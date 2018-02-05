@@ -26,7 +26,7 @@ Simply put, it's a giant ball of molten rock which is no use to anyone yet. ;)
   
   
 # Long-term Goals
-  1. Develop Molten engine and at least one game, running on Windows 7/8/10
+  1. Develop Molten engine and at least one game, running on Windows 7/8/10 via [SharpDX](http://sharpdx.org)
   2. Add linux support later in time via [OpenTK](https://opentk.github.io/) or [OpenGL4Net](https://sourceforge.net/projects/ogl4net/)
   3. DX12/Vulkan support
   4. Depending how far the engine has progressed, mobile support may come much later via Xamarin or whatever the best cross-platform framework is at that time.
