@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.IO", "Molten.IO\Molt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Samples", "Molten.Samples\Molten.Samples.csproj", "{6BCCAD84-5049-4A75-9A92-A9A5EA933D55}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.IO.Windows", "Molten.IO.Windows\Molten.IO.Windows.csproj", "{BDA0168B-68FF-4201-8812-9C4FFE1F6A86}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +103,14 @@ Global
 		{6BCCAD84-5049-4A75-9A92-A9A5EA933D55}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6BCCAD84-5049-4A75-9A92-A9A5EA933D55}.Release|x64.ActiveCfg = Release|Any CPU
 		{6BCCAD84-5049-4A75-9A92-A9A5EA933D55}.Release|x64.Build.0 = Release|Any CPU
+		{BDA0168B-68FF-4201-8812-9C4FFE1F6A86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDA0168B-68FF-4201-8812-9C4FFE1F6A86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDA0168B-68FF-4201-8812-9C4FFE1F6A86}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BDA0168B-68FF-4201-8812-9C4FFE1F6A86}.Debug|x64.Build.0 = Debug|Any CPU
+		{BDA0168B-68FF-4201-8812-9C4FFE1F6A86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDA0168B-68FF-4201-8812-9C4FFE1F6A86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDA0168B-68FF-4201-8812-9C4FFE1F6A86}.Release|x64.ActiveCfg = Release|Any CPU
+		{BDA0168B-68FF-4201-8812-9C4FFE1F6A86}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
