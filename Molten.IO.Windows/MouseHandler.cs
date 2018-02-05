@@ -109,6 +109,11 @@ namespace Molten.Input
             return pos;
         }
 
+        public override void ClearState()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>Update input handler.</summary>
         /// <param name="time">The snapshot of game time to use.</param>
         public override void Update(Timing time)
