@@ -15,9 +15,11 @@ Right now the engine is extremely rough around the edges. Here's a list of the c
   * An extremely basic renderer with:
     * Entity-component-system (ECS) scene system
     * Sprite-batcher
+    * Material system
+    * Abstraction layer for swapping out the renderer without touching the engine itself
   * Content manager
-  * Material system
-  * Abstraction layer for swapping out the renderer without touching the engine itself
+  * Crude test app (written in WPF)
+  
 
 Currently, there is no audio system. No input (WIP), no collision/physics, no deferred rendering or post-processing.
 Simply put, it's a giant ball of molten rock which is no use to anyone yet. ;)
