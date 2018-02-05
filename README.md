@@ -34,4 +34,4 @@ Simply put, it's a giant ball of molten rock which is no use to anyone yet. ;)
 Any commerially viable games I produce with this engine will obviously not be open-source, but I'll definitely be making some example games to go alongside it, as well as documentation at some point.
 
 # Licensing
-MIT - Basically, you can do what you want with it. Fork it, add a knife, consume it for dinner (just kidding). You get the idea!
+MIT - Basically, you can do what you want with it. Fork it, add a knife, consume it for dinner (*just kidding*). You get the idea!
