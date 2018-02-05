@@ -8,7 +8,7 @@ Despite it sounding like a classic case of reinventing the wheel, I intend to tr
 # Why Open-Source?
 I've previously attempted a game engine back in 2015 using SharpDX and while it inevitably ended in failure, I learned a great deal in terms of game engine architecture and the way a GPU works under the hood, as well as things like multi-threading, tasking and other high-performance system design.
 
-This is my second attempt at such an engine, so I would like to extend the learning experience further by it opening up to everyone. More importantly, it allows others to learn from my mistakes, code and other bits and pieces!
+This is my second attempt at such an engine, so I would like to extend the learning experience further by it opening up to everyone. More importantly, it allows others to learn from my code (and mistakes) and perhaps even use the engine as a base for their own games and engine variants.
 
 # Current State
 Right now the engine is extremely rough around the edges. Here's a list of the current features:
