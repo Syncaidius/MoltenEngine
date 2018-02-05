@@ -15,8 +15,6 @@ namespace Molten.Graphics
         GraphicsRasterizerState _rasterState;
         int _stencilReference;
 
-        Material _material;
-
         BufferSegment[] _vSegments;
         BufferSegment _iSegment;
 
@@ -90,8 +88,6 @@ namespace Molten.Graphics
             _blendState = null;
             _depthState = null;
             _rasterState = null;
-
-            _material = null;
 
             for (int i = 0; i < _vSegments.Length; i++)
                 _vSegments[i] = null;

@@ -14,7 +14,6 @@ namespace Molten.Graphics
         internal InputLayout Layout;
         bool _valid = true;
         bool _isInstanced = false;
-
         ulong[] _hashKeys;
 
         internal VertexInputLayout(GraphicsDevice device, 

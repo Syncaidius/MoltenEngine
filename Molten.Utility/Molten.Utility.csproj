@@ -66,22 +66,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BindableValue.cs" />
-    <Compile Include="Collections\ConcurrentDeque.cs" />
     <Compile Include="Collections\ExpansionMode.cs" />
-    <Compile Include="Collections\FastDictionary.cs" />
     <Compile Include="Collections\ObjectPool.cs" />
-    <Compile Include="Collections\ObservableDictionary.cs" />
-    <Compile Include="Collections\ObservableList.cs" />
-    <Compile Include="Collections\QuickDictionary.cs" />
-    <Compile Include="Collections\QuickList.cs" />
-    <Compile Include="Collections\QuickQueue.cs" />
-    <Compile Include="Collections\QuickSet.cs" />
-    <Compile Include="Collections\RawList.cs" />
-    <Compile Include="Collections\RawValueList.cs" />
-    <Compile Include="Collections\ReadOnlyDictionary.cs" />
-    <Compile Include="Collections\ReadOnlyEnumerable.cs" />
-    <Compile Include="Collections\ReadOnlyList.cs" />
-    <Compile Include="Collections\SpeedDictionary.cs" />
     <Compile Include="Collections\SpeedList.cs" />
     <Compile Include="Collections\SpeedTable.cs" />
     <Compile Include="Collections\ThreadedDictionary.cs" />
@@ -91,8 +77,6 @@
     <Compile Include="Collections\ThreadedList.Enumerator.cs" />
     <Compile Include="Collections\ThreadedQueue.cs" />
     <Compile Include="Collections\ThreadedQueue.Enumerator.cs" />
-    <Compile Include="Collections\TinyList.cs" />
-    <Compile Include="Collections\TinyStructList.cs" />
     <Compile Include="Collections\WatchableList.cs" />
     <Compile Include="Comparers\IntPtrComparer.cs" />
     <Compile Include="ConversionHelper.cs" />
@@ -107,12 +91,6 @@
     <Compile Include="ReferencedObject.cs" />
     <Compile Include="ReflectionHelper.cs" />
     <Compile Include="Reflection\LibraryDetection.cs" />
-    <Compile Include="ResourceManagement\BufferPool.cs" />
-    <Compile Include="ResourceManagement\BufferPools.cs" />
-    <Compile Include="ResourceManagement\LockingBufferPool.cs" />
-    <Compile Include="ResourceManagement\LockingResourcePool.cs" />
-    <Compile Include="ResourceManagement\ResourcePool.cs" />
-    <Compile Include="ResourceManagement\UnsafeResourcePool.cs" />
     <Compile Include="SanitizedValue.cs" />
     <Compile Include="SanitizedValueArray.cs" />
     <Compile Include="SatitizedArrayValue.cs" />
