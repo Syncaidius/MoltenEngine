@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8800AFBC-8BE4-4145-803E-EF8C1026A17B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Molten.Graphics</RootNamespace>
+    <AssemblyName>Molten.DX11</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SharpDX, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.4.0.1\lib\net45\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.D3DCompiler.4.0.1\lib\net45\SharpDX.D3DCompiler.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Desktop, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Desktop.4.0.1\lib\net45\SharpDX.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct2D1.4.0.1\lib\net45\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct3D11.4.0.1\lib\net45\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11.Effects, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct3D11.Effects.4.0.1\lib\net45\SharpDX.Direct3D11.Effects.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DXGI.4.0.1\lib\net45\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Mathematics.4.0.1\lib\net45\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Buffers\BufferSegment.cs" />
+    <Compile Include="Buffers\GraphicsBuffer.cs" />
+    <Compile Include="Buffers\GraphicsBufferException.cs" />
+    <Compile Include="Buffers\Operations\BufferCopyOperation.cs" />
+    <Compile Include="Buffers\Operations\BufferDirectCopyOperation.cs" />
+    <Compile Include="Buffers\Operations\BufferGetOperation.cs" />
+    <Compile Include="Buffers\Operations\BufferSetOperation.cs" />
+    <Compile Include="Buffers\Operations\IBufferOperation.cs" />
+    <Compile Include="Buffers\ShaderConstantBuffer.cs" />
+    <Compile Include="Buffers\StagingBuffer.cs" />
+    <Compile Include="Buffers\StructuredBuffer.cs" />
+    <Compile Include="Buffers\TypedBuffer.cs" />
+    <Compile Include="D2D\Brushes\D2DBrush.cs" />
+    <Compile Include="D2D\Brushes\D2DGradientBrush.cs" />
+    <Compile Include="D2D\Brushes\D2DSolidBrush.cs" />
+    <Compile Include="D2D\D2DSurface.cs" />
+    <Compile Include="Display\DX11DisplayManager.cs" />
+    <Compile Include="Exceptions\GraphicsContextException.cs" />
+    <Compile Include="Exceptions\MappedBufferException.cs" />
+    <Compile Include="Exceptions\UnsupportedFeatureException.cs" />
+    <Compile Include="GraphicsBlendStage.cs" />
+    <Compile Include="GraphicsBlendState.cs" />
+    <Compile Include="GraphicsContextType.cs" />
+    <Compile Include="GraphicsDepthMode.cs" />
+    <Compile Include="GraphicsDepthStage.cs" />
+    <Compile Include="GraphicsDepthState.cs" />
+    <Compile Include="GraphicsDevice.cs" />
+    <Compile Include="GraphicsPipe.cs" />
+    <Compile Include="GraphicsPipeState.cs" />
+    <Compile Include="GraphicsRasterizerStage.cs" />
+    <Compile Include="GraphicsRasterizerState.cs" />
+    <Compile Include="GraphicsValidationMode.cs" />
+    <Compile Include="GraphicsValidationResult.cs" />
+    <Compile Include="Hardware\GraphicsComputeFeatures.cs" />
+    <Compile Include="Hardware\GraphicsDeviceFeatures.cs" />
+    <Compile Include="Hardware\GraphicsShaderFeatures.cs" />
+    <Compile Include="InternalConstants.cs" />
+    <Compile Include="Meshes\IndexedMesh.cs" />
+    <Compile Include="Meshes\Mesh.cs" />
+    <Compile Include="Pipeline\ComputeInputStage.cs" />
+    <Compile Include="Pipeline\MaterialInputStage.cs" />
+    <Compile Include="Pipeline\PipelineBindSlot.cs" />
+    <Compile Include="Pipeline\PipelineBindType.cs" />
+    <Compile Include="Pipeline\PipelineComponent.cs" />
+    <Compile Include="Pipeline\PipelineInput.cs" />
+    <Compile Include="Pipeline\PipelineObject.cs" />
+    <Compile Include="Pipeline\PipelineOutput.cs" />
+    <Compile Include="Pipeline\PipelineShaderObject.cs" />
+    <Compile Include="Pipeline\ShaderInputStage.cs" />
+    <Compile Include="Pipeline\ShaderStep.cs" />
+    <Compile Include="PipeStateStack.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Renderer\Debug\DebugOverlayPage.cs" />
+    <Compile Include="Renderer\Debug\DebugStatsPage.cs" />
+    <Compile Include="Renderer\Renderable.cs" />
+    <Compile Include="Renderer\RendererDX11.cs" />
+    <Compile Include="Renderer\Tasks\RendererAddScene.cs" />
+    <Compile Include="Renderer\Tasks\RendererRemoveScene.cs" />
+    <Compile Include="Renderer\Tasks\RendererTask.cs" />
+    <Compile Include="ResourceManager.cs" />
+    <Compile Include="Scene\Changes\RenderableAdd.cs" />
+    <Compile Include="Scene\Changes\RenderableRemove.cs" />
+    <Compile Include="Scene\Changes\RenderSceneChange.cs" />
+    <Compile Include="Scene\Changes\SpriteAdd.cs" />
+    <Compile Include="Scene\Changes\SpriteChangeLayer.cs" />
+    <Compile Include="Scene\Changes\SpriteGetLayerCount.cs" />
+    <Compile Include="Scene\Changes\SpriteGetVisibleLayers.cs" />
+    <Compile Include="Scene\Changes\SpriteRemove.cs" />
+    <Compile Include="Scene\Changes\SpriteSetLayerCount.cs" />
+    <Compile Include="Scene\Changes\SpriteSetLayerVisibility.cs" />
+    <Compile Include="Scene\SceneRenderDataDX11.cs" />
+    <Compile Include="Scene\Spritebatch\SpriteBatch.cs" />
+    <Compile Include="Scene\Spritebatch\SpriteClipZone.cs" />
+    <Compile Include="Scene\Spritebatch\SpriteCluster.cs" />
+    <Compile Include="Scene\Spritebatch\SpriteFont.cs" />
+    <Compile Include="Scene\Spritebatch\SpriteVertex.cs" />
+    <Compile Include="Scene\SpriteLayer.cs" />
+    <Compile Include="ShaderModelExtensionsDX11.cs" />
+    <Compile Include="Shaders\Compiler\ComputeCompiler.cs" />
+    <Compile Include="Shaders\Compiler\HlslCompiler.cs" />
+    <Compile Include="Shaders\Compiler\HlslSubCompiler.cs" />
+    <Compile Include="Shaders\Compiler\MaterialCompiler.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\MaterialAuthorParser.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\MaterialDescParser.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\NodeParseResult.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\ShaderEntryParser.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\ShaderNameParser.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\ShaderNodeParser.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\ShaderPassParser.cs" />
+    <Compile Include="Shaders\Compute\ComputeManager.cs" />
+    <Compile Include="Shaders\Compute\ComputeTask.cs" />
+    <Compile Include="Shaders\DefaultIncludeHandler.cs" />
+    <Compile Include="Shaders\EmbeddedIncludeHandler.cs" />
+    <Compile Include="Shaders\HlslShader.cs" />
+    <Compile Include="Shaders\Materials\Material.cs" />
+    <Compile Include="Shaders\Materials\MaterialIncludeHandler.cs" />
+    <Compile Include="Shaders\Materials\MaterialLayoutValidator.cs" />
+    <Compile Include="Shaders\Materials\MaterialManager.cs" />
+    <Compile Include="Shaders\Materials\MaterialPass.cs" />
+    <Compile Include="Shaders\Materials\MaterialPassCompileResult.cs" />
+    <Compile Include="Shaders\Materials\Samplers\ShaderSampler.cs" />
+    <Compile Include="Shaders\ShaderComposition.cs" />
+    <Compile Include="Shaders\ShaderIOStructure.cs" />
+    <Compile Include="Shaders\Variables\BufferVariable.cs" />
+    <Compile Include="Shaders\Variables\RWBufferVariable.cs" />
+    <Compile Include="Shaders\Variables\RWTexture1DVariable.cs" />
+    <Compile Include="Shaders\Variables\RWTexture2DVariable.cs" />
+    <Compile Include="Shaders\Variables\RWVariable.cs" />
+    <Compile Include="Shaders\Variables\Scalar3x2.cs" />
+    <Compile Include="Shaders\Variables\Scalar3x3.cs" />
+    <Compile Include="Shaders\Variables\Scalar3x3Array.cs" />
+    <Compile Include="Shaders\Variables\Scalar4x4.cs" />
+    <Compile Include="Shaders\Variables\Scalar4x4Array.cs" />
+    <Compile Include="Shaders\Variables\ScalarArray.cs" />
+    <Compile Include="Shaders\Variables\ScalarMatrixArray.cs" />
+    <Compile Include="Shaders\Variables\ScalarVariable.cs" />
+    <Compile Include="Shaders\Variables\ShaderConstantVariable.cs" />
+    <Compile Include="Shaders\Variables\ShaderResourceVariable.cs" />
+    <Compile Include="Shaders\Variables\ShaderSamplerVariable.cs" />
+    <Compile Include="Shaders\Variables\Texture1DArrayVariable.cs" />
+    <Compile Include="Shaders\Variables\Texture1DVariable.cs" />
+    <Compile Include="Shaders\Variables\Texture2DArrayVariable.cs" />
+    <Compile Include="Shaders\Variables\Texture2DVariable.cs" />
+    <Compile Include="Shaders\Variables\TextureCubeVariable.cs" />
+    <Compile Include="SharpDX11Interop.cs" />
+    <Compile Include="Surfaces\DepthSurface.cs" />
+    <Compile Include="Surfaces\RenderFormSurface.cs" />
+    <Compile Include="Surfaces\RenderSurface.cs" />
+    <Compile Include="Surfaces\RenderSurfaceBase.cs" />
+    <Compile Include="Surfaces\RenderSurfaceResetMode.cs" />
+    <Compile Include="Surfaces\SwapChainSurface.cs" />
+    <Compile Include="Textures\BmpTextureWriter.cs" />
+    <Compile Include="Textures\Changes\ITextureChange.cs" />
+    <Compile Include="Textures\Changes\SurfaceClearChange.cs" />
+    <Compile Include="Textures\Changes\TextureGenMipMaps.cs" />
+    <Compile Include="Textures\Changes\TextureResize.cs" />
+    <Compile Include="Textures\Changes\TextureSet.cs" />
+    <Compile Include="Textures\DefaultTextureReader.cs" />
+    <Compile Include="Textures\JpegTextureWriter.cs" />
+    <Compile Include="Textures\PngTextureWriter.cs" />
+    <Compile Include="Textures\TextureAsset1D.cs" />
+    <Compile Include="Textures\TextureAsset2D.cs" />
+    <Compile Include="Textures\TextureAssetCube.cs" />
+    <Compile Include="Textures\TextureBase.cs" />
+    <Compile Include="Textures\TextureBase.Exceptions.cs" />
+    <Compile Include="Textures\WICFormatConverter.cs" />
+    <Compile Include="VertexInputLayout.cs" />
+    <Compile Include="Vertices\VertexFormat.cs" />
+    <Compile Include="Vertices\VertexFormatBuilder.cs" />
+    <Compile Include="Vertices\VertexWithID.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\sprite.sbm" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Molten.DX.Common\Molten.DX.Common.csproj">
+      <Project>{23ffc330-bc09-443d-9e30-4148a69ad199}</Project>
+      <Name>Molten.DX.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
+      <Project>{64387480-7656-484e-b11f-468ee563176e}</Project>
+      <Name>Molten.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.Math\Molten.Math.csproj">
+      <Project>{e59938af-a9d4-4963-b4ac-61e53d05527e}</Project>
+      <Name>Molten.Math</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.Render\Molten.Render.csproj">
+      <Project>{11c91c8d-ed1f-40ac-a246-de4796ca2122}</Project>
+      <Name>Molten.Render</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj">
+      <Project>{1e4854b0-d1a8-40ae-9038-1dea304574a5}</Project>
+      <Name>Molten.Utility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
