@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
+    /// <summary>DirectX 11 implementation of <see cref="IResourceManager"/>.</summary>
     public class ResourceManager : IResourceManager
     {
         GraphicsDevice _device;

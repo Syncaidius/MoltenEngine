@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
+    /// <summary>Stores a depth-stencil state for use with a <see cref="GraphicsPipe"/>.</summary>
     internal class GraphicsDepthState : PipelineObject
     {
         public class Face

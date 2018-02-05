@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
+    /// <summary>Stores a rasterizer state for use with a <see cref="GraphicsPipe"/>.</summary>
     internal class GraphicsRasterizerState : PipelineObject
     {
         internal RasterizerState State;

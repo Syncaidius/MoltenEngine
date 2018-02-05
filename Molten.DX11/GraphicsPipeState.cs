@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
+    /// <summary>Stores the current state of a <see cref="GraphicsPipe"/>.</summary>
     internal class GraphicsPipeState
     {
         GraphicsPipe _pipe;

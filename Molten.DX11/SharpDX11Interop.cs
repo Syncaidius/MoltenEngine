@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
+    /// <summary>Interop between SharpDX DX11 and engine types.</summary>
     public static class SharpDX11Interop
     {
         /// <summary>Converts a comparison mode to a SharpDX.Direct3D11.Comparison.</summary>

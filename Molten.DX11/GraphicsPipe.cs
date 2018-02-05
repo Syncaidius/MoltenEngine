@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
+    /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="DeviceContext"/>.</summary>
     internal class GraphicsPipe : EngineObject
     {
         GraphicsDepthStage _depthStencil;
