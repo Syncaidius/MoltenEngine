@@ -18,6 +18,7 @@ Right now the engine is extremely rough around the edges. Here's a list of the c
     * Material system
     * Abstraction layer for swapping out the renderer without touching the engine itself
   * Content manager
+  * Complete set of math types. The majority are imported from [SharpDX](https://github.com/sharpdx/SharpDX) with a few additions and changes.
   * Crude test app (written in WPF)
   
 
