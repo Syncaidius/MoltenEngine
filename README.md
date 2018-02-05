@@ -1,4 +1,4 @@
-# MoltenEngine
+# Molten Engine
 Molten is a engine project I've been working on in my spare time as a means to eventually produce my own games without using a third party engine or framework.
 
 In the past I've used MonoGame, XNA and Unity3D to produce a game but never felt quite satisfied with the fact that I didn't actually create the framework or foundation myself, as well as feeling frustrated at times by the limitations of third-party frameworks.
