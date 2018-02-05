@@ -91,13 +91,9 @@
     <Compile Include="ReferencedObject.cs" />
     <Compile Include="ReflectionHelper.cs" />
     <Compile Include="Reflection\LibraryDetection.cs" />
-    <Compile Include="SanitizedValue.cs" />
-    <Compile Include="SanitizedValueArray.cs" />
-    <Compile Include="SatitizedArrayValue.cs" />
     <Compile Include="Settings\SettingBank.cs" />
     <Compile Include="Settings\SettingValue.cs" />
     <Compile Include="Settings\SettingValueList.cs" />
-    <Compile Include="SpinLock.cs" />
     <Compile Include="StringHelper.cs" />
     <Compile Include="ThreadingHelper.cs" />
     <Compile Include="Timing.cs" />
