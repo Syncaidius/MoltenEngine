@@ -3,7 +3,7 @@ Molten is a engine project I've been working on in my spare time as a means to e
 
 In the past I've used MonoGame, XNA and Unity3D to produce a game but never felt quite satisfied with the fact that I didn't actually create the framework or foundation myself, as well as feeling frustrated at times by the limitations of third-party frameworks.
 
-Despite it sounding like a classic case of reinventing the wheel, I intend to treat it more as a learning experience in the short to mid-term, with high ambitions of actually producing at least one game with it in the long-term.
+Despite it sounding like a classic case of reinventing the wheel, I intend to treat it more as a learning experience in the short to mid-term, with high ambitions of actually producing at least one game with it in the long-term. Whether those ambitions are reached remains to be seen!
 
 # Why Open-Source?
 I've previously attempted a game engine back in 2015 using SharpDX and while it inevitably ended in failure, I learned a great deal in terms of game engine architecture and the way a GPU works under the hood, as well as things like multi-threading, tasking and other high-performance system design.
