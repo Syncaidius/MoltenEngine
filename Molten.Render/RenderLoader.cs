@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
+    /// <summary>Serves one purpose only: To load a renderer library.</summary>
     public class RenderLoader
     {
         GraphicsSettings _settings;
