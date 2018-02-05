@@ -1,5 +1,6 @@
 ﻿using Molten.Collections;
 using Molten.Graphics;
+using Molten.Input;
 using Molten.Threading;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace Molten
         ThreadManager _threadManager;
         EngineThread _threadRenderer;
         ContentManager _content;
+        InputManager _input;
 
         internal List<Scene> Scenes;
 
@@ -41,6 +43,7 @@ namespace Molten
             _threadManager = new ThreadManager(this, _log);
             _taskQueue = new ThreadedQueue<EngineTask>();
             _content = new ContentManager(_log, this, settings.ContentRootDirectory, null, settings.ContentWorkerThreads);
+            _input = new InputManager(_log);
             Scenes = new List<Scene>();
         }
         
@@ -121,10 +124,11 @@ namespace Molten
             while (_taskQueue.TryDequeue(out task))
                 task.Process(this, time);
 
-            Scene scene = null;
-            for (int i = 0; i < Scenes.Count; i++)
-            {
-                scene = Scenes[i];
+            _input.Update(time);
+
+            // Run through all the scenes and update if enabled.
+            foreach(Scene scene in Scenes)
+            { 
                 if(scene.IsEnabled)
                     scene.Update(time);
             }
@@ -157,5 +161,8 @@ namespace Molten
         public ThreadManager Threading => _threadManager;
 
         public ContentManager Content => _content;
+
+        /// <summary>Gets the input manager attached to the current <see cref="Engine"/> instance.</summary>
+        public InputManager Input => _input;
     }
 }

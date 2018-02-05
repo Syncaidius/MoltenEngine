@@ -9,31 +9,21 @@ namespace Molten.Input
 {
     public class InputManager : EngineObject
     {
-        IRenderer _renderer;
         DirectInput _input;
 
         Logger _log;
-        LogitechLCDHandler _logitechLCD;
-        LogitechGKeyHandler _logitechGKey;
 
         List<GamepadHandler> _gamepads;
         Dictionary<IWindowSurface, SurfaceGroup> _groups;
         SurfaceGroup _activeGroup;
         IWindowSurface _activeSurface;
 
-        public InputManager(Logger log, IRenderer renderer)
+        public InputManager(Logger log)
         {
             _log = log;
             _input = new DirectInput();
-            _renderer = renderer;
             _groups = new Dictionary<IWindowSurface, SurfaceGroup>();
             _gamepads = new List<GamepadHandler>();
-
-            _logitechLCD = new LogitechLCDHandler();
-            _logitechLCD.Initialize(this, log, null);
-
-            _logitechGKey = new LogitechGKeyHandler();
-            _logitechGKey.Initialize(this, log, null);
 
             for (int i = 0; i < 4; i++)
             {
@@ -73,9 +63,6 @@ namespace Molten.Input
 
             for (int i = 0; i < _gamepads.Count; i++)
                 _gamepads[i].Update(time);
-
-            _logitechLCD.Update(time);
-            _logitechGKey.Update(time);
         }
 
         /// <summary>Retrieves a gamepad handler.</summary>
@@ -88,8 +75,6 @@ namespace Molten.Input
 
         protected override void OnDispose()
         {
-            DisposeObject(ref _logitechLCD);
-            DisposeObject(ref _logitechGKey);
             DisposeObject(ref _input);
 
             for (int i = 0; i < _gamepads.Count; i++)
@@ -104,11 +89,5 @@ namespace Molten.Input
 
         /// <summary>Gets the handler for the gamepad at GamepadIndex.One.</summary>
         public GamepadHandler GamePad { get { return _gamepads[0]; } }
-
-        /// <summary>Gets the Logitech LCD dislay handler. Supports both monochrome and color LCDs.</summary>
-        public LogitechLCDHandler LogitechLCD { get { return _logitechLCD; } }
-
-        /// <summary>Gets the logitech GKey handler. Supports all logitech devices which have G-Keys (including mice and headsets).</summary>
-        public LogitechGKeyHandler LogitechGKey { get { return _logitechGKey; } }
     }
 }
