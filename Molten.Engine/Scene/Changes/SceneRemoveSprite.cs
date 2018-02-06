@@ -19,6 +19,8 @@ namespace Molten
         public override void Process(Scene scene)
         {
             scene.Sprites.Remove(Sprite);
+            scene.RenderData.RemoveSprite(Sprite);
+
             if (Sprite is IUpdatable up)
                 scene.Updatables.Remove(up);
             Recycle(this);

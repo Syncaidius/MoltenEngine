@@ -19,6 +19,7 @@ namespace Molten
         public override void Process(Scene scene)
         {
             scene.Sprites.Add(Sprite);
+            scene.RenderData.AddSprite(Sprite);
             if (Sprite is IUpdatable up)
                 scene.Updatables.Add(up);
             Recycle(this);

@@ -20,6 +20,7 @@ namespace Molten.Samples
         Vector3 _camPos;
         Vector3 _camRotation;
         SpriteText _txtInstructions;
+        Vector2 _txtInstructionSize;
 
         public SceneStressTest(EngineSettings settings = null) : base("Scene Stress", settings)
         {
@@ -27,6 +28,8 @@ namespace Molten.Samples
 
         protected override void OnInitialize(Engine engine)
         {
+            base.OnInitialize(engine);
+
             Window.OnPostResize += Window_OnPostResize;
             _cam = new Camera3D()
             {
@@ -42,13 +45,15 @@ namespace Molten.Samples
             _scene.OutputCamera = _cam;
 
             string text = "[W][A][S][D] to move. Mouse to rotate";
-            Vector2 size = ISpriteFont.MeasureString()
+            _txtInstructionSize = TestFont.MeasureString(text);
             _txtInstructions = new SpriteText()
             {
                 Text = text,
                 Font = TestFont,
-                Position = new Vector2(Window.Width / 2, 0),
+                Color = Color.White,
             };
+
+            UpdateInstructions();
 
             _scene.AddSprite(_txtInstructions);
 
@@ -120,12 +125,20 @@ namespace Molten.Samples
                 SpawnTestCube(material, mesh, 20);
 
             Window.PresentClearColor = new Color(20, 20, 20, 255);
-            base.OnInitialize(engine);
+        }
+
+        private void UpdateInstructions()
+        {
+            _txtInstructions.Position = new Vector2()
+            {
+                X = Window.Width / 2 + (-_txtInstructionSize.X / 2),
+                Y = 3,
+            };
         }
 
         private void Window_OnPostResize(ITexture texture)
         {
-            throw new NotImplementedException();
+            UpdateInstructions();
         }
 
         private void SpawnTestCube(IMaterial material, IMesh mesh, int spawnRadius)
@@ -170,12 +183,15 @@ namespace Molten.Samples
             // Keyboard input - Again messy code for now
             Matrix camTransform = Matrix.Invert(_cam.View);
             Vector3 moveDelta = Vector3.Zero;
-            if (Keyboard.IsPressed(Key.W)) moveDelta += camTransform.Backward;
-            if (Keyboard.IsPressed(Key.S)) moveDelta += camTransform.Forward;
-            if (Keyboard.IsPressed(Key.A)) moveDelta += camTransform.Left;
-            if (Keyboard.IsPressed(Key.D)) moveDelta += camTransform.Right;
+            float rotSpeed = 0.25f;
+            float speed = 1.0f;
 
-            _camPos += moveDelta * time.Delta;
+            if (Keyboard.IsPressed(Key.W)) moveDelta += camTransform.Backward * rotSpeed;
+            if (Keyboard.IsPressed(Key.S)) moveDelta += camTransform.Forward * rotSpeed;
+            if (Keyboard.IsPressed(Key.A)) moveDelta += camTransform.Left * rotSpeed;
+            if (Keyboard.IsPressed(Key.D)) moveDelta += camTransform.Right * rotSpeed;
+
+            _camPos += moveDelta * time.Delta * speed;
             _cam.SetView(_camPos, _camRotation, Vector3.Up, Vector3.ForwardLH);
         }
     }

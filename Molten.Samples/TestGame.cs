@@ -26,7 +26,7 @@ namespace Molten.Samples
             _formDepthSurface = Engine.Renderer.Resources.CreateDepthSurface(Window.Width, Window.Height);
             Window.OnPostResize += Window_OnPostResize;
 
-            _testFont = engine.Renderer.Resources.CreateFont("arial", 12);
+            _testFont = engine.Renderer.Resources.CreateFont("arial", 14);
         }
 
         private void Window_OnPostResize(ITexture texture)
