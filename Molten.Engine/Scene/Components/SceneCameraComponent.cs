@@ -49,6 +49,7 @@ namespace Molten.Graphics
         private void CalculateView()
         {
             _view = Matrix.Invert(Object.Transform.Global);
+            _viewProjection = Matrix.Multiply(_view, _projection);
         }
 
         /// <summary>Converts the provided screen position to a globalized 3D world position.</summary>
