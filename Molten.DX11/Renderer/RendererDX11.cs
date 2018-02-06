@@ -188,6 +188,9 @@ namespace Molten.Graphics
                 return false;
             });
 
+            _device.Profiler.CaptureFrame();
+            _device.Profiler.Capture(time);
+
             // Clear the list of used surfaces, ready for the next frame.
             _usedSurfaces.Clear();
         }

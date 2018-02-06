@@ -76,9 +76,9 @@ namespace Molten.Graphics
             _frameSnaps[_curShot] = new RenderFrameSnapshot();
         }
 
-        public void Capture(Timing timing)
+        public void Capture(Timing time)
         {
-            _timing += timing.ElapsedTime.TotalMilliseconds;
+            _timing += time.ElapsedTime.TotalMilliseconds;
 
             if (_timing >= 1000)
             {
@@ -128,7 +128,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets or sets the number of render target swaps for the current frame.</summary>
-        public int RenderTargetSwaps
+        public int RTSwaps
         {
             get { return _frameSnaps[_curShot].rtSwaps; }
             set { _frameSnaps[_curShot].rtSwaps = value; }
@@ -167,7 +167,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets the number of render target swaps for the current second.</summary>
-        public int RenderTargetSwapsPerSecond
+        public int RTSwapsPerSecond
         {
             get { return _secondSnaps[_curSecondShot].rtSwaps; }
         }
