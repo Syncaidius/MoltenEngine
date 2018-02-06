@@ -35,6 +35,7 @@ namespace Molten.Samples
             _positions = new List<Matrix>();
             _scene = new Scene("Test", engine);
             _scene.OutputCamera = _cam;
+            SpawnPlayer();
 
             string fn = "assets/BasicColor.sbm";
             string source = "";
