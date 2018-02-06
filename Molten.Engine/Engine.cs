@@ -76,6 +76,13 @@ namespace Molten
             _taskQueue.Enqueue(task);
         }
 
+        public SceneObject CreateObject(Vector3 position)
+        {
+            SceneObject obj = new SceneObject(this);
+            obj.Transform.LocalPosition = position;
+            return obj;
+        }
+
         public SceneObject CreateObject()
         {
             return new SceneObject(this);

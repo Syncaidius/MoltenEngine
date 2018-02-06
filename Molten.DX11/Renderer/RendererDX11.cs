@@ -11,6 +11,9 @@ namespace Molten.Graphics
 {
     public class RendererDX11 : IRenderer
     {
+        static readonly Matrix _defaultView2D = Matrix.Identity;
+        static readonly Matrix _defaultView3D = Matrix.LookAtLH(new Vector3(0, 0, -5), new Vector3(0, 0, 0), Vector3.UnitY);
+
         DX11DisplayManager _displayManager;
         ResourceManager _resourceManager;
         MaterialManager _materials;
@@ -210,7 +213,7 @@ namespace Molten.Graphics
                 if (rs == null)
                     return;
 
-                scene.View = Camera3D.DefaultView;
+                scene.View = _defaultView3D;
                 scene.Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, rs.Width / (float)rs.Height, 0.1f, 100.0f);
                 scene.ViewProjection = Matrix.Multiply(scene.View, scene.Projection);
             }
@@ -262,8 +265,8 @@ namespace Molten.Graphics
                 if (rs == null)
                     return;
 
-                spriteProj = Camera2D.DefaultView;
-                spriteView = Camera2D.GetDefaultProjection(rs, 0, 1);
+                spriteProj = _defaultView2D;
+                spriteView = Matrix.OrthoOffCenterLH(0, rs.Width, -rs.Height, 0, 0, 1);
                 spriteViewProj = Matrix.Multiply(spriteView, spriteProj);
             }
 

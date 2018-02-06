@@ -14,7 +14,7 @@ namespace Molten.Graphics
         protected Matrix _viewProjection;
         protected IRenderSurface _surface;
         protected float _nearClip = 0.1f;
-        protected float _farClip = 100f;
+        protected float _farClip = 1000f;
 
         protected abstract void CalculateProjection();
 

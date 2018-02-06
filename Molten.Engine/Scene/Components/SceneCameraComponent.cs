@@ -9,20 +9,17 @@ namespace Molten.Graphics
     /// <summary>An implementation of <see cref="Camera"/> which provides a left-handed projection matrix based on it's <see cref="Camera.OutputSurface"/>.</summary>
     public class SceneCameraComponent : SceneComponent, ICamera
     {
-        //public static readonly Matrix DefaultView = Matrix.LookAtLH(new Vector3(0, 0, -5), new Vector3(0, 0, 0), Vector3.UnitY);
-
-        Vector3 _position;
         Matrix _view;
         Matrix _projection;
         Matrix _viewProjection;
         IRenderSurface _surface;
-        float _nearClip = 0.1f;
-        float _farClip = 100f;
+        float _nearClip;
+        float _farClip;
 
         public SceneCameraComponent()
         {
             _nearClip = 0.1f;
-            _farClip = 100.0f;
+            _farClip = 1000.0f;
             _view = Matrix.Identity;
         }
 
@@ -51,66 +48,15 @@ namespace Molten.Graphics
 
         private void CalculateView()
         {
-            _view = Matrix.Invert(Object.Transform.GlobalTransform);
-
-            Vector3 scale;
-            Quaternion rot;
-            Object.Transform.GlobalTransform.Decompose(out scale, out rot, out _position);
+            _view = Matrix.Invert(Object.Transform.Global);
         }
-
-        //public void SetView(Vector3 position, Vector3 lookAtPosition, Vector3 upAxis)
-        //{
-        //    _view = Matrix.LookAtLH(position, lookAtPosition, upAxis);
-        //}
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="position">The camera's position.</param>
-        ///// <param name="xRotation">The Z-axis rotation, in degrees.</param>
-        ///// <param name="yRotation">The Z-axis rotation, in degrees.</param>
-        ///// <param name="zRotation">The Z-axis rotation, in degrees.</param>
-        ///// <param name="upAxis">The up axis.</param>
-        //public void SetView(Vector3 position, float xRotation, float yRotation, float zRotation, Vector3 upAxis, Vector3 forwardAxis)
-        //{
-        //    SetView(position, new Vector3(xRotation, yRotation, zRotation), upAxis, forwardAxis);
-        //}
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="position">The camera's position.</param>
-        ///// <param name="rotation">The XYZ rotation, in degrees.</param>
-        ///// <param name="upAxis">The up axis.</param>
-        //public void SetView(Vector3 position, Vector3 rotation, Vector3 upAxis, Vector3 forwardAxis)
-        //{
-        //    Vector3 leftAxis = -Vector3.Cross(forwardAxis, upAxis);
-        //    Quaternion qRot = Quaternion.RotationAxis(leftAxis, MathHelper.DegreesToRadians(rotation.X)) *
-        //        Quaternion.RotationAxis(upAxis, MathHelper.DegreesToRadians(rotation.Y)) *
-        //        Quaternion.RotationAxis(forwardAxis, MathHelper.DegreesToRadians(rotation.Z));
-
-        //    SetView(position, qRot);
-        //}
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="position">The camera's position.</param>
-        ///// <param name="rotation">The rotation quaternion.</param>
-        ///// <param name="upAxis">The up axis.</param>
-        //public void SetView(Vector3 position, Quaternion rotation)
-        //{
-        //    _view = Matrix.FromQuaternion(rotation) * Matrix.CreateTranslation(position);
-        //    _view.Invert();
-        //    _viewProjection = Matrix.Multiply(_view, _projection);
-        //}
 
         /// <summary>Converts the provided screen position to a globalized 3D world position.</summary>
         /// <param name="location">The screen position.</param>
         /// <returns></returns>
         public Vector3 ConvertScreenToWorld(Vector2 location)
         {
-            Vector4 result = Vector2.Transform(location, Object.Transform.GlobalTransform);
+            Vector4 result = Vector2.Transform(location, Object.Transform.Global);
             return new Vector3(result.X, result.Y, result.Z);
         }
 
@@ -125,9 +71,6 @@ namespace Molten.Graphics
         public Matrix Projection => _projection;
 
         public Matrix ViewProjection => _viewProjection;
-
-        /// <summary>Gets the camera's current position.</summary>
-        public Vector3 Position => _position;
 
         /// <summary>Gets or sets the <see cref="IRenderSurface"/> that the camera's view should be rendered out to.</summary>
         public IRenderSurface OutputSurface

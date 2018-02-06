@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics;
+using Molten.Input;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +20,8 @@ namespace Molten.Samples
         SceneObject _child;
         List<Matrix> _positions;
         Random _rng;
-        Camera _cam; 
+        Camera _cam;
+        SceneObject _player;
 
         public SceneParentingTest(EngineSettings settings = null) : base("Scene Parenting", settings)
         {
@@ -28,11 +30,6 @@ namespace Molten.Samples
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-            _cam = new SceneCameraComponent()
-            {
-                OutputSurface = Window,
-                OutputDepthSurface = WindowDepthSurface,
-            };
 
             _rng = new Random();
             _positions = new List<Matrix>();
@@ -115,6 +112,16 @@ namespace Molten.Samples
             Window.PresentClearColor = new Color(20,20,20,255);
         }
 
+        private void SpawnPlayer()
+        {
+            _player = Engine.CreateObject();
+            SceneCameraComponent cam = _player.AddComponent<SceneCameraComponent>();
+            cam.OutputSurface = Window;
+            cam.OutputDepthSurface = WindowDepthSurface;
+            _scene.AddObject(_player);
+            _scene.OutputCamera = cam;
+        }
+
         private SceneObject SpawnTestCube(IMesh mesh)
         {
             SceneObject obj = Engine.CreateObject();
@@ -150,6 +157,23 @@ namespace Molten.Samples
 
             _parent.Transform.LocalPosition = new Vector3(0, 1, 0);
             _child.Transform.LocalPosition = new Vector3(-3, 0, 0);
+
+            // Mouse input - Messy for now - We're just testing input
+            _player.Transform.LocalRotationX += Mouse.Moved.Y;
+            _player.Transform.LocalRotationY += Mouse.Moved.X;
+            Mouse.CenterInWindow();
+
+            // Keyboard input - Again messy code for now
+            Vector3 moveDelta = Vector3.Zero;
+            float rotSpeed = 0.25f;
+            float speed = 1.0f;
+
+            if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * rotSpeed;
+            if (Keyboard.IsPressed(Key.S)) moveDelta += _player.Transform.Global.Forward * rotSpeed;
+            if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * rotSpeed;
+            if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * rotSpeed;
+
+            _player.Transform.LocalPosition += moveDelta * time.Delta * speed;
         }
     }
 }

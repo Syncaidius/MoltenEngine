@@ -20,8 +20,6 @@ namespace Molten
         bool _globalChanged = true;
         bool _localChanged = true;
 
-        public Matrix GlobalTransform => _globalTransform;
-
         internal SceneObjectTransform(SceneObject obj)
         {
             _obj = obj;
@@ -89,6 +87,10 @@ namespace Molten
             _globalChanged = false;
             _localChanged = false;
         }
+
+        public Matrix Global => _globalTransform;
+
+        public Matrix Local => _localTransform;
 
         public Vector3 LocalPosition
         {

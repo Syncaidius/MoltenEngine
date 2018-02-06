@@ -15,34 +15,23 @@ namespace Molten.Samples
 
         Scene _scene;
         List<SceneObject> _objects;
+        SceneObject _player;
         Random _rng;
-        SceneCameraComponent _cam;
-        Vector3 _camPos;
-        Vector3 _camRotation;
         SpriteText _txtInstructions;
         Vector2 _txtInstructionSize;
 
-        public SceneStressTest(EngineSettings settings = null) : base("Scene Stress", settings)
-        {
-        }
+        public SceneStressTest(EngineSettings settings = null) : base("Scene Stress", settings) { }
 
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
 
             Window.OnPostResize += Window_OnPostResize;
-            _cam = new SceneCameraComponent()
-            {
-                MaximumDrawDistance = 1000,
-                OutputSurface = Window,
-                OutputDepthSurface = WindowDepthSurface,
-                View = Matrix.Identity,
-            };
-
+            
             _rng = new Random();
             _objects = new List<SceneObject>();
             _scene = new Scene("Test", engine);
-            _scene.OutputCamera = _cam;
+            SpawnPlayer();
 
             string text = "[W][A][S][D] to move. Mouse to rotate";
             _txtInstructionSize = TestFont.MeasureString(text);
@@ -53,9 +42,8 @@ namespace Molten.Samples
                 Color = Color.White,
             };
 
-            UpdateInstructions();
-
             _scene.AddSprite(_txtInstructions);
+            UpdateInstructions();
 
             string fn = "assets/BasicColor.sbm";
             string source = "";
@@ -129,6 +117,9 @@ namespace Molten.Samples
 
         private void UpdateInstructions()
         {
+            if (_txtInstructions == null)
+                return;
+
             _txtInstructions.Position = new Vector2()
             {
                 X = Window.Width / 2 + (-_txtInstructionSize.X / 2),
@@ -139,6 +130,16 @@ namespace Molten.Samples
         private void Window_OnPostResize(ITexture texture)
         {
             UpdateInstructions();
+        }
+
+        private void SpawnPlayer()
+        {
+            _player = Engine.CreateObject(new Vector3(0,0,-5));
+            SceneCameraComponent cam = _player.AddComponent<SceneCameraComponent>();
+            cam.OutputSurface = Window;
+            cam.OutputDepthSurface = WindowDepthSurface;
+            _scene.AddObject(_player);
+            _scene.OutputCamera = cam;
         }
 
         private void SpawnTestCube(IMaterial material, IMesh mesh, int spawnRadius)
@@ -176,23 +177,21 @@ namespace Molten.Samples
             }
 
             // Mouse input - Messy for now - We're just testing input
-            _camRotation.X += Mouse.Moved.Y;
-            _camRotation.Y += Mouse.Moved.X;
+            _player.Transform.LocalRotationX += Mouse.Moved.Y;
+            _player.Transform.LocalRotationY += Mouse.Moved.X;
             Mouse.CenterInWindow();
 
             // Keyboard input - Again messy code for now
-            Matrix camTransform = Matrix.Invert(_cam.View);
             Vector3 moveDelta = Vector3.Zero;
             float rotSpeed = 0.25f;
             float speed = 1.0f;
 
-            if (Keyboard.IsPressed(Key.W)) moveDelta += camTransform.Backward * rotSpeed;
-            if (Keyboard.IsPressed(Key.S)) moveDelta += camTransform.Forward * rotSpeed;
-            if (Keyboard.IsPressed(Key.A)) moveDelta += camTransform.Left * rotSpeed;
-            if (Keyboard.IsPressed(Key.D)) moveDelta += camTransform.Right * rotSpeed;
+            if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * rotSpeed;
+            if (Keyboard.IsPressed(Key.S)) moveDelta += _player.Transform.Global.Forward * rotSpeed;
+            if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * rotSpeed;
+            if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * rotSpeed;
 
-            _camPos += moveDelta * time.Delta * speed;
-            _cam.SetView(_camPos, _camRotation, Vector3.Up, Vector3.ForwardLH);
+            _player.Transform.LocalPosition += moveDelta * time.Delta * speed;
         }
     }
 }

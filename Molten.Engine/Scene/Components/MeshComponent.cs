@@ -75,7 +75,7 @@ namespace Molten
 
         public override void OnUpdate(Timing time)
         {
-            _data.TargetTransform = Object.Transform.GlobalTransform;
+            _data.TargetTransform = Object.Transform.Global;
         }
 
         /// <summary>The mesh that should be drawn at the location of the component's parent object.</summary>

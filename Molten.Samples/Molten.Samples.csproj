@@ -77,10 +77,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DDSTextureTest.cs" />
     <Compile Include="FontTest.cs" />
     <Compile Include="MultiWindowGame.cs" />
-    <Compile Include="PngTextureTest.cs" />
     <Compile Include="SceneParentingTest.cs" />
     <Compile Include="SceneStressTest.cs" />
     <Compile Include="SceneTextureArrayTest.cs" />
