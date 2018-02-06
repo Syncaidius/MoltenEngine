@@ -22,8 +22,6 @@ namespace Molten.Samples
         IMaterial _material;
         ITexture2D _texture;
 
-        List<ISprite> _sprites;
-
         public SpriteTest(EngineSettings settings = null) : base("Sprite Batch", settings)
         {
 
@@ -44,7 +42,6 @@ namespace Molten.Samples
                 OutputDepthSurface = WindowDepthSurface,
             };
 
-            _sprites = new List<ISprite>();
             _rng = new Random();
             _positions = new List<Matrix>();
             _scene = new Scene("Test", engine);
@@ -157,7 +154,6 @@ namespace Molten.Samples
                     Origin = new Vector2(0.5f),
                 };
 
-                _sprites.Add(s);
                 _scene.RenderData.AddSprite(s);
             }
         }
@@ -187,7 +183,6 @@ namespace Molten.Samples
                     Origin = new Vector2(0.5f),
                 };
 
-                _sprites.Add(s);
                 _scene.RenderData.AddSprite(s);
             }
         }

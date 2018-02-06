@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics;
+using Molten.Input;
 using Molten.Threading;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ namespace Molten
         Engine _engine;
         EngineThread _gameThread;
         IWindowSurface _gameForm;
+        KeyboardHandler _keyboard;
+        MouseHandler _mouse;
 
         public event StoneGameHandler OnGameExiting;
 
@@ -37,6 +40,7 @@ namespace Molten
 
             _engine = new Engine(Settings);
             _engine.LoadRenderer();
+
             if (_engine.Renderer == null)
             {
                 ForceExit();
@@ -47,6 +51,11 @@ namespace Molten
 
             _engine.Renderer.OutputSurfaces.Add(_gameForm);
             _gameForm.Show();
+
+            _keyboard = _engine.Input.GetHandler<KeyboardHandler>(_gameForm);
+            _mouse = _engine.Input.GetHandler<MouseHandler>(_gameForm);
+            _engine.Input.SetActiveWindow(_gameForm);
+
             _engine.Renderer.DefaultSurface = _gameForm;
             _engine.StartRenderer();
 
@@ -133,6 +142,12 @@ namespace Molten
         public Logger Log => _engine.Log;
 
         public Timing Time => _gameThread.Timing;
+
+        /// <summary>Gets the <see cref="KeyboardHandler"/> attached to the game's main window.</summary>
+        public KeyboardHandler Keyboard => _keyboard;
+
+        /// <summary>Gets the <see cref="MouseHandler"/> attached to the game's main window.</summary>
+        public MouseHandler Mouse => _mouse;
 
         /// <summary>Gets the <see cref="IWindowSurface"/> that the game renders in to.</summary>
         public IWindowSurface Window => _gameForm;

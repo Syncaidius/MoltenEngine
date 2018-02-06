@@ -147,7 +147,7 @@ namespace Molten
         /// <summary>
         /// Gets the delta time.
         /// </summary>
-        public float DeltaTime => _deltaTime;
+        public float Delta => _deltaTime;
 
         /// <summary>
         /// Gets the current frame.

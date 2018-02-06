@@ -37,7 +37,7 @@ namespace Molten.Input
                 handler.OnDisposing += Handler_OnDisposing;
                 _byType.Add(t, handler);
                 _handlers.Add(handler);
-                return null;
+                return handler as T;
             }
         }
 

@@ -17,7 +17,7 @@ namespace Molten.Graphics
             _farClip = 1.0f;
         }
 
-        protected override void CalculateViewProjection()
+        protected override void CalculateProjection()
         {
             _projection = Matrix.OrthoOffCenterLH(0, _surface.Width, -_surface.Height, 0, _nearClip, _farClip);
             _viewProjection = Matrix.Multiply(View, _projection);

@@ -10,6 +10,7 @@ namespace Molten.Samples
     public abstract class TestGame : MoltenGame
     {
         IDepthSurface _formDepthSurface;
+        ISpriteFont _testFont;
 
         public TestGame(string title, EngineSettings settings = null) : base($"{title} Test", settings)
         {
@@ -24,6 +25,8 @@ namespace Molten.Samples
             engine.Renderer.SetDebugOverlayPage(true, 0);
             _formDepthSurface = Engine.Renderer.Resources.CreateDepthSurface(Window.Width, Window.Height);
             Window.OnPostResize += Window_OnPostResize;
+
+            _testFont = engine.Renderer.Resources.CreateFont("arial", 12);
         }
 
         private void Window_OnPostResize(ITexture texture)
@@ -41,5 +44,7 @@ namespace Molten.Samples
         /// <summary>Gets the <see cref="IDepthSurface"/> which is meant to be used when rendering to the game's main window.
         /// Whenever the main game window is resized, this depth surface is too.</summary>
         public IDepthSurface WindowDepthSurface => _formDepthSurface;
+
+        public ISpriteFont TestFont => _testFont;
     }
 }

@@ -33,7 +33,7 @@ namespace Molten.Input
             }
         }
 
-        public T GetManager<T>(IWindowSurface surface) where T : InputHandlerBase, new()
+        public T GetHandler<T>(IWindowSurface surface) where T : InputHandlerBase, new()
         {
             SurfaceGroup grp = null;
             if(!_groups.TryGetValue(surface, out grp))
