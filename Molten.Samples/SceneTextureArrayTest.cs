@@ -27,7 +27,7 @@ namespace Molten.Samples
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-            _cam = new Camera3D()
+            _cam = new SceneCameraComponent()
             {
                 OutputSurface = Window,
                 OutputDepthSurface = WindowDepthSurface,

@@ -16,7 +16,7 @@ namespace Molten.Samples
         Scene _scene;
         List<SceneObject> _objects;
         Random _rng;
-        Camera3D _cam;
+        SceneCameraComponent _cam;
         Vector3 _camPos;
         Vector3 _camRotation;
         SpriteText _txtInstructions;
@@ -31,7 +31,7 @@ namespace Molten.Samples
             base.OnInitialize(engine);
 
             Window.OnPostResize += Window_OnPostResize;
-            _cam = new Camera3D()
+            _cam = new SceneCameraComponent()
             {
                 MaximumDrawDistance = 1000,
                 OutputSurface = Window,

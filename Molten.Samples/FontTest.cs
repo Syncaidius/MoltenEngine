@@ -17,7 +17,7 @@ namespace Molten.Samples
         SceneObject _child;
         List<Matrix> _positions;
         Random _rng;
-        Camera3D _cam;
+        SceneCameraComponent _cam;
         Camera2D _cam2D;
         ISpriteFont _font;
         List<ISprite> _sprites;
@@ -31,7 +31,7 @@ namespace Molten.Samples
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-            _cam = new Camera3D()
+            _cam = new SceneCameraComponent()
             {
                 OutputSurface = Window,
                 OutputDepthSurface = WindowDepthSurface,
