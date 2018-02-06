@@ -177,8 +177,8 @@ namespace Molten.Samples
             }
 
             // Mouse input - Messy for now - We're just testing input
-            //_player.Transform.LocalRotationX += Mouse.Moved.Y;
-            //_player.Transform.LocalRotationY += Mouse.Moved.X;
+            _player.Transform.LocalRotationX += Mouse.Moved.Y;
+            _player.Transform.LocalRotationY += Mouse.Moved.X;
             Mouse.CenterInWindow();
 
             // Keyboard input - Again messy code for now
