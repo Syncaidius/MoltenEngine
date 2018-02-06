@@ -11,6 +11,9 @@ namespace Molten.Graphics
     {
         public static readonly Matrix DefaultView = Matrix.LookAtLH(new Vector3(0, 0, -5), new Vector3(0, 0, 0), Vector3.UnitY);
 
+        Matrix _transform;
+        Vector3 _position;
+
         public Camera3D()
         {
             _nearClip = 0.1f;
@@ -67,7 +70,43 @@ namespace Molten.Graphics
         {
             _view = Matrix.FromQuaternion(rotation) * Matrix.CreateTranslation(position);
             _view.Invert();
+            View = _view; // Trigge validation and other updates
             _viewProjection = Matrix.Multiply(_view, _projection);
         }
+
+        /// <summary>Converts the provided screen position to a globalized 3D world position.</summary>
+        /// <param name="location">The screen position.</param>
+        /// <returns></returns>
+        public Vector3 ConvertScreenToWorld(Vector2 location)
+        {
+            Vector4 result = Vector2.Transform(location, _transform);
+            return new Vector3(result.X, result.Y, result.Z);
+        }
+
+        public Vector2 ConvertWorldToScreen(Vector3 position)
+        {
+            Vector4 result = Vector3.Transform(position, _view);
+            return new Vector2(result.X, result.Y);
+        }
+
+        public override Matrix View
+        {
+            get => base.View;
+            set
+            {
+                base.View = value;
+                _transform = Matrix.Invert(value);
+
+                Vector3 scale;
+                Quaternion rot;
+                _transform.Decompose(out scale, out rot, out _position);
+            }
+        }
+
+        /// <summary>Gets the camera's transform.</summary>
+        public Matrix Transform => _transform;
+
+        /// <summary>Gets the camera's current position.</summary>
+        public Vector3 Position => _position;
     }
 }
