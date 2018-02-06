@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>A base class for custom camera implementations.</summary>
-    public abstract class Camera
+    public abstract class Camera : ICamera
     {
         protected Matrix _view;
         protected Matrix _projection;

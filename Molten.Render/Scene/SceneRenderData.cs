@@ -11,9 +11,9 @@ namespace Molten.Graphics
         public bool IsVisible = true;
 
         /// <summary>Gets or sets the camera that should be used as a view or eye when rendering a scene.</summary>
-        public Camera RenderCamera;
+        public ICamera RenderCamera;
 
-        public Camera2D SpriteCamera;
+        public ICamera SpriteCamera;
 
         public Color BackgroundColor = new Color(20,20,20,255);
 
