@@ -40,9 +40,6 @@ namespace Molten.Graphics
         internal GraphicsBuffer DynamicIndexBuffer;
         internal StagingBuffer StagingBuffer;
 
-        TimeSpan _frameTime;
-        Stopwatch _frameTimer;
-
         public RendererDX11()
         {
             _log = Logger.Get();
@@ -66,7 +63,6 @@ namespace Molten.Graphics
             _shaderCompiler = new HlslCompiler(this, _log);
             _tasks = new ThreadedQueue<RendererTask>();
             _usedSurfaces = new HashSet<TextureAsset2D>();
-            _frameTimer = new Stopwatch();
             Scenes = new List<SceneRenderDataDX11>();
 
             int maxVertexBytesStatic = 1024 * 512;
@@ -135,7 +131,8 @@ namespace Molten.Graphics
 
         public void Present(Timing time)
         {
-            _frameTimer.Restart();
+            _profiler.StartCapture();
+            _device.Profiler.StartCapture();
 
             // Perform all queued tasks before proceeding
             RendererTask task = null;
@@ -188,11 +185,12 @@ namespace Molten.Graphics
                 return false;
             });
 
-            _device.Profiler.CaptureFrame();
-            _device.Profiler.Capture(time);
-
             // Clear the list of used surfaces, ready for the next frame.
             _usedSurfaces.Clear();
+            _device.Profiler.EndCapture(time);
+
+            _profiler.AddData(_device.Profiler.CurrentFrame);
+            _profiler.EndCapture(time);
         }
 
         private void Render3D(SceneRenderDataDX11 scene)
@@ -242,9 +240,6 @@ namespace Molten.Graphics
                 _device.Rasterizer.SetViewports(rs.Viewport);
                 scene.Render3D(_device, this);
             }
-
-            _frameTimer.Stop();
-            _frameTime = _frameTimer.Elapsed;
         }
 
         private void Render2D(SceneRenderDataDX11 scene, Timing time)
@@ -367,7 +362,5 @@ namespace Molten.Graphics
             get => _device.DefaultSurface;
             set => _device.DefaultSurface = value as RenderSurfaceBase;
         }
-
-        public TimeSpan FrameTime => _frameTime;
     }
 }

@@ -8,21 +8,27 @@ namespace Molten.Graphics
 {
     public struct RenderFrameSnapshot
     {
-        public int drawCalls;
-        public int bindings;
-        public int bufferSwaps;
-        public int shaderSwaps;
-        public int rtSwaps;
-        public int triCount;
+        public int DrawCalls;
+        public int Bindings;
+        public int BufferSwaps;
+        public int ShaderSwaps;
+        public int RTSwaps;
+
+        /// <summary>The total number of triangles that were rendered in the previous frame.</summary>
+        public int TriCount;
+
+        /// <summary>The time it took to render the previous frame.</summary>
+        public double Time;
 
         public void Add(RenderFrameSnapshot other)
         {
-            drawCalls += other.drawCalls;
-            bindings += other.bindings;
-            rtSwaps += other.rtSwaps;
-            triCount += other.triCount;
-            bufferSwaps += other.bufferSwaps;
-            shaderSwaps += other.shaderSwaps;
+            DrawCalls += other.DrawCalls;
+            Bindings += other.Bindings;
+            RTSwaps += other.RTSwaps;
+            TriCount += other.TriCount;
+            BufferSwaps += other.BufferSwaps;
+            ShaderSwaps += other.ShaderSwaps;
+            Time += other.Time;
         }
     }
 }

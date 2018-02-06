@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -17,8 +18,8 @@ namespace Molten.Graphics
         int _curSecondShot;
         int _prevSecondShot;
         double _timing;
-
         long _vramUsed;
+        Stopwatch _frameTimer;
 
         /// <summary>
         /// 
@@ -26,6 +27,7 @@ namespace Molten.Graphics
         /// <param name="snapshots">The number of previous frames of which to keep snapshots.</param>
         public RenderProfilerDX(int snapshots = 20)
         {
+            _frameTimer = new Stopwatch();
             _frameSnaps = new RenderFrameSnapshot[snapshots];
             _secondSnaps = new RenderFrameSnapshot[snapshots];
         }
@@ -57,29 +59,26 @@ namespace Molten.Graphics
         }
 
         /// <summary>Adds a frame snapshot to the data for the current frame. Useful for collating snapshots from multiple device contexts into one snapshot.</summary>
-        public void AddData(ref RenderFrameSnapshot snap)
+        public void AddData(RenderFrameSnapshot snap)
         {
             _frameSnaps[_curShot].Add(snap);
         }
 
-        /// <summary>Stores the statistics for the current frame.</summary>
-        public void CaptureFrame()
+        public void StartCapture()
         {
-            _prevShot = _curShot;
-            _curShot++;
-
-            if (_curShot == _frameSnaps.Length)
-                _curShot = 0;
-
-            // Accumulate into second-snapshot, then reset.
-            _secondSnaps[_curSecondShot].Add(_frameSnaps[_curShot]);
-            _frameSnaps[_curShot] = new RenderFrameSnapshot();
+            _frameTimer.Restart();
         }
 
-        public void Capture(Timing time)
+        public void EndCapture(Timing time)
         {
-            _timing += time.ElapsedTime.TotalMilliseconds;
+            _frameTimer.Stop();
 
+            // Accumulate into per-second. Reset for next frame.
+            _frameSnaps[_curShot].Time = _frameTimer.Elapsed.TotalMilliseconds;
+            _secondSnaps[_curSecondShot].Add(_frameSnaps[_curShot]);
+
+            // Handle per-second timing updates.
+            _timing += time.ElapsedTime.TotalMilliseconds;
             if (_timing >= 1000)
             {
                 _timing -= 1000;
@@ -91,6 +90,11 @@ namespace Molten.Graphics
 
                 _secondSnaps[_curSecondShot] = new RenderFrameSnapshot();
             }
+
+            _prevShot = _curShot++;
+            if (_curShot == _frameSnaps.Length)
+                _curShot = 0;
+            _frameSnaps[_curShot] = new RenderFrameSnapshot();
         }
 
         public RenderFrameSnapshot PreviousFrame
@@ -116,76 +120,76 @@ namespace Molten.Graphics
         /// <summary>Gets or sets the number of draw calls for the current frame.</summary>
         public int DrawCalls
         {
-            get { return _frameSnaps[_curShot].drawCalls; }
-            set { _frameSnaps[_curShot].drawCalls = value; }
+            get { return _frameSnaps[_curShot].DrawCalls; }
+            set { _frameSnaps[_curShot].DrawCalls = value; }
         }
 
         /// <summary>Gets or sets the number of times a resource was bound to the device.</summary>
         public int Bindings
         {
-            get { return _frameSnaps[_curShot].bindings; }
-            set { _frameSnaps[_curShot].bindings = value; }
+            get { return _frameSnaps[_curShot].Bindings; }
+            set { _frameSnaps[_curShot].Bindings = value; }
         }
 
         /// <summary>Gets or sets the number of render target swaps for the current frame.</summary>
         public int RTSwaps
         {
-            get { return _frameSnaps[_curShot].rtSwaps; }
-            set { _frameSnaps[_curShot].rtSwaps = value; }
+            get { return _frameSnaps[_curShot].RTSwaps; }
+            set { _frameSnaps[_curShot].RTSwaps = value; }
         }
 
         /// <summary>Gets or sets the triangle count for the current frame.</summary>
         public int TriangleCount
         {
-            get { return _frameSnaps[_curShot].triCount; }
-            set { _frameSnaps[_curShot].triCount = value; }
+            get { return _frameSnaps[_curShot].TriCount; }
+            set { _frameSnaps[_curShot].TriCount = value; }
         }
 
         /// <summary>Gets or sets the number of buffer swaps during the current frame.</summary>
         public int BufferSwaps
         {
-            get { return _frameSnaps[_curShot].bufferSwaps; }
-            set { _frameSnaps[_curShot].bufferSwaps = value; }
+            get { return _frameSnaps[_curShot].BufferSwaps; }
+            set { _frameSnaps[_curShot].BufferSwaps = value; }
         }
 
         public int ShaderSwaps
         {
-            get { return _frameSnaps[_curShot].shaderSwaps; }
-            set { _frameSnaps[_curShot].shaderSwaps = value; }
+            get { return _frameSnaps[_curShot].ShaderSwaps; }
+            set { _frameSnaps[_curShot].ShaderSwaps = value; }
         }
 
         /// <summary>Gets the number of draw calls for the current second.</summary>
         public int DrawCallsPerSecond
         {
-            get { return _secondSnaps[_curSecondShot].drawCalls; }
+            get { return _secondSnaps[_curSecondShot].DrawCalls; }
         }
 
         /// <summary>Gets the number of texture swaps for the current second.</summary>
         public int BindingsPerSecond
         {
-            get { return _secondSnaps[_curSecondShot].bindings; }
+            get { return _secondSnaps[_curSecondShot].Bindings; }
         }
 
         /// <summary>Gets the number of render target swaps for the current second.</summary>
         public int RTSwapsPerSecond
         {
-            get { return _secondSnaps[_curSecondShot].rtSwaps; }
+            get { return _secondSnaps[_curSecondShot].RTSwaps; }
         }
 
         /// <summary>Gets the triangle count for the current second.</summary>
         public int TriangleCountPerSecon
         {
-            get { return _secondSnaps[_curSecondShot].triCount; }
+            get { return _secondSnaps[_curSecondShot].TriCount; }
         }
 
         public int BufferSwapsPerSecond
         {
-            get { return _secondSnaps[_curSecondShot].bufferSwaps; }
+            get { return _secondSnaps[_curSecondShot].BufferSwaps; }
         }
 
         public int ShaderSwapsPerSecond
         {
-            get { return _secondSnaps[_curSecondShot].shaderSwaps; }
+            get { return _secondSnaps[_curSecondShot].ShaderSwaps; }
         }
 
         /// <summary>Gets the estimated amount of VRAM currently in use on the GPU.</summary>

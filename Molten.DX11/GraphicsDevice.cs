@@ -28,7 +28,6 @@ namespace Molten.Graphics
         GraphicsDeviceFeatures _features;
         ThreadedList<GraphicsPipe> _contexts;
         Logger _log;
-        RenderProfilerDX _mainProfiler;
         VertexFormatBuilder _vertexBuilder;
 
         ImagingFactory _wicFactory;
@@ -46,7 +45,6 @@ namespace Molten.Graphics
             _displayManager = manager;
             _adapter = _displayManager.SelectedAdapter as GraphicsAdapter<Adapter1, AdapterDescription1, Output1>;
             _contexts = new ThreadedList<GraphicsPipe>();
-            _mainProfiler = profiler;
             _swapChains = new List<SwapChainSurface>();
             _vertexBuilder = new VertexFormatBuilder();
             _settings = settings;
@@ -141,9 +139,6 @@ namespace Molten.Graphics
 
         /// <summary>Gets an instance of <see cref="GraphicsDeviceFeatures"/> which provides access to feature support details for the current graphics device.</summary>
         public GraphicsDeviceFeatures Features => _features;
-
-        /// <summary>Gets the main profiler bound to the device.</summary>
-        internal RenderProfilerDX MainProfiler => _mainProfiler;
 
         /// <summary>Returns the Windows Imaging Component (WIC) factory.</summary>
         public ImagingFactory WICFactory => _wicFactory;

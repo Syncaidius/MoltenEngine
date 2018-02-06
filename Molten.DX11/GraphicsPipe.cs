@@ -34,7 +34,7 @@ namespace Molten.Graphics
             ID = ActivePipes.Add(this);
             _context = context;
             _device = device;
-            Profiler = new RenderProfilerDX(2);
+            Profiler = new RenderProfilerDX();
             Log = log;
 
             if (Context.TypeInfo == DeviceContextType.Immediate)

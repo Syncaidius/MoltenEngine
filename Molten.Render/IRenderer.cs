@@ -47,8 +47,5 @@ namespace Molten.Graphics
         /// <param name="page">The page number.</param>
         /// <returns></returns>
         int SetDebugOverlayPage(bool visible, int page);
-
-        /// <summary>Gets the time taken to process the previous frame.</summary>
-        TimeSpan FrameTime { get; }
     }
 }
