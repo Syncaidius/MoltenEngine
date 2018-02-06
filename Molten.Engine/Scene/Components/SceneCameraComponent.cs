@@ -9,7 +9,7 @@ namespace Molten.Graphics
     /// <summary>An implementation of <see cref="Camera"/> which provides a left-handed projection matrix based on it's <see cref="Camera.OutputSurface"/>.</summary>
     public class SceneCameraComponent : SceneComponent, ICamera
     {
-        public static readonly Matrix DefaultView = Matrix.LookAtLH(new Vector3(0, 0, -5), new Vector3(0, 0, 0), Vector3.UnitY);
+        //public static readonly Matrix DefaultView = Matrix.LookAtLH(new Vector3(0, 0, -5), new Vector3(0, 0, 0), Vector3.UnitY);
 
         Vector3 _position;
         Matrix _view;
@@ -23,12 +23,13 @@ namespace Molten.Graphics
         {
             _nearClip = 0.1f;
             _farClip = 100.0f;
-            _view = DefaultView;
+            _view = Matrix.Identity;
         }
 
         protected override void OnInitialize(SceneObject obj)
         {
             base.OnInitialize(obj);
+            CalculateView();
         }
 
         private void _surface_OnPostResize(ITexture texture)
@@ -45,6 +46,11 @@ namespace Molten.Graphics
         public override void OnUpdate(Timing time)
         {
             base.OnUpdate(time);
+            CalculateView();
+        }
+
+        private void CalculateView()
+        {
             _view = Matrix.Invert(Object.Transform.GlobalTransform);
 
             Vector3 scale;
