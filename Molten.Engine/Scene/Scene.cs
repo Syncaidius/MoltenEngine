@@ -46,17 +46,19 @@ namespace Molten
             _pendingChanges.Enqueue(change);
         }
 
-        public void AddSprite(ISprite sprite)
+        public void AddSprite(ISprite sprite, int layer = 0)
         {
             SceneAddSprite change = SceneAddSprite.Get();
             change.Sprite = sprite;
+            change.Layer = layer;
             _pendingChanges.Enqueue(change);
         }
 
-        public void RemoveSprite(ISprite sprite)
+        public void RemoveSprite(ISprite sprite, int layer = 0)
         {
             SceneRemoveSprite change = SceneRemoveSprite.Get();
             change.Sprite = sprite;
+            change.Layer = layer;
             _pendingChanges.Enqueue(change);
         }
 

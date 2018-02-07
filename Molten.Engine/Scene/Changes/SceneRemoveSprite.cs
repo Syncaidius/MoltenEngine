@@ -11,6 +11,8 @@ namespace Molten
     {
         public ISprite Sprite;
 
+        public int Layer;
+
         public override void Clear()
         {
             Sprite = null;
@@ -19,7 +21,7 @@ namespace Molten
         public override void Process(Scene scene)
         {
             scene.Sprites.Remove(Sprite);
-            scene.RenderData.RemoveSprite(Sprite);
+            scene.RenderData.RemoveSprite(Sprite, Layer);
 
             if (Sprite is IUpdatable up)
                 scene.Updatables.Remove(up);
