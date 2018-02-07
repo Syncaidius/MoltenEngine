@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpDX;
 
 namespace Molten.Graphics
 {
@@ -389,37 +390,62 @@ namespace Molten.Graphics
             pipe.SetVertexSegment(_segment, 0);
 
             // Run through all clip zones
-            for (int z = 0; z < _clipCount; z++)
+            SpriteClipZone clip;
+            for (int c = 0; c < _clipCount; c++)
             {
+                clip = _clipZones[c];
+
                 //reset to-from counters.
                 _drawnFrom = 0;
                 _drawnTo = 0;
-                bool drawNeeded = false;
 
                 // Set rasterizer state + scissor rect
-                pipe.Rasterizer.SetPreset(_clipZones[z].Active ? RasterizerPreset.ScissorTest : raster);
-                pipe.Rasterizer.SetScissorRectangle(_clipZones[z].ClipBounds);
+                pipe.Rasterizer.SetPreset(clip.Active ? RasterizerPreset.ScissorTest : raster);
+                pipe.Rasterizer.SetScissorRectangle(clip.ClipBounds);
 
-                // Flush cluster within current clip-zone.
+                //// Flush cluster within current clip-zone.
                 int clustersDone = 0;
-                while (clustersDone < _clipZones[z].ClusterCount)
+                bool finishedDrawing = false;
+                do
                 {
-                    //attempt to process the current sprite cluster.
-                    if (ProcessCluster(z, clustersDone))
-                    {
-                        clustersDone++;
-                        drawNeeded = true;
-                    }
-                    else // if the process failed to complete, it means the buffer was full.
-                    {
-                        FlushInternal(pipe, ref data, z);
-                        drawNeeded = false;
-                    }
-                }
+                    //_segment.Map(pipe, (buffer, stream) =>
+                    //{
 
-                //flush remaining sprite data if needed.
-                if (drawNeeded)
-                    FlushInternal(pipe, ref data, z);
+                    int clusterID;
+                    SpriteCluster cluster;
+                    do
+                    {
+                        int cID = clip.ClusterIDs[clustersDone];
+                        cluster = _clusterBank[cID];
+
+                        int from = cluster.drawnTo;
+                        int remaining = cluster.spriteCount - from;
+                        int canFit = _spriteCapacity - _vertexCount;
+                        int to = Math.Min(cluster.spriteCount, from + canFit);
+
+                        //assign the start vertex to the cluster
+                        cluster.startVertex = _vertexCount;
+
+                        //process until the end of the cluster, or until the buffer is full
+                        // TODO replace this with a direct _segment.SetData call. Benchmark to see which is faster.
+                        int copyCount = to - from;
+                        Array.Copy(cluster.sprites, from, _vertices, _vertexCount, copyCount);
+                        _vertexCount += copyCount;
+
+                        //update cluster counters
+                        cluster.drawnFrom = from;
+                        cluster.drawnTo = to;
+                        _drawnTo = clustersDone;
+
+                        if (cluster.drawnTo == cluster.spriteCount)
+                            finishedDrawing = ++clustersDone == clip.ClusterCount;
+                        else
+                            break;
+                    } while (!finishedDrawing);
+                //});
+
+                FlushInternal(pipe, ref data, clip);
+                } while (!finishedDrawing);
             }
 
             pipe.PopState();
@@ -433,7 +459,7 @@ namespace Molten.Graphics
             _drawnTo = 0;      
         }
 
-        private void FlushInternal(GraphicsPipe pipe, ref FlushData data, int clipID)
+        private void FlushInternal(GraphicsPipe pipe, ref FlushData data, SpriteClipZone clip)
         {
             _segment.SetDataImmediate(pipe, _vertices, 0, _vertexCount);
 
@@ -442,7 +468,7 @@ namespace Molten.Graphics
 
             for (int i = _drawnFrom; i <= _drawnTo; i++)
             {
-                int cID = _clipZones[clipID].ClusterIDs[i];
+                int cID = clip.ClusterIDs[i];
 
                 if (_clusterBank[cID].texture != null)
                 {
@@ -463,35 +489,6 @@ namespace Molten.Graphics
             //reset all counters
             _vertexCount = 0;
             _drawnFrom = _drawnTo;
-        }
-
-        private bool ProcessCluster(int clipID, int id)
-        {
-            int cID = _clipZones[clipID].ClusterIDs[id];
-
-            int from = _clusterBank[cID].drawnTo;
-            int remaining = _clusterBank[cID].spriteCount - from;
-
-            int canFit = _spriteCapacity - _vertexCount;
-
-            int to = Math.Min(_clusterBank[cID].spriteCount, from + canFit);
-
-            //assign the start vertex to the cluster
-            _clusterBank[cID].startVertex = _vertexCount;
-
-            //process until the end of the cluster, or until the buffer is full
-            // TODO replace this with a direct _segment.SetData call. Benchmark to see which is faster.
-            int copyCount = to - from;
-            Array.Copy(_clusterBank[cID].sprites, from, _vertices, _vertexCount, copyCount);
-            _vertexCount += copyCount;
-
-            //update cluster counters
-            _clusterBank[cID].drawnFrom = from;
-            _clusterBank[cID].drawnTo = to;
-            _drawnTo = id;
-
-            //return true if we're done with this cluster.
-            return _clusterBank[cID].drawnTo == _clusterBank[cID].spriteCount;
         }
 
         /// <summary>Gets the total number of clip zones currently in the batch.</summary>
