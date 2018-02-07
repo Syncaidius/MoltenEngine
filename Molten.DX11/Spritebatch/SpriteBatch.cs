@@ -435,7 +435,7 @@ namespace Molten.Graphics
 
         private void FlushInternal(GraphicsPipe pipe, ref FlushData data, int clipID)
         {
-            _segment.SetData(pipe, _vertices, 0, _vertexCount);
+            _segment.SetDataImmediate(pipe, _vertices, 0, _vertexCount);
 
             // Draw to the screen
             Material mat = null;

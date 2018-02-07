@@ -155,7 +155,7 @@ namespace Molten.Graphics
             int segmentBounds = ByteOffset + ByteCount;
 
             // Ensure the buffer can fit the provided data.
-            if (finalBytePos > ByteCount)
+            if (finalBytePos > segmentBounds)
                 throw new OverflowException($"Provided data's final byte position {finalBytePos} would exceed the segment's bounds (byte {segmentBounds})");
 
             Parent.Set<T>(pipe, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
