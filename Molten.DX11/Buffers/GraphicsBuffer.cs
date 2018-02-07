@@ -382,15 +382,8 @@ namespace Molten.Graphics
                 throw new Exception("The destination buffer must have a usage flag of Staging or Default. Only these two allow the GPU write access for copying/writing data to the destination.");
         }
 
-        /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        internal void Set<T>(GraphicsPipe pipe, T[] data, int startIndex, int count, int dataStride = 0, int byteOffset = 0, StagingBuffer staging = null) 
-            where T : struct
+        internal void Map(GraphicsPipe pipe, int byteOffset, int dataSize, Action<GraphicsBuffer, DataStream> callback, GraphicsBuffer staging = null)
         {
-            if (dataStride == 0)
-                dataStride = Marshal.SizeOf<T>();
-
-            int writeOffset = startIndex * dataStride;
-
             // Check buffer type.
             bool isDynamic = Description.Usage == ResourceUsage.Dynamic;
             bool isStaged = Description.Usage == ResourceUsage.Staging &&
@@ -408,7 +401,7 @@ namespace Molten.Graphics
                     pipe.Context.MapSubresource(_buffer, MapMode.Write, MapFlags.None, out mappedData);
 
                 mappedData.Position = byteOffset;
-                mappedData.WriteRange(data, startIndex, count);
+                callback(this, mappedData);
                 pipe.Context.UnmapSubresource(_buffer, 0);
             }
             else
@@ -423,8 +416,6 @@ namespace Molten.Graphics
                 if (!isDynamic && !isStaged)
                     throw new GraphicsBufferException("The provided staging buffer is invalid. Must be either dynamic or staged.");
 
-                int dataSize = count * dataStride;
-
                 if (staging.Description.SizeInBytes < dataSize)
                     throw new GraphicsBufferException($"The provided staging buffer is not large enough ({staging.Description.SizeInBytes} bytes) to fit the provided data ({dataSize} bytes).");
 
@@ -434,7 +425,7 @@ namespace Molten.Graphics
                 else
                     pipe.Context.MapSubresource(staging._buffer, MapMode.Write, MapFlags.None, out mappedData);
 
-                mappedData.WriteRange(data, startIndex, count);
+                callback(staging, mappedData);
                 pipe.Context.UnmapSubresource(staging._buffer, 0);
 
                 ResourceRegion stagingRegion = new ResourceRegion()
@@ -447,6 +438,22 @@ namespace Molten.Graphics
 
                 pipe.Context.CopySubresourceRegion(staging._buffer, 0, stagingRegion, _buffer, 0, byteOffset);
             }
+        }
+
+        /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
+        internal void Set<T>(GraphicsPipe pipe, T[] data, int startIndex, int count, int dataStride = 0, int byteOffset = 0, StagingBuffer staging = null) 
+            where T : struct
+        {
+            if (dataStride == 0)
+                dataStride = Marshal.SizeOf<T>();
+
+            int writeOffset = startIndex * dataStride;
+            int dataSize = count * dataStride;
+
+            Map(pipe, byteOffset, dataSize, (buffer, stream) =>
+            {
+                stream.WriteRange(data, startIndex, count);
+            }, staging);
         }
 
         /// <summary>Retrieves data from a <see cref="GraphicsBuffer"/>.</summary>

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using SharpDX;
 
 namespace Molten.Graphics
 {
@@ -159,6 +160,11 @@ namespace Molten.Graphics
                 throw new OverflowException($"Provided data's final byte position {finalBytePos} would exceed the segment's bounds (byte {segmentBounds})");
 
             Parent.Set<T>(pipe, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
+        }
+
+        internal void Map(GraphicsPipe pipe, Action<GraphicsBuffer, DataStream> callback, GraphicsBuffer staging = null)
+        {
+            Parent.Map(pipe, ByteOffset, Stride * ElementCount, callback, staging); 
         }
 
         internal void GetData<T>(GraphicsPipe pipe, T[] destination, int startIndex, int count, int elementOffset = 0, Action<T[]> completionCallback = null) where T : struct
