@@ -91,8 +91,8 @@
     <Compile Include="Scene\Components\SceneComponent.cs" />
     <Compile Include="Scene\Components\SceneSingleton.cs" />
     <Compile Include="Scene\Components\SingletonComponent.cs" />
-    <Compile Include="Scene\IInputAcceptor.cs" />
-    <Compile Include="Scene\InputAcceptorResult.cs" />
+    <Compile Include="Scene\IInputable.cs" />
+    <Compile Include="Scene\InputResult.cs" />
     <Compile Include="Scene\IUpdatable.cs" />
     <Compile Include="Scene\Scene.cs" />
     <Compile Include="Scene\SceneException.cs" />

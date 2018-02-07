@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public enum InputAcceptorResult
+    public enum InputResult
     {
         None = 0,
 
