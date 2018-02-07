@@ -27,7 +27,7 @@ namespace Molten.Graphics
         DeviceContext _context;
         PipeStateStack _stateStack;
 
-        internal static SpeedList<GraphicsPipe> ActivePipes = new SpeedList<GraphicsPipe>(1, ExpansionMode.Increment, 1);
+        internal static RawList<GraphicsPipe> ActivePipes = new RawList<GraphicsPipe>(1, ExpansionMode.Increment, 1);
 
         internal void Initialize(Logger log, GraphicsDevice device, DeviceContext context)
         {

@@ -130,7 +130,7 @@ namespace Molten.Samples
 
         private void SetupSprites(ITexture2D tex)
         {
-            for(int i = 0; i < 200; i++)
+            for(int i = 0; i < 10000; i++)
             {
                 Sprite s = new Sprite()
                 {
@@ -159,7 +159,7 @@ namespace Molten.Samples
 
         private void SetupRectangles()
         {
-            for (int i = 0; i < 500; i++)
+            for (int i = 0; i < 50000; i++)
             {
                 RectangleSprite s = new RectangleSprite()
                 {

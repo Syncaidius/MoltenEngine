@@ -24,7 +24,7 @@ namespace Molten.Graphics
 
             RenderProfilerDX profiler = renderer.Device.Profiler;
             pos.Y += 20; batch.DrawString(font, $" Swaps -- Buffer: {profiler.BufferSwaps} -- Shader: {profiler.ShaderSwaps} -- RT: {profiler.RTSwaps}", pos, Color.Yellow);
-            pos.Y += 20; batch.DrawString(font, $"VRAM: {renderer.Device.Profiler.AllocatedVRAM}", pos, Color.Yellow);
+            pos.Y += 20; batch.DrawString(font, $"VRAM: {ByteMath.ToMegabytes(renderer.Device.Profiler.AllocatedVRAM)}MB", pos, Color.Yellow);
         }
     }
 }

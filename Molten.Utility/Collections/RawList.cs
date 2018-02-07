@@ -8,7 +8,7 @@ namespace Molten.Collections
 {
     /// <summary>A List-esque collection class without all the baggage and frills of a generic collection List. Works like a hybrid of a list and an array.</summary>
     /// <typeparam name="T">The type of object you want the list to store.</typeparam>
-    public class SpeedList<T>
+    public class RawList<T>
     {
         /// <summary>The raw array containing the contents of the list. Accessing the items held within the list via this 
         /// array will be significantly faster, but unmanaged.</summary>
@@ -28,7 +28,7 @@ namespace Molten.Collections
         /// <param name="initialCapacity">The initial capacity of the list.</param>
         /// <param name="expansionMode">How to expand the list when it is full.</param>
         /// <param name="expansion">The value to increment or multiply the list capacity by when it is full.</param>
-        public SpeedList(int initialCapacity = 5, ExpansionMode expansionMode = ExpansionMode.Multiply, int expansionValue = 2)
+        public RawList(int initialCapacity = 5, ExpansionMode expansionMode = ExpansionMode.Multiply, int expansionValue = 2)
         {
             _expansionMode = expansionMode;
             _expansionValue = expansionValue;
@@ -223,7 +223,7 @@ namespace Molten.Collections
         /// <summary>Converts a speed list into an array.</summary>
         /// <param name="list">The list to convert.</param>
         /// <returns></returns>
-        public static implicit operator T[](SpeedList<T> list)
+        public static implicit operator T[](RawList<T> list)
         {
             return list.Data;
         }
@@ -244,9 +244,9 @@ namespace Molten.Collections
 
         /// <summary>Creates an indentical clone of the SpeedList and returns the cloned copy.</summary>
         /// <returns></returns>
-        public SpeedList<T> Clone()
+        public RawList<T> Clone()
         {
-            SpeedList<T> newList = new SpeedList<T>();
+            RawList<T> newList = new RawList<T>();
             newList.Data = new T[Data.Length];
             newList._itemCount = _itemCount;
             newList._freeIDs = new int[_freeIDs.Length];
@@ -263,7 +263,7 @@ namespace Molten.Collections
 
         /// <summary>Copies the data of the current list, to another list, overwriting all previous data in the other list.</summary>
         /// <param name="otherList">The other speed list to copy the data to.</param>
-        public void CloneTo(ref SpeedList<T> otherList)
+        public void CloneTo(ref RawList<T> otherList)
         {
             if (otherList.Data.Length != Data.Length)
                 Array.Resize(ref otherList.Data, Data.Length);
