@@ -434,10 +434,13 @@ namespace Molten.Graphics
                             }
                             _drawnTo = clustersDone;
 
+
+                            // Are we done?
                             if (cluster.drawnTo == cluster.spriteCount)
                                 finishedDrawing = ++clustersDone == clip.ClusterCount;
                             else
                                 break;
+
                         } while (!finishedDrawing);
                     });
 
@@ -458,8 +461,6 @@ namespace Molten.Graphics
 
         private void FlushInternal(GraphicsPipe pipe, ref FlushData data, SpriteClipZone clip)
         {
-            //_segment.SetDataImmediate(pipe, _vertices, 0, _vertexCount);
-
             // Draw to the screen
             Material mat = null;
 
