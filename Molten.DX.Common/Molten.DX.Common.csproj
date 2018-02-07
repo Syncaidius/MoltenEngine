@@ -71,12 +71,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\Display\DisplayMode.cs" />
-    <Compile Include="Api\Display\DisplayOutput.cs" />
-    <Compile Include="Api\Display\GraphicsAdapter.cs" />
-    <Compile Include="Api\Display\GraphicsDisplayManager.cs" />
-    <Compile Include="Api\Display\GraphicsOutput.cs" />
-    <Compile Include="Api\RenderSurfaceResetMode.cs" />
+    <Compile Include="Display\DisplayMode.cs" />
+    <Compile Include="Display\DisplayOutput.cs" />
+    <Compile Include="Display\GraphicsAdapter.cs" />
+    <Compile Include="Display\GraphicsDisplayManager.cs" />
+    <Compile Include="Display\GraphicsOutput.cs" />
+    <Compile Include="RenderSurfaceResetMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderProfilerDX.cs" />
     <Compile Include="SharpDXInterop.cs" />

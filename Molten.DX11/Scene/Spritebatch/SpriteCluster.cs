@@ -16,5 +16,10 @@ namespace Molten.Graphics
         public int drawnTo;
         public int drawnFrom;
         public int startVertex;
+
+        internal SpriteCluster(int spriteCapacity)
+        {
+            sprites = new SpriteVertex[spriteCapacity];
+        }
     }
 }

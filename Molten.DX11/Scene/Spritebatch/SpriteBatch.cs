@@ -21,7 +21,7 @@ namespace Molten.Graphics
 
         BufferSegment _segment;
 
-        const int CLUSTER_EXPANSION = 10;
+        const int CLUSTER_EXPANSION = 5;
         const int SPRITE_EXPANSION = 100;
         const int ZONE_EXPANSION = 10;
 
@@ -33,10 +33,8 @@ namespace Molten.Graphics
 
         SpriteCluster[] _clusterBank;
         int _clusterCount;
-        int _clustersInitialized;
 
         int _spriteCapacity;
-        int _totalSprites;
 
         SpriteVertex[] _vertices;
         int _vertexCount;
@@ -57,6 +55,9 @@ namespace Molten.Graphics
 
             _clusterBank = new SpriteCluster[CLUSTER_EXPANSION];
             _clipZones = new SpriteClipZone[ZONE_EXPANSION];
+
+            for (int i = 0; i < _clusterBank.Length; i++)
+                _clusterBank[i] = new SpriteCluster(SPRITE_EXPANSION);
 
             // Setup initial clip zone (which is disabled) ready for starting over.
             _clipStack = new Stack<int>();
@@ -122,60 +123,35 @@ namespace Molten.Graphics
             _clipZones[_curClip].ClipBounds = bounds;
         }
 
-        private int ConfigureNewCluster(int clipID, ITexture2D texture)
+        private SpriteCluster ConfigureNewCluster(SpriteClipZone clip, ITexture2D texture)
         {
-            int cID = _clusterCount; //cluster ID
-
-            if (_clusterBank.Length == cID)
+            if (_clusterBank.Length == _clusterCount)
             {
                 Array.Resize(ref _clusterBank, _clusterBank.Length + CLUSTER_EXPANSION);
 
-                _clusterBank[cID] = new SpriteCluster()
-                {
-                    texture = texture,
-                    sprites = new SpriteVertex[SPRITE_EXPANSION],
-                };
-
-                _clustersInitialized++;
-            }
-            else
-            {
-                //if not enough clusters are initialized, initialize a new one
-                if (cID == _clustersInitialized)
-                {
-                    _clusterBank[cID] = new SpriteCluster()
-                    {
-                        texture = texture,
-                        sprites = new SpriteVertex[SPRITE_EXPANSION],
-                        spriteCount = 0,
-                        drawnTo = 0,
-                        drawnFrom = 0,
-                    };
-
-                    _clustersInitialized++;
-                }
-                else
-                {
-                    _clusterBank[cID].texture = texture;
-                    _clusterBank[cID].drawnTo = 0;
-                    _clusterBank[cID].drawnFrom = 0;
-                    _clusterBank[cID].spriteCount = 0;
-                }
+                // Initialize new cluster slots.
+                for (int i = _clusterCount; i < _clusterBank.Length; i++)
+                    _clusterBank[i] = new SpriteCluster(SPRITE_EXPANSION);
             }
 
+            SpriteCluster cluster = _clusterBank[_clusterCount];
+            cluster.texture = texture;
+            cluster.drawnTo = 0;
+            cluster.drawnFrom = 0;
+            cluster.spriteCount = 0;
+
+            // Now assign the cluster to the current clip zone
+            int clipCluster = clip.ClusterCount;
+
+            // Resize zone's cluster ID array if needed
+            if (clipCluster == clip.ClusterIDs.Length)
+                Array.Resize(ref clip.ClusterIDs, clip.ClusterIDs.Length + CLUSTER_EXPANSION);
+
+            clip.ClusterIDs[clipCluster] = _clusterCount;
+            clip.ClusterCount++;
             _clusterCount++;
 
-            //now assign the cluster to the current clip zone
-            int clipCluster = _clipZones[clipID].ClusterCount;
-
-            //resize zone's cluster ID array if needed
-            if (clipCluster == _clipZones[clipID].ClusterIDs.Length)
-                Array.Resize(ref _clipZones[clipID].ClusterIDs, _clipZones[clipID].ClusterIDs.Length + CLUSTER_EXPANSION);
-
-            _clipZones[clipID].ClusterIDs[clipCluster] = cID;
-            _clipZones[clipID].ClusterCount++;
-
-            return cID;
+            return cluster;
         }
 
         /// <summary>Draws a string of text sprites by using a sprite font to source the needed data..</summary>
@@ -295,44 +271,47 @@ namespace Molten.Graphics
         /// <param name="origin"></param>
         public void Draw(ITexture2D texture, Rectangle source, Rectangle destination, Color color, float rotation, Vector2 origin)
         {
-            //retrieve cluster data from current clip zone.
-            int cClusterCount = _clipZones[_curClip].ClusterCount; //current clip's cluster count
-            int cID = 0;
+            SpriteClipZone clip = _clipZones[_curClip];
+            SpriteCluster cluster;
+            int sID = 0;
 
-            //if the current cluster is for a different texture, start a new cluster.
-            if (cClusterCount == 0)
+            // If the current cluster is for a different texture, start a new cluster.
+            if (clip.ClusterCount == 0)
             {
-                cID = ConfigureNewCluster(_curClip, texture);
+                cluster = ConfigureNewCluster(clip, texture);
             }
             else
             {
-                int clipCluster = _clipZones[_curClip].ClusterCount - 1;
-                cID = _clipZones[_curClip].ClusterIDs[clipCluster];
+                int clusterID = clip.ClusterCount - 1;
+                cluster = _clusterBank[clip.ClusterIDs[clusterID]];
 
-                if (_clusterBank[cID] == null || _clusterBank[cID].texture != texture)
-                    cID = ConfigureNewCluster(_curClip, texture);
+                if (cluster.texture != texture)
+                {
+                    cluster = ConfigureNewCluster(clip, texture);
+                }
+                else
+                {
+                    sID = cluster.spriteCount;
+                    int sLength = cluster.sprites.Length;
+
+                    // If we can't fit the sprite into the cluster, expand.
+                    if (sID == sLength)
+                        Array.Resize(ref cluster.sprites, sLength + SPRITE_EXPANSION);
+                }
             }
 
-            int sID = _clusterBank[cID].spriteCount;
-            int sLength = _clusterBank[cID].sprites.Length;
-
-            //if we can't fit the sprite into the cluster, expand + setup a new one
-            if (sID == sLength)
-                Array.Resize(ref _clusterBank[cID].sprites, sLength + SPRITE_EXPANSION);
-
-            //set the sprite info
-            _clusterBank[cID].sprites[sID] = new SpriteVertex()
+            // Set the sprite info
+            cluster.sprites[sID] = new SpriteVertex()
             {
                 Position = new Vector2(destination.X, destination.Y),
                 Size = new Vector2(destination.Width, destination.Height),
                 UV = new Vector4(source.X, source.Y, source.Right, source.Bottom),
                 Color = color,
                 Origin = origin,
-                Rotation = rotation, //convert to radians
+                Rotation = rotation,
             };
 
-            _clusterBank[cID].spriteCount++;
-            _totalSprites++;
+            cluster.spriteCount++;
         }
 
         /// <summary>Pushes a new clipping zone into the sprite batch. All sprites <see cref="SpriteBatch.Draw"/> will be clipped
@@ -374,7 +353,7 @@ namespace Molten.Graphics
 
         internal void Begin(Viewport viewBounds)
         {
-            // Setup initial clip zone (which is disabled) ready for starting over.
+            // Setup initial clip zone.
             ConfigureNewClip(viewBounds.Bounds, false);
         }
 
@@ -451,24 +430,7 @@ namespace Molten.Graphics
             _clipCount = 0;
             _clusterCount = 0;
             _drawnFrom = 0;
-            _drawnTo = 0;
-            _totalSprites = 0;            
-        }
-
-        private void CombineClusters(int srcID, int destID)
-        {
-            SpriteCluster src = _clusterBank[srcID];
-            SpriteCluster dest = _clusterBank[destID];
-
-            int slotsNeeded = dest.spriteCount + src.spriteCount;
-
-            if (dest.sprites.Length < slotsNeeded)
-                Array.Resize(ref dest.sprites, slotsNeeded + SPRITE_EXPANSION);
-
-            //merge data
-            Array.Copy(src.sprites, 0, dest.sprites, dest.spriteCount, src.spriteCount);
-
-            dest.spriteCount = slotsNeeded;
+            _drawnTo = 0;      
         }
 
         private void FlushInternal(GraphicsPipe pipe, ref FlushData data, int clipID)
@@ -531,9 +493,6 @@ namespace Molten.Graphics
             //return true if we're done with this cluster.
             return _clusterBank[cID].drawnTo == _clusterBank[cID].spriteCount;
         }
-
-        /// <summary>Gets the total number of sprites currently in the batch.</summary>
-        public int TotalSprites { get { return _totalSprites; } }
 
         /// <summary>Gets the total number of clip zones currently in the batch.</summary>
         public int TotalClips { get { return _clipCount; } }

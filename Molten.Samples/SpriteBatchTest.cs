@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SpriteTest : TestGame
+    public class SpriteBatchTest : TestGame
     {
-        public override string Description => "A stress test of sprite rendering.";
+        public override string Description => "A stress test of sprite batching under normal circumstances (i.e. sprites from the same texture drawn together).";
 
         Scene _scene;
         SceneObject _parent;
@@ -21,7 +21,7 @@ namespace Molten.Samples
         Camera2D _cam2D;
         IMaterial _material;
 
-        public SpriteTest(EngineSettings settings = null) : base("Sprite Batch", settings)
+        public SpriteBatchTest(EngineSettings settings = null) : base("Sprite Batch", settings)
         {
 
         }
@@ -128,7 +128,7 @@ namespace Molten.Samples
             Window.PresentClearColor = new Color(20,20,20,255);
         }
 
-        private void SetupSprites(ITexture2D tex)
+        private void SpamSprites(ITexture2D tex)
         {
             for(int i = 0; i < 10000; i++)
             {
@@ -193,7 +193,7 @@ namespace Molten.Samples
 
             ITexture2D tex = content.Get<ITexture2D>(cr.RequestedFiles[0]);
             _material.SetDefaultResource(tex, 0);
-            SetupSprites(tex);
+            SpamSprites(tex);
             SetupRectangles();
         }
 

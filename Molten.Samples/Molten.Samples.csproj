@@ -82,7 +82,8 @@
     <Compile Include="SceneParentingTest.cs" />
     <Compile Include="SceneStressTest.cs" />
     <Compile Include="SceneTextureArrayTest.cs" />
-    <Compile Include="SpriteTest.cs" />
+    <Compile Include="SpriteBatchUnfairTest.cs" />
+    <Compile Include="SpriteBatchTest.cs" />
     <Compile Include="TestClasses\CubeArrayVertex.cs" />
     <Compile Include="TestClasses\TextureDataLoader.cs" />
     <Compile Include="TestGame.cs" />
