@@ -36,8 +36,6 @@ namespace Molten.Graphics
         int _clusterCount;
 
         int _spriteCapacity;
-
-        SpriteVertex[] _vertices;
         int _vertexCount;
 
         int _drawnFrom;
@@ -48,9 +46,8 @@ namespace Molten.Graphics
 
         internal SpriteBatch(RendererDX11 renderer, int spriteBufferSize = 2000)
         {
-            
+
             _spriteCapacity = spriteBufferSize;
-            _vertices = new SpriteVertex[_spriteCapacity];
             _segment = renderer.DynamicVertexBuffer.Allocate<SpriteVertex>(_spriteCapacity);
             _segment.SetVertexFormat(typeof(SpriteVertex));
 
@@ -361,15 +358,15 @@ namespace Molten.Graphics
         /// <summary>Finalizes a batch of sprites, sorts them (if enabled) and then draws them.</summary>
         /// <param name="sortMode"></param>
         internal void Flush(GraphicsPipe pipe, ref Matrix viewProjection,
-            BlendingPreset blend, 
-            DepthStencilPreset depth = DepthStencilPreset.ZDisabled, 
-            RasterizerPreset raster = RasterizerPreset.Default, 
+            BlendingPreset blend,
+            DepthStencilPreset depth = DepthStencilPreset.ZDisabled,
+            RasterizerPreset raster = RasterizerPreset.Default,
             Material material = null, Material noTextureMaterial = null)
         {
             //if nothing was added to the batch, don't bother with any draw operations.
             if (_clusterCount == 0)
                 return;
-                        
+
             FlushData data = new FlushData()
             {
                 Material = material ?? _defaultMaterial,
@@ -408,43 +405,43 @@ namespace Molten.Graphics
                 bool finishedDrawing = false;
                 do
                 {
-                    //_segment.Map(pipe, (buffer, stream) =>
-                    //{
-
-                    int clusterID;
-                    SpriteCluster cluster;
-                    do
+                    _segment.Map(pipe, (buffer, stream) =>
                     {
-                        int cID = clip.ClusterIDs[clustersDone];
-                        cluster = _clusterBank[cID];
+                        SpriteCluster cluster;
+                        do
+                        {
+                            int cID = clip.ClusterIDs[clustersDone];
+                            cluster = _clusterBank[cID];
 
-                        int from = cluster.drawnTo;
-                        int remaining = cluster.spriteCount - from;
-                        int canFit = _spriteCapacity - _vertexCount;
-                        int to = Math.Min(cluster.spriteCount, from + canFit);
+                            int from = cluster.drawnTo;
+                            int remaining = cluster.spriteCount - from;
+                            int canFit = _spriteCapacity - _vertexCount;
+                            int to = Math.Min(cluster.spriteCount, from + canFit);
 
-                        //assign the start vertex to the cluster
-                        cluster.startVertex = _vertexCount;
+                            //assign the start vertex to the cluster
+                            cluster.startVertex = _vertexCount;
 
-                        //process until the end of the cluster, or until the buffer is full
-                        // TODO replace this with a direct _segment.SetData call. Benchmark to see which is faster.
-                        int copyCount = to - from;
-                        Array.Copy(cluster.sprites, from, _vertices, _vertexCount, copyCount);
-                        _vertexCount += copyCount;
+                            // Process until the end of the cluster, or until the buffer is full
+                            int copyCount = to - from;
+                            if (copyCount > 0)
+                            {
+                                stream.WriteRange(cluster.sprites, 0, copyCount);
+                                _vertexCount += copyCount;
 
-                        //update cluster counters
-                        cluster.drawnFrom = from;
-                        cluster.drawnTo = to;
-                        _drawnTo = clustersDone;
+                                //update cluster counters
+                                cluster.drawnFrom = from;
+                                cluster.drawnTo = to;
+                            }
+                            _drawnTo = clustersDone;
 
-                        if (cluster.drawnTo == cluster.spriteCount)
-                            finishedDrawing = ++clustersDone == clip.ClusterCount;
-                        else
-                            break;
-                    } while (!finishedDrawing);
-                //});
+                            if (cluster.drawnTo == cluster.spriteCount)
+                                finishedDrawing = ++clustersDone == clip.ClusterCount;
+                            else
+                                break;
+                        } while (!finishedDrawing);
+                    });
 
-                FlushInternal(pipe, ref data, clip);
+                    FlushInternal(pipe, ref data, clip);
                 } while (!finishedDrawing);
             }
 
@@ -456,12 +453,12 @@ namespace Molten.Graphics
             _clipCount = 0;
             _clusterCount = 0;
             _drawnFrom = 0;
-            _drawnTo = 0;      
+            _drawnTo = 0;
         }
 
         private void FlushInternal(GraphicsPipe pipe, ref FlushData data, SpriteClipZone clip)
         {
-            _segment.SetDataImmediate(pipe, _vertices, 0, _vertexCount);
+            //_segment.SetDataImmediate(pipe, _vertices, 0, _vertexCount);
 
             // Draw to the screen
             Material mat = null;

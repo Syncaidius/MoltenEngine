@@ -295,6 +295,8 @@ namespace Molten.Graphics
                 if (_debugOverlayVisible)
                     _debugOverlay[_debugOverlayPage].Render(_debugFont, this, SpriteBatcher, time);
 
+                
+
                 SpriteBatcher.Flush(_device, ref spriteViewProj, BlendingPreset.PreMultipliedAlpha);
             }
         }
