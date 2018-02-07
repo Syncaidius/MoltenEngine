@@ -80,6 +80,14 @@ namespace Molten
             _gameThread.Start();
         }
 
+        /// <summary>Creates a new instance of <see cref="Scene"/> and automatically binds it to the game engine.</summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public Scene CreateScene(string name)
+        {
+            return new Scene(name, Engine);
+        }
+
         /// <summary>Creates a new <see cref="SceneObject"/> at position 0,0,0.</summary>
         /// <param name="updateFlags">The update flags to set on the newly spawned object.</param>
         /// <param name="scene">The scene to automatically add the object to. Default value is null.</param>

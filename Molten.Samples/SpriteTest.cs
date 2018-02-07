@@ -20,7 +20,6 @@ namespace Molten.Samples
         SceneCameraComponent _cam;
         Camera2D _cam2D;
         IMaterial _material;
-        ITexture2D _texture;
 
         public SpriteTest(EngineSettings settings = null) : base("Sprite Batch", settings)
         {
@@ -44,7 +43,7 @@ namespace Molten.Samples
 
             _rng = new Random();
             _positions = new List<Matrix>();
-            _scene = new Scene("Test", engine);
+            _scene = CreateScene("Test");
             _scene.OutputCamera = _cam;
 
             string fn = "assets/BasicTexture.sbm";
@@ -200,7 +199,7 @@ namespace Molten.Samples
 
         private SceneObject SpawnTestCube(IMesh mesh)
         {
-            SceneObject obj = Engine.CreateObject();
+            SceneObject obj = CreateObject();
             MeshComponent meshCom = obj.AddComponent<MeshComponent>();
             meshCom.Mesh = mesh;
             _positions.Add(Matrix.CreateTranslation(new Vector3()

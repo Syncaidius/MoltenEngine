@@ -60,7 +60,7 @@ namespace Molten.Graphics
             }
 
             // Generate hash for comparing constant buffers.
-            byte[] hashData = ConversionHelper.GetBytes(hashString, Encoding.Unicode);
+            byte[] hashData = StringHelper.GetBytes(hashString, Encoding.Unicode);
             Hash = HashHelper.ComputeFNV(hashData);
             Description.SizeInBytes = desc.Description.Size;
         }
