@@ -33,7 +33,7 @@ namespace Molten.Samples
 
             _rng = new Random();
             _positions = new List<Matrix>();
-            _scene = new Scene("Test", engine);
+            _scene = CreateScene("Test");
             _scene.OutputCamera = _cam;
             SpawnPlayer();
 
@@ -115,7 +115,7 @@ namespace Molten.Samples
 
         private void SpawnPlayer()
         {
-            _player = Engine.CreateObject();
+            _player = CreateObject();
             SceneCameraComponent cam = _player.AddComponent<SceneCameraComponent>();
             cam.OutputSurface = Window;
             cam.OutputDepthSurface = WindowDepthSurface;
@@ -125,7 +125,7 @@ namespace Molten.Samples
 
         private SceneObject SpawnTestCube(IMesh mesh)
         {
-            SceneObject obj = Engine.CreateObject();
+            SceneObject obj = CreateObject();
             MeshComponent meshCom = obj.AddComponent<MeshComponent>();
             meshCom.Mesh = mesh;
             _positions.Add(Matrix.CreateTranslation(new Vector3()

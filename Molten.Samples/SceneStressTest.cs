@@ -30,7 +30,7 @@ namespace Molten.Samples
             
             _rng = new Random();
             _objects = new List<SceneObject>();
-            _scene = new Scene("Test", engine);
+            _scene = CreateScene("Test");
             SpawnPlayer();
 
             string text = "[W][A][S][D] to move. Mouse to rotate";
@@ -134,7 +134,7 @@ namespace Molten.Samples
 
         private void SpawnPlayer()
         {
-            _player = Engine.CreateObject(new Vector3(0,0,-5));
+            _player = CreateObject(new Vector3(0,0,-5));
             SceneCameraComponent cam = _player.AddComponent<SceneCameraComponent>();
             cam.OutputSurface = Window;
             cam.OutputDepthSurface = WindowDepthSurface;
@@ -144,7 +144,7 @@ namespace Molten.Samples
 
         private void SpawnTestCube(IMaterial material, IMesh mesh, int spawnRadius)
         {
-            SceneObject obj = Engine.CreateObject();
+            SceneObject obj = CreateObject();
             MeshComponent meshCom = obj.AddComponent<MeshComponent>();
             meshCom.Mesh = mesh;
 

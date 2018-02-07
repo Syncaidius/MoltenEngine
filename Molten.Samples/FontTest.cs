@@ -46,7 +46,7 @@ namespace Molten.Samples
             _sprites = new List<ISprite>();
             _rng = new Random();
             _positions = new List<Matrix>();
-            _scene = new Scene("Test", engine);
+            _scene = CreateScene("Test");
             _scene.OutputCamera = _cam;
             _font = engine.Renderer.Resources.CreateFont("arial", 36);
             SetupSprites(_font);
@@ -158,7 +158,7 @@ namespace Molten.Samples
 
         private SceneObject SpawnTestCube(IMesh mesh)
         {
-            SceneObject obj = Engine.CreateObject();
+            SceneObject obj = CreateObject();
             MeshComponent meshCom = obj.AddComponent<MeshComponent>();
             meshCom.Mesh = mesh;
             _positions.Add(Matrix.CreateTranslation(new Vector3()
