@@ -8,17 +8,21 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
+    /// <summary>Manages and controls a scene composed of 3D and 2D objects, while also feeding the needed data to a renderer if available.</summary>
     public class Scene : EngineObject
     {
         SceneRenderData _data;
 
         internal List<SceneObject> Objects;
         internal List<ISprite> Sprites;
-        internal  HashSet<ISceneUpdatable> Updatables;
+        internal  HashSet<IUpdatable> Updatables;
 
         ThreadedQueue<SceneChange> _pendingChanges;
 
-        public Scene(string name, Engine engine)
+        /// <summary>Creates a new instance of <see cref="Scene"/></summary>
+        /// <param name="name">The name of the scene.</param>
+        /// <param name="engine">The engine instance to which the scene will be bound.</param>
+        internal Scene(string name, Engine engine)
         {
             Name = name;
             Engine = engine;
@@ -26,12 +30,14 @@ namespace Molten
             engine.AddScene(this);
             Objects = new List<SceneObject>();
             Sprites = new List<ISprite>();
-            Updatables = new HashSet<ISceneUpdatable>();
+            Updatables = new HashSet<IUpdatable>();
             _pendingChanges = new ThreadedQueue<SceneChange>();
 
             engine.Log.WriteLine($"Created scene '{name}'");
         }
 
+        /// <summary>Adds a <see cref="SceneObject"/> to the scene.</summary>
+        /// <param name="obj">The object to be added.</param>
         public void AddObject(SceneObject obj)
         {
             SceneAddObject change = SceneAddObject.Get();
@@ -39,6 +45,8 @@ namespace Molten
             _pendingChanges.Enqueue(change);
         }
 
+        /// <summary>Removes a <see cref="SceneObject"/> from the scene.</summary>
+        /// <param name="obj">The object to be removed.</param>
         public void RemoveObject(SceneObject obj)
         {
             SceneRemoveObject change = SceneRemoveObject.Get();
@@ -46,6 +54,9 @@ namespace Molten
             _pendingChanges.Enqueue(change);
         }
 
+        /// <summary>Adds a sprite to the scene. This is a deferred action which will be performed on the scene's next update.</summary>
+        /// <param name="sprite">The sprite to be added.</param>
+        /// <param name="layer">The layer to which the sprite should be added.</param>
         public void AddSprite(ISprite sprite, int layer = 0)
         {
             SceneAddSprite change = SceneAddSprite.Get();
@@ -54,6 +65,9 @@ namespace Molten
             _pendingChanges.Enqueue(change);
         }
 
+        /// <summary>Removes a sprite from the scene. This is a deferred action which will be performed on the scene's next update.</summary>
+        /// <param name="sprite">The sprite to be removed.</param>
+        /// <param name="layer">The layer from which the sprite should be removed.</param>
         public void RemoveSprite(ISprite sprite, int layer = 0)
         {
             SceneRemoveSprite change = SceneRemoveSprite.Get();
@@ -67,12 +81,12 @@ namespace Molten
             while (_pendingChanges.TryDequeue(out SceneChange change))
                 change.Process(this);
 
-            // Update children.
+            // Update root objects - Updated separately because it's safer/faster to assume at least 1 child object may need updating.
             foreach(SceneObject obj in Objects)
                 obj.Update(time);
 
             // Updatable sprites
-            foreach (ISceneUpdatable up in Updatables)
+            foreach (IUpdatable up in Updatables)
                 up.Update(time);
         }
 

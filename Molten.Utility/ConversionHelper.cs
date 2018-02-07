@@ -19,10 +19,5 @@ namespace Molten
             Marshal.FreeHGlobal(ptr);
             return arr;
         }
-
-        public static byte[] GetBytes(string str, Encoding encoding)
-        {
-            return encoding.GetBytes(str); ;
-        }
     }
 }

@@ -62,30 +62,18 @@ namespace Molten
             _renderer.InitializeRenderer(_settings.Graphics);
         }
 
-        public void AddScene(Scene scene)
+        internal void AddScene(Scene scene)
         {
             EngineAddScene task = EngineAddScene.Get();
             task.Scene = scene;
             _taskQueue.Enqueue(task);
         }
 
-        public void RemoveScene(Scene scene)
+        internal void RemoveScene(Scene scene)
         {
             EngineRemoveScene task = EngineRemoveScene.Get();
             task.Scene = scene;
             _taskQueue.Enqueue(task);
-        }
-
-        public SceneObject CreateObject(Vector3 position)
-        {
-            SceneObject obj = new SceneObject(this);
-            obj.Transform.LocalPosition = position;
-            return obj;
-        }
-
-        public SceneObject CreateObject()
-        {
-            return new SceneObject(this);
         }
 
         /// <summary>Starts the renderer thread.</summary>

@@ -80,6 +80,27 @@ namespace Molten
             _gameThread.Start();
         }
 
+        /// <summary>Creates a new <see cref="SceneObject"/> at position 0,0,0.</summary>
+        /// <param name="updateFlags">The update flags to set on the newly spawned object.</param>
+        /// <param name="scene">The scene to automatically add the object to. Default value is null.</param>
+        /// <returns></returns>
+        public SceneObject CreateObject(Scene scene = null, ObjectUpdateFlags updateFlags = ObjectUpdateFlags.All)
+        {
+            return CreateObject(Vector3.Zero, scene, updateFlags);
+        }
+
+        /// <summary>Creates a new <see cref="SceneObject"/> at specified position.</summary>
+        /// <param name="updateFlags">The update flags to set on the newly spawned object.</param>
+        /// <param name="scene">The scene to automatically add the object to. Default value is null.</param>
+        /// <returns></returns>
+        public SceneObject CreateObject(Vector3 position, Scene scene = null, ObjectUpdateFlags flags = ObjectUpdateFlags.All)
+        {
+            SceneObject obj = new SceneObject(Engine);
+            obj.Transform.LocalPosition = position;
+            scene?.AddObject(obj);
+            return obj;
+        }
+
         public void Pause()
         {
             if (RunState == GameRunState.Paused || RunState == GameRunState.Exited || RunState == GameRunState.Exiting)

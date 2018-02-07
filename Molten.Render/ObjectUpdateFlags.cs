@@ -17,5 +17,8 @@ namespace Molten.Graphics
 
         /// <summary>The object will update it's children.</summary>
         Children = 2,
+
+        /// <summary>All of the available flags combined.</summary>
+        All = 3,
     }
 }
