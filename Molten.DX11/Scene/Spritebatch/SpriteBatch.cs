@@ -44,7 +44,6 @@ namespace Molten.Graphics
         int _drawnFrom;
         int _drawnTo;
 
-        Matrix _mTransform;
         Material _defaultMaterial;
         Material _defaultNoTextureMaterial;
 

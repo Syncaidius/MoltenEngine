@@ -6,7 +6,8 @@ using System.Collections;
 
 namespace Molten.Collections
 {
-    /// <summary>A List-esque collection class without all the baggage and frills of a generic collection List. Works like a hybrid of a list and an array.</summary>
+    /// <summary>A List-esque collection class without all the baggage and frills of a generic collection List. Works like a hybrid of a list and an array. 
+    /// A lot of validation is traded for speed.</summary>
     /// <typeparam name="T">The type of object you want the list to store.</typeparam>
     public class RawList<T>
     {
