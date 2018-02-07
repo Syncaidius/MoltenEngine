@@ -21,10 +21,7 @@ namespace Molten.Samples
         Camera2D _cam2D;
         IMaterial _material;
 
-        public SpriteBatchTest(EngineSettings settings = null) : base("Sprite Batch", settings)
-        {
-
-        }
+        public SpriteBatchTest(EngineSettings settings = null) : base("Sprite Batch", settings) { }
 
         protected override void OnInitialize(Engine engine)
         {

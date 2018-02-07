@@ -187,9 +187,9 @@ namespace Molten.Graphics
 
             // Clear the list of used surfaces, ready for the next frame.
             _usedSurfaces.Clear();
-            _device.Profiler.EndCapture(time);
 
             _profiler.AddData(_device.Profiler.CurrentFrame);
+            _device.Profiler.EndCapture(time);
             _profiler.EndCapture(time);
         }
 
