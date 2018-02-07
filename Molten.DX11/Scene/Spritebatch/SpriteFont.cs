@@ -19,7 +19,6 @@ namespace Molten.Graphics
 
         const int TAB_SPACING = 3; // The size of a tab character represented as spaces. A spacing of 3 will equal the size of 3 space characters.
         const int DATA_INCREMENT = 10;
-        static List<SpriteFont> _fontTable;
 
         D2DSurface _surface;
 
@@ -48,69 +47,6 @@ namespace Molten.Graphics
         ExpectedState _expected;
         ThreadedList<char> _pendingChars;
         int _pendingResize;
-
-        internal static SpriteFont Create(GraphicsDevice device, string fontName, int size = 12,
-            SpriteFontWeight weight = SpriteFontWeight.Regular,
-            SpriteFontStretch stretch = SpriteFontStretch.Normal,
-            SpriteFontStyle style = SpriteFontStyle.Normal, int sheetSize = 512)
-        {
-            if (_fontTable == null)
-                _fontTable = new List<SpriteFont>();
-            SpriteFont result = null;
-
-            FontWeight fWeight = (FontWeight)weight;
-            FontStretch fStretch = (FontStretch)stretch;
-            FontStyle fStyle = (FontStyle)style;
-
-            //attempt to find a matching font.
-            foreach (SpriteFont font in _fontTable)
-            {
-                string fName = font.FontName.ToLower();
-
-                //test names
-                if (fName == fontName.ToLower())
-                {
-                    //test weight
-                    if (font._format.FontWeight == fWeight)
-                    {
-                        //test stretch
-                        if (font._format.FontStretch == fStretch)
-                        {
-                            //test style
-                            if (font._format.FontStyle == fStyle)
-                            {
-                                //test size
-                                if (font._size == size)
-                                {
-                                    result = font;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // If the result is still null, make a new font
-            if (result == null)
-            {
-                result = new SpriteFont(device, fontName, fWeight, fStretch, fStyle, size);
-                _fontTable.Add(result);
-            }
-
-            // Return the resultant font.
-            return result;
-        }
-
-        internal static void DisposeFonts()
-        {
-            if (_fontTable != null)
-            {
-                for (int i = 0; i < _fontTable.Count; i++)
-                    _fontTable[i].Dispose();
-
-                _fontTable.Clear();
-            }
-        }
 
         internal SpriteFont(GraphicsDevice device, string fontName,
             FontWeight weight = FontWeight.Regular,
@@ -501,18 +437,14 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets the underlying font atlas texture.</summary>
-        public ITexture2D UnderlyingTexture { get { return _surface; } }
+        public ITexture2D UnderlyingTexture => _surface;
 
         /// <summary>Gets the name of the font that the sprite font uses.</summary>
-        public string FontName
-        {
-            get { return _family.FamilyNames.GetString(0); }
-        }
+        public string FontName => _family.FamilyNames.GetString(0);
 
         /// <summary>Gets the font size.</summary>
-        public int FontSize
-        {
-            get { return _size; }
-        }
+        public int FontSize => _size;
+
+        internal TextFormat Format => _format;
     }
 }

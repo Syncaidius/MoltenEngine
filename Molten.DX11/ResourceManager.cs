@@ -1,4 +1,5 @@
-﻿using SharpDX.DXGI;
+﻿using SharpDX.DirectWrite;
+using SharpDX.DXGI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,11 +14,13 @@ namespace Molten.Graphics
     {
         GraphicsDevice _device;
         RendererDX11 _renderer;
+        List<SpriteFont> _fontTable;
 
         internal ResourceManager(RendererDX11 renderer)
         {
             _device = renderer.Device;
             _renderer = renderer;
+            _fontTable = new List<SpriteFont>();
         }
 
         public IDepthSurface CreateDepthSurface(int width, int height, int mipCount = 1, int arraySize = 1, DepthFormat format = DepthFormat.R24G8_Typeless, TextureFlags flags = TextureFlags.None)
@@ -69,9 +72,54 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public ISpriteFont CreateFont(string fontName, int size)
+        public ISpriteFont CreateFont(string fontName, int size, SpriteFontWeight weight = SpriteFontWeight.Regular,
+            SpriteFontStretch stretch = SpriteFontStretch.Normal,
+            SpriteFontStyle style = SpriteFontStyle.Normal)
         {
-            return SpriteFont.Create(_device, fontName, size);
+            SpriteFont result = null;
+
+            FontWeight fWeight = (FontWeight)weight;
+            FontStretch fStretch = (FontStretch)stretch;
+            FontStyle fStyle = (FontStyle)style;
+
+            //attempt to find a matching font.
+            foreach (SpriteFont font in _fontTable)
+            {
+                string fName = font.FontName.ToLower();
+
+                //test names
+                if (fName == fontName.ToLower())
+                {
+                    //test weight
+                    if (font.Format.FontWeight == fWeight)
+                    {
+                        //test stretch
+                        if (font.Format.FontStretch == fStretch)
+                        {
+                            //test style
+                            if (font.Format.FontStyle == fStyle)
+                            {
+                                //test size
+                                if (font.FontSize == size)
+                                {
+                                    result = font;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // If the result is still null, make a new font
+            if (result == null)
+            {
+                result = new SpriteFont(_device, fontName, fWeight, fStretch, fStyle, size);
+                _fontTable.Add(result);
+            }
+
+            // Return the resultant font.
+            return result;
         }
 
         public TextureReader GetDefaultTextureReader(FileInfo file)
@@ -101,7 +149,10 @@ namespace Molten.Graphics
 
         public void Dispose()
         {
-            
+            for (int i = 0; i < _fontTable.Count; i++)
+                _fontTable[i].Dispose();
+
+            _fontTable.Clear();
         }
 
         public IMesh<T> CreateMesh<T>(int maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool visible = true) 

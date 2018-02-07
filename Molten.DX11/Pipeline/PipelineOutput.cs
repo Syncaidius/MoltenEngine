@@ -212,7 +212,6 @@ namespace Molten.Graphics
                     _surfaces[slot] = null;
                     break;
             }
-
         }
 
         /// <summary>
