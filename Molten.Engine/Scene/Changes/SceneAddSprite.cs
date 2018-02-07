@@ -22,7 +22,7 @@ namespace Molten
         {
             scene.Sprites.Add(Sprite);
             scene.RenderData.AddSprite(Sprite, Layer);
-            if (Sprite is IUpdatable up)
+            if (Sprite is ISceneUpdatable up)
                 scene.Updatables.Add(up);
             Recycle(this);
         }

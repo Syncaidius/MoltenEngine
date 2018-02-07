@@ -14,7 +14,7 @@ namespace Molten
 
         internal List<SceneObject> Objects;
         internal List<ISprite> Sprites;
-        internal  HashSet<IUpdatable> Updatables;
+        internal  HashSet<ISceneUpdatable> Updatables;
 
         ThreadedQueue<SceneChange> _pendingChanges;
 
@@ -26,7 +26,7 @@ namespace Molten
             engine.AddScene(this);
             Objects = new List<SceneObject>();
             Sprites = new List<ISprite>();
-            Updatables = new HashSet<IUpdatable>();
+            Updatables = new HashSet<ISceneUpdatable>();
             _pendingChanges = new ThreadedQueue<SceneChange>();
 
             engine.Log.WriteLine($"Created scene '{name}'");
@@ -72,7 +72,7 @@ namespace Molten
                 obj.Update(time);
 
             // Updatable sprites
-            foreach (IUpdatable up in Updatables)
+            foreach (ISceneUpdatable up in Updatables)
                 up.Update(time);
         }
 
@@ -87,6 +87,7 @@ namespace Molten
         /// <summary>Gets or sets whether or not the scene is updated.</summary>
         public virtual bool IsEnabled { get; set; } = true;
 
+        /// <summary>Gets or sets whether the scene is rendered.</summary>
         public virtual bool IsVisible
         {
             get => _data.IsVisible;

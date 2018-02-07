@@ -23,7 +23,7 @@ namespace Molten
             scene.Sprites.Remove(Sprite);
             scene.RenderData.RemoveSprite(Sprite, Layer);
 
-            if (Sprite is IUpdatable up)
+            if (Sprite is ISceneUpdatable up)
                 scene.Updatables.Remove(up);
             Recycle(this);
         }

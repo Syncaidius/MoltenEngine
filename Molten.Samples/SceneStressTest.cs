@@ -110,7 +110,7 @@ namespace Molten.Samples
             mesh.Material = material;
             mesh.SetVertices(verts);
             for (int i = 0; i < 6000; i++)
-                SpawnTestCube(material, mesh, 20);
+                SpawnTestCube(material, mesh, 70);
 
             Window.PresentClearColor = new Color(20, 20, 20, 255);
         }
@@ -176,20 +176,20 @@ namespace Molten.Samples
                 obj.Transform.LocalRotationZ += rotateAngle * 0.7f * time.Delta;
             }
 
-            // Mouse input - Messy for now - We're just testing input
-            _player.Transform.LocalRotationX += Mouse.Moved.Y;
-            _player.Transform.LocalRotationY += Mouse.Moved.X;
-            Mouse.CenterInWindow();
-
             // Keyboard input - Again messy code for now
             Vector3 moveDelta = Vector3.Zero;
             float rotSpeed = 0.25f;
             float speed = 1.0f;
 
-            if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * rotSpeed;
-            if (Keyboard.IsPressed(Key.S)) moveDelta += _player.Transform.Global.Forward * rotSpeed;
-            if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * rotSpeed;
-            if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * rotSpeed;
+            // Mouse input - Messy for now - We're just testing input
+            _player.Transform.LocalRotationX -= Mouse.Moved.Y * rotSpeed;
+            _player.Transform.LocalRotationY += Mouse.Moved.X * rotSpeed;
+            Mouse.CenterInWindow();
+
+            if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * speed;
+            if (Keyboard.IsPressed(Key.S)) moveDelta += _player.Transform.Global.Forward * speed;
+            if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * speed;
+            if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * speed;
 
             _player.Transform.LocalPosition += moveDelta * time.Delta * speed;
         }

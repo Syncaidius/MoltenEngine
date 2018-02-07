@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public interface IUpdatable
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface ISceneUpdatable
     {
         void Update(Timing time);
     }
