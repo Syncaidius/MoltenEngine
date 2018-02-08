@@ -1,5 +1,4 @@
-﻿using Molten.Rendering;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +8,6 @@ using System.ComponentModel;
 using Molten.Utilities;
 using Molten.Input;
 using System.Runtime.Serialization;
-using Molten.Serialization;
 
 namespace Molten.UI
 {
@@ -22,11 +20,10 @@ namespace Molten.UI
 
         /// <summary>Creates a new instances of <see cref="UIButton"/>.</summary>
         /// <param name="ui">The UI system to bind this control to.</param>
-        public UIButton(UISystem ui)
-            : base(ui)
+        public UIButton(Engine engine) : base(engine)
         {
             _state = UIButtonState.Default;
-            _text = new UIRenderedText(ui);
+            _text = new UIRenderedText(engine);
             _text.HorizontalAlignment = UIHorizontalAlignment.Center;
             _text.VerticalAlignment = UIVerticalAlignment.Center;
 
@@ -79,7 +76,7 @@ namespace Molten.UI
             _text.Bounds = _globalBounds;
         }
 
-        protected override void OnRender(SpriteBatch sb, RenderProxy proxy)
+        protected override void OnRender(ISpriteBatch sb)
         {
 
             sb.Draw(_globalBounds, _color[(int)_state]);

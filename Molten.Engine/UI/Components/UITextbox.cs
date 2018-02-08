@@ -1,8 +1,5 @@
-﻿using SharpDX;
-using Molten.Graphics;
+﻿using Molten.Graphics;
 using Molten.Input;
-using Molten.Rendering;
-using Molten.Serialization;
 using Molten.Utilities;
 using System;
 using System.Collections.Generic;
@@ -59,8 +56,7 @@ namespace Molten.UI
                                     (char)27, // Escape
                                  };
 
-        public UITextbox(UISystem ui)
-            : base(ui)
+        public UITextbox(Engine engine) : base(engine)
         {
             _bgColor = new Color(90, 90, 90, 255);
             _cursorColor = new Color();
@@ -76,7 +72,7 @@ namespace Molten.UI
             Padding.SuppressEvents = false;
 
 
-            _text = new UIRenderedText(_ui);
+            _text = new UIRenderedText(engine);
             _text.Text = "";
             _text.VerticalAlignment = UIVerticalAlignment.Center;
 
@@ -87,7 +83,17 @@ namespace Molten.UI
             OnClickStarted += UITextbox_OnPressStarted;
             OnClickEndedOutside += UITextbox_OnPressCompletedOutside;
             OnDrag += UITextbox_OnDrag;
-            ui.Engine.Input.Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
+        }
+
+        protected override void OnUISystemChanged(UISystem oldSystem, UISystem newSystem)
+        {
+            base.OnUISystemChanged(oldSystem, newSystem);
+
+            if(oldSystem != null)
+                oldSystem.Keyboard.OnCharacterKey -= Keyboard_OnCharacterKey;
+
+            if(newSystem != null)
+                newSystem.Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
 
         void _text_OnChanged(UIRenderedText text)
@@ -270,7 +276,7 @@ namespace Molten.UI
         {
             if (checkShift)
             {
-                if (!_ui.Engine.Input.Keyboard.IsPressed(Key.LeftShift) && !_ui.Engine.Input.Keyboard.IsPressed(Key.RightShift))
+                if (!_ui.Keyboard.IsPressed(Key.LeftShift) && !_ui.Keyboard.IsPressed(Key.RightShift))
                 {
                     _selectionIndex = _cursorIndex;
                     _selectionPos = _cursorPos;

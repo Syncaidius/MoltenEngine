@@ -1,10 +1,10 @@
-﻿using SharpDX;
-using Molten.Utilities;
+﻿using Molten.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Molten.Collections;
 
 namespace Molten.UI
 {
@@ -32,9 +32,9 @@ namespace Molten.UI
             public Rectangle selectionBounds;
             public UIRenderedText textObject;
 
-            public Line(UISystem ui)
+            public Line(Engine engine)
             {
-                textObject = new UIRenderedText(ui);
+                textObject = new UIRenderedText(engine);
                 textObject.Text = "";
             }
 

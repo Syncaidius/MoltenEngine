@@ -1,7 +1,5 @@
 ﻿using Molten.Graphics;
 using Molten.Input;
-using Molten.Rendering;
-using Molten.Serialization;
 using Molten.Utilities;
 using System;
 using System.ComponentModel;
@@ -38,18 +36,17 @@ namespace Molten.UI
 
         public event UIComponentHandler<UIVerticalScrollBar> OnScroll;
 
-        public UIVerticalScrollBar(UISystem ui)
-            : base(ui)
+        public UIVerticalScrollBar(Engine engine) : base(engine)
         {
             _colorBackground = new Color(20, 40, 60, 255);
             _colorBar = new Color(150, 150, 200, 255);
             _colorBarClicked = new Color(200, 200, 255, 255);
             _colorBarHover = new Color(180, 180, 210, 255);
 
-            _upButton = new UIButton(ui);
+            _upButton = new UIButton(engine);
             _upButton.Text.Text = "▲";
 
-            _downButton = new UIButton(ui);
+            _downButton = new UIButton(engine);
             _downButton.Text.Text = "▼";
 
             AddPart(_upButton);
@@ -190,12 +187,12 @@ namespace Molten.UI
             RefreshBar();
         }
 
-        protected override void OnUpdate(Schedule time)
+        protected override void OnUpdate(Timing time)
         {
             base.OnUpdate(time);
         }
 
-        protected override void OnRender(SpriteBatch sb, RenderProxy proxy)
+        protected override void OnRender(ISpriteBatch sb)
         {
             sb.Draw(_globalBounds, _colorBackground);
 
@@ -206,7 +203,7 @@ namespace Molten.UI
             else
                 sb.Draw(_barBounds, _colorBar);
 
-            base.OnRender(sb, proxy);
+            base.OnRender(sb);
         }
 
         /// <summary>Gets or sets the minimum X offset the scrollbar can provide.</summary>

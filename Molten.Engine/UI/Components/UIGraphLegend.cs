@@ -38,9 +38,7 @@ namespace Molten.UI
 
         protected override void OnUpdateBounds()
         {
-            base.OnUpdateBounds();
-
-            
+            base.OnUpdateBounds();            
         }
 
         protected override void OnRender(ISpriteBatch sb)

@@ -358,6 +358,8 @@ namespace Molten.UI
                 child.UpdateBounds();
         }
 
+        protected virtual void OnUISystemChanged(UISystem oldSystem, UISystem newSystem) { }
+
         /// <summary>Called right before padding is applied to the global bounds to form the clipping bounds.</summary>
         protected virtual void OnApplyClipPadding() { }
 
@@ -802,9 +804,11 @@ namespace Molten.UI
                 if (_ui != value)
                 {
                     // Set the UI system of the current and child components
-                    _ui = value;
                     for (int i = _children.Count - 1; i >= 0; i--)
-                        _children[i].UI = _ui;
+                        _children[i].UI = value;
+
+                    OnUISystemChanged(_ui, value);
+                    _ui = value;
                 }
             }
         }

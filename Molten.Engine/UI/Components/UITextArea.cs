@@ -1,8 +1,6 @@
-﻿using SharpDX;
+﻿using Molten.Collections;
 using Molten.Graphics;
 using Molten.Input;
-using Molten.Rendering;
-using Molten.Serialization;
 using Molten.Utilities;
 using System;
 using System.Collections.Generic;
@@ -51,6 +49,7 @@ namespace Molten.UI
         Vector2 _scrollOffset;
         int _widestLine;
         int _lineCapacity;
+        Engine _engine;
 
         public event UIComponentHandler<UITextbox> OnEnterKey;
 
@@ -65,10 +64,10 @@ namespace Molten.UI
          *  - BUG - horizontal scroll bar only gets its max value from visible lines
          */
 
-        public UITextArea(UISystem ui)
-            : base(ui)
+        public UITextArea(Engine engine) : base(engine)
         {
-            _linePool = new ObjectPool<Line>(() => new Line(_ui));
+            _engine = engine;
+            _linePool = new ObjectPool<Line>(() => new Line(_engine));
             _lines = new List<Line>();
 
             _bgColor = new Color(90, 90, 90, 255);
@@ -86,12 +85,12 @@ namespace Molten.UI
 
             _enableClipping = true;
 
-            _hBar = new UIHorizontalScrollBar(ui)
+            _hBar = new UIHorizontalScrollBar(_engine)
             {
                 BarRange = 20,
                 ScrollSpeed = 10,
             };
-            _vBar = new UIVerticalScrollBar(ui)
+            _vBar = new UIVerticalScrollBar(_engine)
             {
                 BarRange = 5,
                 ScrollSpeed = 10,

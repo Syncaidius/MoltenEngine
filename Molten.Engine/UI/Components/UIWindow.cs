@@ -1,8 +1,6 @@
-﻿using SharpDX;
-using Molten.IO;
+﻿using Molten.IO;
 using Molten.Graphics;
 using Molten.Input;
-using Molten.Rendering;
 using Molten.Utilities;
 using System;
 using System.Collections.Generic;
@@ -11,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
-using Molten.Serialization;
 
 namespace Molten.UI
 {
@@ -49,7 +46,7 @@ namespace Molten.UI
         bool _titleBarGrabbed;
         UIWindowState _state = UIWindowState.Open;
 
-        TextureAsset2D _icon;
+        ITexture2D _icon;
 
         /// <summary>Triggered when the window is opened.</summary>
         public event UIComponentHandler<UIWindow> OnOpen;
@@ -63,10 +60,9 @@ namespace Molten.UI
         /// <summary>Triggered when the window is restored from a minimized state.</summary>
         public event UIComponentHandler<UIWindow> OnRestore;
 
-        public UIWindow(UISystem ui)
-            : base(ui)
+        public UIWindow(Engine engine) : base(engine)
         {
-            _text = new UIRenderedText(ui);
+            _text = new UIRenderedText(engine);
             _text.VerticalAlignment = UIVerticalAlignment.Center;
             _text.Text = " ";
 
@@ -74,14 +70,14 @@ namespace Molten.UI
             _colorBorderFocused = new Color(0, 122, 204, 255);
             _colorBackground = new Color(20, 40, 60, 255);
 
-            _closeButton = new UIButton(ui);
+            _closeButton = new UIButton(engine);
             _closeButton.Text.Text = "X";
             _closeButton.DefaultColor = new Color(150, 150, 200, 255);
             _closeButton.ClickColor = new Color(200, 200, 255, 255);
             _closeButton.HoverColor = new Color(180, 180, 210, 255);
             _closeButton.OnClickEnded += _closeButton_OnClickEnded;
 
-            _minimizeButton = new UIButton(ui);
+            _minimizeButton = new UIButton(engine);
             _minimizeButton.Text.Text = "_";
             _minimizeButton.DefaultColor = new Color(150, 150, 200, 255);
             _minimizeButton.ClickColor = new Color(200, 200, 255, 255);
@@ -251,9 +247,9 @@ namespace Molten.UI
             _minimizeButton.IsVisible = hasMinimize;
         }
 
-        protected override void OnRender(SpriteBatch sb, RenderProxy proxy)
+        protected override void OnRender(ISpriteBatch sb)
         {
-            base.OnRender(sb, proxy);
+            base.OnRender(sb);
 
             switch (_state)
             {
@@ -277,17 +273,17 @@ namespace Molten.UI
             }
         }
 
-        protected override void OnRenderChildren(SpriteBatch sb, RenderProxy proxy)
+        protected override void OnRenderChildren(ISpriteBatch sb)
         {
             if (_state == UIWindowState.Open)
             {
-                _children.ForInterlock(0, 1, (Func<int, UIComponent, bool>)((id, child) =>
+                _children.ForInterlock(0, 1, (id, child) =>
                 {
                     if (child.IsVisible == true)
-                        child.Draw(sb, proxy);
+                        child.Render(sb);
 
                     return false;
-                }));
+                });
             }
         }
 
