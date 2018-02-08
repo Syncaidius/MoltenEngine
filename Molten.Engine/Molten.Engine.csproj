@@ -74,6 +74,10 @@
     <Compile Include="Content\Processors\ContentProcessor.cs" />
     <Compile Include="Content\Processors\MaterialProcessor.cs" />
     <Compile Include="Content\Processors\Texture2DProcessor.cs" />
+    <Compile Include="Content\Serialization\BrowsableStringAttribute.cs" />
+    <Compile Include="Content\Serialization\ExpandablePropertyAttribute.cs" />
+    <Compile Include="Content\Serialization\JsonHelper.cs" />
+    <Compile Include="Content\Serialization\MathConverter.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="EngineSettings.cs" />
     <Compile Include="GameRunState.cs" />

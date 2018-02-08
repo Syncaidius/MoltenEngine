@@ -40,7 +40,7 @@ namespace Molten
             OnCompleted?.Invoke(Manager, this);
         }
 
-        /// <summary>Adds a request for a content file to be loaded.</summary>
+        /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>.</summary>
         /// <param name="fn">The relative file path from the content manager's root directory.</param>
         public void Load<T>(string fn)
         {
@@ -59,6 +59,28 @@ namespace Molten
                 e.Result.AddResult<T>(obj);
             });
         }
+
+        /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="fn"></param>
+        public void Deserialize<T>(string fn)
+        {
+            AddElement(fn, ContentRequestType.Deserialize, typeof(T));
+        }
+
+        /// <summary>Adds a serialization operation to the current <see cref="ContentRequest"/>. This will serialize an object into JSON and write it to the specified file.</summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="fn"></param>
+        /// <param name="obj"></param>
+        public void Serialize<T>(string fn, T obj)
+        {
+            AddElement(fn, ContentRequestType.Serialize, typeof(T), (e) =>
+            {
+                e.Result.AddResult<T>(obj);
+            });
+        }
+
+
 
         /// <summary>
         /// 

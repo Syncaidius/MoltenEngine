@@ -1,6 +1,7 @@
 ﻿using Molten.Collections;
 using Molten.Content;
 using Molten.Threading;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,6 +30,7 @@ namespace Molten
         Logger _log;
         string _rootDirectory;
         Engine _engine;
+        JsonSerializerSettings _jsonSettings;
 
         static ContentManager()
         {
@@ -60,7 +62,7 @@ namespace Molten
         /// <param name="customProcessors">A list of custom processors to override the default ones with. Default value is null.</param>
         /// <param name="engine"></param>
         /// <param name="workerThreads">The number of worker threads that will be used to fulfil content requests.</param>
-        public ContentManager(Logger log, Engine engine, string rootDirectory, List<ContentProcessor> customProcessors = null, int workerThreads = 1)
+        public ContentManager(Logger log, Engine engine, string rootDirectory, List<ContentProcessor> customProcessors = null, int workerThreads = 1, JsonSerializerSettings jsonSettings = null)
         {
             _engine = engine;
             _rootDirectory = rootDirectory.StartsWith("/") ? rootDirectory.Substring(1, rootDirectory.Length - 1) : rootDirectory;
@@ -70,6 +72,7 @@ namespace Molten
             _content = new Dictionary<Type, Dictionary<string, List<object>>>();
             _workers = engine.Threading.SpawnWorkerGroup("content workers", workerThreads);
             _log = log;
+            _jsonSettings = jsonSettings ?? JsonHelper.GetDefaultSettings(_log);
 
             if(customProcessors != null)
             {
@@ -231,6 +234,10 @@ namespace Molten
                             DoRead(e, proc);
                             break;
 
+                        case ContentRequestType.Deserialize:
+                            DoDeserialize(e);
+                            break;
+
                         case ContentRequestType.Write:
                             using (FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                                 proc.OnWrite(_engine, _log, e.ContentType, stream, e.Info);
@@ -249,6 +256,29 @@ namespace Molten
 
             request.Complete();
             _requestPool.Recycle(request);
+        }
+
+        private void DoDeserialize(ContentRequestElement e)
+        {
+            string path = e.Info.ToString();
+            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                string json;
+                using (StreamReader reader = new StreamReader(stream))
+                    json = reader.ReadToEnd();
+
+                try
+                {
+                    object result = JsonConvert.DeserializeObject(json, e.ContentType, _jsonSettings);
+                    List<object> group = GetOrCreateGroup(e.FileRequestString, e.ContentType);
+                    group.Add(result);
+                    _log.WriteLine($"[CONTENT] [JSON] Loaded '{result.GetType().Name}' from '{path}'");
+                }
+                catch (Exception ex)
+                {
+                    _log.WriteError($"[CONTENT] [JSON] { ex.Message}", path);
+                }
+            }
         }
 
         private void DoRead(ContentRequestElement e, ContentProcessor proc)
