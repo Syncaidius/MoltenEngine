@@ -23,7 +23,7 @@ namespace Molten.Graphics
         /// <summary>Gets the name of the output.</summary>
         public string Name { get; protected set; } = "";
 
-        /// <summary>Gets the orientation of the current <see cref="T:StoneBolt.IDisplayOutput" />.</summary>
+        /// <summary>Gets the orientation of the current <see cref="T:Molten.IDisplayOutput" />.</summary>
         public abstract DisplayOrientation Orientation { get; }
 
         /// <summary>Gets the adapter that the display device is connected to.</summary>

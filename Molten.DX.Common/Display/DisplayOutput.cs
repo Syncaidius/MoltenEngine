@@ -49,7 +49,7 @@ namespace Molten.Graphics
         /// <summary>Gets whether or not the output is bound to a desktop.</summary>
         public bool IsBoundToDesktop { get { return _desc.IsAttachedToDesktop; } }
 
-        /// <summary>Gets the orientation of the current <see cref="T:StoneBolt.IDisplayOutput" />.</summary>
+        /// <summary>Gets the orientation of the current <see cref="T:Molten.IDisplayOutput" />.</summary>
         public override DisplayOrientation Orientation => (DisplayOrientation)_desc.Rotation;
     }
 }

@@ -16,7 +16,7 @@ namespace Molten
 
         public override bool CanConvert(Type objectType)
         {
-            return (objectType.Assembly.GetName().Name == "StoneBolt.Math") && _valueType.IsAssignableFrom(objectType);
+            return (objectType.Assembly.GetName().Name == "Molten.Math") && _valueType.IsAssignableFrom(objectType);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

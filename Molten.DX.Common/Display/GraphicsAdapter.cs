@@ -14,7 +14,6 @@ namespace Molten.Graphics
     {
         A _adapter;
         AdapterDescription _desc;
-        D _descSecondary;
 
         DisplayOutput<A,D, O>[] _connectedOutputs;
         List<GraphicsOutput> _activeOutputs;
@@ -23,10 +22,10 @@ namespace Molten.Graphics
         int _id;
         string _name;
 
-        /// <summary> Occurs when an <see cref="T:StoneBolt.IDisplayOutput" /> is connected to the current <see cref="T:StoneBolt.IDisplayAdapter" />.</summary>
+        /// <summary> Occurs when an <see cref="T:Molten.IDisplayOutput" /> is connected to the current <see cref="T:Molten.IDisplayAdapter" />.</summary>
         public event DisplayOutputChanged OnOutputAdded;
 
-        /// <summary>Occurs when an <see cref="T:StoneBolt.IDisplayOutput" /> is disconnected from the current <see cref="T:StoneBolt.IDisplayAdapter" />. </summary>
+        /// <summary>Occurs when an <see cref="T:Molten.IDisplayOutput" /> is disconnected from the current <see cref="T:Molten.IDisplayAdapter" />. </summary>
         public event DisplayOutputChanged OnOutputRemoved;
 
         public GraphicsAdapter(IDisplayManager manager, A adapter, D desc, O[] outputs, int id)
@@ -96,7 +95,7 @@ namespace Molten.Graphics
             _activeOutputs.Clear();
         }
 
-        /// <summary>Gets all <see cref="T:StoneBolt.IDisplayOutput" /> devices attached to the current <see cref="T:StoneBolt.IDisplayAdapter" />.</summary>
+        /// <summary>Gets all <see cref="T:Molten.IDisplayOutput" /> devices attached to the current <see cref="T:Molten.IDisplayAdapter" />.</summary>
         /// <param name="outputList">The output list.</param>
         public void GetAttachedOutputs(List<IDisplayOutput> outputList)
         {
@@ -144,11 +143,8 @@ namespace Molten.Graphics
         /// <summary>Gets the number of <see cref="GraphicsOutput"/> connected to the adapter.</summary>
         public int OutputCount => _connectedOutputs.Length;
 
-        /// <summary>Gets the feature-level-specific description of type <see cref="{D}"/></summary>
-        public D Description => _descSecondary;
-
         /// <summary>
-        /// Gets the <see cref="T:StoneBolt.Graphics.IDisplayManager" /> that spawned the adapter.
+        /// Gets the <see cref="T:Molten.Graphics.IDisplayManager" /> that spawned the adapter.
         /// </summary>
         public IDisplayManager Manager => _manager;
     }
