@@ -8,5 +8,10 @@ namespace Molten.IO
 {
     public interface IClipboard
     {
+        void SetText(string txt);
+
+        bool ContainsText();
+
+        string GetText();
     }
 }

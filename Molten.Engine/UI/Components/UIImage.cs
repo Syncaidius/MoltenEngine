@@ -1,7 +1,5 @@
-﻿using SharpDX;
-using Molten.IO;
+﻿using Molten.IO;
 using Molten.Graphics;
-using Molten.Rendering;
 using Molten.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
-using Molten.Serialization;
 
 namespace Molten.UI
 {
@@ -20,14 +17,13 @@ namespace Molten.UI
         string _sourceFile;
         bool _surpassSourceUpdate;
 
-        TextureAsset2D _texture;
+        ITexture2D _texture;
         Rectangle _source;
         Color _color;
 
         /// <summary>Creates a new instance of <see cref="UIImage"/>.</summary>
         /// <param name="ui">The UI system to bind to.</param>
-        public UIImage(UISystem ui)
-            : base(ui)
+        public UIImage(Engine engine) : base(engine)
         {
             _color = new Color(255, 255, 255, 255);
             _source = new Rectangle(0, 0, 1, 1);
@@ -35,23 +31,23 @@ namespace Molten.UI
 
         private void GetSourceFile()
         {
-            ContentRequest cr = _ui.Engine.Content.GetNewRequest();
-            cr.AddGet<TextureAsset2D>(_sourceFile);
+            ContentRequest cr = _engine.Content.StartRequest();
+            cr.Load<ITexture2D>(_sourceFile);
             cr.OnCompleted += request_OnCompleted;
-            _ui.Engine.Content.SubmitRequest(cr);
+            cr.Commit();
         }
 
         void request_OnCompleted(ContentManager content, ContentRequest request)
         {
-            _texture = content.Get<TextureAsset2D>(request.Files[0].Path);
+            _texture = content.Get<ITexture2D>(request.RequestedFiles[0]);
 
             if (!_surpassSourceUpdate)
                 _source = new Rectangle(0, 0, _texture.Width, _texture.Height);
         }
 
-        protected override void OnRender(SpriteBatch sb, RenderProxy proxy)
+        protected override void OnRender(ISpriteBatch sb)
         {
-            base.OnRender(sb, proxy);
+            base.OnRender(sb);
 
             if (_texture != null)
                 sb.Draw(_texture, _source, _clippingBounds, _color, 0, new Vector2());
@@ -71,7 +67,7 @@ namespace Molten.UI
         }
 
         [Browsable(false)]
-        public TextureAsset2D Texture
+        public ITexture2D Texture
         {
             get { return _texture; }
             set { _texture = value; }

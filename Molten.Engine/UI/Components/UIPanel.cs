@@ -1,5 +1,4 @@
-﻿using Molten.Rendering;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +6,6 @@ using System.Threading.Tasks;
 using Molten.Graphics;
 using Molten.Utilities;
 using System.Runtime.Serialization;
-using Molten.Serialization;
 
 namespace Molten.UI
 {
@@ -15,13 +13,12 @@ namespace Molten.UI
     {
         Color _bgColor;
 
-        public UIPanel(UISystem ui)
-            : base(ui)
+        public UIPanel(Engine engine) : base(engine)
         {
             _bgColor = new Color(100, 100, 200, 200);
         }
 
-        protected override void OnRender(SpriteBatch sb, RenderProxy proxy)
+        protected override void OnRender(ISpriteBatch sb)
         {
             sb.Draw(_globalBounds, _bgColor);
         }

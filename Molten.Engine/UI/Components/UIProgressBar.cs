@@ -1,6 +1,4 @@
 ﻿using Molten.Graphics;
-using Molten.Rendering;
-using Molten.Serialization;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,12 +31,11 @@ namespace Molten.UI
 
         Rectangle _barBounds;
 
-        public UIProgressBar(UISystem ui)
-            : base(ui)
+        public UIProgressBar(Engine engine) : base(engine)
         {
             _bgColor = new Color(100, 100, 100, 255);
             _barColor = new Color(0, 255, 0, 255);
-            _text = new UIRenderedText(ui);
+            _text = new UIRenderedText(engine);
 
             _style = UIProgressBarStyle.Solid;
         }
@@ -80,7 +77,7 @@ namespace Molten.UI
                 _text.Text += _value + " / " + _maxValue;
         }
 
-        protected override void OnRender(SpriteBatch sb, RenderProxy proxy)
+        protected override void OnRender(ISpriteBatch sb)
         {
             sb.Draw(_globalBounds, _bgColor);
 
@@ -126,7 +123,7 @@ namespace Molten.UI
             if (_showText || _showValues)
                 _text.Draw(sb);
 
-            base.OnRender(sb, proxy);
+            base.OnRender(sb);
         }
 
         [Category("Appearance")]

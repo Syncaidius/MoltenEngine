@@ -29,6 +29,7 @@ namespace Molten.UI
         protected UIPadding _clipPadding; //how many pixels on either side will be used to seperate the clipping bounds from the border of the component.
         protected UIMargin _margin; //how many pixels on either side will seperate the component's borders from its parent's borders.
         protected UIComponent _parent;
+        protected Engine _engine;
         protected object _tagObject;
 
         protected bool _enabled;
@@ -76,6 +77,7 @@ namespace Molten.UI
 
         public UIComponent(Engine engine)
         {
+            _engine = engine;
             _children = new ThreadedList<UIComponent>();
             _margin = new UIMargin();
             _margin.OnChanged += _margin_OnChanged;
@@ -816,5 +818,8 @@ namespace Molten.UI
         [DataMember]
         /// <summary>Gets or sets the component's name.</summary>
         public string Name { get; set; }
+
+        /// <summary>Gets or sets the tag object.</summary>
+        public object Tag { get; set; }
     }
 }

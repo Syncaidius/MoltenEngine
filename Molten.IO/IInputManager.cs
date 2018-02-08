@@ -16,5 +16,7 @@ namespace Molten.IO
         void SetActiveWindow(IWindowSurface surface);
 
         void Update(Timing time);
+
+        IClipboard Clipboard { get; }
     }
 }

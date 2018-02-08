@@ -1,17 +1,12 @@
-﻿using Molten.Rendering;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SharpDX;
-using SharpDX.DirectWrite;
 using System.ComponentModel;
-using System.Drawing.Design;
 using Molten.Graphics;
 using Molten.Utilities;
 using System.Runtime.Serialization;
-using Molten.Serialization;
 
 namespace Molten.UI
 {
@@ -19,10 +14,9 @@ namespace Molten.UI
     {
         UIRenderedText _text;
 
-        public UILabel(UISystem ui)
-            : base(ui)
+        public UILabel(Engine engine) : base(engine)
         {
-            _text = new UIRenderedText(ui);
+            _text = new UIRenderedText(engine);
         }
 
         protected override void OnDispose()
@@ -36,7 +30,7 @@ namespace Molten.UI
             _text.Bounds = _globalBounds;
         }
 
-        protected override void OnRender(SpriteBatch sb, RenderProxy proxy)
+        protected override void OnRender(ISpriteBatch sb)
         {
             _text.Draw(sb);
         }

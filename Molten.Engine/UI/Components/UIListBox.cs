@@ -1,5 +1,4 @@
 ﻿using Molten.Graphics;
-using Molten.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,16 +21,18 @@ namespace Molten.UI
         Color _borderColor;
         Color _selectedColor;
         UIListItem _selected;
+        Engine _engine;
 
         public event ObjectHandler<UIListBox> OnSelectionChanged;
 
-        public UIListBox(UISystem ui) : base(ui)
+        public UIListBox(Engine engine) : base(engine)
         {
+            _engine = engine;
             _items = new List<UIListItem>();
             _bgColor = new Color(90, 90, 90, 255);
             _borderColor = new Color(120, 120, 120, 255);
             _selectedColor = new Color(120, 120, 190, 255);
-            _scroll = new UIScrollArea(ui);
+            _scroll = new UIScrollArea(engine);
 
             Padding.Left = 2;
             Padding.Right = 2;
@@ -54,7 +55,7 @@ namespace Molten.UI
             if (item.Index > -1)
                 return;
 
-            item.Button = new UIButton(_ui)
+            item.Button = new UIButton(_engine)
             {
                 DefaultColor = _bgColor, 
             };
@@ -122,9 +123,9 @@ namespace Molten.UI
             }
         }
 
-        protected override void OnRender(SpriteBatch sb, RenderProxy proxy)
+        protected override void OnRender(ISpriteBatch sb)
         {
-            base.OnRender(sb, proxy);
+            base.OnRender(sb);
 
             // Draw main box
             sb.Draw(_globalBounds, _borderColor);

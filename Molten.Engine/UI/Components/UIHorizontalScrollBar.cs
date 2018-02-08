@@ -1,8 +1,5 @@
-﻿using SharpDX;
-using Molten.Graphics;
+﻿using Molten.Graphics;
 using Molten.IO;
-using Molten.Rendering;
-using Molten.Serialization;
 using Molten.Utilities;
 using System;
 using System.Collections.Generic;
@@ -42,18 +39,17 @@ namespace Molten.UI
 
         public event UIComponentHandler<UIHorizontalScrollBar> OnScroll;
 
-        public UIHorizontalScrollBar(UISystem ui)
-            : base(ui)
+        public UIHorizontalScrollBar(Engine engine) : base(engine)
         {
             _colorBackground = new Color(20, 40, 60, 255);
             _colorBar = new Color(150, 150, 200, 255);
             _colorBarClicked = new Color(200, 200, 255, 255);
             _colorBarHover = new Color(180, 180, 210, 255);
 
-            _leftButton = new UIButton(ui);
+            _leftButton = new UIButton(engine);
             _leftButton.Text.Text = "◀";
 
-            _rightButton = new UIButton(ui);
+            _rightButton = new UIButton(engine);
             _rightButton.Text.Text = "▶";
 
             AddPart(_leftButton);
@@ -207,12 +203,12 @@ namespace Molten.UI
             RefreshBar();
         }
 
-        protected override void OnUpdate(Schedule time)
+        protected override void OnUpdate(Timing time)
         {
             base.OnUpdate(time);
         }
 
-        protected override void OnRender(SpriteBatch sb, RenderProxy proxy)
+        protected override void OnRender(ISpriteBatch sb)
         {
             sb.Draw(_globalBounds, _colorBackground);
 
@@ -223,7 +219,7 @@ namespace Molten.UI
             else
                 sb.Draw(_barBounds, _colorBar);
 
-            base.OnRender(sb, proxy);
+            base.OnRender(sb);
         }
 
         /// <summary>Gets or sets the minimum X offset the scrollbar can provide.</summary>

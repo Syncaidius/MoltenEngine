@@ -1,8 +1,5 @@
-﻿using SharpDX;
-using Molten.Graphics;
+﻿using Molten.Graphics;
 using Molten.IO;
-using Molten.Rendering;
-using Molten.Serialization;
 using Molten.Utilities;
 using System;
 using System.Collections.Generic;
@@ -31,9 +28,9 @@ namespace Molten.UI
 
         public event ObjectHandler<UICheckbox> OnCheckChanged;
 
-        public UICheckbox(UISystem ui) : base(ui)
+        public UICheckbox(Engine engine) : base(engine)
         {
-            _text = new UIRenderedText(ui)
+            _text = new UIRenderedText(engine)
             {
                 VerticalAlignment = UIVerticalAlignment.Center,
             };
@@ -76,9 +73,9 @@ namespace Molten.UI
             };
         }
 
-        protected override void OnRender(SpriteBatch sb, RenderProxy proxy)
+        protected override void OnRender(ISpriteBatch sb)
         {
-            base.OnRender(sb, proxy);
+            base.OnRender(sb);
 
             sb.Draw(_boxBounds, _colorBox);
 

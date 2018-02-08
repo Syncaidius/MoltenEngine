@@ -17,6 +17,7 @@ namespace Molten.IO
         Dictionary<IWindowSurface, SurfaceGroup> _groups;
         SurfaceGroup _activeGroup;
         IWindowSurface _activeSurface;
+        WindowsClipboard _clipboard;
 
         public void Initialize(InputSettings settings, Logger log)
         {
@@ -24,6 +25,7 @@ namespace Molten.IO
             _input = new DirectInput();
             _groups = new Dictionary<IWindowSurface, SurfaceGroup>();
             _gamepads = new List<GamepadHandler>();
+            _clipboard = new WindowsClipboard();
 
             for (int i = 0; i < 4; i++)
             {
@@ -89,5 +91,7 @@ namespace Molten.IO
 
         /// <summary>Gets the handler for the gamepad at GamepadIndex.One.</summary>
         public GamepadHandler GamePad { get { return _gamepads[0]; } }
+
+        public IClipboard Clipboard => _clipboard;
     }
 }

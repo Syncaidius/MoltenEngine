@@ -1,5 +1,4 @@
-﻿using SharpDX;
-using Molten.IO;
+﻿using Molten.IO;
 using Molten.Utilities;
 using System;
 using System.Collections.Generic;
@@ -25,13 +24,12 @@ namespace Molten.UI
         int _prevVertical;
         bool _refreshing;
 
-        public UIScrollArea(UISystem ui)
-            : base(ui)
+        public UIScrollArea(Engine engine) : base(engine)
         {
             _enableClipping = true;
 
-            _hBar = new UIHorizontalScrollBar(ui);
-            _vBar = new UIVerticalScrollBar(ui);
+            _hBar = new UIHorizontalScrollBar(engine);
+            _vBar = new UIVerticalScrollBar(engine);
 
             AddPart(_hBar);
             AddPart(_vBar);

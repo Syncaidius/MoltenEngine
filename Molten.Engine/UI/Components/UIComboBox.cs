@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Graphics;
-using Molten.Rendering;
 using System.Runtime.Serialization;
 using System.ComponentModel;
 
@@ -31,17 +30,17 @@ namespace Molten.UI
 
         public event ObjectHandler<UIComboBox> OnSelectionChanged;
 
-        public UIComboBox(UISystem ui) : base(ui)
+        public UIComboBox(Engine engine) : base(engine)
         {
             _bgColor = new Color(90, 90, 90, 255);
             _borderColor = new Color(120, 120, 120, 255);
 
-            _toggle = new UIButton(ui);
+            _toggle = new UIButton(engine);
             _toggle.Text.Text = "v";
 
-            _text = new UIRenderedText(ui);
+            _text = new UIRenderedText(engine);
             _text.Text = "";
-            _list = new UIListBox(ui);
+            _list = new UIListBox(engine);
             _list.OnSelectionChanged += _list_OnSelectionChanged;
 
             Padding.Left = 2;
@@ -127,9 +126,9 @@ namespace Molten.UI
             };
         }
 
-        protected override void OnRender(SpriteBatch sb, RenderProxy proxy)
+        protected override void OnRender(ISpriteBatch sb)
         {
-            base.OnRender(sb, proxy);
+            base.OnRender(sb);
 
             // Draw main box
             sb.Draw(_boxBounds, _borderColor);
