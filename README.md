@@ -23,7 +23,7 @@ Right now the engine is extremely rough around the edges. Here's a list of the c
   * Crude test app (written in WPF)
   
 There is no audio system, no collision/physics, no deferred rendering or post-processing.
-Simply put, it's a giant ball of molten rock which is no use to anyone yet. It'll be pretty rough for a long while. ;)
+Simply put, it's a giant ball of molten rock which is no use to anyone yet. The whole thing is rough and WIP. ;)
   
   
 # Long-term Goals
