@@ -1,5 +1,4 @@
-﻿using SharpDX;
-using Molten.UI;
+﻿using Molten.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;

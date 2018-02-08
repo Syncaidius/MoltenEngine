@@ -1,5 +1,4 @@
-﻿using SharpDX;
-using Molten.Graphics;
+﻿using Molten.Graphics;
 using Molten.Utilities;
 using System;
 using System.Collections.Generic;
@@ -24,9 +23,9 @@ namespace Molten.UI
         bool _visible;
         Vector2 _position;
 
-        public UITooltip(UISystem ui)
+        public UITooltip(Engine engine)
         {
-            _text = new UIRenderedText(ui);
+            _text = new UIRenderedText(engine);
             _text.Text = "";
             _text.OnChanged += _text_OnChanged;
             _text.VerticalAlignment = UIVerticalAlignment.Center;
@@ -60,7 +59,7 @@ namespace Molten.UI
             _text.Bounds = _innerBounds;
         }
 
-        public void Render(SpriteBatch sb)
+        public void Render(ISpriteBatch sb)
         {
             if (_isValid && _visible)
             {

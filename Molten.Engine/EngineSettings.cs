@@ -63,5 +63,9 @@ namespace Molten
         public int ContentWorkerThreads { get; set; } = 1;
 
         public string ProductName { get; set; } = "Stone Bolt Game";
+
+        public string DefaultFontName { get; set; } = "Arial";
+
+        public int DefaultFontSize { get; set; } = 16;
     }
 }

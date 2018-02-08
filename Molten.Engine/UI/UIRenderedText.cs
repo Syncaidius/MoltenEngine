@@ -1,6 +1,4 @@
-﻿using SharpDX.Direct2D1;
-using SharpDX.DirectWrite;
-using Molten.IO;
+﻿using Molten.IO;
 using Molten.Graphics;
 using Molten.Utilities;
 using System;
@@ -9,8 +7,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
-using Molten.Serialization;
-using Molten.Rendering;
 
 namespace Molten.UI
 {
@@ -19,8 +15,7 @@ namespace Molten.UI
     [DataContract]
     public class UIRenderedText : EngineObject
     {
-        GraphicsDevice _device;
-        SpriteFont _font;
+        ISpriteFont _font;
         Color _color = new Color(255,255,255,255);
         Color _shadowColor = new Color(0,0,0,255);
         int _fontSize;
@@ -33,6 +28,7 @@ namespace Molten.UI
         Vector2 _textSize;
         Vector2 _textPos;
         Rectangle _bounds;
+        Engine _engine;
 
         SpriteFontWeight _weight = SpriteFontWeight.Regular;
         SpriteFontStyle _style = SpriteFontStyle.Normal;
@@ -44,13 +40,13 @@ namespace Molten.UI
 
         /// <summary>Creates a new instance of <see cref="UIRenderedText"/>.</summary>
         /// <param name="ui"></param>
-        public UIRenderedText(UISystem ui)
+        public UIRenderedText(Engine engine)
         {
-            _device = ui.Engine.GraphicsDevice;
+            _engine = engine;
             _bounds = new Rectangle(0, 0, 100, 100);
 
-            _fontName = ui.DefaultFontName;
-            _fontSize = ui.DefaultFontSize;
+            _fontName = engine.Settings.DefaultFontName;
+            _fontSize = engine.Settings.DefaultFontSize;
 
             _hAlignment = UIHorizontalAlignment.Left;
             _vAlignment = UIVerticalAlignment.Top;
@@ -71,7 +67,7 @@ namespace Molten.UI
         public void RefreshFont()
         {
             _isFontDirty = false;
-            _font = SpriteFont.Create(_device, _fontName, _fontSize, _weight, _stretch, _style);
+            _font = _engine.Renderer.Resources.CreateFont(_fontName, _fontSize, _weight, _stretch, _style);
             RefreshText();
         }
 
@@ -104,7 +100,7 @@ namespace Molten.UI
             }
         }
 
-        public void Draw(SpriteBatch sb)
+        public void Draw(ISpriteBatch sb)
         {
             Refresh();
 

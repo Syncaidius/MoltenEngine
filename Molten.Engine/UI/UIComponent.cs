@@ -74,9 +74,8 @@ namespace Molten.UI
         /// <summary>Triggered when the scrollwheel is used while the mouse is over the component.</summary>
         public event UIComponentEventHandler<MouseButton> OnScrollWheel;
 
-        public UIComponent(UISystem ui)
+        public UIComponent(Engine engine)
         {
-            _ui = ui;
             _children = new ThreadedList<UIComponent>();
             _margin = new UIMargin();
             _margin.OnChanged += _margin_OnChanged;
@@ -703,6 +702,7 @@ namespace Molten.UI
             private set
             {
                 _parent = value;
+                _ui = _parent != null ? value.UI : null;
                 UpdateBounds();
             }
         }
@@ -797,7 +797,18 @@ namespace Molten.UI
         public UISystem UI
         {
             get { return _ui; }
+            internal set
+            {
+                if (_ui != value)
+                {
+                    // Set the UI system of the current and child components
+                    _ui = value;
+                    for (int i = _children.Count - 1; i >= 0; i--)
+                        _children[i].UI = _ui;
+                }
+            }
         }
+
         [DataMember]
         /// <summary>Gets or sets the component's name.</summary>
         public string Name { get; set; }

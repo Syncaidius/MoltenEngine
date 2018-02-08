@@ -5,16 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Molten.IO;
 using Molten.Graphics;
-using Molten.Rendering;
 using System.Runtime.Serialization;
 
 namespace Molten.UI
 {
     public class UIGraphLegend : UIComponent
     {
+        Engine _engine;
         UILineGraph _graph;
         Color _borderColor = new Color(20, 20, 20, 255);
-        SpriteFont _font;
+        ISpriteFont _font;
         int _fontSize;
         string _fontName;
         int _keySize = 20;
@@ -22,17 +22,18 @@ namespace Molten.UI
         string _numberFormat = "N2";
         string _title;
 
-        public UIGraphLegend(UISystem ui) : base(ui)
+        public UIGraphLegend(Engine engine) : base(engine)
         {
-            _fontName = _ui.DefaultFontName;
-            _fontSize = _ui.DefaultFontSize;
+            _engine = engine;
+            _fontName = engine.Settings.DefaultFontName;
+            _fontSize = engine.Settings.DefaultFontSize;
             GetFont();
         }
 
 
         private void GetFont()
         {
-            _font = SpriteFont.Create(_ui.Engine.GraphicsDevice, _fontName, _fontSize);
+            _font = _engine.Renderer.Resources.CreateFont(_fontName, _fontSize);
         }
 
         protected override void OnUpdateBounds()
@@ -42,7 +43,7 @@ namespace Molten.UI
             
         }
 
-        protected override void OnRender(SpriteBatch sb, RenderProxy proxy)
+        protected override void OnRender(ISpriteBatch sb)
         {
             IntVector2 textPos = new IntVector2(_clippingBounds.X + 5, _clippingBounds.Y);
             sb.DrawString(_font, _title, textPos, Color.White);
@@ -74,7 +75,7 @@ namespace Molten.UI
                 });
             }
 
-            base.OnRender(sb, proxy);
+            base.OnRender(sb);
         }
 
         /// <summary>Gets or sets the source graph of the legend.</summary>

@@ -21,8 +21,6 @@ namespace Molten.UI
         InputManager _input;
         UIWindowManager _windowManager;
 
-        string _defaultFontName = "Arial";
-        int _defaultFontSize = 16;
         bool _inputEnabled = true;
 
         List<UIClickTracker> _trackers;
@@ -65,9 +63,10 @@ namespace Molten.UI
                     Height = 1,
                 },
                 Name = "Screen",
+                UI = this,
             };            
 
-            _tooltip = new UITooltip(this);
+            _tooltip = new UITooltip(engine);
         }
 
         internal void SetSurface(IWindowSurface newSurface)
@@ -172,13 +171,15 @@ namespace Molten.UI
         public void RemoveUI(string childName)
         {
             UIComponent matchingChild = null;
-
+            
+            // What is this? :o
             if (childName == _screen.Name)
             {
                 for (int i = _screen.Children.Count - 1; i >= 0; i--)
                     _screen.RemoveChild(_screen.Children[i]);
             }
-            else {
+            else
+            {
 
                 matchingChild = _screen.HasChild(childName);
 
@@ -208,9 +209,6 @@ namespace Molten.UI
 
         private UIComponent HandlePressStarted(Vector2 inputPos)
         {
-            //check message dialog first
-            //if (_mDialog.HandleInput(inputPos) == true) return null;
-
             UIComponent result = _screen.GetComponent(inputPos);
 
             return result;
@@ -221,11 +219,9 @@ namespace Molten.UI
             Vector2 mousePos = _mouse.Position;
             Vector2 mouseMove = _mouse.Moved;
 
-            //----UPDATE----
             _screen.Update(time);
 
             UIComponent newHover = HandlePressStarted(mousePos);
-
             if (newHover == null)
             {
                 //trigger leave on previous hover component.
@@ -287,20 +283,6 @@ namespace Molten.UI
                 if (_mouse.WheelDelta != 0)
                     _hoverComponent.InvokeScrollWheel(_mouse.WheelDelta);
             }
-        }
-
-        /// <summary>Gets or sets the name of the default font.</summary>
-        public string DefaultFontName
-        {
-            get { return _defaultFontName; }
-            set { _defaultFontName = value; }
-        }
-
-        /// <summary>Gets or sets the default font size.</summary>
-        public int DefaultFontSize
-        {
-            get { return _defaultFontSize; }
-            set { _defaultFontSize = value; }
         }
 
         /// <summary>Gets the root UI component which represents the screen.</summary>

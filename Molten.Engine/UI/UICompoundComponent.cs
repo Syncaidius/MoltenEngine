@@ -14,8 +14,7 @@ namespace Molten.UI
     {
         List<UIComponent> _parts;
 
-        public UICompoundComponent(UISystem ui)
-            : base(ui)
+        public UICompoundComponent(Engine engine) : base(engine)
         {
             _parts = new List<UIComponent>();
         }
