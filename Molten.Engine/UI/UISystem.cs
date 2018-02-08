@@ -36,6 +36,7 @@ namespace Molten.UI
         float _dragThreshold = 10.0f;
         IWindowSurface _surface;
 
+
         public event UIComponentEventHandler<MouseButton> OnFocus;
         public event UIComponentEventHandler<MouseButton> OnUnfocus;
 
@@ -52,7 +53,7 @@ namespace Molten.UI
             AddTracker(MouseButton.Right);
             AddTracker(MouseButton.Middle);
 
-            //setup screen component
+            // Setup screen component
             _screen = new UIContainer(this)
             {
                 LocalBounds = new Rectangle()
@@ -172,12 +173,6 @@ namespace Molten.UI
             return _screen.RemoveChild(container);
         }
 
-        protected override void OnDispose()
-        {
-            _renderProxy.Recycle();
-            DisposeObject(ref _sb);
-        }
-
         private void AddTracker(MouseButton button)
         {
             UIClickTracker tracker = new UIClickTracker(button);
@@ -202,7 +197,7 @@ namespace Molten.UI
             return result;
         }
 
-        internal override void Update(Schedule time)
+        internal void Update(Timing time)
         {
             Vector2 mousePos = _input.Mouse.Position;
             Vector2 mouseMove = _input.Mouse.Moved;
@@ -301,9 +296,6 @@ namespace Molten.UI
 
         /// <summary>Gets the root UI component which represents the screen.</summary>
         public UIContainer Screen { get { return _screen; } }
-
-        /// <summary>Gets the engine instance that the UI system is bound to.</summary>
-        public ClientEngine Engine { get { return _engine; } }
 
         /// <summary>Gets the component which is currently focused.</summary>
         public UIComponent Focused

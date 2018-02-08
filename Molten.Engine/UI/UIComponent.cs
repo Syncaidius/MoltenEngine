@@ -16,7 +16,7 @@ namespace Molten.UI
 {
     [JsonConverter(typeof(UIJsonConverter))]
     [DataContract]
-    public abstract class UIComponent : EngineObject, ISprite, IInputable, IUpdatable
+    public abstract class UIComponent : EngineObject, ISprite, IUpdatable
     {
         protected static UISystem _ui;
 
