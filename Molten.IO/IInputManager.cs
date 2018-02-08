@@ -9,6 +9,8 @@ namespace Molten.IO
 {
     public interface IInputManager
     {
+        void Initialize(InputSettings settings, Logger log);
+
         T GetHandler<T>(IWindowSurface surface) where T : InputHandlerBase, new();
 
         void SetActiveWindow(IWindowSurface surface);

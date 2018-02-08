@@ -18,7 +18,7 @@ namespace Molten.IO
         SurfaceGroup _activeGroup;
         IWindowSurface _activeSurface;
 
-        public InputManager(Logger log)
+        public void Initialize(InputSettings settings, Logger log)
         {
             _log = log;
             _input = new DirectInput();

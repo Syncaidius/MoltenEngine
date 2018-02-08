@@ -21,7 +21,7 @@ namespace Molten
         ThreadManager _threadManager;
         EngineThread _threadRenderer;
         ContentManager _content;
-        InputManager _input;
+        IInputManager _input;
         UISystem _ui;
 
         internal List<Scene> Scenes;
@@ -53,7 +53,9 @@ namespace Molten
             _threadManager = new ThreadManager(this, _log);
             _taskQueue = new ThreadedQueue<EngineTask>();
             _content = new ContentManager(_log, this, settings.ContentRootDirectory, null, settings.ContentWorkerThreads);
-            _input = new InputManager(_log);
+
+            InputLoader inputLoader = new InputLoader();
+            _input = inputLoader.GetManager(_log, _settings.Input);
             Scenes = new List<Scene>();
         }
         
@@ -66,8 +68,8 @@ namespace Molten
             }
 
             // Load renderer library
-            RenderLoader renderLoader = new RenderLoader(_log, _settings.Graphics);
-            _renderer = renderLoader.GetRenderer();
+            RenderLoader renderLoader = new RenderLoader();
+            _renderer = renderLoader.GetRenderer(_log, _settings.Graphics);
             OnAdapterInitialized?.Invoke(_renderer.DisplayManager);
             _renderer.InitializeRenderer(_settings.Graphics);
         }
@@ -169,6 +171,6 @@ namespace Molten
         public ContentManager Content => _content;
 
         /// <summary>Gets the input manager attached to the current <see cref="Engine"/> instance.</summary>
-        public InputManager Input => _input;
+        public IInputManager Input => _input;
     }
 }

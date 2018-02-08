@@ -1,5 +1,6 @@
 ﻿using Molten.Collections;
 using Molten.Graphics;
+using Molten.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,6 +17,7 @@ namespace Molten
         public EngineSettings()
         {
             Graphics = new GraphicsSettings();
+            Input = new InputSettings();
         }
 
         public void Load()
@@ -55,17 +57,25 @@ namespace Molten
         [DataMember]
         public GraphicsSettings Graphics { get; private set; }
 
+        [DataMember]
+        public InputSettings Input { get; private set; }
+
         /// <summary>Gets or sets the settings file name.</summary>
         public string Filename { get; set; } = "settings.json";
 
+        /// <summary>Gets or sets the content root directory.</summary>
         public string ContentRootDirectory { get; set; } = "/Assets/";
 
+        /// <summary>Gets or sets the number of content worker threads.</summary>
         public int ContentWorkerThreads { get; set; } = 1;
 
+        /// <summary>Gets or sets the product name.</summary>
         public string ProductName { get; set; } = "Stone Bolt Game";
 
+        /// <summary>Gets or sets the default font.</summary>
         public string DefaultFontName { get; set; } = "Arial";
 
+        /// <summary>Gets or sets the default font size.</summary>
         public int DefaultFontSize { get; set; } = 16;
     }
 }
