@@ -2,6 +2,7 @@
 using Molten.Graphics;
 using Molten.Input;
 using Molten.Threading;
+using Molten.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace Molten
         EngineThread _threadRenderer;
         ContentManager _content;
         InputManager _input;
+        UISystem _ui;
 
         internal List<Scene> Scenes;
 
@@ -52,6 +54,7 @@ namespace Molten
             _taskQueue = new ThreadedQueue<EngineTask>();
             _content = new ContentManager(_log, this, settings.ContentRootDirectory, null, settings.ContentWorkerThreads);
             _input = new InputManager(_log);
+            _ui = new UISystem(this);
             Scenes = new List<Scene>();
         }
         
@@ -168,5 +171,8 @@ namespace Molten
 
         /// <summary>Gets the input manager attached to the current <see cref="Engine"/> instance.</summary>
         public InputManager Input => _input;
+
+        /// <summary>Gets the UI system bound to the current <see cref="Engine"/> instance.</summary>
+        public UISystem UI => _ui;
     }
 }

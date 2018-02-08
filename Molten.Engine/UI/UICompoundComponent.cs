@@ -1,7 +1,5 @@
-﻿using SharpDX;
-using Molten.IO;
+﻿using Molten.IO;
 using Molten.Graphics;
-using Molten.Rendering;
 using Molten.Utilities;
 using System;
 using System.Collections.Generic;
@@ -87,7 +85,7 @@ namespace Molten.UI
 
         /// <summary>Updates the component and all its children.</summary>
         /// <param name="time"></param>
-        internal override void Update(Schedule time)
+        public override void Update(Timing time)
         {
             if (_enabled)
             {
@@ -110,28 +108,28 @@ namespace Molten.UI
 
         /// <summary>Draws the component and all its children.</summary>
         /// <param name="sb">The surface that the UI component must draw on to.</param>
-        internal override void Draw(SpriteBatch sb, RenderProxy proxy)
+        public override void Render(ISpriteBatch sb)
         {
             if (!_visible)
                 return;
 
-            OnRender(sb, proxy);
+            OnRender(sb);
 
             foreach (UIComponent component in _parts)
-                component.Draw(sb, proxy);
+                component.Render(sb);
 
             // Render all children inside the component's clipping bounds.
             if (_enableClipping)
             {
                 sb.PushClip(_clippingBounds);
                 OnRenderClipped(sb);
-                OnRenderChildren(sb, proxy);
+                OnRenderChildren(sb);
                 sb.PopClip();
             }
             else
             {
                 OnRenderClipped(sb);
-                OnRenderChildren(sb, proxy);
+                OnRenderChildren(sb);
             }
         }
     }

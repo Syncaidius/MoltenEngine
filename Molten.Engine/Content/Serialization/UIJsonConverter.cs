@@ -35,7 +35,7 @@ namespace Molten
             }
             catch (Exception e)
             {
-                Engine.Current.Log.WriteError(e.Message, reader.Path);
+                //Engine.Current.Log.WriteError(e.Message, reader.Path);
             }
 
             return com;

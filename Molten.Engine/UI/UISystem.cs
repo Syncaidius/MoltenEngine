@@ -18,7 +18,6 @@ namespace Molten.UI
 
         UITooltip _tooltip;
         UIContainer _screen;
-        Engine _engine;
         InputManager _input;
         UIWindowManager _windowManager;
 
@@ -34,17 +33,19 @@ namespace Molten.UI
         double _tooltipTimer;
         float _tooltipDelay = 500;
         float _dragThreshold = 10.0f;
+
         IWindowSurface _surface;
         MouseHandler _mouse;
         KeyboardHandler _keyboard;
-
+        Scene _scene;
+        Engine _engine;
 
         public event UIComponentEventHandler<MouseButton> OnFocus;
         public event UIComponentEventHandler<MouseButton> OnUnfocus;
 
-        internal UISystem(IWindowSurface surface, Engine engine)
+        internal UISystem(Scene scene, Engine engine)
         {
-            _surface = surface;
+            _scene = scene;
             _engine = engine;
             _input = _engine.Input;
             _windowManager = new UIWindowManager(this);
@@ -60,20 +61,34 @@ namespace Molten.UI
             {
                 LocalBounds = new Rectangle()
                 {
-                    Width = surface.Width,
-                    Height = surface.Height,
+                    Width = 1,
+                    Height = 1,
                 },
                 Name = "Screen",
-            };
+            };            
 
-            surface.OnPostResize += MainOutput_OnResize;
-
-            _mouse = engine.Input.GetHandler<MouseHandler>(surface);
-            _keyboard = engine.Input.GetHandler<KeyboardHandler>(surface);
             _tooltip = new UITooltip(this);
         }
 
-        void MainOutput_OnResize(ITexture surface)
+        internal void SetSurface(IWindowSurface newSurface)
+        {
+            if (newSurface == _surface)
+                return;
+
+            if(_surface != null)
+                _surface.OnPostResize -= Surface_OnPostResize;
+
+            _screen.LocalBounds = new Rectangle()
+            {
+                Width = newSurface.Width,
+                Height = newSurface.Height,
+            };
+
+            newSurface.OnPostResize += Surface_OnPostResize;
+            _surface = newSurface;
+        }
+
+        void Surface_OnPostResize(ITexture surface)
         {
             _screen.LocalBounds = new Rectangle()
             {
@@ -203,8 +218,8 @@ namespace Molten.UI
 
         internal void Update(Timing time)
         {
-            Vector2 mousePos = _input.Mouse.Position;
-            Vector2 mouseMove = _input.Mouse.Moved;
+            Vector2 mousePos = _mouse.Position;
+            Vector2 mouseMove = _mouse.Moved;
 
             //----UPDATE----
             _screen.Update(time);
@@ -247,7 +262,7 @@ namespace Molten.UI
             if (_inputEnabled)
             {
                 for (int i = 0; i < _trackers.Count; i++)
-                    _trackers[i].Update(this, _input, time);
+                    _trackers[i].Update(this, time);
             }
 
             // Invoke hover event if possible
@@ -269,8 +284,8 @@ namespace Molten.UI
                 _tooltip.Position = mousePos + new Vector2(16);
 
                 // Handle scroll wheel event
-                if (_input.Mouse.WheelDelta != 0)
-                    _hoverComponent.InvokeScrollWheel(_input.Mouse.WheelDelta);
+                if (_mouse.WheelDelta != 0)
+                    _hoverComponent.InvokeScrollWheel(_mouse.WheelDelta);
             }
         }
 
@@ -302,6 +317,10 @@ namespace Molten.UI
 
         /// <summary>Gets the window manager bound to the UI system.</summary>
         public UIWindowManager WindowManager { get { return _windowManager; } }
+
+        public MouseHandler Mouse => _mouse;
+
+        public KeyboardHandler Keyboard => _keyboard;
 
         /// <summary>Gets or sets the number of pixels the mouse must be dragged before it 
         /// begins triggering drag events. Resets when the left mouse button is released.</summary>

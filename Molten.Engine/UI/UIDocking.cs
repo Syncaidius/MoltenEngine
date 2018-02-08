@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.UI
 {
-    [FlagsAttribute]
+    [Flags]
     public enum UIDocking : byte
     {
         None = 0,
