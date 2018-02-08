@@ -13,17 +13,17 @@ This is my second attempt at such an engine, so I would like to extend the learn
 # Current State
 Right now the engine is extremely rough around the edges. Here's a list of the current features:
   * An extremely basic renderer with:
-    * Entity-component-system (ECS) scene system
+    * [WIP] Entity-component-system (ECS) scene system
     * Sprite-batcher
-    * Material system
-    * Abstraction layer for swapping out the renderer without touching the engine itself
+    * [WIP] Material system
+    * Abstraction layer for swapping out renderer without touching the engine itself
   * Content manager
   * Complete set of math types. The majority are imported from [SharpDX](https://github.com/sharpdx/SharpDX) with a few additions and changes.
+  * [WIP] Mouse, keyboard and gamepad input
   * Crude test app (written in WPF)
   
-
-Currently, there is no audio system. No input (WIP), no collision/physics, no deferred rendering or post-processing.
-Simply put, it's a giant ball of molten rock which is no use to anyone yet. ;)
+There is no audio system, no collision/physics, no deferred rendering or post-processing.
+Simply put, it's a giant ball of molten rock which is no use to anyone yet. The whole thing is rough and WIP. ;)
   
   
 # Long-term Goals
