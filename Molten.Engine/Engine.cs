@@ -54,7 +54,6 @@ namespace Molten
             _taskQueue = new ThreadedQueue<EngineTask>();
             _content = new ContentManager(_log, this, settings.ContentRootDirectory, null, settings.ContentWorkerThreads);
             _input = new InputManager(_log);
-            _ui = new UISystem(this);
             Scenes = new List<Scene>();
         }
         
@@ -171,8 +170,5 @@ namespace Molten
 
         /// <summary>Gets the input manager attached to the current <see cref="Engine"/> instance.</summary>
         public InputManager Input => _input;
-
-        /// <summary>Gets the UI system bound to the current <see cref="Engine"/> instance.</summary>
-        public UISystem UI => _ui;
     }
 }

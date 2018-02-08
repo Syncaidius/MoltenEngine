@@ -36,8 +36,8 @@ namespace Molten.UI
             AddPart(_hBar);
             AddPart(_vBar);
 
-            OnChildAdd += UIScrollArea_OnChildAdd;
-            OnChildRemove += UIScrollArea_OnChildRemove;
+            OnChildAdded += UIScrollArea_OnChildAdd;
+            OnChildRemoved += UIScrollArea_OnChildRemove;
 
             _hBar.OnScroll += _hBar_OnScroll;
             _vBar.OnScroll += _vBar_OnScroll;

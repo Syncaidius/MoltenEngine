@@ -1,5 +1,6 @@
 ﻿using Molten.Collections;
 using Molten.Graphics;
+using Molten.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace Molten
         internal  HashSet<IUpdatable> Updatables;
 
         ThreadedQueue<SceneChange> _pendingChanges;
+        UISystem _ui;
 
         /// <summary>Creates a new instance of <see cref="Scene"/></summary>
         /// <param name="name">The name of the scene.</param>
@@ -32,6 +34,7 @@ namespace Molten
             Sprites = new List<ISprite>();
             Updatables = new HashSet<IUpdatable>();
             _pendingChanges = new ThreadedQueue<SceneChange>();
+            _ui = new UISystem(this, engine);
 
             engine.Log.WriteLine($"Created scene '{name}'");
         }
@@ -140,5 +143,8 @@ namespace Molten
             get => _data.BackgroundColor;
             set => _data.BackgroundColor = value;
         }
+
+        /// <summary>Gets the <see cref="UISystem"/> bound to the current <see cref="Scene"/> instance.</summary>
+        internal UISystem UI => _ui;
     }
 }

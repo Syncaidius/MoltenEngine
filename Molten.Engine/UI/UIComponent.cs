@@ -62,10 +62,10 @@ namespace Molten.UI
         public event UIComponentEventHandler<MouseButton> OnHold;
 
         /// <summary>Triggered when a child component is added.</summary>
-        public event UIComponentEventHandler<MouseButton> OnChildAdd;
+        public event UIComponentEventHandler<MouseButton> OnChildAdded;
 
         /// <summary>triggered when a child component is removed.</summary>
-        public event UIComponentEventHandler<MouseButton> OnChildRemove;
+        public event UIComponentEventHandler<MouseButton> OnChildRemoved;
 
         public event UIComponentEventHandler<MouseButton> OnFocus;
 
@@ -202,9 +202,9 @@ namespace Molten.UI
 
                 //trigger on child addition event
                 Rectangle childBounds = component.LocalBounds;
-                if (OnChildAdd != null)
+                if (OnChildAdded != null)
                 {
-                    OnChildAdd.Invoke(new UIEventData<MouseButton>()
+                    OnChildAdded.Invoke(new UIEventData<MouseButton>()
                     {
                         Component = component,
                         Position = new Vector2(childBounds.X, childBounds.Y),
@@ -218,38 +218,31 @@ namespace Molten.UI
 
         public virtual bool RemoveChild(UIComponent component)
         {
-            bool hasChild = _children.Contains(component);
-            if (hasChild == true)
+            bool removed = _children.Remove(component);
+            if (removed)
             {
-                component.OnRemove();
-
+                component.OnRemoved();
                 component.Parent = null;
-                _children.Remove(component);
 
                 //trigger on child removal event.
                 Rectangle childBounds = component.LocalBounds;
-                if (OnChildRemove != null)
+                OnChildRemoved?.Invoke(new UIEventData<MouseButton>()
                 {
-                    OnChildRemove.Invoke(new UIEventData<MouseButton>()
-                    {
-                        Component = component,
-                        Position = new Vector2(childBounds.X, childBounds.Y),
-                        Delta = new Vector2(),
-                        InputValue = MouseButton.None,
-                        WasDragged = false,
-                    });
-                }
+                    Component = component,
+                    Position = new Vector2(childBounds.X, childBounds.Y),
+                    Delta = new Vector2(),
+                    InputValue = MouseButton.None,
+                    WasDragged = false,
+                });
             }
 
-            return hasChild;
+            return removed;
         }
 
-        public virtual void OnRemove()
+        public virtual void OnRemoved()
         {
             foreach (UIComponent child in _children)
-            {
-                child.OnRemove();
-            }
+                child.OnRemoved();
         }
 
         public override string ToString()
