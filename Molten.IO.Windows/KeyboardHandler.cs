@@ -10,7 +10,7 @@ using SharpDX.Windows;
 using Molten.Graphics;
 using Molten.Utilities;
 
-namespace Molten.Input
+namespace Molten.IO
 {
     /// <summary>A handler for keyboard input.</summary>
     public class KeyboardHandler : InputHandlerBase<Key>

@@ -6,16 +6,14 @@ using SharpDX.XInput;
 using SharpDX;
 using System.Runtime.InteropServices;
 
-namespace Molten.Input
+namespace Molten.IO
 {
     using Molten.Graphics;
+    using Molten.Utilities;
     using State = SharpDX.XInput.State;
 
     public class GamepadHandler : InputHandlerBase<GamepadButtonFlags>
     {
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetForegroundWindow();
-
         Gamepad _state;
         Gamepad _statePrev;
         Controller _pad;
@@ -34,8 +32,9 @@ namespace Molten.Input
             _padIndex = (int)index;
         }
 
-        protected override void OnInitialize(InputManager manager, Logger log, IWindowSurface surface)
+        public override void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
         {
+            base.Initialize(manager, log, surface);
             _pad = new Controller((UserIndex)_padIndex);
             _state = new Gamepad();
 
@@ -191,7 +190,7 @@ namespace Molten.Input
 
             //TODO test against all windows, not just the current
             //release input if window is not focused.
-            IntPtr focusedHandle = GetForegroundWindow();
+            IntPtr focusedHandle = Win32.GetForegroundWindow();
             IntPtr winHandle = focusedHandle; //TODO fix this. _input.GraphicsDevice.CurrentOutput.Handle;
             bool releaseInput = winHandle != focusedHandle;
 

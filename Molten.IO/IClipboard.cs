@@ -6,14 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.IO
 {
-    public enum GamepadIndex : byte
+    public interface IClipboard
     {
-        One = 0,
-
-        Two = 1,
-
-        Three = 2,
-
-        Four = 3,
     }
 }

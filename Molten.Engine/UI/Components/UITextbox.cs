@@ -1,5 +1,5 @@
 ﻿using Molten.Graphics;
-using Molten.Input;
+using Molten.IO;
 using Molten.Utilities;
 using System;
 using System.Collections.Generic;
@@ -101,7 +101,7 @@ namespace Molten.UI
             AlignText();
         }
 
-        void Keyboard_OnCharacterKey(Input.CharacterEventArgs e)
+        void Keyboard_OnCharacterKey(IO.CharacterEventArgs e)
         {
             if (!_isEditable)
                 return;

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Molten.Threading
@@ -73,6 +74,21 @@ namespace Molten.Threading
             _groups.Remove(group);
             _groupsByName.Remove(group.Name);
             _log.WriteLine($"Destroyed worker group '{group.Name}");
+        }
+
+        /// <summary>Run a callback inside a single-threaded apartment (STA) thread.</summary>
+        /// <param name="callback"></param>
+        public void RunAsSTAThread(Action callback)
+        {
+            AutoResetEvent resetter = new AutoResetEvent(false);
+            Thread t = new Thread(() =>
+            {
+                callback();
+                resetter.Set();
+            });
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+            resetter.WaitOne();
         }
 
         /// <summary>Exits all engine threads before disposing of the thread manager. Do not call this externally.</summary>

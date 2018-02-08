@@ -7,7 +7,7 @@ using Molten.Utilities;
 using Molten.IO;
 using System.ComponentModel;
 using Molten.Graphics;
-using Molten.Input;
+using Molten.IO;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Molten.Collections;

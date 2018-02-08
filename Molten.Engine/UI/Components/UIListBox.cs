@@ -103,7 +103,7 @@ namespace Molten.UI
             }
         }
 
-        private void Button_OnClickEnded(UIEventData<Input.MouseButton> data)
+        private void Button_OnClickEnded(UIEventData<IO.MouseButton> data)
         {
             UIButton btn = data.Component as UIButton;
             UIListItem item = btn.Tag as UIListItem;

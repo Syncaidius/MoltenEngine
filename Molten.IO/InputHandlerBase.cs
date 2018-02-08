@@ -1,27 +1,23 @@
-﻿using SharpDX.DirectInput;
-using Molten.Graphics;
+﻿using Molten.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Molten.Input
+namespace Molten.IO
 {
     public delegate void InputConnectionHandler<T>(InputHandlerBase<T> device, bool isConnected) where T : struct;
 
     public abstract class InputHandlerBase : EngineObject
     {
-        protected InputManager _manager;
+        protected IInputManager _manager;
 
-        internal void Initialize(InputManager manager, Logger log, IWindowSurface surface)
+        public virtual void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
         {
             _manager = manager;
-            OnInitialize(manager, log, surface);
         }
 
         public abstract void ClearState();
-
-        protected abstract void OnInitialize(InputManager manager, Logger log, IWindowSurface surface);
 
         public abstract void Update(Timing time);
 

@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using Molten.IO;
 using Molten.Graphics;
 using Molten.Utilities;
 using Molten.Graphics.Textures;
-using Molten.Input;
+using Molten.IO;
 
 namespace Molten.UI
 {

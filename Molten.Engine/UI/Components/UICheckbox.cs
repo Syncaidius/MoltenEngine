@@ -1,6 +1,6 @@
 ﻿using SharpDX;
 using Molten.Graphics;
-using Molten.Input;
+using Molten.IO;
 using Molten.Rendering;
 using Molten.Serialization;
 using Molten.Utilities;

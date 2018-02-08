@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Molten.Input
+namespace Molten.IO
 {
     public class CharacterEventArgs : EventArgs
     {

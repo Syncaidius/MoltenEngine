@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Input
+namespace Molten.IO
 {
     internal static class SharpDXInterop
     {

@@ -73,7 +73,7 @@ namespace Molten.UI
             UpdateListBounds();
         }
 
-        private void _toggle_OnClickEnded(UIEventData<Input.MouseButton> data)
+        private void _toggle_OnClickEnded(UIEventData<IO.MouseButton> data)
         {
             SetListVisibility(!_listVisible);
         }

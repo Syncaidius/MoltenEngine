@@ -13,7 +13,7 @@ using Molten.Utilities;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace Molten.Input
+namespace Molten.IO
 {
     /// <summary>Handles mouse input.</summary>
     public class MouseHandler : InputHandlerBase<MouseButton>

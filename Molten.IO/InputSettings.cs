@@ -6,14 +6,8 @@ using System.Threading.Tasks;
 
 namespace Molten.IO
 {
-    public enum GamepadIndex : byte
+    public class InputSettings
     {
-        One = 0,
-
-        Two = 1,
-
-        Three = 2,
-
-        Four = 3,
+        internal static string DEFAULT_LIBRARY = "Molten.IO.Windows.dll; Molten.IO.InputManager";
     }
 }

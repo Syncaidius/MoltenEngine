@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Molten.Input
+namespace Molten.IO
 {
-    public class InputManager : EngineObject
+    public class InputManager : EngineObject, IInputManager
     {
         DirectInput _input;
 
