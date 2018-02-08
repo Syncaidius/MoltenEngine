@@ -52,8 +52,8 @@ namespace Molten.Samples
             SetupSprites(_font);
 
             ContentRequest cr = engine.Content.StartRequest();
-            cr.Add<ITexture2D>("png_test.png;mipmaps=true");
-            cr.Add<IMaterial>("Basictexture.sbm");
+            cr.Load<ITexture2D>("png_test.png;mipmaps=true");
+            cr.Load<IMaterial>("Basictexture.sbm");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 

@@ -40,11 +40,9 @@ namespace Molten
             OnCompleted?.Invoke(Manager, this);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary>Adds a request for a content file to be loaded.</summary>
         /// <param name="fn">The relative file path from the content manager's root directory.</param>
-        public void Add<T>(string fn)
+        public void Load<T>(string fn)
         {
             AddElement(fn, ContentRequestType.Read, typeof(T));
         }

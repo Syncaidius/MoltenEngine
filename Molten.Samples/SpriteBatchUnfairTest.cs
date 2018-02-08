@@ -58,7 +58,7 @@ namespace Molten.Samples
             _material = shaders["material", 0] as IMaterial;
 
             ContentRequest cr = engine.Content.StartRequest();
-            cr.Add<ITexture2D>("png_test.png;mipmaps=true");
+            cr.Load<ITexture2D>("png_test.png;mipmaps=true");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
