@@ -35,6 +35,8 @@ namespace Molten.UI
         float _tooltipDelay = 500;
         float _dragThreshold = 10.0f;
         IWindowSurface _surface;
+        MouseHandler _mouse;
+        KeyboardHandler _keyboard;
 
 
         public event UIComponentEventHandler<MouseButton> OnFocus;
@@ -66,6 +68,8 @@ namespace Molten.UI
 
             surface.OnPostResize += MainOutput_OnResize;
 
+            _mouse = engine.Input.GetHandler<MouseHandler>(surface);
+            _keyboard = engine.Input.GetHandler<KeyboardHandler>(surface);
             _tooltip = new UITooltip(this);
         }
 
@@ -268,16 +272,6 @@ namespace Molten.UI
                 if (_input.Mouse.WheelDelta != 0)
                     _hoverComponent.InvokeScrollWheel(_input.Mouse.WheelDelta);
             }
-        }
-
-        /// <summary>Renders the UI.</summary>
-        /// <param name="sb">The spritebatch to use for drawing the final result to the current render surface.</param>
-        internal void Render()
-        {
-            _screen.Draw(_sb, _renderProxy);
-            _tooltip.Render(_sb);
-            _renderProxy.DrawBatch(_sb, BatchSortMode.Depth);
-            _renderProxy.Submit(RenderCommitMode.Overwrite);
         }
 
         /// <summary>Gets or sets the name of the default font.</summary>
