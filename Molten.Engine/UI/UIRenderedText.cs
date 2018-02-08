@@ -297,7 +297,7 @@ namespace Molten.UI
         }
 
         [Browsable(false)]
-        public SpriteFont Font
+        public ISpriteFont Font
         {
             get { return _font; }
         }

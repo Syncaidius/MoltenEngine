@@ -17,7 +17,7 @@ namespace Molten.UI
 
         UITooltip _tooltip;
         UIContainer _screen;
-        InputManager _input;
+        IInputManager _input;
         UIWindowManager _windowManager;
 
         bool _inputEnabled = true;
@@ -54,7 +54,7 @@ namespace Molten.UI
             AddTracker(MouseButton.Middle);
 
             // Setup screen component
-            _screen = new UIContainer(this)
+            _screen = new UIContainer(engine)
             {
                 LocalBounds = new Rectangle()
                 {

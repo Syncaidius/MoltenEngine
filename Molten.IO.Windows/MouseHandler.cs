@@ -37,10 +37,12 @@ namespace Molten.IO
         bool _cursorVisibleState = true;
         IWindowSurface _surface;
 
-        protected override void OnInitialize(InputManager manager, Logger log, IWindowSurface surface)
+        public override void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
         {
+            InputManager diManager = manager as InputManager;
+
             _surface = surface;
-            _mouse = new Mouse(manager.DirectInput);
+            _mouse = new Mouse(diManager.DirectInput);
             _mouse.Properties.AxisMode = DeviceAxisMode.Relative;
             _mouse.Properties.BufferSize = 256;
             _mouse.Acquire();

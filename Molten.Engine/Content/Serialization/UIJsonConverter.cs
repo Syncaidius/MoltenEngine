@@ -50,7 +50,7 @@ namespace Molten
 
             string typeName = tType.Value<string>();
             Type t = Type.GetType(typeName);
-            UIComponent com = Activator.CreateInstance(t, Engine.Current.UI) as UIComponent;
+            UIComponent com = Activator.CreateInstance(t, Engine.Current) as UIComponent;
 
             JToken tProperties = o["Children"];
             o.Remove("Children");

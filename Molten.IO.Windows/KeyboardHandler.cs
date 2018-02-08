@@ -64,14 +64,16 @@ namespace Molten.IO
         public event KeyPressHandler OnCharacterKey;
         public event OnKeyHandler OnKeyReleased;
 
-        protected override void OnInitialize(InputManager manager, Logger log, IWindowSurface surface)
+        public override void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
         {
+            InputManager diManager = manager as InputManager;
+
             _surface = surface;
             _state = new KeyboardState();
             _prevState = new KeyboardState();
             _pressedKeys = new List<Key>();
 
-            _keyboard = new Keyboard(manager.DirectInput);
+            _keyboard = new Keyboard(diManager.DirectInput);
             _keyboard.Properties.BufferSize = 256;
             _keyboard.Acquire();
 
