@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Molten
@@ -16,15 +17,6 @@ namespace Molten
         bool _isDisposed;
 
         public event EngineObjectHandler OnDisposing;
-
-        static JsonSerializerSettings _defaultJsonSettings = new JsonSerializerSettings()
-        {
-            Formatting = Formatting.Indented,
-            //Converters = new JsonConverter[]
-            //{
-            //    new SettingSerializer(),
-            //}
-        };
 
         /// <summary>Safely disposes of an object.</summary>
         /// <param name="disposable">The object to dispose.</param>
@@ -52,21 +44,6 @@ namespace Molten
 
         /// <summary>Invoked when <see cref="Dispose"/> is called.</summary>
         protected virtual void OnDispose() { }
-
-        /// <summary>Serializes the current instance into JSON and returns the result.</summary>
-        /// <param name="formatting">The type of JSON formatting.</param>
-        public virtual string ToJson(JsonSerializerSettings settings = null)
-        {
-            return JsonConvert.SerializeObject(this, settings ?? _defaultJsonSettings);
-        }
-
-        /// <summary>Deserializes a JSON string and populates the current instance with the result.</summary>
-        /// <param name="json">The json to deserialize.</param>
-        /// <param name="settings">Custom JSON settings to use when deserializing.</param>
-        public virtual void FromJson(string json, JsonSerializerSettings settings = null)
-        {
-            JsonConvert.PopulateObject(json, this, settings ?? _defaultJsonSettings);
-        }
 
         /// <summary>Gets whether or not the object has been disposed.</summary>
         public bool IsDisposed => _isDisposed;

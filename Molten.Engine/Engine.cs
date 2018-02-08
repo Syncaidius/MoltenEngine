@@ -26,6 +26,9 @@ namespace Molten
 
         ThreadedQueue<EngineTask> _taskQueue;
 
+        /// <summary>Gets the current instance of the engine. There can only be one active per application.</summary>
+        public static Engine Current { get; private set; }
+
         /// <summary>
         /// Occurs right after the display manager has detected active display <see cref="IDisplayOutput"/>. Here you can change the output configuration before it is passed
         /// down to the graphics and rendering chain.
@@ -34,6 +37,11 @@ namespace Molten
 
         public Engine(EngineSettings settings = null)
         {
+            if (Current != null)
+                throw new Exception("Cannot create more than one active instance of Engine. Dispose of the previous one first.");
+
+            Current = this;
+
             _settings = settings ?? new EngineSettings();
             _settings.Load();
 
@@ -141,6 +149,7 @@ namespace Molten
 
             _log.Dispose();
             _settings.Save();
+            Current = null;
         }
 
         /// <summary>Gets the renderer attached to the current <see cref="Engine"/> instance.</summary>>

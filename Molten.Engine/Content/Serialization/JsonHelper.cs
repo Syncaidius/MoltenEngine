@@ -17,6 +17,7 @@ namespace Molten
             _customConverters = new JsonConverter[]
             {
                 new MathConverter(),
+                new UIJsonConverter(),
             };
         }
 
