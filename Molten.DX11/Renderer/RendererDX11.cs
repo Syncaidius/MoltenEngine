@@ -290,11 +290,7 @@ namespace Molten.Graphics
                 _device.Rasterizer.SetViewports(rs.Viewport);
 
                 SpriteBatcher.Begin(rs.Viewport);
-
-                _test.Restart();
                 scene.Render2D(_device, this);
-                _test.Stop();
-                Timing = _test.Elapsed.TotalMilliseconds;
 
                 // Render the debug overlay here so it shows on top of everything else
                 if (_debugOverlayVisible)
@@ -303,9 +299,6 @@ namespace Molten.Graphics
                 SpriteBatcher.Flush(_device, ref spriteViewProj, BlendingPreset.PreMultipliedAlpha);
             }
         }
-
-        Stopwatch _test = new Stopwatch();
-        public double Timing = 0;
 
         public void Dispose()
         {
