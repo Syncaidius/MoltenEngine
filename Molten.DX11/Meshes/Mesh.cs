@@ -103,5 +103,7 @@ namespace Molten.Graphics
             get => _material;
             set => Material = value as Material;
         }
+
+        public int VertexCount => _vertexCount;
     }
 }

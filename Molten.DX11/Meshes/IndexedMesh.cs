@@ -73,5 +73,7 @@ namespace Molten.Graphics
         }
 
         public int MaxIndices => _maxIndices;
+
+        public int IndexCount => _indexCount;
     }
 }

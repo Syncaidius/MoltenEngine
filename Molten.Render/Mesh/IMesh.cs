@@ -12,6 +12,9 @@ namespace Molten.Graphics
         /// <summary>Gets the maximum number of vertices the mesh can contain.</summary>
         int MaxVertices { get; }
 
+        /// <summary>Gets the number of vertices stored in the mesh.</summary>
+        int VertexCount { get; }
+
         /// <summary>Gets the topology/structure of the mesh's data (e.g. line, triangles list/strip, etc).</summary>
         VertexTopology Topology { get; }
 
