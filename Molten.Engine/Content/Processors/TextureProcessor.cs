@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Content
 {
-    public class Texture2DProcessor : ContentProcessor
+    public class TextureProcessor : ContentProcessor
     {
         public override Type[] AcceptedTypes { get; protected set; } = new Type[] { typeof(ITexture)};
 

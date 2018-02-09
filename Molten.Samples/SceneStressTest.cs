@@ -19,6 +19,7 @@ namespace Molten.Samples
         Random _rng;
         SpriteText _txtInstructions;
         Vector2 _txtInstructionSize;
+        IMesh<VertexColor> _mesh;
 
         public SceneStressTest(EngineSettings settings = null) : base("Scene Stress", settings) { }
 
@@ -45,24 +46,13 @@ namespace Molten.Samples
             _scene.AddSprite(_txtInstructions);
             UpdateInstructions();
 
-            string fn = "assets/BasicColor.sbm";
-            string source = "";
-            using (FileStream stream = new FileStream(fn, FileMode.Open, FileAccess.Read))
-            {
-                using (StreamReader reader = new StreamReader(stream))
-                    source = reader.ReadToEnd();
-            }
 
-            ShaderParseResult shaders = engine.Renderer.Resources.CreateShaders(source, fn);
-            IMaterial material = shaders["material", 0] as IMaterial;
+            ContentRequest cr = engine.Content.StartRequest();
+            cr.Load<IMaterial>("BasicColor.sbm");
+            cr.OnCompleted += Cr_OnCompleted;
+            cr.Commit();
 
-            IMesh<VertexColor> mesh = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
-            if (material == null)
-            {
-                Exit();
-                return;
-            }
-
+            _mesh = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
             VertexColor[] vertices = new VertexColor[]{
                         new VertexColor(new Vector3(-1,-1,-1), Color.Red), //front
                         new VertexColor(new Vector3(-1,1,-1), Color.Red),
@@ -107,12 +97,23 @@ namespace Molten.Samples
                         new VertexColor(new Vector3(1,1,1), Color.White),
                     };
 
-            mesh.Material = material;
-            mesh.SetVertices(vertices);
-            for (int i = 0; i < 6000; i++)
-                SpawnTestCube(material, mesh, 70);
-
+            _mesh.SetVertices(vertices);
             Window.PresentClearColor = new Color(20, 20, 20, 255);
+            for (int i = 0; i < 6000; i++)
+                SpawnTestCube(_mesh, 70);
+        }
+
+        private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
+        {
+            IMaterial mat = content.Get<IMaterial>(cr.RequestedFiles[0]);
+
+            if (mat == null)
+            {
+                Exit();
+                return;
+            }
+
+            _mesh.Material = mat;
         }
 
         private void UpdateInstructions()
@@ -142,7 +143,7 @@ namespace Molten.Samples
             _scene.OutputCamera = cam;
         }
 
-        private void SpawnTestCube(IMaterial material, IMesh mesh, int spawnRadius)
+        private void SpawnTestCube(IMesh mesh, int spawnRadius)
         {
             SceneObject obj = CreateObject();
             MeshComponent meshCom = obj.AddComponent<MeshComponent>();

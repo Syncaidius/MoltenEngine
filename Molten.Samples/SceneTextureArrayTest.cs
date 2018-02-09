@@ -19,90 +19,31 @@ namespace Molten.Samples
         List<Matrix> _positions;
         Random _rng;
         SceneObject _player;
+        SpriteText _txtInstructions;
+        Vector2 _txtInstructionSize;
+        IMesh<CubeArrayVertex> _mesh;
 
-        public SceneTextureArrayTest(EngineSettings settings = null) : base("Texture Arrays", settings)
-        {
-
-        }
+        public SceneTextureArrayTest(EngineSettings settings = null) : base("2D Texture Array", settings) { }
 
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-
-            // Default texture
-            TextureData texData;
-            string fn = "assets/128_1.dds";
-            using (FileStream stream = new FileStream(fn, FileMode.Open, FileAccess.Read))
-            {
-                using (BinaryReader reader = new BinaryReader(stream))
-                {
-                    TextureDataLoader texLoader = new TextureDataLoader();
-                    texData = texLoader.Read(Log, engine, reader, fn);
-                }
-            }
-
-            ITexture2D texDefault = engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
-            {
-                Width = texData.Width,
-                Height = texData.Height,
-                MipMapLevels = texData.MipMapCount,
-                ArraySize = 3,
-                Flags = texData.Flags,
-                Format = texData.Format,
-            });
-
-            texDefault.SetData(texData, 0,0, texData.MipMapCount, 1, 0, 0);
-
-            fn = "assets/128_2.dds";
-            using (FileStream stream = new FileStream(fn, FileMode.Open, FileAccess.Read))
-            {
-                using (BinaryReader reader = new BinaryReader(stream))
-                {
-                    TextureDataLoader texLoader = new TextureDataLoader();
-                    texData = texLoader.Read(Log, engine, reader, fn);
-                }
-            }
-
-            texDefault.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 1);
-
-            fn = "assets/128_3.dds";
-            using (FileStream stream = new FileStream(fn, FileMode.Open, FileAccess.Read))
-            {
-                using (BinaryReader reader = new BinaryReader(stream))
-                {
-                    TextureDataLoader texLoader = new TextureDataLoader();
-                    texData = texLoader.Read(Log, engine, reader, fn);
-                }
-            }
-
-            texDefault.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 2);
 
             _rng = new Random();
             _positions = new List<Matrix>();
             _scene = CreateScene("Test");
             SpawnPlayer();
 
-            fn = "assets/BasicTextureArray2D.sbm";
-            string source = "";
-            using (FileStream stream = new FileStream(fn, FileMode.Open, FileAccess.Read))
+            string text = "[W][A][S][D] to move. Mouse to rotate";
+            _txtInstructionSize = TestFont.MeasureString(text);
+            _txtInstructions = new SpriteText()
             {
-                using (StreamReader reader = new StreamReader(stream))
-                    source = reader.ReadToEnd();
-            }
+                Text = text,
+                Font = TestFont,
+                Color = Color.White,
+            };           
 
-            ShaderParseResult shaders = engine.Renderer.Resources.CreateShaders(source, fn);
-            IMaterial material = shaders["material", 0] as IMaterial;
-            
-            if (material == null)
-            {
-                Exit();
-                return;
-            }
-
-            IMesh<CubeArrayVertex> mesh = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
-
-            material.SetDefaultResource(texDefault, 0);
-
+            _mesh = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
             CubeArrayVertex[] verts = new CubeArrayVertex[]{
                new CubeArrayVertex(new Vector3(-1,-1,-1), new Vector3(0,1,0)), //front
                new CubeArrayVertex(new Vector3(-1,1,-1), new Vector3(0,0,0)),
@@ -147,18 +88,57 @@ namespace Molten.Samples
                new CubeArrayVertex(new Vector3(1,1,1), new Vector3(0,1,2)),
             };
 
-            mesh.Material = material;
-            mesh.SetVertices(verts);
+            _mesh.SetVertices(verts);
 
-            _parent = SpawnTestCube(mesh);
-            _child = SpawnTestCube(mesh);
+            ContentRequest cr = engine.Content.StartRequest();
+            cr.Load<IMaterial>("BasicTextureArray2D.sbm");
+            cr.Load<TextureData>("128_1.dds");
+            cr.Load<TextureData>("128_2.dds");
+            cr.Load<TextureData>("128_3.dds");
+            cr.OnCompleted += Cr_OnCompleted;
+            cr.Commit();
+
+            _parent = SpawnTestCube(_mesh);
+            _child = SpawnTestCube(_mesh);
 
             _child.Transform.LocalScale = new Vector3(0.5f);
-
             _parent.Transform.LocalPosition = new Vector3(0, 0, 4);
             _parent.Children.Add(_child);
 
             Window.PresentClearColor = new Color(20,20,20,255);
+        }
+
+        private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
+        {
+            IMaterial mat = content.Get<IMaterial>(cr.RequestedFiles[0]);
+
+            if (mat == null)
+            {
+                Exit();
+                return;
+            }
+
+            // Manually construct a 2D texture array from the 3 textures we requested earlier
+            TextureData texData = content.Get<TextureData>(cr.RequestedFiles[1]);
+            ITexture2D texture = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
+            {
+                Width = texData.Width,
+                Height = texData.Height,
+                MipMapLevels = texData.MipMapCount,
+                ArraySize = 3,
+                Flags = texData.Flags,
+                Format = texData.Format,
+            });
+            texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 0);
+
+            texData = content.Get<TextureData>(cr.RequestedFiles[2]);
+            texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 1);
+
+            texData = content.Get<TextureData>(cr.RequestedFiles[3]);
+            texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 2);
+
+            mat.SetDefaultResource(texture, 0);
+            _mesh.Material = mat;
         }
 
         private void SpawnPlayer()
@@ -207,20 +187,20 @@ namespace Molten.Samples
             _parent.Transform.LocalPosition = new Vector3(0, 1, 0);
             _child.Transform.LocalPosition = new Vector3(-3, 0, 0);
 
-            // Mouse input - Messy for now - We're just testing input
-            _player.Transform.LocalRotationX += Mouse.Moved.Y;
-            _player.Transform.LocalRotationY += Mouse.Moved.X;
-            Mouse.CenterInWindow();
-
             // Keyboard input - Again messy code for now
             Vector3 moveDelta = Vector3.Zero;
             float rotSpeed = 0.25f;
             float speed = 1.0f;
 
-            if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * rotSpeed;
-            if (Keyboard.IsPressed(Key.S)) moveDelta += _player.Transform.Global.Forward * rotSpeed;
-            if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * rotSpeed;
-            if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * rotSpeed;
+            // Mouse input - Messy for now - We're just testing input
+            _player.Transform.LocalRotationX += Mouse.Moved.Y * rotSpeed;
+            _player.Transform.LocalRotationY += Mouse.Moved.X * rotSpeed;
+            Mouse.CenterInWindow();
+
+            if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * speed;
+            if (Keyboard.IsPressed(Key.S)) moveDelta += _player.Transform.Global.Forward * speed;
+            if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * speed;
+            if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * speed;
 
             _player.Transform.LocalPosition += moveDelta * time.Delta * speed;
 

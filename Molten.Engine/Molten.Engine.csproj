@@ -73,7 +73,8 @@
     <Compile Include="Content\ContentWorkerTask.cs" />
     <Compile Include="Content\Processors\ContentProcessor.cs" />
     <Compile Include="Content\Processors\MaterialProcessor.cs" />
-    <Compile Include="Content\Processors\Texture2DProcessor.cs" />
+    <Compile Include="Content\Processors\TextureDataProcessor.cs" />
+    <Compile Include="Content\Processors\TextureProcessor.cs" />
     <Compile Include="Content\Serialization\BrowsableStringAttribute.cs" />
     <Compile Include="Content\Serialization\ExpandablePropertyAttribute.cs" />
     <Compile Include="Content\Serialization\JsonHelper.cs" />
