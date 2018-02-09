@@ -9,16 +9,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SceneParentingTest : SampleGame
+    public class SceneParentingTest : SampleSceneGame
     {
         public override string Description => "A simple test of the scene object parenting system";
 
-        Scene _scene;
         SceneObject _parent;
         SceneObject _child;
-        List<Matrix> _positions;
-        Random _rng;
-        SceneObject _player;
         IMesh<VertexColor> _mesh;
 
         public SceneParentingTest(EngineSettings settings = null) : base("Scene Parenting", settings) { }
@@ -26,11 +22,6 @@ namespace Molten.Samples
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-
-            _rng = new Random();
-            _positions = new List<Matrix>();
-            _scene = CreateScene("Test");
-            SpawnPlayer();
 
             ContentRequest cr = engine.Content.StartRequest();
             cr.Load<IMaterial>("BasicColor.sbm");
@@ -83,16 +74,7 @@ namespace Molten.Samples
             };
 
             _mesh.SetVertices(verts);
-
-            _parent = SpawnTestCube(_mesh);
-            _child = SpawnTestCube(_mesh);
-
-            _child.Transform.LocalScale = new Vector3(0.5f);
-
-            _parent.Transform.LocalPosition = new Vector3(0, 0, 4);
-            _parent.Children.Add(_child);
-
-            Window.PresentClearColor = new Color(20,20,20,255);
+            SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
         }
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
@@ -108,67 +90,9 @@ namespace Molten.Samples
             _mesh.Material = mat;
         }
 
-        private void SpawnPlayer()
-        {
-            _player = CreateObject();
-            SceneCameraComponent cam = _player.AddComponent<SceneCameraComponent>();
-            cam.OutputSurface = Window;
-            cam.OutputDepthSurface = WindowDepthSurface;
-            _scene.AddObject(_player);
-            _scene.OutputCamera = cam;
-        }
-
-        private SceneObject SpawnTestCube(IMesh mesh)
-        {
-            SceneObject obj = CreateObject();
-            MeshComponent meshCom = obj.AddComponent<MeshComponent>();
-            meshCom.Mesh = mesh;
-            _positions.Add(Matrix.CreateTranslation(new Vector3()
-            {
-                X = -4 + (float)(_rng.NextDouble() * 8),
-                Y = -1 + (float)(_rng.NextDouble() * 2),
-                Z = 3 + (float)(_rng.NextDouble() * 4)
-            }));
-
-            _scene.AddObject(obj);
-            return obj;
-        }
-
-        private void Window_OnClose(IWindowSurface surface)
-        {
-            Exit();
-        }
-
         protected override void OnUpdate(Timing time)
         {
-            var rotateTime = (float)time.TotalTime.TotalSeconds;
-
-            _parent.Transform.LocalRotationY += 0.5f;
-            if (_parent.Transform.LocalRotationY >= 360)
-                _parent.Transform.LocalRotationY -= 360;
-
-            _child.Transform.LocalRotationX += 1f;
-            if (_child.Transform.LocalRotationX >= 360)
-                _child.Transform.LocalRotationX -= 360;
-
-            _parent.Transform.LocalPosition = new Vector3(0, 1, 0);
-            _child.Transform.LocalPosition = new Vector3(-3, 0, 0);
-
-            Vector3 moveDelta = Vector3.Zero;
-            float rotSpeed = 0.25f;
-            float speed = 1.0f;
-
-            // Mouse input - Messy for now - We're just testing input
-            _player.Transform.LocalRotationX += Mouse.Moved.Y * rotSpeed;
-            _player.Transform.LocalRotationY += Mouse.Moved.X * rotSpeed;
-            Mouse.CenterInWindow();
-
-            if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * speed;
-            if (Keyboard.IsPressed(Key.S)) moveDelta += _player.Transform.Global.Forward * speed;
-            if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * speed;
-            if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * speed;
-
-            _player.Transform.LocalPosition += moveDelta * time.Delta * speed;
+            RotateParentChild(_parent, _child, time);
 
             base.OnUpdate(time);
         }

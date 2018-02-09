@@ -9,16 +9,11 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SceneStressTest : SampleGame
+    public class SceneStressTest : SampleSceneGame
     {
         public override string Description => "A simple scene test using colored cubes with";
 
-        Scene _scene;
         List<SceneObject> _objects;
-        SceneObject _player;
-        Random _rng;
-        SpriteText _txtInstructions;
-        Vector2 _txtInstructionSize;
         IMesh<VertexColor> _mesh;
 
         public SceneStressTest(EngineSettings settings = null) : base("Scene Stress", settings) { }
@@ -27,25 +22,7 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
 
-            Window.OnPostResize += Window_OnPostResize;
-            
-            _rng = new Random();
             _objects = new List<SceneObject>();
-            _scene = CreateScene("Test");
-            SpawnPlayer();
-
-            string text = "[W][A][S][D] to move. Mouse to rotate";
-            _txtInstructionSize = TestFont.MeasureString(text);
-            _txtInstructions = new SpriteText()
-            {
-                Text = text,
-                Font = TestFont,
-                Color = Color.White,
-            };
-
-            _scene.AddSprite(_txtInstructions);
-            UpdateInstructions();
-
 
             ContentRequest cr = engine.Content.StartRequest();
             cr.Load<IMaterial>("BasicColor.sbm");
@@ -100,7 +77,7 @@ namespace Molten.Samples
             _mesh.SetVertices(vertices);
             Window.PresentClearColor = new Color(20, 20, 20, 255);
             for (int i = 0; i < 6000; i++)
-                SpawnTestCube(_mesh, 70);
+                SpawnRandomTestCube(_mesh, 70);
         }
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
@@ -116,34 +93,7 @@ namespace Molten.Samples
             _mesh.Material = mat;
         }
 
-        private void UpdateInstructions()
-        {
-            if (_txtInstructions == null)
-                return;
-
-            _txtInstructions.Position = new Vector2()
-            {
-                X = Window.Width / 2 + (-_txtInstructionSize.X / 2),
-                Y = 3,
-            };
-        }
-
-        private void Window_OnPostResize(ITexture texture)
-        {
-            UpdateInstructions();
-        }
-
-        private void SpawnPlayer()
-        {
-            _player = CreateObject(new Vector3(0,0,-5));
-            SceneCameraComponent cam = _player.AddComponent<SceneCameraComponent>();
-            cam.OutputSurface = Window;
-            cam.OutputDepthSurface = WindowDepthSurface;
-            _scene.AddObject(_player);
-            _scene.OutputCamera = cam;
-        }
-
-        private void SpawnTestCube(IMesh mesh, int spawnRadius)
+        private void SpawnRandomTestCube(IMesh mesh, int spawnRadius)
         {
             SceneObject obj = CreateObject();
             MeshComponent meshCom = obj.AddComponent<MeshComponent>();
@@ -152,13 +102,13 @@ namespace Molten.Samples
             int maxRange = spawnRadius * 2;
             obj.Transform.LocalPosition = new Vector3()
             {
-                X = -spawnRadius + (float)(_rng.NextDouble() * maxRange),
-                Y = -spawnRadius + (float)(_rng.NextDouble() * maxRange),
-                Z = spawnRadius + (float)(_rng.NextDouble() * maxRange)
+                X = -spawnRadius + (float)(Rng.NextDouble() * maxRange),
+                Y = -spawnRadius + (float)(Rng.NextDouble() * maxRange),
+                Z = spawnRadius + (float)(Rng.NextDouble() * maxRange)
             };
 
             _objects.Add(obj);
-            _scene.AddObject(obj);
+            SampleScene.AddObject(obj);
         }
 
         private void Window_OnClose(IWindowSurface surface)
@@ -176,23 +126,6 @@ namespace Molten.Samples
                 obj.Transform.LocalRotationY += rotateAngle;
                 obj.Transform.LocalRotationZ += rotateAngle * 0.7f * time.Delta;
             }
-
-            // Keyboard input - Again messy code for now
-            Vector3 moveDelta = Vector3.Zero;
-            float rotSpeed = 0.25f;
-            float speed = 1.0f;
-
-            // Mouse input - Messy for now - We're just testing input
-            _player.Transform.LocalRotationX -= Mouse.Moved.Y * rotSpeed;
-            _player.Transform.LocalRotationY += Mouse.Moved.X * rotSpeed;
-            Mouse.CenterInWindow();
-
-            if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * speed;
-            if (Keyboard.IsPressed(Key.S)) moveDelta += _player.Transform.Global.Forward * speed;
-            if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * speed;
-            if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * speed;
-
-            _player.Transform.LocalPosition += moveDelta * time.Delta * speed;
 
             base.OnUpdate(time);
         }

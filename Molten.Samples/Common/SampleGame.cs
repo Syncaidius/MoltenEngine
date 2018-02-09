@@ -29,6 +29,7 @@ namespace Molten.Samples
             Window.OnPostResize += Window_OnPostResize;
 
             _testFont = engine.Renderer.Resources.CreateFont("arial", 14);
+            Window.PresentClearColor = new Color(20, 20, 20, 255);
         }
 
         private void Window_OnPostResize(ITexture texture)
@@ -54,5 +55,8 @@ namespace Molten.Samples
         public IDepthSurface WindowDepthSurface => _formDepthSurface;
 
         public ISpriteFont TestFont => _testFont;
+
+        /// <summary>Gets a random number generator. Used for various samples.</summary>
+        public Random Rng { get; private set; } = new Random();
     }
 }

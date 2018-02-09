@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Molten.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics
+namespace Molten
 {
     /// <summary>An implementation of <see cref="Camera"/> which provides a left-handed projection matrix based on it's <see cref="Camera.OutputSurface"/>.</summary>
     public class SceneCameraComponent : SceneComponent, ICamera
