@@ -9,6 +9,10 @@ namespace Molten.Graphics
     /// <summary>A base interface for mesh implementations.</summary>
     public interface IMesh : IRenderable, IDisposable
     {
+        /// <summary>Gets whether or not the mesh was created as a dynamic mesh. 
+        /// Dynamic meshes are preferable when the mesh's data will be changing at least once or more per frame.</summary>
+        bool IsDynamic { get; }
+
         /// <summary>Gets the maximum number of vertices the mesh can contain.</summary>
         int MaxVertices { get; }
 

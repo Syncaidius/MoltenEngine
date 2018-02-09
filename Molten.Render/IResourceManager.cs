@@ -63,7 +63,7 @@ namespace Molten.Graphics
         IMesh<T> CreateMesh<T>(
             int maxVertices, 
             VertexTopology topology = VertexTopology.TriangleList,
-            bool visible = true) 
+            bool dynamic = false) 
             where T : struct, IVertexType;
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Molten.Graphics
         IIndexedMesh<T> CreateIndexedMesh<T>(int maxVertices, int maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit,
-            bool visible = true) 
+            bool dynamic = false) 
             where T : struct, IVertexType;
 
         void SaveAsPng(Stream stream, TextureData data);

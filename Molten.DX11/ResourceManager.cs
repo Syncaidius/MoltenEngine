@@ -155,10 +155,10 @@ namespace Molten.Graphics
             _fontTable.Clear();
         }
 
-        public IMesh<T> CreateMesh<T>(int maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool visible = true) 
+        public IMesh<T> CreateMesh<T>(int maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
             where T : struct, IVertexType
         {
-            return new Mesh<T>(_renderer, maxVertices, topology);
+            return new Mesh<T>(_renderer, maxVertices, topology, dynamic);
         }
 
         public IIndexedMesh<T> CreateIndexedMesh<T>(
@@ -166,10 +166,10 @@ namespace Molten.Graphics
             int maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit, 
-            bool visible = true)
+            bool dynamic = false)
             where T : struct, IVertexType
         {
-            return new IndexedMesh<T>(_renderer, maxVertices, maxIndices, topology, indexFormat, visible);
+            return new IndexedMesh<T>(_renderer, maxVertices, maxIndices, topology, indexFormat, dynamic);
         }
 
         /// <summary>Compiels a set of shaders from the provided source string.</summary>

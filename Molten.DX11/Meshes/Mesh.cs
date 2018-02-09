@@ -18,14 +18,17 @@ namespace Molten.Graphics
         private protected Material _material;
         private protected IShaderValue _materialWvp;
         private protected int _vertexCount;
+        private protected bool _isDynamic;
 
-        internal Mesh(RendererDX11 renderer, int maxVertices, VertexTopology topology) : base(renderer.Device)
+        internal Mesh(RendererDX11 renderer, int maxVertices, VertexTopology topology, bool dynamic) : base(renderer.Device)
         {
             _renderer = renderer;
             _maxVertices = maxVertices;
             _topology = topology.ToApi();
 
-            _vb = renderer.StaticVertexBuffer.Allocate<T>(maxVertices);
+            GraphicsBuffer vBuffer = dynamic ? renderer.DynamicVertexBuffer : renderer.StaticVertexBuffer;
+
+            _vb = vBuffer.Allocate<T>(maxVertices);
             _vb.SetVertexFormat<T>();
         }
 
@@ -42,7 +45,7 @@ namespace Molten.Graphics
         public void SetVertices(T[] data, int startIndex, int count)
         {
             _vertexCount = count;
-            _vb.SetData(_renderer.Device.ExternalContext, data, startIndex, count, 0, _renderer.StagingBuffer);
+            _vb.SetData(_renderer.Device.ExternalContext, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         internal virtual void ApplyBuffers(GraphicsPipe pipe)
@@ -105,5 +108,7 @@ namespace Molten.Graphics
         }
 
         public int VertexCount => _vertexCount;
+
+        public bool IsDynamic => _isDynamic;
     }
 }

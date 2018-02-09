@@ -18,20 +18,22 @@ namespace Molten.Graphics
         IndexBufferFormat _iFormat;
         int _indexCount;
 
-        internal IndexedMesh(RendererDX11 renderer, int maxVertices, int maxIndices, VertexTopology topology, IndexBufferFormat indexFormat, bool visible) : 
-            base(renderer, maxVertices, topology)
+        internal IndexedMesh(RendererDX11 renderer, int maxVertices, int maxIndices, VertexTopology topology, IndexBufferFormat indexFormat, bool dynamic) : 
+            base(renderer, maxVertices, topology, dynamic)
         {
             _maxIndices = maxIndices;
             _iFormat = indexFormat;
 
+            GraphicsBuffer iBuffer = dynamic ? renderer.DynamicIndexBuffer : renderer.StaticIndexBuffer;
+
             switch (_iFormat)
             {
                 case IndexBufferFormat.Unsigned16Bit:
-                    _ib = renderer.StaticIndexBuffer.Allocate<ushort>(maxIndices);
+                    _ib = iBuffer.Allocate<ushort>(maxIndices);
                     break;
 
                 case IndexBufferFormat.Unsigned32Bit:
-                    _ib = renderer.StaticIndexBuffer.Allocate<uint>(maxIndices);
+                    _ib = iBuffer.Allocate<uint>(maxIndices);
                     break;
             }
         }
@@ -49,7 +51,7 @@ namespace Molten.Graphics
         public void SetIndices<I>(I[] data, int startIndex, int count) where I : struct
         {
             _indexCount = count;
-            _ib.SetData(_renderer.Device.ExternalContext, data, startIndex, count, 0, _renderer.StagingBuffer);
+            _ib.SetData(_renderer.Device.ExternalContext, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         internal override void ApplyBuffers(GraphicsPipe pipe)
