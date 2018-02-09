@@ -159,6 +159,32 @@ namespace Molten.Graphics
         /// <param name="color">The color of the text.</param>
         public void DrawString(ISpriteFont font, string text, Vector2 position, Color color)
         {
+            SpriteClipZone clip = _clipZones[_curClip];
+            SpriteCluster cluster;
+            int sID = 0;
+
+            // If the current cluster is for a different texture, start a new cluster.
+            if (clip.ClusterCount == 0)
+            {
+                cluster = ConfigureNewCluster(clip, font.UnderlyingTexture);
+            }
+            else
+            {
+                int clusterID = clip.ClusterCount - 1;
+                cluster = _clusterBank[clip.ClusterIDs[clusterID]];
+
+                if (cluster.texture != font.UnderlyingTexture)
+                    cluster = ConfigureNewCluster(clip, font.UnderlyingTexture);
+                else
+                    sID = cluster.spriteCount;
+            }
+
+            // Ensure the whole string can fit in the new/existing cluster.
+            int sLength = cluster.sprites.Length;
+            int needed = sID + text.Length;
+            if (needed >= sLength)
+                Array.Resize(ref cluster.sprites, sLength + SPRITE_EXPANSION + needed);
+
             //cycle through all characters in the string and process them
             int strLength = text == null ? 0 : text.Length;
             Rectangle invalid = Rectangle.Empty;
@@ -169,20 +195,22 @@ namespace Molten.Graphics
                 char c = text[i];
                 Rectangle charRect = font.GetCharRect(c);
 
-                Rectangle pos = new Rectangle()
+                // Set the sprite info
+                cluster.sprites[sID++] = new SpriteVertex()
                 {
-                    X = (int)charPos.X,
-                    Y = (int)charPos.Y,
-                    Width = charRect.Width,
-                    Height = charRect.Height,
+                    Position = new Vector2(charPos.X, charPos.Y),
+                    Size = new Vector2(charRect.Width, charRect.Height),
+                    UV = new Vector4(charRect.X, charRect.Y, charRect.Right, charRect.Bottom),
+                    Color = color,
+                    Origin = Vector2.Zero,
+                    Rotation = 0,
                 };
-
-                //TODO add rotation, origin and depth support.
-                Draw(font.UnderlyingTexture, charRect, pos, color, 0, new Vector2());
 
                 //increase pos by size of char (along X)
                 charPos.X += charRect.Width;
             }
+
+            cluster.spriteCount += text.Length;
         }
 
         public void Draw(Rectangle destination, Color color)

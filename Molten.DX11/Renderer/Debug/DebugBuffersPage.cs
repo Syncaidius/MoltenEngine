@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     internal class DebugBuffersPage : DebugOverlayPage
     {
-        Color _bgColor = new Color(40, 40, 40, 230);
+        Color _bgColor = new Color(40, 40, 40, 240);
         Color _segColor = Color.Lime;
 
         public override void Render(ISpriteFont font, RendererDX11 renderer, SpriteBatch sb, Timing time, IRenderSurface surface)

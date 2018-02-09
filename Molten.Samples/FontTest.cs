@@ -117,14 +117,14 @@ namespace Molten.Samples
 
         private void SetupSprites(ISpriteFont font)
         {
-            for(int i = 0; i < 100; i++)
+            for(int i = 0; i < 6000; i++)
             {
                 SpriteText s = new SpriteText()
                 {
                     Position = new Vector2()
                     {
-                        X = _rng.Next(0, 1920),
-                        Y = _rng.Next(0, 1080),
+                        X = _rng.Next(0, 1720),
+                        Y = _rng.Next(0, 880),
                     },
 
                     Color = Color.White,
