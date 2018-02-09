@@ -10,13 +10,14 @@ namespace Molten.Graphics
 {
     public class Mesh<T> : Renderable, IMesh<T> where T : struct, IVertexType
     {
-        protected RendererDX11 _renderer;
-        BufferSegment _vb;
-        int _maxVertices;
-        PrimitiveTopology _topology;
-        Material _material;
-
-        IShaderValue _materialWvp;
+        // private protected is new in C# 7.2. See: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/private-protected
+        private protected RendererDX11 _renderer;
+        private protected BufferSegment _vb; 
+        private protected int _maxVertices;
+        private protected PrimitiveTopology _topology;
+        private protected Material _material;
+        private protected IShaderValue _materialWvp;
+        private protected int _vertexCount;
 
         internal Mesh(RendererDX11 renderer, int maxVertices, VertexTopology topology) : base(renderer.Device)
         {
@@ -40,6 +41,7 @@ namespace Molten.Graphics
 
         public void SetVertices(T[] data, int startIndex, int count)
         {
+            _vertexCount = count;
             _vb.SetData(_renderer.Device.ExternalContext, data, startIndex, count, 0, _renderer.StagingBuffer);
         }
 
@@ -59,19 +61,11 @@ namespace Molten.Graphics
             if (_materialWvp != null)
                 _materialWvp.Value = Matrix.Multiply(data.RenderTransform, sceneData.ViewProjection);
 
-            renderer.Device.Draw(_material, _vb.ElementCount, _topology);
+            renderer.Device.Draw(_material, _vertexCount, _topology);
 
             /* TODO: According to: https://www.gamedev.net/forums/topic/667328-vertices-and-indices-in-the-same-buffer/
             *  - A buffer can be bound as both a vertex and index buffer
             *  - If offsets and formats for each segment are correct, a single buffer can be bound at multiple pipeline stages.
-            *  
-            * TODO:
-            *  - Remove Vertex and Index buffer
-            *  - Let the renderer decide the bind flags of buffers
-            *  - The above allows a combined vertex + index buffer.
-            *  - Also opens the door for streamed buffers of any type instead of just vertex buffers
-            *  - Simpler code maintainance, less buffer classes to deal with.
-            *  - Check bind flags of buffer when setting as vertex and/or index buffer, in PipelineInput.
             */
         }
 

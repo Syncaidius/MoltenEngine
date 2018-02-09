@@ -16,6 +16,7 @@ namespace Molten.Graphics
         BufferSegment _ib;
         int _maxIndices;
         IndexBufferFormat _iFormat;
+        int _indexCount;
 
         internal IndexedMesh(RendererDX11 renderer, int maxVertices, int maxIndices, VertexTopology topology, IndexBufferFormat indexFormat, bool visible) : 
             base(renderer, maxVertices, topology)
@@ -37,31 +38,38 @@ namespace Molten.Graphics
 
         public void SetIndices<I>(I[] data) where I : struct
         {
-            throw new NotImplementedException();
+            SetIndices<I>(data, 0, data.Length);
         }
 
         public void SetIndices<I>(I[] data, int count) where I : struct
         {
-            throw new NotImplementedException();
+            SetIndices<I>(data, 0, count);
         }
 
         public void SetIndices<I>(I[] data, int startIndex, int count) where I : struct
         {
-            _ib.SetData(_renderer.Device.ExternalContext, data, startIndex, count);
+            _indexCount = count;
+            _ib.SetData(_renderer.Device.ExternalContext, data, startIndex, count, 0, _renderer.StagingBuffer);
         }
 
         internal override void ApplyBuffers(GraphicsPipe pipe)
         {
             base.ApplyBuffers(pipe);
-
-            // TODO call PipelineInput.SetIndexSegment(_ib);
+            pipe.SetIndexSegment(_ib);
         }
 
         internal override void Render(GraphicsPipe pipe, RendererDX11 renderer, ObjectRenderData data, SceneRenderDataDX11 sceneData)
         {
-            ApplyBuffers(pipe);
+            if (_material == null)
+                return;
 
-            //renderer.Device.DrawIndexed();
+            ApplyBuffers(pipe);
+            ApplyResources(_material);
+
+            if (_materialWvp != null)
+                _materialWvp.Value = Matrix.Multiply(data.RenderTransform, sceneData.ViewProjection);
+
+            renderer.Device.DrawIndexed(_material, _indexCount, _topology);
         }
 
         public int MaxIndices => _maxIndices;

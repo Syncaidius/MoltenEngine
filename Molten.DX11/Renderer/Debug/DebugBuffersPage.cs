@@ -35,7 +35,7 @@ namespace Molten.Graphics
         {
             sb.Draw(destination, _bgColor);
 
-            int capacity = buffer.ByteCapacity;
+            double capacity = buffer.ByteCapacity;
             int used = 0;
             Rectangle segDest = destination;
             BufferSegment seg = buffer.FirstSegment;
@@ -44,9 +44,9 @@ namespace Molten.Graphics
             {
                 if (!seg.IsFree)
                 {
-                    float usePercent = (float)seg.ByteOffset / capacity;
+                    double usePercent = seg.ByteOffset / capacity;
                     segDest.X = destination.X + (int)(usePercent * destination.Width);
-                    segDest.Width = (int)(((float)seg.ByteCount / capacity) * destination.Width);
+                    segDest.Width = (int)((seg.ByteCount / capacity) * destination.Width);
                     sb.Draw(segDest, _segColor);
                     used += seg.ByteCount;
                 }
@@ -55,7 +55,7 @@ namespace Molten.Graphics
             } while (seg != null);
 
             Vector2 tPos = new Vector2(destination.X, destination.Y);
-            float percentUsed = ((float)used / capacity) * 100;
+            double percentUsed = (used / capacity) * 100.0;
 
             sb.DrawString(font, $"{label}: {used}/{capacity} ({percentUsed.ToString("N2")}%) bytes used", tPos, Color.White);
         }

@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SceneStressTest : TestGame
+    public class SceneIndexedStressTest : TestGame
     {
-        public override string Description => "A simple scene test using colored cubes with";
+        public override string Description => "A simple scene test using colored cubes with indexed meshes.";
 
         Scene _scene;
         List<SceneObject> _objects;
@@ -20,7 +20,7 @@ namespace Molten.Samples
         SpriteText _txtInstructions;
         Vector2 _txtInstructionSize;
 
-        public SceneStressTest(EngineSettings settings = null) : base("Scene Stress", settings) { }
+        public SceneIndexedStressTest(EngineSettings settings = null) : base("Scene Stress (Indexed)", settings) { }
 
         protected override void OnInitialize(Engine engine)
         {
@@ -56,7 +56,7 @@ namespace Molten.Samples
             ShaderParseResult shaders = engine.Renderer.Resources.CreateShaders(source, fn);
             IMaterial material = shaders["material", 0] as IMaterial;
 
-            IMesh<VertexColor> mesh = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
+            IIndexedMesh<VertexColor> mesh = Engine.Renderer.Resources.CreateIndexedMesh<VertexColor>(24, 36);
             if (material == null)
             {
                 Exit();
@@ -64,51 +64,49 @@ namespace Molten.Samples
             }
 
             VertexColor[] vertices = new VertexColor[]{
-                        new VertexColor(new Vector3(-1,-1,-1), Color.Red), //front
-                        new VertexColor(new Vector3(-1,1,-1), Color.Red),
-                        new VertexColor(new Vector3(1,1,-1), Color.Red),
-                        new VertexColor(new Vector3(-1,-1,-1), Color.Red),
-                        new VertexColor(new Vector3(1,1,-1), Color.Red),
-                        new VertexColor(new Vector3(1,-1,-1), Color.Red),
+                new VertexColor(new Vector3(-1,-1,-1), Color.Red), //front
+                new VertexColor(new Vector3(-1,1,-1), Color.Red),
+                new VertexColor(new Vector3(1,1,-1), Color.Red),
+                new VertexColor(new Vector3(1,-1,-1), Color.Red),
 
-                        new VertexColor(new Vector3(-1,-1,1), Color.Blue), //back
-                        new VertexColor(new Vector3(1,1,1), Color.Blue),
-                        new VertexColor(new Vector3(-1,1,1), Color.Blue),
-                        new VertexColor(new Vector3(-1,-1,1),Color.Blue),
-                        new VertexColor(new Vector3(1,-1,1), Color.Blue),
-                        new VertexColor(new Vector3(1,1,1), Color.Blue),
+                new VertexColor(new Vector3(-1,-1,1), Color.Green), //back
+                new VertexColor(new Vector3(1,1,1), Color.Green),
+                new VertexColor(new Vector3(-1,1,1), Color.Green),
+                new VertexColor(new Vector3(1,-1,1), Color.Green),
 
-                        new VertexColor(new Vector3(-1,1,-1), Color.Yellow), //top
-                        new VertexColor(new Vector3(-1,1,1), Color.Yellow),
-                        new VertexColor(new Vector3(1,1,1), Color.Yellow),
-                        new VertexColor(new Vector3(-1,1,-1), Color.Yellow),
-                        new VertexColor(new Vector3(1,1,1), Color.Yellow),
-                        new VertexColor(new Vector3(1,1,-1), Color.Yellow),
+                new VertexColor(new Vector3(-1,1,-1), Color.Blue), //top
+                new VertexColor(new Vector3(-1,1,1), Color.Blue),
+                new VertexColor(new Vector3(1,1,1), Color.Blue),
+                new VertexColor(new Vector3(1,1,-1), Color.Blue),
 
-                        new VertexColor(new Vector3(-1,-1,-1), Color.Purple), //bottom
-                        new VertexColor(new Vector3(1,-1,1), Color.Purple),
-                        new VertexColor(new Vector3(-1,-1,1), Color.Purple),
-                        new VertexColor(new Vector3(-1,-1,-1), Color.Purple),
-                        new VertexColor(new Vector3(1,-1,-1), Color.Purple),
-                        new VertexColor(new Vector3(1,-1,1), Color.Purple),
+                new VertexColor(new Vector3(-1,-1,-1), Color.Yellow), //bottom
+                new VertexColor(new Vector3(1,-1,1), Color.Yellow),
+                new VertexColor(new Vector3(-1,-1,1), Color.Yellow),
+                new VertexColor(new Vector3(1,-1,-1), Color.Yellow),
 
-                        new VertexColor(new Vector3(-1,-1,-1), Color.Green), //left
-                        new VertexColor(new Vector3(-1,-1,1), Color.Green),
-                        new VertexColor(new Vector3(-1,1,1), Color.Green),
-                        new VertexColor(new Vector3(-1,-1,-1), Color.Green),
-                        new VertexColor(new Vector3(-1,1,1), Color.Green),
-                        new VertexColor(new Vector3(-1,1,-1), Color.Green),
+                new VertexColor(new Vector3(-1,-1,-1), Color.Purple), //left
+                new VertexColor(new Vector3(-1,-1,1), Color.Purple),
+                new VertexColor(new Vector3(-1,1,1), Color.Purple),
+                new VertexColor(new Vector3(-1,1,-1), Color.Purple),
 
-                        new VertexColor(new Vector3(1,-1,-1), Color.White), //right
-                        new VertexColor(new Vector3(1,1,1), Color.White),
-                        new VertexColor(new Vector3(1,-1,1), Color.White),
-                        new VertexColor(new Vector3(1,-1,-1), Color.White),
-                        new VertexColor(new Vector3(1,1,-1), Color.White),
-                        new VertexColor(new Vector3(1,1,1), Color.White),
-                    };
+                new VertexColor(new Vector3(1,-1,-1), Color.White), //right
+                new VertexColor(new Vector3(1,1,1), Color.White),
+                new VertexColor(new Vector3(1,-1,1), Color.White),
+                new VertexColor(new Vector3(1,1,-1), Color.White),
+            };
+
+            int[] indices = new int[]{
+                0, 1, 2, 0, 2, 3,
+                4, 5, 6, 4, 7, 5,
+                8, 9, 10, 8, 10, 11,
+                12, 13, 14, 12, 15, 13,
+                16,17,18, 16, 18, 19,
+                20, 21, 22, 20, 23, 21,
+            };
 
             mesh.Material = material;
             mesh.SetVertices(vertices);
+            mesh.SetIndices(indices);
             for (int i = 0; i < 6000; i++)
                 SpawnTestCube(material, mesh, 70);
 

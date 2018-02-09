@@ -80,6 +80,7 @@
     <Compile Include="FontTest.cs" />
     <Compile Include="MultiWindowGame.cs" />
     <Compile Include="SceneParentingTest.cs" />
+    <Compile Include="SceneIndexedStressTest.cs" />
     <Compile Include="SceneStressTest.cs" />
     <Compile Include="SceneTextureArrayTest.cs" />
     <Compile Include="SpriteBatchUnfairTest.cs" />
