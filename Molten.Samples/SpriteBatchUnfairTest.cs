@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SpriteBatchUnfairTest : TestGame
+    public class SpriteBatchUnfairTest : SampleGame
     {
         public override string Description => "A stress test of sprite batching which deliberately draws jumbled sprites in random order to cause crazy amounts of draw calls.";
 

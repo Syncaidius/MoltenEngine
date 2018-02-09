@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SceneParentingTest : TestGame
+    public class SceneParentingTest : SampleGame
     {
         public override string Description => "A simple test of the scene object parenting system";
 

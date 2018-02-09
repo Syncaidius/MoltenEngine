@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public abstract class TestGame : MoltenGame
+    public abstract class SampleGame : MoltenGame
     {
         IDepthSurface _formDepthSurface;
         ISpriteFont _testFont;
         int _nextRenderPage;
 
-        public TestGame(string title, EngineSettings settings = null) : base($"{title} Test", settings)
+        public SampleGame(string title, EngineSettings settings = null) : base(title, settings)
         {
 
         }

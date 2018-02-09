@@ -32,7 +32,7 @@ namespace Molten.Samples
         public static extern bool ShowWindow(System.IntPtr hWnd, int cmdShow);
 
         List<TestEntry> testEntries = new List<TestEntry>();
-        TestGame curTest;
+        SampleGame curTest;
         ConsoleColor defaultCol = Console.ForegroundColor;
 
         Type lastTestType;
@@ -151,7 +151,7 @@ namespace Molten.Samples
 
         private void GetTests()
         {
-            List<Type> testTypes = TestHelper.FindType<TestGame>().ToList();
+            List<Type> testTypes = TestHelper.FindType<SampleGame>().ToList();
 
             for (int i = 0; i < testTypes.Count; i++)
             {
@@ -160,7 +160,7 @@ namespace Molten.Samples
 
                 EngineSettings settings = new EngineSettings();
                 settings.Graphics.EnableDebugLayer.Value = chkDebugLayer.IsChecked.Value;
-                TestGame test = Activator.CreateInstance(testTypes[i], settings) as TestGame;
+                SampleGame test = Activator.CreateInstance(testTypes[i], settings) as SampleGame;
                 TestEntry entry = new TestEntry()
                 {
                     TestName = test.Title,
@@ -188,7 +188,7 @@ namespace Molten.Samples
             EngineSettings settings = new EngineSettings();
             settings.Graphics.EnableDebugLayer.Value = chkDebugLayer.IsChecked.Value;
             settings.Graphics.VSync.Value = chkVsync.IsChecked.Value;
-            curTest = Activator.CreateInstance(lastTestType, settings) as TestGame;
+            curTest = Activator.CreateInstance(lastTestType, settings) as SampleGame;
             curTest.Start();
             Console.ForegroundColor = ConsoleColor.White;
 

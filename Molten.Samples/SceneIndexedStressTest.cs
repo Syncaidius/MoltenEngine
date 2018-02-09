@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SceneIndexedStressTest : TestGame
+    public class SceneIndexedStressTest : SampleGame
     {
         public override string Description => "A simple scene test using colored cubes with indexed meshes.";
 

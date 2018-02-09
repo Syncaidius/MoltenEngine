@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class MultiWindowGame : TestGame
+    public class MultiWindowGame : SampleGame
     {
         public override string Description => "A simple multi-window test.";
 

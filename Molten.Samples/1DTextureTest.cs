@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class OneDTextureTest : TestGame
+    public class OneDTextureTest : SampleGame
     {
         public override string Description => "A simple 1D texture test, to check that it all works.";
 

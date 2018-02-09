@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SceneTextureArrayTest : TestGame
+    public class SceneTextureArrayTest : SampleGame
     {
         public override string Description => "A simple test of texture arrays via a material shared between two parented objects.";
 

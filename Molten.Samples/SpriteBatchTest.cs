@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SpriteBatchTest : TestGame
+    public class SpriteBatchTest : SampleGame
     {
         public override string Description => "A stress test of sprite batching under normal circumstances (i.e. sprites from the same texture drawn together).";
 

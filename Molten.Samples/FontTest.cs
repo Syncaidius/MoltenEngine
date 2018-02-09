@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class FontTest : TestGame
+    public class FontTest : SampleGame
     {
         public override string Description => "A stress test of sprite rendering.";
 

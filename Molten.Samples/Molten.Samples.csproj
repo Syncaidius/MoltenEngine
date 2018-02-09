@@ -89,7 +89,7 @@
     <Compile Include="SpriteBatchTest.cs" />
     <Compile Include="TestClasses\CubeArrayVertex.cs" />
     <Compile Include="TestClasses\TextureDataLoader.cs" />
-    <Compile Include="TestGame.cs" />
+    <Compile Include="SampleGame.cs" />
     <Compile Include="TestHelper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
