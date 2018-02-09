@@ -1,6 +1,6 @@
 ﻿<material>
 	<name>position-texture</name>
-	<description>A simple shader which renders meshes with position and 2D UV data</description>
+	<description>A simple shader which renders meshes with position and 1D UV data</description>
 	<pass>
 		<name>main</name>
 		<iterations>1</iterations>
@@ -34,7 +34,7 @@ cbuffer Object : register(b1){
   float4x4 world : packoffset(c4);
 }
 
-Texture2D mapAlbedo;
+Texture1D mapAlbedo;
 SamplerState texSampler;
 
 PS_IN VS( VS_IN input )
@@ -47,5 +47,5 @@ PS_IN VS( VS_IN input )
 
 float4 PS( PS_IN input ) : SV_Target
 {
-	return mapAlbedo.Sample(texSampler, input.uv);
+	return mapAlbedo.Sample(texSampler, input.uv.x);
 }

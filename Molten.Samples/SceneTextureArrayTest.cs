@@ -18,7 +18,6 @@ namespace Molten.Samples
         SceneObject _child;
         List<Matrix> _positions;
         Random _rng;
-        Camera _cam;
         SceneObject _player;
 
         public SceneTextureArrayTest(EngineSettings settings = null) : base("Texture Arrays", settings)
@@ -81,7 +80,7 @@ namespace Molten.Samples
             _rng = new Random();
             _positions = new List<Matrix>();
             _scene = CreateScene("Test");
-            _scene.OutputCamera = _cam;
+            SpawnPlayer();
 
             fn = "assets/BasicTextureArray2D.sbm";
             string source = "";

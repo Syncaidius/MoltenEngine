@@ -11,9 +11,9 @@ namespace Molten.Content
 {
     public class Texture2DProcessor : ContentProcessor
     {
-        public override Type[] AcceptedTypes { get; protected set; } = new Type[] { typeof(ITexture2D)};
+        public override Type[] AcceptedTypes { get; protected set; } = new Type[] { typeof(ITexture)};
 
-        public override void OnRead(Engine engine, Logger log, Type t, Stream stream, Dictionary<string,string> metadata, FileInfo file, ContentResult output)
+        public override void OnRead(Engine engine, Logger log, Type contentType, Stream stream, Dictionary<string,string> metadata, FileInfo file, ContentResult output)
         {
             string extension = file.Extension.ToLower();
             TextureData data = null;
@@ -67,8 +67,19 @@ namespace Molten.Content
                         }
                     }
 
-                    ITexture2D tex = engine.Renderer.Resources.CreateTexture2D(data);
-                    output.AddResult(tex);
+                    ITexture tex = null;
+                    if (contentType == typeof(ITexture2D))
+                        tex = engine.Renderer.Resources.CreateTexture2D(data);
+                    else if (contentType == typeof(ITextureCube))
+                        tex = engine.Renderer.Resources.CreateTextureCube(data);
+                    else if (contentType == typeof(ITexture))
+                        tex = engine.Renderer.Resources.CreateTexture1D(data);
+                    else
+                        log.WriteError($"Unsupported texture type {contentType}", file.ToString());
+
+                    if(tex != null)
+                        output.AddResult(contentType, tex);
+
                     texReader.Dispose();
                 }
             }

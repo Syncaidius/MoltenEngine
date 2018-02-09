@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SceneParentingTest : TestGame
+    public class OneDTextureTest : TestGame
     {
-        public override string Description => "A simple test of the scene object parenting system";
+        public override string Description => "A simple 1D texture test, to check that it all works.";
 
         Scene _scene;
         SceneObject _parent;
@@ -19,9 +19,9 @@ namespace Molten.Samples
         List<Matrix> _positions;
         Random _rng;
         SceneObject _player;
-        IMesh<VertexColor> _mesh;
+        IMesh<VertexTexture> _mesh;
 
-        public SceneParentingTest(EngineSettings settings = null) : base("Scene Parenting", settings) { }
+        public OneDTextureTest(EngineSettings settings = null) : base("1D Texture", settings) { }
 
         protected override void OnInitialize(Engine engine)
         {
@@ -33,53 +33,54 @@ namespace Molten.Samples
             SpawnPlayer();
 
             ContentRequest cr = engine.Content.StartRequest();
-            cr.Load<IMaterial>("BasicColor.sbm");
-            cr.OnCompleted += Cr_OnCompleted; ;
+            cr.Load<ITexture>("one_d.png;mipmaps=true");
+            cr.Load<IMaterial>("BasicTexture1D.sbm");
+            cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
-            _mesh = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
-            VertexColor[] verts = new VertexColor[]{
-                new VertexColor(new Vector3(-1,-1,-1), Color.Red), //front
-                new VertexColor(new Vector3(-1,1,-1), Color.Red),
-                new VertexColor(new Vector3(1,1,-1), Color.Red),
-                new VertexColor(new Vector3(-1,-1,-1), Color.Red),
-                new VertexColor(new Vector3(1,1,-1), Color.Red),
-                new VertexColor(new Vector3(1,-1,-1), Color.Red),
+            _mesh = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
+            VertexTexture[] verts = new VertexTexture[]{
+                new VertexTexture(new Vector3(-1,-1,-1), new Vector2(0,1)), //front
+                new VertexTexture(new Vector3(-1,1,-1), new Vector2(0,0)),
+                new VertexTexture(new Vector3(1,1,-1), new Vector2(1,0)),
+                new VertexTexture(new Vector3(-1,-1,-1), new Vector2(0,1)),
+                new VertexTexture(new Vector3(1,1,-1), new Vector2(1, 0)),
+                new VertexTexture(new Vector3(1,-1,-1), new Vector2(1,1)),
 
-                new VertexColor(new Vector3(-1,-1,1), Color.Blue), //back
-                new VertexColor(new Vector3(1,1,1), Color.Blue),
-                new VertexColor(new Vector3(-1,1,1), Color.Blue),
-                new VertexColor(new Vector3(-1,-1,1),Color.Blue),
-                new VertexColor(new Vector3(1,-1,1), Color.Blue),
-                new VertexColor(new Vector3(1,1,1), Color.Blue),
+                new VertexTexture(new Vector3(-1,-1,1), new Vector2(1,0)), //back
+                new VertexTexture(new Vector3(1,1,1), new Vector2(0,1)),
+                new VertexTexture(new Vector3(-1,1,1), new Vector2(1,1)),
+                new VertexTexture(new Vector3(-1,-1,1), new Vector2(1,0)),
+                new VertexTexture(new Vector3(1,-1,1), new Vector2(0, 0)),
+                new VertexTexture(new Vector3(1,1,1), new Vector2(0,1)),
 
-                new VertexColor(new Vector3(-1,1,-1), Color.Yellow), //top
-                new VertexColor(new Vector3(-1,1,1), Color.Yellow),
-                new VertexColor(new Vector3(1,1,1), Color.Yellow),
-                new VertexColor(new Vector3(-1,1,-1), Color.Yellow),
-                new VertexColor(new Vector3(1,1,1), Color.Yellow),
-                new VertexColor(new Vector3(1,1,-1), Color.Yellow),
+                new VertexTexture(new Vector3(-1,1,-1), new Vector2(0,1)), //top
+                new VertexTexture(new Vector3(-1,1,1), new Vector2(0,0)),
+                new VertexTexture(new Vector3(1,1,1), new Vector2(1,0)),
+                new VertexTexture(new Vector3(-1,1,-1), new Vector2(0,1)),
+                new VertexTexture(new Vector3(1,1,1), new Vector2(1, 0)),
+                new VertexTexture(new Vector3(1,1,-1), new Vector2(1,1)),
 
-                new VertexColor(new Vector3(-1,-1,-1), Color.Purple), //bottom
-                new VertexColor(new Vector3(1,-1,1), Color.Purple),
-                new VertexColor(new Vector3(-1,-1,1), Color.Purple),
-                new VertexColor(new Vector3(-1,-1,-1), Color.Purple),
-                new VertexColor(new Vector3(1,-1,-1), Color.Purple),
-                new VertexColor(new Vector3(1,-1,1), Color.Purple),
+                new VertexTexture(new Vector3(-1,-1,-1), new Vector2(1,0)), //bottom
+                new VertexTexture(new Vector3(1,-1,1), new Vector2(0,1)),
+                new VertexTexture(new Vector3(-1,-1,1), new Vector2(1,1)),
+                new VertexTexture(new Vector3(-1,-1,-1), new Vector2(1,0)),
+                new VertexTexture(new Vector3(1,-1,-1), new Vector2(0, 0)),
+                new VertexTexture(new Vector3(1,-1,1), new Vector2(0,1)),
 
-                new VertexColor(new Vector3(-1,-1,-1), Color.Green), //left
-                new VertexColor(new Vector3(-1,-1,1), Color.Green),
-                new VertexColor(new Vector3(-1,1,1), Color.Green),
-                new VertexColor(new Vector3(-1,-1,-1), Color.Green),
-                new VertexColor(new Vector3(-1,1,1), Color.Green),
-                new VertexColor(new Vector3(-1,1,-1), Color.Green),
+                new VertexTexture(new Vector3(-1,-1,-1), new Vector2(0,1)), //left
+                new VertexTexture(new Vector3(-1,-1,1), new Vector2(0,0)),
+                new VertexTexture(new Vector3(-1,1,1), new Vector2(1,0)),
+                new VertexTexture(new Vector3(-1,-1,-1), new Vector2(0,1)),
+                new VertexTexture(new Vector3(-1,1,1), new Vector2(1, 0)),
+                new VertexTexture(new Vector3(-1,1,-1), new Vector2(1,1)),
 
-                new VertexColor(new Vector3(1,-1,-1), Color.White), //right
-                new VertexColor(new Vector3(1,1,1), Color.White),
-                new VertexColor(new Vector3(1,-1,1), Color.White),
-                new VertexColor(new Vector3(1,-1,-1), Color.White),
-                new VertexColor(new Vector3(1,1,-1), Color.White),
-                new VertexColor(new Vector3(1,1,1), Color.White),
+                new VertexTexture(new Vector3(1,-1,-1), new Vector2(1,0)), //right
+                new VertexTexture(new Vector3(1,1,1), new Vector2(0,1)),
+                new VertexTexture(new Vector3(1,-1,1), new Vector2(1,1)),
+                new VertexTexture(new Vector3(1,-1,-1), new Vector2(1,0)),
+                new VertexTexture(new Vector3(1,1,-1), new Vector2(0, 0)),
+                new VertexTexture(new Vector3(1,1,1), new Vector2(0,1)),
             };
 
             _mesh.SetVertices(verts);
@@ -92,12 +93,13 @@ namespace Molten.Samples
             _parent.Transform.LocalPosition = new Vector3(0, 0, 4);
             _parent.Children.Add(_child);
 
-            Window.PresentClearColor = new Color(20,20,20,255);
+            Window.PresentClearColor = new Color(20, 20, 20, 255);
         }
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
         {
-            IMaterial mat = content.Get<IMaterial>(cr.RequestedFiles[0]);
+            ITexture tex = content.Get<ITexture>(cr.RequestedFiles[0]);
+            IMaterial mat = content.Get<IMaterial>(cr.RequestedFiles[1]);
 
             if (mat == null)
             {
@@ -105,6 +107,7 @@ namespace Molten.Samples
                 return;
             }
 
+            mat.SetDefaultResource(tex, 0);
             _mesh.Material = mat;
         }
 

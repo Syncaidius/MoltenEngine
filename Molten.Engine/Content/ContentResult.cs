@@ -21,6 +21,11 @@ namespace Molten
                 return;
 
             Type t = typeof(T);
+            AddResult(t, obj);
+        }
+
+        public void AddResult(Type t, object obj)
+        {
             List<object> group = null;
             if (!Objects.TryGetValue(t, out group))
             {
