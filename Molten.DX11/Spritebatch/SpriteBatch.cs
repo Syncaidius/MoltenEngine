@@ -453,7 +453,7 @@ namespace Molten.Graphics
                             int copyCount = to - from;
                             if (copyCount > 0)
                             {
-                                stream.WriteRange(cluster.sprites, 0, copyCount);
+                                stream.WriteRange(cluster.sprites, from, copyCount);
                                 _vertexCount += copyCount;
 
                                 //update cluster counters

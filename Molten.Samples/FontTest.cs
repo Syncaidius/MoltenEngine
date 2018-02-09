@@ -117,7 +117,7 @@ namespace Molten.Samples
 
         private void SetupSprites(ISpriteFont font)
         {
-            for(int i = 0; i < 6000; i++)
+            for(int i = 0; i < 1000; i++)
             {
                 SpriteText s = new SpriteText()
                 {
@@ -127,10 +127,16 @@ namespace Molten.Samples
                         Y = _rng.Next(0, 880),
                     },
 
-                    Color = Color.White,
+                    Color = new Color()
+                    {
+                        R = (byte)_rng.Next(0, 256),
+                        G = (byte)_rng.Next(0, 256),
+                        B = (byte)_rng.Next(0, 256),
+                        A = 255,
+                    },
 
                     Font = font,
-                    Text = $"TEST {_rng.Next(int.MinValue, int.MaxValue)}",
+                    Text = $"TEST {_rng.Next(6000000, int.MaxValue)}",
                 };
 
                 _sprites.Add(s);
