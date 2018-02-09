@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics;
+using Molten.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace Molten.Samples
     {
         IDepthSurface _formDepthSurface;
         ISpriteFont _testFont;
+        int _nextRenderPage;
 
         public TestGame(string title, EngineSettings settings = null) : base($"{title} Test", settings)
         {
@@ -37,6 +39,12 @@ namespace Molten.Samples
         private void Window_OnClose(IWindowSurface surface)
         {
             Exit();
+        }
+
+        protected override void OnUpdate(Timing time)
+        {
+            if(Keyboard.IsTapped(Key.F1))
+                _nextRenderPage = Engine.Renderer.SetDebugOverlayPage(true, _nextRenderPage);
         }
 
         public abstract string Description { get; }

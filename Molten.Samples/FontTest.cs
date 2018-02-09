@@ -23,7 +23,7 @@ namespace Molten.Samples
         List<ISprite> _sprites;
         IMesh<VertexTexture> _mesh;
 
-        public FontTest(EngineSettings settings = null) : base("Sprite Font", settings)
+        public FontTest(EngineSettings settings = null) : base("Font/Text", settings)
         {
 
         }
@@ -191,6 +191,8 @@ namespace Molten.Samples
 
             _parent.Transform.LocalPosition = new Vector3(0, 1, 0);
             _child.Transform.LocalPosition = new Vector3(-3, 0, 0);
+
+            base.OnUpdate(time);
         }
     }
 }

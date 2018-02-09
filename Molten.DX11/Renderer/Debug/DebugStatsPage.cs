@@ -8,13 +8,13 @@ namespace Molten.Graphics
 {
     internal class DebugStatsPage : DebugOverlayPage
     {
-        public override void Render(ISpriteFont font, RendererDX11 renderer, SpriteBatch batch, Timing time)
+        public override void Render(ISpriteFont font, RendererDX11 renderer, SpriteBatch batch, Timing time, IRenderSurface surface)
         {
             Vector2 pos = new Vector2(3, 3);
             batch.DrawString(font, $"FPS: {time.UPS}", pos, Color.Yellow);
 
             double frameTime = renderer.Profiler.PreviousFrame.Time;
-            double frameTimePercentage = frameTime / time.TargetFrameTime;
+            double frameTimePercentage = (frameTime / time.TargetFrameTime) * 100;
             pos.Y += 20; batch.DrawString(font, $"Frame Time: {frameTime}ms -- {frameTimePercentage}%", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"  After Vsync: {time.ElapsedTime.TotalMilliseconds}", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"Delta: x{time.Delta}", pos, Color.Yellow);

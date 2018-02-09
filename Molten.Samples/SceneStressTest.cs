@@ -192,6 +192,8 @@ namespace Molten.Samples
             if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * speed;
 
             _player.Transform.LocalPosition += moveDelta * time.Delta * speed;
+
+            base.OnUpdate(time);
         }
     }
 }

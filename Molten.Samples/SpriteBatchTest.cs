@@ -229,6 +229,8 @@ namespace Molten.Samples
 
             _parent.Transform.LocalPosition = new Vector3(0, 1, 0);
             _child.Transform.LocalPosition = new Vector3(-3, 0, 0);
+
+            base.OnUpdate(time);
         }
     }
 }

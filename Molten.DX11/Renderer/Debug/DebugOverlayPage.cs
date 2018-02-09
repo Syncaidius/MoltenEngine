@@ -8,6 +8,6 @@ namespace Molten.Graphics
 {
     internal abstract class DebugOverlayPage
     {
-        public abstract void Render(ISpriteFont font, RendererDX11 renderer, SpriteBatch batch, Timing time);
+        public abstract void Render(ISpriteFont font, RendererDX11 renderer, SpriteBatch sb, Timing time, IRenderSurface surface);
     }
 }

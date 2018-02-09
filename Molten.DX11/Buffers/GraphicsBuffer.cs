@@ -622,5 +622,8 @@ namespace Molten.Graphics
         /// Gets a value indicating whether the current buffer has unordered access.
         /// </summary>
         public bool IsUnorderedAccess => (Description.BindFlags & BindFlags.UnorderedAccess) == BindFlags.UnorderedAccess;
+
+        /// <summary>Gets the buffer's first segment. This always exists.</summary>
+        internal BufferSegment FirstSegment => _firstSegment;
     }
 }

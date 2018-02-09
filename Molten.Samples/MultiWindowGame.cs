@@ -49,6 +49,8 @@ namespace Molten.Samples
         protected override void OnUpdate(Timing time)
         {
             Window.PresentClearColor = Color.Red;
+
+            base.OnUpdate(time);
         }
     }
 }

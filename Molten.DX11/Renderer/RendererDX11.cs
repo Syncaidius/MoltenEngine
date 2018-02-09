@@ -86,6 +86,7 @@ namespace Molten.Graphics
             _debugFont = _resourceManager.CreateFont("arial", 14);
             _debugOverlay = new List<DebugOverlayPage>();
             _debugOverlay.Add(new DebugStatsPage());
+            _debugOverlay.Add(new DebugBuffersPage());
         }
 
         public int SetDebugOverlayPage(bool visible, int page)
@@ -293,7 +294,7 @@ namespace Molten.Graphics
 
                 // Render the debug overlay here so it shows on top of everything else
                 if (_debugOverlayVisible)
-                    _debugOverlay[_debugOverlayPage].Render(_debugFont, this, SpriteBatcher, time);
+                    _debugOverlay[_debugOverlayPage].Render(_debugFont, this, SpriteBatcher, time, rs);
 
                 SpriteBatcher.Flush(_device, ref spriteViewProj, BlendingPreset.PreMultipliedAlpha);
             }
