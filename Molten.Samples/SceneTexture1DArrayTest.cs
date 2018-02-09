@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SceneTextureArrayTest : TestGame
+    public class SceneTexture1DArrayTest : TestGame
     {
-        public override string Description => "A simple test of texture arrays via a material shared between two parented objects.";
+        public override string Description => "A simple test of 1D texture arrays via a material shared between two parented objects.";
 
         Scene _scene;
         SceneObject _parent;
@@ -23,7 +23,7 @@ namespace Molten.Samples
         Vector2 _txtInstructionSize;
         IMesh<CubeArrayVertex> _mesh;
 
-        public SceneTextureArrayTest(EngineSettings settings = null) : base("2D Texture Array", settings) { }
+        public SceneTexture1DArrayTest(EngineSettings settings = null) : base("1D Texture Array", settings) { }
 
         protected override void OnInitialize(Engine engine)
         {
@@ -91,10 +91,10 @@ namespace Molten.Samples
             _mesh.SetVertices(verts);
 
             ContentRequest cr = engine.Content.StartRequest();
-            cr.Load<IMaterial>("BasicTextureArray2D.sbm");
-            cr.Load<TextureData>("128_1.dds");
-            cr.Load<TextureData>("128_2.dds");
-            cr.Load<TextureData>("128_3.dds");
+            cr.Load<IMaterial>("BasicTextureArray1D.sbm");
+            cr.Load<TextureData>("1d_1.png");
+            cr.Load<TextureData>("1d_2.png");
+            cr.Load<TextureData>("1d_3.png");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
@@ -120,10 +120,9 @@ namespace Molten.Samples
 
             // Manually construct a 2D texture array from the 3 textures we requested earlier
             TextureData texData = content.Get<TextureData>(cr.RequestedFiles[1]);
-            ITexture2D texture = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
+            ITexture texture = Engine.Renderer.Resources.CreateTexture1D(new Texture1DProperties()
             {
                 Width = texData.Width,
-                Height = texData.Height,
                 MipMapLevels = texData.MipMapCount,
                 ArraySize = 3,
                 Flags = texData.Flags,

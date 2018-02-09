@@ -33,7 +33,7 @@ namespace Molten.Samples
             SpawnPlayer();
 
             ContentRequest cr = engine.Content.StartRequest();
-            cr.Load<ITexture>("one_d.png;mipmaps=true");
+            cr.Load<ITexture>("1d_1.png;mipmaps=true");
             cr.Load<IMaterial>("BasicTexture1D.sbm");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
