@@ -1,12 +1,12 @@
 ﻿//MIT, 2016, Viktor Chlumsky, Multi-channel signed distance field generator, from https://github.com/Chlumsky/msdfgen
-//MIT, 2017, WinterDev (C# port) from https://github.com/LayoutFarm/Typography/tree/master/Typography.MsdfGen
-
+//MIT, 2017, WinterDev (C# port)
 using System;
 
-namespace Molten.Render.Msdf
+namespace Msdfgen
 {
     public abstract class EdgeSegment
     {
+
         public const int MSDFGEN_CUBIC_SEARCH_STARTS = 4;
         public const int MSDFGEN_CUBIC_SEARCH_STEPS = 4;
 
@@ -16,7 +16,7 @@ namespace Molten.Render.Msdf
             this.color = edgeColor;
         }
         public abstract void findBounds(ref double left, ref double bottom, ref double right, ref double top);
-        public void distanceToPseudoDistance(ref SignedDistance distance, Vector2 origin, double param)
+        public void distanceToPsedoDistance(ref SignedDistance distance, Vector2 origin, double param)
         {
             if (param < 0)
             {
@@ -28,7 +28,7 @@ namespace Molten.Render.Msdf
                     double pseudoDistance = Vector2.crossProduct(aq, dir);
                     if (Math.Abs(pseudoDistance) <= Math.Abs(distance.distance))
                     {
-                        distance = new SignedDistance(pseudoDistance, 0);
+                        distance = new Msdfgen.SignedDistance(pseudoDistance, 0);
                     }
                 }
             }
@@ -42,7 +42,7 @@ namespace Molten.Render.Msdf
                     double pseudoDistance = Vector2.crossProduct(bq, dir);
                     if (Math.Abs(pseudoDistance) <= Math.Abs(distance.distance))
                     {
-                        distance = new SignedDistance(pseudoDistance, 0);
+                        distance = new Msdfgen.SignedDistance(pseudoDistance, 0);
                     }
                 }
             }

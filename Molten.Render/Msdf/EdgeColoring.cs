@@ -1,10 +1,9 @@
 ﻿//MIT, 2016, Viktor Chlumsky, Multi-channel signed distance field generator, from https://github.com/Chlumsky/msdfgen
-//MIT, 2017, WinterDev (C# port) from https://github.com/LayoutFarm/Typography/tree/master/Typography.MsdfGen
-
+//MIT, 2017, WinterDev (C# port)
 using System;
 using System.Collections.Generic; 
 
-namespace Molten.Render.Msdf
+namespace Msdfgen
 {
     public struct Vector2
     {
@@ -265,6 +264,7 @@ namespace Molten.Render.Msdf
 
     public static class EdgeColoring
     {
+
         static bool isCorner(Vector2 aDir, Vector2 bDir, double crossThreshold)
         {
             return Vector2.dotProduct(aDir, bDir) <= 0 || Math.Abs(Vector2.crossProduct(aDir, bDir)) > crossThreshold;

@@ -1,8 +1,8 @@
 ﻿//MIT, 2016, Viktor Chlumsky, Multi-channel signed distance field generator, from https://github.com/Chlumsky/msdfgen
-//MIT, 2017, WinterDev (C# port) from https://github.com/LayoutFarm/Typography/tree/master/Typography.MsdfGen
+//MIT, 2017, WinterDev (C# port)
 
 using System;
-namespace Molten.Render.Msdf
+namespace Msdfgen
 {
     //#include "equation-solver.h"
 

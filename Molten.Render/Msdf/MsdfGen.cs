@@ -1,11 +1,10 @@
 ﻿//MIT, 2016, Viktor Chlumsky, Multi-channel signed distance field generator, from https://github.com/Chlumsky/msdfgen
-//MIT, 2017, WinterDev (C# port) from https://github.com/LayoutFarm/Typography/tree/master/Typography.MsdfGen
+//MIT, 2017, WinterDev (C# port)
 
-using Molten;
 using System;
 using System.Collections.Generic;
 
-namespace Molten.Render.Msdf
+namespace Msdfgen
 {
     public struct FloatRGB
     {
@@ -23,7 +22,6 @@ namespace Molten.Render.Msdf
         }
 #endif
     }
-
     public struct Pair<T, U>
     {
         public T first;
@@ -34,7 +32,6 @@ namespace Molten.Render.Msdf
             this.second = second;
         }
     }
-
     public class FloatBmp
     {
         float[] buffer;
@@ -55,7 +52,6 @@ namespace Molten.Render.Msdf
             return this.buffer[x + (y * Width)];
         }
     }
-
     public class FloatRGBBmp
     {
         FloatRGB[] buffer;
@@ -76,7 +72,6 @@ namespace Molten.Render.Msdf
             return this.buffer[x + (y * Width)];
         }
     }
-
     public static class SdfGenerator
     {
         //siged distance field generator
@@ -209,25 +204,21 @@ namespace Molten.Render.Msdf
         }
 
     }
-
     struct MultiDistance
     {
         public double r, g, b;
         public double med;
     }
-
     public static class MsdfGenerator
     {
         static float median(float a, float b, float c)
         {
             return Math.Max(Math.Min(a, b), Math.Min(Math.Max(a, b), c));
         }
-
         static double median(double a, double b, double c)
         {
             return Math.Max(Math.Min(a, b), Math.Min(Math.Max(a, b), c));
         }
-
         static bool pixelClash(FloatRGB a, FloatRGB b, double threshold)
         {
             // Only consider pair where both are on the inside or both are on the outside
@@ -271,10 +262,9 @@ namespace Molten.Render.Msdf
                 && (Math.Abs(ab - bb) >= threshold)
                 && Math.Abs(ac - .5f) >= Math.Abs(bc - .5f); // Out of the pair, only flag the pixel farther from a shape edge
         }
-
         static void msdfErrorCorrection(FloatRGBBmp output, Vector2 threshold)
         {
-            List<Pair<int, int>> clashes = new List<Pair<int, int>>();
+            List<Pair<int, int>> clashes = new List<Msdfgen.Pair<int, int>>();
             int w = output.Width, h = output.Height;
             for (int y = 0; y < h; ++y)
             {
@@ -304,7 +294,6 @@ namespace Molten.Render.Msdf
             //    pixel.r = med, pixel.g = med, pixel.b = med;
             //}
         }
-
         //multi-channel signed distance field generator
         struct EdgePoint
         {
@@ -312,7 +301,7 @@ namespace Molten.Render.Msdf
             public EdgeHolder nearEdge;
             public double nearParam;
         }
-        public static int[] ConvertToIntBmp(FloatRGBBmp input)
+        public static int[] ConvertToIntBmp(Msdfgen.FloatRGBBmp input)
         {
             int height = input.Height;
             int width = input.Width;
@@ -324,7 +313,7 @@ namespace Molten.Render.Msdf
                 {
                     //a b g r
                     //----------------------------------
-                    FloatRGB pixel = input.GetPixel(x, y);
+                    Msdfgen.FloatRGB pixel = input.GetPixel(x, y);
                     //a b g r
                     //for big-endian color
                     //int abgr = (255 << 24) |
@@ -335,9 +324,9 @@ namespace Molten.Render.Msdf
                     //for little-endian color
 
                     int abgr = (255 << 24) |
-                        Vector2.Clamp((int)(pixel.r * 0x100), 0xff) << 16 |
-                        Vector2.Clamp((int)(pixel.g * 0x100), 0xff) << 8 |
-                        Vector2.Clamp((int)(pixel.b * 0x100), 0xff);
+                        Msdfgen.Vector2.Clamp((int)(pixel.r * 0x100), 0xff) << 16 |
+                        Msdfgen.Vector2.Clamp((int)(pixel.g * 0x100), 0xff) << 8 |
+                        Msdfgen.Vector2.Clamp((int)(pixel.b * 0x100), 0xff);
 
                     output[(y * width) + x] = abgr;
                     //----------------------------------
@@ -348,7 +337,6 @@ namespace Molten.Render.Msdf
             }
             return output;
         }
-
         public static void generateMSDF(FloatRGBBmp output, Shape shape, double range, Vector2 scale, Vector2 translate, double edgeThreshold)
         {
             List<Contour> contours = shape.contours;
@@ -426,11 +414,11 @@ namespace Molten.Render.Msdf
                         }
 
                         if (r.nearEdge != null)
-                            r.nearEdge.edgeSegment.distanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
+                            r.nearEdge.edgeSegment.distanceToPsedoDistance(ref r.minDistance, p, r.nearParam);
                         if (g.nearEdge != null)
-                            g.nearEdge.edgeSegment.distanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
+                            g.nearEdge.edgeSegment.distanceToPsedoDistance(ref g.minDistance, p, g.nearParam);
                         if (b.nearEdge != null)
-                            b.nearEdge.edgeSegment.distanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
+                            b.nearEdge.edgeSegment.distanceToPsedoDistance(ref b.minDistance, p, b.nearParam);
                         //--------------
                         medMinDistance = median(r.minDistance.distance, g.minDistance.distance, b.minDistance.distance);
                         contourSD[n].r = r.minDistance.distance;
@@ -443,11 +431,11 @@ namespace Molten.Render.Msdf
                             negDist = medMinDistance;
                     }
                     if (sr.nearEdge != null)
-                        sr.nearEdge.edgeSegment.distanceToPseudoDistance(ref sr.minDistance, p, sr.nearParam);
+                        sr.nearEdge.edgeSegment.distanceToPsedoDistance(ref sr.minDistance, p, sr.nearParam);
                     if (sg.nearEdge != null)
-                        sg.nearEdge.edgeSegment.distanceToPseudoDistance(ref sg.minDistance, p, sg.nearParam);
+                        sg.nearEdge.edgeSegment.distanceToPsedoDistance(ref sg.minDistance, p, sg.nearParam);
                     if (sb.nearEdge != null)
-                        sb.nearEdge.edgeSegment.distanceToPseudoDistance(ref sb.minDistance, p, sb.nearParam);
+                        sb.nearEdge.edgeSegment.distanceToPsedoDistance(ref sb.minDistance, p, sb.nearParam);
 
                     MultiDistance msd;
                     msd.r = msd.g = msd.b = msd.med = SignedDistance.INFINITE.distance;
@@ -492,7 +480,6 @@ namespace Molten.Render.Msdf
             }
 
         }
-
         public static void generateMSDF_legacy(FloatRGBBmp output, Shape shape, double range, Vector2 scale, Vector2 translate,
             double edgeThreshold)
         {
@@ -546,15 +533,15 @@ namespace Molten.Render.Msdf
                         }
                         if (r.nearEdge != null)
                         {
-                            r.nearEdge.edgeSegment.distanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
+                            r.nearEdge.edgeSegment.distanceToPsedoDistance(ref r.minDistance, p, r.nearParam);
                         }
                         if (g.nearEdge != null)
                         {
-                            g.nearEdge.edgeSegment.distanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
+                            g.nearEdge.edgeSegment.distanceToPsedoDistance(ref g.minDistance, p, g.nearParam);
                         }
                         if (b.nearEdge != null)
                         {
-                            b.nearEdge.edgeSegment.distanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
+                            b.nearEdge.edgeSegment.distanceToPsedoDistance(ref b.minDistance, p, b.nearParam);
                         }
 
                         output.SetPixel(x, row,

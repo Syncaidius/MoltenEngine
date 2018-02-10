@@ -1,7 +1,7 @@
 ﻿//MIT, 2016, Viktor Chlumsky, Multi-channel signed distance field generator, from https://github.com/Chlumsky/msdfgen
-//MIT, 2017, WinterDev (C# port) from https://github.com/LayoutFarm/Typography/tree/master/Typography.MsdfGen
+//MIT, 2017, WinterDev (C# port) 
 
-namespace Molten.Render.Msdf
+namespace Msdfgen
 {
     public struct SignedDistance
     {

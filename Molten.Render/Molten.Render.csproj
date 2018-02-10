@@ -40,6 +40,7 @@
     <LangVersion>latest</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -86,8 +87,116 @@
     <Compile Include="Msdf\EdgeHolder.cs" />
     <Compile Include="Msdf\EdgeSegment.cs" />
     <Compile Include="Msdf\EquationSolver.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\0_GlyphTriangle.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\1_EdgeLine.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\2_GlyphCentroidPair.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\3_GlyphBoneJoint.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\4_GlyphBone.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\5_CentroidLineAndHub.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\CurveGen.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\GlyphContour.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\GlyphContourBuilder.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\GlyphIntermediateOutline.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\GlyphOutlineAnalyzer.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\GlyphOutlineWalker.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\GlyphPartFlattener.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\GlyphParts.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\GlyphPoint.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\MyMath.cs" />
+    <Compile Include="Msdf\GlyphAnalysis\Rect.cs" />
+    <Compile Include="Msdf\GlyphDynamicOutline.cs" />
+    <Compile Include="Msdf\GlyphLayout\GlyphIndexList.cs" />
+    <Compile Include="Msdf\GlyphLayout\GlyphLayout.cs" />
+    <Compile Include="Msdf\GlyphLayout\GlyphPosition.cs" />
+    <Compile Include="Msdf\GlyphLayout\GlyphSubtitution.cs" />
+    <Compile Include="Msdf\GlyphLayout\MeasureStringBox.cs" />
+    <Compile Include="Msdf\GlyphLayout\UserCharToGlyphIndexMap.cs" />
     <Compile Include="Msdf\MsdfGen.cs" />
+    <Compile Include="Msdf\OpenFont\Bounds.cs" />
+    <Compile Include="Msdf\OpenFont\CharacterMap.cs" />
+    <Compile Include="Msdf\OpenFont\Geometry.cs" />
+    <Compile Include="Msdf\OpenFont\Glyph.cs" />
+    <Compile Include="Msdf\OpenFont\IGlyphTranslator.cs" />
+    <Compile Include="Msdf\OpenFont\IO\ByteOrderSwappingBinaryReader.cs" />
+    <Compile Include="Msdf\OpenFont\OpenFontReader.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\AttachmentListTable.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\Base.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\ClassDefTable.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\COLR.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\CoverageTable.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\CPAL.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\FeatureInfo.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\FeatureList.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\GDEF.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\GPOS.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\GPOS.Others.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\GSUB.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\GSUB.SubTables.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\JustificationTable.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\LigatureCaretListTable.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\MathTable.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\ScriptLang.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\ScriptList.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.AdvancedLayout\ScriptTable.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Others\EBLCTable.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Others\HorizontalDeviceMatrics.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Others\Kern.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Others\LinearThreashold.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Others\Merge.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Others\Meta.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Others\STAT.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Others\VerticalDeviceMatrics.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Others\VerticalMatrics.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Others\VerticalMatricsHeader.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.TrueType\Cvt_Programs.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.TrueType\Gasp.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.TrueType\Glyf.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.TrueType\GlyphLocations.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Variations\AVar.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Variations\FVar.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Variations\GVar.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Variations\HVar.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Variations\MVar.cs" />
+    <Compile Include="Msdf\OpenFont\Tables.Variations\VVar.cs" />
+    <Compile Include="Msdf\OpenFont\Tables\Cmap.cs" />
+    <Compile Include="Msdf\OpenFont\Tables\Head.cs" />
+    <Compile Include="Msdf\OpenFont\Tables\HorizontalHeader.cs" />
+    <Compile Include="Msdf\OpenFont\Tables\HorizontalMetrics.cs" />
+    <Compile Include="Msdf\OpenFont\Tables\MaxProfile.cs" />
+    <Compile Include="Msdf\OpenFont\Tables\NameEntry.cs" />
+    <Compile Include="Msdf\OpenFont\Tables\OS2.cs" />
+    <Compile Include="Msdf\OpenFont\Tables\Post.cs" />
+    <Compile Include="Msdf\OpenFont\Tables\TableEntry.cs" />
+    <Compile Include="Msdf\OpenFont\Tables\TableEntryCollection.cs" />
+    <Compile Include="Msdf\OpenFont\Tables\TableHeader.cs" />
+    <Compile Include="Msdf\OpenFont\Tables\Utils.cs" />
+    <Compile Include="Msdf\OpenFont\TrueTypeInterperter\ForNet20.cs" />
+    <Compile Include="Msdf\OpenFont\TrueTypeInterperter\Interpreter.cs" />
+    <Compile Include="Msdf\OpenFont\TrueTypeInterperter\InvalidFontException.cs" />
+    <Compile Include="Msdf\OpenFont\Typeface.cs" />
     <Compile Include="Msdf\SignedDistance.cs" />
+    <Compile Include="Msdf\Triangulation\P2T.cs" />
+    <Compile Include="Msdf\Triangulation\Polygon\Polygon.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\Delaunay\DelaunayTriangle.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\Delaunay\Sweep\AdvancingFront.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\Delaunay\Sweep\AdvancingFrontNode.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\Delaunay\Sweep\DTSweep.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\Delaunay\Sweep\DTSweepConstraint.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\Delaunay\Sweep\DTSweepContext.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\Delaunay\Sweep\DTSweepDebugContext.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\Delaunay\Sweep\PointOnEdgeException.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\ITriangulatable.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\Orientation.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\Sets\ConstrainedPointSet.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\Sets\PointSet.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\TriangulationAlgorithm.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\TriangulationContext.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\TriangulationDebugContext.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\TriangulationMode.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\TriangulationPoint.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\TriangulationUtil.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\Util\PointGenerator.cs" />
+    <Compile Include="Msdf\Triangulation\Triangulation\Util\PolygonGenerator.cs" />
     <Compile Include="ObjectUpdateFlags.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderFrameSnapshot.cs" />
@@ -176,5 +285,6 @@
       <Name>Molten.Utility</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
