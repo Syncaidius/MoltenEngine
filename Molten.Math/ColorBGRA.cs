@@ -983,7 +983,7 @@ namespace Molten
         /// <returns>The result of the conversion.</returns>
         public static explicit operator ColorBGRA(Color4 value)
         {
-            return new ColorBGRA(value.Red, value.Green, value.Blue, value.Alpha);
+            return new ColorBGRA(value.R, value.G, value.B, value.A);
         }
 
         /// <summary>

@@ -72,22 +72,22 @@ namespace Molten
         /// <summary>
         /// The red component of the color.
         /// </summary>
-        public float Red;
+        public float R;
 
         /// <summary>
         /// The green component of the color.
         /// </summary>
-        public float Green;
+        public float G;
 
         /// <summary>
         /// The blue component of the color.
         /// </summary>
-        public float Blue;
+        public float B;
 
         /// <summary>
         /// The alpha component of the color.
         /// </summary>
-        public float Alpha;
+        public float A;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Color4"/> struct.
@@ -95,7 +95,7 @@ namespace Molten
         /// <param name="value">The value that will be assigned to all components.</param>
         public Color4(float value)
         {
-            Alpha = Red = Green = Blue = value;
+            A = R = G = B = value;
         }
 
         /// <summary>
@@ -107,10 +107,10 @@ namespace Molten
         /// <param name="alpha">The alpha component of the color.</param>
         public Color4(float red, float green, float blue, float alpha)
         {
-            Red = red;
-            Green = green;
-            Blue = blue;
-            Alpha = alpha;
+            R = red;
+            G = green;
+            B = blue;
+            A = alpha;
         }
 
         /// <summary>
@@ -119,10 +119,10 @@ namespace Molten
         /// <param name="value">The red, green, blue, and alpha components of the color.</param>
         public Color4(Vector4 value)
         {
-            Red = value.X;
-            Green = value.Y;
-            Blue = value.Z;
-            Alpha = value.W;
+            R = value.X;
+            G = value.Y;
+            B = value.Z;
+            A = value.W;
         }
 
         /// <summary>
@@ -132,10 +132,10 @@ namespace Molten
         /// <param name="alpha">The alpha component of the color.</param>
         public Color4(Vector3 value, float alpha)
         {
-            Red = value.X;
-            Green = value.Y;
-            Blue = value.Z;
-            Alpha = alpha;
+            R = value.X;
+            G = value.Y;
+            B = value.Z;
+            A = alpha;
         }
 
         /// <summary>
@@ -144,10 +144,10 @@ namespace Molten
         /// <param name="rgba">A packed integer containing all four color components in RGBA order.</param>
         public Color4(uint rgba)
         {
-            Alpha = ((rgba >> 24) & 255) / 255.0f;
-            Blue = ((rgba >> 16) & 255) / 255.0f;
-            Green = ((rgba >> 8) & 255) / 255.0f;
-            Red = (rgba & 255) / 255.0f;
+            A = ((rgba >> 24) & 255) / 255.0f;
+            B = ((rgba >> 16) & 255) / 255.0f;
+            G = ((rgba >> 8) & 255) / 255.0f;
+            R = (rgba & 255) / 255.0f;
         }
 
         /// <summary>
@@ -156,10 +156,10 @@ namespace Molten
         /// <param name="rgba">A packed integer containing all four color components in RGBA order.</param>
         public Color4(int rgba)
         {
-            Alpha = ((rgba >> 24) & 255) / 255.0f;
-            Blue = ((rgba >> 16) & 255) / 255.0f;
-            Green = ((rgba >> 8) & 255) / 255.0f;
-            Red = (rgba & 255) / 255.0f;
+            A = ((rgba >> 24) & 255) / 255.0f;
+            B = ((rgba >> 16) & 255) / 255.0f;
+            G = ((rgba >> 8) & 255) / 255.0f;
+            R = (rgba & 255) / 255.0f;
         }
 
         /// <summary>
@@ -175,10 +175,10 @@ namespace Molten
             if (values.Length != 4)
                 throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for Color4.");
 
-            Red = values[0];
-            Green = values[1];
-            Blue = values[2];
-            Alpha = values[3];
+            R = values[0];
+            G = values[1];
+            B = values[2];
+            A = values[3];
         }
 
         /// <summary>
@@ -187,10 +187,10 @@ namespace Molten
         /// <param name="color"><see cref="Color3"/> used to initialize the color.</param>
         public Color4(Color3 color)
         {
-          Red = color.R;
-          Green = color.G;
-          Blue = color.B;
-          Alpha = 1.0f;
+          R = color.R;
+          G = color.G;
+          B = color.B;
+          A = 1.0f;
         }
         
         /// <summary>
@@ -200,10 +200,10 @@ namespace Molten
         /// <param name="alpha">The alpha component of the color.</param>
         public Color4(Color3 color, float alpha)
         {
-          Red = color.R;
-          Green = color.G;
-          Blue = color.B;
-          Alpha = alpha;
+          R = color.R;
+          G = color.G;
+          B = color.B;
+          A = alpha;
         }
 
         /// <summary>
@@ -219,10 +219,10 @@ namespace Molten
             {
                 switch (index)
                 {
-                    case 0: return Red;
-                    case 1: return Green;
-                    case 2: return Blue;
-                    case 3: return Alpha;
+                    case 0: return R;
+                    case 1: return G;
+                    case 2: return B;
+                    case 3: return A;
                 }
 
                 throw new ArgumentOutOfRangeException("index", "Indices for Color4 run from 0 to 3, inclusive.");
@@ -232,10 +232,10 @@ namespace Molten
             {
                 switch (index)
                 {
-                    case 0: Red = value; break;
-                    case 1: Green = value; break;
-                    case 2: Blue = value; break;
-                    case 3: Alpha = value; break;
+                    case 0: R = value; break;
+                    case 1: G = value; break;
+                    case 2: B = value; break;
+                    case 3: A = value; break;
                     default: throw new ArgumentOutOfRangeException("index", "Indices for Color4 run from 0 to 3, inclusive.");
                 }
             }
@@ -247,10 +247,10 @@ namespace Molten
         /// <returns>A packed integer containing all four color components.</returns>
         public int ToBgra()
         {
-            uint a = (uint)(Alpha * 255.0f) & 255;
-            uint r = (uint)(Red * 255.0f) & 255;
-            uint g = (uint)(Green * 255.0f) & 255;
-            uint b = (uint)(Blue * 255.0f) & 255;
+            uint a = (uint)(A * 255.0f) & 255;
+            uint r = (uint)(R * 255.0f) & 255;
+            uint g = (uint)(G * 255.0f) & 255;
+            uint b = (uint)(B * 255.0f) & 255;
 
             uint value = b;
             value |= g << 8;
@@ -266,10 +266,10 @@ namespace Molten
         /// <returns>A packed integer containing all four color components.</returns>
         public void ToBgra(out byte r, out byte g, out byte b, out byte a)
         {
-            a = (byte)(Alpha * 255.0f);
-            r = (byte)(Red * 255.0f);
-            g = (byte)(Green * 255.0f);
-            b = (byte)(Blue * 255.0f);
+            a = (byte)(A * 255.0f);
+            r = (byte)(R * 255.0f);
+            g = (byte)(G * 255.0f);
+            b = (byte)(B * 255.0f);
         }
 
         /// <summary>
@@ -278,10 +278,10 @@ namespace Molten
         /// <returns>A packed integer containing all four color components.</returns>
         public int ToRgba()
         {
-            uint a = (uint) (Alpha * 255.0f) & 255;
-            uint r = (uint) (Red * 255.0f) & 255;
-            uint g = (uint) (Green * 255.0f) & 255;
-            uint b = (uint) (Blue * 255.0f) & 255;
+            uint a = (uint) (A * 255.0f) & 255;
+            uint r = (uint) (R * 255.0f) & 255;
+            uint g = (uint) (G * 255.0f) & 255;
+            uint b = (uint) (B * 255.0f) & 255;
 
             uint value = r;
             value |= g << 8;
@@ -297,7 +297,7 @@ namespace Molten
         /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
         public Vector3 ToVector3()
         {
-            return new Vector3(Red, Green, Blue);
+            return new Vector3(R, G, B);
         }
 
         /// <summary>
@@ -306,7 +306,7 @@ namespace Molten
         /// <returns>A four component vector containing all four color components.</returns>
         public Vector4 ToVector4()
         {
-            return new Vector4(Red, Green, Blue, Alpha);
+            return new Vector4(R, G, B, A);
         }
 
         /// <summary>
@@ -315,7 +315,7 @@ namespace Molten
         /// <returns>A four-element array containing the components of the color.</returns>
         public float[] ToArray()
         {
-            return new float[] { Red, Green, Blue, Alpha };
+            return new float[] { R, G, B, A };
         }
 
         /// <summary>
@@ -326,10 +326,10 @@ namespace Molten
         /// <param name="result">When the method completes, completes the sum of the two colors.</param>
         public static void Add(ref Color4 left, ref Color4 right, out Color4 result)
         {
-            result.Alpha = left.Alpha + right.Alpha;
-            result.Red = left.Red + right.Red;
-            result.Green = left.Green + right.Green;
-            result.Blue = left.Blue + right.Blue;
+            result.A = left.A + right.A;
+            result.R = left.R + right.R;
+            result.G = left.G + right.G;
+            result.B = left.B + right.B;
         }
 
         /// <summary>
@@ -340,7 +340,7 @@ namespace Molten
         /// <returns>The sum of the two colors.</returns>
         public static Color4 Add(Color4 left, Color4 right)
         {
-            return new Color4(left.Red + right.Red, left.Green + right.Green, left.Blue + right.Blue, left.Alpha + right.Alpha);
+            return new Color4(left.R + right.R, left.G + right.G, left.B + right.B, left.A + right.A);
         }
 
         /// <summary>
@@ -351,10 +351,10 @@ namespace Molten
         /// <param name="result">WHen the method completes, contains the difference of the two colors.</param>
         public static void Subtract(ref Color4 left, ref Color4 right, out Color4 result)
         {
-            result.Alpha = left.Alpha - right.Alpha;
-            result.Red = left.Red - right.Red;
-            result.Green = left.Green - right.Green;
-            result.Blue = left.Blue - right.Blue;
+            result.A = left.A - right.A;
+            result.R = left.R - right.R;
+            result.G = left.G - right.G;
+            result.B = left.B - right.B;
         }
 
         /// <summary>
@@ -365,7 +365,7 @@ namespace Molten
         /// <returns>The difference of the two colors.</returns>
         public static Color4 Subtract(Color4 left, Color4 right)
         {
-            return new Color4(left.Red - right.Red, left.Green - right.Green, left.Blue - right.Blue, left.Alpha - right.Alpha);
+            return new Color4(left.R - right.R, left.G - right.G, left.B - right.B, left.A - right.A);
         }
 
         /// <summary>
@@ -376,10 +376,10 @@ namespace Molten
         /// <param name="result">When the method completes, contains the modulated color.</param>
         public static void Modulate(ref Color4 left, ref Color4 right, out Color4 result)
         {
-            result.Alpha = left.Alpha * right.Alpha;
-            result.Red = left.Red * right.Red;
-            result.Green = left.Green * right.Green;
-            result.Blue = left.Blue * right.Blue;
+            result.A = left.A * right.A;
+            result.R = left.R * right.R;
+            result.G = left.G * right.G;
+            result.B = left.B * right.B;
         }
 
         /// <summary>
@@ -390,7 +390,7 @@ namespace Molten
         /// <returns>The modulated color.</returns>
         public static Color4 Modulate(Color4 left, Color4 right)
         {
-            return new Color4(left.Red * right.Red, left.Green * right.Green, left.Blue * right.Blue, left.Alpha * right.Alpha);
+            return new Color4(left.R * right.R, left.G * right.G, left.B * right.B, left.A * right.A);
         }
 
         /// <summary>
@@ -401,10 +401,10 @@ namespace Molten
         /// <param name="result">When the method completes, contains the scaled color.</param>
         public static void Scale(ref Color4 value, float scale, out Color4 result)
         {
-            result.Alpha = value.Alpha * scale;
-            result.Red = value.Red * scale;
-            result.Green = value.Green * scale;
-            result.Blue = value.Blue * scale;
+            result.A = value.A * scale;
+            result.R = value.R * scale;
+            result.G = value.G * scale;
+            result.B = value.B * scale;
         }
 
         /// <summary>
@@ -415,7 +415,7 @@ namespace Molten
         /// <returns>The scaled color.</returns>
         public static Color4 Scale(Color4 value, float scale)
         {
-            return new Color4(value.Red * scale, value.Green * scale, value.Blue * scale, value.Alpha * scale);
+            return new Color4(value.R * scale, value.G * scale, value.B * scale, value.A * scale);
         }
 
         /// <summary>
@@ -425,10 +425,10 @@ namespace Molten
         /// <param name="result">When the method completes, contains the negated color.</param>
         public static void Negate(ref Color4 value, out Color4 result)
         {
-            result.Alpha = 1.0f - value.Alpha;
-            result.Red = 1.0f - value.Red;
-            result.Green = 1.0f - value.Green;
-            result.Blue = 1.0f - value.Blue;
+            result.A = 1.0f - value.A;
+            result.R = 1.0f - value.R;
+            result.G = 1.0f - value.G;
+            result.B = 1.0f - value.B;
         }
 
         /// <summary>
@@ -438,7 +438,7 @@ namespace Molten
         /// <returns>The negated color.</returns>
         public static Color4 Negate(Color4 value)
         {
-            return new Color4(1.0f - value.Red, 1.0f - value.Green, 1.0f - value.Blue, 1.0f - value.Alpha);
+            return new Color4(1.0f - value.R, 1.0f - value.G, 1.0f - value.B, 1.0f - value.A);
         }
 
         /// <summary>
@@ -450,21 +450,21 @@ namespace Molten
         /// <param name="result">When the method completes, contains the clamped value.</param>
         public static void Clamp(ref Color4 value, ref Color4 min, ref Color4 max, out Color4 result)
         {
-            float alpha = value.Alpha;
-            alpha = (alpha > max.Alpha) ? max.Alpha : alpha;
-            alpha = (alpha < min.Alpha) ? min.Alpha : alpha;
+            float alpha = value.A;
+            alpha = (alpha > max.A) ? max.A : alpha;
+            alpha = (alpha < min.A) ? min.A : alpha;
 
-            float red = value.Red;
-            red = (red > max.Red) ? max.Red : red;
-            red = (red < min.Red) ? min.Red : red;
+            float red = value.R;
+            red = (red > max.R) ? max.R : red;
+            red = (red < min.R) ? min.R : red;
 
-            float green = value.Green;
-            green = (green > max.Green) ? max.Green : green;
-            green = (green < min.Green) ? min.Green : green;
+            float green = value.G;
+            green = (green > max.G) ? max.G : green;
+            green = (green < min.G) ? min.G : green;
 
-            float blue = value.Blue;
-            blue = (blue > max.Blue) ? max.Blue : blue;
-            blue = (blue < min.Blue) ? min.Blue : blue;
+            float blue = value.B;
+            blue = (blue > max.B) ? max.B : blue;
+            blue = (blue < min.B) ? min.B : blue;
 
             result = new Color4(red, green, blue, alpha);
         }
@@ -495,10 +495,10 @@ namespace Molten
         /// </remarks>
         public static void Lerp(ref Color4 start, ref Color4 end, float amount, out Color4 result)
         {
-            result.Red = MathHelper.Lerp(start.Red, end.Red, amount);
-            result.Green = MathHelper.Lerp(start.Green, end.Green, amount);
-            result.Blue = MathHelper.Lerp(start.Blue, end.Blue, amount);
-            result.Alpha = MathHelper.Lerp(start.Alpha, end.Alpha, amount);
+            result.R = MathHelper.Lerp(start.R, end.R, amount);
+            result.G = MathHelper.Lerp(start.G, end.G, amount);
+            result.B = MathHelper.Lerp(start.B, end.B, amount);
+            result.A = MathHelper.Lerp(start.A, end.A, amount);
         }
 
         /// <summary>
@@ -553,10 +553,10 @@ namespace Molten
         /// <param name="result">When the method completes, contains an new color composed of the largest components of the source colors.</param>
         public static void Max(ref Color4 left, ref Color4 right, out Color4 result)
         {
-            result.Alpha = (left.Alpha > right.Alpha) ? left.Alpha : right.Alpha;
-            result.Red = (left.Red > right.Red) ? left.Red : right.Red;
-            result.Green = (left.Green > right.Green) ? left.Green : right.Green;
-            result.Blue = (left.Blue > right.Blue) ? left.Blue : right.Blue;
+            result.A = (left.A > right.A) ? left.A : right.A;
+            result.R = (left.R > right.R) ? left.R : right.R;
+            result.G = (left.G > right.G) ? left.G : right.G;
+            result.B = (left.B > right.B) ? left.B : right.B;
         }
 
         /// <summary>
@@ -580,10 +580,10 @@ namespace Molten
         /// <param name="result">When the method completes, contains an new color composed of the smallest components of the source colors.</param>
         public static void Min(ref Color4 left, ref Color4 right, out Color4 result)
         {
-            result.Alpha = (left.Alpha < right.Alpha) ? left.Alpha : right.Alpha;
-            result.Red = (left.Red < right.Red) ? left.Red : right.Red;
-            result.Green = (left.Green < right.Green) ? left.Green : right.Green;
-            result.Blue = (left.Blue < right.Blue) ? left.Blue : right.Blue;
+            result.A = (left.A < right.A) ? left.A : right.A;
+            result.R = (left.R < right.R) ? left.R : right.R;
+            result.G = (left.G < right.G) ? left.G : right.G;
+            result.B = (left.B < right.B) ? left.B : right.B;
         }
 
         /// <summary>
@@ -607,10 +607,10 @@ namespace Molten
         /// <param name="result">When the method completes, contains the adjusted color.</param>
         public static void AdjustContrast(ref Color4 value, float contrast, out Color4 result)
         {
-            result.Alpha = value.Alpha;
-            result.Red = 0.5f + contrast * (value.Red - 0.5f);
-            result.Green = 0.5f + contrast * (value.Green - 0.5f);
-            result.Blue = 0.5f + contrast * (value.Blue - 0.5f);
+            result.A = value.A;
+            result.R = 0.5f + contrast * (value.R - 0.5f);
+            result.G = 0.5f + contrast * (value.G - 0.5f);
+            result.B = 0.5f + contrast * (value.B - 0.5f);
         }
 
         /// <summary>
@@ -622,10 +622,10 @@ namespace Molten
         public static Color4 AdjustContrast(Color4 value, float contrast)
         {
             return new Color4(                
-                0.5f + contrast * (value.Red - 0.5f),
-                0.5f + contrast * (value.Green - 0.5f),
-                0.5f + contrast * (value.Blue - 0.5f),
-                value.Alpha);
+                0.5f + contrast * (value.R - 0.5f),
+                0.5f + contrast * (value.G - 0.5f),
+                0.5f + contrast * (value.B - 0.5f),
+                value.A);
         }
 
         /// <summary>
@@ -636,12 +636,12 @@ namespace Molten
         /// <param name="result">When the method completes, contains the adjusted color.</param>
         public static void AdjustSaturation(ref Color4 value, float saturation, out Color4 result)
         {
-            float grey = value.Red * 0.2125f + value.Green * 0.7154f + value.Blue * 0.0721f;
+            float grey = value.R * 0.2125f + value.G * 0.7154f + value.B * 0.0721f;
 
-            result.Alpha = value.Alpha;
-            result.Red = grey + saturation * (value.Red - grey);
-            result.Green = grey + saturation * (value.Green - grey);
-            result.Blue = grey + saturation * (value.Blue - grey);
+            result.A = value.A;
+            result.R = grey + saturation * (value.R - grey);
+            result.G = grey + saturation * (value.G - grey);
+            result.B = grey + saturation * (value.B - grey);
         }
 
         /// <summary>
@@ -652,13 +652,13 @@ namespace Molten
         /// <returns>The adjusted color.</returns>
         public static Color4 AdjustSaturation(Color4 value, float saturation)
         {
-            float grey = value.Red * 0.2125f + value.Green * 0.7154f + value.Blue * 0.0721f;
+            float grey = value.R * 0.2125f + value.G * 0.7154f + value.B * 0.0721f;
 
             return new Color4(                
-                grey + saturation * (value.Red - grey),
-                grey + saturation * (value.Green - grey),
-                grey + saturation * (value.Blue - grey),
-                value.Alpha);
+                grey + saturation * (value.R - grey),
+                grey + saturation * (value.G - grey),
+                grey + saturation * (value.B - grey),
+                value.A);
         }
 
         /// <summary>
@@ -668,10 +668,10 @@ namespace Molten
         /// <param name="result">The premultiplied result.</param>
         public static void Premultiply(ref Color4 value, out Color4 result)
         {
-            result.Alpha = value.Alpha;
-            result.Red = value.Red * value.Alpha;
-            result.Green = value.Green * value.Alpha;
-            result.Blue = value.Blue * value.Alpha;
+            result.A = value.A;
+            result.R = value.R * value.A;
+            result.G = value.G * value.A;
+            result.B = value.B * value.A;
         }
 
         /// <summary>
@@ -694,7 +694,7 @@ namespace Molten
         /// <returns>The sum of the two colors.</returns>
         public static Color4 operator +(Color4 left, Color4 right)
         {
-            return new Color4(left.Red + right.Red, left.Green + right.Green, left.Blue + right.Blue, left.Alpha + right.Alpha);
+            return new Color4(left.R + right.R, left.G + right.G, left.B + right.B, left.A + right.A);
         }
 
         /// <summary>
@@ -715,7 +715,7 @@ namespace Molten
         /// <returns>The difference of the two colors.</returns>
         public static Color4 operator -(Color4 left, Color4 right)
         {
-            return new Color4(left.Red - right.Red, left.Green - right.Green, left.Blue - right.Blue, left.Alpha - right.Alpha);
+            return new Color4(left.R - right.R, left.G - right.G, left.B - right.B, left.A - right.A);
         }
 
         /// <summary>
@@ -725,7 +725,7 @@ namespace Molten
         /// <returns>A negated color.</returns>
         public static Color4 operator -(Color4 value)
         {
-            return new Color4(-value.Red, -value.Green, -value.Blue, -value.Alpha);
+            return new Color4(-value.R, -value.G, -value.B, -value.A);
         }
 
         /// <summary>
@@ -736,7 +736,7 @@ namespace Molten
         /// <returns>The scaled color.</returns>
         public static Color4 operator *(float scale, Color4 value)
         {
-            return new Color4(value.Red * scale, value.Green * scale, value.Blue * scale, value.Alpha * scale);
+            return new Color4(value.R * scale, value.G * scale, value.B * scale, value.A * scale);
         }
 
         /// <summary>
@@ -747,7 +747,7 @@ namespace Molten
         /// <returns>The scaled color.</returns>
         public static Color4 operator *(Color4 value, float scale)
         {
-            return new Color4(value.Red * scale, value.Green * scale, value.Blue * scale, value.Alpha * scale);
+            return new Color4(value.R * scale, value.G * scale, value.B * scale, value.A * scale);
         }
 
         /// <summary>
@@ -758,7 +758,7 @@ namespace Molten
         /// <returns>The modulated color.</returns>
         public static Color4 operator *(Color4 left, Color4 right)
         {
-            return new Color4(left.Red * right.Red, left.Green * right.Green, left.Blue * right.Blue, left.Alpha * right.Alpha);
+            return new Color4(left.R * right.R, left.G * right.G, left.B * right.B, left.A * right.A);
         }
 
         /// <summary>
@@ -792,7 +792,7 @@ namespace Molten
         /// <returns>The result of the conversion.</returns>
         public static explicit operator Color3(Color4 value)
         {
-            return new Color3(value.Red, value.Green, value.Blue);
+            return new Color3(value.R, value.G, value.B);
         }
 
         /// <summary>
@@ -802,7 +802,7 @@ namespace Molten
         /// <returns>The result of the conversion.</returns>
         public static explicit operator Vector3(Color4 value)
         {
-            return new Vector3(value.Red, value.Green, value.Blue);
+            return new Vector3(value.R, value.G, value.B);
         }
 
         /// <summary>
@@ -812,7 +812,7 @@ namespace Molten
         /// <returns>The result of the conversion.</returns>
         public static implicit operator Vector4(Color4 value)
         {
-            return new Vector4(value.Red, value.Green, value.Blue, value.Alpha);
+            return new Vector4(value.R, value.G, value.B, value.A);
         }
 
         /// <summary>
@@ -852,7 +852,7 @@ namespace Molten
         /// <returns>The result of the conversion.</returns>
         public static explicit operator ColorBGRA(Color4 value)
         {
-            return new ColorBGRA(value.Red, value.Green, value.Blue, value.Alpha);
+            return new ColorBGRA(value.R, value.G, value.B, value.A);
         }
 
         /// <summary>
@@ -911,7 +911,7 @@ namespace Molten
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, toStringFormat, Alpha, Red, Green, Blue);
+            return string.Format(formatProvider, toStringFormat, A, R, G, B);
         }
 
         /// <summary>
@@ -929,10 +929,10 @@ namespace Molten
 
             return string.Format(formatProvider,
                                  toStringFormat,
-                                 Alpha.ToString(format, formatProvider),
-                                 Red.ToString(format, formatProvider),
-                                 Green.ToString(format, formatProvider),
-                                 Blue.ToString(format, formatProvider));
+                                 A.ToString(format, formatProvider),
+                                 R.ToString(format, formatProvider),
+                                 G.ToString(format, formatProvider),
+                                 B.ToString(format, formatProvider));
         }
 
         /// <summary>
@@ -945,10 +945,10 @@ namespace Molten
         {
             unchecked
             {
-                var hashCode = Red.GetHashCode();
-                hashCode = (hashCode * 397) ^ Green.GetHashCode();
-                hashCode = (hashCode * 397) ^ Blue.GetHashCode();
-                hashCode = (hashCode * 397) ^ Alpha.GetHashCode();
+                var hashCode = R.GetHashCode();
+                hashCode = (hashCode * 397) ^ G.GetHashCode();
+                hashCode = (hashCode * 397) ^ B.GetHashCode();
+                hashCode = (hashCode * 397) ^ A.GetHashCode();
                 return hashCode;
             }
         }
@@ -963,7 +963,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Color4 other)
         {
-            return Alpha == other.Alpha && Red == other.Red && Green == other.Green && Blue == other.Blue;
+            return A == other.A && R == other.R && G == other.G && B == other.B;
         }
 
         /// <summary>

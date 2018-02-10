@@ -81,6 +81,13 @@
     <Compile Include="Mesh\IBonedMesh.cs" />
     <Compile Include="Mesh\IIndexedMesh.cs" />
     <Compile Include="Mesh\IMesh.cs" />
+    <Compile Include="Msdf\EdgeColor.cs" />
+    <Compile Include="Msdf\EdgeColoring.cs" />
+    <Compile Include="Msdf\EdgeHolder.cs" />
+    <Compile Include="Msdf\EdgeSegment.cs" />
+    <Compile Include="Msdf\EquationSolver.cs" />
+    <Compile Include="Msdf\MsdfGen.cs" />
+    <Compile Include="Msdf\SignedDistance.cs" />
     <Compile Include="ObjectUpdateFlags.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderFrameSnapshot.cs" />

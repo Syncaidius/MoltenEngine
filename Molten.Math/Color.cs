@@ -1121,7 +1121,7 @@ namespace Molten
         /// <returns>The result of the conversion.</returns>
         public static explicit operator Color(Color4 value)
         {
-            return new Color(value.Red, value.Green, value.Blue, value.Alpha);
+            return new Color(value.R, value.G, value.B, value.A);
         }
 
         /// <summary>
