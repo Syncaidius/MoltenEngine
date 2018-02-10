@@ -654,25 +654,15 @@ namespace Molten
             result.Normalize();
         }
 
-        ///// <summary>
-        ///// Converts the vector into a unit vector.
-        ///// </summary>
-        ///// <param name="value">The vector to normalize.</param>
-        ///// <returns>The normalized vector.</returns>
-        //public static Double2 Normalize(Double2 value)
-        //{
-        //    value.Normalize();
-        //    return value;
-        //}
-
-        public static Double2 Normalize(Double2 val, bool allowZero = false)
+        /// <summary>
+        /// Converts the vector into a unit vector.
+        /// </summary>
+        /// <param name="value">The vector to normalize.</param>
+        /// <returns>The normalized vector.</returns>
+        public static Double2 Normalize(Double2 value)
         {
-            double len = Math.Sqrt(val.X * val.X + val.Y * val.Y);
-            if (len == 0)
-            {
-                return new Double2(0, !allowZero ? 1 : 0);
-            }
-            return new Double2(val.X / len, val.Y / len);
+            value.Normalize();
+            return value;
         }
 
         /// <summary>
