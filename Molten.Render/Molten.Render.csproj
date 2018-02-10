@@ -87,6 +87,7 @@
     <Compile Include="Msdf\Atlas\MsdfGlyphGen.cs" />
     <Compile Include="Msdf\Atlas\SimpleFontAtlas.cs" />
     <Compile Include="Msdf\Atlas\SimpleFontAtlasBuilder.cs" />
+    <Compile Include="Msdf\Contour.cs" />
     <Compile Include="Msdf\EdgeColor.cs" />
     <Compile Include="Msdf\EdgeColoring.cs" />
     <Compile Include="Msdf\EdgeHolder.cs" />
@@ -182,6 +183,8 @@
     <Compile Include="Msdf\OpenFont\TrueTypeInterperter\Interpreter.cs" />
     <Compile Include="Msdf\OpenFont\TrueTypeInterperter\InvalidFontException.cs" />
     <Compile Include="Msdf\OpenFont\Typeface.cs" />
+    <Compile Include="Msdf\SdfMath.cs" />
+    <Compile Include="Msdf\Shape.cs" />
     <Compile Include="Msdf\SignedDistance.cs" />
     <Compile Include="Msdf\Triangulation\P2T.cs" />
     <Compile Include="Msdf\Triangulation\Polygon\Polygon.cs" />
@@ -205,6 +208,7 @@
     <Compile Include="Msdf\Triangulation\Triangulation\TriangulationUtil.cs" />
     <Compile Include="Msdf\Triangulation\Triangulation\Util\PointGenerator.cs" />
     <Compile Include="Msdf\Triangulation\Triangulation\Util\PolygonGenerator.cs" />
+    <Compile Include="Msdf\Vector2.cs" />
     <Compile Include="ObjectUpdateFlags.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderFrameSnapshot.cs" />

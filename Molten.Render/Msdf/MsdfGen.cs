@@ -23,6 +23,7 @@ namespace Msdfgen
         }
 #endif
     }
+
     public class FloatBmp
     {
         float[] buffer;
@@ -43,6 +44,7 @@ namespace Msdfgen
             return this.buffer[x + (y * Width)];
         }
     }
+
     public class FloatRGBBmp
     {
         FloatRGB[] buffer;
@@ -63,6 +65,7 @@ namespace Msdfgen
             return this.buffer[x + (y * Width)];
         }
     }
+
     public static class SdfGenerator
     {
         //siged distance field generator
@@ -80,7 +83,7 @@ namespace Msdfgen
             List<int> windings = new List<int>(contourCount);
             for (int i = 0; i < contourCount; ++i)
             {
-                windings.Add(contours[i].winding());
+                windings.Add(contours[i].Winding());
             }
 
             //# ifdef MSDFGEN_USE_OPENMP
@@ -108,7 +111,7 @@ namespace Msdfgen
                         {
                             Contour contour = contours[i];
                             SignedDistance minDistance = SignedDistance.INFINITE;
-                            List<EdgeHolder> edges = contour.edges;
+                            List<EdgeHolder> edges = contour.Edges;
                             int edgeCount = edges.Count;
                             for (int ee = 0; ee < edgeCount; ++ee)
                             {
@@ -150,10 +153,8 @@ namespace Msdfgen
                     }
                 }
             }
-
-
-
         }
+
         public static void GenerateSdf_legacy(FloatBmp output,
             Shape shape,
             double range,
@@ -177,7 +178,7 @@ namespace Msdfgen
                     for (int n = 0; n < m; ++n)
                     {
                         Contour contour = contours[n];
-                        List<EdgeHolder> edges = contour.edges;
+                        List<EdgeHolder> edges = contour.Edges;
                         int nn = edges.Count;
                         for (int i = 0; i < nn; ++i)
                         {
@@ -195,11 +196,13 @@ namespace Msdfgen
         }
 
     }
+
     struct MultiDistance
     {
         public double r, g, b;
         public double med;
     }
+
     public static class MsdfGenerator
     {
         static float median(float a, float b, float c)
@@ -253,6 +256,7 @@ namespace Msdfgen
                 && (Math.Abs(ab - bb) >= threshold)
                 && Math.Abs(ac - .5f) >= Math.Abs(bc - .5f); // Out of the pair, only flag the pixel farther from a shape edge
         }
+
         static void msdfErrorCorrection(FloatRGBBmp output, Vector2 threshold)
         {
             List<ValueTuple<int, int>> clashes = new List<ValueTuple<int, int>>();
@@ -261,10 +265,10 @@ namespace Msdfgen
             {
                 for (int x = 0; x < w; ++x)
                 {
-                    if ((x > 0 && pixelClash(output.GetPixel(x, y), output.GetPixel(x - 1, y), threshold.x))
-                        || (x < w - 1 && pixelClash(output.GetPixel(x, y), output.GetPixel(x + 1, y), threshold.x))
-                        || (y > 0 && pixelClash(output.GetPixel(x, y), output.GetPixel(x, y - 1), threshold.y))
-                        || (y < h - 1 && pixelClash(output.GetPixel(x, y), output.GetPixel(x, y + 1), threshold.y)))
+                    if ((x > 0 && pixelClash(output.GetPixel(x, y), output.GetPixel(x - 1, y), threshold.X))
+                        || (x < w - 1 && pixelClash(output.GetPixel(x, y), output.GetPixel(x + 1, y), threshold.X))
+                        || (y > 0 && pixelClash(output.GetPixel(x, y), output.GetPixel(x, y - 1), threshold.Y))
+                        || (y < h - 1 && pixelClash(output.GetPixel(x, y), output.GetPixel(x, y + 1), threshold.Y)))
                     {
                         clashes.Add(new ValueTuple<int, int>(x, y));
                     }
@@ -285,6 +289,7 @@ namespace Msdfgen
             //    pixel.r = med, pixel.g = med, pixel.b = med;
             //}
         }
+
         //multi-channel signed distance field generator
         struct EdgePoint
         {
@@ -292,6 +297,7 @@ namespace Msdfgen
             public EdgeHolder nearEdge;
             public double nearParam;
         }
+
         public static int[] ConvertToIntBmp(Msdfgen.FloatRGBBmp input)
         {
             int height = input.Height;
@@ -304,7 +310,7 @@ namespace Msdfgen
                 {
                     //a b g r
                     //----------------------------------
-                    Msdfgen.FloatRGB pixel = input.GetPixel(x, y);
+                    FloatRGB pixel = input.GetPixel(x, y);
                     //a b g r
                     //for big-endian color
                     //int abgr = (255 << 24) |
@@ -315,9 +321,9 @@ namespace Msdfgen
                     //for little-endian color
 
                     int abgr = (255 << 24) |
-                        Msdfgen.Vector2.Clamp((int)(pixel.r * 0x100), 0xff) << 16 |
-                        Msdfgen.Vector2.Clamp((int)(pixel.g * 0x100), 0xff) << 8 |
-                        Msdfgen.Vector2.Clamp((int)(pixel.b * 0x100), 0xff);
+                        SdfMath.Clamp((int)(pixel.r * 0x100), 0xff) << 16 |
+                        SdfMath.Clamp((int)(pixel.g * 0x100), 0xff) << 8 |
+                        SdfMath.Clamp((int)(pixel.b * 0x100), 0xff);
 
                     output[(y * width) + x] = abgr;
                     //----------------------------------
@@ -328,6 +334,7 @@ namespace Msdfgen
             }
             return output;
         }
+
         public static void generateMSDF(FloatRGBBmp output, Shape shape, double range, Vector2 scale, Vector2 translate, double edgeThreshold)
         {
             List<Contour> contours = shape.contours;
@@ -337,7 +344,7 @@ namespace Msdfgen
             List<int> windings = new List<int>(contourCount);
             for (int i = 0; i < contourCount; ++i)
             {
-                windings.Add(contours[i].winding());
+                windings.Add(contours[i].Winding());
             }
 
             var contourSD = new MultiDistance[contourCount];
@@ -360,7 +367,7 @@ namespace Msdfgen
                     {
                         //for-each contour
                         Contour contour = contours[n];
-                        List<EdgeHolder> edges = contour.edges;
+                        List<EdgeHolder> edges = contour.Edges;
                         int edgeCount = edges.Count;
                         EdgePoint r = new EdgePoint { minDistance = SignedDistance.INFINITE },
                         g = new EdgePoint { minDistance = SignedDistance.INFINITE },
@@ -471,6 +478,7 @@ namespace Msdfgen
             }
 
         }
+
         public static void generateMSDF_legacy(FloatRGBBmp output, Shape shape, double range, Vector2 scale, Vector2 translate,
             double edgeThreshold)
         {
@@ -495,7 +503,7 @@ namespace Msdfgen
                     for (int n = 0; n < m; ++n)
                     {
                         Contour contour = contours[n];
-                        List<EdgeHolder> edges = contour.edges;
+                        List<EdgeHolder> edges = contour.Edges;
                         int j = edges.Count;
                         for (int i = 0; i < j; ++i)
                         {

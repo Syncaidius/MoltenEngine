@@ -20,12 +20,12 @@ namespace Msdfgen
         {
             if (param < 0)
             {
-                Vector2 dir = direction(0).normalize();
+                Vector2 dir = direction(0).Normalize();
                 Vector2 aq = origin - point(0);
-                double ts = Vector2.dotProduct(aq, dir);
+                double ts = Vector2.Dot(aq, dir);
                 if (ts < 0)
                 {
-                    double pseudoDistance = Vector2.crossProduct(aq, dir);
+                    double pseudoDistance = Vector2.Cross(aq, dir);
                     if (Math.Abs(pseudoDistance) <= Math.Abs(distance.distance))
                     {
                         distance = new Msdfgen.SignedDistance(pseudoDistance, 0);
@@ -34,12 +34,12 @@ namespace Msdfgen
             }
             else if (param > 1)
             {
-                Vector2 dir = direction(1).normalize();
+                Vector2 dir = direction(1).Normalize();
                 Vector2 bq = origin - point(1);
-                double ts = Vector2.dotProduct(bq, dir);
+                double ts = Vector2.Dot(bq, dir);
                 if (ts > 0)
                 {
-                    double pseudoDistance = Vector2.crossProduct(bq, dir);
+                    double pseudoDistance = Vector2.Cross(bq, dir);
                     if (Math.Abs(pseudoDistance) <= Math.Abs(distance.distance))
                     {
                         distance = new Msdfgen.SignedDistance(pseudoDistance, 0);
@@ -65,8 +65,8 @@ namespace Msdfgen
             //return T((S(1) - weight) * a + weight * b);
             //return T((S(1) - weight) * a + weight * b);
             return new Vector2(
-                (1 - weight) * a.x + (weight * b.x),
-                (1 - weight) * a.y + (weight * b.y));
+                (1 - weight) * a.X + (weight * b.X),
+                (1 - weight) * a.Y + (weight * b.Y));
 
         }
 
@@ -83,8 +83,8 @@ namespace Msdfgen
         }
         public override void findBounds(ref double left, ref double bottom, ref double right, ref double top)
         {
-            Vector2.pointBounds(p[0], ref left, ref bottom, ref right, ref top);
-            Vector2.pointBounds(p[1], ref left, ref bottom, ref right, ref top);
+            Vector2.PointBounds(p[0], ref left, ref bottom, ref right, ref top);
+            Vector2.PointBounds(p[1], ref left, ref bottom, ref right, ref top);
         }
         public override void splitInThirds(out EdgeSegment part1, out EdgeSegment part2, out EdgeSegment part3)
         {
@@ -96,20 +96,20 @@ namespace Msdfgen
         {
             Vector2 aq = origin - p[0];
             Vector2 ab = p[1] - p[0];
-            param = Vector2.dotProduct(aq, ab) / Vector2.dotProduct(ab, ab);
+            param = Vector2.Dot(aq, ab) / Vector2.Dot(ab, ab);
             Vector2 eq = p[(param > .5) ? 1 : 0] - origin;
             double endpointDistance = eq.Length();
             if (param > 0 && param < 1)
             {
-                double orthoDistance = Vector2.dotProduct(ab.getOrthoNormal(false), aq);
+                double orthoDistance = Vector2.Dot(ab.GetOrthoNormal(false), aq);
                 if (Math.Abs(orthoDistance) < endpointDistance)
                 {
                     return new SignedDistance(orthoDistance, 0);
                 }
             }
             return new SignedDistance(
-                nonZeroSign(Vector2.crossProduct(aq, ab)) * endpointDistance,
-                Math.Abs(Vector2.dotProduct(ab.normalize(), eq.normalize())));
+                nonZeroSign(Vector2.Cross(aq, ab)) * endpointDistance,
+                Math.Abs(Vector2.Dot(ab.Normalize(), eq.Normalize())));
         }
         public override Vector2 direction(double param)
         {
@@ -133,7 +133,7 @@ namespace Msdfgen
             : base(edgeColor)
         {
             p = new Vector2[3];
-            if (Vector2.IsEq(p1, p0) || Vector2.IsEq(p1, p2))
+            if (Vector2.IsEqual(p1, p0) || Vector2.IsEqual(p1, p2))
             {
                 p1 = 0.5 * (p0 + p2);
             }
@@ -144,20 +144,20 @@ namespace Msdfgen
         }
         public override void findBounds(ref double left, ref double bottom, ref double right, ref double top)
         {
-            Vector2.pointBounds(p[0], ref left, ref bottom, ref right, ref top);
-            Vector2.pointBounds(p[2], ref left, ref bottom, ref right, ref top);
+            Vector2.PointBounds(p[0], ref left, ref bottom, ref right, ref top);
+            Vector2.PointBounds(p[2], ref left, ref bottom, ref right, ref top);
             Vector2 bot = (p[1] - p[0]) - (p[2] - p[1]);
-            if (bot.x != 0)
+            if (bot.X != 0)
             {
-                double param = (p[1].x - p[0].x) / bot.x;
+                double param = (p[1].X - p[0].X) / bot.X;
                 if (param > 0 && param < 1)
-                    Vector2.pointBounds(point(param), ref left, ref bottom, ref right, ref top);
+                    Vector2.PointBounds(point(param), ref left, ref bottom, ref right, ref top);
             }
-            if (bot.y != 0)
+            if (bot.Y != 0)
             {
-                double param = (p[1].y - p[0].y) / bot.y;
+                double param = (p[1].Y - p[0].Y) / bot.Y;
                 if (param > 0 && param < 1)
-                    Vector2.pointBounds(point(param), ref left, ref bottom, ref right, ref top);
+                    Vector2.PointBounds(point(param), ref left, ref bottom, ref right, ref top);
             }
         }
         public override void splitInThirds(out EdgeSegment part1, out EdgeSegment part2, out EdgeSegment part3)
@@ -179,22 +179,22 @@ namespace Msdfgen
             Vector2 qa = p[0] - origin;
             Vector2 ab = p[1] - p[0];
             Vector2 br = p[0] + p[2] - p[1] - p[1];
-            double a = Vector2.dotProduct(br, br);
-            double b = 3 * Vector2.dotProduct(ab, br);
-            double c = 2 * Vector2.dotProduct(ab, ab) + Vector2.dotProduct(qa, br);
-            double d = Vector2.dotProduct(qa, ab);
+            double a = Vector2.Dot(br, br);
+            double b = 3 * Vector2.Dot(ab, br);
+            double c = 2 * Vector2.Dot(ab, ab) + Vector2.Dot(qa, br);
+            double d = Vector2.Dot(qa, ab);
             double[] t = new double[3];
             int solutions = EquationSolver.SolveCubic(t, a, b, c, d);
 
-            double minDistance = nonZeroSign(Vector2.crossProduct(ab, qa)) * qa.Length(); // distance from A
-            param = -Vector2.dotProduct(qa, ab) / Vector2.dotProduct(ab, ab);
+            double minDistance = nonZeroSign(Vector2.Cross(ab, qa)) * qa.Length(); // distance from A
+            param = -Vector2.Dot(qa, ab) / Vector2.Dot(ab, ab);
             {
                 double distance = nonZeroSign(
-                    Vector2.crossProduct(p[2] - p[1], p[2] - origin)) * (p[2] - origin).Length(); // distance from B
+                    Vector2.Cross(p[2] - p[1], p[2] - origin)) * (p[2] - origin).Length(); // distance from B
                 if (Math.Abs(distance) < Math.Abs(minDistance))
                 {
                     minDistance = distance;
-                    param = Vector2.dotProduct(origin - p[1], p[2] - p[1]) / Vector2.dotProduct(p[2] - p[1], p[2] - p[1]);
+                    param = Vector2.Dot(origin - p[1], p[2] - p[1]) / Vector2.Dot(p[2] - p[1], p[2] - p[1]);
                 }
             }
             for (int i = 0; i < solutions; ++i)
@@ -203,7 +203,7 @@ namespace Msdfgen
                 {
                     Vector2 endpoint = p[0] + 2 * t[i] * ab + t[i] * t[i] * br;
                     double distance = nonZeroSign(
-                        Vector2.crossProduct(p[2] - p[0], endpoint - origin)) * (endpoint - origin).Length();
+                        Vector2.Cross(p[2] - p[0], endpoint - origin)) * (endpoint - origin).Length();
                     if (Math.Abs(distance) <= Math.Abs(minDistance))
                     {
                         minDistance = distance;
@@ -215,9 +215,9 @@ namespace Msdfgen
             if (param >= 0 && param <= 1)
                 return new SignedDistance(minDistance, 0);
             if (param < .5)
-                return new SignedDistance(minDistance, Math.Abs(Vector2.dotProduct(ab.normalize(), qa.normalize())));
+                return new SignedDistance(minDistance, Math.Abs(Vector2.Dot(ab.Normalize(), qa.Normalize())));
             else
-                return new SignedDistance(minDistance, Math.Abs(Vector2.dotProduct((p[2] - p[1]).normalize(), (p[2] - origin).normalize())));
+                return new SignedDistance(minDistance, Math.Abs(Vector2.Dot((p[2] - p[1]).Normalize(), (p[2] - origin).Normalize())));
         }
 #if DEBUG
         public override string ToString()
@@ -240,30 +240,30 @@ namespace Msdfgen
         }
         public override void findBounds(ref double left, ref double bottom, ref double right, ref double top)
         {
-            Vector2.pointBounds(p[0], ref left, ref bottom, ref right, ref top);
-            Vector2.pointBounds(p[3], ref left, ref bottom, ref right, ref top);
+            Vector2.PointBounds(p[0], ref left, ref bottom, ref right, ref top);
+            Vector2.PointBounds(p[3], ref left, ref bottom, ref right, ref top);
             Vector2 a0 = p[1] - p[0];
             Vector2 a1 = 2 * (p[2] - p[1] - a0);
             Vector2 a2 = p[3] - 3 * p[2] + 3 * p[1] - p[0];
             double[] pars = new double[2];
             int solutions;
-            solutions = EquationSolver.SolveQuadratic(pars, a2.x, a1.x, a0.x);
+            solutions = EquationSolver.SolveQuadratic(pars, a2.X, a1.X, a0.X);
             for (int i = 0; i < solutions; ++i)
                 if (pars[i] > 0 && pars[i] < 1)
-                    Vector2.pointBounds(point(pars[i]), ref left, ref bottom, ref right, ref top);
-            solutions = EquationSolver.SolveQuadratic(pars, a2.y, a1.y, a0.y);
+                    Vector2.PointBounds(point(pars[i]), ref left, ref bottom, ref right, ref top);
+            solutions = EquationSolver.SolveQuadratic(pars, a2.Y, a1.Y, a0.Y);
             for (int i = 0; i < solutions; ++i)
                 if (pars[i] > 0 && pars[i] < 1)
-                    Vector2.pointBounds(point(pars[i]), ref left, ref bottom, ref right, ref top);
+                    Vector2.PointBounds(point(pars[i]), ref left, ref bottom, ref right, ref top);
         }
         public override void splitInThirds(out EdgeSegment part1, out EdgeSegment part2, out EdgeSegment part3)
         {
-            part1 = new CubicSegment(p[0], Vector2.IsEq(p[0], p[1]) ? p[0] : mix(p[0], p[1], 1 / 3.0), mix(mix(p[0], p[1], 1 / 3.0), mix(p[1], p[2], 1 / 3.0), 1 / 3.0), point(1 / 3.0), color);
+            part1 = new CubicSegment(p[0], Vector2.IsEqual(p[0], p[1]) ? p[0] : mix(p[0], p[1], 1 / 3.0), mix(mix(p[0], p[1], 1 / 3.0), mix(p[1], p[2], 1 / 3.0), 1 / 3.0), point(1 / 3.0), color);
             part2 = new CubicSegment(point(1 / 3.0),
                 mix(mix(mix(p[0], p[1], 1 / 3.0), mix(p[1], p[2], 1 / 3.0), 1 / 3.0), mix(mix(p[1], p[2], 1 / 3.0), mix(p[2], p[3], 1 / 3.0), 1 / 3.0), 2 / 3.0),
                 mix(mix(mix(p[0], p[1], 2 / 3.0), mix(p[1], p[2], 2 / 3.0), 2 / 3.0), mix(mix(p[1], p[2], 2 / 3.0), mix(p[2], p[3], 2 / 3.0), 2 / 3.0), 1 / 3.0),
                 point(2 / 3.0), color);
-            part3 = new CubicSegment(point(2 / 3.0), mix(mix(p[1], p[2], 2 / 3.0), mix(p[2], p[3], 2 / 3.0), 2 / 3.0), Vector2.IsEq(p[2], p[3]) ? p[3] : mix(p[2], p[3], 2 / 3.0), p[3], color);
+            part3 = new CubicSegment(point(2 / 3.0), mix(mix(p[1], p[2], 2 / 3.0), mix(p[2], p[3], 2 / 3.0), 2 / 3.0), Vector2.IsEqual(p[2], p[3]) ? p[3] : mix(p[2], p[3], 2 / 3.0), p[3], color);
         }
         public override Vector2 direction(double param)
         {
@@ -289,15 +289,15 @@ namespace Msdfgen
             Vector2 as_ = (p[3] - p[2]) - (p[2] - p[1]) - br;
             Vector2 epDir = direction(0);
 
-            double minDistance = nonZeroSign(Vector2.crossProduct(epDir, qa)) * qa.Length(); // distance from A
-            param = -Vector2.dotProduct(qa, epDir) / Vector2.dotProduct(epDir, epDir);
+            double minDistance = nonZeroSign(Vector2.Cross(epDir, qa)) * qa.Length(); // distance from A
+            param = -Vector2.Dot(qa, epDir) / Vector2.Dot(epDir, epDir);
             {
                 epDir = direction(1);
-                double distance = nonZeroSign(Vector2.crossProduct(epDir, p[3] - origin)) * (p[3] - origin).Length(); // distance from B
+                double distance = nonZeroSign(Vector2.Cross(epDir, p[3] - origin)) * (p[3] - origin).Length(); // distance from B
                 if (EquationSolver.fabs(distance) < EquationSolver.fabs(minDistance))
                 {
                     minDistance = distance;
-                    param = Vector2.dotProduct(origin + epDir - p[3], epDir) / Vector2.dotProduct(epDir, epDir);
+                    param = Vector2.Dot(origin + epDir - p[3], epDir) / Vector2.Dot(epDir, epDir);
                 }
             }
             // Iterative minimum distance search
@@ -307,7 +307,7 @@ namespace Msdfgen
                 for (int step = 0; ; ++step)
                 {
                     Vector2 qpt = point(t) - origin;
-                    double distance = nonZeroSign(Vector2.crossProduct(direction(t), qpt)) * qpt.Length();
+                    double distance = nonZeroSign(Vector2.Cross(direction(t), qpt)) * qpt.Length();
 
                     if (EquationSolver.fabs(distance) < EquationSolver.fabs(minDistance))
                     {
@@ -319,7 +319,7 @@ namespace Msdfgen
                     // Improve t
                     Vector2 d1 = 3 * as_ * t * t + 6 * br * t + 3 * ab;
                     Vector2 d2 = 6 * as_ * t + 6 * br;
-                    t -= Vector2.dotProduct(qpt, d1) / (Vector2.dotProduct(d1, d1) + Vector2.dotProduct(qpt, d2));
+                    t -= Vector2.Dot(qpt, d1) / (Vector2.Dot(d1, d1) + Vector2.Dot(qpt, d2));
                     if (t < 0 || t > 1)
                         break;
                 }
@@ -329,10 +329,10 @@ namespace Msdfgen
                 return new SignedDistance(minDistance, 0);
             if (param < .5)
                 return new SignedDistance(minDistance,
-                    EquationSolver.fabs(Vector2.dotProduct(direction(0), qa.normalize())));
+                    EquationSolver.fabs(Vector2.Dot(direction(0), qa.Normalize())));
             else
                 return new SignedDistance(minDistance,
-                    EquationSolver.fabs(Vector2.dotProduct(direction(1).normalize(), (p[3] - origin).normalize())));
+                    EquationSolver.fabs(Vector2.Dot(direction(1).Normalize(), (p[3] - origin).Normalize())));
         }
 #if DEBUG
         public override string ToString()
