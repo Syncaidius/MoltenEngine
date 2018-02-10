@@ -109,8 +109,8 @@ namespace Molten.Samples
             _mesh.SetVertices(verts);
             SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
 
-            if (File.Exists("assets/tahoma.ttf"))
-                CreateSampleMsdfTextureFont("assets/tahoma.ttf", 18, new char[] { 'A', 'B', 'C', 'D', 'E', 'F', '测', '试' }, "msdf");
+            if (File.Exists("assets/BroshK.ttf"))
+                CreateSampleMsdfTextureFont("assets/BroshK.ttf", 18, new char[] { 'A', 'B', 'C', 'D', 'E', 'F', '测', '试' }, "msdf");
             else
                 Log.WriteError("Cannot run MSDF test. Font file does not exist.");
         }

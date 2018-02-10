@@ -77,6 +77,8 @@
     <Compile Include="Color3.cs" />
     <Compile Include="Color4.cs" />
     <Compile Include="ColorBGRA.cs" />
+    <Compile Include="DoublePrecision\Double3.cs" />
+    <Compile Include="DoublePrecision\Double4.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="FastMath.cs" />
     <Compile Include="FrustumCameraParams.cs" />
@@ -112,6 +114,7 @@
     <Compile Include="UIntVector2.cs" />
     <Compile Include="UIntVector3.cs" />
     <Compile Include="UIntVector4.cs" />
+    <Compile Include="DoublePrecision\Double2.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="Vector3.cs" />
     <Compile Include="Vector4.cs" />

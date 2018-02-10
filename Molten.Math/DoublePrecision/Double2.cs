@@ -1,4 +1,8 @@
-﻿// Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
+﻿/* Copyright (c) 2018 MoltenEngine - James Yarwood
+ * Original code from SharpDX Vector2
+   License type unchanged. See below for license details.*/
+
+// Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -54,76 +58,76 @@ namespace Molten
     /// Represents a two dimensional mathematical vector.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Vector2 : IEquatable<Vector2>, IFormattable
+    public struct Double2 : IEquatable<Double2>, IFormattable
     {
         /// <summary>
-        /// The size of the <see cref="Vector2"/> type, in bytes.
+        /// The size of the <see cref="Double2"/> type, in bytes.
         /// </summary>
-        public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector2));
+        public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Double2));
 
         /// <summary>
-        /// A <see cref="Vector2"/> with all of its components set to zero.
+        /// A <see cref="Double2"/> with all of its components set to zero.
         /// </summary>
-        public static readonly Vector2 Zero = new Vector2();
+        public static readonly Double2 Zero = new Double2();
 
         /// <summary>
-        /// The X unit <see cref="Vector2"/> (1, 0).
+        /// The X unit <see cref="Double2"/> (1, 0).
         /// </summary>
-        public static readonly Vector2 UnitX = new Vector2(1.0f, 0.0f);
+        public static readonly Double2 UnitX = new Double2(1.0f, 0.0f);
 
         /// <summary>
-        /// The Y unit <see cref="Vector2"/> (0, 1).
+        /// The Y unit <see cref="Double2"/> (0, 1).
         /// </summary>
-        public static readonly Vector2 UnitY = new Vector2(0.0f, 1.0f);
+        public static readonly Double2 UnitY = new Double2(0.0f, 1.0f);
 
         /// <summary>
-        /// A <see cref="Vector2"/> with all of its components set to one.
+        /// A <see cref="Double2"/> with all of its components set to one.
         /// </summary>
-        public static readonly Vector2 One = new Vector2(1.0f, 1.0f);
+        public static readonly Double2 One = new Double2(1.0f, 1.0f);
 
         /// <summary>
         /// The X component of the vector.
         /// </summary>
-        public float X;
+        public double X;
 
         /// <summary>
         /// The Y component of the vector.
         /// </summary>
-        public float Y;
+        public double Y;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Vector2"/> struct.
+        /// Initializes a new instance of the <see cref="Double2"/> struct.
         /// </summary>
         /// <param name="value">The value that will be assigned to all components.</param>
-        public Vector2(float value)
+        public Double2(double value)
         {
             X = value;
             Y = value;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Vector2"/> struct.
+        /// Initializes a new instance of the <see cref="Double2"/> struct.
         /// </summary>
         /// <param name="x">Initial value for the X component of the vector.</param>
         /// <param name="y">Initial value for the Y component of the vector.</param>
-        public Vector2(float x, float y)
+        public Double2(double x, double y)
         {
             X = x;
             Y = y;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Vector2"/> struct.
+        /// Initializes a new instance of the <see cref="Double2"/> struct.
         /// </summary>
         /// <param name="values">The values to assign to the X and Y components of the vector. This must be an array with two elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
-        public Vector2(float[] values)
+        public Double2(double[] values)
         {
             if (values == null)
                 throw new ArgumentNullException("values");
             if (values.Length != 2)
-                throw new ArgumentOutOfRangeException("values", "There must be two and only two input values for Vector2.");
+                throw new ArgumentOutOfRangeException("values", "There must be two and only two input values for Double2.");
 
             X = values[0];
             Y = values[1];
@@ -152,7 +156,7 @@ namespace Molten
         /// <param name="index">The index of the component to access. Use 0 for the X component and 1 for the Y component.</param>
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 1].</exception>
-        public float this[int index]
+        public double this[int index]
         {
             get
             {
@@ -162,7 +166,7 @@ namespace Molten
                     case 1: return Y;
                 }
 
-                throw new ArgumentOutOfRangeException("index", "Indices for Vector2 run from 0 to 1, inclusive.");
+                throw new ArgumentOutOfRangeException("index", "Indices for Double2 run from 0 to 1, inclusive.");
             }
 
             set
@@ -171,7 +175,7 @@ namespace Molten
                 {
                     case 0: X = value; break;
                     case 1: Y = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for Vector2 run from 0 to 1, inclusive.");
+                    default: throw new ArgumentOutOfRangeException("index", "Indices for Double2 run from 0 to 1, inclusive.");
                 }
             }
         }
@@ -181,12 +185,12 @@ namespace Molten
         /// </summary>
         /// <returns>The length of the vector.</returns>
         /// <remarks>
-        /// <see cref="Vector2.LengthSquared"/> may be preferred when only the relative length is needed
+        /// <see cref="Double2.LengthSquared"/> may be preferred when only the relative length is needed
         /// and speed is of the essence.
         /// </remarks>
-        public float Length()
+        public double Length()
         {
-            return (float)Math.Sqrt((X * X) + (Y * Y));
+            return (double)Math.Sqrt((X * X) + (Y * Y));
         }
 
         /// <summary>
@@ -194,10 +198,10 @@ namespace Molten
         /// </summary>
         /// <returns>The squared length of the vector.</returns>
         /// <remarks>
-        /// This method may be preferred to <see cref="Vector2.Length"/> when only a relative length is needed
+        /// This method may be preferred to <see cref="Double2.Length"/> when only a relative length is needed
         /// and speed is of the essence.
         /// </remarks>
-        public float LengthSquared()
+        public double LengthSquared()
         {
             return (X * X) + (Y * Y);
         }
@@ -207,10 +211,10 @@ namespace Molten
         /// </summary>
         public void Normalize()
         {
-            float length = Length();
+            double length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inv = 1.0f / length;
+                double inv = 1.0f / length;
                 X *= inv;
                 Y *= inv;
             }
@@ -220,9 +224,9 @@ namespace Molten
         /// Creates an array containing the elements of the vector.
         /// </summary>
         /// <returns>A two-element array containing the components of the vector.</returns>
-        public float[] ToArray()
+        public double[] ToArray()
         {
-            return new float[] { X, Y };
+            return new double[] { X, Y };
         }
 
         /// <summary>
@@ -231,9 +235,9 @@ namespace Molten
         /// <param name="left">The first vector to add.</param>
         /// <param name="right">The second vector to add.</param>
         /// <param name="result">When the method completes, contains the sum of the two vectors.</param>
-        public static void Add(ref Vector2 left, ref Vector2 right, out Vector2 result)
+        public static void Add(ref Double2 left, ref Double2 right, out Double2 result)
         {
-            result = new Vector2(left.X + right.X, left.Y + right.Y);
+            result = new Double2(left.X + right.X, left.Y + right.Y);
         }
 
         /// <summary>
@@ -242,9 +246,9 @@ namespace Molten
         /// <param name="left">The first vector to add.</param>
         /// <param name="right">The second vector to add.</param>
         /// <returns>The sum of the two vectors.</returns>
-        public static Vector2 Add(Vector2 left, Vector2 right)
+        public static Double2 Add(Double2 left, Double2 right)
         {
-            return new Vector2(left.X + right.X, left.Y + right.Y);
+            return new Double2(left.X + right.X, left.Y + right.Y);
         }
 
         /// <summary>
@@ -253,9 +257,9 @@ namespace Molten
         /// <param name="left">The input vector</param>
         /// <param name="right">The scalar value to be added to elements</param>
         /// <param name="result">The vector with added scalar for each element.</param>
-        public static void Add(ref Vector2 left, ref float right, out Vector2 result)
+        public static void Add(ref Double2 left, ref double right, out Double2 result)
         {
-            result = new Vector2(left.X + right, left.Y + right);
+            result = new Double2(left.X + right, left.Y + right);
         }
 
         /// <summary>
@@ -264,9 +268,9 @@ namespace Molten
         /// <param name="left">The input vector</param>
         /// <param name="right">The scalar value to be added to elements</param>
         /// <returns>The vector with added scalar for each element.</returns>
-        public static Vector2 Add(Vector2 left, float right)
+        public static Double2 Add(Double2 left, double right)
         {
-            return new Vector2(left.X + right, left.Y + right);
+            return new Double2(left.X + right, left.Y + right);
         }
 
         /// <summary>
@@ -275,9 +279,9 @@ namespace Molten
         /// <param name="left">The first vector to subtract.</param>
         /// <param name="right">The second vector to subtract.</param>
         /// <param name="result">When the method completes, contains the difference of the two vectors.</param>
-        public static void Subtract(ref Vector2 left, ref Vector2 right, out Vector2 result)
+        public static void Subtract(ref Double2 left, ref Double2 right, out Double2 result)
         {
-            result = new Vector2(left.X - right.X, left.Y - right.Y);
+            result = new Double2(left.X - right.X, left.Y - right.Y);
         }
 
         /// <summary>
@@ -286,9 +290,9 @@ namespace Molten
         /// <param name="left">The first vector to subtract.</param>
         /// <param name="right">The second vector to subtract.</param>
         /// <returns>The difference of the two vectors.</returns>
-        public static Vector2 Subtract(Vector2 left, Vector2 right)
+        public static Double2 Subtract(Double2 left, Double2 right)
         {
-            return new Vector2(left.X - right.X, left.Y - right.Y);
+            return new Double2(left.X - right.X, left.Y - right.Y);
         }
 
         /// <summary>
@@ -297,9 +301,9 @@ namespace Molten
         /// <param name="left">The input vector</param>
         /// <param name="right">The scalar value to be subtraced from elements</param>
         /// <param name="result">The vector with subtracted scalar for each element.</param>
-        public static void Subtract(ref Vector2 left, ref float right, out Vector2 result)
+        public static void Subtract(ref Double2 left, ref double right, out Double2 result)
         {
-            result = new Vector2(left.X - right, left.Y - right);
+            result = new Double2(left.X - right, left.Y - right);
         }
 
         /// <summary>
@@ -308,9 +312,9 @@ namespace Molten
         /// <param name="left">The input vector</param>
         /// <param name="right">The scalar value to be subtraced from elements</param>
         /// <returns>The vector with subtracted scalar for each element.</returns>
-        public static Vector2 Subtract(Vector2 left, float right)
+        public static Double2 Subtract(Double2 left, double right)
         {
-            return new Vector2(left.X - right, left.Y - right);
+            return new Double2(left.X - right, left.Y - right);
         }
 
         /// <summary>
@@ -319,9 +323,9 @@ namespace Molten
         /// <param name="left">The scalar value to be subtraced from elements</param>
         /// <param name="right">The input vector</param>
         /// <param name="result">The vector with subtracted scalar for each element.</param>
-        public static void Subtract(ref float left, ref Vector2 right, out Vector2 result)
+        public static void Subtract(ref double left, ref Double2 right, out Double2 result)
         {
-            result = new Vector2(left - right.X, left - right.Y);
+            result = new Double2(left - right.X, left - right.Y);
         }
 
         /// <summary>
@@ -330,9 +334,9 @@ namespace Molten
         /// <param name="left">The scalar value to be subtraced from elements</param>
         /// <param name="right">The input vector</param>
         /// <returns>The vector with subtracted scalar for each element.</returns>
-        public static Vector2 Subtract(float left, Vector2 right)
+        public static Double2 Subtract(double left, Double2 right)
         {
-            return new Vector2(left - right.X, left - right.Y);
+            return new Double2(left - right.X, left - right.Y);
         }
 
         /// <summary>
@@ -341,9 +345,9 @@ namespace Molten
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <param name="result">When the method completes, contains the scaled vector.</param>
-        public static void Multiply(ref Vector2 value, float scale, out Vector2 result)
+        public static void Multiply(ref Double2 value, double scale, out Double2 result)
         {
-            result = new Vector2(value.X * scale, value.Y * scale);
+            result = new Double2(value.X * scale, value.Y * scale);
         }
 
         /// <summary>
@@ -352,9 +356,9 @@ namespace Molten
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static Vector2 Multiply(Vector2 value, float scale)
+        public static Double2 Multiply(Double2 value, double scale)
         {
-            return new Vector2(value.X * scale, value.Y * scale);
+            return new Double2(value.X * scale, value.Y * scale);
         }
 
         /// <summary>
@@ -363,9 +367,9 @@ namespace Molten
         /// <param name="left">The first vector to multiply.</param>
         /// <param name="right">The second vector to multiply.</param>
         /// <param name="result">When the method completes, contains the multiplied vector.</param>
-        public static void Multiply(ref Vector2 left, ref Vector2 right, out Vector2 result)
+        public static void Multiply(ref Double2 left, ref Double2 right, out Double2 result)
         {
-            result = new Vector2(left.X * right.X, left.Y * right.Y);
+            result = new Double2(left.X * right.X, left.Y * right.Y);
         }
 
         /// <summary>
@@ -374,9 +378,9 @@ namespace Molten
         /// <param name="left">The first vector to multiply.</param>
         /// <param name="right">The second vector to multiply.</param>
         /// <returns>The multiplied vector.</returns>
-        public static Vector2 Multiply(Vector2 left, Vector2 right)
+        public static Double2 Multiply(Double2 left, Double2 right)
         {
-            return new Vector2(left.X * right.X, left.Y * right.Y);
+            return new Double2(left.X * right.X, left.Y * right.Y);
         }
 
         /// <summary>
@@ -385,9 +389,9 @@ namespace Molten
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <param name="result">When the method completes, contains the scaled vector.</param>
-        public static void Divide(ref Vector2 value, float scale, out Vector2 result)
+        public static void Divide(ref Double2 value, double scale, out Double2 result)
         {
-            result = new Vector2(value.X / scale, value.Y / scale);
+            result = new Double2(value.X / scale, value.Y / scale);
         }
 
         /// <summary>
@@ -396,9 +400,9 @@ namespace Molten
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static Vector2 Divide(Vector2 value, float scale)
+        public static Double2 Divide(Double2 value, double scale)
         {
-            return new Vector2(value.X / scale, value.Y / scale);
+            return new Double2(value.X / scale, value.Y / scale);
         }
 
         /// <summary>
@@ -407,9 +411,9 @@ namespace Molten
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <param name="value">The vector to scale.</param>
         /// <param name="result">When the method completes, contains the scaled vector.</param>
-        public static void Divide(float scale,ref Vector2 value, out Vector2 result)
+        public static void Divide(double scale,ref Double2 value, out Double2 result)
         {
-            result = new Vector2(scale / value.X, scale / value.Y);
+            result = new Double2(scale / value.X, scale / value.Y);
         }
 
         /// <summary>
@@ -418,9 +422,9 @@ namespace Molten
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static Vector2 Divide(float scale, Vector2 value)
+        public static Double2 Divide(double scale, Double2 value)
         {
-            return new Vector2(scale / value.X, scale / value.Y);
+            return new Double2(scale / value.X, scale / value.Y);
         }
 
         /// <summary>
@@ -428,9 +432,9 @@ namespace Molten
         /// </summary>
         /// <param name="value">The vector to negate.</param>
         /// <param name="result">When the method completes, contains a vector facing in the opposite direction.</param>
-        public static void Negate(ref Vector2 value, out Vector2 result)
+        public static void Negate(ref Double2 value, out Double2 result)
         {
-            result = new Vector2(-value.X, -value.Y);
+            result = new Double2(-value.X, -value.Y);
         }
 
         /// <summary>
@@ -438,38 +442,38 @@ namespace Molten
         /// </summary>
         /// <param name="value">The vector to negate.</param>
         /// <returns>A vector facing in the opposite direction.</returns>
-        public static Vector2 Negate(Vector2 value)
+        public static Double2 Negate(Double2 value)
         {
-            return new Vector2(-value.X, -value.Y);
+            return new Double2(-value.X, -value.Y);
         }
 
         /// <summary>
-        /// Returns a <see cref="Vector2"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// Returns a <see cref="Double2"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
-        /// <param name="value1">A <see cref="Vector2"/> containing the 2D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <see cref="Vector2"/> containing the 2D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <see cref="Vector2"/> containing the 2D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="value1">A <see cref="Double2"/> containing the 2D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <see cref="Double2"/> containing the 2D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <see cref="Double2"/> containing the 2D Cartesian coordinates of vertex 3 of the triangle.</param>
         /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
         /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
         /// <param name="result">When the method completes, contains the 2D Cartesian coordinates of the specified point.</param>
-        public static void Barycentric(ref Vector2 value1, ref Vector2 value2, ref Vector2 value3, float amount1, float amount2, out Vector2 result)
+        public static void Barycentric(ref Double2 value1, ref Double2 value2, ref Double2 value3, double amount1, double amount2, out Double2 result)
         {
-            result = new Vector2((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)),
+            result = new Double2((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)),
                 (value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)));
         }
 
         /// <summary>
-        /// Returns a <see cref="Vector2"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// Returns a <see cref="Double2"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
-        /// <param name="value1">A <see cref="Vector2"/> containing the 2D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <see cref="Vector2"/> containing the 2D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <see cref="Vector2"/> containing the 2D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="value1">A <see cref="Double2"/> containing the 2D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <see cref="Double2"/> containing the 2D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <see cref="Double2"/> containing the 2D Cartesian coordinates of vertex 3 of the triangle.</param>
         /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
         /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        /// <returns>A new <see cref="Vector2"/> containing the 2D Cartesian coordinates of the specified point.</returns>
-        public static Vector2 Barycentric(Vector2 value1, Vector2 value2, Vector2 value3, float amount1, float amount2)
+        /// <returns>A new <see cref="Double2"/> containing the 2D Cartesian coordinates of the specified point.</returns>
+        public static Double2 Barycentric(Double2 value1, Double2 value2, Double2 value3, double amount1, double amount2)
         {
-            Vector2 result;
+            Double2 result;
             Barycentric(ref value1, ref value2, ref value3, amount1, amount2, out result);
             return result;
         }
@@ -481,17 +485,17 @@ namespace Molten
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
         /// <param name="result">When the method completes, contains the clamped value.</param>
-        public static void Clamp(ref Vector2 value, ref Vector2 min, ref Vector2 max, out Vector2 result)
+        public static void Clamp(ref Double2 value, ref Double2 min, ref Double2 max, out Double2 result)
         {
-            float x = value.X;
+            double x = value.X;
             x = (x > max.X) ? max.X : x;
             x = (x < min.X) ? min.X : x;
 
-            float y = value.Y;
+            double y = value.Y;
             y = (y > max.Y) ? max.Y : y;
             y = (y < min.Y) ? min.Y : y;
 
-            result = new Vector2(x, y);
+            result = new Double2(x, y);
         }
 
         /// <summary>
@@ -501,9 +505,9 @@ namespace Molten
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
         /// <returns>The clamped value.</returns>
-        public static Vector2 Clamp(Vector2 value, Vector2 min, Vector2 max)
+        public static Double2 Clamp(Double2 value, Double2 min, Double2 max)
         {
-            Vector2 result;
+            Double2 result;
             Clamp(ref value, ref min, ref max, out result);
             return result;
         }
@@ -524,15 +528,15 @@ namespace Molten
         /// <param name="value2">The second vector.</param>
         /// <param name="result">When the method completes, contains the distance between the two vectors.</param>
         /// <remarks>
-        /// <see cref="Vector2.DistanceSquared(ref Vector2, ref Vector2, out float)"/> may be preferred when only the relative distance is needed
+        /// <see cref="Double2.DistanceSquared(ref Double2, ref Double2, out double)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
-        public static void Distance(ref Vector2 value1, ref Vector2 value2, out float result)
+        public static void Distance(ref Double2 value1, ref Double2 value2, out double result)
         {
-            float x = value1.X - value2.X;
-            float y = value1.Y - value2.Y;
+            double x = value1.X - value2.X;
+            double y = value1.Y - value2.Y;
 
-            result = (float)Math.Sqrt((x * x) + (y * y));
+            result = (double)Math.Sqrt((x * x) + (y * y));
         }
 
         /// <summary>
@@ -542,15 +546,15 @@ namespace Molten
         /// <param name="value2">The second vector.</param>
         /// <returns>The distance between the two vectors.</returns>
         /// <remarks>
-        /// <see cref="Vector2.DistanceSquared(Vector2, Vector2)"/> may be preferred when only the relative distance is needed
+        /// <see cref="Double2.DistanceSquared(Double2, Double2)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
-        public static float Distance(Vector2 value1, Vector2 value2)
+        public static double Distance(Double2 value1, Double2 value2)
         {
-            float x = value1.X - value2.X;
-            float y = value1.Y - value2.Y;
+            double x = value1.X - value2.X;
+            double y = value1.Y - value2.Y;
 
-            return (float)Math.Sqrt((x * x) + (y * y));
+            return (double)Math.Sqrt((x * x) + (y * y));
         }
 
         /// <summary>
@@ -566,10 +570,10 @@ namespace Molten
         /// involves two square roots, which are computationally expensive. However, using distance squared 
         /// provides the same information and avoids calculating two square roots.
         /// </remarks>
-        public static void DistanceSquared(ref Vector2 value1, ref Vector2 value2, out float result)
+        public static void DistanceSquared(ref Double2 value1, ref Double2 value2, out double result)
         {
-            float x = value1.X - value2.X;
-            float y = value1.Y - value2.Y;
+            double x = value1.X - value2.X;
+            double y = value1.Y - value2.Y;
 
             result = (x * x) + (y * y);
         }
@@ -587,10 +591,10 @@ namespace Molten
         /// involves two square roots, which are computationally expensive. However, using distance squared 
         /// provides the same information and avoids calculating two square roots.
         /// </remarks>
-        public static float DistanceSquared(Vector2 value1, Vector2 value2)
+        public static double DistanceSquared(Double2 value1, Double2 value2)
         {
-            float x = value1.X - value2.X;
-            float y = value1.Y - value2.Y;
+            double x = value1.X - value2.X;
+            double y = value1.Y - value2.Y;
 
             return (x * x) + (y * y);
         }
@@ -600,8 +604,8 @@ namespace Molten
         /// </summary>
         /// <param name="left">First source vector.</param>
         /// <param name="right">Second source vector.</param>
-        /// <param name="result">When the method completes, contains the dot product of the two vectors.</param>
-        public static void Cross(ref Vector2 left, ref Vector2 right, out float result)
+        /// <param name="result">When the method completes, contains the cross product of the two vectors.</param>
+        public static void Cross(ref Double2 left, ref Double2 right, out double result)
         {
             result = (left.X * right.Y) - (left.Y * right.X);
         }
@@ -612,7 +616,7 @@ namespace Molten
         /// <param name="left">First source vector.</param>
         /// <param name="right">Second source vector.</param>
         /// <param name="result">When the method completes, contains the cross product of the two vectors.</param>
-        public static float Cross(Vector2 left, Vector2 right)
+        public static double Cross(Double2 left, Double2 right)
         {
             return (left.X * right.Y) - (left.Y * right.X);
         }
@@ -623,7 +627,7 @@ namespace Molten
         /// <param name="left">First source vector.</param>
         /// <param name="right">Second source vector.</param>
         /// <param name="result">When the method completes, contains the dot product of the two vectors.</param>
-        public static void Dot(ref Vector2 left, ref Vector2 right, out float result)
+        public static void Dot(ref Double2 left, ref Double2 right, out double result)
         {
             result = (left.X * right.X) + (left.Y * right.Y);
         }
@@ -634,7 +638,7 @@ namespace Molten
         /// <param name="left">First source vector.</param>
         /// <param name="right">Second source vector.</param>
         /// <returns>The dot product of the two vectors.</returns>
-        public static float Dot(Vector2 left, Vector2 right)
+        public static double Dot(Double2 left, Double2 right)
         {
             return (left.X * right.X) + (left.Y * right.Y);
         }
@@ -644,21 +648,31 @@ namespace Molten
         /// </summary>
         /// <param name="value">The vector to normalize.</param>
         /// <param name="result">When the method completes, contains the normalized vector.</param>
-        public static void Normalize(ref Vector2 value, out Vector2 result)
+        public static void Normalize(ref Double2 value, out Double2 result)
         {
             result = value;
             result.Normalize();
         }
 
-        /// <summary>
-        /// Converts the vector into a unit vector.
-        /// </summary>
-        /// <param name="value">The vector to normalize.</param>
-        /// <returns>The normalized vector.</returns>
-        public static Vector2 Normalize(Vector2 value)
+        ///// <summary>
+        ///// Converts the vector into a unit vector.
+        ///// </summary>
+        ///// <param name="value">The vector to normalize.</param>
+        ///// <returns>The normalized vector.</returns>
+        //public static Double2 Normalize(Double2 value)
+        //{
+        //    value.Normalize();
+        //    return value;
+        //}
+
+        public static Double2 Normalize(Double2 val, bool allowZero = false)
         {
-            value.Normalize();
-            return value;
+            double len = Math.Sqrt(val.X * val.X + val.Y * val.Y);
+            if (len == 0)
+            {
+                return new Double2(0, !allowZero ? 1 : 0);
+            }
+            return new Double2(val.X / len, val.Y / len);
         }
 
         /// <summary>
@@ -671,7 +685,7 @@ namespace Molten
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Vector2 start, ref Vector2 end, float amount, out Vector2 result)
+        public static void Lerp(ref Double2 start, ref Double2 end, double amount, out Double2 result)
         {
             result.X = MathHelper.Lerp(start.X, end.X, amount);
             result.Y = MathHelper.Lerp(start.Y, end.Y, amount);
@@ -687,9 +701,9 @@ namespace Molten
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static Vector2 Lerp(Vector2 start, Vector2 end, float amount)
+        public static Double2 Lerp(Double2 start, Double2 end, double amount)
         {
-            Vector2 result;
+            Double2 result;
             Lerp(ref start, ref end, amount, out result);
             return result;
         }
@@ -701,7 +715,7 @@ namespace Molten
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
-        public static void SmoothStep(ref Vector2 start, ref Vector2 end, float amount, out Vector2 result)
+        public static void SmoothStep(ref Double2 start, ref Double2 end, double amount, out Double2 result)
         {
             amount = MathHelper.SmoothStep(amount);
             Lerp(ref start, ref end, amount, out result);
@@ -714,9 +728,9 @@ namespace Molten
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <returns>The cubic interpolation of the two vectors.</returns>
-        public static Vector2 SmoothStep(Vector2 start, Vector2 end, float amount)
+        public static Double2 SmoothStep(Double2 start, Double2 end, double amount)
         {
-            Vector2 result;
+            Double2 result;
             SmoothStep(ref start, ref end, amount, out result);
             return result;
         }
@@ -730,14 +744,14 @@ namespace Molten
         /// <param name="tangent2">Second source tangent vector.</param>
         /// <param name="amount">Weighting factor.</param>
         /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
-        public static void Hermite(ref Vector2 value1, ref Vector2 tangent1, ref Vector2 value2, ref Vector2 tangent2, float amount, out Vector2 result)
+        public static void Hermite(ref Double2 value1, ref Double2 tangent1, ref Double2 value2, ref Double2 tangent2, double amount, out Double2 result)
         {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
-            float part2 = (-2.0f * cubed) + (3.0f * squared);
-            float part3 = (cubed - (2.0f * squared)) + amount;
-            float part4 = cubed - squared;
+            double squared = amount * amount;
+            double cubed = amount * squared;
+            double part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
+            double part2 = (-2.0f * cubed) + (3.0f * squared);
+            double part3 = (cubed - (2.0f * squared)) + amount;
+            double part4 = cubed - squared;
 
             result.X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4);
             result.Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4);
@@ -752,9 +766,9 @@ namespace Molten
         /// <param name="tangent2">Second source tangent vector.</param>
         /// <param name="amount">Weighting factor.</param>
         /// <returns>The result of the Hermite spline interpolation.</returns>
-        public static Vector2 Hermite(Vector2 value1, Vector2 tangent1, Vector2 value2, Vector2 tangent2, float amount)
+        public static Double2 Hermite(Double2 value1, Double2 tangent1, Double2 value2, Double2 tangent2, double amount)
         {
-            Vector2 result;
+            Double2 result;
             Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount, out result);
             return result;
         }
@@ -768,10 +782,10 @@ namespace Molten
         /// <param name="value4">The fourth position in the interpolation.</param>
         /// <param name="amount">Weighting factor.</param>
         /// <param name="result">When the method completes, contains the result of the Catmull-Rom interpolation.</param>
-        public static void CatmullRom(ref Vector2 value1, ref Vector2 value2, ref Vector2 value3, ref Vector2 value4, float amount, out Vector2 result)
+        public static void CatmullRom(ref Double2 value1, ref Double2 value2, ref Double2 value3, ref Double2 value4, double amount, out Double2 result)
         {
-            float squared = amount * amount;
-            float cubed = amount * squared;
+            double squared = amount * amount;
+            double cubed = amount * squared;
 
             result.X = 0.5f * ((((2.0f * value2.X) + ((-value1.X + value3.X) * amount)) +
             (((((2.0f * value1.X) - (5.0f * value2.X)) + (4.0f * value3.X)) - value4.X) * squared)) +
@@ -791,9 +805,9 @@ namespace Molten
         /// <param name="value4">The fourth position in the interpolation.</param>
         /// <param name="amount">Weighting factor.</param>
         /// <returns>A vector that is the result of the Catmull-Rom interpolation.</returns>
-        public static Vector2 CatmullRom(Vector2 value1, Vector2 value2, Vector2 value3, Vector2 value4, float amount)
+        public static Double2 CatmullRom(Double2 value1, Double2 value2, Double2 value3, Double2 value4, double amount)
         {
-            Vector2 result;
+            Double2 result;
             CatmullRom(ref value1, ref value2, ref value3, ref value4, amount, out result);
             return result;
         }
@@ -804,7 +818,7 @@ namespace Molten
         /// <param name="left">The first source vector.</param>
         /// <param name="right">The second source vector.</param>
         /// <param name="result">When the method completes, contains an new vector composed of the largest components of the source vectors.</param>
-        public static void Max(ref Vector2 left, ref Vector2 right, out Vector2 result)
+        public static void Max(ref Double2 left, ref Double2 right, out Double2 result)
         {
             result.X = (left.X > right.X) ? left.X : right.X;
             result.Y = (left.Y > right.Y) ? left.Y : right.Y;
@@ -816,9 +830,9 @@ namespace Molten
         /// <param name="left">The first source vector.</param>
         /// <param name="right">The second source vector.</param>
         /// <returns>A vector containing the largest components of the source vectors.</returns>
-        public static Vector2 Max(Vector2 left, Vector2 right)
+        public static Double2 Max(Double2 left, Double2 right)
         {
-            Vector2 result;
+            Double2 result;
             Max(ref left, ref right, out result);
             return result;
         }
@@ -829,7 +843,7 @@ namespace Molten
         /// <param name="left">The first source vector.</param>
         /// <param name="right">The second source vector.</param>
         /// <param name="result">When the method completes, contains an new vector composed of the smallest components of the source vectors.</param>
-        public static void Min(ref Vector2 left, ref Vector2 right, out Vector2 result)
+        public static void Min(ref Double2 left, ref Double2 right, out Double2 result)
         {
             result.X = (left.X < right.X) ? left.X : right.X;
             result.Y = (left.Y < right.Y) ? left.Y : right.Y;
@@ -841,9 +855,9 @@ namespace Molten
         /// <param name="left">The first source vector.</param>
         /// <param name="right">The second source vector.</param>
         /// <returns>A vector containing the smallest components of the source vectors.</returns>
-        public static Vector2 Min(Vector2 left, Vector2 right)
+        public static Double2 Min(Double2 left, Double2 right)
         {
-            Vector2 result;
+            Double2 result;
             Min(ref left, ref right, out result);
             return result;
         }
@@ -856,9 +870,9 @@ namespace Molten
         /// <param name="result">When the method completes, contains the reflected vector.</param>
         /// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
         /// whether the original vector was close enough to the surface to hit it.</remarks>
-        public static void Reflect(ref Vector2 vector, ref Vector2 normal, out Vector2 result)
+        public static void Reflect(ref Double2 vector, ref Double2 normal, out Double2 result)
         {
-            float dot = (vector.X * normal.X) + (vector.Y * normal.Y);
+            double dot = (vector.X * normal.X) + (vector.Y * normal.Y);
 
             result.X = vector.X - ((2.0f * dot) * normal.X);
             result.Y = vector.Y - ((2.0f * dot) * normal.Y);
@@ -872,9 +886,9 @@ namespace Molten
         /// <returns>The reflected vector.</returns>
         /// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
         /// whether the original vector was close enough to the surface to hit it.</remarks>
-        public static Vector2 Reflect(Vector2 vector, Vector2 normal)
+        public static Double2 Reflect(Double2 vector, Double2 normal)
         {
-            Vector2 result;
+            Double2 result;
             Reflect(ref vector, ref normal, out result);
             return result;
         }
@@ -895,7 +909,7 @@ namespace Molten
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Orthogonalize(Vector2[] destination, params Vector2[] source)
+        public static void Orthogonalize(Double2[] destination, params Double2[] source)
         {
             //Uses the modified Gram-Schmidt process.
             //q1 = m1
@@ -913,11 +927,11 @@ namespace Molten
 
             for (int i = 0; i < source.Length; ++i)
             {
-                Vector2 newvector = source[i];
+                Double2 newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
                 {
-                    newvector -= (Vector2.Dot(destination[r], newvector) / Vector2.Dot(destination[r], destination[r])) * destination[r];
+                    newvector -= (Double2.Dot(destination[r], newvector) / Double2.Dot(destination[r], destination[r])) * destination[r];
                 }
 
                 destination[i] = newvector;
@@ -940,7 +954,7 @@ namespace Molten
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Orthonormalize(Vector2[] destination, params Vector2[] source)
+        public static void Orthonormalize(Double2[] destination, params Double2[] source)
         {
             //Uses the modified Gram-Schmidt process.
             //Because we are making unit vectors, we can optimize the math for orthogonalization
@@ -960,11 +974,11 @@ namespace Molten
 
             for (int i = 0; i < source.Length; ++i)
             {
-                Vector2 newvector = source[i];
+                Double2 newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
                 {
-                    newvector -= Vector2.Dot(destination[r], newvector) * destination[r];
+                    newvector -= Double2.Dot(destination[r], newvector) * destination[r];
                 }
 
                 newvector.Normalize();
@@ -977,19 +991,19 @@ namespace Molten
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="rotation">The <see cref="Quaternion"/> rotation to apply.</param>
-        /// <param name="result">When the method completes, contains the transformed <see cref="Vector4"/>.</param>
-        public static void Transform(ref Vector2 vector, ref Quaternion rotation, out Vector2 result)
+        /// <param name="result">When the method completes, contains the transformed <see cref="Double4"/>.</param>
+        public static void Transform(ref Double2 vector, ref Quaternion rotation, out Double2 result)
         {
-            float x = rotation.X + rotation.X;
-            float y = rotation.Y + rotation.Y;
-            float z = rotation.Z + rotation.Z;
-            float wz = rotation.W * z;
-            float xx = rotation.X * x;
-            float xy = rotation.X * y;
-            float yy = rotation.Y * y;
-            float zz = rotation.Z * z;
+            double x = rotation.X + rotation.X;
+            double y = rotation.Y + rotation.Y;
+            double z = rotation.Z + rotation.Z;
+            double wz = rotation.W * z;
+            double xx = rotation.X * x;
+            double xy = rotation.X * y;
+            double yy = rotation.Y * y;
+            double zz = rotation.Z * z;
 
-            result = new Vector2((vector.X * (1.0f - yy - zz)) + (vector.Y * (xy - wz)), (vector.X * (xy + wz)) + (vector.Y * (1.0f - xx - zz)));
+            result = new Double2((vector.X * (1.0f - yy - zz)) + (vector.Y * (xy - wz)), (vector.X * (xy + wz)) + (vector.Y * (1.0f - xx - zz)));
         }
 
         /// <summary>
@@ -997,10 +1011,10 @@ namespace Molten
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="rotation">The <see cref="Quaternion"/> rotation to apply.</param>
-        /// <returns>The transformed <see cref="Vector4"/>.</returns>
-        public static Vector2 Transform(Vector2 vector, Quaternion rotation)
+        /// <returns>The transformed <see cref="Double4"/>.</returns>
+        public static Double2 Transform(Double2 vector, Quaternion rotation)
         {
-            Vector2 result;
+            Double2 result;
             Transform(ref vector, ref rotation, out result);
             return result;
         }
@@ -1014,7 +1028,7 @@ namespace Molten
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(Vector2[] source, ref Quaternion rotation, Vector2[] destination)
+        public static void Transform(Double2[] source, ref Quaternion rotation, Double2[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -1023,23 +1037,23 @@ namespace Molten
             if (destination.Length < source.Length)
                 throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
 
-            float x = rotation.X + rotation.X;
-            float y = rotation.Y + rotation.Y;
-            float z = rotation.Z + rotation.Z;
-            float wz = rotation.W * z;
-            float xx = rotation.X * x;
-            float xy = rotation.X * y;
-            float yy = rotation.Y * y;
-            float zz = rotation.Z * z;
+            double x = rotation.X + rotation.X;
+            double y = rotation.Y + rotation.Y;
+            double z = rotation.Z + rotation.Z;
+            double wz = rotation.W * z;
+            double xx = rotation.X * x;
+            double xy = rotation.X * y;
+            double yy = rotation.Y * y;
+            double zz = rotation.Z * z;
 
-            float num1 = (1.0f - yy - zz);
-            float num2 = (xy - wz);
-            float num3 = (xy + wz);
-            float num4 = (1.0f - xx - zz);
+            double num1 = (1.0f - yy - zz);
+            double num2 = (xy - wz);
+            double num3 = (xy + wz);
+            double num4 = (1.0f - xx - zz);
 
             for (int i = 0; i < source.Length; ++i)
             {
-                destination[i] = new Vector2(
+                destination[i] = new Double2(
                     (source[i].X * num1) + (source[i].Y * num2),
                     (source[i].X * num3) + (source[i].Y * num4));
             }
@@ -1050,10 +1064,10 @@ namespace Molten
         /// </summary>
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
-        /// <param name="result">When the method completes, contains the transformed <see cref="Vector4"/>.</param>
-        public static void Transform(ref Vector2 vector, ref Matrix transform, out Vector4 result)
+        /// <param name="result">When the method completes, contains the transformed <see cref="Double4"/>.</param>
+        public static void Transform(ref Double2 vector, ref Matrix transform, out Double4 result)
         {
-            result = new Vector4(
+            result = new Double4(
                 (vector.X * transform.M11) + (vector.Y * transform.M21) + transform.M41,
                 (vector.X * transform.M12) + (vector.Y * transform.M22) + transform.M42,
                 (vector.X * transform.M13) + (vector.Y * transform.M23) + transform.M43,
@@ -1065,10 +1079,10 @@ namespace Molten
         /// </summary>
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
-        /// <returns>The transformed <see cref="Vector4"/>.</returns>
-        public static Vector4 Transform(Vector2 vector, Matrix transform)
+        /// <returns>The transformed <see cref="Double4"/>.</returns>
+        public static Double4 Transform(Double2 vector, Matrix transform)
         {
-            Vector4 result;
+            Double4 result;
             Transform(ref vector, ref transform, out result);
             return result;
         }
@@ -1081,7 +1095,7 @@ namespace Molten
         /// <param name="destination">The array for which the transformed vectors are stored.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(Vector2[] source, ref Matrix transform, Vector4[] destination)
+        public static void Transform(Double2[] source, ref Matrix transform, Double4[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -1109,15 +1123,15 @@ namespace Molten
         /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
         /// with coordinates as the w component can safely be ignored.
         /// </remarks>
-        public static void TransformCoordinate(ref Vector2 coordinate, ref Matrix transform, out Vector2 result)
+        public static void TransformCoordinate(ref Double2 coordinate, ref Matrix transform, out Double2 result)
         {
-            Vector4 vector = new Vector4();
+            Double4 vector = new Double4();
             vector.X = (coordinate.X * transform.M11) + (coordinate.Y * transform.M21) + transform.M41;
             vector.Y = (coordinate.X * transform.M12) + (coordinate.Y * transform.M22) + transform.M42;
             vector.Z = (coordinate.X * transform.M13) + (coordinate.Y * transform.M23) + transform.M43;
             vector.W = 1f / ((coordinate.X * transform.M14) + (coordinate.Y * transform.M24) + transform.M44);
 
-            result = new Vector2(vector.X * vector.W, vector.Y * vector.W);
+            result = new Double2(vector.X * vector.W, vector.Y * vector.W);
         }
 
         /// <summary>
@@ -1133,9 +1147,9 @@ namespace Molten
         /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
         /// with coordinates as the w component can safely be ignored.
         /// </remarks>
-        public static Vector2 TransformCoordinate(Vector2 coordinate, Matrix transform)
+        public static Double2 TransformCoordinate(Double2 coordinate, Matrix transform)
         {
-            Vector2 result;
+            Double2 result;
             TransformCoordinate(ref coordinate, ref transform, out result);
             return result;
         }
@@ -1156,7 +1170,7 @@ namespace Molten
         /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
         /// with coordinates as the w component can safely be ignored.
         /// </remarks>
-        public static void TransformCoordinate(Vector2[] source, ref Matrix transform, Vector2[] destination)
+        public static void TransformCoordinate(Double2[] source, ref Matrix transform, Double2[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -1184,9 +1198,9 @@ namespace Molten
         /// apply. This is often preferred for normal vectors as normals purely represent direction
         /// rather than location because normal vectors should not be translated.
         /// </remarks>
-        public static void TransformNormal(ref Vector2 normal, ref Matrix transform, out Vector2 result)
+        public static void TransformNormal(ref Double2 normal, ref Matrix transform, out Double2 result)
         {
-            result = new Vector2(
+            result = new Double2(
                 (normal.X * transform.M11) + (normal.Y * transform.M21),
                 (normal.X * transform.M12) + (normal.Y * transform.M22));
         }
@@ -1204,9 +1218,9 @@ namespace Molten
         /// apply. This is often preferred for normal vectors as normals purely represent direction
         /// rather than location because normal vectors should not be translated.
         /// </remarks>
-        public static Vector2 TransformNormal(Vector2 normal, Matrix transform)
+        public static Double2 TransformNormal(Double2 normal, Matrix transform)
         {
-            Vector2 result;
+            Double2 result;
             TransformNormal(ref normal, ref transform, out result);
             return result;
         }
@@ -1227,7 +1241,7 @@ namespace Molten
         /// apply. This is often preferred for normal vectors as normals purely represent direction
         /// rather than location because normal vectors should not be translated.
         /// </remarks>
-        public static void TransformNormal(Vector2[] source, ref Matrix transform, Vector2[] destination)
+        public static void TransformNormal(Double2[] source, ref Matrix transform, Double2[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -1248,20 +1262,20 @@ namespace Molten
         /// <param name="left">The first vector to add.</param>
         /// <param name="right">The second vector to add.</param>
         /// <returns>The sum of the two vectors.</returns>
-        public static Vector2 operator +(Vector2 left, Vector2 right)
+        public static Double2 operator +(Double2 left, Double2 right)
         {
-            return new Vector2(left.X + right.X, left.Y + right.Y);
+            return new Double2(left.X + right.X, left.Y + right.Y);
         }
 
         /// <summary>
-        /// Multiplies a vector with another by performing component-wise multiplication equivalent to <see cref="Multiply(ref Vector2,ref Vector2,out Vector2)"/>.
+        /// Multiplies a vector with another by performing component-wise multiplication equivalent to <see cref="Multiply(ref Double2,ref Double2,out Double2)"/>.
         /// </summary>
         /// <param name="left">The first vector to multiply.</param>
         /// <param name="right">The second vector to multiply.</param>
         /// <returns>The multiplication of the two vectors.</returns>
-        public static Vector2 operator *(Vector2 left, Vector2 right)
+        public static Double2 operator *(Double2 left, Double2 right)
         {
-            return new Vector2(left.X * right.X, left.Y * right.Y);
+            return new Double2(left.X * right.X, left.Y * right.Y);
         }
 
         /// <summary>
@@ -1269,7 +1283,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The vector to assert (unchanged).</param>
         /// <returns>The asserted (unchanged) vector.</returns>
-        public static Vector2 operator +(Vector2 value)
+        public static Double2 operator +(Double2 value)
         {
             return value;
         }
@@ -1280,9 +1294,9 @@ namespace Molten
         /// <param name="left">The first vector to subtract.</param>
         /// <param name="right">The second vector to subtract.</param>
         /// <returns>The difference of the two vectors.</returns>
-        public static Vector2 operator -(Vector2 left, Vector2 right)
+        public static Double2 operator -(Double2 left, Double2 right)
         {
-            return new Vector2(left.X - right.X, left.Y - right.Y);
+            return new Double2(left.X - right.X, left.Y - right.Y);
         }
 
         /// <summary>
@@ -1290,9 +1304,9 @@ namespace Molten
         /// </summary>
         /// <param name="value">The vector to negate.</param>
         /// <returns>A vector facing in the opposite direction.</returns>
-        public static Vector2 operator -(Vector2 value)
+        public static Double2 operator -(Double2 value)
         {
-            return new Vector2(-value.X, -value.Y);
+            return new Double2(-value.X, -value.Y);
         }
 
         /// <summary>
@@ -1301,9 +1315,9 @@ namespace Molten
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static Vector2 operator *(float scale, Vector2 value)
+        public static Double2 operator *(double scale, Double2 value)
         {
-            return new Vector2(value.X * scale, value.Y * scale);
+            return new Double2(value.X * scale, value.Y * scale);
         }
 
         /// <summary>
@@ -1312,9 +1326,9 @@ namespace Molten
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static Vector2 operator *(Vector2 value, float scale)
+        public static Double2 operator *(Double2 value, double scale)
         {
-            return new Vector2(value.X * scale, value.Y * scale);
+            return new Double2(value.X * scale, value.Y * scale);
         }
 
         /// <summary>
@@ -1323,9 +1337,9 @@ namespace Molten
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static Vector2 operator /(Vector2 value, float scale)
+        public static Double2 operator /(Double2 value, double scale)
         {
-            return new Vector2(value.X / scale, value.Y / scale);
+            return new Double2(value.X / scale, value.Y / scale);
         }
 
         /// <summary>
@@ -1334,9 +1348,9 @@ namespace Molten
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <param name="value">The vector to scale.</param>  
         /// <returns>The scaled vector.</returns>
-        public static Vector2 operator /(float scale , Vector2 value)
+        public static Double2 operator /(double scale , Double2 value)
         {
-            return new Vector2(scale / value.X, scale / value.Y);
+            return new Double2(scale / value.X, scale / value.Y);
         }
 
         /// <summary>
@@ -1345,9 +1359,9 @@ namespace Molten
         /// <param name="value">The vector to scale.</param>
         /// <param name="scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static Vector2 operator /(Vector2 value, Vector2 scale)
+        public static Double2 operator /(Double2 value, Double2 scale)
         {
-            return new Vector2(value.X / scale.X, value.Y / scale.Y);
+            return new Double2(value.X / scale.X, value.Y / scale.Y);
         }
 
         /// <summary>
@@ -1356,9 +1370,9 @@ namespace Molten
         /// <param name="value">The input vector.</param>
         /// <param name="scalar">The scalar value to be added on elements</param>
         /// <returns>The vector with added scalar for each element.</returns>
-        public static Vector2 operator +(Vector2 value, float scalar)
+        public static Double2 operator +(Double2 value, double scalar)
         {
-            return new Vector2(value.X + scalar, value.Y + scalar);
+            return new Double2(value.X + scalar, value.Y + scalar);
         }
 
         /// <summary>
@@ -1367,9 +1381,9 @@ namespace Molten
         /// <param name="value">The input vector.</param>
         /// <param name="scalar">The scalar value to be added on elements</param>
         /// <returns>The vector with added scalar for each element.</returns>
-        public static Vector2 operator +(float scalar, Vector2 value)
+        public static Double2 operator +(double scalar, Double2 value)
         {
-            return new Vector2(scalar + value.X, scalar + value.Y);
+            return new Double2(scalar + value.X, scalar + value.Y);
         }
 
         /// <summary>
@@ -1378,9 +1392,9 @@ namespace Molten
         /// <param name="value">The input vector.</param>
         /// <param name="scalar">The scalar value to be subtraced from elements</param>
         /// <returns>The vector with subtraced scalar from each element.</returns>
-        public static Vector2 operator -(Vector2 value, float scalar)
+        public static Double2 operator -(Double2 value, double scalar)
         {
-            return new Vector2(value.X - scalar, value.Y - scalar);
+            return new Double2(value.X - scalar, value.Y - scalar);
         }
 
         /// <summary>
@@ -1389,9 +1403,9 @@ namespace Molten
         /// <param name="value">The input vector.</param>
         /// <param name="scalar">The scalar value to be subtraced from elements</param>
         /// <returns>The vector with subtraced scalar from each element.</returns>
-        public static Vector2 operator -(float scalar, Vector2 value)
+        public static Double2 operator -(double scalar, Double2 value)
         {
-            return new Vector2(scalar - value.X, scalar - value.Y);
+            return new Double2(scalar - value.X, scalar - value.Y);
         }
 
         /// <summary>
@@ -1401,7 +1415,7 @@ namespace Molten
         /// <param name="right">The second value to compare.</param>
         /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Vector2 left, Vector2 right)
+        public static bool operator ==(Double2 left, Double2 right)
         {
             return left.Equals(ref right);
         }
@@ -1413,38 +1427,38 @@ namespace Molten
         /// <param name="right">The second value to compare.</param>
         /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Vector2 left, Vector2 right)
+        public static bool operator !=(Double2 left, Double2 right)
         {
             return !left.Equals(ref right);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Vector2"/> to <see cref="Vector3"/>.
+        /// Performs an explicit conversion from <see cref="Double2"/> to <see cref="Double3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector3(Vector2 value)
+        public static explicit operator Double3(Double2 value)
         {
-            return new Vector3(value, 0.0f);
+            return new Double3(value, 0.0f);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Vector2"/> to <see cref="Vector4"/>.
+        /// Performs an explicit conversion from <see cref="Double2"/> to <see cref="Double4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector4(Vector2 value)
+        public static explicit operator Double4(Double2 value)
         {
-            return new Vector4(value, 0.0f, 0.0f);
+            return new Double4(value, 0.0f, 0.0f);
         }
 
         /// <summary>T</summary>
         /// <param name="vec"></param>
         /// <param name="vec">The vector.</param>
         /// <returns></returns>
-        public static Vector2 Truncate(Vector2 vec)
+        public static Double2 Truncate(Double2 vec)
         {
-            return new Vector2()
+            return new Double2()
             {
                 X = (Math.Abs(vec.X) - 0.0001 < 0) ? 0 : vec.X,
                 Y = (Math.Abs(vec.Y) - 0.0001 < 0) ? 0 : vec.Y,
@@ -1455,21 +1469,21 @@ namespace Molten
         /// If so this method truncates that value to zero.</summary>
         /// <param name="power">The power.</param>
         /// <param name="vec">The vector.</param>
-        public static Vector2 Pow(Vector2 vec, float power)
+        public static Double2 Pow(Double2 vec, double power)
         {
-            return new Vector2()
+            return new Double2()
             {
-                X = (float)Math.Pow(vec.X, power),
-                Y = (float)Math.Pow(vec.Y, power),
+                X = (double)Math.Pow(vec.X, power),
+                Y = (double)Math.Pow(vec.Y, power),
             };
         }
 
         /// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
-        public static Vector2 Clamp(Vector2 vec, float min, float max)
+        public static Double2 Clamp(Double2 vec, double min, double max)
         {
-            return new Vector2()
+            return new Double2()
             {
                 X = MathHelper.Clamp(vec.X, min, max),
                 Y = MathHelper.Clamp(vec.Y, min, max),
@@ -1545,27 +1559,27 @@ namespace Molten
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Vector2"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Double2"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="Vector2"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="Double2"/> to compare with this instance.</param>
         /// <returns>
-        /// 	<c>true</c> if the specified <see cref="Vector2"/> is equal to this instance; otherwise, <c>false</c>.
+        /// 	<c>true</c> if the specified <see cref="Double2"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref Vector2 other)
+        public bool Equals(ref Double2 other)
         {
             return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y);
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Vector2"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Double2"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="Vector2"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="Double2"/> to compare with this instance.</param>
         /// <returns>
-        /// 	<c>true</c> if the specified <see cref="Vector2"/> is equal to this instance; otherwise, <c>false</c>.
+        /// 	<c>true</c> if the specified <see cref="Double2"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Vector2 other)
+        public bool Equals(Double2 other)
         {
             return Equals(ref other);
         }
@@ -1579,10 +1593,10 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is Vector2))
+            if (!(value is Double2))
                 return false;
 
-            var strongValue = (Vector2)value;
+            var strongValue = (Double2)value;
             return Equals(ref strongValue);
         }
 
@@ -1590,7 +1604,7 @@ namespace Molten
         /// Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
         /// If so this method truncates that value to zero.
         /// </summary>
-        /// <returns>A truncated Vector4</returns>
+        /// <returns>A truncated Double4</returns>
         public void Truncate()
         {
             X = (Math.Abs(X) - 0.0001 < 0) ? 0 : X;
@@ -1599,16 +1613,16 @@ namespace Molten
 
         /// <summary>Updates the component values to the power of the specified value.</summary>
         /// <param name="power"></param>
-        public void Pow(float power)
+        public void Pow(double power)
         {
-            X = (float)Math.Pow(X, power);
-            Y = (float)Math.Pow(Y, power);
+            X = (double)Math.Pow(X, power);
+            Y = (double)Math.Pow(Y, power);
         }
 
         /// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
-        public void Clamp(float min, float max)
+        public void Clamp(double min, double max)
         {
             X = MathHelper.Clamp(X, min, max);
             Y = MathHelper.Clamp(Y, min, max);
@@ -1617,15 +1631,15 @@ namespace Molten
         /// <summary>Rounds all components down to the nearest unit.</summary>
         public void Floor()
         {
-            X = (float)Math.Floor(X);
-            Y = (float)Math.Floor(Y);
+            X = (double)Math.Floor(X);
+            Y = (double)Math.Floor(Y);
         }
 
         /// <summary>Rounds all components up to the nearest unit.</summary>
         public void Ceiling()
         {
-            X = (float)Math.Ceiling(X);
-            Y = (float)Math.Ceiling(Y);
+            X = (double)Math.Ceiling(X);
+            Y = (double)Math.Ceiling(Y);
         }
     }
 }

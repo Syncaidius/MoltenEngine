@@ -1,5 +1,6 @@
 ﻿//MIT, 2016, Viktor Chlumsky, Multi-channel signed distance field generator, from https://github.com/Chlumsky/msdfgen
 //MIT, 2017, WinterDev (C# port)
+//MIT, 2018, James Yarwood (Adapted for Molten Engine)
 
 using System;
 using System.Collections.Generic;
@@ -21,16 +22,6 @@ namespace Msdfgen
             return r + "," + g + "," + b;
         }
 #endif
-    }
-    public struct Pair<T, U>
-    {
-        public T first;
-        public U second;
-        public Pair(T first, U second)
-        {
-            this.first = first;
-            this.second = second;
-        }
     }
     public class FloatBmp
     {
@@ -264,7 +255,7 @@ namespace Msdfgen
         }
         static void msdfErrorCorrection(FloatRGBBmp output, Vector2 threshold)
         {
-            List<Pair<int, int>> clashes = new List<Msdfgen.Pair<int, int>>();
+            List<ValueTuple<int, int>> clashes = new List<ValueTuple<int, int>>();
             int w = output.Width, h = output.Height;
             for (int y = 0; y < h; ++y)
             {
@@ -275,15 +266,15 @@ namespace Msdfgen
                         || (y > 0 && pixelClash(output.GetPixel(x, y), output.GetPixel(x, y - 1), threshold.y))
                         || (y < h - 1 && pixelClash(output.GetPixel(x, y), output.GetPixel(x, y + 1), threshold.y)))
                     {
-                        clashes.Add(new Pair<int, int>(x, y));
+                        clashes.Add(new ValueTuple<int, int>(x, y));
                     }
                 }
             }
             int clash_count = clashes.Count;
             for (int i = 0; i < clash_count; ++i)
             {
-                Pair<int, int> clash = clashes[i];
-                FloatRGB pixel = output.GetPixel(clash.first, clash.second);
+                ValueTuple<int, int> clash = clashes[i];
+                FloatRGB pixel = output.GetPixel(clash.Item1, clash.Item2);
                 float med = median(pixel.r, pixel.g, pixel.b);
                 pixel.r = med; pixel.g = med; pixel.b = med;
             }
