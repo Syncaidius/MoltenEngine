@@ -1,17 +1,21 @@
 ﻿using Molten.Graphics;
+using Msdfgen;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Typography.Contours;
 using Typography.OpenFont;
+using Typography.Rendering;
 
 namespace Molten.Samples
 {
-    public class FontTest : SampleSceneGame
+    public class MsdfSample : SampleSceneGame
     {
-        public override string Description => "A stress test of sprite rendering.";
+        public override string Description => "multi-channel signed distance field sample.";
 
         Scene _scene;
         SceneObject _parent;
@@ -24,7 +28,7 @@ namespace Molten.Samples
         List<ISprite> _sprites;
         IMesh<VertexTexture> _mesh;
 
-        public FontTest(EngineSettings settings = null) : base("Font/Text", settings)
+        public MsdfSample(EngineSettings settings = null) : base("MSDF", settings)
         {
 
         }
@@ -50,7 +54,6 @@ namespace Molten.Samples
             _scene = CreateScene("Test");
             _scene.OutputCamera = _cam;
             _font = engine.Renderer.Resources.CreateFont("arial", 36);
-            SetupSprites(_font);
 
             ContentRequest cr = engine.Content.StartRequest();
             cr.Load<ITexture2D>("png_test.png;mipmaps=true");
@@ -105,34 +108,85 @@ namespace Molten.Samples
             };
             _mesh.SetVertices(verts);
             SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
+
+            if (File.Exists("assets/tahoma.ttf"))
+                CreateSampleMsdfTextureFont("assets/tahoma.ttf", 18, new char[] { 'A', 'B', 'C', 'D', 'E', 'F', '测', '试' }, "msdf");
+            else
+                Log.WriteError("Cannot run MSDF test. Font file does not exist.");
         }
 
-        private void SetupSprites(ISpriteFont font)
+        static void CreateSampleMsdfTextureFont(string fontfile, float sizeInPoint, char[] chars, string outputDir)
         {
-            for(int i = 0; i < 1000; i++)
+            if (!Directory.Exists(outputDir))
+                Directory.CreateDirectory(outputDir);
+
+            //sample
+            var reader = new OpenFontReader();
+            using (var fs = new FileStream(fontfile, FileMode.Open))
             {
-                SpriteText s = new SpriteText()
+                //1. read typeface from font file
+                Typeface typeface = reader.Read(fs);
+                //sample: create sample msdf texture 
+                //-------------------------------------------------------------
+                var builder = new GlyphPathBuilder(typeface);
+                //builder.UseTrueTypeInterpreter = this.chkTrueTypeHint.Checked;
+                //builder.UseVerticalHinting = this.chkVerticalHinting.Checked;
+                //-------------------------------------------------------------
+                var atlasBuilder = new SimpleFontAtlasBuilder();
+
+                MsdfGenParams msdfGenParams = new MsdfGenParams();
+
+                int j = chars.Length;
+                for (int i = 0; i < j; ++i)
                 {
-                    Position = new Vector2()
+                    //build glyph
+                    ushort gindex = typeface.LookupIndex(chars[i]);
+                    //-----------------------------------
+                    //get exact bounds of glyphs
+                    Glyph glyph = typeface.GetGlyphByIndex(gindex);
+                    Bounds bounds = glyph.Bounds;  //exact bounds
+
+                    //-----------------------------------
+                    builder.BuildFromGlyphIndex(gindex, -1);
+                    var glyphToContour = new GlyphContourBuilder();
+                    //glyphToContour.Read(builder.GetOutputPoints(), builder.GetOutputContours());
+                    builder.ReadShapes(glyphToContour);
+                    float scale = 1f / 64;
+                    msdfGenParams.shapeScale = scale;
+                    float s_xmin = bounds.XMin * scale;
+                    float s_xmax = bounds.XMax * scale;
+                    float s_ymin = bounds.YMin * scale;
+                    float s_ymax = bounds.YMax * scale;
+
+
+                    //-----------------------------------
+                    GlyphImage glyphImg = MsdfGlyphGen.CreateMsdfImage(glyphToContour, msdfGenParams);
+                    atlasBuilder.AddGlyph(gindex, glyphImg);
+                    int w = glyphImg.Width;
+                    int h = glyphImg.Height;
+                    using (Bitmap bmp = new Bitmap(glyphImg.Width, glyphImg.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
                     {
-                        X = _rng.Next(0, 1720),
-                        Y = _rng.Next(0, 880),
-                    },
+                        var bmpdata = bmp.LockBits(new System.Drawing.Rectangle(0, 0, w, h), System.Drawing.Imaging.ImageLockMode.ReadWrite, bmp.PixelFormat);
+                        int[] imgBuffer = glyphImg.GetImageBuffer();
+                        System.Runtime.InteropServices.Marshal.Copy(imgBuffer, 0, bmpdata.Scan0, imgBuffer.Length);
+                        bmp.UnlockBits(bmpdata);
+                        string path = $"{outputDir}/char_{i}.png";
+                        bmp.Save(path);
+                    }
+                }
 
-                    Color = new Color()
-                    {
-                        R = (byte)_rng.Next(0, 256),
-                        G = (byte)_rng.Next(0, 256),
-                        B = (byte)_rng.Next(0, 256),
-                        A = 255,
-                    },
+                var glyphImg2 = atlasBuilder.BuildSingleImage();
+                using (Bitmap bmp = new Bitmap(glyphImg2.Width, glyphImg2.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+                {
+                    var bmpdata = bmp.LockBits(new System.Drawing.Rectangle(0, 0, glyphImg2.Width, glyphImg2.Height),
+                        System.Drawing.Imaging.ImageLockMode.ReadWrite, bmp.PixelFormat);
+                    int[] intBuffer = glyphImg2.GetImageBuffer();
 
-                    Font = font,
-                    Text = $"TEST {_rng.Next(6000000, int.MaxValue)}",
-                };
-
-                _sprites.Add(s);
-                _scene.RenderData.AddSprite(s);
+                    System.Runtime.InteropServices.Marshal.Copy(intBuffer, 0, bmpdata.Scan0, intBuffer.Length);
+                    bmp.UnlockBits(bmpdata);
+                    bmp.Save($"{outputDir}/sheet.png");
+                }
+                atlasBuilder.SaveFontInfo($"{outputDir}/sheet_info.xml");
             }
         }
 

@@ -82,6 +82,11 @@
     <Compile Include="Mesh\IBonedMesh.cs" />
     <Compile Include="Mesh\IIndexedMesh.cs" />
     <Compile Include="Mesh\IMesh.cs" />
+    <Compile Include="Msdf\Atlas\BinPacker.cs" />
+    <Compile Include="Msdf\Atlas\GlyphImages.cs" />
+    <Compile Include="Msdf\Atlas\MsdfGlyphGen.cs" />
+    <Compile Include="Msdf\Atlas\SimpleFontAtlas.cs" />
+    <Compile Include="Msdf\Atlas\SimpleFontAtlasBuilder.cs" />
     <Compile Include="Msdf\EdgeColor.cs" />
     <Compile Include="Msdf\EdgeColoring.cs" />
     <Compile Include="Msdf\EdgeHolder.cs" />
@@ -111,6 +116,9 @@
     <Compile Include="Msdf\GlyphLayout\GlyphSubtitution.cs" />
     <Compile Include="Msdf\GlyphLayout\MeasureStringBox.cs" />
     <Compile Include="Msdf\GlyphLayout\UserCharToGlyphIndexMap.cs" />
+    <Compile Include="Msdf\GlyphPathBuilder\GlyphPathBuilder.cs" />
+    <Compile Include="Msdf\GlyphPathBuilder\GlyphPathBuilderBase.cs" />
+    <Compile Include="Msdf\GlyphPathBuilder\HintTechnique.cs" />
     <Compile Include="Msdf\MsdfGen.cs" />
     <Compile Include="Msdf\OpenFont\Bounds.cs" />
     <Compile Include="Msdf\OpenFont\CharacterMap.cs" />
