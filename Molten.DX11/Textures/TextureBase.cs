@@ -363,6 +363,40 @@ namespace Molten.Graphics
                 pipe.Context.GenerateMips(_srv);
         }
 
+        public void SetData<T>(Rectangle area, T[] data, int bytesPerPixel, int level, int arrayIndex = 0) where T : struct
+        {
+            int eSize = Marshal.SizeOf(typeof(T));
+            int count = data.Length;
+            int texturePitch = area.Width * bytesPerPixel;
+            int pixels = area.Width * area.Height;
+
+            int expectedBytes = pixels * bytesPerPixel;
+            int dataBytes = data.Length * eSize;
+
+            if (pixels != data.Length)
+                throw new Exception($"The provided data does not match the provided area of {area.Width}x{area.Height}. Expected {expectedBytes} bytes. {dataBytes} bytes were provided.");
+
+            // Do a bounds check
+            Rectangle texBounds = new Rectangle(0, 0, _width, _height);
+            if (!texBounds.Contains(area))
+                throw new Exception("The provided area would go outside of the current texture's bounds.");
+
+            TextureSet<T> change = new TextureSet<T>()
+            {
+                Stride = eSize,
+                Count = count,
+                Data = new T[count],
+                Pitch = texturePitch,
+                StartIndex = 0,
+                ArrayIndex = arrayIndex,
+                MipLevel = level,
+                Area = area,
+            };
+
+            //copy the data so that it is not affected by other threads
+            Array.Copy(data, 0, change.Data, 0, count);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -568,7 +602,7 @@ namespace Molten.Graphics
         /// <param name="arrayIndex">The index in the texture's array to set the data. 
         /// Ordinary textures generally have 1 array element, with an index of 0. Cube maps usually have an array size of 6, 
         /// where one element is 1 side of the cube map.</param>
-        internal void SetDataInternal<T>(GraphicsPipe pipe, T[] data, int startIndex, int count, int stride, int mipLevel, int arrayIndex, int pitch) where T: struct
+        internal void SetDataInternal<T>(GraphicsPipe pipe, T[] data, int startIndex, int count, int stride, int mipLevel, int arrayIndex, int pitch, Rectangle? area = null) where T: struct
         {
             //calculate size of a single level
             int sliceBytes = 0;
@@ -605,16 +639,39 @@ namespace Molten.Graphics
                 IntPtr dataPtr = ptr + startBytes;
                 int subLevel = (_mipCount * arrayIndex) + mipLevel;
 
-                if (_isBlockCompressed)
+                if (HasFlags(TextureFlags.Dynamic))
                 {
-                    if (HasFlags(TextureFlags.Dynamic))
+                    DataStream stream = null;
+                    DataBox destBox = pipe.Context.MapSubresource(_resource, subLevel, MapMode.WriteDiscard, SharpDX.Direct3D11.MapFlags.None, out stream);
+
+                    // Are we constrained to an area of the texture?
+                    if (area != null)
                     {
-                        DataStream stream = null;
-                        DataBox destBox = pipe.Context.MapSubresource(_resource, subLevel, MapMode.WriteDiscard, SharpDX.Direct3D11.MapFlags.None, out stream);
-                        stream.WriteRange(dataPtr, count);
-                        pipe.Context.UnmapSubresource(_resource, subLevel);
+                        Rectangle rect = area.Value;
+                        int areaPitch = stride * rect.Width;
+                        int aX = rect.X;
+                        int aY = rect.Y;
+                        
+
+                        for (int y = aY, end = rect.Bottom; y < end; y++)
+                        {
+                            stream.Position = (pitch * aY) + (aX * stride);
+                            stream.WriteRange(dataPtr, areaPitch);
+
+                            dataPtr += areaPitch;
+                            aY++;
+                        }
                     }
                     else
+                    {
+                        stream.WriteRange(dataPtr, count);
+                    }
+
+                    pipe.Context.UnmapSubresource(_resource, subLevel);
+                }
+                else
+                {
+                    if (_isBlockCompressed)
                     {
                         // Calculate mip-map level size.
                         levelWidth = _width >> mipLevel;
@@ -623,36 +680,36 @@ namespace Molten.Graphics
                         int bcPitch = GetBCPitch(levelWidth, levelHeight, blockSize);
                         DataBox box = new DataBox(dataPtr, bcPitch, sliceBytes);
 
+                        if (area != null)
+                            throw new NotImplementedException("Area-based SetData on block-compressed texture is currently unsupported. Sorry!");
+
                         pipe.Context.UpdateSubresource(box, _resource, subLevel);
-                    }
-                }
-                else
-                {
-                    if (HasFlags(TextureFlags.Dynamic))
-                    {
-                        DataStream stream = null;
-                        DataBox destBox = pipe.Context.MapSubresource(_resource, subLevel, MapMode.WriteDiscard, SharpDX.Direct3D11.MapFlags.None, out stream);
-                        stream.WriteRange(dataPtr, count);
-                        pipe.Context.UnmapSubresource(_resource, subLevel);
                     }
                     else
                     {
-                        int x = 0;
-                        int y = 0;
-                        int w = Math.Max(_width >> mipLevel, 1);
-                        int h = Math.Max(_height >> mipLevel, 1);
+                        if (area != null)
+                        {
 
-                        DataBox box = new SharpDX.DataBox(dataPtr, pitch, sliceBytes);
+                        }
+                        else
+                        {
+                            int x = 0;
+                            int y = 0;
+                            int w = Math.Max(_width >> mipLevel, 1);
+                            int h = Math.Max(_height >> mipLevel, 1);
 
-                        ResourceRegion region = new SharpDX.Direct3D11.ResourceRegion();
-                        region.Top = y;
-                        region.Front = 0;
-                        region.Back = 1;
-                        region.Bottom = y + h;
-                        region.Left = x;
-                        region.Right = x + w;
+                            DataBox box = new SharpDX.DataBox(dataPtr, pitch, sliceBytes);
 
-                        pipe.Context.UpdateSubresource(box, _resource, subLevel, region);
+                            ResourceRegion region = new SharpDX.Direct3D11.ResourceRegion();
+                            region.Top = y;
+                            region.Front = 0;
+                            region.Back = 1;
+                            region.Bottom = y + h;
+                            region.Left = x;
+                            region.Right = x + w;
+
+                            pipe.Context.UpdateSubresource(box, _resource, subLevel, region);
+                        }
                     }
                 }
             });

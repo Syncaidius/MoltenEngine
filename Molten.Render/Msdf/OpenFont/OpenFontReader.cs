@@ -1,4 +1,5 @@
-﻿//Apache2, 2017, WinterDev
+﻿//MIT, 2018, James Yarwood (Adapted for Molten Engine)
+//Apache2, 2017, WinterDev
 //Apache2, 2014-2016, Samuel Carlsson, WinterDev
 
 using System;
@@ -59,7 +60,7 @@ namespace Typography.OpenFont
         }
 
 
-        public Typeface Read(Stream stream, ReadFlags readFlags = ReadFlags.Full)
+        public Typeface Read(Stream stream)
         {
             var little = BitConverter.IsLittleEndian;
             using (var input = new ByteOrderSwappingBinaryReader(stream))
@@ -85,18 +86,17 @@ namespace Typography.OpenFont
                 HorizontalHeader horizontalHeader = ReadTableIfExists(tables, input, new HorizontalHeader());
                 HorizontalMetrics horizontalMetrics = ReadTableIfExists(tables, input, new HorizontalMetrics(horizontalHeader.HorizontalMetricsCount, maximumProfile.GlyphCount));
 
-                //--------------
                 Cmap cmaps = ReadTableIfExists(tables, input, new Cmap());
                 GlyphLocations glyphLocations = ReadTableIfExists(tables, input, new GlyphLocations(maximumProfile.GlyphCount, header.WideGlyphLocations));
                 Glyf glyf = ReadTableIfExists(tables, input, new Glyf(glyphLocations));
-                //--------------
+
                 Gasp gaspTable = ReadTableIfExists(tables, input, new Gasp());
                 VerticalDeviceMatrics vdmx = ReadTableIfExists(tables, input, new VerticalDeviceMatrics());
-                //--------------
+
                 PostTable postTable = ReadTableIfExists(tables, input, new PostTable());
                 Kern kern = ReadTableIfExists(tables, input, new Kern());
-                //--------------
-                //advanced typography
+
+                // Advanced typography
                 GDEF gdef = ReadTableIfExists(tables, input, new GDEF());
                 GSUB gsub = ReadTableIfExists(tables, input, new GSUB());
                 GPOS gpos = ReadTableIfExists(tables, input, new GPOS());

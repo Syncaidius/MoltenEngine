@@ -134,9 +134,7 @@ namespace Molten.Samples
                 var atlasBuilder = new SimpleFontAtlasTextureBuilder();
 
                 MsdfGenParams msdfGenParams = new MsdfGenParams();
-
-                int j = chars.Length;
-                for (int i = 0; i < j; ++i)
+                for (int i = 0; i < chars.Length; ++i)
                 {
                     //build glyph
                     ushort gindex = typeface.LookupIndex(chars[i]);
@@ -148,7 +146,6 @@ namespace Molten.Samples
                     //-----------------------------------
                     builder.BuildFromGlyphIndex(gindex, -1);
                     var glyphToContour = new GlyphContourBuilder();
-                    //glyphToContour.Read(builder.GetOutputPoints(), builder.GetOutputContours());
                     builder.ReadShapes(glyphToContour);
                     float scale = 1f / 64;
                     msdfGenParams.shapeScale = scale;

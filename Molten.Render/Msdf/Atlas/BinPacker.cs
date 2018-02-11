@@ -4,6 +4,7 @@
 using System;
 namespace Typography.Rendering
 {
+    [Obsolete("Replace with Molten.Rectangle")]
     public struct BinPackRect
     {
         //TODO: review here 
@@ -27,6 +28,7 @@ namespace Typography.Rendering
         public override string ToString() { return X + "," + Y + "," + Width + "," + Height; }
     }
 
+    [Obsolete("Use List<T>")]
     struct ResizableArray<T>
     {
         //TODO: review here 

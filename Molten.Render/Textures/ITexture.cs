@@ -48,6 +48,8 @@ namespace Molten.Graphics
         /// <param name="arraySlice">The position in the texture array to start copying the texture data to. For a non-array texture, this should be 0.</param>
         void SetData(TextureData.Slice data, int mipLevel, int arraySlice);
 
+        void SetData<T>(Rectangle area, T[] data, int bytesPerPixel, int level, int arrayIndex = 0) where T : struct;
+
         /// <summary>Returns the data contained within a texture via a staging texture or directly from the texture itself if possible.</summary>
         /// <param name="stagingTexture">A staging texture to use when retrieving data from the GPU. Only textures
         /// with the staging flag set will work.</param>

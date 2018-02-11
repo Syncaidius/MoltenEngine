@@ -16,10 +16,11 @@ namespace Molten.Graphics
 
         public int Count;
         public int Stride;
+        public Rectangle? Area;
 
         public void Process(GraphicsPipe pipe, TextureBase texture)
         {
-            texture.SetDataInternal<T>(pipe, Data, StartIndex, Count, Stride, MipLevel, ArrayIndex, Pitch);
+            texture.SetDataInternal<T>(pipe, Data, StartIndex, Count, Stride, MipLevel, ArrayIndex, Pitch, Area);
         }
     }
 }

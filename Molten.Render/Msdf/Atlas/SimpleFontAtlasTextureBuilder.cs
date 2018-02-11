@@ -1,12 +1,10 @@
 ﻿//MIT, 2016-2017, WinterDev
-//----------------------------------- 
+//MIT, 2018, James Yarwood (Adapted for Molten Engine)
 
+using System.Linq;
 using System.Collections.Generic;
 using System.Xml;
 using Molten;
-using PixelFarm.Drawing.Fonts;
-using Typography.Contours;
-using RectangleF = Typography.Contours.RectangleF;
 using Rectangle = Typography.Contours.Rectangle;
 
 namespace Typography.Rendering
@@ -14,9 +12,12 @@ namespace Typography.Rendering
     public class SimpleFontAtlasTextureBuilder
     {
         GlyphData latestGenGlyphData;
+
         Dictionary<int, CacheGlyphData> glyphs = new Dictionary<int, CacheGlyphData>();
         public TextureKind TextureKind { get; private set; }
+
         public float FontSizeInPoints { get; private set; }
+
         public void AddGlyph(int codePoint, GlyphData img)
         {
             var glyphCache = new CacheGlyphData();
@@ -31,6 +32,7 @@ namespace Typography.Rendering
             this.TextureKind = textureKind;
             this.FontSizeInPoints = fontSizeInPts;
         }
+
         public GlyphData BuildSingleData()
         {
             //1. add to list 
@@ -40,17 +42,22 @@ namespace Typography.Rendering
                 //sort data
                 glyphList.Add(glyphImg);
             }
+
+            // TODO JY - switch to once previous changes confirmed to work: var glyphList = glyphs.Values.ToList();
+
+
             //2. sort
             glyphList.Sort((a, b) =>
             {
                 return a.img.Width.CompareTo(b.img.Width);
             });
-            //3. layout
 
+            //3. layout
             int totalMaxLim = 800;
             int maxRowHeight = 0;
             int currentY = 0;
             int currentX = 0;
+
             for (int i = glyphList.Count - 1; i >= 0; --i)
             {
                 CacheGlyphData g = glyphList[i];
@@ -68,9 +75,10 @@ namespace Typography.Rendering
                 g.area = new Rectangle(currentX, currentY, g.img.Width, g.img.Height);
                 currentX += g.img.Width;
             }
+
             currentY += maxRowHeight;
             int imgH = currentY;
-            //-------------------------------
+
             //compact image location
             //TODO: review performance here again***
             BinPacker binPacker = new BinPacker(totalMaxLim, currentY);
@@ -81,7 +89,6 @@ namespace Typography.Rendering
                 g.area = new Rectangle(newRect.X, newRect.Y,
                     g.img.Width, g.img.Height);
             }
-            //------------------------------- 
 
             //4. create array that can hold data
             Color[] totalBuffer = new Color[totalMaxLim * imgH];
@@ -92,7 +99,6 @@ namespace Typography.Rendering
                 GlyphData img = g.img;
                 CopyToDest(img.GetImageBuffer(), img.Width, img.Height, totalBuffer, g.area.Left, g.area.Top, totalMaxLim);
             }
-            //------------------
 
             GlyphData glyphImage = new GlyphData(totalMaxLim, imgH);
             glyphImage.SetImageBuffer(totalBuffer, true);

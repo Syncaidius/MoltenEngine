@@ -10,6 +10,7 @@ namespace Molten.Graphics
 {
     using SharpDX.Direct3D;
     using System.IO;
+    using System.Runtime.InteropServices;
     using Resource = SharpDX.Direct3D11.Resource;
 
     public class TextureAsset2D : TextureBase, ITexture2D
@@ -139,28 +140,6 @@ namespace Molten.Graphics
             }
 
             UAV = new UnorderedAccessView(Device.D3d, _texture, uDesc);
-        }
-
-        /// <summary>Maps the texture resource via a staging texture, which is passed into the provided callback to be used however you want.
-        /// Note: </summary>
-        /// <param name="callback">The callback to invoke once the texture is mapped for CPU access.</param>
-        internal void Map(GraphicsPipe pipe, Action<GraphicsDevice, Texture2D> callback)
-        {
-            //create a temporary staging texture
-            Texture2DDescription stageDesc = _description;
-            stageDesc.CpuAccessFlags = CpuAccessFlags.Read;
-            stageDesc.Usage = ResourceUsage.Staging;
-            stageDesc.BindFlags = BindFlags.None;
-            Texture2D staging = new Texture2D(Device.D3d, stageDesc);
-
-            //copy the texture into the staging texture.
-            pipe.Context.CopyResource(_texture, staging);
-
-            //invoke the callback
-            callback(Device, staging);
-
-            //dispose of staging texture
-            staging.Dispose();
         }
 
         protected override void BeforeResize()

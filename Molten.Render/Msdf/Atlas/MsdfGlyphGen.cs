@@ -1,5 +1,5 @@
 ﻿//MIT, 2016-2017, WinterDev
-//-----------------------------------  
+//MIT, 2018, James Yarwood (Adapted for Molten Engine)
 using Molten;
 using Molten.Graphics;
 using Msdfgen;
