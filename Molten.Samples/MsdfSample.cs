@@ -25,8 +25,9 @@ namespace Molten.Samples
         SceneCameraComponent _cam;
         Camera2D _cam2D;
         ISpriteFont _font;
-        List<ISprite> _sprites;
         IMesh<VertexTexture> _mesh;
+        ITexture2D _msdfTexture;
+        ISprite _msdfSprite;
 
         public MsdfSample(EngineSettings settings = null) : base("MSDF", settings)
         {
@@ -48,7 +49,6 @@ namespace Molten.Samples
                 OutputDepthSurface = WindowDepthSurface,
             };
 
-            _sprites = new List<ISprite>();
             _rng = new Random();
             _positions = new List<Matrix>();
             _scene = CreateScene("Test");
@@ -110,15 +110,16 @@ namespace Molten.Samples
             SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
 
             if (File.Exists("assets/BroshK.ttf"))
-                CreateSampleMsdfTextureFont("assets/BroshK.ttf", 18, new char[] { 'A', 'B', 'C', 'D', 'E', 'F', '测', '试' }, "msdf");
+                CreateSampleMsdfTextureFont("assets/BroshK.ttf", 18, new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f', 'g' }, "msdf");
             else
                 Log.WriteError("Cannot run MSDF test. Font file does not exist.");
         }
 
-        static void CreateSampleMsdfTextureFont(string fontfile, float sizeInPoint, char[] chars, string outputDir)
+        void CreateSampleMsdfTextureFont(string fontfile, float sizeInPoint, char[] chars, string outputDir)
         {
             if (!Directory.Exists(outputDir))
                 Directory.CreateDirectory(outputDir);
+
 
             //sample
             var reader = new OpenFontReader();
@@ -160,33 +161,57 @@ namespace Molten.Samples
 
 
                     //-----------------------------------
-                    GlyphImage glyphImg = MsdfGlyphGen.CreateMsdfImage(glyphToContour, msdfGenParams);
+                    GlyphData glyphImg = MsdfGlyphGen.CreateMsdfImage(Engine.Renderer, glyphToContour, msdfGenParams);
                     atlasBuilder.AddGlyph(gindex, glyphImg);
-                    int w = glyphImg.Width;
-                    int h = glyphImg.Height;
-                    using (Bitmap bmp = new Bitmap(glyphImg.Width, glyphImg.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
-                    {
-                        var bmpdata = bmp.LockBits(new System.Drawing.Rectangle(0, 0, w, h), System.Drawing.Imaging.ImageLockMode.ReadWrite, bmp.PixelFormat);
-                        int[] imgBuffer = glyphImg.GetImageBuffer();
-                        System.Runtime.InteropServices.Marshal.Copy(imgBuffer, 0, bmpdata.Scan0, imgBuffer.Length);
-                        bmp.UnlockBits(bmpdata);
-                        string path = $"{outputDir}/char_{i}.png";
-                        bmp.Save(path);
-                    }
+                    //int w = glyphImg.Width;
+                    //int h = glyphImg.Height;
+                    //using (Bitmap bmp = new Bitmap(glyphImg.Width, glyphImg.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+                    //{
+                    //    var bmpdata = bmp.LockBits(new System.Drawing.Rectangle(0, 0, w, h), System.Drawing.Imaging.ImageLockMode.ReadWrite, bmp.PixelFormat);
+                    //    int[] imgBuffer = glyphImg.GetImageBuffer();
+                    //    System.Runtime.InteropServices.Marshal.Copy(imgBuffer, 0, bmpdata.Scan0, imgBuffer.Length);
+                    //    bmp.UnlockBits(bmpdata);
+                    //    string path = $"{outputDir}/char_{i}.png";
+                    //    bmp.Save(path);
+                    //}
                 }
 
                 var glyphImg2 = atlasBuilder.BuildSingleImage();
-                using (Bitmap bmp = new Bitmap(glyphImg2.Width, glyphImg2.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+                _msdfTexture = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
                 {
-                    var bmpdata = bmp.LockBits(new System.Drawing.Rectangle(0, 0, glyphImg2.Width, glyphImg2.Height),
-                        System.Drawing.Imaging.ImageLockMode.ReadWrite, bmp.PixelFormat);
-                    int[] intBuffer = glyphImg2.GetImageBuffer();
+                    Width = glyphImg2.Width,
+                    Height = glyphImg2.Height,
+                    Format = GraphicsFormat.R8G8B8A8_UNorm,
+                    ArraySize = 1,
+                    MipMapLevels = 1,
+                });
 
-                    System.Runtime.InteropServices.Marshal.Copy(intBuffer, 0, bmpdata.Scan0, intBuffer.Length);
-                    bmp.UnlockBits(bmpdata);
-                    bmp.Save($"{outputDir}/sheet.png");
-                }
-                atlasBuilder.SaveFontInfo($"{outputDir}/sheet_info.xml");
+                int[] intBuffer = glyphImg2.GetImageBuffer(); // Each integer is ARGB
+                int pitch = glyphImg2.Width * sizeof(int);
+                _msdfTexture.SetData(0, intBuffer, 0, intBuffer.Length, pitch);
+                _msdfSprite = new Sprite()
+                {
+                    Texture = _msdfTexture,
+                    Color = Color.White,
+                    Source = new Rectangle(0,0, glyphImg2.Width, glyphImg2.Height),
+                    Position = new Vector2(300,200),
+                    Origin = new Vector2(),
+                    Rotation = 0,
+                    Scale = new Vector2(5)
+                };
+                SampleScene.AddSprite(_msdfSprite);
+
+                //using (Bitmap bmp = new Bitmap(glyphImg2.Width, glyphImg2.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+                //{
+                //    var bmpdata = bmp.LockBits(new System.Drawing.Rectangle(0, 0, glyphImg2.Width, glyphImg2.Height),
+                //        System.Drawing.Imaging.ImageLockMode.ReadWrite, bmp.PixelFormat);
+                //    int[] intBuffer = glyphImg2.GetImageBuffer();
+
+                //    System.Runtime.InteropServices.Marshal.Copy(intBuffer, 0, bmpdata.Scan0, intBuffer.Length);
+                //    bmp.UnlockBits(bmpdata);
+                //    bmp.Save($"{outputDir}/sheet.png");
+                //}
+                //atlasBuilder.SaveFontInfo($"{outputDir}/sheet_info.xml");
             }
         }
 

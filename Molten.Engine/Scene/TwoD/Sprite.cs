@@ -15,10 +15,11 @@ namespace Molten
         public float Rotation;
         public Vector2 Origin;
         public Color Color = Color.White;
+        public Vector2 Scale = Vector2.One;
 
         public void Render(ISpriteBatch batch)
         {
-            batch.Draw(Texture, Position, Source, Color, Rotation, Origin);
+            batch.Draw(Texture, Position, Source, Color, Rotation, Scale, Origin);
         }
     }
 }

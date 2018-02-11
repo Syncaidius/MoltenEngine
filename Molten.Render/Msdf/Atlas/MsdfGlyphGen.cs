@@ -1,10 +1,13 @@
 ﻿//MIT, 2016-2017, WinterDev
 //-----------------------------------  
+using Molten;
+using Molten.Graphics;
 using Msdfgen;
 using System;
 using System.Collections.Generic;
-
+using System.Runtime.InteropServices;
 using Typography.Contours;
+using Vector2 = Msdfgen.Vector2;
 
 namespace Typography.Rendering
 {
@@ -54,11 +57,11 @@ namespace Typography.Rendering
 
         static Shape CreateMsdfShape(List<GlyphContour> contours)
         {
-            var shape = new Msdfgen.Shape();
+            var shape = new Shape();
             int j = contours.Count;
             for (int i = 0; i < j; ++i)
             {
-                var cnt = new Msdfgen.Contour();
+                var cnt = new Contour();
                 shape.contours.Add(cnt);
 
                 GlyphContour contour = contours[i];
@@ -150,13 +153,71 @@ namespace Typography.Rendering
         }
         //---------------------------------------------------------------------
 
+        public static GlyphData CreateMsdfImage(IRenderer renderer, GlyphContourBuilder glyphToContour, MsdfGenParams genParams)
+        {
+            Shape shape = CreateMsdfShape(glyphToContour, genParams.shapeScale);
+
+            double left, bottom, right, top;
+            shape.FindBounds(out left, out bottom, out right, out top);
+            int w = (int)Math.Ceiling((right - left));
+            int h = (int)Math.Ceiling((top - bottom));
+
+            if (w < genParams.minImgWidth)
+            {
+                w = genParams.minImgWidth;
+            }
+            if (h < genParams.minImgHeight)
+            {
+                h = genParams.minImgHeight;
+            }
+
+
+            //temp, for debug with glyph 'I', tahoma font
+            //double edgeThreshold = 1.00000001;//default, if edgeThreshold < 0 then  set  edgeThreshold=1 
+            //Msdfgen.Vector2 scale = new Msdfgen.Vector2(0.98714652956298199, 0.98714652956298199);
+            //double pxRange = 4;
+            //translate = new Msdfgen.Vector2(12.552083333333332, 4.0520833333333330);
+            //double range = pxRange / Math.Min(scale.x, scale.y);
+
+
+            int borderW = (int)((float)w / 5f);
+            var translate = new Msdfgen.Vector2(left < 0 ? -left + borderW : borderW, bottom < 0 ? -bottom + borderW : borderW);
+            w += borderW * 2; //borders,left- right
+            h += borderW * 2; //borders, top- bottom
+
+            double edgeThreshold = genParams.edgeThreshold;
+            if (edgeThreshold < 0)
+                edgeThreshold = 1.00000001; //use default if  edgeThreshold <0
+
+            var scale = new Vector2(genParams.scaleX, genParams.scaleY); //scale               
+            double range = genParams.pxRange / Math.Min(scale.X, scale.Y);
+            //---------
+            FloatRGBBmp frgbBmp = new FloatRGBBmp(w, h);
+            EdgeColoring.edgeColoringSimple(shape, genParams.angleThreshold);
+            MsdfGenerator.generateMSDF(frgbBmp,
+                shape,
+                range,
+                scale,
+                translate,//translate to positive quadrant
+                edgeThreshold);
+            //-----------------------------------
+            Color[] buffer = MsdfGenerator.ConvertToR8G8B8A8(frgbBmp);
+
+            GlyphData data = new GlyphData(w, h);
+            data.TextureOffsetX = translate.X;
+            data.TextureOffsetY = translate.Y;
+            data.SetImageBuffer(buffer, false);
+            return data;
+        }
+
         public static GlyphImage CreateMsdfImage(
              GlyphContourBuilder glyphToContour, MsdfGenParams genParams)
         {
             // create msdf shape , then convert to actual image
             return CreateMsdfImage(CreateMsdfShape(glyphToContour, genParams.shapeScale), genParams);
         }
-        public static GlyphImage CreateMsdfImage(Msdfgen.Shape shape, MsdfGenParams genParams)
+
+        public static GlyphImage CreateMsdfImage(Shape shape, MsdfGenParams genParams)
         {
             double left, bottom, right, top;
             shape.FindBounds(out left, out bottom, out right, out top);
@@ -188,23 +249,21 @@ namespace Typography.Rendering
 
             double edgeThreshold = genParams.edgeThreshold;
             if (edgeThreshold < 0)
-            {
                 edgeThreshold = 1.00000001; //use default if  edgeThreshold <0
-            }
 
-            var scale = new Msdfgen.Vector2(genParams.scaleX, genParams.scaleY); //scale               
+            var scale = new Vector2(genParams.scaleX, genParams.scaleY); //scale               
             double range = genParams.pxRange / Math.Min(scale.X, scale.Y);
             //---------
-            Msdfgen.FloatRGBBmp frgbBmp = new Msdfgen.FloatRGBBmp(w, h);
-            Msdfgen.EdgeColoring.edgeColoringSimple(shape, genParams.angleThreshold);
-            Msdfgen.MsdfGenerator.generateMSDF(frgbBmp,
+            FloatRGBBmp frgbBmp = new FloatRGBBmp(w, h);
+            EdgeColoring.edgeColoringSimple(shape, genParams.angleThreshold);
+            MsdfGenerator.generateMSDF(frgbBmp,
                 shape,
                 range,
                 scale,
                 translate,//translate to positive quadrant
                 edgeThreshold);
             //-----------------------------------
-            int[] buffer = Msdfgen.MsdfGenerator.ConvertToIntBmp(frgbBmp);
+            int[] buffer = MsdfGenerator.ConvertToIntBmp(frgbBmp);
 
             GlyphImage img = new GlyphImage(w, h);
             img.TextureOffsetX = translate.X;

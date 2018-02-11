@@ -2,6 +2,8 @@
 //MIT, 2017, WinterDev (C# port)
 //MIT, 2018, James Yarwood (Adapted for Molten Engine)
 
+using Molten;
+using Molten.Graphics;
 using System;
 using System.Collections.Generic;
 
@@ -298,7 +300,47 @@ namespace Msdfgen
             public double nearParam;
         }
 
-        public static int[] ConvertToIntBmp(Msdfgen.FloatRGBBmp input)
+        public static Color[] ConvertToR8G8B8A8(FloatRGBBmp input)
+        {
+            int height = input.Height;
+            int width = input.Width;
+            Color[] output = new Color[input.Width * input.Height];
+
+            for (int y = height - 1; y >= 0; --y)
+            {
+                for (int x = 0; x < width; ++x)
+                {
+                    //a b g r
+                    //----------------------------------
+                    FloatRGB pixel = input.GetPixel(x, y);
+                    //a b g r
+                    //for big-endian color
+                    //int abgr = (255 << 24) |
+                    //    Msdfgen.Vector2.Clamp((int)(pixel.r * 0x100), 0xff) |
+                    //    Msdfgen.Vector2.Clamp((int)(pixel.g * 0x100), 0xff) << 8 |
+                    //    Msdfgen.Vector2.Clamp((int)(pixel.b * 0x100), 0xff) << 16;
+
+                    //for little-endian color
+
+                    //int abgr = (255 << 24) |
+                    //    SdfMath.Clamp((int)(pixel.r * 0x100), 0xff) << 16 |
+                    //    SdfMath.Clamp((int)(pixel.g * 0x100), 0xff) << 8 |
+                    //    SdfMath.Clamp((int)(pixel.b * 0x100), 0xff);
+
+                    //output[(y * width) + x] = abgr;
+                    //----------------------------------
+                    /**it++ = clamp(int(bitmap(x, y).r*0x100), 0xff);
+                    *it++ = clamp(int(bitmap(x, y).g*0x100), 0xff);
+                    *it++ = clamp(int(bitmap(x, y).b*0x100), 0xff);*/
+
+                    output[(y * width) + x] = new Color(pixel.r, pixel.g, pixel.b, 255);
+                }
+            }
+
+            return output;
+        }
+
+        public static int[] ConvertToIntBmp(FloatRGBBmp input)
         {
             int height = input.Height;
             int width = input.Width;
@@ -473,9 +515,7 @@ namespace Msdfgen
             }
 
             if (edgeThreshold > 0)
-            {
                 msdfErrorCorrection(output, edgeThreshold / (scale * range));
-            }
 
         }
 

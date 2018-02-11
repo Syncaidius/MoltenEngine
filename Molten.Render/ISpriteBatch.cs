@@ -22,7 +22,7 @@ namespace Molten.Graphics
 
         void Draw(ITexture2D texture, Vector2 position, Color color, float rotation, Vector2 origin);
 
-        void Draw(ITexture2D texture, Vector2 position, Rectangle source, Color color, float rotation, Vector2 origin);
+        void Draw(ITexture2D texture, Vector2 position, Rectangle source, Color color, float rotation, Vector2 scale, Vector2 origin);
 
         void Draw(ITexture2D texture, Rectangle source, Rectangle destination, Color color, float rotation, Vector2 origin);
 

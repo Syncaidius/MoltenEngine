@@ -282,9 +282,15 @@ namespace Molten.Graphics
         /// <param name="color"></param>
         /// <param name="rotation">Rotation, in radians.</param>
         /// <param name="origin"></param>
-        public void Draw(ITexture2D texture, Vector2 position, Rectangle source, Color color, float rotation, Vector2 origin)
+        public void Draw(ITexture2D texture, Vector2 position, Rectangle source, Color color, float rotation, Vector2 scale, Vector2 origin)
         {
-            Rectangle dest = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
+            Rectangle dest = new Rectangle()
+            {
+                X = (int)position.X,
+                Y = (int)position.Y,
+                Width = (int)(texture.Width * scale.X),
+                Height = (int)(texture.Height * scale.Y),
+            };
             Draw(texture, source, dest, color, rotation, origin);
         }
 
