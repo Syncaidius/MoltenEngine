@@ -111,14 +111,17 @@ namespace Msdfgen
                 nonZeroSign(Vector2.Cross(aq, ab)) * endpointDistance,
                 Math.Abs(Vector2.Dot(ab.Normalize(), eq.Normalize())));
         }
+
         public override Vector2 direction(double param)
         {
             return p[1] - p[0];
         }
+
         public override Vector2 point(double param)
         {
             return mix(p[0], p[1], param);
         }
+
 #if DEBUG
         public override string ToString()
         {
@@ -126,6 +129,7 @@ namespace Msdfgen
         }
 #endif
     }
+
     public class QuadraticSegment : EdgeSegment
     {
         Vector2[] p;
@@ -142,6 +146,7 @@ namespace Msdfgen
             p[2] = p2;
 
         }
+
         public override void findBounds(ref double left, ref double bottom, ref double right, ref double top)
         {
             Vector2.PointBounds(p[0], ref left, ref bottom, ref right, ref top);
@@ -160,20 +165,24 @@ namespace Msdfgen
                     Vector2.PointBounds(point(param), ref left, ref bottom, ref right, ref top);
             }
         }
+
         public override void splitInThirds(out EdgeSegment part1, out EdgeSegment part2, out EdgeSegment part3)
         {
             part1 = new QuadraticSegment(p[0], mix(p[0], p[1], 1 / 3.0), point(1 / 3.0), this.color);
             part2 = new QuadraticSegment(point(1 / 3.0), mix(mix(p[0], p[1], 5 / 9.0), mix(p[1], p[2], 4 / 9.0), .5), point(2 / 3.0), this.color);
             part3 = new QuadraticSegment(point(2 / 3.0), mix(p[1], p[2], 2 / 3.0), p[2], this.color);
         }
+
         public override Vector2 direction(double param)
         {
             return mix(p[1] - p[0], p[2] - p[1], param);
         }
+
         public override Vector2 point(double param)
         {
             return mix(mix(p[0], p[1], param), mix(p[1], p[2], param), param);
         }
+
         public override SignedDistance signedDistance(Vector2 origin, out double param)
         {
             Vector2 qa = p[0] - origin;
@@ -219,6 +228,7 @@ namespace Msdfgen
             else
                 return new SignedDistance(minDistance, Math.Abs(Vector2.Dot((p[2] - p[1]).Normalize(), (p[2] - origin).Normalize())));
         }
+
 #if DEBUG
         public override string ToString()
         {
