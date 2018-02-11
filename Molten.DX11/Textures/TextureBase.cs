@@ -395,6 +395,8 @@ namespace Molten.Graphics
 
             //copy the data so that it is not affected by other threads
             Array.Copy(data, 0, change.Data, 0, count);
+
+            _pendingChanges.Enqueue(change);
         }
 
         /// <summary>
@@ -689,7 +691,18 @@ namespace Molten.Graphics
                     {
                         if (area != null)
                         {
+                            Rectangle rect = area.Value;
+                            int areaPitch = stride * rect.Width;
+                            DataBox box = new DataBox(dataPtr, areaPitch, data.Length);
 
+                            ResourceRegion region = new ResourceRegion();
+                            region.Top = rect.Y;
+                            region.Front = 0;
+                            region.Back = 1;
+                            region.Bottom = rect.Bottom;
+                            region.Left = rect.X;
+                            region.Right = rect.Right;
+                            pipe.Context.UpdateSubresource(box, _resource, subLevel, region);
                         }
                         else
                         {
@@ -698,9 +711,9 @@ namespace Molten.Graphics
                             int w = Math.Max(_width >> mipLevel, 1);
                             int h = Math.Max(_height >> mipLevel, 1);
 
-                            DataBox box = new SharpDX.DataBox(dataPtr, pitch, sliceBytes);
+                            DataBox box = new DataBox(dataPtr, pitch, sliceBytes);
 
-                            ResourceRegion region = new SharpDX.Direct3D11.ResourceRegion();
+                            ResourceRegion region = new ResourceRegion();
                             region.Top = y;
                             region.Front = 0;
                             region.Back = 1;

@@ -75,18 +75,30 @@ namespace Molten.IO
 
             _keyboard = new Keyboard(diManager.DirectInput);
             _keyboard.Properties.BufferSize = 256;
-            _keyboard.Acquire();
+            _keyboard.Acquire();            
+            CreateHook();
+            surface.OnPostResize += Surface_OnPostResize;
+        }
 
-            IntPtr outputHandle = _surface.WindowHandle;
+        private void Surface_OnPostResize(ITexture texture)
+        {
+            CreateHook();
+        }
+
+        private void CreateHook()
+        {
+            if (_hookProcDelegate != null || _surface.WindowHandle == IntPtr.Zero)
+                return;
+
             _prevWndProc = IntPtr.Zero;
 
-            if (_hookProcDelegate == null)
-                _hookProcDelegate = new ReferencedObject<WndProc>(new WndProc(HookProc));
-            else
-                _hookProcDelegate.Reference();
+            //if (_hookProcDelegate == null)
+            _hookProcDelegate = new ReferencedObject<WndProc>(new WndProc(HookProc));
+            //else
+            //    _hookProcDelegate.Reference();
 
             SetWindowLongDelegate(_hookProcDelegate);
-            _hIMC = ImmGetContext(outputHandle);
+            _hIMC = ImmGetContext(_surface.WindowHandle);
         }
 
         public override void ClearState()
@@ -96,8 +108,6 @@ namespace Molten.IO
 
         private void SetWindowLongDelegate(WndProc hook)
         {
-            IntPtr outputHandle = _surface.WindowHandle;
-
             if (hook != null)
             {
                 IntPtr ptrVal = Marshal.GetFunctionPointerForDelegate(hook);
@@ -105,29 +115,21 @@ namespace Molten.IO
                 if (_prevWndProc == IntPtr.Zero)
                 {
                     if (IntPtr.Size == 8) // 64-bit
-                    {
-                        _prevWndProc = (IntPtr)SetWindowLongPtr(outputHandle, GWL_WNDPROC, ptrVal);
-                    }
-                    else {
-                        _prevWndProc = (IntPtr)SetWindowLong(outputHandle, GWL_WNDPROC, ptrVal.ToInt32());
-                    }
+                        _prevWndProc = (IntPtr)SetWindowLongPtr(_surface.WindowHandle, GWL_WNDPROC, ptrVal);
+                    else 
+                        _prevWndProc = (IntPtr)SetWindowLong(_surface.WindowHandle, GWL_WNDPROC, ptrVal.ToInt32());
                 }
             }
         }
 
         private void ResetWindowLong()
         {
-            IntPtr outputHandle = _surface.WindowHandle;
-
             if (_prevWndProc != null)
             {
                 if (IntPtr.Size == 8) // 64-bit
-                {
-                    SetWindowLongPtr(outputHandle, GWL_WNDPROC, _prevWndProc);
-                }
-                else {
-                    SetWindowLong(outputHandle, GWL_WNDPROC, _prevWndProc.ToInt32());
-                }
+                    SetWindowLongPtr(_surface.WindowHandle, GWL_WNDPROC, _prevWndProc);
+                else 
+                    SetWindowLong(_surface.WindowHandle, GWL_WNDPROC, _prevWndProc.ToInt32());
             }
         }
 
@@ -148,8 +150,7 @@ namespace Molten.IO
                     long paramVal = lParam.ToInt32();
 #endif
                     CharacterEventArgs e = new CharacterEventArgs((char)wParam, paramVal);
-                    if (OnCharacterKey != null)
-                        OnCharacterKey(e);
+                    OnCharacterKey?.Invoke(e);
                     break;
                 case WM_IME_SETCONTEXT:
                     if (wParam.ToInt32() == 1)

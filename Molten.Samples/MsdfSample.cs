@@ -27,6 +27,7 @@ namespace Molten.Samples
         ISpriteFont _font;
         IMesh<VertexTexture> _mesh;
         ITexture2D _msdfTexture;
+        SpriteFont2 _newFont;
 
         public MsdfSample(EngineSettings settings = null) : base("MSDF", settings)
         {
@@ -108,10 +109,38 @@ namespace Molten.Samples
             _mesh.SetVertices(verts);
             SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
 
+            char[] chars = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f', 'g' };
+
             if (File.Exists("assets/BroshK.ttf"))
-                CreateSampleMsdfTextureFont("assets/BroshK.ttf", 18, new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f', 'g' }, "msdf");
+                CreateSampleMsdfTextureFont("assets/BroshK.ttf", 18, chars, "msdf");
             else
                 Log.WriteError("Cannot run MSDF test. Font file does not exist.");
+
+
+            using (var fs = new FileStream("assets/BroshK.ttf", FileMode.Open))
+                _newFont = new SpriteFont2(Engine.Renderer, fs);
+
+            //for (int i = 0; i < chars.Length; i++)
+            //    _newFont.GetCharRect(chars[i]);
+
+            Sprite fontSprite = new Sprite()
+            {
+                Texture = _newFont.SheetTexture,
+                Color = Color.White,
+                Source = new Rectangle(0, 0, _newFont.SheetTexture.Width, _newFont.SheetTexture.Height),
+                Position = new Vector2(300, 100),
+                Origin = new Vector2(),
+                Rotation = 0,
+                Scale = new Vector2(5)
+            };
+            SampleScene.AddSprite(fontSprite);
+
+            Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
+        }
+
+        private void Keyboard_OnCharacterKey(IO.CharacterEventArgs e)
+        {
+            _newFont.GetCharRect(e.Character);
         }
 
         void CreateSampleMsdfTextureFont(string fontfile, float sizeInPoint, char[] chars, string outputDir)
@@ -189,22 +218,10 @@ namespace Molten.Samples
                     Texture = _msdfTexture,
                     Color = Color.White,
                     Source = new Rectangle(0,0, glyphImg2.Width, glyphImg2.Height),
-                    Position = new Vector2(300,200),
+                    Position = new Vector2(300, 200),
                     Origin = new Vector2(),
                     Rotation = 0,
                     Scale = new Vector2(5)
-                };
-                SampleScene.AddSprite(msdfSprite);
-
-                msdfSprite = new Sprite()
-                {
-                    Texture = _msdfTexture,
-                    Color = Color.White,
-                    Source = new Rectangle(0, 0, glyphImg2.Width, glyphImg2.Height),
-                    Position = new Vector2(300, 200 - glyphImg2.Height - 5),
-                    Origin = new Vector2(),
-                    Rotation = 0,
-                    Scale = new Vector2(1)
                 };
                 SampleScene.AddSprite(msdfSprite);
 
