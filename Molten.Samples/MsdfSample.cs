@@ -133,7 +133,7 @@ namespace Molten.Samples
                 //builder.UseTrueTypeInterpreter = this.chkTrueTypeHint.Checked;
                 //builder.UseVerticalHinting = this.chkVerticalHinting.Checked;
                 //-------------------------------------------------------------
-                var atlasBuilder = new SimpleFontAtlasBuilder();
+                var atlasBuilder = new SimpleFontAtlasTextureBuilder();
 
                 MsdfGenParams msdfGenParams = new MsdfGenParams();
 
@@ -176,7 +176,7 @@ namespace Molten.Samples
                     //}
                 }
 
-                var glyphImg2 = atlasBuilder.BuildSingleImage();
+                var glyphImg2 = atlasBuilder.BuildSingleData();
                 _msdfTexture = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
                 {
                     Width = glyphImg2.Width,
@@ -186,7 +186,7 @@ namespace Molten.Samples
                     MipMapLevels = 1,
                 });
 
-                int[] intBuffer = glyphImg2.GetImageBuffer(); // Each integer is ARGB
+                Color[] intBuffer = glyphImg2.GetImageBuffer(); // Each integer is ARGB
                 int pitch = glyphImg2.Width * sizeof(int);
                 _msdfTexture.SetData(0, intBuffer, 0, intBuffer.Length, pitch);
                 _msdfSprite = new Sprite()

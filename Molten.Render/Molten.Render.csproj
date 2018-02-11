@@ -83,10 +83,14 @@
     <Compile Include="Mesh\IIndexedMesh.cs" />
     <Compile Include="Mesh\IMesh.cs" />
     <Compile Include="Msdf\Atlas\BinPacker.cs" />
+    <Compile Include="Msdf\Atlas\CacheGlyphData.cs" />
+    <Compile Include="Msdf\Atlas\CacheGlyph.cs" />
     <Compile Include="Msdf\Atlas\GlyphImages.cs" />
     <Compile Include="Msdf\Atlas\MsdfGlyphGen.cs" />
     <Compile Include="Msdf\Atlas\SimpleFontAtlas.cs" />
+    <Compile Include="Msdf\Atlas\SimpleFontAtlasTextureBuilder.cs" />
     <Compile Include="Msdf\Atlas\SimpleFontAtlasBuilder.cs" />
+    <Compile Include="Msdf\Atlas\TextureKind.cs" />
     <Compile Include="Msdf\Contour.cs" />
     <Compile Include="Msdf\EdgeColor.cs" />
     <Compile Include="Msdf\EdgeColoring.cs" />

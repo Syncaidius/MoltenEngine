@@ -46,6 +46,5 @@ namespace Molten.Graphics
         /// that a texture should be sampled at mipmap level 3 and MipLODBias is 2, then 
         /// the texture will be sampled at mipmap level 5.</summary>
         float LodBias { get; set; }
-
     }
 }

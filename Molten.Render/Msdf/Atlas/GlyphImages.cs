@@ -97,18 +97,6 @@ namespace Typography.Rendering
         public double TextureOffsetY { get; set; }
     }
 
-    public class CacheGlyph
-    {
-        public int borderX;
-        public int borderY;
-        public GlyphImage img;
-        public Rectangle area;
-        public char character;
-        public int codePoint;
-        public GlyphMatrix2 glyphMatrix;
-    
-    }
-
     public class TextureFontGlyphData
     {
         public float BorderX { get; set; }

@@ -3,20 +3,23 @@
 
 using System.Collections.Generic;
 using System.Xml;
+using Molten;
 using PixelFarm.Drawing.Fonts;
 using Typography.Contours;
+using RectangleF = Typography.Contours.RectangleF;
+using Rectangle = Typography.Contours.Rectangle;
 
 namespace Typography.Rendering
 {
-    public class SimpleFontAtlasBuilder
+    public class SimpleFontAtlasTextureBuilder
     {
-        GlyphImage latestGenGlyphImage;
-        Dictionary<int, CacheGlyph> glyphs = new Dictionary<int, CacheGlyph>();
+        GlyphData latestGenGlyphData;
+        Dictionary<int, CacheGlyphData> glyphs = new Dictionary<int, CacheGlyphData>();
         public TextureKind TextureKind { get; private set; }
         public float FontSizeInPoints { get; private set; }
-        public void AddGlyph(int codePoint, GlyphImage img)
+        public void AddGlyph(int codePoint, GlyphData img)
         {
-            var glyphCache = new CacheGlyph();
+            var glyphCache = new CacheGlyphData();
             glyphCache.codePoint = codePoint;
             glyphCache.img = img;
 
@@ -28,11 +31,11 @@ namespace Typography.Rendering
             this.TextureKind = textureKind;
             this.FontSizeInPoints = fontSizeInPts;
         }
-        public GlyphImage BuildSingleImage()
+        public GlyphData BuildSingleData()
         {
             //1. add to list 
-            var glyphList = new List<CacheGlyph>(glyphs.Count);
-            foreach (CacheGlyph glyphImg in glyphs.Values)
+            var glyphList = new List<CacheGlyphData>(glyphs.Count);
+            foreach (CacheGlyphData glyphImg in glyphs.Values)
             {
                 //sort data
                 glyphList.Add(glyphImg);
@@ -50,7 +53,7 @@ namespace Typography.Rendering
             int currentX = 0;
             for (int i = glyphList.Count - 1; i >= 0; --i)
             {
-                CacheGlyph g = glyphList[i];
+                CacheGlyphData g = glyphList[i];
                 if (g.img.Height > maxRowHeight)
                 {
                     maxRowHeight = g.img.Height;
@@ -73,7 +76,7 @@ namespace Typography.Rendering
             BinPacker binPacker = new BinPacker(totalMaxLim, currentY);
             for (int i = glyphList.Count - 1; i >= 0; --i)
             {
-                CacheGlyph g = glyphList[i];
+                CacheGlyphData g = glyphList[i];
                 BinPackRect newRect = binPacker.Insert(g.img.Width, g.img.Height);
                 g.area = new Rectangle(newRect.X, newRect.Y,
                     g.img.Width, g.img.Height);
@@ -81,19 +84,19 @@ namespace Typography.Rendering
             //------------------------------- 
 
             //4. create array that can hold data
-            int[] totalBuffer = new int[totalMaxLim * imgH];
+            Color[] totalBuffer = new Color[totalMaxLim * imgH];
             for (int i = glyphList.Count - 1; i >= 0; --i)
             {
-                CacheGlyph g = glyphList[i];
+                CacheGlyphData g = glyphList[i];
                 //copy data to totalBuffer
-                GlyphImage img = g.img;
+                GlyphData img = g.img;
                 CopyToDest(img.GetImageBuffer(), img.Width, img.Height, totalBuffer, g.area.Left, g.area.Top, totalMaxLim);
             }
             //------------------
 
-            GlyphImage glyphImage = new GlyphImage(totalMaxLim, imgH);
+            GlyphData glyphImage = new GlyphData(totalMaxLim, imgH);
             glyphImage.SetImageBuffer(totalBuffer, true);
-            latestGenGlyphImage = glyphImage;
+            latestGenGlyphData = glyphImage;
             return glyphImage;
 
         }
@@ -110,21 +113,21 @@ namespace Typography.Rendering
             XmlElement root = xmldoc.CreateElement("font");
             xmldoc.AppendChild(root);
 
-            if (latestGenGlyphImage == null)
+            if (latestGenGlyphData == null)
             {
-                BuildSingleImage();
+                BuildSingleData();
             }
 
             {
                 //total img element
                 XmlElement totalImgElem = xmldoc.CreateElement("total_img");
-                totalImgElem.SetAttribute("w", latestGenGlyphImage.Width.ToString());
-                totalImgElem.SetAttribute("h", latestGenGlyphImage.Height.ToString());
+                totalImgElem.SetAttribute("w", latestGenGlyphData.Width.ToString());
+                totalImgElem.SetAttribute("h", latestGenGlyphData.Height.ToString());
                 totalImgElem.SetAttribute("compo", "4");
                 root.AppendChild(totalImgElem);
             }
 
-            foreach (CacheGlyph g in glyphs.Values)
+            foreach (CacheGlyphData g in glyphs.Values)
             {
                 XmlElement gElem = xmldoc.CreateElement("glyph");
                 //convert char to hex
@@ -178,7 +181,7 @@ namespace Typography.Rendering
             SimpleFontAtlas simpleFontAtlas = new SimpleFontAtlas();
             simpleFontAtlas.TextureKind = this.TextureKind;
             simpleFontAtlas.OriginalFontSizePts = this.FontSizeInPoints;
-            foreach (CacheGlyph cacheGlyph in glyphs.Values)
+            foreach (CacheGlyphData cacheGlyph in glyphs.Values)
             {
                 //convert char to hex
                 string unicode = ("0x" + ((int)cacheGlyph.character).ToString("X"));//code point
@@ -278,7 +281,7 @@ namespace Typography.Rendering
         }
 
 
-        static void CopyToDest(int[] srcPixels, int srcW, int srcH, int[] targetPixels, int targetX, int targetY, int totalTargetWidth)
+        static void CopyToDest(Color[] srcPixels, int srcW, int srcH, Color[] targetPixels, int targetX, int targetY, int totalTargetWidth)
         {
             int srcIndex = 0;
             unsafe
