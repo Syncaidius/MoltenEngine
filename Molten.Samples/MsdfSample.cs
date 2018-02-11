@@ -27,7 +27,6 @@ namespace Molten.Samples
         ISpriteFont _font;
         IMesh<VertexTexture> _mesh;
         ITexture2D _msdfTexture;
-        ISprite _msdfSprite;
 
         public MsdfSample(EngineSettings settings = null) : base("MSDF", settings)
         {
@@ -120,7 +119,6 @@ namespace Molten.Samples
             if (!Directory.Exists(outputDir))
                 Directory.CreateDirectory(outputDir);
 
-
             //sample
             var reader = new OpenFontReader();
             using (var fs = new FileStream(fontfile, FileMode.Open))
@@ -189,7 +187,7 @@ namespace Molten.Samples
                 Color[] intBuffer = glyphImg2.GetImageBuffer(); // Each integer is ARGB
                 int pitch = glyphImg2.Width * sizeof(int);
                 _msdfTexture.SetData(0, intBuffer, 0, intBuffer.Length, pitch);
-                _msdfSprite = new Sprite()
+                Sprite msdfSprite = new Sprite()
                 {
                     Texture = _msdfTexture,
                     Color = Color.White,
@@ -199,7 +197,20 @@ namespace Molten.Samples
                     Rotation = 0,
                     Scale = new Vector2(5)
                 };
-                SampleScene.AddSprite(_msdfSprite);
+                SampleScene.AddSprite(msdfSprite);
+
+                msdfSprite = new Sprite()
+                {
+                    Texture = _msdfTexture,
+                    Color = Color.White,
+                    Source = new Rectangle(0, 0, glyphImg2.Width, glyphImg2.Height),
+                    Position = new Vector2(300, 200 - glyphImg2.Height - 5),
+                    Origin = new Vector2(),
+                    Rotation = 0,
+                    Scale = new Vector2(1)
+                };
+                SampleScene.AddSprite(msdfSprite);
+
 
                 //using (Bitmap bmp = new Bitmap(glyphImg2.Width, glyphImg2.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
                 //{

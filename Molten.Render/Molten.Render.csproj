@@ -7,7 +7,7 @@
     <ProjectGuid>{11C91C8D-ED1F-40AC-A246-DE4796CA2122}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Molten.Render</RootNamespace>
+    <RootNamespace>Molten.Graphics</RootNamespace>
     <AssemblyName>Molten.Render</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -73,6 +73,8 @@
     <Compile Include="Display\IDisplayOutput.cs" />
     <Compile Include="Exceptions\AdapterException.cs" />
     <Compile Include="Exceptions\AdapterOutputException.cs" />
+    <Compile Include="Font\FontSource.cs" />
+    <Compile Include="Font\SpriteFont.cs" />
     <Compile Include="GraphicsFormat.cs" />
     <Compile Include="GraphicsSettings.cs" />
     <Compile Include="IRenderer.cs" />
@@ -84,12 +86,10 @@
     <Compile Include="Mesh\IMesh.cs" />
     <Compile Include="Msdf\Atlas\BinPacker.cs" />
     <Compile Include="Msdf\Atlas\CacheGlyphData.cs" />
-    <Compile Include="Msdf\Atlas\CacheGlyph.cs" />
-    <Compile Include="Msdf\Atlas\GlyphImages.cs" />
+    <Compile Include="Msdf\Atlas\GlyphData.cs" />
+    <Compile Include="Msdf\Atlas\GlyphMatrix2.cs" />
     <Compile Include="Msdf\Atlas\MsdfGlyphGen.cs" />
-    <Compile Include="Msdf\Atlas\SimpleFontAtlas.cs" />
     <Compile Include="Msdf\Atlas\SimpleFontAtlasTextureBuilder.cs" />
-    <Compile Include="Msdf\Atlas\SimpleFontAtlasBuilder.cs" />
     <Compile Include="Msdf\Atlas\TextureKind.cs" />
     <Compile Include="Msdf\Contour.cs" />
     <Compile Include="Msdf\EdgeColor.cs" />

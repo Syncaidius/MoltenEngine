@@ -16,6 +16,5 @@ namespace Typography.Rendering
         public char character;
         public int codePoint;
         public GlyphMatrix2 glyphMatrix;
-
     }
 }
