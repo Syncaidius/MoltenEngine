@@ -10,10 +10,38 @@ namespace Molten.Graphics.Font
 {
     public class FontReader
     {
-        public void ReadFont(Stream stream)
+        static Dictionary<string, FontTableParser> _tableParsers;
+
+        static FontReader()
+        {
+            _tableParsers = new Dictionary<string, FontTableParser>();
+            IEnumerable<Type> parserTypes = ReflectionHelper.FindType<FontTable>(typeof(FontTable).Assembly);
+            foreach(Type t in parserTypes)
+            {
+                FontTableParser parser = Activator.CreateInstance(t) as FontTableParser;
+                _tableParsers.Add(parser.TableTag, parser);
+            }
+        }
+
+        static FontTableParser GetTableParser(string tableTag)
+        {
+            if (_tableParsers.TryGetValue(tableTag, out FontTableParser parser))
+                return parser;
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="log"></param>
+        /// <param name="filename">Optional. Provided simply to improve log errors and message.</param>
+        public void ReadFont(Stream stream, Logger log, string filename = null)
         {
             OffsetTable offsetTable;
-            List<TableHeader> unreadTables = new List<TableHeader>();
+            List<TableHeader> headers = new List<TableHeader>();
+            Dictionary<string, FontTable> completedTables = new Dictionary<string, FontTable>();
 
             // True-type fonts use big-endian.
             using (BinaryEndianAgnosticReader reader = new BinaryEndianAgnosticReader(stream, false))
@@ -28,9 +56,23 @@ namespace Molten.Graphics.Font
                     RangeShift = reader.ReadUInt16(),
                 };
 
+                // Read table header entries.
                 for (int i = 0; i < offsetTable.NumTables; i++)
+                    headers.Add(ReadTableHeader(reader));
+
+                // TODO Check for presence of REQUIRED tables before proceeding here.
+                // TODO See: https://www.microsoft.com/typography/otspec/otff.htm
+                // TODO Also consider TTF tables and CFF tables for OpenType data. Certain tables require or refer to other table types.
+                //      Example: TTF fonts require glyf and loca tables. OpenType fonts require a CFF or CFF2 table.
+
+                // Now parse the tables.
+                foreach (TableHeader th in headers)
                 {
-                    unreadTables.Add(ReadTableHeader(reader));
+                    FontTableParser parser = GetTableParser(th.Tag);
+                    if (parser != null)
+                        parser.Parse(reader, th, log);
+                    else
+                        log.WriteWarning($"Unsupported font table '{th.Tag}'", filename);
                 }
             }
         }

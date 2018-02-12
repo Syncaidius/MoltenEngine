@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    /// <summary>A reader which automatically flips the bits of read types if the current system's endian architecture does not match the stream's endian format.</summary>
+    /// <summary>A reader which automatically flips the bytes of read types if the current system's endian architecture does not match the stream's endian format.</summary>
     public class BinaryEndianAgnosticReader : BinaryReader
     {
         bool _flipBytes;

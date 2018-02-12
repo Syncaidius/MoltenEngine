@@ -175,7 +175,10 @@ namespace Molten
 
         public void WriteWarning(string value, string filename)
         {
-            WriteLine($"{WarningPrefix} {filename}: {value}", WarningColor);
+            if (string.IsNullOrEmpty(filename))
+                WriteWarning(value);
+            else
+                WriteLine($"{WarningPrefix} {filename}: {value}", WarningColor);
         }
 
         public void Write(string value)

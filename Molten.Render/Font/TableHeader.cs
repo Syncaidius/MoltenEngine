@@ -19,5 +19,10 @@ namespace Molten.Graphics.Font
 
         /// <summary>The length of the table that the current <see cref="TableHeader"/> represents.</summary>
         public uint Length;
+
+        public override string ToString()
+        {
+            return $"{Tag} -- {Length} bytes";
+        }
     }
 }
