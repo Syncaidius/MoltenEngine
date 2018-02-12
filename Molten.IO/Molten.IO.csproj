@@ -62,7 +62,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EmbeddedResourceReader.cs" />
     <Compile Include="IClipboard.cs" />
     <Compile Include="IInputManager.cs" />
     <Compile Include="InputHandlerBase.cs" />

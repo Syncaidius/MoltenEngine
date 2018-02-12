@@ -73,6 +73,9 @@
     <Compile Include="Display\IDisplayOutput.cs" />
     <Compile Include="Exceptions\AdapterException.cs" />
     <Compile Include="Exceptions\AdapterOutputException.cs" />
+    <Compile Include="Font\FontReader.cs" />
+    <Compile Include="Font\OffsetTable.cs" />
+    <Compile Include="Font\TableHeader.cs" />
     <Compile Include="GraphicsFormat.cs" />
     <Compile Include="GraphicsSettings.cs" />
     <Compile Include="IRenderer.cs" />

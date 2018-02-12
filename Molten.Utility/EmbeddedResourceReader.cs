@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Molten.IO
+namespace Molten
 {
     public static class EmbeddedResourceReader
     {

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DWFont = SharpDX.DirectWrite.Font;
 
 namespace Molten.Graphics
 {
@@ -27,7 +28,7 @@ namespace Molten.Graphics
 
         int _size;
         FontFamily _family;
-        Font _font;
+        DWFont _font;
         FontFace _face;
         FontMetrics _metrics;
         TextFormat _format;

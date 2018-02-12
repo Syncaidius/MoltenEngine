@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinaryEndianAgnosticReader.cs" />
     <Compile Include="BindableValue.cs" />
     <Compile Include="Collections\ExpansionMode.cs" />
     <Compile Include="Collections\ObjectPool.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="Collections\WatchableList.cs" />
     <Compile Include="Comparers\IntPtrComparer.cs" />
     <Compile Include="ConversionHelper.cs" />
+    <Compile Include="EmbeddedResourceReader.cs" />
     <Compile Include="EngineInterop.cs" />
     <Compile Include="EngineObject.cs" />
     <Compile Include="EnumHelper.cs" />

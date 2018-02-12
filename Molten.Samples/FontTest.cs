@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics;
+using Molten.Graphics.Font;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -104,6 +105,13 @@ namespace Molten.Samples
             };
             _mesh.SetVertices(verts);
             SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
+
+            // Hi. I'm just a piece of test code for the new WIP font system. Please ignore me.
+            using (FileStream stream = new FileStream("assets/broshk.ttf", FileMode.Open, FileAccess.Read))
+            {
+                FontReader reader = new FontReader();
+                reader.ReadFont(stream);
+            }
         }
 
         private void SetupSprites(ISpriteFont font)
