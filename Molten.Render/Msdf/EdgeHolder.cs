@@ -1,6 +1,7 @@
 ﻿//MIT, 2016, Viktor Chlumsky, Multi-channel signed distance field generator, from https://github.com/Chlumsky/msdfgen
 //MIT, 2017, WinterDev (C# port)
-
+//MIT, 2017 Applied Ckohnert's changes from https://github.com/ckohnert/msdfgen
+//MIT, 2018, James Yarwood (Adapted for Molten Engine)
 namespace Msdfgen
 {
     //#include "EdgeHolder.h"
@@ -40,6 +41,12 @@ namespace Msdfgen
         {
             return edgeSegment.point(param);
         }
+
+        public int crossings(Vector2 r, WindingSpanner cb)
+        {
+            return edgeSegment.crossings(r, cb);
+        }
+
 #if DEBUG
         public override string ToString()
         {

@@ -212,6 +212,7 @@
     <Compile Include="Msdf\Triangulation\Triangulation\Util\PointGenerator.cs" />
     <Compile Include="Msdf\Triangulation\Triangulation\Util\PolygonGenerator.cs" />
     <Compile Include="Msdf\Vector2.cs" />
+    <Compile Include="Msdf\WindingSpanner.cs" />
     <Compile Include="ObjectUpdateFlags.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderFrameSnapshot.cs" />

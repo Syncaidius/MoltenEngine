@@ -112,7 +112,7 @@ namespace Molten.Samples
 
             // Test using the original PixelFarm MSDF code
             char[] chars = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', '1', '2', '3', 'M', 'N', '.' };
-            string fn = "assets/Digitalt.ttf";
+            string fn = "assets/broshk.ttf";
             if (File.Exists(fn))
                 CreateSampleMsdfTextureFont(fn, 18, chars, "msdf");
             else

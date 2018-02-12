@@ -1,6 +1,8 @@
 ﻿//MIT, 2016, Viktor Chlumsky, Multi-channel signed distance field generator, from https://github.com/Chlumsky/msdfgen
 //MIT, 2017, WinterDev (C# port)
 //MIT, 2018, James Yarwood (Adapted for Molten Engine)
+//MIT, 2017 Applied Ckohnert's changes from https://github.com/ckohnert/msdfgen
+//MIT, 2018, James Yarwood (Adapted for Molten Engine)
 
 using Molten;
 using Molten.Graphics;
@@ -271,6 +273,112 @@ namespace Msdfgen
             return output;
         }
 
+        public static void generateMSDF_v3(FloatRGBBmp output, Shape shape, double range, Vector2 scale, Vector2 translate, double edgeThreshold)
+        {
+            List<Contour> contours = shape.contours;
+            int contourCount = contours.Count;
+            int w = output.Width;
+            int h = output.Height;
+
+            WindingSpanner spanner = new WindingSpanner();
+            double bound_l, bound_t, bound_b, bound_r;
+            shape.FindBounds(out bound_l, out bound_b, out bound_r, out bound_t);
+
+            var contourSD = new MultiDistance[contourCount];
+            for(int y = 0; y < h; ++y)
+            {
+                int row = shape.InverseYAxis ? h - y - 1 : y;
+
+                // Start slightly off the -X edge so we ensure we find all spans.
+                spanner.Collect(shape, new Vector2(bound_l - 0.5, (y + 0.5) / scale.Y - translate.Y));
+
+                for(int x = 0; x < w; ++x)
+                {
+                    Vector2 p = new Vector2(x + .5, y + .5) / scale - translate;
+
+                    EdgePoint sr, sg, sb;
+                    sr.nearEdge = sg.nearEdge = sb.nearEdge = null;
+                    sr.nearParam = sg.nearParam = sb.nearParam = 0;
+                    sr.minDistance = sg.minDistance = sb.minDistance = new SignedDistance(); // JY - Added to avoid unassigned error
+                    int realSign = spanner.AdvanceTo(p.X);
+
+                    for(int i = 0; i < contourCount; ++i)
+                    {
+                        Contour contour = contours[i];
+                        EdgePoint r, g, b;
+                        r.nearEdge = g.nearEdge = b.nearEdge = null;
+                        r.nearParam = g.nearParam = b.nearParam = 0;
+                        r.minDistance = g.minDistance = b.minDistance = new SignedDistance(); // JY -Added to avoid unassigned error
+
+                        for (int e = 0; e < contour.Edges.Count; e++)
+                        {
+                            double param;
+                            EdgeHolder holder = contour.Edges[e];
+                            EdgeSegment edge = holder.edgeSegment;
+                            SignedDistance distance = edge.signedDistance(p, out param);
+                            if((edge.color & EdgeColor.RED) == EdgeColor.RED && distance < r.minDistance)
+                            {
+                                r.minDistance = distance;
+                                r.nearEdge = holder;
+                                r.nearParam = param;
+                            }
+                            if ((edge.color & EdgeColor.GREEN) == EdgeColor.GREEN && distance < g.minDistance)
+                            {
+                                g.minDistance = distance;
+                                g.nearEdge = holder;
+                                g.nearParam = param;
+                            }
+                            if ((edge.color & EdgeColor.BLUE) == EdgeColor.BLUE && distance < b.minDistance)
+                            {
+                                b.minDistance = distance;
+                                b.nearEdge = holder;
+                                b.nearParam = param;
+                            }
+                        }
+
+                        if (r.minDistance < sr.minDistance)
+                        {
+                            sr = r;
+                        }
+                        if (g.minDistance < sg.minDistance)
+                        {
+                            sg = g;
+                        }
+                        if (b.minDistance < sb.minDistance)
+                        {
+                            sb = b;
+                        }
+                    }
+
+                    sb.nearEdge?.edgeSegment.distanceToPseudoDistance(ref sr.minDistance, p, sr.nearParam);
+                    sb.nearEdge?.edgeSegment.distanceToPseudoDistance(ref sg.minDistance, p, sg.nearParam);
+                    sb.nearEdge?.edgeSegment.distanceToPseudoDistance(ref sb.minDistance, p, sb.nearParam);
+
+                    double dr = sr.minDistance.distance;
+                    double dg = sg.minDistance.distance;
+                    double db = sb.minDistance.distance;
+
+                    double med = median(dr, dg, db);
+                    // Note: Use signbit() not sign() here because we need to know -0 case.
+                    int medSign = SdfMath.signbit(med) ? -1 : 1;
+
+                    if (medSign != realSign)
+                    {
+                        dr = -dr;
+                        dg = -dg;
+                        db = -db;
+                    }
+
+                    output[x, row] = new FloatRGB()
+                    {
+                        r = (float)(dr / range + .5),
+                        g = (float)(dg / range + .5),
+                        b = (float)(db / range + .5)
+                    };
+                }
+            }
+        }
+
         public static void generateMSDF(FloatRGBBmp output, Shape shape, double range, Vector2 scale, Vector2 translate, double edgeThreshold)
         {
             List<Contour> contours = shape.contours;
@@ -348,28 +456,30 @@ namespace Msdfgen
                         }
 
                         if (r.nearEdge != null)
-                            r.nearEdge.edgeSegment.distanceToPsedoDistance(ref r.minDistance, p, r.nearParam);
+                            r.nearEdge.edgeSegment.distanceToPseudoDistance(ref r.minDistance, p, r.nearParam);
                         if (g.nearEdge != null)
-                            g.nearEdge.edgeSegment.distanceToPsedoDistance(ref g.minDistance, p, g.nearParam);
+                            g.nearEdge.edgeSegment.distanceToPseudoDistance(ref g.minDistance, p, g.nearParam);
                         if (b.nearEdge != null)
-                            b.nearEdge.edgeSegment.distanceToPsedoDistance(ref b.minDistance, p, b.nearParam);
+                            b.nearEdge.edgeSegment.distanceToPseudoDistance(ref b.minDistance, p, b.nearParam);
+
                         //--------------
                         medMinDistance = median(r.minDistance.distance, g.minDistance.distance, b.minDistance.distance);
                         contourSD[n].r = r.minDistance.distance;
                         contourSD[n].g = g.minDistance.distance;
                         contourSD[n].b = b.minDistance.distance;
                         contourSD[n].med = medMinDistance;
+
                         if (windings[n] > 0 && medMinDistance >= 0 && Math.Abs(medMinDistance) < Math.Abs(posDist))
                             posDist = medMinDistance;
                         if (windings[n] < 0 && medMinDistance <= 0 && Math.Abs(medMinDistance) < Math.Abs(negDist))
                             negDist = medMinDistance;
                     }
                     if (sr.nearEdge != null)
-                        sr.nearEdge.edgeSegment.distanceToPsedoDistance(ref sr.minDistance, p, sr.nearParam);
+                        sr.nearEdge.edgeSegment.distanceToPseudoDistance(ref sr.minDistance, p, sr.nearParam);
                     if (sg.nearEdge != null)
-                        sg.nearEdge.edgeSegment.distanceToPsedoDistance(ref sg.minDistance, p, sg.nearParam);
+                        sg.nearEdge.edgeSegment.distanceToPseudoDistance(ref sg.minDistance, p, sg.nearParam);
                     if (sb.nearEdge != null)
-                        sb.nearEdge.edgeSegment.distanceToPsedoDistance(ref sb.minDistance, p, sb.nearParam);
+                        sb.nearEdge.edgeSegment.distanceToPseudoDistance(ref sb.minDistance, p, sb.nearParam);
 
                     MultiDistance msd;
                     msd.r = msd.g = msd.b = msd.med = SignedDistance.INFINITE.distance;

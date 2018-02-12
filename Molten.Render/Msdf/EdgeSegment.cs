@@ -1,12 +1,13 @@
 ﻿//MIT, 2016, Viktor Chlumsky, Multi-channel signed distance field generator, from https://github.com/Chlumsky/msdfgen
 //MIT, 2017, WinterDev (C# port)
+//MIT, 2017 Applied Ckohnert's changes from https://github.com/ckohnert/msdfgen
+//MIT, 2018, James Yarwood (Adapted for Molten Engine)
 using System;
 
 namespace Msdfgen
 {
     public abstract class EdgeSegment
     {
-
         public const int MSDFGEN_CUBIC_SEARCH_STARTS = 4;
         public const int MSDFGEN_CUBIC_SEARCH_STEPS = 4;
 
@@ -15,8 +16,10 @@ namespace Msdfgen
         {
             this.color = edgeColor;
         }
+
         public abstract void findBounds(ref double left, ref double bottom, ref double right, ref double top);
-        public void distanceToPsedoDistance(ref SignedDistance distance, Vector2 origin, double param)
+
+        public void distanceToPseudoDistance(ref SignedDistance distance, Vector2 origin, double param)
         {
             if (param < 0)
             {
@@ -48,9 +51,14 @@ namespace Msdfgen
             }
         }
 
+        public abstract int crossings(Vector2 r, WindingSpanner cb);
+
         public abstract Vector2 direction(double param);
+
         public abstract Vector2 point(double param);
+
         public abstract SignedDistance signedDistance(Vector2 origin, out double param);
+
         public abstract void splitInThirds(
           out EdgeSegment part1,
           out EdgeSegment part2,
@@ -60,6 +68,7 @@ namespace Msdfgen
         {
             return 2 * ((n > 0) ? 1 : 0) - 1;
         }
+
         protected static Vector2 mix(Vector2 a, Vector2 b, double weight)
         {
             //return T((S(1) - weight) * a + weight * b);
@@ -67,10 +76,97 @@ namespace Msdfgen
             return new Vector2(
                 (1 - weight) * a.X + (weight * b.X),
                 (1 - weight) * a.Y + (weight * b.Y));
-
         }
 
+        /// Check how many times a ray from point R extending to the +X direction intersects
+        /// the given segment:
+        ///  0 = no intersection or co-linear
+        /// +1 = for each intersection increasing in the Y axis
+        /// -1 = for each intersection decreasing in the Y axis
+        protected static int crossCubic(Vector2 r, Vector2 p0, Vector2 c0, Vector2 c1, Vector2 p1, int depth, WindingSpanner cb)
+        {
+            if (r.Y < Math.Min(p0.Y, Math.Min(c0.Y, Math.Min(c1.Y, p1.Y))))
+                return 0;
+            if (r.Y > Math.Max(p0.Y, Math.Max(c0.Y, Math.Max(c1.Y, p1.Y))))
+                return 0;
+            if (r.X >= Math.Max(p0.X, Math.Max(c0.X, Math.Max(c1.X, p1.X))))
+                return 0;
+
+            // Recursively subdivide the curve to find the intersection point(s). If we haven't
+            // converged on a solution by a given depth, just treat it as a linear segment
+            // and call the approximation good enough.
+            if (depth > 30)
+                return crossLine(r, p0, p1, cb);
+
+            depth++;
+
+            Vector2 mid = (c0 + c1) * 0.5;
+            Vector2 c00 = (p0 + c0) * 0.5;
+            Vector2 c11 = (c1 + p1) * 0.5;
+            Vector2 c01 = (c00 + mid) * 0.5;
+            Vector2 c10 = (c11 + mid) * 0.5;
+
+            mid = (c01 + c10) * 0.5;
+
+            return crossCubic(r, p0, c00, c01, mid, depth, cb) + crossCubic(r, mid, c10, c11, p1, depth, cb);
+        }
+
+        /// Check how many times a ray from point R extending to the +X direction intersects
+        /// the given segment:
+        ///  0 = no intersection or co-linear
+        /// +1 = for each intersection increasing in the Y axis
+        /// -1 = for each intersection decreasing in the Y axis
+        protected static int crossQuad(Vector2 r, Vector2 p0, Vector2 c0, Vector2 p1, int depth, WindingSpanner cb)
+        {
+            if (r.Y < Math.Min(p0.Y, Math.Min(c0.Y, p1.Y)))
+                return 0;
+            if (r.Y > Math.Max(p0.Y, Math.Max(c0.Y, p1.Y)))
+                return 0;
+            if (r.X >= Math.Max(p0.X, Math.Max(c0.X, p1.X)))
+                return 0;
+
+            // Recursively subdivide the curve to find the intersection point(s). If we haven't
+            // converged on a solution by a given depth, just treat it as a linear segment
+            // and call the approximation good enough.
+            if (depth > 30)
+                return crossLine(r, p0, p1, cb);
+
+            depth++;
+
+            Vector2 mc0 = (p0 + c0) * 0.5;
+            Vector2 mc1 = (c0 + p1) * 0.5;
+            Vector2 mid = (mc0 + mc1) * 0.5;
+
+            return crossQuad(r, p0, mc0, mid, depth, cb) + crossQuad(r, mid, mc1, p1, depth, cb);
+        }
+
+        /// Check how many times a ray from point R extending to the +X direction intersects
+        /// the given segment:
+        ///  0 = no intersection or co-linear
+        /// +1 = intersection increasing in the Y axis
+        /// -1 = intersection decreasing in the Y axis
+        protected static int crossLine(Vector2 r, Vector2 p0, Vector2 p1, WindingSpanner cb)
+        {
+            if (r.Y < Math.Min(p0.Y, p1.Y))
+                return 0;
+            if (r.Y >= Math.Max(p0.Y, p1.Y))
+                return 0;
+            if (r.X >= Math.Max(p0.X, p1.X))
+                return 0;
+
+            // Intersect the line at r.y and see if the intersection is before or after the origin.
+            double xintercept = (p0.X + (r.Y - p0.Y) * (p1.X - p0.X) / (p1.Y - p0.Y));
+            if (r.X < xintercept)
+            {
+                int w = (p0.Y < p1.Y) ? 1 : -1;
+                cb?.Intersection(new Vector2(xintercept, r.Y), w);
+                return w;
+            }
+
+            return 0;
+        }
     }
+
     public class LinearSegment : EdgeSegment
     {
         Vector2[] p;
@@ -120,6 +216,11 @@ namespace Msdfgen
         public override Vector2 point(double param)
         {
             return mix(p[0], p[1], param);
+        }
+
+        public override int crossings(Vector2 r, WindingSpanner cb)
+        {
+            return crossLine(r, p[0], p[1], cb);
         }
 
 #if DEBUG
@@ -229,6 +330,11 @@ namespace Msdfgen
                 return new SignedDistance(minDistance, Math.Abs(Vector2.Dot((p[2] - p[1]).Normalize(), (p[2] - origin).Normalize())));
         }
 
+        public override int crossings(Vector2 r, WindingSpanner cb)
+        {
+            return crossQuad(r, p[0], p[1], p[2], 0, cb);
+        }
+
 #if DEBUG
         public override string ToString()
         {
@@ -236,6 +342,7 @@ namespace Msdfgen
         }
 #endif
     }
+
     public class CubicSegment : EdgeSegment
     {
         Vector2[] p;
@@ -344,6 +451,12 @@ namespace Msdfgen
                 return new SignedDistance(minDistance,
                     EquationSolver.fabs(Vector2.Dot(direction(1).Normalize(), (p[3] - origin).Normalize())));
         }
+
+        public override int crossings(Vector2 r, WindingSpanner cb)
+        {
+            return crossCubic(r, p[0], p[1], p[2], p[3], 0, cb);
+        }
+
 #if DEBUG
         public override string ToString()
         {

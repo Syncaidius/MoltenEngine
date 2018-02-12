@@ -30,5 +30,13 @@ namespace Msdfgen
         {
             return (n == 0) ? 0 : (n > 0) ? 1 : -1;
         }
+
+        private static readonly long SignMask = BitConverter.DoubleToInt64Bits(-0.0) ^
+    BitConverter.DoubleToInt64Bits(+0.0);
+
+        public static bool signbit(double arg)
+        {
+            return (BitConverter.DoubleToInt64Bits(arg) & SignMask) == SignMask;
+        }
     }
 }
