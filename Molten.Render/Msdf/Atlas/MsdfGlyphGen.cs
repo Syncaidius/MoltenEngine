@@ -25,7 +25,11 @@ namespace Typography.Rendering
         public double angleThreshold = 3; //default
         public double pxRange = 4; //default
         public double edgeThreshold = 1.00000001;//default,(from original code)
-        
+
+        public bool skipColoring = false;
+        public string edgeAssignment = null;
+        public int coloringSeed = 0;
+
         public MsdfGenParams()
         {
 
@@ -189,13 +193,25 @@ namespace Typography.Rendering
             double range = genParams.pxRange / Math.Min(scale.X, scale.Y);
             //---------
             FloatRGBBmp frgbBmp = new FloatRGBBmp(w, h);
-            EdgeColoring.edgeColoringSimple(shape, genParams.angleThreshold);
-            MsdfGenerator.generateMSDF(frgbBmp,
+
+            if (!genParams.skipColoring)
+                EdgeColoring.edgeColoringSimple(shape, genParams.angleThreshold, genParams.coloringSeed);
+            if (genParams.edgeAssignment != null)
+                EdgeColoring.parseColoring(shape, genParams.edgeAssignment);
+
+            MsdfGenerator.generateMSDF_v3(frgbBmp,
                 shape,
                 range,
                 scale,
                 translate,//translate to positive quadrant
                 edgeThreshold);
+
+            //FloatBmp frgbBmp = new FloatBmp(w, h);
+            //MsdfGenerator.GenerateSdf(frgbBmp,
+            //    shape,
+            //    range,
+            //    scale,
+            //    translate);
             //-----------------------------------
             Color[] buffer = MsdfGenerator.ConvertToR8G8B8A8(frgbBmp);
 

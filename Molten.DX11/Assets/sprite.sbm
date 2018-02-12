@@ -11,6 +11,18 @@
 </material>
 
 <material>
+  <name>sprite-msdf</name>
+  <description>The default material for rendering MSDF sprites in a SpriteBatch with a texture</description>
+  <pass>
+    <name>main</name>
+    <iterations>1</iterations>
+    <vertex>VS</vertex>
+    <geometry>GS</geometry>
+    <pixel>PS_Msdf</pixel>
+  </pass>
+</material>
+
+<material>
 	<name>sprite-no-texture</name>
 	<description>The default material for rendering sprites in a SpriteBatch with no texture.</description>
 	<pass>
@@ -44,6 +56,8 @@ SamplerState albedoSampler;
 
 float4x4 worldViewProj;
 float2 textureSize;
+float pxRange;
+float smoothing = 1.0 / 16.0;
 
 VS_GS VS(VS_GS input)
 {
@@ -108,10 +122,36 @@ void GS(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
 	}
 }
 
+float median(float r, float g, float b) {
+    return max(min(r, g), min(max(r, g), b));
+}
+
 float4 PS( PS_IN input ) : SV_Target
 {
 	float4 col = albedo.Sample(albedoSampler, input.uv);
 	return col * input.col;
+}
+
+float4 PS_Msdf( PS_IN input ) : SV_Target
+{
+    // MSDF - Multichannel signed distance field.
+    float3 sample = albedo.Sample(albedoSampler, input.uv).rgb;
+    float d = median(sample.r,sample.g,sample.b);
+    float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, d);
+    return float4(input.col.rgb, input.col.a * alpha);
+    
+    /*float2 msdfUnit = pxRange / float2(9,10);//textureSize;
+    float3 sample = albedo.Sample(albedoSampler, input.uv).rgb;
+    float sigDist = median(sample.r, sample.g, sample.b) - 0.5;
+    sigDist *= dot(msdfUnit, 0.5 / fwidth(input.uv));
+    float opacity = clamp(sigDist + 0.5, 0.0, 1.0);
+    
+    return input.col * opacity; //lerp(bgColor, fgColor, opacity);*/
+    
+    // SDF - Signed distance field
+    /*float d = albedo.Sample(albedoSampler, input.uv).r;
+    float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, d);
+    return float4(input.col.rgb, input.col.a * alpha);*/
 }
 
 float4 PS_NoTexture(PS_IN input) : SV_Target

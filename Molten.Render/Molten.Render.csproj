@@ -73,6 +73,7 @@
     <Compile Include="Display\IDisplayOutput.cs" />
     <Compile Include="Exceptions\AdapterException.cs" />
     <Compile Include="Exceptions\AdapterOutputException.cs" />
+    <Compile Include="Font\FontRenderMode.cs" />
     <Compile Include="Font\SpriteFont.cs" />
     <Compile Include="GraphicsFormat.cs" />
     <Compile Include="GraphicsSettings.cs" />

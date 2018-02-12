@@ -407,6 +407,12 @@ namespace Molten.Graphics
                 NoTexMaterial = noTextureMaterial ?? _defaultNoTextureMaterial,
             };
 
+            if (data.Material == null)
+            {
+                Reset();
+                return;
+            }
+
             data.TextureValue = data.Material["albedo"];
             data.TexSizeValue = data.Material["textureSize"];
             data.Material["worldViewProj"].Value = viewProjection;
@@ -484,6 +490,12 @@ namespace Molten.Graphics
 
             pipe.PopState();
 
+            //reset counters
+            Reset();
+        }
+
+        private void Reset()
+        {
             //reset counters
             _clipStack.Clear();
             _curClip = 0;

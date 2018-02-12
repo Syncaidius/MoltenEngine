@@ -8,14 +8,15 @@ namespace Msdfgen
 {
     public class WindingSpanner
     {
-        List<KeyValuePair<double, int>> crossings = new List<KeyValuePair<double, int>>();
+        List<ValueTuple<double, int>> crossings = new List<ValueTuple<double, int>>();
         public FillRule fillRule;
 
         int curW = 0;
-        int curSpanID;
+        int curSpanID = 0;
 
         public void Collect(Shape shape, Vector2 p)
         {
+            fillRule = shape.FillRule;
             crossings.Clear();
             foreach(Contour contour in shape.contours)
             {
@@ -26,9 +27,9 @@ namespace Msdfgen
             // Make sure we've collected them all in increasing x order.
             crossings.Sort((a, b) =>
             {
-                if (a.Key < b.Key)
+                if (a.Item1 < b.Item1)
                     return -1;
-                else if (a.Key == b.Key)
+                else if (a.Item1 == b.Item1)
                     return 0;
                 else
                     return 1;
@@ -44,9 +45,9 @@ namespace Msdfgen
 
         public int AdvanceTo(double x)
         {
-            while (curSpanID != crossings.Count && x > crossings[curSpanID].Key)
+            while (curSpanID != crossings.Count && x > crossings[curSpanID].Item1)
             {
-                curW += crossings[curSpanID].Value;
+                curW += crossings[curSpanID].Item2;
                 curSpanID++;
             }
 
@@ -57,7 +58,7 @@ namespace Msdfgen
                 case FillRule.EvenOdd:
                     return curW % 2 == 0 ? 1 : -1;
                 case FillRule.None when curSpanID != crossings.Count:
-                    return SdfMath.Sign(crossings[curSpanID].Value);
+                    return SdfMath.Sign(crossings[curSpanID].Item2);
             }
 
             return 0;
@@ -65,15 +66,7 @@ namespace Msdfgen
 
         public void Intersection(Vector2 p, int winding)
         {
-            crossings.Add(new KeyValuePair<double, int>(p.X, winding));
+            crossings.Add(new ValueTuple<double, int>(p.X, winding));
         }
-    }
-
-    /// Fill rules compatible with SVG: https://www.w3.org/TR/SVG/painting.html#FillRuleProperty
-    public enum FillRule
-    {
-        None = 0, // Legacy
-        NonZero = 1,
-        EvenOdd = 2,
     }
 }

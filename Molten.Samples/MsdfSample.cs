@@ -26,9 +26,9 @@ namespace Molten.Samples
         Camera2D _cam2D;
         ISpriteFont _font;
         IMesh<VertexTexture> _mesh;
-        ITexture2D _msdfTexture;
         SpriteFont2 _newFont;
         SpriteText _kbSprite;
+        Sprite _fontSprite;
 
         public MsdfSample(EngineSettings settings = null) : base("MSDF", settings)
         {
@@ -123,7 +123,7 @@ namespace Molten.Samples
                 _newFont = new SpriteFont2(Engine.Renderer, fs);
 
             // Draw the font's sheet texture so we can see what's happening!
-            Sprite fontSprite = new Sprite()
+            _fontSprite = new Sprite()
             {
                 Texture = _newFont.SheetTexture,
                 Color = Color.White,
@@ -131,9 +131,9 @@ namespace Molten.Samples
                 Position = new Vector2(300, 200),
                 Origin = new Vector2(),
                 Rotation = 0,
-                Scale = new Vector2(4) // Scale up so we can actually see it. MSDF sheet is tiny!
+                Scale = new Vector2(1) // Scale up so we can actually see it. MSDF sheet is tiny!
             };
-            SampleScene.AddSprite(fontSprite);
+            SampleScene.AddSprite(_fontSprite);
 
             _kbSprite = new SpriteText()
             {
@@ -212,7 +212,7 @@ namespace Molten.Samples
                 }
 
                 var glyphImg2 = atlasBuilder.BuildSingleData();
-                _msdfTexture = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
+                ITexture2D msdfTexture = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
                 {
                     Width = glyphImg2.Width,
                     Height = glyphImg2.Height,
@@ -223,10 +223,10 @@ namespace Molten.Samples
 
                 Color[] intBuffer = glyphImg2.GetImageBuffer(); // Each integer is ARGB
                 int pitch = glyphImg2.Width * sizeof(int);
-                _msdfTexture.SetData(0, intBuffer, 0, intBuffer.Length, pitch);
+                msdfTexture.SetData(0, intBuffer, 0, intBuffer.Length, pitch);
                 Sprite msdfSprite = new Sprite()
                 {
-                    Texture = _msdfTexture,
+                    Texture = msdfTexture,
                     Color = Color.White,
                     Source = new Rectangle(0,0, glyphImg2.Width, glyphImg2.Height),
                     Position = new Vector2(800, 200),
@@ -235,19 +235,6 @@ namespace Molten.Samples
                     Scale = new Vector2(4)
                 };
                 SampleScene.AddSprite(msdfSprite);
-
-
-                //using (Bitmap bmp = new Bitmap(glyphImg2.Width, glyphImg2.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
-                //{
-                //    var bmpdata = bmp.LockBits(new System.Drawing.Rectangle(0, 0, glyphImg2.Width, glyphImg2.Height),
-                //        System.Drawing.Imaging.ImageLockMode.ReadWrite, bmp.PixelFormat);
-                //    int[] intBuffer = glyphImg2.GetImageBuffer();
-
-                //    System.Runtime.InteropServices.Marshal.Copy(intBuffer, 0, bmpdata.Scan0, intBuffer.Length);
-                //    bmp.UnlockBits(bmpdata);
-                //    bmp.Save($"{outputDir}/sheet.png");
-                //}
-                //atlasBuilder.SaveFontInfo($"{outputDir}/sheet_info.xml");
             }
         }
 
@@ -277,6 +264,12 @@ namespace Molten.Samples
         protected override void OnUpdate(Timing time)
         {
             RotateParentChild(_parent, _child, time);
+
+            if (Keyboard.IsTapped(IO.Key.Up))
+                _fontSprite.Scale += 1.0f;
+            else if (Keyboard.IsTapped(IO.Key.Down))
+                _fontSprite.Scale -= 1.0f;
+
             base.OnUpdate(time);
         }
     }

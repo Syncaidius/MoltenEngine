@@ -10,10 +10,21 @@ using System.Threading.Tasks;
 
 namespace Msdfgen
 {
+    /// Fill rules compatible with SVG: https://www.w3.org/TR/SVG/painting.html#FillRuleProperty
+    public enum FillRule
+    {
+        None = 0, // Legacy
+        NonZero = 1,
+        EvenOdd = 2,
+    }
+
     public class Shape
     {
         public List<Contour> contours = new List<Contour>();
         public bool InverseYAxis { get; set; }
+
+        public FillRule FillRule { get; set; } = FillRule.NonZero;
+
         public void normalized()
         {
             int j = contours.Count;

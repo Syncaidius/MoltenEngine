@@ -101,12 +101,8 @@ namespace Molten.Graphics
             builder.BuildFromGlyphIndex(codePoint, -1);
             var glyphToContour = new GlyphContourBuilder();
             builder.ReadShapes(glyphToContour);
-            float scale = 1f / 64;
+            float scale = 1f / 32;
             msdfGenParams.shapeScale = scale;
-            float s_xmin = bounds.XMin * scale;
-            float s_xmax = bounds.XMax * scale;
-            float s_ymin = bounds.YMin * scale;
-            float s_ymax = bounds.YMax * scale;
 
             GlyphData gData = MsdfGlyphGen.CreateMsdfImage(_renderer, glyphToContour, msdfGenParams);
             CacheGlyphData g = new CacheGlyphData()
