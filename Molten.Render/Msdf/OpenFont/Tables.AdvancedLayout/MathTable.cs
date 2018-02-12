@@ -1,1 +1,0 @@
-﻿//https://www.microsoft.com/typography/otspec/math.htm

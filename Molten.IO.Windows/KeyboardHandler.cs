@@ -144,11 +144,8 @@ namespace Molten.IO
                     break;
 
                 case WM_CHAR:
-#if X64
                     long paramVal = lParam.ToInt64();
-#else
-                    long paramVal = lParam.ToInt32();
-#endif
+
                     CharacterEventArgs e = new CharacterEventArgs((char)wParam, paramVal);
                     OnCharacterKey?.Invoke(e);
                     break;
