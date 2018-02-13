@@ -8,23 +8,38 @@ namespace Molten.Graphics.Font
 {
     public class AttachListTable
     {
-        CoverageTable _coverage;
+        public CoverageTable CoverageTable { get; private set; }
+
+        /// <summary>Gets an array containing AttachPoint tables ordered by coverage index, which hold contour point indices.</summary>
+        public AttachPointTable[] AttachPointTables { get; private set; }
 
         public void ReadTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader header)
         {
             long attachStartOffset = reader.Position;
             ushort coverageOffset = reader.ReadUInt16();
             uint glyphCount = reader.ReadUInt16();
-            _coverage = new CoverageTable();
+            CoverageTable = new CoverageTable();
+            AttachPointTables = new AttachPointTable[glyphCount];
 
-            // TODO: Check this. Is previous font data being mis-read and causing this table to be empty?
-                ushort[] attachPointOffsets = new ushort[glyphCount];
-                for (int i = 0; i < glyphCount; i++)
-                    attachPointOffsets[i] = reader.ReadUInt16();
+            // prepare attach point tables with their respective offsets.
+            for (int i = 0; i < glyphCount; i++)
+                AttachPointTables[i] = new AttachPointTable(this, reader.ReadUInt16());
 
-                // Read the coverage table.
-                reader.Position = attachStartOffset + coverageOffset;
-                _coverage.ReadTable(reader, log, header);
+            // Read the coverage table.
+            reader.Position = attachStartOffset + coverageOffset;
+            CoverageTable.ReadTable(reader, log, header);
+
+            // Populate attach points in each AttachPointTable.
+            for (int i = 0; i < glyphCount; i++)
+            {
+                AttachPointTable pt = AttachPointTables[i];
+                reader.Position = attachStartOffset + pt.Offset;
+
+                ushort pointCount = reader.ReadUInt16();
+                pt.ContourPointIndices = new ushort[pointCount];
+                for (int p = 0; p < pointCount; p++)
+                    pt.ContourPointIndices[p] = reader.ReadUInt16();
+            }
         }
     }
 }

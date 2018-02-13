@@ -74,6 +74,7 @@
     <Compile Include="Exceptions\AdapterException.cs" />
     <Compile Include="Exceptions\AdapterOutputException.cs" />
     <Compile Include="Font\AttachListTable.cs" />
+    <Compile Include="Font\AttachPointTable.cs" />
     <Compile Include="Font\CoverageTable.cs" />
     <Compile Include="Font\ClassDefinitionTable.cs" />
     <Compile Include="Font\FontReader.cs" />

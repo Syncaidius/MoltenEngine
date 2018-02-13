@@ -45,15 +45,17 @@ namespace Molten.Graphics.Font
                 ushort attachListOffset = reader.ReadUInt16();
                 ushort ligCaretListOffset = reader.ReadUInt16();
                 ushort markAttachClassDefOffset = reader.ReadUInt16();
+                ushort markGlyphSetsDefOffset = 0;
+                ushort itemVarStoreOffset = 0;
 
                 // Read version-specific table information.
                 if (table.MajorVersion >= 1)
                 {
                     if(table.MinorVersion >= 2)
-                        table.MarkGlyphSetsDefOffset = reader.ReadUInt16();
+                        markGlyphSetsDefOffset = reader.ReadUInt16();
 
                     if (table.MinorVersion >= 3)
-                        table.ItemVarStoreOffset = reader.ReadUInt16();
+                        itemVarStoreOffset = reader.ReadUInt16();
                 }
 
                 // Glyph class definition table
@@ -75,6 +77,26 @@ namespace Molten.Graphics.Font
                     reader.Position = header.Offset + attachListOffset;
                     table.AttachList = new AttachListTable();
                     table.AttachList.ReadTable(reader, log, header);
+                }
+
+                if(ligCaretListOffset > 0)
+                {
+                    // TODO read ligature caret list table.
+                }
+
+                if(markAttachClassDefOffset > 0)
+                {
+                    // TODO read mark attachment class definition table
+                }
+
+                if (markGlyphSetsDefOffset > 0)
+                {
+                    // TODO read Mark glyph sets table.
+                }
+
+                if(itemVarStoreOffset > 0)
+                {
+                    // TODO read item variation store table.
                 }
 
                 return table;
