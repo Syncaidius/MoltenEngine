@@ -18,7 +18,7 @@ namespace Molten.Graphics.Font
 
         T[] _glyphClassIDs;
 
-        public void ReadTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader header, T[] classTranslationTable)
+        internal void ReadTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader header, T[] classTranslationTable)
         {
             Format = reader.ReadUInt16();
 

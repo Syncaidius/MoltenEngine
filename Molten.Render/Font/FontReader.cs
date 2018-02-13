@@ -71,6 +71,7 @@ namespace Molten.Graphics.Font
                     FontTableParser parser = GetTableParser(th.Tag);
                     if (parser != null)
                     {
+                        log.WriteDebugLine($"Found '{th.Tag}' parser -- table is {th.Length} bytes", filename);
                         // Move to the start of the table and parse it.
                         reader.Position = th.Offset;
                         FontTable table = parser.Parse(reader, th, log);
@@ -80,7 +81,7 @@ namespace Molten.Graphics.Font
                     }
                     else
                     {
-                        log.WriteWarning($"Unsupported font table '{th.Tag}'", filename);
+                        log.WriteWarning($"Unsupported font table -- {th.ToString()}", filename);
                     }
                 }
             }

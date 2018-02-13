@@ -13,9 +13,9 @@ namespace Molten.Graphics.Font
 
         public ushort MinorVersion { get; internal set; }
 
-        public ushort GlyphClassDefOffset { get; internal set; }
+        public ClassDefinitionTable<GlyphClassDefinition> GlyphClassDefs { get; internal set; }
 
-        public ushort AttachListOffset { get; internal set; }
+        public CoverageTable AttachList { get; internal set; }
 
         public ushort LigCaretListOffset { get; internal set; }
 
@@ -39,14 +39,15 @@ namespace Molten.Graphics.Font
                 {
                     MajorVersion = reader.ReadUInt16(),
                     MinorVersion = reader.ReadUInt16(),
-                    GlyphClassDefOffset = reader.ReadUInt16(),
-                    AttachListOffset = reader.ReadUInt16(),
-                    LigCaretListOffset = reader.ReadUInt16(),
-                    MarkAttachClassDefOffset = reader.ReadUInt16(),
                 };
 
+                ushort glyphClassDefOffset = reader.ReadUInt16();
+                ushort attachListOffset = reader.ReadUInt16();
+                ushort ligCaretListOffset = reader.ReadUInt16();
+                ushort markAttachClassDefOffset = reader.ReadUInt16();
+
                 // Read version-specific table information.
-                if(table.MajorVersion >= 1)
+                if (table.MajorVersion >= 1)
                 {
                     if(table.MinorVersion >= 2)
                         table.MarkGlyphSetsDefOffset = reader.ReadUInt16();
@@ -55,9 +56,18 @@ namespace Molten.Graphics.Font
                         table.ItemVarStoreOffset = reader.ReadUInt16();
                 }
 
-                reader.Position = header.Offset + table.GlyphClassDefOffset;
-                ClassDefinitionTable<GlyphClassDefinition> glyphClassDef = new ClassDefinitionTable<GlyphClassDefinition>();
-                glyphClassDef.ReadTable(reader, log, header, _classTranslation);
+                // Glyph class definition table
+                reader.Position = header.Offset + glyphClassDefOffset;
+                table.GlyphClassDefs = new ClassDefinitionTable<GlyphClassDefinition>();
+                table.GlyphClassDefs.ReadTable(reader, log, header, _classTranslation);
+
+                // Attachment point list table
+                /*The table consists of an offset to a Coverage table (Coverage) listing all glyphs that define attachment points in the GPOS table, 
+                 * a count of the glyphs with attachment points (GlyphCount), and an array of offsets to AttachPoint tables (AttachPoint). 
+                 * The array lists the AttachPoint tables, one for each glyph in the Coverage table, in the same order as the Coverage Index.*/
+                reader.Position = header.Offset + attachListOffset;
+                table.AttachList = new CoverageTable();
+                table.AttachList.ReadTable(reader, log, header);
 
                 return table;
             }
