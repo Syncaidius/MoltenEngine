@@ -15,7 +15,7 @@ namespace Molten.Graphics.Font
         static FontReader()
         {
             _tableParsers = new Dictionary<string, FontTableParser>();
-            IEnumerable<Type> parserTypes = ReflectionHelper.FindType<FontTable>(typeof(FontTable).Assembly);
+            IEnumerable<Type> parserTypes = ReflectionHelper.FindType<FontTableParser>(typeof(FontTableParser).Assembly);
             foreach(Type t in parserTypes)
             {
                 FontTableParser parser = Activator.CreateInstance(t) as FontTableParser;
@@ -70,9 +70,18 @@ namespace Molten.Graphics.Font
                 {
                     FontTableParser parser = GetTableParser(th.Tag);
                     if (parser != null)
-                        parser.Parse(reader, th, log);
+                    {
+                        // Move to the start of the table and parse it.
+                        reader.Position = th.Offset;
+                        FontTable table = parser.Parse(reader, th, log);
+                        table.Header = th;
+                        completedTables.Add(th.Tag, table);
+                        log.WriteDebugLine($"Parsed font table '{th.Tag}'", filename);
+                    }
                     else
+                    {
                         log.WriteWarning($"Unsupported font table '{th.Tag}'", filename);
+                    }
                 }
             }
         }

@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Font
 {
-    class OffsetTable
+    public class OffsetTable
     {
-        public ushort MajorVersion;
+        public ushort MajorVersion { get; internal set; }
 
-        public ushort MinorVersion;
+        public ushort MinorVersion { get; internal set; }
 
-        public ushort NumTables;
+        public ushort NumTables { get; internal set; }
 
-        public ushort SearchRange;
+        public ushort SearchRange { get; internal set; }
 
-        public ushort EntrySelector;
+        public ushort EntrySelector { get; internal set; }
 
-        public ushort RangeShift;
+        public ushort RangeShift { get; internal set; }
     }
 }

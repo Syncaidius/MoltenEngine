@@ -74,6 +74,18 @@ namespace Molten
 
         /// <summary>A debug version of <see cref="WriteLine(string)"/> which will be ignored and removed in release builds.</summary>
         /// <param name="value">The text to be written.</param>
+        /// <param name="filename">The filename associated with the message.</param>
+        [Conditional("DEBUG")]
+        public void WriteDebugLine(string value, string filename)
+        {
+            if (string.IsNullOrEmpty(filename))
+                WriteLine($"[DEBUG] {value}", DebugColor);
+            else
+                WriteLine($"[DEBUG] {filename}: {value}", DebugColor);
+        }
+
+        /// <summary>A debug version of <see cref="WriteLine(string)"/> which will be ignored and removed in release builds.</summary>
+        /// <param name="value">The text to be written.</param>
         /// <param name="color">The color of the text.</param>
         [Conditional("DEBUG")]
         public void WriteDebugLine(string value, Color color)
@@ -217,7 +229,9 @@ namespace Molten
         /// <summary>The default color of errors when calling <see cref="WriteError(Exception, bool)"/> or <see cref="Error(string)"/>.</summary>
         public Color ErrorColor { get; set; } = Color.Red;
 
-        public Color WarningColor { get; set; } = new Color(100, 100, 100, 255);
+        public Color WarningColor { get; set; } = new Color(200, 200, 100, 255);
+
+        public Color DebugColor { get; set; } = new Color(100, 100, 100, 255);
 
         public string ErrorPrefix { get; set; } = "[ERROR]";
 

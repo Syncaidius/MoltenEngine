@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Font
 {
-    abstract class FontTable
+    public abstract class FontTable
     {
-
+        public TableHeader Header { get; internal set; }
     }
 
-    abstract class FontTableParser
+    public abstract class FontTableParser
     {
         public abstract FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log);
 

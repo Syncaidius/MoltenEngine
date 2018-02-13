@@ -76,6 +76,7 @@
     <Compile Include="Font\FontReader.cs" />
     <Compile Include="Font\OffsetTable.cs" />
     <Compile Include="Font\TableHeader.cs" />
+    <Compile Include="Font\Tables\DSIG.cs" />
     <Compile Include="Font\Tables\FontTable.cs" />
     <Compile Include="GraphicsFormat.cs" />
     <Compile Include="GraphicsSettings.cs" />

@@ -13,13 +13,18 @@ namespace Molten
     {
         bool _flipNeeded;
         byte[] _flipBuffer;
-        byte[] _flipBuffer16;
+        int[] _decimalBuffer;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="dataIsLittleEndian">Set to false if the expected data should be big-endian. Default value is true (i.e. data is expected to be little-endian).</param>
         public BinaryEndianAgnosticReader(Stream stream, bool dataIsLittleEndian = true) : base(stream)
         {
             _flipNeeded = BitConverter.IsLittleEndian != dataIsLittleEndian;
             _flipBuffer = new byte[8];
-            _flipBuffer16 = new byte[16];
+            _decimalBuffer = new int[4];
         }
 
         public override short ReadInt16()
@@ -89,9 +94,21 @@ namespace Molten
         public override decimal ReadDecimal()
         {
             if (_flipNeeded)
-                throw new NotImplementedException();
+            {
+                _decimalBuffer = new int[4]
+                {
+                    BitConverter.ToInt32(ReadReverse(4), 4),
+                    BitConverter.ToInt32(ReadReverse(4), 4),
+                    BitConverter.ToInt32(ReadReverse(4), 4),
+                    BitConverter.ToInt32(ReadReverse(4), 4),
+                };
+                Array.Reverse(_decimalBuffer);
+                return new decimal(_decimalBuffer);
+            }
             else
+            {
                 return base.ReadDecimal();
+            }
         }
 
         private byte[] ReadReverse(int count)
@@ -101,11 +118,11 @@ namespace Molten
             return _flipBuffer;
         }
 
-        private byte[] ReadReverse16(int count)
+        /// <summary>Gets or sets the position of the underlying <see cref="Stream"/>.</summary>
+        public long Position
         {
-            base.Read(_flipBuffer16, 0, count);
-            Array.Reverse(_flipBuffer16);
-            return _flipBuffer16;
+            get => BaseStream.Position;
+            set => BaseStream.Position = value;
         }
     }
 }
