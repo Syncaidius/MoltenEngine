@@ -6,18 +6,15 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Font
 {
-    /// <summary>A table containing coverage indices. A glyph ID is used as an index for the <see cref="GlyphCoverageIndices"/> array.</summary>
+    /// <summary>TTF/OTF font coverage table. See: https://www.microsoft.com/typography/otspec/chapter2.htm#coverageTbl</summary>
     public class CoverageTable
     {
         public ushort Format { get; internal set; }
 
-        /// <summary>Gets the starting ID within <see cref="GlyphCoverageIndices"/>.</summary>
-        public ushort StartGlyphID { get; internal set; } = ushort.MaxValue;
+        /// <summary>Gets an array containing the IDs of each glyph referenced by the coverage table.</summary>
+        public ushort[] Glyphs => _glyphIDs;
 
-        /// <summary>Gets a array containing the class ID's of each glyph. The ID of a glyph should be used as an index for the array.</summary>
-        public ushort[] GlyphCoverageIndices => _coverageIndices;
-
-        ushort[] _coverageIndices;
+        ushort[] _glyphIDs;
 
         internal void ReadTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader header)
         {
@@ -26,12 +23,9 @@ namespace Molten.Graphics.Font
             if (Format == 1) // CoverageFormat1 - list
             {
                 ushort glyphCount = reader.ReadUInt16();
-                _coverageIndices = new ushort[glyphCount];
+                _glyphIDs = new ushort[glyphCount];
                 for (ushort i = 0; i < glyphCount; i++)
-                {
-                    int glyphID = reader.ReadUInt16();
-                    GlyphCoverageIndices[glyphID] = i;
-                }
+                    _glyphIDs[i] = reader.ReadUInt16();
             }
             else if (Format == 2) // CoverageFormat2 - ranges
             {
@@ -40,14 +34,13 @@ namespace Molten.Graphics.Font
                 {
                     ushort glyphStartID = reader.ReadUInt16();
                     ushort glyphEndID = reader.ReadUInt16();
-                    ushort startCoverageIndex = reader.ReadUInt16();
+                    ushort coverageIndex = reader.ReadUInt16();
 
-                    StartGlyphID = Math.Min(glyphStartID, StartGlyphID);
-                    if (GlyphCoverageIndices == null || glyphEndID >= GlyphCoverageIndices.Length)
-                        Array.Resize(ref _coverageIndices, glyphEndID);
+                    if (_glyphIDs == null || glyphEndID >= _glyphIDs.Length)
+                        Array.Resize(ref _glyphIDs, glyphEndID);
 
                     for (ushort g = glyphStartID; g < glyphEndID; g++)
-                        _coverageIndices[g] = (ushort)(startCoverageIndex + g - glyphStartID);
+                        _glyphIDs[coverageIndex++] = g;
                 }
             }
             else

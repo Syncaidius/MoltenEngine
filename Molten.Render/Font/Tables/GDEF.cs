@@ -15,7 +15,7 @@ namespace Molten.Graphics.Font
 
         public ClassDefinitionTable<GlyphClassDefinition> GlyphClassDefs { get; internal set; }
 
-        public CoverageTable AttachList { get; internal set; }
+        public AttachListTable AttachList { get; internal set; }
 
         public ushort LigCaretListOffset { get; internal set; }
 
@@ -57,17 +57,25 @@ namespace Molten.Graphics.Font
                 }
 
                 // Glyph class definition table
-                reader.Position = header.Offset + glyphClassDefOffset;
-                table.GlyphClassDefs = new ClassDefinitionTable<GlyphClassDefinition>();
-                table.GlyphClassDefs.ReadTable(reader, log, header, _classTranslation);
+                if (glyphClassDefOffset > 0)
+                {
+                    log.WriteDebugLine($"[GDEF] Reading Glyph Class Definition Table -- Local pos: {glyphClassDefOffset}/{header.Length}");
+                    reader.Position = header.Offset + glyphClassDefOffset;
+                    table.GlyphClassDefs = new ClassDefinitionTable<GlyphClassDefinition>();
+                    table.GlyphClassDefs.ReadTable(reader, log, header, _classTranslation);
+                }
 
                 // Attachment point list table
                 /*The table consists of an offset to a Coverage table (Coverage) listing all glyphs that define attachment points in the GPOS table, 
                  * a count of the glyphs with attachment points (GlyphCount), and an array of offsets to AttachPoint tables (AttachPoint). 
                  * The array lists the AttachPoint tables, one for each glyph in the Coverage table, in the same order as the Coverage Index.*/
-                reader.Position = header.Offset + attachListOffset;
-                table.AttachList = new CoverageTable();
-                table.AttachList.ReadTable(reader, log, header);
+                if (attachListOffset > 0)
+                {
+                    log.WriteDebugLine($"[GDEF] Reading Attachment Point List Table -- Local pos: {attachListOffset}/{header.Length}");
+                    reader.Position = header.Offset + attachListOffset;
+                    table.AttachList = new AttachListTable();
+                    table.AttachList.ReadTable(reader, log, header);
+                }
 
                 return table;
             }

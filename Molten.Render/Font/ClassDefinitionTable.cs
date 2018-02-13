@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Font
 {
+    /// <summary>
+    /// TTF/OTF class definition table. See: https://www.microsoft.com/typography/otspec/chapter2.htm#classDefTbl
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ClassDefinitionTable<T> where T : struct
     {
         public ushort Format { get; internal set; }

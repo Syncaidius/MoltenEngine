@@ -108,6 +108,8 @@ namespace Molten.Samples
 
             // Hi. I'm just a piece of test code for the new WIP font system. Please ignore me.
             string fontFile = "assets/broshk.ttf";
+            //string fontFile = "assets/euphorigenic.ttf";
+            //string fontFile = "assets/STOREB.ttf";
             using (FileStream stream = new FileStream(fontFile, FileMode.Open, FileAccess.Read))
             {
                 FontReader reader = new FontReader();
