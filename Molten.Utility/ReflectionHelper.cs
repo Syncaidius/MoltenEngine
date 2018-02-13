@@ -69,5 +69,14 @@ namespace Molten
 
             return type + ", " + type.Assembly.FullName.Split(delims, StringSplitOptions.RemoveEmptyEntries)[0];
         }
+
+        public static T[] EnumToArray<T>() where T : struct
+        {
+            Type t = typeof(T);
+            if (!t.IsEnum)
+                throw new Exception("The provided type was not of type Enum");
+
+            return Enum.GetValues(t) as T[];
+        }
     }
 }
