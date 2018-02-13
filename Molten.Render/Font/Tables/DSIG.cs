@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Font
 {
-    class DSIG : FontTable
+    /// <summary>Digital signature table. See: https://www.microsoft.com/typography/otspec/dsig.htm</summary>
+    public class DSIG : FontTable
     {
         public uint Version { get; internal set; }
 

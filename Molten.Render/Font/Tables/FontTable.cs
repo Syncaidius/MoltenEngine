@@ -15,6 +15,16 @@ namespace Molten.Graphics.Font
     {
         public abstract FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log);
 
+        /// <summary>Reads times in the same format as a 'head' table -- 64 bit times, seconds since 00:00:00, 1-Jan-1904)</summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        protected DateTime ReadHeadTime(BinaryEndianAgnosticReader reader)
+        {
+            DateTime baseTime = new DateTime(1904, 1, 1, 0, 0, 0);
+            long secondsFromBase = reader.ReadInt64();
+            return baseTime + TimeSpan.FromSeconds(secondsFromBase);
+        }
+
         /// <summary>Gets the table's expected tag string (e.g. cmap, CFF, head, name, OS/2).</summary>
         public abstract string TableTag { get; }
     }
