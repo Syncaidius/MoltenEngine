@@ -81,7 +81,11 @@ namespace Molten.Font
                         long expectedEnd = th.Offset + th.Length;
                         long readerPos = reader.Position;
                         long posDif = expectedEnd - readerPos;
-                        log.WriteDebugLine($"Parsed font table '{th.Tag}' -- End pos: byte {readerPos} -- Expected pos: byte {expectedEnd}{(expectedEnd != readerPos ? $" [MISMATCH: {posDif} bytes off]" : "")}", filename);
+
+                        if(expectedEnd != readerPos)
+                            log.WriteDebugLine($"Parsed font table '{th.Tag}' -- End pos: byte {readerPos} -- [MISMATCH] expected: {expectedEnd} -- dif: {posDif} bytes", filename);
+                        else
+                            log.WriteDebugLine($"Parsed font table '{th.Tag}' -- End pos: byte {readerPos} -- [CORRECT]", filename);
                     }
                     else
                     {

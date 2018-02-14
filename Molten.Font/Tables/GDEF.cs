@@ -21,8 +21,10 @@ namespace Molten.Font
 
         public ClassDefinitionTable<GlyphMarkClass> MarkAttachClassDefs { get; internal set; }
 
-        /// <summary>Set in table version 1.2 or higher, otherwise 0.</summary>
-        public ushort MarkGlyphSetsDefOffset { get; internal set; }
+        /// <summary> Gets the GDEF mark glyph sets table. <para />
+        /// Set in table version 1.2 or higher, otherwise 0. <para />
+        /// See: https://www.microsoft.com/typography/otspec/gdef.htm</summary>
+        public MarkGlyphSetsTable MarkGlyphSets { get; internal set; }
 
         /// <summary>Set in table version 1.3 or higher, otherwise 0.</summary>
         public ushort ItemVarStoreOffset { get; internal set; }
@@ -60,54 +62,32 @@ namespace Molten.Font
                 }
 
                 // Glyph class definition table
-                if (glyphClassDefOffset > 0)
-                {
-                    log.WriteDebugLine($"[GDEF] Reading Glyph Class-Def sub-table -- Local pos: {glyphClassDefOffset}/{header.Length}");
-                    reader.Position = header.Offset + glyphClassDefOffset;
-                    table.GlyphClassDefs = new ClassDefinitionTable<GlyphClass>();
-                    table.GlyphClassDefs.Read(reader, log, header, _classTranslation);
-                }
+                ReadSubTable(reader, log, "Glyph Class-Def", glyphClassDefOffset, header, (startPos) =>
+                    table.GlyphClassDefs = new ClassDefinitionTable<GlyphClass>(reader, log, header, _classTranslation));
 
                 // Attachment point list table
                 /*The table consists of an offset to a Coverage table (Coverage) listing all glyphs that define attachment points in the GPOS table, 
                  * a count of the glyphs with attachment points (GlyphCount), and an array of offsets to AttachPoint tables (AttachPoint). 
                  * The array lists the AttachPoint tables, one for each glyph in the Coverage table, in the same order as the Coverage Index.*/
-                if (attachListOffset > 0)
-                {
-                    log.WriteDebugLine($"[GDEF] Reading Attachment Point List sub-table -- Local pos: {attachListOffset}/{header.Length}");
-                    reader.Position = header.Offset + attachListOffset;
-                    table.AttachList = new AttachListTable();
-                    table.AttachList.Read(reader, log, header);
-                }
+                ReadSubTable(reader, log, "Attachment Point List", attachListOffset, header, (startPos) => 
+                table.AttachList = new AttachListTable(reader, log, header));
 
                 // Ligature caret list sub-table.
-                if (ligCaretListOffset > 0)
-                {
-                    log.WriteDebugLine($"[GDEF] Reading Ligature Caret List sub-table -- Local pos: {ligCaretListOffset}/{header.Length}");
-                    reader.Position = header.Offset + ligCaretListOffset;
-                    table.LigatureCaretList = new LigatureCaretListTable();
-                    table.LigatureCaretList.Read(reader, log, header);
-                }
+                ReadSubTable(reader, log, "Ligature Caret List", ligCaretListOffset, header, (startPos) => 
+                table.LigatureCaretList = new LigatureCaretListTable(reader, log, header));
 
                 // Mark attachment class definition  sub-table.
-                if (markAttachClassDefOffset > 0)
-                {
-                    log.WriteDebugLine($"[GDEF] Reading Mark Attach Class-Def sub-table -- Local pos: {markAttachClassDefOffset}/{header.Length}");
-                    reader.Position = header.Offset + markAttachClassDefOffset;
-                    table.MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>();
-                    table.MarkAttachClassDefs.Read(reader, log, header, _markTranslation);
-                }
+                ReadSubTable(reader, log, "Mark Attach Class-Def", markAttachClassDefOffset, header, (startPos) =>
+                table.MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>(reader, log, header, _markTranslation));
 
                 // Mark glyph sets  sub-table.
-                if (markGlyphSetsDefOffset > 0)
-                {
-                    // TODO read 
-                }
+                ReadSubTable(reader, log, "Reading Mark Glyph Set", markGlyphSetsDefOffset, header, (startPos) =>
+                    table.MarkGlyphSets = new MarkGlyphSetsTable(reader, log, header));
 
                 // Item variation store  sub-table.
                 if (itemVarStoreOffset > 0)
                 {
-                    // TODO read 
+                    // TODO read
                 }
 
                 return table;

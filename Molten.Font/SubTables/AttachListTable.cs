@@ -11,12 +11,11 @@ namespace Molten.Font
         /// <summary>Gets an array containing AttachPoint tables ordered by coverage index, which hold contour point indices.</summary>
         public AttachPointTable[] PointTables { get; private set; }
 
-        public void Read(BinaryEndianAgnosticReader reader, Logger log, TableHeader header)
+        internal AttachListTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader header)
         {
             long startOFfset = reader.Position;
             ushort coverageOffset = reader.ReadUInt16();
             uint glyphCount = reader.ReadUInt16();
-            CoverageTable coverage = new CoverageTable();
             PointTables = new AttachPointTable[glyphCount];
 
             // prepare attach point tables with their respective offsets.
@@ -25,7 +24,7 @@ namespace Molten.Font
 
             // Read the coverage table.
             reader.Position = startOFfset + coverageOffset;
-            coverage.ReadTable(reader, log, header);
+            CoverageTable coverage = new CoverageTable(reader, log, header);
 
             // Populate attach points in each AttachPointTable.
             for (int i = 0; i < glyphCount; i++)

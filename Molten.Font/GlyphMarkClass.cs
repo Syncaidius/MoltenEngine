@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public enum GlyphMarkClass
+    public enum GlyphMarkClass : ushort
     {
         Zero = 0,
 

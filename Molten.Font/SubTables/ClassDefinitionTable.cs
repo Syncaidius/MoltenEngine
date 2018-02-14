@@ -9,7 +9,7 @@ namespace Molten.Font
     /// <summary>
     /// TTF/OTF class definition table. See: https://www.microsoft.com/typography/otspec/chapter2.htm#classDefTbl
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type that class definition values should represent.</typeparam>
     public class ClassDefinitionTable<T> where T : struct
     {
         public ushort Format { get; internal set; }
@@ -22,7 +22,7 @@ namespace Molten.Font
 
         T[] _glyphClassIDs;
 
-        internal void Read(BinaryEndianAgnosticReader reader, Logger log, TableHeader header, T[] classTranslationTable)
+        internal ClassDefinitionTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader header, T[] classTranslationTable)
         {
             Format = reader.ReadUInt16();
 
