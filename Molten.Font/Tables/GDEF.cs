@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.Font
+namespace Molten.Font
 {
     /// <summary>Glyph definition table. See: https://www.microsoft.com/typography/otspec/gdef.htm
     public class GDEF : FontTable
@@ -17,7 +17,7 @@ namespace Molten.Graphics.Font
 
         public AttachListTable AttachList { get; internal set; }
 
-        public ushort LigCaretListOffset { get; internal set; }
+        public LigatureCaretListTable LigatureCaretList { get; internal set; }
 
         public ushort MarkAttachClassDefOffset { get; internal set; }
 
@@ -61,10 +61,10 @@ namespace Molten.Graphics.Font
                 // Glyph class definition table
                 if (glyphClassDefOffset > 0)
                 {
-                    log.WriteDebugLine($"[GDEF] Reading Glyph Class Definition Table -- Local pos: {glyphClassDefOffset}/{header.Length}");
+                    log.WriteDebugLine($"[GDEF] Reading Glyph Class-Def sub-table -- Local pos: {glyphClassDefOffset}/{header.Length}");
                     reader.Position = header.Offset + glyphClassDefOffset;
                     table.GlyphClassDefs = new ClassDefinitionTable<GlyphClassDefinition>();
-                    table.GlyphClassDefs.ReadTable(reader, log, header, _classTranslation);
+                    table.GlyphClassDefs.Read(reader, log, header, _classTranslation);
                 }
 
                 // Attachment point list table
@@ -73,31 +73,36 @@ namespace Molten.Graphics.Font
                  * The array lists the AttachPoint tables, one for each glyph in the Coverage table, in the same order as the Coverage Index.*/
                 if (attachListOffset > 0)
                 {
-                    log.WriteDebugLine($"[GDEF] Reading Attachment Point List Table -- Local pos: {attachListOffset}/{header.Length}");
+                    log.WriteDebugLine($"[GDEF] Reading Attachment Point List sub-table -- Local pos: {attachListOffset}/{header.Length}");
                     reader.Position = header.Offset + attachListOffset;
                     table.AttachList = new AttachListTable();
-                    table.AttachList.ReadTable(reader, log, header);
+                    table.AttachList.Read(reader, log, header);
                 }
 
-                // Ligature caret list table.
+                // Ligature caret list sub-table.
                 if (ligCaretListOffset > 0)
                 {
-                    // TODO read 
+                    log.WriteDebugLine($"[GDEF] Reading Ligature Caret List sub-table -- Local pos: {ligCaretListOffset}/{header.Length}");
+                    reader.Position = header.Offset + ligCaretListOffset;
+                    table.LigatureCaretList = new LigatureCaretListTable();
+                    table.LigatureCaretList.Read(reader, log, header);
                 }
 
-                // Mark attachment class definition table
+                // Mark attachment class definition  sub-table.
                 if (markAttachClassDefOffset > 0)
                 {
-                    // TODO read 
+                    log.WriteDebugLine($"[GDEF] Reading Mark Attach Class-Def sub-table -- Local pos: {markAttachClassDefOffset}/{header.Length}");
+                    reader.Position = header.Offset + markAttachClassDefOffset;
+
                 }
 
-                // Mark glyph sets table.
+                // Mark glyph sets  sub-table.
                 if (markGlyphSetsDefOffset > 0)
                 {
                     // TODO read 
                 }
 
-                // Item variation store table.
+                // Item variation store  sub-table.
                 if (itemVarStoreOffset > 0)
                 {
                     // TODO read 

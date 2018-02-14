@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.Font
+namespace Molten.Font
 {
     /// <summary>TTF/OTF font coverage table. See: https://www.microsoft.com/typography/otspec/chapter2.htm#coverageTbl</summary>
     public class CoverageTable

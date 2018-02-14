@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.Font
+namespace Molten.Font
 {
     /// <summary>Digital signature table. See: https://www.microsoft.com/typography/otspec/dsig.htm</summary>
     public class DSIG : FontTable

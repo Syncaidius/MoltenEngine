@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.Font
+namespace Molten.Font
 {
     /// <summary>FontForge Time-stamp table. See: https://fontforge.github.io/non-standard.html#FFTM</summary>
     public class FFTM : FontTable

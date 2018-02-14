@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.Font
+namespace Molten.Font
 {
     public abstract class FontTable
     {

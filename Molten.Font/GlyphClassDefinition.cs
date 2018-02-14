@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.Font
+namespace Molten.Font
 {
     /// <summary>See: https://www.microsoft.com/typography/otspec/gdef.htm - "Glyph Class Definition Table"</summary>
     public enum GlyphClassDefinition : ushort

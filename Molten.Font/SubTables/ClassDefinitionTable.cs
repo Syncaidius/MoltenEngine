@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.Font
+namespace Molten.Font
 {
     /// <summary>
     /// TTF/OTF class definition table. See: https://www.microsoft.com/typography/otspec/chapter2.htm#classDefTbl
@@ -22,7 +22,7 @@ namespace Molten.Graphics.Font
 
         T[] _glyphClassIDs;
 
-        internal void ReadTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader header, T[] classTranslationTable)
+        internal void Read(BinaryEndianAgnosticReader reader, Logger log, TableHeader header, T[] classTranslationTable)
         {
             Format = reader.ReadUInt16();
 
