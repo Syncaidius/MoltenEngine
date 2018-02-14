@@ -8,8 +8,6 @@ namespace Molten.Graphics.Font
 {
     public class AttachListTable
     {
-        public CoverageTable CoverageTable { get; private set; }
-
         /// <summary>Gets an array containing AttachPoint tables ordered by coverage index, which hold contour point indices.</summary>
         public AttachPointTable[] AttachPointTables { get; private set; }
 
@@ -18,7 +16,7 @@ namespace Molten.Graphics.Font
             long attachStartOffset = reader.Position;
             ushort coverageOffset = reader.ReadUInt16();
             uint glyphCount = reader.ReadUInt16();
-            CoverageTable = new CoverageTable();
+            CoverageTable coverage = new CoverageTable();
             AttachPointTables = new AttachPointTable[glyphCount];
 
             // prepare attach point tables with their respective offsets.
@@ -27,7 +25,7 @@ namespace Molten.Graphics.Font
 
             // Read the coverage table.
             reader.Position = attachStartOffset + coverageOffset;
-            CoverageTable.ReadTable(reader, log, header);
+            coverage.ReadTable(reader, log, header);
 
             // Populate attach points in each AttachPointTable.
             for (int i = 0; i < glyphCount; i++)

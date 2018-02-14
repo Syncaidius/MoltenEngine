@@ -20,6 +20,9 @@ namespace Molten.Graphics.Font
         /// <summary>Gets the parent <see cref="AttachListTable"/> of the current <see cref="AttachPointTable"/>.</summary>
         public AttachListTable Parent { get; private set; }
 
+        /// <summary>Gets the ID of the glyph that these attach points belong to.</summary>
+        public ushort GlyphID { get; internal set; }
+
         internal AttachPointTable(AttachListTable parent, ushort offset)
         {
             Parent = parent;

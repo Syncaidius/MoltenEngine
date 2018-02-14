@@ -207,6 +207,10 @@
       <Project>{8e14325b-28cc-44a8-83ed-4b5946240d88}</Project>
       <Name>Molten.Engine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Molten.Font\Molten.Font.csproj">
+      <Project>{4fe5b72a-3e02-46b9-ac04-b781c964890a}</Project>
+      <Name>Molten.Font</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Molten.IO.Windows\Molten.IO.Windows.csproj">
       <Project>{bda0168b-68ff-4201-8812-9c4ffe1f6a86}</Project>
       <Name>Molten.IO.Windows</Name>

@@ -79,24 +79,28 @@ namespace Molten.Graphics.Font
                     table.AttachList.ReadTable(reader, log, header);
                 }
 
-                if(ligCaretListOffset > 0)
+                // Ligature caret list table.
+                if (ligCaretListOffset > 0)
                 {
-                    // TODO read ligature caret list table.
+                    // TODO read 
                 }
 
-                if(markAttachClassDefOffset > 0)
+                // Mark attachment class definition table
+                if (markAttachClassDefOffset > 0)
                 {
-                    // TODO read mark attachment class definition table
+                    // TODO read 
                 }
 
+                // Mark glyph sets table.
                 if (markGlyphSetsDefOffset > 0)
                 {
-                    // TODO read Mark glyph sets table.
+                    // TODO read 
                 }
 
-                if(itemVarStoreOffset > 0)
+                // Item variation store table.
+                if (itemVarStoreOffset > 0)
                 {
-                    // TODO read item variation store table.
+                    // TODO read 
                 }
 
                 return table;
