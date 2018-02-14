@@ -14,11 +14,11 @@ namespace Molten.Font
     {
         public ushort Format { get; internal set; }
 
-        /// <summary>Gets the starting ID within <see cref="GlyphClassIDs"/>.</summary>
+        /// <summary>Gets the starting ID within <see cref="Values"/>.</summary>
         public ushort StartGlyphID { get; internal set; } = ushort.MaxValue;
 
-        /// <summary>Gets a array containing the class ID's of each glyph. The ID of a glyph should be used as an index for the array.</summary>
-        public T[] GlyphClassIDs => _glyphClassIDs;
+        /// <summary>Gets a array containing the class ID's of each glyph in the array. The ID of a glyph should be used as an index for the array.</summary>
+        public T[] Values => _glyphClassIDs;
 
         T[] _glyphClassIDs;
 
@@ -32,7 +32,7 @@ namespace Molten.Font
                 ushort glyphCount = reader.ReadUInt16();
                 _glyphClassIDs = new T[glyphCount];
                 for (ushort i = 0; i < glyphCount; i++)
-                    GlyphClassIDs[i] = classTranslationTable[reader.ReadUInt16()];
+                    Values[i] = classTranslationTable[reader.ReadUInt16()];
             }
             else if (Format == 2) // ClassDefFormat2
             {
@@ -44,7 +44,7 @@ namespace Molten.Font
                     T glyphClass = classTranslationTable[reader.ReadUInt16()];
 
                     StartGlyphID = Math.Min(glyphStartID, StartGlyphID);
-                    if (GlyphClassIDs == null || glyphEndID >= GlyphClassIDs.Length)
+                    if (Values == null || glyphEndID >= Values.Length)
                         Array.Resize(ref _glyphClassIDs, glyphEndID + 1);
 
                     for(int g = glyphStartID; g <= glyphEndID; g++)

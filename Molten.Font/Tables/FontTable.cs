@@ -11,9 +11,9 @@ namespace Molten.Font
         public TableHeader Header { get; internal set; }
     }
 
-    public abstract class FontTableParser
+    internal abstract class FontTableParser
     {
-        public abstract FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log);
+        internal abstract FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log);
 
         /// <summary>Reads times in the same format as a 'head' table -- 64 bit times, seconds since 00:00:00, 1-Jan-1904.</summary>
         /// <param name="reader">The reader with which to read the date.</param>

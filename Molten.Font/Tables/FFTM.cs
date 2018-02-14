@@ -24,11 +24,11 @@ namespace Molten.Font
         /// (not always accurate)</summary>
         public DateTime LastModified { get; internal set; }
 
-        public class Parser : FontTableParser
+        internal class Parser : FontTableParser
         {
             public override string TableTag => "FFTM";
 
-            public override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log)
+            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log)
             {
                 return new FFTM()
                 {

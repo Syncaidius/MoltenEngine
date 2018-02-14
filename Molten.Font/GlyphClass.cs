@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Font
 {
     /// <summary>See: https://www.microsoft.com/typography/otspec/gdef.htm - "Glyph Class Definition Table"</summary>
-    public enum GlyphClassDefinition : ushort
+    public enum GlyphClass : ushort
     {
         Zero = 0,
 

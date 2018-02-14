@@ -40,11 +40,11 @@ namespace Molten.Font
             public uint Offset { get; internal set; }
         }
 
-        public class Parser : FontTableParser
+        internal class Parser : FontTableParser
         {
             public override string TableTag => "DSIG";
 
-            public override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log)
+            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log)
             {
                 DSIG table = new DSIG()
                 {

@@ -13,13 +13,13 @@ namespace Molten.Font
 
         public ushort MinorVersion { get; internal set; }
 
-        public ClassDefinitionTable<GlyphClassDefinition> GlyphClassDefs { get; internal set; }
+        public ClassDefinitionTable<GlyphClass> GlyphClassDefs { get; internal set; }
 
         public AttachListTable AttachList { get; internal set; }
 
         public LigatureCaretListTable LigatureCaretList { get; internal set; }
 
-        public ushort MarkAttachClassDefOffset { get; internal set; }
+        public ClassDefinitionTable<GlyphMarkClass> MarkAttachClassDefs { get; internal set; }
 
         /// <summary>Set in table version 1.2 or higher, otherwise 0.</summary>
         public ushort MarkGlyphSetsDefOffset { get; internal set; }
@@ -27,13 +27,14 @@ namespace Molten.Font
         /// <summary>Set in table version 1.3 or higher, otherwise 0.</summary>
         public ushort ItemVarStoreOffset { get; internal set; }
 
-        public class Parser : FontTableParser
+        internal class Parser : FontTableParser
         {
-            static readonly GlyphClassDefinition[] _classTranslation = ReflectionHelper.EnumToArray<GlyphClassDefinition>();
+            static readonly GlyphClass[] _classTranslation = ReflectionHelper.EnumToArray<GlyphClass>();
+            static readonly GlyphMarkClass[] _markTranslation = ReflectionHelper.EnumToArray<GlyphMarkClass>();
 
             public override string TableTag => "GDEF";
 
-            public override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log)
+            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log)
             {
                 GDEF table = new GDEF()
                 {
@@ -63,7 +64,7 @@ namespace Molten.Font
                 {
                     log.WriteDebugLine($"[GDEF] Reading Glyph Class-Def sub-table -- Local pos: {glyphClassDefOffset}/{header.Length}");
                     reader.Position = header.Offset + glyphClassDefOffset;
-                    table.GlyphClassDefs = new ClassDefinitionTable<GlyphClassDefinition>();
+                    table.GlyphClassDefs = new ClassDefinitionTable<GlyphClass>();
                     table.GlyphClassDefs.Read(reader, log, header, _classTranslation);
                 }
 
@@ -93,7 +94,8 @@ namespace Molten.Font
                 {
                     log.WriteDebugLine($"[GDEF] Reading Mark Attach Class-Def sub-table -- Local pos: {markAttachClassDefOffset}/{header.Length}");
                     reader.Position = header.Offset + markAttachClassDefOffset;
-
+                    table.MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>();
+                    table.MarkAttachClassDefs.Read(reader, log, header, _markTranslation);
                 }
 
                 // Mark glyph sets  sub-table.

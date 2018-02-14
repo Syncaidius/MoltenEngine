@@ -63,7 +63,8 @@
   <ItemGroup>
     <Compile Include="CaretValue.cs" />
     <Compile Include="FontReader.cs" />
-    <Compile Include="GlyphClassDefinition.cs" />
+    <Compile Include="GlyphClass.cs" />
+    <Compile Include="GlyphMarkClass.cs" />
     <Compile Include="OffsetTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SubTables\AttachListTable.cs" />
