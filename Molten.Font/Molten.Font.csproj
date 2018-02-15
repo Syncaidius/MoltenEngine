@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CaretValue.cs" />
+    <Compile Include="FontMath.cs" />
     <Compile Include="FontReader.cs" />
     <Compile Include="GlyphClass.cs" />
     <Compile Include="GlyphMarkClass.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="SubTables\ClassDefinitionTable.cs" />
     <Compile Include="SubTables\CoverageTable.cs" />
     <Compile Include="SubTables\DeviceVariationIndexTable.cs" />
+    <Compile Include="SubTables\ItemVariationStore.cs" />
     <Compile Include="SubTables\LigatureCaretListTable.cs" />
     <Compile Include="SubTables\LigatureGlyphTable.cs" />
     <Compile Include="SubTables\MarkGlyphSetsTable.cs" />
