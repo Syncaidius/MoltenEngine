@@ -85,6 +85,7 @@
     <Compile Include="TableHeader.cs" />
     <Compile Include="Tables\DSIG.cs" />
     <Compile Include="Tables\Head.cs" />
+    <Compile Include="Tables\Cvt.cs" />
     <Compile Include="Tables\Prep.cs" />
     <Compile Include="Tables\Post.cs" />
     <Compile Include="Tables\FFTM.cs" />

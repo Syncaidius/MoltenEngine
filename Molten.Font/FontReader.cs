@@ -108,7 +108,7 @@ namespace Molten.Font
 
             return new TableHeader()
             {
-                Tag = new string(tagChars),
+                Tag = new string(tagChars).Trim(),
                 CheckSum = reader.ReadUInt32(),
                 Offset = reader.ReadUInt32(),
                 Length = reader.ReadUInt32(),
