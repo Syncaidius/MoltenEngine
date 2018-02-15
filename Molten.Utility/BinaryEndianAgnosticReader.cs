@@ -27,6 +27,15 @@ namespace Molten
             _decimalBuffer = new int[4];
         }
 
+        /// <summary>Reads a pascal string from the underlying stream. Pascal streams store their length in the first byte, followed by the string data, up to a maximum length of 255 bytes.</summary>
+        /// <returns></returns>
+        public string ReadPascalString()
+        {
+            byte size = base.ReadByte();
+            byte[] body = base.ReadBytes(size);
+            return Encoding.ASCII.GetString(body);
+        }
+
         public override short ReadInt16()
         {
             if (_flipNeeded)

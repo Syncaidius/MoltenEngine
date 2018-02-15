@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CaretValue.cs" />
+    <Compile Include="FontLookup.cs" />
     <Compile Include="FontMath.cs" />
     <Compile Include="FontReader.cs" />
     <Compile Include="GlyphClass.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="SubTables\MarkGlyphSetsTable.cs" />
     <Compile Include="TableHeader.cs" />
     <Compile Include="Tables\DSIG.cs" />
+    <Compile Include="Tables\post_TABLE.cs" />
     <Compile Include="Tables\FFTM.cs" />
     <Compile Include="Tables\FontTable.cs" />
     <Compile Include="Tables\GDEF.cs" />

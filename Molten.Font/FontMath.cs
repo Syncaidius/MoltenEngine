@@ -15,5 +15,17 @@ namespace Molten.Font
         {
             return (short)packed / 16384.0f;
         }
+
+        /// <summary>Converts a 32-bit signed integer into a fixed-point float with a 16-bit integral and 16-bit fraction (16.16).</summary>
+        /// <param name="fixedValue"></param>
+        /// <returns></returns>
+        public static float FixedToDouble(int fixedValue)
+        {
+            int integer = (fixedValue >> 16);
+            int fraction = (fixedValue << 16) >> 16;
+            float i = fraction / 65536.0f;
+
+            return integer + i;
+        }
     }
 }

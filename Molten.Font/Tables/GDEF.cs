@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    /// <summary>Glyph definition table. See: https://www.microsoft.com/typography/otspec/gdef.htm
+    /// <summary>Glyph definition table. <para/>
+    /// See: https://www.microsoft.com/typography/otspec/gdef.htm </summary>
     public class GDEF : FontTable
     {
         /// <summary>Gets the major version of the table.</summary>

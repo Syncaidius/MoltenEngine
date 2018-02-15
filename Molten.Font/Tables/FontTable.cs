@@ -43,7 +43,7 @@ namespace Molten.Font
             if (subTableOffset == 0)
                 return;
 
-            log.WriteDebugLine($"[{parentHeader.Tag}] Reading {subTableName} sub-table -- Local pos: {subTableOffset}/{parentHeader.Length}");
+            log.WriteDebugLine($"[{parentHeader.Tag}] Reading sub-table '{subTableName}' -- Local pos: {subTableOffset}/{parentHeader.Length}");
 
             long subPos = parentHeader.Offset + subTableOffset;
             reader.Position = subPos;
