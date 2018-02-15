@@ -110,10 +110,12 @@ namespace Molten.Samples
             string fontFile = "assets/euphorigenic.ttf";
             //string fontFile = "assets/euphorigenic.ttf";
             //string fontFile = "assets/STOREB.ttf";
+
+            FontFile font;
             using (FileStream stream = new FileStream(fontFile, FileMode.Open, FileAccess.Read))
             {
                 FontReader reader = new FontReader();
-                reader.ReadFont(stream, Log, fontFile);
+                font = reader.ReadFont(stream, Log, fontFile);
             }
         }
 

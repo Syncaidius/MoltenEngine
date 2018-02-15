@@ -37,11 +37,11 @@ namespace Molten.Font
         /// <param name="stream"></param>
         /// <param name="log"></param>
         /// <param name="filename">Optional. Provided simply to improve log errors and message.</param>
-        public void ReadFont(Stream stream, Logger log, string filename = null)
+        public FontFile ReadFont(Stream stream, Logger log, string filename = null)
         {
             OffsetTable offsetTable;
             List<TableHeader> headers = new List<TableHeader>();
-            Dictionary<string, FontTable> completedTables = new Dictionary<string, FontTable>();
+            FontFile font = new FontFile();
 
             // True-type fonts use big-endian.
             using (BinaryEndianAgnosticReader reader = new BinaryEndianAgnosticReader(stream, false))
@@ -76,7 +76,7 @@ namespace Molten.Font
                         reader.Position = th.Offset;
                         FontTable table = parser.Parse(reader, th, log);
                         table.Header = th;
-                        completedTables.Add(th.Tag, table);
+                        font[th.Tag] = table;
 
                         long expectedEnd = th.Offset + th.Length;
                         long readerPos = reader.Position;
@@ -93,6 +93,8 @@ namespace Molten.Font
                     }
                 }
             }
+
+            return font;
         }
 
         private TableHeader ReadTableHeader(BinaryEndianAgnosticReader reader)
