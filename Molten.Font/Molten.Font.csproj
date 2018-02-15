@@ -62,11 +62,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CaretValue.cs" />
+    <Compile Include="FontDirectionHint.cs" />
+    <Compile Include="FontFlags.cs" />
+    <Compile Include="FontLocFormat.cs" />
     <Compile Include="FontLookup.cs" />
     <Compile Include="FontMath.cs" />
     <Compile Include="FontReader.cs" />
     <Compile Include="GlyphClass.cs" />
     <Compile Include="GlyphMarkClass.cs" />
+    <Compile Include="MacStyleFlags.cs" />
     <Compile Include="OffsetTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SubTables\AttachListTable.cs" />
@@ -80,7 +84,8 @@
     <Compile Include="SubTables\MarkGlyphSetsTable.cs" />
     <Compile Include="TableHeader.cs" />
     <Compile Include="Tables\DSIG.cs" />
-    <Compile Include="Tables\post_TABLE.cs" />
+    <Compile Include="Tables\Head.cs" />
+    <Compile Include="Tables\Post.cs" />
     <Compile Include="Tables\FFTM.cs" />
     <Compile Include="Tables\FontTable.cs" />
     <Compile Include="Tables\GDEF.cs" />

@@ -33,9 +33,9 @@ namespace Molten.Font
                 return new FFTM()
                 {
                     Version = reader.ReadUInt32(),
-                    SourceTimeStamp = ReadHeadDate(reader),
-                    CreationDate = ReadHeadDate(reader),
-                    LastModified = ReadHeadDate(reader),
+                    SourceTimeStamp = FontMath.FromLongDate(reader.ReadInt64()),
+                    CreationDate = FontMath.FromLongDate(reader.ReadInt64()),
+                    LastModified = FontMath.FromLongDate(reader.ReadInt64()),
                 };
             }
         }

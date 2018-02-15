@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    /// <summary>FontForge Time-stamp table.<para/>
-    /// See: https://fontforge.github.io/non-standard.html#FFTM</summary>
-    public class post_TABLE : FontTable
+    /// <summary>PostScript table.<para/>
+    /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/post </summary>
+    public class Post : FontTable
     {
         public ushort MajorVersion { get; private set; }
 
@@ -76,7 +76,7 @@ namespace Molten.Font
 
             internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log)
             {
-                post_TABLE table = new post_TABLE()
+                Post table = new Post()
                 {
                     MajorVersion = reader.ReadUInt16(),
                     MinorVersion = reader.ReadUInt16(),
