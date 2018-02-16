@@ -82,6 +82,7 @@ namespace Molten.Font
             {
                 TableHeader header = ReadTableHeader(_reader);
                 expectedEndPos += header.Length;
+
                 toParse.Add(header);
                 toParseByTag.Add(header.Tag, header);
             }

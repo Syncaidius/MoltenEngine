@@ -87,6 +87,8 @@
     <Compile Include="SubTables\MarkGlyphSetsTable.cs" />
     <Compile Include="TableHeader.cs" />
     <Compile Include="Tables\DSIG.cs" />
+    <Compile Include="Tables\Fpgm.cs" />
+    <Compile Include="Tables\Gasp.cs" />
     <Compile Include="Tables\Hhea.cs" />
     <Compile Include="Tables\Head.cs" />
     <Compile Include="Tables\Cvt.cs" />
