@@ -100,7 +100,7 @@ namespace Molten.Font
         {
             public override string TableTag => "hhea";
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log)
+            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, DependencyList dependencies)
             {
                 Hhea table = new Hhea()
                 {

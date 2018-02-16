@@ -108,11 +108,13 @@ namespace Molten.Font
             if (parser != null)
             {
                 _log.WriteDebugLine($"Found '{header.Tag}' parser -- table is {header.Length} bytes", _filename);
-                Dictionary<string, FontTable> dependencies = new Dictionary<string, FontTable>();
+                DependencyList dependencies = new DependencyList();
                 bool dependenciesValid = true;
 
-                if (parser.Dependencies != null)
+                if (parser.Dependencies != null && parser.Dependencies.Length > 0)
                 {
+                    _log.WriteDebugLine($"[{header.Tag}] Dependencies: {string.Join(",", parser.Dependencies)}");
+
                     // Attempt to load/retrieve dependency tables before continuing.
                     foreach (string depTag in parser.Dependencies)
                     {
@@ -121,7 +123,7 @@ namespace Molten.Font
                         {
                             if (toParseByTag.TryGetValue(depTag, out TableHeader depHeader))
                             {
-                                _log.WriteDebugLine($"[{header.Tag}] Loading dependency '{depTag}'");
+                                _log.WriteDebugLine($"[{header.Tag}] Attempting to load missing dependency '{depTag}'");
                                 LoadTable(font, depHeader, toParse, toParseByTag);
                                 dep = font[depTag];
                                 if(dep == null)
@@ -138,9 +140,13 @@ namespace Molten.Font
                                 break;
                             }
                         }
+                        else
+                        {
+
+                        }
 
                         _log.WriteDebugLine($"[{header.Tag}] Dependency '{depTag}' found");
-                        dependencies.Add(depTag, dep);
+                        dependencies.Add(dep);
                     }
                 }
 
@@ -148,7 +154,7 @@ namespace Molten.Font
                 {
                     // Move to the start of the table and parse it.
                     _reader.Position = header.Offset;
-                    FontTable table = parser.Parse(_reader, header, _log);
+                    FontTable table = parser.Parse(_reader, header, _log, dependencies);
                     table.Header = header;
                     font[header.Tag] = table;
 

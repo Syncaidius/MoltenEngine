@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CaretValue.cs" />
+    <Compile Include="DependencyList.cs" />
     <Compile Include="FontFile.cs" />
     <Compile Include="FontDirectionHint.cs" />
     <Compile Include="FontFlags.cs" />
@@ -89,6 +90,8 @@
     <Compile Include="Tables\DSIG.cs" />
     <Compile Include="Tables\Fpgm.cs" />
     <Compile Include="Tables\Gasp.cs" />
+    <Compile Include="Tables\maxp.cs" />
+    <Compile Include="Tables\Hmtx.cs" />
     <Compile Include="Tables\Hhea.cs" />
     <Compile Include="Tables\Head.cs" />
     <Compile Include="Tables\Cvt.cs" />
