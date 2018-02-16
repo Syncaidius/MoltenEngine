@@ -91,7 +91,12 @@ namespace Molten.Font
             {
                 TableHeader header = toParse[toParse.Count - 1];
                 LoadTable(font, header, toParse, toParseByTag);
-            }                
+            }
+
+            /* Jump to the end of the font file data within the stream.
+             * Due to table depedency checks, we cannot guarantee the last table to be read is at the end of the font data, so this
+             * avoids messing up the stream in a situation where multiple files/fonts/data-sets are held in the same file.*/
+            _stream.Position = expectedEndPos;
 
             return font;
         }

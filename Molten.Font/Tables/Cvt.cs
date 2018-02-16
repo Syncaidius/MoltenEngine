@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    /// <summary>Control value program table .<para/>
-    /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/prep </summary>
+    /// <summary>Control value table (CVT).<para/>
+    /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/cvt </summary>
     public class Cvt : FontTable
     {
         /// <summary>Gets an array of values referenceable by instructions (such as those in a 'prep' table). </summary>

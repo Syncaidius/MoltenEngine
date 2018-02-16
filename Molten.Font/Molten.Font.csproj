@@ -68,6 +68,8 @@
     <Compile Include="FontLocFormat.cs" />
     <Compile Include="FontLookup.cs" />
     <Compile Include="FontMath.cs" />
+    <Compile Include="FontNameType.cs" />
+    <Compile Include="FontPlatform.cs" />
     <Compile Include="FontReader.cs" />
     <Compile Include="GlyphClass.cs" />
     <Compile Include="GlyphMarkClass.cs" />
@@ -88,6 +90,7 @@
     <Compile Include="Tables\Hhea.cs" />
     <Compile Include="Tables\Head.cs" />
     <Compile Include="Tables\Cvt.cs" />
+    <Compile Include="Tables\Name.cs" />
     <Compile Include="Tables\Prep.cs" />
     <Compile Include="Tables\Post.cs" />
     <Compile Include="Tables\FFTM.cs" />
