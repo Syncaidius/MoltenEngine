@@ -42,5 +42,8 @@ namespace Molten.Font
 
         /// <summary>Gets the table's expected tag string (e.g. cmap, CFF, head, name, OS/2).</summary>
         public abstract string TableTag { get; }
+
+        /// <summary>Gets a list of tags for tables that the parser depends on to parse it's own table type.</summary>
+        public virtual string[] Dependencies => null;
     }
 }

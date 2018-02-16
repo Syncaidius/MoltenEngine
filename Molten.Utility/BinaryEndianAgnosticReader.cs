@@ -15,12 +15,23 @@ namespace Molten
         byte[] _flipBuffer;
         int[] _decimalBuffer;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="stream"></param>
+        /// <summary>Creates a new instance of <see cref="BinaryEndianAgnosticReader"/>.</summary>
+        /// <param name="stream">The stream from which to read data.</param>
         /// <param name="dataIsLittleEndian">Set to false if the expected data should be big-endian. Default value is true (i.e. data is expected to be little-endian).</param>
-        public BinaryEndianAgnosticReader(Stream stream, bool dataIsLittleEndian = true) : base(stream)
+        /// <param name="leaveOpen">If true, the underlying stream will be left open when the <see cref="BinaryEndianAgnosticReader"/> is disposed.</param>
+        /// <param name="encoding">The encoding to use when reading data from the provided stream.</param>
+        public BinaryEndianAgnosticReader(Stream stream, Encoding encoding, bool dataIsLittleEndian = true, bool leaveOpen = false) : base(stream, encoding, leaveOpen)
+        {
+            _flipNeeded = BitConverter.IsLittleEndian != dataIsLittleEndian;
+            _flipBuffer = new byte[8];
+            _decimalBuffer = new int[4];
+        }
+
+        /// <summary>Creates a new instance of <see cref="BinaryEndianAgnosticReader"/>.</summary>
+        /// <param name="stream">The stream from which to read data.</param>
+        /// <param name="dataIsLittleEndian">Set to false if the expected data should be big-endian. Default value is true (i.e. data is expected to be little-endian).</param>
+        /// <param name="leaveOpen">If true, the provided stream will be left open when the <see cref="BinaryEndianAgnosticReader"/> is disposed.</param>
+        public BinaryEndianAgnosticReader(Stream stream, bool dataIsLittleEndian = true, bool leaveOpen = false) : base(stream, new UTF8Encoding(), leaveOpen)
         {
             _flipNeeded = BitConverter.IsLittleEndian != dataIsLittleEndian;
             _flipBuffer = new byte[8];

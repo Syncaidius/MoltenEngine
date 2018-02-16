@@ -11,18 +11,6 @@
 </material>
 
 <material>
-  <name>sprite-msdf</name>
-  <description>The default material for rendering MSDF sprites in a SpriteBatch with a texture</description>
-  <pass>
-    <name>main</name>
-    <iterations>1</iterations>
-    <vertex>VS</vertex>
-    <geometry>GS</geometry>
-    <pixel>PS_Msdf</pixel>
-  </pass>
-</material>
-
-<material>
 	<name>sprite-no-texture</name>
 	<description>The default material for rendering sprites in a SpriteBatch with no texture.</description>
 	<pass>

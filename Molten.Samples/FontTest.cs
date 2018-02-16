@@ -107,15 +107,17 @@ namespace Molten.Samples
             SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
 
             // Hi. I'm just a piece of test code for the new WIP font system. Please ignore me.
-            string fontFile = "assets/euphorigenic.ttf";
+            string fontPath = "assets/euphorigenic.ttf";
             //string fontFile = "assets/euphorigenic.ttf";
             //string fontFile = "assets/STOREB.ttf";
 
             FontFile font;
-            using (FileStream stream = new FileStream(fontFile, FileMode.Open, FileAccess.Read))
+            using (FileStream stream = new FileStream(fontPath, FileMode.Open, FileAccess.Read))
             {
-                FontReader reader = new FontReader();
-                font = reader.ReadFont(stream, Log, fontFile);
+                using (FontReader reader = new FontReader(stream, Log, fontPath))
+                {
+                    font = reader.ReadFont();
+                }
             }
         }
 
