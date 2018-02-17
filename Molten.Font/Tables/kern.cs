@@ -18,7 +18,7 @@ namespace Molten.Font
         {
             public override string TableTag => "kern";
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, DependencyList dependencies)
+            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
             {
                 /* TODO NOTE: Previous versions of the 'kern' table defined both the version and nTables fields in the header as UInt16 values and not UInt32 values. 
                  * Use of the older format on OS X is discouraged (although AAT can sense an old kerning table and still make correct use of it). 

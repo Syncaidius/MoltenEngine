@@ -92,6 +92,10 @@ namespace Molten.Font
                 LoadTable(font, header, toParse, toParseByTag);
             }
 
+            // Spit out warnings for unsupported font tables
+            foreach(TableHeader header in font.Tables.UnsupportedTables)
+                _log.WriteWarning($"Unsupported table -- {header.ToString()}", _filename);
+
             /* Jump to the end of the font file data within the stream.
              * Due to table depedency checks, we cannot guarantee the last table to be read is at the end of the font data, so this
              * avoids messing up the stream in a situation where multiple files/fonts/data-sets are held in the same file.*/
@@ -106,7 +110,7 @@ namespace Molten.Font
             if (parser != null)
             {
                 _log.WriteDebugLine($"Supported table '{header.Tag}' found ({header.Length} bytes)", _filename);
-                DependencyList dependencies = new DependencyList();
+                FontTableList dependencies = new FontTableList();
                 bool dependenciesValid = true;
 
                 if (parser.Dependencies != null && parser.Dependencies.Length > 0)
@@ -116,14 +120,14 @@ namespace Molten.Font
                     // Attempt to load/retrieve dependency tables before continuing.
                     foreach (string depTag in parser.Dependencies)
                     {
-                        FontTable dep = font[depTag];
+                        FontTable dep = font.Tables.Get(depTag);
                         if (dep == null)
                         {
                             if (toParseByTag.TryGetValue(depTag, out TableHeader depHeader))
                             {
                                 _log.WriteDebugLine($"[{header.Tag}] Attempting to load missing dependency '{depTag}'");
                                 LoadTable(font, depHeader, toParse, toParseByTag);
-                                dep = font[depTag];
+                                dep = font.Tables.Get(depTag);
                                 if(dep == null)
                                 {
                                     _log.WriteDebugLine($"[{header.Tag}] Dependency '{depTag}' failed to load correctly. Unable to load table.");
@@ -154,7 +158,7 @@ namespace Molten.Font
                     _reader.Position = header.Offset;
                     FontTable table = parser.Parse(_reader, header, _log, dependencies);
                     table.Header = header;
-                    font[header.Tag] = table;
+                    font.Tables.Add(table);
 
                     long expectedEnd = header.Offset + header.Length;
                     long readerPos = _reader.Position;
@@ -168,7 +172,7 @@ namespace Molten.Font
             }
             else
             {
-                _log.WriteWarning($"Unsupported table -- {header.ToString()}", _filename);
+                font.Tables.AddUnsupported(header);
             }
 
             // Successful or not, we're done with the current table.

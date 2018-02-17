@@ -62,7 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CaretValue.cs" />
-    <Compile Include="DependencyList.cs" />
     <Compile Include="FontFile.cs" />
     <Compile Include="FontDirectionHint.cs" />
     <Compile Include="FontFlags.cs" />
@@ -72,6 +71,7 @@
     <Compile Include="FontNameType.cs" />
     <Compile Include="FontPlatform.cs" />
     <Compile Include="FontReader.cs" />
+    <Compile Include="FontTableList.cs" />
     <Compile Include="GlyphClass.cs" />
     <Compile Include="GlyphMarkClass.cs" />
     <Compile Include="MacStyleFlags.cs" />

@@ -54,7 +54,7 @@ namespace Molten.Font
         {
             public override string TableTag => "head";
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, DependencyList dependencies)
+            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
             {
                 Head table = new Head()
                 {

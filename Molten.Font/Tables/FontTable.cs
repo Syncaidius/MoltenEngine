@@ -13,7 +13,7 @@ namespace Molten.Font
 
     internal abstract class FontTableParser
     {
-        internal abstract FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, DependencyList dependencies);
+        internal abstract FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies);
 
         /// <summary>Attempts to read a sub-table if the provided subTableOffset is greater than 0.</summary>
         /// <param name="reader"></param>

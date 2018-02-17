@@ -23,7 +23,7 @@ namespace Molten.Font
 
             public override string[] Dependencies => _dependencies;
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, DependencyList dependencies)
+            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
             {
                 Hhea tableHhea = dependencies.Get<Hhea>();
                 Maxp tableMaxp = dependencies.Get<Maxp>();

@@ -9,31 +9,19 @@ namespace Molten.Font
     /// <summary>A loaded version of a font file.</summary>
     public class FontFile
     {
-        Dictionary<string, FontTable> _tables;
-        
+        FontTableList _tables;
+
         internal FontFile()
         {
-            _tables = new Dictionary<string, FontTable>();
+            _tables = new FontTableList();
         }
 
-        /// <summary>Gets a font table that was loaded with the font. Returns null if the table does not exist.<para/>
-        /// FontTables provide access to the underlying font data which may be useful in advanced use cases.</summary>
-        /// <param name="name">The name of the table. Case-sensitive. Leading and trailing spaces are not required.</param>
-        /// <returns>A font table, or null if not found.</returns>
-        public FontTable this[string name]
+        internal void SetTables()
         {
-            internal set
-            {
-                _tables[name] = value;
-            }
 
-            get
-            {
-                if (_tables.TryGetValue(name, out FontTable table))
-                    return table;
-                else
-                    return null;
-            }
         }
+
+        /// <summary>Gets the font's table list, which can be used to access any loaded tables, or the headers of tables that were not supported.</summary>
+        public FontTableList Tables => _tables;
     }
 }

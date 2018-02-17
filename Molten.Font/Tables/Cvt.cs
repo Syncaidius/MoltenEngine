@@ -17,7 +17,7 @@ namespace Molten.Font
         {
             public override string TableTag => "cvt";
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, DependencyList dependencies)
+            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
             {
                 uint valueCount = header.Length / 2; //FWORD -- int16 that describes a quantity in font design units. 
                 Cvt table = new Cvt()

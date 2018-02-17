@@ -19,7 +19,7 @@ namespace Molten.Font
         {
             public override string TableTag => "prep";
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, DependencyList dependencies)
+            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
             {
                 Prep table = new Prep()
                 {

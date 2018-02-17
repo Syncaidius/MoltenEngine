@@ -21,7 +21,7 @@ namespace Molten.Font
         {
             public override string TableTag => "name";
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, DependencyList dependencies)
+            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
             {
                 Name table = new Name()
                 {
