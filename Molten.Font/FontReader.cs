@@ -101,6 +101,7 @@ namespace Molten.Font
              * avoids messing up the stream in a situation where multiple files/fonts/data-sets are held in the same file.*/
             _stream.Position = expectedEndPos;
 
+            font.Build();
             return font;
         }
 

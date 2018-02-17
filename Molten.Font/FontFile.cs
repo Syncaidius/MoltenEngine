@@ -16,6 +16,11 @@ namespace Molten.Font
             _tables = new FontTableList();
         }
 
+        internal void Build()
+        {
+            // TODO Build the font (glyphs, metadata, etc) using data from provided tables.
+        }
+
         /// <summary>Gets the font's table list, which can be used to access any loaded tables, or the headers of tables that were not supported.</summary>
         public FontTableList Tables => _tables;
     }

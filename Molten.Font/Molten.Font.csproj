@@ -72,6 +72,7 @@
     <Compile Include="FontPlatform.cs" />
     <Compile Include="FontReader.cs" />
     <Compile Include="FontTableList.cs" />
+    <Compile Include="GlyphData.cs" />
     <Compile Include="GlyphClass.cs" />
     <Compile Include="GlyphMarkClass.cs" />
     <Compile Include="MacStyleFlags.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Tables\DSIG.cs" />
     <Compile Include="Tables\Fpgm.cs" />
     <Compile Include="Tables\Gasp.cs" />
+    <Compile Include="Tables\Glyf.cs" />
     <Compile Include="Tables\Loca.cs" />
     <Compile Include="Tables\Kern.cs" />
     <Compile Include="Tables\maxp.cs" />
