@@ -13,7 +13,6 @@ namespace Molten.Samples
     {
         public override string Description => "A stress test of sprite rendering.";
 
-        Scene _scene;
         SceneObject _parent;
         SceneObject _child;
         List<Matrix> _positions;
@@ -47,8 +46,6 @@ namespace Molten.Samples
             _sprites = new List<ISprite>();
             _rng = new Random();
             _positions = new List<Matrix>();
-            _scene = CreateScene("Test");
-            _scene.OutputCamera = _cam;
             _font = engine.Renderer.Resources.CreateFont("arial", 36);
             SetupSprites(_font);
 
@@ -146,7 +143,7 @@ namespace Molten.Samples
                 };
 
                 _sprites.Add(s);
-                _scene.RenderData.AddSprite(s);
+                SampleScene.RenderData.AddSprite(s);
             }
         }
 

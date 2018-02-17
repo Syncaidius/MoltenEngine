@@ -165,9 +165,9 @@ namespace Molten.Font
                     long posDif = expectedEnd - readerPos;
 
                     if (expectedEnd != readerPos)
-                        _log.WriteDebugLine($"Parsed table '{header.Tag}' -- End pos: byte {readerPos} -- [MISMATCH] expected: {expectedEnd} -- dif: {posDif} bytes", _filename);
+                        _log.WriteDebugLine($"Parsed table '{header.Tag}' -- [MISMATCH] End pos (byte): {readerPos}. Expected: {expectedEnd} -- dif: {(posDif > 0 ? "+" : "-")}{posDif} bytes", _filename);
                     else
-                        _log.WriteDebugLine($"Parsed table '{header.Tag}' -- End pos: byte {readerPos} -- [CORRECT]", _filename);
+                        _log.WriteDebugLine($"Parsed table '{header.Tag}' -- [PASS]", _filename);
                 }
             }
             else

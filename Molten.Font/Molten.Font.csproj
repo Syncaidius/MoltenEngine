@@ -65,7 +65,7 @@
     <Compile Include="FontFile.cs" />
     <Compile Include="FontDirectionHint.cs" />
     <Compile Include="FontFlags.cs" />
-    <Compile Include="FontLocFormat.cs" />
+    <Compile Include="FontLocaFormat.cs" />
     <Compile Include="FontLookup.cs" />
     <Compile Include="FontMath.cs" />
     <Compile Include="FontNameType.cs" />
@@ -91,6 +91,7 @@
     <Compile Include="Tables\DSIG.cs" />
     <Compile Include="Tables\Fpgm.cs" />
     <Compile Include="Tables\Gasp.cs" />
+    <Compile Include="Tables\Loca.cs" />
     <Compile Include="Tables\Kern.cs" />
     <Compile Include="Tables\maxp.cs" />
     <Compile Include="Tables\Hmtx.cs" />

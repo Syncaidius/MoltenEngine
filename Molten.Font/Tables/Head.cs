@@ -46,7 +46,8 @@ namespace Molten.Font
 
         public FontDirectionHint DirectionHint { get; private set; }
 
-        public FontLocFormat LocFormat { get; private set; }
+        /// <summary>Gets the expected format of the index-to-location (loca) table, if present.</summary>
+        public FontLocaFormat LocaFormat { get; private set; }
 
         public short GlyphDataFormat { get; private set; }
 
@@ -75,7 +76,7 @@ namespace Molten.Font
                     MacStyle = (MacStyleFlags)reader.ReadUInt16(),
                     LowestRecPPEM = reader.ReadUInt16(),
                     DirectionHint = (FontDirectionHint) reader.ReadInt16(),
-                    LocFormat = (FontLocFormat)reader.ReadInt16(),
+                    LocaFormat = (FontLocaFormat)reader.ReadInt16(),
                     GlyphDataFormat = reader.ReadInt16(),
                 };
 

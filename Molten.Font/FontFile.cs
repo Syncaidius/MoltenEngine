@@ -16,11 +16,6 @@ namespace Molten.Font
             _tables = new FontTableList();
         }
 
-        internal void SetTables()
-        {
-
-        }
-
         /// <summary>Gets the font's table list, which can be used to access any loaded tables, or the headers of tables that were not supported.</summary>
         public FontTableList Tables => _tables;
     }
