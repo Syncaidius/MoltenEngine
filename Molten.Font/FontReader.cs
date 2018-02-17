@@ -51,9 +51,7 @@ namespace Molten.Font
             _reader = new BinaryEndianAgnosticReader(_stream, false, leaveOpen);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary>Parses a .TTF or .OTF font file and returns a new <see cref="FontFile"/> instance containing detailed information about a font.</summary>
         /// <param name="stream"></param>
         /// <param name="log"></param>
         /// <param name="filename">Optional. Provided simply to improve log errors and message.</param>
@@ -107,7 +105,7 @@ namespace Molten.Font
             FontTableParser parser = GetTableParser(header.Tag);
             if (parser != null)
             {
-                _log.WriteDebugLine($"Found '{header.Tag}' parser -- table is {header.Length} bytes", _filename);
+                _log.WriteDebugLine($"Supported table '{header.Tag}' found ({header.Length} bytes)", _filename);
                 DependencyList dependencies = new DependencyList();
                 bool dependenciesValid = true;
 
@@ -163,14 +161,14 @@ namespace Molten.Font
                     long posDif = expectedEnd - readerPos;
 
                     if (expectedEnd != readerPos)
-                        _log.WriteDebugLine($"Parsed font table '{header.Tag}' -- End pos: byte {readerPos} -- [MISMATCH] expected: {expectedEnd} -- dif: {posDif} bytes", _filename);
+                        _log.WriteDebugLine($"Parsed table '{header.Tag}' -- End pos: byte {readerPos} -- [MISMATCH] expected: {expectedEnd} -- dif: {posDif} bytes", _filename);
                     else
-                        _log.WriteDebugLine($"Parsed font table '{header.Tag}' -- End pos: byte {readerPos} -- [CORRECT]", _filename);
+                        _log.WriteDebugLine($"Parsed table '{header.Tag}' -- End pos: byte {readerPos} -- [CORRECT]", _filename);
                 }
             }
             else
             {
-                _log.WriteWarning($"Unsupported font table -- {header.ToString()}", _filename);
+                _log.WriteWarning($"Unsupported table -- {header.ToString()}", _filename);
             }
 
             // Successful or not, we're done with the current table.
