@@ -43,9 +43,10 @@ namespace Molten.Font
                 {
                     case FontLocaFormat.UnsignedInt16:
                         for (int i = 0; i < numGlyphs; i++)
-                            table.Offsets[i] = reader.ReadUInt16();
+                            table.Offsets[i] = reader.ReadUInt16() * 2U;
                         break;
 
+                    default:
                     case FontLocaFormat.UnsignedInt32:
                         for (int i = 0; i < numGlyphs; i++)
                             table.Offsets[i] = reader.ReadUInt32();

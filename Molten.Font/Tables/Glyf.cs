@@ -11,6 +11,7 @@ namespace Molten.Font
     /// Information regarding the rasterizer (scaler) refers to the TrueType rasterizer. See: https://docs.microsoft.com/en-us/typography/opentype/spec/head </summary>
     public class Glyf : FontTable
     {        
+        public Glyph[] Glyphs { get; internal set; }
 
         internal class Parser : FontTableParser
         {
@@ -67,11 +68,12 @@ namespace Molten.Font
                     }
                 }
 
-                // TODO resolve composite glyph data here.
+                // TODO: Resolve composite glyphs here.
 
-                Glyf table = new Glyf();                
-
-                return table;
+                return new Glyf()
+                {
+                    Glyphs = glyphs,
+                };
             }
 
             private Glyph ReadSimpleGlyph(BinaryEndianAgnosticReader reader, short numContours, Rectangle bounds)
@@ -83,13 +85,18 @@ namespace Molten.Font
                 ushort instructionLength = reader.ReadUInt16();
                 byte[] instructions = instructionLength > 0? reader.ReadBytes(instructionLength) : new byte[0];
 
+                // TODO: revisit this and attempt to reduce garbage (3 arrays get dumped).
                 ushort pointCount = (ushort)(contourEndPoints[numContours - 1] + 1);
                 SimpleGlyphFlags[] flags = ReadFlags(reader, pointCount);
                 short[] xCoords = ReadCoordinates(reader, pointCount, flags, SimpleGlyphFlags.XShortVector, SimpleGlyphFlags.XSameOrPositive);
                 short[] yCoords = ReadCoordinates(reader, pointCount, flags, SimpleGlyphFlags.YShortVector, SimpleGlyphFlags.YSameOrPositive);
 
+                GlyphPoint[] points = new GlyphPoint[pointCount];
+                for (int i = 0; i < pointCount; i++)
+                    points[i] = new GlyphPoint(xCoords[i], yCoords[i], HasFlag(flags[i], SimpleGlyphFlags.OnCurvePoint));
+
                 // Create glyph
-                return new Glyph(bounds, contourEndPoints, instructions);
+                return new Glyph(bounds, contourEndPoints, points, instructions);
             }
 
             private SimpleGlyphFlags[] ReadFlags(BinaryEndianAgnosticReader reader, ushort pointCount)
