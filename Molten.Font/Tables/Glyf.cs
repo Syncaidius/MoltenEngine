@@ -8,7 +8,8 @@ namespace Molten.Font
 {
     /// <summary>Glyf data table (glyf).<para/>
     /// This table contains information that describes the glyphs in the font in the TrueType outline format. 
-    /// Information regarding the rasterizer (scaler) refers to the TrueType rasterizer. See: https://docs.microsoft.com/en-us/typography/opentype/spec/head </summary>
+    /// Information regarding the rasterizer (scaler) refers to the TrueType rasterizer. <para/>
+    /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/glyf </summary>
     public class Glyf : FontTable
     {        
         public Glyph[] Glyphs { get; internal set; }
