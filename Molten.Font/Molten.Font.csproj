@@ -72,9 +72,10 @@
     <Compile Include="FontPlatform.cs" />
     <Compile Include="FontReader.cs" />
     <Compile Include="FontTableList.cs" />
-    <Compile Include="GlyphData.cs" />
+    <Compile Include="Glyph.cs" />
     <Compile Include="GlyphClass.cs" />
     <Compile Include="GlyphMarkClass.cs" />
+    <Compile Include="GlyphPoint.cs" />
     <Compile Include="MacStyleFlags.cs" />
     <Compile Include="OffsetTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

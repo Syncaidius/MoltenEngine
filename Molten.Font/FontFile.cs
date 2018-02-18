@@ -11,12 +11,13 @@ namespace Molten.Font
     {
         FontTableList _tables;
 
-        internal FontFile()
+        internal FontFile(FontTableList tables)
         {
-            _tables = new FontTableList();
+            _tables = tables;
+            Build();
         }
 
-        internal void Build()
+        private void Build()
         {
             // TODO Build the font (glyphs, metadata, etc) using data from provided tables.
         }

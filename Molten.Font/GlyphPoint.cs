@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class GlyphData
+    public class GlyphPoint
     {
+        public Double2 Coordinate { get; internal set; }
 
+        public bool IsOnCurve { get; internal set; }
     }
 }
