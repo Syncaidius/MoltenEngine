@@ -24,7 +24,7 @@ namespace Molten.Font
 
             internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
             {
-                long startOffset = reader.Position;
+                long tableStartPos = reader.Position;
                 Loca loca = dependencies.Get<Loca>();
                 Maxp maxp = dependencies.Get<Maxp>();
 
@@ -40,41 +40,146 @@ namespace Molten.Font
 
                 ushort numGlyphs = maxp.NumGlyphs;
                 Glyph[] glyphs = new Glyph[numGlyphs];
-                List<ushort> compositeGlyphs = new List<ushort>();
 
                 for (ushort i = 0; i < numGlyphs; i++)
                 {
-                    uint offset = loca.Offsets[i];
-                    uint length = loca.Offsets[i + 1] - offset;
+                    // Has the glyph already loaded earlier via a composite? Skip it!
+                    if (glyphs[i] != null)
+                        continue;
+                    else
+                        ReadGlyph(reader, glyphs, tableStartPos, loca.Offsets, i);
+                }
 
-                    if (length == 0)
+                return new Glyf() { Glyphs = glyphs };
+            }
+
+            private void ReadGlyph(BinaryEndianAgnosticReader reader, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, ushort id)
+            {
+                uint offset = locaOffsets[id];
+                uint length = locaOffsets[id + 1] - offset;
+
+                if (length == 0)
+                {
+                    glyphs[id] = id == 0 ? Glyph.Empty : glyphs[0];
+                }
+                else
+                {
+                    reader.Position = tableStartPos + offset;
+
+                    // If the number of contours is >= zero, this is a single glyph. If it's negative, this is a composite glyph.
+                    short numContours = reader.ReadInt16();
+                    Rectangle bounds = ReadBounds(reader);
+
+                    if (numContours >= 0)
+                        glyphs[id] = ReadSimpleGlyph(reader, numContours, bounds);
+                    else
+                        glyphs[id] = ReadCompositeGlyph(reader, glyphs, tableStartPos, locaOffsets, bounds, id);
+                }
+            }
+
+            private Glyph ReadCompositeGlyph(BinaryEndianAgnosticReader reader, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, Rectangle bounds, ushort id)
+            {
+                CompositeGlyphFlags flags;
+                Glyph compositeGlyph = null;
+
+                do
+                {
+                    flags = (CompositeGlyphFlags)reader.ReadUInt16();
+                    ushort glyphID = reader.ReadUInt16();
+
+                    // Check if we're referring to an un-loaded glyph.
+                    if (glyphs[glyphID] == null)
                     {
-                        if (i == 0)
-                            glyphs[i] = Glyph.Empty;
+                        long curPos = reader.Position;
+                        ReadGlyph(reader, glyphs, tableStartPos, locaOffsets, glyphID);
+                        reader.Position = curPos;
+                    }
+
+                    int arg1;
+                    int arg2;
+                    float scaleX = 1;
+                    float scale01 = 0;
+                    float scale10 = 0;
+                    float scaleY = 1;
+                    bool hasScale = false;
+                    bool hasMatrix = false;
+
+                    // Is arg1 and 2 a XY offset value?
+                    // Argument1 and argument2 can be either x and y offsets to be added to the glyph (the ARGS_ARE_XY_VALUES flag is set), 
+                    // or two point numbers (the ARGS_ARE_XY_VALUES flag is not set). 
+                    if (HasFlag(flags, CompositeGlyphFlags.ArgsAreXYValues))
+                    {
+                        if (HasFlag(flags, CompositeGlyphFlags.Arg1And2AreWords))
+                        {
+                            arg1 = reader.ReadInt16(); // 1st short contains the value of x offset
+                            arg2 = reader.ReadInt16(); // 2nd short contains the value of y offset
+                        }
                         else
-                            glyphs[i] = glyphs[0]; // Use glyph 0 if the current glyph has no data.
+                        {
+                            arg1 = reader.ReadSByte(); // 1st byte contains the value of x offset
+                            arg2 = reader.ReadSByte(); // 2nd byte contains the value of y offset
+                        }
                     }
                     else
                     {
-                        reader.Position = startOffset + offset;
-
-                        // If the number of contours is >= zero, this is a single glyph. If it's negative, this is a composite glyph.
-                        short numContours = reader.ReadInt16();
-                        Rectangle bounds = ReadBounds(reader);
-
-                        if (numContours >= 0)
-                            glyphs[i] = ReadSimpleGlyph(reader, numContours, bounds);
+                        if (HasFlag(flags, CompositeGlyphFlags.Arg1And2AreWords))
+                        {
+                            arg1 = reader.ReadUInt16(); // 1st short contains the index of matching point in compound being constructed
+                            arg2 = reader.ReadUInt16(); // 2nd short contains index of matching point in component
+                        }
                         else
-                            compositeGlyphs.Add(i);
+                        {
+                            arg1 = reader.ReadByte(); // 1st byte contains the index of matching point in compound being constructed
+                            arg2 = reader.ReadByte(); // 2nd byte contains index of matching point in component
+                        }
                     }
-                }
 
-                // TODO: Resolve composite glyphs here.
+                    // Read scale values
+                    if (HasFlag(flags, CompositeGlyphFlags.WeHaveScale))
+                    {
+                        scaleX = FontMath.FromF2DOT14(reader.ReadInt16());
+                        hasScale = true;
+                    }
+                    else if (HasFlag(flags, CompositeGlyphFlags.WeHaveXAndYScale))
+                    {
+                        scaleX = FontMath.FromF2DOT14(reader.ReadInt16());
+                        scaleY = FontMath.FromF2DOT14(reader.ReadInt16());
+                        hasScale = true;
+                    }
+                    else if (HasFlag(flags, CompositeGlyphFlags.WeHaveATwoByTwo))
+                    {
+                        scaleX = FontMath.FromF2DOT14(reader.ReadInt16());
+                        scale01 = FontMath.FromF2DOT14(reader.ReadInt16());
+                        scale10 = FontMath.FromF2DOT14(reader.ReadInt16());
+                        scaleY = FontMath.FromF2DOT14(reader.ReadInt16());
+                        hasMatrix = true;
+                        hasScale = true;
+                    }
 
-                return new Glyf()
-                {
-                    Glyphs = glyphs,
-                };
+                    if (hasScale)
+                    {
+                        // TODO https://github.com/servo/libfreetype2/blob/master/freetype2/src/truetype/ttgload.c#L1124
+                    }
+                    else
+                    {
+                        // TODO No scale?
+                    }
+
+                    /* The purpose of USE_MY_METRICS is to force the lsb and rsb to take on a desired value. 
+                     * For example, an i-circumflex (U+00EF) is often composed of the circumflex and a dotless-i. 
+                     * In order to force the composite to have the same metrics as the dotless-i, set USE_MY_METRICS for the dotless-i component of the composite. 
+                     */
+                    if (HasFlag(flags, CompositeGlyphFlags.UseMyMetrics))
+                    {
+                        // TODO apply the current glyph's metrics to the composite glyph
+                        // See: https://github.com/servo/libfreetype2/blob/master/freetype2/src/truetype/ttgload.c#L1912
+                    }
+
+                } while (HasFlag(flags, CompositeGlyphFlags.MoreComponents));
+
+                // TOOD replace this once implemented.
+                // Dumped it here so we can build the project.
+                return Glyph.Empty; // TODO ^^^^^^^^^^
             }
 
             private Glyph ReadSimpleGlyph(BinaryEndianAgnosticReader reader, short numContours, Rectangle bounds)
@@ -157,10 +262,104 @@ namespace Molten.Font
                 return coords;
             }
 
+            private bool HasFlag(CompositeGlyphFlags val, CompositeGlyphFlags flag)
+            {
+                return (val & flag) == flag;
+            }
+
             private bool HasFlag(SimpleGlyphFlags val, SimpleGlyphFlags flag)
             {
                 return (val & flag) == flag;
             }
+
+            [Flags]
+            public enum CompositeGlyphFlags : ushort
+            {
+                None = 0,
+
+                /// <summary>
+                /// Bit 0: If this is set, the arguments are 16-bit (uint16 or int16); otherwise, they are bytes (uint8 or int8).
+                /// </summary>
+                Arg1And2AreWords = 1,
+
+                /// <summary>
+                /// Bit 1: If this is set, the arguments are signed xy values; otherwise, they are unsigned point numbers.
+                /// </summary>
+                ArgsAreXYValues = 2,
+
+                /// <summary>
+                /// Bit 2: For the xy values if the preceding is true.
+                /// </summary>
+                RoundXYToGrid = 4,
+
+                /// <summary>
+                /// Bit 3: This indicates that there is a simple scale for the component. Otherwise, scale = 1.0.
+                /// </summary>
+                WeHaveScale = 8,
+
+                /// <summary>
+                /// Bits 4 reserved: set to 0.
+                /// </summary>
+                Reserved4 = 16,
+
+                /// <summary>
+                /// Bit 5: Indicates at least one more glyph after this one.
+                /// </summary>
+                MoreComponents = 32,
+
+                /// <summary>
+                /// Bit 6: The x direction will use a different scale from the y direction.
+                /// </summary>
+                WeHaveXAndYScale = 64,
+
+                /// <summary>
+                /// Bit 7: There is a 2 by 2 transformation that will be used to scale the component.
+                /// </summary>
+                WeHaveATwoByTwo = 128,
+
+                /// <summary>
+                /// Bit 8: Following the last component are instructions for the composite character.
+                /// </summary>
+                WeHaveInstructions = 256,
+                
+                /// <summary>
+                /// Bit 9: If set, this forces the aw and lsb (and rsb) for the composite to be equal to those from this original glyph. This works for hinted and unhinted characters.
+                /// </summary>
+                UseMyMetrics = 512,
+
+                /// <summary>
+                /// Bit 10: If set, the components of the compound glyph overlap. Use of this flag is not required in OpenType — that is, 
+                /// it is valid to have components overlap without having this flag set. <para/>
+                /// It may affect behaviors in some platforms, however. (See Apple's specification for details regarding behavior in Apple platforms.)
+                /// </summary>
+                OverlapCompound = 1024,
+
+                /// <summary>
+                /// Bit 11: The composite is designed to have the component offset scaled.
+                /// </summary>
+                ScaledComponentOffset = 2048,
+
+                /// <summary>
+                /// Bit 12: The composite is designed not to have the component offset scaled.
+                /// </summary>
+                UnscaledComponentOffset = 4096,
+
+                /// <summary>
+                /// Bit 13 is reserved: set to 0.
+                /// </summary>
+                Reserved13 = 8192,
+
+                /// <summary>
+                /// Bit 14 is reserved: set to 0.
+                /// </summary>
+                Reserved14 = 16384,
+
+                /// <summary>
+                /// Bit 15 is reserved: set to 0.
+                /// </summary>
+                Reserved15 = 32768,
+            }
+
 
             [Flags]
             private enum SimpleGlyphFlags : byte

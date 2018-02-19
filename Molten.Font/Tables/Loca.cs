@@ -41,6 +41,8 @@ namespace Molten.Font
 
                 switch (head.LocaFormat)
                 {
+                    // 16-bit loca format stores the original values divided by two (val / 2).
+                    // To reverse, simply multiply them by 2 here.
                     case FontLocaFormat.UnsignedInt16:
                         for (int i = 0; i < numGlyphs; i++)
                             table.Offsets[i] = reader.ReadUInt16() * 2U;
