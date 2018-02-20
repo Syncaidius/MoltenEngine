@@ -1,8 +1,4 @@
-﻿ 
-
-
-
-namespace Molten
+﻿namespace Molten
 {
     /// <summary>
     /// 2 row, 3 column matrix.

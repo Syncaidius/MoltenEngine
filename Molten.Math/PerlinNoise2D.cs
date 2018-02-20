@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public class Perlin2D
+    /// <summary>A 2-dimensional implementation of perlin noise.</summary>
+    public class PerlinNoise2D
     {
         public int Seed { get; set; }
 
         int _seed;
 
-        public Perlin2D(int seed)
+        public PerlinNoise2D(int seed)
         {
             _seed = seed;
             Random r = new Random(_seed);

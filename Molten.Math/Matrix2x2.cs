@@ -55,17 +55,10 @@ namespace Molten
         /// <param name="result">Sum of the two matrices.</param>
         public static void Add(ref Matrix2x2 a, ref Matrix2x2 b, out Matrix2x2 result)
         {
-            float m11 = a.M11 + b.M11;
-            float m12 = a.M12 + b.M12;
-
-            float m21 = a.M21 + b.M21;
-            float m22 = a.M22 + b.M22;
-
-            result.M11 = m11;
-            result.M12 = m12;
-
-            result.M21 = m21;
-            result.M22 = m22;
+            result.M11 = a.M11 + b.M11;
+            result.M12 = a.M12 + b.M12;
+            result.M21 = a.M21 + b.M21;
+            result.M22 = a.M22 + b.M22;
         }
 
         /// <summary>
@@ -76,17 +69,10 @@ namespace Molten
         /// <param name="result">Sum of the two matrices.</param>
         public static void Add(ref Matrix a, ref Matrix2x2 b, out Matrix2x2 result)
         {
-            float m11 = a.M11 + b.M11;
-            float m12 = a.M12 + b.M12;
-
-            float m21 = a.M21 + b.M21;
-            float m22 = a.M22 + b.M22;
-
-            result.M11 = m11;
-            result.M12 = m12;
-
-            result.M21 = m21;
-            result.M22 = m22;
+            result.M11 = a.M11 + b.M11;
+            result.M12 = a.M12 + b.M12;
+            result.M21 = a.M21 + b.M21;
+            result.M22 = a.M22 + b.M22;
         }
 
         /// <summary>
@@ -97,17 +83,10 @@ namespace Molten
         /// <param name="result">Sum of the two matrices.</param>
         public static void Add(ref Matrix2x2 a, ref Matrix b, out Matrix2x2 result)
         {
-            float m11 = a.M11 + b.M11;
-            float m12 = a.M12 + b.M12;
-
-            float m21 = a.M21 + b.M21;
-            float m22 = a.M22 + b.M22;
-
-            result.M11 = m11;
-            result.M12 = m12;
-
-            result.M21 = m21;
-            result.M22 = m22;
+            result.M11 = a.M11 + b.M11;
+            result.M12 = a.M12 + b.M12;
+            result.M21 = a.M21 + b.M21;
+            result.M22 = a.M22 + b.M22;
         }
 
         /// <summary>
@@ -118,17 +97,10 @@ namespace Molten
         /// <param name="result">Sum of the two matrices.</param>
         public static void Add(ref Matrix a, ref Matrix b, out Matrix2x2 result)
         {
-            float m11 = a.M11 + b.M11;
-            float m12 = a.M12 + b.M12;
-
-            float m21 = a.M21 + b.M21;
-            float m22 = a.M22 + b.M22;
-
-            result.M11 = m11;
-            result.M12 = m12;
-
-            result.M21 = m21;
-            result.M22 = m22;
+            result.M11 = a.M11 + b.M11;
+            result.M12 = a.M12 + b.M12;
+            result.M21 = a.M21 + b.M21;
+            result.M22 = a.M22 + b.M22;
         }
 
         /// <summary>
@@ -140,7 +112,6 @@ namespace Molten
         {
             matrix.M11 = scale;
             matrix.M22 = scale;
-
             matrix.M12 = 0;
             matrix.M21 = 0;
         }
@@ -154,17 +125,11 @@ namespace Molten
         public static void Invert(ref Matrix2x2 matrix, out Matrix2x2 result)
         {
             float determinantInverse = 1 / (matrix.M11 * matrix.M22 - matrix.M12 * matrix.M21);
-            float m11 = matrix.M22 * determinantInverse;
-            float m12 = -matrix.M12 * determinantInverse;
+            result.M11 = matrix.M22 * determinantInverse;
+            result.M12 = -matrix.M12 * determinantInverse;
 
-            float m21 = -matrix.M21 * determinantInverse;
-            float m22 = matrix.M11 * determinantInverse;
-
-            result.M11 = m11;
-            result.M12 = m12;
-
-            result.M21 = m21;
-            result.M22 = m22;
+            result.M21 = -matrix.M21 * determinantInverse;
+            result.M22 = matrix.M11 * determinantInverse;
         }
 
         /// <summary>
@@ -175,17 +140,10 @@ namespace Molten
         /// <param name="result">Product of the multiplication.</param>
         public static void Multiply(ref Matrix2x2 a, ref Matrix2x2 b, out Matrix2x2 result)
         {
-            float resultM11 = a.M11 * b.M11 + a.M12 * b.M21;
-            float resultM12 = a.M11 * b.M12 + a.M12 * b.M22;
-
-            float resultM21 = a.M21 * b.M11 + a.M22 * b.M21;
-            float resultM22 = a.M21 * b.M12 + a.M22 * b.M22;
-
-            result.M11 = resultM11;
-            result.M12 = resultM12;
-
-            result.M21 = resultM21;
-            result.M22 = resultM22;
+            result.M11 = a.M11 * b.M11 + a.M12 * b.M21;
+            result.M12 = a.M11 * b.M12 + a.M12 * b.M22;
+            result.M21 = a.M21 * b.M11 + a.M22 * b.M21;
+            result.M22 = a.M21 * b.M12 + a.M22 * b.M22;
         }
 
         /// <summary>
@@ -196,17 +154,10 @@ namespace Molten
         /// <param name="result">Product of the multiplication.</param>
         public static void Multiply(ref Matrix2x2 a, ref Matrix b, out Matrix2x2 result)
         {
-            float resultM11 = a.M11 * b.M11 + a.M12 * b.M21;
-            float resultM12 = a.M11 * b.M12 + a.M12 * b.M22;
-
-            float resultM21 = a.M21 * b.M11 + a.M22 * b.M21;
-            float resultM22 = a.M21 * b.M12 + a.M22 * b.M22;
-
-            result.M11 = resultM11;
-            result.M12 = resultM12;
-
-            result.M21 = resultM21;
-            result.M22 = resultM22;
+            result.M11 = a.M11 * b.M11 + a.M12 * b.M21;
+            result.M12 = a.M11 * b.M12 + a.M12 * b.M22;
+            result.M21 = a.M21 * b.M11 + a.M22 * b.M21;
+            result.M22 = a.M21 * b.M12 + a.M22 * b.M22;
         }
 
         /// <summary>
@@ -217,17 +168,10 @@ namespace Molten
         /// <param name="result">Product of the multiplication.</param>
         public static void Multiply(ref Matrix a, ref Matrix2x2 b, out Matrix2x2 result)
         {
-            float resultM11 = a.M11 * b.M11 + a.M12 * b.M21;
-            float resultM12 = a.M11 * b.M12 + a.M12 * b.M22;
-
-            float resultM21 = a.M21 * b.M11 + a.M22 * b.M21;
-            float resultM22 = a.M21 * b.M12 + a.M22 * b.M22;
-
-            result.M11 = resultM11;
-            result.M12 = resultM12;
-
-            result.M21 = resultM21;
-            result.M22 = resultM22;
+            result.M11 = a.M11 * b.M11 + a.M12 * b.M21;
+            result.M12 = a.M11 * b.M12 + a.M12 * b.M22;
+            result.M21 = a.M21 * b.M11 + a.M22 * b.M21;
+            result.M22 = a.M21 * b.M12 + a.M22 * b.M22;
         }
 
         /// <summary>
@@ -240,7 +184,6 @@ namespace Molten
         {
             result.M11 = a.M11 * b.M11 + a.M12 * b.M21 + a.M13 * b.M31;
             result.M12 = a.M11 * b.M12 + a.M12 * b.M22 + a.M13 * b.M32;
-
             result.M21 = a.M21 * b.M11 + a.M22 * b.M21 + a.M23 * b.M31;
             result.M22 = a.M21 * b.M12 + a.M22 * b.M22 + a.M23 * b.M32;
         }
@@ -252,18 +195,10 @@ namespace Molten
         /// <param name="result">Negated matrix.</param>
         public static void Negate(ref Matrix2x2 matrix, out Matrix2x2 result)
         {
-            float m11 = -matrix.M11;
-            float m12 = -matrix.M12;
-
-            float m21 = -matrix.M21;
-            float m22 = -matrix.M22;
-
-
-            result.M11 = m11;
-            result.M12 = m12;
-
-            result.M21 = m21;
-            result.M22 = m22;
+            result.M11 = -matrix.M11;
+            result.M12 = -matrix.M12;
+            result.M21 = -matrix.M21;
+            result.M22 = -matrix.M22;
         }
 
         /// <summary>
@@ -274,17 +209,11 @@ namespace Molten
         /// <param name="result">Difference of the two matrices.</param>
         public static void Subtract(ref Matrix2x2 a, ref Matrix2x2 b, out Matrix2x2 result)
         {
-            float m11 = a.M11 - b.M11;
-            float m12 = a.M12 - b.M12;
+            result.M11 = a.M11 - b.M11;
+            result.M12 = a.M12 - b.M12;
 
-            float m21 = a.M21 - b.M21;
-            float m22 = a.M22 - b.M22;
-
-            result.M11 = m11;
-            result.M12 = m12;
-
-            result.M21 = m21;
-            result.M22 = m22;
+            result.M21 = a.M21 - b.M21;
+            result.M22 = a.M22 - b.M22;
         }
 
         /// <summary>
@@ -349,6 +278,14 @@ namespace Molten
             return M11 * M22 - M12 * M21;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is Matrix2x2 m)
+                return this == m;
+            else
+                return false;
+        }
+
         public static bool operator ==(Matrix2x2 matrix1, Matrix2x2 matrix2)
         {
             return MathHelper.NearEqual(matrix1.M11, matrix2.M11)
@@ -367,70 +304,69 @@ namespace Molten
 
         public static Matrix2x2 operator +(Matrix2x2 matrix1, Matrix2x2 matrix2)
         {
-            float m11 = matrix1.M11 + matrix2.M11;
-            float m21 = matrix1.M21 + matrix2.M21;
-            float m12 = matrix1.M12 + matrix2.M12;
-            float m22 = matrix1.M22 + matrix2.M22;
-
-            return new Matrix2x2(m11, m21,
-                                 m12, m22);
+            return new Matrix2x2()
+            {
+                M11 = matrix1.M11 + matrix2.M11,
+                M12 = matrix1.M12 + matrix2.M12,
+                M21 = matrix1.M21 + matrix2.M21,
+                M22 = matrix1.M22 + matrix2.M22,
+            };
         }
 
         public static Matrix2x2 operator -(Matrix2x2 matrix1, Matrix2x2 matrix2)
         {
-            float m11 = matrix1.M11 - matrix2.M11;
-            float m21 = matrix1.M21 - matrix2.M21;
-            float m12 = matrix1.M12 - matrix2.M12;
-            float m22 = matrix1.M22 - matrix2.M22;
-
-            return new Matrix2x2(m11, m21,
-                                 m12, m22);
+            return new Matrix2x2()
+            {
+                M11 = matrix1.M11 - matrix2.M11,
+                M12 = matrix1.M12 - matrix2.M12,
+                M21 = matrix1.M21 - matrix2.M21,
+                M22 = matrix1.M22 - matrix2.M22,
+            };
         }
 
         public static Matrix2x2 operator *(Matrix2x2 matrix, float scalar)
         {
-            float m11 = matrix.M11 * scalar;
-            float m21 = matrix.M21 * scalar;
-            float m12 = matrix.M12 * scalar;
-            float m22 = matrix.M22 * scalar;
-
-            return new Matrix2x2(m11, m21,
-                                 m12, m22);
+            return new Matrix2x2()
+            {
+                M11 = matrix.M11 * scalar,
+                M12 = matrix.M12 * scalar,
+                M21 = matrix.M21 * scalar,
+                M22 = matrix.M22 * scalar,
+            };
         }
 
         public static Matrix2x2 operator *(float scalar, Matrix2x2 matrix)
         {
-            float m11 = scalar * matrix.M11;
-            float m21 = scalar * matrix.M21;
-            float m12 = scalar * matrix.M12;
-            float m22 = scalar * matrix.M22;
-
-            return new Matrix2x2(m11, m21,
-                                 m12, m22);
+            return new Matrix2x2()
+            {
+                M11 = scalar * matrix.M11,
+                M12 = scalar * matrix.M12,
+                M21 = scalar * matrix.M21,
+                M22 = scalar * matrix.M22,
+            };
         }
 
         public static Matrix2x2 operator *(Matrix2x2 matrix1, Matrix2x2 matrix2)
         {
-            float m11 = matrix1.M11 * matrix2.M11 + matrix1.M21 * matrix2.M12;
-            float m21 = matrix1.M11 * matrix2.M21 + matrix1.M21 * matrix2.M22;
-            float m12 = matrix1.M12 * matrix2.M11 + matrix1.M22 * matrix2.M12;
-            float m22 = matrix1.M12 * matrix2.M21 + matrix1.M22 * matrix2.M22;
-
-            return new Matrix2x2(m11, m21,
-                                 m12, m22);
+            return new Matrix2x2()
+            {
+                M11 = matrix1.M11 * matrix2.M11 + matrix1.M21 * matrix2.M12,
+                M12 = matrix1.M12 * matrix2.M11 + matrix1.M22 * matrix2.M12,
+                M21 = matrix1.M11 * matrix2.M21 + matrix1.M21 * matrix2.M22,
+                M22 = matrix1.M12 * matrix2.M21 + matrix1.M22 * matrix2.M22,
+            };
         }
         public static Matrix3x2 operator *(Matrix2x2 matrix1, Matrix3x2 matrix2)
         {
-            float m11 = matrix1.M11 * matrix2.M11 + matrix1.M21 * matrix2.M12;
-            float m21 = matrix1.M11 * matrix2.M21 + matrix1.M21 * matrix2.M22;
-            float m31 = matrix1.M11 * matrix2.M31 + matrix1.M21 * matrix2.M32;
-            float m12 = matrix1.M12 * matrix2.M11 + matrix1.M22 * matrix2.M12;
-            float m22 = matrix1.M12 * matrix2.M21 + matrix1.M22 * matrix2.M22;
-            float m32 = matrix1.M12 * matrix2.M31 + matrix1.M22 * matrix2.M32;
-
-            return new Matrix3x2(m11, m21, m31,
-                                 m12, m22, m32);
+            return new Matrix3x2()
+            {
+                M11 = matrix1.M11 * matrix2.M11 + matrix1.M21 * matrix2.M12,
+                M21 = matrix1.M11 * matrix2.M21 + matrix1.M21 * matrix2.M22,
+                M31 = matrix1.M11 * matrix2.M31 + matrix1.M21 * matrix2.M32,
+                M12 = matrix1.M12 * matrix2.M11 + matrix1.M22 * matrix2.M12,
+                M22 = matrix1.M12 * matrix2.M21 + matrix1.M22 * matrix2.M22,
+                M32 = matrix1.M12 * matrix2.M31 + matrix1.M22 * matrix2.M32,
+            };
         }
-
     }
 }

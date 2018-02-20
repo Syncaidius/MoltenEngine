@@ -99,7 +99,7 @@
     <Compile Include="Matrix3x3.cs" />
     <Compile Include="Matrix5x4.cs" />
     <Compile Include="OrientedBoundingBox.cs" />
-    <Compile Include="Perlin2D.cs" />
+    <Compile Include="PerlinNoise2D.cs" />
     <Compile Include="PerlinNoise.cs" />
     <Compile Include="Plane.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
