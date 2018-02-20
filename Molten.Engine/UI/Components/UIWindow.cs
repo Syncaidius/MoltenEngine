@@ -1,6 +1,4 @@
 ﻿using Molten.IO;
-using Molten.Graphics;
-using Molten.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
+using Molten.Graphics;
 
 namespace Molten.UI
 {

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using SharpDX;
 using SharpDX.Direct3D11;
-using Molten.Utilities;
 using System.Runtime.InteropServices;
 
 namespace Molten.Graphics

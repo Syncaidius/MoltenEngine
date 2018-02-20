@@ -1,7 +1,4 @@
 ﻿using SharpDX.Direct3D11;
-using SharpDX.DXGI;
-using Molten.Utilities;
-using Molten.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;

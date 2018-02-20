@@ -3,7 +3,6 @@ using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using Molten.Graphics.Textures.DDS;
 using Molten.Graphics.Textures;
-using Molten.Utilities;
 using System;
 
 namespace Molten.Graphics

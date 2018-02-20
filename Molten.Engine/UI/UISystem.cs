@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Molten.Graphics;
-using Molten.Utilities;
 using Molten.Graphics.Textures;
 using Molten.IO;
 

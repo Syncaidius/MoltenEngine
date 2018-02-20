@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Molten.Graphics.Shaders;
-using Molten.Utilities;
 using Molten.Utility;
 
 namespace Molten.Graphics
