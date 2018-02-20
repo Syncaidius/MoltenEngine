@@ -8,15 +8,26 @@ namespace Molten.Font
 {
     public class GlyphPoint
     {
-        Double2 _point;
+        Vector2 _point;
 
-        internal GlyphPoint(double x, double y, bool isOnCurve)
+        internal GlyphPoint(float x, float y, bool isOnCurve)
         {
-            _point = new Double2(x, y);
-            IsOnCurve = true;
+            _point = new Vector2(x, y);
+            IsOnCurve = isOnCurve;
         }
 
-        public Double2 Coordinate
+        internal GlyphPoint(Vector2 p, bool isOnCurve)
+        {
+            _point = p;
+            IsOnCurve = isOnCurve;
+        }
+
+        public override string ToString()
+        {
+            return $"X: {_point.X}, Y: {_point.Y}, OnCurve: {IsOnCurve}";
+        }
+
+        public Vector2 Coordinate
         {
             get => _point;
             internal set => _point = value;
@@ -24,13 +35,13 @@ namespace Molten.Font
 
         public bool IsOnCurve { get; internal set; }
 
-        public double X
+        public float X
         {
             get => _point.X;
             internal set => _point.X = value;
         }
 
-        public double Y
+        public float Y
         {
             get => _point.Y;
             internal set => _point.Y = value;

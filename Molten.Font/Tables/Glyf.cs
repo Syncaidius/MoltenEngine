@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace Molten.Font
                 Maxp maxp = dependencies.Get<Maxp>();
 
                 /* https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6glyf.html
-                 * Glyph descrion:
+                 * Glyph description:
                  * Type 	Name 	Description
                  * SHORT 	numberOfContours 	If the number of contours is >= zero, this is a single glyph. If it's negative, this is a composite glyph.
                  * SHORT 	xMin 	Minimum x for coordinate data.
@@ -47,13 +48,16 @@ namespace Molten.Font
                     if (glyphs[i] != null)
                         continue;
                     else
-                        ReadGlyph(reader, glyphs, tableStartPos, loca.Offsets, i);
+                        ReadGlyph(reader, log, glyphs, tableStartPos, loca.Offsets, i);
                 }
 
+                // Jump to the expected end of the table (last offset in the loca table).
+                // This is for debugging purposes only.
+                reader.Position = tableStartPos + loca.Offsets[numGlyphs];
                 return new Glyf() { Glyphs = glyphs };
             }
 
-            private void ReadGlyph(BinaryEndianAgnosticReader reader, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, ushort id)
+            private void ReadGlyph(BinaryEndianAgnosticReader reader, Logger log, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, ushort id)
             {
                 uint offset = locaOffsets[id];
                 uint length = locaOffsets[id + 1] - offset;
@@ -73,11 +77,32 @@ namespace Molten.Font
                     if (numContours >= 0)
                         glyphs[id] = ReadSimpleGlyph(reader, numContours, bounds);
                     else
-                        glyphs[id] = ReadCompositeGlyph(reader, glyphs, tableStartPos, locaOffsets, bounds, id);
+                        glyphs[id] = ReadCompositeGlyph(reader, log, glyphs, tableStartPos, locaOffsets, bounds, id);
+
+                    LogGlyph(log, reader.Position, tableStartPos, locaOffsets, length, id, numContours >= 0);
                 }
             }
 
-            private Glyph ReadCompositeGlyph(BinaryEndianAgnosticReader reader, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, Rectangle bounds, ushort id)
+            [Conditional("DEBUG")]
+            private void LogGlyph(Logger log, long readerPos, long tableStartPos, uint[] locaOffsets, uint length, ushort id, bool isSimple)
+            {
+                long expectedEndPos = tableStartPos + locaOffsets[id + 1];
+                long dif = readerPos - expectedEndPos;
+
+                // Did we read less than expected? 
+                if (dif < 0)
+                {
+                    // Adjust for padding. MS docs: Note that the local offsets should be 32-bit aligned. Offsets which are not 32-bit aligned may seriously degrade performance of some processors. 
+                    long expectedPadding = (expectedEndPos - readerPos) % 32;
+                    expectedEndPos -= expectedPadding;
+                }
+
+                if (readerPos != expectedEndPos)
+                    log.WriteDebugLine($"[GLYF] ({(isSimple ? "Simple   " : "Composite")}) Glyph {id} was read/aligned correctly. " +
+                        $"Length: {length}. End Pos -- Expected: {expectedEndPos}. Actual: {readerPos}. Dif: {(dif < 0 ? "" : "+")}{dif} bytes");
+            }
+
+            private Glyph ReadCompositeGlyph(BinaryEndianAgnosticReader reader, Logger log, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, Rectangle bounds, ushort id)
             {
                 CompositeGlyphFlags flags;
                 Glyph compositeGlyph = null;
@@ -91,18 +116,14 @@ namespace Molten.Font
                     if (glyphs[glyphID] == null)
                     {
                         long curPos = reader.Position;
-                        ReadGlyph(reader, glyphs, tableStartPos, locaOffsets, glyphID);
+                        ReadGlyph(reader, log, glyphs, tableStartPos, locaOffsets, glyphID);
                         reader.Position = curPos;
                     }
 
                     int arg1;
                     int arg2;
-                    float scaleX = 1;
-                    float scale01 = 0;
-                    float scale10 = 0;
-                    float scaleY = 1;
-                    bool hasScale = false;
-                    bool hasMatrix = false;
+                    Matrix2x2? scaleMatrix = null;
+                    Glyph glyphClone = glyphs[glyphID].Clone();
 
                     // Is arg1 and 2 a XY offset value?
                     // Argument1 and argument2 can be either x and y offsets to be added to the glyph (the ARGS_ARE_XY_VALUES flag is set), 
@@ -119,9 +140,59 @@ namespace Molten.Font
                             arg1 = reader.ReadSByte(); // 1st byte contains the value of x offset
                             arg2 = reader.ReadSByte(); // 2nd byte contains the value of y offset
                         }
+
+                        // Read scale values
+                        if (HasFlag(flags, CompositeGlyphFlags.WeHaveScale))
+                        {
+                            float scale = FontMath.FromF2DOT14(reader.ReadInt16());
+                            scaleMatrix = new Matrix2x2()
+                            {
+                                M11 = scale,
+                                M12 = 0,
+                                M21 = 0,
+                                M22 = scale,
+                            };
+                        }
+                        else if (HasFlag(flags, CompositeGlyphFlags.WeHaveXAndYScale))
+                        {
+                            scaleMatrix = new Matrix2x2()
+                            {
+                                M11 = FontMath.FromF2DOT14(reader.ReadInt16()),
+                                M12 = 0,
+                                M21 = 0,
+                                M22 = FontMath.FromF2DOT14(reader.ReadInt16())
+                            };
+                        }
+                        else if (HasFlag(flags, CompositeGlyphFlags.WeHaveATwoByTwo))
+                        {
+                            scaleMatrix = new Matrix2x2()
+                            {
+                                M11 = FontMath.FromF2DOT14(reader.ReadInt16()),
+                                M12 = FontMath.FromF2DOT14(reader.ReadInt16()),
+                                M21 = FontMath.FromF2DOT14(reader.ReadInt16()),
+                                M22 = FontMath.FromF2DOT14(reader.ReadInt16()),
+                            };
+                        }
+
+                        if (HasFlag(flags, CompositeGlyphFlags.RoundXYToGrid))
+                        {
+                            // TODO round to grid. Does this go before or after scaling?
+                        }
+
+                        if (scaleMatrix != null)
+                        {
+                            // ref: https://github.com/servo/libfreetype2/blob/master/freetype2/src/truetype/ttgload.c#L1124
+                            FontMath.TransformGlyph(glyphClone, scaleMatrix.Value);
+                            FontMath.OffsetGlyph(glyphClone, arg1, arg2);
+                        }
+                        else
+                        {
+                            FontMath.OffsetGlyph(glyphClone, arg1, arg2);
+                        }
                     }
                     else
                     {
+                        // We have two point values instead.
                         if (HasFlag(flags, CompositeGlyphFlags.Arg1And2AreWords))
                         {
                             arg1 = reader.ReadUInt16(); // 1st short contains the index of matching point in compound being constructed
@@ -134,36 +205,7 @@ namespace Molten.Font
                         }
                     }
 
-                    // Read scale values
-                    if (HasFlag(flags, CompositeGlyphFlags.WeHaveScale))
-                    {
-                        scaleX = FontMath.FromF2DOT14(reader.ReadInt16());
-                        hasScale = true;
-                    }
-                    else if (HasFlag(flags, CompositeGlyphFlags.WeHaveXAndYScale))
-                    {
-                        scaleX = FontMath.FromF2DOT14(reader.ReadInt16());
-                        scaleY = FontMath.FromF2DOT14(reader.ReadInt16());
-                        hasScale = true;
-                    }
-                    else if (HasFlag(flags, CompositeGlyphFlags.WeHaveATwoByTwo))
-                    {
-                        scaleX = FontMath.FromF2DOT14(reader.ReadInt16());
-                        scale01 = FontMath.FromF2DOT14(reader.ReadInt16());
-                        scale10 = FontMath.FromF2DOT14(reader.ReadInt16());
-                        scaleY = FontMath.FromF2DOT14(reader.ReadInt16());
-                        hasMatrix = true;
-                        hasScale = true;
-                    }
 
-                    if (hasScale)
-                    {
-                        // TODO https://github.com/servo/libfreetype2/blob/master/freetype2/src/truetype/ttgload.c#L1124
-                    }
-                    else
-                    {
-                        // TODO No scale?
-                    }
 
                     /* The purpose of USE_MY_METRICS is to force the lsb and rsb to take on a desired value. 
                      * For example, an i-circumflex (U+00EF) is often composed of the circumflex and a dotless-i. 

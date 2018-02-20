@@ -2,6 +2,7 @@
 using Molten.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -109,11 +110,15 @@ namespace Molten.Samples
             //string fontFile = "assets/STOREB.ttf";
 
             FontFile font;
+            Stopwatch fontTimer = new Stopwatch();
             using (FileStream stream = new FileStream(fontPath, FileMode.Open, FileAccess.Read))
             {
                 using (FontReader reader = new FontReader(stream, Log, fontPath))
                 {
+                    fontTimer.Start();
                     font = reader.ReadFont();
+                    fontTimer.Stop();
+                    Log.WriteLine($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read font");
                 }
             }
         }

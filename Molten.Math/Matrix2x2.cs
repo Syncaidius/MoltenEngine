@@ -1,7 +1,4 @@
-﻿ 
-
-
-
+﻿
 namespace Molten
 {
     /// <summary>
@@ -9,6 +6,11 @@ namespace Molten
     /// </summary>
     public struct Matrix2x2
     {
+        /// <summary>
+        /// A Matrix2x2 with values intialized to the identity of a 2 x 2 matrix
+        /// </summary>
+        public static readonly Matrix2x2 Identity = new Matrix2x2(1, 0, 0, 1);
+
         /// <summary>
         /// Value at row 1, column 1 of the matrix.
         /// </summary>
@@ -43,14 +45,6 @@ namespace Molten
             M12 = m12;
             M21 = m21;
             M22 = m22;
-        }
-
-        /// <summary>
-        /// Gets the 2x2 identity matrix.
-        /// </summary>
-        public static Matrix2x2 Identity
-        {
-            get { return new Matrix2x2(1, 0, 1, 0); }
         }
 
         /// <summary>
@@ -354,5 +348,89 @@ namespace Molten
         {
             return M11 * M22 - M12 * M21;
         }
+
+        public static bool operator ==(Matrix2x2 matrix1, Matrix2x2 matrix2)
+        {
+            return MathHelper.NearEqual(matrix1.M11, matrix2.M11)
+                && MathHelper.NearEqual(matrix1.M21, matrix2.M21)
+                && MathHelper.NearEqual(matrix1.M12, matrix2.M12)
+                && MathHelper.NearEqual(matrix1.M22, matrix2.M22);
+        }
+
+        public static bool operator !=(Matrix2x2 matrix1, Matrix2x2 matrix2)
+        {
+            return !MathHelper.NearEqual(matrix1.M11, matrix2.M11)
+                || !MathHelper.NearEqual(matrix1.M21, matrix2.M21)
+                || !MathHelper.NearEqual(matrix1.M12, matrix2.M12)
+                || !MathHelper.NearEqual(matrix1.M22, matrix2.M22);
+        }
+
+        public static Matrix2x2 operator +(Matrix2x2 matrix1, Matrix2x2 matrix2)
+        {
+            float m11 = matrix1.M11 + matrix2.M11;
+            float m21 = matrix1.M21 + matrix2.M21;
+            float m12 = matrix1.M12 + matrix2.M12;
+            float m22 = matrix1.M22 + matrix2.M22;
+
+            return new Matrix2x2(m11, m21,
+                                 m12, m22);
+        }
+
+        public static Matrix2x2 operator -(Matrix2x2 matrix1, Matrix2x2 matrix2)
+        {
+            float m11 = matrix1.M11 - matrix2.M11;
+            float m21 = matrix1.M21 - matrix2.M21;
+            float m12 = matrix1.M12 - matrix2.M12;
+            float m22 = matrix1.M22 - matrix2.M22;
+
+            return new Matrix2x2(m11, m21,
+                                 m12, m22);
+        }
+
+        public static Matrix2x2 operator *(Matrix2x2 matrix, float scalar)
+        {
+            float m11 = matrix.M11 * scalar;
+            float m21 = matrix.M21 * scalar;
+            float m12 = matrix.M12 * scalar;
+            float m22 = matrix.M22 * scalar;
+
+            return new Matrix2x2(m11, m21,
+                                 m12, m22);
+        }
+
+        public static Matrix2x2 operator *(float scalar, Matrix2x2 matrix)
+        {
+            float m11 = scalar * matrix.M11;
+            float m21 = scalar * matrix.M21;
+            float m12 = scalar * matrix.M12;
+            float m22 = scalar * matrix.M22;
+
+            return new Matrix2x2(m11, m21,
+                                 m12, m22);
+        }
+
+        public static Matrix2x2 operator *(Matrix2x2 matrix1, Matrix2x2 matrix2)
+        {
+            float m11 = matrix1.M11 * matrix2.M11 + matrix1.M21 * matrix2.M12;
+            float m21 = matrix1.M11 * matrix2.M21 + matrix1.M21 * matrix2.M22;
+            float m12 = matrix1.M12 * matrix2.M11 + matrix1.M22 * matrix2.M12;
+            float m22 = matrix1.M12 * matrix2.M21 + matrix1.M22 * matrix2.M22;
+
+            return new Matrix2x2(m11, m21,
+                                 m12, m22);
+        }
+        public static Matrix3x2 operator *(Matrix2x2 matrix1, Matrix3x2 matrix2)
+        {
+            float m11 = matrix1.M11 * matrix2.M11 + matrix1.M21 * matrix2.M12;
+            float m21 = matrix1.M11 * matrix2.M21 + matrix1.M21 * matrix2.M22;
+            float m31 = matrix1.M11 * matrix2.M31 + matrix1.M21 * matrix2.M32;
+            float m12 = matrix1.M12 * matrix2.M11 + matrix1.M22 * matrix2.M12;
+            float m22 = matrix1.M12 * matrix2.M21 + matrix1.M22 * matrix2.M22;
+            float m32 = matrix1.M12 * matrix2.M31 + matrix1.M22 * matrix2.M32;
+
+            return new Matrix3x2(m11, m21, m31,
+                                 m12, m22, m32);
+        }
+
     }
 }

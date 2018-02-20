@@ -1211,6 +1211,33 @@ namespace Molten
             return result;
         }
 
+
+        /// <summary>
+        /// Performs a normal transformation using the given <see cref="Matrix2x2"/>.
+        /// </summary>
+        /// <param name="normal">The normal vector to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix2x2"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed normal.</param>
+        public static void TransformNormal(ref Vector2 normal, ref Matrix2x2 transform, out Vector2 result)
+        {
+            result = new Vector2(
+                (normal.X * transform.M11) + (normal.Y * transform.M21),
+                (normal.X * transform.M12) + (normal.Y * transform.M22));
+        }
+
+        /// <summary>
+        /// Performs a normal transformation using the given <see cref="Matrix2x2"/>.
+        /// </summary>
+        /// <param name="normal">The normal vector to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix2x2"/>.</param>
+        /// <returns>The transformed normal.</returns>
+        public static Vector2 TransformNormal(Vector2 normal, Matrix2x2 transform)
+        {
+            Vector2 result;
+            TransformNormal(ref normal, ref transform, out result);
+            return result;
+        }
+
         /// <summary>
         /// Performs a normal transformation on an array of vectors using the given <see cref="Matrix"/>.
         /// </summary>

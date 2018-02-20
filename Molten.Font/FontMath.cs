@@ -37,5 +37,50 @@ namespace Molten.Font
         {
             return BaseTime + TimeSpan.FromSeconds(secondsFromBase);
         }
+
+        internal static void TransformGlyph(Glyph glyph, Matrix2x2 matrix)
+        {
+            RectangleF bounds = RectangleF.Empty;
+
+            GlyphPoint[] glyphPoints = glyph.Points;
+            for (int i = glyphPoints.Length - 1; i >= 0; --i)
+            {
+                GlyphPoint p = glyphPoints[i];
+
+                // Use a Vector2 transform-normal calculation here
+                Vector2 pNew = Vector2.TransformNormal(p.Coordinate, matrix);
+                glyphPoints[i] = new GlyphPoint(pNew, p.IsOnCurve);
+
+                // Check if transformed point goes outside of the glyph's current bounds.
+                if (pNew.X < bounds.X)
+                    bounds.X = pNew.X;
+
+                if (pNew.X > bounds.Right)
+                    bounds.Right = pNew.X;
+
+                if (pNew.Y < bounds.Y)
+                    bounds.Y = pNew.Y;
+
+                if (pNew.Y > bounds.Bottom)
+                    bounds.Bottom = pNew.Y;
+            }
+
+            glyph.Bounds = (Rectangle)bounds;
+        }
+
+        internal static void OffsetGlyph(Glyph glyph, int dx, int dy)
+        {
+            GlyphPoint[] points = glyph.Points;
+            for (int i = points.Length - 1; i >= 0; --i)
+                points[i] = new GlyphPoint(points[i].Coordinate + new Vector2(dx, dy), points[i].IsOnCurve);
+
+            // Update bounds
+            Rectangle curBounds = glyph.Bounds;
+            glyph.Bounds = new Rectangle(
+               (curBounds.X + dx),
+               (curBounds.Y + dy),
+               (curBounds.Right + dx),
+               (curBounds.Bottom + dy));
+        }
     }
 }
