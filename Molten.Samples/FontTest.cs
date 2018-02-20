@@ -105,9 +105,10 @@ namespace Molten.Samples
             SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
 
             // Hi. I'm just a piece of test code for the new WIP font system. Please ignore me.
-            string fontPath = "assets/euphorigenic.ttf";
-            //string fontFile = "assets/euphorigenic.ttf";
-            //string fontFile = "assets/STOREB.ttf";
+            //string fontPath = "assets/euphorigenic.ttf";
+            //string fontPath = "assets/BroshK.ttf";
+            //string fontPath = "assets/Digitalt.ttf";
+            string fontPath = "assets/STOREB.ttf";
 
             FontFile font;
             Stopwatch fontTimer = new Stopwatch();

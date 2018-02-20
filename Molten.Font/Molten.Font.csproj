@@ -98,6 +98,7 @@
     <Compile Include="Tables\Fpgm.cs" />
     <Compile Include="Tables\Gasp.cs" />
     <Compile Include="Tables\Glyf.cs" />
+    <Compile Include="Tables\Hdmx.cs" />
     <Compile Include="Tables\Os2.cs" />
     <Compile Include="Tables\Loca.cs" />
     <Compile Include="Tables\Kern.cs" />
