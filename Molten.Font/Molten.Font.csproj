@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CaretValue.cs" />
+    <Compile Include="FontEmbeddingFlags.cs" />
     <Compile Include="FontFile.cs" />
     <Compile Include="FontDirectionHint.cs" />
     <Compile Include="FontFlags.cs" />
@@ -72,7 +73,9 @@
     <Compile Include="FontNameType.cs" />
     <Compile Include="FontPlatform.cs" />
     <Compile Include="FontReader.cs" />
+    <Compile Include="FontSelectionFlags.cs" />
     <Compile Include="FontTableList.cs" />
+    <Compile Include="FontWidthClass.cs" />
     <Compile Include="Glyph.cs" />
     <Compile Include="GlyphClass.cs" />
     <Compile Include="GlyphMarkClass.cs" />
@@ -95,6 +98,7 @@
     <Compile Include="Tables\Fpgm.cs" />
     <Compile Include="Tables\Gasp.cs" />
     <Compile Include="Tables\Glyf.cs" />
+    <Compile Include="Tables\Os2.cs" />
     <Compile Include="Tables\Loca.cs" />
     <Compile Include="Tables\Kern.cs" />
     <Compile Include="Tables\maxp.cs" />
