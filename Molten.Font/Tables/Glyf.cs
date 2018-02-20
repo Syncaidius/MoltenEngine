@@ -98,7 +98,7 @@ namespace Molten.Font
                 }
 
                 if (readerPos != expectedEndPos)
-                    log.WriteDebugLine($"[GLYF] ({(isSimple ? "Simple   " : "Composite")}) Glyph {id} was read/aligned correctly. " +
+                    log.WriteDebugLine($"[GLYF] ({(isSimple ? "Simple   " : "Composite")}) Glyph {id} was read/aligned incorrectly. " +
                         $"Length: {length}. End Pos -- Expected: {expectedEndPos}. Actual: {readerPos}. Dif: {(dif < 0 ? "" : "+")}{dif} bytes");
             }
 
@@ -123,7 +123,7 @@ namespace Molten.Font
                     int arg1;
                     int arg2;
                     Matrix2x2? scaleMatrix = null;
-                    Glyph glyphClone = glyphs[glyphID].Clone();
+                    Glyph componentGlyph = glyphs[glyphID].Clone();
 
                     // Is arg1 and 2 a XY offset value?
                     // Argument1 and argument2 can be either x and y offsets to be added to the glyph (the ARGS_ARE_XY_VALUES flag is set), 
@@ -181,13 +181,21 @@ namespace Molten.Font
 
                         if (scaleMatrix != null)
                         {
+                            /* MS Docs: If the SCALED_COMPONENT_OFFSET flag is set, then the x and y offset values are deemed to be 
+                             * in the component glyph's coordinate system, and the scale transformation is applied to both values. */
+                            if (HasFlag(flags, CompositeGlyphFlags.ScaledComponentOffset))
+                            {
+                                Vector2 p = new Vector2(arg1, arg2);
+                                p = Vector2.TransformNormal(p, scaleMatrix.Value);
+                            }
+
                             // ref: https://github.com/servo/libfreetype2/blob/master/freetype2/src/truetype/ttgload.c#L1124
-                            FontMath.TransformGlyph(glyphClone, scaleMatrix.Value);
-                            FontMath.OffsetGlyph(glyphClone, arg1, arg2);
+                            FontMath.TransformGlyph(componentGlyph, scaleMatrix.Value);
+                            FontMath.OffsetGlyph(componentGlyph, arg1, arg2);
                         }
                         else
                         {
-                            FontMath.OffsetGlyph(glyphClone, arg1, arg2);
+                            FontMath.OffsetGlyph(componentGlyph, arg1, arg2);
                         }
                     }
                     else
@@ -203,25 +211,37 @@ namespace Molten.Font
                             arg1 = reader.ReadByte(); // 1st byte contains the index of matching point in compound being constructed
                             arg2 = reader.ReadByte(); // 2nd byte contains index of matching point in component
                         }
+
+                        // TODO ????
                     }
-
-
 
                     /* The purpose of USE_MY_METRICS is to force the lsb and rsb to take on a desired value. 
                      * For example, an i-circumflex (U+00EF) is often composed of the circumflex and a dotless-i. 
-                     * In order to force the composite to have the same metrics as the dotless-i, set USE_MY_METRICS for the dotless-i component of the composite. 
-                     */
+                     * In order to force the composite to have the same metrics as the dotless-i, set USE_MY_METRICS for the dotless-i component of the composite. */
                     if (HasFlag(flags, CompositeGlyphFlags.UseMyMetrics))
                     {
                         // TODO apply the current glyph's metrics to the composite glyph
                         // See: https://github.com/servo/libfreetype2/blob/master/freetype2/src/truetype/ttgload.c#L1912
                     }
 
+                    if (compositeGlyph == null)
+                        compositeGlyph = componentGlyph;
+                    else
+                        compositeGlyph.Append(componentGlyph);
+
                 } while (HasFlag(flags, CompositeGlyphFlags.MoreComponents));
+
+                // Read composite glyph instructions, if any.
+                byte[] instructions;
+                if(HasFlag(flags, CompositeGlyphFlags.WeHaveInstructions))
+                {
+                    ushort numInstructions = reader.ReadUInt16();
+                    instructions = reader.ReadBytes(numInstructions);
+                }
 
                 // TOOD replace this once implemented.
                 // Dumped it here so we can build the project.
-                return Glyph.Empty; // TODO ^^^^^^^^^^
+                return compositeGlyph;
             }
 
             private Glyph ReadSimpleGlyph(BinaryEndianAgnosticReader reader, short numContours, Rectangle bounds)

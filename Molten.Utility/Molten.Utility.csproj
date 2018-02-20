@@ -66,6 +66,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArrayHelper.cs" />
     <Compile Include="BinaryEndianAgnosticReader.cs" />
     <Compile Include="BindableValue.cs" />
     <Compile Include="Collections\ExpansionMode.cs" />

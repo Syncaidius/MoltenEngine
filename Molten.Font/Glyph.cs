@@ -26,6 +26,27 @@ namespace Molten.Font
             Points = points;
         }
 
+        /// <summary>
+        /// Append the data from the provided glyph to the current glyph. This is useful when building a composite glyph.
+        /// </summary>
+        /// <param name="other">The glyph to be appended to the current one</param>
+        internal void Append(Glyph other)
+        {
+            int oldLength = ContourEndPoints.Length;
+            int src_contour_count = other.ContourEndPoints.Length;
+            ushort oldLastPointCount = (ushort)(ContourEndPoints[oldLength - 1] + 1);
+
+            Points = ArrayHelper.Concat(Points, other.Points);
+            ContourEndPoints = ArrayHelper.Concat(ContourEndPoints, other.ContourEndPoints);
+            int newLength = ContourEndPoints.Length;
+
+            // Offset latest append contour end points
+            for (int i = oldLength; i < newLength; ++i)
+                ContourEndPoints[i] += oldLastPointCount;
+
+            Bounds = Rectangle.Union(Bounds, other.Bounds);
+        }
+
         public Glyph Clone()
         {
             ushort[] contourClone = new ushort[ContourEndPoints.Length];
