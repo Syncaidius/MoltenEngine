@@ -239,8 +239,6 @@ namespace Molten.Font
                     instructions = reader.ReadBytes(numInstructions);
                 }
 
-                // TOOD replace this once implemented.
-                // Dumped it here so we can build the project.
                 return compositeGlyph;
             }
 

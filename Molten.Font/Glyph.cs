@@ -40,7 +40,7 @@ namespace Molten.Font
             ContourEndPoints = ArrayHelper.Concat(ContourEndPoints, other.ContourEndPoints);
             int newLength = ContourEndPoints.Length;
 
-            // Offset latest append contour end points
+            // Offset appended end-points by the current glyph's original end point count.
             for (int i = oldLength; i < newLength; ++i)
                 ContourEndPoints[i] += oldLastPointCount;
 
