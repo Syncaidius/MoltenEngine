@@ -24,7 +24,7 @@ namespace Molten.Font
 
         public uint MagicNumber { get; private set; }
 
-        public FontFlags Flags { get; private set; }
+        public FontHeadFlags Flags { get; private set; }
 
         public ushort UnitsPerEm { get; private set; }
 
@@ -65,7 +65,7 @@ namespace Molten.Font
                     FontRevisionMinor = reader.ReadUInt16(),
                     ChecksumAdjustment = reader.ReadUInt32(),
                     MagicNumber = reader.ReadUInt32(),
-                    Flags = (FontFlags)reader.ReadUInt16(),
+                    Flags = (FontHeadFlags)reader.ReadUInt16(),
                     UnitsPerEm = reader.ReadUInt16(),
                     Created = FontMath.FromLongDate(reader.ReadInt64()),
                     Modified = FontMath.FromLongDate(reader.ReadInt64()),
