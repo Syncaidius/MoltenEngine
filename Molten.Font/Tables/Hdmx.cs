@@ -14,7 +14,6 @@ namespace Molten.Font
 
         public DeviceRecord[] Records { get; internal set; }
 
-
         /// <summary>
         /// Gets an array of <see cref="LongHorMetric"/> instances containing paired advance width and left side bearing values for each glyph. Records are indexed by glyph ID.
         /// </summary>
@@ -55,8 +54,10 @@ namespace Molten.Font
                 }
 
                 // NOTE: For some reason this table sometimes fall short of header.Length despite having all the correct data present.
-                // Jump to the expected table end position for now.
-                reader.Position = header.Offset + header.Length;
+                // If it fell short, jump to the expected table end position for debugging purposes.
+                long expectedEnd = header.Offset + header.Length;
+                if(reader.Position < expectedEnd)
+                    reader.Position = expectedEnd;
 
                 return new Hdmx() { Records = records };
             }

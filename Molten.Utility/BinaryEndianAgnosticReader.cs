@@ -111,6 +111,42 @@ namespace Molten
                 return base.ReadDouble();
         }
 
+        public ushort[] ReadArrayUInt16(int count)
+        {
+            ushort[] r = new ushort[count];
+            for (int i = 0; i < count; i++)
+                r[i] = ReadUInt16();
+
+            return r;
+        }
+
+        public short[] ReadArrayInt16(int count)
+        {
+            short[] r = new short[count];
+            for (int i = 0; i < count; i++)
+                r[i] = ReadInt16();
+
+            return r;
+        }
+
+        public uint[] ReadArrayUInt32(int count)
+        {
+            uint[] r = new uint[count];
+            for (int i = 0; i < count; i++)
+                r[i] = ReadUInt32();
+
+            return r;
+        }
+
+        public int[] ReadArrayInt32(int count)
+        {
+            int[] r = new int[count];
+            for (int i = 0; i < count; i++)
+                r[i] = ReadInt32();
+
+            return r;
+        }
+
         public override decimal ReadDecimal()
         {
             if (_flipNeeded)
