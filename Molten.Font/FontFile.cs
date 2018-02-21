@@ -16,10 +16,14 @@ namespace Molten.Font
         {
             _tables = tables;
             _flags = FontFlags.Invalid;
-            Build();
         }
 
-        private void Build()
+        /// <summary>
+        /// (Re)Builds the font based on it's set of available tables. <para/>
+        /// You can drop any tables you do not want the font to be built with via <see cref="Tables"/>.<para/>
+        /// If the font has already been built previously, calling this again will cause the font to be rebuilt from the tables present in <see cref="Tables"/>.
+        /// </summary>
+        public void Build()
         {
             // If the flags are invalid, we cannot make a usable FontFile instance.
             _flags = FontValidator.Validate(_tables);
@@ -37,7 +41,8 @@ namespace Molten.Font
             return (_flags & flag) == flag;
         }
 
-        /// <summary>Gets the font's table list, which can be used to access any loaded tables, or the headers of tables that were not supported.</summary>
+        /// <summary>Gets the font's table list, which can be used to access any loaded tables, or the headers of tables that were not supported.<para/>
+        /// You can also use the table list to drop loaded tables. This may be useful if you wish to reduce the font's footprint after it has been built.</summary>
         public FontTableList Tables => _tables;
 
         /// <summary>

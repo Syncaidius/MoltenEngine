@@ -11,6 +11,7 @@ namespace Molten.Font
     {
         Dictionary<string, FontTable> _byTag;
         Dictionary<Type, FontTable> _byType;
+        List<FontTable> _tables;
         List<TableHeader> _unsupported;
 
         // For read-only access.
@@ -24,6 +25,41 @@ namespace Molten.Font
 
             _byTag = new Dictionary<string, FontTable>();
             _byType = new Dictionary<Type, FontTable>();
+            _tables = new List<FontTable>();
+            _tablesReadOnly = _tables.AsReadOnly();
+        }
+
+        /// <summary>Drops a loaded font table. Returns true if the table was found and succesfully dropped.</summary>
+        /// <param name="tableTag">The tag of the table to be dropped.</param>
+        /// <returns></returns>
+        public bool Drop(string tableTag)
+        {
+            if(_byTag.TryGetValue(tableTag, out FontTable table))
+            {
+                _byTag.Remove(tableTag);
+                _byType.Remove(table.GetType());
+                _tables.Remove(table);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Drops a loaded font table. Returns true if the table was found and succesfully dropped.</summary>
+        /// <typeparam name="T">The type of <see cref="FontTable"/> to be dropped.</typeparam>
+        /// <returns></returns>
+        public bool Drop<T>() where T : FontTable
+        {
+            Type t = typeof(T);
+            if (_byType.TryGetValue(t, out FontTable table))
+            {
+                _byTag.Remove(table.Header.Tag);
+                _byType.Remove(t);
+                _tables.Remove(table);
+                return true;
+            }
+
+            return false;
         }
 
         internal void AddUnsupported(TableHeader header)
@@ -35,6 +71,7 @@ namespace Molten.Font
         {
             _byTag.Add(table.Header.Tag, table);
             _byType.Add(table.GetType(), table);
+            _tables.Add(table);
         }
 
         /// <summary>Retrieves a table from the dictory list, or null if it isn't present.</summary>

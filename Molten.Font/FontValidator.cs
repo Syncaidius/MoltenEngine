@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
+    /// <summary>A small container class for tracking the tables that must be present for a <see cref="FontFile"/> to earn the attached <see cref="FontFlags"/>.</summary>
     internal class FontRequirements
     {
         public FontFlags Flags;
