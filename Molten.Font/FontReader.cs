@@ -53,7 +53,8 @@ namespace Molten.Font
 
         /// <summary>Parses a .TTF or .OTF font file and returns a new <see cref="FontFile"/> instance containing detailed information about a font.</summary>
         /// <param name="buildFontWhenDone">If true, the font will be built - by calling <see cref="FontFile.Build"/> - when font data has been completely read.</param>
-        public FontFile ReadFont(bool buildFontWhenDone = true)
+        /// <param name="ignoredTables">One or more tags (of font tables) to be ignored, if any. Ignored tables will not be parsed/loaded.</param>
+        public FontFile ReadFont(bool buildFontWhenDone = true, params string[] ignoredTables)
         {
             OffsetTable offsetTable;
             FontTableList tables = new FontTableList();
@@ -78,9 +79,26 @@ namespace Molten.Font
             {
                 TableHeader header = ReadTableHeader(_reader);
                 expectedEndPos += header.Length;
+                bool ignored = false;
 
-                toParse.Add(header);
-                toParseByTag.Add(header.Tag, header);
+                // Check if table is ignored.
+                if(ignoredTables != null)
+                {
+                    for(int j = 0; j < ignoredTables.Length; j++)
+                    {
+                        if(ignoredTables[j] == header.Tag)
+                        {
+                            _log.WriteDebugLine($"Ignoring table '{header.Tag}' ({header.Length} bytes)", _filename);
+                            ignored = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!ignored) {
+                    toParse.Add(header);
+                    toParseByTag.Add(header.Tag, header);
+                }
             }
 
             // Now parse the tables.
