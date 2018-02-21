@@ -118,7 +118,7 @@ namespace Molten.Samples
                 using (FontReader reader = new FontReader(stream, Log, fontPath))
                 {
                     fontTimer.Start();
-                    font = reader.ReadFont(true, "GPOS");
+                    font = reader.ReadFont();
                     fontTimer.Stop();
                     Log.WriteLine($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read font");
                 }
