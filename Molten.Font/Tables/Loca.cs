@@ -34,28 +34,24 @@ namespace Molten.Font
                 // From MS + Apple Docs: In order to compute the length of the last glyph element, there is an extra entry after the last valid index.
                 int numGlyphs = maxp.NumGlyphs + 1;
 
-                Loca table = new Loca()
-                {
-                    Offsets = new uint[numGlyphs],
-                };
-
+                uint[] offsets;
                 switch (head.LocaFormat)
                 {
                     // 16-bit loca format stores the original values divided by two (val / 2).
                     // To reverse, simply multiply them by 2 here.
                     case FontLocaFormat.UnsignedInt16:
+                        offsets = new uint[numGlyphs];
                         for (int i = 0; i < numGlyphs; i++)
-                            table.Offsets[i] = reader.ReadUInt16() * 2U;
+                            offsets[i] = reader.ReadUInt16() * 2U;
                         break;
 
                     default:
                     case FontLocaFormat.UnsignedInt32:
-                        for (int i = 0; i < numGlyphs; i++)
-                            table.Offsets[i] = reader.ReadUInt32();
+                        offsets = reader.ReadArrayUInt32(numGlyphs);
                         break;
                 }
 
-                return table;
+                return new Loca() { Offsets = offsets };
             }
         }
     }

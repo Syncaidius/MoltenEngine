@@ -147,6 +147,15 @@ namespace Molten
             return r;
         }
 
+        public sbyte[] ReadArraySByte(int count)
+        {
+            sbyte[] r = new sbyte[count];
+            for (int i = 0; i < count; i++)
+                r[i] = ReadSByte();
+
+            return r;
+        }
+
         public override decimal ReadDecimal()
         {
             if (_flipNeeded)

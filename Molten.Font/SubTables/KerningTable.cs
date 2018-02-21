@@ -89,9 +89,7 @@ namespace Molten.Font
                     for (int r = 0; r < leftClasses.Length; r++)
                     {
                         for (int c = 0; c < rightClasses.Length; c++)
-                        {
                             kerningArray[r, c] = reader.ReadInt16();
-                        }
                     }
 
                     // TODO translate into KerningPair instances -- Need a test font with format2 kerning tables.
@@ -104,10 +102,7 @@ namespace Molten.Font
             reader.Position = tableStart + offset;
             ushort firstGlyph = reader.ReadUInt16(); // ID of the first glyph within the class range
             ushort numGlyphs = reader.ReadUInt16();
-
-            ushort[] classTable = new ushort[numGlyphs];
-            for (int i = 0; i < numGlyphs; i++)
-                classTable[i] = reader.ReadUInt16();
+            ushort[] classTable = reader.ReadArrayUInt16(numGlyphs);
 
             return classTable;
         }

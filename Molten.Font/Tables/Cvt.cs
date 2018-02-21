@@ -20,14 +20,7 @@ namespace Molten.Font
             internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
             {
                 uint valueCount = header.Length / 2; //FWORD -- int16 that describes a quantity in font design units. 
-                Cvt table = new Cvt()
-                {
-                    Values = new short[valueCount]
-                };
-
-                for (int i = 0; i < valueCount; i++)
-                    table.Values[i] = reader.ReadInt16();
-                return table;
+                return new Cvt() { Values = reader.ReadArrayInt16((int)valueCount) };
             }
         }
     }

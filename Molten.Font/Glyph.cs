@@ -53,8 +53,7 @@ namespace Molten.Font
             Array.Copy(ContourEndPoints, contourClone, contourClone.Length);
 
             GlyphPoint[] pointClone = new GlyphPoint[Points.Length];
-            for (int i = 0; i < pointClone.Length; i++)
-                pointClone[i] = Points[i];
+            Array.Copy(Points, pointClone, Points.Length);
 
             byte[] instructionClone = new byte[Instructions.Length];
             Array.Copy(Instructions, instructionClone, instructionClone.Length);
