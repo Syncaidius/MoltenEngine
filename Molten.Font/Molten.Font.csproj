@@ -94,6 +94,7 @@
     <Compile Include="SubTables\LigatureGlyphTable.cs" />
     <Compile Include="SubTables\MarkGlyphSetsTable.cs" />
     <Compile Include="TableHeader.cs" />
+    <Compile Include="Tables\Cmap.format6.cs" />
     <Compile Include="Tables\Cmap.format4.cs" />
     <Compile Include="Tables\Cmap.format0.cs" />
     <Compile Include="Tables\DSIG.cs" />

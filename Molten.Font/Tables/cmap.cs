@@ -57,6 +57,8 @@ namespace Molten.Font
 
         public abstract class SubTable
         {
+            public ushort Format { get; private set; }
+
             public FontPlatform Platform { get; protected set; }
 
             public ushort Encoding { get; protected set; }
@@ -69,6 +71,7 @@ namespace Molten.Font
 
             public SubTable(EncodingRecord record)
             {
+                Format = record.Format;
                 Platform = record.Platform;
                 Encoding = record.Encoding;
             }
@@ -78,6 +81,8 @@ namespace Molten.Font
 
         public class EncodingRecord
         {
+            public ushort Format { get; internal set; }
+
             public FontPlatform Platform { get; internal set; }
 
             public ushort Encoding { get; internal set; }
@@ -117,15 +122,16 @@ namespace Molten.Font
                 {
                     EncodingRecord record = records[i];
                     reader.Position = header.Offset + record.Offset;
-                    ushort format = reader.ReadUInt16();
+                    record.Format = reader.ReadUInt16();
 
-                    switch (format)
+                    switch (record.Format)
                     {
                         case 0: table.SubTables[i] = new CmapFormat0SubTable(record); break;
                         //case 2: ReadFormat2(reader, record); break; // Had no luck finding a font with format_2 cmap subtables. Need one for testing.
                         case 4: table.SubTables[i] = new CmapFormat4SubTable(record); break;
+                        case 6: table.SubTables[i] = new CmapFormat6SubTable(record); break;
                         default:
-                            log.WriteDebugLine($"[CMAP] Unsupported format for record {i}/{numRecords - 1}: Format {format}");
+                            log.WriteDebugLine($"[CMAP] Unsupported format for record {i}/{numRecords - 1}: Format {record.Format}");
                             break;
                     }
 

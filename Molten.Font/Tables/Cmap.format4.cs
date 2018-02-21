@@ -8,26 +8,15 @@ namespace Molten.Font
 {
     public class CmapFormat4SubTable : Cmap.SubTable
     {
-        class EndCountComparer : IComparer<ushort>
-        {
-            public int Compare(ushort endCount, ushort codepoint)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        byte[] _glyphIDs;
         ushort[] _startCode;
         ushort[] _endCode;    
         short[] _idDelta;
         ushort[] _idRangeOffset;
         ushort[] _glyphIdArray;
 
-        public CmapFormat4SubTable(Cmap.EncodingRecord record) : 
+        public CmapFormat4SubTable(Cmap.EncodingRecord record) :
             base(record)
-        {
-
-        }
+        { }
 
         public override ushort CharPairToGlyphIndex(int codepoint, ushort defaultGlyphIndex, int nextCodepoint)
         {
@@ -53,13 +42,13 @@ namespace Molten.Font
 
             if(_startCode[segID] <= codepoint)
             {
-                /* If the idRangeOffset is 0, the idDelta value is added directly to the character code offset (i.e. idDelta[i] + c) to get the corresponding glyph index. 
+                /* MS docs: If the idRangeOffset is 0, the idDelta value is added directly to the character code offset (i.e. idDelta[i] + c) to get the corresponding glyph index. 
                  * Again, the idDelta arithmetic is modulo 65536. */
                 if (_idRangeOffset[segID] == 0)
                     return (ushort)(_idDelta[segID] + codepoint);
                 else
                 {
-                    /*The character code offset from startCode is added to the idRangeOffset value. 
+                    /* MS docs: The character code offset from startCode is added to the idRangeOffset value. 
                      * This sum is used as an offset from the current location within idRangeOffset itself to index out the correct glyphIdArray value. 
                      * This obscure indexing trick works because glyphIdArray immediately follows idRangeOffset in the font file.*/
                     int offset = (_idRangeOffset[segID] / 2) + (codepoint - _startCode[segID]);
