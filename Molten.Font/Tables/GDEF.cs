@@ -77,19 +77,24 @@ namespace Molten.Font
                 /*The table consists of an offset to a Coverage table (Coverage) listing all glyphs that define attachment points in the GPOS table, 
                  * a count of the glyphs with attachment points (GlyphCount), and an array of offsets to AttachPoint tables (AttachPoint). 
                  * The array lists the AttachPoint tables, one for each glyph in the Coverage table, in the same order as the Coverage Index.*/
-                table.AttachList = new AttachListTable(reader, log, header.Offset + attachListOffset);
+                if (attachListOffset > FontMath.NULL)
+                    table.AttachList = new AttachListTable(reader, log, header.Offset + attachListOffset);
 
                 // Ligature caret list sub-table.
-                table.LigatureCaretList = new LigatureCaretListTable(reader, log, header.Offset + ligCaretListOffset);
+                if (ligCaretListOffset > FontMath.NULL)
+                    table.LigatureCaretList = new LigatureCaretListTable(reader, log, header.Offset + ligCaretListOffset);
 
                 // Mark attachment class definition sub-table.
-                table.MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>(reader, log, _markTranslation, header.Offset + markAttachClassDefOffset);
+                if (markAttachClassDefOffset > FontMath.NULL)
+                    table.MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>(reader, log, _markTranslation, header.Offset + markAttachClassDefOffset);
 
                 // Mark glyph sets sub-table.
-                table.MarkGlyphSets = new MarkGlyphSetsTable(reader, log, header.Offset + markGlyphSetsDefOffset);
+                if (markGlyphSetsDefOffset > FontMath.NULL)
+                    table.MarkGlyphSets = new MarkGlyphSetsTable(reader, log, header.Offset + markGlyphSetsDefOffset);
 
                 // Item variation store sub-table.
-                table.ItemVarStore = new ItemVariationStore(reader, log, header.Offset + itemVarStoreOffset);
+                if (itemVarStoreOffset > FontMath.NULL)
+                    table.ItemVarStore = new ItemVariationStore(reader, log, header.Offset + itemVarStoreOffset);
 
                 return table;
             }
