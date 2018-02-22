@@ -36,7 +36,20 @@ namespace Molten.Font
                 {
                     long subStartPos = lookupStartPos + subTableOffsets[s];
                     reader.Position = subStartPos;
+
+                    // Skip unsupported tables.
+                    if(lookupType >= lookupTypeIndex.Length)
+                    {
+                        log.WriteDebugLine($"Unsupported lookup sub-table type: {lookupType}");
+                        continue;
+                    }
+                    else
+                    {
+                        log.WriteDebugLine($"Parsing lookup sub-table type: {lookupType}. Flags: {lookupFlags}");
+                    }
+
                     LookupSubTable subTable = Activator.CreateInstance(lookupTypeIndex[lookupType]) as LookupSubTable;
+                    subTable.SubTableId = s;
                     subTable.Read(reader, log, subStartPos, lookupType, lookupFlags, markFilteringSet);
                     subtables.Add(subTable);
                 }
@@ -46,6 +59,8 @@ namespace Molten.Font
 
     public abstract class LookupSubTable
     {
+        public int SubTableId { get; internal set; }
+
         internal abstract void Read(BinaryEndianAgnosticReader reader, 
             Logger log, 
             long subStartPos, 

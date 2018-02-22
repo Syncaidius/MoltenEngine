@@ -18,6 +18,9 @@ namespace Molten.Font
             IEnumerable<Type> parserTypes = ReflectionHelper.FindType<FontTableParser>(typeof(FontTableParser).Assembly);
             foreach(Type t in parserTypes)
             {
+                if (t.IsAbstract)
+                    continue;
+
                 FontTableParser parser = Activator.CreateInstance(t) as FontTableParser;
                 _tableParsers.Add(parser.TableTag, parser);
             }

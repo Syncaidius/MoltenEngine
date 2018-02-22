@@ -30,7 +30,8 @@ namespace Molten.Font
             {
                 return new Type[]
                 {
-
+                    typeof(SingleAdjustmentPositioningSubTable),
+                    typeof(PairAdjustmentPositioningSubTable),
                 };
             }
 
