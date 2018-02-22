@@ -30,7 +30,7 @@ namespace Molten.Font
             for(int i = 0; i < setCount; i++)
             {
                 reader.Position = startOffset + offsets[i];
-                Sets[i] = new CoverageTable(reader, log, parentHeader);
+                Sets[i] = new CoverageTable(reader, log);
             }
         }        
     }

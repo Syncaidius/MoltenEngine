@@ -24,7 +24,7 @@ namespace Molten.Font
 
             // Read the coverage table.
             reader.Position = startOFfset + coverageOffset;
-            CoverageTable coverage = new CoverageTable(reader, log, header);
+            CoverageTable coverage = new CoverageTable(reader, log);
 
             // Populate attach points in each AttachPointTable.
             for (int i = 0; i < glyphCount; i++)

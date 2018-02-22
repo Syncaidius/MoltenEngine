@@ -16,7 +16,7 @@ namespace Molten.Font
 
         ushort[] _glyphIDs;
 
-        internal CoverageTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader header)
+        internal CoverageTable(BinaryEndianAgnosticReader reader, Logger log)
         {
             Format = reader.ReadUInt16();
 
@@ -45,7 +45,7 @@ namespace Molten.Font
             }
             else
             {
-                log.WriteWarning($"Unsupported coverage sub-table in font '{header.Tag}' table");
+                log.WriteWarning($"Unsupported coverage sub-table in font table");
             }
         }
     }
