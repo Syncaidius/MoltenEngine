@@ -106,6 +106,8 @@
     <Compile Include="Tables\Gasp.cs" />
     <Compile Include="Tables\Glyf.cs" />
     <Compile Include="Tables\Cmap.cs" />
+    <Compile Include="Tables\GPOS.ClassRecord.cs" />
+    <Compile Include="Tables\GPOS.PairSet.cs" />
     <Compile Include="Tables\GPOS.ValueRecord.cs" />
     <Compile Include="Tables\Hdmx.cs" />
     <Compile Include="Tables\GPOS.cs" />

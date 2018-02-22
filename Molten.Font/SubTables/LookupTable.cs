@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class LookupTable<T> where T : LookupSubTable, new()
+    public class LookupTable
     {
-        List<T> _subTables = new List<T>();
+        List<LookupSubTable> _subTables = new List<LookupSubTable>();
 
-        public IReadOnlyCollection<T> SubTables { get; internal set; }
+        public IReadOnlyCollection<LookupSubTable> SubTables { get; internal set; }
 
         internal LookupTable(BinaryEndianAgnosticReader reader, Logger log, Type[] lookupTypeIndex)
         {
@@ -18,7 +18,7 @@ namespace Molten.Font
             ushort lookupCount = reader.ReadUInt16();
             ushort[] lookupOffsets = reader.ReadArrayUInt16(lookupCount);
 
-            List<T> subtables = new List<T>();
+            List<LookupSubTable> subtables = new List<LookupSubTable>();
             SubTables = subtables.AsReadOnly();
 
             for (int i = 0; i < lookupCount; i++)
@@ -36,8 +36,8 @@ namespace Molten.Font
                 {
                     long subStartPos = lookupStartPos + subTableOffsets[s];
                     reader.Position = subStartPos;
-                    T subTable = Activator.CreateInstance(lookupTypeIndex[lookupType]) as T;
-                    subTable.Read(reader, log, lookupStartPos, subStartPos, lookupType, lookupFlags, markFilteringSet);
+                    LookupSubTable subTable = Activator.CreateInstance(lookupTypeIndex[lookupType]) as LookupSubTable;
+                    subTable.Read(reader, log, subStartPos, lookupType, lookupFlags, markFilteringSet);
                     subtables.Add(subTable);
                 }
             }
@@ -48,7 +48,6 @@ namespace Molten.Font
     {
         internal abstract void Read(BinaryEndianAgnosticReader reader, 
             Logger log, 
-            long lookupStartPos, 
             long subStartPos, 
             ushort lookupType,
             LookupFlags flags,

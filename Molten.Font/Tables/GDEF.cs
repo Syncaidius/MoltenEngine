@@ -72,7 +72,7 @@ namespace Molten.Font
 
                 // Glyph class definition table
                 ReadSubTable(reader, log, "Glyph Class-Def", glyphClassDefOffset, header, (startPos) =>
-                    table.GlyphClassDefs = new ClassDefinitionTable<GlyphClass>(reader, log, header, _classTranslation));
+                    table.GlyphClassDefs = new ClassDefinitionTable<GlyphClass>(reader, log, _classTranslation));
 
                 // Attachment point list table
                 /*The table consists of an offset to a Coverage table (Coverage) listing all glyphs that define attachment points in the GPOS table, 
@@ -87,7 +87,7 @@ namespace Molten.Font
 
                 // Mark attachment class definition  sub-table.
                 ReadSubTable(reader, log, "Mark Attach Class-Def", markAttachClassDefOffset, header, (startPos) =>
-                table.MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>(reader, log, header, _markTranslation));
+                table.MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>(reader, log, _markTranslation));
 
                 // Mark glyph sets  sub-table.
                 ReadSubTable(reader, log, "Mark Glyph Set", markGlyphSetsDefOffset, header, (startPos) =>

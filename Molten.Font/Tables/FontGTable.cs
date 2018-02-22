@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 namespace Molten.Font
 {
     /// <summary>A base implementation for GPOS and GSUB tables.</summary>
-    public abstract class FontGTable<T> : FontTable where T : LookupSubTable, new()
+    public abstract class FontGTable : FontTable
     {
         public ushort MajorVersion { get; internal set; }
 
         public ushort MinorVersion { get; internal set; }
 
-        public ScriptList ScriptList { get; internal set; }
+        //public ScriptList ScriptList { get; internal set; }
 
-        public FeatureList FeatureList { get; internal set; }
+        //public FeatureList FeatureList { get; internal set; }
 
-        public LookupTable<T> LookupTable { get; internal set; }
+        public LookupTable LookupTable { get; internal set; }
 
         internal abstract class Parser : FontTableParser
         {
@@ -30,7 +30,7 @@ namespace Molten.Font
 
             protected abstract Type[] GetLookupTypeIndex();
 
-            protected abstract FontGTable<T> CreateTable(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependenceies);
+            protected abstract FontGTable CreateTable(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependenceies);
 
             internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
             {
@@ -39,7 +39,7 @@ namespace Molten.Font
                  * Single and pair adjustments (LookupTypes 1 and 2) use a ValueRecord structure and associated ValueFormat enumeration, which are defined later in this chapter. 
                  * Attachment subtables (LookupTypes 3, 4, 5 and 6) use Anchor and MarkArray tables, also defined later in this chapter.*/
 
-                FontGTable<T> table = CreateTable(reader, header, log, dependencies);
+                FontGTable table = CreateTable(reader, header, log, dependencies);
                 table.MajorVersion =  reader.ReadUInt16();
                 table.MinorVersion = reader.ReadUInt16();
                 ushort scriptListOffset = reader.ReadUInt16();
@@ -59,7 +59,7 @@ namespace Molten.Font
                 // TODO read feature list.
 
                 reader.Position = header.Offset + lookupListOffset;
-                table.LookupTable = new LookupTable<T>(reader, log, _lookupTypeIndex);
+                table.LookupTable = new LookupTable(reader, log, _lookupTypeIndex);
 
                 return table;
             }

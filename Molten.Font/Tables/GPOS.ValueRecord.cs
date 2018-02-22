@@ -58,6 +58,8 @@ namespace Molten.Font
             internal ValueRecord(BinaryEndianAgnosticReader reader, ValueFormat format)
             {
                 Format = format;
+                if (format == ValueFormat.Empty)
+                    return;
 
                 if (HasFormat(ValueFormat.XPlacement))
                     XPlacement = reader.ReadInt16();
@@ -93,6 +95,8 @@ namespace Molten.Font
         [Flags]
         public enum ValueFormat
         {
+            Empty = 0,
+
             /// <summary>
             /// Includes horizontal adjustment for placement
             /// </summary>
