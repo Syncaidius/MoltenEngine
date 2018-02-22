@@ -34,10 +34,9 @@ namespace Molten.Font
         /// </summary>
         public ushort RangeShift { get; private set; }
 
-        internal KerningTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader parentHeader)
+        internal KerningTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader parentHeader, long startPos)
         {
-            long subTableStart = reader.Position;
-
+            reader.Position = startPos;
             Version = reader.ReadUInt16();
             ushort subHeaderLength = reader.ReadUInt16();
 
@@ -72,8 +71,8 @@ namespace Molten.Font
                     ushort rightClasstableOffset = reader.ReadUInt16();
                     ushort arrayOffset = reader.ReadUInt16();
 
-                    ushort[] leftClasses = ReadClassTable(reader, subTableStart, leftClassTableOffset);
-                    ushort[] rightClasses = ReadClassTable(reader, subTableStart, rightClasstableOffset);
+                    ushort[] leftClasses = ReadClassTable(reader, startPos, leftClassTableOffset);
+                    ushort[] rightClasses = ReadClassTable(reader, startPos, rightClasstableOffset);
 
                     // "Un-multiply" the values in each class table to give us the original class values.
                     // Left class table - The values in the left class table are stored pre-multiplied by the number of bytes in one row

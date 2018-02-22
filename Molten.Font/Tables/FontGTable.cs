@@ -51,15 +51,14 @@ namespace Molten.Font
                 if (table.MajorVersion == 1 && table.MinorVersion == 1)
                 {
                     featureVariationsOffset = reader.ReadUInt32();
-                    // TODO read variation list
+                    // TODO read variation list (if featureVariationOffset > 0 (NULL)
                 }
 
                 // TODO read script list
 
                 // TODO read feature list.
 
-                reader.Position = header.Offset + lookupListOffset;
-                table.LookupTable = new LookupTable(reader, log, _lookupTypeIndex);
+                table.LookupTable = new LookupTable(reader, log, _lookupTypeIndex, header.Offset + lookupListOffset);
 
                 return table;
             }

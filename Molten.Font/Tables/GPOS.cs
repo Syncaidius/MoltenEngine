@@ -30,8 +30,10 @@ namespace Molten.Font
             {
                 return new Type[]
                 {
-                    typeof(SingleAdjustmentPositioningSubTable),
-                    typeof(PairAdjustmentPositioningSubTable),
+                    null, // Type 0
+                    typeof(SingleAdjustmentPositioningSubTable), // Type 1
+                    typeof(PairAdjustmentPositioningSubTable), // Type 2
+                    typeof(CursiveAttachmentPositioningSubTable), // Type 3
                 };
             }
 
@@ -86,8 +88,9 @@ namespace Molten.Font
         /// </summary>
         public CoverageTable Coverage { get; private set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, Logger log, long subStartPos, ushort lookupType, LookupFlags flags, ushort markFilteringSet)
+        internal override void Read(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort lookupType, LookupFlags flags, ushort markFilteringSet)
         {
+            reader.Position = startPos;
             GPOSLookupType lt = (GPOSLookupType)lookupType;
             Type = lt;
 
@@ -110,8 +113,7 @@ namespace Molten.Font
                     break;
             }
 
-            reader.Position = subStartPos + coverageOffset;
-            Coverage = new CoverageTable(reader, log);
+            Coverage = new CoverageTable(reader, log, startPos + coverageOffset);
         }
     }
 
@@ -134,8 +136,9 @@ namespace Molten.Font
 
         public ClassDefinitionTable Class2Definitions { get; internal set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, Logger log, long subStartPos, ushort lookupType, LookupFlags flags, ushort markFilteringSet)
+        internal override void Read(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort lookupType, LookupFlags flags, ushort markFilteringSet)
         {
+            reader.Position = startPos;
             GPOSLookupType lt = (GPOSLookupType)lookupType;
             Type = lt;
 
@@ -152,7 +155,7 @@ namespace Molten.Font
 
                     for (int i = 0; i < pairSetCount; i++)
                     {
-                        long pairSetStartPos = subStartPos + pairSetOffsets[i];
+                        long pairSetStartPos = startPos + pairSetOffsets[i];
                         reader.Position = pairSetStartPos;
                         PairSets[i] = new GPOS.PairSet(reader, pairSetStartPos, valueFormat1, valueFormat2);
                     }
@@ -168,25 +171,45 @@ namespace Molten.Font
                     for(int i = 0; i < classCount1; i++)
                         ClassRecords[i] = new GPOS.Class1Record(reader, classCount2, valueFormat1, valueFormat2);
 
-                    reader.Position = subStartPos + classDef1Offset;
-                    Class1Definitions = new ClassDefinitionTable(reader, log);
+                    Class1Definitions = new ClassDefinitionTable(reader, log, startPos + classDef1Offset);
 
                     // Check if Class2 table is the same as Class1. If true, share them.
                     if (classDef2Offset != classDef1Offset)
-                    {
-                        reader.Position = subStartPos + classDef2Offset;
-                        Class2Definitions = new ClassDefinitionTable(reader, log);
-                    }
+                        Class2Definitions = new ClassDefinitionTable(reader, log, startPos + classDef2Offset);
                     else
-                    {
                         Class2Definitions = Class1Definitions;
-                    }
 
                     break;
             }
 
-            reader.Position = subStartPos + coverageOffset;
-            Coverage = new CoverageTable(reader, log);
+            Coverage = new CoverageTable(reader, log, startPos + coverageOffset);
+        }
+    }
+
+    public class CursiveAttachmentPositioningSubTable : GPosLookupSubTable
+    {
+        public GPOS.EntryExitRecord[] Records { get; private set; }
+
+        internal override void Read(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort lookupType, LookupFlags flags, ushort markFilteringSet)
+        {
+            reader.Position = startPos;
+            GPOSLookupType lt = (GPOSLookupType)lookupType;
+            Type = lt;
+
+            ushort posFormat = reader.ReadUInt16();
+            ushort coverageOffset = reader.ReadUInt16();
+            ushort entryExitCount = reader.ReadUInt16();
+            Records = new GPOS.EntryExitRecord[entryExitCount];
+            for(int i = 0; i < entryExitCount; i++)
+            {
+                ushort entryAnchorOffset = reader.ReadUInt16();
+                ushort exitAnchorOffset = reader.ReadUInt16();
+                Records[i] = new GPOS.EntryExitRecord()
+                {
+                    EntryAnchor = new AnchorTable(reader, log, startPos + entryAnchorOffset),
+                    ExitAnchor = new AnchorTable(reader, log, startPos + exitAnchorOffset),
+                };
+            }
         }
     }
 }

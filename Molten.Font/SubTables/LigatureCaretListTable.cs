@@ -11,9 +11,8 @@ namespace Molten.Font
         /// <summary>Gets an array containing AttachPoint tables ordered by coverage index, which hold contour point indices.</summary>
         public LigatureGlyphTable[] GlyphTables { get; private set; }
 
-        internal LigatureCaretListTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader header)
+        internal LigatureCaretListTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
         {
-            long startOffset = reader.Position;
             ushort coverageOffset = reader.ReadUInt16();
             uint ligGlyphCount = reader.ReadUInt16();
             GlyphTables = new LigatureGlyphTable[ligGlyphCount];
@@ -23,14 +22,13 @@ namespace Molten.Font
                 GlyphTables[i] = new LigatureGlyphTable(this, reader.ReadUInt16());
 
             // Read the coverage table.
-            reader.Position = startOffset + coverageOffset;
-            CoverageTable coverage = new CoverageTable(reader, log);
+            CoverageTable coverage = new CoverageTable(reader, log, startPos + coverageOffset);
 
             // Populate attach points in each AttachPointTable.
             for (int i = 0; i < ligGlyphCount; i++)
             {
                 LigatureGlyphTable pt = GlyphTables[i];
-                reader.Position = startOffset + pt.Offset;
+                reader.Position = startPos + pt.Offset;
 
                 ushort caretCount = reader.ReadUInt16();
                 pt.CaretValues = new CaretValue[caretCount];
@@ -47,8 +45,7 @@ namespace Molten.Font
                     else if (format == CaretValueFormat.Three_CoordWithDVarTable)
                     {
                         cv = reader.ReadInt16(); // signed.
-                        dvt = new DeviceVariationIndexTable();
-                        dvt.Read(reader, log, header);
+                        dvt = new DeviceVariationIndexTable(reader, log);
                     }
 
                     CaretValue val = new CaretValue(format, cv, dvt);

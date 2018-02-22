@@ -12,9 +12,9 @@ namespace Molten.Font
 
         public IReadOnlyCollection<LookupSubTable> SubTables { get; internal set; }
 
-        internal LookupTable(BinaryEndianAgnosticReader reader, Logger log, Type[] lookupTypeIndex)
+        internal LookupTable(BinaryEndianAgnosticReader reader, Logger log, Type[] lookupTypeIndex, long startPos)
         {
-            long lookupStartPos = reader.Position;
+            reader.Position = startPos;
             ushort lookupCount = reader.ReadUInt16();
             ushort[] lookupOffsets = reader.ReadArrayUInt16(lookupCount);
 
@@ -23,7 +23,7 @@ namespace Molten.Font
 
             for (int i = 0; i < lookupCount; i++)
             {
-                reader.Position = lookupStartPos + lookupOffsets[i];
+                reader.Position = startPos + lookupOffsets[i];
                 ushort lookupType = reader.ReadUInt16();
                 LookupFlags lookupFlags = (LookupFlags)reader.ReadUInt16();
                 ushort subTableCount = reader.ReadUInt16();
@@ -34,11 +34,8 @@ namespace Molten.Font
 
                 for (int s = 0; s < subTableCount; s++)
                 {
-                    long subStartPos = lookupStartPos + subTableOffsets[s];
-                    reader.Position = subStartPos;
-
                     // Skip unsupported tables.
-                    if(lookupType >= lookupTypeIndex.Length)
+                    if(lookupType >= lookupTypeIndex.Length || lookupTypeIndex[lookupType] == null)
                     {
                         log.WriteDebugLine($"Unsupported lookup sub-table type: {lookupType}");
                         continue;
@@ -48,9 +45,10 @@ namespace Molten.Font
                         log.WriteDebugLine($"Parsing lookup sub-table type: {lookupType}. Flags: {lookupFlags}");
                     }
 
+                    long subTableStartPos = startPos + subTableOffsets[s];
                     LookupSubTable subTable = Activator.CreateInstance(lookupTypeIndex[lookupType]) as LookupSubTable;
                     subTable.SubTableId = s;
-                    subTable.Read(reader, log, subStartPos, lookupType, lookupFlags, markFilteringSet);
+                    subTable.Read(reader, log, subTableStartPos, lookupType, lookupFlags, markFilteringSet);
                     subtables.Add(subTable);
                 }
             }

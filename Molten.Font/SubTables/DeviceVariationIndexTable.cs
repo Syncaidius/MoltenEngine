@@ -54,7 +54,7 @@ namespace Molten.Font
 
         int[] _deltas;
 
-        public void Read(BinaryEndianAgnosticReader reader, Logger log, TableHeader parentTableHeader)
+        internal DeviceVariationIndexTable(BinaryEndianAgnosticReader reader, Logger log)
         {
             DeviceStartSize = reader.ReadUInt16();
             DeviceEndSize = reader.ReadUInt16();

@@ -10,6 +10,9 @@ namespace Molten.Font
     {
         public static readonly DateTime BaseTime = new DateTime(1904, 1, 1, 0, 0, 0);
 
+        /// <summary>Helper for when we're checking if table offsets are meant to be equivilent to C++ NULL (0).</summary>
+        public const int NULL = 0;
+
         /// <summary>Unpacks a 16-bit signed fixed number with the low 14 bits of fraction (2.14), into a float.</summary>
         /// <param name="packed">The packed 16-bit signed value.</param>
         /// <returns></returns>

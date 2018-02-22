@@ -16,8 +16,9 @@ namespace Molten.Font
 
         ushort[] _glyphIDs;
 
-        internal CoverageTable(BinaryEndianAgnosticReader reader, Logger log)
+        internal CoverageTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
         {
+            reader.Position = startPos;
             Format = reader.ReadUInt16();
 
             if (Format == 1) // CoverageFormat1 - list

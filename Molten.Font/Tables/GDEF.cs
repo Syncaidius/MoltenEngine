@@ -71,31 +71,25 @@ namespace Molten.Font
                 }
 
                 // Glyph class definition table
-                ReadSubTable(reader, log, "Glyph Class-Def", glyphClassDefOffset, header, (startPos) =>
-                    table.GlyphClassDefs = new ClassDefinitionTable<GlyphClass>(reader, log, _classTranslation));
+                table.GlyphClassDefs = new ClassDefinitionTable<GlyphClass>(reader, log, _classTranslation, header.Offset + glyphClassDefOffset);
 
                 // Attachment point list table
                 /*The table consists of an offset to a Coverage table (Coverage) listing all glyphs that define attachment points in the GPOS table, 
                  * a count of the glyphs with attachment points (GlyphCount), and an array of offsets to AttachPoint tables (AttachPoint). 
                  * The array lists the AttachPoint tables, one for each glyph in the Coverage table, in the same order as the Coverage Index.*/
-                ReadSubTable(reader, log, "Attachment Point List", attachListOffset, header, (startPos) =>
-                table.AttachList = new AttachListTable(reader, log, header));
+                table.AttachList = new AttachListTable(reader, log, header.Offset + attachListOffset);
 
                 // Ligature caret list sub-table.
-                ReadSubTable(reader, log, "Ligature Caret List", ligCaretListOffset, header, (startPos) =>
-                table.LigatureCaretList = new LigatureCaretListTable(reader, log, header));
+                table.LigatureCaretList = new LigatureCaretListTable(reader, log, header.Offset + ligCaretListOffset);
 
-                // Mark attachment class definition  sub-table.
-                ReadSubTable(reader, log, "Mark Attach Class-Def", markAttachClassDefOffset, header, (startPos) =>
-                table.MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>(reader, log, _markTranslation));
+                // Mark attachment class definition sub-table.
+                table.MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>(reader, log, _markTranslation, header.Offset + markAttachClassDefOffset);
 
-                // Mark glyph sets  sub-table.
-                ReadSubTable(reader, log, "Mark Glyph Set", markGlyphSetsDefOffset, header, (startPos) =>
-                    table.MarkGlyphSets = new MarkGlyphSetsTable(reader, log, header));
+                // Mark glyph sets sub-table.
+                table.MarkGlyphSets = new MarkGlyphSetsTable(reader, log, header.Offset + markGlyphSetsDefOffset);
 
-                // Item variation store  sub-table.
-                ReadSubTable(reader, log, "Item Variation Store", itemVarStoreOffset, header, (startPos) =>
-                    table.ItemVarStore = new ItemVariationStore(reader, log, header));
+                // Item variation store sub-table.
+                table.ItemVarStore = new ItemVariationStore(reader, log, header.Offset + itemVarStoreOffset);
 
                 return table;
             }

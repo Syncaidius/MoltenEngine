@@ -34,7 +34,7 @@ namespace Molten.Font
                 ushort numTables = reader.ReadUInt16();
                 table.Tables = new KerningTable[numTables];
                 for(int i = 0; i < numTables; i++)
-                    table.Tables[i] = new KerningTable(reader, log, header);
+                    table.Tables[i] = new KerningTable(reader, log, header, reader.Position);
 
                 return table;
             }

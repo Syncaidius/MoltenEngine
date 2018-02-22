@@ -16,10 +16,9 @@ namespace Molten.Font
         /// The regions are indicated by an array of indices into the variation region list.</summary>
         public ItemVariationData[] DeltaSets { get; private set; }
 
-        internal ItemVariationStore(BinaryEndianAgnosticReader reader, Logger log, TableHeader parentHeader)
+        internal ItemVariationStore(BinaryEndianAgnosticReader reader, Logger log, long startPos)
         {
-            long startOffset = reader.Position;
-
+            reader.Position = startPos;
             Format = reader.ReadUInt16();
             uint variationRegionListOffset = reader.ReadUInt32();
             ushort itemVariationDataCount = reader.ReadUInt16();
@@ -30,12 +29,12 @@ namespace Molten.Font
             // Read IVD sub-tables
             for(int i = 0; i < itemVariationDataCount; i++)
             {
-                reader.Position = startOffset + ivdOffsets[i];
+                reader.Position = startPos + ivdOffsets[i];
                 DeltaSets[i] = new ItemVariationData(reader, log);
             }
 
             // Read region list
-            reader.Position = startOffset + variationRegionListOffset;
+            reader.Position = startPos + variationRegionListOffset;
             RegionList = new VariationRegionList(reader, log);
         }
     }

@@ -85,6 +85,7 @@
     <Compile Include="MacStyleFlags.cs" />
     <Compile Include="OffsetTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SubTables\AnchorTable.cs" />
     <Compile Include="SubTables\AttachListTable.cs" />
     <Compile Include="SubTables\AttachPointTable.cs" />
     <Compile Include="SubTables\ClassDefinitionTable.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Tables\Gasp.cs" />
     <Compile Include="Tables\Glyf.cs" />
     <Compile Include="Tables\Cmap.cs" />
+    <Compile Include="Tables\GPOS.EntryExitRecord.cs" />
     <Compile Include="Tables\GPOS.ClassRecord.cs" />
     <Compile Include="Tables\GPOS.PairSet.cs" />
     <Compile Include="Tables\GPOS.ValueRecord.cs" />
