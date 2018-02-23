@@ -31,9 +31,12 @@ namespace Molten.Font
                 return new Type[]
                 {
                     null, // Type 0
-                    typeof(SingleAdjustmentPositioningSubTable), // Type 1
-                    typeof(PairAdjustmentPositioningSubTable), // Type 2
-                    typeof(CursiveAttachmentPositioningSubTable), // Type 3
+                    typeof(SingleAdjustmentPosSubTable), // Type 1
+                    typeof(PairAdjustmentPosSubTable), // Type 2
+                    typeof(CursiveAttachmentPosSubTable), // Type 3
+                    typeof(MarkToBaseAttachmentPosSubTable), // Type 4,
+                    typeof(MarkToLigatureAttachmentPosSubTable), // Type 5,
+                    typeof(MarkToMarkAttachmentPosSubTable), // Type 6,
                 };
             }
 
@@ -76,6 +79,8 @@ namespace Molten.Font
     {
         public GPOSLookupType Type { get; protected set; }
 
+        public ushort Format { get; private set; }
+
         internal sealed override void Read(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort lookupType, LookupFlags flags, ushort markFilteringSet)
         {
             log.WriteDebugLine($"[GPOS] Parsing lookup sub-table '{this.GetType().Name}'");
@@ -83,8 +88,8 @@ namespace Molten.Font
             GPOSLookupType lt = (GPOSLookupType)lookupType;
             Type = lt;
 
-            ushort posFormat = reader.ReadUInt16();
-            OnRead(reader, log, startPos, markFilteringSet, posFormat);
+            Format = reader.ReadUInt16();
+            OnRead(reader, log, startPos, markFilteringSet, Format);
         }
 
         protected abstract void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat);
@@ -94,13 +99,13 @@ namespace Molten.Font
     /// GPOS - Lookup Type 1: Single Adjustment Positioning Subtable. <para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-1-single-adjustment-positioning-subtable
     /// </summary>
-    public class SingleAdjustmentPositioningSubTable : GPosLookupSubTable
+    public class SingleAdjustmentPosSubTable : GPosLookupSubTable
     {
         /// <summary>Gets an array of positioning value records. Each record corresponds to the matching glyph in <see cref="Coverage"/>.</summary>
         public GPOS.ValueRecord[] Records { get; private set; }
 
         /// <summary>
-        /// Gets the coverage table associated with the current <see cref="SingleAdjustmentPositioningSubTable"/>. This contains the IDs of glyphs to be adjusted.
+        /// Gets the coverage table associated with the current <see cref="SingleAdjustmentPosSubTable"/>. This contains the IDs of glyphs to be adjusted.
         /// </summary>
         public CoverageTable Coverage { get; private set; }
 
@@ -132,7 +137,7 @@ namespace Molten.Font
     /// GPOS - Lookup Type 2: Pair Adjustment Positioning Subtable. <para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-2-pair-adjustment-positioning-subtable
     /// </summary>
-    public class PairAdjustmentPositioningSubTable : GPosLookupSubTable
+    public class PairAdjustmentPosSubTable : GPosLookupSubTable
     {
         public GPOS.PairSet[] PairSets { get; internal set; }
 
@@ -195,7 +200,7 @@ namespace Molten.Font
     /// the designated exit point of a glyph, and the designated entry point of the following glyph.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-3-cursive-attachment-positioning-subtable
     /// </summary>
-    public class CursiveAttachmentPositioningSubTable : GPosLookupSubTable
+    public class CursiveAttachmentPosSubTable : GPosLookupSubTable
     {
         public GPOS.EntryExitRecord[] Records { get; private set; }
 
@@ -222,7 +227,7 @@ namespace Molten.Font
     /// For example, the Arabic, Hebrew, and Thai scripts combine vowels, diacritical marks, and tone marks with base glyphs.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-4-mark-to-base-attachment-positioning-subtable
     /// </summary>
-    public class MarkToBaseAttachmentPositioningSubTable : GPosLookupSubTable
+    public class MarkToBaseAttachmentPosSubTable : GPosLookupSubTable
     {
         public CoverageTable MarkCoverage { get; internal set; }
 
@@ -262,7 +267,7 @@ namespace Molten.Font
     /// and each component has a separate set of attachment points defined for the different mark classes.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-5-mark-to-ligature-attachment-positioning-subtable
     /// </summary>
-    public class MarkToLigatureAttachmentPositioningSubTable : GPosLookupSubTable
+    public class MarkToLigatureAttachmentPosSubTable : GPosLookupSubTable
     {
         public CoverageTable MarkCoverage { get; internal set; }
 
@@ -289,6 +294,110 @@ namespace Molten.Font
                     LigatureCoverage = new CoverageTable(reader, log, startPos + ligatureCoverageOffset);
                     MarkArray = new MarkArrayTable(reader, log, startPos + markArrayOffset);
                     LigatureArray = new LigatureArrayTable(reader, log, startPos + ligatureArrayOffset, MarkClassCount);
+                    break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// GPOS - Mark-to-Mark attachment positoning table.<para/>
+    /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-6-mark-to-mark-attachment-positioning-subtable
+    /// </summary>
+    public class MarkToMarkAttachmentPosSubTable : GPosLookupSubTable
+    {
+        public CoverageTable Mark1Coverage { get; internal set; }
+
+        public CoverageTable Mark2Coverage { get; internal set; }
+
+        public ushort MarkClassCount { get; internal set; }
+
+        public MarkArrayTable Mark1Array { get; internal set; }
+
+        /// <summary>
+        /// Gets a <see cref="Mark2ArrayTable"/> containing records which each contain an array of <see cref="AnchorTable"/> instances (one per class).
+        /// </summary>
+        public Mark2ArrayTable Mark2Array { get; internal set; }
+
+        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
+        {
+            ushort mark1CoverageOffset = reader.ReadUInt16();
+            ushort mark2CoverageOffset = reader.ReadUInt16();
+            MarkClassCount = reader.ReadUInt16();
+            ushort mark1ArrayOffset = reader.ReadUInt16();
+            ushort mark2ArrayOffset = reader.ReadUInt16();
+
+            Mark1Coverage = new CoverageTable(reader, log, startPos + mark1CoverageOffset);
+            Mark2Coverage = new CoverageTable(reader, log, startPos + mark2CoverageOffset);
+            Mark1Array = new MarkArrayTable(reader, log, startPos + mark1ArrayOffset);
+            Mark2Array = new Mark2ArrayTable(reader, log, startPos + mark2ArrayOffset, MarkClassCount);
+        }
+    }
+
+    public class ContextPosTable : GPosLookupSubTable
+    {
+        public ClassDefinitionTable ClassDefinitions { get; internal set; }
+
+        public CoverageTable[] Coverages { get; internal set; }
+
+        public PosRuleSetTable[] RuleSetTables { get; internal set; }
+
+        public PosClassSetTable[] ClassSets { get; internal set; }
+
+        /// <summary>
+        /// Gets an array of <see cref="PosLookupRecord"/> instances. Only present in format 3.
+        /// </summary>
+        public PosLookupRecord[] Records { get; internal set; }
+
+        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
+        {
+            ushort coverageOffset;
+
+            switch (posFormat)
+            {
+                case 1:
+                    coverageOffset = reader.ReadUInt16();
+                    ushort posRuleSetCount = reader.ReadUInt16();
+                    ushort[] posRuleSetOffsets = reader.ReadArrayUInt16(posRuleSetCount);
+                    Coverages = new CoverageTable[] { new CoverageTable(reader, log, startPos + coverageOffset) };
+                    RuleSetTables = new PosRuleSetTable[posRuleSetCount];
+
+                    for (int i = 0; i < posRuleSetCount; i++)
+                        RuleSetTables[i] = new PosRuleSetTable(reader, log, startPos + posRuleSetOffsets[i]);
+
+                    break;
+
+                case 2:
+                    coverageOffset = reader.ReadUInt16();
+                    ushort classDefOffset = reader.ReadUInt16();
+                    ushort posClassSetCount = reader.ReadUInt16();
+                    ushort[] posClassSetOffsets = reader.ReadArrayUInt16(posClassSetCount);
+
+                    Coverages = new CoverageTable[] { new CoverageTable(reader, log, startPos + coverageOffset) };
+                    ClassDefinitions = new ClassDefinitionTable(reader, log, startPos + classDefOffset);
+                    ClassSets = new PosClassSetTable[posClassSetCount];
+                    for (int i = 0; i < posClassSetCount; i++)
+                        ClassSets[i] = new PosClassSetTable(reader, log, startPos + posClassSetOffsets[i]);
+
+                    break;
+
+                case 3:
+                    ushort glyphCount = reader.ReadUInt16();
+                    ushort posCount = reader.ReadUInt16();
+                    ushort[] coverageOffsets = reader.ReadArrayUInt16(glyphCount);
+
+                    Records = new PosLookupRecord[posCount];
+                    for(int i = 0; i < posCount; i++)
+                    {
+                        Records[i] = new PosLookupRecord()
+                        {
+                            SequenceIndex = reader.ReadUInt16(),
+                            LookupListIndex = reader.ReadUInt16(),
+                        };
+                    }
+
+                    Coverages = new CoverageTable[glyphCount];
+                    for (int i = 0; i < glyphCount; i++)
+                        Coverages[i] = new CoverageTable(reader, log, coverageOffsets[i]);
                     break;
             }
         }

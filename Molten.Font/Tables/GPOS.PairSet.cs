@@ -32,7 +32,7 @@ namespace Molten.Font
         {
             /// <summary>
             /// Gets the glyph ID of second glyph in the pair. 
-            /// The ID of the first glyph is listed is listed in the Coverage table of the parent <see cref="PairAdjustmentPositioningSubTable"/>.
+            /// The ID of the first glyph is listed is listed in the Coverage table of the parent <see cref="PairAdjustmentPosSubTable"/>.
             /// </summary>
             public ushort SecondGlyphID { get; internal set; }
 
