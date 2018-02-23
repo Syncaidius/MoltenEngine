@@ -69,9 +69,22 @@ namespace Molten.Font
         Reserved = 10,
     }
 
-    public abstract class GPosLookupSubTable : LookupSubTable
+    public abstract class GPosLookupSubTable : LookupTable
     {
         public GPOSLookupType Type { get; protected set; }
+
+        internal sealed override void Read(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort lookupType, LookupFlags flags, ushort markFilteringSet)
+        {
+            log.WriteDebugLine($"[GPOS] Parsing lookup sub-table '{this.GetType().Name}'");
+            reader.Position = startPos;
+            GPOSLookupType lt = (GPOSLookupType)lookupType;
+            Type = lt;
+
+            ushort posFormat = reader.ReadUInt16();
+            OnRead(reader, log, startPos, markFilteringSet, posFormat);
+        }
+
+        protected abstract void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat);
     }
 
     /// <summary>
@@ -88,13 +101,8 @@ namespace Molten.Font
         /// </summary>
         public CoverageTable Coverage { get; private set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort lookupType, LookupFlags flags, ushort markFilteringSet)
+        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
         {
-            reader.Position = startPos;
-            GPOSLookupType lt = (GPOSLookupType)lookupType;
-            Type = lt;
-
-            ushort posFormat = reader.ReadUInt16();
             ushort coverageOffset = reader.ReadUInt16();
             GPOS.ValueFormat valueFormat = (GPOS.ValueFormat)reader.ReadUInt16();
 
@@ -136,13 +144,8 @@ namespace Molten.Font
 
         public ClassDefinitionTable Class2Definitions { get; internal set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort lookupType, LookupFlags flags, ushort markFilteringSet)
+        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
         {
-            reader.Position = startPos;
-            GPOSLookupType lt = (GPOSLookupType)lookupType;
-            Type = lt;
-
-            ushort posFormat = reader.ReadUInt16();
             ushort coverageOffset = reader.ReadUInt16();
             GPOS.ValueFormat valueFormat1 = (GPOS.ValueFormat)reader.ReadUInt16();
             GPOS.ValueFormat valueFormat2 = (GPOS.ValueFormat)reader.ReadUInt16();
@@ -152,13 +155,9 @@ namespace Molten.Font
                 case 1:
                     ushort pairSetCount = reader.ReadUInt16();
                     ushort[] pairSetOffsets = reader.ReadArrayUInt16(pairSetCount);
-
+                    PairSets = new GPOS.PairSet[pairSetCount];
                     for (int i = 0; i < pairSetCount; i++)
-                    {
-                        long pairSetStartPos = startPos + pairSetOffsets[i];
-                        reader.Position = pairSetStartPos;
-                        PairSets[i] = new GPOS.PairSet(reader, pairSetStartPos, valueFormat1, valueFormat2);
-                    }
+                        PairSets[i] = new GPOS.PairSet(reader, startPos + pairSetOffsets[i], valueFormat1, valueFormat2);
                     break;
 
                 case 2:
@@ -186,17 +185,19 @@ namespace Molten.Font
         }
     }
 
+    /// <summary>
+    /// Some cursive fonts are designed so that adjacent glyphs join when rendered with their default positioning. 
+    /// However, if positioning adjustments are needed to join the glyphs, 
+    /// a cursive attachment positioning (CursivePos) subtable can describe how to connect the glyphs by aligning two anchor points: 
+    /// the designated exit point of a glyph, and the designated entry point of the following glyph.<para/>
+    /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-3-cursive-attachment-positioning-subtable
+    /// </summary>
     public class CursiveAttachmentPositioningSubTable : GPosLookupSubTable
     {
         public GPOS.EntryExitRecord[] Records { get; private set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort lookupType, LookupFlags flags, ushort markFilteringSet)
+        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
         {
-            reader.Position = startPos;
-            GPOSLookupType lt = (GPOSLookupType)lookupType;
-            Type = lt;
-
-            ushort posFormat = reader.ReadUInt16();
             ushort coverageOffset = reader.ReadUInt16();
             ushort entryExitCount = reader.ReadUInt16();
             Records = new GPOS.EntryExitRecord[entryExitCount];
@@ -209,6 +210,83 @@ namespace Molten.Font
                     EntryAnchor = new AnchorTable(reader, log, startPos + entryAnchorOffset),
                     ExitAnchor = new AnchorTable(reader, log, startPos + exitAnchorOffset),
                 };
+            }
+        }
+    }
+
+    /// <summary>
+    /// The MarkToBase attachment (MarkBasePos) subtable is used to position combining mark glyphs with respect to base glyphs. <para/>
+    /// For example, the Arabic, Hebrew, and Thai scripts combine vowels, diacritical marks, and tone marks with base glyphs.<para/>
+    /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-4-mark-to-base-attachment-positioning-subtable
+    /// </summary>
+    public class MarkToBaseAttachmentPositioningSubTable : GPosLookupSubTable
+    {
+        public CoverageTable MarkCoverage { get; internal set; }
+
+        public CoverageTable BaseCoverage { get; internal set; }
+
+        public MarkArrayTable MarkArray { get; internal set; }
+
+        public BaseArrayTable BaseArray { get; internal set; }
+
+        public ushort MarkClassCount { get; internal set; }
+
+        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
+        {
+            switch (posFormat)
+            {
+                case 1:
+                    ushort markCoverageOffset = reader.ReadUInt16();
+                    ushort baseCoverageOffset = reader.ReadUInt16();
+                    MarkClassCount = reader.ReadUInt16();
+                    ushort markArrayOffset = reader.ReadUInt16();
+                    ushort baseArrayOffset = reader.ReadUInt16();
+
+                    MarkCoverage = new CoverageTable(reader, log, startPos + markCoverageOffset);
+                    BaseCoverage = new CoverageTable(reader, log, startPos + baseCoverageOffset);
+                    MarkArray = new MarkArrayTable(reader, log, startPos + markArrayOffset);
+                    BaseArray = new BaseArrayTable(reader, log, startPos + baseArrayOffset, MarkClassCount);
+                    break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// GPOS - Mark-to-Ligature Attachment Positioning Subtable.<para/>
+    /// The MarkToLigature attachment (MarkLigPos) subtable is used to position combining mark glyphs with respect to ligature base glyphs. 
+    /// With MarkToBase attachment, described previously, each base glyph has an attachment point defined for each class of marks. 
+    /// MarkToLigature attachment is similar, except that each ligature glyph is defined to have multiple components (in a virtual sense — not actual glyphs), 
+    /// and each component has a separate set of attachment points defined for the different mark classes.<para/>
+    /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-5-mark-to-ligature-attachment-positioning-subtable
+    /// </summary>
+    public class MarkToLigatureAttachmentPositioningSubTable : GPosLookupSubTable
+    {
+        public CoverageTable MarkCoverage { get; internal set; }
+
+        public CoverageTable LigatureCoverage { get; internal set; }
+
+        public MarkArrayTable MarkArray { get; internal set; }
+
+        public LigatureArrayTable LigatureArray { get; internal set; }
+
+        public ushort MarkClassCount { get; internal set; }
+
+        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
+        {
+            switch (posFormat)
+            {
+                case 1:
+                    ushort markCoverageOffset = reader.ReadUInt16();
+                    ushort ligatureCoverageOffset = reader.ReadUInt16();
+                    ushort markClassCount = reader.ReadUInt16();
+                    ushort markArrayOffset = reader.ReadUInt16();
+                    ushort ligatureArrayOffset = reader.ReadUInt16();
+
+                    MarkCoverage = new CoverageTable(reader, log, startPos + markCoverageOffset);
+                    LigatureCoverage = new CoverageTable(reader, log, startPos + ligatureCoverageOffset);
+                    MarkArray = new MarkArrayTable(reader, log, startPos + markArrayOffset);
+                    LigatureArray = new LigatureArrayTable(reader, log, startPos + ligatureArrayOffset, MarkClassCount);
+                    break;
             }
         }
     }

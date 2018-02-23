@@ -95,7 +95,10 @@
     <Compile Include="SubTables\KerningTable.cs" />
     <Compile Include="SubTables\LigatureCaretListTable.cs" />
     <Compile Include="SubTables\LigatureGlyphTable.cs" />
-    <Compile Include="SubTables\LookupTable.cs" />
+    <Compile Include="SubTables\LookupListTable.cs" />
+    <Compile Include="SubTables\BaseArrayTable.cs" />
+    <Compile Include="SubTables\LigatureArrayTable.cs" />
+    <Compile Include="SubTables\MarkArrayTable.cs" />
     <Compile Include="SubTables\MarkGlyphSetsTable.cs" />
     <Compile Include="TableHeader.cs" />
     <Compile Include="Tables\Cmap.format6.cs" />

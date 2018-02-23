@@ -17,7 +17,7 @@ namespace Molten.Font
 
         //public FeatureList FeatureList { get; internal set; }
 
-        public LookupTable LookupTable { get; internal set; }
+        public LookupListTable LookupTable { get; internal set; }
 
         internal abstract class Parser : FontTableParser
         {
@@ -58,8 +58,8 @@ namespace Molten.Font
 
                 // TODO read feature list.
 
-                table.LookupTable = new LookupTable(reader, log, _lookupTypeIndex, header.Offset + lookupListOffset);
-
+                table.LookupTable = new LookupListTable(reader, log, _lookupTypeIndex, header.Offset + lookupListOffset);
+                reader.Position = header.Offset + header.Length;
                 return table;
             }
         }

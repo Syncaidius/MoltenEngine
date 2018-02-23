@@ -14,6 +14,7 @@ namespace Molten.Font
 
             internal PairSet(BinaryEndianAgnosticReader reader, long startPos, ValueFormat format1, ValueFormat format2)
             {
+                reader.Position = startPos;
                 ushort pairvalueCount = reader.ReadUInt16();
                 PairRecords = new PairValueRecord[pairvalueCount];
                 for (int i = 0; i < pairvalueCount; i++)
