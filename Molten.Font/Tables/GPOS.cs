@@ -37,8 +37,16 @@ namespace Molten.Font
                     typeof(MarkToBaseAttachmentPosSubTable), // Type 4,
                     typeof(MarkToLigatureAttachmentPosSubTable), // Type 5,
                     typeof(MarkToMarkAttachmentPosSubTable), // Type 6,
+                    typeof(ContextPosSubTable), // Type 7,
+                    typeof(ChainingContextualPosSubTable) // Type 8
                 };
             }
+
+            protected override ushort GetExtensionIndex()
+            {
+                return (ushort)GPOSLookupType.ExtensionPositioning;
+            }
+
 
             protected override FontGTable CreateTable(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependenceies)
             {
@@ -333,7 +341,7 @@ namespace Molten.Font
         }
     }
 
-    public class ContextPosTable : GPosLookupSubTable
+    public class ContextPosSubTable : GPosLookupSubTable
     {
         public ClassDefinitionTable ClassDefinitions { get; internal set; }
 
@@ -398,6 +406,79 @@ namespace Molten.Font
                     Coverages = new CoverageTable[glyphCount];
                     for (int i = 0; i < glyphCount; i++)
                         Coverages[i] = new CoverageTable(reader, log, coverageOffsets[i]);
+                    break;
+            }
+        }
+    }
+
+    public class ChainingContextualPosSubTable : GPosLookupSubTable
+    {
+        public CoverageTable Coverage { get; internal set; }
+
+        public ChainPosRuleSetTable[] ChainRuleSets { get; internal set; }
+
+        public ClassDefinitionTable BacktrackClasses { get; internal set; }
+
+        public ClassDefinitionTable InputClasses { get; internal set; }
+
+        public ClassDefinitionTable LookAheadClasses { get; internal set; }
+
+        public PosLookupRecord[] Records { get; internal set; }
+
+        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
+        {
+            ushort coverageOffset;
+
+            switch (posFormat)
+            {
+                case 1: // ChainRuleSets contains glyph IDs.
+                    coverageOffset = reader.ReadUInt16();
+                    ushort chainPosRuleSetCount = reader.ReadUInt16();
+                    ushort[] chainPosRuleSetOffsets = reader.ReadArrayUInt16(chainPosRuleSetCount);
+                    ChainRuleSets = new ChainPosRuleSetTable[chainPosRuleSetCount];
+                    for (int i = 0; i < chainPosRuleSetCount; i++)
+                        ChainRuleSets[i] = new ChainPosRuleSetTable(reader, log, startPos + chainPosRuleSetOffsets[i]);
+
+                    Coverage = new CoverageTable(reader, log, startPos + coverageOffset);
+                    break;
+
+                case 2: // ChainRuleSets contains class IDs instead of glyph IDs
+                    coverageOffset = reader.ReadUInt16();
+                    ushort backtrackClassDefOffset = reader.ReadUInt16();
+                    ushort inputClassDefOffset = reader.ReadUInt16();
+                    ushort lookAheadClassDefOffset = reader.ReadUInt16();
+                    ushort chainPosClassSetCount = reader.ReadUInt16();
+                    ushort[] chainPosClassSetOffsets = reader.ReadArrayUInt16(chainPosClassSetCount);
+
+                    Coverage = new CoverageTable(reader, log, startPos + coverageOffset);
+                    BacktrackClasses = new ClassDefinitionTable(reader, log, startPos + backtrackClassDefOffset);
+                    InputClasses = new ClassDefinitionTable(reader, log, startPos + inputClassDefOffset);
+                    LookAheadClasses = new ClassDefinitionTable(reader, log, startPos + lookAheadClassDefOffset);
+                    ChainRuleSets = new ChainPosRuleSetTable[chainPosClassSetCount];
+                    for (int i = 0; i < chainPosClassSetCount; i++)
+                        ChainRuleSets[i] = new ChainPosRuleSetTable(reader, log, startPos + chainPosClassSetOffsets[i]);
+                    break;
+
+                case 3:
+                    ushort backtrackGlyphCount = reader.ReadUInt16();
+                    ushort[] backtrackCoverageOffsets = reader.ReadArrayUInt16(backtrackGlyphCount);
+
+                    ushort inputGlyphCount = reader.ReadUInt16();
+                    ushort[] inputCoverageOffsets = reader.ReadArrayUInt16(inputGlyphCount);
+
+                    ushort lookAheadGlyphCount = reader.ReadUInt16();
+                    ushort[] lookAheadCoverageOffsets = reader.ReadArrayUInt16(lookAheadGlyphCount);
+
+                    ushort posCount = reader.ReadUInt16();
+                    Records = new PosLookupRecord[posCount];
+                    for(int i = 0; i < posCount; i++)
+                    {
+                        Records[i] = new PosLookupRecord()
+                        {
+                            SequenceIndex = reader.ReadUInt16(),
+                            LookupListIndex = reader.ReadUInt16()
+                        };
+                    }
                     break;
             }
         }

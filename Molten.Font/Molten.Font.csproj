@@ -101,6 +101,7 @@
     <Compile Include="SubTables\LigatureArrayTable.cs" />
     <Compile Include="SubTables\FeatureVariationsTable.cs" />
     <Compile Include="SubTables\PosClassSetTable.cs" />
+    <Compile Include="SubTables\ChainPosRuleSetTable.cs" />
     <Compile Include="SubTables\PosRuleSetTable.cs" />
     <Compile Include="SubTables\MarkArrayTable.cs" />
     <Compile Include="SubTables\MarkGlyphSetsTable.cs" />

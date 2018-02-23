@@ -12,7 +12,7 @@ namespace Molten.Font
 
         public IReadOnlyCollection<LookupTable> SubTables { get; internal set; }
 
-        internal LookupListTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader header, Type[] lookupTypeIndex, long startPos)
+        internal LookupListTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader header, Type[] lookupTypeIndex, ushort extensionIndex, long startPos)
         {
             reader.Position = startPos;
             ushort lookupCount = reader.ReadUInt16();
@@ -32,15 +32,32 @@ namespace Molten.Font
                 log.WriteDebugLine($"[{header.Tag}] Reading lookup table {i+1}/{lookupCount} at {lookupStartPos} containing {subTableCount} sub-tables");
 
                 // Get the offset's for the lookup subtable's own subtables.
-                ushort[] subTableOffsets = reader.ReadArrayUInt16(subTableCount);
+                uint[] subTableOffsets = new uint[subTableCount];
+                reader.ReadArrayUInt16(subTableOffsets, subTableCount);
                 ushort markFilteringSet = 0;
                 if (HasFlag(flags, LookupFlags.UseMarkFilteringSet))
                     markFilteringSet = reader.ReadUInt16();
 
                 for (int s = 0; s < subTableCount; s++)
                 {
+                    // Check for extension.
+                    // MS Docs: This lookup provides a mechanism whereby any other lookup type's subtables are stored at a 32-bit offset location in the 'GPOS' table
+                    if (lookupType == extensionIndex)
+                    {
+                        ushort posFormat = reader.ReadUInt16();
+                        lookupType = reader.ReadUInt16(); // extensionLookupType.
+                        subTableOffsets[s] = reader.ReadUInt32(); // overwrite the offset for this table with the 32-bit offset.
+
+                        // ExtensionLookupType must be set to any lookup type other than the extension lookup type.
+                        if (lookupType == extensionIndex)
+                        {
+                            log.WriteDebugLine($"[{header.Tag}] Nested extension lookup table detected. Ignored.");
+                            continue;
+                        }
+                    }
+
                     // Skip unsupported tables.
-                    if(lookupType >= lookupTypeIndex.Length || lookupTypeIndex[lookupType] == null)
+                    if (lookupType >= lookupTypeIndex.Length || lookupTypeIndex[lookupType] == null)
                     {
                         log.WriteDebugLine($"[{header.Tag}] Unsupported lookup sub-table type: {lookupType}");
                         continue;

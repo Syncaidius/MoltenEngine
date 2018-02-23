@@ -120,6 +120,17 @@ namespace Molten
             return r;
         }
 
+        /// <summary>
+        /// Reads an array of <see cref="ushort"/> into a <see cref="uint"/> array.
+        /// </summary>
+        /// <param name="dest"></param>
+        /// <param name="count"></param>
+        public void ReadArrayUInt16(uint[] dest, int count)
+        {
+            for (int i = 0; i < count; i++)
+                dest[i] = ReadUInt16();
+        }
+
         public short[] ReadArrayInt16(int count)
         {
             short[] r = new short[count];

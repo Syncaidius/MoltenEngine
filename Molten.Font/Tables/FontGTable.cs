@@ -42,6 +42,8 @@ namespace Molten.Font
 
             protected abstract Type[] GetLookupTypeIndex();
 
+            protected abstract ushort GetExtensionIndex();
+
             protected abstract FontGTable CreateTable(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependenceies);
 
             internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
@@ -67,9 +69,10 @@ namespace Molten.Font
                         table.FeatureVarTable = new FeatureVariationsTable(reader, log, header.Offset + featureVariationsOffset);
                 }
 
+                ushort extensionIndex = GetExtensionIndex();
                 table.ScriptList = new ScriptListTable(reader, log, header.Offset + scriptListOffset);
                 table.FeatureList = new FeatureListTable(reader, log, header.Offset + featureListOffset);
-                table.LookupTable = new LookupListTable(reader, log, header, _lookupTypeIndex, header.Offset + lookupListOffset);
+                table.LookupTable = new LookupListTable(reader, log, header, _lookupTypeIndex, extensionIndex, header.Offset + lookupListOffset);
                 reader.Position = header.Offset + header.Length;
                 return table;
             }
