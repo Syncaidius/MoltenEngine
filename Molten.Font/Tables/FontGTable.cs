@@ -13,9 +13,9 @@ namespace Molten.Font
 
         public ushort MinorVersion { get; internal set; }
 
-        //public ScriptList ScriptList { get; internal set; }
+        public ScriptListTable ScriptList { get; internal set; }
 
-        //public FeatureList FeatureList { get; internal set; }
+        public FeatureListTable FeatureList { get; internal set; }
 
         public LookupListTable LookupTable { get; internal set; }
 
@@ -54,10 +54,8 @@ namespace Molten.Font
                     // TODO read variation list (if featureVariationOffset > 0 (NULL)
                 }
 
-                // TODO read script list
-
-                // TODO read feature list.
-
+                table.ScriptList = new ScriptListTable(reader, log, header.Offset + scriptListOffset);
+                table.FeatureList = new FeatureListTable(reader, log, header.Offset + featureListOffset);
                 table.LookupTable = new LookupListTable(reader, log, header, _lookupTypeIndex, header.Offset + lookupListOffset);
                 reader.Position = header.Offset + header.Length;
                 return table;
