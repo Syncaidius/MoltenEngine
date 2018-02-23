@@ -58,7 +58,7 @@ namespace Molten.Font
 
                 // TODO read feature list.
 
-                table.LookupTable = new LookupListTable(reader, log, _lookupTypeIndex, header.Offset + lookupListOffset);
+                table.LookupTable = new LookupListTable(reader, log, header, _lookupTypeIndex, header.Offset + lookupListOffset);
                 reader.Position = header.Offset + header.Length;
                 return table;
             }

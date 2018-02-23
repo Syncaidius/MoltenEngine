@@ -113,9 +113,9 @@ namespace Molten.Font
                 {
                     RegionAxes[r, a] = new Axis()
                     {
-                        StartCoord = FontMath.FromF2DOT14(reader.ReadInt16()),
-                        PeakCoord = FontMath.FromF2DOT14(reader.ReadInt16()),
-                        EndCoord = FontMath.FromF2DOT14(reader.ReadInt16()),
+                        StartCoord = FontUtil.FromF2DOT14(reader.ReadInt16()),
+                        PeakCoord = FontUtil.FromF2DOT14(reader.ReadInt16()),
+                        EndCoord = FontUtil.FromF2DOT14(reader.ReadInt16()),
                     };
                 }
             }

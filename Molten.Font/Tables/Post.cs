@@ -80,7 +80,7 @@ namespace Molten.Font
                 {
                     MajorVersion = reader.ReadUInt16(),
                     MinorVersion = reader.ReadUInt16(),
-                    ItalicAngle = FontMath.FixedToDouble(reader.ReadInt32()),
+                    ItalicAngle = FontUtil.FixedToDouble(reader.ReadInt32()),
                     UnderlinePosition = reader.ReadInt16(),
                     UnderlineThickness = reader.ReadInt16(),
                     IsFixedPitch = reader.ReadUInt32() == 0, // 0 if the font is proportionally spaced (fixed)

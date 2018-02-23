@@ -69,7 +69,7 @@
     <Compile Include="FontHeadFlags.cs" />
     <Compile Include="FontLocaFormat.cs" />
     <Compile Include="FontLookup.cs" />
-    <Compile Include="FontMath.cs" />
+    <Compile Include="FontUtil.cs" />
     <Compile Include="FontNameType.cs" />
     <Compile Include="FontPlatform.cs" />
     <Compile Include="FontReader.cs" />
@@ -100,6 +100,7 @@
     <Compile Include="SubTables\LigatureArrayTable.cs" />
     <Compile Include="SubTables\MarkArrayTable.cs" />
     <Compile Include="SubTables\MarkGlyphSetsTable.cs" />
+    <Compile Include="SubTables\ScriptList.cs" />
     <Compile Include="TableHeader.cs" />
     <Compile Include="Tables\Cmap.format6.cs" />
     <Compile Include="Tables\Cmap.format4.cs" />

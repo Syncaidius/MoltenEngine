@@ -53,13 +53,13 @@ namespace Molten.Font
                     ushort xDeviceOffset = reader.ReadUInt16();
                     ushort yDeviceOffset = reader.ReadUInt16();
 
-                    if (xDeviceOffset > FontMath.NULL)
+                    if (xDeviceOffset > FontUtil.NULL)
                     {
                         reader.Position = startPos + xDeviceOffset;
                         XDevice = new DeviceVariationIndexTable(reader, log);
                     }
 
-                    if (yDeviceOffset > FontMath.NULL)
+                    if (yDeviceOffset > FontUtil.NULL)
                     {
                         reader.Position = startPos + yDeviceOffset;
                         YDevice = new DeviceVariationIndexTable(reader, log);

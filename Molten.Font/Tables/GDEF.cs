@@ -77,23 +77,23 @@ namespace Molten.Font
                 /*The table consists of an offset to a Coverage table (Coverage) listing all glyphs that define attachment points in the GPOS table, 
                  * a count of the glyphs with attachment points (GlyphCount), and an array of offsets to AttachPoint tables (AttachPoint). 
                  * The array lists the AttachPoint tables, one for each glyph in the Coverage table, in the same order as the Coverage Index.*/
-                if (attachListOffset > FontMath.NULL)
+                if (attachListOffset > FontUtil.NULL)
                     table.AttachList = new AttachListTable(reader, log, header.Offset + attachListOffset);
 
                 // Ligature caret list sub-table.
-                if (ligCaretListOffset > FontMath.NULL)
+                if (ligCaretListOffset > FontUtil.NULL)
                     table.LigatureCaretList = new LigatureCaretListTable(reader, log, header.Offset + ligCaretListOffset);
 
                 // Mark attachment class definition sub-table.
-                if (markAttachClassDefOffset > FontMath.NULL)
+                if (markAttachClassDefOffset > FontUtil.NULL)
                     table.MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>(reader, log, _markTranslation, header.Offset + markAttachClassDefOffset);
 
                 // Mark glyph sets sub-table.
-                if (markGlyphSetsDefOffset > FontMath.NULL)
+                if (markGlyphSetsDefOffset > FontUtil.NULL)
                     table.MarkGlyphSets = new MarkGlyphSetsTable(reader, log, header.Offset + markGlyphSetsDefOffset);
 
                 // Item variation store sub-table.
-                if (itemVarStoreOffset > FontMath.NULL)
+                if (itemVarStoreOffset > FontUtil.NULL)
                     table.ItemVarStore = new ItemVariationStore(reader, log, header.Offset + itemVarStoreOffset);
 
                 return table;

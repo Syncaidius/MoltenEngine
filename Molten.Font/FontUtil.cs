@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public static class FontMath
+    public static class FontUtil
     {
         public static readonly DateTime BaseTime = new DateTime(1904, 1, 1, 0, 0, 0);
 
@@ -84,6 +84,19 @@ namespace Molten.Font
                (curBounds.Y + dy),
                (curBounds.Right + dx),
                (curBounds.Bottom + dy));
+        }
+
+        /// <summary>
+        /// Reads a 4-byte tag and converts it into a string.</para>
+        /// From MS Docs: Array of four uint8s (length = 32 bits) used to identify a script, language system, feature, or baseline. <para/>
+        /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/font-file
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        public static string ReadTag(BinaryEndianAgnosticReader reader)
+        {
+            byte[] bytes = reader.ReadBytes(4);
+            return Encoding.ASCII.GetString(bytes);
         }
     }
 }

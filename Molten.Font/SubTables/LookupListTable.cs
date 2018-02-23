@@ -12,11 +12,12 @@ namespace Molten.Font
 
         public IReadOnlyCollection<LookupTable> SubTables { get; internal set; }
 
-        internal LookupListTable(BinaryEndianAgnosticReader reader, Logger log, Type[] lookupTypeIndex, long startPos)
+        internal LookupListTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader header, Type[] lookupTypeIndex, long startPos)
         {
             reader.Position = startPos;
             ushort lookupCount = reader.ReadUInt16();
             ushort[] lookupOffsets = reader.ReadArrayUInt16(lookupCount);
+            log.WriteDebugLine($"[{header.Tag}] Reading lookup list table at {startPos} containing {lookupCount} lookup tables");
 
             List<LookupTable> subtables = new List<LookupTable>();
             SubTables = subtables.AsReadOnly();
@@ -28,6 +29,7 @@ namespace Molten.Font
                 ushort lookupType = reader.ReadUInt16();
                 LookupFlags flags = (LookupFlags)reader.ReadUInt16();
                 ushort subTableCount = reader.ReadUInt16();
+                log.WriteDebugLine($"[{header.Tag}] Reading lookup table {i+1}/{lookupCount} at {lookupStartPos} containing {subTableCount} sub-tables");
 
                 // Get the offset's for the lookup subtable's own subtables.
                 ushort[] subTableOffsets = reader.ReadArrayUInt16(subTableCount);
@@ -40,7 +42,7 @@ namespace Molten.Font
                     // Skip unsupported tables.
                     if(lookupType >= lookupTypeIndex.Length || lookupTypeIndex[lookupType] == null)
                     {
-                        log.WriteDebugLine($"Unsupported lookup sub-table type: {lookupType}");
+                        log.WriteDebugLine($"[{header.Tag}] Unsupported lookup sub-table type: {lookupType}");
                         continue;
                     }
 

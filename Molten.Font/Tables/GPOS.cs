@@ -69,6 +69,9 @@ namespace Molten.Font
         Reserved = 10,
     }
 
+    /// <summary>
+    /// A base class for all GPOS lookup tables.
+    /// </summary>
     public abstract class GPosLookupSubTable : LookupTable
     {
         public GPOSLookupType Type { get; protected set; }

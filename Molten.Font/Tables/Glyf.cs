@@ -144,7 +144,7 @@ namespace Molten.Font
                         // Read scale values
                         if (HasFlag(flags, CompositeGlyphFlags.WeHaveScale))
                         {
-                            float scale = FontMath.FromF2DOT14(reader.ReadInt16());
+                            float scale = FontUtil.FromF2DOT14(reader.ReadInt16());
                             scaleMatrix = new Matrix2x2()
                             {
                                 M11 = scale,
@@ -157,20 +157,20 @@ namespace Molten.Font
                         {
                             scaleMatrix = new Matrix2x2()
                             {
-                                M11 = FontMath.FromF2DOT14(reader.ReadInt16()),
+                                M11 = FontUtil.FromF2DOT14(reader.ReadInt16()),
                                 M12 = 0,
                                 M21 = 0,
-                                M22 = FontMath.FromF2DOT14(reader.ReadInt16())
+                                M22 = FontUtil.FromF2DOT14(reader.ReadInt16())
                             };
                         }
                         else if (HasFlag(flags, CompositeGlyphFlags.WeHaveATwoByTwo))
                         {
                             scaleMatrix = new Matrix2x2()
                             {
-                                M11 = FontMath.FromF2DOT14(reader.ReadInt16()),
-                                M12 = FontMath.FromF2DOT14(reader.ReadInt16()),
-                                M21 = FontMath.FromF2DOT14(reader.ReadInt16()),
-                                M22 = FontMath.FromF2DOT14(reader.ReadInt16()),
+                                M11 = FontUtil.FromF2DOT14(reader.ReadInt16()),
+                                M12 = FontUtil.FromF2DOT14(reader.ReadInt16()),
+                                M21 = FontUtil.FromF2DOT14(reader.ReadInt16()),
+                                M22 = FontUtil.FromF2DOT14(reader.ReadInt16()),
                             };
                         }
 
@@ -190,12 +190,12 @@ namespace Molten.Font
                             }
 
                             // ref: https://github.com/servo/libfreetype2/blob/master/freetype2/src/truetype/ttgload.c#L1124
-                            FontMath.TransformGlyph(componentGlyph, scaleMatrix.Value);
-                            FontMath.OffsetGlyph(componentGlyph, arg1, arg2);
+                            FontUtil.TransformGlyph(componentGlyph, scaleMatrix.Value);
+                            FontUtil.OffsetGlyph(componentGlyph, arg1, arg2);
                         }
                         else
                         {
-                            FontMath.OffsetGlyph(componentGlyph, arg1, arg2);
+                            FontUtil.OffsetGlyph(componentGlyph, arg1, arg2);
                         }
                     }
                     else
