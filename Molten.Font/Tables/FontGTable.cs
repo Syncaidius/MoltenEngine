@@ -13,11 +13,23 @@ namespace Molten.Font
 
         public ushort MinorVersion { get; internal set; }
 
+        /// <summary>Gets the <see cref="ScriptList"/> associated with the current table.</summary>
         public ScriptListTable ScriptList { get; internal set; }
 
+        /// <summary>
+        /// Gets the <see cref="FeatureListTable"/> associated with the current table.
+        /// </summary>
         public FeatureListTable FeatureList { get; internal set; }
 
+        /// <summary>
+        /// Gets the <see cref="LookupListTable"/> associated with the current table.
+        /// </summary>
         public LookupListTable LookupTable { get; internal set; }
+
+        /// <summary>
+        /// Gets the feature variations table associated with the current table. Optional (may be null).
+        /// </summary>
+        public FeatureVariationsTable FeatureVarTable { get; internal set; }
 
         internal abstract class Parser : FontTableParser
         {
@@ -47,11 +59,12 @@ namespace Molten.Font
                 ushort lookupListOffset = reader.ReadUInt16();
                 uint featureVariationsOffset = 0;
 
-                // version 1.1
+                // Version 1.1 - Optional eature variation table.
                 if (table.MajorVersion == 1 && table.MinorVersion == 1)
                 {
                     featureVariationsOffset = reader.ReadUInt32();
-                    // TODO read variation list (if featureVariationOffset > 0 (NULL)
+                    if(featureVariationsOffset > FontUtil.NULL)
+                        table.FeatureVarTable = new FeatureVariationsTable(reader, log, header.Offset + featureVariationsOffset);
                 }
 
                 table.ScriptList = new ScriptListTable(reader, log, header.Offset + scriptListOffset);
