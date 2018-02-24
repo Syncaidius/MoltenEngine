@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class MarkArrayTable
+    public class MarkArrayTable : FontSubTable
     {
         public MarkRecord[] Records { get; private set; }
 
-        internal MarkArrayTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal MarkArrayTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort markCount = reader.ReadUInt16();
             Records = new MarkRecord[markCount];
             ushort[] anchorOffsets = new ushort[markCount];
@@ -29,7 +29,7 @@ namespace Molten.Font
 
             // Read anchor tables.
             for(int i = 0; i < markCount; i++)
-                Records[i].Table = new AnchorTable(reader, log, startPos + anchorOffsets[i]);
+                Records[i].Table = new AnchorTable(reader, log, this, anchorOffsets[i]);
         }
     }
 
@@ -40,13 +40,13 @@ namespace Molten.Font
         public AnchorTable Table { get; internal set; }
     }
 
-    public class Mark2ArrayTable
+    public class Mark2ArrayTable : FontSubTable
     {
         public Mark2Record[] Records { get; private set; }
 
-        internal Mark2ArrayTable(BinaryEndianAgnosticReader reader, Logger log, long startPos, int markClassCount)
+        internal Mark2ArrayTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, int markClassCount) :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort mark2Count = reader.ReadUInt16();
             Records = new Mark2Record[mark2Count];
             ushort[][] anchorOffsets = new ushort[mark2Count][];
@@ -61,7 +61,7 @@ namespace Molten.Font
             {
                 Records[i].Tables = new AnchorTable[markClassCount];
                 for(int j = 0; j < markClassCount; j++)
-                    Records[i].Tables[j] = new AnchorTable(reader, log, startPos + anchorOffsets[i][j]);
+                    Records[i].Tables[j] = new AnchorTable(reader, log, this, anchorOffsets[i][j]);
             }
         }
     }

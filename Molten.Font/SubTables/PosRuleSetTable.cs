@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class PosRuleSetTable
+    public class PosRuleSetTable : FontSubTable
     {
         /// <summary>
         /// Gets an array of PosRule tables, ordered by preference.
         /// </summary>
         public PosRuleTable[] Tables { get; internal set; }
 
-        internal PosRuleSetTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal PosRuleSetTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort posRuleCount = reader.ReadUInt16();
             ushort[] posRuleOffsets = reader.ReadArrayUInt16(posRuleCount);
             Tables = new PosRuleTable[posRuleCount];
             for (int i = 0; i < posRuleCount; i++)
-                Tables[i] = new PosRuleTable(reader, log, startPos + posRuleOffsets[i]);
+                Tables[i] = new PosRuleTable(reader, log, this, posRuleOffsets[i]);
         }
     }
 
@@ -29,7 +29,7 @@ namespace Molten.Font
     /// Each record specifies a position in the input glyph sequence and a LookupList index to the positioning lookup to be applied there. 
     /// The array should list records in design order, or the order the lookups should be applied to the entire glyph sequence.
     /// </summary>
-    public class PosRuleTable
+    public class PosRuleTable : FontSubTable
     {
         /// <summary>
         /// Gets an array of input glyph IDs — starting with the second glyph.
@@ -41,9 +41,9 @@ namespace Molten.Font
         /// </summary>
         public PosLookupRecord[] Records { get; internal set; }
 
-        internal PosRuleTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal PosRuleTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset):
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort glyphCount = reader.ReadUInt16();
             ushort posCount = reader.ReadUInt16();
             InputSequence = reader.ReadArrayUInt16(glyphCount - 1);

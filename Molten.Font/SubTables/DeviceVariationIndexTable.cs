@@ -25,7 +25,7 @@ namespace Molten.Font
         /// <summary>For future use — set to 0</summary>
         Reserved = 0x7FFC,
     }
-    public class DeviceVariationIndexTable
+    public class DeviceVariationIndexTable : FontSubTable
     {
         public DeviceVariableTableFormat Format { get; private set; }
 
@@ -54,7 +54,8 @@ namespace Molten.Font
 
         int[] _deltas;
 
-        internal DeviceVariationIndexTable(BinaryEndianAgnosticReader reader, Logger log)
+        internal DeviceVariationIndexTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset)
+            : base(reader, log, parent, offset)
         {
             DeviceStartSize = reader.ReadUInt16();
             DeviceEndSize = reader.ReadUInt16();

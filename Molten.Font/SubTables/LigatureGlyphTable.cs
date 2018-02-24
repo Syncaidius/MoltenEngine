@@ -6,24 +6,39 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class LigatureGlyphTable
+    public class LigatureGlyphTable : FontSubTable
     {
-        /// <summary>Gets the byte offset of the <see cref="LigatureGlyphTable"/> within it's parent <see cref="LigatureCaretListTable"/>.</summary>
-        public ushort Offset { get; private set; }
-
         /// <summary>Gets an array of <see cref="CaretValue"/> for a glyph.</summary>
         public CaretValue[] CaretValues { get; internal set; }
-
-        /// <summary>Gets the parent <see cref="LigatureCaretListTable"/> of the current <see cref="LigatureGlyphTable"/>.</summary>
-        public LigatureCaretListTable Parent { get; private set; }
 
         /// <summary>Gets the ID of the glyph that the <see cref="CaretValues"/> correspond to.</summary>
         public ushort GlyphID { get; internal set; }
 
-        internal LigatureGlyphTable(LigatureCaretListTable parent, ushort offset)
+        internal LigatureGlyphTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, CoverageTable coverage) : 
+            base(reader, log, parent, offset)
         {
-            Parent = parent;
-            Offset = offset;
+            ushort caretCount = reader.ReadUInt16();
+            CaretValues = new CaretValue[caretCount];
+            for (int p = 0; p < caretCount; p++)
+            {
+                CaretValueFormat format = (CaretValueFormat)reader.ReadUInt16();
+                int cv = 0;
+                DeviceVariationIndexTable dvt = null;
+
+                if (format == CaretValueFormat.DesignUnits)
+                    cv = reader.ReadInt16(); // signed int16 here (just to make it obvious!)
+                else if (format == CaretValueFormat.ContourPointIndex)
+                    cv = reader.ReadUInt16(); // unsigned.
+                else if (format == CaretValueFormat.DesignUnitsPlusDVarTable)
+                {
+                    cv = reader.ReadInt16(); // signed.
+                    ushort dvtOffset = reader.ReadUInt16();
+                    dvt = new DeviceVariationIndexTable(reader, log, this, dvtOffset);
+                }
+
+                CaretValue val = new CaretValue(format, cv, dvt);
+                GlyphID = coverage.Glyphs[p];
+            }
         }
     }
 }

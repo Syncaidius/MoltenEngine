@@ -1,35 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class LookupListTable
+    public class LookupListTable : FontSubTable
     {
         List<LookupTable> _subTables = new List<LookupTable>();
 
         public IReadOnlyCollection<LookupTable> SubTables { get; internal set; }
 
-        internal LookupListTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader header, Type[] lookupTypeIndex, ushort extensionIndex, long startPos)
+        internal LookupListTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, Type[] lookupTypeIndex, ushort extensionIndex) : 
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort lookupCount = reader.ReadUInt16();
             ushort[] lookupOffsets = reader.ReadArrayUInt16(lookupCount);
-            log.WriteDebugLine($"[{header.Tag}] Reading lookup list table at {startPos} containing {lookupCount} lookup tables");
+            log.WriteDebugLine($"Reading lookup list table at {Header.Offset} containing {lookupCount} lookup tables");
 
             List<LookupTable> subtables = new List<LookupTable>();
             SubTables = subtables.AsReadOnly();
 
             for (int i = 0; i < lookupCount; i++)
             {
-                long lookupStartPos = startPos + lookupOffsets[i];
+                long lookupStartPos = Header.Offset + lookupOffsets[i];
                 reader.Position = lookupStartPos;
                 ushort lookupType = reader.ReadUInt16();
                 LookupFlags flags = (LookupFlags)reader.ReadUInt16();
                 ushort subTableCount = reader.ReadUInt16();
-                log.WriteDebugLine($"[{header.Tag}] Reading lookup table {i+1}/{lookupCount} at {lookupStartPos} containing {subTableCount} sub-tables");
+                log.WriteDebugLine($"Reading lookup table {i+1}/{lookupCount} at {lookupStartPos} containing {subTableCount} sub-tables");
 
                 // Get the offset's for the lookup subtable's own subtables.
                 uint[] subTableOffsets = new uint[subTableCount];
@@ -51,7 +52,7 @@ namespace Molten.Font
                         // ExtensionLookupType must be set to any lookup type other than the extension lookup type.
                         if (lookupType == extensionIndex)
                         {
-                            log.WriteDebugLine($"[{header.Tag}] Nested extension lookup table detected. Ignored.");
+                            log.WriteDebugLine($"Nested extension lookup table detected. Ignored.");
                             continue;
                         }
                     }
@@ -59,14 +60,13 @@ namespace Molten.Font
                     // Skip unsupported tables.
                     if (lookupType >= lookupTypeIndex.Length || lookupTypeIndex[lookupType] == null)
                     {
-                        log.WriteDebugLine($"[{header.Tag}] Unsupported lookup sub-table type: {lookupType}");
+                        log.WriteDebugLine($"Unsupported lookup sub-table type: {lookupType}");
                         continue;
                     }
 
-                    long subTableStartPos = lookupStartPos + subTableOffsets[s];
-                    LookupTable subTable = Activator.CreateInstance(lookupTypeIndex[lookupType]) as LookupTable;
-                    subTable.SubTableId = s;
-                    subTable.Read(reader, log, subTableStartPos, lookupType, flags, markFilteringSet);
+                    long subOffsetFromListStart = lookupOffsets[i] + subTableOffsets[s];
+                    LookupTable subTable = Activator.CreateInstance(lookupTypeIndex[lookupType], BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
+                        new object[] { reader, log, this, subOffsetFromListStart, lookupType, flags, markFilteringSet }, null) as LookupTable;
                     subtables.Add(subTable);
                 }
             }
@@ -78,16 +78,17 @@ namespace Molten.Font
         }
     }
 
-    public abstract class LookupTable
+    public abstract class LookupTable : FontSubTable
     {
-        public int SubTableId { get; internal set; }
-
-        internal abstract void Read(BinaryEndianAgnosticReader reader, 
-            Logger log, 
-            long startPos, 
+        internal LookupTable(BinaryEndianAgnosticReader reader,
+            Logger log,
+            IFontTable parent,
+            long offset,
             ushort lookupType,
             LookupFlags flags,
-            ushort markFilteringSet);
+            ushort markFilteringSet) :
+            base(reader, log, parent, offset)
+        { }
     }
 
     [Flags]

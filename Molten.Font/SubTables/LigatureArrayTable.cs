@@ -6,29 +6,29 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class LigatureArrayTable
+    public class LigatureArrayTable : FontSubTable
     {
         public LigatureAttachTable[] Tables { get; private set; }
 
-        internal LigatureArrayTable(BinaryEndianAgnosticReader reader, Logger log, long startPos, long markClassCount)
+        internal LigatureArrayTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, long markClassCount):
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort ligatureCount = reader.ReadUInt16();
             ushort[] offsets = reader.ReadArrayUInt16(ligatureCount);
             Tables = new LigatureAttachTable[ligatureCount];
 
             for (int i = 0; i < ligatureCount; i++)
-                Tables[i] = new LigatureAttachTable(reader, log, startPos + offsets[i], markClassCount);
+                Tables[i] = new LigatureAttachTable(reader, log, this, offsets[i], markClassCount);
         }
     }
 
-    public class LigatureAttachTable
+    public class LigatureAttachTable : FontSubTable
     {
         public ComponentRecord[] Records { get; private set; }
 
-        internal LigatureAttachTable(BinaryEndianAgnosticReader reader, Logger log, long startPos, long markClassCount)
+        internal LigatureAttachTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, long markClassCount) :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort componentCount = reader.ReadUInt16();
             ushort[,] offsets = new ushort[componentCount, markClassCount];
             Records = new ComponentRecord[componentCount];
@@ -45,7 +45,7 @@ namespace Molten.Font
             {
                 AnchorTable[] tables = new AnchorTable[markClassCount];
                 for (int j = 0; j < markClassCount; j++)
-                    tables[j] = new AnchorTable(reader, log, startPos + offsets[i, j]);
+                    tables[j] = new AnchorTable(reader, log, this, offsets[i, j]);
 
                 Records[i] = new ComponentRecord() { AnchorTables = tables };
             }

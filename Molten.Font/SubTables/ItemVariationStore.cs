@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class ItemVariationStore
+    public class ItemVariationStore : FontSubTable
     {
         public ushort Format { get; private set; }
 
-        public VariationRegionList RegionList { get; private set; }
+        public VariationRegionListTable RegionList { get; private set; }
 
         /// <summary>Gets an array of item variation data subtable. Each includes deltas for some number of items, and some subset of regions. <para/>
         /// The regions are indicated by an array of indices into the variation region list.</summary>
         public ItemVariationData[] DeltaSets { get; private set; }
 
-        internal ItemVariationStore(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal ItemVariationStore(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) : 
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             Format = reader.ReadUInt16();
             uint variationRegionListOffset = reader.ReadUInt32();
             ushort itemVariationDataCount = reader.ReadUInt16();
@@ -28,18 +28,14 @@ namespace Molten.Font
 
             // Read IVD sub-tables
             for(int i = 0; i < itemVariationDataCount; i++)
-            {
-                reader.Position = startPos + ivdOffsets[i];
-                DeltaSets[i] = new ItemVariationData(reader, log);
-            }
+                DeltaSets[i] = new ItemVariationData(reader, log, this, ivdOffsets[i]);
 
             // Read region list
-            reader.Position = startPos + variationRegionListOffset;
-            RegionList = new VariationRegionList(reader, log);
+            RegionList = new VariationRegionListTable(reader, log, this, variationRegionListOffset);
         }
     }
 
-    public class ItemVariationData
+    public class ItemVariationData : FontSubTable
     {
         /// <summary>Gets the delta set table. The number of rows is equal to <see cref="ItemCount"/>, while the number of columns is equal to <see cref="TotalDeltaSetColumns"/>.</summary>
         public short[,] DeltaSets { get; private set; }
@@ -59,7 +55,8 @@ namespace Molten.Font
         /// <summary>Gets the sum of <see cref="ShortDeltaCount"/> and <see cref="RegionIndexCount"/>.</summary>
         public int TotalDeltaSetColumns { get; private set; }
 
-        internal ItemVariationData(BinaryEndianAgnosticReader reader, Logger log)
+        internal ItemVariationData(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
             ItemCount = reader.ReadUInt16();
             ShortDeltaCount = reader.ReadUInt16();
@@ -81,43 +78,6 @@ namespace Molten.Font
                 // Now read 8-bit signed values (sbyte)
                 for (int d = ShortDeltaCount; d < TotalDeltaSetColumns; d++)
                     DeltaSets[i, d] = reader.ReadSByte();
-            }
-        }
-    }
-
-    public class VariationRegionList
-    {
-        /// <summary>Gets a multi-dimensional array containing region axis data. <para />
-        /// The first dimension is the region ID. The second dimension is the axis ID.</summary>
-        public Axis[,] RegionAxes { get; private set; }
-
-        public class Axis
-        {
-            public float StartCoord { get; internal set; }
-
-            public float PeakCoord { get; internal set; }
-
-            public float EndCoord { get; internal set; }
-        }
-
-        internal VariationRegionList(BinaryEndianAgnosticReader reader, Logger log)
-        {
-            ushort axisCount = reader.ReadUInt16();
-            ushort regionCount = reader.ReadUInt16();
-
-            RegionAxes = new Axis[regionCount, axisCount];
-
-            for (int r = 0; r < regionCount; r++)
-            {
-                for (int a = 0; a < axisCount; a++)
-                {
-                    RegionAxes[r, a] = new Axis()
-                    {
-                        StartCoord = FontUtil.FromF2DOT14(reader.ReadInt16()),
-                        PeakCoord = FontUtil.FromF2DOT14(reader.ReadInt16()),
-                        EndCoord = FontUtil.FromF2DOT14(reader.ReadInt16()),
-                    };
-                }
             }
         }
     }

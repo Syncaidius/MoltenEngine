@@ -20,6 +20,10 @@ namespace Molten.Font
         /// <summary>The length of the table that the current <see cref="TableHeader"/> represents.</summary>
         public uint Length { get; internal set; }
 
+        /// <summary>Gets the depth of the table represented by the current <see cref="TableHeader"/>. <para/>
+        /// Table depth describes how many levels down/in the hierarchy a table is. A depth of 0 is equivilent to a root font table.</summary>
+        public int TableDepth { get; internal set; }
+
         public override string ToString()
         {
             return $"{Tag} -- {Length} bytes";

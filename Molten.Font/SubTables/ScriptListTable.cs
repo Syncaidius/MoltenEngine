@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class ScriptListTable
+    public class ScriptListTable : FontSubTable
     {
         public ScriptRecord[] Records { get; internal set; }
 
-        internal ScriptListTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal ScriptListTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) : 
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort scriptCount = reader.ReadUInt16();
             Records = new ScriptRecord[scriptCount];
 
@@ -28,7 +28,7 @@ namespace Molten.Font
             }
 
             for (int i = 0; i < scriptCount; i++)
-                Records[i].Table = new ScriptTable(reader, startPos + scriptTableOffsets[i]);
+                Records[i].Table = new ScriptTable(reader, log, this, scriptTableOffsets[i]);
         }
     }
 
@@ -42,15 +42,15 @@ namespace Molten.Font
         public ScriptTable Table { get; internal set; }
     }
 
-    public class ScriptTable
+    public class ScriptTable : FontSubTable
     {
         public LangSysRecord[] Records { get; internal set; }
 
         public LangSysTable Default { get; internal set; }
 
-        internal ScriptTable(BinaryEndianAgnosticReader reader, long startPos)
+        internal ScriptTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort defaultLangSys = reader.ReadUInt16();
             ushort langSysCount = reader.ReadUInt16();
 
@@ -66,10 +66,10 @@ namespace Molten.Font
                 langSysOffsets[i] = reader.ReadUInt16();
             }
 
-            Default = new LangSysTable(reader, startPos + defaultLangSys);
+            Default = new LangSysTable(reader, log, this, defaultLangSys);
 
             for (int i = 0; i < langSysCount; i++)
-                Records[i].Table = new LangSysTable(reader, startPos + langSysOffsets[i]);
+                Records[i].Table = new LangSysTable(reader, log, this, langSysOffsets[i]);
         }
     }
 
@@ -86,7 +86,7 @@ namespace Molten.Font
         public LangSysTable Table { get; internal set; }
     }
 
-    public class LangSysTable
+    public class LangSysTable : FontSubTable
     {
         /// <summary>
         /// Gets the lookup order. Usually reserved for an offset to a reordering table, so will be equal to <see cref="FontUtil.NULL"/>.
@@ -101,7 +101,8 @@ namespace Molten.Font
         /// </summary>
         public ushort RequiredFeatureIndex { get; internal set; }
 
-        internal LangSysTable(BinaryEndianAgnosticReader reader, long startPos)
+        internal LangSysTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
             LookupOrder = reader.ReadUInt16();
             RequiredFeatureIndex = reader.ReadUInt16();

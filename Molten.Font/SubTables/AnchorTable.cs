@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class AnchorTable
+    public class AnchorTable : FontSubTable
     {
         /// <summary>
         /// Gets the format of the anchor table.
@@ -38,9 +38,9 @@ namespace Molten.Font
         /// </summary>
         public DeviceVariationIndexTable YDevice { get; internal set; }
 
-        internal AnchorTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal AnchorTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             Format = reader.ReadUInt16();
 
             switch (Format)
@@ -54,16 +54,10 @@ namespace Molten.Font
                     ushort yDeviceOffset = reader.ReadUInt16();
 
                     if (xDeviceOffset > FontUtil.NULL)
-                    {
-                        reader.Position = startPos + xDeviceOffset;
-                        XDevice = new DeviceVariationIndexTable(reader, log);
-                    }
+                        XDevice = new DeviceVariationIndexTable(reader, log, this, xDeviceOffset);
 
                     if (yDeviceOffset > FontUtil.NULL)
-                    {
-                        reader.Position = startPos + yDeviceOffset;
-                        YDevice = new DeviceVariationIndexTable(reader, log);
-                    }
+                        YDevice = new DeviceVariationIndexTable(reader, log, this, yDeviceOffset);
                     break;
             }
         }

@@ -9,24 +9,16 @@ namespace Molten.Font
     /// <summary>
     /// 
     /// </summary>
-    public class AttachPointTable
+    public class AttachPointTable : FontSubTable
     {
-        /// <summary>Gets the byte offset of the <see cref="AttachPointTable"/> within it's parent <see cref="AttachListTable"/>.</summary>
-        public ushort Offset { get; private set; }
-
         /// <summary>Gets an array of contour point indices for a glyph.</summary>
         public ushort[] ContourPointIndices { get; internal set; }
 
-        /// <summary>Gets the parent <see cref="AttachListTable"/> of the current <see cref="AttachPointTable"/>.</summary>
-        public AttachListTable Parent { get; private set; }
-
-        /// <summary>Gets the ID of the glyph that these attach points belong to.</summary>
-        public ushort GlyphID { get; internal set; }
-
-        internal AttachPointTable(AttachListTable parent, ushort offset)
+        internal AttachPointTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent,  ushort offset) : 
+            base(reader, log, parent, offset)
         {
-            Parent = parent;
-            Offset = offset;
+            ushort pointCount = reader.ReadUInt16();
+            ContourPointIndices = reader.ReadArrayUInt16(pointCount);
         }
     }
 }

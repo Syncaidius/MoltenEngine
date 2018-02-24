@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Font
 {
     /// <summary>TTF/OTF font coverage table. See: https://www.microsoft.com/typography/otspec/chapter2.htm#coverageTbl</summary>
-    public class CoverageTable
+    public class CoverageTable : FontSubTable
     {
         public ushort Format { get; internal set; }
 
@@ -16,9 +16,9 @@ namespace Molten.Font
 
         ushort[] _glyphIDs;
 
-        internal CoverageTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal CoverageTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset):
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             Format = reader.ReadUInt16();
 
             if (Format == 1) // CoverageFormat1 - list
@@ -46,7 +46,7 @@ namespace Molten.Font
             }
             else
             {
-                log.WriteWarning($"Unsupported coverage sub-table in font table");
+                log.WriteWarning($"Unsupported coverage format: {Format}");
             }
         }
     }

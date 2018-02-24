@@ -65,30 +65,30 @@ namespace Molten.Font
             }
 
             // Glyph class definition table
-            GlyphClassDefs = new ClassDefinitionTable<GlyphClass>(reader, log, _classTranslation, header.Offset + glyphClassDefOffset);
+            GlyphClassDefs = new ClassDefinitionTable<GlyphClass>(reader, log, this, glyphClassDefOffset, _classTranslation);
 
             // Attachment point list table
             /*The table consists of an offset to a Coverage table (Coverage) listing all glyphs that define attachment points in the GPOS table, 
              * a count of the glyphs with attachment points (GlyphCount), and an array of offsets to AttachPoint tables (AttachPoint). 
              * The array lists the AttachPoint tables, one for each glyph in the Coverage table, in the same order as the Coverage Index.*/
             if (attachListOffset > FontUtil.NULL)
-                AttachList = new AttachListTable(reader, log, header.Offset + attachListOffset);
+                AttachList = new AttachListTable(reader, log, this, attachListOffset);
 
             // Ligature caret list sub-
             if (ligCaretListOffset > FontUtil.NULL)
-                LigatureCaretList = new LigatureCaretListTable(reader, log, header.Offset + ligCaretListOffset);
+                LigatureCaretList = new LigatureCaretListTable(reader, log, this, ligCaretListOffset);
 
             // Mark attachment class definition sub-
             if (markAttachClassDefOffset > FontUtil.NULL)
-                MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>(reader, log, _markTranslation, header.Offset + markAttachClassDefOffset);
+                MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>(reader, log, this, markAttachClassDefOffset, _markTranslation);
 
             // Mark glyph sets sub-
             if (markGlyphSetsDefOffset > FontUtil.NULL)
-                MarkGlyphSets = new MarkGlyphSetsTable(reader, log, header.Offset + markGlyphSetsDefOffset);
+                MarkGlyphSets = new MarkGlyphSetsTable(reader, log, this, markGlyphSetsDefOffset);
 
             // Item variation store sub-
             if (itemVarStoreOffset > FontUtil.NULL)
-                ItemVarStore = new ItemVariationStore(reader, log, header.Offset + itemVarStoreOffset);
+                ItemVarStore = new ItemVariationStore(reader, log, this, itemVarStoreOffset);
         }
     }
 }

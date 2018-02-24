@@ -56,13 +56,13 @@ namespace Molten.Font
             {
                 featureVariationsOffset = reader.ReadUInt32();
                 if (featureVariationsOffset > FontUtil.NULL)
-                    FeatureVarTable = new FeatureVariationsTable(reader, log, header.Offset + featureVariationsOffset);
+                    FeatureVarTable = new FeatureVariationsTable(reader, log, this, featureVariationsOffset);
             }
 
             ushort extensionIndex = GetExtensionIndex();
-            ScriptList = new ScriptListTable(reader, log, header.Offset + scriptListOffset);
-            FeatureList = new FeatureListTable(reader, log, header.Offset + featureListOffset);
-            LookupTable = new LookupListTable(reader, log, header, lookupIndex, extensionIndex, header.Offset + lookupListOffset);
+            ScriptList = new ScriptListTable(reader, log, this, scriptListOffset);
+            FeatureList = new FeatureListTable(reader, log, this, featureListOffset);
+            LookupTable = new LookupListTable(reader, log, this, lookupListOffset, lookupIndex, extensionIndex);
             reader.Position = header.Offset + header.Length;
         }
     }

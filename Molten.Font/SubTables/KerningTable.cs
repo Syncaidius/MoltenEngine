@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Font
 {
     /// <summary>A sub-table for the <see cref="Kern"/> font table.</summary>
-    public class KerningTable
+    public class KerningTable : FontSubTable
     {
         public ushort Version { get; private set; }
 
@@ -34,9 +34,9 @@ namespace Molten.Font
         /// </summary>
         public ushort RangeShift { get; private set; }
 
-        internal KerningTable(BinaryEndianAgnosticReader reader, Logger log, TableHeader parentHeader, long startPos)
+        internal KerningTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             Version = reader.ReadUInt16();
             ushort subHeaderLength = reader.ReadUInt16();
 
@@ -71,8 +71,8 @@ namespace Molten.Font
                     ushort rightClasstableOffset = reader.ReadUInt16();
                     ushort arrayOffset = reader.ReadUInt16();
 
-                    ushort[] leftClasses = ReadClassTable(reader, startPos, leftClassTableOffset);
-                    ushort[] rightClasses = ReadClassTable(reader, startPos, rightClasstableOffset);
+                    ushort[] leftClasses = ReadClassTable(reader, Header.Offset, leftClassTableOffset);
+                    ushort[] rightClasses = ReadClassTable(reader, Header.Offset, rightClasstableOffset);
 
                     // "Un-multiply" the values in each class table to give us the original class values.
                     // Left class table - The values in the left class table are stored pre-multiplied by the number of bytes in one row

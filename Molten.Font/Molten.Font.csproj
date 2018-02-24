@@ -90,9 +90,11 @@
     <Compile Include="SubTables\AttachListTable.cs" />
     <Compile Include="SubTables\AttachPointTable.cs" />
     <Compile Include="SubTables\ClassDefinitionTable.cs" />
+    <Compile Include="SubTables\ConditionSetTable.cs" />
     <Compile Include="SubTables\CoverageTable.cs" />
     <Compile Include="SubTables\DeviceVariationIndexTable.cs" />
     <Compile Include="FontSubTable.cs" />
+    <Compile Include="SubTables\FeatureSubstitutionTable.cs" />
     <Compile Include="SubTables\ItemVariationStore.cs" />
     <Compile Include="SubTables\KerningTable.cs" />
     <Compile Include="SubTables\LigatureCaretListTable.cs" />
@@ -108,6 +110,7 @@
     <Compile Include="SubTables\MarkArrayTable.cs" />
     <Compile Include="SubTables\MarkGlyphSetsTable.cs" />
     <Compile Include="SubTables\ScriptListTable.cs" />
+    <Compile Include="SubTables\VariationRegionListTable.cs" />
     <Compile Include="TableHeader.cs" />
     <Compile Include="Tables\Cmap.format6.cs" />
     <Compile Include="Tables\Cmap.format4.cs" />

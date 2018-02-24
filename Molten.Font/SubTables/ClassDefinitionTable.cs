@@ -9,7 +9,7 @@ namespace Molten.Font
     /// <summary>
     /// TTF/OTF class definition table which stores class values as a <see cref="ushort"/>. See: https://www.microsoft.com/typography/otspec/chapter2.htm#classDefTbl
     /// </summary>
-    public class ClassDefinitionTable
+    public class ClassDefinitionTable : FontSubTable
     {
         public ushort Format { get; internal set; }
 
@@ -21,9 +21,9 @@ namespace Molten.Font
 
         ushort[] _glyphClassIDs;
 
-        internal ClassDefinitionTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal ClassDefinitionTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             Format = reader.ReadUInt16();
 
             if (Format == 1) // ClassDefFormat1
@@ -60,7 +60,7 @@ namespace Molten.Font
     /// TTF/OTF class definition table which stores class values as type T. See: https://www.microsoft.com/typography/otspec/chapter2.htm#classDefTbl
     /// </summary>
     /// <typeparam name="T">The type that class definition values should represent.</typeparam>
-    public class ClassDefinitionTable<T> where T : struct
+    public class ClassDefinitionTable<T> : FontSubTable where T : struct
     {
         public ushort Format { get; internal set; }
 
@@ -72,9 +72,9 @@ namespace Molten.Font
 
         T[] _glyphClassIDs;
 
-        internal ClassDefinitionTable(BinaryEndianAgnosticReader reader, Logger log, T[] classTranslationTable, long startPos)
+        internal ClassDefinitionTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, T[] classTranslationTable) :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             Format = reader.ReadUInt16();
 
             if (Format == 1) // ClassDefFormat1

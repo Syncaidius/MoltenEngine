@@ -10,16 +10,16 @@ namespace Molten.Font
     /// A feature list table.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#feature-table
     /// </summary>
-    public class FeatureListTable
+    public class FeatureListTable : FontSubTable
     {
         /// <summary>
         /// Gets an array of <see cref="FeatureRecord"/> — zero-based (first feature has FeatureIndex = 0), listed alphabetically by <see cref="FeatureRecord.Tag"/>.
         /// </summary>
         public FeatureRecord[] Records { get; internal set; }
 
-        internal FeatureListTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal FeatureListTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort featureCount = reader.ReadUInt16();
             Records = new FeatureRecord[featureCount];
             ushort[] featureOffsets = new ushort[featureCount];
@@ -36,7 +36,7 @@ namespace Molten.Font
 
             // Now populate the record tables using offsets collected above.
             for (int i = 0; i < featureCount; i++)
-                Records[i].Table = new FeatureTable(reader, log, startPos + featureOffsets[i]);
+                Records[i].Table = new FeatureTable(reader, log, this, featureOffsets[i]);
         }
     }
 
@@ -54,7 +54,7 @@ namespace Molten.Font
     /// A feature table.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#feature-table
     /// </summary>
-    public class FeatureTable
+    public class FeatureTable : FontSubTable
     {
         /// <summary>
         /// Gets the feature params value. Reserved for FeatureParams, so usually equal to <see cref="FontUtil.NULL"/>.
@@ -66,9 +66,9 @@ namespace Molten.Font
         /// </summary>
         public ushort[] LookupListIndices { get; internal set; }
 
-        internal FeatureTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal FeatureTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset)  :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             FeatureParams = reader.ReadUInt16();
             ushort lookupIndexCount = reader.ReadUInt16();
             LookupListIndices = reader.ReadArrayUInt16(lookupIndexCount);

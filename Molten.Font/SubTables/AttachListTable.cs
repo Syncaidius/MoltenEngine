@@ -6,39 +6,30 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class AttachListTable
+    public class AttachListTable : FontSubTable
     {
         /// <summary>Gets an array containing AttachPoint tables ordered by coverage index, which hold contour point indices.</summary>
         public AttachPointTable[] PointTables { get; private set; }
 
-        internal AttachListTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        /// <summary>
+        /// Gets a <see cref="CoverageTable"/> containing glyph IDs.
+        /// </summary>
+        public CoverageTable Coverage { get; internal set; }
+
+        internal AttachListTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) : 
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort coverageOffset = reader.ReadUInt16();
-            uint glyphCount = reader.ReadUInt16();
+            ushort glyphCount = reader.ReadUInt16();
             PointTables = new AttachPointTable[glyphCount];
+            ushort[] attachPointOffsets = reader.ReadArrayUInt16(glyphCount);
 
             // prepare attach point tables with their respective offsets.
             for (int i = 0; i < glyphCount; i++)
-                PointTables[i] = new AttachPointTable(this, reader.ReadUInt16());
+                PointTables[i] = new AttachPointTable(reader, log, this, attachPointOffsets[i]);
 
             // Read the coverage table.
-            CoverageTable coverage = new CoverageTable(reader, log, startPos + coverageOffset);
-
-            // Populate attach points in each AttachPointTable.
-            for (int i = 0; i < glyphCount; i++)
-            {
-                AttachPointTable pt = PointTables[i];
-                reader.Position = startPos + pt.Offset;
-
-                ushort pointCount = reader.ReadUInt16();
-                pt.ContourPointIndices = new ushort[pointCount];
-                for (int p = 0; p < pointCount; p++)
-                {
-                    pt.ContourPointIndices[p] = reader.ReadUInt16();
-                    pt.GlyphID = coverage.Glyphs[p];
-                }
-            }
+            CoverageTable coverage = new CoverageTable(reader, log, this, coverageOffset);
         }
     }
 }

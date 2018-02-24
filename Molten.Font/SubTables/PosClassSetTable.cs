@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class PosClassSetTable
+    public class PosClassSetTable : FontSubTable
     {
         /// <summary>
         /// Gets an array of PosClassRule tables, ordered by preference.
         /// </summary>
         public PosClassRuleTable[] Tables { get; internal set; }
 
-        internal PosClassSetTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal PosClassSetTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort posClassRuleCount = reader.ReadUInt16();
             ushort[] posClassRuleOffsets = reader.ReadArrayUInt16(posClassRuleCount);
             Tables = new PosClassRuleTable[posClassRuleCount];
             for (int i = 0; i < posClassRuleCount; i++)
-                Tables[i] = new PosClassRuleTable(reader, log, startPos + posClassRuleOffsets[i]);
+                Tables[i] = new PosClassRuleTable(reader, log, this, posClassRuleOffsets[i]);
         }
     }
 
@@ -41,9 +41,8 @@ namespace Molten.Font
         /// </summary>
         public PosLookupRecord[] Records { get; internal set; }
 
-        internal PosClassRuleTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal PosClassRuleTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset)
         {
-            reader.Position = startPos;
             ushort glyphCount = reader.ReadUInt16();
             ushort posCount = reader.ReadUInt16();
             Classes = reader.ReadArrayUInt16(glyphCount - 1);

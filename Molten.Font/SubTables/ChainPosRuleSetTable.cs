@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class ChainPosRuleSetTable
+    public class ChainPosRuleSetTable : FontSubTable
     {
         /// <summary>
         /// Gets an array of PosRule tables, ordered by preference.
         /// </summary>
         public ChainPosRuleTable[] Tables { get; internal set; }
 
-        internal ChainPosRuleSetTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal ChainPosRuleSetTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort posRuleCount = reader.ReadUInt16();
             ushort[] posRuleOffsets = reader.ReadArrayUInt16(posRuleCount);
             Tables = new ChainPosRuleTable[posRuleCount];
             for (int i = 0; i < posRuleCount; i++)
-                Tables[i] = new ChainPosRuleTable(reader, log, startPos + posRuleOffsets[i]);
+                Tables[i] = new ChainPosRuleTable(reader, log, this, posRuleOffsets[i]);
         }
     }
 
@@ -29,7 +29,7 @@ namespace Molten.Font
     /// Each record specifies a position in the input glyph sequence and a LookupList index to the positioning lookup to be applied there. 
     /// The array should list records in design order, or the order the lookups should be applied to the entire glyph sequence.
     /// </summary>
-    public class ChainPosRuleTable
+    public class ChainPosRuleTable : FontSubTable
     {
         /// <summary>
         /// Gets an array of gylph or class IDs (depending on format) for a backtrack sequence.
@@ -51,10 +51,9 @@ namespace Molten.Font
         /// </summary>
         public PosLookupRecord[] Records { get; internal set; }
 
-        internal ChainPosRuleTable(BinaryEndianAgnosticReader reader, Logger log, long startPos)
+        internal ChainPosRuleTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
-
             ushort backtrackGlyphCount = reader.ReadUInt16();
             BacktrackSequence = reader.ReadArrayUInt16(backtrackGlyphCount);
 

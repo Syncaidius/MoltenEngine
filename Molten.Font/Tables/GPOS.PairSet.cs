@@ -8,13 +8,13 @@ namespace Molten.Font
 {
     public partial class GPOS
     {
-        public class PairSet
+        public class PairSet : FontSubTable
         {
             public PairValueRecord[] PairRecords { get; private set; }
 
-            internal PairSet(BinaryEndianAgnosticReader reader, long startPos, ValueFormat format1, ValueFormat format2)
+            internal PairSet(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, ValueFormat format1, ValueFormat format2) :
+                base(reader, log, parent, offset)
             {
-                reader.Position = startPos;
                 ushort pairvalueCount = reader.ReadUInt16();
                 PairRecords = new PairValueRecord[pairvalueCount];
                 for (int i = 0; i < pairvalueCount; i++)

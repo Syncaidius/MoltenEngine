@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class BaseArrayTable
+    public class BaseArrayTable : FontSubTable
     {
         public BaseRecord[] Records { get; private set; }
 
-        internal BaseArrayTable(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markClassCount)
+        internal BaseArrayTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, ushort markClassCount)
+            : base(reader, log, parent, offset)
         {
-            reader.Position = startPos;
             ushort baseCount = reader.ReadUInt16();
             Records = new BaseRecord[baseCount];
             ushort[,] anchorOffsets = new ushort[baseCount, markClassCount];
@@ -28,7 +28,7 @@ namespace Molten.Font
             {
                 AnchorTable[] tables = new AnchorTable[markClassCount];
                 for (int j = 0; j < markClassCount; j++)
-                    tables[j] = new AnchorTable(reader, log, startPos + anchorOffsets[i, j]);
+                    tables[j] = new AnchorTable(reader, log, this, anchorOffsets[i, j]);
 
                 Records[i] = new BaseRecord() { Tables = tables };
             }

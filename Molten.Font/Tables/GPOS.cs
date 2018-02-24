@@ -79,18 +79,15 @@ namespace Molten.Font
 
         public ushort Format { get; private set; }
 
-        internal sealed override void Read(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort lookupType, LookupFlags flags, ushort markFilteringSet)
+        internal GPosLookupSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, 
+            ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
+            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
-            log.WriteDebugLine($"[GPOS] Parsing lookup sub-table '{this.GetType().Name}'");
-            reader.Position = startPos;
             GPOSLookupType lt = (GPOSLookupType)lookupType;
             Type = lt;
 
             Format = reader.ReadUInt16();
-            OnRead(reader, log, startPos, markFilteringSet, Format);
         }
-
-        protected abstract void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat);
     }
 
     /// <summary>
@@ -107,12 +104,14 @@ namespace Molten.Font
         /// </summary>
         public CoverageTable Coverage { get; private set; }
 
-        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
+        internal SingleAdjustmentPosSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, 
+            ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
+            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
             ushort coverageOffset = reader.ReadUInt16();
             GPOS.ValueFormat valueFormat = (GPOS.ValueFormat)reader.ReadUInt16();
 
-            switch (posFormat)
+            switch (Format)
             {
                 case 1:
                     Records = new GPOS.ValueRecord[1];
@@ -127,7 +126,7 @@ namespace Molten.Font
                     break;
             }
 
-            Coverage = new CoverageTable(reader, log, startPos + coverageOffset);
+            Coverage = new CoverageTable(reader, log, this, coverageOffset);
         }
     }
 
@@ -150,20 +149,22 @@ namespace Molten.Font
 
         public ClassDefinitionTable Class2Definitions { get; internal set; }
 
-        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
+        internal PairAdjustmentPosSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
+            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
             ushort coverageOffset = reader.ReadUInt16();
             GPOS.ValueFormat valueFormat1 = (GPOS.ValueFormat)reader.ReadUInt16();
             GPOS.ValueFormat valueFormat2 = (GPOS.ValueFormat)reader.ReadUInt16();
 
-            switch (posFormat)
+            switch (Format)
             {
                 case 1:
                     ushort pairSetCount = reader.ReadUInt16();
                     ushort[] pairSetOffsets = reader.ReadArrayUInt16(pairSetCount);
                     PairSets = new GPOS.PairSet[pairSetCount];
                     for (int i = 0; i < pairSetCount; i++)
-                        PairSets[i] = new GPOS.PairSet(reader, startPos + pairSetOffsets[i], valueFormat1, valueFormat2);
+                        PairSets[i] = new GPOS.PairSet(reader, log, this, pairSetOffsets[i], valueFormat1, valueFormat2);
                     break;
 
                 case 2:
@@ -176,18 +177,18 @@ namespace Molten.Font
                     for(int i = 0; i < classCount1; i++)
                         ClassRecords[i] = new GPOS.Class1Record(reader, classCount2, valueFormat1, valueFormat2);
 
-                    Class1Definitions = new ClassDefinitionTable(reader, log, startPos + classDef1Offset);
+                    Class1Definitions = new ClassDefinitionTable(reader, log, this, classDef1Offset);
 
                     // Check if Class2 table is the same as Class1. If true, share them.
                     if (classDef2Offset != classDef1Offset)
-                        Class2Definitions = new ClassDefinitionTable(reader, log, startPos + classDef2Offset);
+                        Class2Definitions = new ClassDefinitionTable(reader, log, this, classDef2Offset);
                     else
                         Class2Definitions = Class1Definitions;
 
                     break;
             }
 
-            Coverage = new CoverageTable(reader, log, startPos + coverageOffset);
+            Coverage = new CoverageTable(reader, log, this, coverageOffset);
         }
     }
 
@@ -202,7 +203,9 @@ namespace Molten.Font
     {
         public GPOS.EntryExitRecord[] Records { get; private set; }
 
-        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
+        internal CursiveAttachmentPosSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
+            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
             ushort coverageOffset = reader.ReadUInt16();
             ushort entryExitCount = reader.ReadUInt16();
@@ -213,8 +216,8 @@ namespace Molten.Font
                 ushort exitAnchorOffset = reader.ReadUInt16();
                 Records[i] = new GPOS.EntryExitRecord()
                 {
-                    EntryAnchor = new AnchorTable(reader, log, startPos + entryAnchorOffset),
-                    ExitAnchor = new AnchorTable(reader, log, startPos + exitAnchorOffset),
+                    EntryAnchor = new AnchorTable(reader, log, this, entryAnchorOffset),
+                    ExitAnchor = new AnchorTable(reader, log, this, exitAnchorOffset),
                 };
             }
         }
@@ -237,9 +240,11 @@ namespace Molten.Font
 
         public ushort MarkClassCount { get; internal set; }
 
-        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
+        internal MarkToBaseAttachmentPosSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
+            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
-            switch (posFormat)
+            switch (Format)
             {
                 case 1:
                     ushort markCoverageOffset = reader.ReadUInt16();
@@ -248,10 +253,10 @@ namespace Molten.Font
                     ushort markArrayOffset = reader.ReadUInt16();
                     ushort baseArrayOffset = reader.ReadUInt16();
 
-                    MarkCoverage = new CoverageTable(reader, log, startPos + markCoverageOffset);
-                    BaseCoverage = new CoverageTable(reader, log, startPos + baseCoverageOffset);
-                    MarkArray = new MarkArrayTable(reader, log, startPos + markArrayOffset);
-                    BaseArray = new BaseArrayTable(reader, log, startPos + baseArrayOffset, MarkClassCount);
+                    MarkCoverage = new CoverageTable(reader, log, this, markCoverageOffset);
+                    BaseCoverage = new CoverageTable(reader, log, this, baseCoverageOffset);
+                    MarkArray = new MarkArrayTable(reader, log, this, markArrayOffset);
+                    BaseArray = new BaseArrayTable(reader, log, this, baseArrayOffset, MarkClassCount);
                     break;
             }
         }
@@ -277,9 +282,11 @@ namespace Molten.Font
 
         public ushort MarkClassCount { get; internal set; }
 
-        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
+        internal MarkToLigatureAttachmentPosSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
+            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
-            switch (posFormat)
+            switch (Format)
             {
                 case 1:
                     ushort markCoverageOffset = reader.ReadUInt16();
@@ -288,10 +295,10 @@ namespace Molten.Font
                     ushort markArrayOffset = reader.ReadUInt16();
                     ushort ligatureArrayOffset = reader.ReadUInt16();
 
-                    MarkCoverage = new CoverageTable(reader, log, startPos + markCoverageOffset);
-                    LigatureCoverage = new CoverageTable(reader, log, startPos + ligatureCoverageOffset);
-                    MarkArray = new MarkArrayTable(reader, log, startPos + markArrayOffset);
-                    LigatureArray = new LigatureArrayTable(reader, log, startPos + ligatureArrayOffset, MarkClassCount);
+                    MarkCoverage = new CoverageTable(reader, log, this, markCoverageOffset);
+                    LigatureCoverage = new CoverageTable(reader, log, this, ligatureCoverageOffset);
+                    MarkArray = new MarkArrayTable(reader, log, this, markArrayOffset);
+                    LigatureArray = new LigatureArrayTable(reader, log, this, ligatureArrayOffset, MarkClassCount);
                     break;
             }
         }
@@ -316,7 +323,9 @@ namespace Molten.Font
         /// </summary>
         public Mark2ArrayTable Mark2Array { get; internal set; }
 
-        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
+        internal MarkToMarkAttachmentPosSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
+            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
             ushort mark1CoverageOffset = reader.ReadUInt16();
             ushort mark2CoverageOffset = reader.ReadUInt16();
@@ -324,10 +333,10 @@ namespace Molten.Font
             ushort mark1ArrayOffset = reader.ReadUInt16();
             ushort mark2ArrayOffset = reader.ReadUInt16();
 
-            Mark1Coverage = new CoverageTable(reader, log, startPos + mark1CoverageOffset);
-            Mark2Coverage = new CoverageTable(reader, log, startPos + mark2CoverageOffset);
-            Mark1Array = new MarkArrayTable(reader, log, startPos + mark1ArrayOffset);
-            Mark2Array = new Mark2ArrayTable(reader, log, startPos + mark2ArrayOffset, MarkClassCount);
+            Mark1Coverage = new CoverageTable(reader, log, this, mark1CoverageOffset);
+            Mark2Coverage = new CoverageTable(reader, log, this, mark2CoverageOffset);
+            Mark1Array = new MarkArrayTable(reader, log, this, mark1ArrayOffset);
+            Mark2Array = new Mark2ArrayTable(reader, log, this, mark2ArrayOffset, MarkClassCount);
         }
     }
 
@@ -346,21 +355,23 @@ namespace Molten.Font
         /// </summary>
         public PosLookupRecord[] Records { get; internal set; }
 
-        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
+        internal ContextPosSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
+            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
             ushort coverageOffset;
 
-            switch (posFormat)
+            switch (Format)
             {
                 case 1:
                     coverageOffset = reader.ReadUInt16();
                     ushort posRuleSetCount = reader.ReadUInt16();
                     ushort[] posRuleSetOffsets = reader.ReadArrayUInt16(posRuleSetCount);
-                    Coverages = new CoverageTable[] { new CoverageTable(reader, log, startPos + coverageOffset) };
+                    Coverages = new CoverageTable[] { new CoverageTable(reader, log, this, coverageOffset) };
                     RuleSetTables = new PosRuleSetTable[posRuleSetCount];
 
                     for (int i = 0; i < posRuleSetCount; i++)
-                        RuleSetTables[i] = new PosRuleSetTable(reader, log, startPos + posRuleSetOffsets[i]);
+                        RuleSetTables[i] = new PosRuleSetTable(reader, log, this, posRuleSetOffsets[i]);
 
                     break;
 
@@ -370,11 +381,11 @@ namespace Molten.Font
                     ushort posClassSetCount = reader.ReadUInt16();
                     ushort[] posClassSetOffsets = reader.ReadArrayUInt16(posClassSetCount);
 
-                    Coverages = new CoverageTable[] { new CoverageTable(reader, log, startPos + coverageOffset) };
-                    ClassDefinitions = new ClassDefinitionTable(reader, log, startPos + classDefOffset);
+                    Coverages = new CoverageTable[] { new CoverageTable(reader, log, this, coverageOffset) };
+                    ClassDefinitions = new ClassDefinitionTable(reader, log, this, classDefOffset);
                     ClassSets = new PosClassSetTable[posClassSetCount];
                     for (int i = 0; i < posClassSetCount; i++)
-                        ClassSets[i] = new PosClassSetTable(reader, log, startPos + posClassSetOffsets[i]);
+                        ClassSets[i] = new PosClassSetTable(reader, log, this, posClassSetOffsets[i]);
 
                     break;
 
@@ -395,7 +406,7 @@ namespace Molten.Font
 
                     Coverages = new CoverageTable[glyphCount];
                     for (int i = 0; i < glyphCount; i++)
-                        Coverages[i] = new CoverageTable(reader, log, coverageOffsets[i]);
+                        Coverages[i] = new CoverageTable(reader, log, this, coverageOffsets[i]);
                     break;
             }
         }
@@ -415,11 +426,13 @@ namespace Molten.Font
 
         public PosLookupRecord[] Records { get; internal set; }
 
-        protected override void OnRead(BinaryEndianAgnosticReader reader, Logger log, long startPos, ushort markFilteringSet, ushort posFormat)
+        internal ChainingContextualPosSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
+            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
             ushort coverageOffset;
 
-            switch (posFormat)
+            switch (Format)
             {
                 case 1: // ChainRuleSets contains glyph IDs.
                     coverageOffset = reader.ReadUInt16();
@@ -427,9 +440,9 @@ namespace Molten.Font
                     ushort[] chainPosRuleSetOffsets = reader.ReadArrayUInt16(chainPosRuleSetCount);
                     ChainRuleSets = new ChainPosRuleSetTable[chainPosRuleSetCount];
                     for (int i = 0; i < chainPosRuleSetCount; i++)
-                        ChainRuleSets[i] = new ChainPosRuleSetTable(reader, log, startPos + chainPosRuleSetOffsets[i]);
+                        ChainRuleSets[i] = new ChainPosRuleSetTable(reader, log, this, chainPosRuleSetOffsets[i]);
 
-                    Coverage = new CoverageTable(reader, log, startPos + coverageOffset);
+                    Coverage = new CoverageTable(reader, log, this, coverageOffset);
                     break;
 
                 case 2: // ChainRuleSets contains class IDs instead of glyph IDs
@@ -440,13 +453,13 @@ namespace Molten.Font
                     ushort chainPosClassSetCount = reader.ReadUInt16();
                     ushort[] chainPosClassSetOffsets = reader.ReadArrayUInt16(chainPosClassSetCount);
 
-                    Coverage = new CoverageTable(reader, log, startPos + coverageOffset);
-                    BacktrackClasses = new ClassDefinitionTable(reader, log, startPos + backtrackClassDefOffset);
-                    InputClasses = new ClassDefinitionTable(reader, log, startPos + inputClassDefOffset);
-                    LookAheadClasses = new ClassDefinitionTable(reader, log, startPos + lookAheadClassDefOffset);
+                    Coverage = new CoverageTable(reader, log, this, coverageOffset);
+                    BacktrackClasses = new ClassDefinitionTable(reader, log, this, backtrackClassDefOffset);
+                    InputClasses = new ClassDefinitionTable(reader, log, this, inputClassDefOffset);
+                    LookAheadClasses = new ClassDefinitionTable(reader, log, this, lookAheadClassDefOffset);
                     ChainRuleSets = new ChainPosRuleSetTable[chainPosClassSetCount];
                     for (int i = 0; i < chainPosClassSetCount; i++)
-                        ChainRuleSets[i] = new ChainPosRuleSetTable(reader, log, startPos + chainPosClassSetOffsets[i]);
+                        ChainRuleSets[i] = new ChainPosRuleSetTable(reader, log, this, chainPosClassSetOffsets[i]);
                     break;
 
                 case 3:
