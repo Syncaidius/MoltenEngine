@@ -8,6 +8,7 @@ namespace Molten.Font
 {
     /// <summary>Font header table .<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/head </summary>
+    [FontTableTag("hhea")]
     public class Hhea : FontTable
     {
         public ushort MajorVersion { get; private set; }
@@ -96,36 +97,26 @@ namespace Molten.Font
         /// </summary>
         public ushort NumberOfHMetrics { get; private set; }
 
-        internal class Parser : FontTableParser
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            public override string TableTag => "hhea";
-
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
-            {
-                Hhea table = new Hhea()
-                {
-                    MajorVersion = reader.ReadUInt16(),
-                    MinorVersion = reader.ReadUInt16(),
-                    Ascender = reader.ReadInt16(),
-                    Descender = reader.ReadInt16(),
-                    LineGap = reader.ReadInt16(),
-                    AdvanceWidthMax = reader.ReadUInt16(),
-                    MinLeftSideBearing = reader.ReadInt16(),
-                    MinRightSideBearing = reader.ReadInt16(),
-                    MaxExtentX = reader.ReadInt16(),
-                    CaretSlopeRise = reader.ReadInt16(),
-                    CaretSlopeRun = reader.ReadInt16(),
-                    CaretOffset = reader.ReadInt16(),
-                    Reserved1 = reader.ReadInt16(),
-                    Reserved2 = reader.ReadInt16(),
-                    Reserved3 = reader.ReadInt16(),
-                    Reserved4 = reader.ReadInt16(),
-                    MetricDataFormat = reader.ReadInt16(),
-                    NumberOfHMetrics = reader.ReadUInt16(),
-                };
-
-                return table;
-            }
+            MajorVersion = reader.ReadUInt16();
+            MinorVersion = reader.ReadUInt16();
+            Ascender = reader.ReadInt16();
+            Descender = reader.ReadInt16();
+            LineGap = reader.ReadInt16();
+            AdvanceWidthMax = reader.ReadUInt16();
+            MinLeftSideBearing = reader.ReadInt16();
+            MinRightSideBearing = reader.ReadInt16();
+            MaxExtentX = reader.ReadInt16();
+            CaretSlopeRise = reader.ReadInt16();
+            CaretSlopeRun = reader.ReadInt16();
+            CaretOffset = reader.ReadInt16();
+            Reserved1 = reader.ReadInt16();
+            Reserved2 = reader.ReadInt16();
+            Reserved3 = reader.ReadInt16();
+            Reserved4 = reader.ReadInt16();
+            MetricDataFormat = reader.ReadInt16();
+            NumberOfHMetrics = reader.ReadUInt16();
         }
     }
 

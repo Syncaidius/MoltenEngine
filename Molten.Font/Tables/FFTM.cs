@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Font
 {
     /// <summary>FontForge Time-stamp table. See: https://fontforge.github.io/non-standard.html#FFTM</summary>
+    [FontTableTag("FFTM")]
     public class FFTM : FontTable
     {
         public uint Version { get; internal set; }
@@ -24,21 +25,12 @@ namespace Molten.Font
         /// (not always accurate)</summary>
         public DateTime LastModified { get; internal set; }
 
-        internal class Parser : FontTableParser
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            public override string TableTag => "FFTM";
-
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
-            {
-                return new FFTM()
-                {
-                    Version = reader.ReadUInt32(),
-                    SourceTimeStamp = FontUtil.FromLongDate(reader.ReadInt64()),
-                    CreationDate = FontUtil.FromLongDate(reader.ReadInt64()),
-                    LastModified = FontUtil.FromLongDate(reader.ReadInt64()),
-                };
-            }
+            Version = reader.ReadUInt32();
+            SourceTimeStamp = FontUtil.FromLongDate(reader.ReadInt64());
+            CreationDate = FontUtil.FromLongDate(reader.ReadInt64());
+            LastModified = FontUtil.FromLongDate(reader.ReadInt64());
         }
     }
-
 }

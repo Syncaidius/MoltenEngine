@@ -69,6 +69,7 @@
     <Compile Include="FontHeadFlags.cs" />
     <Compile Include="FontLocaFormat.cs" />
     <Compile Include="FontLookup.cs" />
+    <Compile Include="FontTableTagAttribute.cs" />
     <Compile Include="FontUtil.cs" />
     <Compile Include="FontNameType.cs" />
     <Compile Include="FontPlatform.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="SubTables\ClassDefinitionTable.cs" />
     <Compile Include="SubTables\CoverageTable.cs" />
     <Compile Include="SubTables\DeviceVariationIndexTable.cs" />
+    <Compile Include="FontSubTable.cs" />
     <Compile Include="SubTables\ItemVariationStore.cs" />
     <Compile Include="SubTables\KerningTable.cs" />
     <Compile Include="SubTables\LigatureCaretListTable.cs" />
@@ -134,7 +136,7 @@
     <Compile Include="Tables\Prep.cs" />
     <Compile Include="Tables\Post.cs" />
     <Compile Include="Tables\FFTM.cs" />
-    <Compile Include="Tables\FontTable.cs" />
+    <Compile Include="FontTable.cs" />
     <Compile Include="Tables\GDEF.cs" />
   </ItemGroup>
   <ItemGroup>

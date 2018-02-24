@@ -8,6 +8,7 @@ namespace Molten.Font
 {
     /// <summary>A grid-fitting and scan-conversion procedure table (gasp).<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gasp </summary>
+    [FontTableTag("gasp")]
     public class Gasp : FontTable
     {
         public ushort Version { get; private set; }
@@ -15,30 +16,20 @@ namespace Molten.Font
         /// <summary>Gets an array of <see cref="GaspRange"/> instances, sorted by ppem.</summary>
         public GaspRange[] Ranges { get; private set; }
 
-        internal class Parser : FontTableParser
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            public override string TableTag => "gasp";
-
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+            Version = reader.ReadUInt16();
+            ushort numRanges = reader.ReadUInt16();
+            Ranges = new GaspRange[numRanges];
+            for (int i = 0; i < numRanges; i++)
             {
-                Gasp table = new Gasp()
+                Ranges[i] = new GaspRange()
                 {
-                    Version = reader.ReadUInt16(),
+                    MaxPPEM = reader.ReadUInt16(),
+                    BehaviourFlags = (GaspBehaviorFlags)reader.ReadUInt16(),
                 };
-
-                ushort numRanges = reader.ReadUInt16();
-                table.Ranges = new GaspRange[numRanges];
-                for(int i = 0; i < numRanges; i++)
-                {
-                    table.Ranges[i] = new GaspRange()
-                    {
-                        MaxPPEM = reader.ReadUInt16(),
-                        BehaviourFlags = (GaspBehaviorFlags)reader.ReadUInt16(),
-                    };
-                }
-
-                return table;
             }
+
         }
     }
 

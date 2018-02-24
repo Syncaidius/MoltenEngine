@@ -5,33 +5,49 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Molten.Font
 {
     public class FontReader : IDisposable
     {
-        static Dictionary<string, FontTableParser> _tableParsers;
+        class TableEntry
+        {
+            public Type Type;
+            public string[] Dependencies;
+        }
+
+        static Dictionary<string, TableEntry> _tableTypes;
 
         static FontReader()
         {
-            _tableParsers = new Dictionary<string, FontTableParser>();
-            IEnumerable<Type> parserTypes = ReflectionHelper.FindType<FontTableParser>(typeof(FontTableParser).Assembly);
-            foreach(Type t in parserTypes)
+            _tableTypes = new Dictionary<string, TableEntry>();
+            IEnumerable<Type> tableTypes = ReflectionHelper.FindTypesWithAttribute<FontTableTagAttribute>(typeof(FontTableTagAttribute).Assembly);
+            foreach(Type t in tableTypes)
             {
                 if (t.IsAbstract)
                     continue;
 
-                FontTableParser parser = Activator.CreateInstance(t) as FontTableParser;
-                _tableParsers.Add(parser.TableTag, parser);
+                FontTableTagAttribute att = t.GetCustomAttribute<FontTableTagAttribute>();
+                _tableTypes.Add(att.Tag, new TableEntry()
+                {
+                    Type = t,
+                    Dependencies = att.Dependencies,
+                });
             }
         }
 
-        static FontTableParser GetTableParser(string tableTag)
+        static FontTable GetTable(TableHeader header)
         {
-            if (_tableParsers.TryGetValue(tableTag, out FontTableParser parser))
-                return parser;
-            else
-                return null;
+            if (_tableTypes.TryGetValue(header.Tag, out TableEntry entry))
+            {
+                FontTable table = Activator.CreateInstance(entry.Type) as FontTable;
+                table.Header = header;
+                table.Dependencies = entry.Dependencies.Clone() as string[];
+                return table;
+            }
+
+            return null;
         }
 
         Stream _stream;
@@ -129,19 +145,19 @@ namespace Molten.Font
 
         private void LoadTable(FontTableList tables, TableHeader header, List<TableHeader> toParse, Dictionary<string, TableHeader> toParseByTag)
         {
-            FontTableParser parser = GetTableParser(header.Tag);
-            if (parser != null)
+            FontTable table = GetTable(header);
+            if (table != null)
             {
                 _log.WriteDebugLine($"Supported table '{header.Tag}' found ({header.Length} bytes)", _filename);
                 FontTableList dependencies = new FontTableList();
                 bool dependenciesValid = true;
 
-                if (parser.Dependencies != null && parser.Dependencies.Length > 0)
+                if (table.Dependencies != null && table.Dependencies.Length > 0)
                 {
-                    _log.WriteDebugLine($"[{header.Tag}] Dependencies: {string.Join(",", parser.Dependencies)}");
+                    _log.WriteDebugLine($"[{header.Tag}] Dependencies: {string.Join(",", table.Dependencies)}");
 
                     // Attempt to load/retrieve dependency tables before continuing.
-                    foreach (string depTag in parser.Dependencies)
+                    foreach (string depTag in table.Dependencies)
                     {
                         FontTable dep = tables.Get(depTag);
                         if (dep == null)
@@ -165,10 +181,6 @@ namespace Molten.Font
                                 break;
                             }
                         }
-                        else
-                        {
-
-                        }
 
                         _log.WriteDebugLine($"[{header.Tag}] Dependency '{depTag}' found");
                         dependencies.Add(dep);
@@ -179,8 +191,7 @@ namespace Molten.Font
                 {
                     // Move to the start of the table and parse it.
                     _reader.Position = header.Offset;
-                    FontTable table = parser.Parse(_reader, header, _log, dependencies);
-                    table.Header = header;
+                    table.Read(_reader, header, _log, dependencies);
                     tables.Add(table);
 
                     long expectedEnd = header.Offset + header.Length;

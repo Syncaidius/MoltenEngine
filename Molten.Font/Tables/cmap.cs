@@ -8,6 +8,7 @@ namespace Molten.Font
 {
     /// <summary>Horizontal Device Metrics (hdmx) table.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/hdmx </summary>
+    [FontTableTag("cmap")]
     public class Cmap : FontTable
     {
         public ushort Version { get; internal set; }
@@ -55,6 +56,48 @@ namespace Molten.Font
             return result;
         }
 
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        {
+            ushort version = reader.ReadUInt16();
+            ushort numRecords = reader.ReadUInt16();
+            EncodingRecord[] records = new EncodingRecord[numRecords];
+
+            // Read offsets and prepare records.
+            for (int i = 0; i < numRecords; i++)
+            {
+                records[i] = new EncodingRecord()
+                {
+                    Platform = (FontPlatform)reader.ReadUInt16(),
+                    Encoding = reader.ReadUInt16(),
+                    Offset = reader.ReadUInt32(),
+                };
+            }
+
+            Version = version;
+                SubTables = new SubTable[numRecords];
+
+            // Populate records based on their format
+            for (int i = 0; i < numRecords; i++)
+            {
+                EncodingRecord record = records[i];
+                reader.Position = header.Offset + record.Offset;
+                record.Format = reader.ReadUInt16();
+
+                switch (record.Format)
+                {
+                    case 0: SubTables[i] = new CmapFormat0SubTable(record); break;
+                    //case 2: ReadFormat2(reader, record); break; // Had no luck finding a font with format_2 cmap subtables. Need one for testing.
+                    case 4: SubTables[i] = new CmapFormat4SubTable(record); break;
+                    case 6: SubTables[i] = new CmapFormat6SubTable(record); break;
+                    default:
+                        log.WriteDebugLine($"[CMAP] Unsupported format for record {i}/{numRecords - 1}: Format {record.Format}");
+                        break;
+                }
+
+                SubTables[i]?.Read(reader, log, header);
+            }
+        }
+
         public abstract class SubTable
         {
             public ushort Format { get; private set; }
@@ -88,58 +131,6 @@ namespace Molten.Font
             public ushort Encoding { get; internal set; }
 
             public uint Offset { get; internal set; }
-        }
-
-        internal class Parser : FontTableParser
-        {
-            public override string TableTag => "cmap";
-
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
-            {
-                ushort version = reader.ReadUInt16();
-                ushort numRecords = reader.ReadUInt16();
-                EncodingRecord[] records = new EncodingRecord[numRecords];
-
-                // Read offsets and prepare records.
-                for(int i = 0; i < numRecords; i++)
-                {
-                    records[i] = new EncodingRecord()
-                    {
-                        Platform = (FontPlatform)reader.ReadUInt16(),
-                        Encoding = reader.ReadUInt16(),
-                        Offset = reader.ReadUInt32(),
-                    };
-                }
-
-                Cmap table = new Cmap()
-                {
-                    Version = version,
-                    SubTables = new SubTable[numRecords],
-                };
-
-                // Populate records based on their format
-                for(int i = 0; i < numRecords; i++)
-                {
-                    EncodingRecord record = records[i];
-                    reader.Position = header.Offset + record.Offset;
-                    record.Format = reader.ReadUInt16();
-
-                    switch (record.Format)
-                    {
-                        case 0: table.SubTables[i] = new CmapFormat0SubTable(record); break;
-                        //case 2: ReadFormat2(reader, record); break; // Had no luck finding a font with format_2 cmap subtables. Need one for testing.
-                        case 4: table.SubTables[i] = new CmapFormat4SubTable(record); break;
-                        case 6: table.SubTables[i] = new CmapFormat6SubTable(record); break;
-                        default:
-                            log.WriteDebugLine($"[CMAP] Unsupported format for record {i}/{numRecords - 1}: Format {record.Format}");
-                            break;
-                    }
-
-                    table.SubTables[i]?.Read(reader, log, header);
-                }
-
-                return table;
-            }
         }
     }    
 }

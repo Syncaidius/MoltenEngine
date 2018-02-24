@@ -8,6 +8,7 @@ namespace Molten.Font
 {
     /// <summary>Maximum profile table (maxp).<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/maxp </summary>
+    [FontTableTag("maxp")]
     public class Maxp : FontTable
     {
         public ushort MajorVersion { get; private set; }
@@ -84,34 +85,24 @@ namespace Molten.Font
         /// </summary>
         public ushort MaxComponentDepth { get; private set; }
 
-        internal class Parser : FontTableParser
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            public override string TableTag => "maxp";
-
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
-            {
-                Maxp table = new Maxp()
-                {
-                    MajorVersion = reader.ReadUInt16(),
-                    MinorVersion = reader.ReadUInt16(),
-                    NumGlyphs = reader.ReadUInt16(),
-                    MaxPoints = reader.ReadUInt16(),
-                    MaxContours = reader.ReadUInt16(),
-                    MaxCompositePoints = reader.ReadUInt16(),
-                    MaxCompositeContours = reader.ReadUInt16(),
-                    MaxZones = reader.ReadUInt16(),
-                    MaxTwilightPoints = reader.ReadUInt16(),
-                    MaxStorage = reader.ReadUInt16(),
-                    MaxFunctionDefs = reader.ReadUInt16(),
-                    MaxInstructionDefs = reader.ReadUInt16(),
-                    MaxStackElements = reader.ReadUInt16(),
-                    MaxSizeOfInstructions = reader.ReadUInt16(),
-                    MaxComponentElements = reader.ReadUInt16(),
-                    MaxComponentDepth = reader.ReadUInt16(),
-                };
-
-                return table;
-            }
+            MajorVersion = reader.ReadUInt16();
+            MinorVersion = reader.ReadUInt16();
+            NumGlyphs = reader.ReadUInt16();
+            MaxPoints = reader.ReadUInt16();
+            MaxContours = reader.ReadUInt16();
+            MaxCompositePoints = reader.ReadUInt16();
+            MaxCompositeContours = reader.ReadUInt16();
+            MaxZones = reader.ReadUInt16();
+            MaxTwilightPoints = reader.ReadUInt16();
+            MaxStorage = reader.ReadUInt16();
+            MaxFunctionDefs = reader.ReadUInt16();
+            MaxInstructionDefs = reader.ReadUInt16();
+            MaxStackElements = reader.ReadUInt16();
+            MaxSizeOfInstructions = reader.ReadUInt16();
+            MaxComponentElements = reader.ReadUInt16();
+            MaxComponentDepth = reader.ReadUInt16();
         }
     }
 }

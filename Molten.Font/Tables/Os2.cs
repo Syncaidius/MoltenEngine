@@ -10,6 +10,7 @@ namespace Molten.Font
     /// <para>The indexToLoc table stores the offsets to the locations of the glyphs in the font, relative to the beginning of the glyphData table. In order to compute the length of the last glyph element, there is an extra entry after the last valid index.</para>
     /// <para>By definition, index zero points to the "missing character," which is the character that appears if a character is not found in the font. The missing character is commonly represented by a blank box or a space. If the font does not contain an outline for the missing character, then the first and second offsets should have the same value. This also applies to any other characters without an outline, such as the space character. If a glyph has no outline, then loca[n] = loca [n+1]. In the particular case of the last glyph(s), loca[n] will be equal the length of the glyph data ('glyf') table. The offsets must be in ascending order with loca[n] less-or-equal-to loca[n+1].</para>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/head </summary>
+    [FontTableTag("OS/2")]
     public class Os2 : FontTable
     {
         public ushort Version { get; internal set; }
@@ -141,71 +142,61 @@ namespace Molten.Font
 
         public ushort UsUpperOpticalPointSize { get; internal set; }
 
-        internal class Parser : FontTableParser
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            public override string TableTag => "OS/2";
+            // Read common table data. This is the same layout for all versions.
+            Version = reader.ReadUInt16();
+            XAverageCharWidth = reader.ReadInt16();
+            UsWeightClass = reader.ReadUInt16();
+            WidthClass = (FontWidthClass)reader.ReadUInt16();
+            EmbeddingFlags = (FontEmbeddingFlags)reader.ReadUInt16();
+            YSubscriptXSize = reader.ReadInt16();
+            YSubscriptYSize = reader.ReadInt16();
+            YSubscriptXOffset = reader.ReadInt16();
+            YSubscriptYOffset = reader.ReadInt16();
+            YSuperscriptXSize = reader.ReadInt16();
+            YSuperscriptYSize = reader.ReadInt16();
+            YSuperscriptXOffset = reader.ReadInt16();
+            YSuperscriptYOffset = reader.ReadInt16();
+            YStrikeoutSize = reader.ReadInt16();
+            YStrikeoutPosition = reader.ReadInt16();
+            SFamilyClass = reader.ReadInt16();
+            Panose = reader.ReadBytes(10);
+            UlUnicodeRange1 = reader.ReadUInt32();
+            UlUnicodeRange2 = reader.ReadUInt32();
+            UlUnicodeRange3 = reader.ReadUInt32();
+            UlUnicodeRange4 = reader.ReadUInt32();
+            AchVendID = reader.ReadBytes(4);
+            SelectionFlags = (FontSelectionFlags)reader.ReadUInt16();
+            UsFirstCharIndex = reader.ReadUInt16();
+            UsLastCharIndex = reader.ReadUInt16();
+            STypoAscender = reader.ReadInt16();
+            STypoDescender = reader.ReadInt16();
+            STypoLineGap = reader.ReadInt16();
+            UsWinAscent = reader.ReadUInt16();
+            UsWinDescent = reader.ReadUInt16();
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+            if (Version >= 1)
             {
-                // Read common table data. This is the same layout for all versions.
-                Os2 table = new Os2()
-                {
-                    Version = reader.ReadUInt16(),
-                    XAverageCharWidth = reader.ReadInt16(),
-                    UsWeightClass = reader.ReadUInt16(),
-                    WidthClass = (FontWidthClass)reader.ReadUInt16(),
-                    EmbeddingFlags = (FontEmbeddingFlags)reader.ReadUInt16(),
-                    YSubscriptXSize = reader.ReadInt16(),
-                    YSubscriptYSize = reader.ReadInt16(),
-                    YSubscriptXOffset = reader.ReadInt16(),
-                    YSubscriptYOffset = reader.ReadInt16(),
-                    YSuperscriptXSize = reader.ReadInt16(),
-                    YSuperscriptYSize = reader.ReadInt16(),
-                    YSuperscriptXOffset = reader.ReadInt16(),
-                    YSuperscriptYOffset = reader.ReadInt16(),
-                    YStrikeoutSize = reader.ReadInt16(),
-                    YStrikeoutPosition = reader.ReadInt16(),
-                    SFamilyClass = reader.ReadInt16(),
-                    Panose = reader.ReadBytes(10),
-                    UlUnicodeRange1 = reader.ReadUInt32(),
-                    UlUnicodeRange2 = reader.ReadUInt32(),
-                    UlUnicodeRange3 = reader.ReadUInt32(),
-                    UlUnicodeRange4 = reader.ReadUInt32(),
-                    AchVendID = reader.ReadBytes(4),
-                    SelectionFlags = (FontSelectionFlags)reader.ReadUInt16(),
-                    UsFirstCharIndex = reader.ReadUInt16(),
-                    UsLastCharIndex = reader.ReadUInt16(),
-                    STypoAscender = reader.ReadInt16(),
-                    STypoDescender = reader.ReadInt16(),
-                    STypoLineGap = reader.ReadInt16(),
-                    UsWinAscent = reader.ReadUInt16(),
-                    UsWinDescent = reader.ReadUInt16(),
-                };
+                UlCodePageRange1 = reader.ReadUInt32();
+                UlCodePageRange2 = reader.ReadUInt32();
+            }
 
-                if(table.Version >= 1)
-                {
-                    table.UlCodePageRange1 = reader.ReadUInt32();
-                    table.UlCodePageRange2 = reader.ReadUInt32();
-                }
+            if (Version >= 2)
+            {
+                SxHeight = reader.ReadInt16();
+                SCapHeight = reader.ReadInt16();
+                UsDefaultChar = reader.ReadUInt16();
+                UsBreakChar = reader.ReadUInt16();
+            }
 
-                if(table.Version >= 2)
-                {
-                    table.SxHeight = reader.ReadInt16();
-                    table.SCapHeight = reader.ReadInt16();
-                    table.UsDefaultChar = reader.ReadUInt16();
-                    table.UsBreakChar = reader.ReadUInt16();
-                }
+            if (Version >= 3)
+                UsMaxContext = reader.ReadUInt16();
 
-                if(table.Version >= 3)
-                    table.UsMaxContext = reader.ReadUInt16();
-
-                if(table.Version >= 5)
-                {
-                    table.UsLowerOpticalPointSize = reader.ReadUInt16();
-                    table.UsUpperOpticalPointSize = reader.ReadUInt16();
-                }
-
-                return table;
+            if (Version >= 5)
+            {
+                UsLowerOpticalPointSize = reader.ReadUInt16();
+                UsUpperOpticalPointSize = reader.ReadUInt16();
             }
         }
     }

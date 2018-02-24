@@ -8,6 +8,7 @@ namespace Molten.Font
 {
     /// <summary>Control value program table .<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/prep </summary>
+    [FontTableTag("prep")]
     public class Prep : FontTable
     {
         /// <summary>
@@ -15,21 +16,12 @@ namespace Molten.Font
         /// </summary>
         public byte[] Instructions { get; private set; }
 
-        internal class Parser : FontTableParser
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            public override string TableTag => "prep";
+            Instructions = reader.ReadBytes((int)header.Length);
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
-            {
-                Prep table = new Prep()
-                {
-                    Instructions = reader.ReadBytes((int)header.Length),
-                };
-
-                // TODO expand upon this so that the instructions and their values can be accessed easily (instead of just a byte array).
-                // TODO See: https://developer.apple.com/fonts/TrueType-Reference-Manual/RM03/Chap3.html#font_program
-                return table;
-            }
+            // TODO expand upon this so that the instructions and their values can be accessed easily (instead of just a byte array).
+            // TODO See: https://developer.apple.com/fonts/TrueType-Reference-Manual/RM03/Chap3.html#font_program
         }
     }
 

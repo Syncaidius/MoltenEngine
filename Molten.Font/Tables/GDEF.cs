@@ -8,6 +8,7 @@ namespace Molten.Font
 {
     /// <summary>Glyph definition table. <para/>
     /// See: https://www.microsoft.com/typography/otspec/gdef.htm </summary>
+    [FontTableTag("GDEF")]
     public class GDEF : FontTable
     {
         /// <summary>Gets the major version of the table.</summary>
@@ -38,66 +39,56 @@ namespace Molten.Font
         /// Set in table version 1.3 or higher, otherwise null.</summary>
         public ItemVariationStore ItemVarStore { get; internal set; }
 
-        internal class Parser : FontTableParser
+        static readonly GlyphClass[] _classTranslation = ReflectionHelper.EnumToArray<GlyphClass>();
+        static readonly GlyphMarkClass[] _markTranslation = ReflectionHelper.EnumToArray<GlyphMarkClass>();
+
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            static readonly GlyphClass[] _classTranslation = ReflectionHelper.EnumToArray<GlyphClass>();
-            static readonly GlyphMarkClass[] _markTranslation = ReflectionHelper.EnumToArray<GlyphMarkClass>();
+            MajorVersion = reader.ReadUInt16();
+            MinorVersion = reader.ReadUInt16();
 
-            public override string TableTag => "GDEF";
+            ushort glyphClassDefOffset = reader.ReadUInt16();
+            ushort attachListOffset = reader.ReadUInt16();
+            ushort ligCaretListOffset = reader.ReadUInt16();
+            ushort markAttachClassDefOffset = reader.ReadUInt16();
+            ushort markGlyphSetsDefOffset = 0;
+            ushort itemVarStoreOffset = 0;
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+            // Read version-specific table information.
+            if (MajorVersion >= 1)
             {
-                GDEF table = new GDEF()
-                {
-                    MajorVersion = reader.ReadUInt16(),
-                    MinorVersion = reader.ReadUInt16(),
-                };
+                if (MinorVersion >= 2)
+                    markGlyphSetsDefOffset = reader.ReadUInt16();
 
-                ushort glyphClassDefOffset = reader.ReadUInt16();
-                ushort attachListOffset = reader.ReadUInt16();
-                ushort ligCaretListOffset = reader.ReadUInt16();
-                ushort markAttachClassDefOffset = reader.ReadUInt16();
-                ushort markGlyphSetsDefOffset = 0;
-                ushort itemVarStoreOffset = 0;
-
-                // Read version-specific table information.
-                if (table.MajorVersion >= 1)
-                {
-                    if (table.MinorVersion >= 2)
-                        markGlyphSetsDefOffset = reader.ReadUInt16();
-
-                    if (table.MinorVersion >= 3)
-                        itemVarStoreOffset = reader.ReadUInt16();
-                }
-
-                // Glyph class definition table
-                table.GlyphClassDefs = new ClassDefinitionTable<GlyphClass>(reader, log, _classTranslation, header.Offset + glyphClassDefOffset);
-
-                // Attachment point list table
-                /*The table consists of an offset to a Coverage table (Coverage) listing all glyphs that define attachment points in the GPOS table, 
-                 * a count of the glyphs with attachment points (GlyphCount), and an array of offsets to AttachPoint tables (AttachPoint). 
-                 * The array lists the AttachPoint tables, one for each glyph in the Coverage table, in the same order as the Coverage Index.*/
-                if (attachListOffset > FontUtil.NULL)
-                    table.AttachList = new AttachListTable(reader, log, header.Offset + attachListOffset);
-
-                // Ligature caret list sub-table.
-                if (ligCaretListOffset > FontUtil.NULL)
-                    table.LigatureCaretList = new LigatureCaretListTable(reader, log, header.Offset + ligCaretListOffset);
-
-                // Mark attachment class definition sub-table.
-                if (markAttachClassDefOffset > FontUtil.NULL)
-                    table.MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>(reader, log, _markTranslation, header.Offset + markAttachClassDefOffset);
-
-                // Mark glyph sets sub-table.
-                if (markGlyphSetsDefOffset > FontUtil.NULL)
-                    table.MarkGlyphSets = new MarkGlyphSetsTable(reader, log, header.Offset + markGlyphSetsDefOffset);
-
-                // Item variation store sub-table.
-                if (itemVarStoreOffset > FontUtil.NULL)
-                    table.ItemVarStore = new ItemVariationStore(reader, log, header.Offset + itemVarStoreOffset);
-
-                return table;
+                if (MinorVersion >= 3)
+                    itemVarStoreOffset = reader.ReadUInt16();
             }
+
+            // Glyph class definition table
+            GlyphClassDefs = new ClassDefinitionTable<GlyphClass>(reader, log, _classTranslation, header.Offset + glyphClassDefOffset);
+
+            // Attachment point list table
+            /*The table consists of an offset to a Coverage table (Coverage) listing all glyphs that define attachment points in the GPOS table, 
+             * a count of the glyphs with attachment points (GlyphCount), and an array of offsets to AttachPoint tables (AttachPoint). 
+             * The array lists the AttachPoint tables, one for each glyph in the Coverage table, in the same order as the Coverage Index.*/
+            if (attachListOffset > FontUtil.NULL)
+                AttachList = new AttachListTable(reader, log, header.Offset + attachListOffset);
+
+            // Ligature caret list sub-
+            if (ligCaretListOffset > FontUtil.NULL)
+                LigatureCaretList = new LigatureCaretListTable(reader, log, header.Offset + ligCaretListOffset);
+
+            // Mark attachment class definition sub-
+            if (markAttachClassDefOffset > FontUtil.NULL)
+                MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>(reader, log, _markTranslation, header.Offset + markAttachClassDefOffset);
+
+            // Mark glyph sets sub-
+            if (markGlyphSetsDefOffset > FontUtil.NULL)
+                MarkGlyphSets = new MarkGlyphSetsTable(reader, log, header.Offset + markGlyphSetsDefOffset);
+
+            // Item variation store sub-
+            if (itemVarStoreOffset > FontUtil.NULL)
+                ItemVarStore = new ItemVariationStore(reader, log, header.Offset + itemVarStoreOffset);
         }
     }
 }

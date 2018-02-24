@@ -8,6 +8,7 @@ namespace Molten.Font
 {
     /// <summary>Font header table .<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/head </summary>
+    [FontTableTag("head")]
     public class Head : FontTable
     {
         public const uint EXPECTED_MAGIC_NUMBER = 0x5F0F3CF5;
@@ -51,40 +52,30 @@ namespace Molten.Font
 
         public short GlyphDataFormat { get; private set; }
 
-        internal class Parser : FontTableParser
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            public override string TableTag => "head";
+            MajorVersion = reader.ReadUInt16();
+            MinorVersion = reader.ReadUInt16();
+            FontRevisionMajor = reader.ReadUInt16();
+            FontRevisionMinor = reader.ReadUInt16();
+            ChecksumAdjustment = reader.ReadUInt32();
+            MagicNumber = reader.ReadUInt32();
+            Flags = (FontHeadFlags)reader.ReadUInt16();
+            UnitsPerEm = reader.ReadUInt16();
+            Created = FontUtil.FromLongDate(reader.ReadInt64());
+            Modified = FontUtil.FromLongDate(reader.ReadInt64());
+            MinX = reader.ReadInt16();
+            MinY = reader.ReadInt16();
+            MaxX = reader.ReadInt16();
+            MaxY = reader.ReadInt16();
+            MacStyle = (MacStyleFlags)reader.ReadUInt16();
+            LowestRecPPEM = reader.ReadUInt16();
+            DirectionHint = (FontDirectionHint)reader.ReadInt16();
+            LocaFormat = (FontLocaFormat)reader.ReadInt16();
+            GlyphDataFormat = reader.ReadInt16();
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
-            {
-                Head table = new Head()
-                {
-                    MajorVersion = reader.ReadUInt16(),
-                    MinorVersion = reader.ReadUInt16(),
-                    FontRevisionMajor = reader.ReadUInt16(),
-                    FontRevisionMinor = reader.ReadUInt16(),
-                    ChecksumAdjustment = reader.ReadUInt32(),
-                    MagicNumber = reader.ReadUInt32(),
-                    Flags = (FontHeadFlags)reader.ReadUInt16(),
-                    UnitsPerEm = reader.ReadUInt16(),
-                    Created = FontUtil.FromLongDate(reader.ReadInt64()),
-                    Modified = FontUtil.FromLongDate(reader.ReadInt64()),
-                    MinX = reader.ReadInt16(),
-                    MinY = reader.ReadInt16(),
-                    MaxX = reader.ReadInt16(),
-                    MaxY = reader.ReadInt16(),
-                    MacStyle = (MacStyleFlags)reader.ReadUInt16(),
-                    LowestRecPPEM = reader.ReadUInt16(),
-                    DirectionHint = (FontDirectionHint) reader.ReadInt16(),
-                    LocaFormat = (FontLocaFormat)reader.ReadInt16(),
-                    GlyphDataFormat = reader.ReadInt16(),
-                };
-
-                if (table.MagicNumber != EXPECTED_MAGIC_NUMBER)
-                    log.WriteDebugLine($"[head] Invalid magic number detected: {table.MagicNumber} -- Expected: {EXPECTED_MAGIC_NUMBER}");
-
-                return table;
-            }
+            if (MagicNumber != EXPECTED_MAGIC_NUMBER)
+                log.WriteDebugLine($"[head] Invalid magic number detected: {MagicNumber} -- Expected: {EXPECTED_MAGIC_NUMBER}");
         }
     }
 

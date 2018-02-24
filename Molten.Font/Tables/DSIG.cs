@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Font
 {
     /// <summary>Digital signature table. See: https://www.microsoft.com/typography/otspec/dsig.htm</summary>
+    [FontTableTag("DSIG")]
     public class DSIG : FontTable
     {
         public uint Version { get; internal set; }
@@ -40,54 +41,44 @@ namespace Molten.Font
             public uint Offset { get; internal set; }
         }
 
-        internal class Parser : FontTableParser
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            public override string TableTag => "DSIG";
+            Version = reader.ReadUInt32();
+            NumSignatures = reader.ReadUInt16();
+            Flags = reader.ReadUInt16();
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+            log.WriteDebugLine($"[DSIG] Version {Version} -- {NumSignatures} signatures found");
+
+            // Read signature record list.
+            List<SignatureRecord> sigs = new List<SignatureRecord>();
+            for (int i = 0; i < NumSignatures; i++)
             {
-                DSIG table = new DSIG()
+                sigs.Add(new SignatureRecord()
                 {
-                    Version = reader.ReadUInt32(),
-                    NumSignatures = reader.ReadUInt16(),
-                    Flags = reader.ReadUInt16(),
+                    Format = reader.ReadUInt32(),
+                    Length = reader.ReadUInt32(),
+                    Offset = reader.ReadUInt32(),
+                });
+            }
+
+            // Now read the signatures based on the provided records
+            for (int i = 0; i < NumSignatures; i++)
+            {
+                SignatureRecord record = sigs[i];
+                // Jump to signature position in stream
+                long sigPos = header.Offset + record.Offset;
+                reader.Position = sigPos;
+
+                Signature sig = new Signature()
+                {
+                    Reserved1 = reader.ReadUInt16(),
+                    Reserved2 = reader.ReadUInt16(),
+                    Record = record,
                 };
 
-                log.WriteDebugLine($"[DSIG] Version {table.Version} -- {table.NumSignatures} signatures found");
-
-                // Read signature record list.
-                List<SignatureRecord> sigs = new List<SignatureRecord>();
-                for(int i = 0; i < table.NumSignatures; i++)
-                {
-                    sigs.Add(new SignatureRecord()
-                    {
-                        Format = reader.ReadUInt32(),
-                        Length = reader.ReadUInt32(),
-                        Offset = reader.ReadUInt32(),
-                    });
-                }
-
-                // Now read the signatures based on the provided records
-                for(int i = 0; i < table.NumSignatures; i++)
-                {
-                    SignatureRecord record = sigs[i];
-                    // Jump to signature position in stream
-                    uint sigPos = header.Offset + record.Offset;
-                    reader.Position = sigPos;
-
-                    Signature sig = new Signature()
-                    {
-                        Reserved1 = reader.ReadUInt16(),
-                        Reserved2 = reader.ReadUInt16(),
-                        Record = record,
-                    };
-
-                    uint sigDataLength = reader.ReadUInt32();
-                    sig.Data = reader.ReadBytes((int)sigDataLength);
-                    table.Signatures.Add(sig);
-                }
-
-                return table;
+                uint sigDataLength = reader.ReadUInt32();
+                sig.Data = reader.ReadBytes((int)sigDataLength);
+                Signatures.Add(sig);
             }
         }
     }

@@ -8,6 +8,7 @@ namespace Molten.Font
 {
     /// <summary>Horizontal metrics (hmtx) table.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/hmtx </summary>
+    [FontTableTag("hmtx", "hhea", "maxp")]
     public class Hmtx : FontTable
     {
         /// <summary>
@@ -15,62 +16,47 @@ namespace Molten.Font
         /// </summary>
         public LongHorMetric[] Metrics { get; private set; }
 
-        internal class Parser : FontTableParser
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            static string[] _dependencies = new string[] { "hhea", "maxp"};
+            Hhea tableHhea = dependencies.Get<Hhea>();
+            Maxp tableMaxp = dependencies.Get<Maxp>();
 
-            public override string TableTag => "hmtx";
+            ushort numHMetrics = tableHhea.NumberOfHMetrics;
+            ushort numGlyphs = tableMaxp.NumGlyphs;
+            Metrics = new LongHorMetric[numGlyphs];
 
-            public override string[] Dependencies => _dependencies;
-
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+            for (int i = 0; i < numHMetrics; i++)
             {
-                Hhea tableHhea = dependencies.Get<Hhea>();
-                Maxp tableMaxp = dependencies.Get<Maxp>();
-
-                ushort numHMetrics = tableHhea.NumberOfHMetrics;
-                ushort numGlyphs = tableMaxp.NumGlyphs;
-
-                Hmtx table = new Hmtx()
+                Metrics[i] = new LongHorMetric()
                 {
-                    Metrics = new LongHorMetric[numGlyphs],
+                    AdvanceWidth = reader.ReadUInt16(),
+                    LeftSideBearing = reader.ReadInt16(),
                 };
+            }
 
-                for(int i = 0; i < numHMetrics; i++)
+            /* The table uses a longHorMetric record to give the advance width and left side bearing of a glyph. 
+             * Records are indexed by glyph ID. As an optimization, the number of records can be less than the number of glyphs, 
+             * in which case the advance width value of the last record applies to all remaining glyph IDs.
+             * This can be useful in monospaced fonts, or in fonts that have a large number of glyphs with the same advance width (provided the glyphs are ordered appropriately). 
+             * The number of longHorMetric records is determined by the numberOfHMetrics field in the 'hhea' table.
+             */
+
+            // If numHMetrics is less than the total number of glyphs, then that array is followed by an array for the left side bearing values of the remaining glyphs.
+            // Here we'll fill in the remaining LongHorMetric using the rules described above.
+            // Eats a tad more memory, but we're going for speed not tiny memory footprints!
+            if (numHMetrics < numGlyphs)
+            {
+                int remaining = numGlyphs - numHMetrics;
+                ushort lastAdvWidth = Metrics[numHMetrics - 1].AdvanceWidth;
+
+                for (int i = numHMetrics; i < numGlyphs; i++)
                 {
-                    table.Metrics[i] = new LongHorMetric()
+                    Metrics[i] = new LongHorMetric()
                     {
-                        AdvanceWidth = reader.ReadUInt16(),
+                        AdvanceWidth = lastAdvWidth,
                         LeftSideBearing = reader.ReadInt16(),
                     };
                 }
-
-                /* The table uses a longHorMetric record to give the advance width and left side bearing of a glyph. 
-                 * Records are indexed by glyph ID. As an optimization, the number of records can be less than the number of glyphs, 
-                 * in which case the advance width value of the last record applies to all remaining glyph IDs.
-                 * This can be useful in monospaced fonts, or in fonts that have a large number of glyphs with the same advance width (provided the glyphs are ordered appropriately). 
-                 * The number of longHorMetric records is determined by the numberOfHMetrics field in the 'hhea' table.
-                 */
-
-                // If numHMetrics is less than the total number of glyphs, then that array is followed by an array for the left side bearing values of the remaining glyphs.
-                // Here we'll fill in the remaining LongHorMetric using the rules described above.
-                // Eats a tad more memory, but we're going for speed not tiny memory footprints!
-                if (numHMetrics < numGlyphs)
-                {
-                    int remaining = numGlyphs - numHMetrics;
-                    ushort lastAdvWidth = table.Metrics[numHMetrics - 1].AdvanceWidth;
-
-                    for(int i = numHMetrics; i < numGlyphs; i++)
-                    {
-                        table.Metrics[i] = new LongHorMetric()
-                        {
-                            AdvanceWidth = lastAdvWidth,
-                            LeftSideBearing = reader.ReadInt16(),
-                        };
-                    }
-                }
-
-                return table;
             }
         }
     }

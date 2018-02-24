@@ -8,6 +8,7 @@ namespace Molten.Font
 {
     /// <summary>PostScript table.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/post </summary>
+    [FontTableTag("post")]
     public class Post : FontTable
     {
         public ushort MajorVersion { get; private set; }
@@ -70,66 +71,55 @@ namespace Molten.Font
             return string.Empty;
         }
 
-        internal class Parser : FontTableParser
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            public override string TableTag => "post";
+            MajorVersion = reader.ReadUInt16();
+            MinorVersion = reader.ReadUInt16();
+            ItalicAngle = FontUtil.FixedToDouble(reader.ReadInt32());
+            UnderlinePosition = reader.ReadInt16();
+            UnderlineThickness = reader.ReadInt16();
+            IsFixedPitch = reader.ReadUInt32() == 0; // 0 if the font is proportionally spaced (fixed)
+            MinMemoryType42 = reader.ReadUInt32();
+            MaxMemoryType42 = reader.ReadUInt32();
+            MinMemoryType1 = reader.ReadUInt32();
+            MaxMemoryType1 = reader.ReadUInt32();
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+            switch (MajorVersion)
             {
-                Post table = new Post()
-                {
-                    MajorVersion = reader.ReadUInt16(),
-                    MinorVersion = reader.ReadUInt16(),
-                    ItalicAngle = FontUtil.FixedToDouble(reader.ReadInt32()),
-                    UnderlinePosition = reader.ReadInt16(),
-                    UnderlineThickness = reader.ReadInt16(),
-                    IsFixedPitch = reader.ReadUInt32() == 0, // 0 if the font is proportionally spaced (fixed)
-                    MinMemoryType42 = reader.ReadUInt32(),
-                    MaxMemoryType42 = reader.ReadUInt32(),
-                    MinMemoryType1 = reader.ReadUInt32(),
-                    MaxMemoryType1 = reader.ReadUInt32(),
-                };
+                case 2 when MinorVersion == 0:
+                    ushort numGlyphs = reader.ReadUInt16();
+                    NameIndices = new ushort[numGlyphs];
 
-                switch (table.MajorVersion)
-                {
-                    case 2 when table.MinorVersion == 0:
-                        ushort numGlyphs = reader.ReadUInt16();
-                        table.NameIndices = new ushort[numGlyphs];
+                    // Use a hashset to track the number of non-Macintosh-standard glyphs.
+                    HashSet<ushort> newGlyphs = new HashSet<ushort>();
 
-                        // Use a hashset to track the number of non-Macintosh-standard glyphs.
-                        HashSet<ushort> newGlyphs = new HashSet<ushort>();
+                    // Read name indices
+                    for (int i = 0; i < numGlyphs; i++)
+                    {
+                        ushort gID = reader.ReadUInt16();
+                        NameIndices[i] = gID;
 
-                        // Read name indices
-                        for (int i = 0; i < numGlyphs; i++)
-                        {
-                            ushort gID = reader.ReadUInt16();
-                            table.NameIndices[i] = gID;
+                        // If the name index is between 258 and 32767, then subtract 258 and use that to index into the list of Pascal strings at the end of the table.
+                        if (gID > 257)
+                            newGlyphs.Add(gID);
+                    }
 
-                            // If the name index is between 258 and 32767, then subtract 258 and use that to index into the list of Pascal strings at the end of the table.
-                            if (gID > 257)
-                                newGlyphs.Add(gID);
-                        }
+                    // Read new glyph names (stored in file as pascal strings).
+                    int numNewGlyphs = newGlyphs.Count;
+                    Names = new string[numNewGlyphs];
+                    for (int i = 0; i < numNewGlyphs; i++)
+                        Names[i] = reader.ReadPascalString();
+                    break;
 
-                        // Read new glyph names (stored in file as pascal strings).
-                        int numNewGlyphs = newGlyphs.Count;
-                        table.Names = new string[numNewGlyphs];
-                        for (int i = 0; i < numNewGlyphs; i++)
-                            table.Names[i] = reader.ReadPascalString();
-                        break;
+                case 2 when MinorVersion == 5:
+                    ushort glyphCount = reader.ReadUInt16();
+                    StandardOffsets = reader.ReadArraySByte(glyphCount);
+                    break;
 
-                    case 2 when table.MinorVersion == 5:
-                        ushort glyphCount = reader.ReadUInt16();
-                        table.StandardOffsets = reader.ReadArraySByte(glyphCount);
-                        break;
-
-                    case 4 when table.MinorVersion == 0:
-                        log.WriteDebugLine($"[post] Table format 4.{table.MinorVersion} (AAT) detected. Ignoring extra data.");
-                        // From Apple docs: "As a rule, format 4 'post' tables are no longer necessary and should be avoided."
-                        break;
-                }
-
-
-                return table;
+                case 4 when MinorVersion == 0:
+                    log.WriteDebugLine($"[post] Table format 4.{MinorVersion} (AAT) detected. Ignoring extra data.");
+                    // From Apple docs: "As a rule, format 4 'post' tables are no longer necessary and should be avoided."
+                    break;
             }
         }
     }

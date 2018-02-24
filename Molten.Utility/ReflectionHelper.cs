@@ -34,6 +34,12 @@ namespace Molten
             return assembly.GetTypes().Where(t => t.IsSubclassOf(bType));
         }
 
+        public static IEnumerable<Type> FindTypesWithAttribute<T>(Assembly assembly) where T: Attribute
+        {
+            Type bType = typeof(T);
+            return assembly.GetTypes().Where(t => t.GetCustomAttribute<T>() != null);
+        }
+
         /// <summary>Gets the name of a type. Includes its namespace and name only.</summary>
         /// <param name="type">The type of which to retrieve the name.</param>
         /// <returns></returns>

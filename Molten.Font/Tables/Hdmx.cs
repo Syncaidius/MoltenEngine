@@ -8,6 +8,7 @@ namespace Molten.Font
 {
     /// <summary>Horizontal Device Metrics (hdmx) table.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/hdmx </summary>
+    [FontTableTag("hdmx", "maxp")]
     public class Hdmx : FontTable
     {
         public ushort Version { get; internal set; }
@@ -19,48 +20,37 @@ namespace Molten.Font
         /// </summary>
         public DeviceRecord[] Metrics { get; private set; }
 
-        internal class Parser : FontTableParser
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            static string[] _dependencies = new string[] { "maxp" };
+            Maxp tableMaxp = dependencies.Get<Maxp>();
+            ushort numGlyphs = tableMaxp.NumGlyphs;
 
-            public override string TableTag => "hdmx";
+            ushort version = reader.ReadUInt16();
+            short numRecords = reader.ReadInt16();
+            int sizeDeviceRecord = reader.ReadInt32(); // Record size after padding.
 
-            public override string[] Dependencies => _dependencies;
+            // MS docs: Each DeviceRecord is padded with 0's to make it 32-bit (4 bytes) aligned.
+            int actualRecordSize = 2 + numGlyphs;
+            int padding = actualRecordSize % 4;
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+            Records = new DeviceRecord[numRecords];
+            for (int i = 0; i < numRecords; i++)
             {
-                Maxp tableMaxp = dependencies.Get<Maxp>();
-                ushort numGlyphs = tableMaxp.NumGlyphs;
-
-                ushort version = reader.ReadUInt16();
-                short numRecords = reader.ReadInt16();
-                int sizeDeviceRecord = reader.ReadInt32(); // Record size after padding.
-
-                // MS docs: Each DeviceRecord is padded with 0's to make it 32-bit (4 bytes) aligned.
-                int actualRecordSize = 2 + numGlyphs;
-                int padding = actualRecordSize % 4;
-
-                DeviceRecord[] records = new DeviceRecord[numRecords];
-                for(int i = 0; i < numRecords; i++)
+                Records[i] = new DeviceRecord()
                 {
-                    records[i] = new DeviceRecord()
-                    {
-                        PixelSize = reader.ReadByte(),
-                        MaxWidth = reader.ReadByte(),
-                        Widths = reader.ReadBytes(numGlyphs),
-                    };
+                    PixelSize = reader.ReadByte(),
+                    MaxWidth = reader.ReadByte(),
+                    Widths = reader.ReadBytes(numGlyphs),
+                };
 
-                    reader.Position += padding;
-                }
-
-                // NOTE: For some reason this table sometimes fall short of header.Length despite having all the correct data present.
-                // If it fell short, jump to the expected table end position for debugging purposes.
-                long expectedEnd = header.Offset + header.Length;
-                if(reader.Position < expectedEnd)
-                    reader.Position = expectedEnd;
-
-                return new Hdmx() { Records = records };
+                reader.Position += padding;
             }
+
+            // NOTE: For some reason this table sometimes fall short of header.Length despite having all the correct data present.
+            // If it fell short, jump to the expected table end position for debugging purposes.
+            long expectedEnd = header.Offset + header.Length;
+            if (reader.Position < expectedEnd)
+                reader.Position = expectedEnd;
         }
     }
 

@@ -9,6 +9,7 @@ namespace Molten.Font
 {
     /// <summary>Naming (name) table .<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/name </summary>
+    [FontTableTag("name")]
     public class Name : FontTable
     {
         public ushort Format { get; private set; }
@@ -17,82 +18,73 @@ namespace Molten.Font
 
         public string[] LanguageTags { get; private set; }
 
-        internal class Parser : FontTableParser
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            public override string TableTag => "name";
+            Format = reader.ReadUInt16();
 
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+            ushort nameCount = reader.ReadUInt16();
+            ushort stringOffset = reader.ReadUInt16();
+            long stringStorageOffset = header.Offset + stringOffset;
+
+            long returnPos = reader.Position;
+            int stringDataLen = (int)(header.Length - stringOffset);
+            long endPos = stringStorageOffset + stringDataLen;
+
+            // TODO Review this later for possible improvements
+            // Read the string data into a separate memory stream for quicker access
+            reader.Position = stringStorageOffset;
+            byte[] stringStorageData = reader.ReadBytes(stringDataLen);
+            reader.Position = returnPos;
+
+            using (MemoryStream stringStream = new MemoryStream(stringStorageData))
             {
-                Name table = new Name()
+                using (BinaryReader stringStorageReader = new BinaryReader(stringStream))
                 {
-                    Format = reader.ReadUInt16(),
-                };
-
-                ushort nameCount = reader.ReadUInt16();
-                ushort stringOffset = reader.ReadUInt16();
-                long stringStorageOffset = header.Offset + stringOffset;
-
-                long returnPos = reader.Position;
-                int stringDataLen = (int)(header.Length - stringOffset);
-                long endPos = stringStorageOffset + stringDataLen;
-
-                // TODO Review this later for possible improvements
-                // Read the string data into a separate memory stream for quicker access
-                reader.Position = stringStorageOffset;
-                byte[] stringStorageData = reader.ReadBytes(stringDataLen);
-                reader.Position = returnPos;
-
-                using (MemoryStream stringStream = new MemoryStream(stringStorageData))
-                {
-                    using (BinaryReader stringStorageReader = new BinaryReader(stringStream))
+                    // Read name records. Present in both format 0 and 1.
+                    Records = new NameRecord[nameCount];
+                    for (int i = 0; i < nameCount; i++)
                     {
-                        // Read name records. Present in both format 0 and 1.
-                        table.Records = new NameRecord[nameCount];
-                        for (int i = 0; i < nameCount; i++)
+                        NameRecord record = new NameRecord()
                         {
-                            NameRecord record = new NameRecord()
-                            {
-                                Platform = (FontPlatform)reader.ReadUInt16(),
-                                PlatformEncoding = reader.ReadUInt16(),
-                                LanguageID = reader.ReadUInt16(),
-                                NameID = (FontNameType)reader.ReadUInt16(),
-                            };
+                            Platform = (FontPlatform)reader.ReadUInt16(),
+                            PlatformEncoding = reader.ReadUInt16(),
+                            LanguageID = reader.ReadUInt16(),
+                            NameID = (FontNameType)reader.ReadUInt16(),
+                        };
 
+                        ushort length = reader.ReadUInt16();
+                        ushort offset = reader.ReadUInt16();
+
+                        // Jump to string in string storage.
+                        stringStorageReader.BaseStream.Position = offset;
+                        record.Value = Encoding.ASCII.GetString(stringStorageReader.ReadBytes(length)); // TODO use platform-specific encoding if needed/possible.
+                        Records[i] = record;
+                    }
+
+                    // Read language tag records. Present only in format 1.
+                    if (Format == 1)
+                    {
+                        ushort langTagCount = reader.ReadUInt16();
+                        LanguageTags = new string[langTagCount];
+                        for (int i = 0; i < langTagCount; i++)
+                        {
                             ushort length = reader.ReadUInt16();
                             ushort offset = reader.ReadUInt16();
 
-                            // Jump to string in string storage.
-                            stringStorageReader.BaseStream.Position = offset;
-                            record.Value = Encoding.ASCII.GetString(stringStorageReader.ReadBytes(length)); // TODO use platform-specific encoding if needed/possible.
-                            table.Records[i] = record;
-                        }
-
-                        // Read language tag records. Present only in format 1.
-                        if (table.Format == 1)
-                        {
-                            ushort langTagCount = reader.ReadUInt16();
-                            table.LanguageTags = new string[langTagCount];
-                            for (int i = 0; i < langTagCount; i++)
-                            {
-                                ushort length = reader.ReadUInt16();
-                                ushort offset = reader.ReadUInt16();
-
-                                //Language-tag strings stored in the Naming table must be encoded in UTF-16BE (Big Endian). 
-                                table.LanguageTags[i] = Encoding.BigEndianUnicode.GetString(stringStorageReader.ReadBytes(length));
-                            }
-                        }
-                        else
-                        {
-                            table.LanguageTags = new string[0];
+                            //Language-tag strings stored in the Naming table must be encoded in UTF-16BE (Big Endian). 
+                            LanguageTags[i] = Encoding.BigEndianUnicode.GetString(stringStorageReader.ReadBytes(length));
                         }
                     }
+                    else
+                    {
+                        LanguageTags = new string[0];
+                    }
                 }
-
-                // Jump to end of table so we're correctly aligned.
-                // Not required but, it helps with debugging...
-                reader.Position = endPos;
-                return table;
             }
+
+            // Jump to end of table so we're correctly aligned.
+            // Not required but, it helps with debugging...
+            reader.Position = endPos;
         }
 
         public class NameRecord

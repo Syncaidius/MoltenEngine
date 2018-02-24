@@ -8,21 +8,16 @@ namespace Molten.Font
 {
     /// <summary>Control value table (CVT).<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/cvt </summary>
+    [FontTableTag("cvt")]
     public class Cvt : FontTable
     {
         /// <summary>Gets an array of values referenceable by instructions (such as those in a 'prep' table). </summary>
         public short[] Values { get; private set; }
 
-        internal class Parser : FontTableParser
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            public override string TableTag => "cvt";
-
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
-            {
-                uint valueCount = header.Length / 2; //FWORD -- int16 that describes a quantity in font design units. 
-                return new Cvt() { Values = reader.ReadArrayInt16((int)valueCount) };
-            }
+            uint valueCount = header.Length / 2; //FWORD -- int16 that describes a quantity in font design units. 
+            Values = reader.ReadArrayInt16((int)valueCount);
         }
     }
-
 }

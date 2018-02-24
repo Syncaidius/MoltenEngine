@@ -15,7 +15,7 @@ namespace Molten.Font
         public uint CheckSum { get; internal set; }
 
         /// <summary>The offset of the table, from the beginning of the font file.</summary>
-        public uint Offset { get; internal set; }
+        public long Offset { get; internal set; }
 
         /// <summary>The length of the table that the current <see cref="TableHeader"/> represents.</summary>
         public uint Length { get; internal set; }

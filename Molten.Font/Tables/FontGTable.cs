@@ -30,52 +30,40 @@ namespace Molten.Font
         /// Gets the feature variations table associated with the current table. Optional (may be null).
         /// </summary>
         public FeatureVariationsTable FeatureVarTable { get; internal set; }
+        
+        protected abstract Type[] GetLookupTypeIndex();
 
-        internal abstract class Parser : FontTableParser
+        protected abstract ushort GetExtensionIndex();
+
+        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            Type[] _lookupTypeIndex;
+            Type[] lookupIndex = GetLookupTypeIndex();
 
-            internal Parser()
+            /* Certain structures are used across multiple GPOS Lookup subtable types and formats. All Lookup subtables use the Coverage table, 
+             * which is defined in the OpenType Layout Common Table Formats chapter. 
+             * Single and pair adjustments (LookupTypes 1 and 2) use a ValueRecord structure and associated ValueFormat enumeration, which are defined later in this chapter. 
+             * Attachment subtables (LookupTypes 3, 4, 5 and 6) use Anchor and MarkArray tables, also defined later in this chapter.*/
+
+            MajorVersion = reader.ReadUInt16();
+            MinorVersion = reader.ReadUInt16();
+            ushort scriptListOffset = reader.ReadUInt16();
+            ushort featureListOffset = reader.ReadUInt16();
+            ushort lookupListOffset = reader.ReadUInt16();
+            uint featureVariationsOffset = 0;
+
+            // Version 1.1 - Optional eature variation table.
+            if (MajorVersion == 1 && MinorVersion == 1)
             {
-                _lookupTypeIndex = GetLookupTypeIndex();
+                featureVariationsOffset = reader.ReadUInt32();
+                if (featureVariationsOffset > FontUtil.NULL)
+                    FeatureVarTable = new FeatureVariationsTable(reader, log, header.Offset + featureVariationsOffset);
             }
 
-            protected abstract Type[] GetLookupTypeIndex();
-
-            protected abstract ushort GetExtensionIndex();
-
-            protected abstract FontGTable CreateTable(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependenceies);
-
-            internal override FontTable Parse(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
-            {
-                /* Certain structures are used across multiple GPOS Lookup subtable types and formats. All Lookup subtables use the Coverage table, 
-                 * which is defined in the OpenType Layout Common Table Formats chapter. 
-                 * Single and pair adjustments (LookupTypes 1 and 2) use a ValueRecord structure and associated ValueFormat enumeration, which are defined later in this chapter. 
-                 * Attachment subtables (LookupTypes 3, 4, 5 and 6) use Anchor and MarkArray tables, also defined later in this chapter.*/
-
-                FontGTable table = CreateTable(reader, header, log, dependencies);
-                table.MajorVersion =  reader.ReadUInt16();
-                table.MinorVersion = reader.ReadUInt16();
-                ushort scriptListOffset = reader.ReadUInt16();
-                ushort featureListOffset = reader.ReadUInt16();
-                ushort lookupListOffset = reader.ReadUInt16();
-                uint featureVariationsOffset = 0;
-
-                // Version 1.1 - Optional eature variation table.
-                if (table.MajorVersion == 1 && table.MinorVersion == 1)
-                {
-                    featureVariationsOffset = reader.ReadUInt32();
-                    if(featureVariationsOffset > FontUtil.NULL)
-                        table.FeatureVarTable = new FeatureVariationsTable(reader, log, header.Offset + featureVariationsOffset);
-                }
-
-                ushort extensionIndex = GetExtensionIndex();
-                table.ScriptList = new ScriptListTable(reader, log, header.Offset + scriptListOffset);
-                table.FeatureList = new FeatureListTable(reader, log, header.Offset + featureListOffset);
-                table.LookupTable = new LookupListTable(reader, log, header, _lookupTypeIndex, extensionIndex, header.Offset + lookupListOffset);
-                reader.Position = header.Offset + header.Length;
-                return table;
-            }
+            ushort extensionIndex = GetExtensionIndex();
+            ScriptList = new ScriptListTable(reader, log, header.Offset + scriptListOffset);
+            FeatureList = new FeatureListTable(reader, log, header.Offset + featureListOffset);
+            LookupTable = new LookupListTable(reader, log, header, lookupIndex, extensionIndex, header.Offset + lookupListOffset);
+            reader.Position = header.Offset + header.Length;
         }
     }
 }
