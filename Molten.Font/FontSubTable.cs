@@ -36,7 +36,7 @@ namespace Molten.Font
                 TableDepth = parent.Header.TableDepth + 1,
             };
 
-            log.WriteDebugLine($"{new string('\t', Header.TableDepth)}[{parent.Header.Tag}] Reading sub-table {Header.Tag}");
+            log.WriteDebugLine($"{new string(' ', Header.TableDepth)}[{parent.Header.Tag}] Reading sub-table {Header.Tag}");
             reader.Position = Header.Offset;
         }
     }

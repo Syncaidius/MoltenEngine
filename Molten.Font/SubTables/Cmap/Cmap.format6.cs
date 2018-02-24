@@ -6,15 +6,23 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class CmapFormat6SubTable : Cmap.SubTable
+    public class CmapFormat6SubTable : CmapSubTable
     {
         ushort _startCode;
         ushort _endCode;
         ushort[] _glyphIdArray;
 
-        public CmapFormat6SubTable(Cmap.EncodingRecord record) :
-            base(record)
-        { }
+        internal CmapFormat6SubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
+            base(reader, log, parent, offset, record)
+        {
+            ushort length = reader.ReadUInt16();
+
+            Language = reader.ReadUInt16();
+            _startCode = reader.ReadUInt16();
+            ushort entryCount = reader.ReadUInt16();
+            _endCode = (ushort)(_startCode + (entryCount - 1));
+            _glyphIdArray = reader.ReadArrayUInt16(entryCount);
+        }
 
         public override ushort CharPairToGlyphIndex(int codepoint, ushort defaultGlyphIndex, int nextCodepoint)
         {
@@ -30,16 +38,6 @@ namespace Molten.Font
                 return _glyphIdArray[codepoint - _startCode];
             else
                 return 0;
-        }
-
-        internal override void Read(BinaryEndianAgnosticReader reader, Logger log, TableHeader header)
-        {
-            ushort length = reader.ReadUInt16();
-            Language = reader.ReadUInt16();
-            _startCode = reader.ReadUInt16();
-            ushort entryCount = reader.ReadUInt16();
-            _endCode = (ushort)(_startCode + (entryCount-1));
-            _glyphIdArray = reader.ReadArrayUInt16(entryCount);
         }
     }
 }

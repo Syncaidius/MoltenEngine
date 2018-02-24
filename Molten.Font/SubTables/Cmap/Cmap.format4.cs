@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class CmapFormat4SubTable : Cmap.SubTable
+    public class CmapFormat4SubTable : CmapSubTable
     {
         ushort[] _startCode;
         ushort[] _endCode;    
@@ -14,9 +14,33 @@ namespace Molten.Font
         ushort[] _idRangeOffset;
         ushort[] _glyphIdArray;
 
-        public CmapFormat4SubTable(Cmap.EncodingRecord record) :
-            base(record)
-        { }
+        internal CmapFormat4SubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
+            base(reader, log, parent, offset, record)
+        {
+            Header.Length = reader.ReadUInt16() - 2U; // Subtract 2 because it also includes the length value in the byte size...
+            Language = reader.ReadUInt16();
+
+            ushort segCountX2 = reader.ReadUInt16();
+            ushort searchRange = reader.ReadUInt16();
+            ushort entrySelector = reader.ReadUInt16();
+            ushort rangeShift = reader.ReadUInt16();
+            int segCount = segCountX2 / 2;
+
+            _endCode = reader.ReadArrayUInt16(segCount);
+            ushort reservedPad = reader.ReadUInt16();
+            _startCode = reader.ReadArrayUInt16(segCount);
+            _idDelta = reader.ReadArrayInt16(segCount);
+
+            // Pre-modulo all the deltas to avoid performing a modulo calculation every time a character is looked up.
+            for (int i = 0; i < _idDelta.Length; i++)
+                _idDelta[i] = (short)(_idDelta[i] % 65536);
+
+            _idRangeOffset = reader.ReadArrayUInt16(segCount);
+
+            long tableEndPos = Header.Offset + Header.Length;
+            int numGlyphIDs = (int)(tableEndPos - reader.Position) / sizeof(ushort);
+            _glyphIdArray = reader.ReadArrayUInt16(numGlyphIDs);
+        }
 
         public override ushort CharPairToGlyphIndex(int codepoint, ushort defaultGlyphIndex, int nextCodepoint)
         {
@@ -59,33 +83,6 @@ namespace Molten.Font
             {
                 return 0;
             }
-        }
-
-        internal override void Read(BinaryEndianAgnosticReader reader, Logger log, TableHeader header)
-        {
-            ushort length = reader.ReadUInt16();
-            Language = reader.ReadUInt16();
-
-            ushort segCountX2 = reader.ReadUInt16();
-            ushort searchRange = reader.ReadUInt16();
-            ushort entrySelector = reader.ReadUInt16();
-            ushort rangeShift = reader.ReadUInt16();
-            int segCount = segCountX2 / 2;
-
-            _endCode = reader.ReadArrayUInt16(segCount);
-            ushort reservedPad = reader.ReadUInt16();
-            _startCode = reader.ReadArrayUInt16(segCount);
-            _idDelta = reader.ReadArrayInt16(segCount);
-
-            // Pre-modulo all the deltas to avoid performing a modulo calculation every time a character is looked up.
-            for (int i = 0; i < _idDelta.Length; i++)
-                _idDelta[i] = (short)(_idDelta[i] % 65536);
-
-            _idRangeOffset = reader.ReadArrayUInt16(segCount);
-
-            long tableEndPos = header.Offset + header.Length;
-            int numGlyphIDs = (int)(tableEndPos - reader.Position) / sizeof(ushort);
-            _glyphIdArray = reader.ReadArrayUInt16(numGlyphIDs);
         }
     }
 }

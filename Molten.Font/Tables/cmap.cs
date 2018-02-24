@@ -13,7 +13,7 @@ namespace Molten.Font
     {
         public ushort Version { get; internal set; }
 
-        public SubTable[] SubTables { get; internal set; }
+        public CmapSubTable[] Tables { get; internal set; }
 
         Dictionary<int, ushort> _charIndexToGlyph = new Dictionary<int, ushort>();
 
@@ -25,7 +25,7 @@ namespace Molten.Font
 
             if (!_charIndexToGlyph.TryGetValue(codepoint, out result))
             {
-                foreach (SubTable cmap in SubTables)
+                foreach (CmapSubTable cmap in Tables)
                 {
                     ushort glyphID = cmap.CharToGlyphIndex(codepoint);
 
@@ -43,7 +43,7 @@ namespace Molten.Font
             //  -> otherwise, return 0
             if (nextCodepoint > 0)
             {
-                foreach (SubTable cmap in SubTables)
+                foreach (CmapSubTable cmap in Tables)
                 {
                     ushort gylphID = cmap.CharPairToGlyphIndex(codepoint, result, nextCodepoint);
                     if (gylphID > 0)
@@ -60,12 +60,12 @@ namespace Molten.Font
         {
             ushort version = reader.ReadUInt16();
             ushort numRecords = reader.ReadUInt16();
-            EncodingRecord[] records = new EncodingRecord[numRecords];
+            CmapEncodingRecord[] records = new CmapEncodingRecord[numRecords];
 
             // Read offsets and prepare records.
             for (int i = 0; i < numRecords; i++)
             {
-                records[i] = new EncodingRecord()
+                records[i] = new CmapEncodingRecord()
                 {
                     Platform = (FontPlatform)reader.ReadUInt16(),
                     Encoding = reader.ReadUInt16(),
@@ -74,63 +74,40 @@ namespace Molten.Font
             }
 
             Version = version;
-                SubTables = new SubTable[numRecords];
+                Tables = new CmapSubTable[numRecords];
 
             // Populate records based on their format
             for (int i = 0; i < numRecords; i++)
             {
-                EncodingRecord record = records[i];
+                CmapEncodingRecord record = records[i];
                 reader.Position = header.Offset + record.Offset;
                 record.Format = reader.ReadUInt16();
 
                 switch (record.Format)
                 {
-                    case 0: SubTables[i] = new CmapFormat0SubTable(record); break;
+                    case 0: Tables[i] = new CmapFormat0SubTable(reader, log, this, record.Offset + 2, record); break;
                     //case 2: ReadFormat2(reader, record); break; // Had no luck finding a font with format_2 cmap subtables. Need one for testing.
-                    case 4: SubTables[i] = new CmapFormat4SubTable(record); break;
-                    case 6: SubTables[i] = new CmapFormat6SubTable(record); break;
+                    case 4: Tables[i] = new CmapFormat4SubTable(reader, log, this, record.Offset + 2, record); break;
+                    case 6: Tables[i] = new CmapFormat6SubTable(reader, log, this, record.Offset + 2, record); break;
                     default:
-                        log.WriteDebugLine($"[CMAP] Unsupported format for record {i}/{numRecords - 1}: Format {record.Format}");
+                        log.WriteDebugLine($"[CMAP] Unsupported format for sub-table {i}/{numRecords - 1}: Format {record.Format}");
                         break;
                 }
-
-                SubTables[i]?.Read(reader, log, header);
-            }
-        }
-
-        public abstract class SubTable
-        {
-            public ushort Format { get; private set; }
-
-            public FontPlatform Platform { get; protected set; }
-
-            public ushort Encoding { get; protected set; }
-
-            public ushort Language { get; protected set; }
-
-            public abstract ushort CharToGlyphIndex(int codepoint);
-
-            public abstract ushort CharPairToGlyphIndex(int codepoint, ushort defaultGlyphIndex, int nextCodepoint);
-
-            public SubTable(EncodingRecord record)
-            {
-                Format = record.Format;
-                Platform = record.Platform;
-                Encoding = record.Encoding;
             }
 
-            internal abstract void Read(BinaryEndianAgnosticReader reader, Logger log, TableHeader header);
+            reader.Position = header.Offset + header.Length;
         }
+    }
 
-        public class EncodingRecord
-        {
-            public ushort Format { get; internal set; }
 
-            public FontPlatform Platform { get; internal set; }
+    public class CmapEncodingRecord
+    {
+        public ushort Format { get; internal set; }
 
-            public ushort Encoding { get; internal set; }
+        public FontPlatform Platform { get; internal set; }
 
-            public uint Offset { get; internal set; }
-        }
-    }    
+        public ushort Encoding { get; internal set; }
+
+        public uint Offset { get; internal set; }
+    }
 }

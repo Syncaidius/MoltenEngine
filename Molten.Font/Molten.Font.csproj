@@ -90,6 +90,7 @@
     <Compile Include="SubTables\AttachListTable.cs" />
     <Compile Include="SubTables\AttachPointTable.cs" />
     <Compile Include="SubTables\ClassDefinitionTable.cs" />
+    <Compile Include="SubTables\Cmap\CmapSubTable.cs" />
     <Compile Include="SubTables\ConditionSetTable.cs" />
     <Compile Include="SubTables\CoverageTable.cs" />
     <Compile Include="SubTables\DeviceVariationIndexTable.cs" />
@@ -112,9 +113,9 @@
     <Compile Include="SubTables\ScriptListTable.cs" />
     <Compile Include="SubTables\VariationRegionListTable.cs" />
     <Compile Include="TableHeader.cs" />
-    <Compile Include="Tables\Cmap.format6.cs" />
-    <Compile Include="Tables\Cmap.format4.cs" />
-    <Compile Include="Tables\Cmap.format0.cs" />
+    <Compile Include="SubTables\Cmap\Cmap.format6.cs" />
+    <Compile Include="SubTables\Cmap\Cmap.format4.cs" />
+    <Compile Include="SubTables\Cmap\Cmap.format0.cs" />
     <Compile Include="Tables\DSIG.cs" />
     <Compile Include="Tables\FontGTable.cs" />
     <Compile Include="Tables\Fpgm.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Tables\Head.cs" />
     <Compile Include="Tables\Cvt.cs" />
     <Compile Include="Tables\Name.cs" />
+    <Compile Include="Tables\GSUB.cs" />
     <Compile Include="Tables\Prep.cs" />
     <Compile Include="Tables\Post.cs" />
     <Compile Include="Tables\FFTM.cs" />
