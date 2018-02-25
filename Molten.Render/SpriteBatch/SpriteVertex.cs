@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal struct SpriteVertex : IVertexType
+    public struct SpriteVertex : IVertexType
     {
         [VertexElement(VertexElementType.Vector2, VertexElementUsage.Position, 0)]
         public Vector2 Position;

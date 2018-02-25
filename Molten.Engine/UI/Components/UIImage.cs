@@ -49,7 +49,7 @@ namespace Molten.UI
             base.OnRender(sb);
 
             if (_texture != null)
-                sb.Draw(_texture, _source, _clippingBounds, _color, 0, new Vector2());
+                sb.Draw(_texture, _source, _clippingBounds, _color, 0, new Vector2(), null);
         }
 
         [DisplayName("Source File")]

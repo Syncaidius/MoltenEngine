@@ -163,10 +163,7 @@
     <Compile Include="Scene\Changes\SpriteSetLayerVisibility.cs" />
     <Compile Include="Scene\SceneRenderDataDX11.cs" />
     <Compile Include="Spritebatch\SpriteBatch.cs" />
-    <Compile Include="Spritebatch\SpriteClipZone.cs" />
-    <Compile Include="Spritebatch\SpriteCluster.cs" />
     <Compile Include="Spritebatch\SpriteFont.cs" />
-    <Compile Include="Spritebatch\SpriteVertex.cs" />
     <Compile Include="Scene\SpriteLayer.cs" />
     <Compile Include="ShaderModelExtensionsDX11.cs" />
     <Compile Include="Shaders\Compiler\ComputeCompiler.cs" />
