@@ -6,30 +6,29 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class ChainPosRuleSetTable : FontSubTable
+    public class ChainRuleSetTable : FontSubTable
     {
         /// <summary>
         /// Gets an array of PosRule tables, ordered by preference.
         /// </summary>
-        public ChainPosRuleTable[] Tables { get; internal set; }
+        public ChainRuleTable[] Tables { get; internal set; }
 
-        internal ChainPosRuleSetTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal ChainRuleSetTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort posRuleCount = reader.ReadUInt16();
             ushort[] posRuleOffsets = reader.ReadArrayUInt16(posRuleCount);
-            Tables = new ChainPosRuleTable[posRuleCount];
+            Tables = new ChainRuleTable[posRuleCount];
             for (int i = 0; i < posRuleCount; i++)
-                Tables[i] = new ChainPosRuleTable(reader, log, this, posRuleOffsets[i]);
+                Tables[i] = new ChainRuleTable(reader, log, this, posRuleOffsets[i]);
         }
     }
 
     /// <summary>
-    /// A PosRule table also contains a count of the positioning operations to be performed on the input glyph sequence (posCount) and an array of PosLookupRecords (posLookupRecords). 
-    /// Each record specifies a position in the input glyph sequence and a LookupList index to the positioning lookup to be applied there. 
-    /// The array should list records in design order, or the order the lookups should be applied to the entire glyph sequence.
+    /// See for ChainPosRule table: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#chaining-context-positioning-format-2-class-based-glyph-contexts
+    /// See for ChainSubRule table: https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#62-chaining-context-substitution-format-2-class-based-glyph-contexts
     /// </summary>
-    public class ChainPosRuleTable : FontSubTable
+    public class ChainRuleTable : FontSubTable
     {
         /// <summary>
         /// Gets an array of gylph or class IDs (depending on format) for a backtrack sequence.
@@ -49,9 +48,9 @@ namespace Molten.Font
         /// <summary>
         /// Gets an array of positioning lookups, in design order.
         /// </summary>
-        public PosLookupRecord[] Records { get; internal set; }
+        public RuleLookupRecord[] Records { get; internal set; }
 
-        internal ChainPosRuleTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal ChainRuleTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort backtrackGlyphCount = reader.ReadUInt16();
@@ -64,10 +63,10 @@ namespace Molten.Font
             LookAheadSequence = reader.ReadArrayUInt16(lookAheadGlyphCount);
 
             ushort posCount = reader.ReadUInt16();
-            Records = new PosLookupRecord[posCount];
+            Records = new RuleLookupRecord[posCount];
             for(int i = 0; i < posCount; i++)
             {
-                Records[i] = new PosLookupRecord()
+                Records[i] = new RuleLookupRecord()
                 {
                     SequenceIndex = reader.ReadUInt16(),
                     LookupListIndex = reader.ReadUInt16(),
