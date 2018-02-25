@@ -14,10 +14,30 @@ namespace Molten.Font
     {
         public ushort Format { get; private set; }
 
+        /// <summary>
+        /// Gets an array of <see cref="NameRecord"/>. Each record contains a string for a specific naming type/ID and platform (e.g. author, copyright, trademark, etc).
+        /// </summary>
         public NameRecord[] Records { get; private set; }
 
         public string[] LanguageTags { get; private set; }
 
+        /// <summary>
+        /// Returns a string matching the provided type and platform, or <see cref="String.Empty"/> if not present
+        /// </summary>
+        /// <param name="type">The type of string to return.</param>
+        /// <param name="platform">The platform for which to retrieve the string.</param>
+        /// <returns></returns>
+        public string GetNameString(FontNameType type, FontPlatform platform)
+        {
+            // TODO take into account the language.
+            foreach(NameRecord record in Records)
+            {
+                if (record.NameID == type && record.Platform == platform)
+                    return record.Value;
+            }
+
+            return string.Empty;
+        }
         internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             Format = reader.ReadUInt16();
@@ -47,7 +67,7 @@ namespace Molten.Font
                         NameRecord record = new NameRecord()
                         {
                             Platform = (FontPlatform)reader.ReadUInt16(),
-                            PlatformEncoding = reader.ReadUInt16(),
+                            PlatformEncodingID = reader.ReadUInt16(),
                             LanguageID = reader.ReadUInt16(),
                             NameID = (FontNameType)reader.ReadUInt16(),
                         };
@@ -57,7 +77,8 @@ namespace Molten.Font
 
                         // Jump to string in string storage.
                         stringStorageReader.BaseStream.Position = offset;
-                        record.Value = Encoding.ASCII.GetString(stringStorageReader.ReadBytes(length)); // TODO use platform-specific encoding if needed/possible.
+                        Encoding encoding = FontLookup.GetEncoding(record.Platform, record.PlatformEncodingID);
+                        record.Value = encoding.GetString(stringStorageReader.ReadBytes(length)); // TODO use platform-specific encoding if needed/possible.
                         Records[i] = record;
                     }
 
@@ -71,8 +92,8 @@ namespace Molten.Font
                             ushort length = reader.ReadUInt16();
                             ushort offset = reader.ReadUInt16();
 
-                            //Language-tag strings stored in the Naming table must be encoded in UTF-16BE (Big Endian). 
-                            LanguageTags[i] = Encoding.BigEndianUnicode.GetString(stringStorageReader.ReadBytes(length));
+                            // Language-tag strings stored in the Naming table must be encoded in UTF-16BE (Big Endian). 
+                            LanguageTags[i] = Encoding.BigEndianUnicode.GetString(stringStorageReader.ReadBytes(length)).Replace("\0", "");
                         }
                     }
                     else
@@ -94,7 +115,7 @@ namespace Molten.Font
             /// <summary>Gets the platform-specific encoding ID. <para/>
             /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/name#enc3 <para/>
             /// See Also: https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6name.html</summary>
-            public ushort PlatformEncoding { get; internal set; }
+            public ushort PlatformEncodingID { get; internal set; }
 
             public ushort LanguageID { get; internal set; }
 
@@ -108,5 +129,4 @@ namespace Molten.Font
             }
         }
     }
-
 }

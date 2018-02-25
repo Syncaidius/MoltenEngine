@@ -269,5 +269,40 @@ namespace Molten.Font
             "ccaron",
             "dcroat"
         };
+
+        public static Encoding GetEncoding(FontPlatform platform, ushort encodingID)
+        {
+            switch (platform)
+            {
+                default:
+                case FontPlatform.ISO:
+                case FontPlatform.Custom:
+                    return Encoding.ASCII;
+
+                case FontPlatform.Macintosh:
+                    return GetMacintoshEncoding(encodingID);
+
+                case FontPlatform.Unicode:
+                    return GetUnicodeEncoding(encodingID);
+
+                case FontPlatform.Windows:
+                    return GetWindowsEncoding(encodingID);
+            }
+        }
+
+        public static Encoding GetMacintoshEncoding(ushort macEncodingID)
+        {
+            return Encoding.ASCII; // TODO expand on this
+        }
+
+        public static Encoding GetUnicodeEncoding(ushort unicodeEncodingID)
+        {
+            return Encoding.BigEndianUnicode; // TODO expand on this
+        }
+
+        public static Encoding GetWindowsEncoding(ushort windowsEncodingID)
+        {
+            return Encoding.BigEndianUnicode; // TODO expand on this
+        }
     }
 }

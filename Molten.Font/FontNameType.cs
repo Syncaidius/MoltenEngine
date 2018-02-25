@@ -88,7 +88,7 @@ namespace Molten.Font
         /// <summary>
         /// URL where additional licensing information can be found.
         /// </summary>
-        LicenseInfo = 14,
+        LicenseURL = 14,
 
         /// <summary>
         /// Reserved.

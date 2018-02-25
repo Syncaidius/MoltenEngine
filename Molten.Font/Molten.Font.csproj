@@ -67,6 +67,7 @@
     <Compile Include="FontFile.cs" />
     <Compile Include="FontDirectionHint.cs" />
     <Compile Include="FontHeadFlags.cs" />
+    <Compile Include="FontInfo.cs" />
     <Compile Include="FontLocaFormat.cs" />
     <Compile Include="FontLookup.cs" />
     <Compile Include="FontTableTagAttribute.cs" />

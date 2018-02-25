@@ -9,6 +9,7 @@ namespace Molten.Font
     /// <summary>A loaded version of a font file.</summary>
     public class FontFile
     {
+        FontInfo _info;
         FontTableList _tables;
         FontFlags _flags;
         
@@ -30,6 +31,8 @@ namespace Molten.Font
             if (_flags == FontFlags.Invalid)
                 return;
 
+            Name nameTable = _tables.Get<Name>();
+            _info = new FontInfo(nameTable);
             // TODO Build the font (glyphs, metadata, etc) using data from provided tables.
         }
 
@@ -49,5 +52,10 @@ namespace Molten.Font
         /// Gets a flags value containing information about the current <see cref="FontFile"/>.
         /// </summary>
         public FontFlags Flags => _flags;
+
+        /// <summary>
+        /// Gets the <see cref="FontInfo"/> bound to the current <see cref="FontFile"/>. Contains basic details such as the font name, description, copyright and designer name.
+        /// </summary>
+        public FontInfo Info => _info;
     }
 }
