@@ -131,6 +131,7 @@
     <Compile Include="Tables\GPOS.ValueRecord.cs" />
     <Compile Include="Tables\Hdmx.cs" />
     <Compile Include="Tables\GPOS.cs" />
+    <Compile Include="Tables\PCLT.cs" />
     <Compile Include="Tables\Os2.cs" />
     <Compile Include="Tables\Loca.cs" />
     <Compile Include="Tables\Kern.cs" />
