@@ -76,7 +76,7 @@ namespace Molten.Graphics
             DynamicIndexBuffer = new GraphicsBuffer(_device, BufferMode.Dynamic, BindFlags.IndexBuffer, maxIndexBytesDynamic);
 
             StagingBuffer = new StagingBuffer(_device, StagingBufferFlags.Write, maxVertexBytesStatic / 4);
-            SpriteBatcher = new SpriteBatch(this);
+            SpriteBatcher = new SpriteBatch(this, 3000);
 
             InitializeDebugOverlay();
         }

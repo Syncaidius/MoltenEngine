@@ -83,6 +83,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\SampleSceneGame.cs" />
+    <Compile Include="Common\SpriteCacheTestObject.cs" />
+    <Compile Include="Common\UnfairSpriteCacheTestObject.cs" />
     <Compile Include="FontTest.cs" />
     <Compile Include="MultiWindowGame.cs" />
     <Compile Include="1DTextureTest.cs" />
@@ -91,6 +93,8 @@
     <Compile Include="SceneStressTest.cs" />
     <Compile Include="SceneTexture1DArrayTest.cs" />
     <Compile Include="SceneTexture2DArrayTest.cs" />
+    <Compile Include="SpriteBatchCacheFair.cs" />
+    <Compile Include="SpriteBatchCacheUnfair.cs" />
     <Compile Include="SpriteBatchUnfairTest.cs" />
     <Compile Include="SpriteBatchTest.cs" />
     <Compile Include="Common\CubeArrayVertex.cs" />

@@ -17,6 +17,7 @@ namespace Molten.Graphics
             public Rectangle ClipBounds;
             public int[] ClusterIDs;
             public int ClusterCount;
+            public SpriteCluster CurCluster;
         }
 
         protected class SpriteCluster
@@ -67,9 +68,10 @@ namespace Molten.Graphics
             int id = _clipCount;
 
             if (_clipZones.Length == id)
-            {
                 Array.Resize(ref _clipZones, _clipZones.Length + ZONE_EXPANSION);
 
+            if (id == _clipsInitialized)
+            {
                 _clipZones[id] = new SpriteClipZone()
                 {
                     Active = isActive,
@@ -80,21 +82,9 @@ namespace Molten.Graphics
             }
             else
             {
-                if (id == _clipsInitialized)
-                {
-                    _clipZones[id] = new SpriteClipZone()
-                    {
-                        Active = isActive,
-                        ClusterIDs = new int[CLUSTER_EXPANSION],
-                    };
-
-                    _clipsInitialized++;
-                }
-                else
-                {
-                    _clipZones[id].ClusterCount = 0;
-                    _clipZones[id].Active = isActive;
-                }
+                _clipZones[id].ClusterCount = 0;
+                _clipZones[id].CurCluster = null;
+                _clipZones[id].Active = isActive;
             }
 
             _clipCount++;
@@ -127,6 +117,7 @@ namespace Molten.Graphics
             if (clipCluster == clip.ClusterIDs.Length)
                 Array.Resize(ref clip.ClusterIDs, clip.ClusterIDs.Length + CLUSTER_EXPANSION);
 
+            clip.CurCluster = cluster;
             clip.ClusterIDs[clipCluster] = _clusterCount;
             clip.ClusterCount++;
             _clusterCount++;
@@ -152,8 +143,7 @@ namespace Molten.Graphics
             }
             else
             {
-                int clusterID = clip.ClusterCount - 1;
-                cluster = _clusterBank[clip.ClusterIDs[clusterID]];
+                cluster = clip.CurCluster;
 
                 if (cluster.Texture != font.UnderlyingTexture || cluster.Material != material)
                     cluster = ConfigureNewCluster(clip, font.UnderlyingTexture, material);
@@ -296,9 +286,7 @@ namespace Molten.Graphics
             }
             else
             {
-                int clusterID = clip.ClusterCount - 1;
-                cluster = _clusterBank[clip.ClusterIDs[clusterID]];
-
+                cluster = clip.CurCluster;
                 if (cluster.Texture != texture || cluster.Material != material)
                 {
                     cluster = ConfigureNewCluster(clip, texture, material);
@@ -330,24 +318,66 @@ namespace Molten.Graphics
 
         public void Draw(SpriteBatchCache cache)
         {
-            SpriteClipZone clip = _clipZones[_curClip];
+            if (cache._clusterCount == 0)
+                return;
 
-            // If the current cluster is empty, start copying right now.
-            if (clip.ClusterCount == 0)
+            SpriteClipZone clip = _clipZones[_curClip];
+            SpriteCluster cluster;
+            SpriteClipZone cacheClip;
+            SpriteCluster cacheCluster;
+
+            for (int i = 0; i < cache._clipCount; i++)
             {
-                
-            }
-            else
-            {
-                // Never allow the first clip to be replaced in the current batch.
-                if (_curClip > 0)
+                cacheClip = cache._clipZones[i];
+
+                // Configure a new clip if the cache's current clip is active.
+                if (cacheClip.Active)
                 {
-                    // TODO if the current clip has no clusters, just replace it with the first clip from 
+                    ConfigureNewClip(cacheClip.ClipBounds, true);
+                    clip = _clipZones[_curClip];
                 }
 
-                for (int i = 0; i < cache._clipCount; i++)
+                // If the current cache clip is empty, continue to the next
+                if (cacheClip.ClusterCount == 0)
+                    continue;
+
+                int cacheClusterID = 0;
+                cacheCluster = cache._clusterBank[cacheClip.ClusterIDs[cacheClusterID]];
+                if (clip.ClusterCount == 0)
                 {
-                
+                    // Prepare a new cluster to match the current cache cluster.
+                    cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material);
+                }
+                else
+                {
+                    cluster = clip.CurCluster;
+                    // See if we can merge the first cache cluster into the current. If not, create a new cluster to start copying to.
+                    if (cluster.Texture != cacheCluster.Texture || cluster.Material != cacheCluster.Material)
+                        cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material);
+                }
+
+
+                // Copy cache clusters
+                while (cacheCluster != null)
+                {
+                    int needed = cluster.SpriteCount + cacheCluster.SpriteCount;
+                    if (needed >= cluster.Sprites.Length)
+                        Array.Resize(ref cluster.Sprites, needed + SPRITE_EXPANSION);
+
+                    Array.Copy(cacheCluster.Sprites, 0, cluster.Sprites, cluster.SpriteCount, cacheCluster.SpriteCount);
+                    cacheClusterID++;
+                    cluster.SpriteCount += cacheCluster.SpriteCount;
+
+                    // Prepare the next cache cluster copy, if needed.
+                    if (cacheClusterID < cacheClip.ClusterCount)
+                    { 
+                        cacheCluster = cache._clusterBank[cacheClip.ClusterIDs[cacheClusterID]];
+                        cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material);
+                    }
+                    else
+                    {
+                        cacheCluster = null;
+                    }
                 }
             }
         }
@@ -372,7 +402,7 @@ namespace Molten.Graphics
                     clipBounds.Bottom = current.Bottom;
             }
 
-            //create new clip zone.
+            // Create new clip zone.
             _clipStack.Push(_curClip);
             ConfigureNewClip(clipBounds, true);
         }

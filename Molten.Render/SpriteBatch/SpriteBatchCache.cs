@@ -9,6 +9,15 @@ namespace Molten.Graphics
     /// <summary>A implementation of <see cref="ISpriteBatch"/> which does not draw anything. Instead draw calls are cached until the cache is reset."/></summary>
     public class SpriteBatchCache : SpriteBatchBase, ISpriteBatch
     {
-        public SpriteBatchCache() { }
+        public SpriteBatchCache()
+        {
+            Reset();
+        }
+
+        protected override void Reset()
+        {
+            base.Reset();
+            ConfigureNewClip(new Rectangle(0, 0, int.MaxValue, int.MaxValue), false);
+        }
     }
 }

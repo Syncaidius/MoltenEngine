@@ -8,16 +8,20 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SpriteBatchTest : SampleSceneGame
+    public class SpriteBatchCacheFair : SampleSceneGame
     {
-        public override string Description => "A stress test of sprite batching under normal circumstances (i.e. sprites from the same texture drawn together).";
+        public override string Description => "An stress test for sprite batch caching. Sprites are drawn in order of texture/no-texture";
 
         SceneObject _parent;
         SceneObject _child;
+        List<Matrix> _positions;
         Camera2D _cam2D;
         IMesh<VertexTexture> _mesh;
 
-        public SpriteBatchTest(EngineSettings settings = null) : base("Sprite Batch", settings) { }
+        public SpriteBatchCacheFair(EngineSettings settings = null) : base("Sprite Batch Cache", settings)
+        {
+
+        }
 
         protected override void OnInitialize(Engine engine)
         {
@@ -85,63 +89,7 @@ namespace Molten.Samples
             SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
         }
 
-        private void SetupTexturedSprites(ITexture2D tex)
-        {
-            for(int i = 0; i < 10000; i++)
-            {
-                Sprite s = new Sprite()
-                {
-                    Position = new Vector2()
-                    {
-                        X = Rng.Next(0, 1920),
-                        Y = Rng.Next(0, 1080),
-                    },
 
-                    Color = new Color()
-                    {
-                        R = (byte)Rng.Next(0, 255),
-                        G = (byte)Rng.Next(0, 255),
-                        B = (byte)Rng.Next(0, 255),
-                        A = (byte)Rng.Next(0, 50),
-                    },
-
-                    Texture = tex,
-                    Source = new Rectangle(0,0,128,128),
-                    Origin = new Vector2(0.5f),
-                };
-
-                SampleScene.RenderData.AddSprite(s);
-            }
-        }
-
-        private void SetupRectangles()
-        {
-            for (int i = 0; i < 100000; i++)
-            {
-                RectangleSprite s = new RectangleSprite()
-                {
-                    Destination = new Rectangle()
-                    {
-                        X = Rng.Next(0, 1920),
-                        Y = Rng.Next(0, 1080),
-                        Width = Rng.Next(16, 129),
-                        Height = Rng.Next(16, 129)
-                    },
-
-                    Color = new Color()
-                    {
-                        R = (byte)Rng.Next(0, 255),
-                        G = (byte)Rng.Next(0, 255),
-                        B = (byte)Rng.Next(0, 255),
-                        A = 40,
-                    },
-
-                    Origin = new Vector2(0.5f),
-                };
-
-                SampleScene.RenderData.AddSprite(s);
-            }
-        }
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
         {
@@ -158,14 +106,14 @@ namespace Molten.Samples
             ITexture2D tex = content.Get<ITexture2D>(cr.RequestedFiles[1]);
             mat.SetDefaultResource(tex, 0);
             _mesh.Material = mat;
-            SetupTexturedSprites(tex);
-            SetupRectangles();
+
+            SpriteCacheTestObject obj = new SpriteCacheTestObject(this, tex);
+            SampleScene.AddSprite(obj);
         }
 
         protected override void OnUpdate(Timing time)
         {
             RotateParentChild(_parent, _child, time);
-
             base.OnUpdate(time);
         }
     }
