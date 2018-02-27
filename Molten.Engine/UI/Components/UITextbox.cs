@@ -533,11 +533,11 @@ namespace Molten.UI
             base.OnRender(sb);
 
             if (_ui.Focused == this)
-                sb.Draw(_globalBounds, _colorBorderFocused);
+                sb.DrawRect(_globalBounds, _colorBorderFocused);
             else
-                sb.Draw(_globalBounds, _colorBorderUnFocused);
+                sb.DrawRect(_globalBounds, _colorBorderUnFocused);
 
-            sb.Draw(_clippingBounds, _bgColor);
+            sb.DrawRect(_clippingBounds, _bgColor);
 
             if (_cursorVisible && _ui.Focused == this)
                 sb.DrawString(_text.Font, "|", _text.ActualPosition + new Vector2(_cursorPos, 0), _cursorColor);
@@ -548,7 +548,7 @@ namespace Molten.UI
             base.OnRenderClipped(sb);
 
             if (_selectionIndex != _cursorIndex)
-                sb.Draw(_selectionBounds, _selectionColor);
+                sb.DrawRect(_selectionBounds, _selectionColor);
 
             _text.Draw(sb);
         }

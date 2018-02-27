@@ -78,7 +78,7 @@ namespace Molten.UI
         protected override void OnRender(ISpriteBatch sb)
         {
 
-            sb.Draw(_globalBounds, _color[(int)_state]);
+            sb.DrawRect(_globalBounds, _color[(int)_state]);
             _text.Draw(sb);
         }
 

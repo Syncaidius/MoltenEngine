@@ -253,19 +253,19 @@ namespace Molten.UI
             {
                 case UIWindowState.Open:
                     if (_ui.Focused == this)
-                        sb.Draw(_globalBounds, _colorBorderFocused);
+                        sb.DrawRect(_globalBounds, _colorBorderFocused);
                     else
-                        sb.Draw(_globalBounds, _colorBorder);
+                        sb.DrawRect(_globalBounds, _colorBorder);
 
-                    sb.Draw(_clippingBounds, _colorBackground);
+                    sb.DrawRect(_clippingBounds, _colorBackground);
 
                     _text.Draw(sb);
 
                     break;
 
                 case UIWindowState.Minimized:
-                    sb.Draw(_globalBounds, _colorBorderFocused);
-                    sb.Draw(_clippingBounds, _colorBackground);
+                    sb.DrawRect(_globalBounds, _colorBorderFocused);
+                    sb.DrawRect(_clippingBounds, _colorBackground);
                     _text.Draw(sb);
                     break;
             }

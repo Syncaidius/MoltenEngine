@@ -128,8 +128,8 @@ namespace Molten.UI
             base.OnRender(sb);
 
             // Draw main box
-            sb.Draw(_globalBounds, _borderColor);
-            sb.Draw(_clippingBounds, _bgColor);
+            sb.DrawRect(_globalBounds, _borderColor);
+            sb.DrawRect(_clippingBounds, _bgColor);
         }
 
         [DataMember]

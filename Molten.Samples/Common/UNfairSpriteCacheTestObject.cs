@@ -62,7 +62,7 @@ namespace Molten.Samples
                         Height = rng.Next(16, 129)
                     };
 
-                    _cache.Draw(dest, col, 0, origin);
+                    _cache.DrawRect(dest, col, 0, origin);
                 }
             }
         }

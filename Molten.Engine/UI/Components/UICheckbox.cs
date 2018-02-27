@@ -76,10 +76,10 @@ namespace Molten.UI
         {
             base.OnRender(sb);
 
-            sb.Draw(_boxBounds, _colorBox);
+            sb.DrawRect(_boxBounds, _colorBox);
 
             if (_isChecked)
-                sb.Draw(_checkedBounds, _colorChecked);
+                sb.DrawRect(_checkedBounds, _colorChecked);
 
             _text.Draw(sb);
         }

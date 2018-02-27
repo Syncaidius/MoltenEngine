@@ -62,8 +62,8 @@ namespace Molten.UI
         {
             if (_isValid && _visible)
             {
-                sb.Draw(_bounds, _borderColor);
-                sb.Draw(_innerBounds, _mainColor);
+                sb.DrawRect(_bounds, _borderColor);
+                sb.DrawRect(_innerBounds, _mainColor);
 
                 _text.Draw(sb);
             }

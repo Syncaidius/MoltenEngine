@@ -974,11 +974,11 @@ namespace Molten.UI
             base.OnRender(sb);
 
             if (_ui.Focused == this)
-                sb.Draw(_globalBounds, _colorBorderFocused);
+                sb.DrawRect(_globalBounds, _colorBorderFocused);
             else
-                sb.Draw(_globalBounds, _colorBorderUnFocused);
+                sb.DrawRect(_globalBounds, _colorBorderUnFocused);
 
-            sb.Draw(_clippingBounds, _bgColor);
+            sb.DrawRect(_clippingBounds, _bgColor);
         }
 
         protected override void OnRenderClipped(ISpriteBatch sb)
@@ -1007,7 +1007,7 @@ namespace Molten.UI
                     curLine = _lines[i];
 
                     if (i >= selectStart && i <= selectEnd)
-                        sb.Draw(curLine.selectionBounds, _selectionColor);
+                        sb.DrawRect(curLine.selectionBounds, _selectionColor);
 
                     curLine.textObject.Draw(sb);
                 }

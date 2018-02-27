@@ -33,7 +33,7 @@ namespace Molten.Graphics
 
         private void DrawBar(string label, ISpriteFont font, SpriteBatch sb, GraphicsBuffer buffer, Rectangle destination)
         {
-            sb.Draw(destination, _bgColor);
+            sb.DrawRect(destination, _bgColor);
 
             double capacity = buffer.ByteCapacity;
             int used = 0;
@@ -47,7 +47,7 @@ namespace Molten.Graphics
                     double usePercent = seg.ByteOffset / capacity;
                     segDest.X = destination.X + (int)(usePercent * destination.Width);
                     segDest.Width = (int)((seg.ByteCount / capacity) * destination.Width);
-                    sb.Draw(segDest, _segColor);
+                    sb.DrawRect(segDest, _segColor);
                     used += seg.ByteCount;
                 }
 

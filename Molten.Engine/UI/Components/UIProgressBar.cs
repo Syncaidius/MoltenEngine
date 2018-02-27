@@ -79,7 +79,7 @@ namespace Molten.UI
 
         protected override void OnRender(ISpriteBatch sb)
         {
-            sb.Draw(_globalBounds, _bgColor);
+            sb.DrawRect(_globalBounds, _bgColor);
 
             // Draw bar
             if (_value != _minValue)
@@ -87,7 +87,7 @@ namespace Molten.UI
                 switch (_style)
                 {
                     case UIProgressBarStyle.Solid:
-                        sb.Draw(_barBounds, _barColor);
+                        sb.DrawRect(_barBounds, _barColor);
                         break;
 
                     case UIProgressBarStyle.Segmented:
@@ -107,7 +107,7 @@ namespace Molten.UI
                         {
                             segBounds.Width = (int)Math.Min(availableWidth, _segmentWidth);
 
-                            sb.Draw(segBounds, _barColor);
+                            sb.DrawRect(segBounds, _barColor);
 
                             increment = segBounds.Width + _segmentSpacing;
                             segBounds.X += increment;

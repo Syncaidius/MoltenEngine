@@ -131,8 +131,8 @@ namespace Molten.UI
             base.OnRender(sb);
 
             // Draw main box
-            sb.Draw(_boxBounds, _borderColor);
-            sb.Draw(_innerBounds, _bgColor);
+            sb.DrawRect(_boxBounds, _borderColor);
+            sb.DrawRect(_innerBounds, _bgColor);
 
             _text.Draw(sb);
         }

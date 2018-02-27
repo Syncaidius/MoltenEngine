@@ -11,6 +11,17 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class SpriteBatchBase : EngineObject
     {
+        protected enum ClusterFormat
+        {
+            Sprite = 0, // Textured or untextured (rectangle) sprites
+
+            Line = 1, // Untextured lines
+
+            Triangle = 2, // Untextured triangles
+
+            Circle = 3, // Untextured circles - Uses a geometry shader to handle this
+        }
+
         protected class SpriteClipZone
         {
             public bool Active;
@@ -22,6 +33,7 @@ namespace Molten.Graphics
 
         protected class SpriteCluster
         {
+            public ClusterFormat Format;
             public ITexture2D Texture;
             public IMaterial Material;
             public SpriteVertex[] Sprites;
@@ -92,7 +104,7 @@ namespace Molten.Graphics
             _clipZones[_curClip].ClipBounds = bounds;
         }
 
-        protected SpriteCluster ConfigureNewCluster(SpriteClipZone clip, ITexture2D texture, IMaterial material)
+        protected SpriteCluster ConfigureNewCluster(SpriteClipZone clip, ITexture2D texture, IMaterial material, ClusterFormat format)
         {
             if (_clusterBank.Length == _clusterCount)
             {
@@ -104,6 +116,7 @@ namespace Molten.Graphics
             }
 
             SpriteCluster cluster = _clusterBank[_clusterCount];
+            cluster.Format = format;
             cluster.Texture = texture;
             cluster.Material = material;
             cluster.drawnTo = 0;
@@ -133,42 +146,20 @@ namespace Molten.Graphics
         public void DrawString(ISpriteFont font, string text, Vector2 position, Color color, IMaterial material = null)
         {
             SpriteClipZone clip = _clipZones[_curClip];
-            SpriteCluster cluster;
-            int sID = 0;
+            int spriteID = 0;
+            int strLength = text.Length;
+            SpriteCluster cluster = GetCluster(clip, font.UnderlyingTexture, material, ClusterFormat.Sprite, strLength, out spriteID);
 
-            // If the current cluster is for a different texture, start a new cluster.
-            if (clip.ClusterCount == 0)
-            {
-                cluster = ConfigureNewCluster(clip, font.UnderlyingTexture, material);
-            }
-            else
-            {
-                cluster = clip.CurCluster;
-
-                if (cluster.Texture != font.UnderlyingTexture || cluster.Material != material)
-                    cluster = ConfigureNewCluster(clip, font.UnderlyingTexture, material);
-                else
-                    sID = cluster.SpriteCount;
-            }
-
-            // Ensure the whole string can fit in the new/existing cluster.
-            int sLength = cluster.Sprites.Length;
-            int needed = sID + text.Length;
-            if (needed >= sLength)
-                Array.Resize(ref cluster.Sprites, sLength + SPRITE_EXPANSION + needed);
-
-            //cycle through all characters in the string and process them
-            int strLength = text == null ? 0 : text.Length;
+            // Cycle through all characters in the string and process them
             Rectangle invalid = Rectangle.Empty;
             Vector2 charPos = position;
-
             for (int i = 0; i < strLength; i++)
             {
                 char c = text[i];
                 Rectangle charRect = font.GetCharRect(c);
 
                 // Set the sprite info
-                cluster.Sprites[sID++] = new SpriteVertex()
+                cluster.Sprites[spriteID++] = new SpriteVertex()
                 {
                     Position = new Vector2(charPos.X, charPos.Y),
                     Size = new Vector2(charRect.Width, charRect.Height),
@@ -178,14 +169,74 @@ namespace Molten.Graphics
                     Rotation = 0,
                 };
 
-                //increase pos by size of char (along X)
+                // Increase pos by size of char (along X)
                 charPos.X += charRect.Width;
             }
 
-            cluster.SpriteCount += text.Length;
+            cluster.SpriteCount += strLength;
         }
 
-        public void Draw(Rectangle destination, Color color, IMaterial material = null)
+        public void DrawCircle(Vector2 center, float radius, float startAngle, float endAngle, Color col, int segments = 16)
+        {
+            DrawEllipse(center, radius, radius, startAngle, endAngle, col, segments);
+        }
+
+        public void DrawCircle(Vector2 center, float radius, Color col, int segments = 16)
+        {
+            DrawEllipse(center, radius, radius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, segments);
+        }
+
+        public void DrawEllipse(Vector2 center, float xRadius, float yRadius, Color col, int segments = 16)
+        {
+            DrawEllipse(center, xRadius, yRadius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, segments);
+        }
+
+        public void DrawEllipse(Vector2 center, float xRadius, float yRadius, float startAngle, float endAngle, Color col, int segments = 16)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawTriangle(Vector2 p1, Vector2 p2, Vector2 p3, Color col)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawTriangle(Vector2 p1, Vector2 p2, Vector2 p3, Color col1, Color col2, Color col3)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawPolygon(IList<Vector2> points, IList<Color> colors)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawPolygon(IList<Vector2> points, Color col)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawLines(IList<Vector2> points, IList<Color> pointColors)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawLines(IList<Vector2> points, Color color)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawLine(Vector2 p1, Vector2 p2, Color col)
+        {
+            DrawLine(p1, p2, col, col);
+        }
+
+        public void DrawLine(Vector2 p1, Vector2 p2, Color col1, Color col2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawRect(Rectangle destination, Color color, IMaterial material = null)
         {
             Draw(null, new Rectangle(0, 0, 1, 1), destination, color, 0, new Vector2(), material);
         }
@@ -196,7 +247,7 @@ namespace Molten.Graphics
         /// <param name="rotation">The rotation of the sprite, in radians.</param>
         /// <param name="origin">The origin, as a scale value. 1.0f will set the origin to the bottom-right corner of the sprite.
         /// 0.0f will set the origin to the top-left. </param>
-        public void Draw(Rectangle destination, Color color, float rotation, Vector2 origin, IMaterial material = null)
+        public void DrawRect(Rectangle destination, Color color, float rotation, Vector2 origin, IMaterial material = null)
         {
             Draw(null, new Rectangle(0, 0, 1, 1), destination, color, rotation, origin, material);
         }
@@ -275,32 +326,8 @@ namespace Molten.Graphics
         /// <param name="origin"></param>
         public void Draw(ITexture2D texture, Rectangle source, Rectangle destination, Color color, float rotation, Vector2 origin, IMaterial material)
         {
-            SpriteClipZone clip = _clipZones[_curClip];
-            SpriteCluster cluster;
             int spriteID = 0;
-
-            // If the current cluster is for a different texture, start a new cluster.
-            if (clip.ClusterCount == 0)
-            {
-                cluster = ConfigureNewCluster(clip, texture, material);
-            }
-            else
-            {
-                cluster = clip.CurCluster;
-                if (cluster.Texture != texture || cluster.Material != material)
-                {
-                    cluster = ConfigureNewCluster(clip, texture, material);
-                }
-                else
-                {
-                    spriteID = cluster.SpriteCount;
-                    int sLength = cluster.Sprites.Length;
-
-                    // If we can't fit the sprite into the cluster, expand.
-                    if (spriteID == sLength)
-                        Array.Resize(ref cluster.Sprites, sLength + SPRITE_EXPANSION);
-                }
-            }
+            SpriteCluster cluster = GetCluster(_clipZones[_curClip], texture, material, ClusterFormat.Sprite, 1, out spriteID);
 
             // Set the sprite info
             cluster.Sprites[spriteID] = new SpriteVertex()
@@ -346,14 +373,14 @@ namespace Molten.Graphics
                 if (clip.ClusterCount == 0)
                 {
                     // Prepare a new cluster to match the current cache cluster.
-                    cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material);
+                    cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material, cacheCluster.Format);
                 }
                 else
                 {
                     cluster = clip.CurCluster;
                     // See if we can merge the first cache cluster into the current. If not, create a new cluster to start copying to.
-                    if (cluster.Texture != cacheCluster.Texture || cluster.Material != cacheCluster.Material)
-                        cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material);
+                    if (cluster.Texture != cacheCluster.Texture || cluster.Material != cacheCluster.Material || cluster.Format != cacheCluster.Format)
+                        cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material, cacheCluster.Format);
                 }
 
 
@@ -372,7 +399,7 @@ namespace Molten.Graphics
                     if (cacheClusterID < cacheClip.ClusterCount)
                     { 
                         cacheCluster = cache._clusterBank[cacheClip.ClusterIDs[cacheClusterID]];
-                        cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material);
+                        cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material, cacheCluster.Format);
                     }
                     else
                     {
@@ -380,6 +407,38 @@ namespace Molten.Graphics
                     }
                 }
             }
+        }
+
+        protected SpriteCluster GetCluster(SpriteClipZone clip, ITexture2D texture, IMaterial material, ClusterFormat format, int needed, out int spriteID)
+        {
+            SpriteCluster cluster;
+            spriteID = 0;
+
+            // If the current cluster is for a different texture, start a new cluster.
+            if (clip.ClusterCount == 0)
+            {
+                cluster = ConfigureNewCluster(clip, texture, material, format);
+            }
+            else
+            {
+                cluster = clip.CurCluster;
+                if (cluster.Texture != texture || cluster.Material != material || cluster.Format != format)
+                {
+                    cluster = ConfigureNewCluster(clip, texture, material, format);
+                }
+                else
+                {
+                    spriteID = cluster.SpriteCount;
+                    needed += spriteID;
+                    int sLength = cluster.Sprites.Length;
+
+                    // If we can't fit the sprite into the cluster, expand.
+                    if (needed >= sLength)
+                        Array.Resize(ref cluster.Sprites, sLength + SPRITE_EXPANSION + needed);
+                }
+            }
+
+            return cluster;
         }
 
         /// <summary>Pushes a new clipping zone into the sprite batch. All sprites <see cref="SpriteBatch.Draw"/> will be clipped

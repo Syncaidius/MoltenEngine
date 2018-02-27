@@ -19,7 +19,7 @@ namespace Molten.UI
 
         protected override void OnRender(ISpriteBatch sb)
         {
-            sb.Draw(_globalBounds, _bgColor);
+            sb.DrawRect(_globalBounds, _bgColor);
         }
 
         /// <summary>The background color of the panel.</summary>

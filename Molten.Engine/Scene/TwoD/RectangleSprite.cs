@@ -16,7 +16,7 @@ namespace Molten
 
         public void Render(ISpriteBatch batch)
         {
-            batch.Draw(Destination, Color, Rotation, Origin);
+            batch.DrawRect(Destination, Color, Rotation, Origin);
         }
     }
 }

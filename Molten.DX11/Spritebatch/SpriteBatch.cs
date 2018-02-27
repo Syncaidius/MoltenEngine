@@ -61,7 +61,6 @@ namespace Molten.Graphics
             _segment.Release();
         }
 
-
         internal void Begin(Viewport viewBounds)
         {
             ConfigureNewClip(viewBounds.Bounds, false); // Initial clip zone

@@ -209,14 +209,14 @@ namespace Molten.UI
 
         protected override void OnRender(ISpriteBatch sb)
         {
-            sb.Draw(_globalBounds, _colorBackground);
+            sb.DrawRect(_globalBounds, _colorBackground);
 
             if (_barClicked)
-                sb.Draw(_barBounds, _colorBarClicked);
+                sb.DrawRect(_barBounds, _colorBarClicked);
             else if (_barHover)
-                sb.Draw(_barBounds, _colorBarHover);
+                sb.DrawRect(_barBounds, _colorBarHover);
             else
-                sb.Draw(_barBounds, _colorBar);
+                sb.DrawRect(_barBounds, _colorBar);
 
             base.OnRender(sb);
         }
