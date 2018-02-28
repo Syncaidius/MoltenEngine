@@ -75,7 +75,7 @@ namespace Molten.UI
             _text.Bounds = _globalBounds;
         }
 
-        protected override void OnRender(ISpriteBatch sb)
+        protected override void OnRender(SpriteBatch sb)
         {
 
             sb.DrawRect(_globalBounds, _color[(int)_state]);

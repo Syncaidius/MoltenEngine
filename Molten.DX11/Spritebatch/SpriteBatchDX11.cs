@@ -10,7 +10,7 @@ using SharpDX;
 
 namespace Molten.Graphics
 {
-    public class SpriteBatch : SpriteBatchBase, ISpriteBatch
+    public class SpriteBatchDX11 : SpriteBatch
     {
         BufferSegment _segment;
         int _vertexCount;
@@ -31,7 +31,7 @@ namespace Molten.Graphics
 
         Action<GraphicsPipe, SpriteCluster>[] _clusterFlushes;
 
-        internal SpriteBatch(RendererDX11 renderer, int spriteBufferSize = 2000)
+        internal SpriteBatchDX11(RendererDX11 renderer, int spriteBufferSize = 2000)
         {
             _spriteCapacity = spriteBufferSize;
             _segment = renderer.DynamicVertexBuffer.Allocate<SpriteVertex>(_spriteCapacity);
@@ -156,7 +156,7 @@ namespace Molten.Graphics
 
             // Swap the default depth mode for Sprite2D mode, if attemping to use .Default as it is no good for rendering sprites efficiently.
             DepthStencilPreset depthPreset = depth == DepthStencilPreset.Default ? DepthStencilPreset.Sprite2D : depth;
-
+             
             pipe.PushState();
             pipe.DepthStencil.SetPreset(depthPreset);
             pipe.BlendState.SetPreset(blend);

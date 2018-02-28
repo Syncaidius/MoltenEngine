@@ -32,7 +32,7 @@ namespace Molten.Graphics
         ISpriteFont _debugFont;
         bool _debugOverlayVisible = false;
         
-        internal SpriteBatch SpriteBatcher;
+        internal SpriteBatchDX11 SpriteBatcher;
         internal List<SceneRenderDataDX11> Scenes;
         internal GraphicsBuffer StaticVertexBuffer;
         internal GraphicsBuffer StaticIndexBuffer;
@@ -76,7 +76,7 @@ namespace Molten.Graphics
             DynamicIndexBuffer = new GraphicsBuffer(_device, BufferMode.Dynamic, BindFlags.IndexBuffer, maxIndexBytesDynamic);
 
             StagingBuffer = new StagingBuffer(_device, StagingBufferFlags.Write, maxVertexBytesStatic / 4);
-            SpriteBatcher = new SpriteBatch(this, 3000);
+            SpriteBatcher = new SpriteBatchDX11(this, 3000);
 
             InitializeDebugOverlay();
         }

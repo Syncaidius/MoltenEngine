@@ -17,7 +17,7 @@ namespace Molten.UI
             _bgColor = new Color(100, 100, 200, 200);
         }
 
-        protected override void OnRender(ISpriteBatch sb)
+        protected override void OnRender(SpriteBatch sb)
         {
             sb.DrawRect(_globalBounds, _bgColor);
         }

@@ -15,9 +15,9 @@ namespace Molten.Samples
         /// <summary>
         /// Called when the renderer draws the object.
         /// </summary>
-        public Action<ISpriteBatch> OnDraw;
+        public Action<SpriteBatch> OnDraw;
 
-        public void Render(ISpriteBatch batch)
+        public void Render(SpriteBatch batch)
         {
             OnDraw?.Invoke(batch);
         }

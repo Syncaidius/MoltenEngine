@@ -17,7 +17,7 @@ namespace Molten
         public Color Color = Color.White;
         public Vector2 Scale = Vector2.One;
 
-        public void Render(ISpriteBatch batch)
+        public void Render(SpriteBatch batch)
         {
             batch.Draw(Texture, Position, Source, Color, Rotation, Scale, Origin);
         }

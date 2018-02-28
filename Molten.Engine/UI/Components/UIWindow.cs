@@ -245,7 +245,7 @@ namespace Molten.UI
             _minimizeButton.IsVisible = hasMinimize;
         }
 
-        protected override void OnRender(ISpriteBatch sb)
+        protected override void OnRender(SpriteBatch sb)
         {
             base.OnRender(sb);
 
@@ -271,7 +271,7 @@ namespace Molten.UI
             }
         }
 
-        protected override void OnRenderChildren(ISpriteBatch sb)
+        protected override void OnRenderChildren(SpriteBatch sb)
         {
             if (_state == UIWindowState.Open)
             {

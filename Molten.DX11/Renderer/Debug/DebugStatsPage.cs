@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     internal class DebugStatsPage : DebugOverlayPage
     {
-        public override void Render(ISpriteFont font, RendererDX11 renderer, SpriteBatch batch, Timing time, IRenderSurface surface)
+        public override void Render(ISpriteFont font, RendererDX11 renderer, SpriteBatchDX11 batch, Timing time, IRenderSurface surface)
         {
             Vector2 pos = new Vector2(3, 3);
             batch.DrawString(font, $"FPS: {time.UPS}", pos, Color.Yellow);

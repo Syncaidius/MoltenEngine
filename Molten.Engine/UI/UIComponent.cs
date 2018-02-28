@@ -6,7 +6,6 @@ using System.IO;
 using Molten.IO;
 using System.ComponentModel;
 using Molten.Graphics;
-using Molten.IO;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Molten.Collections;
@@ -593,7 +592,7 @@ namespace Molten.UI
 
         /// <summary>Draws the component and all its children.</summary>
         /// <param name="sb">The surface that the UI component must draw on to.</param>
-        public virtual void Render(ISpriteBatch sb)
+        public virtual void Render(SpriteBatch sb)
         {
             if (!_visible)
                 return;
@@ -620,16 +619,16 @@ namespace Molten.UI
         /// <summary>Called right before the standard draw method draws the component's children. You can change this behaviour by overriding
         /// <see cref="UIComponent.Render"/>.</summary>
         /// <param name="surface"></param>
-        protected virtual void OnRender(ISpriteBatch sb) { }
+        protected virtual void OnRender(SpriteBatch sb) { }
 
         /// <summary>Called after the component has rendered normally. If clipping is enabled, this will be called once the clip 
         /// zone is created and anything rendered will be clipped..</summary>
         /// <param name="sb"></param>
-        protected virtual void OnRenderClipped(ISpriteBatch sb) { }
+        protected virtual void OnRenderClipped(SpriteBatch sb) { }
 
         /// <summary>Called when the component needs to draw its child components.</summary>
         /// <param name="sb">The spritebatch used for drawing UI components.</param>
-        protected virtual void OnRenderChildren(ISpriteBatch sb)
+        protected virtual void OnRenderChildren(SpriteBatch sb)
         {
             _children.ForInterlock(0, 1, (id, child) =>
             {

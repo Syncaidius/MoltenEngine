@@ -14,7 +14,7 @@ namespace Molten
         public Vector2 Origin;
         public Color Color = Color.White;
 
-        public void Render(ISpriteBatch batch)
+        public void Render(SpriteBatch batch)
         {
             batch.DrawRect(Destination, Color, Rotation, Origin);
         }

@@ -528,7 +528,7 @@ namespace Molten.UI
             }
         }
 
-        protected override void OnRender(ISpriteBatch sb)
+        protected override void OnRender(SpriteBatch sb)
         {
             base.OnRender(sb);
 
@@ -543,7 +543,7 @@ namespace Molten.UI
                 sb.DrawString(_text.Font, "|", _text.ActualPosition + new Vector2(_cursorPos, 0), _cursorColor);
         }
 
-        protected override void OnRenderClipped(ISpriteBatch sb)
+        protected override void OnRenderClipped(SpriteBatch sb)
         {
             base.OnRenderClipped(sb);
 

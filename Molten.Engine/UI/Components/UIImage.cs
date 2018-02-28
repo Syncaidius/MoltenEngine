@@ -44,7 +44,7 @@ namespace Molten.UI
                 _source = new Rectangle(0, 0, _texture.Width, _texture.Height);
         }
 
-        protected override void OnRender(ISpriteBatch sb)
+        protected override void OnRender(SpriteBatch sb)
         {
             base.OnRender(sb);
 

@@ -969,7 +969,7 @@ namespace Molten.UI
             }
         }
 
-        protected override void OnRender(ISpriteBatch sb)
+        protected override void OnRender(SpriteBatch sb)
         {
             base.OnRender(sb);
 
@@ -981,7 +981,7 @@ namespace Molten.UI
             sb.DrawRect(_clippingBounds, _bgColor);
         }
 
-        protected override void OnRenderClipped(ISpriteBatch sb)
+        protected override void OnRenderClipped(SpriteBatch sb)
         {
             base.OnRenderClipped(sb);
 

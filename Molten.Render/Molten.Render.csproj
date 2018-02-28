@@ -79,7 +79,6 @@
     <Compile Include="IRenderer.cs" />
     <Compile Include="IRenderProfiler.cs" />
     <Compile Include="IResourceManager.cs" />
-    <Compile Include="SpriteBatch\ISpriteBatch.cs" />
     <Compile Include="Mesh\IBonedMesh.cs" />
     <Compile Include="Mesh\IIndexedMesh.cs" />
     <Compile Include="Mesh\IMesh.cs" />
@@ -115,6 +114,7 @@
     <Compile Include="Shaders\ShaderType.cs" />
     <Compile Include="SpriteBatch\SpriteBatchBase.cs" />
     <Compile Include="SpriteBatch\SpriteBatchCache.cs" />
+    <Compile Include="SpriteBatch\SpriteBatchException.cs" />
     <Compile Include="SpriteBatch\SpriteVertex.cs" />
     <Compile Include="Surfaces\DepthClearFlags.cs" />
     <Compile Include="Surfaces\DepthFormat.cs" />

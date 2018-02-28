@@ -207,7 +207,7 @@ namespace Molten.UI
             base.OnUpdate(time);
         }
 
-        protected override void OnRender(ISpriteBatch sb)
+        protected override void OnRender(SpriteBatch sb)
         {
             sb.DrawRect(_globalBounds, _colorBackground);
 

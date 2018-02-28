@@ -14,7 +14,7 @@ namespace Molten
         public Color Color = Color.White;
         public string Text = "";
 
-        public void Render(ISpriteBatch batch)
+        public void Render(SpriteBatch batch)
         {
             batch.DrawString(Font, Text, Position, Color);
         }

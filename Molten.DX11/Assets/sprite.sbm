@@ -132,7 +132,7 @@ void GS(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
 void GS_Line(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
 {
 	PS_IN v;
-	v.col = input[0].col;
+  v.col = input[0].col;
   float2 p1 = input[0].pos;
   float2 p2 = input[0].size;
   float2 dir = p2 - p1;
@@ -152,6 +152,7 @@ void GS_Line(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
   spriteStream.Append(v);
   
   // Vertex p2 vertex 0 (v2)
+  v.col = input[0].uv;
   v.pos = float4(p2 - (thickness * normal), 0, 1);
   v.pos = mul(v.pos, worldViewProj);
   v.uv = float2(0,0);

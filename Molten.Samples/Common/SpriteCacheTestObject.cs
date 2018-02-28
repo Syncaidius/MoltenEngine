@@ -17,7 +17,7 @@ namespace Molten.Samples
             FillCache(game, tex);
         }
 
-        public void Render(ISpriteBatch batch)
+        public void Render(SpriteBatch batch)
         {
             batch.Draw(_cache);
         }

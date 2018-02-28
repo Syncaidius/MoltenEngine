@@ -134,12 +134,40 @@ namespace Molten.Samples
             // Create points for zig-zagging lines.
             List<Vector2> linePoints = new List<Vector2>();
             float y = 100;
-            Vector2 lineOffset = new Vector2(200, 100);
+            Vector2 lineOffset = new Vector2(300, 100);
             for (int i = 0; i < 20; i++)
             {
                 linePoints.Add(lineOffset + new Vector2(i * 50, y));
                 y = 100 - y;
             }
+
+            // Create a second batch of lines for a circle outline
+            List<Vector2> circleLinePoints = new List<Vector2>();
+            float radius = 100;
+            Vector2 origin = new Vector2(500);
+            int segments = 32;
+            float angleIncrement = 360.0f / segments;
+            float angle = 0;
+
+            for(int i = 0; i <= segments; i++)
+            {
+                float rad = angle * MathHelper.DegToRad;
+                angle += angleIncrement;
+
+                circleLinePoints.Add(new Vector2()
+                {
+                    X = origin.X + (float)Math.Sin(rad) * radius,
+                    Y = origin.Y + (float)Math.Cos(rad) * radius,
+                });
+            }
+
+            // Add 5 colors. The last color will be used when we have more points than colors.
+            List<Color> lineColors = new List<Color>();
+            lineColors.Add(Color.White);
+            lineColors.Add(Color.Red);
+            lineColors.Add(Color.Lime);
+            lineColors.Add(Color.Blue);
+            lineColors.Add(Color.Yellow);
 
             // Use a container for doing some testing.
             SpriteBatchContainer sbContainer = new SpriteBatchContainer()
@@ -147,7 +175,8 @@ namespace Molten.Samples
                 OnDraw = (sb) =>
                 {
                     sb.DrawLine(new Vector2(0), new Vector2(400), Color.White, 1);
-                    sb.DrawLines(linePoints, Color.Yellow, 4);
+                    sb.DrawLines(linePoints, lineColors, 2);
+                    sb.DrawLines(circleLinePoints, lineColors, 4);
                 }
             };
             SampleScene.AddSprite(sbContainer);

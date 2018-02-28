@@ -106,7 +106,7 @@ namespace Molten.UI
 
         /// <summary>Draws the component and all its children.</summary>
         /// <param name="sb">The surface that the UI component must draw on to.</param>
-        public override void Render(ISpriteBatch sb)
+        public override void Render(SpriteBatch sb)
         {
             if (!_visible)
                 return;

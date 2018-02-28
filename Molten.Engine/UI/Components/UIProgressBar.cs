@@ -77,7 +77,7 @@ namespace Molten.UI
                 _text.Text += _value + " / " + _maxValue;
         }
 
-        protected override void OnRender(ISpriteBatch sb)
+        protected override void OnRender(SpriteBatch sb)
         {
             sb.DrawRect(_globalBounds, _bgColor);
 

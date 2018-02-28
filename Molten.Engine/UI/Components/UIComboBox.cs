@@ -126,7 +126,7 @@ namespace Molten.UI
             };
         }
 
-        protected override void OnRender(ISpriteBatch sb)
+        protected override void OnRender(SpriteBatch sb)
         {
             base.OnRender(sb);
 

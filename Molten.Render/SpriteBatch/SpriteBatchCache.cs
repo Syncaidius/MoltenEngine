@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    /// <summary>A implementation of <see cref="ISpriteBatch"/> which does not draw anything. Instead draw calls are cached until the cache is reset."/></summary>
-    public class SpriteBatchCache : SpriteBatchBase, ISpriteBatch
+    /// <summary>A implementation of <see cref="SpriteBatch"/> which does not draw anything. Instead draw calls are stored until the cache is reset."/></summary>
+    public class SpriteBatchCache : SpriteBatch
     {
         public SpriteBatchCache()
         {

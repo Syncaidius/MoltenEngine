@@ -99,7 +99,7 @@ namespace Molten.UI
             }
         }
 
-        public void Draw(ISpriteBatch sb)
+        public void Draw(SpriteBatch sb)
         {
             Refresh();
 
