@@ -81,35 +81,39 @@ namespace Molten.Graphics
         /// This means every 3 points should form a triangle. The polygon should be made up of several triangles.
         /// </summary>
         /// <param name="points">A list of points that form the polygon.</param>
-        /// <param name="col">The color of the polygon.</param>
-        void DrawPolygon(IList<Vector2> points, Color col);
+        /// <param name="color">The color of the polygon.</param>
+        void DrawPolygon(IList<Vector2> points, Color color);
 
         /// <summary>Draws lines between each of the provided points.</summary>
         /// <param name="points">The points between which to draw lines.</param>
         /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
-        void DrawLines(IList<Vector2> points, IList<Color> pointColors);
+        /// <param name="thickness">The thickness of the line in pixels.</param>
+        void DrawLines(IList<Vector2> points, IList<Color> pointColors, float thickness);
 
         /// <summary>Draws lines between each of the provided points.</summary>
         /// <param name="points">The points between which to draw lines.</param>
         /// <param name="color">The color of the lines</param>
-        void DrawLines(IList<Vector2> points, Color color);
+        /// <param name="thickness">The thickness of the line in pixels.</param>
+        void DrawLines(IList<Vector2> points, Color color, float thickness);
 
         /// <summary>
         /// Draws a line between two points.
         /// </summary>
         /// <param name="p1">The first point.</param>
         /// <param name="p2">The second point.</param>
-        /// <param name="col">The color of the line.</param>
-        void DrawLine(Vector2 p1, Vector2 p2, Color col);
+        /// <param name="color">The color of the line.</param>
+        /// <param name="thickness">The thickness of the line in pixels.</param>
+        void DrawLine(Vector2 p1, Vector2 p2, Color color, float thickness);
 
         /// <summary>
         /// Draws a line between two points with a color gradient produced with the two provided colors.
         /// </summary>
         /// <param name="p1">The first point.</param>
         /// <param name="p2">The second point.</param>
-        /// <param name="col1">The color for pos1.</param>
-        /// <param name="col2">The color for pos2.</param>
-        void DrawLine(Vector2 p1, Vector2 p2, Color col1, Color col2);
+        /// <param name="color1">The color for pos1.</param>
+        /// <param name="color2">The color for pos2.</param>
+        /// <param name="thickness">The thickness of the line in pixels.</param>
+        void DrawLine(Vector2 p1, Vector2 p2, Color color1, Color color2, float thickness);
 
         void DrawRect(Rectangle destination, Color color, IMaterial material = null);
 

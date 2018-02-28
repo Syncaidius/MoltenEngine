@@ -201,7 +201,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void DrawTriangle(Vector2 p1, Vector2 p2, Vector2 p3, Color col1, Color col2, Color col3)
+        public void DrawTriangle(Vector2 p1, Vector2 p2, Vector2 p3, Color color1, Color color2, Color color3)
         {
             throw new NotImplementedException();
         }
@@ -211,29 +211,91 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public void DrawPolygon(IList<Vector2> points, Color col)
+        public void DrawPolygon(IList<Vector2> points, Color color)
         {
             throw new NotImplementedException();
         }
 
-        public void DrawLines(IList<Vector2> points, IList<Color> pointColors)
+        public void DrawLines(IList<Vector2> points, IList<Color> pointColors, float thickness)
         {
             throw new NotImplementedException();
         }
 
-        public void DrawLines(IList<Vector2> points, Color color)
+        public void DrawLines(IList<Vector2> points, Color color, float thickness)
         {
-            throw new NotImplementedException();
+            if (points.Count == 2)
+            {
+                DrawLine(points[0], points[1], color, color, thickness);
+            }
+            else
+            {
+                SpriteClipZone clip = _clipZones[_curClip];
+                int spriteID = 0;
+                int lineCount = points.Count - 1;
+                SpriteCluster cluster = GetCluster(clip, null, null, ClusterFormat.Line, lineCount, out spriteID);
+
+                Vector2 p1, p2;
+                int last = points.Count - 1;
+                int prev = 0;
+                int next = 1;
+
+                for (int i = 0; i < last; i++)
+                {
+                    p1 = points[i];
+                    p2 = points[next];
+
+                    // Pack two points into a single sprite vertex. This equates to 1 vertex per line.
+                    cluster.Sprites[spriteID] = new SpriteVertex()
+                    {
+                        Position = p1,
+                        Size = p2,
+                        UV = color.ToColor4(),
+                        Color = color,
+                        Rotation = thickness,
+                    };
+
+                    // Provide the previous line with the direction of the current line.
+                    if (prev < i)
+                        cluster.Sprites[spriteID - 1].Origin = p2 - p1;
+
+                    // If there is no line after the current, use the current line's direction to fill the tangent calculation.
+                    if (next + 1 == last)
+                        cluster.Sprites[spriteID].Origin = p2 - p1;
+
+                    spriteID++;
+                    next++;
+                }
+
+                cluster.SpriteCount += lineCount;
+            }
         }
 
-        public void DrawLine(Vector2 p1, Vector2 p2, Color col)
+        public void DrawLine(Vector2 p1, Vector2 p2, Color col, float thickness)
         {
-            DrawLine(p1, p2, col, col);
+            DrawLine(p1, p2, col, col, thickness);
         }
 
-        public void DrawLine(Vector2 p1, Vector2 p2, Color col1, Color col2)
+        public void DrawLine(Vector2 p1, Vector2 p2, Color col1, Color col2, float thickness)
         {
-            throw new NotImplementedException();
+            SpriteClipZone clip = _clipZones[_curClip];
+            int spriteID = 0;
+            SpriteCluster cluster = GetCluster(clip, null, null, ClusterFormat.Line, 1, out spriteID);
+
+            // Pack two line points into a single sprite vertex.
+            cluster.Sprites[spriteID++] = new SpriteVertex()
+            {
+                Position = p1,
+                Size = p2,
+                UV = col1.ToColor4(), 
+                Color = col2,
+                
+                // Normal of next line. This is used for creating sharp edges when drawing multiple lines. 
+                // In this case, we set it to the direction of the current line, because we're just drawing one.
+                Origin = p2 - p1, 
+                Rotation = thickness,
+            };
+
+            cluster.SpriteCount++;
         }
 
         public void DrawRect(Rectangle destination, Color color, IMaterial material = null)

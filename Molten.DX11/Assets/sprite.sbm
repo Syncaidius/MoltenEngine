@@ -22,6 +22,18 @@
 	</pass>
 </material>
 
+<material>
+  <name>line</name>
+  <description>The default material for rendering lines in a SpriteBatch with no texture.</description>
+  <pass>
+    <name>main</name>
+    <iterations>1</iterations>
+    <vertex>VS_Line</vertex>
+    <geometry>GS_Line</geometry>
+    <pixel>PS_NoTexture</pixel>
+  </pass>
+</material>
+
 struct VS_GS
 {
 	float2 pos : POSITION0;
@@ -56,6 +68,14 @@ VS_GS VS(VS_GS input)
 	// Invert Y origin
 	input.origin.y = -input.origin.y;
 
+	return input;
+}
+
+VS_GS VS_Line(VS_GS input)
+{
+	//invert y axis.
+	input.pos.y = -input.pos.y;
+  input.size.y = -input.size.y; // y position of 2nd line point.
 	return input;
 }
 
@@ -108,8 +128,40 @@ void GS(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
 	}
 }
 
-float median(float r, float g, float b) {
-    return max(min(r, g), min(max(r, g), b));
+[maxvertexcount(4)]
+void GS_Line(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
+{
+	PS_IN v;
+	v.col = input[0].col;
+  float2 p1 = input[0].pos;
+  float2 p2 = input[0].size;
+  float2 dir = p2 - p1;
+  float2 normal = normalize(float2(-dir.y, dir.x));
+  float thickness = input[0].rotation * 0.5;
+  
+  // Vertex p1 vertex 0 (v0)
+  v.pos = float4(p1 - (thickness * normal), 0, 1);
+  v.pos = mul(v.pos, worldViewProj);
+  v.uv = float2(0,0);
+  spriteStream.Append(v);
+  
+  // Vertex p1 vertex 1 (v1)
+  v.pos = float4(p1 + (thickness * normal), 0, 1);
+  v.pos = mul(v.pos, worldViewProj);
+  v.uv = float2(0,0);
+  spriteStream.Append(v);
+  
+  // Vertex p2 vertex 0 (v2)
+  v.pos = float4(p2 - (thickness * normal), 0, 1);
+  v.pos = mul(v.pos, worldViewProj);
+  v.uv = float2(0,0);
+  spriteStream.Append(v);
+  
+  // Vertex p2 vertex 1 (v3)
+  v.pos = float4(p2 + (thickness * normal), 0, 1);
+  v.pos = mul(v.pos, worldViewProj);
+  v.uv = float2(0,0);
+  spriteStream.Append(v);
 }
 
 float4 PS( PS_IN input ) : SV_Target
