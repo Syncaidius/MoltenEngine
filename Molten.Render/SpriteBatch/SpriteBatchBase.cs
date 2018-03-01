@@ -253,7 +253,6 @@ namespace Molten.Graphics
 
                 for (int i = 0; i < pieces; i++)
                 {
-                    // Pack two line points into a single sprite vertex.
                     cluster.Sprites[spriteID++] = new SpriteVertex()
                     {
                         Position = center,
@@ -273,8 +272,6 @@ namespace Molten.Graphics
             else
             {
                 cluster = GetCluster(clip, null, null, ClusterFormat.Circle, 1, out spriteID);
-
-                // Pack two line points into a single sprite vertex.
                 cluster.Sprites[spriteID++] = new SpriteVertex()
                 {
                     Position = center,
@@ -296,19 +293,22 @@ namespace Molten.Graphics
         /// <param name="col1">The color of the triangle.</param>
         public void DrawTriangle(Vector2 p1, Vector2 p2, Vector2 p3, Color col)
         {
-            throw new NotImplementedException();
-        }
+            SpriteClipZone clip = _clipZones[_curClip];
+            int spriteID = 0;
+            SpriteCluster cluster = GetCluster(clip, null, null, ClusterFormat.Triangle, 1, out spriteID);
 
-        /// <summary>Draws a triangle using 3 provided points.</summary>
-        /// <param name="p1">The first point.</param>
-        /// <param name="p2">The second point.</param>
-        /// <param name="p3">The third point.</param>
-        /// <param name="col1">The color for the first point.</param>
-        /// <param name="col2">The color for the second point.</param>
-        /// <param name="col3">The color for the thrid point.</param>
-        public void DrawTriangle(Vector2 p1, Vector2 p2, Vector2 p3, Color color1, Color color2, Color color3)
-        {
-            throw new NotImplementedException();
+            // Pack two line points into a single sprite vertex.
+            cluster.Sprites[spriteID++] = new SpriteVertex()
+            {
+                Position = p1,
+                Size = p2,
+                UV = Vector4.Zero, // Unused
+                Color = col,
+                Origin = p3,
+                Rotation = 0,
+            };
+
+            cluster.SpriteCount++;
         }
 
         /// <summary>
@@ -317,7 +317,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="points">A list of points that form the polygon. A minimum of 3 points is expected.</param>
         /// <param name="col">A list of colors. One color per point. A minimum of 3 colors is expected.</param>
-        public void DrawPolygon(IList<Vector2> points, IList<Color> colors)
+        public void DrawTriangleList(IList<Vector2> points, IList<Color> colors)
         {
             throw new NotImplementedException();
         }
@@ -328,7 +328,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="points">A list of points that form the polygon.</param>
         /// <param name="color">The color of the polygon.</param>
-        public void DrawPolygon(IList<Vector2> points, Color color)
+        public void DrawTriangleList(IList<Vector2> points, Color color)
         {
             throw new NotImplementedException();
         }
@@ -339,9 +339,13 @@ namespace Molten.Graphics
         /// <param name="thickness">The thickness of the line in pixels.</param>
         public void DrawLines(IList<Vector2> points, IList<Color> pointColors, float thickness)
         {
+            if (pointColors.Count == 0)
+                throw new SpriteBatchException(this, "There must be at least one color available in pointColors list.");
+
             if (points.Count == 2)
             {
-                DrawLine(points[0], points[1], pointColors[0], pointColors[1], thickness);
+                int secondCol = pointColors.Count > 1 ? 1 : 0;
+                DrawLine(points[0], points[1], pointColors[0], pointColors[secondCol], thickness);
             }
             else
             {

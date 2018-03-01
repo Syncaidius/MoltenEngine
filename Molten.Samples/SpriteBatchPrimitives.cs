@@ -178,6 +178,8 @@ namespace Molten.Samples
                     sb.DrawLine(new Vector2(0), new Vector2(400), Color.White, 1);
                     sb.DrawLines(linePoints, colors, 2);
                     sb.DrawLines(circleLinePoints, colors, 4);
+                    sb.DrawTriangle(new Vector2(500, 220), new Vector2(450, 320), new Vector2(600, 260), Color.SkyBlue);
+                    sb.DrawTriangle(new Vector2(600, 220), new Vector2(690, 350), new Vector2(750, 280), Color.Violet);
 
                     origin.X = 500;
                     origin.Y = 500;

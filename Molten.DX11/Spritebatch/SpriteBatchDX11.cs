@@ -22,6 +22,7 @@ namespace Molten.Graphics
         Material _defaultNoTextureMaterial;
         Material _defaultLineMaterial;
         Material _defaultCircleMaterial;
+        Material _defaultTriMaterial;
 
         IShaderValue _valDefaultAlbedo;
         IShaderValue _valDefaultWvp;
@@ -29,6 +30,7 @@ namespace Molten.Graphics
         IShaderValue _valNoTexWvp;
         IShaderValue _valLineWvp;
         IShaderValue _valCircleWvp;
+        IShaderValue _valTriWvp;
         Matrix _viewProjection;
 
         Action<GraphicsPipe, SpriteCluster>[] _clusterFlushes;
@@ -54,6 +56,7 @@ namespace Molten.Graphics
                 _defaultNoTextureMaterial = result["material", "sprite-no-texture"] as Material;
                 _defaultLineMaterial = result["material", "line"] as Material;
                 _defaultCircleMaterial = result["material", "circle"] as Material;
+                _defaultTriMaterial = result["material", "triangle"] as Material;
 
                 _valDefaultAlbedo = _defaultMaterial["albedo"];
                 _valDefaultTexSize = _defaultMaterial["textureSize"];
@@ -62,6 +65,7 @@ namespace Molten.Graphics
                 _valNoTexWvp = _defaultNoTextureMaterial["worldViewProj"];
                 _valLineWvp = _defaultLineMaterial["worldViewProj"];
                 _valCircleWvp = _defaultCircleMaterial["worldViewProj"];
+                _valTriWvp = _defaultTriMaterial["worldViewProj"];
             }
 
             _clusterFlushes = new Action<GraphicsPipe, SpriteCluster>[4]
@@ -238,7 +242,10 @@ namespace Molten.Graphics
 
         private void FlushTriangleCluster(GraphicsPipe pipe, SpriteCluster cluster)
         {
-
+            _valTriWvp.Value = _viewProjection;
+            int startVertex = cluster.startVertex;
+            int vertexCount = cluster.drawnTo - cluster.drawnFrom;
+            pipe.Draw(_defaultTriMaterial, vertexCount, PrimitiveTopology.PointList, startVertex);
         }
 
         private void FlushCircleCluster(GraphicsPipe pipe, SpriteCluster cluster)
