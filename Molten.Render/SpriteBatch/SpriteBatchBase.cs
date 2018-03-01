@@ -11,6 +11,10 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class SpriteBatch : EngineObject
     {
+        // This is must match [maxvertexcount()] - 2 in the geometry shader.
+        const int CIRCLE_GEOMETRY_MAX_SIDES = 32;
+        const int CIRCLE_MIN_SIDES = 3;
+
         protected enum ClusterFormat
         {
             Sprite = 0, // Textured or untextured (rectangle) sprites
@@ -186,10 +190,10 @@ namespace Molten.Graphics
         /// <param name="startAngle">The start angle of the circle, in radians. This is useful when drawing a partial-circle.</param>
         /// <param name="endAngle">The end angle of the circle, in radians. This is useful when drawing a partial-circle</param>
         /// <param name="col">The color of the circle.</param>
-        /// <param name="segments">The number of segments that will make up the circle. A higher value will produce a smoother edge. The minimum value is 5.</param>
-        public void DrawCircle(Vector2 center, float radius, float startAngle, float endAngle, Color col, int segments = 16)
+        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
+        public void DrawCircle(Vector2 center, float radius, float startAngle, float endAngle, Color col, int sides = 16)
         {
-            DrawEllipse(center, radius, radius, startAngle, endAngle, col, segments);
+            DrawEllipse(center, radius, radius, startAngle, endAngle, col, sides);
         }
 
         /// <summary>
@@ -198,10 +202,10 @@ namespace Molten.Graphics
         /// <param name="center">The position of the circle center.</param>
         /// <param name="xRadius">The radius, in radians.</param>
         /// <param name="col">The color of the circle.</param>
-        /// <param name="segments">The number of segments that will make up the circle. A higher value will produce a smoother edge. The minimum value is 5.</param>
-        public void DrawCircle(Vector2 center, float radius, Color col, int segments = 16)
+        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
+        public void DrawCircle(Vector2 center, float radius, Color col, int sides = 16)
         {
-            DrawEllipse(center, radius, radius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, segments);
+            DrawEllipse(center, radius, radius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, sides);
         }
 
         /// <summary>
@@ -211,10 +215,10 @@ namespace Molten.Graphics
         /// <param name="xRadius">The X radius, in radians.</param>
         /// <param name="yRadius">The Y radius, in radians.</param>
         /// <param name="col">The color of the ellipse.</param>
-        /// <param name="segments">The number of segments that will make up the ellipse. A higher value will produce a smoother edge. The minimum value is 5.</param>
-        public void DrawEllipse(Vector2 center, float xRadius, float yRadius, Color col, int segments = 16)
+        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
+        public void DrawEllipse(Vector2 center, float xRadius, float yRadius, Color col, int sides = 16)
         {
-            DrawEllipse(center, xRadius, yRadius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, segments);
+            DrawEllipse(center, xRadius, yRadius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, sides);
         }
 
         /// <summary>
@@ -225,11 +229,64 @@ namespace Molten.Graphics
         /// <param name="yRadius">The Y radius, in radians.</param>
         /// <param name="startAngle">The start angle of the circle, in radians. This is useful when drawing a partial-ellipse.</param>
         /// <param name="endAngle">The end angle of the circle, in radians. This is useful when drawing a partial-ellipse</param>
-        /// <param name="col">The color of the ellipse.</param>
-        /// <param name="segments">The number of segments that will make up the ellipse. A higher value will produce a smoother edge. The minimum value is 5.</param>
-        public void DrawEllipse(Vector2 center, float xRadius, float yRadius, float startAngle, float endAngle, Color col, int segments = 16)
-        {
-            throw new NotImplementedException();
+        /// <param name="color">The color of the ellipse.</param>
+        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
+        public void DrawEllipse(Vector2 center, float xRadius, float yRadius, float startAngle, float endAngle, Color color, int sides = 16)
+        {          
+            if (sides < CIRCLE_MIN_SIDES)
+                throw new SpriteBatchException(this, $"The minimum number of sides is {CIRCLE_MIN_SIDES}.");
+
+            SpriteClipZone clip = _clipZones[_curClip];
+            int spriteID = 0;
+            SpriteCluster cluster;
+
+            // Split the circle up into smaller pieces if we're going to hit the geometry shader output limit.
+            if (sides > CIRCLE_GEOMETRY_MAX_SIDES)
+            {
+                int pieces = sides / CIRCLE_GEOMETRY_MAX_SIDES;
+                pieces += sides % CIRCLE_GEOMETRY_MAX_SIDES > 0 ? 1 : 0;
+                float angleRange = endAngle - startAngle;
+                float rangePerPiece = angleRange / pieces;
+                float pieceStartAngle = startAngle;
+                float pieceEndAngle = pieceStartAngle + rangePerPiece;
+                cluster = GetCluster(clip, null, null, ClusterFormat.Circle, pieces, out spriteID);
+
+                for (int i = 0; i < pieces; i++)
+                {
+                    // Pack two line points into a single sprite vertex.
+                    cluster.Sprites[spriteID++] = new SpriteVertex()
+                    {
+                        Position = center,
+                        Size = new Vector2(xRadius, yRadius),
+                        UV = Vector4.Zero, // Unused
+                        Color = color,
+                        Origin = new Vector2(pieceStartAngle, pieceEndAngle),
+                        Rotation = sides,
+                    };
+
+                    pieceStartAngle += rangePerPiece;
+                    pieceEndAngle += rangePerPiece;
+                }
+
+                cluster.SpriteCount += pieces;
+            }
+            else
+            {
+                cluster = GetCluster(clip, null, null, ClusterFormat.Circle, 1, out spriteID);
+
+                // Pack two line points into a single sprite vertex.
+                cluster.Sprites[spriteID++] = new SpriteVertex()
+                {
+                    Position = center,
+                    Size = new Vector2(xRadius, yRadius),
+                    UV = Vector4.Zero, // Unused
+                    Color = color,
+                    Origin = new Vector2(startAngle, endAngle),
+                    Rotation = sides,
+                };
+
+                cluster.SpriteCount++;
+            }
         }
 
         /// <summary>Draws a triangle using 3 provided points.</summary>
@@ -276,7 +333,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        /// <summary>Draws lines between each of the provided points.</summary>
+        /// <summary>Draws connecting lines between each of the provided points.</summary>
         /// <param name="points">The points between which to draw lines.</param>
         /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
@@ -332,7 +389,7 @@ namespace Molten.Graphics
             }
         }
 
-        /// <summary>Draws lines between each of the provided points.</summary>
+        /// <summary>Draws connecting lines between each of the provided points.</summary>
         /// <param name="points">The points between which to draw lines.</param>
         /// <param name="color">The color of the lines</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>

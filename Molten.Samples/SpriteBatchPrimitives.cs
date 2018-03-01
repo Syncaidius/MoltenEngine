@@ -143,13 +143,14 @@ namespace Molten.Samples
 
             // Create a second batch of lines for a circle outline
             List<Vector2> circleLinePoints = new List<Vector2>();
-            float radius = 100;
+            float radius = 50;
+
             Vector2 origin = new Vector2(500);
-            int segments = 32;
-            float angleIncrement = 360.0f / segments;
+            int outlineSegments = 32;
+            float angleIncrement = 360.0f / outlineSegments;
             float angle = 0;
 
-            for(int i = 0; i <= segments; i++)
+            for(int i = 0; i <= outlineSegments; i++)
             {
                 float rad = angle * MathHelper.DegToRad;
                 angle += angleIncrement;
@@ -162,12 +163,12 @@ namespace Molten.Samples
             }
 
             // Add 5 colors. The last color will be used when we have more points than colors.
-            List<Color> lineColors = new List<Color>();
-            lineColors.Add(Color.White);
-            lineColors.Add(Color.Red);
-            lineColors.Add(Color.Lime);
-            lineColors.Add(Color.Blue);
-            lineColors.Add(Color.Yellow);
+            List<Color> colors = new List<Color>();
+            colors.Add(Color.White);
+            colors.Add(Color.Red);
+            colors.Add(Color.Lime);
+            colors.Add(Color.Blue);
+            colors.Add(Color.Yellow);
 
             // Use a container for doing some testing.
             SpriteBatchContainer sbContainer = new SpriteBatchContainer()
@@ -175,8 +176,18 @@ namespace Molten.Samples
                 OnDraw = (sb) =>
                 {
                     sb.DrawLine(new Vector2(0), new Vector2(400), Color.White, 1);
-                    sb.DrawLines(linePoints, lineColors, 2);
-                    sb.DrawLines(circleLinePoints, lineColors, 4);
+                    sb.DrawLines(linePoints, colors, 2);
+                    sb.DrawLines(circleLinePoints, colors, 4);
+
+                    origin.X = 500;
+                    origin.Y = 500;
+                    int circleSegs = 80;
+                    for (int i = 0; i < colors.Count; i++)
+                    {
+                        origin.X += 100;
+                        sb.DrawCircle(origin, 50, colors[i], circleSegs);
+                        circleSegs /= 2;
+                    }
                 }
             };
             SampleScene.AddSprite(sbContainer);

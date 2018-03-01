@@ -21,12 +21,14 @@ namespace Molten.Graphics
         Material _defaultMaterial;
         Material _defaultNoTextureMaterial;
         Material _defaultLineMaterial;
+        Material _defaultCircleMaterial;
 
         IShaderValue _valDefaultAlbedo;
         IShaderValue _valDefaultWvp;
         IShaderValue _valDefaultTexSize;
         IShaderValue _valNoTexWvp;
         IShaderValue _valLineWvp;
+        IShaderValue _valCircleWvp;
         Matrix _viewProjection;
 
         Action<GraphicsPipe, SpriteCluster>[] _clusterFlushes;
@@ -51,14 +53,15 @@ namespace Molten.Graphics
                 _defaultMaterial = result["material", "sprite-texture"] as Material;
                 _defaultNoTextureMaterial = result["material", "sprite-no-texture"] as Material;
                 _defaultLineMaterial = result["material", "line"] as Material;
+                _defaultCircleMaterial = result["material", "circle"] as Material;
 
                 _valDefaultAlbedo = _defaultMaterial["albedo"];
                 _valDefaultTexSize = _defaultMaterial["textureSize"];
                 _valDefaultWvp = _defaultMaterial["worldViewProj"];
 
                 _valNoTexWvp = _defaultNoTextureMaterial["worldViewProj"];
-
                 _valLineWvp = _defaultLineMaterial["worldViewProj"];
+                _valCircleWvp = _defaultCircleMaterial["worldViewProj"];
             }
 
             _clusterFlushes = new Action<GraphicsPipe, SpriteCluster>[4]
@@ -68,66 +71,6 @@ namespace Molten.Graphics
                 FlushTriangleCluster,
                 FlushCircleCluster,
             };
-        }
-
-        private void FlushSpriteCluster(GraphicsPipe pipe, SpriteCluster cluster)
-        {
-            Material mat = cluster.Material as Material;
-
-            if (cluster.Texture != null)
-            {
-                Vector2 texSize = new Vector2(cluster.Texture.Width, cluster.Texture.Height);
-                if (mat != null)
-                {
-                    // TODO improve this to avoid dictionary lookups.
-                    mat["worldViewProj"].Value = _viewProjection;
-                    mat["albedo"].Value = cluster.Texture;
-                    mat["textureSize"].Value = texSize;
-                }
-                else
-                {
-                    mat = _defaultMaterial;
-                    _valDefaultWvp.Value = _viewProjection;
-                    _valDefaultTexSize.Value = texSize;
-                    _valDefaultAlbedo.Value = cluster.Texture;
-                }
-            }
-            else
-            {
-                if (mat != null)
-                {
-                    mat["worldViewProj"].Value = _viewProjection;
-                }
-                else
-                {
-                    mat = _defaultNoTextureMaterial;
-                    _valNoTexWvp.Value = _viewProjection;
-                }
-            }
-
-            int startVertex = cluster.startVertex;
-            int vertexCount = cluster.drawnTo - cluster.drawnFrom;
-            pipe.Draw(mat, vertexCount, PrimitiveTopology.PointList, startVertex);
-        }
-
-        private void FlushLineCluster(GraphicsPipe pipe, SpriteCluster cluster)
-        {
-            Material mat = _defaultLineMaterial;
-            _valLineWvp.Value = _viewProjection;
-
-            int startVertex = cluster.startVertex;
-            int vertexCount = cluster.drawnTo - cluster.drawnFrom;
-            pipe.Draw(mat, vertexCount, PrimitiveTopology.PointList, startVertex);
-        }
-
-        private void FlushTriangleCluster(GraphicsPipe pipe, SpriteCluster cluster)
-        {
-
-        }
-
-        private void FlushCircleCluster(GraphicsPipe pipe, SpriteCluster cluster)
-        {
-
         }
 
         /// <summary>Disposes of the spritebatch.</summary>
@@ -243,6 +186,67 @@ namespace Molten.Graphics
             // Reset all counters
             _vertexCount = 0;
             _drawnFrom = _drawnTo;
+        }
+
+        private void FlushSpriteCluster(GraphicsPipe pipe, SpriteCluster cluster)
+        {
+            Material mat = cluster.Material as Material;
+
+            if (cluster.Texture != null)
+            {
+                Vector2 texSize = new Vector2(cluster.Texture.Width, cluster.Texture.Height);
+                if (mat != null)
+                {
+                    // TODO improve this to avoid dictionary lookups.
+                    mat["worldViewProj"].Value = _viewProjection;
+                    mat["albedo"].Value = cluster.Texture;
+                    mat["textureSize"].Value = texSize;
+                }
+                else
+                {
+                    mat = _defaultMaterial;
+                    _valDefaultWvp.Value = _viewProjection;
+                    _valDefaultTexSize.Value = texSize;
+                    _valDefaultAlbedo.Value = cluster.Texture;
+                }
+            }
+            else
+            {
+                if (mat != null)
+                {
+                    mat["worldViewProj"].Value = _viewProjection;
+                }
+                else
+                {
+                    mat = _defaultNoTextureMaterial;
+                    _valNoTexWvp.Value = _viewProjection;
+                }
+            }
+
+            int startVertex = cluster.startVertex;
+            int vertexCount = cluster.drawnTo - cluster.drawnFrom;
+            pipe.Draw(mat, vertexCount, PrimitiveTopology.PointList, startVertex);
+        }
+
+        private void FlushLineCluster(GraphicsPipe pipe, SpriteCluster cluster)
+        {
+            _valLineWvp.Value = _viewProjection;
+            int startVertex = cluster.startVertex;
+            int vertexCount = cluster.drawnTo - cluster.drawnFrom;
+            pipe.Draw(_defaultLineMaterial, vertexCount, PrimitiveTopology.PointList, startVertex);
+        }
+
+        private void FlushTriangleCluster(GraphicsPipe pipe, SpriteCluster cluster)
+        {
+
+        }
+
+        private void FlushCircleCluster(GraphicsPipe pipe, SpriteCluster cluster)
+        {
+            _valCircleWvp.Value = _viewProjection;
+            int startVertex = cluster.startVertex;
+            int vertexCount = cluster.drawnTo - cluster.drawnFrom;
+            pipe.Draw(_defaultCircleMaterial, vertexCount, PrimitiveTopology.PointList, startVertex);
         }
 
         protected override void Reset()
