@@ -316,10 +316,39 @@ namespace Molten.Graphics
         /// This means every 3 points should form a triangle. The polygon should be made up of several triangles.
         /// </summary>
         /// <param name="points">A list of points that form the polygon. A minimum of 3 points is expected.</param>
-        /// <param name="col">A list of colors. One color per point. A minimum of 3 colors is expected.</param>
-        public void DrawTriangleList(IList<Vector2> points, IList<Color> colors)
+        /// <param name="triColors">A list of colors. One color per triangle. A minimum of 1 color is expected.</param>
+        public void DrawTriangleList(IList<Vector2> points, IList<Color> triColors)
         {
-            throw new NotImplementedException();
+            if (points.Count % 3 > 0)
+                throw new SpriteBatchException(this, "Incorrect number of points for triangle list. There should be 3 points per triangle");
+
+            if (triColors.Count == 0)
+                throw new SpriteBatchException(this, "There must be at least one color available in the triColors list.");
+
+            int triCount = points.Count / 3;
+
+            SpriteClipZone clip = _clipZones[_curClip];
+            int spriteID = 0;
+            SpriteCluster cluster = GetCluster(clip, null, null, ClusterFormat.Triangle, triCount, out spriteID);
+            Color lastCol = triColors[triColors.Count - 1];
+
+            for (int i = 0; i < points.Count; i += 3)
+            {
+                int colID = i / 3;
+
+                // Pack two line points into a single sprite vertex.
+                cluster.Sprites[spriteID++] = new SpriteVertex()
+                {
+                    Position = points[i],
+                    Size = points[i+1],
+                    UV = Vector4.Zero, // Unused
+                    Color = colID < triColors.Count ? triColors[colID] : lastCol,
+                    Origin = points[i+2],
+                    Rotation = 0,
+                };
+            }
+            
+            cluster.SpriteCount += triCount;
         }
 
         /// <summary>
@@ -330,7 +359,8 @@ namespace Molten.Graphics
         /// <param name="color">The color of the polygon.</param>
         public void DrawTriangleList(IList<Vector2> points, Color color)
         {
-            throw new NotImplementedException();
+            _singleColorList[0] = color;
+            DrawTriangleList(points, _singleColorList);
         }
 
         /// <summary>Draws connecting lines between each of the provided points.</summary>
@@ -340,7 +370,7 @@ namespace Molten.Graphics
         public void DrawLines(IList<Vector2> points, IList<Color> pointColors, float thickness)
         {
             if (pointColors.Count == 0)
-                throw new SpriteBatchException(this, "There must be at least one color available in pointColors list.");
+                throw new SpriteBatchException(this, "There must be at least one color available in the pointColors list.");
 
             if (points.Count == 2)
             {

@@ -164,11 +164,19 @@ namespace Molten.Samples
 
             // Add 5 colors. The last color will be used when we have more points than colors.
             List<Color> colors = new List<Color>();
-            colors.Add(Color.White);
+            colors.Add(Color.Orange);
             colors.Add(Color.Red);
             colors.Add(Color.Lime);
             colors.Add(Color.Blue);
             colors.Add(Color.Yellow);
+
+            List<Vector2> triPoints = new List<Vector2>();
+            triPoints.Add(new Vector2(600, 220)); // First triangle
+            triPoints.Add(new Vector2(630, 320));
+            triPoints.Add(new Vector2(700, 260));
+            triPoints.Add(new Vector2(710, 220)); // Second triangle
+            triPoints.Add(new Vector2(730, 360));
+            triPoints.Add(new Vector2(770, 280));
 
             // Use a container for doing some testing.
             SpriteBatchContainer sbContainer = new SpriteBatchContainer()
@@ -178,17 +186,18 @@ namespace Molten.Samples
                     sb.DrawLine(new Vector2(0), new Vector2(400), Color.White, 1);
                     sb.DrawLines(linePoints, colors, 2);
                     sb.DrawLines(circleLinePoints, colors, 4);
-                    sb.DrawTriangle(new Vector2(500, 220), new Vector2(450, 320), new Vector2(600, 260), Color.SkyBlue);
-                    sb.DrawTriangle(new Vector2(600, 220), new Vector2(690, 350), new Vector2(750, 280), Color.Violet);
-
+                    sb.DrawTriangle(new Vector2(400, 220), new Vector2(350, 320), new Vector2(500, 260), Color.SkyBlue);
+                    sb.DrawTriangle(new Vector2(500, 220), new Vector2(590, 350), new Vector2(650, 280), Color.Violet);
+                    sb.DrawTriangleList(triPoints, colors);
+                    // Draw a few circles with a decreasing number of sides.
                     origin.X = 500;
                     origin.Y = 500;
-                    int circleSegs = 80;
+                    int circleSides = 80;
                     for (int i = 0; i < colors.Count; i++)
                     {
                         origin.X += 100;
-                        sb.DrawCircle(origin, 50, colors[i], circleSegs);
-                        circleSegs /= 2;
+                        sb.DrawCircle(origin, 50, colors[i], circleSides);
+                        circleSides /= 2;
                     }
                 }
             };
