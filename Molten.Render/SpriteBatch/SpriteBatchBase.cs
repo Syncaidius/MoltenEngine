@@ -316,7 +316,8 @@ namespace Molten.Graphics
         /// This means every 3 points should form a triangle. The polygon should be made up of several triangles.
         /// </summary>
         /// <param name="points">A list of points that form the polygon. A minimum of 3 points is expected.</param>
-        /// <param name="triColors">A list of colors. One color per triangle. A minimum of 1 color is expected.</param>
+        /// <param name="triColors">A list of colors. One color per triangle. A minimum of 1 color is expected. 
+        /// Insufficient colors for the provided triangles will cause the colors to be repeated.</param>
         public void DrawTriangleList(IList<Vector2> points, IList<Color> triColors)
         {
             if (points.Count % 3 > 0)
@@ -330,7 +331,6 @@ namespace Molten.Graphics
             SpriteClipZone clip = _clipZones[_curClip];
             int spriteID = 0;
             SpriteCluster cluster = GetCluster(clip, null, null, ClusterFormat.Triangle, triCount, out spriteID);
-            Color lastCol = triColors[triColors.Count - 1];
 
             for (int i = 0; i < points.Count; i += 3)
             {
@@ -342,7 +342,7 @@ namespace Molten.Graphics
                     Position = points[i],
                     Size = points[i+1],
                     UV = Vector4.Zero, // Unused
-                    Color = colID < triColors.Count ? triColors[colID] : lastCol,
+                    Color = triColors[colID % triColors.Count],
                     Origin = points[i+2],
                     Rotation = 0,
                 };
@@ -402,8 +402,8 @@ namespace Molten.Graphics
                     {
                         Position = p1,
                         Size = p2,
-                        UV = next < pointColors.Count ? pointColors[next] : lastCol4,
-                        Color = i < pointColors.Count ? pointColors[i] : lastCol,
+                        UV = pointColors[next % pointColors.Count].ToVector4(),
+                        Color = pointColors[i % pointColors.Count],
                         Rotation = thickness,
                     };
 
