@@ -49,8 +49,6 @@ namespace Molten
             StepCount++;
         }
 
-        public abstract TriangulationAlgorithm Algorithm { get; }
-
         public virtual void PrepareTriangulation(Triangulatable t)
         {
             Triangulatable = t;

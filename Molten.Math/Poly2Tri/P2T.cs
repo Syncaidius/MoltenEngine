@@ -31,31 +31,10 @@
 
 using System;
 
-namespace Molten {
-	public static class P2T {
-		private static TriangulationAlgorithm _defaultAlgorithm = TriangulationAlgorithm.DTSweep;
-
-		public static void Triangulate(PolygonSet ps) {
-			TriangulationContext tcx = CreateContext(_defaultAlgorithm);
-			foreach (Polygon p in ps.Polygons) {
-				tcx.PrepareTriangulation(p);
-				Triangulate(tcx);
-				tcx.Clear();
-			}
-		}
-
-		public static void Triangulate(Polygon p) {
-			Triangulate(_defaultAlgorithm, p);
-		}
-
-		public static void Triangulate(ConstrainedPointSet cps) {
-			Triangulate(_defaultAlgorithm, cps);
-		}
-
-		public static void Triangulate(PointSet ps) {
-			Triangulate(_defaultAlgorithm, ps);
-		}
-
+namespace Molten
+{
+    public static class P2T
+    {
         public static int IndexOf<T>(T[] array, T obj)
         {
             return Array.IndexOf(array, obj);
@@ -71,31 +50,11 @@ namespace Molten {
             Array.Clear(array, 0, array.Length);
         }
 
-		public static TriangulationContext CreateContext(TriangulationAlgorithm algorithm) {
-			switch (algorithm) {
-			case TriangulationAlgorithm.DTSweep:
-			default:
-				return new DTSweepContext();
-			}
-		}
-
-		public static void Triangulate(TriangulationAlgorithm algorithm, Triangulatable t) {
-			TriangulationContext tcx;
-
-			//        long time = System.nanoTime();
-			tcx = CreateContext(algorithm);
-			tcx.PrepareTriangulation(t);
-			Triangulate(tcx);
-			//        logger.info( "Triangulation of {} points [{}ms]", tcx.getPoints().size(), ( System.nanoTime() - time ) / 1e6 );
-		}
-
-		public static void Triangulate(TriangulationContext tcx) {
-			switch (tcx.Algorithm) {
-			case TriangulationAlgorithm.DTSweep:
-			default:
-				DTSweep.Triangulate((DTSweepContext)tcx);
-				break;
-			}
-		}
-	}
+        public static void Triangulate(Triangulatable t)
+        {
+            DTSweepContext tcx = new DTSweepContext();
+            tcx.PrepareTriangulation(t);
+            DTSweep.Triangulate(tcx);
+        }
+    }
 }

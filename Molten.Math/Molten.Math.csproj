@@ -103,8 +103,6 @@
     <Compile Include="Poly2Tri\P2T.cs" />
     <Compile Include="Poly2Tri\Polygon\Polygon.cs" />
     <Compile Include="Poly2Tri\Polygon\PolygonPoint.cs" />
-    <Compile Include="Poly2Tri\Polygon\PolygonSet.cs" />
-    <Compile Include="Poly2Tri\RectangleD.cs" />
     <Compile Include="Poly2Tri\Triangulation\Delaunay\DelaunayTriangle.cs" />
     <Compile Include="Poly2Tri\Triangulation\Delaunay\Sweep\AdvancingFront.cs" />
     <Compile Include="Poly2Tri\Triangulation\Delaunay\Sweep\AdvancingFrontNode.cs" />
@@ -118,17 +116,12 @@
     <Compile Include="Poly2Tri\Triangulation\Delaunay\Sweep\PointOnEdgeException.cs" />
     <Compile Include="Poly2Tri\Triangulation\ITriangulatable.cs" />
     <Compile Include="Poly2Tri\Triangulation\Orientation.cs" />
-    <Compile Include="Poly2Tri\Triangulation\Sets\ConstrainedPointSet.cs" />
-    <Compile Include="Poly2Tri\Triangulation\Sets\PointSet.cs" />
-    <Compile Include="Poly2Tri\Triangulation\TriangulationAlgorithm.cs" />
     <Compile Include="Poly2Tri\Triangulation\TriangulationConstraint.cs" />
     <Compile Include="Poly2Tri\Triangulation\TriangulationContext.cs" />
     <Compile Include="Poly2Tri\Triangulation\TriangulationDebugContext.cs" />
     <Compile Include="Poly2Tri\Triangulation\TriangulationMode.cs" />
     <Compile Include="Poly2Tri\Triangulation\TriangulationPoint.cs" />
     <Compile Include="Poly2Tri\Triangulation\TriangulationUtil.cs" />
-    <Compile Include="Poly2Tri\Triangulation\Util\PointGenerator.cs" />
-    <Compile Include="Poly2Tri\Triangulation\Util\PolygonGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Quaternion.cs" />
     <Compile Include="RandomNumber.cs" />

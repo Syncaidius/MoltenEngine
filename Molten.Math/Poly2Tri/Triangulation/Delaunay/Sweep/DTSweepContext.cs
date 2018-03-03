@@ -29,169 +29,181 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Molten {
-	/**
+namespace Molten
+{
+    /**
 	 * 
 	 * @author Thomas Åhlén, thahlen@gmail.com
 	 *
 	 */
-	public class DTSweepContext : TriangulationContext {
-		// Inital triangle factor, seed triangle will extend 30% of 
-		// PointSet width to both left and right.
-		private readonly float ALPHA = 0.3f;
+    public class DTSweepContext : TriangulationContext
+    {
+        // Inital triangle factor, seed triangle will extend 30% of 
+        // PointSet width to both left and right.
+        private readonly float ALPHA = 0.3f;
 
-		public AdvancingFront     Front;
-		public TriangulationPoint Head { get; set; }
-		public TriangulationPoint Tail { get; set; }
+        public AdvancingFront Front;
+        public TriangulationPoint Head { get; set; }
+        public TriangulationPoint Tail { get; set; }
 
-		public DTSweepBasin     Basin     = new DTSweepBasin();
-		public DTSweepEdgeEvent EdgeEvent = new DTSweepEdgeEvent();
+        public DTSweepBasin Basin = new DTSweepBasin();
+        public DTSweepEdgeEvent EdgeEvent = new DTSweepEdgeEvent();
 
-		private DTSweepPointComparator _comparator = new DTSweepPointComparator();
+        private DTSweepPointComparator _comparator = new DTSweepPointComparator();
 
-		public DTSweepContext() {
-			Clear();
-		}
+        public DTSweepContext()
+        {
+            Clear();
+        }
 
-		public override bool IsDebugEnabled { get {
-			return base.IsDebugEnabled;
-		} protected set {
-			if (value && DebugContext == null) DebugContext = new DTSweepDebugContext(this);
-			base.IsDebugEnabled = value;
-		}}
+        public override bool IsDebugEnabled
+        {
+            get
+            {
+                return base.IsDebugEnabled;
+            }
+            protected set
+            {
+                if (value && DebugContext == null) DebugContext = new DTSweepDebugContext(this);
+                base.IsDebugEnabled = value;
+            }
+        }
 
-		public void RemoveFromList( DelaunayTriangle triangle ) {
-			Triangles.Remove(triangle);
-			// TODO: remove all neighbor pointers to this triangle
-			//        for( int i=0; i<3; i++ )
-			//        {
-			//            if( triangle.neighbors[i] != null )
-			//            {
-			//                triangle.neighbors[i].clearNeighbor( triangle );
-			//            }
-			//        }
-			//        triangle.clearNeighbors();
-		}
+        public void RemoveFromList(DelaunayTriangle triangle)
+        {
+            Triangles.Remove(triangle);
+            // TODO: remove all neighbor pointers to this triangle
+            //        for( int i=0; i<3; i++ )
+            //        {
+            //            if( triangle.neighbors[i] != null )
+            //            {
+            //                triangle.neighbors[i].clearNeighbor( triangle );
+            //            }
+            //        }
+            //        triangle.clearNeighbors();
+        }
 
-		public void MeshClean( DelaunayTriangle triangle ) {
-			MeshCleanReq(triangle);
-		}
+        public void MeshClean(DelaunayTriangle triangle)
+        {
+            MeshCleanReq(triangle);
+        }
 
-		private void MeshCleanReq( DelaunayTriangle triangle ) {
-			if (triangle != null && !triangle.IsInterior) {
-				triangle.IsInterior = true;
-				Triangulatable.AddTriangle(triangle);
+        private void MeshCleanReq(DelaunayTriangle triangle)
+        {
+            if (triangle != null && !triangle.IsInterior)
+            {
+                triangle.IsInterior = true;
+                Triangulatable.AddTriangle(triangle);
 
-				for (int i = 0; i < 3; i++)
-				if (!triangle.EdgeIsConstrained[i])
-				{
-					MeshCleanReq(triangle.Neighbors[i]);
-				}
-			}
-		}
+                for (int i = 0; i < 3; i++)
+                    if (!triangle.EdgeIsConstrained[i])
+                    {
+                        MeshCleanReq(triangle.Neighbors[i]);
+                    }
+            }
+        }
 
-		public override void Clear() {
-			base.Clear();
-			Triangles.Clear();
-		}
+        public override void Clear()
+        {
+            base.Clear();
+            Triangles.Clear();
+        }
 
-		public void AddNode( AdvancingFrontNode node ) {
-			//        Console.WriteLine( "add:" + node.key + ":" + System.identityHashCode(node.key));
-			//        m_nodeTree.put( node.getKey(), node );
-			Front.AddNode(node);
-		}
+        public void AddNode(AdvancingFrontNode node)
+        {
+            //        Console.WriteLine( "add:" + node.key + ":" + System.identityHashCode(node.key));
+            //        m_nodeTree.put( node.getKey(), node );
+            Front.AddNode(node);
+        }
 
-		public void RemoveNode( AdvancingFrontNode node ) {
-			//        Console.WriteLine( "remove:" + node.key + ":" + System.identityHashCode(node.key));
-			//        m_nodeTree.delete( node.getKey() );
-			Front.RemoveNode(node);
-		}
+        public void RemoveNode(AdvancingFrontNode node)
+        {
+            //        Console.WriteLine( "remove:" + node.key + ":" + System.identityHashCode(node.key));
+            //        m_nodeTree.delete( node.getKey() );
+            Front.RemoveNode(node);
+        }
 
-		public AdvancingFrontNode LocateNode( TriangulationPoint point ) {
-			return Front.LocateNode(point);
-		}
+        public AdvancingFrontNode LocateNode(TriangulationPoint point)
+        {
+            return Front.LocateNode(point);
+        }
 
-		public void CreateAdvancingFront() {
-			AdvancingFrontNode head, tail, middle;
-			// Initial triangle
-			DelaunayTriangle iTriangle = new DelaunayTriangle(Points[0], Tail, Head);
-			Triangles.Add(iTriangle);
+        public void CreateAdvancingFront()
+        {
+            AdvancingFrontNode head, tail, middle;
+            // Initial triangle
+            DelaunayTriangle iTriangle = new DelaunayTriangle(Points[0], Tail, Head);
+            Triangles.Add(iTriangle);
 
-			head = new AdvancingFrontNode(iTriangle.Points[1]);
-			head.Triangle = iTriangle;
-			middle = new AdvancingFrontNode(iTriangle.Points[0]);
-			middle.Triangle = iTriangle;
-			tail = new AdvancingFrontNode(iTriangle.Points[2]);
+            head = new AdvancingFrontNode(iTriangle.Points[1]);
+            head.Triangle = iTriangle;
+            middle = new AdvancingFrontNode(iTriangle.Points[0]);
+            middle.Triangle = iTriangle;
+            tail = new AdvancingFrontNode(iTriangle.Points[2]);
 
-			Front = new AdvancingFront(head, tail);
-			Front.AddNode(middle);
+            Front = new AdvancingFront(head, tail);
+            Front.AddNode(middle);
 
-			// TODO: I think it would be more intuitive if head is middles next and not previous
-			//       so swap head and tail
-			Front.Head.Next = middle;
-			middle.Next = Front.Tail;
-			middle.Prev = Front.Head;
-			Front.Tail.Prev = middle;
-		}
+            // TODO: I think it would be more intuitive if head is middles next and not previous
+            //       so swap head and tail
+            Front.Head.Next = middle;
+            middle.Next = Front.Tail;
+            middle.Prev = Front.Head;
+            Front.Tail.Prev = middle;
+        }
 
+        /// <summary>
+        /// Try to map a node to all sides of this triangle that don't have 
+        /// a neighbor.
+        /// </summary>
+        public void MapTriangleToNodes(DelaunayTriangle t)
+        {
+            for (int i = 0; i < 3; i++)
+                if (t.Neighbors[i] == null)
+                {
+                    AdvancingFrontNode n = Front.LocatePoint(t.PointCWFrom(t.Points[i]));
+                    if (n != null) n.Triangle = t;
+                }
+        }
 
+        public override void PrepareTriangulation(Triangulatable t)
+        {
+            base.PrepareTriangulation(t);
 
+            double xmax, xmin;
+            double ymax, ymin;
 
+            xmax = xmin = Points[0].X;
+            ymax = ymin = Points[0].Y;
 
-		/// <summary>
-		/// Try to map a node to all sides of this triangle that don't have 
-		/// a neighbor.
-		/// </summary>
-		public void MapTriangleToNodes( DelaunayTriangle t ) {
-			for (int i = 0; i < 3; i++)
-			if (t.Neighbors[i] == null)
-			{
-				AdvancingFrontNode n = Front.LocatePoint(t.PointCWFrom(t.Points[i]));
-				if (n != null) n.Triangle = t;
-			}
-		}
+            // Calculate bounds. Should be combined with the sorting
+            foreach (TriangulationPoint p in Points)
+            {
+                if (p.X > xmax) xmax = p.X;
+                if (p.X < xmin) xmin = p.X;
+                if (p.Y > ymax) ymax = p.Y;
+                if (p.Y < ymin) ymin = p.Y;
+            }
 
-		public override void PrepareTriangulation( Triangulatable t ) {
-			base.PrepareTriangulation(t);
+            double deltaX = ALPHA * (xmax - xmin);
+            double deltaY = ALPHA * (ymax - ymin);
+            TriangulationPoint p1 = new TriangulationPoint(xmax + deltaX, ymin - deltaY);
+            TriangulationPoint p2 = new TriangulationPoint(xmin - deltaX, ymin - deltaY);
 
-			double xmax, xmin;
-			double ymax, ymin;
+            Head = p1;
+            Tail = p2;
+            Points.Sort(_comparator);
+        }
 
-			xmax = xmin = Points[0].X;
-			ymax = ymin = Points[0].Y;
+        public void FinalizeTriangulation()
+        {
+            Triangulatable.AddTriangles(Triangles);
+            Triangles.Clear();
+        }
 
-			// Calculate bounds. Should be combined with the sorting
-			foreach (TriangulationPoint p in Points) {
-				if (p.X > xmax) xmax = p.X;
-				if (p.X < xmin) xmin = p.X;
-				if (p.Y > ymax) ymax = p.Y;
-				if (p.Y < ymin) ymin = p.Y;
-			}
-
-			double deltaX = ALPHA * (xmax - xmin);
-			double deltaY = ALPHA * (ymax - ymin);
-			TriangulationPoint p1 = new TriangulationPoint(xmax + deltaX, ymin - deltaY);
-			TriangulationPoint p2 = new TriangulationPoint(xmin - deltaX, ymin - deltaY);
-
-			Head = p1;
-			Tail = p2;
-
-			//        long time = System.nanoTime();
-			// Sort the points along y-axis
-			Points.Sort(_comparator);
-			//        logger.info( "Triangulation setup [{}ms]", ( System.nanoTime() - time ) / 1e6 );
-		}
-
-
-		public void FinalizeTriangulation() {
-			Triangulatable.AddTriangles(Triangles);
-			Triangles.Clear();
-		}
-
-		public override TriangulationConstraint NewConstraint( TriangulationPoint a, TriangulationPoint b ) {
-			return new DTSweepConstraint(a, b);
-		}
-
-		public override TriangulationAlgorithm Algorithm { get { return TriangulationAlgorithm.DTSweep; }}
-	}
+        public override TriangulationConstraint NewConstraint(TriangulationPoint a, TriangulationPoint b)
+        {
+            return new DTSweepConstraint(a, b);
+        }
+    }
 }

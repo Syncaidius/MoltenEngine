@@ -31,6 +31,8 @@
 
 namespace Molten {
 	public enum TriangulationMode {
-		Unconstrained,Constrained,Polygon
+		Unconstrained,
+        Constrained,
+        Polygon
 	}
 }
