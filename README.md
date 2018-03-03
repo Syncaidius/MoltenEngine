@@ -11,7 +11,7 @@ I've previously attempted a game engine back in 2015 using SharpDX and while it 
 This is my second attempt at such an engine, so I would like to extend the learning experience further by it opening up to everyone. More importantly, it allows others to learn from my code (and mistakes) and perhaps even use the engine as a base for their own games and engine variants.
 
 # Current State
-The engine is pretty rough around the edges at this point in time. There is no audio system, AI, cross-platform, collision/physics, deferred rendering or post-processing.
+The engine is pretty rough around the edges at this point in time. There is no audio system, AI, cross-platform, collision/physics, deferred rendering or post-processing.  
 Simply put, it's a giant ball of molten rock which is probably no use to anyone yet.
 
 Here's a list of completed or work-in-progress (WIP) features:
@@ -41,5 +41,5 @@ Any commerially viable games I produce with this engine will obviously not be op
 MIT - Basically, do what you want with it. Fork it, chop it up, consume it for dinner (*just kidding*). You get the idea!
 
 # Credits
-[SharpDX](http://sharpdx.org) - Provides the foundation for the engine's DirectX support.
+[SharpDX](http://sharpdx.org) - Provides the foundation for the engine's DirectX support.  
 [MaulingMonkey's poly2tri C# port](https://github.com/MaulingMonkey/poly2tri-cs) - Provided a great starting point for font/shape-to-mesh conversion
