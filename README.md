@@ -11,22 +11,22 @@ I've previously attempted a game engine back in 2015 using SharpDX and while it 
 This is my second attempt at such an engine, so I would like to extend the learning experience further by it opening up to everyone. More importantly, it allows others to learn from my code (and mistakes) and perhaps even use the engine as a base for their own games and engine variants.
 
 # Current State
-Right now the engine is extremely rough around the edges. Here's a list of the current features:
+The engine is pretty rough around the edges at this point in time. There is no audio system, AI, cross-platform, collision/physics, deferred rendering or post-processing.
+Simply put, it's a giant ball of molten rock which is probably no use to anyone yet.
+
+Here's a list of completed or work-in-progress (WIP) features:
   * A basic renderer with:
     * [WIP] Entity-component-system (ECS)
     * Sprite/primitive batcher
     * [WIP] Material system
-    * Abstraction layer for swapping out renderer without touching the engine itself
-	* Support for texture formats (DDS, PNG, JPEG, etc)
+	* Support for popular texture formats - DDS, PNG and JEG
 	* Compressed texture support
 	* [WIP] Sprite font system
   * Content manager
+  * Modular abstraction layer - remove/replace parts of the engine without touching the core
   * Complete set of math types. The majority are imported from [SharpDX](https://github.com/sharpdx/SharpDX) with a few additions and changes.
   * [WIP] Mouse, keyboard and game-pad input
   * Samples
-  
-There is no audio system, AI, cross-platform, collision/physics, deferred rendering or post-processing.
-Simply put, it's a giant ball of molten rock which is no use to anyone yet. The whole thing is a work-in-progress. ;)
   
   
 # Long-term Goals
@@ -38,4 +38,8 @@ Simply put, it's a giant ball of molten rock which is no use to anyone yet. The 
 Any commerially viable games I produce with this engine will obviously not be open-source, but I'll definitely be making some example games to go alongside it, as well as documentation at some point.
 
 # Licensing
-MIT - Basically, you can do what you want with it. Fork it, add a knife, consume it for dinner (*just kidding*). You get the idea!
+MIT - Basically, do what you want with it. Fork it, chop it up, consume it for dinner (*just kidding*). You get the idea!
+
+# Credits
+[SharpDX](http://sharpdx.org) - Provides the foundation for the engine's DirectX support.
+[MaulingMonkey's poly2tri C# port](https://github.com/MaulingMonkey/poly2tri-cs) - Provided a great starting point for font/shape-to-mesh conversion
