@@ -42,20 +42,21 @@ using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-namespace Poly2Tri
+namespace Molten
 {
     public class DelaunayTriangle
     {
-        public FixedArray3<TriangulationPoint> Points;
-        public FixedArray3<DelaunayTriangle> Neighbors;
-        public FixedBitArray3 EdgeIsConstrained, EdgeIsDelaunay;
+        public TriangulationPoint[] Points;
+        public DelaunayTriangle[] Neighbors;
+        public bool[] EdgeIsConstrained, EdgeIsDelaunay;
         public bool IsInterior { get; set; }
 
         public DelaunayTriangle(TriangulationPoint p1, TriangulationPoint p2, TriangulationPoint p3)
         {
-            Points[0] = p1;
-            Points[1] = p2;
-            Points[2] = p3;
+            Points = new TriangulationPoint[3] { p1, p2, p3 };
+            Neighbors = new DelaunayTriangle[3];
+            EdgeIsConstrained = new bool[3];
+            EdgeIsDelaunay = new bool[3];
         }
 
         public void ReversePointFlow()
@@ -67,7 +68,7 @@ namespace Poly2Tri
 
         public int IndexOf(TriangulationPoint p)
         {
-            int i = Points.IndexOf(p);
+            int i = P2T.IndexOf(Points, p);
             if (i == -1)
                 throw new Exception("Calling index with a point that doesn't exist in triangle");
             return i;
@@ -76,7 +77,7 @@ namespace Poly2Tri
         public int IndexCWFrom(TriangulationPoint p) { return (IndexOf(p) + 2) % 3; }
         public int IndexCCWFrom(TriangulationPoint p) { return (IndexOf(p) + 1) % 3; }
 
-        public bool Contains(TriangulationPoint p) { return Points.Contains(p); }
+        public bool Contains(TriangulationPoint p) { return P2T.Contains(Points, p); }
 
         /// <summary>
         /// Update neighbor pointers
@@ -116,9 +117,9 @@ namespace Poly2Tri
             return PointCWFrom(t.PointCWFrom(p));
         }
 
-        public DelaunayTriangle NeighborCWFrom(TriangulationPoint point) { return Neighbors[(Points.IndexOf(point) + 1) % 3]; }
-        public DelaunayTriangle NeighborCCWFrom(TriangulationPoint point) { return Neighbors[(Points.IndexOf(point) + 2) % 3]; }
-        public DelaunayTriangle NeighborAcrossFrom(TriangulationPoint point) { return Neighbors[Points.IndexOf(point)]; }
+        public DelaunayTriangle NeighborCWFrom(TriangulationPoint point) { return Neighbors[(P2T.IndexOf(Points, point) + 1) % 3]; }
+        public DelaunayTriangle NeighborCCWFrom(TriangulationPoint point) { return Neighbors[(P2T.IndexOf(Points, point) + 2) % 3]; }
+        public DelaunayTriangle NeighborAcrossFrom(TriangulationPoint point) { return Neighbors[P2T.IndexOf(Points, point)]; }
 
         public TriangulationPoint PointCCWFrom(TriangulationPoint point) { return Points[(IndexOf(point) + 1) % 3]; }
         public TriangulationPoint PointCWFrom(TriangulationPoint point) { return Points[(IndexOf(point) + 2) % 3]; }
@@ -213,8 +214,8 @@ namespace Poly2Tri
         /// <returns>index of the shared edge or -1 if edge isn't shared</returns>
         public int EdgeIndex(TriangulationPoint p1, TriangulationPoint p2)
         {
-            int i1 = Points.IndexOf(p1);
-            int i2 = Points.IndexOf(p2);
+            int i1 = P2T.IndexOf(Points, p1);
+            int i2 = P2T.IndexOf(Points, p2);
 
             // Points of this triangle in the edge p1-p2
             bool a = (i1 == 0 || i2 == 0);

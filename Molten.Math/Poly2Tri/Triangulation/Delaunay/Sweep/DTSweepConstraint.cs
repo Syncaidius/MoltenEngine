@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Poly2Tri {
+namespace Molten {
 	public class DTSweepConstraint : TriangulationConstraint {
 		/// <summary>
 		/// Give two points in any order. Will always be ordered so

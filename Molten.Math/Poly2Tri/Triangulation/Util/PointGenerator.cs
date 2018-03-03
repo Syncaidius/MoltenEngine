@@ -32,7 +32,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Poly2Tri {
+namespace Molten {
 	public class PointGenerator {
 		static readonly Random RNG = new Random();
 

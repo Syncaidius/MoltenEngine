@@ -31,7 +31,7 @@
 
 using System;
 
-namespace Poly2Tri {
+namespace Molten {
 	public class PointOnEdgeException : NotImplementedException {
 		public readonly TriangulationPoint A,B,C;
 

@@ -31,7 +31,7 @@
 
 using System.Collections.Generic;
 
-namespace Poly2Tri {
+namespace Molten {
 	public class TriangulationPoint {
 		// List of edges this point constitutes an upper ending point (CDT)
 		public List<DTSweepConstraint> Edges { get; private set; }

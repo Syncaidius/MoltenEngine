@@ -35,7 +35,7 @@
 /// Future possibilities
 ///   Comments!
 
-namespace Poly2Tri {
+namespace Molten {
 	public class AdvancingFrontNode {
 		public AdvancingFrontNode Next;
 		public AdvancingFrontNode Prev;

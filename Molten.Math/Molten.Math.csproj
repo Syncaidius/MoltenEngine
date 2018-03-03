@@ -129,8 +129,6 @@
     <Compile Include="Poly2Tri\Triangulation\TriangulationUtil.cs" />
     <Compile Include="Poly2Tri\Triangulation\Util\PointGenerator.cs" />
     <Compile Include="Poly2Tri\Triangulation\Util\PolygonGenerator.cs" />
-    <Compile Include="Poly2Tri\Utility\FixedArray3.cs" />
-    <Compile Include="Poly2Tri\Utility\FixedBitArray3.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Quaternion.cs" />
     <Compile Include="RandomNumber.cs" />

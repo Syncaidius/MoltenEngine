@@ -34,7 +34,7 @@
 /// Future possibilities
 ///   Documentation!
 
-namespace Poly2Tri {
+namespace Molten {
 	public class PolygonPoint : TriangulationPoint {
 		public PolygonPoint( double x, double y ) : base(x, y) { }
 

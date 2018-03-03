@@ -50,7 +50,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Poly2Tri {
+namespace Molten {
 	public static class DTSweep {
 		private const double PI_div2 = Math.PI / 2;
 		private const double PI_3div4 = 3 * Math.PI / 4;
@@ -564,14 +564,14 @@ namespace Poly2Tri {
 				edgeIndex = ot.EdgeIndex(p, op);
 				ot.EdgeIsDelaunay[edgeIndex] = true;
 				Legalize(tcx, ot);
-				ot.EdgeIsDelaunay.Clear();
+				P2T.Clear(ot.EdgeIsDelaunay);
 				return t;
 			}
 			// t is not crossing edge after flip
 			edgeIndex = t.EdgeIndex(p, op);
 			t.EdgeIsDelaunay[edgeIndex] = true;
 			Legalize(tcx, t);
-			t.EdgeIsDelaunay.Clear();
+			P2T.Clear(t.EdgeIsDelaunay);
 			return ot;
 		}
 
@@ -796,10 +796,12 @@ namespace Poly2Tri {
 			for (int i = 0; i < 3; i++) {
 				// TODO: fix so that cEdge is always valid when creating new triangles then we can check it here
 				//       instead of below with ot
-				if (t.EdgeIsDelaunay[i]) continue;
+				if (t.EdgeIsDelaunay[i])
+                    continue;
 
 				DelaunayTriangle ot = t.Neighbors[i];
-				if (ot == null) continue;
+				if (ot == null)
+                    continue;
 
 				TriangulationPoint p = t.Points[i];
 				TriangulationPoint op = ot.OppositePoint(t, p);
@@ -811,7 +813,8 @@ namespace Poly2Tri {
 					continue;
 				}
 
-				if (!TriangulationUtil.SmartIncircle(p,t.PointCCWFrom(p),t.PointCWFrom(p),op)) continue;
+				if (!TriangulationUtil.SmartIncircle(p,t.PointCCWFrom(p),t.PointCWFrom(p),op))
+                    continue;
 
 				// Lets mark this shared edge as Delaunay 
 				t.EdgeIsDelaunay[i] = true;
@@ -824,8 +827,11 @@ namespace Poly2Tri {
 				// This gives us 4 new edges to check for Delaunay
 
 				// Make sure that triangle to node mapping is done only one time for a specific triangle
-				if (!Legalize(tcx, t)) tcx.MapTriangleToNodes(t);
-				if (!Legalize(tcx, ot)) tcx.MapTriangleToNodes(ot);
+				if (!Legalize(tcx, t))
+                    tcx.MapTriangleToNodes(t);
+
+				if (!Legalize(tcx, ot))
+                    tcx.MapTriangleToNodes(ot);
 
 				// Reset the Delaunay edges, since they only are valid Delaunay edges
 				// until we add a new triangle or point.
@@ -892,9 +898,9 @@ namespace Poly2Tri {
 			//      what side should be assigned to what neighbor after the 
 			//      rotation. Now mark neighbor does lots of testing to find 
 			//      the right side.
-			t.Neighbors.Clear();
-			ot.Neighbors.Clear();
-			if (n1 != null) ot.MarkNeighbor(n1);
+			P2T.Clear(t.Neighbors);
+            P2T.Clear(ot.Neighbors);
+            if (n1 != null) ot.MarkNeighbor(n1);
 			if (n2 != null) t.MarkNeighbor(n2);
 			if (n3 != null) t.MarkNeighbor(n3);
 			if (n4 != null) ot.MarkNeighbor(n4);

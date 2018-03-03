@@ -36,7 +36,7 @@
  * @author Thomas Åhlén, thahlen@gmail.com
  */
 
-namespace Poly2Tri {
+namespace Molten {
 	public class TriangulationConstraint {
 		public TriangulationPoint P;
 		public TriangulationPoint Q;

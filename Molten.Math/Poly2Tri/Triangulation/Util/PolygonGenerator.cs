@@ -31,7 +31,7 @@
 
 using System;
 
-namespace Poly2Tri {
+namespace Molten {
 	public class PolygonGenerator {
 		static readonly Random RNG = new Random();
 

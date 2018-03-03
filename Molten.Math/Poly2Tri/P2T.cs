@@ -29,7 +29,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Poly2Tri {
+using System;
+
+namespace Molten {
 	public static class P2T {
 		private static TriangulationAlgorithm _defaultAlgorithm = TriangulationAlgorithm.DTSweep;
 
@@ -53,6 +55,21 @@ namespace Poly2Tri {
 		public static void Triangulate(PointSet ps) {
 			Triangulate(_defaultAlgorithm, ps);
 		}
+
+        public static int IndexOf<T>(T[] array, T obj)
+        {
+            return Array.IndexOf(array, obj);
+        }
+
+        public static bool Contains<T>(T[] array, T obj)
+        {
+            return Array.IndexOf(array, obj) > -1;
+        }
+
+        public static void Clear(Array array)
+        {
+            Array.Clear(array, 0, array.Length);
+        }
 
 		public static TriangulationContext CreateContext(TriangulationAlgorithm algorithm) {
 			switch (algorithm) {
