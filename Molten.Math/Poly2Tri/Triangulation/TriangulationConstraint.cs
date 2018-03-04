@@ -28,17 +28,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/**
- * Forces a triangle edge between two points p and q
- * when triangulating. For example used to enforce
- * Polygon Edges during a polygon triangulation.
- * 
- * @author Thomas Åhlén, thahlen@gmail.com
- */
 
-namespace Molten {
-	public class TriangulationConstraint {
-		public TriangulationPoint P;
-		public TriangulationPoint Q;
-	}
+namespace Molten
+{
+    public class TriangulationConstraint
+    {
+        public TriangulationPoint P;
+        public TriangulationPoint Q;
+
+        /// <summary>
+        /// Give two points in any order. Will always be ordered so
+        /// that q.y > p.y and q.x > p.x if same y value 
+        /// </summary>
+        public TriangulationConstraint(TriangulationPoint p1, TriangulationPoint p2)
+        {
+            P = p1;
+            Q = p2;
+            if (p1.Y > p2.Y)
+            {
+                Q = p1;
+                P = p2;
+            }
+            else if (p1.Y == p2.Y)
+            {
+                if (p1.X > p2.X)
+                {
+                    Q = p1;
+                    P = p2;
+                }
+                //else if (p1.X == p2.X)
+                //{
+                //    logger.info("Failed to create constraint {}={}", p1, p2);
+                //    throw new DuplicatePointException(p1 + "=" + p2);
+                //    return;
+                //}
+            }
+            Q.AddEdge(this);
+        }
+    }
 }

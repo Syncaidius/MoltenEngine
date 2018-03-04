@@ -34,7 +34,7 @@ using System.Collections.Generic;
 namespace Molten {
 	public class TriangulationPoint {
 		// List of edges this point constitutes an upper ending point (CDT)
-		public List<DTSweepConstraint> Edges { get; private set; }
+		public List<TriangulationConstraint> Edges { get; private set; }
 
 		public TriangulationPoint( double x, double y ) { X=x; Y=y; }
 
@@ -44,8 +44,8 @@ namespace Molten {
 
 		public double X,Y;
 
-		public void AddEdge(DTSweepConstraint e) {
-			if (Edges == null) Edges = new List<DTSweepConstraint>();
+		public void AddEdge(TriangulationConstraint e) {
+			if (Edges == null) Edges = new List<TriangulationConstraint>();
 			Edges.Add(e);
 		}
 

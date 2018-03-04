@@ -29,18 +29,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
-
-namespace Molten {
-	public class PointOnEdgeException : NotImplementedException {
-		public readonly TriangulationPoint A,B,C;
-
-		public PointOnEdgeException( string message, TriangulationPoint a, TriangulationPoint b, TriangulationPoint c )
-			: base(message)
-		{
-			A=a;
-			B=b;
-			C=c;
-		}
-	}
+namespace Molten
+{
+    public class SweepBasin
+    {
+        public AdvancingFrontNode leftNode;
+        public AdvancingFrontNode bottomNode;
+        public AdvancingFrontNode rightNode;
+        public double width;
+        public bool leftHighest;
+    }
 }

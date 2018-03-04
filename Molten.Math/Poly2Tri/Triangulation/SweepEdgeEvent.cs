@@ -30,25 +30,13 @@
  */
 
 /// Changes from the Java version
-///   Removed getters
-///   Has* turned into attributes
-/// Future possibilities
-///   Comments!
+///   Turned DTSweepEdgeEvent into a value type
 
-namespace Molten {
-	public class AdvancingFrontNode {
-		public AdvancingFrontNode Next;
-		public AdvancingFrontNode Prev;
-		public double             Value;
-		public TriangulationPoint Point;
-		public DelaunayTriangle   Triangle;
-
-		public AdvancingFrontNode(TriangulationPoint point) {
-			this.Point = point;
-			Value = point.X;
-		}
-
-		public bool HasNext { get { return Next != null; } }
-		public bool HasPrev { get { return Prev != null; } }
-	}
+namespace Molten
+{
+    public class SweepEdgeEvent
+    {
+        public TriangulationConstraint ConstrainedEdge;
+        public bool Right;
+    }
 }

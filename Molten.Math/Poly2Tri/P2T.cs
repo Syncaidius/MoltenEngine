@@ -50,11 +50,11 @@ namespace Molten
             Array.Clear(array, 0, array.Length);
         }
 
-        public static void Triangulate(Triangulatable t)
+        public static void Triangulate(Polygon t)
         {
-            DTSweepContext tcx = new DTSweepContext();
+            TriangulationContext tcx = new TriangulationContext();
             tcx.PrepareTriangulation(t);
-            DTSweep.Triangulate(tcx);
+            TriangulationSweep.Triangulate(tcx);
         }
     }
 }

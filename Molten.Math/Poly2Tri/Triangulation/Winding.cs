@@ -29,24 +29,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Collections.Generic;
+namespace Molten
+{
+    /// <summary>
+    /// The winding of a polygon's points.
+    /// </summary>
+    public enum Winding
+    {
+        CW = 0,
 
-namespace Molten {
-	public class DTSweepPointComparator : IComparer<TriangulationPoint> {
-		public int Compare(TriangulationPoint p1, TriangulationPoint p2) {
-			if (p1.Y < p2.Y) {
-				return -1;
-			} else if (p1.Y > p2.Y) {
-				return 1;
-			} else {
-				if (p1.X < p2.X) {
-					return -1;
-				} else if (p1.X > p2.X) {
-					return 1;
-				} else {
-					return 0;
-				}
-			}
-		}
-	}
+        CCW = 1,
+
+        Collinear = 2,
+    }
 }

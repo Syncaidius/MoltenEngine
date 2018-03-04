@@ -179,7 +179,7 @@ namespace Molten
             EdgeIsConstrained[index] = true;
         }
 
-        public void MarkConstrainedEdge(DTSweepConstraint edge)
+        public void MarkConstrainedEdge(TriangulationConstraint edge)
         {
             MarkConstrainedEdge(edge.P, edge.Q);
         }

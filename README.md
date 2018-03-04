@@ -38,7 +38,3 @@ Any commerially viable games I produce with this engine will obviously not be op
 
 # Licensing
 MIT - Basically, do what you want with it. Fork it, chop it up, consume it for dinner (*just kidding*). You get the idea!
-
-# Credits
-[SharpDX](http://sharpdx.org) - Provides the foundation for the engine's DirectX support.  
-[MaulingMonkey's poly2tri C# port](https://github.com/MaulingMonkey/poly2tri-cs) - Provided a great starting point for font/shape-to-mesh conversion
