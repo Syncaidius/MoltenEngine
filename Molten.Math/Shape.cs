@@ -83,17 +83,36 @@ namespace Molten
         /// <param name="points">A list of unique points.</param>
         public Shape(params PolygonPoint[] points) : this((IList<PolygonPoint>)points) { }
 
+        /// <summary>
+        /// Creates a polygon from a list of at least 3 Vector3 points, with no duplicates.
+        /// </summary>
+        /// <param name="points">The input points.</param>
+        /// <param name="offset">An offset to apply to all of the provided points.</param>
+        /// <param name="scale">The scale of the provided points. 0.5f is half size. 2.0f is 2x the normal size.</param>
         public Shape(IList<Vector2> points, Vector2 offset, float scale)
         {
             if (points.Count < 3)
                 throw new ArgumentException("List has fewer than 3 points", "points");
 
+            // Lets sanity check that first and last point haven't got the same position
+            // Its something that often happens when importing polygon data from other formats
+            if (points[0].Equals(points[points.Count - 1]))
+                points.RemoveAt(points.Count - 1);
+
             for (int i = 0; i < points.Count; i++)
                 _points.Add(new PolygonPoint(offset + (points[i] * scale)));
         }
 
+        /// <summary>
+        /// Creates a polygon from a list of at least 3 Vector3 points, with no duplicates.
+        /// </summary>
+        /// <param name="points">The input points.</param>
         public Shape(IList<Vector2> points) : this(points, Vector2.Zero, 1.0f) { }
 
+        /// <summary>
+        /// Triangulates the shape and adds all of the points (in triangle list layout) to the provided output.
+        /// </summary>
+        /// <param name="output">The output list.</param>
         public void Triangulate(IList<Vector2> output)
         {
             Triangulation.Triangulate(this);
@@ -105,6 +124,17 @@ namespace Molten
                 output.Add(TriToVector2(tri.Points[1]));
                 output.Add(TriToVector2(tri.Points[2]));
             }
+        }
+
+        /// <summary>
+        /// Triangulates the shape and adds all of the triangles to the provided output.
+        /// </summary>
+        /// <param name="output">The output list.</param>
+        public void Triangulate(IList<DelaunayTriangle> output)
+        {
+            Triangulation.Triangulate(this);
+            for (int i = 0; i < _triangles.Count; i++)
+                output.Add(_triangles[i]);
         }
 
         private Vector2 TriToVector2(PolygonPoint p)
@@ -215,8 +245,6 @@ namespace Molten
             _points.Remove(p);
         }
 
-        public IList<PolygonPoint> Points => _points;
-        public IList<DelaunayTriangle> Triangles => _triangles;
         public IList<Shape> Holes => _holes;
 
         public void AddTriangle(DelaunayTriangle t)

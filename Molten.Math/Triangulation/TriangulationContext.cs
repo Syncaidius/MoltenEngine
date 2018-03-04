@@ -170,8 +170,8 @@ namespace Molten
             Triangulatable = t;
             t.Prepare(this);
 
-            double xmax, xmin;
-            double ymax, ymin;
+            float xmax, xmin;
+            float ymax, ymin;
 
             xmax = xmin = Points[0].X;
             ymax = ymin = Points[0].Y;
@@ -185,8 +185,8 @@ namespace Molten
                 if (p.Y < ymin) ymin = p.Y;
             }
 
-            double deltaX = ALPHA * (xmax - xmin);
-            double deltaY = ALPHA * (ymax - ymin);
+            float deltaX = ALPHA * (xmax - xmin);
+            float deltaY = ALPHA * (ymax - ymin);
             PolygonPoint p1 = new PolygonPoint(xmax + deltaX, ymin - deltaY);
             PolygonPoint p2 = new PolygonPoint(xmin - deltaX, ymin - deltaY);
 

@@ -45,7 +45,7 @@ namespace Molten
             Y = p.Y;
         }
 
-        public PolygonPoint(double x, double y)
+        public PolygonPoint(float x, float y)
         {
             X = x;
             Y = y;
@@ -56,15 +56,16 @@ namespace Molten
             return "[" + X + "," + Y + "]";
         }
 
-        public double X, Y;
+        public float X;
+        public float Y;
 
         public void AddEdge(TriangulationConstraint e)
         {
-            if (Edges == null) Edges = new List<TriangulationConstraint>();
+            Edges = Edges ?? new List<TriangulationConstraint>();
             Edges.Add(e);
         }
 
-        public bool HasEdges { get { return Edges != null; } }
+        public bool HasEdges => Edges != null;
 
         public PolygonPoint Next { get; set; }
         public PolygonPoint Previous { get; set; }

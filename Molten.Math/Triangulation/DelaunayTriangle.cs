@@ -70,7 +70,7 @@ namespace Molten
         {
             int i = Triangulation.IndexOf(Points, p);
             if (i == -1)
-                throw new Exception("Calling index with a point that doesn't exist in triangle");
+                throw new Exception("Calling IndexOf with a point that doesn't exist in triangle");
             return i;
         }
 
@@ -167,11 +167,13 @@ namespace Molten
         public void MarkEdge(List<DelaunayTriangle> tList)
         {
             foreach (DelaunayTriangle t in tList)
+            {
                 for (int i = 0; i < 3; i++)
+                {
                     if (t.EdgeIsConstrained[i])
-                    {
                         MarkConstrainedEdge(t.Points[(i + 1) % 3], t.Points[(i + 2) % 3]);
-                    }
+                }
+            }
         }
 
         public void MarkConstrainedEdge(int index)
@@ -187,12 +189,18 @@ namespace Molten
         /// <summary>
         /// Mark edge as constrained
         /// </summary>
-        public void MarkConstrainedEdge(PolygonPoint p, PolygonPoint q)
+        internal void MarkConstrainedEdge(PolygonPoint p, PolygonPoint q)
         {
             int i = EdgeIndex(p, q);
-            if (i != -1) EdgeIsConstrained[i] = true;
+
+            if (i != -1)
+                EdgeIsConstrained[i] = true;
         }
 
+        /// <summary>
+        /// Returns the area of the triangle.
+        /// </summary>
+        /// <returns></returns>
         public double Area()
         {
             double b = Points[0].X - Points[1].X;
@@ -201,10 +209,14 @@ namespace Molten
             return Math.Abs((b * h * 0.5f));
         }
 
+        /// <summary>
+        /// Returns the median center-point of the triangle, based on the position of the 3 corner points.
+        /// </summary>
+        /// <returns></returns>
         public PolygonPoint Centroid()
         {
-            double cx = (Points[0].X + Points[1].X + Points[2].X) / 3f;
-            double cy = (Points[0].Y + Points[1].Y + Points[2].Y) / 3f;
+            float cx = (Points[0].X + Points[1].X + Points[2].X) / 3f;
+            float cy = (Points[0].Y + Points[1].Y + Points[2].Y) / 3f;
             return new PolygonPoint(cx, cy);
         }
 

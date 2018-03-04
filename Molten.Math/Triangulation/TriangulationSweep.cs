@@ -886,7 +886,7 @@ namespace Molten
                     continue;
                 }
 
-                if (!TriangulationUtil.SmartIncircle(p, t.PointCCWFrom(p), t.PointCWFrom(p), op))
+                if (!TriangulationUtil.SmartInCircle(p, t.PointCCWFrom(p), t.PointCWFrom(p), op))
                     continue;
 
                 // Lets mark this shared edge as Delaunay 
