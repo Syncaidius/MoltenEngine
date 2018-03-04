@@ -1,37 +1,104 @@
-﻿using System;
+﻿// MIT - 2018 - James Yarwood - Modified for Molten Engine - https://github.com/Syncaidius/MoltenEngine
+
+/* Poly2Tri
+ * Copyright (c) 2009-2010, Poly2Tri Contributors
+ * http://code.google.com/p/poly2tri/
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * * Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ * * Neither the name of Poly2Tri nor the names of its contributors may be
+ *   used to endorse or promote products derived from this software without specific
+ *   prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/// Changes from the Java version
+///   Polygon constructors sprused up, checks for 3+ polys
+///   Naming of everything
+///   getTriangulationMode() -> TriangulationMode { get; }
+///   Exceptions replaced
+/// Future possibilities
+///   We have a lot of Add/Clear methods -- we may prefer to just expose the container
+///   Some self-explanitory methods may deserve commenting anyways
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Molten;
 
 namespace Molten
 {
-    /// <summary>
-    /// Represents a shape with a defined outline. 
-    /// The last point will automatically be connected to the first point to form a continous shape outline.
-    /// </summary>
     public class Shape
     {
-        public List<Vector2> Points { get; private set; }
+        List<PolygonPoint> _points = new List<PolygonPoint>();
+        List<PolygonPoint> _steinerPoints;
+        List<Shape> _holes;
+        List<DelaunayTriangle> _triangles;
+        PolygonPoint _last;
 
-        public Shape(IList<Vector2> outlinePoints)
+        /// <summary>
+        /// Create a polygon from a list of at least 3 points with no duplicates.
+        /// </summary>
+        /// <param name="points">A list of unique points</param>
+        public Shape(IList<PolygonPoint> points)
         {
-            Points = new List<Vector2>(outlinePoints);
+            if (points.Count < 3)
+                throw new ArgumentException("List has fewer than 3 points", "points");
+
+            // Lets sanity check that first and last point haven't got the same position
+            // Its something that often happens when importing polygon data from other formats
+            if (points[0].Equals(points[points.Count - 1]))
+                points.RemoveAt(points.Count - 1);
+
+            _points.AddRange(points);
         }
 
-        public void Triangulate(IList<Vector2> output, Vector2 offset, float scale = 1.0f)
+        /// <summary>
+        /// Create a polygon from a list of at least 3 points with no duplicates.
+        /// </summary>
+        /// <param name="points">A list of unique points.</param>
+        public Shape(IEnumerable<PolygonPoint> points) : this((points as IList<PolygonPoint>) ?? points.ToArray()) { }
+
+        /// <summary>
+        /// Create a polygon from a list of at least 3 points with no duplicates.
+        /// </summary>
+        /// <param name="points">A list of unique points.</param>
+        public Shape(params PolygonPoint[] points) : this((IList<PolygonPoint>)points) { }
+
+        public Shape(IList<Vector2> points, Vector2 offset, float scale)
         {
-            List<PolygonPoint> pPoints = new List<PolygonPoint>();
-            for (int i = 0; i < Points.Count; i++)
-            {
-                pPoints.Add(new PolygonPoint(offset.X + (Points[i].X * scale), offset.Y + (Points[i].Y * scale)));
-            }
+            if (points.Count < 3)
+                throw new ArgumentException("List has fewer than 3 points", "points");
 
-            Polygon p = new Polygon(pPoints);
-            P2T.Triangulate(p);
+            for (int i = 0; i < points.Count; i++)
+                _points.Add(new PolygonPoint(offset + (points[i] * scale)));
+        }
 
-            foreach(DelaunayTriangle tri in p.Triangles)
+        public Shape(IList<Vector2> points) : this(points, Vector2.Zero, 1.0f) { }
+
+        public void Triangulate(IList<Vector2> output)
+        {
+            Triangulation.Triangulate(this);
+
+            foreach (DelaunayTriangle tri in _triangles)
             {
                 tri.ReversePointFlow();
                 output.Add(TriToVector2(tri.Points[0]));
@@ -49,131 +116,156 @@ namespace Molten
             };
         }
 
-        //private static List<TriangulationPoint> asPointSet(IList<TriangulationPoint> points)
-        //{
-        //    List<TriangulationPoint> contour = new List<TriangulationPoint>();
+        public void AddSteinerPoint(PolygonPoint point)
+        {
+            if (_steinerPoints == null) _steinerPoints = new List<PolygonPoint>();
+            _steinerPoints.Add(point);
+        }
 
-        //    for (var n = 0; n < points.Count; n++)
-        //    {
-        //        var x = points[n].X;
-        //        var y = points[n].Y;
+        public void AddSteinerPoints(List<PolygonPoint> points)
+        {
+            if (_steinerPoints == null) _steinerPoints = new List<PolygonPoint>();
+            _steinerPoints.AddRange(points);
+        }
 
-        //        TriangulationPoint np = new PolygonPoint(x, y);
+        public void ClearSteinerPoints()
+        {
+            if (_steinerPoints != null) _steinerPoints.Clear();
+        }
 
-        //        if (P2TUtil.indexOfPointInList(np, contour) == -1)
-        //        {
-        //            if ((n == 0 || n == points.Count - 1) || !P2TUtil.isCollinear(points[n - 1], points[n], points[n + 1]))
-        //                contour.Add(np);
-        //        }
-        //    }
-        //    return contour;
-        //}
+        /// <summary>
+        /// Add a hole to the polygon.
+        /// </summary>
+        /// <param name="poly">A subtraction polygon fully contained inside this polygon.</param>
+        public void AddHole(Shape poly)
+        {
+            if (_holes == null)
+                _holes = new List<Shape>();
 
-        //private static bool insideHole(poly, point)
-        //{
-        //    for (var i = 0; i < poly.holes.length; i++)
-        //    {
-        //        var hole = poly.holes[i];
-        //        if (util.pointInPoly(hole, point))
-        //            return true;
-        //    }
-        //    return false;
-        //}
+            _holes.Add(poly);
+            // XXX: tests could be made here to be sure it is fully inside
+            //        addSubtraction( poly.getPoints() );
+        }
 
-        //private static void addSteinerPoints(Polygon poly, IList<TriangulationPoint> points, TriangulationContext sweep)
-        //{
-        //    var bounds = P2TUtil.getBounds(poly.Points);
+        /// <summary>
+        /// Inserts newPoint after point.
+        /// </summary>
+        /// <param name="point">The point to insert after in the polygon</param>
+        /// <param name="newPoint">The point to insert into the polygon</param>
+        public void InsertPointAfter(PolygonPoint point, PolygonPoint newPoint)
+        {
+            // Validate that 
+            int index = _points.IndexOf(point);
+            if (index == -1) throw new ArgumentException("Tried to insert a point into a Polygon after a point not belonging to the Polygon", "point");
+            newPoint.Next = point.Next;
+            newPoint.Previous = point;
+            point.Next.Previous = newPoint;
+            point.Next = newPoint;
+            _points.Insert(index + 1, newPoint);
+        }
 
-        //    //ensure points are unique and not collinear 
-        //    points = asPointSet(points);
+        /// <summary>
+        /// Inserts list (after last point in polygon?)
+        /// </summary>
+        /// <param name="list"></param>
+        public void AddPoints(IEnumerable<PolygonPoint> list)
+        {
+            PolygonPoint first;
+            foreach (PolygonPoint p in list)
+            {
+                p.Previous = _last;
+                if (_last != null)
+                {
+                    p.Next = _last.Next;
+                    _last.Next = p;
+                }
 
-        //    for (var i = 0; i < points.Count; i++)
-        //    {
-        //        var p = points[i];
+                _last = p;
+                _points.Add(p);
+            }
+            first = (PolygonPoint)_points[0];
+            _last.Next = first;
+            first.Previous = _last;
+        }
 
-        //        //fugly collinear fix ... gotta revisit this
-        //        p.X += 0.5;
-        //        p.Y += 0.5;
+        /// <summary>
+        /// Adds a point after the last in the polygon.
+        /// </summary>
+        /// <param name="p">The point to add</param>
+        public void AddPoint(PolygonPoint p)
+        {
+            p.Previous = _last;
+            p.Next = _last.Next;
+            _last.Next = p;
+            _points.Add(p);
+        }
 
-        //        if (p.X <= bounds.X || p.Y <= bounds.Y || p.X >= bounds.Right || p.Y >= bounds.Bottom)
-        //            continue;
+        /// <summary>
+        /// Removes a point from the polygon.
+        /// </summary>
+        /// <param name="p"></param>
+        public void RemovePoint(PolygonPoint p)
+        {
+            PolygonPoint next, prev;
 
-        //        if (P2TUtil.pointInPoly(poly.contour, p) && !insideHole(poly, p))
-        //        {
-        //            //We are in the polygon! Now make sure we're not in a hole..
-        //            sweep.addPoint(new poly2tri.Point(p.x, p.y));
-        //        }
-        //    }
-        //}
+            next = p.Next;
+            prev = p.Previous;
+            prev.Next = next;
+            next.Previous = prev;
+            _points.Remove(p);
+        }
 
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="shapes"></param>
-        ///// <param name="steinerPoints"></param>
-        //public static void Triangulate(IList<Polygon> shapes, IList<Vector2> steinerPoints)
-        //{
-        //    bool windingClockwise = false;
-        //    DTSweepContext sweep = new DTSweepContext();
+        public IList<PolygonPoint> Points => _points;
+        public IList<DelaunayTriangle> Triangles => _triangles;
+        public IList<Shape> Holes => _holes;
 
-        //    Polygon poly = new Polygon();
-        //    var allTris = [];
+        public void AddTriangle(DelaunayTriangle t)
+        {
+            _triangles.Add(t);
+        }
 
-        //    steinerPoints = (steinerPoints != null && steinerPoints.Count != 0) ? steinerPoints : null;
+        public void AddTriangles(IEnumerable<DelaunayTriangle> list)
+        {
+            _triangles.AddRange(list);
+        }
 
-        //    for (var j=0; j<shapes.Count; j++) {
-        //        IList<TriangulationPoint> points = shapes[j].Points;
-        //        List<TriangulationPoint> set = asPointSet(points);
+        public void ClearTriangles()
+        {
+            if (_triangles != null)
+                _triangles.Clear();
+        }
 
-        //        //OpenBaskerville-0.0.75.ttf does some strange things
-        //        //with the moveTo command, causing the decomposition
-        //        //to give us an extra shape with only 1 point. This
-        //        //simply skips a path if it can't make up a triangle..
-        //        if (set.Count < 3)
-        //            continue;
+        /// <summary>
+        /// Creates constraints and populates the context with points
+        /// </summary>
+        /// <param name="tcx">The context</param>
+        internal void Prepare(TriangulationContext tcx)
+        {
+            if (_triangles == null)
+                _triangles = new List<DelaunayTriangle>(_points.Count);
+            else
+                _triangles.Clear();
 
-        //        //check the winding order
-        //        if (j==0) {
-        //            windingClockwise = P2TUtil.isClockwise(set);
-        //        }
+            // Outer constraints
+            for (int i = 0; i < _points.Count - 1; i++)
+                tcx.NewConstraint(_points[i], _points[i + 1]);
 
-        //        //if the sweep has already been created, maybe we're on a hole?
-        //        if (sweep != null) {
-        //            var clock = P2TUtil.isClockwise(set);
+            tcx.NewConstraint(_points[0], _points[_points.Count - 1]);
+            tcx.Points.AddRange(_points);
 
-        //            //we have a hole...
-        //            if (windingClockwise != clock) {
-        //                poly.Holes.Add(shapes[j]);
-        //            } else {
-        //                //no hole, so it must be a new shape.
-        //                //add our last shape
-        //                if (steinerPoints != null) {
-        //                    addSteinerPoints(poly, steinerPoints, sweep);
-        //                }
+            // Hole constraints
+            if (_holes != null)
+            {
+                foreach (Shape p in _holes)
+                {
+                    for (int i = 0; i < p._points.Count - 1; i++) tcx.NewConstraint(p._points[i], p._points[i + 1]);
+                    tcx.NewConstraint(p._points[0], p._points[p._points.Count - 1]);
+                    tcx.Points.AddRange(p._points);
+                }
+            }
 
-        //                sweep.triangulate();
-        //                allTris = allTris.concat(sweep.getTriangles());
-
-        //                //reset the sweep for next shape
-        //                sweep = new poly2tri.SweepContext(set);
-        //                poly = {holes:[], contour:points};
-        //            }
-        //        } else {
-        //            sweep = new poly2tri.SweepContext(set);
-        //            poly = new Polygon();
-        //        }
-        //    }
-
-        //    //if the sweep is still setup, then triangulate it
-        //    if (sweep !== null) {
-        //        if (steinerPoints!==null) {
-        //            addSteinerPoints(poly, steinerPoints, sweep);
-        //        }
-
-        //        sweep.triangulate();
-        //        allTris = allTris.concat(sweep.getTriangles());
-        //    }
-        //    return allTris;
-        //}
+            if (_steinerPoints != null)
+                tcx.Points.AddRange(_steinerPoints);
+        }
     }
 }

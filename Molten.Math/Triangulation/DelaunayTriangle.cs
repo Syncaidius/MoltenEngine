@@ -68,7 +68,7 @@ namespace Molten
 
         public int IndexOf(PolygonPoint p)
         {
-            int i = P2T.IndexOf(Points, p);
+            int i = Triangulation.IndexOf(Points, p);
             if (i == -1)
                 throw new Exception("Calling index with a point that doesn't exist in triangle");
             return i;
@@ -77,7 +77,7 @@ namespace Molten
         public int IndexCWFrom(PolygonPoint p) { return (IndexOf(p) + 2) % 3; }
         public int IndexCCWFrom(PolygonPoint p) { return (IndexOf(p) + 1) % 3; }
 
-        public bool Contains(PolygonPoint p) { return P2T.Contains(Points, p); }
+        public bool Contains(PolygonPoint p) { return Triangulation.Contains(Points, p); }
 
         /// <summary>
         /// Update neighbor pointers
@@ -117,9 +117,9 @@ namespace Molten
             return PointCWFrom(t.PointCWFrom(p));
         }
 
-        public DelaunayTriangle NeighborCWFrom(PolygonPoint point) { return Neighbors[(P2T.IndexOf(Points, point) + 1) % 3]; }
-        public DelaunayTriangle NeighborCCWFrom(PolygonPoint point) { return Neighbors[(P2T.IndexOf(Points, point) + 2) % 3]; }
-        public DelaunayTriangle NeighborAcrossFrom(PolygonPoint point) { return Neighbors[P2T.IndexOf(Points, point)]; }
+        public DelaunayTriangle NeighborCWFrom(PolygonPoint point) { return Neighbors[(Triangulation.IndexOf(Points, point) + 1) % 3]; }
+        public DelaunayTriangle NeighborCCWFrom(PolygonPoint point) { return Neighbors[(Triangulation.IndexOf(Points, point) + 2) % 3]; }
+        public DelaunayTriangle NeighborAcrossFrom(PolygonPoint point) { return Neighbors[Triangulation.IndexOf(Points, point)]; }
 
         public PolygonPoint PointCCWFrom(PolygonPoint point) { return Points[(IndexOf(point) + 1) % 3]; }
         public PolygonPoint PointCWFrom(PolygonPoint point) { return Points[(IndexOf(point) + 2) % 3]; }
@@ -214,8 +214,8 @@ namespace Molten
         /// <returns>index of the shared edge or -1 if edge isn't shared</returns>
         public int EdgeIndex(PolygonPoint p1, PolygonPoint p2)
         {
-            int i1 = P2T.IndexOf(Points, p1);
-            int i2 = P2T.IndexOf(Points, p2);
+            int i1 = Triangulation.IndexOf(Points, p1);
+            int i2 = Triangulation.IndexOf(Points, p2);
 
             // Points of this triangle in the edge p1-p2
             bool a = (i1 == 0 || i2 == 0);

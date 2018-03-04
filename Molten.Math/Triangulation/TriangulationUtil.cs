@@ -34,7 +34,7 @@ namespace Molten
     /**
 	 * @author Thomas Åhlén, thahlen@gmail.com
 	 */
-    public class TriangulationUtil
+    internal class TriangulationUtil
     {
         public static double EPSILON = 1e-12;
         /// <summary>

@@ -1,4 +1,5 @@
-﻿/* Poly2Tri
+﻿// MIT - 2018 - James Yarwood - Modified for Molten Engine - https://github.com/Syncaidius/MoltenEngine
+/* Poly2Tri
  * Copyright (c) 2009-2010, Poly2Tri Contributors
  * http://code.google.com/p/poly2tri/
  *
@@ -29,14 +30,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Collections.Generic;
+
 namespace Molten
 {
-    public class SweepBasin
+    public class PolygonPoint
     {
-        public AdvancingFrontNode leftNode;
-        public AdvancingFrontNode bottomNode;
-        public AdvancingFrontNode rightNode;
-        public double width;
-        public bool leftHighest;
+        // List of edges this point constitutes an upper ending point (CDT)
+        public List<TriangulationConstraint> Edges { get; private set; }
+
+        public PolygonPoint(Vector2 p)
+        {
+            X = p.X;
+            Y = p.Y;
+        }
+
+        public PolygonPoint(double x, double y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public override string ToString()
+        {
+            return "[" + X + "," + Y + "]";
+        }
+
+        public double X, Y;
+
+        public void AddEdge(TriangulationConstraint e)
+        {
+            if (Edges == null) Edges = new List<TriangulationConstraint>();
+            Edges.Add(e);
+        }
+
+        public bool HasEdges { get { return Edges != null; } }
+
+        public PolygonPoint Next { get; set; }
+        public PolygonPoint Previous { get; set; }
     }
 }

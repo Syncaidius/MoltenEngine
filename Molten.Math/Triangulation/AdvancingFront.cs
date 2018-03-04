@@ -43,7 +43,7 @@ namespace Molten
     /**
 	 * @author Thomas Åhlen (thahlen@gmail.com)
 	 */
-    public class AdvancingFront
+    internal class AdvancingFront
     {
         public AdvancingFrontNode Head;
         public AdvancingFrontNode Tail;

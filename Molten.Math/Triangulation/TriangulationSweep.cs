@@ -46,7 +46,7 @@ using System.Linq;
 
 namespace Molten
 {
-    public static class TriangulationSweep
+    internal static class TriangulationSweep
     {
         private const double PI_div2 = Math.PI / 2;
         private const double PI_3div4 = 3 * Math.PI / 4;
@@ -608,14 +608,14 @@ namespace Molten
                 edgeIndex = ot.EdgeIndex(p, op);
                 ot.EdgeIsDelaunay[edgeIndex] = true;
                 Legalize(tcx, ot);
-                P2T.Clear(ot.EdgeIsDelaunay);
+                Triangulation.Clear(ot.EdgeIsDelaunay);
                 return t;
             }
             // t is not crossing edge after flip
             edgeIndex = t.EdgeIndex(p, op);
             t.EdgeIsDelaunay[edgeIndex] = true;
             Legalize(tcx, t);
-            P2T.Clear(t.EdgeIsDelaunay);
+            Triangulation.Clear(t.EdgeIsDelaunay);
             return ot;
         }
 
@@ -972,8 +972,8 @@ namespace Molten
             //      what side should be assigned to what neighbor after the 
             //      rotation. Now mark neighbor does lots of testing to find 
             //      the right side.
-            P2T.Clear(t.Neighbors);
-            P2T.Clear(ot.Neighbors);
+            Triangulation.Clear(t.Neighbors);
+            Triangulation.Clear(ot.Neighbors);
             if (n1 != null) ot.MarkNeighbor(n1);
             if (n2 != null) t.MarkNeighbor(n2);
             if (n3 != null) t.MarkNeighbor(n3);

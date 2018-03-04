@@ -29,17 +29,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/// Changes from the Java version
+///   Turned DTSweepEdgeEvent into a value type
+
 namespace Molten
 {
-    /// <summary>
-    /// The winding of a polygon's points.
-    /// </summary>
-    public enum Winding
+    internal class SweepEdgeEvent
     {
-        CW = 0,
-
-        CCW = 1,
-
-        Collinear = 2,
+        public TriangulationConstraint ConstrainedEdge;
+        public bool Right;
     }
 }

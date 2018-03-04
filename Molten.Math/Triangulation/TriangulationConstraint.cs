@@ -1,4 +1,5 @@
-﻿/* Poly2Tri
+﻿// MIT - 2018 - James Yarwood - Modified for Molten Engine - https://github.com/Syncaidius/MoltenEngine
+/* Poly2Tri
  * Copyright (c) 2009-2010, Poly2Tri Contributors
  * http://code.google.com/p/poly2tri/
  *
@@ -29,20 +30,41 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
-
 namespace Molten
 {
-    public class PointOnEdgeException : NotImplementedException
+    public class TriangulationConstraint
     {
-        public readonly PolygonPoint A, B, C;
+        public PolygonPoint P;
+        public PolygonPoint Q;
 
-        public PointOnEdgeException(string message, PolygonPoint a, PolygonPoint b, PolygonPoint c)
-            : base(message)
+        /// <summary>
+        /// Give two points in any order. Will always be ordered so
+        /// that q.y > p.y and q.x > p.x if same y value 
+        /// </summary>
+        public TriangulationConstraint(PolygonPoint p1, PolygonPoint p2)
         {
-            A = a;
-            B = b;
-            C = c;
+            P = p1;
+            Q = p2;
+            if (p1.Y > p2.Y)
+            {
+                Q = p1;
+                P = p2;
+            }
+            else if (p1.Y == p2.Y)
+            {
+                if (p1.X > p2.X)
+                {
+                    Q = p1;
+                    P = p2;
+                }
+                //else if (p1.X == p2.X)
+                //{
+                //    logger.info("Failed to create constraint {}={}", p1, p2);
+                //    throw new DuplicatePointException(p1 + "=" + p2);
+                //    return;
+                //}
+            }
+            Q.AddEdge(this);
         }
     }
 }

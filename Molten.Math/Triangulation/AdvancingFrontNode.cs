@@ -29,41 +29,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/// Changes from the Java version
+///   Removed getters
+///   Has* turned into attributes
+/// Future possibilities
+///   Comments!
+
 namespace Molten
 {
-    public class TriangulationConstraint
+    internal class AdvancingFrontNode
     {
-        public PolygonPoint P;
-        public PolygonPoint Q;
+        public AdvancingFrontNode Next;
+        public AdvancingFrontNode Prev;
+        public double Value;
+        public PolygonPoint Point;
+        public DelaunayTriangle Triangle;
 
-        /// <summary>
-        /// Give two points in any order. Will always be ordered so
-        /// that q.y > p.y and q.x > p.x if same y value 
-        /// </summary>
-        public TriangulationConstraint(PolygonPoint p1, PolygonPoint p2)
+        public AdvancingFrontNode(PolygonPoint point)
         {
-            P = p1;
-            Q = p2;
-            if (p1.Y > p2.Y)
-            {
-                Q = p1;
-                P = p2;
-            }
-            else if (p1.Y == p2.Y)
-            {
-                if (p1.X > p2.X)
-                {
-                    Q = p1;
-                    P = p2;
-                }
-                //else if (p1.X == p2.X)
-                //{
-                //    logger.info("Failed to create constraint {}={}", p1, p2);
-                //    throw new DuplicatePointException(p1 + "=" + p2);
-                //    return;
-                //}
-            }
-            Q.AddEdge(this);
+            this.Point = point;
+            Value = point.X;
         }
+
+        public bool HasNext { get { return Next != null; } }
+        public bool HasPrev { get { return Prev != null; } }
     }
 }

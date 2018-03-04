@@ -38,14 +38,14 @@ namespace Molten
 	 * @author Thomas Åhlén, thahlen@gmail.com
 	 *
 	 */
-    public class TriangulationContext
+    internal class TriangulationContext
     {
         // Inital triangle factor, seed triangle will extend 30% of 
         // PointSet width to both left and right.
         private readonly float ALPHA = 0.3f;
         public readonly List<DelaunayTriangle> Triangles = new List<DelaunayTriangle>();
         public readonly List<PolygonPoint> Points = new List<PolygonPoint>(200);
-        public Polygon Triangulatable { get; private set; }
+        public Shape Triangulatable { get; private set; }
         public int StepCount { get; private set; }
 
         public AdvancingFront Front;
@@ -143,7 +143,7 @@ namespace Molten
             Front = new AdvancingFront(head, tail);
             Front.AddNode(middle);
 
-            // TODO: I think it would be more intuitive if head is middles next and not previous
+            // TODO: I think it would be more intuitive if head is middle's next and not previous
             //       so swap head and tail
             Front.Head.Next = middle;
             middle.Next = Front.Tail;
@@ -165,7 +165,7 @@ namespace Molten
                 }
         }
 
-        public void PrepareTriangulation(Polygon t)
+        public void PrepareTriangulation(Shape t)
         {
             Triangulatable = t;
             t.Prepare(this);

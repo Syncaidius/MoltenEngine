@@ -1,4 +1,6 @@
-﻿/* Poly2Tri
+﻿// MIT - 2018 - James Yarwood - Modified for Molten Engine - https://github.com/Syncaidius/MoltenEngine
+
+/* Poly2Tri
  * Copyright (c) 2009-2010, Poly2Tri Contributors
  * http://code.google.com/p/poly2tri/
  *
@@ -29,29 +31,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/// Changes from the Java version
-///   Removed getters
-///   Has* turned into attributes
-/// Future possibilities
-///   Comments!
+using System;
 
 namespace Molten
 {
-    public class AdvancingFrontNode
+    internal static class Triangulation
     {
-        public AdvancingFrontNode Next;
-        public AdvancingFrontNode Prev;
-        public double Value;
-        public PolygonPoint Point;
-        public DelaunayTriangle Triangle;
-
-        public AdvancingFrontNode(PolygonPoint point)
+        public static int IndexOf<T>(T[] array, T obj)
         {
-            this.Point = point;
-            Value = point.X;
+            return Array.IndexOf(array, obj);
         }
 
-        public bool HasNext { get { return Next != null; } }
-        public bool HasPrev { get { return Prev != null; } }
+        public static bool Contains<T>(T[] array, T obj)
+        {
+            return Array.IndexOf(array, obj) > -1;
+        }
+
+        public static void Clear(Array array)
+        {
+            Array.Clear(array, 0, array.Length);
+        }
+
+        public static void Triangulate(Shape t)
+        {
+            TriangulationContext tcx = new TriangulationContext();
+            tcx.PrepareTriangulation(t);
+            TriangulationSweep.Triangulate(tcx);
+        }
     }
 }

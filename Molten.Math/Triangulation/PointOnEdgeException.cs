@@ -33,28 +33,16 @@ using System;
 
 namespace Molten
 {
-    public static class P2T
+    public class PointOnEdgeException : NotImplementedException
     {
-        public static int IndexOf<T>(T[] array, T obj)
-        {
-            return Array.IndexOf(array, obj);
-        }
+        public readonly PolygonPoint A, B, C;
 
-        public static bool Contains<T>(T[] array, T obj)
+        internal PointOnEdgeException(string message, PolygonPoint a, PolygonPoint b, PolygonPoint c)
+            : base(message)
         {
-            return Array.IndexOf(array, obj) > -1;
-        }
-
-        public static void Clear(Array array)
-        {
-            Array.Clear(array, 0, array.Length);
-        }
-
-        public static void Triangulate(Polygon t)
-        {
-            TriangulationContext tcx = new TriangulationContext();
-            tcx.PrepareTriangulation(t);
-            TriangulationSweep.Triangulate(tcx);
+            A = a;
+            B = b;
+            C = c;
         }
     }
 }
