@@ -46,14 +46,14 @@ namespace Molten
 {
     public class DelaunayTriangle
     {
-        public TriangulationPoint[] Points;
+        public PolygonPoint[] Points;
         public DelaunayTriangle[] Neighbors;
         public bool[] EdgeIsConstrained, EdgeIsDelaunay;
         public bool IsInterior { get; set; }
 
-        public DelaunayTriangle(TriangulationPoint p1, TriangulationPoint p2, TriangulationPoint p3)
+        public DelaunayTriangle(PolygonPoint p1, PolygonPoint p2, PolygonPoint p3)
         {
-            Points = new TriangulationPoint[3] { p1, p2, p3 };
+            Points = new PolygonPoint[3] { p1, p2, p3 };
             Neighbors = new DelaunayTriangle[3];
             EdgeIsConstrained = new bool[3];
             EdgeIsDelaunay = new bool[3];
@@ -61,12 +61,12 @@ namespace Molten
 
         public void ReversePointFlow()
         {
-            TriangulationPoint temp = Points[1];
+            PolygonPoint temp = Points[1];
             Points[1] = Points[2];
             Points[2] = temp;
         }
 
-        public int IndexOf(TriangulationPoint p)
+        public int IndexOf(PolygonPoint p)
         {
             int i = P2T.IndexOf(Points, p);
             if (i == -1)
@@ -74,10 +74,10 @@ namespace Molten
             return i;
         }
 
-        public int IndexCWFrom(TriangulationPoint p) { return (IndexOf(p) + 2) % 3; }
-        public int IndexCCWFrom(TriangulationPoint p) { return (IndexOf(p) + 1) % 3; }
+        public int IndexCWFrom(PolygonPoint p) { return (IndexOf(p) + 2) % 3; }
+        public int IndexCCWFrom(PolygonPoint p) { return (IndexOf(p) + 1) % 3; }
 
-        public bool Contains(TriangulationPoint p) { return P2T.Contains(Points, p); }
+        public bool Contains(PolygonPoint p) { return P2T.Contains(Points, p); }
 
         /// <summary>
         /// Update neighbor pointers
@@ -85,7 +85,7 @@ namespace Molten
         /// <param name="p1">Point 1 of the shared edge</param>
         /// <param name="p2">Point 2 of the shared edge</param>
         /// <param name="t">This triangle's new neighbor</param>
-        private void MarkNeighbor(TriangulationPoint p1, TriangulationPoint p2, DelaunayTriangle t)
+        private void MarkNeighbor(PolygonPoint p1, PolygonPoint p2, DelaunayTriangle t)
         {
             int i = EdgeIndex(p1, p2);
             if (i == -1)
@@ -111,18 +111,18 @@ namespace Molten
 
         /// <param name="t">Opposite triangle</param>
         /// <param name="p">The point in t that isn't shared between the triangles</param>
-        public TriangulationPoint OppositePoint(DelaunayTriangle t, TriangulationPoint p)
+        public PolygonPoint OppositePoint(DelaunayTriangle t, PolygonPoint p)
         {
             Debug.Assert(t != this, "self-pointer error");
             return PointCWFrom(t.PointCWFrom(p));
         }
 
-        public DelaunayTriangle NeighborCWFrom(TriangulationPoint point) { return Neighbors[(P2T.IndexOf(Points, point) + 1) % 3]; }
-        public DelaunayTriangle NeighborCCWFrom(TriangulationPoint point) { return Neighbors[(P2T.IndexOf(Points, point) + 2) % 3]; }
-        public DelaunayTriangle NeighborAcrossFrom(TriangulationPoint point) { return Neighbors[P2T.IndexOf(Points, point)]; }
+        public DelaunayTriangle NeighborCWFrom(PolygonPoint point) { return Neighbors[(P2T.IndexOf(Points, point) + 1) % 3]; }
+        public DelaunayTriangle NeighborCCWFrom(PolygonPoint point) { return Neighbors[(P2T.IndexOf(Points, point) + 2) % 3]; }
+        public DelaunayTriangle NeighborAcrossFrom(PolygonPoint point) { return Neighbors[P2T.IndexOf(Points, point)]; }
 
-        public TriangulationPoint PointCCWFrom(TriangulationPoint point) { return Points[(IndexOf(point) + 1) % 3]; }
-        public TriangulationPoint PointCWFrom(TriangulationPoint point) { return Points[(IndexOf(point) + 2) % 3]; }
+        public PolygonPoint PointCCWFrom(PolygonPoint point) { return Points[(IndexOf(point) + 1) % 3]; }
+        public PolygonPoint PointCWFrom(PolygonPoint point) { return Points[(IndexOf(point) + 2) % 3]; }
 
         private void RotateCW()
         {
@@ -137,7 +137,7 @@ namespace Molten
         /// </summary>
         /// <param name="oPoint">The origin point to rotate around</param>
         /// <param name="nPoint">???</param>
-        public void Legalize(TriangulationPoint oPoint, TriangulationPoint nPoint)
+        public void Legalize(PolygonPoint oPoint, PolygonPoint nPoint)
         {
             RotateCW();
             Points[IndexCCWFrom(oPoint)] = nPoint;
@@ -187,7 +187,7 @@ namespace Molten
         /// <summary>
         /// Mark edge as constrained
         /// </summary>
-        public void MarkConstrainedEdge(TriangulationPoint p, TriangulationPoint q)
+        public void MarkConstrainedEdge(PolygonPoint p, PolygonPoint q)
         {
             int i = EdgeIndex(p, q);
             if (i != -1) EdgeIsConstrained[i] = true;
@@ -201,18 +201,18 @@ namespace Molten
             return Math.Abs((b * h * 0.5f));
         }
 
-        public TriangulationPoint Centroid()
+        public PolygonPoint Centroid()
         {
             double cx = (Points[0].X + Points[1].X + Points[2].X) / 3f;
             double cy = (Points[0].Y + Points[1].Y + Points[2].Y) / 3f;
-            return new TriangulationPoint(cx, cy);
+            return new PolygonPoint(cx, cy);
         }
 
         /// <summary>
         /// Get the index of the neighbor that shares this edge (or -1 if it isn't shared)
         /// </summary>
         /// <returns>index of the shared edge or -1 if edge isn't shared</returns>
-        public int EdgeIndex(TriangulationPoint p1, TriangulationPoint p2)
+        public int EdgeIndex(PolygonPoint p1, PolygonPoint p2)
         {
             int i1 = P2T.IndexOf(Points, p1);
             int i2 = P2T.IndexOf(Points, p2);
@@ -228,18 +228,18 @@ namespace Molten
             return -1;
         }
 
-        public bool GetConstrainedEdgeCCW(TriangulationPoint p) { return EdgeIsConstrained[(IndexOf(p) + 2) % 3]; }
-        public bool GetConstrainedEdgeCW(TriangulationPoint p) { return EdgeIsConstrained[(IndexOf(p) + 1) % 3]; }
-        public bool GetConstrainedEdgeAcross(TriangulationPoint p) { return EdgeIsConstrained[IndexOf(p)]; }
-        public void SetConstrainedEdgeCCW(TriangulationPoint p, bool ce) { EdgeIsConstrained[(IndexOf(p) + 2) % 3] = ce; }
-        public void SetConstrainedEdgeCW(TriangulationPoint p, bool ce) { EdgeIsConstrained[(IndexOf(p) + 1) % 3] = ce; }
-        public void SetConstrainedEdgeAcross(TriangulationPoint p, bool ce) { EdgeIsConstrained[IndexOf(p)] = ce; }
+        public bool GetConstrainedEdgeCCW(PolygonPoint p) { return EdgeIsConstrained[(IndexOf(p) + 2) % 3]; }
+        public bool GetConstrainedEdgeCW(PolygonPoint p) { return EdgeIsConstrained[(IndexOf(p) + 1) % 3]; }
+        public bool GetConstrainedEdgeAcross(PolygonPoint p) { return EdgeIsConstrained[IndexOf(p)]; }
+        public void SetConstrainedEdgeCCW(PolygonPoint p, bool ce) { EdgeIsConstrained[(IndexOf(p) + 2) % 3] = ce; }
+        public void SetConstrainedEdgeCW(PolygonPoint p, bool ce) { EdgeIsConstrained[(IndexOf(p) + 1) % 3] = ce; }
+        public void SetConstrainedEdgeAcross(PolygonPoint p, bool ce) { EdgeIsConstrained[IndexOf(p)] = ce; }
 
-        public bool GetDelaunayEdgeCCW(TriangulationPoint p) { return EdgeIsDelaunay[(IndexOf(p) + 2) % 3]; }
-        public bool GetDelaunayEdgeCW(TriangulationPoint p) { return EdgeIsDelaunay[(IndexOf(p) + 1) % 3]; }
-        public bool GetDelaunayEdgeAcross(TriangulationPoint p) { return EdgeIsDelaunay[IndexOf(p)]; }
-        public void SetDelaunayEdgeCCW(TriangulationPoint p, bool ce) { EdgeIsDelaunay[(IndexOf(p) + 2) % 3] = ce; }
-        public void SetDelaunayEdgeCW(TriangulationPoint p, bool ce) { EdgeIsDelaunay[(IndexOf(p) + 1) % 3] = ce; }
-        public void SetDelaunayEdgeAcross(TriangulationPoint p, bool ce) { EdgeIsDelaunay[IndexOf(p)] = ce; }
+        public bool GetDelaunayEdgeCCW(PolygonPoint p) { return EdgeIsDelaunay[(IndexOf(p) + 2) % 3]; }
+        public bool GetDelaunayEdgeCW(PolygonPoint p) { return EdgeIsDelaunay[(IndexOf(p) + 1) % 3]; }
+        public bool GetDelaunayEdgeAcross(PolygonPoint p) { return EdgeIsDelaunay[IndexOf(p)]; }
+        public void SetDelaunayEdgeCCW(PolygonPoint p, bool ce) { EdgeIsDelaunay[(IndexOf(p) + 2) % 3] = ce; }
+        public void SetDelaunayEdgeCW(PolygonPoint p, bool ce) { EdgeIsDelaunay[(IndexOf(p) + 1) % 3] = ce; }
+        public void SetDelaunayEdgeAcross(PolygonPoint p, bool ce) { EdgeIsDelaunay[IndexOf(p)] = ce; }
     }
 }

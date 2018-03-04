@@ -29,29 +29,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/// Changes from the Java version
-///   Removed getters
-///   Has* turned into attributes
-/// Future possibilities
-///   Comments!
+using System;
 
 namespace Molten
 {
-    public class AdvancingFrontNode
+    public class PointOnEdgeException : NotImplementedException
     {
-        public AdvancingFrontNode Next;
-        public AdvancingFrontNode Prev;
-        public double Value;
-        public TriangulationPoint Point;
-        public DelaunayTriangle Triangle;
+        public readonly PolygonPoint A, B, C;
 
-        public AdvancingFrontNode(TriangulationPoint point)
+        public PointOnEdgeException(string message, PolygonPoint a, PolygonPoint b, PolygonPoint c)
+            : base(message)
         {
-            this.Point = point;
-            Value = point.X;
+            A = a;
+            B = b;
+            C = c;
         }
-
-        public bool HasNext { get { return Next != null; } }
-        public bool HasPrev { get { return Prev != null; } }
     }
 }

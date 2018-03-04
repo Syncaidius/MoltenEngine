@@ -46,8 +46,8 @@ namespace Molten
 {
     public class Polygon
     {
-        protected List<TriangulationPoint> _points = new List<TriangulationPoint>();
-        protected List<TriangulationPoint> _steinerPoints;
+        protected List<PolygonPoint> _points = new List<PolygonPoint>();
+        protected List<PolygonPoint> _steinerPoints;
         protected List<Polygon> _holes;
         protected List<DelaunayTriangle> _triangles;
         protected PolygonPoint _last;
@@ -58,13 +58,15 @@ namespace Molten
         /// <param name="points">A list of unique points</param>
         public Polygon(IList<PolygonPoint> points)
         {
-            if (points.Count < 3) throw new ArgumentException("List has fewer than 3 points", "points");
+            if (points.Count < 3)
+                throw new ArgumentException("List has fewer than 3 points", "points");
 
-            // Lets do one sanity check that first and last point hasn't got same position
-            // Its something that often happen when importing polygon data from other formats
-            if (points[0].Equals(points[points.Count - 1])) points.RemoveAt(points.Count - 1);
+            // Lets sanity check that first and last point haven't got the same position
+            // Its something that often happens when importing polygon data from other formats
+            if (points[0].Equals(points[points.Count - 1]))
+                points.RemoveAt(points.Count - 1);
 
-            _points.AddRange(points.Cast<TriangulationPoint>());
+            _points.AddRange(points);
         }
 
         /// <summary>
@@ -79,15 +81,15 @@ namespace Molten
         /// <param name="points">A list of unique points.</param>
         public Polygon(params PolygonPoint[] points) : this((IList<PolygonPoint>)points) { }
 
-        public void AddSteinerPoint(TriangulationPoint point)
+        public void AddSteinerPoint(PolygonPoint point)
         {
-            if (_steinerPoints == null) _steinerPoints = new List<TriangulationPoint>();
+            if (_steinerPoints == null) _steinerPoints = new List<PolygonPoint>();
             _steinerPoints.Add(point);
         }
 
-        public void AddSteinerPoints(List<TriangulationPoint> points)
+        public void AddSteinerPoints(List<PolygonPoint> points)
         {
-            if (_steinerPoints == null) _steinerPoints = new List<TriangulationPoint>();
+            if (_steinerPoints == null) _steinerPoints = new List<PolygonPoint>();
             _steinerPoints.AddRange(points);
         }
 
@@ -102,7 +104,9 @@ namespace Molten
         /// <param name="poly">A subtraction polygon fully contained inside this polygon.</param>
         public void AddHole(Polygon poly)
         {
-            if (_holes == null) _holes = new List<Polygon>();
+            if (_holes == null)
+                _holes = new List<Polygon>();
+
             _holes.Add(poly);
             // XXX: tests could be made here to be sure it is fully inside
             //        addSubtraction( poly.getPoints() );
@@ -140,6 +144,7 @@ namespace Molten
                     p.Next = _last.Next;
                     _last.Next = p;
                 }
+
                 _last = p;
                 _points.Add(p);
             }
@@ -175,7 +180,7 @@ namespace Molten
             _points.Remove(p);
         }
 
-        public IList<TriangulationPoint> Points { get { return _points; } }
+        public IList<PolygonPoint> Points { get { return _points; } }
         public IList<DelaunayTriangle> Triangles { get { return _triangles; } }
         public IList<Polygon> Holes { get { return _holes; } }
 

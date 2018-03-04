@@ -33,14 +33,14 @@ namespace Molten
 {
     public class TriangulationConstraint
     {
-        public TriangulationPoint P;
-        public TriangulationPoint Q;
+        public PolygonPoint P;
+        public PolygonPoint Q;
 
         /// <summary>
         /// Give two points in any order. Will always be ordered so
         /// that q.y > p.y and q.x > p.x if same y value 
         /// </summary>
-        public TriangulationConstraint(TriangulationPoint p1, TriangulationPoint p2)
+        public TriangulationConstraint(PolygonPoint p1, PolygonPoint p2)
         {
             P = p1;
             Q = p2;

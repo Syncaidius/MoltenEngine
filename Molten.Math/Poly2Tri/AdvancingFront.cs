@@ -86,7 +86,7 @@ namespace Molten
         /// <summary>
         /// We use a balancing tree to locate a node smaller or equal to given key value (in theory)
         /// </summary>
-        public AdvancingFrontNode LocateNode(TriangulationPoint point)
+        public AdvancingFrontNode LocateNode(PolygonPoint point)
         {
             return LocateNode(point.X);
         }
@@ -122,7 +122,7 @@ namespace Molten
         /// <summary>
         /// This implementation will use simple node traversal algorithm to find a point on the front
         /// </summary>
-        public AdvancingFrontNode LocatePoint(TriangulationPoint point)
+        public AdvancingFrontNode LocatePoint(PolygonPoint point)
         {
             double px = point.X;
             AdvancingFrontNode node = FindSearchNode(px);

@@ -31,24 +31,35 @@
 
 using System.Collections.Generic;
 
-namespace Molten {
-	public class TriangulationPoint {
-		// List of edges this point constitutes an upper ending point (CDT)
-		public List<TriangulationConstraint> Edges { get; private set; }
+namespace Molten
+{
+    public class PolygonPoint
+    {
+        // List of edges this point constitutes an upper ending point (CDT)
+        public List<TriangulationConstraint> Edges { get; private set; }
 
-		public TriangulationPoint( double x, double y ) { X=x; Y=y; }
+        public PolygonPoint(double x, double y)
+        {
+            X = x;
+            Y = y;
+        }
 
-		public override string ToString() {
-			return "[" + X + "," + Y + "]";
-		}
+        public override string ToString()
+        {
+            return "[" + X + "," + Y + "]";
+        }
 
-		public double X,Y;
+        public double X, Y;
 
-		public void AddEdge(TriangulationConstraint e) {
-			if (Edges == null) Edges = new List<TriangulationConstraint>();
-			Edges.Add(e);
-		}
+        public void AddEdge(TriangulationConstraint e)
+        {
+            if (Edges == null) Edges = new List<TriangulationConstraint>();
+            Edges.Add(e);
+        }
 
-		public bool HasEdges { get { return Edges != null; } }
-	}
+        public bool HasEdges { get { return Edges != null; } }
+
+        public PolygonPoint Next { get; set; }
+        public PolygonPoint Previous { get; set; }
+    }
 }

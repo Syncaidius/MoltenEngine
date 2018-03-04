@@ -29,16 +29,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/// Changes from the Java version
-///   Replaced get/set Next/Previous with attributes
-/// Future possibilities
-///   Documentation!
+using System.Collections.Generic;
 
-namespace Molten {
-	public class PolygonPoint : TriangulationPoint {
-		public PolygonPoint( double x, double y ) : base(x, y) { }
-
-		public PolygonPoint Next { get; set; }
-		public PolygonPoint Previous { get; set; }
-	}
+namespace Molten
+{
+    public class SweepPointComparator : IComparer<PolygonPoint>
+    {
+        public int Compare(PolygonPoint p1, PolygonPoint p2)
+        {
+            if (p1.Y < p2.Y)
+            {
+                return -1;
+            }
+            else if (p1.Y > p2.Y)
+            {
+                return 1;
+            }
+            else
+            {
+                if (p1.X < p2.X)
+                    return -1;
+                else if (p1.X > p2.X)
+                    return 1;
+                else
+                    return 0;
+            }
+        }
+    }
 }

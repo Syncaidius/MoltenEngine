@@ -44,13 +44,13 @@ namespace Molten
         // PointSet width to both left and right.
         private readonly float ALPHA = 0.3f;
         public readonly List<DelaunayTriangle> Triangles = new List<DelaunayTriangle>();
-        public readonly List<TriangulationPoint> Points = new List<TriangulationPoint>(200);
+        public readonly List<PolygonPoint> Points = new List<PolygonPoint>(200);
         public Polygon Triangulatable { get; private set; }
         public int StepCount { get; private set; }
 
         public AdvancingFront Front;
-        public TriangulationPoint Head { get; set; }
-        public TriangulationPoint Tail { get; set; }
+        public PolygonPoint Head { get; set; }
+        public PolygonPoint Tail { get; set; }
 
         public SweepBasin Basin = new SweepBasin();
         public SweepEdgeEvent EdgeEvent = new SweepEdgeEvent();
@@ -122,7 +122,7 @@ namespace Molten
             Front.RemoveNode(node);
         }
 
-        public AdvancingFrontNode LocateNode(TriangulationPoint point)
+        public AdvancingFrontNode LocateNode(PolygonPoint point)
         {
             return Front.LocateNode(point);
         }
@@ -177,7 +177,7 @@ namespace Molten
             ymax = ymin = Points[0].Y;
 
             // Calculate bounds. Should be combined with the sorting
-            foreach (TriangulationPoint p in Points)
+            foreach (PolygonPoint p in Points)
             {
                 if (p.X > xmax) xmax = p.X;
                 if (p.X < xmin) xmin = p.X;
@@ -187,8 +187,8 @@ namespace Molten
 
             double deltaX = ALPHA * (xmax - xmin);
             double deltaY = ALPHA * (ymax - ymin);
-            TriangulationPoint p1 = new TriangulationPoint(xmax + deltaX, ymin - deltaY);
-            TriangulationPoint p2 = new TriangulationPoint(xmin - deltaX, ymin - deltaY);
+            PolygonPoint p1 = new PolygonPoint(xmax + deltaX, ymin - deltaY);
+            PolygonPoint p2 = new PolygonPoint(xmin - deltaX, ymin - deltaY);
 
             Head = p1;
             Tail = p2;
@@ -201,7 +201,7 @@ namespace Molten
             Triangles.Clear();
         }
 
-        public TriangulationConstraint NewConstraint(TriangulationPoint a, TriangulationPoint b)
+        public TriangulationConstraint NewConstraint(PolygonPoint a, PolygonPoint b)
         {
             return new TriangulationConstraint(a, b);
         }

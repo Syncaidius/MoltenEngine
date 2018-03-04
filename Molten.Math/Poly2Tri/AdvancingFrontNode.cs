@@ -29,31 +29,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Collections.Generic;
+/// Changes from the Java version
+///   Removed getters
+///   Has* turned into attributes
+/// Future possibilities
+///   Comments!
 
 namespace Molten
 {
-    public class SweepPointComparator : IComparer<TriangulationPoint>
+    public class AdvancingFrontNode
     {
-        public int Compare(TriangulationPoint p1, TriangulationPoint p2)
+        public AdvancingFrontNode Next;
+        public AdvancingFrontNode Prev;
+        public double Value;
+        public PolygonPoint Point;
+        public DelaunayTriangle Triangle;
+
+        public AdvancingFrontNode(PolygonPoint point)
         {
-            if (p1.Y < p2.Y)
-            {
-                return -1;
-            }
-            else if (p1.Y > p2.Y)
-            {
-                return 1;
-            }
-            else
-            {
-                if (p1.X < p2.X)
-                    return -1;
-                else if (p1.X > p2.X)
-                    return 1;
-                else
-                    return 0;
-            }
+            this.Point = point;
+            Value = point.X;
         }
+
+        public bool HasNext { get { return Next != null; } }
+        public bool HasPrev { get { return Prev != null; } }
     }
 }

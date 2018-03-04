@@ -61,7 +61,7 @@ namespace Molten
         /// <param name="pc">triangle point</param>
         /// <param name="pd">point opposite a</param>
         /// <returns>true if d is inside circle, false if on circle edge</returns>
-        public static bool SmartIncircle(TriangulationPoint pa, TriangulationPoint pb, TriangulationPoint pc, TriangulationPoint pd)
+        public static bool SmartIncircle(PolygonPoint pa, PolygonPoint pb, PolygonPoint pc, PolygonPoint pd)
         {
             double pdx = pd.X;
             double pdy = pd.Y;
@@ -96,7 +96,7 @@ namespace Molten
             return det > 0;
         }
 
-        public static bool InScanArea(TriangulationPoint pa, TriangulationPoint pb, TriangulationPoint pc, TriangulationPoint pd)
+        public static bool InScanArea(PolygonPoint pa, PolygonPoint pb, PolygonPoint pc, PolygonPoint pd)
         {
             double pdx = pd.X;
             double pdy = pd.Y;
@@ -129,7 +129,7 @@ namespace Molten
         /// 0 if collinear
         /// A[P1,P2,P3]  =  (x1*y2 - y1*x2) + (x2*y3 - y2*x3) + (x3*y1 - y3*x1)
         ///              =  (x1-x3)*(y2-y3) - (y1-y3)*(x2-x3)
-        public static Winding Orient2D(TriangulationPoint pa, TriangulationPoint pb, TriangulationPoint pc)
+        public static Winding Orient2D(PolygonPoint pa, PolygonPoint pb, PolygonPoint pc)
         {
             double detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
             double detright = (pa.Y - pc.Y) * (pb.X - pc.X);

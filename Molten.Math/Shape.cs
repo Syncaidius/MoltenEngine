@@ -40,7 +40,7 @@ namespace Molten
             }
         }
 
-        private Vector2 TriToVector2(TriangulationPoint p)
+        private Vector2 TriToVector2(PolygonPoint p)
         {
             return new Vector2()
             {
