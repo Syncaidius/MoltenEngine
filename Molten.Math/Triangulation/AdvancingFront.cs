@@ -1,4 +1,6 @@
-﻿/* Poly2Tri
+﻿// MIT - 2018 - James Yarwood - Modified for Molten Engine - https://github.com/Syncaidius/MoltenEngine
+
+/* Poly2Tri
  * Copyright (c) 2009-2010, Poly2Tri Contributors
  * http://code.google.com/p/poly2tri/
  *
@@ -86,7 +88,7 @@ namespace Molten
         /// <summary>
         /// We use a balancing tree to locate a node smaller or equal to given key value (in theory)
         /// </summary>
-        public AdvancingFrontNode LocateNode(PolygonPoint point)
+        public AdvancingFrontNode LocateNode(ShapePoint point)
         {
             return LocateNode(point.X);
         }
@@ -122,7 +124,7 @@ namespace Molten
         /// <summary>
         /// This implementation will use simple node traversal algorithm to find a point on the front
         /// </summary>
-        public AdvancingFrontNode LocatePoint(PolygonPoint point)
+        public AdvancingFrontNode LocatePoint(ShapePoint point)
         {
             double px = point.X;
             AdvancingFrontNode node = FindSearchNode(px);

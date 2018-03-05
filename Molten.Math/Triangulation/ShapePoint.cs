@@ -1,4 +1,5 @@
 ﻿// MIT - 2018 - James Yarwood - Modified for Molten Engine - https://github.com/Syncaidius/MoltenEngine
+
 /* Poly2Tri
  * Copyright (c) 2009-2010, Poly2Tri Contributors
  * http://code.google.com/p/poly2tri/
@@ -34,18 +35,18 @@ using System.Collections.Generic;
 
 namespace Molten
 {
-    public class PolygonPoint
+    public class ShapePoint
     {
         // List of edges this point constitutes an upper ending point (CDT)
         public List<TriangulationConstraint> Edges { get; private set; }
 
-        public PolygonPoint(Vector2 p)
+        public ShapePoint(Vector2 p)
         {
             X = p.X;
             Y = p.Y;
         }
 
-        public PolygonPoint(float x, float y)
+        public ShapePoint(float x, float y)
         {
             X = x;
             Y = y;
@@ -67,7 +68,7 @@ namespace Molten
 
         public bool HasEdges => Edges != null;
 
-        public PolygonPoint Next { get; set; }
-        public PolygonPoint Previous { get; set; }
+        public ShapePoint Next { get; set; }
+        public ShapePoint Previous { get; set; }
     }
 }

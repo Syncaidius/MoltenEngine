@@ -1,4 +1,6 @@
-﻿/* Poly2Tri
+﻿// MIT - 2018 - James Yarwood - Modified for Molten Engine - https://github.com/Syncaidius/MoltenEngine
+
+/* Poly2Tri
  * Copyright (c) 2009-2010, Poly2Tri Contributors
  * http://code.google.com/p/poly2tri/
  *
@@ -35,9 +37,9 @@ namespace Molten
 {
     public class PointOnEdgeException : NotImplementedException
     {
-        public readonly PolygonPoint A, B, C;
+        public readonly ShapePoint A, B, C;
 
-        internal PointOnEdgeException(string message, PolygonPoint a, PolygonPoint b, PolygonPoint c)
+        internal PointOnEdgeException(string message, ShapePoint a, ShapePoint b, ShapePoint c)
             : base(message)
         {
             A = a;

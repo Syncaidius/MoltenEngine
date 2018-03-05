@@ -1,4 +1,6 @@
-﻿/* Poly2Tri
+﻿// MIT - 2018 - James Yarwood - Modified for Molten Engine - https://github.com/Syncaidius/MoltenEngine
+
+/* Poly2Tri
  * Copyright (c) 2009-2010, Poly2Tri Contributors
  * http://code.google.com/p/poly2tri/
  *
@@ -44,13 +46,13 @@ namespace Molten
         // PointSet width to both left and right.
         private readonly float ALPHA = 0.3f;
         public readonly List<DelaunayTriangle> Triangles = new List<DelaunayTriangle>();
-        public readonly List<PolygonPoint> Points = new List<PolygonPoint>(200);
+        public readonly List<ShapePoint> Points = new List<ShapePoint>(200);
         public Shape Triangulatable { get; private set; }
         public int StepCount { get; private set; }
 
         public AdvancingFront Front;
-        public PolygonPoint Head { get; set; }
-        public PolygonPoint Tail { get; set; }
+        public ShapePoint Head { get; set; }
+        public ShapePoint Tail { get; set; }
 
         public SweepBasin Basin = new SweepBasin();
         public SweepEdgeEvent EdgeEvent = new SweepEdgeEvent();
@@ -122,7 +124,7 @@ namespace Molten
             Front.RemoveNode(node);
         }
 
-        public AdvancingFrontNode LocateNode(PolygonPoint point)
+        public AdvancingFrontNode LocateNode(ShapePoint point)
         {
             return Front.LocateNode(point);
         }
@@ -177,7 +179,7 @@ namespace Molten
             ymax = ymin = Points[0].Y;
 
             // Calculate bounds. Should be combined with the sorting
-            foreach (PolygonPoint p in Points)
+            foreach (ShapePoint p in Points)
             {
                 if (p.X > xmax) xmax = p.X;
                 if (p.X < xmin) xmin = p.X;
@@ -187,8 +189,8 @@ namespace Molten
 
             float deltaX = ALPHA * (xmax - xmin);
             float deltaY = ALPHA * (ymax - ymin);
-            PolygonPoint p1 = new PolygonPoint(xmax + deltaX, ymin - deltaY);
-            PolygonPoint p2 = new PolygonPoint(xmin - deltaX, ymin - deltaY);
+            ShapePoint p1 = new ShapePoint(xmax + deltaX, ymin - deltaY);
+            ShapePoint p2 = new ShapePoint(xmin - deltaX, ymin - deltaY);
 
             Head = p1;
             Tail = p2;
@@ -201,7 +203,7 @@ namespace Molten
             Triangles.Clear();
         }
 
-        public TriangulationConstraint NewConstraint(PolygonPoint a, PolygonPoint b)
+        public TriangulationConstraint NewConstraint(ShapePoint a, ShapePoint b)
         {
             return new TriangulationConstraint(a, b);
         }

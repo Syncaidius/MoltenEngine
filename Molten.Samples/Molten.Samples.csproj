@@ -86,7 +86,8 @@
     <Compile Include="Common\SpriteBatchContainer.cs" />
     <Compile Include="Common\SpriteCacheTestObject.cs" />
     <Compile Include="Common\UnfairSpriteCacheTestObject.cs" />
-    <Compile Include="FontTest.cs" />
+    <Compile Include="SpriteFontStress.cs" />
+    <Compile Include="FontFileTest.cs" />
     <Compile Include="MultiWindowGame.cs" />
     <Compile Include="1DTextureTest.cs" />
     <Compile Include="SceneParentingTest.cs" />

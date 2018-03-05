@@ -1,4 +1,6 @@
-﻿/* Poly2Tri
+﻿// MIT - 2018 - James Yarwood - Modified for Molten Engine - https://github.com/Syncaidius/MoltenEngine
+
+/* Poly2Tri
  * Copyright (c) 2009-2010, Poly2Tri Contributors
  * http://code.google.com/p/poly2tri/
  *
@@ -62,7 +64,7 @@ namespace Molten
         /// <param name="pc">triangle point</param>
         /// <param name="pd">point opposite a</param>
         /// <returns>true if d is inside circle, false if on circle edge</returns>
-        internal static bool SmartInCircle(PolygonPoint pa, PolygonPoint pb, PolygonPoint pc, PolygonPoint pd)
+        internal static bool SmartInCircle(ShapePoint pa, ShapePoint pb, ShapePoint pc, ShapePoint pd)
         {
             double pdx = pd.X;
             double pdy = pd.Y;
@@ -97,7 +99,7 @@ namespace Molten
             return det > 0;
         }
 
-        internal static bool InScanArea(PolygonPoint pa, PolygonPoint pb, PolygonPoint pc, PolygonPoint pd)
+        internal static bool InScanArea(ShapePoint pa, ShapePoint pb, ShapePoint pc, ShapePoint pd)
         {
             double pdx = pd.X;
             double pdy = pd.Y;
@@ -130,7 +132,7 @@ namespace Molten
         /// 0 if collinear
         /// A[P1,P2,P3]  =  (x1*y2 - y1*x2) + (x2*y3 - y2*x3) + (x3*y1 - y3*x1)
         ///              =  (x1-x3)*(y2-y3) - (y1-y3)*(x2-x3)
-        internal static Winding Orient2D(PolygonPoint pa, PolygonPoint pb, PolygonPoint pc)
+        internal static Winding Orient2D(ShapePoint pa, ShapePoint pb, ShapePoint pc)
         {
             double detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
             double detright = (pa.Y - pc.Y) * (pb.X - pc.X);

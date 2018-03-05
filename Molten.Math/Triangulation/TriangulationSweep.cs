@@ -1,4 +1,6 @@
-﻿/* Poly2Tri
+﻿// MIT - 2018 - James Yarwood - Modified for Molten Engine - https://github.com/Syncaidius/MoltenEngine
+
+/* Poly2Tri
  * Copyright (c) 2009-2010, Poly2Tri Contributors
  * http://code.google.com/p/poly2tri/
  *
@@ -69,7 +71,7 @@ namespace Molten
         private static void Sweep(TriangulationContext tcx)
         {
             var points = tcx.Points;
-            PolygonPoint point;
+            ShapePoint point;
             AdvancingFrontNode node;
 
             for (int i = 1; i < points.Count; i++)
@@ -92,7 +94,7 @@ namespace Molten
         {
             AdvancingFrontNode n1, n2, n3;
             DelaunayTriangle t1;
-            PolygonPoint first, p1;
+            ShapePoint first, p1;
 
             n1 = tcx.Front.Head.Next;
             n2 = n1.Next;
@@ -183,7 +185,7 @@ namespace Molten
         {
             // Get an Internal triangle to start with
             DelaunayTriangle t = tcx.Front.Head.Next.Triangle;
-            PolygonPoint p = tcx.Front.Head.Next.Point;
+            ShapePoint p = tcx.Front.Head.Next.Point;
             while (!t.GetConstrainedEdgeCW(p)) t = t.NeighborCCWFrom(p);
 
             // Collect interior triangles constrained by edges
@@ -195,7 +197,7 @@ namespace Molten
         /// create a new triangle. If needed new holes and basins
         /// will be filled to.
         /// </summary>
-        private static AdvancingFrontNode PointEvent(TriangulationContext tcx, PolygonPoint point)
+        private static AdvancingFrontNode PointEvent(TriangulationContext tcx, ShapePoint point)
         {
             AdvancingFrontNode node, newNode;
 
@@ -215,7 +217,7 @@ namespace Molten
         /// <summary>
         /// Creates a new front triangle and legalize it
         /// </summary>
-        private static AdvancingFrontNode NewFrontTriangle(TriangulationContext tcx, PolygonPoint point, AdvancingFrontNode node)
+        private static AdvancingFrontNode NewFrontTriangle(TriangulationContext tcx, ShapePoint point, AdvancingFrontNode node)
         {
             AdvancingFrontNode newNode;
             DelaunayTriangle triangle;
@@ -244,7 +246,8 @@ namespace Molten
                 tcx.EdgeEvent.ConstrainedEdge = edge;
                 tcx.EdgeEvent.Right = edge.P.X > edge.Q.X;
 
-                if (IsEdgeSideOfTriangle(node.Triangle, edge.P, edge.Q)) return;
+                if (IsEdgeSideOfTriangle(node.Triangle, edge.P, edge.Q))
+                    return;
 
                 // For now we will do all needed filling
                 // TODO: integrate with flip process might give some better performance 
@@ -432,7 +435,7 @@ namespace Molten
             }
         }
 
-        private static bool IsEdgeSideOfTriangle(DelaunayTriangle triangle, PolygonPoint ep, PolygonPoint eq)
+        private static bool IsEdgeSideOfTriangle(DelaunayTriangle triangle, ShapePoint ep, ShapePoint eq)
         {
             int index = triangle.EdgeIndex(ep, eq);
             if (index == -1) return false;
@@ -442,9 +445,9 @@ namespace Molten
             return true;
         }
 
-        private static void EdgeEvent(TriangulationContext tcx, PolygonPoint ep, PolygonPoint eq, DelaunayTriangle triangle, PolygonPoint point)
+        private static void EdgeEvent(TriangulationContext tcx, ShapePoint ep, ShapePoint eq, DelaunayTriangle triangle, ShapePoint point)
         {
-            PolygonPoint p1, p2;
+            ShapePoint p1, p2;
             if (IsEdgeSideOfTriangle(triangle, ep, eq))
                 return;
 
@@ -506,7 +509,7 @@ namespace Molten
         /// <param name="ep"></param>
         /// <param name="eq"></param>
         /// <param name="p">point on the edge between ep->eq</param>
-        private static void SplitEdge(PolygonPoint ep, PolygonPoint eq, PolygonPoint p)
+        private static void SplitEdge(ShapePoint ep, ShapePoint eq, ShapePoint p)
         {
             TriangulationConstraint edge = eq.Edges.First(e => e.Q == ep || e.P == ep);
             edge.P = p;
@@ -518,10 +521,10 @@ namespace Molten
             //          newEdgeEvent( tcx, edge, triangle, p2 );
         }
 
-        private static void FlipEdgeEvent(TriangulationContext tcx, PolygonPoint ep, PolygonPoint eq, DelaunayTriangle t, PolygonPoint p)
+        private static void FlipEdgeEvent(TriangulationContext tcx, ShapePoint ep, ShapePoint eq, DelaunayTriangle t, ShapePoint p)
         {
             DelaunayTriangle ot = t.NeighborAcrossFrom(p);
-            PolygonPoint op = ot.OppositePoint(t, p);
+            ShapePoint op = ot.OppositePoint(t, p);
 
             if (ot == null)
             {
@@ -562,7 +565,7 @@ namespace Molten
             }
             else
             {
-                PolygonPoint newP = NextFlipPoint(ep, eq, ot, op);
+                ShapePoint newP = NextFlipPoint(ep, eq, ot, op);
                 FlipScanEdgeEvent(tcx, ep, eq, t, ot, newP);
                 EdgeEvent(tcx, ep, eq, t, p);
             }
@@ -573,7 +576,7 @@ namespace Molten
         /// the point in current triangle that is the opposite point to the next
         /// triangle. 
         /// </summary>
-        private static PolygonPoint NextFlipPoint(PolygonPoint ep, PolygonPoint eq, DelaunayTriangle ot, PolygonPoint op)
+        private static ShapePoint NextFlipPoint(ShapePoint ep, ShapePoint eq, DelaunayTriangle ot, ShapePoint op)
         {
             Winding o2d = TriangulationUtil.Orient2D(eq, op, ep);
             switch (o2d)
@@ -599,7 +602,7 @@ namespace Molten
         /// <param name="p">a point shared by both triangles</param>
         /// <param name="op">another point shared by both triangles</param>
         /// <returns>returns the triangle still intersecting the edge</returns>
-        private static DelaunayTriangle NextFlipTriangle(TriangulationContext tcx, Winding o, DelaunayTriangle t, DelaunayTriangle ot, PolygonPoint p, PolygonPoint op)
+        private static DelaunayTriangle NextFlipTriangle(TriangulationContext tcx, Winding o, DelaunayTriangle t, DelaunayTriangle ot, ShapePoint p, ShapePoint op)
         {
             int edgeIndex;
             if (o == Winding.CCW)
@@ -631,10 +634,10 @@ namespace Molten
         /// <param name="flipTriangle">the current triangle sharing the point eq with edge</param>
         /// <param name="t"></param>
         /// <param name="p"></param>
-        private static void FlipScanEdgeEvent(TriangulationContext tcx, PolygonPoint ep, PolygonPoint eq, DelaunayTriangle flipTriangle, DelaunayTriangle t, PolygonPoint p)
+        private static void FlipScanEdgeEvent(TriangulationContext tcx, ShapePoint ep, ShapePoint eq, DelaunayTriangle flipTriangle, DelaunayTriangle t, ShapePoint p)
         {
             DelaunayTriangle ot;
-            PolygonPoint op, newP;
+            ShapePoint op, newP;
             bool inScanArea;
 
             ot = t.NeighborAcrossFrom(p);
@@ -875,8 +878,8 @@ namespace Molten
                 if (ot == null)
                     continue;
 
-                PolygonPoint p = t.Points[i];
-                PolygonPoint op = ot.OppositePoint(t, p);
+                ShapePoint p = t.Points[i];
+                ShapePoint op = ot.OppositePoint(t, p);
                 int oi = ot.IndexOf(op);
                 // If this is a Constrained Edge or a Delaunay Edge(only during recursive legalization)
                 // then we should not try to legalize
@@ -932,7 +935,7 @@ namespace Molten
         ///    +-----+ oP            +-----+
         ///       n4                    n4
         /// </summary>
-        private static void RotateTrianglePair(DelaunayTriangle t, PolygonPoint p, DelaunayTriangle ot, PolygonPoint op)
+        private static void RotateTrianglePair(DelaunayTriangle t, ShapePoint p, DelaunayTriangle ot, ShapePoint op)
         {
             DelaunayTriangle n1, n2, n3, n4;
             n1 = t.NeighborCCWFrom(p);

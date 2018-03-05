@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class FontTest : SampleSceneGame
+    public class SpriteFontStress : SampleSceneGame
     {
         public override string Description => "A stress test of sprite rendering.";
 
@@ -24,7 +24,7 @@ namespace Molten.Samples
         List<ISprite> _sprites;
         IMesh<VertexTexture> _mesh;
 
-        public FontTest(EngineSettings settings = null) : base("Font/Text", settings)
+        public SpriteFontStress(EngineSettings settings = null) : base("SpriteFont Stress Test", settings)
         {
 
         }
@@ -103,26 +103,6 @@ namespace Molten.Samples
             };
             _mesh.SetVertices(verts);
             SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
-
-            // Hi. I'm just a piece of test code for the new WIP font system. Please ignore me.
-            //string fontPath = "assets/euphorigenic.ttf";
-            //string fontPath = "assets/BroshK.ttf";
-            //string fontPath = "assets/Digitalt.ttf";
-            //string fontPath = "assets/STOREB.ttf"; // For testing 'cmap' (format 4 and 6).
-            string fontPath = "assets/UECHIGOT.TTF"; // For testing 'PCLT', 'cmap' (format 0 and 4).
-
-            FontFile font;
-            Stopwatch fontTimer = new Stopwatch();
-            using (FileStream stream = new FileStream(fontPath, FileMode.Open, FileAccess.Read))
-            {
-                using (FontReader reader = new FontReader(stream, Log, fontPath))
-                {
-                    fontTimer.Start();
-                    font = reader.ReadFont();
-                    fontTimer.Stop();
-                    Log.WriteLine($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read font");
-                }
-            }
         }
 
         private void SetupSprites(ISpriteFont font)

@@ -48,17 +48,17 @@ namespace Molten
 {
     public class Shape
     {
-        List<PolygonPoint> _points = new List<PolygonPoint>();
-        List<PolygonPoint> _steinerPoints;
+        List<ShapePoint> _points = new List<ShapePoint>();
+        List<ShapePoint> _steinerPoints;
         List<Shape> _holes;
         List<DelaunayTriangle> _triangles;
-        PolygonPoint _last;
+        ShapePoint _last;
 
         /// <summary>
         /// Create a polygon from a list of at least 3 points with no duplicates.
         /// </summary>
         /// <param name="points">A list of unique points</param>
-        public Shape(IList<PolygonPoint> points)
+        public Shape(IList<ShapePoint> points)
         {
             if (points.Count < 3)
                 throw new ArgumentException("List has fewer than 3 points", "points");
@@ -75,13 +75,13 @@ namespace Molten
         /// Create a polygon from a list of at least 3 points with no duplicates.
         /// </summary>
         /// <param name="points">A list of unique points.</param>
-        public Shape(IEnumerable<PolygonPoint> points) : this((points as IList<PolygonPoint>) ?? points.ToArray()) { }
+        public Shape(IEnumerable<ShapePoint> points) : this((points as IList<ShapePoint>) ?? points.ToArray()) { }
 
         /// <summary>
         /// Create a polygon from a list of at least 3 points with no duplicates.
         /// </summary>
         /// <param name="points">A list of unique points.</param>
-        public Shape(params PolygonPoint[] points) : this((IList<PolygonPoint>)points) { }
+        public Shape(params ShapePoint[] points) : this((IList<ShapePoint>)points) { }
 
         /// <summary>
         /// Creates a polygon from a list of at least 3 Vector3 points, with no duplicates.
@@ -100,7 +100,7 @@ namespace Molten
                 points.RemoveAt(points.Count - 1);
 
             for (int i = 0; i < points.Count; i++)
-                _points.Add(new PolygonPoint(offset + (points[i] * scale)));
+                _points.Add(new ShapePoint(offset + (points[i] * scale)));
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace Molten
                 output.Add(_triangles[i]);
         }
 
-        private Vector2 TriToVector2(PolygonPoint p)
+        private Vector2 TriToVector2(ShapePoint p)
         {
             return new Vector2()
             {
@@ -146,15 +146,15 @@ namespace Molten
             };
         }
 
-        public void AddSteinerPoint(PolygonPoint point)
+        public void AddSteinerPoint(ShapePoint point)
         {
-            if (_steinerPoints == null) _steinerPoints = new List<PolygonPoint>();
+            if (_steinerPoints == null) _steinerPoints = new List<ShapePoint>();
             _steinerPoints.Add(point);
         }
 
-        public void AddSteinerPoints(List<PolygonPoint> points)
+        public void AddSteinerPoints(List<ShapePoint> points)
         {
-            if (_steinerPoints == null) _steinerPoints = new List<PolygonPoint>();
+            if (_steinerPoints == null) _steinerPoints = new List<ShapePoint>();
             _steinerPoints.AddRange(points);
         }
 
@@ -182,7 +182,7 @@ namespace Molten
         /// </summary>
         /// <param name="point">The point to insert after in the polygon</param>
         /// <param name="newPoint">The point to insert into the polygon</param>
-        public void InsertPointAfter(PolygonPoint point, PolygonPoint newPoint)
+        public void InsertPointAfter(ShapePoint point, ShapePoint newPoint)
         {
             // Validate that 
             int index = _points.IndexOf(point);
@@ -198,10 +198,10 @@ namespace Molten
         /// Inserts list (after last point in polygon?)
         /// </summary>
         /// <param name="list"></param>
-        public void AddPoints(IEnumerable<PolygonPoint> list)
+        public void AddPoints(IEnumerable<ShapePoint> list)
         {
-            PolygonPoint first;
-            foreach (PolygonPoint p in list)
+            ShapePoint first;
+            foreach (ShapePoint p in list)
             {
                 p.Previous = _last;
                 if (_last != null)
@@ -213,7 +213,7 @@ namespace Molten
                 _last = p;
                 _points.Add(p);
             }
-            first = (PolygonPoint)_points[0];
+            first = (ShapePoint)_points[0];
             _last.Next = first;
             first.Previous = _last;
         }
@@ -222,7 +222,7 @@ namespace Molten
         /// Adds a point after the last in the polygon.
         /// </summary>
         /// <param name="p">The point to add</param>
-        public void AddPoint(PolygonPoint p)
+        public void AddPoint(ShapePoint p)
         {
             p.Previous = _last;
             p.Next = _last.Next;
@@ -234,9 +234,9 @@ namespace Molten
         /// Removes a point from the polygon.
         /// </summary>
         /// <param name="p"></param>
-        public void RemovePoint(PolygonPoint p)
+        public void RemovePoint(ShapePoint p)
         {
-            PolygonPoint next, prev;
+            ShapePoint next, prev;
 
             next = p.Next;
             prev = p.Previous;
