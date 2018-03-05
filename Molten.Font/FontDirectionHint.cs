@@ -13,14 +13,29 @@ namespace Molten.Font
     /// In a "normal" Roman font where spaces and punctuation are present, the font direction hints should be set to two (2).</summary>
     public enum FontDirectionHint : short
     {
+        /// <summary>
+        /// Like <see cref="StrongRightToLeft"/> but also contains neutrals
+        /// </summary>
         StrongRightToLeftWithNeutrals = -2,
 
+        /// <summary>
+        /// Only strongly right to left
+        /// </summary>
         StrongRightToLeft = -1,
 
+        /// <summary>
+        /// Fully mixed directional glyphs
+        /// </summary>
         FullyMixed = 0,
 
+        /// <summary>
+        /// Only strongly left to right
+        /// </summary>
         StrongLeftToRight = 1,
 
+        /// <summary>
+        /// Like <see cref="StrongLeftToRight"/> but also contains neutrals
+        /// </summary>
         StrongLeftToRightWithNeutrals = 2,
     }
 }

@@ -11,10 +11,12 @@ namespace Molten.Font
     [FontTableTag("hmtx", "hhea", "maxp")]
     public class Hmtx : FontTable
     {
+        LongHorMetric[] _metrics;
+
         /// <summary>
         /// Gets an array of <see cref="LongHorMetric"/> instances containing paired advance width and left side bearing values for each glyph. Records are indexed by glyph ID.
         /// </summary>
-        public LongHorMetric[] Metrics { get; private set; }
+        public LongHorMetric[] Metrics => _metrics;
 
         internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
@@ -23,7 +25,7 @@ namespace Molten.Font
 
             ushort numHMetrics = tableHhea.NumberOfHMetrics;
             ushort numGlyphs = tableMaxp.NumGlyphs;
-            Metrics = new LongHorMetric[numGlyphs];
+            _metrics = new LongHorMetric[numGlyphs];
 
             for (int i = 0; i < numHMetrics; i++)
             {
@@ -59,8 +61,20 @@ namespace Molten.Font
                 }
             }
         }
+
+        public ushort GetAdvanceWidth(int index)
+        {
+            return _metrics[index].AdvanceWidth;
+        }
+        public short GetLeftSideBearing(int index)
+        {
+            return _metrics[index].LeftSideBearing;
+        }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class LongHorMetric
     {
         /// <summary>

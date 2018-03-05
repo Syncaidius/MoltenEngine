@@ -60,7 +60,7 @@ namespace Molten.Font
                 GlyphPoint p = glyphPoints[i];
 
                 // Use a Vector2 transform-normal calculation here
-                Vector2 pNew = Vector2.TransformNormal(p.Coordinate, matrix);
+                Vector2 pNew = Vector2.TransformNormal(p.Point, matrix);
                 glyphPoints[i] = new GlyphPoint(pNew, p.IsOnCurve);
 
                 // Check if transformed point goes outside of the glyph's current bounds.
@@ -84,7 +84,7 @@ namespace Molten.Font
         {
             GlyphPoint[] points = glyph.Points;
             for (int i = points.Length - 1; i >= 0; --i)
-                points[i] = new GlyphPoint(points[i].Coordinate + new Vector2(dx, dy), points[i].IsOnCurve);
+                points[i] = new GlyphPoint(points[i].Point + new Vector2(dx, dy), points[i].IsOnCurve);
 
             // Update bounds
             Rectangle curBounds = glyph.Bounds;
@@ -106,6 +106,20 @@ namespace Molten.Font
         {
             byte[] bytes = reader.ReadBytes(4);
             return Encoding.ASCII.GetString(bytes);
+        }
+
+        /// <summary>
+        /// Creates a new array with the specified number of extra elements, then fills it with the elements from the original array.
+        /// </summary>
+        /// <typeparam name="T">The type of the array.</typeparam>
+        /// <param name="original">The original array from which to create an extended clone.</param>
+        /// <param name="lengthToAdd">The number of extra elements to add to the clone's length.</param>
+        /// <returns></returns>
+        public static T[] CloneAndExtendArray<T>(T[] original, int lengthToAdd = 0)
+        {
+            T[] cloned = new T[original.Length + lengthToAdd];
+            Array.Copy(original, cloned, original.Length);
+            return cloned;
         }
     }
 }

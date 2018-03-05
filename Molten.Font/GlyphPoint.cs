@@ -6,45 +6,62 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class GlyphPoint
+    public struct GlyphPoint
     {
-        Vector2 _point;
+        public Vector2 Point;
+        public bool IsOnCurve;
 
         internal GlyphPoint(float x, float y, bool isOnCurve)
         {
-            _point = new Vector2(x, y);
+            Point = new Vector2(x, y);
             IsOnCurve = isOnCurve;
         }
 
         internal GlyphPoint(Vector2 p, bool isOnCurve)
         {
-            _point = p;
+            Point = p;
             IsOnCurve = isOnCurve;
         }
 
+        internal GlyphPoint Offset(short dx, short dy) { return new GlyphPoint(new Vector2(Point.X + dx, Point.Y + dy), IsOnCurve); }
+
+        internal void ApplyScale(float scale)
+        {
+            Point *= scale;
+        }
+
+        internal void ApplyScaleOnlyOnXAxis(float scale)
+        {
+            Point.X *= scale;
+        }
+
+        /// <summary>
+        /// Applies an offset to the X element of the current <see cref="GlyphPoint"/>.
+        /// </summary>
+        /// <param name="offsetX">The X offset to apply.</param>
+        internal void OffsetX(float offsetX) => Point.X += offsetX;
+
+        /// <summary>
+        /// Applies an offset to the X element of the current <see cref="GlyphPoint"/>.
+        /// </summary>
+        /// <param name="offsetX">The X offset to apply.</param>
+        internal void OffsetY(float offsetY) => Point.Y += offsetY;
+
         public override string ToString()
         {
-            return $"X: {_point.X}, Y: {_point.Y}, OnCurve: {IsOnCurve}";
+            return $"X: {Point.X}, Y: {Point.Y}, OnCurve: {IsOnCurve}";
         }
-
-        public Vector2 Coordinate
-        {
-            get => _point;
-            internal set => _point = value;
-        }
-
-        public bool IsOnCurve { get; internal set; }
 
         public float X
         {
-            get => _point.X;
-            internal set => _point.X = value;
+            get => Point.X;
+            internal set => Point.X = value;
         }
 
         public float Y
         {
-            get => _point.Y;
-            internal set => _point.Y = value;
+            get => Point.Y;
+            internal set => Point.Y = value;
         }
     }
 }

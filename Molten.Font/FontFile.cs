@@ -14,7 +14,10 @@ namespace Molten.Font
         FontFlags _flags;
         Glyph[] _glyphs;
         Cmap _cmap;
-        
+        Maxp _maxp;
+        Hmtx _hmtx;
+        Head _head;
+
         internal FontFile(FontTableList tables)
         {
             _tables = tables;
@@ -31,14 +34,19 @@ namespace Molten.Font
             // If the flags are invalid, we cannot make a usable FontFile instance.
             _flags = FontValidator.Validate(_tables);
             if (_flags == FontFlags.Invalid)
+            {
+                _maxp = new Maxp();
                 return;
+            }
 
             Name nameTable = _tables.Get<Name>();
             _info = new FontInfo(nameTable);
+            _cmap = _tables.Get<Cmap>();
+            _maxp = _tables.Get<Maxp>();
+            _hmtx = _tables.Get<Hmtx>();
+            _head = _tables.Get<Head>();
 
             Glyf glyf = _tables.Get<Glyf>();
-            _cmap = _tables.Get<Cmap>();
-
             if (glyf != null)
             {
                 _glyphs = new Glyph[glyf.Glyphs.Length];
@@ -53,8 +61,49 @@ namespace Molten.Font
         /// <returns></returns>
         public Glyph GetGlyph(char character)
         {
-            int glyphIndex = _cmap.LookupIndex(character);
-            return _glyphs[glyphIndex];
+            int index = _cmap.LookupIndex(character);
+            return _glyphs[index];
+        }
+
+        /// <summary>
+        /// Gets a glyph by it's index, as defined by the font, which is not to be confused with a character code/ID.
+        /// </summary>
+        /// <param name="index">The glyph index.</param>
+        /// <returns></returns>
+        public Glyph GetGlyphByIndex(int index)
+        {
+            return _glyphs[index];
+        }
+
+        /// <summary>
+        /// Calculates the scale to the target pixel size based on the current <see cref="FontFile"/> UnitsPerEm
+        /// </summary>
+        /// <param name="targetPixelSize">target font size in point unit</param>
+        /// <returns></returns>
+        public float CalculateScaleToPixel(float targetPixelSize)
+        {
+            //1. return targetPixelSize / UnitsPerEm
+            return targetPixelSize / _head.UnitsPerEm;
+        }
+
+        /// <summary>
+        /// Gets the horizontal advance width from the glyph at the specified index (not character code).
+        /// </summary>
+        /// <param name="index">The font glyph index.</param>
+        /// <returns></returns>
+        public ushort GetHAdvanceWidthFromGlyphIndex(int index)
+        {
+            return _hmtx.GetAdvanceWidth(index);
+        }
+
+        /// <summary>
+        /// Gets the front side bearing (FSB) from the glyph at the specified index (not character code).
+        /// </summary>
+        /// <param name="index">The font glyph index.</param>
+        /// <returns></returns>
+        public short GetHFrontSideBearingFromGlyphIndex(int index)
+        {
+            return _hmtx.GetLeftSideBearing(index);
         }
 
         /// <summary>Returns true if the current <see cref="Flags"/> contains the specified flag value.</summary>
@@ -83,5 +132,16 @@ namespace Molten.Font
         /// Gets the number of glyphs in the font.
         /// </summary>
         public int GlyphCount => _glyphs.Length;
+
+        /// <summary>
+        /// Gets the maximum profile information for the current <see cref="FontFile"/>.<para/>
+        /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/maxp
+        /// </summary>
+        public Maxp MaximumProfile => _maxp;
+
+        /// <summary>
+        /// Gets the <see cref="FontFile"/> header table which contains metric information about the font's overall structure, such as the units-per-em.
+        /// </summary>
+        public Head Header => _head;
     }
 }

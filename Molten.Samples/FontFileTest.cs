@@ -131,15 +131,7 @@ namespace Molten.Samples
                 }
             }
 
-            // Add 5 colors. The last color will be used when we have more points than colors.
-            List<Color> colors = new List<Color>();
-            colors.Add(Color.Orange);
-            colors.Add(Color.Red);
-            colors.Add(Color.Lime);
-            colors.Add(Color.Blue);
-            colors.Add(Color.Yellow);
-
-            Glyph cGlyph = font.GetGlyph('C');
+            Glyph cGlyph = font.GetGlyph('#');
             ushort[] endPoints = cGlyph.ContourEndPoints;
             int start = 0;
 
@@ -172,7 +164,10 @@ namespace Molten.Samples
                 int end = endPoints[i];
 
                 for (int p = start; p <= end; p++)
-                    points.Add((cGlyph.Points[p].Coordinate * 0.25f) + offset + new Vector2(300 * i, 0));
+                    points.Add((cGlyph.Points[p].Point * scale) + offset + new Vector2(150 * i, 0));
+
+                // Add the first point again to create a loop (for rendering only)
+                points.Add(points[0]);
 
                 // Set the current end as the start of the next run.
                 start = end + 1;
@@ -183,10 +178,7 @@ namespace Molten.Samples
             {
                 OnDraw = (sb) =>
                 {
-                    //sb.DrawLine(new Vector2(200), new Vector2(500), Color.White, 1);
-                    //sb.DrawTriangle(new Vector2(400, 220), new Vector2(350, 320), new Vector2(500, 260), Color.SkyBlue);
-                    //sb.DrawTriangle(new Vector2(500, 220), new Vector2(590, 350), new Vector2(650, 280), Color.Violet);
-                    //sb.DrawTriangleList(triPoints, colors);
+                    //sb.DrawTriangleList(triPoints, Color.Yellow);
                     for(int i = 0; i < linePoints.Length; i++)
                         sb.DrawLines(linePoints[i], Color.Red, 1);
                 }

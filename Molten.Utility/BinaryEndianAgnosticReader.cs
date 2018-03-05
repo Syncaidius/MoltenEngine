@@ -123,8 +123,8 @@ namespace Molten
         /// <summary>
         /// Reads an array of <see cref="ushort"/> into a <see cref="uint"/> array.
         /// </summary>
-        /// <param name="dest"></param>
-        /// <param name="count"></param>
+        /// <param name="dest">The destination array.</param>
+        /// <param name="count">The number of values to read.</param>
         public void ReadArrayUInt16(uint[] dest, int count)
         {
             for (int i = 0; i < count; i++)
@@ -138,6 +138,17 @@ namespace Molten
                 r[i] = ReadInt16();
 
             return r;
+        }
+
+        /// <summary>
+        /// Reads an array of <see cref="short"/> into a <see cref="int"/> array.
+        /// </summary>
+        /// <param name="dest">The destination array.</param>
+        /// <param name="count">The number of values to read.</param>
+        public void ReadArrayInt16(int[] dest, int count)
+        {
+            for (int i = 0; i < count; i++)
+                dest[i] = ReadUInt16();
         }
 
         public uint[] ReadArrayUInt32(int count)

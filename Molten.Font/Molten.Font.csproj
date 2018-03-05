@@ -40,6 +40,8 @@
     <LangVersion>latest</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Optimize>false</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -84,6 +86,8 @@
     <Compile Include="GlyphClass.cs" />
     <Compile Include="GlyphMarkClass.cs" />
     <Compile Include="GlyphPoint.cs" />
+    <Compile Include="Interpreter\FontInterpreterException.cs" />
+    <Compile Include="Interpreter\TrueTypeInterpreter.cs" />
     <Compile Include="MacStyleFlags.cs" />
     <Compile Include="OffsetTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -97,6 +101,7 @@
     <Compile Include="SubTables\DeviceVariationIndexTable.cs" />
     <Compile Include="FontSubTable.cs" />
     <Compile Include="SubTables\FeatureSubstitutionTable.cs" />
+    <Compile Include="Interpreter\SharpFontInterpreter.cs" />
     <Compile Include="SubTables\ItemVariationStore.cs" />
     <Compile Include="SubTables\KerningTable.cs" />
     <Compile Include="SubTables\LigatureCaretListTable.cs" />

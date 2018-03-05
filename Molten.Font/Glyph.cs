@@ -8,9 +8,23 @@ namespace Molten.Font
 {
     public class Glyph : ICloneable
     {
+        Rectangle _bounds;
+
         public static readonly Glyph Empty = new Glyph(Rectangle.Empty, new ushort[0], new GlyphPoint[0], new byte[0]);
 
-        public Rectangle Bounds { get; internal set; }
+        public Rectangle Bounds
+        {
+            get => _bounds;
+            internal set => _bounds = value;
+        }
+
+        public int MinX => _bounds.X;
+
+        public int MinY => _bounds.Y;
+
+        public int MaxX => _bounds.Right;
+
+        public int MaxY => _bounds.Bottom;
 
         public ushort[] ContourEndPoints { get; private set; }
 

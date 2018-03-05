@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    /// <summary>Font header table .<para/>
+    /// <summary>Font header table (head).<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/head </summary>
     [FontTableTag("head")]
     public class Head : FontTable
     {
+        /// <summary>
+        /// The expected magic number value of a valid <see cref="Head"/> table.
+        /// </summary>
         public const uint EXPECTED_MAGIC_NUMBER = 0x5F0F3CF5;
 
         public ushort MajorVersion { get; private set; }
@@ -23,33 +26,74 @@ namespace Molten.Font
 
         public uint ChecksumAdjustment { get; private set; }
 
+        /// <summary>
+        /// Gets the magic number for the <see cref="Head"/> table.
+        /// </summary>
         public uint MagicNumber { get; private set; }
 
+        /// <summary>
+        /// Gets the font head flags which provide basic information about the rules and design of the font.
+        /// </summary>
         public FontHeadFlags Flags { get; private set; }
 
+        /// <summary>
+        /// Gets the units-per-em of the font.
+        /// </summary>
         public ushort UnitsPerEm { get; private set; }
 
+        /// <summary>
+        /// Gets the date the font was created. <para/>
+        /// Note: This is not the date that the font file itself was created.
+        /// </summary>
         public DateTime Created { get; private set; }
 
+        /// <summary>
+        /// Gets the date the font was last modified. <para/>
+        /// Note: This is not the date that the font file itself was modified.
+        /// </summary>
         public DateTime Modified { get; private set; }
 
+        /// <summary>
+        /// Gets the minimum X bounds for all glyph bounding boxes.
+        /// </summary>
         public short MinX { get; private set; }
 
+        /// <summary>
+        /// Gets the minimum Y bounds for all glyph bounding boxes.
+        /// </summary>
         public short MinY { get; private set; }
 
+        /// <summary>
+        /// Gets the maximum X bounds for all glyph bounding boxes.
+        /// </summary>
         public short MaxX { get; private set; }
 
+        /// <summary>
+        /// Gets the maximum Y bounds for all glyph bounding boxes.
+        /// </summary>
         public short MaxY { get; private set; }
 
+        /// <summary>
+        /// Gets macintosh-style flags. 
+        /// </summary>
         public MacStyleFlags MacStyle { get; private set; }
 
+        /// <summary>
+        /// Gets the smallest readable size (pixels-per-em) in pixels.
+        /// </summary>
         public ushort LowestRecPPEM { get; private set; }
 
+        /// <summary>
+        /// Gets the direction hint of the font.
+        /// </summary>
         public FontDirectionHint DirectionHint { get; private set; }
 
         /// <summary>Gets the expected format of the index-to-location (loca) table, if present.</summary>
         public FontLocaFormat LocaFormat { get; private set; }
 
+        /// <summary>
+        /// Gets the glyph data format.
+        /// </summary>
         public short GlyphDataFormat { get; private set; }
 
         internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
