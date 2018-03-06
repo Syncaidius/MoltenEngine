@@ -44,8 +44,6 @@ namespace Molten.Font
         {
 
             Glyph glyph = _curFont.GetGlyphByIndex(glyphIndex);
-            //-------------------------------------------
-            //1. start with original points/contours from glyph 
             int horizontalAdv = _curFont.GetHAdvanceWidthFromGlyphIndex(glyphIndex);
             int hFrontSideBearing = _curFont.GetHFrontSideBearingFromGlyphIndex(glyphIndex);
 
@@ -57,7 +55,6 @@ namespace Molten.Font
                 glyph.ContourEndPoints,
                 glyph.Instructions,
                 glyphSizeInPixel);
-
         }
 
         public GlyphPoint[] HintGlyph(
@@ -95,9 +92,9 @@ namespace Molten.Font
             for (int i = orgLen + 3; i >= 0; --i)
                 newGlyphPoints[i].ApplyScale(pxScale);
 
-            //test : agg's vertical hint
-            //apply large scale on horizontal axis only 
-            //translate and then scale back
+            // Test : agg's vertical hint
+            // Apply large scale on horizontal axis only 
+            // Translate and then scale back
             float agg_x_scale = 1000;
             if (UseVerticalHinting)
                 ApplyScaleOnlyOnXAxis(newGlyphPoints, agg_x_scale);

@@ -90,8 +90,14 @@ namespace Molten.Font
             }
 
             if (readerPos != expectedEndPos)
+            {
                 log.WriteDebugLine($"[GLYF] ({(isSimple ? "Simple   " : "Composite")}) Glyph {id} was read/aligned incorrectly. " +
                     $"Length: {length}. End Pos -- Expected: {expectedEndPos}. Actual: {readerPos}. Dif: {(dif < 0 ? "" : "+")}{dif} bytes");
+            }
+            else
+            {
+                log.WriteDebugLine($"[GLYF] Read ({(isSimple ? "Simple   " : "Composite")}) Glyph {id} Length: {length}. ");
+            }
         }
 
         private Glyph ReadCompositeGlyph(BinaryEndianAgnosticReader reader, Logger log, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, Rectangle bounds, ushort id)
@@ -247,8 +253,13 @@ namespace Molten.Font
             short[] yCoords = ReadCoordinates(reader, pointCount, flags, SimpleGlyphFlags.YShortVector, SimpleGlyphFlags.YSameOrPositive);
 
             GlyphPoint[] points = new GlyphPoint[pointCount];
+            Vector2 pos = Vector2.Zero;
             for (int i = 0; i < pointCount; i++)
-                points[i] = new GlyphPoint(xCoords[i], yCoords[i], HasFlag(flags[i], SimpleGlyphFlags.OnCurvePoint));
+            {
+                pos.X += xCoords[i];
+                pos.Y += yCoords[i];
+                points[i] = new GlyphPoint(pos, HasFlag(flags[i], SimpleGlyphFlags.OnCurvePoint));
+            }
 
             // Create glyph
             return new Glyph(bounds, contourEndPoints, points, instructions);
@@ -285,7 +296,6 @@ namespace Molten.Font
         {
             short[] coords = new short[pointCount];
             int i = 0;
-            short prevCoord = 0;
 
             while (i < pointCount)
             {
@@ -304,7 +314,6 @@ namespace Molten.Font
                         coords[i] = reader.ReadInt16();
                 }
 
-                prevCoord = coords[i];
                 i++;
             }
 

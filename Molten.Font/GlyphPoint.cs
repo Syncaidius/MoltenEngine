@@ -23,13 +23,30 @@ namespace Molten.Font
             IsOnCurve = isOnCurve;
         }
 
-        internal GlyphPoint Offset(short dx, short dy) { return new GlyphPoint(new Vector2(Point.X + dx, Point.Y + dy), IsOnCurve); }
+        /// <summary>
+        /// Offsets the current glyh by the specified amount.
+        /// </summary>
+        /// <param name="offsetX">The amount to offset along the X axis.</param>
+        /// <param name="offsetY">The amount to offset along the Y axis.</param>
+        /// <returns></returns>
+        internal GlyphPoint Offset(short offsetX, short offsetY)
+        {
+            return new GlyphPoint(new Vector2(Point.X + offsetX, Point.Y + offsetY), IsOnCurve);
+        }
 
+        /// <summary>
+        /// Applies the specified scale to the X and Y axis of the current <see cref="GlyphPoint"/>.
+        /// </summary>
+        /// <param name="scale">The scale value.</param>
         internal void ApplyScale(float scale)
         {
             Point *= scale;
         }
 
+        /// <summary>
+        /// Applies the specified scale to only the X axis of the current <see cref="GlyphPoint"/>.
+        /// </summary>
+        /// <param name="scale">The scale value.</param>
         internal void ApplyScaleOnlyOnXAxis(float scale)
         {
             Point.X *= scale;
@@ -52,12 +69,18 @@ namespace Molten.Font
             return $"X: {Point.X}, Y: {Point.Y}, OnCurve: {IsOnCurve}";
         }
 
+        /// <summary>
+        /// Gets the X value of the current <see cref="GlyphPoint"/>.
+        /// </summary>
         public float X
         {
             get => Point.X;
             internal set => Point.X = value;
         }
 
+        /// <summary>
+        /// Gets the X value of the current <see cref="GlyphPoint"/>.
+        /// </summary>
         public float Y
         {
             get => Point.Y;

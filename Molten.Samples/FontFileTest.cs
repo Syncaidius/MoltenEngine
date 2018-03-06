@@ -131,31 +131,16 @@ namespace Molten.Samples
                 }
             }
 
-            Glyph cGlyph = font.GetGlyph('#');
+            char glyphChar = '8';
+            Log.WriteDebugLine($"FontFile test: using glyph at index {font.GetGlyphIndex(glyphChar)}");
+            Glyph cGlyph = font.GetGlyph(glyphChar);
             ushort[] endPoints = cGlyph.ContourEndPoints;
             int start = 0;
-
-            // Triangulate glyph
-            //List<Vector2> points = new List<Vector2>();
-            //List<Vector2> triPoints = new List<Vector2>();
-            //for (int i = 0; i < endPoints.Length; i++)
-            //{
-            //    int end = endPoints[i];
-            //    for (int p = start; p <= end; p++)
-            //        points.Add(cGlyph.Points[p].Coordinate);
-
-            //    Shape shape = new Shape(points, new Vector2(300 + (300 * i), 300), 0.25f);
-            //    shape.Triangulate(triPoints);
-            //    points.Clear();
-
-            //    // Set the current end as the start of the next run.
-            //    start = end + 1;
-            //}
 
             // Draw outline
             List<Vector2>[] linePoints = new List<Vector2>[endPoints.Length];
             Vector2 offset = new Vector2(300);
-            float scale = 0.25f;
+            float scale = 1f;
 
             for (int i = 0; i < endPoints.Length; i++)
             {
@@ -163,8 +148,14 @@ namespace Molten.Samples
                 linePoints[i] = points;
                 int end = endPoints[i];
 
+                // Offset the points so we can see them
+                // Flip the Y axis because 0,0 is top-left, not bottom-left.
                 for (int p = start; p <= end; p++)
-                    points.Add((cGlyph.Points[p].Point * scale) + offset + new Vector2(150 * i, 0));
+                {
+                    Vector2 point = cGlyph.Points[p].Point;
+                    point.Y = cGlyph.Bounds.Height - point.Y;
+                    points.Add((point * scale) + offset);
+                }
 
                 // Add the first point again to create a loop (for rendering only)
                 points.Add(points[0]);
@@ -179,7 +170,7 @@ namespace Molten.Samples
                 OnDraw = (sb) =>
                 {
                     //sb.DrawTriangleList(triPoints, Color.Yellow);
-                    for(int i = 0; i < linePoints.Length; i++)
+                    for (int i = 0; i < linePoints.Length; i++)
                         sb.DrawLines(linePoints[i], Color.Red, 1);
                 }
             };

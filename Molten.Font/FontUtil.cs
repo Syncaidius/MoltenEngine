@@ -13,6 +13,8 @@ namespace Molten.Font
         /// <summary>Helper for when we're checking if table offsets are meant to be equivilent to C++ NULL (0).</summary>
         public const int NULL = 0;
 
+        public const int POINTS_PER_INCH = 72;
+
         /// <summary>Gets an offset from the start position to the current position.</summary>
         /// <param name="startPos">The starting position.</param>
         /// <param name="curPos">The current position.</param>
@@ -120,6 +122,21 @@ namespace Molten.Font
             T[] cloned = new T[original.Length + lengthToAdd];
             Array.Copy(original, cloned, original.Length);
             return cloned;
+        }
+
+        /// <summary>
+        /// Convert from a point-unit value to a pixel value
+        /// </summary>
+        /// <param name="targetPointSize">The target font point size.</param>
+        /// <param name="pixelsPerInch">The number of pixels per inch.</param>
+        /// <returns></returns>
+        public static float FontPointsToPixels(float targetPointSize, int pixelsPerInch = 96)
+        {
+            // Points = pixels * 72 / 96
+            // Pixels = targetPointSize * 96 /72
+            // Pixels = targetPointSize * resolution / pointPerInch
+            // See: http://stackoverflow.com/questions/139655/convert-pixels-to-points
+            return targetPointSize * pixelsPerInch / POINTS_PER_INCH;
         }
     }
 }

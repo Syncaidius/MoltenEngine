@@ -372,6 +372,9 @@ namespace Molten.Graphics
             if (pointColors.Count == 0)
                 throw new SpriteBatchException(this, "There must be at least one color available in the pointColors list.");
 
+            if (points.Count < 2)
+                throw new SpriteBatchException(this, "There must be at least 2 points in the point list.");
+
             if (points.Count == 2)
             {
                 int secondCol = pointColors.Count > 1 ? 1 : 0;

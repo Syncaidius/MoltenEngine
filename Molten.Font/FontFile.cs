@@ -17,6 +17,7 @@ namespace Molten.Font
         Maxp _maxp;
         Hmtx _hmtx;
         Head _head;
+        Prep _prep;
 
         internal FontFile(FontTableList tables)
         {
@@ -63,6 +64,16 @@ namespace Molten.Font
         {
             int index = _cmap.LookupIndex(character);
             return _glyphs[index];
+        }
+
+        /// <summary>
+        /// Returns the index of the glyph for the specified character. If there is no glyph available, the default one (index 0) will be returned.
+        /// </summary>
+        /// <param name="character">The character for which to retrieve a glyph index.</param>
+        /// <returns></returns>
+        public ushort GetGlyphIndex(char character)
+        {
+            return _cmap.LookupIndex(character);
         }
 
         /// <summary>
@@ -143,5 +154,7 @@ namespace Molten.Font
         /// Gets the <see cref="FontFile"/> header table which contains metric information about the font's overall structure, such as the units-per-em.
         /// </summary>
         public Head Header => _head;
+
+        internal Prep ControlValueProgram => _prep;
     }
 }
