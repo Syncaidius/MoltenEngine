@@ -67,5 +67,10 @@ namespace Molten
         }
 
         public bool HasEdges => Edges != null;
+
+        public static explicit operator Vector2(ShapePoint p)
+        {
+            return new Vector2(p.X, p.Y);
+        }
     }
 }

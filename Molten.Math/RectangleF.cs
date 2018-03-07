@@ -287,6 +287,13 @@ namespace Molten
 
         /// <summary>Determines whether this rectangle entirely contains a specified rectangle.</summary>
         /// <param name="value">The rectangle to evaluate.</param>
+        public bool Contains(RectangleF value)
+        {
+            return (X <= value.X) && (value.Right <= Right) && (Y <= value.Y) && (value.Bottom <= Bottom);
+        }
+
+        /// <summary>Determines whether this rectangle entirely contains a specified rectangle.</summary>
+        /// <param name="value">The rectangle to evaluate.</param>
         /// <param name="result">[OutAttribute] On exit, is true if this rectangle entirely contains the specified rectangle, or false if not.</param>
         public void Contains(ref RectangleF value, out bool result)
         {

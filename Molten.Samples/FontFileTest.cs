@@ -103,13 +103,13 @@ namespace Molten.Samples
             _mesh.SetVertices(verts);
             SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
 
-            NewFontSystemTest();
+            NewFontSystemTest('8');
         }
 
         /// <summary>
         /// A test for a new WIP sprite font system.
         /// </summary>
-        private void NewFontSystemTest()
+        private void NewFontSystemTest(char glyphChar)
         {
             // Hi. I'm just a piece of test code for the new WIP font system. Please ignore me.
             //string fontPath = "assets/euphorigenic.ttf";
@@ -131,75 +131,96 @@ namespace Molten.Samples
                 }
             }
 
-            //  Test mesh holes - anti-clockwise
-            Rectangle box = new Rectangle(800, 500, 300, 200);
-            List<Vector2> boxPoints = new List<Vector2>();
-            boxPoints.Add(new Vector2(box.Left, box.Top));
-            boxPoints.Add(new Vector2(box.Left, box.Bottom));
-            boxPoints.Add(new Vector2(box.Right, box.Bottom));
-            boxPoints.Add(new Vector2(box.Right, box.Top));
-            List<Vector2> boxTriangleList = new List<Vector2>();
-            Shape boxShape = new Shape(boxPoints);
-
-            // Box hole - clockwise
-            Rectangle boxInner = box;
-            boxPoints.Clear();
-            boxInner.Inflate(-20);
-            boxPoints.Add(new Vector2(boxInner.Left, boxInner.Top));
-            boxPoints.Add(new Vector2(boxInner.Right, boxInner.Top));
-            boxPoints.Add(new Vector2(boxInner.Right, boxInner.Bottom));
-            boxPoints.Add(new Vector2(boxInner.Left, boxInner.Bottom));
-            Shape boxHole = new Shape(boxPoints);
-            boxShape.AddHole(boxHole);
-
-            boxShape.Triangulate(boxTriangleList);
-
-            char glyphChar = '8';
             Log.WriteDebugLine($"FontFile test: using glyph at index {font.GetGlyphIndex(glyphChar)}");
-            Glyph cGlyph = font.GetGlyph(glyphChar);
-            ushort[] endPoints = cGlyph.ContourEndPoints;
+            Glyph glyph = font.GetGlyph(glyphChar);
+            glyph.PopulateShapes();
+            ushort[] endPoints = glyph.ContourEndPoints;
             int start = 0;
 
             // Draw outline
-            List<Vector2>[] linePoints = new List<Vector2>[endPoints.Length];
             Vector2 offset = new Vector2(300);
             float scale = 0.25f;
 
-            for (int i = 0; i < endPoints.Length; i++)
+            List<List<Vector2>> linePoints = new List<List<Vector2>>();
+            List<List<Vector2>> holePoints = new List<List<Vector2>>();
+            for (int i = 0; i < glyph.Shapes.Count; i++)
             {
+                Shape shape = glyph.Shapes[i];
                 List<Vector2> points = new List<Vector2>();
-                linePoints[i] = points;
-                int end = endPoints[i];
+                linePoints.Add(points);
 
-                // Offset the points so we can see them
-                // Flip the Y axis because 0,0 is top-left, not bottom-left.
-                for (int p = start; p <= end; p++)
+                for (int j = 0; j < shape.Points.Count; j++)
                 {
-                    if (!cGlyph.Points[p].IsOnCurve)
-                        continue;
-
-                    Vector2 point = cGlyph.Points[p].Point;
-                    point.Y = cGlyph.Bounds.Height - point.Y;
+                    Vector2 point = (Vector2)shape.Points[j];
+                    point.Y = glyph.Bounds.Height - point.Y;
                     points.Add((point * scale) + offset);
                 }
 
-                // Add the first point again to create a loop (for rendering only)
-                points.Add(points[0]);
+                foreach(Shape h in shape.Holes)
+                {
+                    List<Vector2> hPoints = new List<Vector2>();
+                    holePoints.Add(hPoints);
 
-                // Set the current end as the start of the next run.
-                start = end + 1;
+                    for (int j = 0; j < h.Points.Count; j++)
+                    {
+                        Vector2 point = (Vector2)h.Points[j];
+                        point.Y = glyph.Bounds.Height - point.Y;
+                        hPoints.Add((point * scale) + offset);
+                    }
+                }
             }
+
+            //List<Vector2>[] linePoints = new List<Vector2>[glyph.ContourEndPoints.Length];
+            //for (int i = 0; i < endPoints.Length; i++)
+            //{
+            //    List<Vector2> points = new List<Vector2>();
+            //    linePoints[i] = points;
+            //    int end = endPoints[i];
+
+            //    // Offset the points so we can see them
+            //    // Flip the Y axis because 0,0 is top-left, not bottom-left.
+            //    for (int p = start; p <= end; p++)
+            //    {
+            //        if (!glyph.Points[p].IsOnCurve)
+            //            continue;
+
+            //        Vector2 point = glyph.Points[p].Point;
+            //        point.Y = glyph.Bounds.Height - point.Y;
+            //        points.Add((point * scale) + offset);
+            //    }
+
+            //    // Add the first point again to create a loop (for rendering only)
+            //    points.Add(points[0]);
+
+            //    // Set the current end as the start of the next run.
+            //    start = end + 1;
+            //}
+
+            RectangleF glyphBounds = glyph.Bounds;
+            glyphBounds.Top *= scale;
+            glyphBounds.Left *= scale;
+            glyphBounds.X += offset.X;
+            glyphBounds.Y += offset.Y;
+            glyphBounds.Width *= scale;
+            glyphBounds.Height *= scale;
 
             // Use a container for doing some testing.
             SpriteBatchContainer sbContainer = new SpriteBatchContainer()
             {
                 OnDraw = (sb) =>
                 {
+                    // Draw glyph bounds
+                    sb.DrawLine(glyphBounds.TopLeft, glyphBounds.TopRight, Color.Grey, 1);
+                    sb.DrawLine(glyphBounds.TopRight, glyphBounds.BottomRight, Color.Grey, 1);
+                    sb.DrawLine(glyphBounds.BottomRight, glyphBounds.BottomLeft, Color.Grey, 1);                    
+                    sb.DrawLine(glyphBounds.BottomLeft, glyphBounds.TopLeft, Color.Grey, 1);
+
                     //sb.DrawTriangleList(triPoints, Color.Yellow);
-                    for (int i = 0; i < linePoints.Length; i++)
+                    for (int i = 0; i < linePoints.Count; i++)
                         sb.DrawLines(linePoints[i], Color.Red, 1);
 
-                    sb.DrawTriangleList(boxTriangleList, Color.Yellow);
+                    for (int i = 0; i < holePoints.Count; i++)
+                        sb.DrawLines(holePoints[i], Color.SkyBlue, 1);
                 }
             };
             SampleScene.AddSprite(sbContainer);

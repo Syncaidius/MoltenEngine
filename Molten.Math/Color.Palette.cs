@@ -291,6 +291,11 @@ namespace Molten
         public static readonly Color Gray = Color.FromBgra(0xFF808080);
 
         /// <summary>
+        /// Grey color.
+        /// </summary>
+        public static readonly Color Grey = Color.FromBgra(0xFF808080);
+
+        /// <summary>
         /// Green color.
         /// </summary>
         public static readonly Color Green = Color.FromBgra(0xFF008000);
