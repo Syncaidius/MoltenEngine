@@ -35,17 +35,13 @@ using System.Collections.Generic;
 
 namespace Molten
 {
-    /**
-	 * 
-	 * @author Thomas Åhlén, thahlen@gmail.com
-	 *
-	 */
+    // @author Thomas Åhlén, thahlen@gmail.com
     internal class TriangulationContext
     {
         // Inital triangle factor, seed triangle will extend 30% of 
         // PointSet width to both left and right.
         private readonly float ALPHA = 0.3f;
-        public readonly List<DelaunayTriangle> Triangles = new List<DelaunayTriangle>();
+        public readonly List<ShapeTriangle> Triangles = new List<ShapeTriangle>();
         public readonly List<ShapePoint> Points = new List<ShapePoint>(200);
         public Shape Triangulatable { get; private set; }
         public int StepCount { get; private set; }
@@ -64,7 +60,7 @@ namespace Molten
             Clear();
         }
 
-        public void RemoveFromList(DelaunayTriangle triangle)
+        public void RemoveFromList(ShapeTriangle triangle)
         {
             Triangles.Remove(triangle);
             // TODO: remove all neighbor pointers to this triangle
@@ -78,12 +74,12 @@ namespace Molten
             //        triangle.clearNeighbors();
         }
 
-        public void MeshClean(DelaunayTriangle triangle)
+        public void MeshClean(ShapeTriangle triangle)
         {
             MeshCleanReq(triangle);
         }
 
-        private void MeshCleanReq(DelaunayTriangle triangle)
+        private void MeshCleanReq(ShapeTriangle triangle)
         {
             if (triangle != null && !triangle.IsInterior)
             {
@@ -103,6 +99,9 @@ namespace Molten
             Points.Clear();
             StepCount = 0;
             Triangles.Clear();
+            Triangulatable = null;
+            Head = null;
+            Tail = null;
         }
 
         public void Done()
@@ -133,7 +132,7 @@ namespace Molten
         {
             AdvancingFrontNode head, tail, middle;
             // Initial triangle
-            DelaunayTriangle iTriangle = new DelaunayTriangle(Points[0], Tail, Head);
+            ShapeTriangle iTriangle = new ShapeTriangle(Points[0], Tail, Head);
             Triangles.Add(iTriangle);
 
             head = new AdvancingFrontNode(iTriangle.Points[1]);
@@ -157,7 +156,7 @@ namespace Molten
         /// Try to map a node to all sides of this triangle that don't have 
         /// a neighbor.
         /// </summary>
-        public void MapTriangleToNodes(DelaunayTriangle t)
+        public void MapTriangleToNodes(ShapeTriangle t)
         {
             for (int i = 0; i < 3; i++)
                 if (t.Neighbors[i] == null)

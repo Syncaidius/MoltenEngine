@@ -45,7 +45,7 @@ namespace Molten
         public AdvancingFrontNode Prev;
         public double Value;
         public ShapePoint Point;
-        public DelaunayTriangle Triangle;
+        public ShapeTriangle Triangle;
 
         public AdvancingFrontNode(ShapePoint point)
         {

@@ -87,104 +87,10 @@ namespace Molten
             }
         }
 
-        /// <summary>
-        /// If this is a Delaunay Triangulation of a pointset we need to fill so the triangle mesh gets a ConvexHull 
-        /// </summary>
-        private static void FinalizationConvexHull(TriangulationContext tcx)
-        {
-            AdvancingFrontNode n1, n2, n3;
-            DelaunayTriangle t1;
-            ShapePoint first, p1;
-
-            n1 = tcx.Front.Head.Next;
-            n2 = n1.Next;
-            n3 = n2.Next;
-            first = n1.Point;
-
-            TurnAdvancingFrontConvex(tcx, n1, n2);
-
-            n1 = tcx.Front.Tail.Prev;
-            if (n1.Triangle.Contains(n1.Next.Point) && n1.Triangle.Contains(n1.Prev.Point))
-            {
-                t1 = n1.Triangle.NeighborAcrossFrom(n1.Point);
-                RotateTrianglePair(n1.Triangle, n1.Point, t1, t1.OppositePoint(n1.Triangle, n1.Point));
-                tcx.MapTriangleToNodes(n1.Triangle);
-                tcx.MapTriangleToNodes(t1);
-            }
-            n1 = tcx.Front.Head.Next;
-            if (n1.Triangle.Contains(n1.Prev.Point) && n1.Triangle.Contains(n1.Next.Point))
-            {
-                t1 = n1.Triangle.NeighborAcrossFrom(n1.Point);
-                RotateTrianglePair(n1.Triangle, n1.Point, t1, t1.OppositePoint(n1.Triangle, n1.Point));
-                tcx.MapTriangleToNodes(n1.Triangle);
-                tcx.MapTriangleToNodes(t1);
-            }
-
-            // TODO: implement ConvexHull for lower right and left boundary
-            // Lower right boundary 
-            first = tcx.Front.Head.Point;
-            n2 = tcx.Front.Tail.Prev;
-            t1 = n2.Triangle;
-            p1 = n2.Point;
-            do
-            {
-                tcx.RemoveFromList(t1);
-                p1 = t1.PointCCWFrom(p1);
-                if (p1 == first) break;
-                t1 = t1.NeighborCCWFrom(p1);
-            } while (true);
-
-            // Lower left boundary
-            first = tcx.Front.Head.Next.Point;
-            p1 = t1.PointCWFrom(tcx.Front.Head.Point);
-            t1 = t1.NeighborCWFrom(tcx.Front.Head.Point);
-            do
-            {
-                tcx.RemoveFromList(t1);
-                p1 = t1.PointCCWFrom(p1);
-                t1 = t1.NeighborCCWFrom(p1);
-            } while (p1 != first);
-
-            tcx.FinalizeTriangulation();
-        }
-
-        /// <summary>
-        /// We will traverse the entire advancing front and fill it to form a convex hull.
-        /// </summary>
-        private static void TurnAdvancingFrontConvex(TriangulationContext tcx, AdvancingFrontNode b, AdvancingFrontNode c)
-        {
-            AdvancingFrontNode first = b;
-            while (c != tcx.Front.Tail)
-            {
-                if (TriangulationUtil.Orient2D(b.Point, c.Point, c.Next.Point) == Winding.CCW)
-                {
-                    // [b,c,d] Concave - fill around c
-                    Fill(tcx, c);
-                    c = c.Next;
-                }
-                else
-                {
-                    // [b,c,d] Convex
-                    if (b != first && TriangulationUtil.Orient2D(b.Prev.Point, b.Point, c.Point) == Winding.CCW)
-                    {
-                        // [a,b,c] Concave - fill around b
-                        Fill(tcx, b);
-                        b = b.Prev;
-                    }
-                    else
-                    {
-                        // [a,b,c] Convex - nothing to fill
-                        b = c;
-                        c = c.Next;
-                    }
-                }
-            }
-        }
-
         private static void FinalizationPolygon(TriangulationContext tcx)
         {
             // Get an Internal triangle to start with
-            DelaunayTriangle t = tcx.Front.Head.Next.Triangle;
+            ShapeTriangle t = tcx.Front.Head.Next.Triangle;
             ShapePoint p = tcx.Front.Head.Next.Point;
             while (!t.GetConstrainedEdgeCW(p)) t = t.NeighborCCWFrom(p);
 
@@ -220,9 +126,9 @@ namespace Molten
         private static AdvancingFrontNode NewFrontTriangle(TriangulationContext tcx, ShapePoint point, AdvancingFrontNode node)
         {
             AdvancingFrontNode newNode;
-            DelaunayTriangle triangle;
+            ShapeTriangle triangle;
 
-            triangle = new DelaunayTriangle(point, node.Point, node.Next.Point);
+            triangle = new ShapeTriangle(point, node.Point, node.Next.Point);
             triangle.MarkNeighbor(node.Triangle);
             tcx.Triangles.Add(triangle);
 
@@ -435,7 +341,7 @@ namespace Molten
             }
         }
 
-        private static bool IsEdgeSideOfTriangle(DelaunayTriangle triangle, ShapePoint ep, ShapePoint eq)
+        private static bool IsEdgeSideOfTriangle(ShapeTriangle triangle, ShapePoint ep, ShapePoint eq)
         {
             int index = triangle.EdgeIndex(ep, eq);
             if (index == -1) return false;
@@ -445,7 +351,7 @@ namespace Molten
             return true;
         }
 
-        private static void EdgeEvent(TriangulationContext tcx, ShapePoint ep, ShapePoint eq, DelaunayTriangle triangle, ShapePoint point)
+        private static void EdgeEvent(TriangulationContext tcx, ShapePoint ep, ShapePoint eq, ShapeTriangle triangle, ShapePoint point)
         {
             ShapePoint p1, p2;
             if (IsEdgeSideOfTriangle(triangle, ep, eq))
@@ -495,35 +401,9 @@ namespace Molten
             }
         }
 
-        /// <summary>
-        /// In the case of a pointset with some constraint edges. If a triangle side is collinear
-        /// with a part of the constraint we split the constraint into two constraints. This could
-        /// happen when the given constraint migth intersect a point in the set.<br>
-        /// This can never happen in the case when we are working with a polygon.
-        /// 
-        /// Think of two triangles that have non shared sides that are collinear and the constraint
-        /// is set from a point in triangle A to a point in triangle B so that the constraint is
-        /// the union of both those sides. We then have to split the constraint into two so we get
-        /// one constraint for each triangle.  
-        /// </summary>
-        /// <param name="ep"></param>
-        /// <param name="eq"></param>
-        /// <param name="p">point on the edge between ep->eq</param>
-        private static void SplitEdge(ShapePoint ep, ShapePoint eq, ShapePoint p)
+        private static void FlipEdgeEvent(TriangulationContext tcx, ShapePoint ep, ShapePoint eq, ShapeTriangle t, ShapePoint p)
         {
-            TriangulationConstraint edge = eq.Edges.First(e => e.Q == ep || e.P == ep);
-            edge.P = p;
-            new TriangulationConstraint(ep, p); // Et tu, Brute? --MM
-
-            //        // Redo this edge now that we have split the constraint
-            //          newEdgeEvent( tcx, edge, triangle, point );
-            //          // Continue with new edge
-            //          newEdgeEvent( tcx, edge, triangle, p2 );
-        }
-
-        private static void FlipEdgeEvent(TriangulationContext tcx, ShapePoint ep, ShapePoint eq, DelaunayTriangle t, ShapePoint p)
-        {
-            DelaunayTriangle ot = t.NeighborAcrossFrom(p);
+            ShapeTriangle ot = t.NeighborAcrossFrom(p);
             ShapePoint op = ot.OppositePoint(t, p);
 
             if (ot == null)
@@ -576,7 +456,7 @@ namespace Molten
         /// the point in current triangle that is the opposite point to the next
         /// triangle. 
         /// </summary>
-        private static ShapePoint NextFlipPoint(ShapePoint ep, ShapePoint eq, DelaunayTriangle ot, ShapePoint op)
+        private static ShapePoint NextFlipPoint(ShapePoint ep, ShapePoint eq, ShapeTriangle ot, ShapePoint op)
         {
             Winding o2d = TriangulationUtil.Orient2D(eq, op, ep);
             switch (o2d)
@@ -602,7 +482,7 @@ namespace Molten
         /// <param name="p">a point shared by both triangles</param>
         /// <param name="op">another point shared by both triangles</param>
         /// <returns>returns the triangle still intersecting the edge</returns>
-        private static DelaunayTriangle NextFlipTriangle(TriangulationContext tcx, Winding o, DelaunayTriangle t, DelaunayTriangle ot, ShapePoint p, ShapePoint op)
+        private static ShapeTriangle NextFlipTriangle(TriangulationContext tcx, Winding o, ShapeTriangle t, ShapeTriangle ot, ShapePoint p, ShapePoint op)
         {
             int edgeIndex;
             if (o == Winding.CCW)
@@ -634,9 +514,9 @@ namespace Molten
         /// <param name="flipTriangle">the current triangle sharing the point eq with edge</param>
         /// <param name="t"></param>
         /// <param name="p"></param>
-        private static void FlipScanEdgeEvent(TriangulationContext tcx, ShapePoint ep, ShapePoint eq, DelaunayTriangle flipTriangle, DelaunayTriangle t, ShapePoint p)
+        private static void FlipScanEdgeEvent(TriangulationContext tcx, ShapePoint ep, ShapePoint eq, ShapeTriangle flipTriangle, ShapeTriangle t, ShapePoint p)
         {
-            DelaunayTriangle ot;
+            ShapeTriangle ot;
             ShapePoint op, newP;
             bool inScanArea;
 
@@ -844,7 +724,7 @@ namespace Molten
         /// <param name="node">middle node, that is the bottom of the hole</param>
         private static void Fill(TriangulationContext tcx, AdvancingFrontNode node)
         {
-            DelaunayTriangle triangle = new DelaunayTriangle(node.Prev.Point, node.Point, node.Next.Point);
+            ShapeTriangle triangle = new ShapeTriangle(node.Prev.Point, node.Point, node.Next.Point);
             // TODO: should copy the cEdge value from neighbor triangles
             //       for now cEdge values are copied during the legalize 
             triangle.MarkNeighbor(node.Prev.Triangle);
@@ -863,7 +743,7 @@ namespace Molten
         /// <summary>
         /// Returns true if triangle was legalized
         /// </summary>
-        private static bool Legalize(TriangulationContext tcx, DelaunayTriangle t)
+        private static bool Legalize(TriangulationContext tcx, ShapeTriangle t)
         {
             // To legalize a triangle we start by finding if any of the three edges
             // violate the Delaunay condition
@@ -874,7 +754,7 @@ namespace Molten
                 if (t.EdgeIsDelaunay[i])
                     continue;
 
-                DelaunayTriangle ot = t.Neighbors[i];
+                ShapeTriangle ot = t.Neighbors[i];
                 if (ot == null)
                     continue;
 
@@ -935,9 +815,9 @@ namespace Molten
         ///    +-----+ oP            +-----+
         ///       n4                    n4
         /// </summary>
-        private static void RotateTrianglePair(DelaunayTriangle t, ShapePoint p, DelaunayTriangle ot, ShapePoint op)
+        private static void RotateTrianglePair(ShapeTriangle t, ShapePoint p, ShapeTriangle ot, ShapePoint op)
         {
-            DelaunayTriangle n1, n2, n3, n4;
+            ShapeTriangle n1, n2, n3, n4;
             n1 = t.NeighborCCWFrom(p);
             n2 = t.NeighborCWFrom(p);
             n3 = ot.NeighborCCWFrom(op);

@@ -113,10 +113,10 @@ namespace Molten.Samples
         {
             // Hi. I'm just a piece of test code for the new WIP font system. Please ignore me.
             //string fontPath = "assets/euphorigenic.ttf";
-            string fontPath = "assets/BroshK.ttf";
+            //string fontPath = "assets/BroshK.ttf";
             //string fontPath = "assets/Digitalt.ttf";
             //string fontPath = "assets/STOREB.ttf"; // For testing 'cmap' (format 4 and 6).
-            //string fontPath = "assets/UECHIGOT.TTF"; // For testing 'PCLT', 'cmap' (format 0 and 4).
+            string fontPath = "assets/UECHIGOT.TTF"; // For testing 'PCLT', 'cmap' (format 0 and 4).
 
             FontFile font;
             Stopwatch fontTimer = new Stopwatch();
@@ -131,6 +131,29 @@ namespace Molten.Samples
                 }
             }
 
+            //  Test mesh holes - anti-clockwise
+            Rectangle box = new Rectangle(800, 500, 300, 200);
+            List<Vector2> boxPoints = new List<Vector2>();
+            boxPoints.Add(new Vector2(box.Left, box.Top));
+            boxPoints.Add(new Vector2(box.Left, box.Bottom));
+            boxPoints.Add(new Vector2(box.Right, box.Bottom));
+            boxPoints.Add(new Vector2(box.Right, box.Top));
+            List<Vector2> boxTriangleList = new List<Vector2>();
+            Shape boxShape = new Shape(boxPoints);
+
+            // Box hole - clockwise
+            Rectangle boxInner = box;
+            boxPoints.Clear();
+            boxInner.Inflate(-20);
+            boxPoints.Add(new Vector2(boxInner.Left, boxInner.Top));
+            boxPoints.Add(new Vector2(boxInner.Right, boxInner.Top));
+            boxPoints.Add(new Vector2(boxInner.Right, boxInner.Bottom));
+            boxPoints.Add(new Vector2(boxInner.Left, boxInner.Bottom));
+            Shape boxHole = new Shape(boxPoints);
+            boxShape.AddHole(boxHole);
+
+            boxShape.Triangulate(boxTriangleList);
+
             char glyphChar = '8';
             Log.WriteDebugLine($"FontFile test: using glyph at index {font.GetGlyphIndex(glyphChar)}");
             Glyph cGlyph = font.GetGlyph(glyphChar);
@@ -140,7 +163,7 @@ namespace Molten.Samples
             // Draw outline
             List<Vector2>[] linePoints = new List<Vector2>[endPoints.Length];
             Vector2 offset = new Vector2(300);
-            float scale = 1f;
+            float scale = 0.25f;
 
             for (int i = 0; i < endPoints.Length; i++)
             {
@@ -152,6 +175,9 @@ namespace Molten.Samples
                 // Flip the Y axis because 0,0 is top-left, not bottom-left.
                 for (int p = start; p <= end; p++)
                 {
+                    if (!cGlyph.Points[p].IsOnCurve)
+                        continue;
+
                     Vector2 point = cGlyph.Points[p].Point;
                     point.Y = cGlyph.Bounds.Height - point.Y;
                     points.Add((point * scale) + offset);
@@ -172,6 +198,8 @@ namespace Molten.Samples
                     //sb.DrawTriangleList(triPoints, Color.Yellow);
                     for (int i = 0; i < linePoints.Length; i++)
                         sb.DrawLines(linePoints[i], Color.Red, 1);
+
+                    sb.DrawTriangleList(boxTriangleList, Color.Yellow);
                 }
             };
             SampleScene.AddSprite(sbContainer);

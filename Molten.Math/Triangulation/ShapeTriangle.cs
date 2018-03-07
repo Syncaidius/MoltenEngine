@@ -46,17 +46,17 @@ using System.Collections.Generic;
 
 namespace Molten
 {
-    public class DelaunayTriangle
+    public class ShapeTriangle
     {
         public ShapePoint[] Points;
-        public DelaunayTriangle[] Neighbors;
+        public ShapeTriangle[] Neighbors;
         public bool[] EdgeIsConstrained, EdgeIsDelaunay;
         public bool IsInterior { get; set; }
 
-        public DelaunayTriangle(ShapePoint p1, ShapePoint p2, ShapePoint p3)
+        public ShapeTriangle(ShapePoint p1, ShapePoint p2, ShapePoint p3)
         {
             Points = new ShapePoint[3] { p1, p2, p3 };
-            Neighbors = new DelaunayTriangle[3];
+            Neighbors = new ShapeTriangle[3];
             EdgeIsConstrained = new bool[3];
             EdgeIsDelaunay = new bool[3];
         }
@@ -87,7 +87,7 @@ namespace Molten
         /// <param name="p1">Point 1 of the shared edge</param>
         /// <param name="p2">Point 2 of the shared edge</param>
         /// <param name="t">This triangle's new neighbor</param>
-        private void MarkNeighbor(ShapePoint p1, ShapePoint p2, DelaunayTriangle t)
+        private void MarkNeighbor(ShapePoint p1, ShapePoint p2, ShapeTriangle t)
         {
             int i = EdgeIndex(p1, p2);
             if (i == -1)
@@ -98,7 +98,7 @@ namespace Molten
         /// <summary>
         /// Exhaustive search to update neighbor pointers
         /// </summary>
-        public void MarkNeighbor(DelaunayTriangle t)
+        public void MarkNeighbor(ShapeTriangle t)
         {
             // Points of this triangle also belonging to t
             bool a = t.Contains(Points[0]);
@@ -113,15 +113,15 @@ namespace Molten
 
         /// <param name="t">Opposite triangle</param>
         /// <param name="p">The point in t that isn't shared between the triangles</param>
-        public ShapePoint OppositePoint(DelaunayTriangle t, ShapePoint p)
+        public ShapePoint OppositePoint(ShapeTriangle t, ShapePoint p)
         {
             Debug.Assert(t != this, "self-pointer error");
             return PointCWFrom(t.PointCWFrom(p));
         }
 
-        public DelaunayTriangle NeighborCWFrom(ShapePoint point) { return Neighbors[(Triangulation.IndexOf(Points, point) + 1) % 3]; }
-        public DelaunayTriangle NeighborCCWFrom(ShapePoint point) { return Neighbors[(Triangulation.IndexOf(Points, point) + 2) % 3]; }
-        public DelaunayTriangle NeighborAcrossFrom(ShapePoint point) { return Neighbors[Triangulation.IndexOf(Points, point)]; }
+        public ShapeTriangle NeighborCWFrom(ShapePoint point) { return Neighbors[(Triangulation.IndexOf(Points, point) + 1) % 3]; }
+        public ShapeTriangle NeighborCCWFrom(ShapePoint point) { return Neighbors[(Triangulation.IndexOf(Points, point) + 2) % 3]; }
+        public ShapeTriangle NeighborAcrossFrom(ShapePoint point) { return Neighbors[Triangulation.IndexOf(Points, point)]; }
 
         public ShapePoint PointCCWFrom(ShapePoint point) { return Points[(IndexOf(point) + 1) % 3]; }
         public ShapePoint PointCWFrom(ShapePoint point) { return Points[(IndexOf(point) + 2) % 3]; }
@@ -158,7 +158,7 @@ namespace Molten
                 }
         }
 
-        public void MarkEdge(DelaunayTriangle triangle)
+        public void MarkEdge(ShapeTriangle triangle)
         {
             for (int i = 0; i < 3; i++) if (EdgeIsConstrained[i])
                 {
@@ -166,9 +166,9 @@ namespace Molten
                 }
         }
 
-        public void MarkEdge(List<DelaunayTriangle> tList)
+        public void MarkEdge(List<ShapeTriangle> tList)
         {
-            foreach (DelaunayTriangle t in tList)
+            foreach (ShapeTriangle t in tList)
             {
                 for (int i = 0; i < 3; i++)
                 {

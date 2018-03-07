@@ -67,8 +67,5 @@ namespace Molten
         }
 
         public bool HasEdges => Edges != null;
-
-        public ShapePoint Next { get; set; }
-        public ShapePoint Previous { get; set; }
     }
 }

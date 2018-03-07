@@ -137,6 +137,7 @@ namespace Molten
             double detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
             double detright = (pa.Y - pc.Y) * (pb.X - pc.X);
             double val = detleft - detright;
+
             if (val > -EPSILON && val < EPSILON)
                 return Winding.Collinear;
             else if (val > 0)

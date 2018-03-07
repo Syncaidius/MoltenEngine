@@ -102,7 +102,7 @@
     <Compile Include="Plane.cs" />
     <Compile Include="Triangulation\Triangulation.cs" />
     <Compile Include="Shape.cs" />
-    <Compile Include="Triangulation\DelaunayTriangle.cs" />
+    <Compile Include="Triangulation\ShapeTriangle.cs" />
     <Compile Include="Triangulation\AdvancingFront.cs" />
     <Compile Include="Triangulation\AdvancingFrontNode.cs" />
     <Compile Include="Triangulation\TriangulationSweep.cs" />

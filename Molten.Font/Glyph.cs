@@ -74,6 +74,21 @@ namespace Molten.Font
             return new Glyph(Bounds, contourClone, pointClone, instructionClone);
         }
 
+        /// <summary>
+        /// Creates a new <see cref="Shape"/> instance from the glyph.
+        /// </summary>
+        /// <returns></returns>
+        public Shape ToShape()
+        {
+            // TODO check winding of points.
+            // TODO certain windings are outlines, others are hole borders.
+
+            // TODO automatically build and add hole shapes.
+
+            List<Vector2> points = new List<Vector2>();
+            return new Shape(points);
+        }
+
         object ICloneable.Clone()
         {
             return Clone();

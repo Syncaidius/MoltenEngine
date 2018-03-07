@@ -51,8 +51,9 @@ namespace Molten
         List<ShapePoint> _points = new List<ShapePoint>();
         List<ShapePoint> _steinerPoints;
         List<Shape> _holes;
-        List<DelaunayTriangle> _triangles;
-        ShapePoint _last;
+        List<ShapeTriangle> _triangles;
+
+        public IList<Shape> Holes => _holes;
 
         /// <summary>
         /// Create a polygon from a list of at least 3 points with no duplicates.
@@ -117,7 +118,7 @@ namespace Molten
         {
             Triangulation.Triangulate(this);
 
-            foreach (DelaunayTriangle tri in _triangles)
+            foreach (ShapeTriangle tri in _triangles)
             {
                 tri.ReversePointFlow();
                 output.Add(TriToVector2(tri.Points[0]));
@@ -130,7 +131,7 @@ namespace Molten
         /// Triangulates the shape and adds all of the triangles to the provided output.
         /// </summary>
         /// <param name="output">The output list.</param>
-        public void Triangulate(IList<DelaunayTriangle> output)
+        public void Triangulate(IList<ShapeTriangle> output)
         {
             Triangulation.Triangulate(this);
             for (int i = 0; i < _triangles.Count; i++)
@@ -187,10 +188,6 @@ namespace Molten
             // Validate that 
             int index = _points.IndexOf(point);
             if (index == -1) throw new ArgumentException("Tried to insert a point into a Polygon after a point not belonging to the Polygon", "point");
-            newPoint.Next = point.Next;
-            newPoint.Previous = point;
-            point.Next.Previous = newPoint;
-            point.Next = newPoint;
             _points.Insert(index + 1, newPoint);
         }
 
@@ -200,22 +197,7 @@ namespace Molten
         /// <param name="list"></param>
         public void AddPoints(IEnumerable<ShapePoint> list)
         {
-            ShapePoint first;
-            foreach (ShapePoint p in list)
-            {
-                p.Previous = _last;
-                if (_last != null)
-                {
-                    p.Next = _last.Next;
-                    _last.Next = p;
-                }
-
-                _last = p;
-                _points.Add(p);
-            }
-            first = (ShapePoint)_points[0];
-            _last.Next = first;
-            first.Previous = _last;
+            _points.AddRange(list);
         }
 
         /// <summary>
@@ -224,9 +206,6 @@ namespace Molten
         /// <param name="p">The point to add</param>
         public void AddPoint(ShapePoint p)
         {
-            p.Previous = _last;
-            p.Next = _last.Next;
-            _last.Next = p;
             _points.Add(p);
         }
 
@@ -236,23 +215,15 @@ namespace Molten
         /// <param name="p"></param>
         public void RemovePoint(ShapePoint p)
         {
-            ShapePoint next, prev;
-
-            next = p.Next;
-            prev = p.Previous;
-            prev.Next = next;
-            next.Previous = prev;
             _points.Remove(p);
         }
 
-        public IList<Shape> Holes => _holes;
-
-        public void AddTriangle(DelaunayTriangle t)
+        public void AddTriangle(ShapeTriangle t)
         {
             _triangles.Add(t);
         }
 
-        public void AddTriangles(IEnumerable<DelaunayTriangle> list)
+        public void AddTriangles(IEnumerable<ShapeTriangle> list)
         {
             _triangles.AddRange(list);
         }
@@ -270,7 +241,7 @@ namespace Molten
         internal void Prepare(TriangulationContext tcx)
         {
             if (_triangles == null)
-                _triangles = new List<DelaunayTriangle>(_points.Count);
+                _triangles = new List<ShapeTriangle>(_points.Count);
             else
                 _triangles.Clear();
 
@@ -286,7 +257,9 @@ namespace Molten
             {
                 foreach (Shape p in _holes)
                 {
-                    for (int i = 0; i < p._points.Count - 1; i++) tcx.NewConstraint(p._points[i], p._points[i + 1]);
+                    for (int i = 0; i < p._points.Count - 1; i++)
+                        tcx.NewConstraint(p._points[i], p._points[i + 1]);
+
                     tcx.NewConstraint(p._points[0], p._points[p._points.Count - 1]);
                     tcx.Points.AddRange(p._points);
                 }
