@@ -185,10 +185,10 @@ namespace Molten
             if (node.Next.Point != edge.P)
             {
                 // Next above or below edge?
-                if (TriangulationUtil.Orient2D(edge.Q, node.Next.Point, edge.P) == Winding.CCW)
+                if (TriangulationUtil.GetWinding(edge.Q, node.Next.Point, edge.P) == Winding.CounterClockwise)
                 {
                     // Below
-                    if (TriangulationUtil.Orient2D(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CCW)
+                    if (TriangulationUtil.GetWinding(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CounterClockwise)
                     {
                         // Next is concave
                         FillRightConcaveEdgeEvent(tcx, edge, node);
@@ -204,7 +204,7 @@ namespace Molten
         private static void FillRightConvexEdgeEvent(TriangulationContext tcx, TriangulationConstraint edge, AdvancingFrontNode node)
         {
             // Next concave or convex?
-            if (TriangulationUtil.Orient2D(node.Next.Point, node.Next.Next.Point, node.Next.Next.Next.Point) == Winding.CCW)
+            if (TriangulationUtil.GetWinding(node.Next.Point, node.Next.Next.Point, node.Next.Next.Next.Point) == Winding.CounterClockwise)
             {
                 // Concave
                 FillRightConcaveEdgeEvent(tcx, edge, node.Next);
@@ -213,7 +213,7 @@ namespace Molten
             {
                 // Convex
                 // Next above or below edge?
-                if (TriangulationUtil.Orient2D(edge.Q, node.Next.Next.Point, edge.P) == Winding.CCW)
+                if (TriangulationUtil.GetWinding(edge.Q, node.Next.Next.Point, edge.P) == Winding.CounterClockwise)
                 {
                     // Below
                     FillRightConvexEdgeEvent(tcx, edge, node.Next);
@@ -229,7 +229,7 @@ namespace Molten
         {
             if (node.Point.X < edge.P.X)
             { // needed?
-                if (TriangulationUtil.Orient2D(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CCW)
+                if (TriangulationUtil.GetWinding(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CounterClockwise)
                 {
                     // Concave 
                     FillRightConcaveEdgeEvent(tcx, edge, node);
@@ -250,8 +250,8 @@ namespace Molten
             while (node.Next.Point.X < edge.P.X)
             {
                 // Check if next node is below the edge
-                Winding o1 = TriangulationUtil.Orient2D(edge.Q, node.Next.Point, edge.P);
-                if (o1 == Winding.CCW)
+                Winding o1 = TriangulationUtil.GetWinding(edge.Q, node.Next.Point, edge.P);
+                if (o1 == Winding.CounterClockwise)
                     FillRightBelowEdgeEvent(tcx, edge, node);
                 else
                     node = node.Next;
@@ -261,7 +261,7 @@ namespace Molten
         private static void FillLeftConvexEdgeEvent(TriangulationContext tcx, TriangulationConstraint edge, AdvancingFrontNode node)
         {
             // Next concave or convex?
-            if (TriangulationUtil.Orient2D(node.Prev.Point, node.Prev.Prev.Point, node.Prev.Prev.Prev.Point) == Winding.CW)
+            if (TriangulationUtil.GetWinding(node.Prev.Point, node.Prev.Prev.Point, node.Prev.Prev.Prev.Point) == Winding.Clockwise)
             {
                 // Concave
                 FillLeftConcaveEdgeEvent(tcx, edge, node.Prev);
@@ -270,7 +270,7 @@ namespace Molten
             {
                 // Convex
                 // Next above or below edge?
-                if (TriangulationUtil.Orient2D(edge.Q, node.Prev.Prev.Point, edge.P) == Winding.CW)
+                if (TriangulationUtil.GetWinding(edge.Q, node.Prev.Prev.Point, edge.P) == Winding.Clockwise)
                 {
                     // Below
                     FillLeftConvexEdgeEvent(tcx, edge, node.Prev);
@@ -288,10 +288,10 @@ namespace Molten
             if (node.Prev.Point != edge.P)
             {
                 // Next above or below edge?
-                if (TriangulationUtil.Orient2D(edge.Q, node.Prev.Point, edge.P) == Winding.CW)
+                if (TriangulationUtil.GetWinding(edge.Q, node.Prev.Point, edge.P) == Winding.Clockwise)
                 {
                     // Below
-                    if (TriangulationUtil.Orient2D(node.Point, node.Prev.Point, node.Prev.Prev.Point) == Winding.CW)
+                    if (TriangulationUtil.GetWinding(node.Point, node.Prev.Point, node.Prev.Prev.Point) == Winding.Clockwise)
                     {
                         // Next is concave
                         FillLeftConcaveEdgeEvent(tcx, edge, node);
@@ -308,7 +308,7 @@ namespace Molten
         {
             if (node.Point.X > edge.P.X)
             {
-                if (TriangulationUtil.Orient2D(node.Point, node.Prev.Point, node.Prev.Prev.Point) == Winding.CW)
+                if (TriangulationUtil.GetWinding(node.Point, node.Prev.Point, node.Prev.Prev.Point) == Winding.Clockwise)
                 {
                     // Concave 
                     FillLeftConcaveEdgeEvent(tcx, edge, node);
@@ -329,8 +329,8 @@ namespace Molten
             while (node.Prev.Point.X > edge.P.X)
             {
                 // Check if next node is below the edge
-                Winding o1 = TriangulationUtil.Orient2D(edge.Q, node.Prev.Point, edge.P);
-                if (o1 == Winding.CW)
+                Winding o1 = TriangulationUtil.GetWinding(edge.Q, node.Prev.Point, edge.P);
+                if (o1 == Winding.Clockwise)
                 {
                     FillLeftBelowEdgeEvent(tcx, edge, node);
                 }
@@ -358,7 +358,7 @@ namespace Molten
                 return;
 
             p1 = triangle.PointCCWFrom(point);
-            Winding o1 = TriangulationUtil.Orient2D(eq, p1, ep);
+            Winding o1 = TriangulationUtil.GetWinding(eq, p1, ep);
             if (o1 == Winding.Collinear)
             {
                 // TODO: Split edge in two
@@ -370,7 +370,7 @@ namespace Molten
             }
 
             p2 = triangle.PointCWFrom(point);
-            Winding o2 = TriangulationUtil.Orient2D(eq, p2, ep);
+            Winding o2 = TriangulationUtil.GetWinding(eq, p2, ep);
             if (o2 == Winding.Collinear)
             {
                 // TODO: Split edge in two
@@ -384,7 +384,7 @@ namespace Molten
             {
                 // Need to decide if we are rotating CW or CCW to get to a triangle
                 // that will cross edge
-                if (o1 == Winding.CW)
+                if (o1 == Winding.Clockwise)
                 {
                     triangle = triangle.NeighborCCWFrom(point);
                 }
@@ -438,7 +438,7 @@ namespace Molten
                 }
                 else
                 {
-                    Winding o = TriangulationUtil.Orient2D(eq, op, ep);
+                    Winding o = TriangulationUtil.GetWinding(eq, op, ep);
                     t = NextFlipTriangle(tcx, o, t, ot, p, op);
                     FlipEdgeEvent(tcx, ep, eq, t, p);
                 }
@@ -458,11 +458,11 @@ namespace Molten
         /// </summary>
         private static ShapePoint NextFlipPoint(ShapePoint ep, ShapePoint eq, ShapeTriangle ot, ShapePoint op)
         {
-            Winding o2d = TriangulationUtil.Orient2D(eq, op, ep);
+            Winding o2d = TriangulationUtil.GetWinding(eq, op, ep);
             switch (o2d)
             {
-                case Winding.CW: return ot.PointCCWFrom(op);
-                case Winding.CCW: return ot.PointCWFrom(op);
+                case Winding.Clockwise: return ot.PointCCWFrom(op);
+                case Winding.CounterClockwise: return ot.PointCWFrom(op);
                 case Winding.Collinear:
                     // TODO: implement support for point on constraint edge
                     throw new PointOnEdgeException("Point on constrained edge not supported yet", eq, op, ep);
@@ -485,7 +485,7 @@ namespace Molten
         private static ShapeTriangle NextFlipTriangle(TriangulationContext tcx, Winding o, ShapeTriangle t, ShapeTriangle ot, ShapePoint p, ShapePoint op)
         {
             int edgeIndex;
-            if (o == Winding.CCW)
+            if (o == Winding.CounterClockwise)
             {
                 // ot is not crossing edge after flip
                 edgeIndex = ot.EdgeIndex(p, op);
@@ -596,7 +596,7 @@ namespace Molten
         /// <param name="node">starting node, this or next node will be left node</param>
         private static void FillBasin(TriangulationContext tcx, AdvancingFrontNode node)
         {
-            if (TriangulationUtil.Orient2D(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CCW)
+            if (TriangulationUtil.GetWinding(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CounterClockwise)
             {
                 // tcx.basin.leftNode = node.next.next;
                 tcx.Basin.leftNode = node;
@@ -637,14 +637,14 @@ namespace Molten
             }
             else if (node.Prev == tcx.Basin.leftNode)
             {
-                Winding o = TriangulationUtil.Orient2D(node.Point, node.Next.Point, node.Next.Next.Point);
-                if (o == Winding.CW) return;
+                Winding o = TriangulationUtil.GetWinding(node.Point, node.Next.Point, node.Next.Next.Point);
+                if (o == Winding.Clockwise) return;
                 node = node.Next;
             }
             else if (node.Next == tcx.Basin.rightNode)
             {
-                Winding o = TriangulationUtil.Orient2D(node.Point, node.Prev.Point, node.Prev.Prev.Point);
-                if (o == Winding.CCW) return;
+                Winding o = TriangulationUtil.GetWinding(node.Point, node.Prev.Point, node.Prev.Prev.Point);
+                if (o == Winding.CounterClockwise) return;
                 node = node.Prev;
             }
             else

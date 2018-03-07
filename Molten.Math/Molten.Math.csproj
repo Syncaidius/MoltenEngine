@@ -112,7 +112,7 @@
     <Compile Include="Triangulation\SweepEdgeEvent.cs" />
     <Compile Include="Triangulation\SweepPointComparator.cs" />
     <Compile Include="Triangulation\PointOnEdgeException.cs" />
-    <Compile Include="Triangulation\Winding.cs" />
+    <Compile Include="Winding.cs" />
     <Compile Include="Triangulation\ShapePoint.cs" />
     <Compile Include="Triangulation\TriangulationUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

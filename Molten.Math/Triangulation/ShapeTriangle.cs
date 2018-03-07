@@ -145,7 +145,10 @@ namespace Molten
             Points[IndexCCWFrom(oPoint)] = nPoint;
         }
 
-        public override string ToString() { return Points[0] + "," + Points[1] + "," + Points[2]; }
+        public override string ToString()
+        {
+            return Points[0] + "," + Points[1] + "," + Points[2];
+        }
 
         /// <summary>
         /// Finalize edge marking
@@ -160,10 +163,11 @@ namespace Molten
 
         public void MarkEdge(ShapeTriangle triangle)
         {
-            for (int i = 0; i < 3; i++) if (EdgeIsConstrained[i])
-                {
+            for (int i = 0; i < 3; i++)
+            {
+                if (EdgeIsConstrained[i])
                     triangle.MarkConstrainedEdge(Points[(i + 1) % 3], Points[(i + 2) % 3]);
-                }
+            }
         }
 
         public void MarkEdge(List<ShapeTriangle> tList)

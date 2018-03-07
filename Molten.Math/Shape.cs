@@ -48,12 +48,33 @@ namespace Molten
 {
     public class Shape
     {
-        List<ShapePoint> _points = new List<ShapePoint>();
-        List<ShapePoint> _steinerPoints;
-        List<Shape> _holes;
-        List<ShapeTriangle> _triangles;
+        /// <summary>
+        /// A list of shape outline points.
+        /// </summary>
+        public readonly List<ShapePoint> Points = new List<ShapePoint>();
 
-        public IList<Shape> Holes => _holes;
+        /// <summary>
+        /// Extra points inserted within the shape's area to control or increase triangulation.
+        /// </summary>
+        public readonly List<ShapePoint> SteinerPoints;
+
+        /// <summary>
+        /// A list of subtraction shapes fully contained inside this shape.<para/>
+        /// Shapes added to this list will be used to create holes during triangulation. Any that are outside or intersect the shape outline are invalid.
+        /// </summary>
+        public readonly List<Shape> Holes = new List<Shape>();
+
+        /// <summary>
+        /// Gets or sets the shape's color.
+        /// </summary>
+        public Color Color { get; set; } = Color.White;
+
+        public RectangleF Bounds { get; private set; }
+
+        List<ShapeTriangle> _triangles = new List<ShapeTriangle>();
+
+
+        public Shape() { }
 
         /// <summary>
         /// Create a polygon from a list of at least 3 points with no duplicates.
@@ -61,15 +82,7 @@ namespace Molten
         /// <param name="points">A list of unique points</param>
         public Shape(IList<ShapePoint> points)
         {
-            if (points.Count < 3)
-                throw new ArgumentException("List has fewer than 3 points", "points");
-
-            // Lets sanity check that first and last point haven't got the same position
-            // Its something that often happens when importing polygon data from other formats
-            if (points[0].Equals(points[points.Count - 1]))
-                points.RemoveAt(points.Count - 1);
-
-            _points.AddRange(points);
+            Points.AddRange(points);
         }
 
         /// <summary>
@@ -92,16 +105,10 @@ namespace Molten
         /// <param name="scale">The scale of the provided points. 0.5f is half size. 2.0f is 2x the normal size.</param>
         public Shape(IList<Vector2> points, Vector2 offset, float scale)
         {
-            if (points.Count < 3)
-                throw new ArgumentException("List has fewer than 3 points", "points");
-
-            // Lets sanity check that first and last point haven't got the same position
-            // Its something that often happens when importing polygon data from other formats
-            if (points[0].Equals(points[points.Count - 1]))
-                points.RemoveAt(points.Count - 1);
-
             for (int i = 0; i < points.Count; i++)
-                _points.Add(new ShapePoint(offset + (points[i] * scale)));
+                Points.Add(new ShapePoint(offset + (points[i] * scale)));
+
+            CalculateBounds();
         }
 
         /// <summary>
@@ -109,6 +116,35 @@ namespace Molten
         /// </summary>
         /// <param name="points">The input points.</param>
         public Shape(IList<Vector2> points) : this(points, Vector2.Zero, 1.0f) { }
+
+        /// <summary>
+        /// Calculates and updates the shape's bounds. Useful after modifying <see cref="Points"/>.
+        /// </summary>
+        public void CalculateBounds()
+        {
+            RectangleF b = new RectangleF()
+            {
+                Left = float.MaxValue,
+                Top = float.MaxValue,
+                Right = float.MinValue,
+                Bottom = float.MinValue,
+            };
+
+            foreach(ShapePoint p in Points)
+            {
+                if (p.X < b.Left)
+                    b.Left = p.X;
+                else if (p.X > b.Right)
+                    b.Right = p.Y;
+
+                if (p.Y < b.Top)
+                    b.Top = p.Y;
+                else if (p.Y > b.Bottom)
+                    b.Bottom = p.Y;
+            }
+
+            Bounds = b;
+        }
 
         /// <summary>
         /// Triangulates the shape and adds all of the points (in triangle list layout) to the provided output.
@@ -147,37 +183,6 @@ namespace Molten
             };
         }
 
-        public void AddSteinerPoint(ShapePoint point)
-        {
-            if (_steinerPoints == null) _steinerPoints = new List<ShapePoint>();
-            _steinerPoints.Add(point);
-        }
-
-        public void AddSteinerPoints(List<ShapePoint> points)
-        {
-            if (_steinerPoints == null) _steinerPoints = new List<ShapePoint>();
-            _steinerPoints.AddRange(points);
-        }
-
-        public void ClearSteinerPoints()
-        {
-            if (_steinerPoints != null) _steinerPoints.Clear();
-        }
-
-        /// <summary>
-        /// Add a hole to the polygon.
-        /// </summary>
-        /// <param name="poly">A subtraction polygon fully contained inside this polygon.</param>
-        public void AddHole(Shape poly)
-        {
-            if (_holes == null)
-                _holes = new List<Shape>();
-
-            _holes.Add(poly);
-            // XXX: tests could be made here to be sure it is fully inside
-            //        addSubtraction( poly.getPoints() );
-        }
-
         /// <summary>
         /// Inserts newPoint after point.
         /// </summary>
@@ -186,52 +191,19 @@ namespace Molten
         public void InsertPointAfter(ShapePoint point, ShapePoint newPoint)
         {
             // Validate that 
-            int index = _points.IndexOf(point);
+            int index = Points.IndexOf(point);
             if (index == -1) throw new ArgumentException("Tried to insert a point into a Polygon after a point not belonging to the Polygon", "point");
-            _points.Insert(index + 1, newPoint);
+            Points.Insert(index + 1, newPoint);
         }
 
-        /// <summary>
-        /// Inserts list (after last point in polygon?)
-        /// </summary>
-        /// <param name="list"></param>
-        public void AddPoints(IEnumerable<ShapePoint> list)
-        {
-            _points.AddRange(list);
-        }
-
-        /// <summary>
-        /// Adds a point after the last in the polygon.
-        /// </summary>
-        /// <param name="p">The point to add</param>
-        public void AddPoint(ShapePoint p)
-        {
-            _points.Add(p);
-        }
-
-        /// <summary>
-        /// Removes a point from the polygon.
-        /// </summary>
-        /// <param name="p"></param>
-        public void RemovePoint(ShapePoint p)
-        {
-            _points.Remove(p);
-        }
-
-        public void AddTriangle(ShapeTriangle t)
+        internal void AddTriangle(ShapeTriangle t)
         {
             _triangles.Add(t);
         }
 
-        public void AddTriangles(IEnumerable<ShapeTriangle> list)
+        internal void AddTriangles(IEnumerable<ShapeTriangle> list)
         {
             _triangles.AddRange(list);
-        }
-
-        public void ClearTriangles()
-        {
-            if (_triangles != null)
-                _triangles.Clear();
         }
 
         /// <summary>
@@ -240,33 +212,38 @@ namespace Molten
         /// <param name="tcx">The context</param>
         internal void Prepare(TriangulationContext tcx)
         {
-            if (_triangles == null)
-                _triangles = new List<ShapeTriangle>(_points.Count);
-            else
-                _triangles.Clear();
+            _triangles.Clear();
+
+            if (Points.Count < 3)
+                throw new InvalidOperationException("Shape has fewer than 3 points");
+
+            // Lets sanity check that first and last point haven't got the same position
+            // Its something that often happens when importing polygon data from other formats
+            if (Points[0].Equals(Points[Points.Count - 1]))
+                Points.RemoveAt(Points.Count - 1);
 
             // Outer constraints
-            for (int i = 0; i < _points.Count - 1; i++)
-                tcx.NewConstraint(_points[i], _points[i + 1]);
+            for (int i = 0; i < Points.Count - 1; i++)
+                tcx.NewConstraint(Points[i], Points[i + 1]);
 
-            tcx.NewConstraint(_points[0], _points[_points.Count - 1]);
-            tcx.Points.AddRange(_points);
+            tcx.NewConstraint(Points[0], Points[Points.Count - 1]);
+            tcx.Points.AddRange(Points);
 
             // Hole constraints
-            if (_holes != null)
+            if (Holes != null)
             {
-                foreach (Shape p in _holes)
+                foreach (Shape p in Holes)
                 {
-                    for (int i = 0; i < p._points.Count - 1; i++)
-                        tcx.NewConstraint(p._points[i], p._points[i + 1]);
+                    for (int i = 0; i < p.Points.Count - 1; i++)
+                        tcx.NewConstraint(p.Points[i], p.Points[i + 1]);
 
-                    tcx.NewConstraint(p._points[0], p._points[p._points.Count - 1]);
-                    tcx.Points.AddRange(p._points);
+                    tcx.NewConstraint(p.Points[0], p.Points[p.Points.Count - 1]);
+                    tcx.Points.AddRange(p.Points);
                 }
             }
 
-            if (_steinerPoints != null)
-                tcx.Points.AddRange(_steinerPoints);
+            if (SteinerPoints != null)
+                tcx.Points.AddRange(SteinerPoints);
         }
     }
 }

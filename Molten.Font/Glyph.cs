@@ -9,6 +9,9 @@ namespace Molten.Font
     public class Glyph : ICloneable
     {
         Rectangle _bounds;
+        GlyphPoint[] _points;
+        List<Shape> _shapes;
+        IReadOnlyList<Shape> _readOnlyShapes;
 
         public static readonly Glyph Empty = new Glyph(Rectangle.Empty, new ushort[0], new GlyphPoint[0], new byte[0]);
 
@@ -28,16 +31,20 @@ namespace Molten.Font
 
         public ushort[] ContourEndPoints { get; private set; }
 
-        public GlyphPoint[] Points { get; private set; }
+        public GlyphPoint[] Points => _points;
 
         public byte[] Instructions { get; private set; }
+
+        public IReadOnlyList<Shape> Shapes => _readOnlyShapes;
 
         internal Glyph(Rectangle bounds, ushort[] contourEndPoints, GlyphPoint[] points, byte[] instructions)
         {
             Bounds = bounds;
             ContourEndPoints = contourEndPoints;
             Instructions = instructions;
-            Points = points;
+            _points = points;
+            _shapes = new List<Shape>();
+            _readOnlyShapes = _shapes.AsReadOnly();
         }
 
         /// <summary>
@@ -50,7 +57,7 @@ namespace Molten.Font
             int src_contour_count = other.ContourEndPoints.Length;
             ushort oldLastPointCount = (ushort)(ContourEndPoints[oldLength - 1] + 1);
 
-            Points = ArrayHelper.Concat(Points, other.Points);
+            _points = ArrayHelper.Concat(Points, other.Points);
             ContourEndPoints = ArrayHelper.Concat(ContourEndPoints, other.ContourEndPoints);
             int newLength = ContourEndPoints.Length;
 
@@ -75,18 +82,78 @@ namespace Molten.Font
         }
 
         /// <summary>
-        /// Creates a new <see cref="Shape"/> instance from the glyph.
+        /// Flips the Y axis of all the glyph's shapes.
         /// </summary>
-        /// <returns></returns>
-        public Shape ToShape()
+        public void FlipShapeYAxis()
         {
-            // TODO check winding of points.
-            // TODO certain windings are outlines, others are hole borders.
+            foreach(Shape s in _shapes)
+            {
+                for(int i = 0; i < s.Points.Count; i++)
+                    s.Points[i].Y = _bounds.Height - s.Points[i].Y;
+            }
+        }
 
-            // TODO automatically build and add hole shapes.
+        /// <summary>
+        /// Populates the <see cref="Shapes"/> list based on the gylph's outline.
+        /// </summary>
+        /// <param name="flipYAxis">If true, the Y axis of the glyph's points will be flipped.</param>
+        /// <returns></returns>
+        public void PopulateShapes()
+        {
+            int start = 0;
+            Vector2[] windingPoints = new Vector2[3];
+            List<Shape> holes = new List<Shape>();
+            GlyphPoint p;
 
-            List<Vector2> points = new List<Vector2>();
-            return new Shape(points);
+            for (int i = 0; i < ContourEndPoints.Length; i++)
+            {
+                Shape shape = new Shape();
+                int end = ContourEndPoints[i];
+                int curWindPoint = 0;
+
+                Winding winding = Winding.Collinear;
+                // TODO improve with winding number system: https://en.wikipedia.org/wiki/Winding_number
+
+                for (int j = start; j <= end; j++)
+                {
+                    p = _points[j];
+                    if (p.IsOnCurve)
+                    {
+                        if (curWindPoint < windingPoints.Length)
+                        {
+                            windingPoints[curWindPoint++] = p.Point;
+                            if (curWindPoint == 3)
+                                winding = MathHelper.GetWinding(windingPoints[0], windingPoints[1], windingPoints[2]);
+                        }
+
+                        shape.Points.Add(new ShapePoint(p.Point));
+                    }
+                }
+
+                // Add the first point again to create a loop (for rendering only)
+                shape.Points.Add(shape.Points[0]);
+
+                shape.CalculateBounds();
+                if (winding == Winding.Clockwise)
+                    _shapes.Add(shape);
+                else
+                    holes.Add(shape);
+
+                start = end + 1;
+            }
+
+            // Figure out which holes belong to which shape
+            foreach (Shape h in holes)
+            {
+                foreach (Shape s in _shapes)
+                {
+                    if (s.Bounds.Contains(h.Bounds))
+                    {
+                        s.Holes.Add(h);
+                        break;
+                    }
+                }
+            }
         }
 
         object ICloneable.Clone()

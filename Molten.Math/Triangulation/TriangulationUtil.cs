@@ -132,7 +132,7 @@ namespace Molten
         /// 0 if collinear
         /// A[P1,P2,P3]  =  (x1*y2 - y1*x2) + (x2*y3 - y2*x3) + (x3*y1 - y3*x1)
         ///              =  (x1-x3)*(y2-y3) - (y1-y3)*(x2-x3)
-        internal static Winding Orient2D(ShapePoint pa, ShapePoint pb, ShapePoint pc)
+        internal static Winding GetWinding(ShapePoint pa, ShapePoint pb, ShapePoint pc)
         {
             double detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
             double detright = (pa.Y - pc.Y) * (pb.X - pc.X);
@@ -141,9 +141,9 @@ namespace Molten
             if (val > -EPSILON && val < EPSILON)
                 return Winding.Collinear;
             else if (val > 0)
-                return Winding.CCW;
+                return Winding.CounterClockwise;
 
-            return Winding.CW;
+            return Winding.Clockwise;
         }
     }
 }
