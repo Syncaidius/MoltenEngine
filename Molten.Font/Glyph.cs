@@ -83,61 +83,72 @@ namespace Molten.Font
         public List<Shape> CreateShapes(int pointsPerCurve, bool flipYAxis)
         {
             List<Shape> result = new List<Shape>();
-            int start = 0;
             Vector2[] windingPoints = new Vector2[3];
             List<Shape> holes = new List<Shape>();
-            GlyphPoint p;
+            List<Vector2> cp = new List<Vector2>();
+            Vector2 prevCurvePoint = Vector2.Zero;
+            int start = 0;
+            GlyphPoint p = GlyphPoint.Empty;
 
             for (int i = 0; i < ContourEndPoints.Length; i++)
             {
                 Shape shape = new Shape();
                 int end = ContourEndPoints[i];
                 int curWindPoint = 0;
-                BezierCurve2D curve = BezierCurve2D.Zero;
-                bool curveIsCubic = false;
-
-                Winding winding = Winding.Collinear;
-                // TODO improve with winding number system: https://en.wikipedia.org/wiki/Winding_number
+                int windingNumber = 0;
+                float curveIncrement = 1.0f / pointsPerCurve;
+                cp.Clear();
 
                 for (int j = start; j <= end; j++)
                 {
                     p = _points[j];
 
-                    if(flipYAxis)
-                        p.Y = _bounds.Height - p.Y;
-
                     if (p.IsOnCurve)
                     {
+                        PlotCurve(shape, prevCurvePoint, p.Point, cp, pointsPerCurve, curveIncrement);
+                        prevCurvePoint = p.Point;
+
+                        // TODO improve with winding number system: https://en.wikipedia.org/wiki/Winding_number
                         if (curWindPoint < windingPoints.Length)
                         {
                             windingPoints[curWindPoint++] = p.Point;
                             if (curWindPoint == 3)
-                                winding = MathHelper.GetWinding(windingPoints[0], windingPoints[1], windingPoints[2]);
+                                windingNumber += MathHelper.GetWindingSign(windingPoints[0], windingPoints[1], windingPoints[2]);
                         }
-
-                        shape.Points.Add(new ShapePoint(p.Point));
+                        else
+                        {
+                            windingPoints[0] = windingPoints[1];
+                            windingPoints[1] = windingPoints[2];
+                            windingPoints[2] = p.Point;
+                            windingNumber += MathHelper.GetWindingSign(windingPoints[0], windingPoints[1], windingPoints[2]);
+                        }
+                    }
+                    else
+                    {
+                        cp.Add(p.Point);
                     }
                 }
 
-                // Add the first point again to create a loop (for rendering only)
-                shape.Points.Add(shape.Points[0]);
+                // Close contour
+                if (cp.Count > 0)
+                    PlotCurve(shape, prevCurvePoint, (Vector2)shape.Points[0], cp, pointsPerCurve, curveIncrement);
 
+                // Add the first point again to create a loop (for rendering only)
                 shape.CalculateBounds();
 
+                // Flip points
                 if (flipYAxis)
                 {
-                    if (winding == Winding.CounterClockwise)
-                        result.Add(shape);
-                    else
-                        holes.Add(shape);
+                    for (int j = 0; j < shape.Points.Count; j++)
+                        shape.Points[j].Y = _bounds.Height - shape.Points[j].Y;
                 }
+
+                //shape.Points.Add(shape.Points[0]);
+
+                if (windingNumber > 0)
+                    result.Add(shape);
                 else
-                {
-                    if (winding == Winding.Clockwise)
-                        result.Add(shape);
-                    else
-                        holes.Add(shape);
-                }
+                    holes.Add(shape);
 
                 start = end + 1;
             }
@@ -145,17 +156,86 @@ namespace Molten.Font
             // Figure out which holes belong to which shape
             foreach (Shape h in holes)
             {
+                bool holeContained = false;
                 foreach (Shape s in result)
                 {
                     if (s.Bounds.Contains(h.Bounds))
                     {
                         s.Holes.Add(h);
+                        holeContained = true;
                         break;
                     }
+                }
+
+                // Must be an outline, reverse it's winding.
+                if (!holeContained)
+                {
+                    h.Points.Reverse();
+                    result.Add(h);
                 }
             }
 
             return result;
+        }
+
+        private void PlotCurve(Shape shape, Vector2 prevPoint, Vector2 curPoint, List<Vector2> cp, float pointsPerCurve, float curveIncrement)
+        {
+            float curvePercent = 0f;
+            switch (cp.Count)
+            {
+                case 0: // Line
+                    shape.Points.Add(new ShapePoint(curPoint));
+                    break;
+
+                case 1: // Quadratic bezier curve
+                    curvePercent = 0f;
+                    for (int c = 0; c < pointsPerCurve; c++)
+                    {
+                        curvePercent += curveIncrement;
+                        Vector2 cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, curPoint, cp[0]);
+                        shape.Points.Add(new ShapePoint(cPos));
+                    }
+                    break;
+
+                case 2: // Cubic curve
+                    curvePercent = 0f;
+                    for (int c = 0; c < pointsPerCurve; c++)
+                    {
+                        curvePercent += curveIncrement;
+                        Vector2 cPos = BezierCurve2D.CalculateCubic(curvePercent, prevPoint, curPoint, cp[0], cp[1]);
+                        shape.Points.Add(new ShapePoint(cPos));
+                    }
+                    break;
+
+                default:
+                    // There are at least 3 control points.
+                    for(int i = 0; i < cp.Count - 1; i++)
+                    {
+                        Vector2 midPoint = (cp[i] + cp[i+1]) / 2f;
+
+                        curvePercent = 0f;
+                        for (int c = 0; c < pointsPerCurve; c++)
+                        {
+                            curvePercent += curveIncrement;
+                            Vector2 cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, midPoint, cp[i]);
+                            shape.Points.Add(new ShapePoint(cPos));
+                        }
+
+                        prevPoint = midPoint;
+                    }
+
+                    // Calculate last bezier 
+                    curvePercent = 0f;
+                    for (int c = 0; c < pointsPerCurve; c++)
+                    {
+                        curvePercent += curveIncrement;
+                        Vector2 cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, curPoint, cp[cp.Count - 1]);
+                        shape.Points.Add(new ShapePoint(cPos));
+                    }
+                    break;
+            }
+
+            cp.Clear();
         }
 
         object ICloneable.Clone()

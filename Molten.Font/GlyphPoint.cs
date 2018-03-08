@@ -8,6 +8,7 @@ namespace Molten.Font
 {
     public struct GlyphPoint
     {
+        public static readonly GlyphPoint Empty = new GlyphPoint();
         public Vector2 Point;
         public bool IsOnCurve;
 

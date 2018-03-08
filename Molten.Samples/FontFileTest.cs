@@ -23,6 +23,8 @@ namespace Molten.Samples
         ISpriteFont _font;
         List<ISprite> _sprites;
         IMesh<VertexTexture> _mesh;
+        SpriteBatchContainer _container;
+        FontFile _fontFile;
 
         public FontFileTest(EngineSettings settings = null) : base("FontFile Test", settings)
         {
@@ -103,13 +105,18 @@ namespace Molten.Samples
             _mesh.SetVertices(verts);
             SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
 
+            LoadFontFile();
             NewFontSystemTest('8');
+
+            Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
 
-        /// <summary>
-        /// A test for a new WIP sprite font system.
-        /// </summary>
-        private void NewFontSystemTest(char glyphChar)
+        private void Keyboard_OnCharacterKey(IO.CharacterEventArgs e)
+        {
+            NewFontSystemTest(e.Character);
+        }
+
+        private void LoadFontFile()
         {
             // Hi. I'm just a piece of test code for the new WIP font system. Please ignore me.
             //string fontPath = "assets/euphorigenic.ttf";
@@ -118,21 +125,29 @@ namespace Molten.Samples
             //string fontPath = "assets/STOREB.ttf"; // For testing 'cmap' (format 4 and 6).
             string fontPath = "assets/UECHIGOT.TTF"; // For testing 'PCLT', 'cmap' (format 0 and 4).
 
-            FontFile font;
             Stopwatch fontTimer = new Stopwatch();
             using (FileStream stream = new FileStream(fontPath, FileMode.Open, FileAccess.Read))
             {
                 using (FontReader reader = new FontReader(stream, Log, fontPath))
                 {
                     fontTimer.Start();
-                    font = reader.ReadFont();
+                    _fontFile = reader.ReadFont();
                     fontTimer.Stop();
                     Log.WriteLine($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read font");
                 }
             }
+        }
 
-            Log.WriteDebugLine($"FontFile test: using glyph at index {font.GetGlyphIndex(glyphChar)}");
-            Glyph glyph = font.GetGlyph(glyphChar);
+        /// <summary>
+        /// A test for a new WIP sprite font system.
+        /// </summary>
+        private void NewFontSystemTest(char glyphChar)
+        {
+            if (_container != null)
+                SampleScene.RemoveSprite(_container);
+
+            Log.WriteDebugLine($"FontFile test using glyph at index {_fontFile.GetGlyphIndex(glyphChar)}");
+            Glyph glyph = _fontFile.GetGlyph(glyphChar);
             List<Shape> glyphShapes = glyph.CreateShapes(16, true);
             ushort[] endPoints = glyph.ContourEndPoints;
             int start = 0;
@@ -163,37 +178,10 @@ namespace Molten.Samples
                     for (int j = 0; j < h.Points.Count; j++)
                     {
                         Vector2 point = (Vector2)h.Points[j];
-                        point.Y = glyph.Bounds.Height - point.Y;
                         hPoints.Add((point * scale) + offset);
                     }
                 }
             }
-
-            //List<Vector2>[] linePoints = new List<Vector2>[glyph.ContourEndPoints.Length];
-            //for (int i = 0; i < endPoints.Length; i++)
-            //{
-            //    List<Vector2> points = new List<Vector2>();
-            //    linePoints[i] = points;
-            //    int end = endPoints[i];
-
-            //    // Offset the points so we can see them
-            //    // Flip the Y axis because 0,0 is top-left, not bottom-left.
-            //    for (int p = start; p <= end; p++)
-            //    {
-            //        if (!glyph.Points[p].IsOnCurve)
-            //            continue;
-
-            //        Vector2 point = glyph.Points[p].Point;
-            //        point.Y = glyph.Bounds.Height - point.Y;
-            //        points.Add((point * scale) + offset);
-            //    }
-
-            //    // Add the first point again to create a loop (for rendering only)
-            //    points.Add(points[0]);
-
-            //    // Set the current end as the start of the next run.
-            //    start = end + 1;
-            //}
 
             RectangleF glyphBounds = glyph.Bounds;
             glyphBounds.Top *= scale;
@@ -203,8 +191,11 @@ namespace Molten.Samples
             glyphBounds.Width *= scale;
             glyphBounds.Height *= scale;
 
+            /* NOTE: Characters % ^ and capital G have a broken inner contour. FIX. 
+             */
+
             // Use a container for doing some testing.
-            SpriteBatchContainer sbContainer = new SpriteBatchContainer()
+            _container = new SpriteBatchContainer()
             {
                 OnDraw = (sb) =>
                 {
@@ -216,13 +207,13 @@ namespace Molten.Samples
 
                     //sb.DrawTriangleList(triPoints, Color.Yellow);
                     for (int i = 0; i < linePoints.Count; i++)
-                        sb.DrawLines(linePoints[i], Color.Red, 1);
+                        sb.DrawLines(linePoints[i], Color.Red, 2);
 
                     for (int i = 0; i < holePoints.Count; i++)
-                        sb.DrawLines(holePoints[i], Color.SkyBlue, 1);
+                        sb.DrawLines(holePoints[i], Color.SkyBlue, 2);
                 }
             };
-            SampleScene.AddSprite(sbContainer);
+            SampleScene.AddSprite(_container);
         }
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)

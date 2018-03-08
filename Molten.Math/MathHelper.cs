@@ -20,4 +20,18 @@ namespace Molten {     public static class MathHelper     {         /// 
                 return Winding.CounterClockwise;
 
             return Winding.Clockwise;
+        }
+
+        public static int GetWindingSign(Vector2 pa, Vector2 pb, Vector2 pc)
+        {
+            double detleft = (pa.X - pc.X) * (pb.Y - pc.Y);
+            double detright = (pa.Y - pc.Y) * (pb.X - pc.X);
+            double val = detleft - detright;
+
+            if (val > -TriangulationUtil.EPSILON && val < TriangulationUtil.EPSILON)
+                return 0;
+            else if (val > 0)
+                return -1;
+
+            return 1;
         }     } } 
