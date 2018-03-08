@@ -133,7 +133,7 @@ namespace Molten.Samples
 
             Log.WriteDebugLine($"FontFile test: using glyph at index {font.GetGlyphIndex(glyphChar)}");
             Glyph glyph = font.GetGlyph(glyphChar);
-            glyph.PopulateShapes();
+            List<Shape> glyphShapes = glyph.CreateShapes(16, true);
             ushort[] endPoints = glyph.ContourEndPoints;
             int start = 0;
 
@@ -143,16 +143,15 @@ namespace Molten.Samples
 
             List<List<Vector2>> linePoints = new List<List<Vector2>>();
             List<List<Vector2>> holePoints = new List<List<Vector2>>();
-            for (int i = 0; i < glyph.Shapes.Count; i++)
+            for (int i = 0; i < glyphShapes.Count; i++)
             {
-                Shape shape = glyph.Shapes[i];
+                Shape shape = glyphShapes[i];
                 List<Vector2> points = new List<Vector2>();
                 linePoints.Add(points);
 
                 for (int j = 0; j < shape.Points.Count; j++)
                 {
                     Vector2 point = (Vector2)shape.Points[j];
-                    point.Y = glyph.Bounds.Height - point.Y;
                     points.Add((point * scale) + offset);
                 }
 

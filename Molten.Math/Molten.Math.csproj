@@ -67,7 +67,8 @@
   <ItemGroup>
     <Compile Include="AffineTransform.cs" />
     <Compile Include="AngleSingle.cs" />
-    <Compile Include="BezierCurve.cs" />
+    <Compile Include="BezierCurve2D.cs" />
+    <Compile Include="BezierCurve3D.cs" />
     <Compile Include="Bool4.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="BoundingFrustum.cs" />

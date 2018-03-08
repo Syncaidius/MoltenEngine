@@ -93,6 +93,8 @@ namespace Molten.Font
                 Shape shape = new Shape();
                 int end = ContourEndPoints[i];
                 int curWindPoint = 0;
+                BezierCurve2D curve = BezierCurve2D.Zero;
+                bool curveIsCubic = false;
 
                 Winding winding = Winding.Collinear;
                 // TODO improve with winding number system: https://en.wikipedia.org/wiki/Winding_number
@@ -121,10 +123,21 @@ namespace Molten.Font
                 shape.Points.Add(shape.Points[0]);
 
                 shape.CalculateBounds();
-                if (winding == Winding.Clockwise)
-                    result.Add(shape);
+
+                if (flipYAxis)
+                {
+                    if (winding == Winding.CounterClockwise)
+                        result.Add(shape);
+                    else
+                        holes.Add(shape);
+                }
                 else
-                    holes.Add(shape);
+                {
+                    if (winding == Winding.Clockwise)
+                        result.Add(shape);
+                    else
+                        holes.Add(shape);
+                }
 
                 start = end + 1;
             }
