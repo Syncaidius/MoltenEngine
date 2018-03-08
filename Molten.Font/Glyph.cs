@@ -10,8 +10,6 @@ namespace Molten.Font
     {
         Rectangle _bounds;
         GlyphPoint[] _points;
-        List<Shape> _shapes;
-        IReadOnlyList<Shape> _readOnlyShapes;
 
         public static readonly Glyph Empty = new Glyph(Rectangle.Empty, new ushort[0], new GlyphPoint[0], new byte[0]);
 
@@ -35,16 +33,12 @@ namespace Molten.Font
 
         public byte[] Instructions { get; private set; }
 
-        public IReadOnlyList<Shape> Shapes => _readOnlyShapes;
-
         internal Glyph(Rectangle bounds, ushort[] contourEndPoints, GlyphPoint[] points, byte[] instructions)
         {
             Bounds = bounds;
             ContourEndPoints = contourEndPoints;
             Instructions = instructions;
             _points = points;
-            _shapes = new List<Shape>();
-            _readOnlyShapes = _shapes.AsReadOnly();
         }
 
         /// <summary>
@@ -82,24 +76,13 @@ namespace Molten.Font
         }
 
         /// <summary>
-        /// Flips the Y axis of all the glyph's shapes.
-        /// </summary>
-        public void FlipShapeYAxis()
-        {
-            foreach(Shape s in _shapes)
-            {
-                for(int i = 0; i < s.Points.Count; i++)
-                    s.Points[i].Y = _bounds.Height - s.Points[i].Y;
-            }
-        }
-
-        /// <summary>
         /// Populates the <see cref="Shapes"/> list based on the gylph's outline.
         /// </summary>
-        /// <param name="flipYAxis">If true, the Y axis of the glyph's points will be flipped.</param>
+        /// <param name="pointsPerCurve">The maximum number of points per curve in a glyph contour.</param>
         /// <returns></returns>
-        public void PopulateShapes()
+        public List<Shape> CreateShapes(int pointsPerCurve, bool flipYAxis)
         {
+            List<Shape> result = new List<Shape>();
             int start = 0;
             Vector2[] windingPoints = new Vector2[3];
             List<Shape> holes = new List<Shape>();
@@ -117,6 +100,10 @@ namespace Molten.Font
                 for (int j = start; j <= end; j++)
                 {
                     p = _points[j];
+
+                    if(flipYAxis)
+                        p.Y = _bounds.Height - p.Y;
+
                     if (p.IsOnCurve)
                     {
                         if (curWindPoint < windingPoints.Length)
@@ -135,7 +122,7 @@ namespace Molten.Font
 
                 shape.CalculateBounds();
                 if (winding == Winding.Clockwise)
-                    _shapes.Add(shape);
+                    result.Add(shape);
                 else
                     holes.Add(shape);
 
@@ -145,7 +132,7 @@ namespace Molten.Font
             // Figure out which holes belong to which shape
             foreach (Shape h in holes)
             {
-                foreach (Shape s in _shapes)
+                foreach (Shape s in result)
                 {
                     if (s.Bounds.Contains(h.Bounds))
                     {
@@ -154,6 +141,8 @@ namespace Molten.Font
                     }
                 }
             }
+
+            return result;
         }
 
         object ICloneable.Clone()
