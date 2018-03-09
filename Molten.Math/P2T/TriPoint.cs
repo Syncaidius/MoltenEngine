@@ -4,10 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Math.P2T
+namespace Molten
 {
-    public struct TriPoint
+    public class TriPoint : IEquatable<TriPoint>
     {
+        /// <summary>
+        /// An empty <see cref="TriPoint"/> with <see cref="EdgeList"/> uninitialized (null).
+        /// </summary>
+        public static readonly TriPoint Empty = new TriPoint(0,0);
+
         public double X;
 
         public double Y;
@@ -18,6 +23,13 @@ namespace Molten.Math.P2T
         {
             X = x;
             Y = y;
+            EdgeList = new List<Edge>();
+        }
+
+        public TriPoint(Vector2 p)
+        {
+            X = p.X;
+            Y = p.Y;
             EdgeList = new List<Edge>();
         }
 
@@ -93,31 +105,31 @@ namespace Molten.Math.P2T
             return len;
         }
 
-        public static TriPoint operator +(TriPoint a, TriPoint b)
-        {
-            return new TriPoint(a.X + b.X, a.Y + b.Y);
-        }
+        //public static TriPoint operator +(TriPoint a, TriPoint b)
+        //{
+        //    return new TriPoint(a.X + b.X, a.Y + b.Y);
+        //}
 
-        public static TriPoint operator -(TriPoint a, TriPoint b)
-        {
-            return new TriPoint(a.X - b.X, a.Y - b.Y);
-        }
+        //public static TriPoint operator -(TriPoint a, TriPoint b)
+        //{
+        //    return new TriPoint(a.X - b.X, a.Y - b.Y);
+        //}
 
-        public static TriPoint operator -(TriPoint a, double s)
-        {
-            return new TriPoint(a.X * s, a.Y * s);
-        }
+        //public static TriPoint operator -(TriPoint a, double s)
+        //{
+        //    return new TriPoint(a.X * s, a.Y * s);
+        //}
 
-        public static bool operator ==(TriPoint a, TriPoint b)
-        {
-            return a.X == b.X && a.Y == b.Y;
-        }
+        //public static bool operator ==(TriPoint a, TriPoint b)
+        //{
+        //    return a.X == b.X && a.Y == b.Y;
+        //}
 
-        public static bool operator !=(TriPoint a, TriPoint b)
-        {
-            // Original: return !(a.x == b.x) && !(a.y == b.y); ??????
-            return a.X != b.X || a.Y != b.Y;
-        }
+        //public static bool operator !=(TriPoint a, TriPoint b)
+        //{
+        //    // Original: return !(a.x == b.x) && !(a.y == b.y); ??????
+        //    return a.X != b.X || a.Y != b.Y;
+        //}
 
         public static double Dot(TriPoint a, TriPoint b)
         {
@@ -139,22 +151,66 @@ namespace Molten.Math.P2T
             return new TriPoint(-s * a.Y, s * a.X);
         }
 
+        public static explicit operator Vector2(TriPoint p)
+        {
+            return new Vector2((float)p.X, (float)p.Y);
+        }
+
         public class Comparer : IComparer<TriPoint>
         {
+            //public int Compare(TriPoint a, TriPoint b)
+            //{
+            //    if (a.Y < b.Y)
+            //    {
+            //        return 1;
+            //    }
+            //    else if (a.Y == b.Y)
+            //    {
+            //        if (a.X < b.X)
+            //            return 1;
+            //    }
+
+            //    return 0;
+            //}
+
             public int Compare(TriPoint a, TriPoint b)
             {
                 if (a.Y < b.Y)
                 {
+                    return -1;
+                }
+                else if (a.Y > b.Y)
+                {
                     return 1;
                 }
-                else if (a.Y == b.Y)
+                else
                 {
                     if (a.X < b.X)
+                        return -1;
+                    else if (a.X > b.X)
                         return 1;
+                    else
+                        return 0;
                 }
-
-                return 0;
             }
+        }
+
+        public override string ToString()
+        {
+            return $"{X},{Y}";
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is TriPoint op)
+                return X == op.X && Y == op.Y;
+            else
+                return false;
+        }
+
+        public bool Equals(TriPoint other)
+        {
+            return X == other.X && Y == other.Y;
         }
     }
 }

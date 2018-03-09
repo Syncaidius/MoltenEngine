@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Math.P2T
+namespace Molten
 {
-    public static class P2T
+    public class EdgeEvent
     {
-        public static void Triangulate(Shape shape)
-        {
+        public Edge ConstrainedEdge;
 
-        }
+        public bool Right;
     }
 }

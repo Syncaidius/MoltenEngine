@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Math.P2T
+namespace Molten
 {
     public class SweepContext
     {
@@ -24,13 +24,21 @@ namespace Molten.Math.P2T
         Node _af_middle;
         Node _af_tail;
 
-        AdvancingFront_2 _front;
+        internal AdvancingFront_2 Front;
+        TriPoint.Comparer _cmp;
+
+        internal SweepBasin Basin;
+        internal EdgeEvent EdgeEvent;
 
         public SweepContext()
         {
             _points = new List<TriPoint>();
             _triangles = new List<Triangle>();
             _map = new List<Triangle>();
+            _cmp = new TriPoint.Comparer();
+            _edge_list = new List<Edge>();
+            EdgeEvent = new EdgeEvent();
+            Basin = new SweepBasin();
         }
 
         public void AddHole(List<TriPoint> polyline)
@@ -42,6 +50,11 @@ namespace Molten.Math.P2T
         public void AddPoint(TriPoint point)
         {
             _points.Add(point);
+        }
+
+        public void AddPoints(List<TriPoint> points)
+        {
+            _points.AddRange(points);
         }
 
         public List<Triangle> GetTriangles()
@@ -81,8 +94,8 @@ namespace Molten.Math.P2T
             _head = new TriPoint(xmax + dx, ymin - dy);
             _tail = new TriPoint(xmin - dx, ymin - dy);
 
-            // Story points along y-axis
-            _points.Sort(0, _points.Count, cmp);
+            // Sort points along y-axis
+            _points.Sort(_cmp);
         }
 
         public void InitEdges(List<TriPoint> polyline)
@@ -108,7 +121,7 @@ namespace Molten.Math.P2T
         public Node LocateNode(TriPoint point)
         {
             // TODO implement search tree
-            return _front.LocateNode(point.X);
+            return Front.LocateNode(point.X);
         }
 
         public void CreateAdvancingFront(List<Node> nodes)
@@ -120,14 +133,14 @@ namespace Molten.Math.P2T
             _af_head = new Node(triangle.GetPoint(1), triangle);
             _af_middle = new Node(triangle.GetPoint(0), triangle);
             _af_tail = new Node(triangle.GetPoint(2), triangle);
-            _front = new AdvancingFront_2(_af_head, _af_tail);
+            Front = new AdvancingFront_2(_af_head, _af_tail);
 
             // TODO: More intuitive if head is middles next and not previous?
             //       so swap head and tail
-            _af_head.Next = _af_middle;
-            _af_middle.Next = _af_tail;
-            _af_middle.Prev = _af_head;
-            _af_tail.Prev = _af_middle;
+            _af_head.next = _af_middle;
+            _af_middle.next = _af_tail;
+            _af_middle.prev = _af_head;
+            _af_tail.prev = _af_middle;
         }
 
         public void RemoveNode(Node node)
@@ -140,9 +153,9 @@ namespace Molten.Math.P2T
         {
             for(int i = 0; i < 3; i++)
             {
-                if (!t.GetNeighbor(i))
+                if (t.GetNeighbor(i) == null)
                 {
-                    Node n = _front.LocatePoint(t.PointCW(t.GetPoint(i)));
+                    Node n = Front.LocatePoint(t.PointCW(t.GetPoint(i)));
                     if (n != null)
                         n.triangle = t;
                 }
@@ -166,14 +179,29 @@ namespace Molten.Math.P2T
                 if(t != null && !t.IsInterior())
                 {
                     t.IsInterior(true);
-                    triangles.Push(t);
+                    _triangles.Add(t);
                     for(int i = 0; i < 3; i++)
                     {
-                        if (t.constrained_edge[i] == null)
-                            triangles.Push(t.GetNeighbour(i));
+                        if (!t.ConstrainedEdge[i])
+                            triangles.Push(t.GetNeighbor(i));
                     }
                 }
             }
+        }
+
+        public int PointCount()
+        {
+            return _points.Count;
+        }
+
+        public void SetHead(TriPoint p1)
+        {
+            _head = p1;
+        }
+
+        public TriPoint GetHead()
+        {
+            return _head;
         }
     }
 }

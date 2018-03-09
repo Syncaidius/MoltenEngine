@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Math.P2T
+namespace Molten
 {
     public class Edge
     {
@@ -19,6 +19,9 @@ namespace Molten.Math.P2T
         /// <param name="p2"></param>
         public Edge(TriPoint p1, TriPoint p2)
         {
+            P = p1;
+            Q = p2;
+
             if (p1.Y > p2.Y)
             {
                 Q = p1;

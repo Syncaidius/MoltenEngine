@@ -133,6 +133,8 @@ namespace Molten.Font
                 // Close contour, by linking the end point back to the start point.
                 if (cp.Count > 0)
                     PlotCurve(shape, prevCurvePoint, (Vector2)shape.Points[0], cp, pointsPerCurve, curveIncrement);
+                else
+                    shape.Points.Add(new TriPoint((Vector2)shape.Points[0]));
 
                 // Add the first point again to create a loop (for rendering only)
                 shape.CalculateBounds();
@@ -141,13 +143,12 @@ namespace Molten.Font
                 if (flipYAxis)
                 {
                     for (int j = 0; j < shape.Points.Count; j++)
-                        shape.Points[j].Y = _bounds.Height - shape.Points[j].Y;
+                    {
+                        TriPoint tp = shape.Points[j];
+                        tp.Y = _bounds.Height - shape.Points[j].Y;
+                        shape.Points[j] = tp;
+                    }
                 }
-
-                // Add the missing closure point after flipping.
-                if(cp.Count == 0)
-                    shape.Points.Add(shape.Points[0]);
-
                 if (windingNumber > 0)
                     result.Add(shape);
                 else
@@ -187,7 +188,7 @@ namespace Molten.Font
             switch (cp.Count)
             {
                 case 0: // Line
-                    shape.Points.Add(new ShapePoint(curPoint));
+                    shape.Points.Add(new TriPoint(curPoint));
                     break;
 
                 case 1: // Quadratic bezier curve
@@ -196,7 +197,7 @@ namespace Molten.Font
                     {
                         curvePercent += curveIncrement;
                         Vector2 cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, curPoint, cp[0]);
-                        shape.Points.Add(new ShapePoint(cPos));
+                        shape.Points.Add(new TriPoint(cPos));
                     }
                     break;
 
@@ -206,7 +207,7 @@ namespace Molten.Font
                     {
                         curvePercent += curveIncrement;
                         Vector2 cPos = BezierCurve2D.CalculateCubic(curvePercent, prevPoint, curPoint, cp[0], cp[1]);
-                        shape.Points.Add(new ShapePoint(cPos));
+                        shape.Points.Add(new TriPoint(cPos));
                     }
                     break;
 
@@ -221,7 +222,7 @@ namespace Molten.Font
                         {
                             curvePercent += curveIncrement;
                             Vector2 cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, midPoint, cp[i]);
-                            shape.Points.Add(new ShapePoint(cPos));
+                            shape.Points.Add(new TriPoint(cPos));
                         }
 
                         prevPoint = midPoint;
@@ -233,7 +234,7 @@ namespace Molten.Font
                     {
                         curvePercent += curveIncrement;
                         Vector2 cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, curPoint, cp[cp.Count - 1]);
-                        shape.Points.Add(new ShapePoint(cPos));
+                        shape.Points.Add(new TriPoint(cPos));
                     }
                     break;
             }

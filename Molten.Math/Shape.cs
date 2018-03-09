@@ -51,12 +51,12 @@ namespace Molten
         /// <summary>
         /// A list of shape outline points.
         /// </summary>
-        public readonly List<ShapePoint> Points = new List<ShapePoint>();
+        public readonly List<TriPoint> Points = new List<TriPoint>();
 
         /// <summary>
         /// Extra points inserted within the shape's area to control or increase triangulation.
         /// </summary>
-        public readonly List<ShapePoint> SteinerPoints;
+        public readonly List<TriPoint> SteinerPoints;
 
         /// <summary>
         /// A list of subtraction shapes fully contained inside this shape.<para/>
@@ -71,7 +71,7 @@ namespace Molten
 
         public RectangleF Bounds { get; private set; }
 
-        List<ShapeTriangle> _triangles = new List<ShapeTriangle>();
+        List<Triangle> _triangles = new List<Triangle>();
 
 
         public Shape() { }
@@ -80,7 +80,7 @@ namespace Molten
         /// Create a polygon from a list of at least 3 points with no duplicates.
         /// </summary>
         /// <param name="points">A list of unique points</param>
-        public Shape(IList<ShapePoint> points)
+        public Shape(IList<TriPoint> points)
         {
             Points.AddRange(points);
         }
@@ -89,13 +89,13 @@ namespace Molten
         /// Create a polygon from a list of at least 3 points with no duplicates.
         /// </summary>
         /// <param name="points">A list of unique points.</param>
-        public Shape(IEnumerable<ShapePoint> points) : this((points as IList<ShapePoint>) ?? points.ToArray()) { }
+        public Shape(IEnumerable<TriPoint> points) : this((points as IList<TriPoint>) ?? points.ToArray()) { }
 
         /// <summary>
         /// Create a polygon from a list of at least 3 points with no duplicates.
         /// </summary>
         /// <param name="points">A list of unique points.</param>
-        public Shape(params ShapePoint[] points) : this((IList<ShapePoint>)points) { }
+        public Shape(params TriPoint[] points) : this((IList<TriPoint>)points) { }
 
         /// <summary>
         /// Creates a polygon from a list of at least 3 Vector3 points, with no duplicates.
@@ -106,7 +106,7 @@ namespace Molten
         public Shape(IList<Vector2> points, Vector2 offset, float scale)
         {
             for (int i = 0; i < points.Count; i++)
-                Points.Add(new ShapePoint(offset + (points[i] * scale)));
+                Points.Add(new TriPoint(offset + (points[i] * scale)));
 
             CalculateBounds();
         }
@@ -130,17 +130,17 @@ namespace Molten
                 Bottom = float.MinValue,
             };
 
-            foreach(ShapePoint p in Points)
+            foreach(TriPoint p in Points)
             {
                 if (p.X < b.Left)
-                    b.Left = p.X;
+                    b.Left = (float)p.X;
                 else if (p.X > b.Right)
-                    b.Right = p.Y;
+                    b.Right = (float)p.Y;
 
                 if (p.Y < b.Top)
-                    b.Top = p.Y;
+                    b.Top = (float)p.Y;
                 else if (p.Y > b.Bottom)
-                    b.Bottom = p.Y;
+                    b.Bottom = (float)p.Y;
             }
 
             Bounds = b;
@@ -152,19 +152,35 @@ namespace Molten
         /// <param name="output">The output list.</param>
         public void Triangulate(IList<Vector2> output)
         {
-            // Lets sanity check that first and last point haven't got the same position
-            // Its something that often happens when importing polygon data from other formats
+            //// Lets sanity check that first and last point haven't got the same position
+            //// Its something that often happens when importing polygon data from other formats
             if (Points[0].Equals(Points[Points.Count - 1]))
                 Points.RemoveAt(Points.Count - 1);
 
-            Triangulation.Triangulate(this);
+            //Triangulation.Triangulate(this);
 
-            foreach (ShapeTriangle tri in _triangles)
+            //foreach (ShapeTriangle tri in _triangles)
+            //{
+            //    tri.ReversePointFlow();
+            //    output.Add(TriToVector2(tri.Points[0]));
+            //    output.Add(TriToVector2(tri.Points[1]));
+            //    output.Add(TriToVector2(tri.Points[2]));
+            //}
+
+            SweepContext tcx = new SweepContext();
+            tcx.AddPoints(Points);  
+            tcx.InitEdges(Points);
+            tcx.InitTriangulation();
+            Sweep sweep = new Sweep();
+            sweep.Triangulate(tcx);
+
+            List<Triangle> triangles = tcx.GetTriangles();
+            foreach (Triangle tri in triangles)
             {
-                tri.ReversePointFlow();
-                output.Add(TriToVector2(tri.Points[0]));
-                output.Add(TriToVector2(tri.Points[1]));
-                output.Add(TriToVector2(tri.Points[2]));
+                //tri.ReversePointFlow();
+                output.Add((Vector2)tri.GetPoint(0));
+                output.Add((Vector2)tri.GetPoint(2));
+                output.Add((Vector2)tri.GetPoint(1));
             }
         }
 
@@ -172,41 +188,39 @@ namespace Molten
         /// Triangulates the shape and adds all of the triangles to the provided output.
         /// </summary>
         /// <param name="output">The output list.</param>
-        public void Triangulate(IList<ShapeTriangle> output)
+        public void Triangulate(IList<Triangle> output)
         {
-            Triangulation.Triangulate(this);
-            for (int i = 0; i < _triangles.Count; i++)
-                output.Add(_triangles[i]);
+            SweepContext tcx = new SweepContext();
+            tcx.AddPoints(Points);
+            tcx.InitEdges(Points);
+            tcx.InitTriangulation();
+            Sweep sweep = new Sweep();
+            sweep.Triangulate(tcx);
+
+            List<Triangle> triangles = tcx.GetTriangles();
+            foreach (Triangle tri in triangles)
+                output.Add(tri);
         }
 
-        private Vector2 TriToVector2(ShapePoint p)
-        {
-            return new Vector2()
-            {
-                X = (float)p.X,
-                Y = (float)p.Y,
-            };
-        }
+        ///// <summary>
+        ///// Inserts newPoint after point.
+        ///// </summary>
+        ///// <param name="point">The point to insert after in the polygon</param>
+        ///// <param name="newPoint">The point to insert into the polygon</param>
+        //public void InsertPointAfter(ShapePoint point, ShapePoint newPoint)
+        //{
+        //    // Validate that 
+        //    int index = Points.IndexOf(point);
+        //    if (index == -1) throw new ArgumentException("Tried to insert a point into a Polygon after a point not belonging to the Polygon", "point");
+        //    Points.Insert(index + 1, newPoint);
+        //}
 
-        /// <summary>
-        /// Inserts newPoint after point.
-        /// </summary>
-        /// <param name="point">The point to insert after in the polygon</param>
-        /// <param name="newPoint">The point to insert into the polygon</param>
-        public void InsertPointAfter(ShapePoint point, ShapePoint newPoint)
-        {
-            // Validate that 
-            int index = Points.IndexOf(point);
-            if (index == -1) throw new ArgumentException("Tried to insert a point into a Polygon after a point not belonging to the Polygon", "point");
-            Points.Insert(index + 1, newPoint);
-        }
-
-        internal void AddTriangle(ShapeTriangle t)
+        internal void AddTriangle(Triangle t)
         {
             _triangles.Add(t);
         }
 
-        internal void AddTriangles(IEnumerable<ShapeTriangle> list)
+        internal void AddTriangles(IEnumerable<Triangle> list)
         {
             _triangles.AddRange(list);
         }
@@ -215,35 +229,35 @@ namespace Molten
         /// Creates constraints and populates the context with points
         /// </summary>
         /// <param name="tcx">The context</param>
-        internal void Prepare(TriangulationContext tcx)
-        {
-            _triangles.Clear();
+        //internal void Prepare(TriangulationContext tcx)
+        //{
+        //    _triangles.Clear();
 
-            if (Points.Count < 3)
-                throw new InvalidOperationException("Shape has fewer than 3 points");
+        //    if (Points.Count < 3)
+        //        throw new InvalidOperationException("Shape has fewer than 3 points");
 
-            // Outer constraints
-            for (int i = 0; i < Points.Count - 1; i++)
-                tcx.NewConstraint(Points[i], Points[i + 1]);
+        //    // Outer constraints
+        //    for (int i = 0; i < Points.Count - 1; i++)
+        //        tcx.NewConstraint(Points[i], Points[i + 1]);
 
-            tcx.NewConstraint(Points[0], Points[Points.Count - 1]);
-            tcx.Points.AddRange(Points);
+        //    tcx.NewConstraint(Points[0], Points[Points.Count - 1]);
+        //    tcx.Points.AddRange(Points);
 
-            // Hole constraints
-            if (Holes != null)
-            {
-                foreach (Shape p in Holes)
-                {
-                    for (int i = 0; i < p.Points.Count - 1; i++)
-                        tcx.NewConstraint(p.Points[i], p.Points[i + 1]);
+        //    // Hole constraints
+        //    if (Holes != null)
+        //    {
+        //        foreach (Shape p in Holes)
+        //        {
+        //            for (int i = 0; i < p.Points.Count - 1; i++)
+        //                tcx.NewConstraint(p.Points[i], p.Points[i + 1]);
 
-                    tcx.NewConstraint(p.Points[0], p.Points[p.Points.Count - 1]);
-                    tcx.Points.AddRange(p.Points);
-                }
-            }
+        //            tcx.NewConstraint(p.Points[0], p.Points[p.Points.Count - 1]);
+        //            tcx.Points.AddRange(p.Points);
+        //        }
+        //    }
 
-            if (SteinerPoints != null)
-                tcx.Points.AddRange(SteinerPoints);
-        }
+        //    if (SteinerPoints != null)
+        //        tcx.Points.AddRange(SteinerPoints);
+        //}
     }
 }

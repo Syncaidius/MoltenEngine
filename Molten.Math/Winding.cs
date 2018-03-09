@@ -5,9 +5,9 @@
     /// </summary>
     public enum Winding
     {
-        Clockwise = 0,
+        CW = 0,
 
-        CounterClockwise = 1,
+        CCW = 1,
 
         Collinear = 2,
     }
