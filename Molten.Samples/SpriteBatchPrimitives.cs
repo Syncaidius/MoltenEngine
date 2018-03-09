@@ -244,7 +244,7 @@ namespace Molten.Samples
             }, new Vector2(100, 400), 0.0625f);
 
             List<Vector2> shapeTriList = new List<Vector2>();
-            testShape.Triangulate(shapeTriList);
+            testShape.Triangulate(shapeTriList, Vector2.Zero, 1);
 
             // Use a container for doing some testing.
             SpriteBatchContainer sbContainer = new SpriteBatchContainer()

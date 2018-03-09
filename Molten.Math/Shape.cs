@@ -150,26 +150,16 @@ namespace Molten
         /// Triangulates the shape and adds all of the points (in triangle list layout) to the provided output.
         /// </summary>
         /// <param name="output">The output list.</param>
-        public void Triangulate(IList<Vector2> output)
+        public void Triangulate(IList<Vector2> output, Vector2 offset, float scale = 1.0f)
         {
-            //// Lets sanity check that first and last point haven't got the same position
-            //// Its something that often happens when importing polygon data from other formats
-            if (Points[0].Equals(Points[Points.Count - 1]))
-                Points.RemoveAt(Points.Count - 1);
-
-            //Triangulation.Triangulate(this);
-
-            //foreach (ShapeTriangle tri in _triangles)
-            //{
-            //    tri.ReversePointFlow();
-            //    output.Add(TriToVector2(tri.Points[0]));
-            //    output.Add(TriToVector2(tri.Points[1]));
-            //    output.Add(TriToVector2(tri.Points[2]));
-            //}
-
+            Points.Reverse();
             SweepContext tcx = new SweepContext();
-            tcx.AddPoints(Points);  
-            tcx.InitEdges(Points);
+            tcx.AddPoints(Points);
+
+            // Hole edges
+           // foreach (Shape p in Holes)
+           //     tcx.AddHole(p.Points);
+
             tcx.InitTriangulation();
             Sweep sweep = new Sweep();
             sweep.Triangulate(tcx);
@@ -178,9 +168,9 @@ namespace Molten
             foreach (Triangle tri in triangles)
             {
                 //tri.ReversePointFlow();
-                output.Add((Vector2)tri.GetPoint(0));
-                output.Add((Vector2)tri.GetPoint(2));
-                output.Add((Vector2)tri.GetPoint(1));
+                output.Add(((Vector2)tri.GetPoint(0) * scale) + offset);
+                output.Add(((Vector2)tri.GetPoint(2) * scale) + offset);
+                output.Add(((Vector2)tri.GetPoint(1) * scale) + offset);
             }
         }
 
@@ -192,7 +182,14 @@ namespace Molten
         {
             SweepContext tcx = new SweepContext();
             tcx.AddPoints(Points);
-            tcx.InitEdges(Points);
+
+            //// Hole edges
+            //if (Holes != null)
+            //{
+            //    foreach (Shape p in Holes)
+            //        tcx.AddHole(p.Points);
+            //}
+
             tcx.InitTriangulation();
             Sweep sweep = new Sweep();
             sweep.Triangulate(tcx);

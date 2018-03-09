@@ -98,7 +98,7 @@
     <Compile Include="Matrix3x3.cs" />
     <Compile Include="Matrix5x4.cs" />
     <Compile Include="OrientedBoundingBox.cs" />
-    <Compile Include="P2T\AdvancingFront_2.cs" />
+    <Compile Include="P2T\AdvancingFront.cs" />
     <Compile Include="P2T\Edge.cs" />
     <Compile Include="P2T\Node.cs" />
     <Compile Include="P2T\Sweep.cs" />

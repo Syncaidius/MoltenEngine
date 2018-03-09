@@ -24,7 +24,7 @@ namespace Molten
         Node _af_middle;
         Node _af_tail;
 
-        internal AdvancingFront_2 Front;
+        internal AdvancingFront Front;
         TriPoint.Comparer _cmp;
 
         internal SweepBasin Basin;
@@ -41,10 +41,17 @@ namespace Molten
             Basin = new SweepBasin();
         }
 
-        public void AddHole(List<TriPoint> polyline)
+        public void AddHole(List<TriPoint> holePoints)
         {
-            InitEdges(polyline);
-            _points.AddRange(polyline);
+            int first = _points.Count;
+            _points.AddRange(holePoints);
+            int last = _points.Count - 1;
+
+            // Sanity check first and last point to make sure they haven't got the same position
+            if (_points[first].Equals(_points[last]))
+                _points.RemoveAt(last--);
+
+            InitEdges(first, last);
         }
 
         public void AddPoint(TriPoint point)
@@ -54,7 +61,15 @@ namespace Molten
 
         public void AddPoints(List<TriPoint> points)
         {
+            int first = _points.Count;
             _points.AddRange(points);
+            int last = _points.Count - 1;
+
+            // Sanity check first and last point to make sure they haven't got the same position
+            if (_points[first].Equals(_points[last]))
+                _points.RemoveAt(last--);
+
+            InitEdges(first, last);
         }
 
         public List<Triangle> GetTriangles()
@@ -98,13 +113,12 @@ namespace Molten
             _points.Sort(_cmp);
         }
 
-        public void InitEdges(List<TriPoint> polyline)
+        private void InitEdges(int first, int last)
         {
-            int num_points = polyline.Count;
-            for(int i = 0; i < num_points; i++)
+            for(int i = first; i <= last; i++)
             {
-                int j = i < num_points - 1 ? i + 1 : 0;
-                _edge_list.Add(new Edge(polyline[i], polyline[j]));
+                int j = i < last ? i + 1 : 0;
+                _edge_list.Add(new Edge(_points[i], _points[j]));
             }
         }
 
@@ -132,8 +146,8 @@ namespace Molten
 
             _af_head = new Node(triangle.GetPoint(1), triangle);
             _af_middle = new Node(triangle.GetPoint(0), triangle);
-            _af_tail = new Node(triangle.GetPoint(2), triangle);
-            Front = new AdvancingFront_2(_af_head, _af_tail);
+            _af_tail = new Node(triangle.GetPoint(2));
+            Front = new AdvancingFront(_af_head, _af_tail);
 
             // TODO: More intuitive if head is middles next and not previous?
             //       so swap head and tail

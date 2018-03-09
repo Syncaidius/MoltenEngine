@@ -105,32 +105,6 @@ namespace Molten
             return len;
         }
 
-        //public static TriPoint operator +(TriPoint a, TriPoint b)
-        //{
-        //    return new TriPoint(a.X + b.X, a.Y + b.Y);
-        //}
-
-        //public static TriPoint operator -(TriPoint a, TriPoint b)
-        //{
-        //    return new TriPoint(a.X - b.X, a.Y - b.Y);
-        //}
-
-        //public static TriPoint operator -(TriPoint a, double s)
-        //{
-        //    return new TriPoint(a.X * s, a.Y * s);
-        //}
-
-        //public static bool operator ==(TriPoint a, TriPoint b)
-        //{
-        //    return a.X == b.X && a.Y == b.Y;
-        //}
-
-        //public static bool operator !=(TriPoint a, TriPoint b)
-        //{
-        //    // Original: return !(a.x == b.x) && !(a.y == b.y); ??????
-        //    return a.X != b.X || a.Y != b.Y;
-        //}
-
         public static double Dot(TriPoint a, TriPoint b)
         {
             return a.X * b.X + a.Y * b.Y;
@@ -158,21 +132,6 @@ namespace Molten
 
         public class Comparer : IComparer<TriPoint>
         {
-            //public int Compare(TriPoint a, TriPoint b)
-            //{
-            //    if (a.Y < b.Y)
-            //    {
-            //        return 1;
-            //    }
-            //    else if (a.Y == b.Y)
-            //    {
-            //        if (a.X < b.X)
-            //            return 1;
-            //    }
-
-            //    return 0;
-            //}
-
             public int Compare(TriPoint a, TriPoint b)
             {
                 if (a.Y < b.Y)

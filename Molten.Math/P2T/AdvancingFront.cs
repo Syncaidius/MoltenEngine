@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public class AdvancingFront_2
+    internal class AdvancingFront
     {
         internal Node _head;
         internal Node _tail;
         internal Node _search_node;
 
-        public AdvancingFront_2(Node head, Node tail)
+        internal AdvancingFront(Node head, Node tail)
         {
             _head = head;
             _tail = tail;
@@ -50,7 +50,7 @@ namespace Molten
             return null;
         }
 
-        public Node FindSearchNode(double x)
+        private Node FindSearchNode(double x)
         {
             // suppress compiler warnings "unused parameter 'x'"
             // TODO: implement BST index
@@ -92,7 +92,9 @@ namespace Molten
                         break;
                 }
             }
-            if (node != null) _search_node = node;
+            if (node != null)
+                _search_node = node;
+
             return node;
         }
     }

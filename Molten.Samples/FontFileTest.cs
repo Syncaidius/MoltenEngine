@@ -152,6 +152,11 @@ namespace Molten.Samples
             ushort[] endPoints = glyph.ContourEndPoints;
             int start = 0;
 
+            // Add 5 colors. The last color will be used when we have more points than colors.
+            List<Color> colors = new List<Color>();
+            colors.Add(Color.Orange);
+            colors.Add(Color.Yellow);
+
             // Draw outline
             Vector2 offset = new Vector2(300);
             float scale = 0.25f;
@@ -192,11 +197,7 @@ namespace Molten.Samples
             glyphBounds.Height *= scale;
 
             List<Vector2> glyphTriPoints = new List<Vector2>();
-            //glyphShapes[0].Holes.Clear();
-            glyphShapes[0].Triangulate(glyphTriPoints);
-
-            /* NOTE: Characters % ^ and capital G have a broken inner contour. FIX. 
-             */
+            glyphShapes[0].Triangulate(glyphTriPoints, offset, scale);
 
             // Use a container for doing some testing.
             _container = new SpriteBatchContainer()
@@ -209,7 +210,7 @@ namespace Molten.Samples
                     sb.DrawLine(glyphBounds.BottomRight, glyphBounds.BottomLeft, Color.Grey, 1);                    
                     sb.DrawLine(glyphBounds.BottomLeft, glyphBounds.TopLeft, Color.Grey, 1);
 
-                    //sb.DrawTriangleList(triPoints, Color.Yellow);
+                    sb.DrawTriangleList(glyphTriPoints, colors);
                     for (int i = 0; i < linePoints.Count; i++)
                         sb.DrawLines(linePoints[i], Color.Red, 2);
 

@@ -110,7 +110,7 @@ namespace Molten.Graphics
             _clipZones[_curClip].ClipBounds = bounds;
         }
 
-        protected SpriteCluster ConfigureNewCluster(SpriteClipZone clip, ITexture2D texture, IMaterial material, ClusterFormat format)
+        protected SpriteCluster ConfigureNewCluster(SpriteClipZone clip, ITexture2D texture, IMaterial material, ClusterFormat format, int needed)
         {
             if (_clusterBank.Length == _clusterCount)
             {
@@ -118,7 +118,7 @@ namespace Molten.Graphics
 
                 // Initialize new cluster slots.
                 for (int i = _clusterCount; i < _clusterBank.Length; i++)
-                    _clusterBank[i] = new SpriteCluster(SPRITE_EXPANSION);
+                    _clusterBank[i] = new SpriteCluster(SPRITE_EXPANSION + needed);
             }
 
             SpriteCluster cluster = _clusterBank[_clusterCount];
@@ -128,6 +128,9 @@ namespace Molten.Graphics
             cluster.drawnTo = 0;
             cluster.drawnFrom = 0;
             cluster.SpriteCount = 0;
+
+            if (cluster.Sprites.Length < needed)
+                Array.Resize(ref cluster.Sprites, needed + SPRITE_EXPANSION);
 
             // Now assign the cluster to the current clip zone
             int clipCluster = clip.ClusterCount;
@@ -620,14 +623,14 @@ namespace Molten.Graphics
                 if (clip.ClusterCount == 0)
                 {
                     // Prepare a new cluster to match the current cache cluster.
-                    cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material, cacheCluster.Format);
+                    cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material, cacheCluster.Format, cacheCluster.Sprites.Length);
                 }
                 else
                 {
                     cluster = clip.CurCluster;
                     // See if we can merge the first cache cluster into the current. If not, create a new cluster to start copying to.
                     if (cluster.Texture != cacheCluster.Texture || cluster.Material != cacheCluster.Material || cluster.Format != cacheCluster.Format)
-                        cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material, cacheCluster.Format);
+                        cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material, cacheCluster.Format, cacheCluster.Sprites.Length);
                 }
 
 
@@ -646,7 +649,7 @@ namespace Molten.Graphics
                     if (cacheClusterID < cacheClip.ClusterCount)
                     { 
                         cacheCluster = cache._clusterBank[cacheClip.ClusterIDs[cacheClusterID]];
-                        cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material, cacheCluster.Format);
+                        cluster = ConfigureNewCluster(clip, cacheCluster.Texture, cacheCluster.Material, cacheCluster.Format, cacheCluster.Sprites.Length);
                     }
                     else
                     {
@@ -664,14 +667,14 @@ namespace Molten.Graphics
             // If the current cluster is for a different texture, start a new cluster.
             if (clip.ClusterCount == 0)
             {
-                cluster = ConfigureNewCluster(clip, texture, material, format);
+                cluster = ConfigureNewCluster(clip, texture, material, format, needed);
             }
             else
             {
                 cluster = clip.CurCluster;
                 if (cluster.Texture != texture || cluster.Material != material || cluster.Format != format)
                 {
-                    cluster = ConfigureNewCluster(clip, texture, material, format);
+                    cluster = ConfigureNewCluster(clip, texture, material, format, needed);
                 }
                 else
                 {
