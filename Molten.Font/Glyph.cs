@@ -103,12 +103,13 @@ namespace Molten.Font
                 {
                     p = _points[j];
 
+                    // If off curve, it's a bezier control point.
                     if (p.IsOnCurve)
                     {
                         PlotCurve(shape, prevCurvePoint, p.Point, cp, pointsPerCurve, curveIncrement);
                         prevCurvePoint = p.Point;
 
-                        // TODO improve with winding number system: https://en.wikipedia.org/wiki/Winding_number
+                        // Use winding number/weight to determine winding: https://en.wikipedia.org/wiki/Winding_number
                         if (curWindPoint < windingPoints.Length)
                         {
                             windingPoints[curWindPoint++] = p.Point;
@@ -129,7 +130,7 @@ namespace Molten.Font
                     }
                 }
 
-                // Close contour
+                // Close contour, by linking the end point back to the start point.
                 if (cp.Count > 0)
                     PlotCurve(shape, prevCurvePoint, (Vector2)shape.Points[0], cp, pointsPerCurve, curveIncrement);
 
@@ -143,7 +144,9 @@ namespace Molten.Font
                         shape.Points[j].Y = _bounds.Height - shape.Points[j].Y;
                 }
 
-                //shape.Points.Add(shape.Points[0]);
+                // Add the missing closure point after flipping.
+                if(cp.Count == 0)
+                    shape.Points.Add(shape.Points[0]);
 
                 if (windingNumber > 0)
                     result.Add(shape);
