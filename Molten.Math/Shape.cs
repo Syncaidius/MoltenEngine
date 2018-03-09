@@ -152,6 +152,11 @@ namespace Molten
         /// <param name="output">The output list.</param>
         public void Triangulate(IList<Vector2> output)
         {
+            // Lets sanity check that first and last point haven't got the same position
+            // Its something that often happens when importing polygon data from other formats
+            if (Points[0].Equals(Points[Points.Count - 1]))
+                Points.RemoveAt(Points.Count - 1);
+
             Triangulation.Triangulate(this);
 
             foreach (ShapeTriangle tri in _triangles)
@@ -216,11 +221,6 @@ namespace Molten
 
             if (Points.Count < 3)
                 throw new InvalidOperationException("Shape has fewer than 3 points");
-
-            // Lets sanity check that first and last point haven't got the same position
-            // Its something that often happens when importing polygon data from other formats
-            if (Points[0].Equals(Points[Points.Count - 1]))
-                Points.RemoveAt(Points.Count - 1);
 
             // Outer constraints
             for (int i = 0; i < Points.Count - 1; i++)

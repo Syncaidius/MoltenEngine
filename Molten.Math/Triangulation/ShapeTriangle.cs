@@ -81,6 +81,8 @@ namespace Molten
 
         public bool Contains(ShapePoint p) { return Triangulation.Contains(Points, p); }
 
+
+        public bool Contains(ShapePoint p, ShapePoint q) { return Triangulation.Contains(Points, p) && Triangulation.Contains(Points, q); }
         /// <summary>
         /// Update neighbor pointers
         /// </summary>

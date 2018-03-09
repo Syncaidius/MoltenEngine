@@ -98,6 +98,12 @@
     <Compile Include="Matrix3x3.cs" />
     <Compile Include="Matrix5x4.cs" />
     <Compile Include="OrientedBoundingBox.cs" />
+    <Compile Include="P2T\AdvancingFront_2.cs" />
+    <Compile Include="P2T\Edge.cs" />
+    <Compile Include="P2T\P2T.cs" />
+    <Compile Include="P2T\SweepContext.cs" />
+    <Compile Include="P2T\Triangle.cs" />
+    <Compile Include="P2T\TriPoint.cs" />
     <Compile Include="PerlinNoise2D.cs" />
     <Compile Include="PerlinNoise.cs" />
     <Compile Include="Plane.cs" />
@@ -137,5 +143,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

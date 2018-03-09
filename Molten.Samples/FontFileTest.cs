@@ -191,6 +191,10 @@ namespace Molten.Samples
             glyphBounds.Width *= scale;
             glyphBounds.Height *= scale;
 
+            List<Vector2> glyphTriPoints = new List<Vector2>();
+            //glyphShapes[0].Holes.Clear();
+            glyphShapes[0].Triangulate(glyphTriPoints);
+
             /* NOTE: Characters % ^ and capital G have a broken inner contour. FIX. 
              */
 

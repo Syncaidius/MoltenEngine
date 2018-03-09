@@ -112,7 +112,8 @@ namespace Molten
 
             // Only need to check +epsilon since point never have smaller 
             // x value than node due to how we fetch nodes from the front
-            if (point.X <= node.Point.X + TriangulationUtil.EPSILON) Fill(tcx, node);
+            if (point.X <= node.Point.X + TriangulationUtil.EPSILON)
+                Fill(tcx, node);
 
             tcx.AddNode(newNode);
 
@@ -126,9 +127,7 @@ namespace Molten
         private static AdvancingFrontNode NewFrontTriangle(TriangulationContext tcx, ShapePoint point, AdvancingFrontNode node)
         {
             AdvancingFrontNode newNode;
-            ShapeTriangle triangle;
-
-            triangle = new ShapeTriangle(point, node.Point, node.Next.Point);
+            ShapeTriangle triangle = new ShapeTriangle(point, node.Point, node.Next.Point);
             triangle.MarkNeighbor(node.Triangle);
             tcx.Triangles.Add(triangle);
 
@@ -147,36 +146,25 @@ namespace Molten
 
         private static void EdgeEvent(TriangulationContext tcx, TriangulationConstraint edge, AdvancingFrontNode node)
         {
-            try
-            {
-                tcx.EdgeEvent.ConstrainedEdge = edge;
-                tcx.EdgeEvent.Right = edge.P.X > edge.Q.X;
+            tcx.EdgeEvent.ConstrainedEdge = edge;
+            tcx.EdgeEvent.Right = edge.P.X > edge.Q.X;
 
-                if (IsEdgeSideOfTriangle(node.Triangle, edge.P, edge.Q))
-                    return;
+            if (IsEdgeSideOfTriangle(node.Triangle, edge.P, edge.Q))
+                return;
 
-                // For now we will do all needed filling
-                // TODO: integrate with flip process might give some better performance 
-                //       but for now this avoid the issue with cases that needs both flips and fills
-                FillEdgeEvent(tcx, edge, node);
-                EdgeEvent(tcx, edge.P, edge.Q, node.Triangle, edge.Q);
-            }
-            catch (PointOnEdgeException e)
-            {
-                throw;
-            }
+            // For now we will do all needed filling
+            // TODO: integrate with flip process might give some better performance 
+            //       but for now this avoid the issue with cases that needs both flips and fills
+            FillEdgeEvent(tcx, edge, node);
+            EdgeEvent(tcx, edge.P, edge.Q, node.Triangle, edge.Q);
         }
 
         private static void FillEdgeEvent(TriangulationContext tcx, TriangulationConstraint edge, AdvancingFrontNode node)
         {
             if (tcx.EdgeEvent.Right)
-            {
                 FillRightAboveEdgeEvent(tcx, edge, node);
-            }
             else
-            {
                 FillLeftAboveEdgeEvent(tcx, edge, node);
-            }
         }
 
         private static void FillRightConcaveEdgeEvent(TriangulationContext tcx, TriangulationConstraint edge, AdvancingFrontNode node)
@@ -320,7 +308,6 @@ namespace Molten
                     // Retry this one
                     FillLeftBelowEdgeEvent(tcx, edge, node);
                 }
-
             }
         }
 
@@ -344,10 +331,15 @@ namespace Molten
         private static bool IsEdgeSideOfTriangle(ShapeTriangle triangle, ShapePoint ep, ShapePoint eq)
         {
             int index = triangle.EdgeIndex(ep, eq);
-            if (index == -1) return false;
+            if (index == -1)
+                return false;
+
             triangle.MarkConstrainedEdge(index);
             triangle = triangle.Neighbors[index];
-            if (triangle != null) triangle.MarkConstrainedEdge(ep, eq);
+
+            if (triangle != null)
+                triangle.MarkConstrainedEdge(ep, eq);
+
             return true;
         }
 
@@ -361,23 +353,41 @@ namespace Molten
             Winding o1 = TriangulationUtil.GetWinding(eq, p1, ep);
             if (o1 == Winding.Collinear)
             {
-                // TODO: Split edge in two
-                ////            splitEdge( ep, eq, p1 );
-                //            edgeEvent( tcx, p1, eq, triangle, point );
-                //            edgeEvent( tcx, ep, p1, triangle, p1 );
-                //            return;
-                throw new PointOnEdgeException("EdgeEvent - Point on constrained edge not supported yet", eq, p1, ep);
+                if (triangle.Contains(eq, p1))
+                {
+                    triangle.MarkConstrainedEdge(eq, p1);
+                    // We are modifying the constraint maybe it would be better to
+                    // not change the given constraint and just keep a variable for the new constraint
+                    tcx.EdgeEvent.ConstrainedEdge.Q = p1;
+                    triangle = triangle.NeighborAcrossFrom(point);
+                    EdgeEvent(tcx, ep, p1, triangle, p1);
+                }
+                else
+                {
+                    throw new NotSupportedException("EdgeEvent - collinear points not supported");
+                }
+
+                return;
             }
 
             p2 = triangle.PointCWFrom(point);
             Winding o2 = TriangulationUtil.GetWinding(eq, p2, ep);
             if (o2 == Winding.Collinear)
             {
-                // TODO: Split edge in two
-                //            edgeEvent( tcx, p2, eq, triangle, point );
-                //            edgeEvent( tcx, ep, p2, triangle, p2 );
-                //            return;
-                throw new PointOnEdgeException("EdgeEvent - Point on constrained edge not supported yet", eq, p2, ep);
+                if (triangle.Contains(eq, p2))
+                {
+                    triangle.MarkConstrainedEdge(eq, p2);
+                    // We are modifying the constraint maybe it would be better to
+                    // not change the given constraint and just keep a variable for the new constraint
+                    tcx.EdgeEvent.ConstrainedEdge.Q = p2;
+                    triangle = triangle.NeighborAcrossFrom(point);
+                    EdgeEvent(tcx, ep, p2, triangle, p2);
+                }
+                else
+                {
+                    throw new NotSupportedException("EdgeEvent - collinear points not supported");
+                }
+                return;
             }
 
             if (o1 == o2)
@@ -385,13 +395,9 @@ namespace Molten
                 // Need to decide if we are rotating CW or CCW to get to a triangle
                 // that will cross edge
                 if (o1 == Winding.Clockwise)
-                {
                     triangle = triangle.NeighborCCWFrom(point);
-                }
                 else
-                {
                     triangle = triangle.NeighborCWFrom(point);
-                }
                 EdgeEvent(tcx, ep, eq, triangle, point);
             }
             else
