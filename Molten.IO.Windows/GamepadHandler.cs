@@ -136,23 +136,23 @@ namespace Molten.IO
         /// <summary>returns the current state of the left thumb stick.</summary>
         /// <param name="playerIndex">The player index of the controller to read from.</param>
         /// <returns>A vector2 containing the current values of the thumbstick.</returns>
-        public Vector2 LeftThumbstick()
+        public Vector2F LeftThumbstick()
         {
             //calculate percentage of left thumbstick
             float xPercent = _state.LeftThumbX / 32767f;
             float yPercent = _state.LeftThumbY / 32767f;
-            return new Vector2(xPercent, yPercent);
+            return new Vector2F(xPercent, yPercent);
         }
 
         /// <summary>returns the current state of the right thumb stick.</summary>
         /// <param name="playerIndex">The player index of the controller to read from.</param>
         /// <returns>A vector2 containing the current values of the thumbstick.</returns>
-        public Vector2 RightThumbstick()
+        public Vector2F RightThumbstick()
         {
             //calculate percentage of left thumbstick
             float xPercent = _state.RightThumbX / 32767f;
             float yPercent = _state.RightThumbY / 32767f;
-            return new Vector2(xPercent, yPercent);
+            return new Vector2F(xPercent, yPercent);
         }
 
         /// <summary>Returns the current value of the left trigger.</summary>

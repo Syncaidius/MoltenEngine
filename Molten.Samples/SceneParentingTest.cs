@@ -30,51 +30,51 @@ namespace Molten.Samples
 
             _mesh = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
             VertexColor[] verts = new VertexColor[]{
-                new VertexColor(new Vector3(-1,-1,-1), Color.Red), //front
-                new VertexColor(new Vector3(-1,1,-1), Color.Red),
-                new VertexColor(new Vector3(1,1,-1), Color.Red),
-                new VertexColor(new Vector3(-1,-1,-1), Color.Red),
-                new VertexColor(new Vector3(1,1,-1), Color.Red),
-                new VertexColor(new Vector3(1,-1,-1), Color.Red),
+                new VertexColor(new Vector3F(-1,-1,-1), Color.Red), //front
+                new VertexColor(new Vector3F(-1,1,-1), Color.Red),
+                new VertexColor(new Vector3F(1,1,-1), Color.Red),
+                new VertexColor(new Vector3F(-1,-1,-1), Color.Red),
+                new VertexColor(new Vector3F(1,1,-1), Color.Red),
+                new VertexColor(new Vector3F(1,-1,-1), Color.Red),
 
-                new VertexColor(new Vector3(-1,-1,1), Color.Blue), //back
-                new VertexColor(new Vector3(1,1,1), Color.Blue),
-                new VertexColor(new Vector3(-1,1,1), Color.Blue),
-                new VertexColor(new Vector3(-1,-1,1),Color.Blue),
-                new VertexColor(new Vector3(1,-1,1), Color.Blue),
-                new VertexColor(new Vector3(1,1,1), Color.Blue),
+                new VertexColor(new Vector3F(-1,-1,1), Color.Blue), //back
+                new VertexColor(new Vector3F(1,1,1), Color.Blue),
+                new VertexColor(new Vector3F(-1,1,1), Color.Blue),
+                new VertexColor(new Vector3F(-1,-1,1),Color.Blue),
+                new VertexColor(new Vector3F(1,-1,1), Color.Blue),
+                new VertexColor(new Vector3F(1,1,1), Color.Blue),
 
-                new VertexColor(new Vector3(-1,1,-1), Color.Yellow), //top
-                new VertexColor(new Vector3(-1,1,1), Color.Yellow),
-                new VertexColor(new Vector3(1,1,1), Color.Yellow),
-                new VertexColor(new Vector3(-1,1,-1), Color.Yellow),
-                new VertexColor(new Vector3(1,1,1), Color.Yellow),
-                new VertexColor(new Vector3(1,1,-1), Color.Yellow),
+                new VertexColor(new Vector3F(-1,1,-1), Color.Yellow), //top
+                new VertexColor(new Vector3F(-1,1,1), Color.Yellow),
+                new VertexColor(new Vector3F(1,1,1), Color.Yellow),
+                new VertexColor(new Vector3F(-1,1,-1), Color.Yellow),
+                new VertexColor(new Vector3F(1,1,1), Color.Yellow),
+                new VertexColor(new Vector3F(1,1,-1), Color.Yellow),
 
-                new VertexColor(new Vector3(-1,-1,-1), Color.Purple), //bottom
-                new VertexColor(new Vector3(1,-1,1), Color.Purple),
-                new VertexColor(new Vector3(-1,-1,1), Color.Purple),
-                new VertexColor(new Vector3(-1,-1,-1), Color.Purple),
-                new VertexColor(new Vector3(1,-1,-1), Color.Purple),
-                new VertexColor(new Vector3(1,-1,1), Color.Purple),
+                new VertexColor(new Vector3F(-1,-1,-1), Color.Purple), //bottom
+                new VertexColor(new Vector3F(1,-1,1), Color.Purple),
+                new VertexColor(new Vector3F(-1,-1,1), Color.Purple),
+                new VertexColor(new Vector3F(-1,-1,-1), Color.Purple),
+                new VertexColor(new Vector3F(1,-1,-1), Color.Purple),
+                new VertexColor(new Vector3F(1,-1,1), Color.Purple),
 
-                new VertexColor(new Vector3(-1,-1,-1), Color.Green), //left
-                new VertexColor(new Vector3(-1,-1,1), Color.Green),
-                new VertexColor(new Vector3(-1,1,1), Color.Green),
-                new VertexColor(new Vector3(-1,-1,-1), Color.Green),
-                new VertexColor(new Vector3(-1,1,1), Color.Green),
-                new VertexColor(new Vector3(-1,1,-1), Color.Green),
+                new VertexColor(new Vector3F(-1,-1,-1), Color.Green), //left
+                new VertexColor(new Vector3F(-1,-1,1), Color.Green),
+                new VertexColor(new Vector3F(-1,1,1), Color.Green),
+                new VertexColor(new Vector3F(-1,-1,-1), Color.Green),
+                new VertexColor(new Vector3F(-1,1,1), Color.Green),
+                new VertexColor(new Vector3F(-1,1,-1), Color.Green),
 
-                new VertexColor(new Vector3(1,-1,-1), Color.White), //right
-                new VertexColor(new Vector3(1,1,1), Color.White),
-                new VertexColor(new Vector3(1,-1,1), Color.White),
-                new VertexColor(new Vector3(1,-1,-1), Color.White),
-                new VertexColor(new Vector3(1,1,-1), Color.White),
-                new VertexColor(new Vector3(1,1,1), Color.White),
+                new VertexColor(new Vector3F(1,-1,-1), Color.White), //right
+                new VertexColor(new Vector3F(1,1,1), Color.White),
+                new VertexColor(new Vector3F(1,-1,1), Color.White),
+                new VertexColor(new Vector3F(1,-1,-1), Color.White),
+                new VertexColor(new Vector3F(1,1,-1), Color.White),
+                new VertexColor(new Vector3F(1,1,1), Color.White),
             };
 
             _mesh.SetVertices(verts);
-            SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
+            SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
         }
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)

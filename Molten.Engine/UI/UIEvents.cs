@@ -11,10 +11,10 @@ namespace Molten.UI
 
     public struct UIEventData<T> where T : struct
     {
-        public Vector2 Position;
+        public Vector2F Position;
 
         /// <summary>The movement delta. For the mouse scroll wheel, this is stored the Y axis.</summary>
-        public Vector2 Delta;
+        public Vector2F Delta;
 
         /// <summary>The value which describes the button or key that was pressed.</summary>
         public T InputValue;

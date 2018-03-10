@@ -24,8 +24,8 @@ namespace Molten.UI
         bool _isFontDirty = true;
         bool _isTextDirty = false;
 
-        Vector2 _textSize;
-        Vector2 _textPos;
+        Vector2F _textSize;
+        Vector2F _textPos;
         Rectangle _bounds;
         Engine _engine;
 
@@ -74,7 +74,7 @@ namespace Molten.UI
         {
             _isTextDirty = false;
             _textSize = _font.MeasureString(_text);
-            _textPos = new Vector2(_bounds.X, _bounds.Y);
+            _textPos = new Vector2F(_bounds.X, _bounds.Y);
 
             switch (_hAlignment)
             {
@@ -104,7 +104,7 @@ namespace Molten.UI
             Refresh();
 
             if (_shadowsEnabled)
-                sb.DrawString(_font, _text, _textPos + new Vector2(3), _shadowColor);
+                sb.DrawString(_font, _text, _textPos + new Vector2F(3), _shadowColor);
 
             if (_text != null)
                 sb.DrawString(_font, _text, _textPos, _color);
@@ -115,12 +115,12 @@ namespace Molten.UI
             // TODO log de-reference of current font (needs usage tracking in SpriteFont).
         }
 
-        public Vector2 GetSize()
+        public Vector2F GetSize()
         {
             return _textSize;
         }
 
-        public Vector2 GetSize(int maxLength)
+        public Vector2F GetSize(int maxLength)
         {
             if (_isFontDirty)
                 RefreshFont();
@@ -136,7 +136,7 @@ namespace Molten.UI
             return _font.MeasureString(_text, startIndex, length);
         }
 
-        public int NearestCharacter(Vector2 location)
+        public int NearestCharacter(Vector2F location)
         {
             return _font.NearestCharacter(_text, location);
         }
@@ -316,7 +316,7 @@ namespace Molten.UI
 
         /// <summary>Gets the actual position of the rendered text.</summary>
         [Browsable(false)]
-        public Vector2 ActualPosition
+        public Vector2F ActualPosition
         {
             get { return _textPos; }
         }

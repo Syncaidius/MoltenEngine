@@ -14,6 +14,6 @@ namespace Molten.Graphics
 
         /// <summary>Gets the thread group size of the sub-effect that will be applied during dispatch. 
         /// This is defined by <see cref="numthreads"/> in a sub-effect's HLSL code.</summary>
-        IntVector3 ThreadGroupSize { get; }
+        Vector3I ThreadGroupSize { get; }
     }
 }

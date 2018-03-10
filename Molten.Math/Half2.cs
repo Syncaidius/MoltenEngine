@@ -95,23 +95,23 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Vector2"/> to <see cref="Half2"/>.
+        /// Performs an explicit conversion from <see cref="Vector2F"/> to <see cref="Half2"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Half2(Vector2 value)
+        public static implicit operator Half2(Vector2F value)
         {
             return new Half2(value.X, value.Y);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Half2"/> to <see cref="Vector2"/>.
+        /// Performs an explicit conversion from <see cref="Half2"/> to <see cref="Vector2F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Vector2(Half2 value)
+        public static implicit operator Vector2F(Half2 value)
         {
-            return new Vector2(value.X, value.Y);
+            return new Vector2F(value.X, value.Y);
         }
         
         /// <summary>

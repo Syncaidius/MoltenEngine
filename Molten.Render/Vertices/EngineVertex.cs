@@ -12,35 +12,35 @@ namespace Molten.Graphics
     {
         [VertexElement(VertexElementType.Vector4, VertexElementUsage.Position, 0)]
         /// <summary>Gets or sets the position as a Vector4</summary>
-        Vector4 Position4;
+        Vector4F Position4;
 
         [VertexElement(VertexElementType.Vector3, VertexElementUsage.Normal, 0)]
-        public Vector3 Normal;
+        public Vector3F Normal;
 
         [VertexElement(VertexElementType.Vector3, VertexElementUsage.Tangent, 0)]
-        public Vector3 Tangent;
+        public Vector3F Tangent;
 
         [VertexElement(VertexElementType.Vector3, VertexElementUsage.Binormal, 0)]
-        public Vector3 BiNormal;
+        public Vector3F BiNormal;
 
         [VertexElement(VertexElementType.Vector2, VertexElementUsage.TextureCoordinate, 0)]
-        public Vector2 UV;
+        public Vector2F UV;
 
-        public EngineVertex(Vector4 position, Vector3 normal, Vector2 textureCoordinates)
+        public EngineVertex(Vector4F position, Vector3F normal, Vector2F textureCoordinates)
         {
             this.Position4 = position;
             this.Normal = normal;
-            this.Tangent = new Vector3();
-            this.BiNormal = new Vector3();
+            this.Tangent = new Vector3F();
+            this.BiNormal = new Vector3F();
             this.UV = textureCoordinates;
         }
 
-        public EngineVertex(Vector3 position, Vector3 normal, Vector2 textureCoordinates)
+        public EngineVertex(Vector3F position, Vector3F normal, Vector2F textureCoordinates)
         {
-            this.Position4 = new Vector4(position, 1);
+            this.Position4 = new Vector4F(position, 1);
             this.Normal = normal;
-            this.Tangent = new Vector3();
-            this.BiNormal = new Vector3();
+            this.Tangent = new Vector3F();
+            this.BiNormal = new Vector3F();
             this.UV = textureCoordinates;
         }
 

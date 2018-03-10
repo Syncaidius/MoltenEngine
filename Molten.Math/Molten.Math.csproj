@@ -87,9 +87,12 @@
     <Compile Include="Half3.cs" />
     <Compile Include="Half4.cs" />
     <Compile Include="HalfUtils.cs" />
-    <Compile Include="IntVector2.cs" />
-    <Compile Include="IntVector3.cs" />
-    <Compile Include="IntVector4.cs" />
+    <Compile Include="Vector2D.cs" />
+    <Compile Include="Vector2I.cs" />
+    <Compile Include="Vector3D.cs" />
+    <Compile Include="Vector3I.cs" />
+    <Compile Include="Vector4D.cs" />
+    <Compile Include="Vector4I.cs" />
     <Compile Include="MathHelper.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="Matrix2x2.cs" />
@@ -122,12 +125,12 @@
     <Compile Include="RectangleF.cs" />
     <Compile Include="RigidTransform.cs" />
     <Compile Include="TriangleSidedness.cs" />
-    <Compile Include="UIntVector2.cs" />
-    <Compile Include="UIntVector3.cs" />
-    <Compile Include="UIntVector4.cs" />
-    <Compile Include="Vector2.cs" />
-    <Compile Include="Vector3.cs" />
-    <Compile Include="Vector4.cs" />
+    <Compile Include="Vector2UI.cs" />
+    <Compile Include="Vector3UI.cs" />
+    <Compile Include="Vector4UI.cs" />
+    <Compile Include="Vector2F.cs" />
+    <Compile Include="Vector3F.cs" />
+    <Compile Include="Vector4F.cs" />
     <Compile Include="Viewport.cs" />
     <Compile Include="ViewportF.cs" />
   </ItemGroup>

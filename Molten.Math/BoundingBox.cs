@@ -60,19 +60,19 @@ namespace Molten
         /// <summary>
         /// The minimum point of the box.
         /// </summary>
-        public Vector3 Min;
+        public Vector3F Min;
 
         /// <summary>
         /// The maximum point of the box.
         /// </summary>
-        public Vector3 Max;
+        public Vector3F Max;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BoundingBox"/> struct.
         /// </summary>
         /// <param name="minimum">The minimum vertex of the bounding box.</param>
         /// <param name="maximum">The maximum vertex of the bounding box.</param>
-        public BoundingBox(Vector3 minimum, Vector3 maximum)
+        public BoundingBox(Vector3F minimum, Vector3F maximum)
         {
             this.Min = minimum;
             this.Max = maximum;
@@ -82,9 +82,9 @@ namespace Molten
         /// Retrieves the eight corners of the bounding box.
         /// </summary>
         /// <returns>An array of points representing the eight corners of the bounding box.</returns>
-        public Vector3[] GetCorners()
+        public Vector3F[] GetCorners()
         {
-            Vector3[] results = new Vector3[8];
+            Vector3F[] results = new Vector3F[8];
             GetCorners(results);
             return results;
         }
@@ -93,16 +93,16 @@ namespace Molten
         /// Retrieves the eight corners of the bounding box.
         /// </summary>
         /// <returns>An array of points representing the eight corners of the bounding box.</returns>
-        public void GetCorners(Vector3[] corners)
+        public void GetCorners(Vector3F[] corners)
         {
-            corners[0] = new Vector3(Min.X, Max.Y, Max.Z);
-            corners[1] = new Vector3(Max.X, Max.Y, Max.Z);
-            corners[2] = new Vector3(Max.X, Min.Y, Max.Z);
-            corners[3] = new Vector3(Min.X, Min.Y, Max.Z);
-            corners[4] = new Vector3(Min.X, Max.Y, Min.Z);
-            corners[5] = new Vector3(Max.X, Max.Y, Min.Z);
-            corners[6] = new Vector3(Max.X, Min.Y, Min.Z);
-            corners[7] = new Vector3(Min.X, Min.Y, Min.Z);
+            corners[0] = new Vector3F(Min.X, Max.Y, Max.Z);
+            corners[1] = new Vector3F(Max.X, Max.Y, Max.Z);
+            corners[2] = new Vector3F(Max.X, Min.Y, Max.Z);
+            corners[3] = new Vector3F(Min.X, Min.Y, Max.Z);
+            corners[4] = new Vector3F(Min.X, Max.Y, Min.Z);
+            corners[5] = new Vector3F(Max.X, Max.Y, Min.Z);
+            corners[6] = new Vector3F(Max.X, Min.Y, Min.Z);
+            corners[7] = new Vector3F(Min.X, Min.Y, Min.Z);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace Molten
         /// <param name="b">Second vertex of the triangle.</param>
         /// <param name="c">Third vertex of the triangle.</param>
         /// <param name="aabb">Bounding box of the triangle.</param>
-        public static void FromTriangle(ref Vector3 a, ref Vector3 b, ref Vector3 c, out BoundingBox aabb)
+        public static void FromTriangle(ref Vector3F a, ref Vector3F b, ref Vector3F c, out BoundingBox aabb)
         {
 #if !WINDOWS
             aabb = new BoundingBox();
@@ -182,7 +182,7 @@ namespace Molten
         /// <param name="a">First vertex of the triangle.</param>
         /// <param name="b">Second vertex of the triangle.</param>
         /// <param name="c">Third vertex of the triangle.</param>
-        public static BoundingBox FromTriangle(ref Vector3 a, ref Vector3 b, ref Vector3 c)
+        public static BoundingBox FromTriangle(ref Vector3F a, ref Vector3F b, ref Vector3F c)
         {
             BoundingBox r;
             FromTriangle(ref a, ref b, ref c, out r);
@@ -217,9 +217,9 @@ namespace Molten
         /// </summary>
         /// <param name="ray">The ray to test.</param>
         /// <param name="point">When the method completes, contains the point of intersection,
-        /// or <see cref="Vector3.Zero"/> if there was no intersection.</param>
+        /// or <see cref="Vector3F.Zero"/> if there was no intersection.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public bool Intersects(ref Ray ray, out Vector3 point)
+        public bool Intersects(ref Ray ray, out Vector3F point)
         {
             return CollisionHelper.RayIntersectsBox(ref ray, ref this, out point);
         }
@@ -313,7 +313,7 @@ namespace Molten
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>The type of containment the two objects have.</returns>
-        public ContainmentType Contains(ref Vector3 point)
+        public ContainmentType Contains(ref Vector3F point)
         {
             return CollisionHelper.BoxContainsPoint(ref this, ref point);
         }
@@ -323,7 +323,7 @@ namespace Molten
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>The type of containment the two objects have.</returns>
-        public ContainmentType Contains(Vector3 point)
+        public ContainmentType Contains(Vector3F point)
         {
             return Contains(ref point);
         }
@@ -388,18 +388,18 @@ namespace Molten
         /// <param name="points">The points that will be contained by the box.</param>
         /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="points"/> is <c>null</c>.</exception>
-        public static void FromPoints(Vector3[] points, out BoundingBox result)
+        public static void FromPoints(Vector3F[] points, out BoundingBox result)
         {
             if (points == null)
                 throw new ArgumentNullException("points");
 
-            Vector3 min = new Vector3(float.MaxValue);
-            Vector3 max = new Vector3(float.MinValue);
+            Vector3F min = new Vector3F(float.MaxValue);
+            Vector3F max = new Vector3F(float.MinValue);
 
             for (int i = 0; i < points.Length; ++i)
             {
-                Vector3.Min(ref min, ref points[i], out min);
-                Vector3.Max(ref max, ref points[i], out max);
+                Vector3F.Min(ref min, ref points[i], out min);
+                Vector3F.Max(ref max, ref points[i], out max);
             }
 
             result = new BoundingBox(min, max);
@@ -410,7 +410,7 @@ namespace Molten
         /// </summary>
         /// <param name="points">Points to enclose with a bounding box.</param>
         /// <returns>Bounding box which contains the list of points.</returns>
-        public static BoundingBox FromPoints(IList<Vector3> points)
+        public static BoundingBox FromPoints(IList<Vector3F> points)
         {
             BoundingBox aabb;
             if (points.Count == 0)
@@ -419,7 +419,7 @@ namespace Molten
             aabb.Max = aabb.Min;
             for (int i = points.Count - 1; i >= 1; i--)
             {
-                Vector3 v = points[i];
+                Vector3F v = points[i];
                 if (v.X < aabb.Min.X)
                     aabb.Min.X = v.X;
                 else if (v.X > aabb.Max.X)
@@ -456,7 +456,7 @@ namespace Molten
         /// </summary>
         /// <param name="boundingBox">Bounding box to expand.</param>
         /// <param name="sweep">Sweep to expand the bounding box with.</param>
-        public static void SweepExpand(ref BoundingBox boundingBox, ref Vector3 sweep)
+        public static void SweepExpand(ref BoundingBox boundingBox, ref Vector3F sweep)
         {
             if (sweep.X > 0)
                 boundingBox.Max.X += sweep.X;
@@ -480,18 +480,18 @@ namespace Molten
         /// <param name="points">The points that will be contained by the box.</param>
         /// <returns>The newly constructed bounding box.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="points"/> is <c>null</c>.</exception>
-        public static BoundingBox FromPoints(Vector3[] points)
+        public static BoundingBox FromPoints(Vector3F[] points)
         {
             if (points == null)
                 throw new ArgumentNullException("points");
 
-            Vector3 min = new Vector3(float.MaxValue);
-            Vector3 max = new Vector3(float.MinValue);
+            Vector3F min = new Vector3F(float.MaxValue);
+            Vector3F max = new Vector3F(float.MinValue);
 
             for (int i = 0; i < points.Length; ++i)
             {
-                Vector3.Min(ref min, ref points[i], out min);
-                Vector3.Max(ref max, ref points[i], out max);
+                Vector3F.Min(ref min, ref points[i], out min);
+                Vector3F.Max(ref max, ref points[i], out max);
             }
 
             return new BoundingBox(min, max);
@@ -504,8 +504,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
         public static void FromSphere(ref BoundingSphere sphere, out BoundingBox result)
         {
-            result.Min = new Vector3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius);
-            result.Max = new Vector3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius);
+            result.Min = new Vector3F(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius);
+            result.Max = new Vector3F(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius);
         }
 
         /// <summary>
@@ -516,8 +516,8 @@ namespace Molten
         public static BoundingBox FromSphere(BoundingSphere sphere)
         {
             BoundingBox box;
-            box.Min = new Vector3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius);
-            box.Max = new Vector3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius);
+            box.Min = new Vector3F(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius);
+            box.Max = new Vector3F(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius);
             return box;
         }
 
@@ -530,8 +530,8 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Encapsulate(ref BoundingBox value1, ref BoundingBox value2, out BoundingBox result)
         {
-            Vector3.Min(ref value1.Min, ref value2.Min, out result.Min);
-            Vector3.Max(ref value1.Max, ref value2.Max, out result.Max);
+            Vector3F.Min(ref value1.Min, ref value2.Min, out result.Min);
+            Vector3F.Max(ref value1.Max, ref value2.Max, out result.Max);
         }
 
         /// <summary>
@@ -544,8 +544,8 @@ namespace Molten
         public static BoundingBox Merge(BoundingBox value1, BoundingBox value2)
         {
             BoundingBox box;
-            Vector3.Min(ref value1.Min, ref value2.Min, out box.Min);
-            Vector3.Max(ref value1.Max, ref value2.Max, out box.Max);
+            Vector3F.Min(ref value1.Min, ref value2.Min, out box.Min);
+            Vector3F.Max(ref value1.Max, ref value2.Max, out box.Max);
             return box;
         }
 
@@ -557,8 +557,8 @@ namespace Molten
         /// <param name="result">Smallest bounding box which contains the two input bounding boxes.</param>
         public static void Merge(ref BoundingBox a, ref BoundingBox b, out BoundingBox result)
         {
-            Vector3.Min(ref a.Min, ref b.Min, out result.Min);
-            Vector3.Max(ref a.Max, ref b.Max, out result.Max);
+            Vector3F.Min(ref a.Min, ref b.Min, out result.Min);
+            Vector3F.Max(ref a.Max, ref b.Max, out result.Max);
         }
 
         /// <summary>
@@ -656,11 +656,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Vector4"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Vector4F"/> is equal to this instance.
         /// </summary>
-        /// <param name="value">The <see cref="Vector4"/> to compare with this instance.</param>
+        /// <param name="value">The <see cref="Vector4F"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="Vector4F"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref BoundingBox value)
@@ -669,11 +669,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Vector4"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Vector4F"/> is equal to this instance.
         /// </summary>
-        /// <param name="value">The <see cref="Vector4"/> to compare with this instance.</param>
+        /// <param name="value">The <see cref="Vector4F"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="Vector4F"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(BoundingBox value)
@@ -713,8 +713,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
         public void Encapsulate(ref BoundingBox other)
         {
-            Min = Vector3.Min(Min, other.Min);
-            Max = Vector3.Max(Max, other.Max);
+            Min = Vector3F.Min(Min, other.Min);
+            Max = Vector3F.Max(Max, other.Max);
         }
 
         /// <summary>
@@ -725,8 +725,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
         public void Encapsulate(BoundingBox other)
         {
-            Min = Vector3.Min(Min, other.Min);
-            Max = Vector3.Max(Max, other.Max);
+            Min = Vector3F.Min(Min, other.Min);
+            Max = Vector3F.Max(Max, other.Max);
         }
 
         /// <summary>
@@ -735,10 +735,10 @@ namespace Molten
         /// <param name="value1">The first box to merge.</param>
         /// <param name="other">The point to encapsulate.</param>
         /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
-        public void Encapsulate(Vector3 other)
+        public void Encapsulate(Vector3F other)
         {
-            Min = Vector3.Min(Min, other);
-            Max = Vector3.Max(Max, other);
+            Min = Vector3F.Min(Min, other);
+            Max = Vector3F.Max(Max, other);
         }
 
         /// <summary>
@@ -747,10 +747,10 @@ namespace Molten
         /// <param name="value1">The first box to merge.</param>
         /// <param name="other">The point to encapsulate.</param>
         /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
-        public void Encapsulate(ref Vector3 other)
+        public void Encapsulate(ref Vector3F other)
         {
-            Min = Vector3.Min(Min, other);
-            Max = Vector3.Max(Max, other);
+            Min = Vector3F.Min(Min, other);
+            Max = Vector3F.Max(Max, other);
         }
 
         /// <summary>
@@ -759,8 +759,8 @@ namespace Molten
         /// <param name="other">The other.</param>
         public void Encapsulate(ref BoundingSphere other)
         {
-            Min = Vector3.Min(Min, other.Center - other.Radius);
-            Max = Vector3.Max(Max, other.Center + other.Radius);
+            Min = Vector3F.Min(Min, other.Center - other.Radius);
+            Max = Vector3F.Max(Max, other.Center + other.Radius);
         }
 
         /// <summary>
@@ -769,8 +769,8 @@ namespace Molten
         /// <param name="other">THe other.</param>
         public void Encapsulate(BoundingSphere other)
         {
-            Min = Vector3.Min(Min, other.Center - other.Radius);
-            Max = Vector3.Max(Max, other.Center + other.Radius);
+            Min = Vector3F.Min(Min, other.Center - other.Radius);
+            Max = Vector3F.Max(Max, other.Center + other.Radius);
         }
     }
 }

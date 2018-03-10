@@ -84,25 +84,25 @@ namespace Molten
         /// <param name="vertex2">The second vertex to test.</param>
         /// <param name="vertex3">The third vertex to test.</param>
         /// <param name="result">When the method completes, contains the closest point between the two objects.</param>
-        public static void ClosestPointPointTriangle(ref Vector3 point, ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3, out Vector3 result)
+        public static void ClosestPointPointTriangle(ref Vector3F point, ref Vector3F vertex1, ref Vector3F vertex2, ref Vector3F vertex3, out Vector3F result)
         {
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 136
 
             //Check if P in vertex region outside A
-            Vector3 ab = vertex2 - vertex1;
-            Vector3 ac = vertex3 - vertex1;
-            Vector3 ap = point - vertex1;
+            Vector3F ab = vertex2 - vertex1;
+            Vector3F ac = vertex3 - vertex1;
+            Vector3F ap = point - vertex1;
 
-            float d1 = Vector3.Dot(ab, ap);
-            float d2 = Vector3.Dot(ac, ap);
+            float d1 = Vector3F.Dot(ab, ap);
+            float d2 = Vector3F.Dot(ac, ap);
             if (d1 <= 0.0f && d2 <= 0.0f)
                 result = vertex1; //Barycentric coordinates (1,0,0)
 
             //Check if P in vertex region outside B
-            Vector3 bp = point - vertex2;
-            float d3 = Vector3.Dot(ab, bp);
-            float d4 = Vector3.Dot(ac, bp);
+            Vector3F bp = point - vertex2;
+            float d3 = Vector3F.Dot(ab, bp);
+            float d4 = Vector3F.Dot(ac, bp);
             if (d3 >= 0.0f && d4 <= d3)
                 result = vertex2; // Barycentric coordinates (0,1,0)
 
@@ -115,9 +115,9 @@ namespace Molten
             }
 
             //Check if P in vertex region outside C
-            Vector3 cp = point - vertex3;
-            float d5 = Vector3.Dot(ab, cp);
-            float d6 = Vector3.Dot(ac, cp);
+            Vector3F cp = point - vertex3;
+            float d5 = Vector3F.Dot(ab, cp);
+            float d6 = Vector3F.Dot(ac, cp);
             if (d6 >= 0.0f && d5 <= d6)
                 result = vertex3; //Barycentric coordinates (0,0,1)
 
@@ -150,13 +150,13 @@ namespace Molten
         /// <param name="plane">The plane to test.</param>
         /// <param name="point">The point to test.</param>
         /// <param name="result">When the method completes, contains the closest point between the two objects.</param>
-        public static void ClosestPointPlanePoint(ref Plane plane, ref Vector3 point, out Vector3 result)
+        public static void ClosestPointPlanePoint(ref Plane plane, ref Vector3F point, out Vector3F result)
         {
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 126
 
             float dot;
-            Vector3.Dot(ref plane.Normal, ref point, out dot);
+            Vector3F.Dot(ref plane.Normal, ref point, out dot);
             float t = dot - plane.D;
 
             result = point - (t * plane.Normal);
@@ -168,14 +168,14 @@ namespace Molten
         /// <param name="box">The box to test.</param>
         /// <param name="point">The point to test.</param>
         /// <param name="result">When the method completes, contains the closest point between the two objects.</param>
-        public static void ClosestPointBoxPoint(ref BoundingBox box, ref Vector3 point, out Vector3 result)
+        public static void ClosestPointBoxPoint(ref BoundingBox box, ref Vector3F point, out Vector3F result)
         {
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 130
 
-            Vector3 temp;
-            Vector3.Max(ref point, ref box.Min, out temp);
-            Vector3.Min(ref temp, ref box.Max, out result);
+            Vector3F temp;
+            Vector3F.Max(ref point, ref box.Min, out temp);
+            Vector3F.Min(ref temp, ref box.Max, out result);
         }
 
         /// <summary>
@@ -184,14 +184,14 @@ namespace Molten
         /// <param name="sphere"></param>
         /// <param name="point">The point to test.</param>
         /// <param name="result">When the method completes, contains the closest point between the two objects;
-        /// or, if the point is directly in the center of the sphere, contains <see cref="Vector3.Zero"/>.</param>
-        public static void ClosestPointSpherePoint(ref BoundingSphere sphere, ref Vector3 point, out Vector3 result)
+        /// or, if the point is directly in the center of the sphere, contains <see cref="Vector3F.Zero"/>.</param>
+        public static void ClosestPointSpherePoint(ref BoundingSphere sphere, ref Vector3F point, out Vector3F result)
         {
             //Source: Jorgy343
             //Reference: None
 
             //Get the unit direction from the sphere's center to the point.
-            Vector3.Subtract(ref point, ref sphere.Center, out result);
+            Vector3F.Subtract(ref point, ref sphere.Center, out result);
             result.Normalize();
 
             //Multiply the unit direction by the sphere's radius to get a vector
@@ -208,19 +208,19 @@ namespace Molten
         /// <param name="sphere1">The first sphere to test.</param>
         /// <param name="sphere2">The second sphere to test.</param>
         /// <param name="result">When the method completes, contains the closest point between the two objects;
-        /// or, if the point is directly in the center of the sphere, contains <see cref="Vector3.Zero"/>.</param>
+        /// or, if the point is directly in the center of the sphere, contains <see cref="Vector3F.Zero"/>.</param>
         /// <remarks>
         /// If the two spheres are overlapping, but not directly on top of each other, the closest point
         /// is the 'closest' point of intersection. This can also be considered is the deepest point of
         /// intersection.
         /// </remarks>
-        public static void ClosestPointSphereSphere(ref BoundingSphere sphere1, ref BoundingSphere sphere2, out Vector3 result)
+        public static void ClosestPointSphereSphere(ref BoundingSphere sphere1, ref BoundingSphere sphere2, out Vector3F result)
         {
             //Source: Jorgy343
             //Reference: None
 
             //Get the unit direction from the first sphere's center to the second sphere's center.
-            Vector3.Subtract(ref sphere2.Center, ref sphere1.Center, out result);
+            Vector3F.Subtract(ref sphere2.Center, ref sphere1.Center, out result);
             result.Normalize();
 
             //Multiply the unit direction by the first sphere's radius to get a vector
@@ -237,13 +237,13 @@ namespace Molten
         /// <param name="plane">The plane to test.</param>
         /// <param name="point">The point to test.</param>
         /// <returns>The distance between the two objects.</returns>
-        public static float DistancePlanePoint(ref Plane plane, ref Vector3 point)
+        public static float DistancePlanePoint(ref Plane plane, ref Vector3F point)
         {
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 127
 
             float dot;
-            Vector3.Dot(ref plane.Normal, ref point, out dot);
+            Vector3F.Dot(ref plane.Normal, ref point, out dot);
             return dot - plane.D;
         }
 
@@ -253,7 +253,7 @@ namespace Molten
         /// <param name="box">The box to test.</param>
         /// <param name="point">The point to test.</param>
         /// <returns>The distance between the two objects.</returns>
-        public static float DistanceBoxPoint(ref BoundingBox box, ref Vector3 point)
+        public static float DistanceBoxPoint(ref BoundingBox box, ref Vector3F point)
         {
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 131
@@ -336,13 +336,13 @@ namespace Molten
         /// <param name="sphere">The sphere to test.</param>
         /// <param name="point">The point to test.</param>
         /// <returns>The distance between the two objects.</returns>
-        public static float DistanceSpherePoint(ref BoundingSphere sphere, ref Vector3 point)
+        public static float DistanceSpherePoint(ref BoundingSphere sphere, ref Vector3F point)
         {
             //Source: Jorgy343
             //Reference: None
 
             float distance;
-            Vector3.Distance(ref sphere.Center, ref point, out distance);
+            Vector3F.Distance(ref sphere.Center, ref point, out distance);
             distance -= sphere.Radius;
 
             return Math.Max(distance, 0f);
@@ -360,7 +360,7 @@ namespace Molten
             //Reference: None
 
             float distance;
-            Vector3.Distance(ref sphere1.Center, ref sphere2.Center, out distance);
+            Vector3F.Distance(ref sphere1.Center, ref sphere2.Center, out distance);
             distance -= sphere1.Radius + sphere2.Radius;
 
             return Math.Max(distance, 0f);
@@ -372,18 +372,18 @@ namespace Molten
         /// <param name="ray">The ray to test.</param>
         /// <param name="point">The point to test.</param>
         /// <returns>Whether the two objects intersect.</returns>
-        public static bool RayIntersectsPoint(ref Ray ray, ref Vector3 point)
+        public static bool RayIntersectsPoint(ref Ray ray, ref Vector3F point)
         {
             //Source: RayIntersectsSphere
             //Reference: None
 
-            Vector3 m;
-            Vector3.Subtract(ref ray.Position, ref point, out m);
+            Vector3F m;
+            Vector3F.Subtract(ref ray.Position, ref point, out m);
 
             //Same thing as RayIntersectsSphere except that the radius of the sphere (point)
             //is the epsilon for zero.
-            float b = Vector3.Dot(m, ray.Direction);
-            float c = Vector3.Dot(m, m) - MathHelper.ZeroTolerance;
+            float b = Vector3F.Dot(m, ray.Direction);
+            float c = Vector3F.Dot(m, m) - MathHelper.ZeroTolerance;
 
             if (c > 0f && b > 0f)
                 return false;
@@ -402,7 +402,7 @@ namespace Molten
         /// <param name="ray1">The first ray to test.</param>
         /// <param name="ray2">The second ray to test.</param>
         /// <param name="point">When the method completes, contains the point of intersection,
-        /// or <see cref="Vector3.Zero"/> if there was no intersection.</param>
+        /// or <see cref="Vector3F.Zero"/> if there was no intersection.</param>
         /// <returns>Whether the two objects intersect.</returns>
         /// <remarks>
         /// This method performs a ray vs ray intersection test based on the following formula
@@ -414,14 +414,14 @@ namespace Molten
         /// of the second ray, det denotes the determinant of a matrix, x denotes the cross
         /// product, [ ] denotes a matrix, and || || denotes the length or magnitude of a vector.
         /// </remarks>
-        public static bool RayIntersectsRay(ref Ray ray1, ref Ray ray2, out Vector3 point)
+        public static bool RayIntersectsRay(ref Ray ray1, ref Ray ray2, out Vector3F point)
         {
             //Source: Real-Time Rendering, Third Edition
             //Reference: Page 780
 
-            Vector3 cross;
+            Vector3F cross;
 
-            Vector3.Cross(ref ray1.Direction, ref ray2.Direction, out cross);
+            Vector3F.Cross(ref ray1.Direction, ref ray2.Direction, out cross);
             float denominator = cross.Length();
 
             //Lines are parallel.
@@ -432,7 +432,7 @@ namespace Molten
                     MathHelper.NearEqual(ray2.Position.Y, ray1.Position.Y) &&
                     MathHelper.NearEqual(ray2.Position.Z, ray1.Position.Z))
                 {
-                    point = Vector3.Zero;
+                    point = Vector3F.Zero;
                     return true;
                 }
             }
@@ -478,15 +478,15 @@ namespace Molten
             float t = dett / denominator;
 
             //The points of intersection.
-            Vector3 point1 = ray1.Position + (s * ray1.Direction);
-            Vector3 point2 = ray2.Position + (t * ray2.Direction);
+            Vector3F point1 = ray1.Position + (s * ray1.Direction);
+            Vector3F point2 = ray2.Position + (t * ray2.Direction);
 
             //If the points are not equal, no intersection has occurred.
             if (!MathHelper.NearEqual(point2.X, point1.X) ||
                 !MathHelper.NearEqual(point2.Y, point1.Y) ||
                 !MathHelper.NearEqual(point2.Z, point1.Z))
             {
-                point = Vector3.Zero;
+                point = Vector3F.Zero;
                 return false;
             }
 
@@ -508,7 +508,7 @@ namespace Molten
             //Reference: Page 175
 
             float direction;
-            Vector3.Dot(ref plane.Normal, ref ray.Direction, out direction);
+            Vector3F.Dot(ref plane.Normal, ref ray.Direction, out direction);
 
             if (MathHelper.IsZero(direction))
             {
@@ -517,7 +517,7 @@ namespace Molten
             }
 
             float position;
-            Vector3.Dot(ref plane.Normal, ref ray.Position, out position);
+            Vector3F.Dot(ref plane.Normal, ref ray.Position, out position);
             distance = (-plane.D - position) / direction;
 
             if (distance < 0f)
@@ -535,9 +535,9 @@ namespace Molten
         /// <param name="ray">The ray to test.</param>
         /// <param name="plane">The plane to test</param>
         /// <param name="point">When the method completes, contains the point of intersection,
-        /// or <see cref="Vector3.Zero"/> if there was no intersection.</param>
+        /// or <see cref="Vector3F.Zero"/> if there was no intersection.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public static bool RayIntersectsPlane(ref Ray ray, ref Plane plane, out Vector3 point)
+        public static bool RayIntersectsPlane(ref Ray ray, ref Plane plane, out Vector3F point)
         {
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 175
@@ -545,7 +545,7 @@ namespace Molten
             float distance;
             if (!RayIntersectsPlane(ref ray, ref plane, out distance))
             {
-                point = Vector3.Zero;
+                point = Vector3F.Zero;
                 return false;
             }
 
@@ -561,23 +561,23 @@ namespace Molten
         /// <param name="t">Interval along line to intersection (A + t * AB).</param>
         /// <param name="q">Intersection point.</param>
         /// <returns>Whether or not the line intersects the plane.  If false, the line is parallel to the plane's surface.</returns>
-        public static bool RayIntersectsPlane(ref Ray ray, ref Plane p, out float t, out Vector3 q)
+        public static bool RayIntersectsPlane(ref Ray ray, ref Plane p, out float t, out Vector3F q)
         {
             float denominator;
-            Vector3.Dot(ref p.Normal, ref ray.Direction, out denominator);
+            Vector3F.Dot(ref p.Normal, ref ray.Direction, out denominator);
             if (denominator < MathHelper.Epsilon && denominator > -MathHelper.Epsilon)
             {
                 //Surface of plane and line are parallel (or very close to it).
-                q = new Vector3();
+                q = new Vector3F();
                 t = float.MaxValue;
                 return false;
             }
             float numerator;
-            Vector3.Dot(ref p.Normal, ref ray.Position, out numerator);
+            Vector3F.Dot(ref p.Normal, ref ray.Position, out numerator);
             t = (p.D - numerator) / denominator;
             //Compute the intersection position.
-            Vector3.Multiply(ref ray.Direction, t, out q);
-            Vector3.Add(ref ray.Position, ref q, out q);
+            Vector3F.Multiply(ref ray.Direction, t, out q);
+            Vector3F.Add(ref ray.Position, ref q, out q);
             return t >= 0;
         }
 
@@ -598,13 +598,13 @@ namespace Molten
         /// the ray, no intersection is assumed to have happened. In both cases of assumptions,
         /// this method returns false.
         /// </remarks>
-        public static bool RayIntersectsTriangle(ref Ray ray, ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3, out float distance)
+        public static bool RayIntersectsTriangle(ref Ray ray, ref Vector3F vertex1, ref Vector3F vertex2, ref Vector3F vertex3, out float distance)
         {
             //Source: Fast Minimum Storage Ray / Triangle Intersection
             //Reference: http://www.cs.virginia.edu/~gfx/Courses/2003/ImageSynthesis/papers/Acceleration/Fast%20MinimumStorage%20RayTriangle%20Intersection.pdf
 
             //Compute vectors along two edges of the triangle.
-            Vector3 edge1, edge2;
+            Vector3F edge1, edge2;
 
             //Edge 1
             edge1.X = vertex2.X - vertex1.X;
@@ -617,7 +617,7 @@ namespace Molten
             edge2.Z = vertex3.Z - vertex1.Z;
 
             //Cross product of ray direction and edge2 - first part of determinant.
-            Vector3 directioncrossedge2;
+            Vector3F directioncrossedge2;
             directioncrossedge2.X = (ray.Direction.Y * edge2.Z) - (ray.Direction.Z * edge2.Y);
             directioncrossedge2.Y = (ray.Direction.Z * edge2.X) - (ray.Direction.X * edge2.Z);
             directioncrossedge2.Z = (ray.Direction.X * edge2.Y) - (ray.Direction.Y * edge2.X);
@@ -639,7 +639,7 @@ namespace Molten
             float inversedeterminant = 1.0f / determinant;
 
             //Calculate the U parameter of the intersection point.
-            Vector3 distanceVector;
+            Vector3F distanceVector;
             distanceVector.X = ray.Position.X - vertex1.X;
             distanceVector.Y = ray.Position.Y - vertex1.Y;
             distanceVector.Z = ray.Position.Z - vertex1.Z;
@@ -656,7 +656,7 @@ namespace Molten
             }
 
             //Calculate the V parameter of the intersection point.
-            Vector3 distancecrossedge1;
+            Vector3F distancecrossedge1;
             distancecrossedge1.X = (distanceVector.Y * edge1.Z) - (distanceVector.Z * edge1.Y);
             distancecrossedge1.Y = (distanceVector.Z * edge1.X) - (distanceVector.X * edge1.Z);
             distancecrossedge1.Z = (distanceVector.X * edge1.Y) - (distanceVector.Y * edge1.X);
@@ -696,14 +696,14 @@ namespace Molten
         /// <param name="vertex2">The second vertex of the triangle to test.</param>
         /// <param name="vertex3">The third vertex of the triangle to test.</param>
         /// <param name="point">When the method completes, contains the point of intersection,
-        /// or <see cref="Vector3.Zero"/> if there was no intersection.</param>
+        /// or <see cref="Vector3F.Zero"/> if there was no intersection.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public static bool RayIntersectsTriangle(ref Ray ray, ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3, out Vector3 point)
+        public static bool RayIntersectsTriangle(ref Ray ray, ref Vector3F vertex1, ref Vector3F vertex2, ref Vector3F vertex3, out Vector3F point)
         {
             float distance;
             if (!RayIntersectsTriangle(ref ray, ref vertex1, ref vertex2, ref vertex3, out distance))
             {
-                point = Vector3.Zero;
+                point = Vector3F.Zero;
                 return false;
             }
 
@@ -722,44 +722,44 @@ namespace Molten
         /// <param name="hitClockwise">True if the the triangle was hit on the clockwise face, false otherwise.</param>
         /// <param name="hit">Hit data of the ray, if any</param>
         /// <returns>Whether or not the ray and triangle intersect.</returns>
-        public static bool RayIntersectsTriangle(ref Ray ray, float maximumLength, ref Vector3 a, ref Vector3 b, ref Vector3 c, out bool hitClockwise, out RayHit hit)
+        public static bool RayIntersectsTriangle(ref Ray ray, float maximumLength, ref Vector3F a, ref Vector3F b, ref Vector3F c, out bool hitClockwise, out RayHit hit)
         {
             hitClockwise = false;
             hit = new RayHit();
-            Vector3 ab, ac;
-            Vector3.Subtract(ref b, ref a, out ab);
-            Vector3.Subtract(ref c, ref a, out ac);
+            Vector3F ab, ac;
+            Vector3F.Subtract(ref b, ref a, out ab);
+            Vector3F.Subtract(ref c, ref a, out ac);
 
-            Vector3.Cross(ref ab, ref ac, out hit.Normal);
+            Vector3F.Cross(ref ab, ref ac, out hit.Normal);
             if (hit.Normal.LengthSquared() < MathHelper.Epsilon)
                 return false; //Degenerate triangle!
 
             float d;
-            Vector3.Dot(ref ray.Direction, ref hit.Normal, out d);
+            Vector3F.Dot(ref ray.Direction, ref hit.Normal, out d);
             d = -d;
 
             hitClockwise = d >= 0;
 
-            Vector3 ap;
-            Vector3.Subtract(ref ray.Position, ref a, out ap);
+            Vector3F ap;
+            Vector3F.Subtract(ref ray.Position, ref a, out ap);
 
-            Vector3.Dot(ref ap, ref hit.Normal, out hit.T);
+            Vector3F.Dot(ref ap, ref hit.Normal, out hit.T);
             hit.T /= d;
             if (hit.T < 0 || hit.T > maximumLength)
                 return false;//Hit is behind origin, or too far away.
 
-            Vector3.Multiply(ref ray.Direction, hit.T, out hit.Location);
-            Vector3.Add(ref ray.Position, ref hit.Location, out hit.Location);
+            Vector3F.Multiply(ref ray.Direction, hit.T, out hit.Location);
+            Vector3F.Add(ref ray.Position, ref hit.Location, out hit.Location);
 
             // Compute barycentric coordinates
-            Vector3.Subtract(ref hit.Location, ref a, out ap);
+            Vector3F.Subtract(ref hit.Location, ref a, out ap);
             float ABdotAB, ABdotAC, ABdotAP;
             float ACdotAC, ACdotAP;
-            Vector3.Dot(ref ab, ref ab, out ABdotAB);
-            Vector3.Dot(ref ab, ref ac, out ABdotAC);
-            Vector3.Dot(ref ab, ref ap, out ABdotAP);
-            Vector3.Dot(ref ac, ref ac, out ACdotAC);
-            Vector3.Dot(ref ac, ref ap, out ACdotAP);
+            Vector3F.Dot(ref ab, ref ab, out ABdotAB);
+            Vector3F.Dot(ref ab, ref ac, out ABdotAC);
+            Vector3F.Dot(ref ab, ref ap, out ABdotAP);
+            Vector3F.Dot(ref ac, ref ac, out ACdotAC);
+            Vector3F.Dot(ref ac, ref ap, out ACdotAP);
 
             float denom = 1 / (ABdotAB * ACdotAC - ABdotAC * ABdotAC);
             float u = (ACdotAC * ABdotAP - ABdotAC * ACdotAP) * denom;
@@ -780,26 +780,26 @@ namespace Molten
         /// <param name="c">Third vertex of the triangle.</param>
         /// <param name="hit">Hit data of the ray, if any</param>
         /// <returns>Whether or not the ray and triangle intersect.</returns>
-        public static bool RayIntersectsTriangle(ref Ray ray, float maximumLength, TriangleSidedness sidedness, ref Vector3 a, ref Vector3 b, ref Vector3 c, out RayHit hit)
+        public static bool RayIntersectsTriangle(ref Ray ray, float maximumLength, TriangleSidedness sidedness, ref Vector3F a, ref Vector3F b, ref Vector3F c, out RayHit hit)
         {
             hit = new RayHit();
-            Vector3 ab, ac;
-            Vector3.Subtract(ref b, ref a, out ab);
-            Vector3.Subtract(ref c, ref a, out ac);
+            Vector3F ab, ac;
+            Vector3F.Subtract(ref b, ref a, out ab);
+            Vector3F.Subtract(ref c, ref a, out ac);
 
-            Vector3.Cross(ref ab, ref ac, out hit.Normal);
+            Vector3F.Cross(ref ab, ref ac, out hit.Normal);
             if (hit.Normal.LengthSquared() < MathHelper.Epsilon)
                 return false; //Degenerate triangle!
 
             float d;
-            Vector3.Dot(ref ray.Direction, ref hit.Normal, out d);
+            Vector3F.Dot(ref ray.Direction, ref hit.Normal, out d);
             d = -d;
             switch (sidedness)
             {
                 case TriangleSidedness.DoubleSided:
                     if (d <= 0) //Pointing the wrong way.  Flip the normal.
                     {
-                        Vector3.Negate(ref hit.Normal, out hit.Normal);
+                        Vector3F.Negate(ref hit.Normal, out hit.Normal);
                         d = -d;
                     }
                     break;
@@ -812,31 +812,31 @@ namespace Molten
                     if (d >= 0) //Pointing the wrong way.  Can't hit.
                         return false;
 
-                    Vector3.Negate(ref hit.Normal, out hit.Normal);
+                    Vector3F.Negate(ref hit.Normal, out hit.Normal);
                     d = -d;
                     break;
             }
 
-            Vector3 ap;
-            Vector3.Subtract(ref ray.Position, ref a, out ap);
+            Vector3F ap;
+            Vector3F.Subtract(ref ray.Position, ref a, out ap);
 
-            Vector3.Dot(ref ap, ref hit.Normal, out hit.T);
+            Vector3F.Dot(ref ap, ref hit.Normal, out hit.T);
             hit.T /= d;
             if (hit.T < 0 || hit.T > maximumLength)
                 return false;//Hit is behind origin, or too far away.
 
-            Vector3.Multiply(ref ray.Direction, hit.T, out hit.Location);
-            Vector3.Add(ref ray.Position, ref hit.Location, out hit.Location);
+            Vector3F.Multiply(ref ray.Direction, hit.T, out hit.Location);
+            Vector3F.Add(ref ray.Position, ref hit.Location, out hit.Location);
 
             // Compute barycentric coordinates
-            Vector3.Subtract(ref hit.Location, ref a, out ap);
+            Vector3F.Subtract(ref hit.Location, ref a, out ap);
             float ABdotAB, ABdotAC, ABdotAP;
             float ACdotAC, ACdotAP;
-            Vector3.Dot(ref ab, ref ab, out ABdotAB);
-            Vector3.Dot(ref ab, ref ac, out ABdotAC);
-            Vector3.Dot(ref ab, ref ap, out ABdotAP);
-            Vector3.Dot(ref ac, ref ac, out ACdotAC);
-            Vector3.Dot(ref ac, ref ap, out ACdotAP);
+            Vector3F.Dot(ref ab, ref ab, out ABdotAB);
+            Vector3F.Dot(ref ab, ref ac, out ABdotAC);
+            Vector3F.Dot(ref ab, ref ap, out ABdotAP);
+            Vector3F.Dot(ref ac, ref ac, out ACdotAC);
+            Vector3F.Dot(ref ac, ref ap, out ACdotAP);
 
             float denom = 1 / (ABdotAB * ACdotAC - ABdotAC * ABdotAC);
             float u = (ACdotAC * ABdotAP - ABdotAC * ACdotAP) * denom;
@@ -964,14 +964,14 @@ namespace Molten
         /// <param name="ray">The ray to test.</param>
         /// <param name="box">The box to test.</param>
         /// <param name="point">When the method completes, contains the point of intersection,
-        /// or <see cref="Vector3.Zero"/> if there was no intersection.</param>
+        /// or <see cref="Vector3F.Zero"/> if there was no intersection.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public static bool RayIntersectsBox(ref Ray ray, ref BoundingBox box, out Vector3 point)
+        public static bool RayIntersectsBox(ref Ray ray, ref BoundingBox box, out Vector3F point)
         {
             float distance;
             if (!RayIntersectsBox(ref ray, ref box, out distance))
             {
-                point = Vector3.Zero;
+                point = Vector3F.Zero;
                 return false;
             }
 
@@ -992,11 +992,11 @@ namespace Molten
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 177
 
-            Vector3 m;
-            Vector3.Subtract(ref ray.Position, ref sphere.Center, out m);
+            Vector3F m;
+            Vector3F.Subtract(ref ray.Position, ref sphere.Center, out m);
 
-            float b = Vector3.Dot(m, ray.Direction);
-            float c = Vector3.Dot(m, m) - (sphere.Radius * sphere.Radius);
+            float b = Vector3F.Dot(m, ray.Direction);
+            float c = Vector3F.Dot(m, m) - (sphere.Radius * sphere.Radius);
 
             if (c > 0f && b > 0f)
             {
@@ -1026,14 +1026,14 @@ namespace Molten
         /// <param name="ray">The ray to test.</param>
         /// <param name="sphere">The sphere to test.</param>
         /// <param name="point">When the method completes, contains the point of intersection,
-        /// or <see cref="Vector3.Zero"/> if there was no intersection.</param>
+        /// or <see cref="Vector3F.Zero"/> if there was no intersection.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public static bool RayIntersectsSphere(ref Ray ray, ref BoundingSphere sphere, out Vector3 point)
+        public static bool RayIntersectsSphere(ref Ray ray, ref BoundingSphere sphere, out Vector3F point)
         {
             float distance;
             if (!RayIntersectsSphere(ref ray, ref sphere, out distance))
             {
-                point = Vector3.Zero;
+                point = Vector3F.Zero;
                 return false;
             }
 
@@ -1050,16 +1050,16 @@ namespace Molten
         ///<param name="maximumLength">Maximum length of the ray in units of the ray direction's length.</param>
         ///<param name="hit">Hit data of the ray, if any.</param>
         ///<returns>Whether or not the ray hits the sphere.</returns>
-        public static bool RayIntersectsSphere(ref Ray ray, ref Vector3 spherePosition, float radius, float maximumLength, out RayHit hit)
+        public static bool RayIntersectsSphere(ref Ray ray, ref Vector3F spherePosition, float radius, float maximumLength, out RayHit hit)
         {
-            Vector3 normalizedDirection;
+            Vector3F normalizedDirection;
             float length = ray.Direction.Length();
-            Vector3.Divide(ref ray.Direction, length, out normalizedDirection);
+            Vector3F.Divide(ref ray.Direction, length, out normalizedDirection);
             maximumLength *= length;
             hit = new RayHit();
-            Vector3 m;
-            Vector3.Subtract(ref ray.Position, ref spherePosition, out m);
-            float b = Vector3.Dot(m, normalizedDirection);
+            Vector3F m;
+            Vector3F.Subtract(ref ray.Position, ref spherePosition, out m);
+            float b = Vector3F.Dot(m, normalizedDirection);
             float c = m.LengthSquared() - radius * radius;
 
             if (c > 0 && b > 0)
@@ -1074,9 +1074,9 @@ namespace Molten
             if (hit.T > maximumLength)
                 return false;
             hit.T /= length;
-            Vector3.Multiply(ref normalizedDirection, hit.T, out hit.Location);
-            Vector3.Add(ref hit.Location, ref ray.Position, out hit.Location);
-            Vector3.Subtract(ref hit.Location, ref spherePosition, out hit.Normal);
+            Vector3F.Multiply(ref normalizedDirection, hit.T, out hit.Location);
+            Vector3F.Add(ref hit.Location, ref ray.Position, out hit.Location);
+            Vector3F.Subtract(ref hit.Location, ref spherePosition, out hit.Normal);
             hit.Normal.Normalize();
             return true;
         }
@@ -1087,10 +1087,10 @@ namespace Molten
         /// <param name="plane">The plane to test.</param>
         /// <param name="point">The point to test.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public static PlaneIntersectionType PlaneIntersectsPoint(ref Plane plane, ref Vector3 point)
+        public static PlaneIntersectionType PlaneIntersectsPoint(ref Plane plane, ref Vector3F point)
         {
             float distance;
-            Vector3.Dot(ref plane.Normal, ref point, out distance);
+            Vector3F.Dot(ref plane.Normal, ref point, out distance);
             distance += plane.D;
 
             if (distance > 0f)
@@ -1110,13 +1110,13 @@ namespace Molten
         /// <returns>Whether the two objects intersected.</returns>
         public static bool PlaneIntersectsPlane(ref Plane plane1, ref Plane plane2)
         {
-            Vector3 direction;
-            Vector3.Cross(ref plane1.Normal, ref plane2.Normal, out direction);
+            Vector3F direction;
+            Vector3F.Cross(ref plane1.Normal, ref plane2.Normal, out direction);
 
             //If direction is the zero vector, the planes are parallel and possibly
             //coincident. It is not an intersection. The dot product will tell us.
             float denominator;
-            Vector3.Dot(ref direction, ref direction, out denominator);
+            Vector3F.Dot(ref direction, ref direction, out denominator);
 
             if (MathHelper.IsZero(denominator))
                 return false;
@@ -1142,13 +1142,13 @@ namespace Molten
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 207
 
-            Vector3 direction;
-            Vector3.Cross(ref plane1.Normal, ref plane2.Normal, out direction);
+            Vector3F direction;
+            Vector3F.Cross(ref plane1.Normal, ref plane2.Normal, out direction);
 
             //If direction is the zero vector, the planes are parallel and possibly
             //coincident. It is not an intersection. The dot product will tell us.
             float denominator;
-            Vector3.Dot(ref direction, ref direction, out denominator);
+            Vector3F.Dot(ref direction, ref direction, out denominator);
 
             //We assume the planes are normalized, therefore the denominator
             //only serves as a parallel and coincident check. Otherwise we need
@@ -1159,9 +1159,9 @@ namespace Molten
                 return false;
             }
 
-            Vector3 point;
-            Vector3 temp = plane1.D * plane2.Normal - plane2.D * plane1.Normal;
-            Vector3.Cross(ref temp, ref direction, out point);
+            Vector3F point;
+            Vector3F temp = plane1.D * plane2.Normal - plane2.D * plane1.Normal;
+            Vector3F.Cross(ref temp, ref direction, out point);
 
             line.Position = point;
             line.Direction = direction;
@@ -1178,7 +1178,7 @@ namespace Molten
         /// <param name="vertex2">The second vertex of the triangle to test.</param>
         /// <param name="vertex3">The third vertex of the triangle to test.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public static PlaneIntersectionType PlaneIntersectsTriangle(ref Plane plane, ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3)
+        public static PlaneIntersectionType PlaneIntersectsTriangle(ref Plane plane, ref Vector3F vertex1, ref Vector3F vertex2, ref Vector3F vertex3)
         {
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 207
@@ -1207,8 +1207,8 @@ namespace Molten
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 161
 
-            Vector3 min;
-            Vector3 max;
+            Vector3F min;
+            Vector3F max;
 
             max.X = (plane.Normal.X >= 0.0f) ? box.Min.X : box.Max.X;
             max.Y = (plane.Normal.Y >= 0.0f) ? box.Min.Y : box.Max.Y;
@@ -1218,12 +1218,12 @@ namespace Molten
             min.Z = (plane.Normal.Z >= 0.0f) ? box.Max.Z : box.Min.Z;
 
             float distance;
-            Vector3.Dot(ref plane.Normal, ref max, out distance);
+            Vector3F.Dot(ref plane.Normal, ref max, out distance);
 
             if (distance + plane.D > 0.0f)
                 return PlaneIntersectionType.Front;
 
-            distance = Vector3.Dot(plane.Normal, min);
+            distance = Vector3F.Dot(plane.Normal, min);
 
             if (distance + plane.D < 0.0f)
                 return PlaneIntersectionType.Back;
@@ -1243,7 +1243,7 @@ namespace Molten
             //Reference: Page 160
 
             float distance;
-            Vector3.Dot(ref plane.Normal, ref sphere.Center, out distance);
+            Vector3F.Dot(ref plane.Normal, ref sphere.Center, out distance);
             distance += plane.D;
 
             if (distance > sphere.Radius)
@@ -1310,9 +1310,9 @@ namespace Molten
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 166
 
-            Vector3 vector;
-            Vector3.Clamp(ref sphere.Center, ref box.Min, ref box.Max, out vector);
-            float distance = Vector3.DistanceSquared(sphere.Center, vector);
+            Vector3F vector;
+            Vector3F.Clamp(ref sphere.Center, ref box.Min, ref box.Max, out vector);
+            float distance = Vector3F.DistanceSquared(sphere.Center, vector);
 
             return distance <= sphere.Radius * sphere.Radius;
         }
@@ -1325,17 +1325,17 @@ namespace Molten
         /// <param name="vertex2">The second vertex of the triangle to test.</param>
         /// <param name="vertex3">The third vertex of the triangle to test.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public static bool SphereIntersectsTriangle(ref BoundingSphere sphere, ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3)
+        public static bool SphereIntersectsTriangle(ref BoundingSphere sphere, ref Vector3F vertex1, ref Vector3F vertex2, ref Vector3F vertex3)
         {
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 167
 
-            Vector3 point;
+            Vector3F point;
             ClosestPointPointTriangle(ref sphere.Center, ref vertex1, ref vertex2, ref vertex3, out point);
-            Vector3 v = point - sphere.Center;
+            Vector3F v = point - sphere.Center;
 
             float dot;
-            Vector3.Dot(ref v, ref v, out dot);
+            Vector3F.Dot(ref v, ref v, out dot);
 
             return dot <= sphere.Radius * sphere.Radius;
         }
@@ -1349,7 +1349,7 @@ namespace Molten
         public static bool SphereIntersectsSphere(ref BoundingSphere sphere1, ref BoundingSphere sphere2)
         {
             float radiisum = sphere1.Radius + sphere2.Radius;
-            return Vector3.DistanceSquared(sphere1.Center, sphere2.Center) <= radiisum * radiisum;
+            return Vector3F.DistanceSquared(sphere1.Center, sphere2.Center) <= radiisum * radiisum;
         }
 
         /// <summary>
@@ -1361,27 +1361,27 @@ namespace Molten
         /// <param name="t">Interval along line to intersection (A + t * AB).</param>
         /// <param name="q">Intersection point.</param>
         /// <returns>Whether or not the line intersects the plane.  If false, the line is parallel to the plane's surface.</returns>
-        public static bool LineIntersectsPlane(ref Vector3 a, ref Vector3 b, ref Plane p, out float t, out Vector3 q)
+        public static bool LineIntersectsPlane(ref Vector3F a, ref Vector3F b, ref Plane p, out float t, out Vector3F q)
         {
-            Vector3 ab;
-            Vector3.Subtract(ref b, ref a, out ab);
+            Vector3F ab;
+            Vector3F.Subtract(ref b, ref a, out ab);
             float denominator;
-            Vector3.Dot(ref p.Normal, ref ab, out denominator);
+            Vector3F.Dot(ref p.Normal, ref ab, out denominator);
             if (denominator < MathHelper.Epsilon && denominator > -MathHelper.Epsilon)
             {
                 //Surface of plane and line are parallel (or very close to it).
-                q = new Vector3();
+                q = new Vector3F();
                 t = float.MaxValue;
                 return false;
             }
 
             float numerator;
-            Vector3.Dot(ref p.Normal, ref a, out numerator);
+            Vector3F.Dot(ref p.Normal, ref a, out numerator);
             t = (p.D - numerator) / denominator;
 
             //Compute the intersection position.
-            Vector3.Multiply(ref ab, t, out q);
-            Vector3.Add(ref a, ref q, out q);
+            Vector3F.Multiply(ref ab, t, out q);
+            Vector3F.Add(ref a, ref q, out q);
             return true;
         }
 
@@ -1392,7 +1392,7 @@ namespace Molten
         /// <param name="box">The box to test.</param>
         /// <param name="point">The point to test.</param>
         /// <returns>The type of containment the two objects have.</returns>
-        public static ContainmentType BoxContainsPoint(ref BoundingBox box, ref Vector3 point)
+        public static ContainmentType BoxContainsPoint(ref BoundingBox box, ref Vector3F point)
         {
             if (box.Min.X <= point.X && box.Max.X >= point.X &&
                 box.Min.Y <= point.Y && box.Max.Y >= point.Y &&
@@ -1464,9 +1464,9 @@ namespace Molten
         /// <returns>The type of containment the two objects have.</returns>
         public static ContainmentType BoxContainsSphere(ref BoundingBox box, ref BoundingSphere sphere)
         {
-            Vector3 vector;
-            Vector3.Clamp(ref sphere.Center, ref box.Min, ref box.Max, out vector);
-            float distance = Vector3.DistanceSquared(sphere.Center, vector);
+            Vector3F vector;
+            Vector3F.Clamp(ref sphere.Center, ref box.Min, ref box.Max, out vector);
+            float distance = Vector3F.DistanceSquared(sphere.Center, vector);
 
             if (distance > sphere.Radius * sphere.Radius)
                 return ContainmentType.Disjoint;
@@ -1487,9 +1487,9 @@ namespace Molten
         /// <param name="sphere">The sphere to test.</param>
         /// <param name="point">The point to test.</param>
         /// <returns>The type of containment the two objects have.</returns>
-        public static ContainmentType SphereContainsPoint(ref BoundingSphere sphere, ref Vector3 point)
+        public static ContainmentType SphereContainsPoint(ref BoundingSphere sphere, ref Vector3F point)
         {
-            if (Vector3.DistanceSquared(point, sphere.Center) <= sphere.Radius * sphere.Radius)
+            if (Vector3F.DistanceSquared(point, sphere.Center) <= sphere.Radius * sphere.Radius)
                 return ContainmentType.Contains;
 
             return ContainmentType.Disjoint;
@@ -1503,7 +1503,7 @@ namespace Molten
         /// <param name="vertex2">The second vertex of the triangle to test.</param>
         /// <param name="vertex3">The third vertex of the triangle to test.</param>
         /// <returns>The type of containment the two objects have.</returns>
-        public static ContainmentType SphereContainsTriangle(ref BoundingSphere sphere, ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3)
+        public static ContainmentType SphereContainsTriangle(ref BoundingSphere sphere, ref Vector3F vertex1, ref Vector3F vertex2, ref Vector3F vertex3)
         {
             //Source: Jorgy343
             //Reference: None
@@ -1529,7 +1529,7 @@ namespace Molten
         /// <returns>The type of containment the two objects have.</returns>
         public static ContainmentType SphereContainsBox(ref BoundingSphere sphere, ref BoundingBox box)
         {
-            Vector3 vector;
+            Vector3F vector;
 
             if (!BoxIntersectsSphere(ref box, ref sphere))
                 return ContainmentType.Disjoint;
@@ -1602,7 +1602,7 @@ namespace Molten
         /// <returns>The type of containment the two objects have.</returns>
         public static ContainmentType SphereContainsSphere(ref BoundingSphere sphere1, ref BoundingSphere sphere2)
         {
-            float distance = Vector3.Distance(sphere1.Center, sphere2.Center);
+            float distance = Vector3F.Distance(sphere1.Center, sphere2.Center);
 
             if (sphere1.Radius + sphere2.Radius < distance)
                 return ContainmentType.Disjoint;
@@ -1621,7 +1621,7 @@ namespace Molten
         /// <param name="vC">A vertex of the triangle.</param>
         /// <param name="p">The point for comparison against the triangle.</param>
         /// <returns>Whether or not the point is within the triangle.</returns>
-        public static bool IsPointInsideTriangle(ref Vector3 vA, ref Vector3 vB, ref Vector3 vC, ref Vector3 p)
+        public static bool IsPointInsideTriangle(ref Vector3F vA, ref Vector3F vB, ref Vector3F vC, ref Vector3F p)
         {
             float u, v, w;
             MathHelper.BarycentricCoordinates(ref p, ref vA, ref vB, ref vC, out u, out v, out w);
@@ -1638,7 +1638,7 @@ namespace Molten
         /// <param name="p">The point for comparison against the triangle.</param>
         /// <param name="margin">Extra area on the edges of the triangle to include.  Can be negative.</param>
         /// <returns>Whether or not the point is within the triangle.</returns>
-        public static bool IsPointInsideTriangle(ref Vector3 vA, ref Vector3 vB, ref Vector3 vC, ref Vector3 p, float margin)
+        public static bool IsPointInsideTriangle(ref Vector3F vA, ref Vector3F vB, ref Vector3F vC, ref Vector3F p, float margin)
         {
             float u, v, w;
             MathHelper.BarycentricCoordinates(ref p, ref vA, ref vB, ref vC, out u, out v, out w);

@@ -206,8 +206,8 @@ namespace Molten.UI
                     OnChildAdded.Invoke(new UIEventData<MouseButton>()
                     {
                         Component = component,
-                        Position = new Vector2(childBounds.X, childBounds.Y),
-                        Delta = new Vector2(),
+                        Position = new Vector2F(childBounds.X, childBounds.Y),
+                        Delta = new Vector2F(),
                         InputValue = MouseButton.None,
                         WasDragged = false,
                     });
@@ -228,8 +228,8 @@ namespace Molten.UI
                 OnChildRemoved?.Invoke(new UIEventData<MouseButton>()
                 {
                     Component = component,
-                    Position = new Vector2(childBounds.X, childBounds.Y),
-                    Delta = new Vector2(),
+                    Position = new Vector2F(childBounds.X, childBounds.Y),
+                    Delta = new Vector2F(),
                     InputValue = MouseButton.None,
                     WasDragged = false,
                 });
@@ -365,7 +365,7 @@ namespace Molten.UI
 
         protected virtual void OnUpdateBounds() { }
 
-        public UIComponent GetComponent(Vector2 inputPos)
+        public UIComponent GetComponent(Vector2F inputPos)
         {
             //if the component isn't visible, neither are its children. Don't handle input.
             return OnGetComponent(inputPos);
@@ -374,7 +374,7 @@ namespace Molten.UI
         /// <summary>[Virtual] Calculates whether or not the component or one of its children contain the provided 2D position.</summary>
         /// <param name="inputPos">The position.</param>
         /// <returns>The component that contains the provided position.</returns>
-        protected virtual UIComponent OnGetComponent(Vector2 inputPos)
+        protected virtual UIComponent OnGetComponent(Vector2F inputPos)
         {
             if (!_visible) return null;
 
@@ -405,7 +405,7 @@ namespace Molten.UI
         /// <summary>Returns true if the given location is inside/over the component's bounds.</summary>
         /// <param name="location"></param>
         /// <returns></returns>
-        public virtual bool Contains(Vector2 location)
+        public virtual bool Contains(Vector2F location)
         {
             bool passed = true;
 
@@ -419,7 +419,7 @@ namespace Molten.UI
             return passed;
         }
 
-        public void InvokeDrag(Vector2 inputPos, Vector2 inputDelta, MouseButton button)
+        public void InvokeDrag(Vector2F inputPos, Vector2F inputDelta, MouseButton button)
         {
             if (OnDrag != null)
             {
@@ -439,13 +439,13 @@ namespace Molten.UI
 
         /// <summary>Forcefully triggers a right tap action on the component.</summary>
         /// <param name="inputPos"></param>
-        public void InvokePressStarted(Vector2 inputPos, MouseButton button)
+        public void InvokePressStarted(Vector2F inputPos, MouseButton button)
         {
             OnClickStarted?.Invoke(new UIEventData<MouseButton>()
             {
                 Component = this,
                 Position = inputPos,
-                Delta = new Vector2(),
+                Delta = new Vector2F(),
                 InputValue = button,
                 WasDragged = false,
             });
@@ -453,13 +453,13 @@ namespace Molten.UI
 
         /// <summary>Forcefully triggers a release tap action on the component.</summary>
         /// <param name="inputPos"></param>
-        public void InvokePressCompleted(Vector2 inputPos, bool wasDragged, MouseButton button)
+        public void InvokePressCompleted(Vector2F inputPos, bool wasDragged, MouseButton button)
         {
             OnClickEnded?.Invoke(new UIEventData<MouseButton>()
             {
                 Component = this,
                 Position = inputPos,
-                Delta = new Vector2(),
+                Delta = new Vector2F(),
                 InputValue = button,
                 WasDragged = wasDragged,
             });
@@ -467,7 +467,7 @@ namespace Molten.UI
 
         /// <summary>Forcefully triggers a release tap action on the component.</summary>
         /// <param name="inputPos"></param>
-        public void InvokeCompletedOutside(Vector2 inputPos, Vector2 inputDelta, MouseButton button)
+        public void InvokeCompletedOutside(Vector2F inputPos, Vector2F inputDelta, MouseButton button)
         {
             OnClickEndedOutside?.Invoke(new UIEventData<MouseButton>()
             {
@@ -479,37 +479,37 @@ namespace Molten.UI
             });
         }
 
-        public void InvokeHold(Vector2 inputPos, bool wasDragged, MouseButton button)
+        public void InvokeHold(Vector2F inputPos, bool wasDragged, MouseButton button)
         {
             OnHold?.Invoke(new UIEventData<MouseButton>()
             {
                 Component = this,
                 Position = inputPos,
-                Delta = new Vector2(),
+                Delta = new Vector2F(),
                 InputValue = button,
                 WasDragged = wasDragged,
             });
         }
 
-        public void InvokeEnter(Vector2 inputPos)
+        public void InvokeEnter(Vector2F inputPos)
         {
             OnEnter?.Invoke(new UIEventData<MouseButton>()
             {
                 Component = this,
                 Position = inputPos,
-                Delta = new Vector2(),
+                Delta = new Vector2F(),
                 InputValue = MouseButton.None,
                 WasDragged = false,
             });
         }
 
-        public void InvokeLeave(Vector2 inputPos)
+        public void InvokeLeave(Vector2F inputPos)
         {
             OnLeave?.Invoke(new UIEventData<MouseButton>()
             {
                 Component = this,
                 Position = inputPos,
-                Delta = new Vector2(),
+                Delta = new Vector2F(),
                 InputValue = MouseButton.None,
                 WasDragged = false,
             });
@@ -521,7 +521,7 @@ namespace Molten.UI
             {
                 Component = this,
                 Position = _globalBounds.TopLeft,
-                Delta = new Vector2(),
+                Delta = new Vector2F(),
                 InputValue = MouseButton.None,
                 WasDragged = false,
             });
@@ -533,19 +533,19 @@ namespace Molten.UI
             {
                 Component = this,
                 Position = _globalBounds.TopLeft,
-                Delta = new Vector2(),
+                Delta = new Vector2F(),
                 InputValue = MouseButton.None,
                 WasDragged = false,
             });
         }
 
-        internal void InvokeHover(Vector2 inputPos)
+        internal void InvokeHover(Vector2F inputPos)
         {
             OnHover?.Invoke(new UIEventData<MouseButton>()
             {
                 Component = this,
                 Position = inputPos,
-                Delta = new Vector2(),
+                Delta = new Vector2F(),
                 InputValue = MouseButton.None,
                 WasDragged = false,
             });
@@ -557,7 +557,7 @@ namespace Molten.UI
             {
                 Component = this,
                 Position = _globalBounds.TopLeft,
-                Delta = new Vector2(0, delta),
+                Delta = new Vector2F(0, delta),
                 InputValue = MouseButton.None,
                 WasDragged = false,
             });

@@ -317,10 +317,10 @@ namespace Molten.Graphics
         /// <remarks>Does not currently support line breaks.</remarks></summary>
         /// <param name="text">The string of text to measure.</param>
         /// <returns></returns>
-        public Vector2 MeasureString(string text)
+        public Vector2F MeasureString(string text)
         {
             if (text == null)
-                return new Vector2();
+                return new Vector2F();
             else
                 return MeasureString(text, text.Length);
         }
@@ -331,9 +331,9 @@ namespace Molten.Graphics
         /// <param name="text">The string of text to measure.</param>
         /// <param name="maxLength">The maximum number of characters to measure.</param>
         /// <returns></returns>
-        public Vector2 MeasureString(string text, int maxLength)
+        public Vector2F MeasureString(string text, int maxLength)
         {
-            Vector2 size = new Vector2(0, _tileHeight);
+            Vector2F size = new Vector2F(0, _tileHeight);
             int limit = Math.Min(maxLength, text.Length);
 
             for (int i = 0; i < limit; i++)
@@ -389,9 +389,9 @@ namespace Molten.Graphics
         /// <param name="text">The string to text to test against.</param>
         /// <param name="localPosition">The local position, relative to the string's position.</param>
         /// <returns></returns>
-        public int NearestCharacter(string text, Vector2 localPosition)
+        public int NearestCharacter(string text, Vector2F localPosition)
         {
-            Vector2 size = new Vector2(0, _tileHeight);
+            Vector2F size = new Vector2F(0, _tileHeight);
             float lowestDist = float.MaxValue;
             float dist = float.MaxValue;
             int result = 0;
@@ -406,7 +406,7 @@ namespace Molten.Graphics
 
                 ushort id = _ids[c];
 
-                dist = Vector2.Distance(localPosition, size);
+                dist = Vector2F.Distance(localPosition, size);
                 if (dist < lowestDist)
                 {
                     lowestDist = dist;
@@ -417,7 +417,7 @@ namespace Molten.Graphics
             }
 
             // Test end of string
-            dist = Vector2.Distance(localPosition, size);
+            dist = Vector2F.Distance(localPosition, size);
             if (dist < lowestDist)
                 result = text.Length;
 

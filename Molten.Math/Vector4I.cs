@@ -1,4 +1,24 @@
-﻿using System;
+﻿// Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -6,71 +26,71 @@ using System.Runtime.InteropServices;
 namespace Molten
 {
     /// <summary>
-    /// Represents a four dimensional mathematical vector.
+    /// Represents a four dimensional mathematical vector, composted of 4 signed integers.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct UIntVector4 : IEquatable<UIntVector4>, IFormattable
+    public struct Vector4I : IEquatable<Vector4I>, IFormattable
     {
         /// <summary>
-        /// The size of the <see cref = "UIntVector4" /> type, in bytes.
+        /// The size of the <see cref = "Vector4I" /> type, in bytes.
         /// </summary>
-        public static readonly int SizeInBytes = Marshal.SizeOf(typeof (UIntVector4));
+        public static readonly int SizeInBytes = Marshal.SizeOf(typeof (Vector4I));
 
         /// <summary>
-        /// A <see cref = "UIntVector4" /> with all of its components set to zero.
+        /// A <see cref = "Vector4I" /> with all of its components set to zero.
         /// </summary>
-        public static readonly UIntVector4 Zero = new UIntVector4();
+        public static readonly Vector4I Zero = new Vector4I();
 
         /// <summary>
-        /// The X unit <see cref = "UIntVector4" /> (1, 0, 0, 0).
+        /// The X unit <see cref = "Vector4I" /> (1, 0, 0, 0).
         /// </summary>
-        public static readonly UIntVector4 UnitX = new UIntVector4(1, 0, 0, 0);
+        public static readonly Vector4I UnitX = new Vector4I(1, 0, 0, 0);
 
         /// <summary>
-        /// The Y unit <see cref = "UIntVector4" /> (0, 1, 0, 0).
+        /// The Y unit <see cref = "Vector4I" /> (0, 1, 0, 0).
         /// </summary>
-        public static readonly UIntVector4 UnitY = new UIntVector4(0, 1, 0, 0);
+        public static readonly Vector4I UnitY = new Vector4I(0, 1, 0, 0);
 
         /// <summary>
-        /// The Z unit <see cref = "UIntVector4" /> (0, 0, 1, 0).
+        /// The Z unit <see cref = "Vector4I" /> (0, 0, 1, 0).
         /// </summary>
-        public static readonly UIntVector4 UnitZ = new UIntVector4(0, 0, 1, 0);
+        public static readonly Vector4I UnitZ = new Vector4I(0, 0, 1, 0);
 
         /// <summary>
-        /// The W unit <see cref = "UIntVector4" /> (0, 0, 0, 1).
+        /// The W unit <see cref = "Vector4I" /> (0, 0, 0, 1).
         /// </summary>
-        public static readonly UIntVector4 UnitW = new UIntVector4(0, 0, 0, 1);
+        public static readonly Vector4I UnitW = new Vector4I(0, 0, 0, 1);
 
         /// <summary>
-        /// A <see cref = "UIntVector4" /> with all of its components set to one.
+        /// A <see cref = "Vector4I" /> with all of its components set to one.
         /// </summary>
-        public static readonly UIntVector4 One = new UIntVector4(1, 1, 1, 1);
+        public static readonly Vector4I One = new Vector4I(1, 1, 1, 1);
 
         /// <summary>
         /// The X component of the vector.
         /// </summary>
-        public uint X;
+        public int X;
 
         /// <summary>
         /// The Y component of the vector.
         /// </summary>
-        public uint Y;
+        public int Y;
 
         /// <summary>
         /// The Z component of the vector.
         /// </summary>
-        public uint Z;
+        public int Z;
 
         /// <summary>
         /// The W component of the vector.
         /// </summary>
-        public uint W;
+        public int W;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref = "UIntVector4" /> struct.
+        /// Initializes a new instance of the <see cref = "Vector4I" /> struct.
         /// </summary>
         /// <param name = "value">The value that will be assigned to all components.</param>
-        public UIntVector4(uint value)
+        public Vector4I(int value)
         {
             X = value;
             Y = value;
@@ -79,13 +99,13 @@ namespace Molten
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref = "UIntVector4" /> struct.
+        /// Initializes a new instance of the <see cref = "Vector4I" /> struct.
         /// </summary>
         /// <param name = "x">Initial value for the X component of the vector.</param>
         /// <param name = "y">Initial value for the Y component of the vector.</param>
         /// <param name = "z">Initial value for the Z component of the vector.</param>
         /// <param name = "w">Initial value for the W component of the vector.</param>
-        public UIntVector4(uint x, uint y, uint z, uint w)
+        public Vector4I(int x, int y, int z, int w)
         {
             X = x;
             Y = y;
@@ -95,12 +115,12 @@ namespace Molten
 
 
         /// <summary>
-        /// Initializes a new instance of the <see cref = "UIntVector4" /> struct.
+        /// Initializes a new instance of the <see cref = "Vector4I" /> struct.
         /// </summary>
         /// <param name = "values">The values to assign to the X, Y, Z, and W components of the vector. This must be an array with four elements.</param>
         /// <exception cref = "ArgumentNullException">Thrown when <paramref name = "values" /> is <c>null</c>.</exception>
         /// <exception cref = "ArgumentOutOfRangeException">Thrown when <paramref name = "values" /> contains more or less than four elements.</exception>
-        public UIntVector4(uint[] values)
+        public Vector4I(int[] values)
         {
             if (values == null)
                 throw new ArgumentNullException("values");
@@ -121,7 +141,7 @@ namespace Molten
         /// <param name = "index">The index of the component to access. Use 0 for the X component, 1 for the Y component, 2 for the Z component, and 3 for the W component.</param>
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref = "System.ArgumentOutOfRangeException">Thrown when the <paramref name = "index" /> is out of the range [0, 3].</exception>
-        public uint this[int index]
+        public int this[int index]
         {
             get
             {
@@ -166,9 +186,9 @@ namespace Molten
         /// Creates an array containing the elements of the vector.
         /// </summary>
         /// <returns>A four-element array containing the components of the vector.</returns>
-        public uint[] ToArray()
+        public int[] ToArray()
         {
-            return new uint[] {X, Y, Z, W};
+            return new int[] {X, Y, Z, W};
         }
 
         /// <summary>
@@ -177,9 +197,9 @@ namespace Molten
         /// <param name = "left">The first vector to add.</param>
         /// <param name = "right">The second vector to add.</param>
         /// <param name = "result">When the method completes, contains the sum of the two vectors.</param>
-        public static void Add(ref UIntVector4 left, ref UIntVector4 right, out UIntVector4 result)
+        public static void Add(ref Vector4I left, ref Vector4I right, out Vector4I result)
         {
-            result = new UIntVector4(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
+            result = new Vector4I(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
         }
 
         /// <summary>
@@ -188,9 +208,9 @@ namespace Molten
         /// <param name = "left">The first vector to add.</param>
         /// <param name = "right">The second vector to add.</param>
         /// <returns>The sum of the two vectors.</returns>
-        public static UIntVector4 Add(UIntVector4 left, UIntVector4 right)
+        public static Vector4I Add(Vector4I left, Vector4I right)
         {
-            return new UIntVector4(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
+            return new Vector4I(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
         }
 
         /// <summary>
@@ -199,9 +219,9 @@ namespace Molten
         /// <param name = "left">The first vector to subtract.</param>
         /// <param name = "right">The second vector to subtract.</param>
         /// <param name = "result">When the method completes, contains the difference of the two vectors.</param>
-        public static void Subtract(ref UIntVector4 left, ref UIntVector4 right, out UIntVector4 result)
+        public static void Subtract(ref Vector4I left, ref Vector4I right, out Vector4I result)
         {
-            result = new UIntVector4(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
+            result = new Vector4I(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
         }
 
         /// <summary>
@@ -210,9 +230,9 @@ namespace Molten
         /// <param name = "left">The first vector to subtract.</param>
         /// <param name = "right">The second vector to subtract.</param>
         /// <returns>The difference of the two vectors.</returns>
-        public static UIntVector4 Subtract(UIntVector4 left, UIntVector4 right)
+        public static Vector4I Subtract(Vector4I left, Vector4I right)
         {
-            return new UIntVector4(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
+            return new Vector4I(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
         }
 
         /// <summary>
@@ -221,9 +241,9 @@ namespace Molten
         /// <param name = "value">The vector to scale.</param>
         /// <param name = "scale">The amount by which to scale the vector.</param>
         /// <param name = "result">When the method completes, contains the scaled vector.</param>
-        public static void Multiply(ref UIntVector4 value, uint scale, out UIntVector4 result)
+        public static void Multiply(ref Vector4I value, int scale, out Vector4I result)
         {
-            result = new UIntVector4(value.X*scale, value.Y*scale, value.Z*scale, value.W*scale);
+            result = new Vector4I(value.X*scale, value.Y*scale, value.Z*scale, value.W*scale);
         }
 
         /// <summary>
@@ -232,9 +252,9 @@ namespace Molten
         /// <param name = "value">The vector to scale.</param>
         /// <param name = "scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static UIntVector4 Multiply(UIntVector4 value, uint scale)
+        public static Vector4I Multiply(Vector4I value, int scale)
         {
-            return new UIntVector4(value.X*scale, value.Y*scale, value.Z*scale, value.W*scale);
+            return new Vector4I(value.X*scale, value.Y*scale, value.Z*scale, value.W*scale);
         }
 
         /// <summary>
@@ -243,9 +263,9 @@ namespace Molten
         /// <param name = "left">The first vector to modulate.</param>
         /// <param name = "right">The second vector to modulate.</param>
         /// <param name = "result">When the method completes, contains the modulated vector.</param>
-        public static void Modulate(ref UIntVector4 left, ref UIntVector4 right, out UIntVector4 result)
+        public static void Modulate(ref Vector4I left, ref Vector4I right, out Vector4I result)
         {
-            result = new UIntVector4(left.X*right.X, left.Y*right.Y, left.Z*right.Z, left.W*right.W);
+            result = new Vector4I(left.X*right.X, left.Y*right.Y, left.Z*right.Z, left.W*right.W);
         }
 
         /// <summary>
@@ -254,9 +274,9 @@ namespace Molten
         /// <param name = "left">The first vector to modulate.</param>
         /// <param name = "right">The second vector to modulate.</param>
         /// <returns>The modulated vector.</returns>
-        public static UIntVector4 Modulate(UIntVector4 left, UIntVector4 right)
+        public static Vector4I Modulate(Vector4I left, Vector4I right)
         {
-            return new UIntVector4(left.X*right.X, left.Y*right.Y, left.Z*right.Z, left.W*right.W);
+            return new Vector4I(left.X*right.X, left.Y*right.Y, left.Z*right.Z, left.W*right.W);
         }
 
         /// <summary>
@@ -265,9 +285,9 @@ namespace Molten
         /// <param name = "value">The vector to scale.</param>
         /// <param name = "scale">The amount by which to scale the vector.</param>
         /// <param name = "result">When the method completes, contains the scaled vector.</param>
-        public static void Divide(ref UIntVector4 value, uint scale, out UIntVector4 result)
+        public static void Divide(ref Vector4I value, int scale, out Vector4I result)
         {
-            result = new UIntVector4(value.X/scale, value.Y/scale, value.Z/scale, value.W/scale);
+            result = new Vector4I(value.X/scale, value.Y/scale, value.Z/scale, value.W/scale);
         }
 
         /// <summary>
@@ -276,9 +296,29 @@ namespace Molten
         /// <param name = "value">The vector to scale.</param>
         /// <param name = "scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static UIntVector4 Divide(UIntVector4 value, uint scale)
+        public static Vector4I Divide(Vector4I value, int scale)
         {
-            return new UIntVector4(value.X/scale, value.Y/scale, value.Z/scale, value.W/scale);
+            return new Vector4I(value.X/scale, value.Y/scale, value.Z/scale, value.W/scale);
+        }
+
+        /// <summary>
+        /// Reverses the direction of a given vector.
+        /// </summary>
+        /// <param name = "value">The vector to negate.</param>
+        /// <param name = "result">When the method completes, contains a vector facing in the opposite direction.</param>
+        public static void Negate(ref Vector4I value, out Vector4I result)
+        {
+            result = new Vector4I(-value.X, -value.Y, -value.Z, -value.W);
+        }
+
+        /// <summary>
+        /// Reverses the direction of a given vector.
+        /// </summary>
+        /// <param name = "value">The vector to negate.</param>
+        /// <returns>A vector facing in the opposite direction.</returns>
+        public static Vector4I Negate(Vector4I value)
+        {
+            return new Vector4I(-value.X, -value.Y, -value.Z, -value.W);
         }
 
         /// <summary>
@@ -288,25 +328,25 @@ namespace Molten
         /// <param name = "min">The minimum value.</param>
         /// <param name = "max">The maximum value.</param>
         /// <param name = "result">When the method completes, contains the clamped value.</param>
-        public static void Clamp(ref UIntVector4 value, ref UIntVector4 min, ref UIntVector4 max, out UIntVector4 result)
+        public static void Clamp(ref Vector4I value, ref Vector4I min, ref Vector4I max, out Vector4I result)
         {
-            uint x = value.X;
+            int x = value.X;
             x = (x > max.X) ? max.X : x;
             x = (x < min.X) ? min.X : x;
 
-            uint y = value.Y;
+            int y = value.Y;
             y = (y > max.Y) ? max.Y : y;
             y = (y < min.Y) ? min.Y : y;
 
-            uint z = value.Z;
+            int z = value.Z;
             z = (z > max.Z) ? max.Z : z;
             z = (z < min.Z) ? min.Z : z;
 
-            uint w = value.W;
+            int w = value.W;
             w = (w > max.W) ? max.W : w;
             w = (w < min.W) ? min.W : w;
 
-            result = new UIntVector4(x, y, z, w);
+            result = new Vector4I(x, y, z, w);
         }
 
         /// <summary>
@@ -316,9 +356,9 @@ namespace Molten
         /// <param name = "min">The minimum value.</param>
         /// <param name = "max">The maximum value.</param>
         /// <returns>The clamped value.</returns>
-        public static UIntVector4 Clamp(UIntVector4 value, UIntVector4 min, UIntVector4 max)
+        public static Vector4I Clamp(Vector4I value, Vector4I min, Vector4I max)
         {
-            UIntVector4 result;
+            Vector4I result;
             Clamp(ref value, ref min, ref max, out result);
             return result;
         }
@@ -329,7 +369,7 @@ namespace Molten
         /// <param name = "left">The first source vector.</param>
         /// <param name = "right">The second source vector.</param>
         /// <param name = "result">When the method completes, contains an new vector composed of the largest components of the source vectors.</param>
-        public static void Max(ref UIntVector4 left, ref UIntVector4 right, out UIntVector4 result)
+        public static void Max(ref Vector4I left, ref Vector4I right, out Vector4I result)
         {
             result.X = (left.X > right.X) ? left.X : right.X;
             result.Y = (left.Y > right.Y) ? left.Y : right.Y;
@@ -343,9 +383,9 @@ namespace Molten
         /// <param name = "left">The first source vector.</param>
         /// <param name = "right">The second source vector.</param>
         /// <returns>A vector containing the largest components of the source vectors.</returns>
-        public static UIntVector4 Max(UIntVector4 left, UIntVector4 right)
+        public static Vector4I Max(Vector4I left, Vector4I right)
         {
-            UIntVector4 result;
+            Vector4I result;
             Max(ref left, ref right, out result);
             return result;
         }
@@ -356,7 +396,7 @@ namespace Molten
         /// <param name = "left">The first source vector.</param>
         /// <param name = "right">The second source vector.</param>
         /// <param name = "result">When the method completes, contains an new vector composed of the smallest components of the source vectors.</param>
-        public static void Min(ref UIntVector4 left, ref UIntVector4 right, out UIntVector4 result)
+        public static void Min(ref Vector4I left, ref Vector4I right, out Vector4I result)
         {
             result.X = (left.X < right.X) ? left.X : right.X;
             result.Y = (left.Y < right.Y) ? left.Y : right.Y;
@@ -370,9 +410,9 @@ namespace Molten
         /// <param name = "left">The first source vector.</param>
         /// <param name = "right">The second source vector.</param>
         /// <returns>A vector containing the smallest components of the source vectors.</returns>
-        public static UIntVector4 Min(UIntVector4 left, UIntVector4 right)
+        public static Vector4I Min(Vector4I left, Vector4I right)
         {
-            UIntVector4 result;
+            Vector4I result;
             Min(ref left, ref right, out result);
             return result;
         }
@@ -383,9 +423,9 @@ namespace Molten
         /// <param name = "left">The first vector to add.</param>
         /// <param name = "right">The second vector to add.</param>
         /// <returns>The sum of the two vectors.</returns>
-        public static UIntVector4 operator +(UIntVector4 left, UIntVector4 right)
+        public static Vector4I operator +(Vector4I left, Vector4I right)
         {
-            return new UIntVector4(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
+            return new Vector4I(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
         }
 
         /// <summary>
@@ -393,7 +433,7 @@ namespace Molten
         /// </summary>
         /// <param name = "value">The vector to assert (unchanged).</param>
         /// <returns>The asserted (unchanged) vector.</returns>
-        public static UIntVector4 operator +(UIntVector4 value)
+        public static Vector4I operator +(Vector4I value)
         {
             return value;
         }
@@ -404,9 +444,19 @@ namespace Molten
         /// <param name = "left">The first vector to subtract.</param>
         /// <param name = "right">The second vector to subtract.</param>
         /// <returns>The difference of the two vectors.</returns>
-        public static UIntVector4 operator -(UIntVector4 left, UIntVector4 right)
+        public static Vector4I operator -(Vector4I left, Vector4I right)
         {
-            return new UIntVector4(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
+            return new Vector4I(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
+        }
+
+        /// <summary>
+        /// Reverses the direction of a given vector.
+        /// </summary>
+        /// <param name = "value">The vector to negate.</param>
+        /// <returns>A vector facing in the opposite direction.</returns>
+        public static Vector4I operator -(Vector4I value)
+        {
+            return new Vector4I(-value.X, -value.Y, -value.Z, -value.W);
         }
 
         /// <summary>
@@ -415,9 +465,9 @@ namespace Molten
         /// <param name = "value">The vector to scale.</param>
         /// <param name = "scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static UIntVector4 operator *(uint scale, UIntVector4 value)
+        public static Vector4I operator *(int scale, Vector4I value)
         {
-            return new UIntVector4(value.X*scale, value.Y*scale, value.Z*scale, value.W*scale);
+            return new Vector4I(value.X*scale, value.Y*scale, value.Z*scale, value.W*scale);
         }
 
         /// <summary>
@@ -426,9 +476,9 @@ namespace Molten
         /// <param name = "value">The vector to scale.</param>
         /// <param name = "scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static UIntVector4 operator *(UIntVector4 value, uint scale)
+        public static Vector4I operator *(Vector4I value, int scale)
         {
-            return new UIntVector4(value.X*scale, value.Y*scale, value.Z*scale, value.W*scale);
+            return new Vector4I(value.X*scale, value.Y*scale, value.Z*scale, value.W*scale);
         }
 
         /// <summary>
@@ -437,9 +487,9 @@ namespace Molten
         /// <param name = "value">The vector to scale.</param>
         /// <param name = "scale">The amount by which to scale the vector.</param>
         /// <returns>The scaled vector.</returns>
-        public static UIntVector4 operator /(UIntVector4 value, uint scale)
+        public static Vector4I operator /(Vector4I value, int scale)
         {
-            return new UIntVector4(value.X/scale, value.Y/scale, value.Z/scale, value.W/scale);
+            return new Vector4I(value.X/scale, value.Y/scale, value.Z/scale, value.W/scale);
         }
 
         /// <summary>
@@ -449,7 +499,7 @@ namespace Molten
         /// <param name = "right">The second value to compare.</param>
         /// <returns><c>true</c> if <paramref name = "left" /> has the same value as <paramref name = "right" />; otherwise, <c>false</c>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(UIntVector4 left, UIntVector4 right)
+        public static bool operator ==(Vector4I left, Vector4I right)
         {
             return left.Equals(ref right);
         }
@@ -461,39 +511,59 @@ namespace Molten
         /// <param name = "right">The second value to compare.</param>
         /// <returns><c>true</c> if <paramref name = "left" /> has a different value than <paramref name = "right" />; otherwise, <c>false</c>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(UIntVector4 left, UIntVector4 right)
+        public static bool operator !=(Vector4I left, Vector4I right)
         {
             return !left.Equals(ref right);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref = "UIntVector4" /> to <see cref = "Vector2" />.
+        /// Performs an explicit conversion from <see cref = "Vector4I" /> to <see cref = "Vector2I" />.
         /// </summary>
         /// <param name = "value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector2(UIntVector4 value)
+        public static explicit operator Vector2I(Vector4I value)
         {
-            return new Vector2(value.X, value.Y);
+            return new Vector2I(value.X, value.Y);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref = "UIntVector4" /> to <see cref = "Vector3" />.
+        /// Performs an explicit conversion from <see cref = "Vector4I" /> to <see cref = "Vector3I" />.
         /// </summary>
         /// <param name = "value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector3(UIntVector4 value)
+        public static explicit operator Vector3I(Vector4I value)
         {
-            return new Vector3(value.X, value.Y, value.Z);
+            return new Vector3I(value.X, value.Y, value.Z);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref = "UIntVector4" /> to <see cref = "Vector4" />.
+        /// Performs an explicit conversion from <see cref = "Vector4I" /> to <see cref = "Vector2F" />.
         /// </summary>
         /// <param name = "value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector4(UIntVector4 value)
+        public static explicit operator Vector2F(Vector4I value)
         {
-            return new Vector4(value.X, value.Y, value.Z, value.W);
+            return new Vector2F(value.X, value.Y);
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref = "Vector4I" /> to <see cref = "Vector3F" />.
+        /// </summary>
+        /// <param name = "value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Vector3F(Vector4I value)
+        {
+            return new Vector3F(value.X, value.Y, value.Z);
+        }
+
+        /// <summary>
+        /// Performs an explicit conversion from <see cref = "Vector4I" /> to <see cref = "Vector4F" />.
+        /// </summary>
+        /// <param name = "value">The value.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static explicit operator Vector4F(Vector4I value)
+        {
+            return new Vector4F(value.X, value.Y, value.Z, value.W);
         }
 
         /// <summary>
@@ -570,32 +640,32 @@ namespace Molten
                 hashCode = (hashCode * 397) ^ Y;
                 hashCode = (hashCode * 397) ^ Z;
                 hashCode = (hashCode * 397) ^ W;
-                return (int)((long)hashCode - int.MaxValue);
+                return hashCode;
             }
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref = "UIntVector4" /> is equal to this instance.
+        /// Determines whether the specified <see cref = "Vector4I" /> is equal to this instance.
         /// </summary>
-        /// <param name = "other">The <see cref = "UIntVector4" /> to compare with this instance.</param>
+        /// <param name = "other">The <see cref = "Vector4I" /> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref = "UIntVector4" /> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref = "Vector4I" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref UIntVector4 other)
+        public bool Equals(ref Vector4I other)
         {
             return other.X == X && other.Y == Y && other.Z == Z && other.W == W;
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref = "UIntVector4" /> is equal to this instance.
+        /// Determines whether the specified <see cref = "Vector4I" /> is equal to this instance.
         /// </summary>
-        /// <param name = "other">The <see cref = "UIntVector4" /> to compare with this instance.</param>
+        /// <param name = "other">The <see cref = "Vector4I" /> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref = "UIntVector4" /> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref = "Vector4I" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(UIntVector4 other)
+        public bool Equals(Vector4I other)
         {
             return Equals(ref other);
         }
@@ -609,41 +679,31 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is UIntVector4))
+            if (!(value is Vector4I))
                 return false;
 
-            var strongValue = (UIntVector4)value;
+            var strongValue = (Vector4I)value;
             return Equals(ref strongValue);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="int"/> array to <see cref="UIntVector4"/>.
+        /// Performs an implicit conversion from <see cref="int"/> array to <see cref="Vector4I"/>.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator UIntVector4(uint[] input)
+        public static implicit operator Vector4I(int[] input)
         {
-            return new UIntVector4(input);
+            return new Vector4I(input);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="UIntVector4"/> to <see cref="System.Int32"/> array.
+        /// Performs an implicit conversion from <see cref="Vector4I"/> to <see cref="System.Int32"/> array.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator uint[](UIntVector4 input)
+        public static implicit operator int[](Vector4I input)
         {
             return input.ToArray();
-        }
-
-        public static implicit operator IntVector4(UIntVector4 value)
-        {
-            return new IntVector4((int)value.X, (int)value.Y, (int)value.Z, (int)value.W);
-        }
-
-        public static explicit operator UIntVector4(IntVector4 value)
-        {
-            return new UIntVector4((uint)value.X, (uint)value.Y, (uint)value.Z, (uint)value.W);
         }
     }
 }

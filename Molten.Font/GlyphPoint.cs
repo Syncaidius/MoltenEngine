@@ -9,16 +9,16 @@ namespace Molten.Font
     public struct GlyphPoint
     {
         public static readonly GlyphPoint Empty = new GlyphPoint();
-        public Vector2 Point;
+        public Vector2F Point;
         public bool IsOnCurve;
 
         internal GlyphPoint(float x, float y, bool isOnCurve)
         {
-            Point = new Vector2(x, y);
+            Point = new Vector2F(x, y);
             IsOnCurve = isOnCurve;
         }
 
-        internal GlyphPoint(Vector2 p, bool isOnCurve)
+        internal GlyphPoint(Vector2F p, bool isOnCurve)
         {
             Point = p;
             IsOnCurve = isOnCurve;
@@ -32,7 +32,7 @@ namespace Molten.Font
         /// <returns></returns>
         internal GlyphPoint Offset(short offsetX, short offsetY)
         {
-            return new GlyphPoint(new Vector2(Point.X + offsetX, Point.Y + offsetY), IsOnCurve);
+            return new GlyphPoint(new Vector2F(Point.X + offsetX, Point.Y + offsetY), IsOnCurve);
         }
 
         /// <summary>

@@ -10,12 +10,12 @@ namespace Molten
     {
         SceneObject _obj;
         Matrix _globalTransform;
-        Vector3 _globalPosition;
+        Vector3F _globalPosition;
 
         Matrix _localTransform;
-        Vector3 _localPosition;
-        Vector3 _localScale = Vector3.One;
-        Vector3 _angles;
+        Vector3F _localPosition;
+        Vector3F _localScale = Vector3F.One;
+        Vector3F _angles;
 
         bool _globalChanged = true;
         bool _localChanged = true;
@@ -27,9 +27,9 @@ namespace Molten
 
         internal void CalculateLocal()
         {
-            Quaternion qRot = Quaternion.RotationAxis(Vector3.Left, MathHelper.DegreesToRadians(_angles.X)) * 
-                Quaternion.RotationAxis(Vector3.Up, MathHelper.DegreesToRadians(_angles.Y)) *
-                Quaternion.RotationAxis(Vector3.ForwardLH, MathHelper.DegreesToRadians(_angles.Z));
+            Quaternion qRot = Quaternion.RotationAxis(Vector3F.Left, MathHelper.DegreesToRadians(_angles.X)) * 
+                Quaternion.RotationAxis(Vector3F.Up, MathHelper.DegreesToRadians(_angles.Y)) *
+                Quaternion.RotationAxis(Vector3F.ForwardLH, MathHelper.DegreesToRadians(_angles.Z));
 
             _localTransform = Matrix.Scaling(_localScale) * Matrix.FromQuaternion(qRot) * Matrix.CreateTranslation(_localPosition);
         }
@@ -92,7 +92,7 @@ namespace Molten
 
         public Matrix Local => _localTransform;
 
-        public Vector3 LocalPosition
+        public Vector3F LocalPosition
         {
             get => _localPosition;
             set
@@ -168,7 +168,7 @@ namespace Molten
             }
         }
 
-        public Vector3 LocalScale
+        public Vector3F LocalScale
         {
             get => _localScale;
             set

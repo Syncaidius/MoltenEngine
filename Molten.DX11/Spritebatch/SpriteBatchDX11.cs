@@ -198,7 +198,7 @@ namespace Molten.Graphics
 
             if (cluster.Texture != null)
             {
-                Vector2 texSize = new Vector2(cluster.Texture.Width, cluster.Texture.Height);
+                Vector2F texSize = new Vector2F(cluster.Texture.Width, cluster.Texture.Height);
                 if (mat != null)
                 {
                     // TODO improve this to avoid dictionary lookups.

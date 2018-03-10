@@ -16,22 +16,22 @@ namespace Molten
         /// <summary>
         /// The start point of the curve
         /// </summary>
-        public Vector2 Start;
+        public Vector2F Start;
 
         /// <summary>
         /// The end point of the curve
         /// </summary>
-        public Vector2 End;
+        public Vector2F End;
 
         /// <summary>
         /// The first control point
         /// </summary>
-        public Vector2 ControlPoint1;
+        public Vector2F ControlPoint1;
 
         /// <summary>
         /// The second control point.
         /// </summary>
-        public Vector2 ControlPoint2;
+        public Vector2F ControlPoint2;
 
         /// <summary>
         /// An empty <see cref="BezierCurve2D"/> curve. All values are zero.
@@ -42,12 +42,12 @@ namespace Molten
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <param name="cp"></param>
-        public BezierCurve2D(Vector2 start, Vector2 end, Vector2 cp)
+        public BezierCurve2D(Vector2F start, Vector2F end, Vector2F cp)
         {
             Start = start;
             End = end;
             ControlPoint1 = cp;
-            ControlPoint2 = Vector2.Zero;
+            ControlPoint2 = Vector2F.Zero;
         }
 
         /// <summary>Calculates a point along a 2D cubic bezier curve.</summary>
@@ -57,8 +57,8 @@ namespace Molten
         /// <param name="cp2">Second control point.</param>
         /// <param name="end">End point.</param>
         /// <returns></returns>
-        public static Vector2 CalculateCubic(float t,
-            Vector2 start, Vector2 end, Vector2 cp1, Vector2 cp2)
+        public static Vector2F CalculateCubic(float t,
+            Vector2F start, Vector2F end, Vector2F cp1, Vector2F cp2)
         {
             float u = 1 - t;
             float tt = t * t;
@@ -66,7 +66,7 @@ namespace Molten
             float uuu = uu * u;
             float ttt = tt * t;
 
-            Vector2 p = uuu * start; //first term
+            Vector2F p = uuu * start; //first term
             p += 3 * uu * t * cp1; //second term
             p += 3 * u * tt * cp2; //third term
             p += ttt * end; //fourth term
@@ -81,7 +81,7 @@ namespace Molten
         /// <param name="cp2">Second control point.</param>
         /// <param name="end">End point.</param>
         /// <returns></returns>
-        public static Vector2 CalculateCubic(float t,
+        public static Vector2F CalculateCubic(float t,
             BezierCurve2D curve)
         {
             float u = 1 - t;
@@ -90,7 +90,7 @@ namespace Molten
             float uuu = uu * u;
             float ttt = tt * t;
 
-            Vector2 p = uuu * curve.Start; //first term
+            Vector2F p = uuu * curve.Start; //first term
             p += 3 * uu * t * curve.ControlPoint1; //second term
             p += 3 * u * tt * curve.ControlPoint2; //third term
             p += ttt * curve.End; //fourth term
@@ -104,15 +104,15 @@ namespace Molten
         /// <param name="cp">The control point.</param>
         /// <param name="end">End point.</param>
         /// <returns></returns>
-        public static Vector2 CalculateQuadratic(float t, Vector2 start, Vector2 end, Vector2 cp)
+        public static Vector2F CalculateQuadratic(float t, Vector2F start, Vector2F end, Vector2F cp)
         {
-            Vector2 cp1 = new Vector2()
+            Vector2F cp1 = new Vector2F()
             {
                 X = start.X + ((2f / 3f) * (cp.X - start.X)),
                 Y = start.Y + ((2f / 3f) * (cp.Y - start.Y)),
             };
 
-            Vector2 cp2 = new Vector2()
+            Vector2F cp2 = new Vector2F()
             {
                 X = end.X + ((2f / 3f) * (cp.X - end.X)),
                 Y = end.Y + ((2f / 3f) * (cp.Y - end.Y)),
@@ -128,16 +128,16 @@ namespace Molten
         /// <param name="endCP">End control point.</param>
         /// <param name="endPoint">End point.</param>
         /// <returns></returns>
-        public static Vector2 CalculateQuadratic(float t,
+        public static Vector2F CalculateQuadratic(float t,
             BezierCurve2D curve)
         {
-            Vector2 cp1 = new Vector2()
+            Vector2F cp1 = new Vector2F()
             {
                 X = curve.Start.X + ((2f / 3f) * (curve.ControlPoint1.X - curve.Start.X)),
                 Y = curve.Start.Y + ((2f / 3f) * (curve.ControlPoint1.Y - curve.Start.Y)),
             };
 
-            Vector2 cp2 = new Vector2()
+            Vector2F cp2 = new Vector2F()
             {
                 X = curve.End.X + ((2f / 3f) * (curve.ControlPoint1.X - curve.End.X)),
                 Y = curve.End.Y + ((2f / 3f) * (curve.ControlPoint1.Y - curve.End.Y)),

@@ -152,7 +152,7 @@ namespace Molten.Graphics
         /// <param name="text">The text to draw.</param>
         /// <param name="position">The position of the text.</param>
         /// <param name="color">The color of the text.</param>
-        public void DrawString(ISpriteFont font, string text, Vector2 position, Color color, IMaterial material = null)
+        public void DrawString(ISpriteFont font, string text, Vector2F position, Color color, IMaterial material = null)
         {
             SpriteClipZone clip = _clipZones[_curClip];
             int spriteID = 0;
@@ -161,7 +161,7 @@ namespace Molten.Graphics
 
             // Cycle through all characters in the string and process them
             Rectangle invalid = Rectangle.Empty;
-            Vector2 charPos = position;
+            Vector2F charPos = position;
             for (int i = 0; i < strLength; i++)
             {
                 char c = text[i];
@@ -170,11 +170,11 @@ namespace Molten.Graphics
                 // Set the sprite info
                 cluster.Sprites[spriteID++] = new SpriteVertex()
                 {
-                    Position = new Vector2(charPos.X, charPos.Y),
-                    Size = new Vector2(charRect.Width, charRect.Height),
-                    UV = new Vector4(charRect.X, charRect.Y, charRect.Right, charRect.Bottom),
+                    Position = new Vector2F(charPos.X, charPos.Y),
+                    Size = new Vector2F(charRect.Width, charRect.Height),
+                    UV = new Vector4F(charRect.X, charRect.Y, charRect.Right, charRect.Bottom),
                     Color = color,
-                    Origin = Vector2.Zero,
+                    Origin = Vector2F.Zero,
                     Rotation = 0,
                 };
 
@@ -194,7 +194,7 @@ namespace Molten.Graphics
         /// <param name="endAngle">The end angle of the circle, in radians. This is useful when drawing a partial-circle</param>
         /// <param name="col">The color of the circle.</param>
         /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawCircle(Vector2 center, float radius, float startAngle, float endAngle, Color col, int sides = 16)
+        public void DrawCircle(Vector2F center, float radius, float startAngle, float endAngle, Color col, int sides = 16)
         {
             DrawEllipse(center, radius, radius, startAngle, endAngle, col, sides);
         }
@@ -206,7 +206,7 @@ namespace Molten.Graphics
         /// <param name="xRadius">The radius, in radians.</param>
         /// <param name="col">The color of the circle.</param>
         /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawCircle(Vector2 center, float radius, Color col, int sides = 16)
+        public void DrawCircle(Vector2F center, float radius, Color col, int sides = 16)
         {
             DrawEllipse(center, radius, radius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, sides);
         }
@@ -219,7 +219,7 @@ namespace Molten.Graphics
         /// <param name="yRadius">The Y radius, in radians.</param>
         /// <param name="col">The color of the ellipse.</param>
         /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawEllipse(Vector2 center, float xRadius, float yRadius, Color col, int sides = 16)
+        public void DrawEllipse(Vector2F center, float xRadius, float yRadius, Color col, int sides = 16)
         {
             DrawEllipse(center, xRadius, yRadius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, sides);
         }
@@ -234,7 +234,7 @@ namespace Molten.Graphics
         /// <param name="endAngle">The end angle of the circle, in radians. This is useful when drawing a partial-ellipse</param>
         /// <param name="color">The color of the ellipse.</param>
         /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        public void DrawEllipse(Vector2 center, float xRadius, float yRadius, float startAngle, float endAngle, Color color, int sides = 16)
+        public void DrawEllipse(Vector2F center, float xRadius, float yRadius, float startAngle, float endAngle, Color color, int sides = 16)
         {          
             if (sides < CIRCLE_MIN_SIDES)
                 throw new SpriteBatchException(this, $"The minimum number of sides is {CIRCLE_MIN_SIDES}.");
@@ -259,10 +259,10 @@ namespace Molten.Graphics
                     cluster.Sprites[spriteID++] = new SpriteVertex()
                     {
                         Position = center,
-                        Size = new Vector2(xRadius, yRadius),
-                        UV = Vector4.Zero, // Unused
+                        Size = new Vector2F(xRadius, yRadius),
+                        UV = Vector4F.Zero, // Unused
                         Color = color,
-                        Origin = new Vector2(pieceStartAngle, pieceEndAngle),
+                        Origin = new Vector2F(pieceStartAngle, pieceEndAngle),
                         Rotation = sides,
                     };
 
@@ -278,10 +278,10 @@ namespace Molten.Graphics
                 cluster.Sprites[spriteID++] = new SpriteVertex()
                 {
                     Position = center,
-                    Size = new Vector2(xRadius, yRadius),
-                    UV = Vector4.Zero, // Unused
+                    Size = new Vector2F(xRadius, yRadius),
+                    UV = Vector4F.Zero, // Unused
                     Color = color,
-                    Origin = new Vector2(startAngle, endAngle),
+                    Origin = new Vector2F(startAngle, endAngle),
                     Rotation = sides,
                 };
 
@@ -294,7 +294,7 @@ namespace Molten.Graphics
         /// <param name="p2">The second point.</param>
         /// <param name="p3">The third point.</param>
         /// <param name="col1">The color of the triangle.</param>
-        public void DrawTriangle(Vector2 p1, Vector2 p2, Vector2 p3, Color col)
+        public void DrawTriangle(Vector2F p1, Vector2F p2, Vector2F p3, Color col)
         {
             SpriteClipZone clip = _clipZones[_curClip];
             int spriteID = 0;
@@ -305,7 +305,7 @@ namespace Molten.Graphics
             {
                 Position = p1,
                 Size = p2,
-                UV = Vector4.Zero, // Unused
+                UV = Vector4F.Zero, // Unused
                 Color = col,
                 Origin = p3,
                 Rotation = 0,
@@ -321,7 +321,7 @@ namespace Molten.Graphics
         /// <param name="points">A list of points that form the polygon. A minimum of 3 points is expected.</param>
         /// <param name="triColors">A list of colors. One color per triangle. A minimum of 1 color is expected. 
         /// Insufficient colors for the provided triangles will cause the colors to be repeated.</param>
-        public void DrawTriangleList(IList<Vector2> points, IList<Color> triColors)
+        public void DrawTriangleList(IList<Vector2F> points, IList<Color> triColors)
         {
             if (points.Count % 3 > 0)
                 throw new SpriteBatchException(this, "Incorrect number of points for triangle list. There should be 3 points per triangle");
@@ -344,7 +344,7 @@ namespace Molten.Graphics
                 {
                     Position = points[i],
                     Size = points[i+1],
-                    UV = Vector4.Zero, // Unused
+                    UV = Vector4F.Zero, // Unused
                     Color = triColors[colID % triColors.Count],
                     Origin = points[i+2],
                     Rotation = 0,
@@ -360,7 +360,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="points">A list of points that form the polygon.</param>
         /// <param name="color">The color of the polygon.</param>
-        public void DrawTriangleList(IList<Vector2> points, Color color)
+        public void DrawTriangleList(IList<Vector2F> points, Color color)
         {
             _singleColorList[0] = color;
             DrawTriangleList(points, _singleColorList);
@@ -370,7 +370,7 @@ namespace Molten.Graphics
         /// <param name="points">The points between which to draw lines.</param>
         /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
-        public void DrawLines(IList<Vector2> points, IList<Color> pointColors, float thickness)
+        public void DrawLines(IList<Vector2F> points, IList<Color> pointColors, float thickness)
         {
             if (pointColors.Count == 0)
                 throw new SpriteBatchException(this, "There must be at least one color available in the pointColors list.");
@@ -390,7 +390,7 @@ namespace Molten.Graphics
                 int lineCount = points.Count - 1;
                 SpriteCluster cluster = GetCluster(clip, null, null, ClusterFormat.Line, lineCount, out spriteID);
 
-                Vector2 p1, p2;
+                Vector2F p1, p2;
                 int startID = spriteID;
                 int last = points.Count - 1;
                 int prev = 0;
@@ -433,7 +433,7 @@ namespace Molten.Graphics
         /// <param name="points">The points between which to draw lines.</param>
         /// <param name="color">The color of the lines</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
-        public void DrawLines(IList<Vector2> points, Color color, float thickness)
+        public void DrawLines(IList<Vector2F> points, Color color, float thickness)
         {
             _singleColorList[0] = color;
             DrawLines(points, _singleColorList, thickness);
@@ -446,7 +446,7 @@ namespace Molten.Graphics
         /// <param name="p2">The second point.</param>
         /// <param name="color">The color of the line.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
-        public void DrawLine(Vector2 p1, Vector2 p2, Color col, float thickness)
+        public void DrawLine(Vector2F p1, Vector2F p2, Color col, float thickness)
         {
             DrawLine(p1, p2, col, col, thickness);
         }
@@ -459,7 +459,7 @@ namespace Molten.Graphics
         /// <param name="color1">The color for pos1.</param>
         /// <param name="color2">The color for pos2.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
-        public void DrawLine(Vector2 p1, Vector2 p2, Color col1, Color col2, float thickness)
+        public void DrawLine(Vector2F p1, Vector2F p2, Color col1, Color col2, float thickness)
         {
             SpriteClipZone clip = _clipZones[_curClip];
             int spriteID = 0;
@@ -484,7 +484,7 @@ namespace Molten.Graphics
 
         public void DrawRect(Rectangle destination, Color color, IMaterial material = null)
         {
-            Draw(null, new Rectangle(0, 0, 1, 1), destination, color, 0, new Vector2(), material);
+            Draw(null, new Rectangle(0, 0, 1, 1), destination, color, 0, new Vector2F(), material);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -493,7 +493,7 @@ namespace Molten.Graphics
         /// <param name="rotation">The rotation of the sprite, in radians.</param>
         /// <param name="origin">The origin, as a scale value. 1.0f will set the origin to the bottom-right corner of the sprite.
         /// 0.0f will set the origin to the top-left. </param>
-        public void DrawRect(Rectangle destination, Color color, float rotation, Vector2 origin, IMaterial material = null)
+        public void DrawRect(Rectangle destination, Color color, float rotation, Vector2F origin, IMaterial material = null)
         {
             Draw(null, new Rectangle(0, 0, 1, 1), destination, color, rotation, origin, material);
         }
@@ -505,7 +505,7 @@ namespace Molten.Graphics
         public void Draw(ITexture2D texture, Rectangle destination, Color color, IMaterial material = null)
         {
             Rectangle src = new Rectangle(0, 0, texture.Width, texture.Height);
-            Draw(texture, src, destination, color, 0, new Vector2(), material);
+            Draw(texture, src, destination, color, 0, new Vector2F(), material);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -514,7 +514,7 @@ namespace Molten.Graphics
         /// <param name="color"></param>
         /// <param name="rotation"></param>
         /// <param name="origin"></param>
-        public void Draw(ITexture2D texture, Rectangle destination, Color color, float rotation, Vector2 origin, IMaterial material = null)
+        public void Draw(ITexture2D texture, Rectangle destination, Color color, float rotation, Vector2F origin, IMaterial material = null)
         {
             Rectangle src = new Rectangle(0, 0, texture.Width, texture.Height);
             Draw(texture, src, destination, color, rotation, origin, material);
@@ -524,11 +524,11 @@ namespace Molten.Graphics
         /// <param name="texture"></param>
         /// <param name="position"></param>
         /// <param name="color"></param>
-        public void Draw(ITexture2D texture, Vector2 position, Color color, IMaterial material = null)
+        public void Draw(ITexture2D texture, Vector2F position, Color color, IMaterial material = null)
         {
             Rectangle src = new Rectangle(0, 0, texture.Width, texture.Height);
             Rectangle dest = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
-            Draw(texture, src, dest, color, 0, new Vector2(), material);
+            Draw(texture, src, dest, color, 0, new Vector2F(), material);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -537,7 +537,7 @@ namespace Molten.Graphics
         /// <param name="color"></param>
         /// <param name="rotation"></param>
         /// <param name="origin"></param>
-        public void Draw(ITexture2D texture, Vector2 position, Color color, float rotation, Vector2 origin, IMaterial material = null)
+        public void Draw(ITexture2D texture, Vector2F position, Color color, float rotation, Vector2F origin, IMaterial material = null)
         {
             Rectangle src = new Rectangle(0, 0, texture.Width, texture.Height);
             Rectangle dest = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
@@ -551,7 +551,7 @@ namespace Molten.Graphics
         /// <param name="color"></param>
         /// <param name="rotation">Rotation, in radians.</param>
         /// <param name="origin"></param>
-        public void Draw(ITexture2D texture, Vector2 position, Rectangle source, Color color, float rotation, Vector2 scale, Vector2 origin, IMaterial material = null)
+        public void Draw(ITexture2D texture, Vector2F position, Rectangle source, Color color, float rotation, Vector2F scale, Vector2F origin, IMaterial material = null)
         {
             Rectangle dest = new Rectangle()
             {
@@ -570,7 +570,7 @@ namespace Molten.Graphics
         /// <param name="color"></param>
         /// <param name="rotation"></param>
         /// <param name="origin"></param>
-        public void Draw(ITexture2D texture, Rectangle source, Rectangle destination, Color color, float rotation, Vector2 origin, IMaterial material)
+        public void Draw(ITexture2D texture, Rectangle source, Rectangle destination, Color color, float rotation, Vector2F origin, IMaterial material)
         {
             int spriteID = 0;
             SpriteCluster cluster = GetCluster(_clipZones[_curClip], texture, material, ClusterFormat.Sprite, 1, out spriteID);
@@ -578,9 +578,9 @@ namespace Molten.Graphics
             // Set the sprite info
             cluster.Sprites[spriteID] = new SpriteVertex()
             {
-                Position = new Vector2(destination.X, destination.Y),
-                Size = new Vector2(destination.Width, destination.Height),
-                UV = new Vector4(source.X, source.Y, source.Right, source.Bottom),
+                Position = new Vector2F(destination.X, destination.Y),
+                Size = new Vector2F(destination.Width, destination.Height),
+                UV = new Vector4F(source.X, source.Y, source.Right, source.Bottom),
                 Color = color,
                 Origin = origin,
                 Rotation = rotation,

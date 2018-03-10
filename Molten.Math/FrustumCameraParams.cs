@@ -31,17 +31,17 @@ namespace Molten
         /// <summary>
         /// Position of the camera.
         /// </summary>
-        public Vector3 Position;
+        public Vector3F Position;
 
         /// <summary>
         /// Looking at direction of the camera.
         /// </summary>
-        public Vector3 LookAtDir;
+        public Vector3F LookAtDir;
 
         /// <summary>
         /// Up direction.
         /// </summary>
-        public Vector3 UpDir;
+        public Vector3F UpDir;
 
         /// <summary>
         /// Field of view.

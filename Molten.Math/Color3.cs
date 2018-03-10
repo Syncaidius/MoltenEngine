@@ -109,7 +109,7 @@ namespace Molten
         /// Initializes a new instance of the <see cref="Color3"/> struct.
         /// </summary>
         /// <param name="value">The red, green, and blue components of the color.</param>
-        public Color3(Vector3 value)
+        public Color3(Vector3F value)
         {
             R = value.X;
             G = value.Y;
@@ -223,9 +223,9 @@ namespace Molten
         /// Converts the color into a three component vector.
         /// </summary>
         /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
-        public Vector3 ToVector3()
+        public Vector3F ToVector3()
         {
-            return new Vector3(R, G, B);
+            return new Vector3F(R, G, B);
         }
 
         /// <summary>
@@ -700,21 +700,21 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Color3"/> to <see cref="Vector3"/>.
+        /// Performs an implicit conversion from <see cref="Color3"/> to <see cref="Vector3F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Vector3(Color3 value)
+        public static implicit operator Vector3F(Color3 value)
         {
-            return new Vector3(value.R, value.G, value.B);
+            return new Vector3F(value.R, value.G, value.B);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Vector3"/> to <see cref="Color3"/>.
+        /// Performs an implicit conversion from <see cref="Vector3F"/> to <see cref="Color3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Color3(Vector3 value)
+        public static implicit operator Color3(Vector3F value)
         {
             return new Color3(value.X, value.Y, value.Z);
         }

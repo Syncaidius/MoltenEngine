@@ -34,7 +34,7 @@ namespace Molten.UI
                 _parts.Remove(part);
         }
 
-        protected override UIComponent OnGetComponent(Vector2 inputPos)
+        protected override UIComponent OnGetComponent(Vector2F inputPos)
         {
             if (!_visible)
                 return null;

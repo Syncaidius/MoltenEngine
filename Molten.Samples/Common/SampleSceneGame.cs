@@ -13,7 +13,7 @@ namespace Molten.Samples
         Scene _scene;
         SceneObject _player;
         SpriteText _txtInstructions;
-        Vector2 _txtInstructionSize;
+        Vector2F _txtInstructionSize;
 
         public SampleSceneGame(string title, EngineSettings settings) : base(title, settings) { }
 
@@ -43,7 +43,7 @@ namespace Molten.Samples
             if (_txtInstructions == null)
                 return;
 
-            _txtInstructions.Position = new Vector2()
+            _txtInstructions.Position = new Vector2F()
             {
                 X = Window.Width / 2 + (-_txtInstructionSize.X / 2),
                 Y = 3,
@@ -67,10 +67,10 @@ namespace Molten.Samples
 
         protected SceneObject SpawnTestCube(IMesh mesh)
         {
-            return SpawnTestCube(mesh, Vector3.Zero);
+            return SpawnTestCube(mesh, Vector3F.Zero);
         }
 
-        protected SceneObject SpawnTestCube(IMesh mesh, Vector3 pos)
+        protected SceneObject SpawnTestCube(IMesh mesh, Vector3F pos)
         {
             SceneObject obj = CreateObject(pos);
             MeshComponent meshCom = obj.AddComponent<MeshComponent>();
@@ -79,13 +79,13 @@ namespace Molten.Samples
             return obj;
         }
 
-        protected void SpawnParentChild(IMesh mesh, Vector3 origin, out SceneObject parent, out SceneObject child)
+        protected void SpawnParentChild(IMesh mesh, Vector3F origin, out SceneObject parent, out SceneObject child)
         {
             parent = SpawnTestCube(mesh);
             child = SpawnTestCube(mesh);
 
-            child.Transform.LocalScale = new Vector3(0.5f);
-            child.Transform.LocalPosition = new Vector3(0, 0, 4);
+            child.Transform.LocalScale = new Vector3F(0.5f);
+            child.Transform.LocalPosition = new Vector3F(0, 0, 4);
             parent.Transform.LocalPosition = origin;
             parent.Children.Add(child);
         }
@@ -102,8 +102,8 @@ namespace Molten.Samples
             if (child.Transform.LocalRotationX >= 360)
                 child.Transform.LocalRotationX -= 360;
 
-            parent.Transform.LocalPosition = new Vector3(0, 1, 0);
-            child.Transform.LocalPosition = new Vector3(-3, 0, 0);
+            parent.Transform.LocalPosition = new Vector3F(0, 1, 0);
+            child.Transform.LocalPosition = new Vector3F(-3, 0, 0);
         }
 
         protected override void OnUpdate(Timing time)
@@ -114,7 +114,7 @@ namespace Molten.Samples
                 Exit();
 
             // Keyboard input - Again messy code for now
-            Vector3 moveDelta = Vector3.Zero;
+            Vector3F moveDelta = Vector3F.Zero;
             float rotSpeed = 0.25f;
             float speed = 1.0f;
 

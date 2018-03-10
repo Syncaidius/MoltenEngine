@@ -152,13 +152,13 @@ namespace Molten
         public float M44;
      
         /// <summary>
-        /// Gets or sets the up <see cref="Vector3"/> of the matrix; that is M21, M22, and M23.
+        /// Gets or sets the up <see cref="Vector3F"/> of the matrix; that is M21, M22, and M23.
         /// </summary>
-        public Vector3 Up
+        public Vector3F Up
         {
           get
           {
-            Vector3 vector3;
+            Vector3F vector3;
             vector3.X = this.M21;
             vector3.Y = this.M22;
             vector3.Z = this.M23;
@@ -173,13 +173,13 @@ namespace Molten
         }
     
         /// <summary>
-        /// Gets or sets the down <see cref="Vector3"/> of the matrix; that is -M21, -M22, and -M23.
+        /// Gets or sets the down <see cref="Vector3F"/> of the matrix; that is -M21, -M22, and -M23.
         /// </summary>
-        public Vector3 Down
+        public Vector3F Down
         {
           get
           {
-            Vector3 vector3;
+            Vector3F vector3;
             vector3.X = -this.M21;
             vector3.Y = -this.M22;
             vector3.Z = -this.M23;
@@ -194,13 +194,13 @@ namespace Molten
         }
     
         /// <summary>
-        /// Gets or sets the right <see cref="Vector3"/> of the matrix; that is M11, M12, and M13.
+        /// Gets or sets the right <see cref="Vector3F"/> of the matrix; that is M11, M12, and M13.
         /// </summary>
-        public Vector3 Right
+        public Vector3F Right
         {
           get
           {
-            Vector3 vector3;
+            Vector3F vector3;
             vector3.X = this.M11;
             vector3.Y = this.M12;
             vector3.Z = this.M13;
@@ -215,13 +215,13 @@ namespace Molten
         }
     
         /// <summary>
-        /// Gets or sets the left <see cref="Vector3"/> of the matrix; that is -M11, -M12, and -M13.
+        /// Gets or sets the left <see cref="Vector3F"/> of the matrix; that is -M11, -M12, and -M13.
         /// </summary>
-        public Vector3 Left
+        public Vector3F Left
         {
           get
           {
-            Vector3 vector3;
+            Vector3F vector3;
             vector3.X = -this.M11;
             vector3.Y = -this.M12;
             vector3.Z = -this.M13;
@@ -236,13 +236,13 @@ namespace Molten
         }
         
         /// <summary>
-        /// Gets or sets the forward <see cref="Vector3"/> of the matrix; that is -M31, -M32, and -M33.
+        /// Gets or sets the forward <see cref="Vector3F"/> of the matrix; that is -M31, -M32, and -M33.
         /// </summary>
-        public Vector3 Forward
+        public Vector3F Forward
         {
           get
           {
-            Vector3 vector3;
+            Vector3F vector3;
             vector3.X = -this.M31;
             vector3.Y = -this.M32;
             vector3.Z = -this.M33;
@@ -257,13 +257,13 @@ namespace Molten
         }
         
         /// <summary>
-        /// Gets or sets the backward <see cref="Vector3"/> of the matrix; that is M31, M32, and M33.
+        /// Gets or sets the backward <see cref="Vector3F"/> of the matrix; that is M31, M32, and M33.
         /// </summary>
-        public Vector3 Backward
+        public Vector3F Backward
         {
           get
           {
-            Vector3 vector3;
+            Vector3F vector3;
             vector3.X = this.M31;
             vector3.Y = this.M32;
             vector3.Z = this.M33;
@@ -356,90 +356,90 @@ namespace Molten
         /// <summary>
         /// Gets or sets the first row in the matrix; that is M11, M12, M13, and M14.
         /// </summary>
-        public Vector4 Row1
+        public Vector4F Row1
         {
-            get { return new Vector4(M11, M12, M13, M14); }
+            get { return new Vector4F(M11, M12, M13, M14); }
             set { M11 = value.X; M12 = value.Y; M13 = value.Z; M14 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the second row in the matrix; that is M21, M22, M23, and M24.
         /// </summary>
-        public Vector4 Row2
+        public Vector4F Row2
         {
-            get { return new Vector4(M21, M22, M23, M24); }
+            get { return new Vector4F(M21, M22, M23, M24); }
             set { M21 = value.X; M22 = value.Y; M23 = value.Z; M24 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the third row in the matrix; that is M31, M32, M33, and M34.
         /// </summary>
-        public Vector4 Row3
+        public Vector4F Row3
         {
-            get { return new Vector4(M31, M32, M33, M34); }
+            get { return new Vector4F(M31, M32, M33, M34); }
             set { M31 = value.X; M32 = value.Y; M33 = value.Z; M34 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the fourth row in the matrix; that is M41, M42, M43, and M44.
         /// </summary>
-        public Vector4 Row4
+        public Vector4F Row4
         {
-            get { return new Vector4(M41, M42, M43, M44); }
+            get { return new Vector4F(M41, M42, M43, M44); }
             set { M41 = value.X; M42 = value.Y; M43 = value.Z; M44 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the first column in the matrix; that is M11, M21, M31, and M41.
         /// </summary>
-        public Vector4 Column1
+        public Vector4F Column1
         {
-            get { return new Vector4(M11, M21, M31, M41); }
+            get { return new Vector4F(M11, M21, M31, M41); }
             set { M11 = value.X; M21 = value.Y; M31 = value.Z; M41 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the second column in the matrix; that is M12, M22, M32, and M42.
         /// </summary>
-        public Vector4 Column2
+        public Vector4F Column2
         {
-            get { return new Vector4(M12, M22, M32, M42); }
+            get { return new Vector4F(M12, M22, M32, M42); }
             set { M12 = value.X; M22 = value.Y; M32 = value.Z; M42 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the third column in the matrix; that is M13, M23, M33, and M43.
         /// </summary>
-        public Vector4 Column3
+        public Vector4F Column3
         {
-            get { return new Vector4(M13, M23, M33, M43); }
+            get { return new Vector4F(M13, M23, M33, M43); }
             set { M13 = value.X; M23 = value.Y; M33 = value.Z; M43 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the fourth column in the matrix; that is M14, M24, M34, and M44.
         /// </summary>
-        public Vector4 Column4
+        public Vector4F Column4
         {
-            get { return new Vector4(M14, M24, M34, M44); }
+            get { return new Vector4F(M14, M24, M34, M44); }
             set { M14 = value.X; M24 = value.Y; M34 = value.Z; M44 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the translation of the matrix; that is M41, M42, and M43.
         /// </summary>
-        public Vector3 Translation
+        public Vector3F Translation
         {
-            get { return new Vector3(M41, M42, M43); }
+            get { return new Vector3F(M41, M42, M43); }
             set { M41 = value.X; M42 = value.Y; M43 = value.Z; }
         }
 
         /// <summary>
         /// Gets or sets the scale of the matrix; that is M11, M22, and M33.
         /// </summary>
-        public Vector3 ScaleVector
+        public Vector3F ScaleVector
         {
-            get { return new Vector3(M11, M22, M33); }
+            get { return new Vector3F(M11, M22, M33); }
             set { M11 = value.X; M22 = value.Y; M33 = value.Z; }
         }
 
@@ -631,19 +631,19 @@ namespace Molten
             Q.Transpose();
 
             R = new Matrix();
-            R.M11 = Vector4.Dot(Q.Column1, Column1);
-            R.M12 = Vector4.Dot(Q.Column1, Column2);
-            R.M13 = Vector4.Dot(Q.Column1, Column3);
-            R.M14 = Vector4.Dot(Q.Column1, Column4);
+            R.M11 = Vector4F.Dot(Q.Column1, Column1);
+            R.M12 = Vector4F.Dot(Q.Column1, Column2);
+            R.M13 = Vector4F.Dot(Q.Column1, Column3);
+            R.M14 = Vector4F.Dot(Q.Column1, Column4);
 
-            R.M22 = Vector4.Dot(Q.Column2, Column2);
-            R.M23 = Vector4.Dot(Q.Column2, Column3);
-            R.M24 = Vector4.Dot(Q.Column2, Column4);
+            R.M22 = Vector4F.Dot(Q.Column2, Column2);
+            R.M23 = Vector4F.Dot(Q.Column2, Column3);
+            R.M24 = Vector4F.Dot(Q.Column2, Column4);
 
-            R.M33 = Vector4.Dot(Q.Column3, Column3);
-            R.M34 = Vector4.Dot(Q.Column3, Column4);
+            R.M33 = Vector4F.Dot(Q.Column3, Column3);
+            R.M34 = Vector4F.Dot(Q.Column3, Column4);
 
-            R.M44 = Vector4.Dot(Q.Column4, Column4);
+            R.M44 = Vector4F.Dot(Q.Column4, Column4);
         }
 
         /// <summary>
@@ -656,19 +656,19 @@ namespace Molten
             Orthonormalize(ref this, out Q);
 
             L = new Matrix();
-            L.M11 = Vector4.Dot(Q.Row1, Row1);
+            L.M11 = Vector4F.Dot(Q.Row1, Row1);
             
-            L.M21 = Vector4.Dot(Q.Row1, Row2);
-            L.M22 = Vector4.Dot(Q.Row2, Row2);
+            L.M21 = Vector4F.Dot(Q.Row1, Row2);
+            L.M22 = Vector4F.Dot(Q.Row2, Row2);
             
-            L.M31 = Vector4.Dot(Q.Row1, Row3);
-            L.M32 = Vector4.Dot(Q.Row2, Row3);
-            L.M33 = Vector4.Dot(Q.Row3, Row3);
+            L.M31 = Vector4F.Dot(Q.Row1, Row3);
+            L.M32 = Vector4F.Dot(Q.Row2, Row3);
+            L.M33 = Vector4F.Dot(Q.Row3, Row3);
             
-            L.M41 = Vector4.Dot(Q.Row1, Row4);
-            L.M42 = Vector4.Dot(Q.Row2, Row4);
-            L.M43 = Vector4.Dot(Q.Row3, Row4);
-            L.M44 = Vector4.Dot(Q.Row4, Row4);
+            L.M41 = Vector4F.Dot(Q.Row1, Row4);
+            L.M42 = Vector4F.Dot(Q.Row2, Row4);
+            L.M43 = Vector4F.Dot(Q.Row3, Row4);
+            L.M44 = Vector4F.Dot(Q.Row4, Row4);
         }
 
         /// <summary>
@@ -680,7 +680,7 @@ namespace Molten
         /// <remarks>
         /// This method is designed to decompose an SRT transformation matrix only.
         /// </remarks>
-        public bool Decompose(out Vector3 scale, out Quaternion rotation, out Vector3 translation)
+        public bool Decompose(out Vector3F scale, out Quaternion rotation, out Vector3F translation)
         {
             //Source: Unknown
             //References: http://www.gamedev.net/community/forums/topic.asp?topic_id=441695
@@ -734,7 +734,7 @@ namespace Molten
         /// <remarks>
         /// This method is designed to decompose only an SRT transformation matrix that has the same scale in every axis.
         /// </remarks>
-        public bool DecomposeUniformScale(out float scale, out Quaternion rotation, out Vector3 translation)
+        public bool DecomposeUniformScale(out float scale, out Quaternion rotation, out Vector3F translation)
         {
             //Get the translation.
             translation.X = this.M41;
@@ -1419,14 +1419,14 @@ namespace Molten
             //By separating the above algorithm into multiple lines, we actually increase accuracy.
             result = value;
 
-            result.Row2 = result.Row2 - (Vector4.Dot(result.Row1, result.Row2) / Vector4.Dot(result.Row1, result.Row1)) * result.Row1;
+            result.Row2 = result.Row2 - (Vector4F.Dot(result.Row1, result.Row2) / Vector4F.Dot(result.Row1, result.Row1)) * result.Row1;
 
-            result.Row3 = result.Row3 - (Vector4.Dot(result.Row1, result.Row3) / Vector4.Dot(result.Row1, result.Row1)) * result.Row1;
-            result.Row3 = result.Row3 - (Vector4.Dot(result.Row2, result.Row3) / Vector4.Dot(result.Row2, result.Row2)) * result.Row2;
+            result.Row3 = result.Row3 - (Vector4F.Dot(result.Row1, result.Row3) / Vector4F.Dot(result.Row1, result.Row1)) * result.Row1;
+            result.Row3 = result.Row3 - (Vector4F.Dot(result.Row2, result.Row3) / Vector4F.Dot(result.Row2, result.Row2)) * result.Row2;
 
-            result.Row4 = result.Row4 - (Vector4.Dot(result.Row1, result.Row4) / Vector4.Dot(result.Row1, result.Row1)) * result.Row1;
-            result.Row4 = result.Row4 - (Vector4.Dot(result.Row2, result.Row4) / Vector4.Dot(result.Row2, result.Row2)) * result.Row2;
-            result.Row4 = result.Row4 - (Vector4.Dot(result.Row3, result.Row4) / Vector4.Dot(result.Row3, result.Row3)) * result.Row3;
+            result.Row4 = result.Row4 - (Vector4F.Dot(result.Row1, result.Row4) / Vector4F.Dot(result.Row1, result.Row1)) * result.Row1;
+            result.Row4 = result.Row4 - (Vector4F.Dot(result.Row2, result.Row4) / Vector4F.Dot(result.Row2, result.Row2)) * result.Row2;
+            result.Row4 = result.Row4 - (Vector4F.Dot(result.Row3, result.Row4) / Vector4F.Dot(result.Row3, result.Row3)) * result.Row3;
         }
 
         /// <summary>
@@ -1483,19 +1483,19 @@ namespace Molten
             //By separating the above algorithm into multiple lines, we actually increase accuracy.
             result = value;
 
-            result.Row1 = Vector4.Normalize(result.Row1);
+            result.Row1 = Vector4F.Normalize(result.Row1);
 
-            result.Row2 = result.Row2 - Vector4.Dot(result.Row1, result.Row2) * result.Row1;
-            result.Row2 = Vector4.Normalize(result.Row2);
+            result.Row2 = result.Row2 - Vector4F.Dot(result.Row1, result.Row2) * result.Row1;
+            result.Row2 = Vector4F.Normalize(result.Row2);
 
-            result.Row3 = result.Row3 - Vector4.Dot(result.Row1, result.Row3) * result.Row1;
-            result.Row3 = result.Row3 - Vector4.Dot(result.Row2, result.Row3) * result.Row2;
-            result.Row3 = Vector4.Normalize(result.Row3);
+            result.Row3 = result.Row3 - Vector4F.Dot(result.Row1, result.Row3) * result.Row1;
+            result.Row3 = result.Row3 - Vector4F.Dot(result.Row2, result.Row3) * result.Row2;
+            result.Row3 = Vector4F.Normalize(result.Row3);
 
-            result.Row4 = result.Row4 - Vector4.Dot(result.Row1, result.Row4) * result.Row1;
-            result.Row4 = result.Row4 - Vector4.Dot(result.Row2, result.Row4) * result.Row2;
-            result.Row4 = result.Row4 - Vector4.Dot(result.Row3, result.Row4) * result.Row3;
-            result.Row4 = Vector4.Normalize(result.Row4);
+            result.Row4 = result.Row4 - Vector4F.Dot(result.Row1, result.Row4) * result.Row1;
+            result.Row4 = result.Row4 - Vector4F.Dot(result.Row2, result.Row4) * result.Row2;
+            result.Row4 = result.Row4 - Vector4F.Dot(result.Row3, result.Row4) * result.Row3;
+            result.Row4 = Vector4F.Normalize(result.Row4);
         }
 
         /// <summary>
@@ -1778,7 +1778,7 @@ namespace Molten
         /// the <paramref name="augmentResult"/> will contain the solution for the system. It is up to the user
         /// to analyze both the input and the result to determine if a solution really exists.</para>
         /// </remarks>
-        public static void ReducedRowEchelonForm(ref Matrix value, ref Vector4 augment, out Matrix result, out Vector4 augmentResult)
+        public static void ReducedRowEchelonForm(ref Matrix value, ref Vector4F augment, out Matrix result, out Vector4F augmentResult)
         {
             //Source: http://rosettacode.org
             //Reference: http://rosettacode.org/wiki/Reduced_row_echelon_form
@@ -1894,11 +1894,11 @@ namespace Molten
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <param name="result">When the method completes, contains the created billboard matrix.</param>
-        public static void BillboardLH(ref Vector3 objectPosition, ref Vector3 cameraPosition, ref Vector3 cameraUpVector, ref Vector3 cameraForwardVector, out Matrix result)
+        public static void BillboardLH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector, out Matrix result)
         {
-            Vector3 crossed;
-            Vector3 final;
-            Vector3 difference = cameraPosition - objectPosition;
+            Vector3F crossed;
+            Vector3F final;
+            Vector3F difference = cameraPosition - objectPosition;
 
             float lengthSq = difference.LengthSquared();
             if (MathHelper.IsZero(lengthSq))
@@ -1906,9 +1906,9 @@ namespace Molten
             else
                 difference *= (float)(1.0 / Math.Sqrt(lengthSq));
 
-            Vector3.Cross(ref cameraUpVector, ref difference, out crossed);
+            Vector3F.Cross(ref cameraUpVector, ref difference, out crossed);
             crossed.Normalize();
-            Vector3.Cross(ref difference, ref crossed, out final);
+            Vector3F.Cross(ref difference, ref crossed, out final);
 
             result.M11 = crossed.X;
             result.M12 = crossed.Y;
@@ -1936,7 +1936,7 @@ namespace Molten
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <returns>The created billboard matrix.</returns>
-        public static Matrix BillboardLH(Vector3 objectPosition, Vector3 cameraPosition, Vector3 cameraUpVector, Vector3 cameraForwardVector)
+        public static Matrix BillboardLH(Vector3F objectPosition, Vector3F cameraPosition, Vector3F cameraUpVector, Vector3F cameraForwardVector)
         {
             Matrix result;
             BillboardLH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector, out result);
@@ -1951,11 +1951,11 @@ namespace Molten
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <param name="result">When the method completes, contains the created billboard matrix.</param>
-        public static void BillboardRH(ref Vector3 objectPosition, ref Vector3 cameraPosition, ref Vector3 cameraUpVector, ref Vector3 cameraForwardVector, out Matrix result)
+        public static void BillboardRH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector, out Matrix result)
         {
-            Vector3 crossed;
-            Vector3 final;
-            Vector3 difference = objectPosition - cameraPosition;
+            Vector3F crossed;
+            Vector3F final;
+            Vector3F difference = objectPosition - cameraPosition;
 
             float lengthSq = difference.LengthSquared();
             if (MathHelper.IsZero(lengthSq))
@@ -1963,9 +1963,9 @@ namespace Molten
             else
                 difference *= (float)(1.0 / Math.Sqrt(lengthSq));
 
-            Vector3.Cross(ref cameraUpVector, ref difference, out crossed);
+            Vector3F.Cross(ref cameraUpVector, ref difference, out crossed);
             crossed.Normalize();
-            Vector3.Cross(ref difference, ref crossed, out final);
+            Vector3F.Cross(ref difference, ref crossed, out final);
 
             result.M11 = crossed.X;
             result.M12 = crossed.Y;
@@ -1993,7 +1993,7 @@ namespace Molten
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <returns>The created billboard matrix.</returns>
-        public static Matrix BillboardRH(Vector3 objectPosition, Vector3 cameraPosition, Vector3 cameraUpVector, Vector3 cameraForwardVector) {
+        public static Matrix BillboardRH(Vector3F objectPosition, Vector3F cameraPosition, Vector3F cameraUpVector, Vector3F cameraForwardVector) {
             Matrix result;
             BillboardRH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector, out result);
             return result;
@@ -2006,21 +2006,21 @@ namespace Molten
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <param name="result">When the method completes, contains the created look-at matrix.</param>
-        public static void LookAtLH(ref Vector3 eye, ref Vector3 target, ref Vector3 up, out Matrix result)
+        public static void LookAtLH(ref Vector3F eye, ref Vector3F target, ref Vector3F up, out Matrix result)
         {
-            Vector3 xaxis, yaxis, zaxis;
-            Vector3.Subtract(ref target, ref eye, out zaxis); zaxis.Normalize();
-            Vector3.Cross(ref up, ref zaxis, out xaxis); xaxis.Normalize();
-            Vector3.Cross(ref zaxis, ref xaxis, out yaxis);
+            Vector3F xaxis, yaxis, zaxis;
+            Vector3F.Subtract(ref target, ref eye, out zaxis); zaxis.Normalize();
+            Vector3F.Cross(ref up, ref zaxis, out xaxis); xaxis.Normalize();
+            Vector3F.Cross(ref zaxis, ref xaxis, out yaxis);
 
             result = Matrix.Identity;
             result.M11 = xaxis.X; result.M21 = xaxis.Y; result.M31 = xaxis.Z;
             result.M12 = yaxis.X; result.M22 = yaxis.Y; result.M32 = yaxis.Z;
             result.M13 = zaxis.X; result.M23 = zaxis.Y; result.M33 = zaxis.Z;
 
-            Vector3.Dot(ref xaxis, ref eye, out result.M41);
-            Vector3.Dot(ref yaxis, ref eye, out result.M42);
-            Vector3.Dot(ref zaxis, ref eye, out result.M43);
+            Vector3F.Dot(ref xaxis, ref eye, out result.M41);
+            Vector3F.Dot(ref yaxis, ref eye, out result.M42);
+            Vector3F.Dot(ref zaxis, ref eye, out result.M43);
 
             result.M41 = -result.M41;
             result.M42 = -result.M42;
@@ -2034,7 +2034,7 @@ namespace Molten
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <returns>The created look-at matrix.</returns>
-        public static Matrix LookAtLH(Vector3 eye, Vector3 target, Vector3 up)
+        public static Matrix LookAtLH(Vector3F eye, Vector3F target, Vector3F up)
         {
             Matrix result;
             LookAtLH(ref eye, ref target, ref up, out result);
@@ -2048,21 +2048,21 @@ namespace Molten
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <param name="result">When the method completes, contains the created look-at matrix.</param>
-        public static void LookAtRH(ref Vector3 eye, ref Vector3 target, ref Vector3 up, out Matrix result)
+        public static void LookAtRH(ref Vector3F eye, ref Vector3F target, ref Vector3F up, out Matrix result)
         {
-            Vector3 xaxis, yaxis, zaxis;
-            Vector3.Subtract(ref eye, ref target, out zaxis); zaxis.Normalize();
-            Vector3.Cross(ref up, ref zaxis, out xaxis); xaxis.Normalize();
-            Vector3.Cross(ref zaxis, ref xaxis, out yaxis);
+            Vector3F xaxis, yaxis, zaxis;
+            Vector3F.Subtract(ref eye, ref target, out zaxis); zaxis.Normalize();
+            Vector3F.Cross(ref up, ref zaxis, out xaxis); xaxis.Normalize();
+            Vector3F.Cross(ref zaxis, ref xaxis, out yaxis);
 
             result = Matrix.Identity;
             result.M11 = xaxis.X; result.M21 = xaxis.Y; result.M31 = xaxis.Z;
             result.M12 = yaxis.X; result.M22 = yaxis.Y; result.M32 = yaxis.Z;
             result.M13 = zaxis.X; result.M23 = zaxis.Y; result.M33 = zaxis.Z;
 
-            Vector3.Dot(ref xaxis, ref eye, out result.M41);
-            Vector3.Dot(ref yaxis, ref eye, out result.M42);
-            Vector3.Dot(ref zaxis, ref eye, out result.M43);
+            Vector3F.Dot(ref xaxis, ref eye, out result.M41);
+            Vector3F.Dot(ref yaxis, ref eye, out result.M42);
+            Vector3F.Dot(ref zaxis, ref eye, out result.M43);
 
             result.M41 = -result.M41;
             result.M42 = -result.M42;
@@ -2076,7 +2076,7 @@ namespace Molten
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <returns>The created look-at matrix.</returns>
-        public static Matrix LookAtRH(Vector3 eye, Vector3 target, Vector3 up)
+        public static Matrix LookAtRH(Vector3F eye, Vector3F target, Vector3F up)
         {
             Matrix result;
             LookAtRH(ref eye, ref target, ref up, out result);
@@ -2431,7 +2431,7 @@ namespace Molten
         /// </summary>
         /// <param name="scale">Scaling factor for all three axes.</param>
         /// <param name="result">When the method completes, contains the created scaling matrix.</param>
-        public static void Scaling(ref Vector3 scale, out Matrix result)
+        public static void Scaling(ref Vector3F scale, out Matrix result)
         {
             Scaling(scale.X, scale.Y, scale.Z, out result);
         }
@@ -2441,7 +2441,7 @@ namespace Molten
         /// </summary>
         /// <param name="scale">Scaling factor for all three axes.</param>
         /// <returns>The created scaling matrix.</returns>
-        public static Matrix Scaling(Vector3 scale)
+        public static Matrix Scaling(Vector3F scale)
         {
             Matrix result;
             Scaling(ref scale, out result);
@@ -2593,7 +2593,7 @@ namespace Molten
         /// <param name="axis">The axis around which to rotate. This parameter is assumed to be normalized.</param>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
-        public static void RotationAxis(ref Vector3 axis, float angle, out Matrix result)
+        public static void RotationAxis(ref Vector3F axis, float angle, out Matrix result)
         {
             float x = axis.X;
             float y = axis.Y;
@@ -2625,7 +2625,7 @@ namespace Molten
         /// <param name="axis">The axis around which to rotate. This parameter is assumed to be normalized.</param>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <returns>The created rotation matrix.</returns>
-        public static Matrix RotationAxis(Vector3 axis, float angle)
+        public static Matrix RotationAxis(Vector3F axis, float angle)
         {
             Matrix result;
             RotationAxis(ref axis, angle, out result);
@@ -2718,7 +2718,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The offset for all three coordinate planes.</param>
         /// <param name="result">When the method completes, contains the created translation matrix.</param>
-        public static void CreateTranslation(ref Vector3 value, out Matrix result)
+        public static void CreateTranslation(ref Vector3F value, out Matrix result)
         {
             CreateTranslation(value.X, value.Y, value.Z, out result);
         }
@@ -2728,7 +2728,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The offset for all three coordinate planes.</param>
         /// <returns>The created translation matrix.</returns>
-        public static Matrix CreateTranslation(Vector3 value)
+        public static Matrix CreateTranslation(Vector3F value)
         {
             Matrix result;
             CreateTranslation(ref value, out result);
@@ -2773,19 +2773,19 @@ namespace Molten
         /// <param name="rotationVec">The rotation vector</param>
         /// <param name="transVec">The translation vector</param>
         /// <param name="matrix">Contains the created skew/shear matrix. </param>
-        public static void CreateSkew(float angle, ref Vector3 rotationVec, ref Vector3 transVec, out Matrix matrix)
+        public static void CreateSkew(float angle, ref Vector3F rotationVec, ref Vector3F transVec, out Matrix matrix)
         {
             //http://elckerlyc.ewi.utwente.nl/browser/Elckerlyc/Hmi/HmiMath/src/hmi/math/Mat3f.java
             float MINIMAL_SKEW_ANGLE = 0.000001f;
 
-            Vector3 e0 = rotationVec;
-            Vector3 e1 = Vector3.Normalize(transVec);
+            Vector3F e0 = rotationVec;
+            Vector3F e1 = Vector3F.Normalize(transVec);
 
             float rv1;
-            Vector3.Dot(ref rotationVec, ref  e1, out rv1);
+            Vector3F.Dot(ref rotationVec, ref  e1, out rv1);
             e0 += rv1 * e1;
             float rv0;
-            Vector3.Dot(ref rotationVec, ref e0, out rv0);
+            Vector3F.Dot(ref rotationVec, ref e0, out rv0);
             float cosa = (float)Math.Cos(angle);
             float sina = (float)Math.Sin(angle);
             float rr0 = rv0 * cosa - rv1 * sina;
@@ -2815,7 +2815,7 @@ namespace Molten
         /// <param name="rotation">The rotation of the transformation.</param>
         /// <param name="translation">The translation factor of the transformation.</param>
         /// <param name="result">When the method completes, contains the created affine transformation matrix.</param>
-        public static void AffineTransformation(float scaling, ref Quaternion rotation, ref Vector3 translation, out Matrix result)
+        public static void AffineTransformation(float scaling, ref Quaternion rotation, ref Vector3F translation, out Matrix result)
         {
             result = Scaling(scaling) * FromQuaternion(rotation) * CreateTranslation(translation);
         }
@@ -2827,7 +2827,7 @@ namespace Molten
         /// <param name="rotation">The rotation of the transformation.</param>
         /// <param name="translation">The translation factor of the transformation.</param>
         /// <returns>The created affine transformation matrix.</returns>
-        public static Matrix AffineTransformation(float scaling, Quaternion rotation, Vector3 translation)
+        public static Matrix AffineTransformation(float scaling, Quaternion rotation, Vector3F translation)
         {
             Matrix result;
             AffineTransformation(scaling, ref rotation, ref translation, out result);
@@ -2842,7 +2842,7 @@ namespace Molten
         /// <param name="rotation">The rotation of the transformation.</param>
         /// <param name="translation">The translation factor of the transformation.</param>
         /// <param name="result">When the method completes, contains the created affine transformation matrix.</param>
-        public static void AffineTransformation(float scaling, ref Vector3 rotationCenter, ref Quaternion rotation, ref Vector3 translation, out Matrix result)
+        public static void AffineTransformation(float scaling, ref Vector3F rotationCenter, ref Quaternion rotation, ref Vector3F translation, out Matrix result)
         {
             result = Scaling(scaling) * CreateTranslation(-rotationCenter) * FromQuaternion(rotation) *
                 CreateTranslation(rotationCenter) * CreateTranslation(translation);
@@ -2856,7 +2856,7 @@ namespace Molten
         /// <param name="rotation">The rotation of the transformation.</param>
         /// <param name="translation">The translation factor of the transformation.</param>
         /// <returns>The created affine transformation matrix.</returns>
-        public static Matrix AffineTransformation(float scaling, Vector3 rotationCenter, Quaternion rotation, Vector3 translation)
+        public static Matrix AffineTransformation(float scaling, Vector3F rotationCenter, Quaternion rotation, Vector3F translation)
         {
             Matrix result;
             AffineTransformation(scaling, ref rotationCenter, ref rotation, ref translation, out result);
@@ -2870,9 +2870,9 @@ namespace Molten
         /// <param name="rotation">The rotation of the transformation.</param>
         /// <param name="translation">The translation factor of the transformation.</param>
         /// <param name="result">When the method completes, contains the created affine transformation matrix.</param>
-        public static void AffineTransformation2D(float scaling, float rotation, ref Vector2 translation, out Matrix result)
+        public static void AffineTransformation2D(float scaling, float rotation, ref Vector2F translation, out Matrix result)
         {
-            result = Scaling(scaling, scaling, 1.0f) * RotationZ(rotation) * CreateTranslation((Vector3)translation);
+            result = Scaling(scaling, scaling, 1.0f) * RotationZ(rotation) * CreateTranslation((Vector3F)translation);
         }
 
         /// <summary>
@@ -2882,7 +2882,7 @@ namespace Molten
         /// <param name="rotation">The rotation of the transformation.</param>
         /// <param name="translation">The translation factor of the transformation.</param>
         /// <returns>The created affine transformation matrix.</returns>
-        public static Matrix AffineTransformation2D(float scaling, float rotation, Vector2 translation)
+        public static Matrix AffineTransformation2D(float scaling, float rotation, Vector2F translation)
         {
             Matrix result;
             AffineTransformation2D(scaling, rotation, ref translation, out result);
@@ -2897,10 +2897,10 @@ namespace Molten
         /// <param name="rotation">The rotation of the transformation.</param>
         /// <param name="translation">The translation factor of the transformation.</param>
         /// <param name="result">When the method completes, contains the created affine transformation matrix.</param>
-        public static void AffineTransformation2D(float scaling, ref Vector2 rotationCenter, float rotation, ref Vector2 translation, out Matrix result)
+        public static void AffineTransformation2D(float scaling, ref Vector2F rotationCenter, float rotation, ref Vector2F translation, out Matrix result)
         {
-            result = Scaling(scaling, scaling, 1.0f) * CreateTranslation((Vector3)(-rotationCenter)) * RotationZ(rotation) *
-                CreateTranslation((Vector3)rotationCenter) * CreateTranslation((Vector3)translation);
+            result = Scaling(scaling, scaling, 1.0f) * CreateTranslation((Vector3F)(-rotationCenter)) * RotationZ(rotation) *
+                CreateTranslation((Vector3F)rotationCenter) * CreateTranslation((Vector3F)translation);
         }
 
         /// <summary>
@@ -2911,7 +2911,7 @@ namespace Molten
         /// <param name="rotation">The rotation of the transformation.</param>
         /// <param name="translation">The translation factor of the transformation.</param>
         /// <returns>The created affine transformation matrix.</returns>
-        public static Matrix AffineTransformation2D(float scaling, Vector2 rotationCenter, float rotation, Vector2 translation)
+        public static Matrix AffineTransformation2D(float scaling, Vector2F rotationCenter, float rotation, Vector2F translation)
         {
             Matrix result;
             AffineTransformation2D(scaling, ref rotationCenter, rotation, ref translation, out result);
@@ -2928,7 +2928,7 @@ namespace Molten
         /// <param name="rotation">The rotation of the transformation.</param>
         /// <param name="translation">The translation factor of the transformation.</param>
         /// <param name="result">When the method completes, contains the created transformation matrix.</param>
-        public static void Transformation(ref Vector3 scalingCenter, ref Quaternion scalingRotation, ref Vector3 scaling, ref Vector3 rotationCenter, ref Quaternion rotation, ref Vector3 translation, out Matrix result)
+        public static void Transformation(ref Vector3F scalingCenter, ref Quaternion scalingRotation, ref Vector3F scaling, ref Vector3F rotationCenter, ref Quaternion rotation, ref Vector3F translation, out Matrix result)
         {
             Matrix sr = FromQuaternion(scalingRotation);
 
@@ -2946,7 +2946,7 @@ namespace Molten
         /// <param name="rotation">The rotation of the transformation.</param>
         /// <param name="translation">The translation factor of the transformation.</param>
         /// <returns>The created transformation matrix.</returns>
-        public static Matrix Transformation(Vector3 scalingCenter, Quaternion scalingRotation, Vector3 scaling, Vector3 rotationCenter, Quaternion rotation, Vector3 translation)
+        public static Matrix Transformation(Vector3F scalingCenter, Quaternion scalingRotation, Vector3F scaling, Vector3F rotationCenter, Quaternion rotation, Vector3F translation)
         {
             Matrix result;
             Transformation(ref scalingCenter, ref scalingRotation, ref scaling, ref rotationCenter, ref rotation, ref translation, out result);
@@ -2963,10 +2963,10 @@ namespace Molten
         /// <param name="rotation">The rotation of the transformation.</param>
         /// <param name="translation">The translation factor of the transformation.</param>
         /// <param name="result">When the method completes, contains the created transformation matrix.</param>
-        public static void Transformation2D(ref Vector2 scalingCenter, float scalingRotation, ref Vector2 scaling, ref Vector2 rotationCenter, float rotation, ref Vector2 translation, out Matrix result)
+        public static void Transformation2D(ref Vector2F scalingCenter, float scalingRotation, ref Vector2F scaling, ref Vector2F rotationCenter, float rotation, ref Vector2F translation, out Matrix result)
         {
-            result = CreateTranslation((Vector3)(-scalingCenter)) * RotationZ(-scalingRotation) * Scaling((Vector3)scaling) * RotationZ(scalingRotation) * CreateTranslation((Vector3)scalingCenter) * 
-                CreateTranslation((Vector3)(-rotationCenter)) * RotationZ(rotation) * CreateTranslation((Vector3)rotationCenter) * CreateTranslation((Vector3)translation);
+            result = CreateTranslation((Vector3F)(-scalingCenter)) * RotationZ(-scalingRotation) * Scaling((Vector3F)scaling) * RotationZ(scalingRotation) * CreateTranslation((Vector3F)scalingCenter) * 
+                CreateTranslation((Vector3F)(-rotationCenter)) * RotationZ(rotation) * CreateTranslation((Vector3F)rotationCenter) * CreateTranslation((Vector3F)translation);
 
             result.M33 = 1f;
             result.M44 = 1f;
@@ -2982,7 +2982,7 @@ namespace Molten
         /// <param name="rotation">The rotation of the transformation.</param>
         /// <param name="translation">The translation factor of the transformation.</param>
         /// <returns>The created transformation matrix.</returns>
-        public static Matrix Transformation2D(Vector2 scalingCenter, float scalingRotation, Vector2 scaling, Vector2 rotationCenter, float rotation, Vector2 translation)
+        public static Matrix Transformation2D(Vector2F scalingCenter, float scalingRotation, Vector2F scaling, Vector2F rotationCenter, float rotation, Vector2F translation)
         {
             Matrix result;
             Transformation2D(ref scalingCenter, scalingRotation, ref scaling, ref rotationCenter, rotation, ref translation, out result);

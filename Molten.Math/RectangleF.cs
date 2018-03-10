@@ -95,6 +95,49 @@ namespace Molten
         }
 
         /// <summary>
+        /// Returns the area of the rectangle based on its width and height.
+        /// </summary>
+        /// <returns></returns>
+        public float Area()
+        {
+            return Width * Height;
+        }
+
+        /// <summary>
+        /// Expands the rectangle as needed so that the given point falls within it's bounds.
+        /// </summary>
+        /// <param name="p"></param>
+        public void Encapsulate(Vector2F p)
+        {
+            if (p.X < Left)
+                Left = (float)Math.Floor(p.X);
+            else if (p.X > Right)
+                Right = (float)Math.Ceiling(p.X);
+
+            if (p.Y < Top)
+                Top = (float)Math.Floor(p.Y);
+            else if (p.Y > Bottom)
+                Bottom = (float)Math.Ceiling(p.Y);
+        }
+
+        /// <summary>
+        /// Expands the rectangle as needed so that the given point falls within it's bounds.
+        /// </summary>
+        /// <param name="p"></param>
+        public void Encapsulate(RectangleF p)
+        {
+            if (p.Left < Left)
+                Left = p.Left;
+            else if (p.Right > Right)
+                Right = p.Right;
+
+            if (p.Top < Top)
+                Top = p.Top;
+            else if (p.Bottom > Bottom)
+                Bottom = p.Bottom;
+        }
+
+        /// <summary>
         /// Gets or sets the X position.
         /// </summary>
         /// <value>The X position.</value>
@@ -154,11 +197,11 @@ namespace Molten
         /// <value>
         /// The location.
         /// </value>
-        public Vector2 Location
+        public Vector2F Location
         {
             get
             {
-                return new Vector2(X, Y);
+                return new Vector2F(X, Y);
             }
             set
             {
@@ -173,11 +216,11 @@ namespace Molten
         /// <value>
         /// The center.
         /// </value>
-        public Vector2 Center
+        public Vector2F Center
         {
             get
             {
-                return new Vector2(X + (Width / 2), Y + (Height / 2));
+                return new Vector2F(X + (Width / 2), Y + (Height / 2));
             }
         }
 
@@ -199,11 +242,11 @@ namespace Molten
         /// Gets or sets the size of the rectangle.
         /// </summary>
         /// <value>The size of the rectangle.</value>
-        public Vector2 Size
+        public Vector2F Size
         {
             get
             {
-                return new Vector2(Width, Height);
+                return new Vector2F(Width, Height);
             }
             set
             {
@@ -216,36 +259,36 @@ namespace Molten
         /// Gets the position of the top-left corner of the rectangle.
         /// </summary>
         /// <value>The top-left corner of the rectangle.</value>
-        public Vector2 TopLeft { get { return new Vector2(Left, Top); } }
+        public Vector2F TopLeft { get { return new Vector2F(Left, Top); } }
 
         /// <summary>
         /// Gets the position of the top-right corner of the rectangle.
         /// </summary>
         /// <value>The top-right corner of the rectangle.</value>
-        public Vector2 TopRight { get { return new Vector2(Right, Top); } }
+        public Vector2F TopRight { get { return new Vector2F(Right, Top); } }
 
         /// <summary>
         /// Gets the position of the bottom-left corner of the rectangle.
         /// </summary>
         /// <value>The bottom-left corner of the rectangle.</value>
-        public Vector2 BottomLeft { get { return new Vector2(Left, Bottom); } }
+        public Vector2F BottomLeft { get { return new Vector2F(Left, Bottom); } }
 
         /// <summary>
         /// Gets the position of the bottom-right corner of the rectangle.
         /// </summary>
         /// <value>The bottom-right corner of the rectangle.</value>
-        public Vector2 BottomRight { get { return new Vector2(Right, Bottom); } }
+        public Vector2F BottomRight { get { return new Vector2F(Right, Bottom); } }
 
         /// <summary>Changes the position of the rectangle.</summary>
         /// <param name="amount">The values to adjust the position of the rectangle by.</param>
-        public void Offset(IntVector2 amount)
+        public void Offset(Vector2I amount)
         {
             Offset(amount.X, amount.Y);
         }
 
         /// <summary>Changes the position of the rectangle.</summary>
         /// <param name="amount">The values to adjust the position of the rectangle by.</param>
-        public void Offset(Vector2 amount)
+        public void Offset(Vector2F amount)
         {
             Offset(amount.X, amount.Y);
         }
@@ -273,7 +316,7 @@ namespace Molten
         /// <summary>Determines whether this rectangle contains a specified Point.</summary>
         /// <param name="value">The Point to evaluate.</param>
         /// <param name="result">[OutAttribute] true if the specified Point is contained within this rectangle; false otherwise.</param>
-        public void Contains(ref Vector2 value, out bool result)
+        public void Contains(ref Vector2F value, out bool result)
         {
             result = (X <= value.X) && (value.X < Right) && (Y <= value.Y) && (value.Y < Bottom);
         }
@@ -312,21 +355,21 @@ namespace Molten
         }
 
         /// <summary>
-        /// Checks, if specified <see cref="Vector2"/> is inside <see cref="RectangleF"/>.
+        /// Checks, if specified <see cref="Vector2F"/> is inside <see cref="RectangleF"/>.
         /// </summary>
-        /// <param name="vector2D">Coordinate <see cref="Vector2"/>.</param>
-        /// <returns><c>true</c> if <see cref="Vector2"/> is inside <see cref="RectangleF"/>, otherwise <c>false</c>.</returns>
-        public bool Contains(Vector2 vector2D)
+        /// <param name="vector2D">Coordinate <see cref="Vector2F"/>.</param>
+        /// <returns><c>true</c> if <see cref="Vector2F"/> is inside <see cref="RectangleF"/>, otherwise <c>false</c>.</returns>
+        public bool Contains(Vector2F vector2D)
         {
             return Contains(vector2D.X, vector2D.Y);
         }
 
         /// <summary>
-        /// Checks, if specified <see cref="IntVector2"/> is inside <see cref="RectangleF"/>.
+        /// Checks, if specified <see cref="Vector2I"/> is inside <see cref="RectangleF"/>.
         /// </summary>
-        /// <param name="point">Coordinate <see cref="IntVector2"/>.</param>
-        /// <returns><c>true</c> if <see cref="IntVector2"/> is inside <see cref="RectangleF"/>, otherwise <c>false</c>.</returns>
-        public bool Contains(IntVector2 point)
+        /// <param name="point">Coordinate <see cref="Vector2I"/>.</param>
+        /// <returns><c>true</c> if <see cref="Vector2I"/> is inside <see cref="RectangleF"/>, otherwise <c>false</c>.</returns>
+        public bool Contains(Vector2I point)
         {
             return Contains(point.X, point.Y);
         }

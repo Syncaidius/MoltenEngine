@@ -48,6 +48,8 @@ namespace Molten
 {
     public class Shape
     {
+        public static readonly ShapeAreaComparer AreaComparer = new ShapeAreaComparer();
+
         /// <summary>
         /// A list of shape outline points.
         /// </summary>
@@ -103,7 +105,7 @@ namespace Molten
         /// <param name="points">The input points.</param>
         /// <param name="offset">An offset to apply to all of the provided points.</param>
         /// <param name="scale">The scale of the provided points. 0.5f is half size. 2.0f is 2x the normal size.</param>
-        public Shape(IList<Vector2> points, Vector2 offset, float scale)
+        public Shape(IList<Vector2F> points, Vector2F offset, float scale)
         {
             for (int i = 0; i < points.Count; i++)
                 Points.Add(new TriPoint(offset + (points[i] * scale)));
@@ -115,7 +117,7 @@ namespace Molten
         /// Creates a polygon from a list of at least 3 Vector3 points, with no duplicates.
         /// </summary>
         /// <param name="points">The input points.</param>
-        public Shape(IList<Vector2> points) : this(points, Vector2.Zero, 1.0f) { }
+        public Shape(IList<Vector2F> points) : this(points, Vector2F.Zero, 1.0f) { }
 
         /// <summary>
         /// Calculates and updates the shape's bounds. Useful after modifying <see cref="Points"/>.
@@ -150,7 +152,7 @@ namespace Molten
         /// Triangulates the shape and adds all of the points (in triangle list layout) to the provided output.
         /// </summary>
         /// <param name="output">The output list.</param>
-        public void Triangulate(IList<Vector2> output, Vector2 offset, float scale = 1.0f)
+        public void Triangulate(IList<Vector2F> output, Vector2F offset, float scale = 1.0f)
         {
             Points.Reverse();
             SweepContext tcx = new SweepContext();
@@ -168,9 +170,9 @@ namespace Molten
             foreach (Triangle tri in triangles)
             {
                 //tri.ReversePointFlow();
-                output.Add(((Vector2)tri.GetPoint(0) * scale) + offset);
-                output.Add(((Vector2)tri.GetPoint(2) * scale) + offset);
-                output.Add(((Vector2)tri.GetPoint(1) * scale) + offset);
+                output.Add(((Vector2F)tri.GetPoint(0) * scale) + offset);
+                output.Add(((Vector2F)tri.GetPoint(2) * scale) + offset);
+                output.Add(((Vector2F)tri.GetPoint(1) * scale) + offset);
             }
         }
 
@@ -199,28 +201,25 @@ namespace Molten
                 output.Add(tri);
         }
 
-        ///// <summary>
-        ///// Inserts newPoint after point.
-        ///// </summary>
-        ///// <param name="point">The point to insert after in the polygon</param>
-        ///// <param name="newPoint">The point to insert into the polygon</param>
-        //public void InsertPointAfter(ShapePoint point, ShapePoint newPoint)
-        //{
-        //    // Validate that 
-        //    int index = Points.IndexOf(point);
-        //    if (index == -1) throw new ArgumentException("Tried to insert a point into a Polygon after a point not belonging to the Polygon", "point");
-        //    Points.Insert(index + 1, newPoint);
-        //}
-
-        internal void AddTriangle(Triangle t)
+        /// <summary>
+        /// Compares <see cref="Shape"/> by bounds area.
+        /// </summary>
+        public class ShapeAreaComparer : IComparer<Shape>
         {
-            _triangles.Add(t);
+            public int Compare(Shape a, Shape b)
+            {
+                float aArea = a.Bounds.Area();
+                float bArea = b.Bounds.Area();
+
+                if (aArea > bArea)
+                    return 1;
+                else if (aArea < bArea)
+                    return -1;
+                else
+                    return 0;
+            }
         }
 
-        internal void AddTriangles(IEnumerable<Triangle> list)
-        {
-            _triangles.AddRange(list);
-        }
 
         /// <summary>
         /// Creates constraints and populates the context with points

@@ -56,16 +56,16 @@ namespace Molten
         /// <summary>Converts the provided screen position to a globalized 3D world position.</summary>
         /// <param name="location">The screen position.</param>
         /// <returns></returns>
-        public Vector3 ConvertScreenToWorld(Vector2 location)
+        public Vector3F ConvertScreenToWorld(Vector2F location)
         {
-            Vector4 result = Vector2.Transform(location, Object.Transform.Global);
-            return new Vector3(result.X, result.Y, result.Z);
+            Vector4F result = Vector2F.Transform(location, Object.Transform.Global);
+            return new Vector3F(result.X, result.Y, result.Z);
         }
 
-        public Vector2 ConvertWorldToScreen(Vector3 position)
+        public Vector2F ConvertWorldToScreen(Vector3F position)
         {
-            Vector4 result = Vector3.Transform(position, _view);
-            return new Vector2(result.X, result.Y);
+            Vector4F result = Vector3F.Transform(position, _view);
+            return new Vector2F(result.X, result.Y);
         }
 
         public Matrix View => _view;

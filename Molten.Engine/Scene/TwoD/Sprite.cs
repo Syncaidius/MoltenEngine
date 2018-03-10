@@ -11,11 +11,11 @@ namespace Molten
     {
         public ITexture2D Texture;
         public Rectangle Source;
-        public Vector2 Position;
+        public Vector2F Position;
         public float Rotation;
-        public Vector2 Origin;
+        public Vector2F Origin;
         public Color Color = Color.White;
-        public Vector2 Scale = Vector2.One;
+        public Vector2F Scale = Vector2F.One;
 
         public void Render(SpriteBatch batch)
         {

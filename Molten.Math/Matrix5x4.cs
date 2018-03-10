@@ -237,63 +237,63 @@ namespace Molten
         /// <summary>
         /// Gets or sets the first row in the Matrix5x4; that is M11, M12, M13, and M14.
         /// </summary>
-        public Vector4 Row1
+        public Vector4F Row1
         {
-            get { return new Vector4(M11, M12, M13, M14); }
+            get { return new Vector4F(M11, M12, M13, M14); }
             set { M11 = value.X; M12 = value.Y; M13 = value.Z; M14 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the second row in the Matrix5x4; that is M21, M22, M23, and M24.
         /// </summary>
-        public Vector4 Row2
+        public Vector4F Row2
         {
-            get { return new Vector4(M21, M22, M23, M24); }
+            get { return new Vector4F(M21, M22, M23, M24); }
             set { M21 = value.X; M22 = value.Y; M23 = value.Z; M24 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the third row in the Matrix5x4; that is M31, M32, M33, and M34.
         /// </summary>
-        public Vector4 Row3
+        public Vector4F Row3
         {
-            get { return new Vector4(M31, M32, M33, M34); }
+            get { return new Vector4F(M31, M32, M33, M34); }
             set { M31 = value.X; M32 = value.Y; M33 = value.Z; M34 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the fourth row in the Matrix5x4; that is M41, M42, M43, and M44.
         /// </summary>
-        public Vector4 Row4
+        public Vector4F Row4
         {
-            get { return new Vector4(M41, M42, M43, M44); }
+            get { return new Vector4F(M41, M42, M43, M44); }
             set { M41 = value.X; M42 = value.Y; M43 = value.Z; M44 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the fifth row in the Matrix5x4; that is M51, M52, M53, and M54.
         /// </summary>
-        public Vector4 Row5
+        public Vector4F Row5
         {
-            get { return new Vector4(M51, M52, M53, M54); }
+            get { return new Vector4F(M51, M52, M53, M54); }
             set { M51 = value.X; M52 = value.Y; M53 = value.Z; M54 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the translation of the Matrix5x4; that is M41, M42, and M43.
         /// </summary>
-        public Vector4 TranslationVector
+        public Vector4F TranslationVector
         {
-            get { return new Vector4(M51, M52, M53, M54); }
+            get { return new Vector4F(M51, M52, M53, M54); }
             set { M51 = value.X; M52 = value.Y; M53 = value.Z; M54 = value.W; }
         }
 
         /// <summary>
         /// Gets or sets the scale of the Matrix5x4; that is M11, M22, and M33.
         /// </summary>
-        public Vector4 ScaleVector
+        public Vector4F ScaleVector
         {
-            get { return new Vector4(M11, M22, M33, M44); }
+            get { return new Vector4F(M11, M22, M33, M44); }
             set { M11 = value.X; M22 = value.Y; M33 = value.Z; M44 = value.W; }
         }
 
@@ -678,7 +678,7 @@ namespace Molten
         /// </summary>
         /// <param name="scale">Scaling factor for all three axes.</param>
         /// <param name="result">When the method completes, contains the created scaling Matrix5x4.</param>
-        public static void Scaling(ref Vector4 scale, out Matrix5x4 result)
+        public static void Scaling(ref Vector4F scale, out Matrix5x4 result)
         {
             Scaling(scale.X, scale.Y, scale.Z, scale.W, out result);
         }
@@ -688,7 +688,7 @@ namespace Molten
         /// </summary>
         /// <param name="scale">Scaling factor for all three axes.</param>
         /// <returns>The created scaling Matrix5x4.</returns>
-        public static Matrix5x4 Scaling(Vector4 scale)
+        public static Matrix5x4 Scaling(Vector4F scale)
         {
             Matrix5x4 result;
             Scaling(ref scale, out result);
@@ -755,7 +755,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The offset for all three coordinate planes.</param>
         /// <param name="result">When the method completes, contains the created translation Matrix5x4.</param>
-        public static void Translation(ref Vector4 value, out Matrix5x4 result)
+        public static void Translation(ref Vector4F value, out Matrix5x4 result)
         {
             Translation(value.X, value.Y, value.Z, value.W, out result);
         }
@@ -765,7 +765,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The offset for all three coordinate planes.</param>
         /// <returns>The created translation Matrix5x4.</returns>
-        public static Matrix5x4 Translation(Vector4 value)
+        public static Matrix5x4 Translation(Vector4F value)
         {
             Matrix5x4 result;
             Translation(ref value, out result);

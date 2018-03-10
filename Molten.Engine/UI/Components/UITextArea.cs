@@ -34,7 +34,7 @@ namespace Molten.UI
         CursorLocation _selection;
         int _blinkInterval = 1000;
         double _blinkTimer;
-        Vector2 _cursorPos;
+        Vector2F _cursorPos;
 
         bool _blinkCursor = false;
         bool _isEditable = true;
@@ -45,7 +45,7 @@ namespace Molten.UI
 
         UIHorizontalScrollBar _hBar;
         UIVerticalScrollBar _vBar;
-        Vector2 _scrollOffset;
+        Vector2F _scrollOffset;
         int _widestLine;
         int _lineCapacity;
         Engine _engine;
@@ -121,7 +121,7 @@ namespace Molten.UI
 
             _selection.line = Math.Min(_lines.Count - 1, _startLine + lineNumber);
             Line line = _lines[_selection.line];
-            Vector2 localPos = data.Position - line.textObject.ActualPosition;
+            Vector2F localPos = data.Position - line.textObject.ActualPosition;
 
             _selection.index = line.textObject.Font.NearestCharacter(line.Text, localPos);
 
@@ -176,7 +176,7 @@ namespace Molten.UI
             {
                 _selection.line = Math.Min(_lines.Count - 1, _startLine + lineNumber);
                 Line line = _lines[_selection.line];
-                Vector2 localPos = data.Position - line.textObject.ActualPosition;
+                Vector2F localPos = data.Position - line.textObject.ActualPosition;
 
                 _selection.index = line.textObject.Font.NearestCharacter(line.Text, localPos);
             }
@@ -184,7 +184,7 @@ namespace Molten.UI
             {
                 _caret.line = Math.Min(_lines.Count - 1, _startLine + lineNumber);
                 Line line = _lines[_caret.line];
-                Vector2 localPos = data.Position - line.textObject.ActualPosition;
+                Vector2F localPos = data.Position - line.textObject.ActualPosition;
 
                 _caret.index = line.textObject.Font.NearestCharacter(line.Text, localPos);
                 _selection = _caret;
@@ -396,7 +396,7 @@ namespace Molten.UI
         private void AlignText()
         {
             Line curLine = _lines[_caret.line];
-            Vector2 textSize = curLine.textObject.GetSize(_caret.index);
+            Vector2F textSize = curLine.textObject.GetSize(_caret.index);
 
             // Calculate start and end lines - TEMP - replace with scrolling later
             _lineCapacity = (int)Math.Ceiling((float)_clippingBounds.Height / textSize.Y);
@@ -415,7 +415,7 @@ namespace Molten.UI
             for (int i = _startLine; i <= _endLine; i++)
             {
                 curLine = _lines[i];
-                Vector2 lineTextSize = curLine.textObject.GetSize();
+                Vector2F lineTextSize = curLine.textObject.GetSize();
                 int yOffset = (int)((textSize.Y * localID) - _scrollOffset.Y);
 
                 curLine.bounds = new Rectangle()
@@ -508,7 +508,7 @@ namespace Molten.UI
         private void CheckLineSelection(Line line, int cursorIndex, int selectionIndex)
         {
             // Update seleection bounds
-            Vector2 textPos = line.textObject.ActualPosition;
+            Vector2F textPos = line.textObject.ActualPosition;
             Rectangle textBounds = new Rectangle();
 
             if (cursorIndex < selectionIndex)

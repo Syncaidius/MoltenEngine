@@ -28,7 +28,7 @@ namespace Molten.Samples
         {
             Random rng = game.Rng;
             Rectangle texSource = new Rectangle(0, 0, 128, 128);
-            Vector2 origin = new Vector2(0.5f);
+            Vector2F origin = new Vector2F(0.5f);
 
             // Textured sprites
             for (int i = 0; i < 10000; i++)
@@ -41,12 +41,12 @@ namespace Molten.Samples
                     A = 40,
                 };
 
-                    Vector2 pos = new Vector2()
+                    Vector2F pos = new Vector2F()
                     {
                         X = rng.Next(0, 1920),
                         Y = rng.Next(0, 1080),
                     };
-                    _cache.Draw(tex, pos, texSource, col, 0, Vector2.One, origin);
+                    _cache.Draw(tex, pos, texSource, col, 0, Vector2F.One, origin);
             }
 
             // Colored sprites

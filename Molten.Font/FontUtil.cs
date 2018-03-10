@@ -62,7 +62,7 @@ namespace Molten.Font
                 GlyphPoint p = glyphPoints[i];
 
                 // Use a Vector2 transform-normal calculation here
-                Vector2 pNew = Vector2.TransformNormal(p.Point, matrix);
+                Vector2F pNew = Vector2F.TransformNormal(p.Point, matrix);
                 glyphPoints[i] = new GlyphPoint(pNew, p.IsOnCurve);
 
                 // Check if transformed point goes outside of the glyph's current bounds.
@@ -86,7 +86,7 @@ namespace Molten.Font
         {
             GlyphPoint[] points = glyph.Points;
             for (int i = points.Length - 1; i >= 0; --i)
-                points[i] = new GlyphPoint(points[i].Point + new Vector2(dx, dy), points[i].IsOnCurve);
+                points[i] = new GlyphPoint(points[i].Point + new Vector2F(dx, dy), points[i].IsOnCurve);
 
             // Update bounds
             Rectangle curBounds = glyph.Bounds;

@@ -267,13 +267,13 @@ namespace Molten
             far.Normalize();
         }
 
-        private static Vector3 Get3PlanesInterPoint(ref Plane p1, ref Plane p2, ref Plane p3)
+        private static Vector3F Get3PlanesInterPoint(ref Plane p1, ref Plane p2, ref Plane p3)
         {
             //P = -d1 * N2xN3 / N1.N2xN3 - d2 * N3xN1 / N2.N3xN1 - d3 * N1xN2 / N3.N1xN2 
-            Vector3 v =
-                -p1.D * Vector3.Cross(p2.Normal, p3.Normal) / Vector3.Dot(p1.Normal, Vector3.Cross(p2.Normal, p3.Normal))
-                - p2.D * Vector3.Cross(p3.Normal, p1.Normal) / Vector3.Dot(p2.Normal, Vector3.Cross(p3.Normal, p1.Normal))
-                - p3.D * Vector3.Cross(p1.Normal, p2.Normal) / Vector3.Dot(p3.Normal, Vector3.Cross(p1.Normal, p2.Normal));
+            Vector3F v =
+                -p1.D * Vector3F.Cross(p2.Normal, p3.Normal) / Vector3F.Dot(p1.Normal, Vector3F.Cross(p2.Normal, p3.Normal))
+                - p2.D * Vector3F.Cross(p3.Normal, p1.Normal) / Vector3F.Dot(p2.Normal, Vector3F.Cross(p3.Normal, p1.Normal))
+                - p3.D * Vector3F.Cross(p1.Normal, p2.Normal) / Vector3F.Dot(p3.Normal, Vector3F.Cross(p1.Normal, p2.Normal));
 
             return v;
         }
@@ -289,29 +289,29 @@ namespace Molten
         /// <param name="zfar">The zfar.</param>
         /// <param name="aspect">The aspect.</param>
         /// <returns>The bounding frustum calculated from perspective camera</returns>
-        public static BoundingFrustum FromCamera(Vector3 cameraPos, Vector3 lookDir, Vector3 upDir, float fov, float znear, float zfar, float aspect)
+        public static BoundingFrustum FromCamera(Vector3F cameraPos, Vector3F lookDir, Vector3F upDir, float fov, float znear, float zfar, float aspect)
         {
             //http://knol.google.com/k/view-frustum
 
-            lookDir = Vector3.Normalize(lookDir);
-            upDir = Vector3.Normalize(upDir);
+            lookDir = Vector3F.Normalize(lookDir);
+            upDir = Vector3F.Normalize(upDir);
 
-            Vector3 nearCenter = cameraPos + lookDir * znear;
-            Vector3 farCenter = cameraPos + lookDir * zfar;
+            Vector3F nearCenter = cameraPos + lookDir * znear;
+            Vector3F farCenter = cameraPos + lookDir * zfar;
             float nearHalfHeight = (float)(znear * Math.Tan(fov / 2f));
             float farHalfHeight = (float)(zfar * Math.Tan(fov / 2f));
             float nearHalfWidth = nearHalfHeight * aspect;
             float farHalfWidth = farHalfHeight * aspect;
 
-            Vector3 rightDir = Vector3.Normalize(Vector3.Cross(upDir, lookDir));
-            Vector3 Near1 = nearCenter - nearHalfHeight * upDir + nearHalfWidth * rightDir;
-            Vector3 Near2 = nearCenter + nearHalfHeight * upDir + nearHalfWidth * rightDir;
-            Vector3 Near3 = nearCenter + nearHalfHeight * upDir - nearHalfWidth * rightDir;
-            Vector3 Near4 = nearCenter - nearHalfHeight * upDir - nearHalfWidth * rightDir;
-            Vector3 Far1 = farCenter - farHalfHeight * upDir + farHalfWidth * rightDir;
-            Vector3 Far2 = farCenter + farHalfHeight * upDir + farHalfWidth * rightDir;
-            Vector3 Far3 = farCenter + farHalfHeight * upDir - farHalfWidth * rightDir;
-            Vector3 Far4 = farCenter - farHalfHeight * upDir - farHalfWidth * rightDir;
+            Vector3F rightDir = Vector3F.Normalize(Vector3F.Cross(upDir, lookDir));
+            Vector3F Near1 = nearCenter - nearHalfHeight * upDir + nearHalfWidth * rightDir;
+            Vector3F Near2 = nearCenter + nearHalfHeight * upDir + nearHalfWidth * rightDir;
+            Vector3F Near3 = nearCenter + nearHalfHeight * upDir - nearHalfWidth * rightDir;
+            Vector3F Near4 = nearCenter - nearHalfHeight * upDir - nearHalfWidth * rightDir;
+            Vector3F Far1 = farCenter - farHalfHeight * upDir + farHalfWidth * rightDir;
+            Vector3F Far2 = farCenter + farHalfHeight * upDir + farHalfWidth * rightDir;
+            Vector3F Far3 = farCenter + farHalfHeight * upDir - farHalfWidth * rightDir;
+            Vector3F Far4 = farCenter - farHalfHeight * upDir - farHalfWidth * rightDir;
 
             var result = new BoundingFrustum();
             result.pNear = new Plane(Near1, Near2, Near3);
@@ -353,9 +353,9 @@ namespace Molten
         /// , element7 is Far4 (far left down corner)
         /// </summary>
         /// <returns>The 8 corners of the frustum</returns>
-        public Vector3[] GetCorners()
+        public Vector3F[] GetCorners()
         {
-            var corners = new Vector3[8];
+            var corners = new Vector3F[8];
             GetCorners(corners);
             return corners;
         }
@@ -371,7 +371,7 @@ namespace Molten
         /// , element7 is Far4 (far left down corner)
         /// </summary>
         /// <returns>The 8 corners of the frustum</returns>
-        public void GetCorners(Vector3[] corners)
+        public void GetCorners(Vector3F[] corners)
         {
             corners[0] = Get3PlanesInterPoint(ref pNear, ref  pBottom, ref  pRight);    //Near1
             corners[1] = Get3PlanesInterPoint(ref pNear, ref  pTop, ref  pRight);       //Near2
@@ -393,8 +393,8 @@ namespace Molten
             var cameraParam = new FrustumCameraParams();
             cameraParam.Position = Get3PlanesInterPoint(ref pRight, ref pTop, ref pLeft);
             cameraParam.LookAtDir = pNear.Normal;
-            cameraParam.UpDir = Vector3.Normalize(Vector3.Cross(pRight.Normal, pNear.Normal));
-            cameraParam.FOV = (float)((Math.PI / 2.0 - Math.Acos(Vector3.Dot(pNear.Normal, pTop.Normal))) * 2);
+            cameraParam.UpDir = Vector3F.Normalize(Vector3F.Cross(pRight.Normal, pNear.Normal));
+            cameraParam.FOV = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(pNear.Normal, pTop.Normal))) * 2);
             cameraParam.AspectRatio = (corners[6] - corners[5]).Length() / (corners[4] - corners[5]).Length();
             cameraParam.ZNear = (cameraParam.Position + (pNear.Normal * pNear.D)).Length();
             cameraParam.ZFar = (cameraParam.Position + (pFar.Normal * pFar.D)).Length();
@@ -406,7 +406,7 @@ namespace Molten
         /// </summary>
         /// <param name="point">The point.</param>
         /// <returns>Type of the containment</returns>
-        public ContainmentType Contains(ref Vector3 point)
+        public ContainmentType Contains(ref Vector3F point)
         {
             var result = PlaneIntersectionType.Front;
             var planeResult = PlaneIntersectionType.Front;
@@ -442,7 +442,7 @@ namespace Molten
         /// </summary>
         /// <param name="point">The point.</param>
         /// <returns>Type of the containment</returns>
-        public ContainmentType Contains(Vector3 point)
+        public ContainmentType Contains(Vector3F point)
         {
             return Contains(ref point);
         }
@@ -452,7 +452,7 @@ namespace Molten
         /// </summary>
         /// <param name="points">The points.</param>
         /// <returns>Type of the containment</returns>
-        public ContainmentType Contains(Vector3[] points)
+        public ContainmentType Contains(Vector3F[] points)
         {
             throw new NotImplementedException();
             /* TODO: (PMin) This method is wrong, does not calculate case where only plane from points is intersected
@@ -486,12 +486,12 @@ namespace Molten
         /// </summary>
         /// <param name="points">The points.</param>
         /// <param name="result">Type of the containment.</param>
-        public void Contains(Vector3[] points, out ContainmentType result)
+        public void Contains(Vector3F[] points, out ContainmentType result)
         {
             result = Contains(points);
         }
 
-        private void GetBoxToPlanePVertexNVertex(ref BoundingBox box, ref Vector3 planeNormal, out Vector3 p, out Vector3 n)
+        private void GetBoxToPlanePVertexNVertex(ref BoundingBox box, ref Vector3F planeNormal, out Vector3F p, out Vector3F n)
         {
             p = box.Min;
             if (planeNormal.X >= 0)
@@ -517,7 +517,7 @@ namespace Molten
         /// <returns>Type of the containment</returns>
         public ContainmentType Contains(ref BoundingBox box)
         {
-            Vector3 p, n;
+            Vector3F p, n;
             Plane plane;
             var result = ContainmentType.Contains;
             for (int i = 0; i < 6; i++)
@@ -674,7 +674,7 @@ namespace Molten
             result = Contains(ref box) != ContainmentType.Disjoint;
         }
 
-        private PlaneIntersectionType PlaneIntersectsPoints(ref Plane plane, Vector3[] points)
+        private PlaneIntersectionType PlaneIntersectsPoints(ref Plane plane, Vector3F[] points)
         {
             var result = CollisionHelper.PlaneIntersectsPoint(ref plane, ref points[0]);
             for (int i = 1; i < points.Length; i++)
@@ -709,7 +709,7 @@ namespace Molten
         /// <returns>With of the frustum at the specified depth</returns>
         public float GetWidthAtDepth(float depth)
         {
-            float hAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3.Dot(pNear.Normal, pLeft.Normal))));
+            float hAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(pNear.Normal, pLeft.Normal))));
             return (float)(Math.Tan(hAngle) * depth * 2);
         }
 
@@ -720,7 +720,7 @@ namespace Molten
         /// <returns>Height of the frustum at the specified depth</returns>
         public float GetHeightAtDepth(float depth)
         {
-            float vAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3.Dot(pNear.Normal, pTop.Normal))));
+            float vAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(pNear.Normal, pTop.Normal))));
             return (float)(Math.Tan(vAngle) * depth * 2);
         }
 
@@ -790,9 +790,9 @@ namespace Molten
                     }
                 }
 
-                Vector3 minPoint = ray.Position + ray.Direction * minDist;
-                Vector3 maxPoint = ray.Position + ray.Direction * maxDist;
-                Vector3 center = (minPoint + maxPoint) / 2f;
+                Vector3F minPoint = ray.Position + ray.Direction * minDist;
+                Vector3F maxPoint = ray.Position + ray.Direction * maxDist;
+                Vector3F center = (minPoint + maxPoint) / 2f;
                 if (Contains(ref center) != ContainmentType.Disjoint)
                 {
                     inDistance = minDist;
@@ -816,11 +816,11 @@ namespace Molten
         /// </summary>
         /// <param name="points">The points.</param>
         /// <returns>The zoom to fit distance</returns>
-        public float GetZoomToExtentsShiftDistance(Vector3[] points)
+        public float GetZoomToExtentsShiftDistance(Vector3F[] points)
         {
-            float vAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3.Dot(pNear.Normal, pTop.Normal))));
+            float vAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(pNear.Normal, pTop.Normal))));
             float vSin = (float)Math.Sin(vAngle);
-            float hAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3.Dot(pNear.Normal, pLeft.Normal))));
+            float hAngle = (float)((Math.PI / 2.0 - Math.Acos(Vector3F.Dot(pNear.Normal, pLeft.Normal))));
             float hSin = (float)Math.Sin(hAngle);
             float horizontalToVerticalMapping = vSin / hSin;
 
@@ -858,7 +858,7 @@ namespace Molten
         /// </summary>
         /// <param name="points">The points.</param>
         /// <returns>The zoom to fit vector</returns>
-        public Vector3 GetZoomToExtentsShiftVector(Vector3[] points)
+        public Vector3F GetZoomToExtentsShiftVector(Vector3F[] points)
         {
             return GetZoomToExtentsShiftDistance(points) * pNear.Normal;
         }
@@ -868,7 +868,7 @@ namespace Molten
         /// </summary>
         /// <param name="boundingBox">The bounding box.</param>
         /// <returns>The zoom to fit vector</returns>
-        public Vector3 GetZoomToExtentsShiftVector(ref BoundingBox boundingBox)
+        public Vector3F GetZoomToExtentsShiftVector(ref BoundingBox boundingBox)
         {
             return GetZoomToExtentsShiftDistance(boundingBox.GetCorners()) * pNear.Normal;
         }

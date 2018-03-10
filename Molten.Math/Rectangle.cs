@@ -153,11 +153,11 @@ namespace Molten
         /// <value>
         /// The center.
         /// </value>
-        public IntVector2 Center
+        public Vector2I Center
         {
             get
             {
-                return new IntVector2(X + (Width / 2), Y + (Height / 2));
+                return new Vector2I(X + (Width / 2), Y + (Height / 2));
             }
         }
 
@@ -165,25 +165,25 @@ namespace Molten
         /// Gets the position of the top-left corner of the rectangle.
         /// </summary>
         /// <value>The top-left corner of the rectangle.</value>
-        public IntVector2 TopLeft { get { return new IntVector2(Left, Top); } }
+        public Vector2I TopLeft { get { return new Vector2I(Left, Top); } }
 
         /// <summary>
         /// Gets the position of the top-right corner of the rectangle.
         /// </summary>
         /// <value>The top-right corner of the rectangle.</value>
-        public IntVector2 TopRight { get { return new IntVector2(Right, Top); } }
+        public Vector2I TopRight { get { return new Vector2I(Right, Top); } }
 
         /// <summary>
         /// Gets the position of the bottom-left corner of the rectangle.
         /// </summary>
         /// <value>The bottom-left corner of the rectangle.</value>
-        public IntVector2 BottomLeft { get { return new IntVector2(Left, Bottom); } }
+        public Vector2I BottomLeft { get { return new Vector2I(Left, Bottom); } }
 
         /// <summary>
         /// Gets the position of the bottom-right corner of the rectangle.
         /// </summary>
         /// <value>The bottom-right corner of the rectangle.</value>
-        public IntVector2 BottomRight { get { return new IntVector2(Right, Bottom); } }
+        public Vector2I BottomRight { get { return new Vector2I(Right, Bottom); } }
 
         /// <summary>Changes the position of the rectangle.</summary>
         /// <param name="offsetX">Change in the x-position.</param>
@@ -192,6 +192,66 @@ namespace Molten
         {
             X += offsetX;
             Y += offsetY;
+        }
+
+        /// <summary>
+        /// Returns the area of the rectangle based on its width and height.
+        /// </summary>
+        /// <returns></returns>
+        public float Area()
+        {
+            return Width * Height;
+        }
+
+        /// <summary>
+        /// Expands the rectangle as needed so that the given point falls within it's bounds.
+        /// </summary>
+        /// <param name="p"></param>
+        public void Encapsulate(Vector2F p)
+        {
+            if (p.X < Left)
+                Left = (int)Math.Floor(p.X);
+            else if (p.X > Right)
+                Right = (int)Math.Ceiling(p.X);
+
+            if (p.Y < Top)
+                Top = (int)Math.Floor(p.Y);
+            else if (p.Y > Bottom)
+                Bottom = (int)Math.Ceiling(p.Y);
+        }
+
+        /// <summary>
+        /// Expands the rectangle as needed so that the given point falls within it's bounds.
+        /// </summary>
+        /// <param name="p"></param>
+        public void Encapsulate(Vector2I p)
+        {
+            if (p.X < Left)
+                Left = p.X;
+            else if (p.X > Right)
+                Right = p.X;
+
+            if (p.Y < Top)
+                Top = p.Y;
+            else if (p.Y > Bottom)
+                Bottom = p.Y;
+        }
+
+        /// <summary>
+        /// Expands the rectangle as needed so that the given point falls within it's bounds.
+        /// </summary>
+        /// <param name="p"></param>
+        public void Encapsulate(Rectangle p)
+        {
+            if (p.Left < Left)
+                Left = p.Left;
+            else if (p.Right > Right)
+                Right = p.Right;
+
+            if (p.Top < Top)
+                Top = p.Top;
+            else if (p.Bottom > Bottom)
+                Bottom = p.Bottom;
         }
 
         /// <summary>Pushes the edges of the rectangle out by the horizontal and vertical values specified.</summary>
@@ -273,7 +333,7 @@ namespace Molten
         /// </summary>
         /// <param name="vector2D">Coordinate <see cref="SharpDX.Vector2"/>.</param>
         /// <returns><c>true</c> if <see cref="SharpDX.Vector2"/> is inside <see cref="SharpDX.Rectangle"/>, otherwise <c>false</c>.</returns>
-        public bool Contains(Vector2 vector2D)
+        public bool Contains(Vector2F vector2D)
         {
             return Contains(vector2D.X, vector2D.Y);
         }

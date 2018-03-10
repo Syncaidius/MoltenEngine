@@ -20,7 +20,7 @@ namespace Molten.UI
         int _borderSize = 2;
         int _padding = 1;
         bool _visible;
-        Vector2 _position;
+        Vector2F _position;
 
         public UITooltip(Engine engine)
         {
@@ -43,7 +43,7 @@ namespace Molten.UI
 
         private void Refresh()
         {
-            Vector2 textSize = _text.GetSize();
+            Vector2F textSize = _text.GetSize();
             _innerBounds = new Rectangle()
             {
                 X = (int)_position.X,
@@ -90,7 +90,7 @@ namespace Molten.UI
             }
         }
 
-        public Vector2 Position
+        public Vector2F Position
         {
             get { return _position; }
             set

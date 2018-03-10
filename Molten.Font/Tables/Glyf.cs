@@ -183,8 +183,8 @@ namespace Molten.Font
                          * in the component glyph's coordinate system, and the scale transformation is applied to both values. */
                         if (HasFlag(flags, CompositeGlyphFlags.ScaledComponentOffset))
                         {
-                            Vector2 p = new Vector2(arg1, arg2);
-                            p = Vector2.TransformNormal(p, scaleMatrix.Value);
+                            Vector2F p = new Vector2F(arg1, arg2);
+                            p = Vector2F.TransformNormal(p, scaleMatrix.Value);
                         }
 
                         // ref: https://github.com/servo/libfreetype2/blob/master/freetype2/src/truetype/ttgload.c#L1124
@@ -253,7 +253,7 @@ namespace Molten.Font
             short[] yCoords = ReadCoordinates(reader, pointCount, flags, SimpleGlyphFlags.YShortVector, SimpleGlyphFlags.YSameOrPositive);
 
             GlyphPoint[] points = new GlyphPoint[pointCount];
-            Vector2 pos = Vector2.Zero;
+            Vector2F pos = Vector2F.Zero;
             for (int i = 0; i < pointCount; i++)
             {
                 pos.X += xCoords[i];

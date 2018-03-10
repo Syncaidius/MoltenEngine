@@ -5,22 +5,22 @@ using System.Runtime.InteropServices;
 namespace Molten
 {
     /// <summary>
-    /// Structure using the same layout than <see cref="System.Drawing.Point"/> except that it uses unsigned integers instead.
+    /// Represents a four dimensional mathematical vector, composted of 2 unsigned integers.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct UIntVector2 : IEquatable<UIntVector2>
+    public struct Vector2UI : IEquatable<Vector2UI>
     {
         /// <summary>
         /// A point with (0,0) coordinates.
         /// </summary>
-        public static readonly UIntVector2 Zero = new UIntVector2(0, 0);
+        public static readonly Vector2UI Zero = new Vector2UI(0, 0);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UIntVector2"/> struct.
+        /// Initializes a new instance of the <see cref="Vector2UI"/> struct.
         /// </summary>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
-        public UIntVector2(uint x, uint y)
+        public Vector2UI(uint x, uint y)
         {
             X = x;
             Y = y;
@@ -44,7 +44,7 @@ namespace Molten
         ///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref UIntVector2 other)
+        public bool Equals(ref Vector2UI other)
         {
             return other.X == X && other.Y == Y;
         }
@@ -57,7 +57,7 @@ namespace Molten
         ///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(UIntVector2 other)
+        public bool Equals(Vector2UI other)
         {
             return Equals(ref other);
         }
@@ -65,10 +65,10 @@ namespace Molten
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
-            if(!(obj is UIntVector2))
+            if(!(obj is Vector2UI))
                 return false;
 
-            var strongValue = (UIntVector2)obj;
+            var strongValue = (Vector2UI)obj;
             return Equals(ref strongValue);
         }
 
@@ -90,7 +90,7 @@ namespace Molten
         /// The result of the operator.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(UIntVector2 left, UIntVector2 right)
+        public static bool operator ==(Vector2UI left, Vector2UI right)
         {
             return left.Equals(ref right);
         }
@@ -104,7 +104,7 @@ namespace Molten
         /// The result of the operator.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(UIntVector2 left, UIntVector2 right)
+        public static bool operator !=(Vector2UI left, Vector2UI right)
         {
             return !left.Equals(ref right);
         }
@@ -115,38 +115,38 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Vector2"/> to <see cref="UIntVector2"/>.
+        /// Performs an explicit conversion from <see cref="Vector2F"/> to <see cref="Vector2UI"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator UIntVector2(Vector2 value)
+        public static explicit operator Vector2UI(Vector2F value)
         {
-            return new UIntVector2((uint)value.X, (uint)value.Y);
+            return new Vector2UI((uint)value.X, (uint)value.Y);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="UIntVector2"/> to <see cref="Vector2"/>.
+        /// Performs an implicit conversion from <see cref="Vector2UI"/> to <see cref="Vector2F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Vector2(UIntVector2 value)
+        public static implicit operator Vector2F(Vector2UI value)
         {
-            return new Vector2(value.X, value.Y);
+            return new Vector2F(value.X, value.Y);
         }
 
-        public static implicit operator IntVector2(UIntVector2 value)
+        public static implicit operator Vector2I(Vector2UI value)
         {
-            return new IntVector2((int)value.X, (int)value.Y);
+            return new Vector2I((int)value.X, (int)value.Y);
         }
 
-        public static explicit operator UIntVector2(IntVector2 value)
+        public static explicit operator Vector2UI(Vector2I value)
         {
-            return new UIntVector2((uint)value.X, (uint)value.Y);
+            return new Vector2UI((uint)value.X, (uint)value.Y);
         }
 
-        public static IntVector2 operator /(UIntVector2 left, UIntVector2 right)
+        public static Vector2I operator /(Vector2UI left, Vector2UI right)
         {
-            return new UIntVector2(left.X / right.X, left.Y / right.Y);
+            return new Vector2UI(left.X / right.X, left.Y / right.Y);
         }
     }
 }

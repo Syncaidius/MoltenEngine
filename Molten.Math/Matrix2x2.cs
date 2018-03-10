@@ -222,12 +222,12 @@ namespace Molten
         /// <param name="v">Vector2 to transform.</param>
         /// <param name="matrix">Matrix to use as the transformation.</param>
         /// <param name="result">Product of the transformation.</param>
-        public static void Transform(ref Vector2 v, ref Matrix2x2 matrix, out Vector2 result)
+        public static void Transform(ref Vector2F v, ref Matrix2x2 matrix, out Vector2F result)
         {
             float vX = v.X;
             float vY = v.Y;
 #if !WINDOWS
-            result = new Vector2();
+            result = new Vector2F();
 #endif
             result.X = vX * matrix.M11 + vY * matrix.M21;
             result.Y = vX * matrix.M12 + vY * matrix.M22;

@@ -13,50 +13,50 @@ namespace Molten.Graphics
     {
         [VertexElement(VertexElementType.Vector4, VertexElementUsage.Position, 0)]
         /// <summary>Gets or sets the position as a Vector4</summary>
-        Vector4 Position4;
+        Vector4F Position4;
 
         [VertexElement(VertexElementType.Color, VertexElementUsage.Color, 0)]
         public Color Color;
 
         [VertexElement(VertexElementType.Vector3, VertexElementUsage.Normal, 0)]
-        public Vector3 Normal;
+        public Vector3F Normal;
 
         [VertexElement(VertexElementType.Vector3, VertexElementUsage.Tangent, 0)]
-        public Vector3 Tangent;
+        public Vector3F Tangent;
 
         [VertexElement(VertexElementType.Vector3, VertexElementUsage.Binormal, 0)]
-        public Vector3 BiNormal;
+        public Vector3F BiNormal;
 
         [VertexElement(VertexElementType.Float, VertexElementUsage.TextureCoordinate, 0)]
         public float ArrayIndex;
 
-        public TriplanarVertex(Vector4 position, Color color, Vector3 normal, float arrayIndex)
+        public TriplanarVertex(Vector4F position, Color color, Vector3F normal, float arrayIndex)
         {
             this.Position4 = position;
             this.Color = color;
             this.Normal = normal;
-            this.Tangent = new Vector3();
-            this.BiNormal = new Vector3();
+            this.Tangent = new Vector3F();
+            this.BiNormal = new Vector3F();
             this.ArrayIndex = arrayIndex;
         }
 
-        public TriplanarVertex(Vector3 position, Color color, Vector3 normal, float arrayIndex)
+        public TriplanarVertex(Vector3F position, Color color, Vector3F normal, float arrayIndex)
         {
-            this.Position4 = new Vector4(position, 1);
+            this.Position4 = new Vector4F(position, 1);
             this.Color = color;
             this.Normal = normal;
-            this.Tangent = new Vector3();
-            this.BiNormal = new Vector3();
+            this.Tangent = new Vector3F();
+            this.BiNormal = new Vector3F();
             this.ArrayIndex = arrayIndex;
         }
 
-        public TriplanarVertex(Vector3 position, Vector3 normal, float arrayIndex)
+        public TriplanarVertex(Vector3F position, Vector3F normal, float arrayIndex)
         {
-            this.Position4 = new Vector4(position, 1);
+            this.Position4 = new Vector4F(position, 1);
             this.Color = new Color(255,255,255,255);
             this.Normal = normal;
-            this.Tangent = new Vector3();
-            this.BiNormal = new Vector3();
+            this.Tangent = new Vector3F();
+            this.BiNormal = new Vector3F();
             this.ArrayIndex = arrayIndex;
         }
 

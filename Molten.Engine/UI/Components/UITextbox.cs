@@ -205,7 +205,7 @@ namespace Molten.UI
             if (data.InputValue != MouseButton.Left)
                 return;
 
-            Vector2 localPos = data.Position - _text.ActualPosition;
+            Vector2F localPos = data.Position - _text.ActualPosition;
 
             int nearest = _text.Font.NearestCharacter(_text.Text, localPos);
             _selectionIndex = nearest;
@@ -217,8 +217,8 @@ namespace Molten.UI
 
         void UITextbox_OnDrag(UIEventData<MouseButton> data)
         {
-            Vector2 localPos = data.Position - _text.ActualPosition;
-            Vector2 textSize = _text.GetSize();
+            Vector2F localPos = data.Position - _text.ActualPosition;
+            Vector2F textSize = _text.GetSize();
 
             if (localPos.X >= 0 && localPos.X <= textSize.X)
             {
@@ -236,7 +236,7 @@ namespace Molten.UI
             //Finalize the end point of the dragged selection
             if (data.WasDragged)
             {
-                Vector2 textSize = _text.GetSize(_cursorIndex);
+                Vector2F textSize = _text.GetSize(_cursorIndex);
                 _cursorPos = textSize.X;
 
                 AlignText();
@@ -283,8 +283,8 @@ namespace Molten.UI
             }
 
             // Update seleection bounds
-            Vector2 textPos = _text.ActualPosition;
-            Vector2 textSize = _text.GetSize();
+            Vector2F textPos = _text.ActualPosition;
+            Vector2F textSize = _text.GetSize();
 
             if (_cursorIndex < _selectionIndex)
             {
@@ -540,7 +540,7 @@ namespace Molten.UI
             sb.DrawRect(_clippingBounds, _bgColor);
 
             if (_cursorVisible && _ui.Focused == this)
-                sb.DrawString(_text.Font, "|", _text.ActualPosition + new Vector2(_cursorPos, 0), _cursorColor);
+                sb.DrawString(_text.Font, "|", _text.ActualPosition + new Vector2F(_cursorPos, 0), _cursorColor);
         }
 
         protected override void OnRenderClipped(SpriteBatch sb)

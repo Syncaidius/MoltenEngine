@@ -12,14 +12,14 @@ namespace Molten.Graphics
         /// <remarks>Does not currently support line breaks.</remarks></summary>
         /// <param name="text">The string of text to measure.</param>
         /// <returns></returns>
-        Vector2 MeasureString(string text);
+        Vector2F MeasureString(string text);
 
         /// <summary>Returns the size of a string of text, in pixels, if it was drawn with this font. 
         /// <remarks>Does not currently support line breaks.</remarks></summary>
         /// <param name="text">The string of text to measure.</param>
         /// <param name="maxLength">The maximum number of characters to measure.</param>
         /// <returns></returns>
-        Vector2 MeasureString(string text, int maxLength);
+        Vector2F MeasureString(string text, int maxLength);
 
         /// <summary>Returns the size of a string of text, in pixels, if it was drawn with this font. 
         /// <remarks>Does not currently support line breaks.</remarks></summary>
@@ -35,7 +35,7 @@ namespace Molten.Graphics
         /// <param name="text">The text to test against.</param>
         /// <param name="localPosition">The location position, relative to the string at position 0,0.</param>
         /// <returns></returns>
-        int NearestCharacter(string text, Vector2 localPosition);
+        int NearestCharacter(string text, Vector2F localPosition);
 
         /// <summary>Gets the font size.</summary>
         int FontSize { get; }

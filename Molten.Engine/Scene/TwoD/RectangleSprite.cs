@@ -11,7 +11,7 @@ namespace Molten
     {
         public Rectangle Destination;
         public float Rotation;
-        public Vector2 Origin;
+        public Vector2F Origin;
         public Color Color = Color.White;
 
         public void Render(SpriteBatch batch)

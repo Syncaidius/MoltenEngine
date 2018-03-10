@@ -112,7 +112,7 @@ namespace Molten
         /// Initializes a new instance of the <see cref="Quaternion"/> struct.
         /// </summary>
         /// <param name="value">A vector containing the values with which to initialize the components.</param>
-        public Quaternion(Vector4 value)
+        public Quaternion(Vector4F value)
         {
             X = value.X;
             Y = value.Y;
@@ -125,7 +125,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">A vector containing the values with which to initialize the X, Y, and Z components.</param>
         /// <param name="w">Initial value for the W component of the quaternion.</param>
-        public Quaternion(Vector3 value, float w)
+        public Quaternion(Vector3F value, float w)
         {
             X = value.X;
             Y = value.Y;
@@ -139,7 +139,7 @@ namespace Molten
         /// <param name="value">A vector containing the values with which to initialize the X and Y components.</param>
         /// <param name="z">Initial value for the Z component of the quaternion.</param>
         /// <param name="w">Initial value for the W component of the quaternion.</param>
-        public Quaternion(Vector2 value, float z, float w)
+        public Quaternion(Vector2F value, float z, float w)
         {
             X = value.X;
             Y = value.Y;
@@ -220,16 +220,16 @@ namespace Molten
         /// Gets the axis components of the quaternion.
         /// </summary>
         /// <value>The axis components of the quaternion.</value>
-        public Vector3 Axis
+        public Vector3F Axis
         {
             get
             {
                 float length = (X * X) + (Y * Y) + (Z * Z);
                 if (MathHelper.IsZero(length))
-                    return Vector3.UnitX;
+                    return Vector3F.UnitX;
 
                 float inv = 1.0f / (float)Math.Sqrt(length);
-                return new Vector3(X * inv, Y * inv, Z * inv);
+                return new Vector3F(X * inv, Y * inv, Z * inv);
             }
         }
 
@@ -820,10 +820,10 @@ namespace Molten
         /// <param name="axis">The axis of rotation.</param>
         /// <param name="angle">The angle of rotation.</param>
         /// <param name="result">When the method completes, contains the newly created quaternion.</param>
-        public static void RotationAxis(ref Vector3 axis, float angle, out Quaternion result)
+        public static void RotationAxis(ref Vector3F axis, float angle, out Quaternion result)
         {
-            Vector3 normalized;
-            Vector3.Normalize(ref axis, out normalized);
+            Vector3F normalized;
+            Vector3F.Normalize(ref axis, out normalized);
 
             float half = angle * 0.5f;
             float sin = (float)Math.Sin(half);
@@ -841,7 +841,7 @@ namespace Molten
         /// <param name="axis">The axis of rotation.</param>
         /// <param name="angle">The angle of rotation.</param>
         /// <returns>The newly created quaternion.</returns>
-        public static Quaternion RotationAxis(Vector3 axis, float angle)
+        public static Quaternion RotationAxis(Vector3F axis, float angle)
         {
             Quaternion result;
             RotationAxis(ref axis, angle, out result);
@@ -985,7 +985,7 @@ namespace Molten
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <param name="result">When the method completes, contains the created look-at quaternion.</param>
-        public static void LookAtLH(ref Vector3 eye, ref Vector3 target, ref Vector3 up, out Quaternion result)
+        public static void LookAtLH(ref Vector3F eye, ref Vector3F target, ref Vector3F up, out Quaternion result)
         {
             Matrix3x3 matrix;
             Matrix3x3.LookAtLH(ref eye, ref target, ref up, out matrix);
@@ -999,7 +999,7 @@ namespace Molten
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <returns>The created look-at quaternion.</returns>
-        public static Quaternion LookAtLH(Vector3 eye, Vector3 target, Vector3 up)
+        public static Quaternion LookAtLH(Vector3F eye, Vector3F target, Vector3F up)
         {
             Quaternion result;
             LookAtLH(ref eye, ref target, ref up, out result);
@@ -1012,9 +1012,9 @@ namespace Molten
         /// <param name="forward">The camera's forward direction.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <param name="result">When the method completes, contains the created look-at quaternion.</param>
-        public static void RotationLookAtLH(ref Vector3 forward, ref Vector3 up, out Quaternion result)
+        public static void RotationLookAtLH(ref Vector3F forward, ref Vector3F up, out Quaternion result)
         {
-            Vector3 eye = Vector3.Zero;
+            Vector3F eye = Vector3F.Zero;
             Quaternion.LookAtLH(ref eye, ref forward, ref up, out result);
         }
 
@@ -1024,7 +1024,7 @@ namespace Molten
         /// <param name="forward">The camera's forward direction.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <returns>The created look-at quaternion.</returns>
-        public static Quaternion RotationLookAtLH(Vector3 forward, Vector3 up)
+        public static Quaternion RotationLookAtLH(Vector3F forward, Vector3F up)
         {
             Quaternion result;
             RotationLookAtLH(ref forward, ref up, out result);
@@ -1038,7 +1038,7 @@ namespace Molten
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <param name="result">When the method completes, contains the created look-at quaternion.</param>
-        public static void LookAtRH(ref Vector3 eye, ref Vector3 target, ref Vector3 up, out Quaternion result)
+        public static void LookAtRH(ref Vector3F eye, ref Vector3F target, ref Vector3F up, out Quaternion result)
         {
             Matrix3x3 matrix;
             Matrix3x3.LookAtRH(ref eye, ref target, ref up, out matrix);
@@ -1052,7 +1052,7 @@ namespace Molten
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <returns>The created look-at quaternion.</returns>
-        public static Quaternion LookAtRH(Vector3 eye, Vector3 target, Vector3 up)
+        public static Quaternion LookAtRH(Vector3F eye, Vector3F target, Vector3F up)
         {
             Quaternion result;
             LookAtRH(ref eye, ref target, ref up, out result);
@@ -1065,9 +1065,9 @@ namespace Molten
         /// <param name="forward">The camera's forward direction.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <param name="result">When the method completes, contains the created look-at quaternion.</param>
-        public static void RotationLookAtRH(ref Vector3 forward, ref Vector3 up, out Quaternion result)
+        public static void RotationLookAtRH(ref Vector3F forward, ref Vector3F up, out Quaternion result)
         {
-            Vector3 eye = Vector3.Zero;
+            Vector3F eye = Vector3F.Zero;
             Quaternion.LookAtRH(ref eye, ref forward, ref up, out result);
         }
 
@@ -1077,7 +1077,7 @@ namespace Molten
         /// <param name="forward">The camera's forward direction.</param>
         /// <param name="up">The camera's up vector.</param>
         /// <returns>The created look-at quaternion.</returns>
-        public static Quaternion RotationLookAtRH(Vector3 forward, Vector3 up)
+        public static Quaternion RotationLookAtRH(Vector3F forward, Vector3F up)
         {
             Quaternion result;
             RotationLookAtRH(ref forward, ref up, out result);
@@ -1092,7 +1092,7 @@ namespace Molten
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <param name="result">When the method completes, contains the created billboard quaternion.</param>
-        public static void BillboardLH(ref Vector3 objectPosition, ref Vector3 cameraPosition, ref Vector3 cameraUpVector, ref Vector3 cameraForwardVector, out Quaternion result)
+        public static void BillboardLH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector, out Quaternion result)
         {
             Matrix3x3 matrix;
             Matrix3x3.BillboardLH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector, out matrix);
@@ -1107,7 +1107,7 @@ namespace Molten
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <returns>The created billboard quaternion.</returns>
-        public static Quaternion BillboardLH(Vector3 objectPosition, Vector3 cameraPosition, Vector3 cameraUpVector, Vector3 cameraForwardVector)
+        public static Quaternion BillboardLH(Vector3F objectPosition, Vector3F cameraPosition, Vector3F cameraUpVector, Vector3F cameraForwardVector)
         {
             Quaternion result;
             BillboardLH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector, out result);
@@ -1122,7 +1122,7 @@ namespace Molten
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <param name="result">When the method completes, contains the created billboard quaternion.</param>
-        public static void BillboardRH(ref Vector3 objectPosition, ref Vector3 cameraPosition, ref Vector3 cameraUpVector, ref Vector3 cameraForwardVector, out Quaternion result)
+        public static void BillboardRH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector, out Quaternion result)
         {
             Matrix3x3 matrix;
             Matrix3x3.BillboardRH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector, out matrix);
@@ -1137,7 +1137,7 @@ namespace Molten
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <returns>The created billboard quaternion.</returns>
-        public static Quaternion BillboardRH(Vector3 objectPosition, Vector3 cameraPosition, Vector3 cameraUpVector, Vector3 cameraForwardVector)
+        public static Quaternion BillboardRH(Vector3F objectPosition, Vector3F cameraPosition, Vector3F cameraUpVector, Vector3F cameraForwardVector)
         {
             Quaternion result;
             BillboardRH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector, out result);
@@ -1309,7 +1309,7 @@ namespace Molten
         /// <param name="q">Quaternion to be converted.</param>
         /// <param name="axis">Axis represented by the quaternion.</param>
         /// <param name="angle">Angle around the axis represented by the quaternion.</param>
-        public static void GetAxisAngle(ref Quaternion q, out Vector3 axis, out float angle)
+        public static void GetAxisAngle(ref Quaternion q, out Vector3F axis, out float angle)
         {
             float qw = q.W;
             if (qw > 0)
@@ -1329,12 +1329,12 @@ namespace Molten
             float lengthSquared = axis.LengthSquared();
             if (lengthSquared > 1e-14f)
             {
-                Vector3.Divide(ref axis, (float)Math.Sqrt(lengthSquared), out axis);
+                Vector3F.Divide(ref axis, (float)Math.Sqrt(lengthSquared), out axis);
                 angle = 2 * (float)Math.Acos(MathHelper.Clamp(qw, -1, 1));
             }
             else
             {
-                axis = Vector3.Up;
+                axis = Vector3F.Up;
                 angle = 0;
             }
         }
@@ -1345,10 +1345,10 @@ namespace Molten
         /// <param name="v1">First unit-length vector.</param>
         /// <param name="v2">Second unit-length vector.</param>
         /// <param name="q">Quaternion representing the rotation from v1 to v2.</param>
-        public static void GetQuaternionBetweenNormalizedVectors(ref Vector3 v1, ref Vector3 v2, out Quaternion q)
+        public static void GetQuaternionBetweenNormalizedVectors(ref Vector3F v1, ref Vector3F v2, out Quaternion q)
         {
             float dot;
-            Vector3.Dot(ref v1, ref v2, out dot);
+            Vector3F.Dot(ref v1, ref v2, out dot);
             //For non-normal vectors, the multiplying the axes length squared would be necessary:
             //float w = dot + (float)Math.Sqrt(v1.LengthSquared() * v2.LengthSquared());
             if (dot < -0.9999f) //parallel, opposing direction
@@ -1370,8 +1370,8 @@ namespace Molten
             }
             else
             {
-                Vector3 axis;
-                Vector3.Cross(ref v1, ref v2, out axis);
+                Vector3F axis;
+                Vector3F.Cross(ref v1, ref v2, out axis);
                 q = new Quaternion(axis.X, axis.Y, axis.Z, dot + 1);
             }
             q.Normalize();

@@ -10,7 +10,7 @@ namespace Molten
         ///<summary>
         /// Translation component of the transform.
         ///</summary>
-        public Vector3 Position;
+        public Vector3F Position;
         ///<summary>
         /// Rotation component of the transform.
         ///</summary>
@@ -21,7 +21,7 @@ namespace Molten
         ///</summary>
         ///<param name="position">Translation component of the transform.</param>
         ///<param name="orientation">Rotation component of the transform.</param>
-        public RigidTransform(Vector3 position, Quaternion orientation)
+        public RigidTransform(Vector3F position, Quaternion orientation)
         {
             Position = position;
             Orientation = orientation;
@@ -31,7 +31,7 @@ namespace Molten
         /// Constructs a new rigid transform.
         ///</summary>
         ///<param name="position">Translation component of the transform.</param>
-        public RigidTransform(Vector3 position)
+        public RigidTransform(Vector3F position)
         {
             Position = position;
             Orientation = Quaternion.Identity;
@@ -43,7 +43,7 @@ namespace Molten
         ///<param name="orienation">Rotation component of the transform.</param>
         public RigidTransform(Quaternion orienation)
         {
-            Position = new Vector3();
+            Position = new Vector3F();
             Orientation = orienation;
         }
 
@@ -82,7 +82,7 @@ namespace Molten
         {
             get
             {
-                var t = new RigidTransform {Orientation = Quaternion.Identity, Position = new Vector3()};
+                var t = new RigidTransform {Orientation = Quaternion.Identity, Position = new Vector3F()};
                 return t;
             }
         }
@@ -95,8 +95,8 @@ namespace Molten
         public static void Invert(ref RigidTransform transform, out RigidTransform inverse)
         {
             Quaternion.Conjugate(ref transform.Orientation, out inverse.Orientation);
-            Vector3.Transform(ref transform.Position, ref inverse.Orientation, out inverse.Position);
-            Vector3.Negate(ref inverse.Position, out inverse.Position);
+            Vector3F.Transform(ref transform.Position, ref inverse.Orientation, out inverse.Position);
+            Vector3F.Negate(ref inverse.Position, out inverse.Position);
         }
 
         ///<summary>
@@ -107,9 +107,9 @@ namespace Molten
         ///<param name="combined">Concatenated rigid transform.</param>
         public static void Multiply(ref RigidTransform a, ref RigidTransform b, out RigidTransform combined)
         {
-            Vector3 intermediate;
-            Vector3.Transform(ref a.Position, ref b.Orientation, out intermediate);
-            Vector3.Add(ref intermediate, ref b.Position, out combined.Position);
+            Vector3F intermediate;
+            Vector3F.Transform(ref a.Position, ref b.Orientation, out intermediate);
+            Vector3F.Add(ref intermediate, ref b.Position, out combined.Position);
             Quaternion.Concatenate(ref a.Orientation, ref b.Orientation, out combined.Orientation);
 
         }
@@ -132,11 +132,11 @@ namespace Molten
         ///<param name="position">Position to transform.</param>
         ///<param name="transform">Transform to apply.</param>
         ///<param name="result">Transformed position.</param>
-        public static void Transform(ref Vector3 position, ref RigidTransform transform, out Vector3 result)
+        public static void Transform(ref Vector3F position, ref RigidTransform transform, out Vector3F result)
         {
-            Vector3 intermediate;
-            Vector3.Transform(ref position, ref transform.Orientation, out intermediate);
-            Vector3.Add(ref intermediate, ref transform.Position, out result);
+            Vector3F intermediate;
+            Vector3F.Transform(ref position, ref transform.Orientation, out intermediate);
+            Vector3F.Add(ref intermediate, ref transform.Position, out result);
         }
 
 
@@ -146,13 +146,13 @@ namespace Molten
         ///<param name="position">Position to transform.</param>
         ///<param name="transform">Transform to invert and apply.</param>
         ///<param name="result">Transformed position.</param>
-        public static void TransformByInverse(ref Vector3 position, ref RigidTransform transform, out Vector3 result)
+        public static void TransformByInverse(ref Vector3F position, ref RigidTransform transform, out Vector3F result)
         {
             Quaternion orientation;
-            Vector3 intermediate;
-            Vector3.Subtract(ref position, ref transform.Position, out intermediate);
+            Vector3F intermediate;
+            Vector3F.Subtract(ref position, ref transform.Position, out intermediate);
             Quaternion.Conjugate(ref transform.Orientation, out orientation);
-            Vector3.Transform(ref intermediate, ref orientation, out result);
+            Vector3F.Transform(ref intermediate, ref orientation, out result);
         }
     }
 }

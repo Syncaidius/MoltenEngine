@@ -23,7 +23,7 @@ namespace Molten.UI
         List<UIWindow> _minimized;
         List<UIWindow> _closed;
 
-        IntVector2 _minimizeLocation;
+        Vector2I _minimizeLocation;
         MinimizeDirection _direction;
 
         internal UIWindowManager(UISystem ui)
@@ -54,7 +54,7 @@ namespace Molten.UI
 
                     foreach (UIWindow window in _minimized)
                     {
-                        Vector2 titleSize = window.Title.GetSize();
+                        Vector2F titleSize = window.Title.GetSize();
                         int height = (int)titleSize.Y + 4;
                         int width = (int)titleSize.X + 4 + UIWindow.ICON_SIZE + UIWindow.ICON_SPACING + 10;
 
@@ -74,7 +74,7 @@ namespace Molten.UI
 
                     foreach (UIWindow window in _minimized)
                     {
-                        Vector2 titleSize = window.Title.GetSize();
+                        Vector2F titleSize = window.Title.GetSize();
                         int height = (int)titleSize.Y + 4;
                         int width = (int)titleSize.X + 4 + UIWindow.ICON_SIZE + UIWindow.ICON_SPACING + 10;
 
@@ -141,7 +141,7 @@ namespace Molten.UI
         }
 
         /// <summary>Gets or sets the location on the screen at which minimized windows are placed.</summary>
-        public IntVector2 MinimizeLocation
+        public Vector2I MinimizeLocation
         {
             get { return _minimizeLocation; }
             set

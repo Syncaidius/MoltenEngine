@@ -23,47 +23,47 @@ namespace Molten.Samples
             base.OnInitialize(engine);
             _mesh = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
             CubeArrayVertex[] verts = new CubeArrayVertex[]{
-               new CubeArrayVertex(new Vector3(-1,-1,-1), new Vector3(0,1,0)), //front
-               new CubeArrayVertex(new Vector3(-1,1,-1), new Vector3(0,0,0)),
-               new CubeArrayVertex(new Vector3(1,1,-1), new Vector3(1,0,0)),
-               new CubeArrayVertex(new Vector3(-1,-1,-1), new Vector3(0,1,0)),
-               new CubeArrayVertex(new Vector3(1,1,-1), new Vector3(1, 0,0)),
-               new CubeArrayVertex(new Vector3(1,-1,-1), new Vector3(1,1,0)),
+               new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(0,1,0)), //front
+               new CubeArrayVertex(new Vector3F(-1,1,-1), new Vector3F(0,0,0)),
+               new CubeArrayVertex(new Vector3F(1,1,-1), new Vector3F(1,0,0)),
+               new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(0,1,0)),
+               new CubeArrayVertex(new Vector3F(1,1,-1), new Vector3F(1, 0,0)),
+               new CubeArrayVertex(new Vector3F(1,-1,-1), new Vector3F(1,1,0)),
 
-               new CubeArrayVertex(new Vector3(-1,-1,1), new Vector3(1,0,1)), //back
-               new CubeArrayVertex(new Vector3(1,1,1), new Vector3(0,1,1)),
-               new CubeArrayVertex(new Vector3(-1,1,1), new Vector3(1,1,1)),
-               new CubeArrayVertex(new Vector3(-1,-1,1), new Vector3(1,0,1)),
-               new CubeArrayVertex(new Vector3(1,-1,1), new Vector3(0, 0,1)),
-               new CubeArrayVertex(new Vector3(1,1,1), new Vector3(0,1,1)),
+               new CubeArrayVertex(new Vector3F(-1,-1,1), new Vector3F(1,0,1)), //back
+               new CubeArrayVertex(new Vector3F(1,1,1), new Vector3F(0,1,1)),
+               new CubeArrayVertex(new Vector3F(-1,1,1), new Vector3F(1,1,1)),
+               new CubeArrayVertex(new Vector3F(-1,-1,1), new Vector3F(1,0,1)),
+               new CubeArrayVertex(new Vector3F(1,-1,1), new Vector3F(0, 0,1)),
+               new CubeArrayVertex(new Vector3F(1,1,1), new Vector3F(0,1,1)),
 
-               new CubeArrayVertex(new Vector3(-1,1,-1), new Vector3(0,1,2)), //top
-               new CubeArrayVertex(new Vector3(-1,1,1), new Vector3(0,0,2)),
-               new CubeArrayVertex(new Vector3(1,1,1), new Vector3(1,0,2)),
-               new CubeArrayVertex(new Vector3(-1,1,-1), new Vector3(0,1,2)),
-               new CubeArrayVertex(new Vector3(1,1,1), new Vector3(1, 0,2)),
-               new CubeArrayVertex(new Vector3(1,1,-1), new Vector3(1,1,2)),
+               new CubeArrayVertex(new Vector3F(-1,1,-1), new Vector3F(0,1,2)), //top
+               new CubeArrayVertex(new Vector3F(-1,1,1), new Vector3F(0,0,2)),
+               new CubeArrayVertex(new Vector3F(1,1,1), new Vector3F(1,0,2)),
+               new CubeArrayVertex(new Vector3F(-1,1,-1), new Vector3F(0,1,2)),
+               new CubeArrayVertex(new Vector3F(1,1,1), new Vector3F(1, 0,2)),
+               new CubeArrayVertex(new Vector3F(1,1,-1), new Vector3F(1,1,2)),
 
-               new CubeArrayVertex(new Vector3(-1,-1,-1), new Vector3(1,0,0)), //bottom
-               new CubeArrayVertex(new Vector3(1,-1,1), new Vector3(0,1,0)),
-               new CubeArrayVertex(new Vector3(-1,-1,1), new Vector3(1,1,0)),
-               new CubeArrayVertex(new Vector3(-1,-1,-1), new Vector3(1,0,0)),
-               new CubeArrayVertex(new Vector3(1,-1,-1), new Vector3(0, 0,0)),
-               new CubeArrayVertex(new Vector3(1,-1,1), new Vector3(0,1,0)),
+               new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(1,0,0)), //bottom
+               new CubeArrayVertex(new Vector3F(1,-1,1), new Vector3F(0,1,0)),
+               new CubeArrayVertex(new Vector3F(-1,-1,1), new Vector3F(1,1,0)),
+               new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(1,0,0)),
+               new CubeArrayVertex(new Vector3F(1,-1,-1), new Vector3F(0, 0,0)),
+               new CubeArrayVertex(new Vector3F(1,-1,1), new Vector3F(0,1,0)),
 
-               new CubeArrayVertex(new Vector3(-1,-1,-1), new Vector3(0,1,1)), //left
-               new CubeArrayVertex(new Vector3(-1,-1,1), new Vector3(0,0,1)),
-               new CubeArrayVertex(new Vector3(-1,1,1), new Vector3(1,0,1)),
-               new CubeArrayVertex(new Vector3(-1,-1,-1), new Vector3(0,1,1)),
-               new CubeArrayVertex(new Vector3(-1,1,1), new Vector3(1, 0,1)),
-               new CubeArrayVertex(new Vector3(-1,1,-1), new Vector3(1,1,1)),
+               new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(0,1,1)), //left
+               new CubeArrayVertex(new Vector3F(-1,-1,1), new Vector3F(0,0,1)),
+               new CubeArrayVertex(new Vector3F(-1,1,1), new Vector3F(1,0,1)),
+               new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(0,1,1)),
+               new CubeArrayVertex(new Vector3F(-1,1,1), new Vector3F(1, 0,1)),
+               new CubeArrayVertex(new Vector3F(-1,1,-1), new Vector3F(1,1,1)),
 
-               new CubeArrayVertex(new Vector3(1,-1,-1), new Vector3(1,0,2)), //right
-               new CubeArrayVertex(new Vector3(1,1,1), new Vector3(0,1,2)),
-               new CubeArrayVertex(new Vector3(1,-1,1), new Vector3(1,1,2)),
-               new CubeArrayVertex(new Vector3(1,-1,-1), new Vector3(1,0,2)),
-               new CubeArrayVertex(new Vector3(1,1,-1), new Vector3(0, 0,2)),
-               new CubeArrayVertex(new Vector3(1,1,1), new Vector3(0,1,2)),
+               new CubeArrayVertex(new Vector3F(1,-1,-1), new Vector3F(1,0,2)), //right
+               new CubeArrayVertex(new Vector3F(1,1,1), new Vector3F(0,1,2)),
+               new CubeArrayVertex(new Vector3F(1,-1,1), new Vector3F(1,1,2)),
+               new CubeArrayVertex(new Vector3F(1,-1,-1), new Vector3F(1,0,2)),
+               new CubeArrayVertex(new Vector3F(1,1,-1), new Vector3F(0, 0,2)),
+               new CubeArrayVertex(new Vector3F(1,1,1), new Vector3F(0,1,2)),
             };
 
             _mesh.SetVertices(verts);
@@ -76,7 +76,7 @@ namespace Molten.Samples
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
-            SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
+            SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
         }
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)

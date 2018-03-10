@@ -10,11 +10,11 @@ namespace Molten
         ///<summary>
         /// Location of the ray hit.
         ///</summary>
-        public Vector3 Location;
+        public Vector3F Location;
         ///<summary>
         /// Normal of the ray hit.
         ///</summary>
-        public Vector3 Normal;
+        public Vector3F Normal;
 
         ///<summary>
         /// T parameter of the ray hit.  

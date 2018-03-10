@@ -34,7 +34,7 @@ namespace Molten
         /// <summary>
         /// Half lengths of the box along each axis.
         /// </summary>
-        public Vector3 Extents;
+        public Vector3F Extents;
 
         /// <summary>
         /// The matrix which aligns and scales the box, and its translation vector represents the center of the box.
@@ -63,7 +63,7 @@ namespace Molten
         /// <remarks>
         /// Initially, the OrientedBoundingBox is axis-aligned box, but it can be rotated and transformed later.
         /// </remarks>
-        public OrientedBoundingBox(Vector3 minimum, Vector3 maximum)
+        public OrientedBoundingBox(Vector3F minimum, Vector3F maximum)
         {
             var Center = minimum + (maximum - minimum) / 2f;
             Extents = maximum - Center;
@@ -78,18 +78,18 @@ namespace Molten
         /// This method is not for computing the best tight-fitting OrientedBoundingBox.
         /// And initially, the OrientedBoundingBox is axis-aligned box, but it can be rotated and transformed later.
         /// </remarks>
-        public OrientedBoundingBox(Vector3[] points)
+        public OrientedBoundingBox(Vector3F[] points)
         {
             if (points == null || points.Length == 0)
                 throw new ArgumentNullException("points");
 
-            Vector3 minimum = new Vector3(float.MaxValue);
-            Vector3 maximum = new Vector3(float.MinValue);
+            Vector3F minimum = new Vector3F(float.MaxValue);
+            Vector3F maximum = new Vector3F(float.MinValue);
 
             for (int i = 0; i < points.Length; ++i)
             {
-                Vector3.Min(ref minimum, ref points[i], out minimum);
-                Vector3.Max(ref maximum, ref points[i], out maximum);
+                Vector3F.Min(ref minimum, ref points[i], out minimum);
+                Vector3F.Max(ref maximum, ref points[i], out maximum);
             }
 
             var Center = minimum + (maximum - minimum) / 2f;
@@ -101,18 +101,18 @@ namespace Molten
         /// Retrieves the eight corners of the bounding box.
         /// </summary>
         /// <returns>An array of points representing the eight corners of the bounding box.</returns>
-        public Vector3[] GetCorners()
+        public Vector3F[] GetCorners()
         {
-            var xv = new Vector3(Extents.X, 0, 0);
-            var yv = new Vector3(0, Extents.Y, 0);
-            var zv = new Vector3(0, 0, Extents.Z);
-            Vector3.TransformNormal(ref xv, ref Transformation, out xv);
-            Vector3.TransformNormal(ref yv, ref Transformation, out yv);
-            Vector3.TransformNormal(ref zv, ref Transformation, out zv);
+            var xv = new Vector3F(Extents.X, 0, 0);
+            var yv = new Vector3F(0, Extents.Y, 0);
+            var zv = new Vector3F(0, 0, Extents.Z);
+            Vector3F.TransformNormal(ref xv, ref Transformation, out xv);
+            Vector3F.TransformNormal(ref yv, ref Transformation, out yv);
+            Vector3F.TransformNormal(ref zv, ref Transformation, out zv);
 
             var center = Transformation.Translation;
 
-            var corners = new Vector3[8];
+            var corners = new Vector3F[8];
             corners[0] = center + xv + yv + zv;
             corners[1] = center + xv + yv - zv;
             corners[2] = center - xv + yv - zv;
@@ -156,7 +156,7 @@ namespace Molten
         /// By keeping Transformation matrix scaling-free, the collision detection methods will be more accurate.
         /// </summary>
         /// <param name="scaling"></param>
-        public void Scale(ref Vector3 scaling)
+        public void Scale(ref Vector3F scaling)
         {
             Extents *= scaling;
         }
@@ -166,7 +166,7 @@ namespace Molten
         /// By keeping Transformation matrix scaling-free, the collision detection methods will be more accurate.
         /// </summary>
         /// <param name="scaling"></param>
-        public void Scale(Vector3 scaling)
+        public void Scale(Vector3F scaling)
         {
             Extents *= scaling;
         }
@@ -185,7 +185,7 @@ namespace Molten
         /// Translates the <see cref="OrientedBoundingBox"/> to a new position using a translation vector;
         /// </summary>
         /// <param name="translation">the translation vector.</param>
-        public void Translate(ref Vector3 translation)
+        public void Translate(ref Vector3F translation)
         {
             Transformation.Translation += translation;
         }
@@ -194,7 +194,7 @@ namespace Molten
         /// Translates the <see cref="OrientedBoundingBox"/> to a new position using a translation vector;
         /// </summary>
         /// <param name="translation">the translation vector.</param>
-        public void Translate(Vector3 translation)
+        public void Translate(Vector3F translation)
         {
             Transformation.Translation += translation;
         }
@@ -206,7 +206,7 @@ namespace Molten
         /// The property will return the actual size even if the scaling is applied using Scale method, 
         /// but if the scaling is applied to transformation matrix, use GetSize Function instead.
         /// </remarks>
-        public Vector3 Size
+        public Vector3F Size
         {
             get
             {
@@ -222,38 +222,38 @@ namespace Molten
         /// This method is computationally expensive, so if no scale is applied to the transformation matrix
         /// use <see cref="OrientedBoundingBox.Size"/> property instead.
         /// </remarks>
-        public Vector3 GetSize()
+        public Vector3F GetSize()
         {
-            var xv = new Vector3(Extents.X * 2, 0, 0);
-            var yv = new Vector3(0, Extents.Y * 2, 0);
-            var zv = new Vector3(0, 0, Extents.Z * 2);
-            Vector3.TransformNormal(ref xv, ref Transformation, out xv);
-            Vector3.TransformNormal(ref yv, ref Transformation, out yv);
-            Vector3.TransformNormal(ref zv, ref Transformation, out zv);
+            var xv = new Vector3F(Extents.X * 2, 0, 0);
+            var yv = new Vector3F(0, Extents.Y * 2, 0);
+            var zv = new Vector3F(0, 0, Extents.Z * 2);
+            Vector3F.TransformNormal(ref xv, ref Transformation, out xv);
+            Vector3F.TransformNormal(ref yv, ref Transformation, out yv);
+            Vector3F.TransformNormal(ref zv, ref Transformation, out zv);
 
-            return new Vector3(xv.Length(), yv.Length(), zv.Length());
+            return new Vector3F(xv.Length(), yv.Length(), zv.Length());
         }
 
         /// <summary>
         /// Returns the square size of the <see cref="OrientedBoundingBox"/> taking into consideration the scaling applied to the transformation matrix.
         /// </summary>
         /// <returns>The size of the consideration</returns>
-        public Vector3 GetSizeSquared()
+        public Vector3F GetSizeSquared()
         {
-            var xv = new Vector3(Extents.X * 2, 0, 0);
-            var yv = new Vector3(0, Extents.Y * 2, 0);
-            var zv = new Vector3(0, 0, Extents.Z * 2);
-            Vector3.TransformNormal(ref xv, ref Transformation, out xv);
-            Vector3.TransformNormal(ref yv, ref Transformation, out yv);
-            Vector3.TransformNormal(ref zv, ref Transformation, out zv);
+            var xv = new Vector3F(Extents.X * 2, 0, 0);
+            var yv = new Vector3F(0, Extents.Y * 2, 0);
+            var zv = new Vector3F(0, 0, Extents.Z * 2);
+            Vector3F.TransformNormal(ref xv, ref Transformation, out xv);
+            Vector3F.TransformNormal(ref yv, ref Transformation, out yv);
+            Vector3F.TransformNormal(ref zv, ref Transformation, out zv);
 
-            return new Vector3(xv.LengthSquared(), yv.LengthSquared(), zv.LengthSquared());
+            return new Vector3F(xv.LengthSquared(), yv.LengthSquared(), zv.LengthSquared());
         }
 
         /// <summary>
         /// Returns the center of the <see cref="OrientedBoundingBox"/>.
         /// </summary>
-        public Vector3 Center
+        public Vector3F Center
         {
             get
             {
@@ -266,14 +266,14 @@ namespace Molten
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>The type of containment the two objects have.</returns>
-        public ContainmentType Contains(ref Vector3 point)
+        public ContainmentType Contains(ref Vector3F point)
         {
             // Transform the point into the obb coordinates
             Matrix invTrans;
             Matrix.Invert(ref Transformation, out invTrans);
 
-            Vector3 locPoint;
-            Vector3.TransformCoordinate(ref point, ref invTrans, out locPoint);
+            Vector3F locPoint;
+            Vector3F.TransformCoordinate(ref point, ref invTrans, out locPoint);
 
             locPoint.X = Math.Abs(locPoint.X);
             locPoint.Y = Math.Abs(locPoint.Y);
@@ -293,7 +293,7 @@ namespace Molten
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>The type of containment the two objects have.</returns>
-        public ContainmentType Contains(Vector3 point)
+        public ContainmentType Contains(Vector3F point)
         {
             return Contains(ref point);
         }
@@ -303,7 +303,7 @@ namespace Molten
         /// </summary>
         /// <param name="points">The points array to test.</param>
         /// <returns>The type of containment.</returns>
-        public ContainmentType Contains(Vector3[] points)
+        public ContainmentType Contains(Vector3F[] points)
         {
             Matrix invTrans;
             Matrix.Invert(ref Transformation, out invTrans);
@@ -313,8 +313,8 @@ namespace Molten
 
             for (int i = 0; i < points.Length; i++)
             {
-                Vector3 locPoint;
-                Vector3.TransformCoordinate(ref points[i], ref invTrans, out locPoint);
+                Vector3F locPoint;
+                Vector3F.TransformCoordinate(ref points[i], ref invTrans, out locPoint);
 
                 locPoint.X = Math.Abs(locPoint.X);
                 locPoint.Y = Math.Abs(locPoint.Y);
@@ -355,8 +355,8 @@ namespace Molten
             Matrix.Invert(ref Transformation, out invTrans);
 
             // Transform sphere center into the obb coordinates
-            Vector3 locCenter;
-            Vector3.TransformCoordinate(ref sphere.Center, ref invTrans, out locCenter);
+            Vector3F locCenter;
+            Vector3F.TransformCoordinate(ref sphere.Center, ref invTrans, out locCenter);
 
             float locRadius;
             if (IgnoreScale)
@@ -364,16 +364,16 @@ namespace Molten
             else
             {
                 // Transform sphere radius into the obb coordinates
-                Vector3 vRadius = Vector3.UnitX * sphere.Radius;
-                Vector3.TransformNormal(ref vRadius, ref invTrans, out vRadius);
+                Vector3F vRadius = Vector3F.UnitX * sphere.Radius;
+                Vector3F.TransformNormal(ref vRadius, ref invTrans, out vRadius);
                 locRadius = vRadius.Length();
             }
 
             //Perform regular BoundingBox to BoundingSphere containment check
-            Vector3 minusExtens = -Extents;
-            Vector3 vector;
-            Vector3.Clamp(ref locCenter, ref minusExtens, ref Extents, out vector);
-            float distance = Vector3.DistanceSquared(locCenter, vector);
+            Vector3F minusExtens = -Extents;
+            Vector3F vector;
+            Vector3F.Clamp(ref locCenter, ref minusExtens, ref Extents, out vector);
+            float distance = Vector3F.DistanceSquared(locCenter, vector);
 
             if (distance > locRadius * locRadius)
                 return ContainmentType.Disjoint;
@@ -388,12 +388,12 @@ namespace Molten
             return ContainmentType.Intersects;
         }
 
-        private static Vector3[] GetRows(ref Matrix mat)
+        private static Vector3F[] GetRows(ref Matrix mat)
         {
-            return new Vector3[] {
-                new Vector3(mat.M11,mat.M12,mat.M13),
-                new Vector3(mat.M21,mat.M22,mat.M23),
-                new Vector3(mat.M31,mat.M32,mat.M33)
+            return new Vector3F[] {
+                new Vector3F(mat.M11,mat.M12,mat.M13),
+                new Vector3F(mat.M21,mat.M22,mat.M23),
+                new Vector3F(mat.M31,mat.M32,mat.M33)
             };
         }
 
@@ -428,7 +428,7 @@ namespace Molten
             for (i = 0; i < 3; i++)
                 for (k = 0; k < 3; k++)
                 {
-                    R[i, k] = Vector3.Dot(RotA[i], RotB[k]);
+                    R[i, k] = Vector3F.Dot(RotA[i], RotB[k]);
                     AR[i, k] = Math.Abs(R[i, k]);
                 }
 
@@ -436,13 +436,13 @@ namespace Molten
             // Vector separating the centers of Box B and of Box A	
             var vSepWS = obb.Center - Center;
             // Rotated into Box A's coordinates
-            var vSepA = new Vector3(Vector3.Dot(vSepWS, RotA[0]), Vector3.Dot(vSepWS, RotA[1]), Vector3.Dot(vSepWS, RotA[2]));
+            var vSepA = new Vector3F(Vector3F.Dot(vSepWS, RotA[0]), Vector3F.Dot(vSepWS, RotA[1]), Vector3F.Dot(vSepWS, RotA[2]));
 
             // Test if any of A's basis vectors separate the box
             for (i = 0; i < 3; i++)
             {
                 ExtentA = SizeA[i];
-                ExtentB = Vector3.Dot(SizeB, new Vector3(AR[i, 0], AR[i, 1], AR[i, 2]));
+                ExtentB = Vector3F.Dot(SizeB, new Vector3F(AR[i, 0], AR[i, 1], AR[i, 2]));
                 Separation = Math.Abs(vSepA[i]);
 
                 if (Separation > ExtentA + ExtentB)
@@ -452,9 +452,9 @@ namespace Molten
             // Test if any of B's basis vectors separate the box
             for (k = 0; k < 3; k++)
             {
-                ExtentA = Vector3.Dot(SizeA, new Vector3(AR[0, k], AR[1, k], AR[2, k]));
+                ExtentA = Vector3F.Dot(SizeA, new Vector3F(AR[0, k], AR[1, k], AR[2, k]));
                 ExtentB = SizeB[k];
-                Separation = Math.Abs(Vector3.Dot(vSepA, new Vector3(R[0, k], R[1, k], R[2, k])));
+                Separation = Math.Abs(Vector3F.Dot(vSepA, new Vector3F(R[0, k], R[1, k], R[2, k])));
 
                 if (Separation > ExtentA + ExtentB)
                     return ContainmentType.Disjoint;
@@ -487,9 +487,9 @@ namespace Molten
         /// For accuracy, The transformation matrix for the <see cref="OrientedBoundingBox"/> must not have any scaling applied to it.
         /// Anyway, scaling using Scale method will keep this method accurate.
         /// </remarks>
-        public ContainmentType ContainsLine(ref Vector3 L1, ref Vector3 L2)
+        public ContainmentType ContainsLine(ref Vector3F L1, ref Vector3F L2)
         {
-            var cornersCheck = Contains(new Vector3[] { L1, L2 });
+            var cornersCheck = Contains(new Vector3F[] { L1, L2 });
             if (cornersCheck != ContainmentType.Disjoint)
                 return cornersCheck;
 
@@ -498,15 +498,15 @@ namespace Molten
             Matrix invTrans;
             Matrix.Invert(ref Transformation, out invTrans);
 
-            Vector3 LB1;
-            Vector3.TransformCoordinate(ref L1, ref invTrans, out LB1);
-            Vector3 LB2;
-            Vector3.TransformCoordinate(ref L1, ref invTrans, out LB2);
+            Vector3F LB1;
+            Vector3F.TransformCoordinate(ref L1, ref invTrans, out LB1);
+            Vector3F LB2;
+            Vector3F.TransformCoordinate(ref L1, ref invTrans, out LB2);
 
             // Get line midpoint and extent
             var LMid = (LB1 + LB2) * 0.5f;
             var L = (LB1 - LMid);
-            var LExt = new Vector3(Math.Abs(L.X), Math.Abs(L.Y), Math.Abs(L.Z));
+            var LExt = new Vector3F(Math.Abs(L.X), Math.Abs(L.Y), Math.Abs(L.Z));
 
             // Use Separating Axis Test
             // Separation vector from box center to line center is LMid, since the line is in box space
@@ -560,13 +560,13 @@ namespace Molten
             // Vector separating the centers of Box B and of Box A	
             var vSepWS = boxCenter - Center;
             // Rotated into Box A's coordinates
-            var vSepA = new Vector3(Vector3.Dot(vSepWS, RotA[0]), Vector3.Dot(vSepWS, RotA[1]), Vector3.Dot(vSepWS, RotA[2]));
+            var vSepA = new Vector3F(Vector3F.Dot(vSepWS, RotA[0]), Vector3F.Dot(vSepWS, RotA[1]), Vector3F.Dot(vSepWS, RotA[2]));
 
             // Test if any of A's basis vectors separate the box
             for (i = 0; i < 3; i++)
             {
                 ExtentA = SizeA[i];
-                ExtentB = Vector3.Dot(SizeB, new Vector3(AR[i, 0], AR[i, 1], AR[i, 2]));
+                ExtentB = Vector3F.Dot(SizeB, new Vector3F(AR[i, 0], AR[i, 1], AR[i, 2]));
                 Separation = Math.Abs(vSepA[i]);
 
                 if (Separation > ExtentA + ExtentB)
@@ -576,9 +576,9 @@ namespace Molten
             // Test if any of B's basis vectors separate the box
             for (k = 0; k < 3; k++)
             {
-                ExtentA = Vector3.Dot(SizeA, new Vector3(AR[0, k], AR[1, k], AR[2, k]));
+                ExtentA = Vector3F.Dot(SizeA, new Vector3F(AR[0, k], AR[1, k], AR[2, k]));
                 ExtentB = SizeB[k];
-                Separation = Math.Abs(Vector3.Dot(vSepA, new Vector3(R[0, k], R[1, k], R[2, k])));
+                Separation = Math.Abs(Vector3F.Dot(vSepA, new Vector3F(R[0, k], R[1, k], R[2, k])));
 
                 if (Separation > ExtentA + ExtentB)
                     return ContainmentType.Disjoint;
@@ -606,17 +606,17 @@ namespace Molten
         /// </summary>
         /// <param name="ray">The ray to test.</param>
         /// <param name="point">When the method completes, contains the point of intersection,
-        /// or <see cref="Vector3.Zero"/> if there was no intersection.</param>
+        /// or <see cref="Vector3F.Zero"/> if there was no intersection.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public bool Intersects(ref Ray ray, out Vector3 point)
+        public bool Intersects(ref Ray ray, out Vector3F point)
         {
             // Put ray in box space
             Matrix invTrans;
             Matrix.Invert(ref Transformation, out invTrans);
 
             Ray bRay;
-            Vector3.TransformNormal(ref ray.Direction, ref invTrans, out bRay.Direction);
-            Vector3.TransformCoordinate(ref ray.Position, ref invTrans, out bRay.Position);
+            Vector3F.TransformNormal(ref ray.Direction, ref invTrans, out bRay.Direction);
+            Vector3F.TransformCoordinate(ref ray.Position, ref invTrans, out bRay.Position);
 
             //Perform a regular ray to BoundingBox check
             var bb = new BoundingBox(-Extents, Extents);
@@ -624,7 +624,7 @@ namespace Molten
 
             //Put the result intersection back to world
             if (intersects)
-                Vector3.TransformCoordinate(ref point, ref Transformation, out point);
+                Vector3F.TransformCoordinate(ref point, ref Transformation, out point);
 
             return intersects;
         }
@@ -636,17 +636,17 @@ namespace Molten
         /// <returns>Whether the two objects intersected.</returns>
         public bool Intersects(ref Ray ray)
         {
-            Vector3 point;
+            Vector3F point;
             return Intersects(ref ray, out point);
         }
 
-        private Vector3[] GetLocalCorners()
+        private Vector3F[] GetLocalCorners()
         {
-            var xv = new Vector3(Extents.X, 0, 0);
-            var yv = new Vector3(0, Extents.Y, 0);
-            var zv = new Vector3(0, 0, Extents.Z);
+            var xv = new Vector3F(Extents.X, 0, 0);
+            var yv = new Vector3F(0, Extents.Y, 0);
+            var zv = new Vector3F(0, 0, Extents.Z);
 
-            var corners = new Vector3[8];
+            var corners = new Vector3F[8];
             corners[0] = +xv + yv + zv;
             corners[1] = +xv + yv - zv;
             corners[2] = -xv + yv - zv;
@@ -690,11 +690,11 @@ namespace Molten
                 int i, k;
                 for (i = 0; i < 3; i++)
                     for (k = 0; k < 3; k++)
-                        AtoB_Matrix[i, k] = Vector3.Dot(RotB[i], RotA[k]);
+                        AtoB_Matrix[i, k] = Vector3F.Dot(RotB[i], RotA[k]);
                 var v = B.Center - A.Center;
-                AtoB_Matrix.M41 = Vector3.Dot(v, RotA[0]);
-                AtoB_Matrix.M42 = Vector3.Dot(v, RotA[1]);
-                AtoB_Matrix.M43 = Vector3.Dot(v, RotA[2]);
+                AtoB_Matrix.M41 = Vector3F.Dot(v, RotA[0]);
+                AtoB_Matrix.M42 = Vector3F.Dot(v, RotA[1]);
+                AtoB_Matrix.M43 = Vector3F.Dot(v, RotA[2]);
                 AtoB_Matrix.M44 = 1;
             }
             else
@@ -724,7 +724,7 @@ namespace Molten
 
             //Get B corners in A Space
             var bCorners = B.GetLocalCorners();
-            Vector3.TransformCoordinate(bCorners, ref AtoB_Matrix, bCorners);
+            Vector3F.TransformCoordinate(bCorners, ref AtoB_Matrix, bCorners);
 
             //Get A local Bounding Box
             var A_LocalBB = new BoundingBox(-A.Extents, A.Extents);
@@ -739,7 +739,7 @@ namespace Molten
             //Find the new Extents and Center, Transform Center back to world
             var newCenter = mergedBB.Min + (mergedBB.Max - mergedBB.Min) / 2f;
             A.Extents = mergedBB.Max - newCenter;
-            Vector3.TransformCoordinate(ref newCenter, ref A.Transformation, out newCenter);
+            Vector3F.TransformCoordinate(ref newCenter, ref A.Transformation, out newCenter);
             A.Transformation.Translation = newCenter;
         }
 
@@ -768,11 +768,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Vector4"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Vector4F"/> is equal to this instance.
         /// </summary>
-        /// <param name="value">The <see cref="Vector4"/> to compare with this instance.</param>
+        /// <param name="value">The <see cref="Vector4F"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="Vector4F"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref OrientedBoundingBox value)
@@ -781,11 +781,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Vector4"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Vector4F"/> is equal to this instance.
         /// </summary>
-        /// <param name="value">The <see cref="Vector4"/> to compare with this instance.</param>
+        /// <param name="value">The <see cref="Vector4F"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="Vector4F"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(OrientedBoundingBox value)

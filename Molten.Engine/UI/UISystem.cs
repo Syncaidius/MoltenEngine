@@ -205,7 +205,7 @@ namespace Molten.UI
                 _trackers[i].DragThreshold = threshold;
         }
 
-        private UIComponent HandlePressStarted(Vector2 inputPos)
+        private UIComponent HandlePressStarted(Vector2F inputPos)
         {
             UIComponent result = _screen.GetComponent(inputPos);
 
@@ -214,8 +214,8 @@ namespace Molten.UI
 
         internal void Update(Timing time)
         {
-            Vector2 mousePos = _mouse.Position;
-            Vector2 mouseMove = _mouse.Moved;
+            Vector2F mousePos = _mouse.Position;
+            Vector2F mouseMove = _mouse.Moved;
 
             _screen.Update(time);
 
@@ -275,7 +275,7 @@ namespace Molten.UI
                     _tooltip.IsVisible = true;
                 }
 
-                _tooltip.Position = mousePos + new Vector2(16);
+                _tooltip.Position = mousePos + new Vector2F(16);
 
                 // Handle scroll wheel event
                 if (_mouse.WheelDelta != 0)

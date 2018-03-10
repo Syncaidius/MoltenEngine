@@ -17,16 +17,16 @@ namespace Molten.Graphics
         Gamma _gamma = Gamma.Linear;
         ExtendMode _extendMode = ExtendMode.Clamp;
 
-        Vector2 _start;
-        Vector2 _end;
+        Vector2F _start;
+        Vector2F _end;
 
         public D2DGradientBrush(D2DSurface surface)
             : base(surface)
         {
             _surface = surface;
             _color = Color.White;
-            _start = new Vector2();
-            _end = new Vector2();
+            _start = new Vector2F();
+            _end = new Vector2F();
         }
 
         protected override void OnRefreshBrush()
@@ -78,7 +78,7 @@ namespace Molten.Graphics
             }
         }
 
-        public Vector2 StartPoint
+        public Vector2F StartPoint
         {
             get { return _start; }
             set
@@ -90,7 +90,7 @@ namespace Molten.Graphics
             }
         }
 
-        public Vector2 EndPoint
+        public Vector2F EndPoint
         {
             get { return _end; }
             set

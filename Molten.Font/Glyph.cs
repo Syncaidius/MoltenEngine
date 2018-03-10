@@ -83,10 +83,9 @@ namespace Molten.Font
         public List<Shape> CreateShapes(int pointsPerCurve, bool flipYAxis)
         {
             List<Shape> result = new List<Shape>();
-            Vector2[] windingPoints = new Vector2[3];
             List<Shape> holes = new List<Shape>();
-            List<Vector2> cp = new List<Vector2>();
-            Vector2 prevCurvePoint = Vector2.Zero;
+            List<Vector2F> cp = new List<Vector2F>();
+            Vector2F prevCurvePoint = Vector2F.Zero;
             int start = 0;
             GlyphPoint p = GlyphPoint.Empty;
 
@@ -94,10 +93,16 @@ namespace Molten.Font
             {
                 Shape shape = new Shape();
                 int end = ContourEndPoints[i];
-                int curWindPoint = 0;
-                int windingNumber = 0;
                 float curveIncrement = 1.0f / pointsPerCurve;
                 cp.Clear();
+
+                // calculate pre-curved bounds
+                for(int j = 0; j < _points.Length; j++)
+                {
+
+                }
+
+                int winding = GetWinding(start, end, new Vector2F(_bounds.Center.X, _bounds.Center.Y));
 
                 for (int j = start; j <= end; j++)
                 {
@@ -108,21 +113,6 @@ namespace Molten.Font
                     {
                         PlotCurve(shape, prevCurvePoint, p.Point, cp, pointsPerCurve, curveIncrement);
                         prevCurvePoint = p.Point;
-
-                        // Use winding number/weight to determine winding: https://en.wikipedia.org/wiki/Winding_number
-                        if (curWindPoint < windingPoints.Length)
-                        {
-                            windingPoints[curWindPoint++] = p.Point;
-                            if (curWindPoint == 3)
-                                windingNumber += MathHelper.GetWindingSign(windingPoints[0], windingPoints[1], windingPoints[2]);
-                        }
-                        else
-                        {
-                            windingPoints[0] = windingPoints[1];
-                            windingPoints[1] = windingPoints[2];
-                            windingPoints[2] = p.Point;
-                            windingNumber += MathHelper.GetWindingSign(windingPoints[0], windingPoints[1], windingPoints[2]);
-                        }
                     }
                     else
                     {
@@ -132,9 +122,9 @@ namespace Molten.Font
 
                 // Close contour, by linking the end point back to the start point.
                 if (cp.Count > 0)
-                    PlotCurve(shape, prevCurvePoint, (Vector2)shape.Points[0], cp, pointsPerCurve, curveIncrement);
+                    PlotCurve(shape, prevCurvePoint, (Vector2F)shape.Points[0], cp, pointsPerCurve, curveIncrement);
                 else
-                    shape.Points.Add(new TriPoint((Vector2)shape.Points[0]));
+                    shape.Points.Add(new TriPoint((Vector2F)shape.Points[0]));
 
                 // Add the first point again to create a loop (for rendering only)
                 shape.CalculateBounds();
@@ -149,13 +139,16 @@ namespace Molten.Font
                         shape.Points[j] = tp;
                     }
                 }
-                if (windingNumber > 0)
-                    result.Add(shape);
-                else
-                    holes.Add(shape);
+
+                holes.Add(shape);
 
                 start = end + 1;
             }
+
+            holes.Sort(Shape.AreaComparer);
+            //holes.Reverse(); // Flip to descending area size.
+
+            // TODO replace with polygon intersect - letter C in UECHIGOT.TTF
 
             // Figure out which holes belong to which shape
             foreach (Shape h in holes)
@@ -182,7 +175,43 @@ namespace Molten.Font
             return result;
         }
 
-        private void PlotCurve(Shape shape, Vector2 prevPoint, Vector2 curPoint, List<Vector2> cp, float pointsPerCurve, float curveIncrement)
+        private int GetWinding(int start, int end, Vector2F center)
+        {
+            Vector3F p1;
+            Vector3F p2;
+            int windingNumber = 0;
+
+            Ray originRay = new Ray(new Vector3F(center, 0), Vector3F.Right);
+            Ray contourRay;
+            Vector3F intersectPoint;
+
+            for(int i = start; i < end; i++)
+            {
+                p1 = new Vector3F(_points[i].Point, 0);
+                p2 = new Vector3F(_points[i + 1].Point, 0);
+                Vector3F dir = p2 - p1;
+                contourRay = new Ray(p1, dir);
+                if (CollisionHelper.RayIntersectsRay(ref originRay, ref contourRay, out intersectPoint))
+                {
+                    if (intersectPoint.X <= _bounds.Right && intersectPoint.Y >= _bounds.Left)
+                    {
+                        // Upward intersection
+                        if (p2.Y < p1.Y)
+                        {
+
+                        }
+                        else // downward intersection
+                        {
+
+                        }
+                    }
+                }
+            }
+
+            return windingNumber;
+        }
+
+        private void PlotCurve(Shape shape, Vector2F prevPoint, Vector2F curPoint, List<Vector2F> cp, float pointsPerCurve, float curveIncrement)
         {
             float curvePercent = 0f;
             switch (cp.Count)
@@ -196,7 +225,7 @@ namespace Molten.Font
                     for (int c = 0; c < pointsPerCurve; c++)
                     {
                         curvePercent += curveIncrement;
-                        Vector2 cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, curPoint, cp[0]);
+                        Vector2F cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, curPoint, cp[0]);
                         shape.Points.Add(new TriPoint(cPos));
                     }
                     break;
@@ -206,7 +235,7 @@ namespace Molten.Font
                     for (int c = 0; c < pointsPerCurve; c++)
                     {
                         curvePercent += curveIncrement;
-                        Vector2 cPos = BezierCurve2D.CalculateCubic(curvePercent, prevPoint, curPoint, cp[0], cp[1]);
+                        Vector2F cPos = BezierCurve2D.CalculateCubic(curvePercent, prevPoint, curPoint, cp[0], cp[1]);
                         shape.Points.Add(new TriPoint(cPos));
                     }
                     break;
@@ -215,13 +244,13 @@ namespace Molten.Font
                     // There are at least 3 control points.
                     for(int i = 0; i < cp.Count - 1; i++)
                     {
-                        Vector2 midPoint = (cp[i] + cp[i+1]) / 2f;
+                        Vector2F midPoint = (cp[i] + cp[i+1]) / 2f;
 
                         curvePercent = 0f;
                         for (int c = 0; c < pointsPerCurve; c++)
                         {
                             curvePercent += curveIncrement;
-                            Vector2 cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, midPoint, cp[i]);
+                            Vector2F cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, midPoint, cp[i]);
                             shape.Points.Add(new TriPoint(cPos));
                         }
 
@@ -233,7 +262,7 @@ namespace Molten.Font
                     for (int c = 0; c < pointsPerCurve; c++)
                     {
                         curvePercent += curveIncrement;
-                        Vector2 cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, curPoint, cp[cp.Count - 1]);
+                        Vector2F cPos = BezierCurve2D.CalculateQuadratic(curvePercent, prevPoint, curPoint, cp[cp.Count - 1]);
                         shape.Points.Add(new TriPoint(cPos));
                     }
                     break;

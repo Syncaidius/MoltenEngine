@@ -12,42 +12,42 @@ namespace Molten.Graphics
     {
         /// <summary>Converts a Vector4 to SharpDX.Mathematics.Interop.RawVector4.</summary>
         /// <param name="val"></param>
-        public static unsafe SharpDX.Mathematics.Interop.RawVector4 ToRawApi(this Vector4 val)
+        public static unsafe SharpDX.Mathematics.Interop.RawVector4 ToRawApi(this Vector4F val)
         {
             return *(SharpDX.Mathematics.Interop.RawVector4*)&val;
         }
 
         /// <summary>Converts a Vector3 to SharpDX.Mathematics.Interop.RawVector3.</summary>
         /// <param name="val"></param>
-        public static unsafe SharpDX.Mathematics.Interop.RawVector3 ToRawApi(this Vector3 val)
+        public static unsafe SharpDX.Mathematics.Interop.RawVector3 ToRawApi(this Vector3F val)
         {
             return *(SharpDX.Mathematics.Interop.RawVector3*)&val;
         }
 
         /// <summary>Converts a Vector2 to SharpDX.Mathematics.Interop.RawVector2.</summary>
         /// <param name="val"></param>
-        public static unsafe SharpDX.Mathematics.Interop.RawVector2 ToRawApi(this Vector2 val)
+        public static unsafe SharpDX.Mathematics.Interop.RawVector2 ToRawApi(this Vector2F val)
         {
             return *(SharpDX.Mathematics.Interop.RawVector2*)&val;
         }
 
         /// <summary>Converts a Vector4 to SharpDX.Vector4.</summary>
         /// <param name="val"></param>
-        public static unsafe SharpDX.Vector4 ToApi(this Vector4 val)
+        public static unsafe SharpDX.Vector4 ToApi(this Vector4F val)
         {
             return *(SharpDX.Vector4*)&val;
         }
 
         /// <summary>Converts a Vector3 to SharpDX.Vector3.</summary>
         /// <param name="val"></param>
-        public static unsafe SharpDX.Vector3 ToApi(this Vector3 val)
+        public static unsafe SharpDX.Vector3 ToApi(this Vector3F val)
         {
             return *(SharpDX.Vector3*)&val;
         }
 
         /// <summary>Converts a Vector2 to SharpDX.Vector2.</summary>
         /// <param name="val"></param>
-        public static unsafe SharpDX.Vector2 ToApi(this Vector2 val)
+        public static unsafe SharpDX.Vector2 ToApi(this Vector2F val)
         {
             return *(SharpDX.Vector2*)&val;
         }
@@ -110,7 +110,7 @@ namespace Molten.Graphics
 
         /// <summary>Converts a Point to SharpDX.Point.</summary>
         /// <param name="val"></param>
-        public static unsafe SharpDX.Point ToApi(this IntVector2 val)
+        public static unsafe SharpDX.Point ToApi(this Vector2I val)
         {
             return *(SharpDX.Point*)&val;
         }
@@ -159,16 +159,16 @@ namespace Molten.Graphics
 
         /// <summary>Converts a SharpDX.Vector3 to Vector3.</summary>
         /// <param name="val"></param>
-        public static unsafe Vector3 FromApi(this SharpDX.Vector3 val)
+        public static unsafe Vector3F FromApi(this SharpDX.Vector3 val)
         {
-            return *(Vector3*)&val;
+            return *(Vector3F*)&val;
         }
 
         /// <summary>Converts a SharpDX.Vector3 to Vector3.</summary>
         /// <param name="val"></param>
-        public static unsafe Vector3 FromRawApi(this SharpDX.Mathematics.Interop.RawVector3 val)
+        public static unsafe Vector3F FromRawApi(this SharpDX.Mathematics.Interop.RawVector3 val)
         {
-            return *(Vector3*)&val;
+            return *(Vector3F*)&val;
         }
 
         /// <summary>Converts a SharpDX.Rectangle to Rectangle.</summary>

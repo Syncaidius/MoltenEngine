@@ -10,7 +10,7 @@ namespace Molten.UI
     internal class UIClickTracker
     {
         internal UIComponent PressedComponent = null;
-        internal Vector2 DragDistance;
+        internal Vector2F DragDistance;
         internal bool InputDragged = false;
         internal float DragThreshold = 10; // Pixels
         internal MouseButton Button;
@@ -26,13 +26,13 @@ namespace Molten.UI
             // if the parent UI system's handlers were switched out, reset input here.
             if(_lastHandler != ui.Mouse)
             {
-                DragDistance = Vector2.Zero;
+                DragDistance = Vector2F.Zero;
                 PressedComponent = null;
                 _lastHandler = ui.Mouse;
             }
 
-            Vector2 mousePos = ui.Mouse.Position;
-            Vector2 mouseMove = ui.Mouse.Moved;
+            Vector2F mousePos = ui.Mouse.Position;
+            Vector2F mouseMove = ui.Mouse.Moved;
 
             //handle clicking and dragging.
             if (ui.Mouse.IsPressed(Button))
@@ -57,7 +57,7 @@ namespace Molten.UI
                     }
 
                     InputDragged = false;
-                    DragDistance = new Vector2();
+                    DragDistance = new Vector2F();
 
                 }
                 else

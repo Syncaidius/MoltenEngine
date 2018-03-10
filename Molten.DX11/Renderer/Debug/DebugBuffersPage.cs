@@ -23,7 +23,7 @@ namespace Molten.Graphics
                 Height = height,
             };
 
-            sb.DrawString(font, "Buffer segmentation: ", new Vector2(dest.X - 10, dest.Y), Color.White);
+            sb.DrawString(font, "Buffer segmentation: ", new Vector2F(dest.X - 10, dest.Y), Color.White);
             dest.Y += 22; DrawBar("Static Vertex", font, sb, renderer.StaticVertexBuffer, dest);
             dest.Y += height + 2; DrawBar("Dynamic Vertex", font, sb, renderer.DynamicVertexBuffer, dest);
 
@@ -54,7 +54,7 @@ namespace Molten.Graphics
                 seg = seg.Next;
             } while (seg != null);
 
-            Vector2 tPos = new Vector2(destination.X, destination.Y);
+            Vector2F tPos = new Vector2F(destination.X, destination.Y);
             double percentUsed = (used / capacity) * 100.0;
 
             sb.DrawString(font, $"{label}: {used}/{capacity} ({percentUsed.ToString("N2")}%) bytes used", tPos, Color.White);

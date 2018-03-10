@@ -12,16 +12,16 @@ namespace Molten.Graphics
     {
         [VertexElement(VertexElementType.Vector4, VertexElementUsage.Position, 0)]
         /// <summary>Gets or sets the position as a Vector4</summary>
-        Vector4 Position4;
+        Vector4F Position4;
 
-        public Vertex(Vector4 position, Vector2 textureCoordinates)
+        public Vertex(Vector4F position, Vector2F textureCoordinates)
         {
             this.Position4 = position;
         }
 
-        public Vertex(Vector3 position, Vector2 textureCoordinates)
+        public Vertex(Vector3F position, Vector2F textureCoordinates)
         {
-            this.Position4 = new Vector4(position, 1);
+            this.Position4 = new Vector4F(position, 1);
         }
 
         public override bool Equals(object obj)

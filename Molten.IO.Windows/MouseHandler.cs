@@ -22,9 +22,9 @@ namespace Molten.IO
         MouseState _state;
         MouseState _prevState;
 
-        Vector2 _position;
-        Vector2 _prevPosition;
-        Vector2 _moved;
+        Vector2F _position;
+        Vector2F _prevPosition;
+        Vector2F _moved;
 
         float _wheelPos;
         float _prevWheelPos;
@@ -60,9 +60,9 @@ namespace Molten.IO
         public void CenterInWindow()
         {
             Rectangle winBounds = _surface.Bounds;
-            IntVector2 p = winBounds.Center;
+            Vector2I p = winBounds.Center;
 
-            _position = new Vector2(p.X, p.Y);
+            _position = new Vector2F(p.X, p.Y);
         }
 
         /// <summary>Returns true if the given buttonboard button is pressed.</summary>
@@ -95,18 +95,18 @@ namespace Molten.IO
             return _state.Buttons[butval] && _prevState.Buttons[butval];
         }
 
-        private Vector2 ToLocalPosition(Vector2 pos)
+        private Vector2F ToLocalPosition(Vector2F pos)
         {
             Rectangle oBounds = _surface.Bounds;
-            pos -= new Vector2(oBounds.X, oBounds.Y);
+            pos -= new Vector2F(oBounds.X, oBounds.Y);
 
             return pos;
         }
 
-        private Vector2 ToDesktopPosition(Vector2 pos)
+        private Vector2F ToDesktopPosition(Vector2F pos)
         {
             Rectangle oBounds = _surface.Bounds;
-            pos += new Vector2(oBounds.X, oBounds.Y);
+            pos += new Vector2F(oBounds.X, oBounds.Y);
 
             return pos;
         }
@@ -125,7 +125,7 @@ namespace Molten.IO
                 for (int i = 0; i < _buffer.Length; i++)
                     _prevState.Update(_buffer[i]);
 
-            _moved = new Vector2();
+            _moved = new Vector2F();
             _wheelDelta = 0f;
 
             _state.X = 0;
@@ -206,14 +206,14 @@ namespace Molten.IO
                 }
                 else
                 {
-                    _position = new Vector2(winPos.X, winPos.Y);
-                    _moved = new Vector2();
+                    _position = new Vector2F(winPos.X, winPos.Y);
+                    _moved = new Vector2F();
                     ToggleCursorVisiblity(true);
                 }
             }
             else
             {
-                _moved = new Vector2();
+                _moved = new Vector2F();
                 ToggleCursorVisiblity(true);
             }
         }
@@ -242,7 +242,7 @@ namespace Molten.IO
         }
 
         /// <summary>Returns the amount the mouse cursor has moved a long X and Y since the last frame/update.</summary>
-        public Vector2 Moved
+        public Vector2F Moved
         {
             get { return _moved; }
         }
@@ -266,7 +266,7 @@ namespace Molten.IO
         }
 
         /// <summary>Gets or sets the position of the mouse cursor.</summary>
-        public Vector2 Position
+        public Vector2F Position
         {
             get
             {

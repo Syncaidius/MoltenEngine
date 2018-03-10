@@ -155,7 +155,7 @@ namespace Molten.UI
             switch (_state)
             {
                 case UIWindowState.Open:
-                    Vector2 textSize = _text.GetSize();
+                    Vector2F textSize = _text.GetSize();
                     int titleHeight = (int)textSize.Y + 4;
 
                     _clipPadding.Top = titleHeight;
@@ -176,7 +176,7 @@ namespace Molten.UI
             switch (_state)
             {
                 case UIWindowState.Open:
-                    Vector2 textSize = _text.GetSize();
+                    Vector2F textSize = _text.GetSize();
                     int titleHeight = (int)textSize.Y + 4;
 
                     _titleBounds = new Rectangle()

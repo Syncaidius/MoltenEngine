@@ -109,63 +109,63 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Vector4"/> to <see cref="Half4"/>.
+        /// Performs an implicit conversion from <see cref="Vector4F"/> to <see cref="Half4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Half4(Vector4 value)
+        public static implicit operator Half4(Vector4F value)
         {
             return new Half4(value.X, value.Y, value.Z, value.W);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Half4"/> to <see cref="Vector4"/>.
+        /// Performs an implicit conversion from <see cref="Half4"/> to <see cref="Vector4F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Vector4(Half4 value)
+        public static implicit operator Vector4F(Half4 value)
         {
-            return new Vector4(value.X, value.Y, value.Z, value.W);
+            return new Vector4F(value.X, value.Y, value.Z, value.W);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Vector3"/> to <see cref="Half4"/>.
+        /// Performs an explicit conversion from <see cref="Vector3F"/> to <see cref="Half4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Half4(Vector3 value)
+        public static explicit operator Half4(Vector3F value)
         {
             return new Half4(value.X, value.Y, value.Z, 0.0f);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Half4"/> to <see cref="Vector3"/>.
+        /// Performs an explicit conversion from <see cref="Half4"/> to <see cref="Vector3F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector3(Half4 value)
+        public static explicit operator Vector3F(Half4 value)
         {
-            return new Vector3(value.X, value.Y, value.Z);
+            return new Vector3F(value.X, value.Y, value.Z);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Vector2"/> to <see cref="Half4"/>.
+        /// Performs an explicit conversion from <see cref="Vector2F"/> to <see cref="Half4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Half4(Vector2 value)
+        public static explicit operator Half4(Vector2F value)
         {
             return new Half4(value.X, value.Y, 0.0f, 0.0f);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Half4"/> to <see cref="Vector2"/>.
+        /// Performs an explicit conversion from <see cref="Half4"/> to <see cref="Vector2F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector2(Half4 value)
+        public static explicit operator Vector2F(Half4 value)
         {
-            return new Vector2(value.X, value.Y);
+            return new Vector2F(value.X, value.Y);
         }
         
         /// <summary>

@@ -59,7 +59,7 @@ namespace Molten
         /// <summary>
         /// The center of the sphere in three dimensional space.
         /// </summary>
-        public Vector3 Center;
+        public Vector3F Center;
 
         /// <summary>
         /// The radius of the sphere.
@@ -71,7 +71,7 @@ namespace Molten
         /// </summary>
         /// <param name="center">The center of the sphere in three dimensional space.</param>
         /// <param name="radius">The radius of the sphere.</param>
-        public BoundingSphere(Vector3 center, float radius)
+        public BoundingSphere(Vector3F center, float radius)
         {
             this.Center = center;
             this.Radius = radius;
@@ -105,9 +105,9 @@ namespace Molten
         /// </summary>
         /// <param name="ray">The ray to test.</param>
         /// <param name="point">When the method completes, contains the point of intersection,
-        /// or <see cref="Vector3.Zero"/> if there was no intersection.</param>
+        /// or <see cref="Vector3F.Zero"/> if there was no intersection.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public bool Intersects(ref Ray ray, out Vector3 point)
+        public bool Intersects(ref Ray ray, out Vector3F point)
         {
             return CollisionHelper.RayIntersectsSphere(ref ray, ref this, out point);
         }
@@ -129,7 +129,7 @@ namespace Molten
         /// <param name="vertex2">The second vertex of the triangle to test.</param>
         /// <param name="vertex3">The third vertex of the triangle to test.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public bool Intersects(ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3)
+        public bool Intersects(ref Vector3F vertex1, ref Vector3F vertex2, ref Vector3F vertex3)
         {
             return CollisionHelper.SphereIntersectsTriangle(ref this, ref vertex1, ref vertex2, ref vertex3);
         }
@@ -179,7 +179,7 @@ namespace Molten
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>The type of containment the two objects have.</returns>
-        public ContainmentType Contains(ref Vector3 point)
+        public ContainmentType Contains(ref Vector3F point)
         {
             return CollisionHelper.SphereContainsPoint(ref this, ref point);
         }
@@ -191,7 +191,7 @@ namespace Molten
         /// <param name="vertex2">The second vertex of the triangle to test.</param>
         /// <param name="vertex3">The third vertex of the triangle to test.</param>
         /// <returns>The type of containment the two objects have.</returns>
-        public ContainmentType Contains(ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3)
+        public ContainmentType Contains(ref Vector3F vertex1, ref Vector3F vertex2, ref Vector3F vertex3)
         {
             return CollisionHelper.SphereContainsTriangle(ref this, ref vertex1, ref vertex2, ref vertex3);
         }
@@ -229,7 +229,7 @@ namespace Molten
         /// or
         /// count
         /// </exception>
-        public static void FromPoints(Vector3[] points, int start, int count, out BoundingSphere result)
+        public static void FromPoints(Vector3F[] points, int start, int count, out BoundingSphere result)
         {
             if (points == null)
             {
@@ -251,10 +251,10 @@ namespace Molten
             var upperEnd = start + count;
 
             //Find the center of all points.
-            Vector3 center = Vector3.Zero;
+            Vector3F center = Vector3F.Zero;
             for (int i = start; i < upperEnd; ++i)
             {
-                Vector3.Add(ref points[i], ref center, out center);
+                Vector3F.Add(ref points[i], ref center, out center);
             }
 
             //This is the center of our sphere.
@@ -267,7 +267,7 @@ namespace Molten
                 //We are doing a relative distance comparison to find the maximum distance
                 //from the center of our sphere.
                 float distance;
-                Vector3.DistanceSquared(ref center, ref points[i], out distance);
+                Vector3F.DistanceSquared(ref center, ref points[i], out distance);
 
                 if (distance > radius)
                     radius = distance;
@@ -286,7 +286,7 @@ namespace Molten
         /// </summary>
         /// <param name="points">The points that will be contained by the sphere.</param>
         /// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
-        public static void FromPoints(Vector3[] points, out BoundingSphere result)
+        public static void FromPoints(Vector3F[] points, out BoundingSphere result)
         {
             if (points == null)
             {
@@ -301,7 +301,7 @@ namespace Molten
         /// </summary>
         /// <param name="points">The points that will be contained by the sphere.</param>
         /// <returns>The newly constructed bounding sphere.</returns>
-        public static BoundingSphere FromPoints(Vector3[] points)
+        public static BoundingSphere FromPoints(Vector3F[] points)
         {
             BoundingSphere result;
             FromPoints(points, out result);
@@ -315,7 +315,7 @@ namespace Molten
         /// <param name="result">When the method completes, the newly constructed bounding sphere.</param>
         public static void FromBox(ref BoundingBox box, out BoundingSphere result)
         {
-            Vector3.Lerp(ref box.Min, ref box.Max, 0.5f, out result.Center);
+            Vector3F.Lerp(ref box.Min, ref box.Max, 0.5f, out result.Center);
 
             float x = box.Min.X - box.Max.X;
             float y = box.Min.Y - box.Max.Y;
@@ -345,7 +345,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the newly constructed bounding sphere.</param>
         public static void Merge(ref BoundingSphere value1, ref BoundingSphere value2, out BoundingSphere result)
         {
-            Vector3 difference = value2.Center - value1.Center;
+            Vector3F difference = value2.Center - value1.Center;
 
             float length = difference.Length();
             float radius = value1.Radius;
@@ -366,7 +366,7 @@ namespace Molten
                 }
             }
 
-            Vector3 vector = difference * (1.0f / length);
+            Vector3F vector = difference * (1.0f / length);
             float min = Math.Min(-radius, length - radius2);
             float max = (Math.Max(radius, length + radius2) - min) * 0.5f;
 
@@ -482,11 +482,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Vector4"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Vector4F"/> is equal to this instance.
         /// </summary>
-        /// <param name="value">The <see cref="Vector4"/> to compare with this instance.</param>
+        /// <param name="value">The <see cref="Vector4F"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="Vector4F"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref BoundingSphere value)
@@ -495,11 +495,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Vector4"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Vector4F"/> is equal to this instance.
         /// </summary>
-        /// <param name="value">The <see cref="Vector4"/> to compare with this instance.</param>
+        /// <param name="value">The <see cref="Vector4F"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="Vector4F"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(BoundingSphere value)

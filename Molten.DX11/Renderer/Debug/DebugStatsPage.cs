@@ -10,7 +10,7 @@ namespace Molten.Graphics
     {
         public override void Render(ISpriteFont font, RendererDX11 renderer, SpriteBatchDX11 batch, Timing time, IRenderSurface surface)
         {
-            Vector2 pos = new Vector2(3, 3);
+            Vector2F pos = new Vector2F(3, 3);
             batch.DrawString(font, $"FPS: {time.UPS}", pos, Color.Yellow);
 
             double frameTime = renderer.Profiler.PreviousFrame.Time;

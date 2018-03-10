@@ -40,35 +40,35 @@ namespace Molten.Samples
             }
 
             VertexColor[] vertices = new VertexColor[]{
-                new VertexColor(new Vector3(-1,-1,-1), Color.Red), //front
-                new VertexColor(new Vector3(-1,1,-1), Color.Red),
-                new VertexColor(new Vector3(1,1,-1), Color.Red),
-                new VertexColor(new Vector3(1,-1,-1), Color.Red),
+                new VertexColor(new Vector3F(-1,-1,-1), Color.Red), //front
+                new VertexColor(new Vector3F(-1,1,-1), Color.Red),
+                new VertexColor(new Vector3F(1,1,-1), Color.Red),
+                new VertexColor(new Vector3F(1,-1,-1), Color.Red),
 
-                new VertexColor(new Vector3(-1,-1,1), Color.Green), //back
-                new VertexColor(new Vector3(1,1,1), Color.Green),
-                new VertexColor(new Vector3(-1,1,1), Color.Green),
-                new VertexColor(new Vector3(1,-1,1), Color.Green),
+                new VertexColor(new Vector3F(-1,-1,1), Color.Green), //back
+                new VertexColor(new Vector3F(1,1,1), Color.Green),
+                new VertexColor(new Vector3F(-1,1,1), Color.Green),
+                new VertexColor(new Vector3F(1,-1,1), Color.Green),
 
-                new VertexColor(new Vector3(-1,1,-1), Color.Blue), //top
-                new VertexColor(new Vector3(-1,1,1), Color.Blue),
-                new VertexColor(new Vector3(1,1,1), Color.Blue),
-                new VertexColor(new Vector3(1,1,-1), Color.Blue),
+                new VertexColor(new Vector3F(-1,1,-1), Color.Blue), //top
+                new VertexColor(new Vector3F(-1,1,1), Color.Blue),
+                new VertexColor(new Vector3F(1,1,1), Color.Blue),
+                new VertexColor(new Vector3F(1,1,-1), Color.Blue),
 
-                new VertexColor(new Vector3(-1,-1,-1), Color.Yellow), //bottom
-                new VertexColor(new Vector3(1,-1,1), Color.Yellow),
-                new VertexColor(new Vector3(-1,-1,1), Color.Yellow),
-                new VertexColor(new Vector3(1,-1,-1), Color.Yellow),
+                new VertexColor(new Vector3F(-1,-1,-1), Color.Yellow), //bottom
+                new VertexColor(new Vector3F(1,-1,1), Color.Yellow),
+                new VertexColor(new Vector3F(-1,-1,1), Color.Yellow),
+                new VertexColor(new Vector3F(1,-1,-1), Color.Yellow),
 
-                new VertexColor(new Vector3(-1,-1,-1), Color.Purple), //left
-                new VertexColor(new Vector3(-1,-1,1), Color.Purple),
-                new VertexColor(new Vector3(-1,1,1), Color.Purple),
-                new VertexColor(new Vector3(-1,1,-1), Color.Purple),
+                new VertexColor(new Vector3F(-1,-1,-1), Color.Purple), //left
+                new VertexColor(new Vector3F(-1,-1,1), Color.Purple),
+                new VertexColor(new Vector3F(-1,1,1), Color.Purple),
+                new VertexColor(new Vector3F(-1,1,-1), Color.Purple),
 
-                new VertexColor(new Vector3(1,-1,-1), Color.White), //right
-                new VertexColor(new Vector3(1,1,1), Color.White),
-                new VertexColor(new Vector3(1,-1,1), Color.White),
-                new VertexColor(new Vector3(1,1,-1), Color.White),
+                new VertexColor(new Vector3F(1,-1,-1), Color.White), //right
+                new VertexColor(new Vector3F(1,1,1), Color.White),
+                new VertexColor(new Vector3F(1,-1,1), Color.White),
+                new VertexColor(new Vector3F(1,1,-1), Color.White),
             };
 
             int[] indices = new int[]{
@@ -96,7 +96,7 @@ namespace Molten.Samples
             meshCom.Mesh = mesh;
 
             int maxRange = spawnRadius * 2;
-            obj.Transform.LocalPosition = new Vector3()
+            obj.Transform.LocalPosition = new Vector3F()
             {
                 X = -spawnRadius + (float)(Rng.NextDouble() * maxRange),
                 Y = -spawnRadius + (float)(Rng.NextDouble() * maxRange),

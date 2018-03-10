@@ -114,7 +114,7 @@ namespace Molten.Graphics
                 _rt.FillRectangle(rectangle.ToApi(), _currentBrush.UnderlyingBrush);
         }
 
-        public void FilledCircle(Vector2 pos, float radiusX, float radiusY)
+        public void FilledCircle(Vector2F pos, float radiusX, float radiusY)
         {
             Ellipse data = new Ellipse(){
                 Point = pos.ToApi(),
@@ -183,7 +183,7 @@ namespace Molten.Graphics
             }
         }
 
-        public void DrawCircle(Vector2 center, float radiusX, float radiusY, int lineWidth = 1)
+        public void DrawCircle(Vector2F center, float radiusX, float radiusY, int lineWidth = 1)
         {
             if (_began)
             {
@@ -211,13 +211,13 @@ namespace Molten.Graphics
             }
         }
 
-        public void DrawLine(Vector2 point1, Vector2 point2, Color color, int lineWidth = 1)
+        public void DrawLine(Vector2F point1, Vector2F point2, Color color, int lineWidth = 1)
         {
             if (_began)
                 _rt.DrawLine(point1.ToApi(), point2.ToApi(), _currentBrush.UnderlyingBrush, lineWidth);
         }
 
-        public void DrawLine(Vector2 point1, Vector2 point2, Color color, StrokeStyle style, int lineWidth = 1)
+        public void DrawLine(Vector2F point1, Vector2F point2, Color color, StrokeStyle style, int lineWidth = 1)
         {
             if (_began)
             {

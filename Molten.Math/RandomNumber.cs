@@ -313,39 +313,39 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets random <see cref="Vector2"/> within range.
+        /// Gets random <see cref="Vector2F"/> within range.
         /// </summary>
         /// <param name="random">Current <see cref="System.Random"/>.</param>
         /// <param name="min">Minimum.</param>
         /// <param name="max">Maximum.</param>
-        /// <returns>Random <see cref="Vector2"/>.</returns>
-        public Vector2 NextVector2(Vector2 min, Vector2 max)
+        /// <returns>Random <see cref="Vector2F"/>.</returns>
+        public Vector2F NextVector2(Vector2F min, Vector2F max)
         {
-            return new Vector2(NextFloat(min.X, max.X), NextFloat(min.Y, max.Y));
+            return new Vector2F(NextFloat(min.X, max.X), NextFloat(min.Y, max.Y));
         }
 
         /// <summary>
-        /// Gets random <see cref="Vector3"/> within range.
+        /// Gets random <see cref="Vector3F"/> within range.
         /// </summary>
         /// <param name="random">Current <see cref="System.Random"/>.</param>
         /// <param name="min">Minimum.</param>
         /// <param name="max">Maximum.</param>
-        /// <returns>Random <see cref="Vector3"/>.</returns>
-        public Vector3 NextVector3(Vector3 min, Vector3 max)
+        /// <returns>Random <see cref="Vector3F"/>.</returns>
+        public Vector3F NextVector3(Vector3F min, Vector3F max)
         {
-            return new Vector3(NextFloat(min.X, max.X), NextFloat(min.Y, max.Y), NextFloat(min.Z, max.Z));
+            return new Vector3F(NextFloat(min.X, max.X), NextFloat(min.Y, max.Y), NextFloat(min.Z, max.Z));
         }
 
         /// <summary>
-        /// Gets random <see cref="Vector4"/> within range.
+        /// Gets random <see cref="Vector4F"/> within range.
         /// </summary>
         /// <param name="random">Current <see cref="System.Random"/>.</param>
         /// <param name="min">Minimum.</param>
         /// <param name="max">Maximum.</param>
-        /// <returns>Random <see cref="Vector4"/>.</returns>
-        public Vector4 NextVector4(Vector4 min, Vector4 max)
+        /// <returns>Random <see cref="Vector4F"/>.</returns>
+        public Vector4F NextVector4(Vector4F min, Vector4F max)
         {
-            return new Vector4(NextFloat(min.X, max.X), NextFloat(min.Y, max.Y), NextFloat(min.Z, max.Z), NextFloat(min.W, max.W));
+            return new Vector4F(NextFloat(min.X, max.X), NextFloat(min.Y, max.Y), NextFloat(min.Z, max.Z), NextFloat(min.W, max.W));
         }
 
         /// <summary>
@@ -398,15 +398,15 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets random <see cref="IntVector2"/>.
+        /// Gets random <see cref="Vector2I"/>.
         /// </summary>
         /// <param name="random">Current <see cref="System.Random"/>.</param>
         /// <param name="min">Minimum.</param>
         /// <param name="max">Maximum.</param>
-        /// <returns>Random <see cref="IntVector2"/>.</returns>
-        public IntVector2 NextPoint(IntVector2 min, IntVector2 max)
+        /// <returns>Random <see cref="Vector2I"/>.</returns>
+        public Vector2I NextPoint(Vector2I min, Vector2I max)
         {
-            return new IntVector2(Next(min.X, max.X), Next(min.Y, max.Y));
+            return new Vector2I(Next(min.X, max.X), Next(min.Y, max.Y));
         }
 
         /// <summary>

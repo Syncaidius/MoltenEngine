@@ -97,43 +97,43 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Vector3"/> to <see cref="Half3"/>.
+        /// Performs an implicit conversion from <see cref="Vector3F"/> to <see cref="Half3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Half3(Vector3 value)
+        public static implicit operator Half3(Vector3F value)
         {
             return new Half3(value.X, value.Y, value.Z);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Half3"/> to <see cref="Vector3"/>.
+        /// Performs an implicit conversion from <see cref="Half3"/> to <see cref="Vector3F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Vector3(Half3 value)
+        public static implicit operator Vector3F(Half3 value)
         {
-            return new Vector3(value.X, value.Y, value.Z);
+            return new Vector3F(value.X, value.Y, value.Z);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Vector2"/> to <see cref="Half3"/>.
+        /// Performs an explicit conversion from <see cref="Vector2F"/> to <see cref="Half3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Half3(Vector2 value)
+        public static explicit operator Half3(Vector2F value)
         {
             return new Half3(value.X, value.Y, 0.0f);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Half3"/> to <see cref="Vector2"/>.
+        /// Performs an explicit conversion from <see cref="Half3"/> to <see cref="Vector2F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector2(Half3 value)
+        public static explicit operator Vector2F(Half3 value)
         {
-            return new Vector2(value.X, value.Y);
+            return new Vector2F(value.X, value.Y);
         }
 
         /// <summary>

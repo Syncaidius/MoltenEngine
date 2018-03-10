@@ -59,7 +59,7 @@ namespace Molten
         /// <summary>
         /// The normal vector of the plane.
         /// </summary>
-        public Vector3 Normal;
+        public Vector3F Normal;
 
         /// <summary>
         /// The distance of the plane along its normal from the origin.
@@ -95,10 +95,10 @@ namespace Molten
         /// </summary>
         /// <param name="point">Any point that lies along the plane.</param>
         /// <param name="normal">The normal vector to the plane.</param>
-        public Plane(Vector3 point, Vector3 normal)
+        public Plane(Vector3F point, Vector3F normal)
         {
             this.Normal = normal;
-            this.D = -Vector3.Dot(normal, point);
+            this.D = -Vector3F.Dot(normal, point);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The normal of the plane.</param>
         /// <param name="d">The distance of the plane along its normal from the origin</param>
-        public Plane(Vector3 value, float d)
+        public Plane(Vector3F value, float d)
         {
             Normal = value;
             D = d;
@@ -118,7 +118,7 @@ namespace Molten
         /// <param name="point1">First point of a triangle defining the plane.</param>
         /// <param name="point2">Second point of a triangle defining the plane.</param>
         /// <param name="point3">Third point of a triangle defining the plane.</param>
-        public Plane(Vector3 point1, Vector3 point2, Vector3 point3)
+        public Plane(Vector3F point1, Vector3F point2, Vector3F point3)
         {
             float x1 = point2.X - point1.X;
             float y1 = point2.Y - point1.Y;
@@ -218,7 +218,7 @@ namespace Molten
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public PlaneIntersectionType Intersects(ref Vector3 point)
+        public PlaneIntersectionType Intersects(ref Vector3F point)
         {
             return CollisionHelper.PlaneIntersectsPoint(ref this, ref point);
         }
@@ -251,9 +251,9 @@ namespace Molten
         /// </summary>
         /// <param name="ray">The ray to test.</param>
         /// <param name="point">When the method completes, contains the point of intersection,
-        /// or <see cref="Vector3.Zero"/> if there was no intersection.</param>
+        /// or <see cref="Vector3F.Zero"/> if there was no intersection.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public bool Intersects(ref Ray ray, out Vector3 point)
+        public bool Intersects(ref Ray ray, out Vector3F point)
         {
             return CollisionHelper.RayIntersectsPlane(ref ray, ref this, out point);
         }
@@ -287,7 +287,7 @@ namespace Molten
         /// <param name="vertex2">The second vertex of the triangle to test.</param>
         /// <param name="vertex3">The third vertex of the triangle to test.</param>
         /// <returns>Whether the two objects intersected.</returns>
-        public PlaneIntersectionType Intersects(ref Vector3 vertex1, ref Vector3 vertex2, ref Vector3 vertex3)
+        public PlaneIntersectionType Intersects(ref Vector3F vertex1, ref Vector3F vertex2, ref Vector3F vertex3)
         {
             return CollisionHelper.PlaneIntersectsTriangle(ref this, ref vertex1, ref vertex2, ref vertex3);
         }
@@ -362,7 +362,7 @@ namespace Molten
         /// <param name="light">The light direction. If the W component is 0, the light is directional light; if the
         /// W component is 1, the light is a point light.</param>
         /// <param name="result">When the method completes, contains the shadow matrix.</param>
-        public void Shadow(ref Vector4 light, out Matrix result)
+        public void Shadow(ref Vector4F light, out Matrix result)
         {
             float dot = (this.Normal.X * light.X) + (this.Normal.Y * light.Y) + (this.Normal.Z * light.Z) + (this.D * light.W);
             float x = -this.Normal.X;
@@ -395,7 +395,7 @@ namespace Molten
         /// <param name="light">The light direction. If the W component is 0, the light is directional light; if the
         /// W component is 1, the light is a point light.</param>
         /// <returns>The shadow matrix.</returns>
-        public Matrix Shadow(Vector4 light)
+        public Matrix Shadow(Vector4F light)
         {
             Matrix result;
             Shadow(ref light, out result);
@@ -446,7 +446,7 @@ namespace Molten
         /// W component is 1, the light is a point light.</param>
         /// <param name="plane">The plane onto which to project the geometry as a shadow. This parameter is assumed to be normalized.</param>
         /// <param name="result">When the method completes, contains the shadow Matrix3x3.</param>
-        public static void Shadow(ref Vector4 light, ref Plane plane, out Matrix3x3 result)
+        public static void Shadow(ref Vector4F light, ref Plane plane, out Matrix3x3 result)
         {
             float dot = (plane.Normal.X * light.X) + (plane.Normal.Y * light.Y) + (plane.Normal.Z * light.Z) + (plane.D * light.W);
             float x = -plane.Normal.X;
@@ -472,7 +472,7 @@ namespace Molten
         /// W component is 1, the light is a point light.</param>
         /// <param name="plane">The plane onto which to project the geometry as a shadow. This parameter is assumed to be normalized.</param>
         /// <returns>The shadow Matrix3x3.</returns>
-        public static Matrix3x3 Shadow(Vector4 light, Plane plane)
+        public static Matrix3x3 Shadow(Vector4F light, Plane plane)
         {
             Matrix3x3 result;
             Shadow(ref light, ref plane, out result);
@@ -511,7 +511,7 @@ namespace Molten
         /// <param name="left">The source plane.</param>
         /// <param name="right">The source vector.</param>
         /// <param name="result">When the method completes, contains the dot product of the specified plane and vector.</param>
-        public static void Dot(ref Plane left, ref Vector4 right, out float result)
+        public static void Dot(ref Plane left, ref Vector4F right, out float result)
         {
             result = (left.Normal.X * right.X) + (left.Normal.Y * right.Y) + (left.Normal.Z * right.Z) + (left.D * right.W);
         }
@@ -522,7 +522,7 @@ namespace Molten
         /// <param name="left">The source plane.</param>
         /// <param name="right">The source vector.</param>
         /// <returns>The dot product of the specified plane and vector.</returns>
-        public static float Dot(Plane left, Vector4 right)
+        public static float Dot(Plane left, Vector4F right)
         {
             return (left.Normal.X * right.X) + (left.Normal.Y * right.Y) + (left.Normal.Z * right.Z) + (left.D * right.W);
         }
@@ -533,7 +533,7 @@ namespace Molten
         /// <param name="left">The source plane.</param>
         /// <param name="right">The source vector.</param>
         /// <param name="result">When the method completes, contains the dot product of a specified vector and the normal of the Plane plus the distance value of the plane.</param>
-        public static void DotCoordinate(ref Plane left, ref Vector3 right, out float result)
+        public static void DotCoordinate(ref Plane left, ref Vector3F right, out float result)
         {
             result = (left.Normal.X * right.X) + (left.Normal.Y * right.Y) + (left.Normal.Z * right.Z) + left.D;
         }
@@ -544,7 +544,7 @@ namespace Molten
         /// <param name="left">The source plane.</param>
         /// <param name="right">The source vector.</param>
         /// <returns>The dot product of a specified vector and the normal of the Plane plus the distance value of the plane.</returns>
-        public static float DotCoordinate(Plane left, Vector3 right)
+        public static float DotCoordinate(Plane left, Vector3F right)
         {
             return (left.Normal.X * right.X) + (left.Normal.Y * right.Y) + (left.Normal.Z * right.Z) + left.D;
         }
@@ -554,7 +554,7 @@ namespace Molten
         /// </summary>
         /// <param name="v">Position to compute the dot product of.</param>
         /// <param name="dot">Dot product.</param>
-        public void DotCoordinate(ref Vector3 v, out float dot)
+        public void DotCoordinate(ref Vector3F v, out float dot)
         {
             dot = Normal.X * v.X + Normal.Y * v.Y + Normal.Z * v.Z + D;
         }
@@ -565,7 +565,7 @@ namespace Molten
         /// <param name="left">The source plane.</param>
         /// <param name="right">The source vector.</param>
         /// <param name="result">When the method completes, contains the dot product of the specified vector and the normal of the plane.</param>
-        public static void DotNormal(ref Plane left, ref Vector3 right, out float result)
+        public static void DotNormal(ref Plane left, ref Vector3F right, out float result)
         {
             result = (left.Normal.X * right.X) + (left.Normal.Y * right.Y) + (left.Normal.Z * right.Z);
         }
@@ -576,7 +576,7 @@ namespace Molten
         /// <param name="left">The source plane.</param>
         /// <param name="right">The source vector.</param>
         /// <returns>The dot product of the specified vector and the normal of the plane.</returns>
-        public static float DotNormal(Plane left, Vector3 right)
+        public static float DotNormal(Plane left, Vector3F right)
         {
             return (left.Normal.X * right.X) + (left.Normal.Y * right.Y) + (left.Normal.Z * right.Z);
         }
@@ -888,11 +888,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Vector4"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Vector4F"/> is equal to this instance.
         /// </summary>
-        /// <param name="value">The <see cref="Vector4"/> to compare with this instance.</param>
+        /// <param name="value">The <see cref="Vector4F"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="Vector4F"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Plane value)
@@ -901,11 +901,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Vector4"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Vector4F"/> is equal to this instance.
         /// </summary>
-        /// <param name="value">The <see cref="Vector4"/> to compare with this instance.</param>
+        /// <param name="value">The <see cref="Vector4F"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="Vector4F"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(Plane value)

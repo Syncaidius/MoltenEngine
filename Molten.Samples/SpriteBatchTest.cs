@@ -38,51 +38,51 @@ namespace Molten.Samples
             _mesh = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
 
             VertexTexture[] verts = new VertexTexture[]{
-               new VertexTexture(new Vector3(-1,-1,-1), new Vector2(0,1)), //front
-               new VertexTexture(new Vector3(-1,1,-1), new Vector2(0,0)),
-               new VertexTexture(new Vector3(1,1,-1), new Vector2(1,0)),
-               new VertexTexture(new Vector3(-1,-1,-1), new Vector2(0,1)),
-               new VertexTexture(new Vector3(1,1,-1), new Vector2(1, 0)),
-               new VertexTexture(new Vector3(1,-1,-1), new Vector2(1,1)),
+               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)), //front
+               new VertexTexture(new Vector3F(-1,1,-1), new Vector2F(0,0)),
+               new VertexTexture(new Vector3F(1,1,-1), new Vector2F(1,0)),
+               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)),
+               new VertexTexture(new Vector3F(1,1,-1), new Vector2F(1, 0)),
+               new VertexTexture(new Vector3F(1,-1,-1), new Vector2F(1,1)),
 
-               new VertexTexture(new Vector3(-1,-1,1), new Vector2(1,0)), //back
-               new VertexTexture(new Vector3(1,1,1), new Vector2(0,1)),
-               new VertexTexture(new Vector3(-1,1,1), new Vector2(1,1)),
-               new VertexTexture(new Vector3(-1,-1,1), new Vector2(1,0)),
-               new VertexTexture(new Vector3(1,-1,1), new Vector2(0, 0)),
-               new VertexTexture(new Vector3(1,1,1), new Vector2(0,1)),
+               new VertexTexture(new Vector3F(-1,-1,1), new Vector2F(1,0)), //back
+               new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
+               new VertexTexture(new Vector3F(-1,1,1), new Vector2F(1,1)),
+               new VertexTexture(new Vector3F(-1,-1,1), new Vector2F(1,0)),
+               new VertexTexture(new Vector3F(1,-1,1), new Vector2F(0, 0)),
+               new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
 
-               new VertexTexture(new Vector3(-1,1,-1), new Vector2(0,1)), //top
-               new VertexTexture(new Vector3(-1,1,1), new Vector2(0,0)),
-               new VertexTexture(new Vector3(1,1,1), new Vector2(1,0)),
-               new VertexTexture(new Vector3(-1,1,-1), new Vector2(0,1)),
-               new VertexTexture(new Vector3(1,1,1), new Vector2(1, 0)),
-               new VertexTexture(new Vector3(1,1,-1), new Vector2(1,1)),
+               new VertexTexture(new Vector3F(-1,1,-1), new Vector2F(0,1)), //top
+               new VertexTexture(new Vector3F(-1,1,1), new Vector2F(0,0)),
+               new VertexTexture(new Vector3F(1,1,1), new Vector2F(1,0)),
+               new VertexTexture(new Vector3F(-1,1,-1), new Vector2F(0,1)),
+               new VertexTexture(new Vector3F(1,1,1), new Vector2F(1, 0)),
+               new VertexTexture(new Vector3F(1,1,-1), new Vector2F(1,1)),
 
-               new VertexTexture(new Vector3(-1,-1,-1), new Vector2(1,0)), //bottom
-               new VertexTexture(new Vector3(1,-1,1), new Vector2(0,1)),
-               new VertexTexture(new Vector3(-1,-1,1), new Vector2(1,1)),
-               new VertexTexture(new Vector3(-1,-1,-1), new Vector2(1,0)),
-               new VertexTexture(new Vector3(1,-1,-1), new Vector2(0, 0)),
-               new VertexTexture(new Vector3(1,-1,1), new Vector2(0,1)),
+               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(1,0)), //bottom
+               new VertexTexture(new Vector3F(1,-1,1), new Vector2F(0,1)),
+               new VertexTexture(new Vector3F(-1,-1,1), new Vector2F(1,1)),
+               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(1,0)),
+               new VertexTexture(new Vector3F(1,-1,-1), new Vector2F(0, 0)),
+               new VertexTexture(new Vector3F(1,-1,1), new Vector2F(0,1)),
 
-               new VertexTexture(new Vector3(-1,-1,-1), new Vector2(0,1)), //left
-               new VertexTexture(new Vector3(-1,-1,1), new Vector2(0,0)),
-               new VertexTexture(new Vector3(-1,1,1), new Vector2(1,0)),
-               new VertexTexture(new Vector3(-1,-1,-1), new Vector2(0,1)),
-               new VertexTexture(new Vector3(-1,1,1), new Vector2(1, 0)),
-               new VertexTexture(new Vector3(-1,1,-1), new Vector2(1,1)),
+               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)), //left
+               new VertexTexture(new Vector3F(-1,-1,1), new Vector2F(0,0)),
+               new VertexTexture(new Vector3F(-1,1,1), new Vector2F(1,0)),
+               new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)),
+               new VertexTexture(new Vector3F(-1,1,1), new Vector2F(1, 0)),
+               new VertexTexture(new Vector3F(-1,1,-1), new Vector2F(1,1)),
 
-               new VertexTexture(new Vector3(1,-1,-1), new Vector2(1,0)), //right
-               new VertexTexture(new Vector3(1,1,1), new Vector2(0,1)),
-               new VertexTexture(new Vector3(1,-1,1), new Vector2(1,1)),
-               new VertexTexture(new Vector3(1,-1,-1), new Vector2(1,0)),
-               new VertexTexture(new Vector3(1,1,-1), new Vector2(0, 0)),
-               new VertexTexture(new Vector3(1,1,1), new Vector2(0,1)),
+               new VertexTexture(new Vector3F(1,-1,-1), new Vector2F(1,0)), //right
+               new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
+               new VertexTexture(new Vector3F(1,-1,1), new Vector2F(1,1)),
+               new VertexTexture(new Vector3F(1,-1,-1), new Vector2F(1,0)),
+               new VertexTexture(new Vector3F(1,1,-1), new Vector2F(0, 0)),
+               new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
             };
 
             _mesh.SetVertices(verts);
-            SpawnParentChild(_mesh, Vector3.Zero, out _parent, out _child);
+            SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
         }
 
         private void SetupTexturedSprites(ITexture2D tex)
@@ -91,7 +91,7 @@ namespace Molten.Samples
             {
                 Sprite s = new Sprite()
                 {
-                    Position = new Vector2()
+                    Position = new Vector2F()
                     {
                         X = Rng.Next(0, 1920),
                         Y = Rng.Next(0, 1080),
@@ -107,7 +107,7 @@ namespace Molten.Samples
 
                     Texture = tex,
                     Source = new Rectangle(0,0,128,128),
-                    Origin = new Vector2(0.5f),
+                    Origin = new Vector2F(0.5f),
                 };
 
                 SampleScene.RenderData.AddSprite(s);
@@ -136,7 +136,7 @@ namespace Molten.Samples
                         A = 40,
                     },
 
-                    Origin = new Vector2(0.5f),
+                    Origin = new Vector2F(0.5f),
                 };
 
                 SampleScene.RenderData.AddSprite(s);

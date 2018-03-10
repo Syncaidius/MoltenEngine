@@ -10,7 +10,7 @@ namespace Molten
         ///<summary>
         /// Translation in the affine transform.
         ///</summary>
-        public Vector3 Translation;
+        public Vector3F Translation;
         /// <summary>
         /// Linear transform in the affine transform.
         /// </summary>
@@ -20,7 +20,7 @@ namespace Molten
         /// Constructs a new affine transform.
         ///</summary>
         ///<param name="translation">Translation to use in the transform.</param>
-        public AffineTransform(ref Vector3 translation)
+        public AffineTransform(ref Vector3F translation)
         {
             LinearTransform = Matrix3x3.Identity;
             Translation = translation;
@@ -30,7 +30,7 @@ namespace Molten
         /// Constructs a new affine transform.
         ///</summary>
         ///<param name="translation">Translation to use in the transform.</param>
-        public AffineTransform(Vector3 translation)
+        public AffineTransform(Vector3F translation)
             : this(ref translation)
         {
         }
@@ -40,7 +40,7 @@ namespace Molten
         ///</summary>
         ///<param name="orientation">Orientation to use as the linear transform.</param>
         ///<param name="translation">Translation to use in the transform.</param>
-        public AffineTransform(ref Quaternion orientation, ref Vector3 translation)
+        public AffineTransform(ref Quaternion orientation, ref Vector3F translation)
         {
             Matrix3x3.FromQuaternion(ref orientation, out LinearTransform);
             Translation = translation;
@@ -51,7 +51,7 @@ namespace Molten
         ///</summary>
         ///<param name="orientation">Orientation to use as the linear transform.</param>
         ///<param name="translation">Translation to use in the transform.</param>
-        public AffineTransform(Quaternion orientation, Vector3 translation)
+        public AffineTransform(Quaternion orientation, Vector3F translation)
             : this(ref orientation, ref translation)
         {
         }
@@ -62,7 +62,7 @@ namespace Molten
         ///<param name="scaling">Scaling to apply in the linear transform.</param>
         ///<param name="orientation">Orientation to apply in the linear transform.</param>
         ///<param name="translation">Translation to apply.</param>
-        public AffineTransform(ref Vector3 scaling, ref Quaternion orientation, ref Vector3 translation)
+        public AffineTransform(ref Vector3F scaling, ref Quaternion orientation, ref Vector3F translation)
         {
             //Create an SRT transform.
             Matrix3x3.CreateScale(ref scaling, out LinearTransform);
@@ -78,7 +78,7 @@ namespace Molten
         ///<param name="scaling">Scaling to apply in the linear transform.</param>
         ///<param name="orientation">Orientation to apply in the linear transform.</param>
         ///<param name="translation">Translation to apply.</param>
-        public AffineTransform(Vector3 scaling, Quaternion orientation, Vector3 translation)
+        public AffineTransform(Vector3F scaling, Quaternion orientation, Vector3F translation)
             : this(ref scaling, ref orientation, ref translation)
         {
         }
@@ -88,7 +88,7 @@ namespace Molten
         ///</summary>
         ///<param name="linearTransform">The linear transform component.</param>
         ///<param name="translation">Translation component of the transform.</param>
-        public AffineTransform(ref Matrix3x3 linearTransform, ref Vector3 translation)
+        public AffineTransform(ref Matrix3x3 linearTransform, ref Vector3F translation)
         {
             LinearTransform = linearTransform;
             Translation = translation;
@@ -100,7 +100,7 @@ namespace Molten
         ///</summary>
         ///<param name="linearTransform">The linear transform component.</param>
         ///<param name="translation">Translation component of the transform.</param>
-        public AffineTransform(Matrix3x3 linearTransform, Vector3 translation)
+        public AffineTransform(Matrix3x3 linearTransform, Vector3F translation)
             : this(ref linearTransform, ref translation)
         {
         }
@@ -134,7 +134,7 @@ namespace Molten
         {
             get
             {
-                var t = new AffineTransform { LinearTransform = Matrix3x3.Identity, Translation = new Vector3() };
+                var t = new AffineTransform { LinearTransform = Matrix3x3.Identity, Translation = new Vector3F() };
                 return t;
             }
         }
@@ -145,10 +145,10 @@ namespace Molten
         ///<param name="position">Position to transform.</param>
         ///<param name="transform">Transform to apply.</param>
         ///<param name="transformed">Transformed position.</param>
-        public static void Transform(ref Vector3 position, ref AffineTransform transform, out Vector3 transformed)
+        public static void Transform(ref Vector3F position, ref AffineTransform transform, out Vector3F transformed)
         {
-            Vector3.Transform(ref position, ref transform.LinearTransform, out transformed);
-            Vector3.Add(ref transformed, ref transform.Translation, out transformed);
+            Vector3F.Transform(ref position, ref transform.LinearTransform, out transformed);
+            Vector3F.Add(ref transformed, ref transform.Translation, out transformed);
         }
 
         ///<summary>
@@ -157,9 +157,9 @@ namespace Molten
         ///<param name="position">Position to transform.</param>
         ///<param name="transform">Transform to invert and apply.</param>
         ///<param name="transformed">Transformed position.</param>
-        public static void TransformInverse(ref Vector3 position, ref AffineTransform transform, out Vector3 transformed)
+        public static void TransformInverse(ref Vector3F position, ref AffineTransform transform, out Vector3F transformed)
         {
-            Vector3.Subtract(ref position, ref transform.Translation, out transformed);
+            Vector3F.Subtract(ref position, ref transform.Translation, out transformed);
             Matrix3x3 inverse;
             Matrix3x3.Invert(ref transform.LinearTransform, out inverse);
             Matrix3x3.TransformTranspose(ref transformed, ref inverse, out transformed);
@@ -173,8 +173,8 @@ namespace Molten
         public static void Invert(ref AffineTransform transform, out AffineTransform inverse)
         {
             Matrix3x3.Invert(ref transform.LinearTransform, out inverse.LinearTransform);
-            Vector3.Transform(ref transform.Translation, ref inverse.LinearTransform, out inverse.Translation);
-            Vector3.Negate(ref inverse.Translation, out inverse.Translation);
+            Vector3F.Transform(ref transform.Translation, ref inverse.LinearTransform, out inverse.Translation);
+            Vector3F.Negate(ref inverse.Translation, out inverse.Translation);
         }
 
         /// <summary>
@@ -187,9 +187,9 @@ namespace Molten
         {
             Matrix3x3 linearTransform;//Have to use temporary variable just in case a or b reference is transform.
             Matrix3x3.Multiply(ref a.LinearTransform, ref b.LinearTransform, out linearTransform);
-            Vector3 translation;
-            Vector3.Transform(ref a.Translation, ref b.LinearTransform, out translation);
-            Vector3.Add(ref translation, ref b.Translation, out transform.Translation);
+            Vector3F translation;
+            Vector3F.Transform(ref a.Translation, ref b.LinearTransform, out translation);
+            Vector3F.Add(ref translation, ref b.Translation, out transform.Translation);
             transform.LinearTransform = linearTransform;
         }
 
@@ -204,9 +204,9 @@ namespace Molten
             Matrix3x3 linearTransform;//Have to use temporary variable just in case b reference is transform.
             Matrix3x3.FromQuaternion(ref a.Orientation, out linearTransform);
             Matrix3x3.Multiply(ref linearTransform, ref b.LinearTransform, out linearTransform);
-            Vector3 translation;
-            Vector3.Transform(ref a.Position, ref b.LinearTransform, out translation);
-            Vector3.Add(ref translation, ref b.Translation, out transform.Translation);
+            Vector3F translation;
+            Vector3F.Transform(ref a.Position, ref b.LinearTransform, out translation);
+            Vector3F.Add(ref translation, ref b.Translation, out transform.Translation);
             transform.LinearTransform = linearTransform;
         }
 
@@ -217,9 +217,9 @@ namespace Molten
         ///<param name="position">Position to transform.</param>
         ///<param name="affineTransform">Transform to apply.</param>
         ///<returns>Transformed position.</returns>
-        public static Vector3 Transform(Vector3 position, AffineTransform affineTransform)
+        public static Vector3F Transform(Vector3F position, AffineTransform affineTransform)
         {
-            Vector3 toReturn;
+            Vector3F toReturn;
             Transform(ref position, ref affineTransform, out toReturn);
             return toReturn;
         }

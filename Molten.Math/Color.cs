@@ -156,7 +156,7 @@ namespace Molten
         /// Initializes a new instance of the <see cref="Color"/> struct.
         /// </summary>
         /// <param name="value">The red, green, blue, and alpha components of the color.</param>
-        public Color(Vector4 value)
+        public Color(Vector4F value)
         {
             R = ToByte(value.X);
             G = ToByte(value.Y);
@@ -169,7 +169,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The red, green, and blue components of the color.</param>
         /// <param name="alpha">The alpha component of the color.</param>
-        public Color(Vector3 value, float alpha)
+        public Color(Vector3F value, float alpha)
         {
             R = ToByte(value.X);
             G = ToByte(value.Y);
@@ -181,7 +181,7 @@ namespace Molten
         /// Initializes a new instance of the <see cref="Color"/> struct. Alpha is set to 255.
         /// </summary>
         /// <param name="value">The red, green, and blue components of the color.</param>
-        public Color(Vector3 value)
+        public Color(Vector3F value)
         {
             R = ToByte(value.X);
             G = ToByte(value.Y);
@@ -332,9 +332,9 @@ namespace Molten
         /// Converts the color into a three component vector.
         /// </summary>
         /// <returns>A three component vector containing the red, green, and blue components of the color.</returns>
-        public Vector3 ToVector3()
+        public Vector3F ToVector3()
         {
-            return new Vector3(R / 255.0f, G / 255.0f, B / 255.0f);
+            return new Vector3F(R / 255.0f, G / 255.0f, B / 255.0f);
         }
 
         /// <summary>
@@ -350,9 +350,9 @@ namespace Molten
         /// Converts the color into a four component vector.
         /// </summary>
         /// <returns>A four component vector containing all four color components.</returns>
-        public Vector4 ToVector4()
+        public Vector4F ToVector4()
         {
-            return new Vector4(R / 255.0f, G / 255.0f, B / 255.0f, A / 255.0f);
+            return new Vector4F(R / 255.0f, G / 255.0f, B / 255.0f, A / 255.0f);
         }
 
         /// <summary>
@@ -1046,23 +1046,23 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Color"/> to <see cref="Vector3"/>.
+        /// Performs an explicit conversion from <see cref="Color"/> to <see cref="Vector3F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector3(Color value)
+        public static explicit operator Vector3F(Color value)
         {
-            return new Vector3(value.R / 255.0f, value.G / 255.0f, value.B / 255.0f);
+            return new Vector3F(value.R / 255.0f, value.G / 255.0f, value.B / 255.0f);
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Color"/> to <see cref="Vector4"/>.
+        /// Performs an explicit conversion from <see cref="Color"/> to <see cref="Vector4F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector4(Color value)
+        public static explicit operator Vector4F(Color value)
         {
-            return new Vector4(value.R / 255.0f, value.G / 255.0f, value.B / 255.0f, value.A / 255.0f);
+            return new Vector4F(value.R / 255.0f, value.G / 255.0f, value.B / 255.0f, value.A / 255.0f);
         }
 
         /// <summary>
@@ -1085,11 +1085,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Vector3"/> to <see cref="Color"/>.
+        /// Performs an explicit conversion from <see cref="Vector3F"/> to <see cref="Color"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Color(Vector3 value)
+        public static explicit operator Color(Vector3F value)
         {
             return new Color(value.X, value.Y, value.Z, 1.0f);
         }
@@ -1105,11 +1105,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Vector4"/> to <see cref="Color"/>.
+        /// Performs an explicit conversion from <see cref="Vector4F"/> to <see cref="Color"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Color(Vector4 value)
+        public static explicit operator Color(Vector4F value)
         {
             return new Color(value.X, value.Y, value.Z, value.W);
         }

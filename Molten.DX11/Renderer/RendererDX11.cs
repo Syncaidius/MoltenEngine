@@ -12,7 +12,7 @@ namespace Molten.Graphics
     public class RendererDX11 : IRenderer
     {
         static readonly Matrix _defaultView2D = Matrix.Identity;
-        static readonly Matrix _defaultView3D = Matrix.LookAtLH(new Vector3(0, 0, -5), new Vector3(0, 0, 0), Vector3.UnitY);
+        static readonly Matrix _defaultView3D = Matrix.LookAtLH(new Vector3F(0, 0, -5), new Vector3F(0, 0, 0), Vector3F.UnitY);
 
         DX11DisplayManager _displayManager;
         ResourceManager _resourceManager;

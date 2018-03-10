@@ -12,20 +12,20 @@ namespace Molten.Graphics
     {
         [VertexElement(VertexElementType.Vector4, VertexElementUsage.Position, 0)]
         /// <summary>Gets or sets the position as a Vector4</summary>
-        public Vector4 Position4;
+        public Vector4F Position4;
 
         [VertexElement(VertexElementType.Vector2, VertexElementUsage.TextureCoordinate, 0)]
-        public Vector2 UV;
+        public Vector2F UV;
 
-        public VertexTexture(Vector4 position, Vector2 textureCoordinates)
+        public VertexTexture(Vector4F position, Vector2F textureCoordinates)
         {
             this.Position4 = position;
             this.UV = textureCoordinates;
         }
 
-        public VertexTexture(Vector3 position, Vector2 textureCoordinates)
+        public VertexTexture(Vector3F position, Vector2F textureCoordinates)
         {
-            this.Position4 = new Vector4(position, 1);
+            this.Position4 = new Vector4F(position, 1);
             this.UV = textureCoordinates;
         }
 

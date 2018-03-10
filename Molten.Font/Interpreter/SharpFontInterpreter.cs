@@ -74,9 +74,9 @@ namespace Molten.Font
                 {
                     // always reset a few fields; copy the reset
                     cvtState = state;
-                    cvtState.Freedom = Vector2.UnitX;
-                    cvtState.Projection = Vector2.UnitX;
-                    cvtState.DualProjection = Vector2.UnitX;
+                    cvtState.Freedom = Vector2F.UnitX;
+                    cvtState.Projection = Vector2F.UnitX;
+                    cvtState.DualProjection = Vector2F.UnitX;
                     cvtState.RoundState = RoundMode.ToGrid;
                     cvtState.Loop = 1;
                 }
@@ -221,7 +221,7 @@ namespace Molten.Font
                         {
                             var y = stack.Pop();
                             var x = stack.Pop();
-                            var vec = Vector2.Normalize(new Vector2(F2Dot14ToFloat(x), F2Dot14ToFloat(y)));
+                            var vec = Vector2F.Normalize(new Vector2F(F2Dot14ToFloat(x), F2Dot14ToFloat(y)));
                             if (opcode == OpCode.SFVFS)
                                 state.Freedom = vec;
                             else
@@ -784,7 +784,7 @@ namespace Molten.Font
                             {
                                 var t = (a0.X * a1.Y) - (a0.Y * a1.X);
                                 var u = (b0.X * b1.Y) - (b0.Y * b1.X);
-                                var p = new Vector2(
+                                var p = new Vector2F(
                                     (t * db.X) - (da.X * u),
                                     (t * db.Y) - (da.Y * u)
                                 );
@@ -1147,20 +1147,20 @@ namespace Molten.Font
 
         void OnVectorsUpdated()
         {
-            fdotp = (float)Vector2.Dot(state.Freedom, state.Projection);
+            fdotp = (float)Vector2F.Dot(state.Freedom, state.Projection);
             if (Math.Abs(fdotp) < Epsilon)
                 fdotp = 1.0f;
         }
 
         void SetFreedomVectorToAxis(int axis)
         {
-            state.Freedom = axis == 0 ? Vector2.UnitY : Vector2.UnitX;
+            state.Freedom = axis == 0 ? Vector2F.UnitY : Vector2F.UnitX;
             OnVectorsUpdated();
         }
 
         void SetProjectionVectorToAxis(int axis)
         {
-            state.Projection = axis == 0 ? Vector2.UnitY : Vector2.UnitX;
+            state.Projection = axis == 0 ? Vector2F.UnitY : Vector2F.UnitX;
             state.DualProjection = state.Projection;
 
             OnVectorsUpdated();
@@ -1183,19 +1183,19 @@ namespace Molten.Font
             {
                 // invalid; just set to whatever
                 if (mode >= 2)
-                    state.Freedom = Vector2.UnitX;
+                    state.Freedom = Vector2F.UnitX;
                 else
                 {
-                    state.Projection = Vector2.UnitX;
-                    state.DualProjection = Vector2.UnitX;
+                    state.Projection = Vector2F.UnitX;
+                    state.DualProjection = Vector2F.UnitX;
                 }
             }
             else
             {
                 // if mode is 1 or 3, we want a perpendicular vector
                 if ((mode & 0x1) != 0)
-                    line = new Vector2(-line.Y, line.X);
-                line = Vector2.Normalize(line);
+                    line = new Vector2F(-line.Y, line.X);
+                line = Vector2F.Normalize(line);
 
                 if (mode >= 2)
                     state.Freedom = line;
@@ -1214,13 +1214,13 @@ namespace Molten.Font
                 line = p2 - p1;
 
                 if (line.LengthSquared() == 0)
-                    state.DualProjection = Vector2.UnitX;
+                    state.DualProjection = Vector2F.UnitX;
                 else
                 {
                     if ((mode & 0x1) != 0)
-                        line = new Vector2(-line.Y, line.X);
+                        line = new Vector2F(-line.Y, line.X);
 
-                    state.DualProjection = Vector2.Normalize(line);
+                    state.DualProjection = Vector2F.Normalize(line);
                 }
             }
 
@@ -1365,7 +1365,7 @@ namespace Molten.Font
                 state.Rp0 = pointIndex;
         }
 
-        Vector2 ComputeDisplacement(int mode, out Zone zone, out int point)
+        Vector2F ComputeDisplacement(int mode, out Zone zone, out int point)
         {
             // compute displacement of the reference point
             if ((mode & 1) == 0)
@@ -1394,7 +1394,7 @@ namespace Molten.Font
             return touch;
         }
 
-        void ShiftPoints(Vector2 displacement)
+        void ShiftPoints(Vector2F displacement)
         {
             var touch = GetTouchState();
             for (int i = 0; i < state.Loop; i++)
@@ -1448,8 +1448,8 @@ namespace Molten.Font
             }
         }
 
-        float Project(Vector2 point) { return (float)Vector2.Dot(point, state.Projection); }
-        float DualProject(Vector2 point) { return (float)Vector2.Dot(point, state.DualProjection); }
+        float Project(Vector2F point) { return (float)Vector2F.Dot(point, state.Projection); }
+        float DualProject(Vector2F point) { return (float)Vector2F.Dot(point, state.DualProjection); }
 
         static OpCode SkipNext(ref InstructionStream stream)
         {
@@ -1685,9 +1685,9 @@ namespace Molten.Font
 
         struct GraphicsState
         {
-            public Vector2 Freedom;
-            public Vector2 DualProjection;
-            public Vector2 Projection;
+            public Vector2F Freedom;
+            public Vector2F DualProjection;
+            public Vector2F Projection;
             public InstructionControlFlags InstructionControl;
             public RoundMode RoundState;
             public float MinDistance;
@@ -1704,9 +1704,9 @@ namespace Molten.Font
 
             public void Reset()
             {
-                Freedom = Vector2.UnitX;
-                Projection = Vector2.UnitX;
-                DualProjection = Vector2.UnitX;
+                Freedom = Vector2F.UnitX;
+                Projection = Vector2F.UnitX;
+                DualProjection = Vector2F.UnitX;
                 InstructionControl = InstructionControlFlags.None;
                 RoundState = RoundMode.ToGrid;
                 MinDistance = 1.0f;
@@ -1800,8 +1800,8 @@ namespace Molten.Font
                 TouchState = new TouchState[points.Length];
             }
 
-            public Vector2 GetCurrent(int index) { return Current[index].Point; }
-            public Vector2 GetOriginal(int index) { return Original[index].Point; }
+            public Vector2F GetCurrent(int index) { return Current[index].Point; }
+            public Vector2F GetOriginal(int index) { return Original[index].Point; }
         }
 
         enum RoundMode

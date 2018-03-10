@@ -120,63 +120,63 @@ namespace Molten
         /// <summary>
         /// Gets or sets the first row in the matrix; that is M11 and M12.
         /// </summary>
-        public Vector2 Row1
+        public Vector2F Row1
         {
-            get { return new Vector2(M11, M12); }
+            get { return new Vector2F(M11, M12); }
             set { M11 = value.X; M12 = value.Y;  }
         }
 
         /// <summary>
         /// Gets or sets the second row in the matrix; that is M21 and M22.
         /// </summary>
-        public Vector2 Row2
+        public Vector2F Row2
         {
-            get { return new Vector2(M21, M22); }
+            get { return new Vector2F(M21, M22); }
             set { M21 = value.X; M22 = value.Y; }
         }
 
         /// <summary>
         /// Gets or sets the third row in the matrix; that is M31 and M32.
         /// </summary>
-        public Vector2 Row3
+        public Vector2F Row3
         {
-            get { return new Vector2(M31, M32); }
+            get { return new Vector2F(M31, M32); }
             set { M31 = value.X; M32 = value.Y; }
         }
 
         /// <summary>
         /// Gets or sets the first column in the matrix; that is M11, M21, and M31.
         /// </summary>
-        public Vector3 Column1
+        public Vector3F Column1
         {
-            get { return new Vector3(M11, M21, M31); }
+            get { return new Vector3F(M11, M21, M31); }
             set { M11 = value.X; M21 = value.Y; M31 = value.Z; }
         }
 
         /// <summary>
         /// Gets or sets the second column in the matrix; that is M12, M22, and M32.
         /// </summary>
-        public Vector3 Column2
+        public Vector3F Column2
         {
-            get { return new Vector3(M12, M22, M32); }
+            get { return new Vector3F(M12, M22, M32); }
             set { M12 = value.X; M22 = value.Y; M32 = value.Z;}
         }
 
         /// <summary>
         /// Gets or sets the translation of the matrix; that is M31 and M32.
         /// </summary>
-        public Vector2 TranslationVector
+        public Vector2F TranslationVector
         {
-            get { return new Vector2(M31, M32); }
+            get { return new Vector2F(M31, M32); }
             set { M31 = value.X; M32 = value.Y;  }
         }
 
         /// <summary>
         /// Gets or sets the scale of the matrix; that is M11 and M22.
         /// </summary>
-        public Vector2 ScaleVector
+        public Vector2F ScaleVector
         {
-            get { return new Vector2(M11, M22); }
+            get { return new Vector2F(M11, M22); }
             set { M11 = value.X; M22 = value.Y; }
         }
 
@@ -517,7 +517,7 @@ namespace Molten
         /// </summary>
         /// <param name="scale">Scaling factor for both axes.</param>
         /// <param name="result">When the method completes, contains the created scaling matrix.</param>
-        public static void Scaling(ref Vector2 scale, out Matrix3x2 result)
+        public static void Scaling(ref Vector2F scale, out Matrix3x2 result)
         {
             Scaling(scale.X, scale.Y, out result);
         }
@@ -527,7 +527,7 @@ namespace Molten
         /// </summary>
         /// <param name="scale">Scaling factor for both axes.</param>
         /// <returns>The created scaling matrix.</returns>
-        public static Matrix3x2 Scaling(Vector2 scale)
+        public static Matrix3x2 Scaling(Vector2F scale)
         {
             Matrix3x2 result;
             Scaling(ref scale, out result);
@@ -590,7 +590,7 @@ namespace Molten
         /// <param name="y">Scaling factor that is applied along the y-axis.</param>
         /// <param name="center">The center of the scaling.</param>
         /// <returns>The created scaling matrix.</returns>
-        public static Matrix3x2 Scaling(float x, float y, Vector2 center)
+        public static Matrix3x2 Scaling(float x, float y, Vector2F center)
         {
             Matrix3x2 result;
 
@@ -610,7 +610,7 @@ namespace Molten
         /// <param name="y">Scaling factor that is applied along the y-axis.</param>
         /// <param name="center">The center of the scaling.</param>
         /// <param name="result">The created scaling matrix.</param>
-        public static void Scaling( float x, float y, ref Vector2 center, out Matrix3x2 result)
+        public static void Scaling( float x, float y, ref Vector2F center, out Matrix3x2 result)
         {
             Matrix3x2 localResult;
 
@@ -667,7 +667,7 @@ namespace Molten
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis.</param>
         /// <param name="center">The center of the rotation.</param>
         /// <returns>The created rotation matrix.</returns>
-        public static Matrix3x2 Rotation(float angle, Vector2 center)
+        public static Matrix3x2 Rotation(float angle, Vector2F center)
         {
             Matrix3x2 result;
             Rotation(angle, center, out result);
@@ -680,7 +680,7 @@ namespace Molten
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis.</param>
         /// <param name="center">The center of the rotation.</param>
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
-        public static void Rotation(float angle, Vector2 center, out Matrix3x2 result)
+        public static void Rotation(float angle, Vector2F center, out Matrix3x2 result)
         {
             result = Translation(-center) * Rotation(angle) * Translation(center);
         }
@@ -720,7 +720,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The offset for both coordinate planes.</param>
         /// <param name="result">When the method completes, contains the created translation matrix.</param>
-        public static void Translation(ref Vector2 value, out Matrix3x2 result)
+        public static void Translation(ref Vector2F value, out Matrix3x2 result)
         {
             Translation(value.X, value.Y, out result);
         }
@@ -730,7 +730,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The offset for both coordinate planes.</param>
         /// <returns>The created translation matrix.</returns>
-        public static Matrix3x2 Translation(Vector2 value)
+        public static Matrix3x2 Translation(Vector2F value)
         {
             Matrix3x2 result;
             Translation(ref value, out result);
@@ -769,9 +769,9 @@ namespace Molten
         /// <param name="matrix">The matrix to use as a transformation matrix.</param>
         /// <param name="point">The original vector to apply the transformation.</param>
         /// <returns>The result of the transformation for the input vector.</returns>
-        public static Vector2 TransformPoint(Matrix3x2 matrix, Vector2 point)
+        public static Vector2F TransformPoint(Matrix3x2 matrix, Vector2F point)
         {
-            Vector2 result;
+            Vector2F result;
             result.X = (point.X * matrix.M11) + (point.Y * matrix.M21) + matrix.M31;
             result.Y = (point.X * matrix.M12) + (point.Y * matrix.M22) + matrix.M32;
             return result;
@@ -784,9 +784,9 @@ namespace Molten
         /// <param name="point">The original vector to apply the transformation.</param>
         /// <param name="result">The result of the transformation for the input vector.</param>
         /// <returns></returns>
-        public static void TransformPoint(ref Matrix3x2 matrix, ref Vector2 point, out Vector2 result)
+        public static void TransformPoint(ref Matrix3x2 matrix, ref Vector2F point, out Vector2F result)
         {
-            Vector2 localResult;
+            Vector2F localResult;
             localResult.X = (point.X * matrix.M11) + (point.Y * matrix.M21) + matrix.M31;
             localResult.Y = (point.X * matrix.M12) + (point.Y * matrix.M22) + matrix.M32;
             result = localResult;
