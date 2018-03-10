@@ -87,6 +87,7 @@
     <Compile Include="Half3.cs" />
     <Compile Include="Half4.cs" />
     <Compile Include="HalfUtils.cs" />
+    <Compile Include="RectangleD.cs" />
     <Compile Include="Vector2D.cs" />
     <Compile Include="Vector2I.cs" />
     <Compile Include="Vector3D.cs" />

@@ -97,6 +97,7 @@ namespace Molten.Font
                 cp.Clear();
 
                 // calculate pre-curved bounds
+                RectangleF bounds = new RectangleF();
                 for(int j = 0; j < _points.Length; j++)
                 {
 
