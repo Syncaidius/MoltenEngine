@@ -48,7 +48,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Molten
+namespace Molten.DoublePrecision
 {
     /// <summary>
     /// Represents a four dimensional mathematical vector, composted of 3 floats.

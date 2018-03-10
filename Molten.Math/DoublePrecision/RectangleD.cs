@@ -23,7 +23,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Molten
+namespace Molten.DoublePrecision
 {
     /// <summary>
     /// Double-precision version of <see cref="RectangleD"/>.
