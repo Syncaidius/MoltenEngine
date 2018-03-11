@@ -96,30 +96,26 @@ namespace Molten.Font
                 float curveIncrement = 1.0f / pointsPerCurve;
                 cp.Clear();
 
-                // calculate pre-curved bounds
-                RectangleF bounds = new RectangleF();
-                for(int j = 0; j < _points.Length; j++)
-                {
-
-                }
-
-                int winding = GetWinding(start, end, new Vector2F(_bounds.Center.X, _bounds.Center.Y));
-
+                RectangleF pointBounds = new RectangleF();
                 for (int j = start; j <= end; j++)
                 {
                     p = _points[j];
+                    pointBounds.Encapsulate(p.Point);
 
                     // If off curve, it's a bezier control point.
                     if (p.IsOnCurve)
                     {
                         PlotCurve(shape, prevCurvePoint, p.Point, cp, pointsPerCurve, curveIncrement);
                         prevCurvePoint = p.Point;
+
                     }
                     else
                     {
                         cp.Add(p.Point);
                     }
                 }
+
+                int winding = GetWinding(start, end, new Vector2F(_bounds.Center.X, _bounds.Center.Y));
 
                 // Close contour, by linking the end point back to the start point.
                 if (cp.Count > 0)
@@ -178,32 +174,46 @@ namespace Molten.Font
 
         private int GetWinding(int start, int end, Vector2F center)
         {
-            Vector3F p1;
-            Vector3F p2;
+            Vector2F p1;
+            Vector2F p2;
             int windingNumber = 0;
 
             Ray originRay = new Ray(new Vector3F(center, 0), Vector3F.Right);
             Ray contourRay;
-            Vector3F intersectPoint;
+            Vector3F intersect;
 
             for(int i = start; i < end; i++)
             {
-                p1 = new Vector3F(_points[i].Point, 0);
-                p2 = new Vector3F(_points[i + 1].Point, 0);
-                Vector3F dir = p2 - p1;
-                contourRay = new Ray(p1, dir);
-                if (CollisionHelper.RayIntersectsRay(ref originRay, ref contourRay, out intersectPoint))
+                p1 = _points[i].Point;
+                p2 = _points[i + 1].Point;
+
+                RectangleF contourBounds = new RectangleF();
+                contourBounds.Encapsulate(p1);
+                contourBounds.Encapsulate(p2);
+
+                Vector2F dir = p2 - p1;
+                contourRay = new Ray(new Vector3F(p1,0), new Vector3F(dir, 0));
+                if (CollisionHelper.RayIntersectsRay(ref originRay, ref contourRay, out intersect))
                 {
-                    if (intersectPoint.X <= _bounds.Right && intersectPoint.Y >= _bounds.Left)
+                    if (contourBounds.Contains(new Vector2F(intersect.X, intersect.Y)))
                     {
+                        // Glyph points are defined with origin 0,0 at the bottom left. Ours is top left, so handle accordingly.
                         // Upward intersection
-                        if (p2.Y < p1.Y)
+                        if (p2.Y > p1.Y)
                         {
-
+                            windingNumber--;
+                            // TODO check if between X of p1 and p2. If not, ignore the intersection.
                         }
-                        else // downward intersection
+                        else if(p2.Y < p1.Y) // downward intersection
                         {
-
+                            windingNumber++;
+                        }
+                        else // Test right-to-left or left-to-right
+                        {
+                            if (p2.X < p1.X) // right-to-left crossing
+                                windingNumber--;
+                            else if (p2.X > p1.X)
+                                windingNumber++;
                         }
                     }
                 }

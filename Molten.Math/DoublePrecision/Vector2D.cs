@@ -134,7 +134,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public bool IsNormalized
         {
-            get { return MathHelper.IsOne((X * X) + (Y * Y)); }
+            get { return DoubleHelper.IsOne((X * X) + (Y * Y)); }
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace Molten.DoublePrecision
         public void Normalize()
         {
             double length = Length();
-            if (!MathHelper.IsZero(length))
+            if (!DoubleHelper.IsZero(length))
             {
                 double inv = 1.0f / length;
                 X *= inv;
@@ -673,8 +673,8 @@ namespace Molten.DoublePrecision
         /// </remarks>
         public static void Lerp(ref Vector2D start, ref Vector2D end, double amount, out Vector2D result)
         {
-            result.X = MathHelper.Lerp(start.X, end.X, amount);
-            result.Y = MathHelper.Lerp(start.Y, end.Y, amount);
+            result.X = DoubleHelper.Lerp(start.X, end.X, amount);
+            result.Y = DoubleHelper.Lerp(start.Y, end.Y, amount);
         }
 
         /// <summary>
@@ -703,7 +703,7 @@ namespace Molten.DoublePrecision
         /// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
         public static void SmoothStep(ref Vector2D start, ref Vector2D end, double amount, out Vector2D result)
         {
-            amount = MathHelper.SmoothStep(amount);
+            amount = DoubleHelper.SmoothStep(amount);
             Lerp(ref start, ref end, amount, out result);
         }
 
@@ -1498,8 +1498,8 @@ namespace Molten.DoublePrecision
         {
             return new Vector2D()
             {
-                X = MathHelper.Clamp(vec.X, min, max),
-                Y = MathHelper.Clamp(vec.Y, min, max),
+                X = DoubleHelper.Clamp(vec.X, min, max),
+                Y = DoubleHelper.Clamp(vec.Y, min, max),
             };
         }
 
@@ -1581,7 +1581,7 @@ namespace Molten.DoublePrecision
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Vector2D other)
         {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y);
+            return DoubleHelper.NearEqual(other.X, X) && DoubleHelper.NearEqual(other.Y, Y);
         }
 
         /// <summary>
@@ -1637,8 +1637,8 @@ namespace Molten.DoublePrecision
         /// <param name="max">The maximum value of each component.</param>
         public void Clamp(double min, double max)
         {
-            X = MathHelper.Clamp(X, min, max);
-            Y = MathHelper.Clamp(Y, min, max);
+            X = DoubleHelper.Clamp(X, min, max);
+            Y = DoubleHelper.Clamp(Y, min, max);
         }
 
         /// <summary>Rounds all components down to the nearest unit.</summary>

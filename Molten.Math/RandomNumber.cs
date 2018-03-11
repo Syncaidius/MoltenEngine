@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Globalization;
 using System.Diagnostics.Contracts;
 using System.Numerics;
+using Molten.DoublePrecision;
 
 namespace Molten
 {
@@ -309,7 +310,7 @@ namespace Molten
         /// <returns>Random <c>double</c> number.</returns>
         public double NextDouble(double min, double max)
         {
-            return MathHelper.Lerp(min, max, (float)NextDecimal());
+            return DoubleHelper.Lerp(min, max, (double)NextDecimal());
         }
 
         /// <summary>

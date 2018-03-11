@@ -189,7 +189,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public bool IsNormalized
         {
-            get { return MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W)); }
+            get { return DoubleHelper.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W)); }
         }
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace Molten.DoublePrecision
         public void Normalize()
         {
             double length = Length();
-            if (!MathHelper.IsZero(length))
+            if (!DoubleHelper.IsZero(length))
             {
                 double inverse = 1.0f / length;
                 X *= inverse;
@@ -722,10 +722,10 @@ namespace Molten.DoublePrecision
         /// </remarks>
         public static void Lerp(ref Vector4D start, ref Vector4D end, double amount, out Vector4D result)
         {
-            result.X = MathHelper.Lerp(start.X, end.X, amount);
-            result.Y = MathHelper.Lerp(start.Y, end.Y, amount);
-            result.Z = MathHelper.Lerp(start.Z, end.Z, amount);
-            result.W = MathHelper.Lerp(start.W, end.W, amount);
+            result.X = DoubleHelper.Lerp(start.X, end.X, amount);
+            result.Y = DoubleHelper.Lerp(start.Y, end.Y, amount);
+            result.Z = DoubleHelper.Lerp(start.Z, end.Z, amount);
+            result.W = DoubleHelper.Lerp(start.W, end.W, amount);
         }
 
         /// <summary>
@@ -754,7 +754,7 @@ namespace Molten.DoublePrecision
         /// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
         public static void SmoothStep(ref Vector4D start, ref Vector4D end, double amount, out Vector4D result)
         {
-            amount = MathHelper.SmoothStep(amount);
+            amount = DoubleHelper.SmoothStep(amount);
             Lerp(ref start, ref end, amount, out result);
         }
 
@@ -1400,10 +1400,10 @@ namespace Molten.DoublePrecision
         {
             return new Vector4D()
             {
-                X = MathHelper.Clamp(vec.X, min, max),
-                Y = MathHelper.Clamp(vec.Y, min, max),
-                Z = MathHelper.Clamp(vec.Z, min, max),
-                W = MathHelper.Clamp(vec.W, min, max),
+                X = DoubleHelper.Clamp(vec.X, min, max),
+                Y = DoubleHelper.Clamp(vec.Y, min, max),
+                Z = DoubleHelper.Clamp(vec.Z, min, max),
+                W = DoubleHelper.Clamp(vec.W, min, max),
             };
         }
 
@@ -1490,10 +1490,10 @@ namespace Molten.DoublePrecision
         /// </returns>
         public bool Equals(ref Vector4D other)
         {
-            return (MathHelper.NearEqual(other.X, X) &&
-                MathHelper.NearEqual(other.Y, Y) &&
-                MathHelper.NearEqual(other.Z, Z) &&
-                MathHelper.NearEqual(other.W, W));
+            return (DoubleHelper.NearEqual(other.X, X) &&
+                DoubleHelper.NearEqual(other.Y, Y) &&
+                DoubleHelper.NearEqual(other.Z, Z) &&
+                DoubleHelper.NearEqual(other.W, W));
         }
 
         /// <summary>
@@ -1552,10 +1552,10 @@ namespace Molten.DoublePrecision
         /// <param name="max">The maximum value of each component.</param>
         public void Clamp(double min, double max)
         {
-            X = MathHelper.Clamp(X, min, max);
-            Y = MathHelper.Clamp(Y, min, max);
-            Z = MathHelper.Clamp(Z, min, max);
-            W = MathHelper.Clamp(W, min, max);
+            X = DoubleHelper.Clamp(X, min, max);
+            Y = DoubleHelper.Clamp(Y, min, max);
+            Z = DoubleHelper.Clamp(Z, min, max);
+            W = DoubleHelper.Clamp(W, min, max);
         }
 
         /// <summary>Rounds all components down to the nearest unit.</summary>
