@@ -111,12 +111,12 @@ namespace Molten
         {
             if (p.X < Left)
                 Left = (float)Math.Floor(p.X);
-            else if (p.X > Right)
+            if (p.X > Right)
                 Right = (float)Math.Ceiling(p.X);
 
             if (p.Y < Top)
                 Top = (float)Math.Floor(p.Y);
-            else if (p.Y > Bottom)
+            if (p.Y > Bottom)
                 Bottom = (float)Math.Ceiling(p.Y);
         }
 
@@ -128,12 +128,12 @@ namespace Molten
         {
             if (p.Left < Left)
                 Left = p.Left;
-            else if (p.Right > Right)
+            if (p.Right > Right)
                 Right = p.Right;
 
             if (p.Top < Top)
                 Top = p.Top;
-            else if (p.Bottom > Bottom)
+            if (p.Bottom > Bottom)
                 Bottom = p.Bottom;
         }
 

@@ -18,33 +18,21 @@ namespace Molten.Samples
         SceneObject _child;
         List<Matrix4F> _positions;
         Random _rng;
-        SceneCameraComponent _cam;
-        Camera2D _cam2D;
         ISpriteFont _font;
         List<ISprite> _sprites;
         IMesh<VertexTexture> _mesh;
         SpriteBatchContainer _container;
         FontFile _fontFile;
 
-        public FontFileTest(EngineSettings settings = null) : base("FontFile Test", settings)
-        {
+        Vector2F _clickPoint;
+        Color _clickColor = Color.Red;
+        List<Shape> _shapes;
 
-        }
+        public FontFileTest(EngineSettings settings = null) : base("FontFile Test", settings) { }
 
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-            _cam = new SceneCameraComponent()
-            {
-                OutputSurface = Window,
-                OutputDepthSurface = WindowDepthSurface,
-            };
-
-            _cam2D = new Camera2D()
-            {
-                OutputSurface = Window,
-                OutputDepthSurface = WindowDepthSurface,
-            };
 
             _sprites = new List<ISprite>();
             _rng = new Random();
@@ -104,6 +92,7 @@ namespace Molten.Samples
             };
             _mesh.SetVertices(verts);
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
+            AcceptPlayerInput = false;
 
             LoadFontFile();
             NewFontSystemTest('8');
@@ -148,9 +137,9 @@ namespace Molten.Samples
 
             Log.WriteDebugLine($"FontFile test using glyph at index {_fontFile.GetGlyphIndex(glyphChar)}");
             Glyph glyph = _fontFile.GetGlyph(glyphChar);
-            List<Shape> glyphShapes = glyph.CreateShapes(16, true);
+
+             _shapes = glyph.CreateShapes(4, true);
             ushort[] endPoints = glyph.ContourEndPoints;
-            int start = 0;
 
             // Add 5 colors. The last color will be used when we have more points than colors.
             List<Color> colors = new List<Color>();
@@ -158,22 +147,21 @@ namespace Molten.Samples
             colors.Add(Color.Yellow);
 
             // Draw outline
-            Vector2F offset = new Vector2F(300);
-            float scale = 0.25f;
+            Vector2F offset = new Vector2F(350, 100);
+            float scale = 0.4f;
+            foreach (Shape s in _shapes)
+                s.ScaleAndOffset(offset, scale);
 
             List<List<Vector2F>> linePoints = new List<List<Vector2F>>();
             List<List<Vector2F>> holePoints = new List<List<Vector2F>>();
-            for (int i = 0; i < glyphShapes.Count; i++)
+            for (int i = 0; i < _shapes.Count; i++)
             {
-                Shape shape = glyphShapes[i];
+                Shape shape = _shapes[i];
                 List<Vector2F> points = new List<Vector2F>();
                 linePoints.Add(points);
 
                 for (int j = 0; j < shape.Points.Count; j++)
-                {
-                    Vector2F point = (Vector2F)shape.Points[j];
-                    points.Add((point * scale) + offset);
-                }
+                    points.Add((Vector2F)shape.Points[j]);
 
                 foreach(Shape h in shape.Holes)
                 {
@@ -181,10 +169,7 @@ namespace Molten.Samples
                     holePoints.Add(hPoints);
 
                     for (int j = 0; j < h.Points.Count; j++)
-                    {
-                        Vector2F point = (Vector2F)h.Points[j];
-                        hPoints.Add((point * scale) + offset);
-                    }
+                        hPoints.Add((Vector2F)h.Points[j]);
                 }
             }
 
@@ -197,7 +182,7 @@ namespace Molten.Samples
             glyphBounds.Height *= scale;
 
             List<Vector2F> glyphTriPoints = new List<Vector2F>();
-            glyphShapes[0].Triangulate(glyphTriPoints, offset, scale);
+            //glyphShapes[0].Triangulate(glyphTriPoints, offset, scale);
 
             // Use a container for doing some testing.
             _container = new SpriteBatchContainer()
@@ -212,10 +197,22 @@ namespace Molten.Samples
 
                     sb.DrawTriangleList(glyphTriPoints, colors);
                     for (int i = 0; i < linePoints.Count; i++)
-                        sb.DrawLines(linePoints[i], Color.Red, 2);
+                        sb.DrawLinePath(linePoints[i], Color.Red, 2);
 
                     for (int i = 0; i < holePoints.Count; i++)
-                        sb.DrawLines(holePoints[i], Color.SkyBlue, 2);
+                        sb.DrawLinePath(holePoints[i], Color.SkyBlue, 2);
+
+                    Rectangle clickRect;
+                    if (_shapes != null)
+                    {
+                        sb.DrawLine(_clickPoint, _clickPoint + new Vector2F(3000, 0), Color.Orange, 1);
+
+                        clickRect = new Rectangle((int)_clickPoint.X, (int)_clickPoint.Y, 0, 0);
+                        clickRect.Inflate(8);
+                        sb.DrawRect(clickRect, _clickColor);
+                        sb.DrawString(TestFont, $"Mouse: {Mouse.Position}", new Vector2F(5, 460), Color.White);
+                        sb.DrawString(TestFont, $"Click point: {_clickPoint}", new Vector2F(5, 480), Color.White);
+                    }
                 }
             };
             SampleScene.AddSprite(_container);
@@ -247,6 +244,25 @@ namespace Molten.Samples
         protected override void OnUpdate(Timing time)
         {
             RotateParentChild(_parent, _child, time);
+
+            if (Mouse.IsTapped(IO.MouseButton.Left))
+            {
+                _clickPoint = Mouse.Position;
+                _clickColor = Color.Red;
+
+                if(_shapes != null)
+                {
+                    foreach (Shape shape in _shapes)
+                    {
+                        if (shape.Contains(_clickPoint))
+                        {
+                            _clickColor = Color.Green;
+                            break;
+                        }
+                    }
+                }
+            }
+
             base.OnUpdate(time);
         }
     }

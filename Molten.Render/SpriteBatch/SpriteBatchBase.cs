@@ -370,7 +370,58 @@ namespace Molten.Graphics
         /// <param name="points">The points between which to draw lines.</param>
         /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
-        public void DrawLines(IList<Vector2F> points, IList<Color> pointColors, float thickness)
+        public void DrawLineList(IList<Vector2F> points, IList<Color> pointColors, float thickness)
+        {
+            if (pointColors.Count == 0)
+                throw new SpriteBatchException(this, "There must be at least one color available in the pointColors list.");
+
+            if (points.Count < 2 && points.Count % 2 > 0)
+                throw new SpriteBatchException(this, "There must be at least 2 points per line.");
+
+            if (points.Count == 2)
+            {
+                int secondCol = pointColors.Count > 1 ? 1 : 0;
+                DrawLine(points[0], points[1], pointColors[0], pointColors[secondCol], thickness);
+            }
+            else
+            {
+                SpriteClipZone clip = _clipZones[_curClip];
+                int spriteID = 0;
+                int lineCount = points.Count / 2;
+                SpriteCluster cluster = GetCluster(clip, null, null, ClusterFormat.Line, lineCount, out spriteID);
+
+                Vector2F p1, p2;
+                int startID = spriteID;
+                Color lastCol = pointColors[pointColors.Count - 1];
+                Color4 lastCol4 = lastCol.ToColor4();
+                int i2 = 0;
+
+                for (int i = 0; i < points.Count; i += 2)
+                {
+                    i2 = i + 1;
+                    p1 = points[i];
+                    p2 = points[i2];
+
+                    // Pack two points into a single sprite vertex. This equates to 1 vertex per line.
+                    cluster.Sprites[spriteID++] = new SpriteVertex()
+                    {
+                        Position = p1,
+                        Size = p2,
+                        UV = pointColors[i2 % pointColors.Count].ToVector4(),
+                        Color = pointColors[i % pointColors.Count],
+                        Rotation = thickness,
+                    };
+                }
+
+                cluster.SpriteCount += lineCount;
+            }
+        }
+
+        /// <summary>Draws connecting lines between each of the provided points.</summary>
+        /// <param name="points">The points between which to draw lines.</param>
+        /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
+        /// <param name="thickness">The thickness of the line in pixels.</param>
+        public void DrawLinePath(IList<Vector2F> points, IList<Color> pointColors, float thickness)
         {
             if (pointColors.Count == 0)
                 throw new SpriteBatchException(this, "There must be at least one color available in the pointColors list.");
@@ -433,10 +484,10 @@ namespace Molten.Graphics
         /// <param name="points">The points between which to draw lines.</param>
         /// <param name="color">The color of the lines</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
-        public void DrawLines(IList<Vector2F> points, Color color, float thickness)
+        public void DrawLinePath(IList<Vector2F> points, Color color, float thickness)
         {
             _singleColorList[0] = color;
-            DrawLines(points, _singleColorList, thickness);
+            DrawLinePath(points, _singleColorList, thickness);
         }
 
         /// <summary>

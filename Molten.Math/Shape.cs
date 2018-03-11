@@ -1,46 +1,4 @@
-﻿// MIT - 2018 - James Yarwood - Modified for Molten Engine - https://github.com/Syncaidius/MoltenEngine
-
-/* Poly2Tri
- * Copyright (c) 2009-2010, Poly2Tri Contributors
- * http://code.google.com/p/poly2tri/
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * * Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- * * Redistributions in binary form must reproduce the above copyright notice,
- *   this list of conditions and the following disclaimer in the documentation
- *   and/or other materials provided with the distribution.
- * * Neither the name of Poly2Tri nor the names of its contributors may be
- *   used to endorse or promote products derived from this software without specific
- *   prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/// Changes from the Java version
-///   Polygon constructors sprused up, checks for 3+ polys
-///   Naming of everything
-///   getTriangulationMode() -> TriangulationMode { get; }
-///   Exceptions replaced
-/// Future possibilities
-///   We have a lot of Add/Clear methods -- we may prefer to just expose the container
-///   Some self-explanitory methods may deserve commenting anyways
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -48,8 +6,6 @@ namespace Molten
 {
     public class Shape
     {
-        public static readonly ShapeAreaComparer AreaComparer = new ShapeAreaComparer();
-
         /// <summary>
         /// A list of shape outline points.
         /// </summary>
@@ -201,23 +157,170 @@ namespace Molten
                 output.Add(tri);
         }
 
-        /// <summary>
-        /// Compares <see cref="Shape"/> by bounds area.
-        /// </summary>
-        public class ShapeAreaComparer : IComparer<Shape>
+        public void Scale(float scale)
         {
-            public int Compare(Shape a, Shape b)
+            for (int i = 0; i < Points.Count; i++)
             {
-                float aArea = a.Bounds.Area();
-                float bArea = b.Bounds.Area();
-
-                if (aArea > bArea)
-                    return 1;
-                else if (aArea < bArea)
-                    return -1;
-                else
-                    return 0;
+                Points[i].X *= scale;
+                Points[i].Y *= scale;
             }
+
+            foreach (Shape h in Holes)
+                h.Scale(scale);
+
+            CalculateBounds();
+        }
+
+        public void Offset(Vector2F offset)
+        {
+            for (int i = 0; i < Points.Count; i++)
+            {
+                Points[i].X += offset.X;
+                Points[i].Y += offset.Y;
+            }
+
+            foreach (Shape h in Holes)
+                h.Offset(offset);
+
+            CalculateBounds();
+        }
+
+        public void ScaleAndOffset(Vector2F offset, float scale)
+        {
+            for (int i = 0; i < Points.Count; i++)
+            {
+                Points[i].X *= scale;
+                Points[i].Y *= scale;
+                Points[i].X += offset.X;
+                Points[i].Y += offset.Y;
+            }
+
+            foreach (Shape h in Holes)
+                h.ScaleAndOffset(offset, scale);
+
+            CalculateBounds();
+        }
+
+        public bool Intersects(Shape shape)
+        {
+            // We only need 1 point to be inside for an intersection
+            for (int i = 0; i < shape.Points.Count; i++)
+            {
+                if (Contains((Vector2F)Points[i]))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool Contains(Shape shape)
+        {
+            // We only need 1 point to be outside to invalidate a containment.
+            for(int i = 0; i < shape.Points.Count; i++)
+            {
+                if (!Contains((Vector2F)Points[i]))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public bool Contains(Vector2F point)
+        {
+            const float X_THRESHOLD = 0.5f; // Half a pixel
+            List<Shape> holes = Holes;
+
+            // Test holes first
+            for (int i = 0; i < holes.Count; i++)
+            {
+                if (holes[i].Contains(point))
+                    return false;
+            }
+
+            Vector2F p1;
+            Vector2F p2;
+            int hitCount = 0;
+
+            Ray originRay = new Ray(new Vector3F(point, 0), Vector3F.Right);
+            Vector3F rayHit;
+            int end = Points.Count - 1;
+            RectangleF inverseRect = new RectangleF()
+            {
+                Left = int.MaxValue,
+                Right = int.MinValue,
+                Top = int.MaxValue,
+                Bottom = int.MinValue,
+            };
+
+            float prevX = float.NaN;
+            float prevIntersectX = prevX;
+            bool prevRunsLeft = true;
+
+            for (int i = 0; i < end; i++)
+            {
+                p1 = (Vector2F)Points[i];
+                p2 = (Vector2F)Points[i + 1];
+
+                RectangleF contourBounds = inverseRect;
+                contourBounds.Encapsulate(p1);
+                contourBounds.Encapsulate(p2);
+
+                Vector2F contourDir = -Vector2F.Normalize(p2 - p1);
+                Ray contourRay = new Ray(new Vector3F(p1, 0), new Vector3F(contourDir, 0));
+
+
+                if (CollisionHelper.RayIntersectsRay(ref originRay, ref contourRay, out rayHit))
+                {
+                    // check if intersection is on the left of the point.
+                    if (rayHit.X < point.X)
+                        continue;
+
+                    Vector2F intersect = (Vector2F)rayHit;
+                    if (contourBounds.Contains(intersect))
+                    {
+                        //_intersectionLines.Add(contourBounds.TopLeft);
+                        //_intersectionLines.Add(contourBounds.TopRight);
+                        //_intersectionLines.Add(contourBounds.TopRight);
+                        //_intersectionLines.Add(contourBounds.BottomRight);
+                        //_intersectionLines.Add(contourBounds.BottomRight);
+                        //_intersectionLines.Add(contourBounds.BottomLeft);
+                        //_intersectionLines.Add(contourBounds.BottomLeft);
+                        //_intersectionLines.Add(contourBounds.TopLeft);
+
+                        // Check if intersect point is the same as the previous one.
+                        if (prevX != intersect.X)
+                        {
+                            float xDist = 0;
+                            bool runsLeft = (contourDir.X < 0);
+
+                            if (!float.IsNaN(prevX))
+                            {
+                                if (prevX == p1.X)
+                                {
+                                    xDist = (prevIntersectX - intersect.X) / X_THRESHOLD;
+                                    if (prevRunsLeft != runsLeft)
+                                        xDist = 0;
+                                    else if (xDist > -1f && xDist < 1f)
+                                        xDist = 1;
+                                    else
+                                        xDist = 0;
+                                }
+                            }
+
+                            if (xDist == 0)
+                            {
+                                hitCount++;
+                                prevIntersectX = intersect.X;
+                                prevX = p2.X;
+                                prevRunsLeft = runsLeft;
+                            }
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine($"Hit count: {hitCount}");
+            return hitCount % 2 != 0;
         }
 
 

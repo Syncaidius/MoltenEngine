@@ -83,7 +83,7 @@ namespace Molten.Font
         public List<Shape> CreateShapes(int pointsPerCurve, bool flipYAxis)
         {
             List<Shape> result = new List<Shape>();
-            List<Shape> holes = new List<Shape>();
+            List<Shape> toTest = new List<Shape>();
             List<Vector2F> cp = new List<Vector2F>();
             Vector2F prevCurvePoint = Vector2F.Zero;
             int start = 0;
@@ -115,8 +115,6 @@ namespace Molten.Font
                     }
                 }
 
-                int winding = GetWinding(start, end, new Vector2F(_bounds.Center.X, _bounds.Center.Y));
-
                 // Close contour, by linking the end point back to the start point.
                 if (cp.Count > 0)
                     PlotCurve(shape, prevCurvePoint, (Vector2F)shape.Points[0], cp, pointsPerCurve, curveIncrement);
@@ -137,23 +135,19 @@ namespace Molten.Font
                     }
                 }
 
-                holes.Add(shape);
-
+                toTest.Add(shape);
                 start = end + 1;
             }
 
-            holes.Sort(Shape.AreaComparer);
-            //holes.Reverse(); // Flip to descending area size.
-
             // TODO replace with polygon intersect - letter C in UECHIGOT.TTF
 
-            // Figure out which holes belong to which shape
-            foreach (Shape h in holes)
+            // Figure out which shapes are holes and which are glyph outlines.
+            foreach (Shape h in toTest)
             {
                 bool holeContained = false;
                 foreach (Shape s in result)
                 {
-                    if (s.Bounds.Contains(h.Bounds))
+                    if (s.Contains(h))
                     {
                         s.Holes.Add(h);
                         holeContained = true;
@@ -170,56 +164,6 @@ namespace Molten.Font
             }
 
             return result;
-        }
-
-        private int GetWinding(int start, int end, Vector2F center)
-        {
-            Vector2F p1;
-            Vector2F p2;
-            int windingNumber = 0;
-
-            Ray originRay = new Ray(new Vector3F(center, 0), Vector3F.Right);
-            Ray contourRay;
-            Vector3F intersect;
-
-            for(int i = start; i < end; i++)
-            {
-                p1 = _points[i].Point;
-                p2 = _points[i + 1].Point;
-
-                RectangleF contourBounds = new RectangleF();
-                contourBounds.Encapsulate(p1);
-                contourBounds.Encapsulate(p2);
-
-                Vector2F dir = p2 - p1;
-                contourRay = new Ray(new Vector3F(p1,0), new Vector3F(dir, 0));
-                if (CollisionHelper.RayIntersectsRay(ref originRay, ref contourRay, out intersect))
-                {
-                    if (contourBounds.Contains(new Vector2F(intersect.X, intersect.Y)))
-                    {
-                        // Glyph points are defined with origin 0,0 at the bottom left. Ours is top left, so handle accordingly.
-                        // Upward intersection
-                        if (p2.Y > p1.Y)
-                        {
-                            windingNumber--;
-                            // TODO check if between X of p1 and p2. If not, ignore the intersection.
-                        }
-                        else if(p2.Y < p1.Y) // downward intersection
-                        {
-                            windingNumber++;
-                        }
-                        else // Test right-to-left or left-to-right
-                        {
-                            if (p2.X < p1.X) // right-to-left crossing
-                                windingNumber--;
-                            else if (p2.X > p1.X)
-                                windingNumber++;
-                        }
-                    }
-                }
-            }
-
-            return windingNumber;
         }
 
         private void PlotCurve(Shape shape, Vector2F prevPoint, Vector2F curPoint, List<Vector2F> cp, float pointsPerCurve, float curveIncrement)

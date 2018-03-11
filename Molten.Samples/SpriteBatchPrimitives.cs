@@ -252,8 +252,8 @@ namespace Molten.Samples
                 OnDraw = (sb) =>
                 {
                     sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.White, 1);
-                    sb.DrawLines(linePoints, colors, 2);
-                    sb.DrawLines(circleLinePoints, colors, 4);
+                    sb.DrawLinePath(linePoints, colors, 2);
+                    sb.DrawLinePath(circleLinePoints, colors, 4);
                     sb.DrawTriangle(new Vector2F(400, 220), new Vector2F(350, 320), new Vector2F(500, 260), Color.SkyBlue);
                     sb.DrawTriangle(new Vector2F(500, 220), new Vector2F(590, 350), new Vector2F(650, 280), Color.Violet);
                     sb.DrawTriangleList(triPoints, colors);
