@@ -201,18 +201,6 @@ namespace Molten
             CalculateBounds();
         }
 
-        public bool Intersects(Shape shape)
-        {
-            // We only need 1 point to be inside for an intersection
-            for (int i = 0; i < shape.Points.Count; i++)
-            {
-                if (Contains((Vector2F)Points[i]))
-                    return true;
-            }
-
-            return false;
-        }
-
         public bool Contains(Shape shape)
         {
             // We only need 1 point to be outside to invalidate a containment.
