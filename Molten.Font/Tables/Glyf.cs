@@ -120,7 +120,7 @@ namespace Molten.Font
 
                 int arg1;
                 int arg2;
-                Matrix2x2? scaleMatrix = null;
+                Matrix2F? scaleMatrix = null;
                 Glyph componentGlyph = glyphs[glyphID].Clone();
 
                 // Is arg1 and 2 a XY offset value?
@@ -143,7 +143,7 @@ namespace Molten.Font
                     if (HasFlag(flags, CompositeGlyphFlags.WeHaveScale))
                     {
                         float scale = FontUtil.FromF2DOT14(reader.ReadInt16());
-                        scaleMatrix = new Matrix2x2()
+                        scaleMatrix = new Matrix2F()
                         {
                             M11 = scale,
                             M12 = 0,
@@ -153,7 +153,7 @@ namespace Molten.Font
                     }
                     else if (HasFlag(flags, CompositeGlyphFlags.WeHaveXAndYScale))
                     {
-                        scaleMatrix = new Matrix2x2()
+                        scaleMatrix = new Matrix2F()
                         {
                             M11 = FontUtil.FromF2DOT14(reader.ReadInt16()),
                             M12 = 0,
@@ -163,7 +163,7 @@ namespace Molten.Font
                     }
                     else if (HasFlag(flags, CompositeGlyphFlags.WeHaveATwoByTwo))
                     {
-                        scaleMatrix = new Matrix2x2()
+                        scaleMatrix = new Matrix2F()
                         {
                             M11 = FontUtil.FromF2DOT14(reader.ReadInt16()),
                             M12 = FontUtil.FromF2DOT14(reader.ReadInt16()),

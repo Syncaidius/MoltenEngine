@@ -9,7 +9,7 @@ namespace Molten.Graphics
     /// <summary>A shader matrix3x2 variable.</summary>
     internal class ScalarFloat3x2Variable : ShaderConstantVariable
     {
-        Matrix3x2 _value;
+        Matrix3x2F _value;
 
         public ScalarFloat3x2Variable(ShaderConstantBuffer parent)
             : base(parent)
@@ -30,7 +30,7 @@ namespace Molten.Graphics
             }
             set
             {
-                _value = (Matrix3x2)value;
+                _value = (Matrix3x2F)value;
                 DirtyParent();
             }
         }

@@ -1006,7 +1006,7 @@ namespace Molten
         /// <param name="maxZ">The maximum depth of the viewport.</param>
         /// <param name="worldViewProjection">The combined world-view-projection matrix.</param>
         /// <param name="result">When the method completes, contains the vector in screen space.</param>
-        public static void Project(ref Vector3F vector, float x, float y, float width, float height, float minZ, float maxZ, ref Matrix worldViewProjection, out Vector3F result)
+        public static void Project(ref Vector3F vector, float x, float y, float width, float height, float minZ, float maxZ, ref Matrix4F worldViewProjection, out Vector3F result)
         {
             Vector3F v = new Vector3F();
             TransformCoordinate(ref vector, ref worldViewProjection, out v);
@@ -1026,7 +1026,7 @@ namespace Molten
         /// <param name="maxZ">The maximum depth of the viewport.</param>
         /// <param name="worldViewProjection">The combined world-view-projection matrix.</param>
         /// <returns>The vector in screen space.</returns>
-        public static Vector3F Project(Vector3F vector, float x, float y, float width, float height, float minZ, float maxZ, Matrix worldViewProjection)
+        public static Vector3F Project(Vector3F vector, float x, float y, float width, float height, float minZ, float maxZ, Matrix4F worldViewProjection)
         {
             Vector3F result;
             Project(ref vector, x, y, width, height, minZ, maxZ, ref worldViewProjection, out result);
@@ -1045,11 +1045,11 @@ namespace Molten
         /// <param name="maxZ">The maximum depth of the viewport.</param>
         /// <param name="worldViewProjection">The combined world-view-projection matrix.</param>
         /// <param name="result">When the method completes, contains the vector in object space.</param>
-        public static void Unproject(ref Vector3F vector, float x, float y, float width, float height, float minZ, float maxZ, ref Matrix worldViewProjection, out Vector3F result)
+        public static void Unproject(ref Vector3F vector, float x, float y, float width, float height, float minZ, float maxZ, ref Matrix4F worldViewProjection, out Vector3F result)
         {
             Vector3F v = new Vector3F();
-            Matrix matrix = new Matrix();
-            Matrix.Invert(ref worldViewProjection, out matrix);
+            Matrix4F matrix = new Matrix4F();
+            Matrix4F.Invert(ref worldViewProjection, out matrix);
 
             v.X = (((vector.X - x) / width) * 2.0f) - 1.0f;
             v.Y = -((((vector.Y - y) / height) * 2.0f) - 1.0f);
@@ -1070,7 +1070,7 @@ namespace Molten
         /// <param name="maxZ">The maximum depth of the viewport.</param>
         /// <param name="worldViewProjection">The combined world-view-projection matrix.</param>
         /// <returns>The vector in object space.</returns>
-        public static Vector3F Unproject(Vector3F vector, float x, float y, float width, float height, float minZ, float maxZ, Matrix worldViewProjection)
+        public static Vector3F Unproject(Vector3F vector, float x, float y, float width, float height, float minZ, float maxZ, Matrix4F worldViewProjection)
         {
             Vector3F result;
             Unproject(ref vector, x, y, width, height, minZ, maxZ, ref worldViewProjection, out result);
@@ -1203,12 +1203,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 3D vector by the given <see cref="Quaternion"/> rotation.
+        /// Transforms a 3D vector by the given <see cref="QuaternionF"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="Quaternion"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector4F"/>.</param>
-        public static void Transform(ref Vector3F vector, ref Quaternion rotation, out Vector3F result)
+        public static void Transform(ref Vector3F vector, ref QuaternionF rotation, out Vector3F result)
         {
             float x = rotation.X + rotation.X;
             float y = rotation.Y + rotation.Y;
@@ -1230,12 +1230,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 3D vector by the given <see cref="Quaternion"/> rotation.
+        /// Transforms a 3D vector by the given <see cref="QuaternionF"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="Quaternion"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
         /// <returns>The transformed <see cref="Vector4F"/>.</returns>
-        public static Vector3F Transform(Vector3F vector, Quaternion rotation)
+        public static Vector3F Transform(Vector3F vector, QuaternionF rotation)
         {
             Vector3F result;
             Transform(ref vector, ref rotation, out result);
@@ -1243,15 +1243,15 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms an array of vectors by the given <see cref="Quaternion"/> rotation.
+        /// Transforms an array of vectors by the given <see cref="QuaternionF"/> rotation.
         /// </summary>
         /// <param name="source">The array of vectors to transform.</param>
-        /// <param name="rotation">The <see cref="Quaternion"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
         /// <param name="destination">The array for which the transformed vectors are stored.
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(Vector3F[] source, ref Quaternion rotation, Vector3F[] destination)
+        public static void Transform(Vector3F[] source, ref QuaternionF rotation, Vector3F[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -1294,12 +1294,12 @@ namespace Molten
 
 
         /// <summary>
-        /// Transforms a 3D vector by the given <see cref="Matrix3x3"/>.
+        /// Transforms a 3D vector by the given <see cref="Matrix3F"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix3x3"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix3F"/>.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector3F"/>.</param>
-        public static void Transform(ref Vector3F vector, ref Matrix3x3 transform, out Vector3F result)
+        public static void Transform(ref Vector3F vector, ref Matrix3F transform, out Vector3F result)
         {
             result = new Vector3F()
             {
@@ -1310,12 +1310,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 3D vector by the given <see cref="Matrix3x3"/>.
+        /// Transforms a 3D vector by the given <see cref="Matrix3F"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix3x3"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix3F"/>.</param>
         /// <returns>The transformed <see cref="Vector3F"/>.</returns>
-        public static Vector3F Transform(Vector3F vector, Matrix3x3 transform)
+        public static Vector3F Transform(Vector3F vector, Matrix3F transform)
         {
             Vector3F result;
             Transform(ref vector, ref transform, out result);
@@ -1323,12 +1323,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 3D vector by the given <see cref="Matrix"/>.
+        /// Transforms a 3D vector by the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector3F"/>.</param>
-        public static void Transform(ref Vector3F vector, ref Matrix transform, out Vector3F result)
+        public static void Transform(ref Vector3F vector, ref Matrix4F transform, out Vector3F result)
         {
             Vector4F intermediate;
             Transform(ref vector, ref transform, out intermediate);
@@ -1336,12 +1336,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 3D vector by the given <see cref="Matrix"/>.
+        /// Transforms a 3D vector by the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector4F"/>.</param>
-        public static void Transform(ref Vector3F vector, ref Matrix transform, out Vector4F result)
+        public static void Transform(ref Vector3F vector, ref Matrix4F transform, out Vector4F result)
         {
             result = new Vector4F(
                 (vector.X * transform.M11) + (vector.Y * transform.M21) + (vector.Z * transform.M31) + transform.M41,
@@ -1351,12 +1351,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 3D vector by the given <see cref="Matrix"/>.
+        /// Transforms a 3D vector by the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <returns>The transformed <see cref="Vector4F"/>.</returns>
-        public static Vector4F Transform(Vector3F vector, Matrix transform)
+        public static Vector4F Transform(Vector3F vector, Matrix4F transform)
         {
             Vector4F result;
             Transform(ref vector, ref transform, out result);
@@ -1364,14 +1364,14 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms an array of 3D vectors by the given <see cref="Matrix"/>.
+        /// Transforms an array of 3D vectors by the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="source">The array of vectors to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="destination">The array for which the transformed vectors are stored.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(Vector3F[] source, ref Matrix transform, Vector4F[] destination)
+        public static void Transform(Vector3F[] source, ref Matrix4F transform, Vector4F[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -1393,7 +1393,7 @@ namespace Molten
         /// <param name="x">X component of the vector to transform.</param>
         /// <param name="rotation">Rotation to apply to the vector.</param>
         /// <param name="result">Transformed vector.</param>
-        public static void TransformX(float x, ref Quaternion rotation, out Vector3F result)
+        public static void TransformX(float x, ref QuaternionF rotation, out Vector3F result)
         {
             //This operation is an optimized-down version of v' = q * v * q^-1.
             //The expanded form would be to treat v as an 'axis only' quaternion
@@ -1423,7 +1423,7 @@ namespace Molten
         /// <param name="y">Y component of the vector to transform.</param>
         /// <param name="rotation">Rotation to apply to the vector.</param>
         /// <param name="result">Transformed vector.</param>
-        public static void TransformY(float y, ref Quaternion rotation, out Vector3F result)
+        public static void TransformY(float y, ref QuaternionF rotation, out Vector3F result)
         {
             //This operation is an optimized-down version of v' = q * v * q^-1.
             //The expanded form would be to treat v as an 'axis only' quaternion
@@ -1454,7 +1454,7 @@ namespace Molten
         /// <param name="z">Z component of the vector to transform.</param>
         /// <param name="rotation">Rotation to apply to the vector.</param>
         /// <param name="result">Transformed vector.</param>
-        public static void TransformZ(float z, ref Quaternion rotation, out Vector3F result)
+        public static void TransformZ(float z, ref QuaternionF rotation, out Vector3F result)
         {
             //This operation is an optimized-down version of v' = q * v * q^-1.
             //The expanded form would be to treat v as an 'axis only' quaternion
@@ -1480,10 +1480,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs a coordinate transformation using the given <see cref="Matrix"/>.
+        /// Performs a coordinate transformation using the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="coordinate">The coordinate vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="result">When the method completes, contains the transformed coordinates.</param>
         /// <remarks>
         /// A coordinate transform performs the transformation with the assumption that the w component
@@ -1492,7 +1492,7 @@ namespace Molten
         /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
         /// with coordinates as the w component can safely be ignored.
         /// </remarks>
-        public static void TransformCoordinate(ref Vector3F coordinate, ref Matrix transform, out Vector3F result)
+        public static void TransformCoordinate(ref Vector3F coordinate, ref Matrix4F transform, out Vector3F result)
         {
             Vector4F vector = new Vector4F();
             vector.X = (coordinate.X * transform.M11) + (coordinate.Y * transform.M21) + (coordinate.Z * transform.M31) + transform.M41;
@@ -1504,10 +1504,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs a coordinate transformation using the given <see cref="Matrix"/>.
+        /// Performs a coordinate transformation using the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="coordinate">The coordinate vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <returns>The transformed coordinates.</returns>
         /// <remarks>
         /// A coordinate transform performs the transformation with the assumption that the w component
@@ -1516,7 +1516,7 @@ namespace Molten
         /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
         /// with coordinates as the w component can safely be ignored.
         /// </remarks>
-        public static Vector3F TransformCoordinate(Vector3F coordinate, Matrix transform)
+        public static Vector3F TransformCoordinate(Vector3F coordinate, Matrix4F transform)
         {
             Vector3F result;
             TransformCoordinate(ref coordinate, ref transform, out result);
@@ -1524,10 +1524,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs a coordinate transformation on an array of vectors using the given <see cref="Matrix"/>.
+        /// Performs a coordinate transformation on an array of vectors using the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="source">The array of coordinate vectors to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="destination">The array for which the transformed vectors are stored.
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
@@ -1539,7 +1539,7 @@ namespace Molten
         /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
         /// with coordinates as the w component can safely be ignored.
         /// </remarks>
-        public static void TransformCoordinate(Vector3F[] source, ref Matrix transform, Vector3F[] destination)
+        public static void TransformCoordinate(Vector3F[] source, ref Matrix4F transform, Vector3F[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -1555,10 +1555,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs a normal transformation using the given <see cref="Matrix"/>.
+        /// Performs a normal transformation using the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="normal">The normal vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="result">When the method completes, contains the transformed normal.</param>
         /// <remarks>
         /// A normal transform performs the transformation with the assumption that the w component
@@ -1567,7 +1567,7 @@ namespace Molten
         /// apply. This is often preferred for normal vectors as normals purely represent direction
         /// rather than location because normal vectors should not be translated.
         /// </remarks>
-        public static void TransformNormal(ref Vector3F normal, ref Matrix transform, out Vector3F result)
+        public static void TransformNormal(ref Vector3F normal, ref Matrix4F transform, out Vector3F result)
         {
             result = new Vector3F(
                 (normal.X * transform.M11) + (normal.Y * transform.M21) + (normal.Z * transform.M31),
@@ -1576,10 +1576,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs a normal transformation using the given <see cref="Matrix"/>.
+        /// Performs a normal transformation using the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="normal">The normal vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <returns>The transformed normal.</returns>
         /// <remarks>
         /// A normal transform performs the transformation with the assumption that the w component
@@ -1588,7 +1588,7 @@ namespace Molten
         /// apply. This is often preferred for normal vectors as normals purely represent direction
         /// rather than location because normal vectors should not be translated.
         /// </remarks>
-        public static Vector3F TransformNormal(Vector3F normal, Matrix transform)
+        public static Vector3F TransformNormal(Vector3F normal, Matrix4F transform)
         {
             Vector3F result;
             TransformNormal(ref normal, ref transform, out result);
@@ -1596,10 +1596,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs a normal transformation on an array of vectors using the given <see cref="Matrix"/>.
+        /// Performs a normal transformation on an array of vectors using the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="source">The array of normal vectors to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="destination">The array for which the transformed vectors are stored.
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
@@ -1611,7 +1611,7 @@ namespace Molten
         /// apply. This is often preferred for normal vectors as normals purely represent direction
         /// rather than location because normal vectors should not be translated.
         /// </remarks>
-        public static void TransformNormal(Vector3F[] source, ref Matrix transform, Vector3F[] destination)
+        public static void TransformNormal(Vector3F[] source, ref Matrix4F transform, Vector3F[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");

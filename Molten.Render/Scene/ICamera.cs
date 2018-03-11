@@ -8,11 +8,11 @@ namespace Molten.Graphics
 {
     public interface ICamera
     {
-        Matrix View { get; }
+        Matrix4F View { get; }
 
-        Matrix Projection { get; }
+        Matrix4F Projection { get; }
 
-        Matrix ViewProjection { get; }
+        Matrix4F ViewProjection { get; }
 
         IRenderSurface OutputSurface { get; set; }
 

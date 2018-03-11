@@ -317,7 +317,7 @@ namespace Molten
         /// </summary>
         /// <param name="plane">The plane for which the reflection occurs. This parameter is assumed to be normalized.</param>
         /// <param name="result">When the method completes, contains the reflection matrix.</param>
-        public void Reflection(out Matrix result)
+        public void Reflection(out Matrix4F result)
         {
             float x = this.Normal.X;
             float y = this.Normal.Y;
@@ -348,9 +348,9 @@ namespace Molten
         /// Builds a matrix that can be used to reflect vectors about a plane.
         /// </summary>
         /// <returns>The reflection matrix.</returns>
-        public Matrix Reflection()
+        public Matrix4F Reflection()
         {
-            Matrix result;
+            Matrix4F result;
             Reflection(out result);
             return result;
         }
@@ -362,7 +362,7 @@ namespace Molten
         /// <param name="light">The light direction. If the W component is 0, the light is directional light; if the
         /// W component is 1, the light is a point light.</param>
         /// <param name="result">When the method completes, contains the shadow matrix.</param>
-        public void Shadow(ref Vector4F light, out Matrix result)
+        public void Shadow(ref Vector4F light, out Matrix4F result)
         {
             float dot = (this.Normal.X * light.X) + (this.Normal.Y * light.Y) + (this.Normal.Z * light.Z) + (this.D * light.W);
             float x = -this.Normal.X;
@@ -395,9 +395,9 @@ namespace Molten
         /// <param name="light">The light direction. If the W component is 0, the light is directional light; if the
         /// W component is 1, the light is a point light.</param>
         /// <returns>The shadow matrix.</returns>
-        public Matrix Shadow(Vector4F light)
+        public Matrix4F Shadow(Vector4F light)
         {
-            Matrix result;
+            Matrix4F result;
             Shadow(ref light, out result);
             return result;
         }
@@ -407,7 +407,7 @@ namespace Molten
         /// This plane is assumed to be normalized
         /// </summary>
         /// <param name="result">When the method completes, contains the reflection Matrix3x3.</param>
-        public void Reflection(out Matrix3x3 result)
+        public void Reflection(out Matrix3F result)
         {
             float x = this.Normal.X;
             float y = this.Normal.Y;
@@ -432,9 +432,9 @@ namespace Molten
         /// This plane is assumed to be normalized
         /// </summary>
         /// <returns>The reflection Matrix3x3.</returns>
-        public Matrix3x3 Reflection3x3()
+        public Matrix3F Reflection3x3()
         {
-            Matrix3x3 result;
+            Matrix3F result;
             Reflection(out result);
             return result;
         }
@@ -446,7 +446,7 @@ namespace Molten
         /// W component is 1, the light is a point light.</param>
         /// <param name="plane">The plane onto which to project the geometry as a shadow. This parameter is assumed to be normalized.</param>
         /// <param name="result">When the method completes, contains the shadow Matrix3x3.</param>
-        public static void Shadow(ref Vector4F light, ref Plane plane, out Matrix3x3 result)
+        public static void Shadow(ref Vector4F light, ref Plane plane, out Matrix3F result)
         {
             float dot = (plane.Normal.X * light.X) + (plane.Normal.Y * light.Y) + (plane.Normal.Z * light.Z) + (plane.D * light.W);
             float x = -plane.Normal.X;
@@ -472,9 +472,9 @@ namespace Molten
         /// W component is 1, the light is a point light.</param>
         /// <param name="plane">The plane onto which to project the geometry as a shadow. This parameter is assumed to be normalized.</param>
         /// <returns>The shadow Matrix3x3.</returns>
-        public static Matrix3x3 Shadow(Vector4F light, Plane plane)
+        public static Matrix3F Shadow(Vector4F light, Plane plane)
         {
-            Matrix3x3 result;
+            Matrix3F result;
             Shadow(ref light, ref plane, out result);
             return result;
         }
@@ -613,7 +613,7 @@ namespace Molten
         /// <param name="plane">The normalized source plane.</param>
         /// <param name="rotation">The quaternion rotation.</param>
         /// <param name="result">When the method completes, contains the transformed plane.</param>
-        public static void Transform(ref Plane plane, ref Quaternion rotation, out Plane result)
+        public static void Transform(ref Plane plane, ref QuaternionF rotation, out Plane result)
         {
             float x2 = rotation.X + rotation.X;
             float y2 = rotation.Y + rotation.Y;
@@ -644,7 +644,7 @@ namespace Molten
         /// <param name="plane">The normalized source plane.</param>
         /// <param name="rotation">The quaternion rotation.</param>
         /// <returns>The transformed plane.</returns>
-        public static Plane Transform(Plane plane, Quaternion rotation)
+        public static Plane Transform(Plane plane, QuaternionF rotation)
         {
             Plane result;
             float x2 = rotation.X + rotation.X;
@@ -678,7 +678,7 @@ namespace Molten
         /// <param name="planes">The array of normalized planes to transform.</param>
         /// <param name="rotation">The quaternion rotation.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="planes"/> is <c>null</c>.</exception>
-        public static void Transform(Plane[] planes, ref Quaternion rotation)
+        public static void Transform(Plane[] planes, ref QuaternionF rotation)
         {
             if (planes == null)
                 throw new ArgumentNullException("planes");
@@ -718,15 +718,15 @@ namespace Molten
         /// <param name="plane">The normalized source plane.</param>
         /// <param name="transformation">The transformation matrix.</param>
         /// <param name="result">When the method completes, contains the transformed plane.</param>
-        public static void Transform(ref Plane plane, ref Matrix transformation, out Plane result)
+        public static void Transform(ref Plane plane, ref Matrix4F transformation, out Plane result)
         {
             float x = plane.Normal.X;
             float y = plane.Normal.Y;
             float z = plane.Normal.Z;
             float d = plane.D;
 
-            Matrix inverse;
-            Matrix.Invert(ref transformation, out inverse);
+            Matrix4F inverse;
+            Matrix4F.Invert(ref transformation, out inverse);
 
             result.Normal.X = (((x * inverse.M11) + (y * inverse.M12)) + (z * inverse.M13)) + (d * inverse.M14);
             result.Normal.Y = (((x * inverse.M21) + (y * inverse.M22)) + (z * inverse.M23)) + (d * inverse.M24);
@@ -740,7 +740,7 @@ namespace Molten
         /// <param name="plane">The normalized source plane.</param>
         /// <param name="transformation">The transformation matrix.</param>
         /// <returns>When the method completes, contains the transformed plane.</returns>
-        public static Plane Transform(Plane plane, Matrix transformation)
+        public static Plane Transform(Plane plane, Matrix4F transformation)
         {
             Plane result;
             float x = plane.Normal.X;
@@ -763,13 +763,13 @@ namespace Molten
         /// <param name="planes">The array of normalized planes to transform.</param>
         /// <param name="transformation">The transformation matrix.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="planes"/> is <c>null</c>.</exception>
-        public static void Transform(Plane[] planes, ref Matrix transformation)
+        public static void Transform(Plane[] planes, ref Matrix4F transformation)
         {
             if (planes == null)
                 throw new ArgumentNullException("planes");
 
-            Matrix inverse;
-            Matrix.Invert(ref transformation, out inverse);
+            Matrix4F inverse;
+            Matrix4F.Invert(ref transformation, out inverse);
 
             for (int i = 0; i < planes.Length; ++i)
             {

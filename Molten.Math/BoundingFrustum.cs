@@ -31,7 +31,7 @@ namespace Molten
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct BoundingFrustum : IEquatable<BoundingFrustum>
     {
-        private Matrix pMatrix;
+        private Matrix4F pMatrix;
         private Plane  pNear;
         private Plane  pFar;
         private Plane  pLeft;
@@ -42,7 +42,7 @@ namespace Molten
         /// <summary>
         /// Gets or sets the Matrix that describes this bounding frustum.
         /// </summary>
-        public Matrix Matrix
+        public Matrix4F Matrix
         {
             get
             {
@@ -119,7 +119,7 @@ namespace Molten
         /// Creates a new instance of BoundingFrustum.
         /// </summary>
         /// <param name="matrix">Combined matrix that usually takes view × projection matrix.</param>
-        public BoundingFrustum(Matrix matrix)
+        public BoundingFrustum(Matrix4F matrix)
         {
             pMatrix = matrix;
             GetPlanesFromMatrix(ref pMatrix, out pNear, out pFar, out pLeft, out pRight, out pTop, out pBottom);
@@ -220,7 +220,7 @@ namespace Molten
             }
         }
 
-        private static void GetPlanesFromMatrix(ref Matrix matrix, out Plane near, out Plane far, out Plane left, out Plane right, out Plane top, out Plane bottom)
+        private static void GetPlanesFromMatrix(ref Matrix4F matrix, out Plane near, out Plane far, out Plane left, out Plane right, out Plane top, out Plane bottom)
         {
             //http://www.chadvernon.com/blog/resources/directx9/frustum-culling/
 
@@ -328,7 +328,7 @@ namespace Molten
             result.pTop.Normalize();
             result.pBottom.Normalize();
 
-            result.pMatrix = Matrix.LookAtLH(cameraPos, cameraPos + lookDir * 10, upDir) * Matrix.PerspectiveFovLH(fov, aspect, znear, zfar);
+            result.pMatrix = Matrix4F.LookAtLH(cameraPos, cameraPos + lookDir * 10, upDir) * Matrix4F.PerspectiveFovLH(fov, aspect, znear, zfar);
 
             return result;
         }

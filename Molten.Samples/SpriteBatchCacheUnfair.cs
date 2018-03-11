@@ -14,7 +14,7 @@ namespace Molten.Samples
 
         SceneObject _parent;
         SceneObject _child;
-        List<Matrix> _positions;
+        List<Matrix4F> _positions;
         Camera2D _cam2D;
         IMesh<VertexTexture> _mesh;
 

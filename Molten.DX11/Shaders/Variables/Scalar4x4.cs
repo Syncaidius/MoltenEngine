@@ -9,7 +9,7 @@ namespace Molten.Graphics
     /// <summary>A shader matrix variable.</summary>
     internal class ScalarFloat4x4Variable : ShaderConstantVariable
     {
-        Matrix _value;
+        Matrix4F _value;
 
         public ScalarFloat4x4Variable(ShaderConstantBuffer parent)
             : base(parent)
@@ -30,7 +30,7 @@ namespace Molten.Graphics
             }
             set
             {
-                _value = (Matrix)value;
+                _value = (Matrix4F)value;
                 _value.Transpose();
                 DirtyParent();
             }

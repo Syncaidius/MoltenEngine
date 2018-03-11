@@ -281,12 +281,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="Matrix"/>.
+        /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector4F"/>.</param>
-        public static void Transform(ref Vector2I vector, ref Matrix transform, out Vector4I result)
+        public static void Transform(ref Vector2I vector, ref Matrix4F transform, out Vector4I result)
         {
             result = new Vector4I(
                 (int)((vector.X * transform.M11) + (vector.Y * transform.M21) + transform.M41),
@@ -296,12 +296,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="Matrix"/>.
+        /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <returns>The transformed <see cref="Vector4F"/>.</returns>
-        public static Vector4I Transform(Vector2I vector, Matrix transform)
+        public static Vector4I Transform(Vector2I vector, Matrix4F transform)
         {
             Vector4I result;
             Transform(ref vector, ref transform, out result);

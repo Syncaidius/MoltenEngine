@@ -52,7 +52,7 @@ namespace Molten.Font
             return BaseTime + TimeSpan.FromSeconds(secondsFromBase);
         }
 
-        internal static void TransformGlyph(Glyph glyph, Matrix2x2 matrix)
+        internal static void TransformGlyph(Glyph glyph, Matrix2F matrix)
         {
             RectangleF bounds = RectangleF.Empty;
 

@@ -238,11 +238,11 @@ namespace Molten
         /// <param name="view">The view matrix.</param>
         /// <param name="world">The world matrix.</param>
         /// <returns>The projected vector.</returns>
-        public Vector3F Project(Vector3F source, Matrix projection, Matrix view, Matrix world)
+        public Vector3F Project(Vector3F source, Matrix4F projection, Matrix4F view, Matrix4F world)
         {
-            Matrix matrix;
-            Matrix.Multiply(ref world, ref view, out matrix);
-            Matrix.Multiply(ref matrix, ref projection, out matrix);
+            Matrix4F matrix;
+            Matrix4F.Multiply(ref world, ref view, out matrix);
+            Matrix4F.Multiply(ref matrix, ref projection, out matrix);
 
             Vector3F vector;
             Project(ref source, ref matrix, out vector);
@@ -255,7 +255,7 @@ namespace Molten
         /// <param name="source">The vector to project.</param>
         /// <param name="matrix">A combined WorldViewProjection matrix.</param>
         /// <param name="vector">The projected vector.</param>
-        public void Project(ref Vector3F source, ref Matrix matrix, out Vector3F vector)
+        public void Project(ref Vector3F source, ref Matrix4F matrix, out Vector3F vector)
         {
             Vector3F.Transform(ref source, ref matrix, out vector);
             float a = (((source.X * matrix.M14) + (source.Y * matrix.M24)) + (source.Z * matrix.M34)) + matrix.M44;
@@ -278,12 +278,12 @@ namespace Molten
         /// <param name="view">The view matrix.</param>
         /// <param name="world">The world matrix.</param>
         /// <returns>The unprojected Vector.</returns>
-        public Vector3F Unproject(Vector3F source, Matrix projection, Matrix view, Matrix world)
+        public Vector3F Unproject(Vector3F source, Matrix4F projection, Matrix4F view, Matrix4F world)
         {
-            Matrix matrix;
-            Matrix.Multiply(ref world, ref view, out matrix);
-            Matrix.Multiply(ref matrix, ref projection, out matrix);
-            Matrix.Invert(ref matrix, out matrix);
+            Matrix4F matrix;
+            Matrix4F.Multiply(ref world, ref view, out matrix);
+            Matrix4F.Multiply(ref matrix, ref projection, out matrix);
+            Matrix4F.Invert(ref matrix, out matrix);
 
             Vector3F vector;
             Unproject(ref source, ref matrix, out vector);
@@ -296,7 +296,7 @@ namespace Molten
         /// <param name="source">The vector to project.</param>
         /// <param name="matrix">An inverted combined WorldViewProjection matrix.</param>
         /// <param name="vector">The unprojected vector.</param>
-        public void Unproject(ref Vector3F source, ref Matrix matrix, out Vector3F vector)
+        public void Unproject(ref Vector3F source, ref Matrix4F matrix, out Vector3F vector)
         {
             vector.X = (((source.X - X) / (Width)) * 2f) - 1f;
             vector.Y = -((((source.Y - Y) / (Height)) * 2f) - 1f);

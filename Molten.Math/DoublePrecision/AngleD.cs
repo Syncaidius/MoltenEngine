@@ -1,4 +1,6 @@
-﻿// Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
+﻿// James Yarwod - double-precision version of  SharpDX's AngleSingle
+
+// Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -47,71 +49,71 @@ using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
-namespace Molten
+namespace Molten.DoublePrecision
 {
     /// <summary>
-    /// Represents a unit independent angle using a single-precision floating-point
+    /// Represents a unit independent angle using a double-precision floating-point
     /// internal representation.
     /// </summary>
     [StructLayout(LayoutKind.Explicit)]
-    public struct AngleSingle : IComparable, IComparable<AngleSingle>, IEquatable<AngleSingle>, IFormattable
+    public struct AngleD : IComparable, IComparable<AngleD>, IEquatable<AngleD>, IFormattable
     {
         /// <summary>
-        /// A value that specifies the size of a single degree.
+        /// A value that specifies the size of a single degree, in revolutions.
         /// </summary>
-        public const float Degree = 0.002777777777777778f;
+        public const double Degree = 0.002777777777777778;
 
         /// <summary>
-        /// A value that specifies the size of a single minute.
+        /// A value that specifies the size of a single minute, in revolutions.
         /// </summary>
-        public const float Minute = 0.000046296296296296f;
+        public const double Minute = 0.000046296296296296;
 
         /// <summary>
-        /// A value that specifies the size of a single second.
+        /// A value that specifies the size of a single second, in revolutions.
         /// </summary>
-        public const float Second = 0.000000771604938272f;
+        public const double Second = 0.000000771604938272;
 
         /// <summary>
-        /// A value that specifies the size of a single radian.
+        /// A value that specifies the size of a single radian, in revolutions.
         /// </summary>
-        public const float Radian = 0.159154943091895336f;
+        public const double Radian = 0.159154943091895336;
 
         /// <summary>
-        /// A value that specifies the size of a single milliradian.
+        /// A value that specifies the size of a single milliradian, in revolutions.
         /// </summary>
-        public const float Milliradian = 0.0001591549431f;
+        public const double Milliradian = 0.0001591549431;
 
         /// <summary>
-        /// A value that specifies the size of a single gradian.
+        /// A value that specifies the size of a single gradian, in revolutions.
         /// </summary>
-        public const float Gradian = 0.0025f;
+        public const double Gradian = 0.0025;
 
         /// <summary>
         /// The internal representation of the angle.
         /// </summary>
         [FieldOffset(0)]
-        float radians;
+        double radians;
 
         [FieldOffset(0)]
         private int radiansInt;
 
         /// <summary>
-        /// Initializes a new instance of the SharpDX.AngleSingle structure with the
+        /// Initializes a new instance of the SharpDX.AngleDouble structure with the
         /// given unit dependant angle and unit type.
         /// </summary>
         /// <param name="angle">A unit dependant measure of the angle.</param>
         /// <param name="type">The type of unit the angle argument is.</param>
-        public AngleSingle(float angle, AngleType type)
+        public AngleD(double angle, AngleType type)
         {
             radiansInt = 0;
             switch (type)
             {
                 case AngleType.Revolution:
-                    radians = MathHelper.RevolutionsToRadians(angle);
+                    radians = DoubleHelper.RevolutionsToRadians(angle);
                     break;
 
                 case AngleType.Degree:
-                    radians = MathHelper.DegreesToRadians(angle);
+                    radians = DoubleHelper.DegreesToRadians(angle);
                     break;
 
                 case AngleType.Radian:
@@ -119,177 +121,177 @@ namespace Molten
                     break;
 
                 case AngleType.Gradian:
-                    radians = MathHelper.GradiansToRadians(angle);
+                    radians = DoubleHelper.GradiansToRadians(angle);
                     break;
 
                 default:
-                    radians = 0.0f;
+                    radians = 0.0;
                     break;
             }
         }
 
         /// <summary>
-        /// Initializes a new instance of the SharpDX.AngleSingle structure using the
+        /// Initializes a new instance of the SharpDX.AngleDouble structure using the
         /// arc length formula (θ = s/r).
         /// </summary>
         /// <param name="arcLength">The measure of the arc.</param>
         /// <param name="radius">The radius of the circle.</param>
-        public AngleSingle(float arcLength, float radius)
+        public AngleD(double arcLength, double radius)
         {
             radiansInt = 0;
             radians = arcLength / radius;
         }
 
         /// <summary>
-        /// Wraps this SharpDX.AngleSingle to be in the range [π, -π].
+        /// Wraps this SharpDX.AngleDouble to be in the range [π, -π].
         /// </summary>
         public void Wrap()
         {
-            float newangle = (float)Math.IEEERemainder(radians, MathHelper.TwoPi);
+            double newangle = Math.IEEERemainder(radians, DoubleHelper.TwoPi);
 
-            if (newangle <= -MathHelper.Pi)
-                newangle += MathHelper.TwoPi;
-            else if (newangle > MathHelper.Pi)
-                newangle -= MathHelper.TwoPi;
+            if (newangle <= -DoubleHelper.Pi)
+                newangle += DoubleHelper.TwoPi;
+            else if (newangle > DoubleHelper.Pi)
+                newangle -= DoubleHelper.TwoPi;
 
             radians = newangle;
         }
 
         /// <summary>
-        /// Wraps this SharpDX.AngleSingle to be in the range [0, 2π).
+        /// Wraps this SharpDX.AngleDouble to be in the range [0, 2π).
         /// </summary>
         public void WrapPositive()
         {
-            float newangle = radians % MathHelper.TwoPi;
+            double newangle = radians % DoubleHelper.TwoPi;
 
             if (newangle < 0.0)
-                newangle += MathHelper.TwoPi;
+                newangle += DoubleHelper.TwoPi;
 
             radians = newangle;
         }
 
         /// <summary>
-        /// Gets or sets the total number of revolutions this SharpDX.AngleSingle represents.
+        /// Gets or sets the total number of revolutions this SharpDX.AngleDouble represents.
         /// </summary>
-        public float Revolutions
+        public double Revolutions
         {
-            get { return MathHelper.RadiansToRevolutions(radians); }
-            set { radians = MathHelper.RevolutionsToRadians(value); }
+            get { return DoubleHelper.RadiansToRevolutions(radians); }
+            set { radians = DoubleHelper.RevolutionsToRadians(value); }
         }
 
         /// <summary>
-        /// Gets or sets the total number of degrees this SharpDX.AngleSingle represents.
+        /// Gets or sets the total number of degrees this SharpDX.AngleDouble represents.
         /// </summary>
-        public float Degrees
+        public double Degrees
         {
-            get { return MathHelper.RadiansToDegrees(radians); }
-            set { radians = MathHelper.DegreesToRadians(value); }
+            get { return DoubleHelper.RadiansToDegrees(radians); }
+            set { radians = DoubleHelper.DegreesToRadians(value); }
         }
 
         /// <summary>
-        /// Gets or sets the minutes component of the degrees this SharpDX.AngleSingle represents.
+        /// Gets or sets the minutes component of the degrees this SharpDX.AngleDouble represents.
         /// When setting the minutes, if the value is in the range (-60, 60) the whole degrees are
         /// not changed; otherwise, the whole degrees may be changed. Fractional values may set
         /// the seconds component.
         /// </summary>
-        public float Minutes
+        public double Minutes
         {
             get
             {
-                float degrees = MathHelper.RadiansToDegrees(radians);
+                double degrees = DoubleHelper.RadiansToDegrees(radians);
 
                 if (degrees < 0)
                 {
-                    float degreesfloor = (float)Math.Ceiling(degrees);
-                    return (degrees - degreesfloor) * 60.0f;
+                    double degreesfloor = Math.Ceiling(degrees);
+                    return (degrees - degreesfloor) * 60.0;
                 }
                 else
                 {
-                    float degreesfloor = (float)Math.Floor(degrees);
-                    return (degrees - degreesfloor) * 60.0f;
+                    double degreesfloor = Math.Floor(degrees);
+                    return (degrees - degreesfloor) * 60.0;
                 }
             }
             set
             {
-                float degrees = MathHelper.RadiansToDegrees(radians);
-                float degreesfloor = (float)Math.Floor(degrees);
+                double degrees = DoubleHelper.RadiansToDegrees(radians);
+                double degreesfloor = Math.Floor(degrees);
 
-                degreesfloor += value / 60.0f;
-                radians = MathHelper.DegreesToRadians(degreesfloor);
+                degreesfloor += value / 60.0;
+                radians = DoubleHelper.DegreesToRadians(degreesfloor);
             }
         }
 
         /// <summary>
-        /// Gets or sets the seconds of the degrees this SharpDX.AngleSingle represents.
+        /// Gets or sets the seconds of the degrees this SharpDX.AngleDouble represents.
         /// When setting the seconds, if the value is in the range (-60, 60) the whole minutes
         /// or whole degrees are not changed; otherwise, the whole minutes or whole degrees
         /// may be changed.
         /// </summary>
-        public float Seconds
+        public double Seconds
         {
             get
             {
-                float degrees = MathHelper.RadiansToDegrees(radians);
+                double degrees = DoubleHelper.RadiansToDegrees(radians);
 
                 if (degrees < 0)
                 {
-                    float degreesfloor = (float)Math.Ceiling(degrees);
+                    double degreesfloor = Math.Ceiling(degrees);
 
-                    float minutes = (degrees - degreesfloor) * 60.0f;
-                    float minutesfloor = (float)Math.Ceiling(minutes);
+                    double minutes = (degrees - degreesfloor) * 60.0;
+                    double minutesfloor = Math.Ceiling(minutes);
 
-                    return (minutes - minutesfloor) * 60.0f;
+                    return (minutes - minutesfloor) * 60.0;
                 }
                 else
                 {
-                    float degreesfloor = (float)Math.Floor(degrees);
+                    double degreesfloor = Math.Floor(degrees);
 
-                    float minutes = (degrees - degreesfloor) * 60.0f;
-                    float minutesfloor = (float)Math.Floor(minutes);
+                    double minutes = (degrees - degreesfloor) * 60.0;
+                    double minutesfloor = Math.Floor(minutes);
 
-                    return (minutes - minutesfloor) * 60.0f;
+                    return (minutes - minutesfloor) * 60.0;
                 }
             }
             set
             {
-                float degrees = MathHelper.RadiansToDegrees(radians);
-                float degreesfloor = (float)Math.Floor(degrees);
+                double degrees = DoubleHelper.RadiansToDegrees(radians);
+                double degreesfloor = Math.Floor(degrees);
 
-                float minutes = (degrees - degreesfloor) * 60.0f;
-                float minutesfloor = (float)Math.Floor(minutes);
+                double minutes = (degrees - degreesfloor) * 60.0;
+                double minutesfloor = Math.Floor(minutes);
 
-                minutesfloor += value / 60.0f;
-                degreesfloor += minutesfloor / 60.0f;
-                radians = MathHelper.DegreesToRadians(degreesfloor);
+                minutesfloor += value / 60.0;
+                degreesfloor += minutesfloor / 60.0;
+                radians = DoubleHelper.DegreesToRadians(degreesfloor);
             }
         }
         
         /// <summary>
-        /// Gets or sets the total number of radians this SharpDX.AngleSingle represents.
+        /// Gets or sets the total number of radians this SharpDX.AngleDouble represents.
         /// </summary>
-        public float Radians
+        public double Radians
         {
             get { return radians; }
             set { radians = value; }
         }
 
         /// <summary>
-        /// Gets or sets the total number of milliradians this SharpDX.AngleSingle represents.
+        /// Gets or sets the total number of milliradians this SharpDX.AngleDouble represents.
         /// One milliradian is equal to 1/(2000π).
         /// </summary>
-        public float Milliradians
+        public double Milliradians
         {
-            get { return radians / (Milliradian * MathHelper.TwoPi); }
-            set { radians = value * (Milliradian * MathHelper.TwoPi); }
+            get { return radians / (Milliradian * DoubleHelper.TwoPi); }
+            set { radians = value * (Milliradian * DoubleHelper.TwoPi); }
         }
 
         /// <summary>
-        /// Gets or sets the total number of gradians this SharpDX.AngleSingle represents.
+        /// Gets or sets the total number of gradians this SharpDX.AngleDouble represents.
         /// </summary>
-        public float Gradians
+        public double Gradians
         {
-            get { return MathHelper.RadiansToGradians(radians); }
-            set { radians = MathHelper.RadiansToGradians(value); }
+            get { return DoubleHelper.RadiansToGradians(radians); }
+            set { radians = DoubleHelper.RadiansToGradians(value); }
         }
 
         /// <summary>
@@ -298,7 +300,7 @@ namespace Molten
         /// </summary>
         public bool IsRight
         {
-            get { return radians == MathHelper.PiOverTwo; }
+            get { return radians == DoubleHelper.PiOverTwo; }
         }
 
         /// <summary>
@@ -307,7 +309,7 @@ namespace Molten
         /// </summary>
         public bool IsStraight
         {
-            get { return radians == MathHelper.Pi; }
+            get { return radians == DoubleHelper.Pi; }
         }
 
         /// <summary>
@@ -316,7 +318,7 @@ namespace Molten
         /// </summary>
         public bool IsFullRotation
         {
-            get { return radians == MathHelper.TwoPi; }
+            get { return radians == DoubleHelper.TwoPi; }
         }
 
         /// <summary>
@@ -325,7 +327,7 @@ namespace Molten
         /// </summary>
         public bool IsOblique
         {
-            get { return WrapPositive(this).radians != MathHelper.PiOverTwo; }
+            get { return WrapPositive(this).radians != DoubleHelper.PiOverTwo; }
         }
 
         /// <summary>
@@ -334,7 +336,7 @@ namespace Molten
         /// </summary>
         public bool IsAcute
         {
-            get { return radians > 0.0 && radians < MathHelper.PiOverTwo; }
+            get { return radians > 0.0 && radians < DoubleHelper.PiOverTwo; }
         }
 
         /// <summary>
@@ -343,7 +345,7 @@ namespace Molten
         /// </summary>
         public bool IsObtuse
         {
-            get { return radians > MathHelper.PiOverTwo && radians < MathHelper.Pi; }
+            get { return radians > DoubleHelper.PiOverTwo && radians < DoubleHelper.Pi; }
         }
 
         /// <summary>
@@ -352,54 +354,54 @@ namespace Molten
         /// </summary>
         public bool IsReflex
         {
-            get { return radians > MathHelper.Pi && radians < MathHelper.TwoPi; }
+            get { return radians > DoubleHelper.Pi && radians < DoubleHelper.TwoPi; }
         }
 
         /// <summary>
-        /// Gets a SharpDX.AngleSingle instance that complements this angle (i.e. the two angles add to 90°).
+        /// Gets a SharpDX.AngleDouble instance that complements this angle (i.e. the two angles add to 90°).
         /// </summary>
-        public AngleSingle Complement
+        public AngleD Complement
         {
-            get { return new AngleSingle(MathHelper.PiOverTwo - radians, AngleType.Radian); }
+            get { return new AngleD(DoubleHelper.PiOverTwo - radians, AngleType.Radian); }
         }
 
         /// <summary>
-        /// Gets a SharpDX.AngleSingle instance that supplements this angle (i.e. the two angles add to 180°).
+        /// Gets a SharpDX.AngleDouble instance that supplements this angle (i.e. the two angles add to 180°).
         /// </summary>
-        public AngleSingle Supplement
+        public AngleD Supplement
         {
-            get { return new AngleSingle(MathHelper.Pi - radians, AngleType.Radian); }
+            get { return new AngleD(DoubleHelper.Pi - radians, AngleType.Radian); }
         }
 
         /// <summary>
-        /// Wraps the SharpDX.AngleSingle given in the value argument to be in the range [π, -π].
+        /// Wraps the SharpDX.AngleDouble given in the value argument to be in the range [π, -π].
         /// </summary>
-        /// <param name="value">A SharpDX.AngleSingle to wrap.</param>
-        /// <returns>The SharpDX.AngleSingle that is wrapped.</returns>
-        public static AngleSingle Wrap(AngleSingle value)
+        /// <param name="value">A SharpDX.AngleDouble to wrap.</param>
+        /// <returns>The SharpDX.AngleDouble that is wrapped.</returns>
+        public static AngleD Wrap(AngleD value)
         {
             value.Wrap();
             return value;
         }
 
         /// <summary>
-        /// Wraps the SharpDX.AngleSingle given in the value argument to be in the range [0, 2π).
+        /// Wraps the SharpDX.AngleDouble given in the value argument to be in the range [0, 2π).
         /// </summary>
-        /// <param name="value">A SharpDX.AngleSingle to wrap.</param>
-        /// <returns>The SharpDX.AngleSingle that is wrapped.</returns>
-        public static AngleSingle WrapPositive(AngleSingle value)
+        /// <param name="value">A SharpDX.AngleDouble to wrap.</param>
+        /// <returns>The SharpDX.AngleDouble that is wrapped.</returns>
+        public static AngleD WrapPositive(AngleD value)
         {
             value.WrapPositive();
             return value;
         }
 
         /// <summary>
-        /// Compares two SharpDX.AngleSingle instances and returns the smaller angle.
+        /// Compares two SharpDX.AngleDouble instances and returns the smaller angle.
         /// </summary>
-        /// <param name="left">The first SharpDX.AngleSingle instance to compare.</param>
-        /// <param name="right">The second SharpDX.AngleSingle instance to compare.</param>
-        /// <returns>The smaller of the two given SharpDX.AngleSingle instances.</returns>
-        public static AngleSingle Min(AngleSingle left, AngleSingle right)
+        /// <param name="left">The first SharpDX.AngleDouble instance to compare.</param>
+        /// <param name="right">The second SharpDX.AngleDouble instance to compare.</param>
+        /// <returns>The smaller of the two given SharpDX.AngleDouble instances.</returns>
+        public static AngleD Min(AngleD left, AngleD right)
         {
             if (left.radians < right.radians)
                 return left;
@@ -408,12 +410,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Compares two SharpDX.AngleSingle instances and returns the greater angle.
+        /// Compares two SharpDX.AngleDouble instances and returns the greater angle.
         /// </summary>
-        /// <param name="left">The first SharpDX.AngleSingle instance to compare.</param>
-        /// <param name="right">The second SharpDX.AngleSingle instance to compare.</param>
-        /// <returns>The greater of the two given SharpDX.AngleSingle instances.</returns>
-        public static AngleSingle Max(AngleSingle left, AngleSingle right)
+        /// <param name="left">The first SharpDX.AngleDouble instance to compare.</param>
+        /// <param name="right">The second SharpDX.AngleDouble instance to compare.</param>
+        /// <returns>The greater of the two given SharpDX.AngleDouble instances.</returns>
+        public static AngleD Max(AngleD left, AngleD right)
         {
             if (left.radians > right.radians)
                 return left;
@@ -422,79 +424,79 @@ namespace Molten
         }
 
         /// <summary>
-        /// Adds two SharpDX.AngleSingle objects and returns the result.
+        /// Adds two SharpDX.AngleDouble objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to add.</param>
         /// <param name="right">The second object to add.</param>
         /// <returns>The value of the two objects added together.</returns>
-        public static AngleSingle Add(AngleSingle left, AngleSingle right)
+        public static AngleD Add(AngleD left, AngleD right)
         {
-            return new AngleSingle(left.radians + right.radians, AngleType.Radian);
+            return new AngleD(left.radians + right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Subtracts two SharpDX.AngleSingle objects and returns the result.
+        /// Subtracts two SharpDX.AngleDouble objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to subtract.</param>
         /// <param name="right">The second object to subtract.</param>
         /// <returns>The value of the two objects subtracted.</returns>
-        public static AngleSingle Subtract(AngleSingle left, AngleSingle right)
+        public static AngleD Subtract(AngleD left, AngleD right)
         {
-            return new AngleSingle(left.radians - right.radians, AngleType.Radian);
+            return new AngleD(left.radians - right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Multiplies two SharpDX.AngleSingle objects and returns the result.
+        /// Multiplies two SharpDX.AngleDouble objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to multiply.</param>
         /// <param name="right">The second object to multiply.</param>
         /// <returns>The value of the two objects multiplied together.</returns>
-        public static AngleSingle Multiply(AngleSingle left, AngleSingle right)
+        public static AngleD Multiply(AngleD left, AngleD right)
         {
-            return new AngleSingle(left.radians * right.radians, AngleType.Radian);
+            return new AngleD(left.radians * right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Divides two SharpDX.AngleSingle objects and returns the result.
+        /// Divides two SharpDX.AngleDouble objects and returns the result.
         /// </summary>
         /// <param name="left">The numerator object.</param>
         /// <param name="right">The denominator object.</param>
         /// <returns>The value of the two objects divided.</returns>
-        public static AngleSingle Divide(AngleSingle left, AngleSingle right)
+        public static AngleD Divide(AngleD left, AngleD right)
         {
-            return new AngleSingle(left.radians / right.radians, AngleType.Radian);
+            return new AngleD(left.radians / right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Gets a new SharpDX.AngleSingle instance that represents the zero angle (i.e. 0°).
+        /// Gets a new SharpDX.AngleDouble instance that represents the zero angle (i.e. 0°).
         /// </summary>
-        public static AngleSingle ZeroAngle
+        public static AngleD ZeroAngle
         {
-            get { return new AngleSingle(0.0f, AngleType.Radian); }
+            get { return new AngleD(0.0, AngleType.Radian); }
         }
 
         /// <summary>
-        /// Gets a new SharpDX.AngleSingle instance that represents the right angle (i.e. 90° or π/2).
+        /// Gets a new SharpDX.AngleDouble instance that represents the right angle (i.e. 90° or π/2).
         /// </summary>
-        public static AngleSingle RightAngle
+        public static AngleD RightAngle
         {
-            get { return new AngleSingle(MathHelper.PiOverTwo, AngleType.Radian); }
+            get { return new AngleD(DoubleHelper.PiOverTwo, AngleType.Radian); }
         }
 
         /// <summary>
-        /// Gets a new SharpDX.AngleSingle instance that represents the straight angle (i.e. 180° or π).
+        /// Gets a new SharpDX.AngleDouble instance that represents the straight angle (i.e. 180° or π).
         /// </summary>
-        public static AngleSingle StraightAngle
+        public static AngleD StraightAngle
         {
-            get { return new AngleSingle(MathHelper.Pi, AngleType.Radian); }
+            get { return new AngleD(DoubleHelper.Pi, AngleType.Radian); }
         }
 
         /// <summary>
-        /// Gets a new SharpDX.AngleSingle instance that represents the full rotation angle (i.e. 360° or 2π).
+        /// Gets a new SharpDX.AngleDouble instance that represents the full rotation angle (i.e. 360° or 2π).
         /// </summary>
-        public static AngleSingle FullRotationAngle
+        public static AngleD FullRotationAngle
         {
-            get { return new AngleSingle(MathHelper.TwoPi, AngleType.Radian); }
+            get { return new AngleD(DoubleHelper.TwoPi, AngleType.Radian); }
         }
 
         /// <summary>
@@ -504,7 +506,7 @@ namespace Molten
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
         /// <returns>True if the left and right parameters have the same value; otherwise, false.</returns>
-        public static bool operator ==(AngleSingle left, AngleSingle right)
+        public static bool operator ==(AngleD left, AngleD right)
         {
             return left.radians == right.radians;
         }
@@ -516,122 +518,122 @@ namespace Molten
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
         /// <returns>True if the left and right parameters do not have the same value; otherwise, false.</returns>
-        public static bool operator !=(AngleSingle left, AngleSingle right)
+        public static bool operator !=(AngleD left, AngleD right)
         {
             return left.radians != right.radians;
         }
 
         /// <summary>
         /// Returns a System.Boolean that indicates whether a SharpDX.Angle
-        /// object is less than another SharpDX.AngleSingle object.
+        /// object is less than another SharpDX.AngleDouble object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
         /// <returns>True if left is less than right; otherwise, false.</returns>
-        public static bool operator <(AngleSingle left, AngleSingle right)
+        public static bool operator <(AngleD left, AngleD right)
         {
             return left.radians < right.radians;
         }
 
         /// <summary>
         /// Returns a System.Boolean that indicates whether a SharpDX.Angle
-        /// object is greater than another SharpDX.AngleSingle object.
+        /// object is greater than another SharpDX.AngleDouble object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
         /// <returns>True if left is greater than right; otherwise, false.</returns>
-        public static bool operator >(AngleSingle left, AngleSingle right)
+        public static bool operator >(AngleD left, AngleD right)
         {
             return left.radians > right.radians;
         }
 
         /// <summary>
         /// Returns a System.Boolean that indicates whether a SharpDX.Angle
-        /// object is less than or equal to another SharpDX.AngleSingle object.
+        /// object is less than or equal to another SharpDX.AngleDouble object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
         /// <returns>True if left is less than or equal to right; otherwise, false.</returns>
-        public static bool operator <=(AngleSingle left, AngleSingle right)
+        public static bool operator <=(AngleD left, AngleD right)
         {
             return left.radians <= right.radians;
         }
 
         /// <summary>
         /// Returns a System.Boolean that indicates whether a SharpDX.Angle
-        /// object is greater than or equal to another SharpDX.AngleSingle object.
+        /// object is greater than or equal to another SharpDX.AngleDouble object.
         /// </summary>
         /// <param name="left">The first object to compare.</param>
         /// <param name="right">The second object to compare.</param>
         /// <returns>True if left is greater than or equal to right; otherwise, false.</returns>
-        public static bool operator >=(AngleSingle left, AngleSingle right)
+        public static bool operator >=(AngleD left, AngleD right)
         {
             return left.radians >= right.radians;
         }
 
         /// <summary>
-        /// Returns the value of the SharpDX.AngleSingle operand. (The sign of
+        /// Returns the value of the SharpDX.AngleDouble operand. (The sign of
         /// the operand is unchanged.)
         /// </summary>
-        /// <param name="value">A SharpDX.AngleSingle object.</param>
+        /// <param name="value">A SharpDX.AngleDouble object.</param>
         /// <returns>The value of the value parameter.</returns>
-        public static AngleSingle operator +(AngleSingle value)
+        public static AngleD operator +(AngleD value)
         {
             return value;
         }
 
         /// <summary>
-        /// Returns the the negated value of the SharpDX.AngleSingle operand.
+        /// Returns the the negated value of the SharpDX.AngleDouble operand.
         /// </summary>
-        /// <param name="value">A SharpDX.AngleSingle object.</param>
+        /// <param name="value">A SharpDX.AngleDouble object.</param>
         /// <returns>The negated value of the value parameter.</returns>
-        public static AngleSingle operator -(AngleSingle value)
+        public static AngleD operator -(AngleD value)
         {
-            return new AngleSingle(-value.radians, AngleType.Radian);
+            return new AngleD(-value.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Adds two SharpDX.AngleSingle objects and returns the result.
+        /// Adds two SharpDX.AngleDouble objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to add.</param>
         /// <param name="right">The second object to add.</param>
         /// <returns>The value of the two objects added together.</returns>
-        public static AngleSingle operator +(AngleSingle left, AngleSingle right)
+        public static AngleD operator +(AngleD left, AngleD right)
         {
-            return new AngleSingle(left.radians + right.radians, AngleType.Radian);
+            return new AngleD(left.radians + right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Subtracts two SharpDX.AngleSingle objects and returns the result.
+        /// Subtracts two SharpDX.AngleDouble objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to subtract</param>
         /// <param name="right">The second object to subtract.</param>
         /// <returns>The value of the two objects subtracted.</returns>
-        public static AngleSingle operator -(AngleSingle left, AngleSingle right)
+        public static AngleD operator -(AngleD left, AngleD right)
         {
-            return new AngleSingle(left.radians - right.radians, AngleType.Radian);
+            return new AngleD(left.radians - right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Multiplies two SharpDX.AngleSingle objects and returns the result.
+        /// Multiplies two SharpDX.AngleDouble objects and returns the result.
         /// </summary>
         /// <param name="left">The first object to multiply.</param>
         /// <param name="right">The second object to multiply.</param>
         /// <returns>The value of the two objects multiplied together.</returns>
-        public static AngleSingle operator *(AngleSingle left, AngleSingle right)
+        public static AngleD operator *(AngleD left, AngleD right)
         {
-            return new AngleSingle(left.radians * right.radians, AngleType.Radian);
+            return new AngleD(left.radians * right.radians, AngleType.Radian);
         }
 
         /// <summary>
-        /// Divides two SharpDX.AngleSingle objects and returns the result.
+        /// Divides two SharpDX.AngleDouble objects and returns the result.
         /// </summary>
         /// <param name="left">The numerator object.</param>
         /// <param name="right">The denominator object.</param>
         /// <returns>The value of the two objects divided.</returns>
-        public static AngleSingle operator /(AngleSingle left, AngleSingle right)
+        public static AngleD operator /(AngleD left, AngleD right)
         {
-            return new AngleSingle(left.radians / right.radians, AngleType.Radian);
+            return new AngleD(left.radians / right.radians, AngleType.Radian);
         }
 
         /// <summary>
@@ -652,10 +654,10 @@ namespace Molten
             if (other == null)
                 return 1;
 
-            if (!(other is AngleSingle))
+            if (!(other is AngleD))
                 throw new ArgumentException("Argument must be of type Angle.", "other");
 
-            float radians = ((AngleSingle)other).radians;
+            double radians = ((AngleD)other).radians;
 
             if (this.radians > radians)
                 return 1;
@@ -667,7 +669,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Compares this instance to a second SharpDX.AngleSingle and returns
+        /// Compares this instance to a second SharpDX.AngleDouble and returns
         /// an integer that indicates whether the value of this instance is less than,
         /// equal to, or greater than the value of the specified object.
         /// </summary>
@@ -679,7 +681,7 @@ namespace Molten
         /// to the other. If the value is greater than zero, the current instance is
         /// greater than the other.
         /// </returns>
-        public int CompareTo(AngleSingle other)
+        public int CompareTo(AngleD other)
         {
             if (this.radians > other.radians)
                 return 1;
@@ -692,14 +694,14 @@ namespace Molten
 
         /// <summary>
         /// Returns a value that indicates whether the current instance and a specified
-        /// SharpDX.AngleSingle object have the same value.
+        /// SharpDX.AngleDouble object have the same value.
         /// </summary>
         /// <param name="other">The object to compare.</param>
         /// <returns>
-        /// Returns true if this SharpDX.AngleSingle object and another have the same value;
+        /// Returns true if this SharpDX.AngleDouble object and another have the same value;
         /// otherwise, false.
         /// </returns>
-        public bool Equals(AngleSingle other)
+        public bool Equals(AngleD other)
         {
             return this == other;
         }
@@ -712,7 +714,7 @@ namespace Molten
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, MathHelper.RadiansToDegrees(radians).ToString("0.##°"));
+            return string.Format(CultureInfo.CurrentCulture, DoubleHelper.RadiansToDegrees(radians).ToString("0.##°"));
         }
 
         /// <summary>
@@ -727,7 +729,7 @@ namespace Molten
             if (format == null)
                 return ToString();
 
-            return string.Format(CultureInfo.CurrentCulture, "{0}°", MathHelper.RadiansToDegrees(radians).ToString(format, CultureInfo.CurrentCulture));
+            return string.Format(CultureInfo.CurrentCulture, "{0}°", DoubleHelper.RadiansToDegrees(radians).ToString(format, CultureInfo.CurrentCulture));
         }
 
         /// <summary>
@@ -739,7 +741,7 @@ namespace Molten
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, MathHelper.RadiansToDegrees(radians).ToString("0.##°"));
+            return string.Format(formatProvider, DoubleHelper.RadiansToDegrees(radians).ToString("0.##°"));
         }
 
         /// <summary>
@@ -755,11 +757,11 @@ namespace Molten
             if (format == null)
                 return ToString(formatProvider);
 
-            return string.Format(formatProvider, "{0}°", MathHelper.RadiansToDegrees(radians).ToString(format, CultureInfo.CurrentCulture));
+            return string.Format(formatProvider, "{0}°", DoubleHelper.RadiansToDegrees(radians).ToString(format, CultureInfo.CurrentCulture));
         }
 
         /// <summary>
-        /// Returns a hash code for this SharpDX.AngleSingle instance.
+        /// Returns a hash code for this SharpDX.AngleDouble instance.
         /// </summary>
         /// <returns>A 32-bit signed integer hash code.</returns>
         public override int GetHashCode()
@@ -773,14 +775,14 @@ namespace Molten
         /// </summary>
         /// <param name="obj">The object to compare.</param>
         /// <returns>
-        /// Returns true if the obj parameter is a SharpDX.AngleSingle object or a type
-        /// capable of implicit conversion to a SharpDX.AngleSingle value, and
+        /// Returns true if the obj parameter is a SharpDX.AngleDouble object or a type
+        /// capable of implicit conversion to a SharpDX.AngleDouble value, and
         /// its value is equal to the value of the current SharpDX.Angle
         /// object; otherwise, false.
         /// </returns>
         public override bool Equals(object obj)
         {
-            return (obj is AngleSingle) && (this == (AngleSingle)obj);
+            return (obj is AngleD) && (this == (AngleD)obj);
         }
     }
 }

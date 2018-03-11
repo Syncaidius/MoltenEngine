@@ -69,7 +69,7 @@ namespace Molten.Graphics
             ApplyResources(_material);
 
             if (_materialWvp != null)
-                _materialWvp.Value = Matrix.Multiply(data.RenderTransform, sceneData.ViewProjection);
+                _materialWvp.Value = Matrix4F.Multiply(data.RenderTransform, sceneData.ViewProjection);
 
             renderer.Device.DrawIndexed(_material, _indexCount, _topology);
         }

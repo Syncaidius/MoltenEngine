@@ -16,7 +16,7 @@ namespace Molten.Samples
         Scene _scene;
         SceneObject _parent;
         SceneObject _child;
-        List<Matrix> _positions;
+        List<Matrix4F> _positions;
         Random _rng;
         SceneObject _player;
         IMesh<VertexTexture> _mesh;
@@ -28,7 +28,7 @@ namespace Molten.Samples
             base.OnInitialize(engine);
 
             _rng = new Random();
-            _positions = new List<Matrix>();
+            _positions = new List<Matrix4F>();
             _scene = CreateScene("Test");
             SpawnPlayer();
 
@@ -126,7 +126,7 @@ namespace Molten.Samples
             SceneObject obj = CreateObject();
             MeshComponent meshCom = obj.AddComponent<MeshComponent>();
             meshCom.Mesh = mesh;
-            _positions.Add(Matrix.CreateTranslation(new Vector3F()
+            _positions.Add(Matrix4F.CreateTranslation(new Vector3F()
             {
                 X = -4 + (float)(_rng.NextDouble() * 8),
                 Y = -1 + (float)(_rng.NextDouble() * 2),

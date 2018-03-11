@@ -153,10 +153,10 @@ namespace Molten.Graphics
             }
         }
 
-        internal Matrix View = Matrix.Identity;
+        internal Matrix4F View = Matrix4F.Identity;
 
-        internal Matrix Projection;
+        internal Matrix4F Projection;
 
-        internal Matrix ViewProjection;
+        internal Matrix4F ViewProjection;
     }
 }

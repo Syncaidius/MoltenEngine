@@ -22,7 +22,7 @@ namespace Molten.Graphics
             typeof(ushort),
             typeof(byte),
             typeof(sbyte),
-            typeof(Matrix2x2),
+            typeof(Matrix2F),
             typeof(Vector2F),
             typeof(Vector3F),
             typeof(Vector4F),

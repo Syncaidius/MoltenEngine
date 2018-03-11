@@ -31,7 +31,7 @@ namespace Molten.Graphics
         IShaderValue _valLineWvp;
         IShaderValue _valCircleWvp;
         IShaderValue _valTriWvp;
-        Matrix _viewProjection;
+        Matrix4F _viewProjection;
 
         Action<GraphicsPipe, SpriteCluster>[] _clusterFlushes;
 
@@ -90,7 +90,7 @@ namespace Molten.Graphics
 
         /// <summary>Finalizes a batch of sprites, sorts them (if enabled) and then draws them.</summary>
         /// <param name="sortMode"></param>
-        internal void Flush(GraphicsPipe pipe, ref Matrix viewProjection,
+        internal void Flush(GraphicsPipe pipe, ref Matrix4F viewProjection,
             BlendingPreset blend,
             DepthStencilPreset depth = DepthStencilPreset.ZDisabled,
             RasterizerPreset raster = RasterizerPreset.Default)

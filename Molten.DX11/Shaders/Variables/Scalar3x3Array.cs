@@ -10,8 +10,8 @@ namespace Molten.Graphics
     /// <summary>A shader matrix variable.</summary>
     internal class ScalarFloat3x3ArrayVariable : ShaderConstantVariable
     {
-        Type _elementType = typeof(Matrix3x3);
-        Matrix3x3[] _value;
+        Type _elementType = typeof(Matrix3F);
+        Matrix3F[] _value;
         int _byteSize;
         int _expectedElements;
         bool _isDirty = false;
@@ -19,12 +19,12 @@ namespace Molten.Graphics
         public ScalarFloat3x3ArrayVariable(ShaderConstantBuffer parent, int expectedElements)
             : base(parent)
         {
-            _byteSize = Matrix.SizeInBytes;
+            _byteSize = Matrix4F.SizeInBytes;
             _expectedElements = expectedElements;
             SizeOf = _expectedElements * _byteSize;
 
             for (int i = 0; i < _value.Length; i++)
-                _value[i] = Matrix3x3.Identity;
+                _value[i] = Matrix3F.Identity;
 
             _isDirty = true;
         }
@@ -68,7 +68,7 @@ namespace Molten.Graphics
 
                     if (eType == _elementType)
                     {
-                        Matrix3x3[] val = (Matrix3x3[])value;
+                        Matrix3F[] val = (Matrix3F[])value;
 
                         if (_value.Length != val.Length)
                             throw new InvalidOperationException("Value that was set is not of the expected size (" + _value.Length + " elements).");

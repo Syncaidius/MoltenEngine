@@ -39,7 +39,7 @@ namespace Molten
         /// <summary>
         /// The matrix which aligns and scales the box, and its translation vector represents the center of the box.
         /// </summary>
-        public Matrix Transformation;
+        public Matrix4F Transformation;
 
         /// <summary>
         /// Creates an <see cref="OrientedBoundingBox"/> from a BoundingBox.
@@ -52,7 +52,7 @@ namespace Molten
         {
             var Center = bb.Min + (bb.Max - bb.Min) / 2f;
             Extents = bb.Max - Center;
-            Transformation = Matrix.CreateTranslation(Center);
+            Transformation = Matrix4F.CreateTranslation(Center);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Molten
         {
             var Center = minimum + (maximum - minimum) / 2f;
             Extents = maximum - Center;
-            Transformation = Matrix.CreateTranslation(Center);
+            Transformation = Matrix4F.CreateTranslation(Center);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Molten
 
             var Center = minimum + (maximum - minimum) / 2f;
             Extents = maximum - Center;
-            Transformation = Matrix.CreateTranslation(Center);
+            Transformation = Matrix4F.CreateTranslation(Center);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Molten
         /// While any kind of transformation can be applied, it is recommended to apply scaling using scale method instead, which
         /// scales the Extents and keeps the Transformation matrix for rotation only, and that preserves collision detection accuracy.
         /// </remarks>
-        public void Transform(ref Matrix mat)
+        public void Transform(ref Matrix4F mat)
         {
             Transformation *= mat;
         }
@@ -146,7 +146,7 @@ namespace Molten
         /// While any kind of transformation can be applied, it is recommended to apply scaling using scale method instead, which
         /// scales the Extents and keeps the Transformation matrix for rotation only, and that preserves collision detection accuracy.
         /// </remarks>
-        public void Transform(Matrix mat)
+        public void Transform(Matrix4F mat)
         {
             Transformation *= mat;
         }
@@ -269,8 +269,8 @@ namespace Molten
         public ContainmentType Contains(ref Vector3F point)
         {
             // Transform the point into the obb coordinates
-            Matrix invTrans;
-            Matrix.Invert(ref Transformation, out invTrans);
+            Matrix4F invTrans;
+            Matrix4F.Invert(ref Transformation, out invTrans);
 
             Vector3F locPoint;
             Vector3F.TransformCoordinate(ref point, ref invTrans, out locPoint);
@@ -305,8 +305,8 @@ namespace Molten
         /// <returns>The type of containment.</returns>
         public ContainmentType Contains(Vector3F[] points)
         {
-            Matrix invTrans;
-            Matrix.Invert(ref Transformation, out invTrans);
+            Matrix4F invTrans;
+            Matrix4F.Invert(ref Transformation, out invTrans);
 
             var containsAll = true;
             var containsAny = false;
@@ -351,8 +351,8 @@ namespace Molten
         /// </remarks>
         public ContainmentType Contains(BoundingSphere sphere, bool IgnoreScale = false)
         {
-            Matrix invTrans;
-            Matrix.Invert(ref Transformation, out invTrans);
+            Matrix4F invTrans;
+            Matrix4F.Invert(ref Transformation, out invTrans);
 
             // Transform sphere center into the obb coordinates
             Vector3F locCenter;
@@ -388,7 +388,7 @@ namespace Molten
             return ContainmentType.Intersects;
         }
 
-        private static Vector3F[] GetRows(ref Matrix mat)
+        private static Vector3F[] GetRows(ref Matrix4F mat)
         {
             return new Vector3F[] {
                 new Vector3F(mat.M11,mat.M12,mat.M13),
@@ -418,8 +418,8 @@ namespace Molten
             var RotA = GetRows(ref Transformation);
             var RotB = GetRows(ref obb.Transformation);
 
-            var R = new Matrix();       // Rotation from B to A
-            var AR = new Matrix();      // absolute values of R matrix, to use with box extents
+            var R = new Matrix4F();       // Rotation from B to A
+            var AR = new Matrix4F();      // absolute values of R matrix, to use with box extents
 
             float ExtentA, ExtentB, Separation;
             int i, k;
@@ -495,8 +495,8 @@ namespace Molten
 
             //http://www.3dkingdoms.com/weekly/bbox.cpp
             // Put line in box space
-            Matrix invTrans;
-            Matrix.Invert(ref Transformation, out invTrans);
+            Matrix4F invTrans;
+            Matrix4F.Invert(ref Transformation, out invTrans);
 
             Vector3F LB1;
             Vector3F.TransformCoordinate(ref L1, ref invTrans, out LB1);
@@ -546,9 +546,9 @@ namespace Molten
             float ExtentA, ExtentB, Separation;
             int i, k;
 
-            Matrix R;                   // Rotation from B to A
-            Matrix.Invert(ref Transformation, out R);
-            var AR = new Matrix();      // absolute values of R matrix, to use with box extents
+            Matrix4F R;                   // Rotation from B to A
+            Matrix4F.Invert(ref Transformation, out R);
+            var AR = new Matrix4F();      // absolute values of R matrix, to use with box extents
 
             for (i = 0; i < 3; i++)
                 for (k = 0; k < 3; k++)
@@ -611,8 +611,8 @@ namespace Molten
         public bool Intersects(ref Ray ray, out Vector3F point)
         {
             // Put ray in box space
-            Matrix invTrans;
-            Matrix.Invert(ref Transformation, out invTrans);
+            Matrix4F invTrans;
+            Matrix4F.Invert(ref Transformation, out invTrans);
 
             Ray bRay;
             Vector3F.TransformNormal(ref ray.Direction, ref invTrans, out bRay.Direction);
@@ -677,16 +677,16 @@ namespace Molten
         /// If true, the method will use a fast algorithm which is inapplicable if a scale is applied to the transformation matrix of the OrientedBoundingBox.
         /// </param>
         /// <returns></returns>
-        public static Matrix GetBoxToBoxMatrix(ref OrientedBoundingBox A, ref OrientedBoundingBox B, bool NoMatrixScaleApplied = false)
+        public static Matrix4F GetBoxToBoxMatrix(ref OrientedBoundingBox A, ref OrientedBoundingBox B, bool NoMatrixScaleApplied = false)
         {
-            Matrix AtoB_Matrix;
+            Matrix4F AtoB_Matrix;
 
             // Calculate B to A transformation matrix
             if (NoMatrixScaleApplied)
             {
                 var RotA = GetRows(ref A.Transformation);
                 var RotB = GetRows(ref B.Transformation);
-                AtoB_Matrix = new Matrix();
+                AtoB_Matrix = new Matrix4F();
                 int i, k;
                 for (i = 0; i < 3; i++)
                     for (k = 0; k < 3; k++)
@@ -699,8 +699,8 @@ namespace Molten
             }
             else
             {
-                Matrix AInvMat;
-                Matrix.Invert(ref A.Transformation, out AInvMat);
+                Matrix4F AInvMat;
+                Matrix4F.Invert(ref A.Transformation, out AInvMat);
                 AtoB_Matrix = B.Transformation * AInvMat;
             }
 
@@ -720,7 +720,7 @@ namespace Molten
         /// </remarks>
         public static void Merge(ref OrientedBoundingBox A, ref OrientedBoundingBox B, bool NoMatrixScaleApplied = false)
         {
-            Matrix AtoB_Matrix = GetBoxToBoxMatrix(ref A, ref B, NoMatrixScaleApplied);
+            Matrix4F AtoB_Matrix = GetBoxToBoxMatrix(ref A, ref B, NoMatrixScaleApplied);
 
             //Get B corners in A Space
             var bCorners = B.GetLocalCorners();

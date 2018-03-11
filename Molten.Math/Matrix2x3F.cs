@@ -3,7 +3,7 @@
     /// <summary>
     /// 2 row, 3 column matrix.
     /// </summary>
-    public struct Matrix2x3
+    public struct Matrix2x3F
     {
         /// <summary>
         /// Value at row 1, column 1 of the matrix.
@@ -45,7 +45,7 @@
         /// <param name="m21">Value at row 2, column 1 of the matrix.</param>
         /// <param name="m22">Value at row 2, column 2 of the matrix.</param>
         /// <param name="m23">Value at row 2, column 3 of the matrix.</param>
-        public Matrix2x3(float m11, float m12, float m13, float m21, float m22, float m23)
+        public Matrix2x3F(float m11, float m12, float m13, float m21, float m22, float m23)
         {
             M11 = m11;
             M12 = m12;
@@ -61,7 +61,7 @@
         /// <param name="a">First matrix to add.</param>
         /// <param name="b">Second matrix to add.</param>
         /// <param name="result">Sum of the two matrices.</param>
-        public static void Add(ref Matrix2x3 a, ref Matrix2x3 b, out Matrix2x3 result)
+        public static void Add(ref Matrix2x3F a, ref Matrix2x3F b, out Matrix2x3F result)
         {
             float m11 = a.M11 + b.M11;
             float m12 = a.M12 + b.M12;
@@ -87,7 +87,7 @@
         /// <param name="a">First matrix to multiply.</param>
         /// <param name="b">Second matrix to multiply.</param>
         /// <param name="result">Product of the multiplication.</param>
-        public static void Multiply(ref Matrix2x3 a, ref Matrix3x3 b, out Matrix2x3 result)
+        public static void Multiply(ref Matrix2x3F a, ref Matrix3F b, out Matrix2x3F result)
         {
             float resultM11 = a.M11 * b.M11 + a.M12 * b.M21 + a.M13 * b.M31;
             float resultM12 = a.M11 * b.M12 + a.M12 * b.M22 + a.M13 * b.M32;
@@ -112,7 +112,7 @@
         /// <param name="a">First matrix to multiply.</param>
         /// <param name="b">Second matrix to multiply.</param>
         /// <param name="result">Product of the multiplication.</param>
-        public static void Multiply(ref Matrix2x3 a, ref Matrix b, out Matrix2x3 result)
+        public static void Multiply(ref Matrix2x3F a, ref Matrix4F b, out Matrix2x3F result)
         {
             float resultM11 = a.M11 * b.M11 + a.M12 * b.M21 + a.M13 * b.M31;
             float resultM12 = a.M11 * b.M12 + a.M12 * b.M22 + a.M13 * b.M32;
@@ -136,7 +136,7 @@
         /// </summary>
         /// <param name="matrix">Matrix to negate.</param>
         /// <param name="result">Negated matrix.</param>
-        public static void Negate(ref Matrix2x3 matrix, out Matrix2x3 result)
+        public static void Negate(ref Matrix2x3F matrix, out Matrix2x3F result)
         {
             float m11 = -matrix.M11;
             float m12 = -matrix.M12;
@@ -161,7 +161,7 @@
         /// <param name="a">First matrix to subtract.</param>
         /// <param name="b">Second matrix to subtract.</param>
         /// <param name="result">Difference of the two matrices.</param>
-        public static void Subtract(ref Matrix2x3 a, ref Matrix2x3 b, out Matrix2x3 result)
+        public static void Subtract(ref Matrix2x3F a, ref Matrix2x3F b, out Matrix2x3F result)
         {
             float m11 = a.M11 - b.M11;
             float m12 = a.M12 - b.M12;
@@ -187,7 +187,7 @@
         /// <param name="v">Vector2 to transform.  Considered to be a row vector for purposes of multiplication.</param>
         /// <param name="matrix">Matrix to use as the transformation.</param>
         /// <param name="result">Row vector product of the transformation.</param>
-        public static void Transform(ref Vector2F v, ref Matrix2x3 matrix, out Vector3F result)
+        public static void Transform(ref Vector2F v, ref Matrix2x3F matrix, out Vector3F result)
         {
 #if !WINDOWS
             result = new Vector3F();
@@ -203,7 +203,7 @@
         /// <param name="v">Vector2 to transform.  Considered to be a column vector for purposes of multiplication.</param>
         /// <param name="matrix">Matrix to use as the transformation.</param>
         /// <param name="result">Column vector product of the transformation.</param>
-        public static void Transform(ref Vector3F v, ref Matrix2x3 matrix, out Vector2F result)
+        public static void Transform(ref Vector3F v, ref Matrix2x3F matrix, out Vector2F result)
         {
 #if !WINDOWS
             result = new Vector2F();
@@ -218,7 +218,7 @@
         /// </summary>
         /// <param name="matrix">Matrix to transpose.</param>
         /// <param name="result">Transposed matrix.</param>
-        public static void Transpose(ref Matrix2x3 matrix, out Matrix3x2 result)
+        public static void Transpose(ref Matrix2x3F matrix, out Matrix3x2F result)
         {
             result.M11 = matrix.M11;
             result.M12 = matrix.M21;

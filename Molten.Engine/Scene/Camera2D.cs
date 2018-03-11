@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     public class Camera2D : Camera
     {
-        public static readonly Matrix DefaultView = Matrix.Identity;
+        public static readonly Matrix4F DefaultView = Matrix4F.Identity;
 
         public Camera2D()
         {
@@ -19,13 +19,13 @@ namespace Molten.Graphics
 
         protected override void CalculateProjection()
         {
-            _projection = Matrix.OrthoOffCenterLH(0, _surface.Width, -_surface.Height, 0, _nearClip, _farClip);
-            _viewProjection = Matrix.Multiply(View, _projection);
+            _projection = Matrix4F.OrthoOffCenterLH(0, _surface.Width, -_surface.Height, 0, _nearClip, _farClip);
+            _viewProjection = Matrix4F.Multiply(View, _projection);
         }
 
-        public static Matrix GetDefaultProjection(IRenderSurface surface, float nearClip = 0.0f, float farClip = 1.0f)
+        public static Matrix4F GetDefaultProjection(IRenderSurface surface, float nearClip = 0.0f, float farClip = 1.0f)
         {
-            return Matrix.OrthoOffCenterLH(0, surface.Width, -surface.Height, 0, nearClip, farClip);
+            return Matrix4F.OrthoOffCenterLH(0, surface.Width, -surface.Height, 0, nearClip, farClip);
         }
     }
 }

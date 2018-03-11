@@ -282,9 +282,9 @@ namespace Molten
         /// <param name="x">X coordinate on 2d screen.</param>
         /// <param name="y">Y coordinate on 2d screen.</param>
         /// <param name="viewport"><see cref="ViewportF"/>.</param>
-        /// <param name="worldViewProjection">Transformation <see cref="Matrix"/>.</param>
+        /// <param name="worldViewProjection">Transformation <see cref="Matrix4F"/>.</param>
         /// <returns>Resulting <see cref="Ray"/>.</returns>
-        public static Ray GetPickRay(int x, int y, ViewportF viewport, Matrix worldViewProjection)
+        public static Ray GetPickRay(int x, int y, ViewportF viewport, Matrix4F worldViewProjection)
         {
             var nearPoint = new Vector3F(x, y, 0);
             var farPoint = new Vector3F(x, y, 1);

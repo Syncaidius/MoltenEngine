@@ -26,16 +26,16 @@ using System.Runtime.InteropServices;
 namespace Molten
 {
     /// <summary>
-    /// Direct2D Matrix3x2. Supports implicit cast from <see cref="Matrix"/>.
+    /// Direct2D Matrix3x2. Supports implicit cast from <see cref="Matrix4F"/>.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Matrix3x2
+    public struct Matrix3x2F
     {
         /// <summary>
         /// Gets the identity matrix.
         /// </summary>
         /// <value>The identity matrix.</value>
-        public readonly static Matrix3x2 Identity = new Matrix3x2(1, 0, 0, 1, 0, 0);
+        public readonly static Matrix3x2F Identity = new Matrix3x2F(1, 0, 0, 1, 0, 0);
 
         /// <summary>
         /// Element (1,1)
@@ -68,10 +68,10 @@ namespace Molten
         public float M32;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix3x2"/> struct.
+        /// Initializes a new instance of the <see cref="Matrix3x2F"/> struct.
         /// </summary>
         /// <param name="value">The value that will be assigned to all components.</param>
-        public Matrix3x2(float value)
+        public Matrix3x2F(float value)
         {
             M11 = M12 = 
             M21 = M22 = 
@@ -79,7 +79,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix3x2"/> struct.
+        /// Initializes a new instance of the <see cref="Matrix3x2F"/> struct.
         /// </summary>
         /// <param name="M11">The value to assign at row 1 column 1 of the matrix.</param>
         /// <param name="M12">The value to assign at row 1 column 2 of the matrix.</param>
@@ -87,7 +87,7 @@ namespace Molten
         /// <param name="M22">The value to assign at row 2 column 2 of the matrix.</param>
         /// <param name="M31">The value to assign at row 3 column 1 of the matrix.</param>
         /// <param name="M32">The value to assign at row 3 column 2 of the matrix.</param>
-        public Matrix3x2(float M11, float M12, float M21, float M22, float M31, float M32)
+        public Matrix3x2F(float M11, float M12, float M21, float M22, float M31, float M32)
         {
             this.M11 = M11; this.M12 = M12;
             this.M21 = M21; this.M22 = M22;
@@ -95,12 +95,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix3x2"/> struct.
+        /// Initializes a new instance of the <see cref="Matrix3x2F"/> struct.
         /// </summary>
         /// <param name="values">The values to assign to the components of the matrix. This must be an array with six elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than six elements.</exception>
-        public Matrix3x2(float[] values)
+        public Matrix3x2F(float[] values)
         {
             if (values == null)
                 throw new ArgumentNullException("values");
@@ -276,7 +276,7 @@ namespace Molten
         /// <param name="left">The first matrix to add.</param>
         /// <param name="right">The second matrix to add.</param>
         /// <param name="result">When the method completes, contains the sum of the two matrices.</param>
-        public static void Add(ref Matrix3x2 left, ref Matrix3x2 right, out Matrix3x2 result)
+        public static void Add(ref Matrix3x2F left, ref Matrix3x2F right, out Matrix3x2F result)
         {
             result.M11 = left.M11 + right.M11;
             result.M12 = left.M12 + right.M12;
@@ -292,9 +292,9 @@ namespace Molten
         /// <param name="left">The first matrix to add.</param>
         /// <param name="right">The second matrix to add.</param>
         /// <returns>The sum of the two matrices.</returns>
-        public static Matrix3x2 Add(Matrix3x2 left, Matrix3x2 right)
+        public static Matrix3x2F Add(Matrix3x2F left, Matrix3x2F right)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Add(ref left, ref right, out result);
             return result;
         }
@@ -305,7 +305,7 @@ namespace Molten
         /// <param name="left">The first matrix to subtract.</param>
         /// <param name="right">The second matrix to subtract.</param>
         /// <param name="result">When the method completes, contains the difference between the two matrices.</param>
-        public static void Subtract(ref Matrix3x2 left, ref Matrix3x2 right, out Matrix3x2 result)
+        public static void Subtract(ref Matrix3x2F left, ref Matrix3x2F right, out Matrix3x2F result)
         {
             result.M11 = left.M11 - right.M11;
             result.M12 = left.M12 - right.M12;
@@ -321,9 +321,9 @@ namespace Molten
         /// <param name="left">The first matrix to subtract.</param>
         /// <param name="right">The second matrix to subtract.</param>
         /// <returns>The difference between the two matrices.</returns>
-        public static Matrix3x2 Subtract(Matrix3x2 left, Matrix3x2 right)
+        public static Matrix3x2F Subtract(Matrix3x2F left, Matrix3x2F right)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Subtract(ref left, ref right, out result);
             return result;
         }
@@ -334,7 +334,7 @@ namespace Molten
         /// <param name="left">The matrix to scale.</param>
         /// <param name="right">The amount by which to scale.</param>
         /// <param name="result">When the method completes, contains the scaled matrix.</param>
-        public static void Multiply(ref Matrix3x2 left, float right, out Matrix3x2 result)
+        public static void Multiply(ref Matrix3x2F left, float right, out Matrix3x2F result)
         {
             result.M11 = left.M11 * right;
             result.M12 = left.M12 * right;
@@ -350,9 +350,9 @@ namespace Molten
         /// <param name="left">The matrix to scale.</param>
         /// <param name="right">The amount by which to scale.</param>
         /// <returns>The scaled matrix.</returns>
-        public static Matrix3x2 Multiply(Matrix3x2 left, float right)
+        public static Matrix3x2F Multiply(Matrix3x2F left, float right)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Multiply(ref left, right, out result);
             return result;
         }
@@ -363,9 +363,9 @@ namespace Molten
         /// <param name="left">The first matrix to multiply.</param>
         /// <param name="right">The second matrix to multiply.</param>
         /// <param name="result">The product of the two matrices.</param>
-        public static void Multiply(ref Matrix3x2 left, ref Matrix3x2 right, out Matrix3x2 result)
+        public static void Multiply(ref Matrix3x2F left, ref Matrix3x2F right, out Matrix3x2F result)
         {
-            result = new Matrix3x2();
+            result = new Matrix3x2F();
             result.M11 = (left.M11 * right.M11) + (left.M12 * right.M21);
             result.M12 = (left.M11 * right.M12) + (left.M12 * right.M22);
             result.M21 = (left.M21 * right.M11) + (left.M22 * right.M21);
@@ -380,9 +380,9 @@ namespace Molten
         /// <param name="left">The first matrix to multiply.</param>
         /// <param name="right">The second matrix to multiply.</param>
         /// <returns>The product of the two matrices.</returns>
-        public static Matrix3x2 Multiply(Matrix3x2 left, Matrix3x2 right)
+        public static Matrix3x2F Multiply(Matrix3x2F left, Matrix3x2F right)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Multiply(ref left, ref right, out result);
             return result;
         }
@@ -393,7 +393,7 @@ namespace Molten
         /// <param name="left">The matrix to scale.</param>
         /// <param name="right">The amount by which to scale.</param>
         /// <param name="result">When the method completes, contains the scaled matrix.</param>
-        public static void Divide(ref Matrix3x2 left, float right, out Matrix3x2 result)
+        public static void Divide(ref Matrix3x2F left, float right, out Matrix3x2F result)
         {
             float inv = 1.0f / right;
 
@@ -411,7 +411,7 @@ namespace Molten
         /// <param name="left">The first matrix to divide.</param>
         /// <param name="right">The second matrix to divide.</param>
         /// <param name="result">When the method completes, contains the quotient of the two matrices.</param>
-        public static void Divide(ref Matrix3x2 left, ref Matrix3x2 right, out Matrix3x2 result)
+        public static void Divide(ref Matrix3x2F left, ref Matrix3x2F right, out Matrix3x2F result)
         {
             result.M11 = left.M11 / right.M11;
             result.M12 = left.M12 / right.M12;
@@ -426,7 +426,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The matrix to be negated.</param>
         /// <param name="result">When the method completes, contains the negated matrix.</param>
-        public static void Negate(ref Matrix3x2 value, out Matrix3x2 result)
+        public static void Negate(ref Matrix3x2F value, out Matrix3x2F result)
         {
             result.M11 = -value.M11;
             result.M12 = -value.M12;
@@ -441,9 +441,9 @@ namespace Molten
         /// </summary>
         /// <param name="value">The matrix to be negated.</param>
         /// <returns>The negated matrix.</returns>
-        public static Matrix3x2 Negate(Matrix3x2 value)
+        public static Matrix3x2F Negate(Matrix3x2F value)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Negate(ref value, out result);
             return result;
         }
@@ -458,7 +458,7 @@ namespace Molten
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Matrix3x2 start, ref Matrix3x2 end, float amount, out Matrix3x2 result)
+        public static void Lerp(ref Matrix3x2F start, ref Matrix3x2F end, float amount, out Matrix3x2F result)
         {
             result.M11 = MathHelper.Lerp(start.M11, end.M11, amount);
             result.M12 = MathHelper.Lerp(start.M12, end.M12, amount);
@@ -478,9 +478,9 @@ namespace Molten
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static Matrix3x2 Lerp(Matrix3x2 start, Matrix3x2 end, float amount)
+        public static Matrix3x2F Lerp(Matrix3x2F start, Matrix3x2F end, float amount)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Lerp(ref start, ref end, amount, out result);
             return result;
         }
@@ -492,7 +492,7 @@ namespace Molten
         /// <param name="end">End matrix.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <param name="result">When the method completes, contains the cubic interpolation of the two matrices.</param>
-        public static void SmoothStep(ref Matrix3x2 start, ref Matrix3x2 end, float amount, out Matrix3x2 result)
+        public static void SmoothStep(ref Matrix3x2F start, ref Matrix3x2F end, float amount, out Matrix3x2F result)
         {
             amount = MathHelper.SmoothStep(amount);
             Lerp(ref start, ref end, amount, out result);
@@ -505,9 +505,9 @@ namespace Molten
         /// <param name="end">End matrix.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         /// <returns>The cubic interpolation of the two matrices.</returns>
-        public static Matrix3x2 SmoothStep(Matrix3x2 start, Matrix3x2 end, float amount)
+        public static Matrix3x2F SmoothStep(Matrix3x2F start, Matrix3x2F end, float amount)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             SmoothStep(ref start, ref end, amount, out result);
             return result;
         }
@@ -517,7 +517,7 @@ namespace Molten
         /// </summary>
         /// <param name="scale">Scaling factor for both axes.</param>
         /// <param name="result">When the method completes, contains the created scaling matrix.</param>
-        public static void Scaling(ref Vector2F scale, out Matrix3x2 result)
+        public static void Scaling(ref Vector2F scale, out Matrix3x2F result)
         {
             Scaling(scale.X, scale.Y, out result);
         }
@@ -527,9 +527,9 @@ namespace Molten
         /// </summary>
         /// <param name="scale">Scaling factor for both axes.</param>
         /// <returns>The created scaling matrix.</returns>
-        public static Matrix3x2 Scaling(Vector2F scale)
+        public static Matrix3x2F Scaling(Vector2F scale)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Scaling(ref scale, out result);
             return result;
         }
@@ -540,9 +540,9 @@ namespace Molten
         /// <param name="x">Scaling factor that is applied along the x-axis.</param>
         /// <param name="y">Scaling factor that is applied along the y-axis.</param>
         /// <param name="result">When the method completes, contains the created scaling matrix.</param>
-        public static void Scaling(float x, float y, out Matrix3x2 result)
+        public static void Scaling(float x, float y, out Matrix3x2F result)
         {
-            result = Matrix3x2.Identity;
+            result = Matrix3x2F.Identity;
             result.M11 = x;
             result.M22 = y;
         }
@@ -553,9 +553,9 @@ namespace Molten
         /// <param name="x">Scaling factor that is applied along the x-axis.</param>
         /// <param name="y">Scaling factor that is applied along the y-axis.</param>
         /// <returns>The created scaling matrix.</returns>
-        public static Matrix3x2 Scaling(float x, float y)
+        public static Matrix3x2F Scaling(float x, float y)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Scaling(x, y, out result);
             return result;
         }
@@ -565,9 +565,9 @@ namespace Molten
         /// </summary>
         /// <param name="scale">The uniform scale that is applied along both axes.</param>
         /// <param name="result">When the method completes, contains the created scaling matrix.</param>
-        public static void Scaling(float scale, out Matrix3x2 result)
+        public static void Scaling(float scale, out Matrix3x2F result)
         {
-            result = Matrix3x2.Identity;
+            result = Matrix3x2F.Identity;
             result.M11 = result.M22 = scale;
         }
 
@@ -576,9 +576,9 @@ namespace Molten
         /// </summary>
         /// <param name="scale">The uniform scale that is applied along both axes.</param>
         /// <returns>The created scaling matrix.</returns>
-        public static Matrix3x2 Scaling(float scale)
+        public static Matrix3x2F Scaling(float scale)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Scaling(scale, out result);
             return result;
         }
@@ -590,9 +590,9 @@ namespace Molten
         /// <param name="y">Scaling factor that is applied along the y-axis.</param>
         /// <param name="center">The center of the scaling.</param>
         /// <returns>The created scaling matrix.</returns>
-        public static Matrix3x2 Scaling(float x, float y, Vector2F center)
+        public static Matrix3x2F Scaling(float x, float y, Vector2F center)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
 
             result.M11 = x;     result.M12 = 0.0f;
             result.M21 = 0.0f;  result.M22 = y;
@@ -610,9 +610,9 @@ namespace Molten
         /// <param name="y">Scaling factor that is applied along the y-axis.</param>
         /// <param name="center">The center of the scaling.</param>
         /// <param name="result">The created scaling matrix.</param>
-        public static void Scaling( float x, float y, ref Vector2F center, out Matrix3x2 result)
+        public static void Scaling( float x, float y, ref Vector2F center, out Matrix3x2F result)
         {
-            Matrix3x2 localResult;
+            Matrix3x2F localResult;
 
             localResult.M11 = x;     localResult.M12 = 0.0f;
             localResult.M21 = 0.0f;  localResult.M22 = y;
@@ -637,12 +637,12 @@ namespace Molten
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis.</param>
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
-        public static void Rotation(float angle, out Matrix3x2 result)
+        public static void Rotation(float angle, out Matrix3x2F result)
         {
             float cos = (float)Math.Cos(angle);
             float sin = (float)Math.Sin(angle);
 
-            result = Matrix3x2.Identity;
+            result = Matrix3x2F.Identity;
             result.M11 = cos;
             result.M12 = sin;
             result.M21 = -sin;
@@ -654,9 +654,9 @@ namespace Molten
         /// </summary>
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis.</param>
         /// <returns>The created rotation matrix.</returns>
-        public static Matrix3x2 Rotation(float angle)
+        public static Matrix3x2F Rotation(float angle)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Rotation(angle, out result);
             return result;
         }
@@ -667,9 +667,9 @@ namespace Molten
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis.</param>
         /// <param name="center">The center of the rotation.</param>
         /// <returns>The created rotation matrix.</returns>
-        public static Matrix3x2 Rotation(float angle, Vector2F center)
+        public static Matrix3x2F Rotation(float angle, Vector2F center)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Rotation(angle, center, out result);
             return result;
         }
@@ -680,7 +680,7 @@ namespace Molten
         /// <param name="angle">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis.</param>
         /// <param name="center">The center of the rotation.</param>
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
-        public static void Rotation(float angle, Vector2F center, out Matrix3x2 result)
+        public static void Rotation(float angle, Vector2F center, out Matrix3x2F result)
         {
             result = Translation(-center) * Rotation(angle) * Translation(center);
         }
@@ -694,7 +694,7 @@ namespace Molten
         /// <param name="xOffset">X-coordinate offset.</param>
         /// <param name="yOffset">Y-coordinate offset.</param>
         /// <param name="result">When the method completes, contains the created transformation matrix.</param>
-        public static void Transformation(float xScale, float yScale, float angle, float xOffset, float yOffset, out Matrix3x2 result)
+        public static void Transformation(float xScale, float yScale, float angle, float xOffset, float yOffset, out Matrix3x2F result)
         {
             result = Scaling(xScale, yScale) * Rotation(angle) * Translation(xOffset, yOffset);
         }
@@ -708,9 +708,9 @@ namespace Molten
         /// <param name="xOffset">X-coordinate offset.</param>
         /// <param name="yOffset">Y-coordinate offset.</param>
         /// <returns>The created transformation matrix.</returns>
-        public static Matrix3x2 Transformation(float xScale, float yScale, float angle, float xOffset, float yOffset)
+        public static Matrix3x2F Transformation(float xScale, float yScale, float angle, float xOffset, float yOffset)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Transformation(xScale, yScale, angle, xOffset, yOffset, out result);
             return result;
         }
@@ -720,7 +720,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The offset for both coordinate planes.</param>
         /// <param name="result">When the method completes, contains the created translation matrix.</param>
-        public static void Translation(ref Vector2F value, out Matrix3x2 result)
+        public static void Translation(ref Vector2F value, out Matrix3x2F result)
         {
             Translation(value.X, value.Y, out result);
         }
@@ -730,9 +730,9 @@ namespace Molten
         /// </summary>
         /// <param name="value">The offset for both coordinate planes.</param>
         /// <returns>The created translation matrix.</returns>
-        public static Matrix3x2 Translation(Vector2F value)
+        public static Matrix3x2F Translation(Vector2F value)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Translation(ref value, out result);
             return result;
         }
@@ -743,9 +743,9 @@ namespace Molten
         /// <param name="x">X-coordinate offset.</param>
         /// <param name="y">Y-coordinate offset.</param>
         /// <param name="result">When the method completes, contains the created translation matrix.</param>
-        public static void Translation(float x, float y, out Matrix3x2 result)
+        public static void Translation(float x, float y, out Matrix3x2F result)
         {
-            result = Matrix3x2.Identity;
+            result = Matrix3x2F.Identity;
             result.M31 = x;
             result.M32 = y;
         }
@@ -756,9 +756,9 @@ namespace Molten
         /// <param name="x">X-coordinate offset.</param>
         /// <param name="y">Y-coordinate offset.</param>
         /// <returns>The created translation matrix.</returns>
-        public static Matrix3x2 Translation(float x, float y)
+        public static Matrix3x2F Translation(float x, float y)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Translation(x, y, out result);
             return result;
         }
@@ -769,7 +769,7 @@ namespace Molten
         /// <param name="matrix">The matrix to use as a transformation matrix.</param>
         /// <param name="point">The original vector to apply the transformation.</param>
         /// <returns>The result of the transformation for the input vector.</returns>
-        public static Vector2F TransformPoint(Matrix3x2 matrix, Vector2F point)
+        public static Vector2F TransformPoint(Matrix3x2F matrix, Vector2F point)
         {
             Vector2F result;
             result.X = (point.X * matrix.M11) + (point.Y * matrix.M21) + matrix.M31;
@@ -784,7 +784,7 @@ namespace Molten
         /// <param name="point">The original vector to apply the transformation.</param>
         /// <param name="result">The result of the transformation for the input vector.</param>
         /// <returns></returns>
-        public static void TransformPoint(ref Matrix3x2 matrix, ref Vector2F point, out Vector2F result)
+        public static void TransformPoint(ref Matrix3x2F matrix, ref Vector2F point, out Vector2F result)
         {
             Vector2F localResult;
             localResult.X = (point.X * matrix.M11) + (point.Y * matrix.M21) + matrix.M31;
@@ -805,9 +805,9 @@ namespace Molten
         /// </summary>
         /// <param name="value">The matrix whose inverse is to be calculated.</param>
         /// <returns>the inverse of the specified matrix.</returns>
-        public static Matrix3x2 Invert(Matrix3x2 value)
+        public static Matrix3x2F Invert(Matrix3x2F value)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Invert(ref value, out result);
             return result;
         }
@@ -818,9 +818,9 @@ namespace Molten
         /// <param name="angleX">Angle of skew along the X-axis in radians.</param>
         /// <param name="angleY">Angle of skew along the Y-axis in radians.</param>
         /// <returns>The created skew matrix.</returns>
-        public static Matrix3x2 Skew(float angleX, float angleY)
+        public static Matrix3x2F Skew(float angleX, float angleY)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Skew(angleX, angleY, out result);
             return result;
         }
@@ -831,9 +831,9 @@ namespace Molten
         /// <param name="angleX">Angle of skew along the X-axis in radians.</param>
         /// <param name="angleY">Angle of skew along the Y-axis in radians.</param>
         /// <param name="result">When the method completes, contains the created skew matrix.</param>
-        public static void Skew(float angleX, float angleY, out Matrix3x2 result)
+        public static void Skew(float angleX, float angleY, out Matrix3x2F result)
         {
-            result = Matrix.Identity;
+            result = Matrix4F.Identity;
             result.M12 = (float) Math.Tan(angleX);
             result.M21 = (float) Math.Tan(angleY);
         }
@@ -843,7 +843,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The matrix whose inverse is to be calculated.</param>
         /// <param name="result">When the method completes, contains the inverse of the specified matrix.</param>
-        public static void Invert(ref Matrix3x2 value, out Matrix3x2 result)
+        public static void Invert(ref Matrix3x2F value, out Matrix3x2F result)
         {
             float determinant = value.Determinant();
 
@@ -857,7 +857,7 @@ namespace Molten
             float _offsetX = value.M31;
             float _offsetY = value.M32;
 
-            result = new Matrix3x2(
+            result = new Matrix3x2F(
                 value.M22 * invdet,
                 -value.M12 * invdet,
                 -value.M21 * invdet,
@@ -872,9 +872,9 @@ namespace Molten
         /// <param name="left">The first matrix to add.</param>
         /// <param name="right">The second matrix to add.</param>
         /// <returns>The sum of the two matrices.</returns>
-        public static Matrix3x2 operator +(Matrix3x2 left, Matrix3x2 right)
+        public static Matrix3x2F operator +(Matrix3x2F left, Matrix3x2F right)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Add(ref left, ref right, out result);
             return result;
         }
@@ -884,7 +884,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The matrix to assert (unchanged).</param>
         /// <returns>The asserted (unchanged) matrix.</returns>
-        public static Matrix3x2 operator +(Matrix3x2 value)
+        public static Matrix3x2F operator +(Matrix3x2F value)
         {
             return value;
         }
@@ -895,9 +895,9 @@ namespace Molten
         /// <param name="left">The first matrix to subtract.</param>
         /// <param name="right">The second matrix to subtract.</param>
         /// <returns>The difference between the two matrices.</returns>
-        public static Matrix3x2 operator -(Matrix3x2 left, Matrix3x2 right)
+        public static Matrix3x2F operator -(Matrix3x2F left, Matrix3x2F right)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Subtract(ref left, ref right, out result);
             return result;
         }
@@ -907,9 +907,9 @@ namespace Molten
         /// </summary>
         /// <param name="value">The matrix to negate.</param>
         /// <returns>The negated matrix.</returns>
-        public static Matrix3x2 operator -(Matrix3x2 value)
+        public static Matrix3x2F operator -(Matrix3x2F value)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Negate(ref value, out result);
             return result;
         }
@@ -920,9 +920,9 @@ namespace Molten
         /// <param name="right">The matrix to scale.</param>
         /// <param name="left">The amount by which to scale.</param>
         /// <returns>The scaled matrix.</returns>
-        public static Matrix3x2 operator *(float left, Matrix3x2 right)
+        public static Matrix3x2F operator *(float left, Matrix3x2F right)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Multiply(ref right, left, out result);
             return result;
         }
@@ -933,9 +933,9 @@ namespace Molten
         /// <param name="left">The matrix to scale.</param>
         /// <param name="right">The amount by which to scale.</param>
         /// <returns>The scaled matrix.</returns>
-        public static Matrix3x2 operator *(Matrix3x2 left, float right)
+        public static Matrix3x2F operator *(Matrix3x2F left, float right)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Multiply(ref left, right, out result);
             return result;
         }
@@ -946,9 +946,9 @@ namespace Molten
         /// <param name="left">The first matrix to multiply.</param>
         /// <param name="right">The second matrix to multiply.</param>
         /// <returns>The product of the two matrices.</returns>
-        public static Matrix3x2 operator *(Matrix3x2 left, Matrix3x2 right)
+        public static Matrix3x2F operator *(Matrix3x2F left, Matrix3x2F right)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Multiply(ref left, ref right, out result);
             return result;
         }
@@ -959,9 +959,9 @@ namespace Molten
         /// <param name="left">The matrix to scale.</param>
         /// <param name="right">The amount by which to scale.</param>
         /// <returns>The scaled matrix.</returns>
-        public static Matrix3x2 operator /(Matrix3x2 left, float right)
+        public static Matrix3x2F operator /(Matrix3x2F left, float right)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Divide(ref left, right, out result);
             return result;
         }
@@ -972,9 +972,9 @@ namespace Molten
         /// <param name="left">The first matrix to divide.</param>
         /// <param name="right">The second matrix to divide.</param>
         /// <returns>The quotient of the two matrices.</returns>
-        public static Matrix3x2 operator /(Matrix3x2 left, Matrix3x2 right)
+        public static Matrix3x2F operator /(Matrix3x2F left, Matrix3x2F right)
         {
-            Matrix3x2 result;
+            Matrix3x2F result;
             Divide(ref left, ref right, out result);
             return result;
         }
@@ -986,7 +986,7 @@ namespace Molten
         /// <param name="right">The second value to compare.</param>
         /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Matrix3x2 left, Matrix3x2 right)
+        public static bool operator ==(Matrix3x2F left, Matrix3x2F right)
         {
             return left.Equals(ref right);
         }
@@ -998,7 +998,7 @@ namespace Molten
         /// <param name="right">The second value to compare.</param>
         /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Matrix3x2 left, Matrix3x2 right)
+        public static bool operator !=(Matrix3x2F left, Matrix3x2F right)
         {
             return !left.Equals(ref right);
         }
@@ -1088,13 +1088,13 @@ namespace Molten
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Matrix3x2"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Matrix3x2F"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="Matrix3x2"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="Matrix3x2F"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="Matrix3x2"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="Matrix3x2F"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(ref Matrix3x2 other)
+        public bool Equals(ref Matrix3x2F other)
         {
             return (MathHelper.NearEqual(other.M11, M11) &&
                 MathHelper.NearEqual(other.M12, M12) &&
@@ -1104,14 +1104,14 @@ namespace Molten
                 MathHelper.NearEqual(other.M32, M32));
         }
         /// <summary>
-        /// Determines whether the specified <see cref="Matrix3x2"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Matrix3x2F"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="Matrix3x2"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="Matrix3x2F"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="Matrix3x2"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="Matrix3x2F"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Matrix3x2 other)
+        public bool Equals(Matrix3x2F other)
         {
             return Equals(ref other);
         }
@@ -1125,21 +1125,21 @@ namespace Molten
         /// </returns>
         public override bool Equals(object value)
         {
-            if (!(value is Matrix3x2))
+            if (!(value is Matrix3x2F))
                 return false;
 
-            var strongValue = (Matrix3x2)value;
+            var strongValue = (Matrix3x2F)value;
             return Equals(ref strongValue);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Matrix"/> to <see cref="Matrix3x2"/>.
+        /// Performs an implicit conversion from <see cref="Matrix4F"/> to <see cref="Matrix3x2F"/>.
         /// </summary>
         /// <param name="matrix">The matrix.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Matrix3x2(Matrix matrix)
+        public static implicit operator Matrix3x2F(Matrix4F matrix)
         {
-            return new Matrix3x2
+            return new Matrix3x2F
             {
                 M11 = matrix.M11,
                 M12 = matrix.M12,

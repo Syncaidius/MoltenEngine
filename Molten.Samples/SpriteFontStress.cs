@@ -16,7 +16,7 @@ namespace Molten.Samples
 
         SceneObject _parent;
         SceneObject _child;
-        List<Matrix> _positions;
+        List<Matrix4F> _positions;
         Random _rng;
         SceneCameraComponent _cam;
         Camera2D _cam2D;
@@ -46,7 +46,7 @@ namespace Molten.Samples
 
             _sprites = new List<ISprite>();
             _rng = new Random();
-            _positions = new List<Matrix>();
+            _positions = new List<Matrix4F>();
             _font = engine.Renderer.Resources.CreateFont("arial", 36);
             SetupSprites(_font);
 

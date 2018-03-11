@@ -996,12 +996,12 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Transforms a 4D vector by the given <see cref="Quaternion"/> rotation.
+        /// Transforms a 4D vector by the given <see cref="QuaternionF"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="Quaternion"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector4D"/>.</param>
-        public static void Transform(ref Vector4D vector, ref Quaternion rotation, out Vector4D result)
+        public static void Transform(ref Vector4D vector, ref QuaternionF rotation, out Vector4D result)
         {
             double x = rotation.X + rotation.X;
             double y = rotation.Y + rotation.Y;
@@ -1024,12 +1024,12 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Transforms a 4D vector by the given <see cref="Quaternion"/> rotation.
+        /// Transforms a 4D vector by the given <see cref="QuaternionF"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="Quaternion"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
         /// <returns>The transformed <see cref="Vector4D"/>.</returns>
-        public static Vector4D Transform(Vector4D vector, Quaternion rotation)
+        public static Vector4D Transform(Vector4D vector, QuaternionF rotation)
         {
             Vector4D result;
             Transform(ref vector, ref rotation, out result);
@@ -1037,15 +1037,15 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Transforms an array of vectors by the given <see cref="Quaternion"/> rotation.
+        /// Transforms an array of vectors by the given <see cref="QuaternionF"/> rotation.
         /// </summary>
         /// <param name="source">The array of vectors to transform.</param>
-        /// <param name="rotation">The <see cref="Quaternion"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
         /// <param name="destination">The array for which the transformed vectors are stored.
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(Vector4D[] source, ref Quaternion rotation, Vector4D[] destination)
+        public static void Transform(Vector4D[] source, ref QuaternionF rotation, Vector4D[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -1088,12 +1088,12 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Transforms a 4D vector by the given <see cref="Matrix"/>.
+        /// Transforms a 4D vector by the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector4D"/>.</param>
-        public static void Transform(ref Vector4D vector, ref Matrix transform, out Vector4D result)
+        public static void Transform(ref Vector4D vector, ref Matrix4F transform, out Vector4D result)
         {
             result = new Vector4D(
                 (vector.X * transform.M11) + (vector.Y * transform.M21) + (vector.Z * transform.M31) + (vector.W * transform.M41),
@@ -1103,12 +1103,12 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Transforms a 4D vector by the given <see cref="Matrix"/>.
+        /// Transforms a 4D vector by the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <returns>The transformed <see cref="Vector4D"/>.</returns>
-        public static Vector4D Transform(Vector4D vector, Matrix transform)
+        public static Vector4D Transform(Vector4D vector, Matrix4F transform)
         {
             Vector4D result;
             Transform(ref vector, ref transform, out result);
@@ -1144,15 +1144,15 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Transforms an array of 4D vectors by the given <see cref="Matrix"/>.
+        /// Transforms an array of 4D vectors by the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="source">The array of vectors to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="destination">The array for which the transformed vectors are stored.
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(Vector4D[] source, ref Matrix transform, Vector4D[] destination)
+        public static void Transform(Vector4D[] source, ref Matrix4F transform, Vector4D[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");

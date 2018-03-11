@@ -10,9 +10,9 @@ namespace Molten
     /// <summary>An implementation of <see cref="Camera"/> which provides a left-handed projection matrix based on it's <see cref="Camera.OutputSurface"/>.</summary>
     public class SceneCameraComponent : SceneComponent, ICamera
     {
-        Matrix _view;
-        Matrix _projection;
-        Matrix _viewProjection;
+        Matrix4F _view;
+        Matrix4F _projection;
+        Matrix4F _viewProjection;
         IRenderSurface _surface;
         float _nearClip;
         float _farClip;
@@ -21,7 +21,7 @@ namespace Molten
         {
             _nearClip = 0.1f;
             _farClip = 1000.0f;
-            _view = Matrix.Identity;
+            _view = Matrix4F.Identity;
         }
 
         protected override void OnInitialize(SceneObject obj)
@@ -33,12 +33,12 @@ namespace Molten
         private void _surface_OnPostResize(ITexture texture)
         {
             CalculateProjection();
-            _viewProjection = Matrix.Multiply(_view, _projection);
+            _viewProjection = Matrix4F.Multiply(_view, _projection);
         }
 
         private void CalculateProjection()
         {
-            _projection = Matrix.PerspectiveFovLH((float)Math.PI / 4.0f, _surface.Width / (float)_surface.Height, _nearClip, _farClip);
+            _projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, _surface.Width / (float)_surface.Height, _nearClip, _farClip);
         }
 
         public override void OnUpdate(Timing time)
@@ -49,8 +49,8 @@ namespace Molten
 
         private void CalculateView()
         {
-            _view = Matrix.Invert(Object.Transform.Global);
-            _viewProjection = Matrix.Multiply(_view, _projection);
+            _view = Matrix4F.Invert(Object.Transform.Global);
+            _viewProjection = Matrix4F.Multiply(_view, _projection);
         }
 
         /// <summary>Converts the provided screen position to a globalized 3D world position.</summary>
@@ -68,11 +68,11 @@ namespace Molten
             return new Vector2F(result.X, result.Y);
         }
 
-        public Matrix View => _view;
+        public Matrix4F View => _view;
 
-        public Matrix Projection => _projection;
+        public Matrix4F Projection => _projection;
 
-        public Matrix ViewProjection => _viewProjection;
+        public Matrix4F ViewProjection => _viewProjection;
 
         /// <summary>Gets or sets the <see cref="IRenderSurface"/> that the camera's view should be rendered out to.</summary>
         public IRenderSurface OutputSurface

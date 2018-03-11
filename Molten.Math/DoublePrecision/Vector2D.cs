@@ -973,12 +973,12 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="Quaternion"/> rotation.
+        /// Transforms a 2D vector by the given <see cref="QuaternionF"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="Quaternion"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector4F"/>.</param>
-        public static void Transform(ref Vector2D vector, ref Quaternion rotation, out Vector2D result)
+        public static void Transform(ref Vector2D vector, ref QuaternionF rotation, out Vector2D result)
         {
             double x = rotation.X + rotation.X;
             double y = rotation.Y + rotation.Y;
@@ -993,12 +993,12 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="Quaternion"/> rotation.
+        /// Transforms a 2D vector by the given <see cref="QuaternionF"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="Quaternion"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
         /// <returns>The transformed <see cref="Vector4F"/>.</returns>
-        public static Vector2D Transform(Vector2D vector, Quaternion rotation)
+        public static Vector2D Transform(Vector2D vector, QuaternionF rotation)
         {
             Vector2D result;
             Transform(ref vector, ref rotation, out result);
@@ -1006,15 +1006,15 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Transforms an array of vectors by the given <see cref="Quaternion"/> rotation.
+        /// Transforms an array of vectors by the given <see cref="QuaternionF"/> rotation.
         /// </summary>
         /// <param name="source">The array of vectors to transform.</param>
-        /// <param name="rotation">The <see cref="Quaternion"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
         /// <param name="destination">The array for which the transformed vectors are stored.
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(Vector2D[] source, ref Quaternion rotation, Vector2D[] destination)
+        public static void Transform(Vector2D[] source, ref QuaternionF rotation, Vector2D[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -1046,12 +1046,12 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="Matrix"/>.
+        /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector4F"/>.</param>
-        public static void Transform(ref Vector2D vector, ref Matrix transform, out Vector4D result)
+        public static void Transform(ref Vector2D vector, ref Matrix4F transform, out Vector4D result)
         {
             result = new Vector4D(
                 (vector.X * transform.M11) + (vector.Y * transform.M21) + transform.M41,
@@ -1061,12 +1061,12 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="Matrix"/>.
+        /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <returns>The transformed <see cref="Vector4F"/>.</returns>
-        public static Vector4D Transform(Vector2D vector, Matrix transform)
+        public static Vector4D Transform(Vector2D vector, Matrix4F transform)
         {
             Vector4D result;
             Transform(ref vector, ref transform, out result);
@@ -1074,14 +1074,14 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Transforms an array of 2D vectors by the given <see cref="Matrix"/>.
+        /// Transforms an array of 2D vectors by the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="source">The array of vectors to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="destination">The array for which the transformed vectors are stored.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(Vector2D[] source, ref Matrix transform, Vector4D[] destination)
+        public static void Transform(Vector2D[] source, ref Matrix4F transform, Vector4D[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -1097,10 +1097,10 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Performs a coordinate transformation using the given <see cref="Matrix"/>.
+        /// Performs a coordinate transformation using the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="coordinate">The coordinate vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="result">When the method completes, contains the transformed coordinates.</param>
         /// <remarks>
         /// A coordinate transform performs the transformation with the assumption that the w component
@@ -1109,7 +1109,7 @@ namespace Molten.DoublePrecision
         /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
         /// with coordinates as the w component can safely be ignored.
         /// </remarks>
-        public static void TransformCoordinate(ref Vector2D coordinate, ref Matrix transform, out Vector2D result)
+        public static void TransformCoordinate(ref Vector2D coordinate, ref Matrix4F transform, out Vector2D result)
         {
             Vector4D vector = new Vector4D();
             vector.X = (coordinate.X * transform.M11) + (coordinate.Y * transform.M21) + transform.M41;
@@ -1121,10 +1121,10 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Performs a coordinate transformation using the given <see cref="Matrix"/>.
+        /// Performs a coordinate transformation using the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="coordinate">The coordinate vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <returns>The transformed coordinates.</returns>
         /// <remarks>
         /// A coordinate transform performs the transformation with the assumption that the w component
@@ -1133,7 +1133,7 @@ namespace Molten.DoublePrecision
         /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
         /// with coordinates as the w component can safely be ignored.
         /// </remarks>
-        public static Vector2D TransformCoordinate(Vector2D coordinate, Matrix transform)
+        public static Vector2D TransformCoordinate(Vector2D coordinate, Matrix4F transform)
         {
             Vector2D result;
             TransformCoordinate(ref coordinate, ref transform, out result);
@@ -1141,10 +1141,10 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Performs a coordinate transformation on an array of vectors using the given <see cref="Matrix"/>.
+        /// Performs a coordinate transformation on an array of vectors using the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="source">The array of coordinate vectors to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="destination">The array for which the transformed vectors are stored.
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
@@ -1156,7 +1156,7 @@ namespace Molten.DoublePrecision
         /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
         /// with coordinates as the w component can safely be ignored.
         /// </remarks>
-        public static void TransformCoordinate(Vector2D[] source, ref Matrix transform, Vector2D[] destination)
+        public static void TransformCoordinate(Vector2D[] source, ref Matrix4F transform, Vector2D[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -1172,10 +1172,10 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Performs a normal transformation using the given <see cref="Matrix"/>.
+        /// Performs a normal transformation using the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="normal">The normal vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="result">When the method completes, contains the transformed normal.</param>
         /// <remarks>
         /// A normal transform performs the transformation with the assumption that the w component
@@ -1184,7 +1184,7 @@ namespace Molten.DoublePrecision
         /// apply. This is often preferred for normal vectors as normals purely represent direction
         /// rather than location because normal vectors should not be translated.
         /// </remarks>
-        public static void TransformNormal(ref Vector2D normal, ref Matrix transform, out Vector2D result)
+        public static void TransformNormal(ref Vector2D normal, ref Matrix4F transform, out Vector2D result)
         {
             result = new Vector2D(
                 (normal.X * transform.M11) + (normal.Y * transform.M21),
@@ -1192,10 +1192,10 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Performs a normal transformation using the given <see cref="Matrix"/>.
+        /// Performs a normal transformation using the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="normal">The normal vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <returns>The transformed normal.</returns>
         /// <remarks>
         /// A normal transform performs the transformation with the assumption that the w component
@@ -1204,7 +1204,7 @@ namespace Molten.DoublePrecision
         /// apply. This is often preferred for normal vectors as normals purely represent direction
         /// rather than location because normal vectors should not be translated.
         /// </remarks>
-        public static Vector2D TransformNormal(Vector2D normal, Matrix transform)
+        public static Vector2D TransformNormal(Vector2D normal, Matrix4F transform)
         {
             Vector2D result;
             TransformNormal(ref normal, ref transform, out result);
@@ -1213,12 +1213,12 @@ namespace Molten.DoublePrecision
 
 
         /// <summary>
-        /// Performs a normal transformation using the given <see cref="Matrix2x2"/>.
+        /// Performs a normal transformation using the given <see cref="Matrix2F"/>.
         /// </summary>
         /// <param name="normal">The normal vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix2x2"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix2F"/>.</param>
         /// <param name="result">When the method completes, contains the transformed normal.</param>
-        public static void TransformNormal(ref Vector2D normal, ref Matrix2x2 transform, out Vector2D result)
+        public static void TransformNormal(ref Vector2D normal, ref Matrix2F transform, out Vector2D result)
         {
             result = new Vector2D(
                 (normal.X * transform.M11) + (normal.Y * transform.M21),
@@ -1226,12 +1226,12 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Performs a normal transformation using the given <see cref="Matrix2x2"/>.
+        /// Performs a normal transformation using the given <see cref="Matrix2F"/>.
         /// </summary>
         /// <param name="normal">The normal vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix2x2"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix2F"/>.</param>
         /// <returns>The transformed normal.</returns>
-        public static Vector2D TransformNormal(Vector2D normal, Matrix2x2 transform)
+        public static Vector2D TransformNormal(Vector2D normal, Matrix2F transform)
         {
             Vector2D result;
             TransformNormal(ref normal, ref transform, out result);
@@ -1239,10 +1239,10 @@ namespace Molten.DoublePrecision
         }
 
         /// <summary>
-        /// Performs a normal transformation on an array of vectors using the given <see cref="Matrix"/>.
+        /// Performs a normal transformation on an array of vectors using the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="source">The array of normal vectors to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="destination">The array for which the transformed vectors are stored.
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
@@ -1254,7 +1254,7 @@ namespace Molten.DoublePrecision
         /// apply. This is often preferred for normal vectors as normals purely represent direction
         /// rather than location because normal vectors should not be translated.
         /// </remarks>
-        public static void TransformNormal(Vector2D[] source, ref Matrix transform, Vector2D[] destination)
+        public static void TransformNormal(Vector2D[] source, ref Matrix4F transform, Vector2D[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");

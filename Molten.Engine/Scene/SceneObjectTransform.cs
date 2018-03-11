@@ -9,10 +9,10 @@ namespace Molten
     public class SceneObjectTransform
     {
         SceneObject _obj;
-        Matrix _globalTransform;
+        Matrix4F _globalTransform;
         Vector3F _globalPosition;
 
-        Matrix _localTransform;
+        Matrix4F _localTransform;
         Vector3F _localPosition;
         Vector3F _localScale = Vector3F.One;
         Vector3F _angles;
@@ -27,17 +27,17 @@ namespace Molten
 
         internal void CalculateLocal()
         {
-            Quaternion qRot = Quaternion.RotationAxis(Vector3F.Left, MathHelper.DegreesToRadians(_angles.X)) * 
-                Quaternion.RotationAxis(Vector3F.Up, MathHelper.DegreesToRadians(_angles.Y)) *
-                Quaternion.RotationAxis(Vector3F.ForwardLH, MathHelper.DegreesToRadians(_angles.Z));
+            QuaternionF qRot = QuaternionF.RotationAxis(Vector3F.Left, MathHelper.DegreesToRadians(_angles.X)) * 
+                QuaternionF.RotationAxis(Vector3F.Up, MathHelper.DegreesToRadians(_angles.Y)) *
+                QuaternionF.RotationAxis(Vector3F.ForwardLH, MathHelper.DegreesToRadians(_angles.Z));
 
-            _localTransform = Matrix.Scaling(_localScale) * Matrix.FromQuaternion(qRot) * Matrix.CreateTranslation(_localPosition);
+            _localTransform = Matrix4F.Scaling(_localScale) * Matrix4F.FromQuaternion(qRot) * Matrix4F.CreateTranslation(_localPosition);
         }
 
         /// <summary>Calculate the global transform at the exact same position as the global one, relative to the ex-parent.</summary>
         internal void Detach(SceneObjectTransform exParent)
         {
-            _localTransform = Matrix.Invert(exParent._globalTransform) * _globalTransform;
+            _localTransform = Matrix4F.Invert(exParent._globalTransform) * _globalTransform;
             _localChanged = true;
         }
 
@@ -88,9 +88,9 @@ namespace Molten
             _localChanged = false;
         }
 
-        public Matrix Global => _globalTransform;
+        public Matrix4F Global => _globalTransform;
 
-        public Matrix Local => _localTransform;
+        public Matrix4F Local => _localTransform;
 
         public Vector3F LocalPosition
         {
