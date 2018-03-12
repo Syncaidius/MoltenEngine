@@ -127,9 +127,6 @@ namespace Molten.Font
                             shape.Points.Add(new TriPoint((Vector2F)shape.Points[0]));
                     }
 
-                    // Add the first point again to create a loop (for rendering only)
-                    shape.CalculateBounds();
-
                     // Flip points
                     if (flipYAxis)
                     {

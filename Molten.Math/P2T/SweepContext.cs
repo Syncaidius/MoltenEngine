@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public class SweepContext
+    internal class SweepContext
     {
         // Inital triangle factor, seed triangle will extend 30% of
         // PointSet width to both left and right.
-        const double kAlpha = 0.3;
+        const float K_ALPHA = 0.3f;
 
         List<TriPoint> _points;
         List<Triangle> _triangles;
@@ -30,7 +30,7 @@ namespace Molten
         internal SweepBasin Basin;
         internal EdgeEvent EdgeEvent;
 
-        public SweepContext()
+        internal SweepContext()
         {
             _points = new List<TriPoint>();
             _triangles = new List<Triangle>();
@@ -85,10 +85,10 @@ namespace Molten
 
         public void InitTriangulation()
         {
-            double xmax = _points[0].X;
-            double xmin = _points[0].X;
-            double ymax = _points[0].Y;
-            double ymin = _points[0].Y;
+            float xmax = _points[0].X;
+            float xmin = _points[0].X;
+            float ymax = _points[0].Y;
+            float ymin = _points[0].Y;
 
             // Calculate bounds
             for(int i = 0; i < _points.Count; i++)
@@ -104,8 +104,8 @@ namespace Molten
                     ymin = p.Y;
             }
 
-            double dx = kAlpha * (xmax - xmin);
-            double dy = kAlpha * (ymax - ymin);
+            float dx = K_ALPHA * (xmax - xmin);
+            float dy = K_ALPHA * (ymax - ymin);
 
             _head = new TriPoint(xmax + dx, ymin - dy);
             _tail = new TriPoint(xmin - dx, ymin - dy);
@@ -145,17 +145,17 @@ namespace Molten
 
             _map.Add(triangle);
 
-            _af_head = new Node(triangle.GetPoint(1), triangle);
-            _af_middle = new Node(triangle.GetPoint(0), triangle);
-            _af_tail = new Node(triangle.GetPoint(2));
+            _af_head = new Node(triangle.Points[1], triangle);
+            _af_middle = new Node(triangle.Points[0], triangle);
+            _af_tail = new Node(triangle.Points[2]);
             Front = new AdvancingFront(_af_head, _af_tail);
 
             // TODO: More intuitive if head is middles next and not previous?
             //       so swap head and tail
-            _af_head.next = _af_middle;
-            _af_middle.next = _af_tail;
-            _af_middle.prev = _af_head;
-            _af_tail.prev = _af_middle;
+            _af_head.Next = _af_middle;
+            _af_middle.Next = _af_tail;
+            _af_middle.Prev = _af_head;
+            _af_tail.Prev = _af_middle;
         }
 
         public void RemoveNode(Node node)
@@ -170,9 +170,9 @@ namespace Molten
             {
                 if (t.GetNeighbor(i) == null)
                 {
-                    Node n = Front.LocatePoint(t.PointCW(t.GetPoint(i)));
+                    Node n = Front.LocatePoint(t.PointCW(t.Points[i]));
                     if (n != null)
-                        n.triangle = t;
+                        n.Triangle = t;
                 }
             }
         }

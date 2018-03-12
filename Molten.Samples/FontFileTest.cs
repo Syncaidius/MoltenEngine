@@ -106,11 +106,10 @@ namespace Molten.Samples
 
         private void LoadFontFile()
         {
-            string fontPath = "assets/euphorigenic.ttf";
+            //string fontPath = "assets/euphorigenic.ttf";
             //string fontPath = "assets/BroshK.ttf";
-            //string fontPath = "assets/Digitalt.ttf";
+            string fontPath = "assets/Digitalt.ttf";
             //string fontPath = "assets/STOREB.ttf"; // For testing 'cmap' (format 4 and 6).
-            //string fontPath = "assets/UECHIGOT.TTF"; // For testing 'PCLT', 'cmap' (format 0 and 4). // TODO fix capital W. Curve on left side crosses itself.
 
             Stopwatch fontTimer = new Stopwatch();
             using (FileStream stream = new FileStream(fontPath, FileMode.Open, FileAccess.Read))
@@ -143,7 +142,7 @@ namespace Molten.Samples
 
             // Draw outline
             Vector2F offset = new Vector2F(300,300);
-            float scale = 0.7f;
+            float scale = 0.2f;
             foreach (Shape s in _shapes)
                 s.ScaleAndOffset(offset, scale);
 
@@ -177,7 +176,9 @@ namespace Molten.Samples
             glyphBounds.Height *= scale;
 
             List<Vector2F> glyphTriPoints = new List<Vector2F>();
-            //_shapes[0].Triangulate(glyphTriPoints, Vector2F.Zero, 1);
+
+            foreach (Shape s in _shapes)
+                s.Triangulate(glyphTriPoints, Vector2F.Zero, 1);
 
             // Use a container for doing some testing.
             _container = new SpriteBatchContainer()
@@ -248,7 +249,6 @@ namespace Molten.Samples
                     {
                         if (ContainsTest(s, _clickPoint))
                             _clickColor = Color.Green;
-
                     }
                 }
             }

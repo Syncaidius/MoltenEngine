@@ -9,7 +9,7 @@ namespace Molten
 {
     public class Triangle
     {
-        TriPoint[] _points;
+        public TriPoint[] Points;
         public bool[] ConstrainedEdge;
         public bool[] DelaunayEdge;
         Triangle[] _neighbours;
@@ -17,15 +17,10 @@ namespace Molten
 
         public Triangle(TriPoint a, TriPoint b, TriPoint c)
         {
-            _points = new TriPoint[] { a, b, c };
+            Points = new TriPoint[] { a, b, c };
             ConstrainedEdge = new bool[3];
             DelaunayEdge = new bool[3];
             _neighbours = new Triangle[3];
-        }
-
-        public TriPoint GetPoint(int index)
-        {
-            return _points[index];
         }
 
         public Triangle GetNeighbor(int index)
@@ -35,7 +30,7 @@ namespace Molten
 
         public bool Contains(TriPoint p)
         {
-            return _points[0].Equals(p) || _points[1].Equals(p) || _points[2].Equals(p);
+            return Points[0].Equals(p) || Points[1].Equals(p) || Points[2].Equals(p);
         }
 
         public bool Contains(Edge e)
@@ -66,11 +61,11 @@ namespace Molten
         /// <param name="t"></param>
         public void MarkNeighbor(TriPoint p1, TriPoint p2, Triangle t)
         {
-            if ((p1.Equals(_points[2]) && p2.Equals(_points[1])) || (p1.Equals(_points[1]) && p2.Equals(_points[2])))
+            if ((p1.Equals(Points[2]) && p2.Equals(Points[1])) || (p1.Equals(Points[1]) && p2.Equals(Points[2])))
                 _neighbours[0] = t;
-            else if ((p1.Equals(_points[0]) && p2.Equals(_points[2])) || (p1.Equals(_points[2]) && p2.Equals(_points[0])))
+            else if ((p1.Equals(Points[0]) && p2.Equals(Points[2])) || (p1.Equals(Points[2]) && p2.Equals(Points[0])))
                 _neighbours[1] = t;
-            else if ((p1.Equals(_points[0]) && p2.Equals(_points[1])) || (p1.Equals(_points[1]) && p2.Equals(_points[0])))
+            else if ((p1.Equals(Points[0]) && p2.Equals(Points[1])) || (p1.Equals(Points[1]) && p2.Equals(Points[0])))
                 _neighbours[2] = t;
             else
                 Debug.Assert(false, "Specified trianlge is not a neighbor");
@@ -82,20 +77,20 @@ namespace Molten
         /// <param name="t"></param>
         public void MarkNeighbor(Triangle t)
         {
-            if (t.Contains(_points[1], _points[2]))
+            if (t.Contains(Points[1], Points[2]))
             {
                 _neighbours[0] = t;
-                t.MarkNeighbor(_points[1], _points[2], this);
+                t.MarkNeighbor(Points[1], Points[2], this);
             }
-            else if (t.Contains(_points[0], _points[2]))
+            else if (t.Contains(Points[0], Points[2]))
             {
                 _neighbours[1] = t;
-                t.MarkNeighbor(_points[0], _points[2], this);
+                t.MarkNeighbor(Points[0], Points[2], this);
             }
-            else if (t.Contains(_points[0], _points[1]))
+            else if (t.Contains(Points[0], Points[1]))
             {
                 _neighbours[2] = t;
-                t.MarkNeighbor(_points[0], _points[1], this);
+                t.MarkNeighbor(Points[0], Points[1], this);
             }
         }
 
@@ -110,7 +105,7 @@ namespace Molten
             }
 
             ClearNeighbors();
-            _points[0] = _points[1] = _points[2] = null;
+            Points[0] = Points[1] = Points[2] = null;
         }
 
         public void ClearNeighbor(Triangle triangle)
@@ -145,9 +140,9 @@ namespace Molten
         /// <param name="point"></param>
         public void Legalize(TriPoint point)
         {
-            _points[1] = _points[0];
-            _points[0] = _points[2];
-            _points[2] = point;
+            Points[1] = Points[0];
+            Points[0] = Points[2];
+            Points[2] = point;
         }
 
         /// <summary>
@@ -157,23 +152,23 @@ namespace Molten
         /// <param name="npoint"></param>
         public void Legalize(TriPoint opoint, TriPoint npoint)
         {
-            if (opoint.Equals(_points[0]))
+            if (opoint.Equals(Points[0]))
             {
-                _points[1] = _points[0];
-                _points[0] = _points[2];
-                _points[2] = npoint;
+                Points[1] = Points[0];
+                Points[0] = Points[2];
+                Points[2] = npoint;
             }
-            else if (opoint.Equals(_points[1]))
+            else if (opoint.Equals(Points[1]))
             {
-                _points[2] = _points[1];
-                _points[1] = _points[0];
-                _points[0] = npoint;
+                Points[2] = Points[1];
+                Points[1] = Points[0];
+                Points[0] = npoint;
             }
-            else if (opoint.Equals(_points[2]))
+            else if (opoint.Equals(Points[2]))
             {
-                _points[0] = _points[2];
-                _points[2] = _points[1];
-                _points[1] = npoint;
+                Points[0] = Points[2];
+                Points[2] = Points[1];
+                Points[1] = npoint;
             }
             else
             {
@@ -183,11 +178,11 @@ namespace Molten
 
         public int Index(TriPoint p)
         {
-            if (p.Equals(_points[0]))
+            if (p.Equals(Points[0]))
                 return 0;
-            else if (p.Equals(_points[1]))
+            else if (p.Equals(Points[1]))
                 return 1;
-            else if (p.Equals(_points[2]))
+            else if (p.Equals(Points[2]))
                 return 2;
 
             Debug.Assert(false, "What happened here????");
@@ -196,25 +191,25 @@ namespace Molten
 
         public int EdgeIndex(TriPoint p1, TriPoint p2)
         {
-            if (_points[0].Equals(p1))
+            if (Points[0].Equals(p1))
             {
-                if (_points[1].Equals(p2))
+                if (Points[1].Equals(p2))
                     return 2;
-                else if (_points[2].Equals(p2))
+                else if (Points[2].Equals(p2))
                     return 1;
             }
-            else if (_points[1].Equals(p1))
+            else if (Points[1].Equals(p1))
             {
-                if (_points[2].Equals(p2))
+                if (Points[2].Equals(p2))
                     return 0;
-                else if (_points[0].Equals(p2))
+                else if (Points[0].Equals(p2))
                     return 2;
             }
-            else if (_points[2].Equals(p1))
+            else if (Points[2].Equals(p1))
             {
-                if (_points[0].Equals(p2))
+                if (Points[0].Equals(p2))
                     return 1;
-                else if (_points[1].Equals(p2))
+                else if (Points[1].Equals(p2))
                     return 0;
             }
 
@@ -238,11 +233,11 @@ namespace Molten
         /// <param name="q"></param>
         public void MarkConstrainedEdge(TriPoint p, TriPoint q)
         {
-            if ((q.Equals(_points[0]) && p.Equals(_points[1])) || (q.Equals(_points[1]) && p.Equals(_points[0])))
+            if ((q.Equals(Points[0]) && p.Equals(Points[1])) || (q.Equals(Points[1]) && p.Equals(Points[0])))
                 ConstrainedEdge[2] = true;
-            else if ((q.Equals(_points[0]) && p.Equals(_points[2])) || (q.Equals(_points[2]) && p.Equals(_points[0])))
+            else if ((q.Equals(Points[0]) && p.Equals(Points[2])) || (q.Equals(Points[2]) && p.Equals(Points[0])))
                 ConstrainedEdge[1] = true;
-            else if ((q.Equals(_points[1]) && p.Equals(_points[2])) || (q.Equals(_points[2]) && p.Equals(_points[1])))
+            else if ((q.Equals(Points[1]) && p.Equals(Points[2])) || (q.Equals(Points[2]) && p.Equals(Points[1])))
                 ConstrainedEdge[0] = true;
         }
 
@@ -253,12 +248,12 @@ namespace Molten
         /// <returns></returns>
         public TriPoint PointCW(TriPoint point)
         {
-            if (point.Equals(_points[0]))
-                return _points[2];
-            else if (point.Equals(_points[1]))
-                return _points[0];
-            else if (point.Equals(_points[2]))
-                return _points[1];
+            if (point.Equals(Points[0]))
+                return Points[2];
+            else if (point.Equals(Points[1]))
+                return Points[0];
+            else if (point.Equals(Points[2]))
+                return Points[1];
 
             Debug.Assert(false, "What happened here????");
             return TriPoint.Empty;
@@ -271,12 +266,12 @@ namespace Molten
         /// <returns></returns>
         public TriPoint PointCCW(TriPoint point)
         {
-            if (point.Equals(_points[0]))
-                return _points[1];
-            else if (point.Equals(_points[1]))
-                return _points[2];
-            else if (point.Equals(_points[2]))
-                return _points[0];
+            if (point.Equals(Points[0]))
+                return Points[1];
+            else if (point.Equals(Points[1]))
+                return Points[2];
+            else if (point.Equals(Points[2]))
+                return Points[0];
 
             Debug.Assert(false, "What happened here????");
             return TriPoint.Empty;
@@ -289,9 +284,9 @@ namespace Molten
         /// <returns></returns>
         public Triangle NeighborCW(TriPoint point)
         {
-            if (point.Equals(_points[0]))
+            if (point.Equals(Points[0]))
                 return _neighbours[1];
-            else if (point.Equals(_points[1]))
+            else if (point.Equals(Points[1]))
                 return _neighbours[2];
 
             return _neighbours[0];
@@ -299,9 +294,9 @@ namespace Molten
 
         public Triangle NeighborCCW(TriPoint point)
         {
-            if (point.Equals(_points[0]))
+            if (point.Equals(Points[0]))
                 return _neighbours[2];
-            else if (point.Equals(_points[1]))
+            else if (point.Equals(Points[1]))
                 return _neighbours[0];
 
             return _neighbours[1];
@@ -309,9 +304,9 @@ namespace Molten
 
         public bool GetConstrainedEdgeCCW(TriPoint p)
         {
-            if (p.Equals(_points[0]))
+            if (p.Equals(Points[0]))
                 return ConstrainedEdge[2];
-            else if (p.Equals( _points[1]))
+            else if (p.Equals( Points[1]))
                 return ConstrainedEdge[0];
 
             return ConstrainedEdge[1];
@@ -319,9 +314,9 @@ namespace Molten
 
         public bool GetConstrainedEdgeCW(TriPoint p)
         {
-            if (p.Equals(_points[0]))
+            if (p.Equals(Points[0]))
                 return ConstrainedEdge[1];
-            else if (p.Equals(_points[1]))
+            else if (p.Equals(Points[1]))
                 return ConstrainedEdge[2];
 
             return ConstrainedEdge[0];
@@ -329,9 +324,9 @@ namespace Molten
 
         public void SetConstrainedEdgeCCW(TriPoint p, bool ce)
         {
-            if (p.Equals(_points[0]))
+            if (p.Equals(Points[0]))
                 ConstrainedEdge[2] = ce;
-            else if (p.Equals(_points[1]))
+            else if (p.Equals(Points[1]))
                 ConstrainedEdge[0] = ce;
             else
                 ConstrainedEdge[1] = ce;
@@ -339,9 +334,9 @@ namespace Molten
 
         public void SetConstrainedEdgeCW(TriPoint p, bool ce)
         {
-            if (p.Equals(_points[0]))
+            if (p.Equals(Points[0]))
                 ConstrainedEdge[1] = ce;
-            else if (p.Equals(_points[1]))
+            else if (p.Equals(Points[1]))
                 ConstrainedEdge[2] = ce;
             else
                 ConstrainedEdge[0] = ce;
@@ -349,9 +344,9 @@ namespace Molten
 
         public bool GetDelaunayEdgeCCW(TriPoint p)
         {
-            if (p.Equals(_points[0]))
+            if (p.Equals(Points[0]))
                 return DelaunayEdge[2];
-            else if (p.Equals(_points[1]))
+            else if (p.Equals(Points[1]))
                 return DelaunayEdge[0];
 
             return DelaunayEdge[1];
@@ -359,9 +354,9 @@ namespace Molten
 
         public bool GetDelaunayEdgeCW(TriPoint p)
         {
-            if (p.Equals(_points[0]))
+            if (p.Equals(Points[0]))
                 return DelaunayEdge[1];
-            else if (p.Equals(_points[1]))
+            else if (p.Equals(Points[1]))
                 return DelaunayEdge[2];
 
             return DelaunayEdge[0];
@@ -369,9 +364,9 @@ namespace Molten
 
         public void SetDelunayEdgeCCW(TriPoint p, bool e)
         {
-            if (p.Equals(_points[0]))
+            if (p.Equals(Points[0]))
                 DelaunayEdge[2] = e;
-            else if (p.Equals(_points[1]))
+            else if (p.Equals(Points[1]))
                 DelaunayEdge[0] = e;
             else
                 DelaunayEdge[1] = e;
@@ -379,9 +374,9 @@ namespace Molten
 
         public void SetDelunayEdgeCW(TriPoint p, bool e)
         {
-            if (p.Equals(_points[0]))
+            if (p.Equals(Points[0]))
                 DelaunayEdge[1] = e;
-            else if (p.Equals(_points[1]))
+            else if (p.Equals(Points[1]))
                 DelaunayEdge[2] = e;
             else
                 DelaunayEdge[0] = e;
@@ -389,9 +384,9 @@ namespace Molten
 
         public Triangle NeighborAcross(TriPoint opoint)
         {
-            if (opoint.Equals(_points[0]))
+            if (opoint.Equals(Points[0]))
                 return _neighbours[0];
-            else if (opoint.Equals(_points[1]))
+            else if (opoint.Equals(Points[1]))
                 return _neighbours[1];
 
             return _neighbours[2];
@@ -399,7 +394,7 @@ namespace Molten
 
         public override string ToString()
         {
-            return $"{_points[0].X},{_points[0].Y} | {_points[1].X},{_points[1].Y} | {_points[2].X},{_points[2].Y}";
+            return $"{Points[0].X},{Points[0].Y} | {Points[1].X},{Points[1].Y} | {Points[2].X},{Points[2].Y}";
         }
     }
 }

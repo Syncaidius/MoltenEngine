@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public class Sweep
+    internal class Sweep
     {
         List<Node> _nodes;
 
@@ -47,8 +47,8 @@ namespace Molten
         private void FinalizationPolygon(SweepContext tcx)
         {
             // Get an Internal triangle to start with
-            Triangle t = tcx.Front._head.next.triangle;
-            TriPoint p = tcx.Front._head.next.point;
+            Triangle t = tcx.Front._head.Next.Triangle;
+            TriPoint p = tcx.Front._head.Next.Point;
             while (!t.GetConstrainedEdgeCW(p))
                 t = t.NeighborCCW(p);
 
@@ -62,7 +62,7 @@ namespace Molten
 
             // Only need to check +epsilon since point never have smaller
             // x value than node due to how we fetch nodes from the front
-            if (point.X <= node.point.X + TriUtil.EPSILON)
+            if (point.X <= node.Point.X + TriUtil.EPSILON)
                 Fill(tcx, node);
 
             //tcx.AddNode(new_node);
@@ -76,14 +76,14 @@ namespace Molten
             tcx.EdgeEvent.ConstrainedEdge = edge;
             tcx.EdgeEvent.Right = (edge.P.X > edge.Q.X);
 
-            if (IsEdgeSideOfTriangle(node.triangle, edge.P, edge.Q))
+            if (IsEdgeSideOfTriangle(node.Triangle, edge.P, edge.Q))
                 return;
 
             // For now we will do all needed filling
             // TODO: integrate with flip process might give some better performance
             //       but for now this avoid the issue with cases that needs both flips and fills
             FillEdgeEvent(tcx, edge, node);
-            EdgeEvent(tcx, edge.P, edge.Q, node.triangle, edge.Q);
+            EdgeEvent(tcx, edge.P, edge.Q, node.Triangle, edge.Q);
         }
 
         private void EdgeEvent(SweepContext tcx, TriPoint ep, TriPoint eq, Triangle triangle, TriPoint point)
@@ -173,18 +173,18 @@ namespace Molten
 
         private Node NewFrontTriangle(SweepContext tcx, TriPoint point, Node node)
         {
-            Triangle triangle = new Triangle(point, node.point, node.next.point);
+            Triangle triangle = new Triangle(point, node.Point, node.Next.Point);
 
-            triangle.MarkNeighbor(node.triangle);
+            triangle.MarkNeighbor(node.Triangle);
             tcx.AddToMap(triangle);
 
             Node new_node = new Node(point);
             _nodes.Add(new_node);
 
-            new_node.next = node.next;
-            new_node.prev = node;
-            node.next.prev = new_node;
-            node.next = new_node;
+            new_node.Next = node.Next;
+            new_node.Prev = node;
+            node.Next.Prev = new_node;
+            node.Next = new_node;
 
             if (!Legalize(tcx, triangle))
                 tcx.MapTriangleToNodes(triangle);
@@ -194,18 +194,18 @@ namespace Molten
 
         private void Fill(SweepContext tcx, Node node)
         {
-            Triangle triangle = new Triangle(node.prev.point, node.point, node.next.point);
+            Triangle triangle = new Triangle(node.Prev.Point, node.Point, node.Next.Point);
 
             // TODO: should copy the constrained_edge value from neighbor triangles
             //       for now constrained_edge values are copied during the legalize
-            triangle.MarkNeighbor(node.prev.triangle);
-            triangle.MarkNeighbor(node.triangle);
+            triangle.MarkNeighbor(node.Prev.Triangle);
+            triangle.MarkNeighbor(node.Triangle);
 
             tcx.AddToMap(triangle);
 
             // Update the advancing front
-            node.prev.next = node.next;
-            node.next.prev = node.prev;
+            node.Prev.Next = node.Next;
+            node.Next.Prev = node.Prev;
 
             // If it was legalized the triangle has already been mapped
             if (!Legalize(tcx, triangle))
@@ -215,29 +215,29 @@ namespace Molten
         private void FillAdvancingFront(SweepContext tcx, Node n)
         {
             // Fill right holes
-            Node node = n.next;
+            Node node = n.Next;
 
-            while (node.next != null)
+            while (node.Next != null)
             {
                 // if HoleAngle exceeds 90 degrees then break.
                 if (LargeHole_DontFill(node)) break;
                 Fill(tcx, node);
-                node = node.next;
+                node = node.Next;
             }
 
             // Fill left holes
-            node = n.prev;
+            node = n.Prev;
 
-            while (node.prev != null)
+            while (node.Prev != null)
             {
                 // if HoleAngle exceeds 90 degrees then break.
                 if (LargeHole_DontFill(node)) break;
                 Fill(tcx, node);
-                node = node.prev;
+                node = node.Prev;
             }
 
             // Fill right basins
-            if (n.next != null && n.next.next != null)
+            if (n.Next != null && n.Next.Next != null)
             {
                 double angle = BasinAngle(n);
                 if (angle < TriUtil.PI_3div4)
@@ -247,20 +247,20 @@ namespace Molten
 
         private bool LargeHole_DontFill(Node node)
         {
-            Node nextNode = node.next;
-            Node prevNode = node.prev;
-            if (!AngleExceeds90Degrees(node.point, nextNode.point, prevNode.point))
+            Node nextNode = node.Next;
+            Node prevNode = node.Prev;
+            if (!AngleExceeds90Degrees(node.Point, nextNode.Point, prevNode.Point))
                 return false;
 
             // Check additional points on front.
-            Node next2Node = nextNode.next;
+            Node next2Node = nextNode.Next;
             // "..Plus.." because only want angles on same side as point being added.
-            if ((next2Node != null) && !AngleExceedsPlus90DegreesOrIsNegative(node.point, next2Node.point, prevNode.point))
+            if ((next2Node != null) && !AngleExceedsPlus90DegreesOrIsNegative(node.Point, next2Node.Point, prevNode.Point))
                 return false;
 
-            Node prev2Node = prevNode.prev;
+            Node prev2Node = prevNode.Prev;
             // "..Plus.." because only want angles on same side as point being added.
-            if ((prev2Node != null) && !AngleExceedsPlus90DegreesOrIsNegative(node.point, nextNode.point, prev2Node.point))
+            if ((prev2Node != null) && !AngleExceedsPlus90DegreesOrIsNegative(node.Point, nextNode.Point, prev2Node.Point))
                 return false;
 
             return true;
@@ -301,8 +301,8 @@ namespace Molten
 
         private double BasinAngle(Node node)
         {
-            double ax = node.point.X - node.next.next.point.X;
-            double ay = node.point.Y - node.next.next.point.Y;
+            double ax = node.Point.X - node.Next.Next.Point.X;
+            double ay = node.Point.Y - node.Next.Next.Point.Y;
             return Math.Atan2(ay, ax);
         }
 
@@ -316,10 +316,10 @@ namespace Molten
             * Where x = ax*bx + ay*by
             *       y = ax*by - ay*bx
             */
-            double ax = node.next.point.X - node.point.X;
-            double ay = node.next.point.Y - node.point.Y;
-            double bx = node.prev.point.X - node.point.X;
-            double by = node.prev.point.Y - node.point.Y;
+            double ax = node.Next.Point.X - node.Point.X;
+            double ay = node.Next.Point.Y - node.Point.Y;
+            double bx = node.Prev.Point.X - node.Point.X;
+            double by = node.Prev.Point.Y - node.Point.Y;
             return Math.Atan2(ax * by - ay * bx, ax * bx + ay * by);
         }
 
@@ -336,7 +336,7 @@ namespace Molten
 
                 if (ot != null)
                 {
-                    TriPoint p = t.GetPoint(i);
+                    TriPoint p = t.Points[i];
                     TriPoint op = ot.OppositePoint(t, p);
                     int oi = ot.Index(op);
 
@@ -515,40 +515,40 @@ namespace Molten
 
         private void FillBasin(SweepContext tcx, Node node)
         {
-            if (TriUtil.Orient2d(node.point, node.next.point, node.next.next.point) == Winding.CCW)
-                tcx.Basin.left_node = node.next.next;
+            if (TriUtil.Orient2d(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CCW)
+                tcx.Basin.LeftNode = node.Next.Next;
             else
-                tcx.Basin.left_node = node.next;
+                tcx.Basin.LeftNode = node.Next;
 
             // Find the bottom and right node
-            tcx.Basin.bottom_node = tcx.Basin.left_node;
-            while (tcx.Basin.bottom_node.next != null
-                   && tcx.Basin.bottom_node.point.Y >= tcx.Basin.bottom_node.next.point.Y)
+            tcx.Basin.BottomNode = tcx.Basin.LeftNode;
+            while (tcx.Basin.BottomNode.Next != null
+                   && tcx.Basin.BottomNode.Point.Y >= tcx.Basin.BottomNode.Next.Point.Y)
             {
-                tcx.Basin.bottom_node = tcx.Basin.bottom_node.next;
+                tcx.Basin.BottomNode = tcx.Basin.BottomNode.Next;
             }
-            if (tcx.Basin.bottom_node == tcx.Basin.left_node)
+            if (tcx.Basin.BottomNode == tcx.Basin.LeftNode)
             {
                 // No valid basin
                 return;
             }
 
-            tcx.Basin.right_node = tcx.Basin.bottom_node;
-            while (tcx.Basin.right_node.next != null
-                   && tcx.Basin.right_node.point.Y < tcx.Basin.right_node.next.point.Y)
+            tcx.Basin.RightNode = tcx.Basin.BottomNode;
+            while (tcx.Basin.RightNode.Next != null
+                   && tcx.Basin.RightNode.Point.Y < tcx.Basin.RightNode.Next.Point.Y)
             {
-                tcx.Basin.right_node = tcx.Basin.right_node.next;
+                tcx.Basin.RightNode = tcx.Basin.RightNode.Next;
             }
-            if (tcx.Basin.right_node == tcx.Basin.bottom_node)
+            if (tcx.Basin.RightNode == tcx.Basin.BottomNode)
             {
                 // No valid basins
                 return;
             }
 
-            tcx.Basin.width = tcx.Basin.right_node.point.X - tcx.Basin.left_node.point.X;
-            tcx.Basin.left_highest = tcx.Basin.left_node.point.Y > tcx.Basin.right_node.point.Y;
+            tcx.Basin.Width = tcx.Basin.RightNode.Point.X - tcx.Basin.LeftNode.Point.X;
+            tcx.Basin.LeftHighest = tcx.Basin.LeftNode.Point.Y > tcx.Basin.RightNode.Point.Y;
 
-            FillBasinReq(tcx, tcx.Basin.bottom_node);
+            FillBasinReq(tcx, tcx.Basin.BottomNode);
         }
 
         private void FillBasinReq(SweepContext tcx, Node node)
@@ -561,33 +561,33 @@ namespace Molten
 
             Fill(tcx, node);
 
-            if (node.prev == tcx.Basin.left_node && node.next == tcx.Basin.right_node)
+            if (node.Prev == tcx.Basin.LeftNode && node.Next == tcx.Basin.RightNode)
             {
                 return;
             }
-            else if (node.prev == tcx.Basin.left_node)
+            else if (node.Prev == tcx.Basin.LeftNode)
             {
-                Winding o = TriUtil.Orient2d(node.point, node.next.point, node.next.next.point);
+                Winding o = TriUtil.Orient2d(node.Point, node.Next.Point, node.Next.Next.Point);
                 if (o == Winding.CW)
                     return;
 
-                node = node.next;
+                node = node.Next;
             }
-            else if (node.next == tcx.Basin.right_node)
+            else if (node.Next == tcx.Basin.RightNode)
             {
-                Winding o = TriUtil.Orient2d(node.point, node.prev.point, node.prev.prev.point);
+                Winding o = TriUtil.Orient2d(node.Point, node.Prev.Point, node.Prev.Prev.Point);
                 if (o == Winding.CCW)
                     return;
 
-                node = node.prev;
+                node = node.Prev;
             }
             else
             {
                 // Continue with the neighbor node with lowest Y value
-                if (node.prev.point.Y < node.next.point.Y)
-                    node = node.prev;
+                if (node.Prev.Point.Y < node.Next.Point.Y)
+                    node = node.Prev;
                 else
-                    node = node.next;
+                    node = node.Next;
             }
 
             FillBasinReq(tcx, node);
@@ -597,13 +597,13 @@ namespace Molten
         {
             double height;
 
-            if (tcx.Basin.left_highest)
-                height = tcx.Basin.left_node.point.Y - node.point.Y;
+            if (tcx.Basin.LeftHighest)
+                height = tcx.Basin.LeftNode.Point.Y - node.Point.Y;
             else
-                height = tcx.Basin.right_node.point.Y - node.point.Y;
+                height = tcx.Basin.RightNode.Point.Y - node.Point.Y;
 
             // if shallow stop filling
-            if (tcx.Basin.width > height)
+            if (tcx.Basin.Width > height)
                 return true;
 
             return false;
@@ -619,21 +619,21 @@ namespace Molten
 
         private void FillRightAboveEdgeEvent(SweepContext tcx, Edge edge, Node node)
         {
-            while (node.next.point.X < edge.P.X)
+            while (node.Next.Point.X < edge.P.X)
             {
                 // Check if next node is below the edge
-                if (TriUtil.Orient2d(edge.Q, node.next.point, edge.P) == Winding.CCW)
+                if (TriUtil.Orient2d(edge.Q, node.Next.Point, edge.P) == Winding.CCW)
                     FillRightBelowEdgeEvent(tcx, edge, node);
                 else
-                    node = node.next;
+                    node = node.Next;
             }
         }
 
         private void FillRightBelowEdgeEvent(SweepContext tcx, Edge edge, Node node)
         {
-            if (node.point.X < edge.P.X)
+            if (node.Point.X < edge.P.X)
             {
-                if (TriUtil.Orient2d(node.point, node.next.point, node.next.next.point) == Winding.CCW)
+                if (TriUtil.Orient2d(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CCW)
                 {
                     // Concave
                     FillRightConcaveEdgeEvent(tcx, edge, node);
@@ -650,14 +650,14 @@ namespace Molten
 
         private void FillRightConcaveEdgeEvent(SweepContext tcx, Edge edge, Node node)
         {
-            Fill(tcx, node.next);
-            if (node.next.point != edge.P)
+            Fill(tcx, node.Next);
+            if (node.Next.Point != edge.P)
             {
                 // Next above or below edge?
-                if (TriUtil.Orient2d(edge.Q, node.next.point, edge.P) == Winding.CCW)
+                if (TriUtil.Orient2d(edge.Q, node.Next.Point, edge.P) == Winding.CCW)
                 {
                     // Below
-                    if (TriUtil.Orient2d(node.point, node.next.point, node.next.next.point) == Winding.CCW)
+                    if (TriUtil.Orient2d(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CCW)
                     {
                         // Next is concave
                         FillRightConcaveEdgeEvent(tcx, edge, node);
@@ -673,19 +673,19 @@ namespace Molten
         private void FillRightConvexEdgeEvent(SweepContext tcx, Edge edge, Node node)
         {
             // Next concave or convex?
-            if (TriUtil.Orient2d(node.next.point, node.next.next.point, node.next.next.next.point) == Winding.CCW)
+            if (TriUtil.Orient2d(node.Next.Point, node.Next.Next.Point, node.Next.Next.Next.Point) == Winding.CCW)
             {
                 // Concave
-                FillRightConcaveEdgeEvent(tcx, edge, node.next);
+                FillRightConcaveEdgeEvent(tcx, edge, node.Next);
             }
             else
             {
                 // Convex
                 // Next above or below edge?
-                if (TriUtil.Orient2d(edge.Q, node.next.next.point, edge.P) == Winding.CCW)
+                if (TriUtil.Orient2d(edge.Q, node.Next.Next.Point, edge.P) == Winding.CCW)
                 {
                     // Below
-                    FillRightConvexEdgeEvent(tcx, edge, node.next);
+                    FillRightConvexEdgeEvent(tcx, edge, node.Next);
                 }
                 else
                 {
@@ -696,21 +696,21 @@ namespace Molten
 
         private void FillLeftAboveEdgeEvent(SweepContext tcx, Edge edge, Node node)
         {
-            while (node.prev.point.X > edge.P.X)
+            while (node.Prev.Point.X > edge.P.X)
             {
                 // Check if next node is below the edge
-                if (TriUtil.Orient2d(edge.Q, node.prev.point, edge.P) == Winding.CW)
+                if (TriUtil.Orient2d(edge.Q, node.Prev.Point, edge.P) == Winding.CW)
                     FillLeftBelowEdgeEvent(tcx, edge, node);
                 else
-                    node = node.prev;
+                    node = node.Prev;
             }
         }
 
         private void FillLeftBelowEdgeEvent(SweepContext tcx, Edge edge, Node node)
         {
-            if (node.point.X > edge.P.X)
+            if (node.Point.X > edge.P.X)
             {
-                if (TriUtil.Orient2d(node.point, node.prev.point, node.prev.prev.point) == Winding.CW)
+                if (TriUtil.Orient2d(node.Point, node.Prev.Point, node.Prev.Prev.Point) == Winding.CW)
                 {
                     // Concave
                     FillLeftConcaveEdgeEvent(tcx, edge, node);
@@ -728,19 +728,19 @@ namespace Molten
         private void FillLeftConvexEdgeEvent(SweepContext tcx, Edge edge, Node node)
         {
             // Next concave or convex?
-            if (TriUtil.Orient2d(node.prev.point, node.prev.prev.point, node.prev.prev.prev.point) == Winding.CW)
+            if (TriUtil.Orient2d(node.Prev.Point, node.Prev.Prev.Point, node.Prev.Prev.Prev.Point) == Winding.CW)
             {
                 // Concave
-                FillLeftConcaveEdgeEvent(tcx, edge, node.prev);
+                FillLeftConcaveEdgeEvent(tcx, edge, node.Prev);
             }
             else
             {
                 // Convex
                 // Next above or below edge?
-                if (TriUtil.Orient2d(edge.Q, node.prev.prev.point, edge.P) == Winding.CW)
+                if (TriUtil.Orient2d(edge.Q, node.Prev.Prev.Point, edge.P) == Winding.CW)
                 {
                     // Below
-                    FillLeftConvexEdgeEvent(tcx, edge, node.prev);
+                    FillLeftConvexEdgeEvent(tcx, edge, node.Prev);
                 }
                 else
                 {
@@ -751,14 +751,14 @@ namespace Molten
 
         private void FillLeftConcaveEdgeEvent(SweepContext tcx, Edge edge, Node node)
         {
-            Fill(tcx, node.prev);
-            if (node.prev.point != edge.P)
+            Fill(tcx, node.Prev);
+            if (node.Prev.Point != edge.P)
             {
                 // Next above or below edge?
-                if (TriUtil.Orient2d(edge.Q, node.prev.point, edge.P) == Winding.CW)
+                if (TriUtil.Orient2d(edge.Q, node.Prev.Point, edge.P) == Winding.CW)
                 {
                     // Below
-                    if (TriUtil.Orient2d(node.point, node.prev.point, node.prev.prev.point) == Winding.CW)
+                    if (TriUtil.Orient2d(node.Point, node.Prev.Point, node.Prev.Prev.Point) == Winding.CW)
                     {
                         // Next is concave
                         FillLeftConcaveEdgeEvent(tcx, edge, node);

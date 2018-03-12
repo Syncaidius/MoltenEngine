@@ -6,25 +6,25 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public class SweepBasin
+    internal class SweepBasin
     {
-        public Node left_node;
+        public Node LeftNode;
 
-        public Node bottom_node;
+        public Node BottomNode;
 
-        public Node right_node;
+        public Node RightNode;
 
-        public double width;
+        public double Width;
 
-        public bool left_highest;
+        public bool LeftHighest;
 
         public void Clear()
         {
-            left_node = null;
-            bottom_node = null;
-            right_node = null;
-            width = 0;
-            left_highest = false;
+            LeftNode = null;
+            BottomNode = null;
+            RightNode = null;
+            Width = 0;
+            LeftHighest = false;
         }
     }
 }

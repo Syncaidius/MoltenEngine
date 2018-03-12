@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public class EdgeEvent
+    internal class EdgeEvent
     {
         public Edge ConstrainedEdge;
 

@@ -13,15 +13,15 @@ namespace Molten
         /// </summary>
         public static readonly TriPoint Empty = new TriPoint();
 
-        public double X;
+        public float X;
 
-        public double Y;
+        public float Y;
 
         public List<Edge> EdgeList;
 
         public TriPoint() { }
 
-        public TriPoint(double x, double y)
+        public TriPoint(float x, float y)
         {
             X = x;
             Y = y;
@@ -41,7 +41,7 @@ namespace Molten
             Y = 0;
         }
 
-        public void Set(double x, double y)
+        public void Set(float x, float y)
         {
             X = x;
             Y = y;
@@ -80,7 +80,7 @@ namespace Molten
         /// Multiply this point by a scalar.
         /// </summary>
         /// <param name="a"></param>
-        public void Multiply(double a)
+        public void Multiply(float a)
         {
             X *= a;
             Y *= a;
@@ -90,39 +90,39 @@ namespace Molten
         /// Get the length of this point (the norm).
         /// </summary>
         /// <returns></returns>
-        public double Length()
+        public float Length()
         {
-            return System.Math.Sqrt(X * X + Y * Y);
+            return (float)Math.Sqrt(X * X + Y * Y);
         }
 
         /// <summary>
         /// Convert this point into a unit point (normalizes it). Returns the Length.
         /// </summary>
         /// <returns></returns>
-        public double Normalize()
+        public float Normalize()
         {
-            double len = Length();
+            float len = Length();
             X /= len;
             Y /= len;
             return len;
         }
 
-        public static double Dot(TriPoint a, TriPoint b)
+        public static float Dot(TriPoint a, TriPoint b)
         {
             return a.X * b.X + a.Y * b.Y;
         }
 
-        public static double Cross(TriPoint a, TriPoint b)
+        public static float Cross(TriPoint a, TriPoint b)
         {
             return a.X * b.Y - a.Y * b.X;
         }
 
-        public static TriPoint Cross(TriPoint a, double s)
+        public static TriPoint Cross(TriPoint a, float s)
         {
             return new TriPoint(s * a.Y, -s * a.X);
         }
 
-        public static TriPoint Cross(double s, TriPoint a)
+        public static TriPoint Cross(float s, TriPoint a)
         {
             return new TriPoint(-s * a.Y, s * a.X);
         }
@@ -188,7 +188,7 @@ namespace Molten
             return a.X != b.X || a.Y != b.Y;
         }
 
-        public static TriPoint operator *(TriPoint a, double scale)
+        public static TriPoint operator *(TriPoint a, float scale)
         {
             return new TriPoint(a.X * scale, a.Y * scale)
             {

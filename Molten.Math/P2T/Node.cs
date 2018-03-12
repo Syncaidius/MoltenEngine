@@ -6,29 +6,29 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public class Node
+    internal class Node
     {
-        public TriPoint point;
+        public TriPoint Point;
 
-        public Triangle triangle;
+        public Triangle Triangle;
 
-        public Node next;
+        public Node Next;
 
-        public Node prev;
+        public Node Prev;
 
-        public double value;
+        public double Value;
 
         public Node(TriPoint p)
         {
-            point = p;
-            value = p.X;
+            Point = p;
+            Value = p.X;
         }
 
         public Node(TriPoint p, Triangle t)
         {
-            point = p;
-            triangle = t;
-            value = p.X;    
+            Point = p;
+            Triangle = t;
+            Value = p.X;    
         }
     }
 }

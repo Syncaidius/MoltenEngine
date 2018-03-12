@@ -29,9 +29,6 @@ namespace Molten
 
         public RectangleF Bounds { get; private set; }
 
-        List<Triangle> _triangles = new List<Triangle>();
-
-
         public Shape() { }
 
         /// <summary>
@@ -76,9 +73,9 @@ namespace Molten
         public Shape(IList<Vector2F> points) : this(points, Vector2F.Zero, 1.0f) { }
 
         /// <summary>
-        /// Calculates and updates the shape's bounds. Useful after modifying <see cref="Points"/>.
+        /// Produces a <see cref="RectangleF"/> which contains all of the shape's points.
         /// </summary>
-        public void CalculateBounds()
+        public RectangleF CalculateBounds()
         {
             RectangleF b = new RectangleF()
             {
@@ -101,7 +98,7 @@ namespace Molten
                     b.Bottom = (float)p.Y;
             }
 
-            Bounds = b;
+            return b;
         }
 
         /// <summary>
@@ -126,9 +123,9 @@ namespace Molten
             foreach (Triangle tri in triangles)
             {
                 //tri.ReversePointFlow();
-                output.Add(((Vector2F)tri.GetPoint(0) * scale) + offset);
-                output.Add(((Vector2F)tri.GetPoint(2) * scale) + offset);
-                output.Add(((Vector2F)tri.GetPoint(1) * scale) + offset);
+                output.Add(((Vector2F)tri.Points[0] * scale) + offset);
+                output.Add(((Vector2F)tri.Points[2] * scale) + offset);
+                output.Add(((Vector2F)tri.Points[1] * scale) + offset);
             }
         }
 

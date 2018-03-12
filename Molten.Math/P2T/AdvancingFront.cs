@@ -24,11 +24,11 @@ namespace Molten
         {
             Node node = _search_node;
 
-            if (x < node.value)
+            if (x < node.Value)
             {
-                while ((node = node.prev) != null)
+                while ((node = node.Prev) != null)
                 {
-                    if (x >= node.value)
+                    if (x >= node.Value)
                     {
                         _search_node = node;
                         return node;
@@ -37,12 +37,12 @@ namespace Molten
             }
             else
             {
-                while ((node = node.next) != null)
+                while ((node = node.Next) != null)
                 {
-                    if (x < node.value)
+                    if (x < node.Value)
                     {
-                        _search_node = node.prev;
-                        return node.prev;
+                        _search_node = node.Prev;
+                        return node.Prev;
                     }
                 }
             }
@@ -61,34 +61,34 @@ namespace Molten
         {
             double px = point.X;
             Node node = FindSearchNode(px);
-            double nx = node.point.X;
+            double nx = node.Point.X;
 
             if (px == nx)
             {
-                if (point != node.point)
+                if (point != node.Point)
                 {
                     // We might have two nodes with same x value for a short time
-                    if (point == node.prev.point)
-                        node = node.prev;
-                    else if (point == node.next.point)
-                        node = node.next;
+                    if (point == node.Prev.Point)
+                        node = node.Prev;
+                    else if (point == node.Next.Point)
+                        node = node.Next;
                     else
                         Debug.Assert(false, "What happened here????");
                 }
             }
             else if (px < nx)
             {
-                while ((node = node.prev) != null)
+                while ((node = node.Prev) != null)
                 {
-                    if (point == node.point)
+                    if (point == node.Point)
                         break;
                 }
             }
             else
             {
-                while ((node = node.next) != null)
+                while ((node = node.Next) != null)
                 {
-                    if (point == node.point)
+                    if (point == node.Point)
                         break;
                 }
             }
