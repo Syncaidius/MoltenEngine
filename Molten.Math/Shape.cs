@@ -157,8 +157,7 @@ namespace Molten
         {
             for (int i = 0; i < Points.Count; i++)
             {
-                Points[i].X *= scale;
-                Points[i].Y *= scale;
+                Points[i] *= scale;
             }
 
             foreach (Shape h in Holes)
@@ -171,8 +170,7 @@ namespace Molten
         {
             for (int i = 0; i < Points.Count; i++)
             {
-                Points[i].X += offset.X;
-                Points[i].Y += offset.Y;
+                Points[i] += offset;
             }
 
             foreach (Shape h in Holes)
@@ -185,10 +183,8 @@ namespace Molten
         {
             for (int i = 0; i < Points.Count; i++)
             {
-                Points[i].X *= scale;
-                Points[i].Y *= scale;
-                Points[i].X += offset.X;
-                Points[i].Y += offset.Y;
+                Points[i] *= scale;
+                Points[i] += offset;
             }
 
             foreach (Shape h in Holes)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public class Edge
+    public struct Edge
     {
         public TriPoint P;
 
@@ -41,6 +41,7 @@ namespace Molten
                 }
             }
 
+            Q.EdgeList = Q.EdgeList ?? new List<Edge>();
             Q.EdgeList.Add(this);
         }
     }

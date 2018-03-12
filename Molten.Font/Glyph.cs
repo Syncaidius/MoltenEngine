@@ -96,49 +96,54 @@ namespace Molten.Font
                 float curveIncrement = 1.0f / pointsPerCurve;
                 cp.Clear();
 
-                RectangleF pointBounds = new RectangleF();
-                for (int j = start; j <= end; j++)
+                // Check if hint-point (1 contour point).
+                if (end - start > 0)
                 {
-                    p = _points[j];
-                    pointBounds.Encapsulate(p.Point);
-
-                    // If off curve, it's a bezier control point.
-                    if (p.IsOnCurve)
+                    RectangleF pointBounds = new RectangleF();
+                    for (int j = start; j <= end; j++)
                     {
-                        PlotCurve(shape, prevCurvePoint, p.Point, cp, pointsPerCurve, curveIncrement);
-                        prevCurvePoint = p.Point;
+                        p = _points[j];
+                        pointBounds.Encapsulate(p.Point);
 
+                        // If off curve, it's a bezier control point.
+                        if (p.IsOnCurve)
+                        {
+                            PlotCurve(shape, prevCurvePoint, p.Point, cp, pointsPerCurve, curveIncrement);
+                            prevCurvePoint = p.Point;
+
+                        }
+                        else
+                        {
+                            cp.Add(p.Point);
+                        }
                     }
-                    else
+
+                    // Close contour, by linking the end point back to the start point.
+                    if (!shape.Points[0].Equals(prevCurvePoint.X, prevCurvePoint.Y))
                     {
-                        cp.Add(p.Point);
+                        if (cp.Count > 0)
+                            PlotCurve(shape, prevCurvePoint, (Vector2F)shape.Points[0], cp, pointsPerCurve, curveIncrement);
+                        else
+                            shape.Points.Add(new TriPoint((Vector2F)shape.Points[0]));
                     }
+
+                    // Add the first point again to create a loop (for rendering only)
+                    shape.CalculateBounds();
+
+                    // Flip points
+                    if (flipYAxis)
+                    {
+                        for (int j = 0; j < shape.Points.Count; j++)
+                        {
+                            TriPoint tp = shape.Points[j];
+                            tp.Y = _bounds.Height - shape.Points[j].Y;
+                            shape.Points[j] = tp;
+                        }
+                    }
+
+                    toTest.Add(shape);
                 }
 
-                // Close contour, by linking the end point back to the start point.
-                if (!shape.Points[0].Equals(prevCurvePoint.X, prevCurvePoint.Y))
-                {
-                    if (cp.Count > 0)
-                        PlotCurve(shape, prevCurvePoint, (Vector2F)shape.Points[0], cp, pointsPerCurve, curveIncrement);
-                    else
-                        shape.Points.Add(new TriPoint((Vector2F)shape.Points[0]));
-                }
-
-                // Add the first point again to create a loop (for rendering only)
-                shape.CalculateBounds();
-
-                // Flip points
-                if (flipYAxis)
-                {
-                    for (int j = 0; j < shape.Points.Count; j++)
-                    {
-                        TriPoint tp = shape.Points[j];
-                        tp.Y = _bounds.Height - shape.Points[j].Y;
-                        shape.Points[j] = tp;
-                    }
-                }
-
-                toTest.Add(shape);
                 start = end + 1;
             }
 

@@ -24,7 +24,6 @@ namespace Molten.Samples
         SpriteBatchContainer _container;
         FontFile _fontFile;
 
-        int _shapeID = 1;
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
         List<Shape> _shapes;
@@ -95,7 +94,7 @@ namespace Molten.Samples
             AcceptPlayerInput = false;
 
             LoadFontFile();
-            NewFontSystemTest('9');
+            NewFontSystemTest('"');
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
@@ -178,7 +177,7 @@ namespace Molten.Samples
             glyphBounds.Height *= scale;
 
             List<Vector2F> glyphTriPoints = new List<Vector2F>();
-            _shapes[0].Triangulate(glyphTriPoints, Vector2F.Zero, 1);
+            //_shapes[0].Triangulate(glyphTriPoints, Vector2F.Zero, 1);
 
             // Use a container for doing some testing.
             _container = new SpriteBatchContainer()

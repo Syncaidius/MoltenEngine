@@ -11,7 +11,7 @@ namespace Molten
         /// <summary>
         /// An empty <see cref="TriPoint"/> with <see cref="EdgeList"/> uninitialized (null).
         /// </summary>
-        public static readonly TriPoint Empty = new TriPoint(0,0);
+        public static readonly TriPoint Empty = new TriPoint();
 
         public double X;
 
@@ -19,18 +19,20 @@ namespace Molten
 
         public List<Edge> EdgeList;
 
+        public TriPoint() { }
+
         public TriPoint(double x, double y)
         {
             X = x;
             Y = y;
-            EdgeList = new List<Edge>();
+            EdgeList = null;
         }
 
         public TriPoint(Vector2F p)
         {
             X = p.X;
             Y = p.Y;
-            EdgeList = new List<Edge>();
+            EdgeList = null;
         }
 
         public void set_zero()
@@ -175,6 +177,31 @@ namespace Molten
         public bool Equals(TriPoint other)
         {
             return X == other.X && Y == other.Y;
+        }
+
+        public static bool operator ==(TriPoint a, TriPoint b)
+        {
+            return a.X == b.X && a.Y == b.Y;
+        }
+        public static bool operator !=(TriPoint a, TriPoint b)
+        {
+            return a.X != b.X || a.Y != b.Y;
+        }
+
+        public static TriPoint operator *(TriPoint a, double scale)
+        {
+            return new TriPoint(a.X * scale, a.Y * scale)
+            {
+                EdgeList = a.EdgeList,
+            };
+        }
+
+        public static TriPoint operator +(TriPoint a, Vector2F delta)
+        {
+            return new TriPoint(a.X + delta.X, a.Y + delta.Y)
+            {
+                EdgeList = a.EdgeList,
+            };
         }
     }
 }

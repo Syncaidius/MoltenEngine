@@ -118,7 +118,7 @@ namespace Molten
         {
             for(int i = first; i <= last; i++)
             {
-                int j = i < last ? i + 1 : 0;
+                int j = i < last ? i + 1 : first;
                 _edge_list.Add(new Edge(_points[i], _points[j]));
             }
         }

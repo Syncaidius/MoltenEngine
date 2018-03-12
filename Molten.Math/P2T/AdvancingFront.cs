@@ -65,22 +65,22 @@ namespace Molten
 
             if (px == nx)
             {
-                if (!point.Equals(node.point))
+                if (point != node.point)
                 {
                     // We might have two nodes with same x value for a short time
-                    if (point.Equals(node.prev.point))
+                    if (point == node.prev.point)
                         node = node.prev;
-                    else if (point.Equals(node.next.point))
+                    else if (point == node.next.point)
                         node = node.next;
                     else
-                        throw new Exception("What happened here???");
+                        Debug.Assert(false, "What happened here????");
                 }
             }
             else if (px < nx)
             {
                 while ((node = node.prev) != null)
                 {
-                    if (point.Equals(node.point))
+                    if (point == node.point)
                         break;
                 }
             }
@@ -88,7 +88,7 @@ namespace Molten
             {
                 while ((node = node.next) != null)
                 {
-                    if (point.Equals(node.point))
+                    if (point == node.point)
                         break;
                 }
             }
