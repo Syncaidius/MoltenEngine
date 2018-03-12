@@ -114,9 +114,9 @@ namespace Molten
             SweepContext tcx = new SweepContext();
             tcx.AddPoints(Points);
 
-            //// Hole edges
-            //foreach (Shape p in Holes)
-            //    tcx.AddHole(p.Points);
+            // Hole edges
+            foreach (Shape h in Holes)
+                tcx.AddHole(h.Points);
 
             tcx.InitTriangulation();
             Sweep sweep = new Sweep();

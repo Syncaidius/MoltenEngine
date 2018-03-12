@@ -647,7 +647,7 @@ namespace Molten
         private void FillRightConcaveEdgeEvent(SweepContext tcx, Edge edge, Node node)
         {
             Fill(tcx, node.next);
-            if (node.next.point != edge.P)
+            if (!node.next.point.Equals(edge.P))
             {
                 // Next above or below edge?
                 if (TriUtil.Orient2d(edge.Q, node.next.point, edge.P) == Winding.CCW)
@@ -748,7 +748,7 @@ namespace Molten
         private void FillLeftConcaveEdgeEvent(SweepContext tcx, Edge edge, Node node)
         {
             Fill(tcx, node.prev);
-            if (node.prev.point != edge.P)
+            if (!node.prev.point.Equals(edge.P))
             {
                 // Next above or below edge?
                 if (TriUtil.Orient2d(edge.Q, node.prev.point, edge.P) == Winding.CW)
@@ -779,9 +779,9 @@ namespace Molten
                 tcx.MapTriangleToNodes(t);
                 tcx.MapTriangleToNodes(ot);
 
-                if (p == eq && op == ep)
+                if (p.Equals(eq) && op.Equals(ep))
                 {
-                    if (eq == tcx.EdgeEvent.ConstrainedEdge.Q && ep == tcx.EdgeEvent.ConstrainedEdge.P)
+                    if (eq.Equals(tcx.EdgeEvent.ConstrainedEdge.Q) && ep.Equals(tcx.EdgeEvent.ConstrainedEdge.P))
                     {
                         t.MarkConstrainedEdge(ep, eq);
                         ot.MarkConstrainedEdge(ep, eq);

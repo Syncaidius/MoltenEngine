@@ -48,6 +48,7 @@ namespace Molten
             int last = _points.Count - 1;
 
             // Sanity check first and last point to make sure they haven't got the same position
+
             if (_points[first].Equals(_points[last]))
                 _points.RemoveAt(last--);
 
@@ -183,12 +184,14 @@ namespace Molten
 
         public void MeshClean(Triangle triangle)
         {
-            Stack<Triangle> triangles = new Stack<Triangle>();
-            triangles.Push(triangle);
+            List<Triangle> triangles = new List<Triangle>();
+            triangles.Add(triangle);
 
             while(triangles.Count != 0)
             {
-                Triangle t = triangles.Pop();
+                int last = triangles.Count - 1;
+                Triangle t = triangles[last];
+                triangles.RemoveAt(last);
 
                 if(t != null && !t.IsInterior())
                 {
@@ -197,7 +200,7 @@ namespace Molten
                     for(int i = 0; i < 3; i++)
                     {
                         if (!t.ConstrainedEdge[i])
-                            triangles.Push(t.GetNeighbor(i));
+                            triangles.Add(t.GetNeighbor(i));
                     }
                 }
             }

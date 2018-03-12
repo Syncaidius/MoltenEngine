@@ -95,7 +95,7 @@ namespace Molten.Samples
             AcceptPlayerInput = false;
 
             LoadFontFile();
-            NewFontSystemTest('\'');
+            NewFontSystemTest('9');
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
@@ -144,7 +144,7 @@ namespace Molten.Samples
 
             // Draw outline
             Vector2F offset = new Vector2F(300,300);
-            float scale = 0.4f;
+            float scale = 0.7f;
             foreach (Shape s in _shapes)
                 s.ScaleAndOffset(offset, scale);
 
