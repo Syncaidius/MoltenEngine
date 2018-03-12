@@ -28,10 +28,6 @@ namespace Molten.Samples
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
         List<Shape> _shapes;
-        List<Vector2F> _contourHits;
-        List<Vector2F> _intersectionLines;
-        List<Color> _intersectColors;
-        Stopwatch _testTimer;
         public FontFileTest(EngineSettings settings = null) : base("FontFile Test", settings) { }
 
         protected override void OnInitialize(Engine engine)
@@ -42,7 +38,6 @@ namespace Molten.Samples
             _rng = new Random();
             _positions = new List<Matrix4F>();
             _font = engine.Renderer.Resources.CreateFont("arial", 36);
-            _testTimer = new Stopwatch();
 
             ContentRequest cr = engine.Content.StartRequest();
             cr.Load<ITexture2D>("png_test.png;mipmaps=true");
@@ -100,7 +95,7 @@ namespace Molten.Samples
             AcceptPlayerInput = false;
 
             LoadFontFile();
-            NewFontSystemTest('N');
+            NewFontSystemTest('\'');
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
@@ -112,11 +107,11 @@ namespace Molten.Samples
 
         private void LoadFontFile()
         {
-            //string fontPath = "assets/euphorigenic.ttf";
+            string fontPath = "assets/euphorigenic.ttf";
             //string fontPath = "assets/BroshK.ttf";
             //string fontPath = "assets/Digitalt.ttf";
             //string fontPath = "assets/STOREB.ttf"; // For testing 'cmap' (format 4 and 6).
-            string fontPath = "assets/UECHIGOT.TTF"; // For testing 'PCLT', 'cmap' (format 0 and 4). // TODO fix capital W. Curve on left side crosses itself.
+            //string fontPath = "assets/UECHIGOT.TTF"; // For testing 'PCLT', 'cmap' (format 0 and 4). // TODO fix capital W. Curve on left side crosses itself.
 
             Stopwatch fontTimer = new Stopwatch();
             using (FileStream stream = new FileStream(fontPath, FileMode.Open, FileAccess.Read))
@@ -140,17 +135,16 @@ namespace Molten.Samples
                 SampleScene.RemoveSprite(_container);
 
             Glyph glyph = _fontFile.GetGlyph(glyphChar);
-            _contourHits = new List<Vector2F>();
-            _intersectionLines = new List<Vector2F>();
              _shapes = glyph.CreateShapes(16, true);
 
             // Add 5 colors. The last color will be used when we have more points than colors.
             List<Color> colors = new List<Color>();
+            colors.Add(Color.Wheat);
             colors.Add(Color.Yellow);
 
             // Draw outline
-            Vector2F offset = new Vector2F(300,100);
-            float scale = 0.3f;
+            Vector2F offset = new Vector2F(300,300);
+            float scale = 0.4f;
             foreach (Shape s in _shapes)
                 s.ScaleAndOffset(offset, scale);
 
@@ -184,7 +178,7 @@ namespace Molten.Samples
             glyphBounds.Height *= scale;
 
             List<Vector2F> glyphTriPoints = new List<Vector2F>();
-            //glyphShapes[0].Triangulate(glyphTriPoints, offset, scale);
+            _shapes[0].Triangulate(glyphTriPoints, Vector2F.Zero, 1);
 
             // Use a container for doing some testing.
             _container = new SpriteBatchContainer()
@@ -198,6 +192,7 @@ namespace Molten.Samples
                     sb.DrawLine(glyphBounds.BottomLeft, glyphBounds.TopLeft, Color.Grey, 1);
 
                     sb.DrawTriangleList(glyphTriPoints, colors);
+
                     for (int i = 0; i < linePoints.Count; i++)
                         sb.DrawLinePath(linePoints[i], Color.Red, 2);
 
@@ -207,40 +202,9 @@ namespace Molten.Samples
                     Rectangle clickRect;
                     if (_shapes != null)
                     {
-                        sb.DrawLine(_clickPoint, _clickPoint + new Vector2F(3000, 0), Color.DarkGray, 1);
-                        sb.DrawLineList(_intersectionLines, Color.Yellow, 1);
-
-                        for(int i = 0; i < _contourHits.Count; i++)
-                        {
-                            Vector2F p = _contourHits[i];
-                            clickRect = new Rectangle((int)p.X, (int)p.Y, 0, 0);
-                            clickRect.Inflate(5);
-                            sb.DrawRect(clickRect, Color.Brown);
-                        }
-
                         clickRect = new Rectangle((int)_clickPoint.X, (int)_clickPoint.Y, 0, 0);
                         clickRect.Inflate(8);
                         sb.DrawRect(clickRect, _clickColor);
-                        sb.DrawString(TestFont, $"Contains Time: {_testTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms", new Vector2F(5, 440), Color.White);
-                        sb.DrawString(TestFont, $"Mouse: {Mouse.Position}", new Vector2F(5, 460), Color.White);
-                        sb.DrawString(TestFont, $"Click point: {_clickPoint}", new Vector2F(5, 480), Color.White);
-                        sb.DrawString(TestFont, $"Line points: {_intersectionLines.Count}", new Vector2F(5, 500), Color.White);
-                        sb.DrawString(TestFont, $"Hit points: {_contourHits.Count}", new Vector2F(5,520), Color.White);
-                        for(int i = 0; i < _contourHits.Count; i++)
-                            sb.DrawString(TestFont, $"  {_contourHits[i]}", new Vector2F(5, 540 + (20 * i)), Color.White);
-
-                        float hitX = 900;
-                        float hitY = 40;
-                        for (int i = 0; i < _intersectionLines.Count; i++)
-                        {
-                            sb.DrawString(TestFont, $"  {_intersectionLines[i]}", new Vector2F(hitX, hitY), Color.White);
-                            hitY += 20;
-                            if(hitY >= Window.Height)
-                            {
-                                hitY = 5;
-                                hitX += 130;
-                            }
-                        }
                     }
                 }
             };
@@ -281,18 +245,12 @@ namespace Molten.Samples
 
                 if (_shapes != null)
                 {
-                    _contourHits.Clear();
-                    _intersectionLines.Clear();
-
-                    _testTimer.Reset();
-                    _testTimer.Start();
                     foreach (Shape s in _shapes)
                     {
                         if (ContainsTest(s, _clickPoint))
                             _clickColor = Color.Green;
 
                     }
-                    _testTimer.Stop();
                 }
             }
 

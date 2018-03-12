@@ -159,6 +159,11 @@ namespace Molten
             return $"{X},{Y}";
         }
 
+        public bool Equals(double x, double y)
+        {
+            return X == x && Y == y;
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is TriPoint op)

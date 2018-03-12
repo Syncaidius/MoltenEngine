@@ -114,9 +114,9 @@ namespace Molten
             SweepContext tcx = new SweepContext();
             tcx.AddPoints(Points);
 
-            // Hole edges
-           // foreach (Shape p in Holes)
-           //     tcx.AddHole(p.Points);
+            //// Hole edges
+            //foreach (Shape p in Holes)
+            //    tcx.AddHole(p.Points);
 
             tcx.InitTriangulation();
             Sweep sweep = new Sweep();
@@ -141,12 +141,8 @@ namespace Molten
             SweepContext tcx = new SweepContext();
             tcx.AddPoints(Points);
 
-            //// Hole edges
-            //if (Holes != null)
-            //{
-            //    foreach (Shape p in Holes)
-            //        tcx.AddHole(p.Points);
-            //}
+            foreach (Shape p in Holes)
+                tcx.AddHole(p.Points);
 
             tcx.InitTriangulation();
             Sweep sweep = new Sweep();
@@ -221,6 +217,7 @@ namespace Molten
                     return false;
             }
 
+            // Thanks to: https://codereview.stackexchange.com/a/108903
             int polygonLength = Points.Count;
             int j = 0;
             bool inside = false;

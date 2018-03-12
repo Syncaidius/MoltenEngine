@@ -116,10 +116,13 @@ namespace Molten.Font
                 }
 
                 // Close contour, by linking the end point back to the start point.
-                if (cp.Count > 0)
-                    PlotCurve(shape, prevCurvePoint, (Vector2F)shape.Points[0], cp, pointsPerCurve, curveIncrement);
-                else
-                    shape.Points.Add(new TriPoint((Vector2F)shape.Points[0]));
+                if (!shape.Points[0].Equals(prevCurvePoint.X, prevCurvePoint.Y))
+                {
+                    if (cp.Count > 0)
+                        PlotCurve(shape, prevCurvePoint, (Vector2F)shape.Points[0], cp, pointsPerCurve, curveIncrement);
+                    else
+                        shape.Points.Add(new TriPoint((Vector2F)shape.Points[0]));
+                }
 
                 // Add the first point again to create a loop (for rendering only)
                 shape.CalculateBounds();
