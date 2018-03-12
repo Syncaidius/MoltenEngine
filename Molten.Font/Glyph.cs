@@ -139,27 +139,29 @@ namespace Molten.Font
                 start = end + 1;
             }
 
-            // TODO replace with polygon intersect - letter C in UECHIGOT.TTF
-
             // Figure out which shapes are holes and which are glyph outlines.
-            foreach (Shape h in toTest)
+            foreach (Shape t in toTest)
             {
-                bool holeContained = false;
-                foreach (Shape s in result)
+                bool contained = false;
+                foreach (Shape s in toTest)
                 {
-                    if (s.Contains(h))
+                    // Don't test against self.
+                    if (t == s)
+                        continue;
+
+                    if (s.Contains(t))
                     {
-                        s.Holes.Add(h);
-                        holeContained = true;
+                        s.Holes.Add(t);
+                        contained = true;
                         break;
                     }
                 }
 
                 // Must be an outline, reverse it's winding.
-                if (!holeContained)
+                if (!contained)
                 {
-                    h.Points.Reverse();
-                    result.Add(h);
+                    t.Points.Reverse();
+                    result.Add(t);
                 }
             }
 

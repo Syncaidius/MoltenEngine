@@ -203,10 +203,10 @@ namespace Molten
 
         public bool Contains(Shape shape)
         {
-            // We only need 1 point to be outside to invalidate a containment.
             for(int i = 0; i < shape.Points.Count; i++)
             {
-                if (!Contains((Vector2F)Points[i]))
+                // We only need 1 point to be outside to invalidate a containment.
+                if (!Contains((Vector2F)shape.Points[i]))
                     return false;
             }
 
@@ -229,6 +229,7 @@ namespace Molten
             Vector2F p2;
             int hitCount = 0;
 
+            // TODO: switch to Ray2D when implemented.
             Ray originRay = new Ray(new Vector3F(point, 0), Vector3F.Right);
             Vector3F rayHit;
             int end = Points.Count - 1;
@@ -248,63 +249,61 @@ namespace Molten
             {
                 p1 = (Vector2F)Points[i];
                 p2 = (Vector2F)Points[i + 1];
+                Vector2F contourDir = Vector2F.Normalize(p2 - p1);
 
-                RectangleF contourBounds = inverseRect;
-                contourBounds.Encapsulate(p1);
-                contourBounds.Encapsulate(p2);
+                // Test if point is on contour edge
+                Vector2F pointDir = Vector2F.Normalize(point - p1);
+                //if (contourDir == pointDir)
+                //{
 
-                Vector2F contourDir = -Vector2F.Normalize(p2 - p1);
-                Ray contourRay = new Ray(new Vector3F(p1, 0), new Vector3F(contourDir, 0));
-
-
-                if (CollisionHelper.RayIntersectsRay(ref originRay, ref contourRay, out rayHit))
-                {
-                    // check if intersection is on the left of the point.
-                    if (rayHit.X < point.X)
-                        continue;
-
-                    Vector2F intersect = (Vector2F)rayHit;
-                    if (contourBounds.Contains(intersect))
+                //}
+                //else // Perform intersection test now all basic tests have been done.
+                //{
+                    Ray contourRay = new Ray(new Vector3F(p1, 0), new Vector3F(contourDir, 0));
+                    if (CollisionHelper.RayIntersectsRay(ref originRay, ref contourRay, out rayHit))
                     {
-                        //_intersectionLines.Add(contourBounds.TopLeft);
-                        //_intersectionLines.Add(contourBounds.TopRight);
-                        //_intersectionLines.Add(contourBounds.TopRight);
-                        //_intersectionLines.Add(contourBounds.BottomRight);
-                        //_intersectionLines.Add(contourBounds.BottomRight);
-                        //_intersectionLines.Add(contourBounds.BottomLeft);
-                        //_intersectionLines.Add(contourBounds.BottomLeft);
-                        //_intersectionLines.Add(contourBounds.TopLeft);
+                        // check if intersection is on the left of the point.
+                        if (rayHit.X < point.X)
+                            continue;
 
-                        // Check if intersect point is the same as the previous one.
-                        if (prevX != intersect.X)
+                        RectangleF contourBounds = inverseRect;
+                        contourBounds.Encapsulate(p1);
+                        contourBounds.Encapsulate(p2);
+
+                        Vector2F intersect = (Vector2F)rayHit;
+                        if (contourBounds.Contains(intersect))
                         {
-                            float xDist = 0;
-                            bool runsLeft = (contourDir.X < 0);
-
-                            if (!float.IsNaN(prevX))
+                            // Check if intersect point is the same as the previous one.
+                            if (prevX != intersect.X)
                             {
-                                if (prevX == p1.X)
+                                float xDist = 0;
+                                bool runsLeft = (contourDir.X < 0);
+
+                                if (!float.IsNaN(prevX))
                                 {
-                                    xDist = (prevIntersectX - intersect.X) / X_THRESHOLD;
-                                    if (prevRunsLeft != runsLeft)
-                                        xDist = 0;
-                                    else if (xDist > -1f && xDist < 1f)
-                                        xDist = 1;
-                                    else
-                                        xDist = 0;
+                                    if (prevX == p1.X)
+                                    {
+                                        xDist = (prevIntersectX - intersect.X) / X_THRESHOLD;
+                                        if (prevRunsLeft != runsLeft)
+                                            xDist = 0;
+                                        else if (xDist > -1f && xDist < 1f)
+                                            xDist = 1;
+                                        else
+                                            xDist = 0;
+                                    }
                                 }
-                            }
 
-                            if (xDist == 0)
-                            {
-                                hitCount++;
-                                prevIntersectX = intersect.X;
-                                prevX = p2.X;
-                                prevRunsLeft = runsLeft;
+                                if (xDist == 0)
+                                {
+                                    hitCount++;
+                                    prevIntersectX = intersect.X;
+                                    prevX = p2.X;
+                                    prevRunsLeft = runsLeft;
+                                }
                             }
                         }
                     }
-                }
+               // }
             }
 
             Console.WriteLine($"Hit count: {hitCount}");

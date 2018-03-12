@@ -27,7 +27,10 @@ namespace Molten.Samples
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
         List<Shape> _shapes;
-
+        List<Vector2F> _contourHits;
+        List<Vector2F> _intersectionLines;
+        List<Color> _intersectColors;
+        Stopwatch _testTimer;
         public FontFileTest(EngineSettings settings = null) : base("FontFile Test", settings) { }
 
         protected override void OnInitialize(Engine engine)
@@ -38,6 +41,7 @@ namespace Molten.Samples
             _rng = new Random();
             _positions = new List<Matrix4F>();
             _font = engine.Renderer.Resources.CreateFont("arial", 36);
+            _testTimer = new Stopwatch();
 
             ContentRequest cr = engine.Content.StartRequest();
             cr.Load<ITexture2D>("png_test.png;mipmaps=true");
@@ -95,7 +99,7 @@ namespace Molten.Samples
             AcceptPlayerInput = false;
 
             LoadFontFile();
-            NewFontSystemTest('8');
+            NewFontSystemTest('l');
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
@@ -137,8 +141,12 @@ namespace Molten.Samples
 
             Log.WriteDebugLine($"FontFile test using glyph at index {_fontFile.GetGlyphIndex(glyphChar)}");
             Glyph glyph = _fontFile.GetGlyph(glyphChar);
+            _contourHits = new List<Vector2F>();
+            _intersectionLines = new List<Vector2F>();
+            _intersectColors = new List<Color>();
+            _intersectColors.Add(Color.Lime);
 
-             _shapes = glyph.CreateShapes(4, true);
+             _shapes = glyph.CreateShapes(2, true);
             ushort[] endPoints = glyph.ContourEndPoints;
 
             // Add 5 colors. The last color will be used when we have more points than colors.
@@ -148,7 +156,7 @@ namespace Molten.Samples
 
             // Draw outline
             Vector2F offset = new Vector2F(350, 100);
-            float scale = 0.4f;
+            float scale = 0.3f;
             foreach (Shape s in _shapes)
                 s.ScaleAndOffset(offset, scale);
 
@@ -205,13 +213,40 @@ namespace Molten.Samples
                     Rectangle clickRect;
                     if (_shapes != null)
                     {
+                        sb.DrawLineList(_intersectionLines, _intersectColors, 1);
                         sb.DrawLine(_clickPoint, _clickPoint + new Vector2F(3000, 0), Color.Orange, 1);
+
+                        for(int i = 0; i < _contourHits.Count; i++)
+                        {
+                            Vector2F p = _contourHits[i];
+                            clickRect = new Rectangle((int)p.X, (int)p.Y, 0, 0);
+                            clickRect.Inflate(5);
+                            sb.DrawRect(clickRect, _clickColor);
+                        }
 
                         clickRect = new Rectangle((int)_clickPoint.X, (int)_clickPoint.Y, 0, 0);
                         clickRect.Inflate(8);
                         sb.DrawRect(clickRect, _clickColor);
+                        sb.DrawString(TestFont, $"Contains Time: {_testTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms", new Vector2F(5, 440), Color.White);
                         sb.DrawString(TestFont, $"Mouse: {Mouse.Position}", new Vector2F(5, 460), Color.White);
                         sb.DrawString(TestFont, $"Click point: {_clickPoint}", new Vector2F(5, 480), Color.White);
+                        sb.DrawString(TestFont, $"Line points: {_intersectionLines.Count}", new Vector2F(5, 500), Color.White);
+                        sb.DrawString(TestFont, $"Hit points: {_contourHits.Count}", new Vector2F(5,520), Color.White);
+                        for(int i = 0; i < _contourHits.Count; i++)
+                            sb.DrawString(TestFont, $"  {_contourHits[i]}", new Vector2F(5, 540 + (20 * i)), Color.White);
+
+                        float hitX = 900;
+                        float hitY = 40;
+                        for (int i = 0; i < _intersectionLines.Count; i++)
+                        {
+                            sb.DrawString(TestFont, $"  {_intersectionLines[i]}", new Vector2F(hitX, hitY), Color.White);
+                            hitY += 20;
+                            if(hitY >= Window.Height)
+                            {
+                                hitY = 5;
+                                hitX += 130;
+                            }
+                        }
                     }
                 }
             };
@@ -252,18 +287,123 @@ namespace Molten.Samples
 
                 if(_shapes != null)
                 {
+                    _contourHits.Clear();
+                    _intersectionLines.Clear();
+
+                    _testTimer.Reset();
+                    _testTimer.Start();
                     foreach (Shape shape in _shapes)
                     {
-                        if (shape.Contains(_clickPoint))
+                        if (ContainsTest(shape, _clickPoint))
                         {
                             _clickColor = Color.Green;
                             break;
                         }
                     }
+                    _testTimer.Stop();
                 }
             }
 
             base.OnUpdate(time);
+        }
+
+        private bool ContainsTest(Shape shape, Vector2F point)
+        {
+            const float X_THRESHOLD = 0.5f; // Half a pixel
+            List<Shape> holes = shape.Holes;    
+
+            // Test holes first
+            for (int i = 0; i < holes.Count; i++)
+            {
+                if (holes[i].Contains(point))
+                    return false;
+            }
+
+            Vector2F p1;
+            Vector2F p2;
+            int hitCount = 0;
+
+            Ray originRay = new Ray(new Vector3F(point, 0), Vector3F.Right);
+            Vector3F rayHit;
+            int end = shape.Points.Count - 1;
+            RectangleF inverseRect = new RectangleF()
+            {
+                Left = int.MaxValue,
+                Right = int.MinValue,
+                Top = int.MaxValue,
+                Bottom = int.MinValue,
+            };
+
+            float prevX = float.NaN;
+            float prevIntersectX = prevX;
+            bool prevRunsLeft = true;
+
+            for (int i = 0; i < end; i++)
+            {
+                p1 = (Vector2F)shape.Points[i];
+                p2 = (Vector2F)shape.Points[i + 1];
+
+                RectangleF contourBounds = inverseRect;
+                contourBounds.Encapsulate(p1);
+                contourBounds.Encapsulate(p2);
+                Vector2F contourDir = -Vector2F.Normalize(p2 - p1);
+                Ray contourRay = new Ray(new Vector3F(p1, 0), new Vector3F(contourDir, 0));
+
+                if (CollisionHelper.RayIntersectsRay(ref originRay, ref contourRay, out rayHit))
+                {
+                    // check if intersection is on the left of the point.
+                    if (rayHit.X < point.X)
+                        continue;
+
+                    Vector2F intersect = (Vector2F)rayHit;
+                    if (contourBounds.Contains(intersect))
+                    {
+                        //_intersectionLines.Add(contourBounds.TopLeft);
+                        //_intersectionLines.Add(contourBounds.TopRight);
+                        //_intersectionLines.Add(contourBounds.TopRight);
+                        //_intersectionLines.Add(contourBounds.BottomRight);
+                        //_intersectionLines.Add(contourBounds.BottomRight);
+                        //_intersectionLines.Add(contourBounds.BottomLeft);
+                        //_intersectionLines.Add(contourBounds.BottomLeft);
+                        //_intersectionLines.Add(contourBounds.TopLeft);
+
+                        // Check if intersect point is the same as the previous one.
+                        if (prevX != intersect.X)
+                        {
+                            float xDist = 0;
+                            bool runsLeft = (contourDir.X < 0);
+
+                            if (!float.IsNaN(prevX))
+                            {
+                                if (prevX == p1.X)
+                                {
+                                    xDist = (prevIntersectX - intersect.X) / X_THRESHOLD;
+                                    if (prevRunsLeft != runsLeft)
+                                        xDist = 0;
+                                    else if (xDist > -1f && xDist < 1f)
+                                        xDist = 1;
+                                    else
+                                        xDist = 0;
+                                }
+                            }
+
+                            if (xDist == 0)
+                            {
+                                _contourHits.Add(intersect);
+                                _intersectionLines.Add(p1);
+                                _intersectionLines.Add(p2);
+                                hitCount++;
+                                prevIntersectX = intersect.X;
+                                prevX = p2.X;
+                                prevRunsLeft = runsLeft;
+                            }
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine($"Hit count: {hitCount}");
+            return hitCount % 2 != 0;
         }
     }
 }
