@@ -366,6 +366,12 @@ namespace Molten.Graphics
             DrawTriangleList(points, _singleColorList);
         }
 
+        public void DrawLineList(IList<Vector2F> points, Color color, float thickness)
+        {
+            _singleColorList[0] = color;
+            DrawLineList(points, _singleColorList, thickness);
+        }
+
         /// <summary>Draws connecting lines between each of the provided points.</summary>
         /// <param name="points">The points between which to draw lines.</param>
         /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>

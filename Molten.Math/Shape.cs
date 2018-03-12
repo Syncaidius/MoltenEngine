@@ -215,99 +215,35 @@ namespace Molten
 
         public bool Contains(Vector2F point)
         {
-            const float X_THRESHOLD = 0.5f; // Half a pixel
-            List<Shape> holes = Holes;
-
-            // Test holes first
-            for (int i = 0; i < holes.Count; i++)
+            for (int i = 0; i < Holes.Count; i++)
             {
-                if (holes[i].Contains(point))
+                if (Holes[i].Contains(point))
                     return false;
             }
 
-            Vector2F p1;
-            Vector2F p2;
-            int hitCount = 0;
+            int polygonLength = Points.Count;
+            int j = 0;
+            bool inside = false;
+            float pointX = point.X, pointY = point.Y; // x, y for tested point.
 
-            // TODO: switch to Ray2D when implemented.
-            Ray originRay = new Ray(new Vector3F(point, 0), Vector3F.Right);
-            Vector3F rayHit;
-            int end = Points.Count - 1;
-            RectangleF inverseRect = new RectangleF()
+            // start / end point for the current polygon segment.
+            float startX, startY, endX, endY;
+            Vector2F endPoint = (Vector2F)Points[polygonLength - 1];
+            endX = endPoint.X;
+            endY = endPoint.Y;
+
+            while (j < polygonLength)
             {
-                Left = int.MaxValue,
-                Right = int.MinValue,
-                Top = int.MaxValue,
-                Bottom = int.MinValue,
-            };
-
-            float prevX = float.NaN;
-            float prevIntersectX = prevX;
-            bool prevRunsLeft = true;
-
-            for (int i = 0; i < end; i++)
-            {
-                p1 = (Vector2F)Points[i];
-                p2 = (Vector2F)Points[i + 1];
-                Vector2F contourDir = Vector2F.Normalize(p2 - p1);
-
-                // Test if point is on contour edge
-                Vector2F pointDir = Vector2F.Normalize(point - p1);
-                //if (contourDir == pointDir)
-                //{
-
-                //}
-                //else // Perform intersection test now all basic tests have been done.
-                //{
-                    Ray contourRay = new Ray(new Vector3F(p1, 0), new Vector3F(contourDir, 0));
-                    if (CollisionHelper.RayIntersectsRay(ref originRay, ref contourRay, out rayHit))
-                    {
-                        // check if intersection is on the left of the point.
-                        if (rayHit.X < point.X)
-                            continue;
-
-                        RectangleF contourBounds = inverseRect;
-                        contourBounds.Encapsulate(p1);
-                        contourBounds.Encapsulate(p2);
-
-                        Vector2F intersect = (Vector2F)rayHit;
-                        if (contourBounds.Contains(intersect))
-                        {
-                            // Check if intersect point is the same as the previous one.
-                            if (prevX != intersect.X)
-                            {
-                                float xDist = 0;
-                                bool runsLeft = (contourDir.X < 0);
-
-                                if (!float.IsNaN(prevX))
-                                {
-                                    if (prevX == p1.X)
-                                    {
-                                        xDist = (prevIntersectX - intersect.X) / X_THRESHOLD;
-                                        if (prevRunsLeft != runsLeft)
-                                            xDist = 0;
-                                        else if (xDist > -1f && xDist < 1f)
-                                            xDist = 1;
-                                        else
-                                            xDist = 0;
-                                    }
-                                }
-
-                                if (xDist == 0)
-                                {
-                                    hitCount++;
-                                    prevIntersectX = intersect.X;
-                                    prevX = p2.X;
-                                    prevRunsLeft = runsLeft;
-                                }
-                            }
-                        }
-                    }
-               // }
+                startX = endX; startY = endY;
+                endPoint = (Vector2F)Points[j++];
+                endX = endPoint.X; endY = endPoint.Y;
+                //
+                inside ^= (endY > pointY ^ startY > pointY) /* ? pointY inside [startY;endY] segment ? */
+                          && /* if so, test if it is under the segment */
+                          ((pointX - endX) < (pointY - endY) * (startX - endX) / (startY - endY));
             }
 
-            Console.WriteLine($"Hit count: {hitCount}");
-            return hitCount % 2 != 0;
+            return inside;
         }
 
 
