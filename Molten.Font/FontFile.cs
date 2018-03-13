@@ -83,11 +83,11 @@ namespace Molten.Font
                     for (int i = 0; i < _metrics.Length; i++)
                     {
                         g = _glyphs[i];
-                        int lsb = _hmtx.GetLeftSideBearing(i);
-                        int aw = _hmtx.GetAdvanceWidth(i);
+                        int lsb = 0;
+                        int aw = g.MaxX - g.MinX;
 
-                        _metrics[i].LeftSideBearing = 0;
-                        _metrics[i].AdvanceWidth = g.MaxX - g.MinX;
+                        _metrics[i].LeftSideBearing = lsb;
+                        _metrics[i].AdvanceWidth = aw
                         _metrics[i].RightSideBearing = aw - (lsb + g.MaxX - g.MinX); // MS Docs: the right side bearing ("rsb") is calculated as follows: rsb = aw - (lsb + xMax - xMin)
                     }
                 }
