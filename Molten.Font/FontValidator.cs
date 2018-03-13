@@ -33,6 +33,7 @@ namespace Molten.Font
             new FontRequirements(FontFlags.SVG, "SVG"),
             new FontRequirements(FontFlags.DigitallySigned, "DSIG"),
             new FontRequirements(FontFlags.Kerning, "kern"),
+            new FontRequirements(FontFlags.ControlValueProgram, "prep"),
         };
 
         internal static FontFlags Validate(FontTableList tables)

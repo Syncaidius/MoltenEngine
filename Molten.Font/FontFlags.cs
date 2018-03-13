@@ -11,7 +11,10 @@ namespace Molten.Font
     public enum FontFlags : uint
     {
         Invalid = 0,
-
+        
+        /// <summary>
+        /// The font file contains all of the required tables. These the are cmap, head, hhea, hmtx, maxp, name, OS/2 and post tables.
+        /// </summary>
         Valid = 1,
 
         /// <summary>The font contains everything needed for using TrueType glyphs/outlines.</summary>
@@ -42,5 +45,16 @@ namespace Molten.Font
         /// The font contains kerning data. This data can be used to control the inter-character spacing for the glyphs in a font. <para/>
         /// </summary>
         Kerning = 1 << 7,
+
+        /// <summary>
+        /// The font contains vertical metrics data. This means the top-side-bearing and advance height of <see cref="GlyphMetrics"/> instances will be populated.
+        /// </summary>
+        VerticalMetrics = 1 << 8,
+
+        /// <summary>
+        /// The font contains a control value program (located in a prep table). It consists of a set of TrueType instructions that will usually be 
+        /// executed whenever the font or point size or transformation matrix change and before each glyph is interpreted
+        /// </summary>
+        ControlValueProgram = 1 << 9,
     }
 }

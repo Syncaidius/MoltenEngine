@@ -86,10 +86,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderFrameSnapshot.cs" />
     <Compile Include="RenderLoader.cs" />
-    <Compile Include="Scene\Font\ISpriteFont.cs" />
-    <Compile Include="Scene\Font\SpriteFontStretch.cs" />
-    <Compile Include="Scene\Font\SpriteFontStyle.cs" />
-    <Compile Include="Scene\Font\SpriteFontWeight.cs" />
+    <Compile Include="Font\ISpriteFont.cs" />
+    <Compile Include="Font\SpriteFontStretch.cs" />
+    <Compile Include="Font\SpriteFontStyle.cs" />
+    <Compile Include="Font\SpriteFontWeight.cs" />
     <Compile Include="Scene\ICamera.cs" />
     <Compile Include="Scene\IRenderable.cs" />
     <Compile Include="Scene\ISprite.cs" />
@@ -112,6 +112,7 @@
     <Compile Include="Shaders\ShaderModel.cs" />
     <Compile Include="Shaders\ShaderParseResult.cs" />
     <Compile Include="Shaders\ShaderType.cs" />
+    <Compile Include="Font\SprintFont2.cs" />
     <Compile Include="SpriteBatch\SpriteBatchBase.cs" />
     <Compile Include="SpriteBatch\SpriteBatchCache.cs" />
     <Compile Include="SpriteBatch\SpriteBatchException.cs" />
@@ -165,6 +166,10 @@
     <Compile Include="WindowMode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Molten.Font\Molten.Font.csproj">
+      <Project>{4fe5b72a-3e02-46b9-ac04-b781c964890a}</Project>
+      <Name>Molten.Font</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj">
       <Project>{e59938af-a9d4-4963-b4ac-61e53d05527e}</Project>
       <Name>Molten.Math</Name>

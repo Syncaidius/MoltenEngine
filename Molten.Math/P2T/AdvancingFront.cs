@@ -11,7 +11,7 @@ namespace Molten
     {
         internal Node _head;
         internal Node _tail;
-        internal Node _search_node;
+        Node _search_node;
 
         internal AdvancingFront(Node head, Node tail)
         {
@@ -50,17 +50,10 @@ namespace Molten
             return null;
         }
 
-        private Node FindSearchNode(double x)
-        {
-            // suppress compiler warnings "unused parameter 'x'"
-            // TODO: implement BST index
-            return _search_node;
-        }
-
         public Node LocatePoint(TriPoint point)
         {
             double px = point.X;
-            Node node = FindSearchNode(px);
+            Node node = _search_node;
             double nx = node.Point.X;
 
             if (px == nx)

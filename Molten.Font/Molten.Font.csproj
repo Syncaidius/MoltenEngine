@@ -85,6 +85,7 @@
     <Compile Include="Glyph.cs" />
     <Compile Include="GlyphClass.cs" />
     <Compile Include="GlyphMarkClass.cs" />
+    <Compile Include="GlyphMetrics.cs" />
     <Compile Include="GlyphPoint.cs" />
     <Compile Include="Interpreter\FontInterpreterException.cs" />
     <Compile Include="Interpreter\TrueTypeInterpreter.cs" />

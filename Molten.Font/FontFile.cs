@@ -13,6 +13,7 @@ namespace Molten.Font
         FontTableList _tables;
         FontFlags _flags;
         Glyph[] _glyphs;
+        GlyphMetrics[] _metrics;
         Cmap _cmap;
         Maxp _maxp;
         Hmtx _hmtx;
@@ -46,12 +47,39 @@ namespace Molten.Font
             _maxp = _tables.Get<Maxp>();
             _hmtx = _tables.Get<Hmtx>();
             _head = _tables.Get<Head>();
+            _prep = Tables.Get<Prep>();
 
             Glyf glyf = _tables.Get<Glyf>();
             if (glyf != null)
             {
                 _glyphs = new Glyph[glyf.Glyphs.Length];
                 Array.Copy(glyf.Glyphs, _glyphs, _glyphs.Length);
+            }
+
+            // Separate _glyphs check since there are several TTF/OTF tables that can produce valid glyphs (only glyf supported currently).
+            if (_glyphs != null)
+            {
+                _metrics = new GlyphMetrics[_glyphs.Length];
+                for (int i = 0; i < _metrics.Length; i++)
+                    _metrics[i] = new GlyphMetrics();
+                
+                // Populate horizontal metrics.
+                if (_metrics != null && _hmtx != null)
+                {
+                    Glyph g = null;
+                    for (int i = 0; i < _metrics.Length; i++)
+                    {
+                        g = _glyphs[i];
+                        int lsb = _hmtx.GetLeftSideBearing(i);
+                        int aw = _hmtx.GetAdvanceWidth(i);
+
+                        _metrics[i].LeftSideBearing = lsb;
+                        _metrics[i].AdvanceWidth = aw;
+                        _metrics[i].RightSideBearing = aw - (lsb + g.MaxX - g.MinX); // MS Docs: the right side bearing ("rsb") is calculated as follows: rsb = aw - (lsb + xMax - xMin)
+                    }
+                }
+
+                // TODO populate metrics with VMTX (vertical metrics) table data.
             }
         }
 
@@ -84,6 +112,23 @@ namespace Molten.Font
         public Glyph GetGlyphByIndex(int index)
         {
             return _glyphs[index];
+        }
+
+        /// <summary>Returns metrics for the specified character, or for the default character if the font does not contain it.</summary>
+        /// <param name="character">The character.</param>
+        /// <returns></returns>
+        public GlyphMetrics GetMetrics(char character)
+        {
+            int index = _cmap.LookupIndex(character);
+            return _metrics[index];
+        }
+
+        /// <summary>Returns metrics for the specified glyph, or for the default glyph if the font does not contain it.</summary>
+        /// <param name="character">The glyph index.</param>
+        /// <returns></returns>
+        public GlyphMetrics GetMetricsByIndex(int index)
+        {
+            return _metrics[index];
         }
 
         /// <summary>
