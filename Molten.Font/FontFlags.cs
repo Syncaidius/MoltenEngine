@@ -49,12 +49,17 @@ namespace Molten.Font
         /// <summary>
         /// The font contains vertical metrics data. This means the top-side-bearing and advance height of <see cref="GlyphMetrics"/> instances will be populated.
         /// </summary>
-        VerticalMetrics = 1 << 8,
+        HorizontalMetrics = 1 << 8,
+
+        /// <summary>
+        /// The font contains vertical metrics data. This means the top-side-bearing and advance height of <see cref="GlyphMetrics"/> instances will be populated.
+        /// </summary>
+        VerticalMetrics = 1 << 9,
 
         /// <summary>
         /// The font contains a control value program (located in a prep table). It consists of a set of TrueType instructions that will usually be 
         /// executed whenever the font or point size or transformation matrix change and before each glyph is interpreted
         /// </summary>
-        ControlValueProgram = 1 << 9,
+        ControlValueProgram = 1 << 10,
     }
 }

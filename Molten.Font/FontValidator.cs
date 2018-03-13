@@ -26,13 +26,14 @@ namespace Molten.Font
     {
         public readonly static FontRequirements[] _requirements = new FontRequirements[]
         {
-            new FontRequirements(FontFlags.Valid,  "cmap", "head", "hhea", "hmtx", "maxp", "name", "OS/2", "post" ),
+            new FontRequirements(FontFlags.Valid,  "cmap", "head", "hhea", "maxp", "name", "OS/2", "post" ),
             new FontRequirements(FontFlags.TrueType, "glyf", "loca" ),
             new FontRequirements(FontFlags.CFF, "CFF"),
             new FontRequirements(FontFlags.CFF2, "CFF2"),
             new FontRequirements(FontFlags.SVG, "SVG"),
             new FontRequirements(FontFlags.DigitallySigned, "DSIG"),
             new FontRequirements(FontFlags.Kerning, "kern"),
+            new FontRequirements(FontFlags.HorizontalMetrics, "hmtx"),
             new FontRequirements(FontFlags.ControlValueProgram, "prep"),
         };
 

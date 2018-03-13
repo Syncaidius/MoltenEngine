@@ -56,17 +56,17 @@ namespace Molten.Font
                 Array.Copy(glyf.Glyphs, _glyphs, _glyphs.Length);
             }
 
-            // Separate _glyphs check since there are several TTF/OTF tables that can produce valid glyphs (only glyf supported currently).
+            // Separate _glyphs null check since there are several TTF/OTF tables that can produce valid glyphs (only glyf supported currently).
             if (_glyphs != null)
             {
                 _metrics = new GlyphMetrics[_glyphs.Length];
                 for (int i = 0; i < _metrics.Length; i++)
                     _metrics[i] = new GlyphMetrics();
-                
+
                 // Populate horizontal metrics.
-                if (_metrics != null && _hmtx != null)
+                Glyph g = null;
+                if (_hmtx != null)
                 {
-                    Glyph g = null;
                     for (int i = 0; i < _metrics.Length; i++)
                     {
                         g = _glyphs[i];
@@ -75,6 +75,19 @@ namespace Molten.Font
 
                         _metrics[i].LeftSideBearing = lsb;
                         _metrics[i].AdvanceWidth = aw;
+                        _metrics[i].RightSideBearing = aw - (lsb + g.MaxX - g.MinX); // MS Docs: the right side bearing ("rsb") is calculated as follows: rsb = aw - (lsb + xMax - xMin)
+                    }
+                }
+                else // No hmtx table. Improvise using glyph bounds.
+                {
+                    for (int i = 0; i < _metrics.Length; i++)
+                    {
+                        g = _glyphs[i];
+                        int lsb = _hmtx.GetLeftSideBearing(i);
+                        int aw = _hmtx.GetAdvanceWidth(i);
+
+                        _metrics[i].LeftSideBearing = 0;
+                        _metrics[i].AdvanceWidth = g.MaxX - g.MinX;
                         _metrics[i].RightSideBearing = aw - (lsb + g.MaxX - g.MinX); // MS Docs: the right side bearing ("rsb") is calculated as follows: rsb = aw - (lsb + xMax - xMin)
                     }
                 }
