@@ -94,7 +94,7 @@ namespace Molten.Samples
             AcceptPlayerInput = false;
 
             LoadFontFile();
-            NewFontSystemTest('"');
+            NewFontSystemTest('{');
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
@@ -109,7 +109,6 @@ namespace Molten.Samples
             //string fontPath = "assets/euphorigenic.ttf";
             //string fontPath = "assets/BroshK.ttf";
             string fontPath = "assets/Digitalt.ttf";
-            //string fontPath = "assets/STOREB.ttf"; // For testing 'cmap' (format 4 and 6).
 
             Stopwatch fontTimer = new Stopwatch();
             using (FileStream stream = new FileStream(fontPath, FileMode.Open, FileAccess.Read))

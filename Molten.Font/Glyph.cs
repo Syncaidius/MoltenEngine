@@ -88,18 +88,32 @@ namespace Molten.Font
             Vector2F prevCurvePoint = Vector2F.Zero;
             int start = 0;
             GlyphPoint p = GlyphPoint.Empty;
+            float curveIncrement = 1.0f / pointsPerCurve;
 
             for (int i = 0; i < ContourEndPoints.Length; i++)
             {
                 Shape shape = new Shape();
                 int end = ContourEndPoints[i];
-                float curveIncrement = 1.0f / pointsPerCurve;
                 cp.Clear();
 
                 // Check if hint-point (1 contour point).
                 if (end - start > 0)
                 {
                     RectangleF pointBounds = new RectangleF();
+                    int startOffset = 0;
+
+                    // Find start point
+                    for (int j = start; j <= end; j++)
+                    {
+                        if (_points[j].IsOnCurve)
+                        {
+                            start = j;
+                            break;
+                        }
+
+                        startOffset++;
+                    }
+
                     for (int j = start; j <= end; j++)
                     {
                         p = _points[j];
@@ -121,6 +135,15 @@ namespace Molten.Font
                     // Close contour, by linking the end point back to the start point.
                     if (!shape.Points[0].Equals(prevCurvePoint.X, prevCurvePoint.Y))
                     {
+                        if (startOffset > 0)
+                        {
+                            // All of the points within the offset start will be control points
+                            int originalStart = start - startOffset;
+                            int offsetEnd = start;
+                            for (int k = originalStart; k < offsetEnd; k++)
+                                cp.Add(_points[k].Point);
+                        }
+
                         if (cp.Count > 0)
                             PlotCurve(shape, prevCurvePoint, (Vector2F)shape.Points[0], cp, pointsPerCurve, curveIncrement);
                         else
