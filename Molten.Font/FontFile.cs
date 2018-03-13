@@ -87,7 +87,7 @@ namespace Molten.Font
                         int aw = g.MaxX - g.MinX;
 
                         _metrics[i].LeftSideBearing = lsb;
-                        _metrics[i].AdvanceWidth = aw
+                        _metrics[i].AdvanceWidth = aw;
                         _metrics[i].RightSideBearing = aw - (lsb + g.MaxX - g.MinX); // MS Docs: the right side bearing ("rsb") is calculated as follows: rsb = aw - (lsb + xMax - xMin)
                     }
                 }
