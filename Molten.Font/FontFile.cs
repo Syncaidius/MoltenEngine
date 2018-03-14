@@ -193,7 +193,7 @@ namespace Molten.Font
         /// <returns></returns>
         public float CalculateScaleToPixel(float targetPixelSize)
         {
-            return targetPixelSize / _head.UnitsPerEm;
+            return targetPixelSize / _head.DesignUnitsPerEm;
         }
 
         /// <summary>Returns true if the current <see cref="Flags"/> contains the specified flag value.</summary>

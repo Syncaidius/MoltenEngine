@@ -106,9 +106,9 @@ namespace Molten.Samples
 
         private void LoadFontFile()
         {
-            //string fontPath = "assets/euphorigenic.ttf";
+            string fontPath = "assets/euphorigenic.ttf";
             //string fontPath = "assets/BroshK.ttf";
-            string fontPath = "assets/Digitalt.ttf";
+            //string fontPath = "assets/Digitalt.ttf";
 
             Stopwatch fontTimer = new Stopwatch();
             using (FileStream stream = new FileStream(fontPath, FileMode.Open, FileAccess.Read))
@@ -141,7 +141,7 @@ namespace Molten.Samples
 
             // Draw outline
             Vector2F offset = new Vector2F(300,300);
-            float scale = 0.15f;
+            float scale = 0.3f;
             foreach (Shape s in _shapes)
                 s.ScaleAndOffset(offset, scale);
 

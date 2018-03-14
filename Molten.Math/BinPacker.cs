@@ -1,0 +1,137 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Molten
+{
+    /// <summary>
+    /// A Bin packer implementation based on the 'MAXRECTS' method developed by Jukka Jylänki: http://clb.demon.fi/files/RectangleBinPack.pdf
+    /// </summary>
+    public class BinPacker
+    {
+        List<Rectangle> freeList;
+
+        public BinPacker(int width, int height)
+        {
+            freeList = new List<Rectangle>();
+            freeList.Add(new Rectangle(0, 0, width, height));
+        }
+
+        public void Clear(int width, int height)
+        {
+            freeList.Clear();
+            freeList.Add(new Rectangle(0, 0, width, height));
+        }
+
+        public Rectangle Insert(int width, int height)
+        {
+            Rectangle bestNode = new Rectangle();
+            int bestShortFit = int.MaxValue;
+            int bestLongFit = int.MaxValue;
+            int count = freeList.Count;
+
+            for (int i = 0; i < count; i++)
+            {
+                // try to place the rect
+                Rectangle rect = freeList[i];
+                if (rect.Width < width || rect.Height < height)
+                    continue;
+
+                int leftoverX = Math.Abs(rect.Width - width);
+                int leftoverY = Math.Abs(rect.Height - height);
+                int shortFit = Math.Min(leftoverX, leftoverY);
+                int longFit = Math.Max(leftoverX, leftoverY);
+
+                if (shortFit < bestShortFit || (shortFit == bestShortFit && longFit < bestLongFit))
+                {
+                    bestNode = new Rectangle(rect.X, rect.Y, width, height);
+                    bestShortFit = shortFit;
+                    bestLongFit = longFit;
+                }
+            }
+
+            if (bestNode.Height == 0)
+                return bestNode;
+
+            // split out free areas into smaller ones
+            for (int i = 0; i < count; i++)
+            {
+                if (SplitFreeNode(freeList[i], bestNode))
+                {
+                    freeList.RemoveAt(i--);
+                    count--;
+                }
+            }
+
+            // prune the freelist
+            for (int i = 0; i < freeList.Count; i++)
+            {
+                for (int j = i + 1; j < freeList.Count; j++)
+                {
+                    Rectangle idata = freeList[i];
+                    Rectangle jdata = freeList[j];
+                    if (jdata.Contains(idata))
+                    {
+                        freeList.RemoveAt(i--);
+                        break;
+                    }
+
+                    if (idata.Contains(jdata))
+                        freeList.RemoveAt(j--);
+                }
+            }
+
+            return bestNode;
+        }
+
+        bool SplitFreeNode(Rectangle freeNode, Rectangle usedNode)
+        {
+            // test if the rects even intersect
+            var insideX = usedNode.X < freeNode.Right && usedNode.Right > freeNode.X;
+            var insideY = usedNode.Y < freeNode.Bottom && usedNode.Bottom > freeNode.Y;
+            if (!insideX || !insideY)
+                return false;
+
+            if (insideX)
+            {
+                // new node at the top side of the used node
+                if (usedNode.Y > freeNode.Y && usedNode.Y < freeNode.Bottom)
+                {
+                    var newNode = freeNode;
+                    newNode.Height = usedNode.Y - newNode.Y;
+                    freeList.Add(newNode);
+                }
+
+                // new node at the bottom side of the used node
+                if (usedNode.Bottom < freeNode.Bottom)
+                {
+                    var newNode = freeNode;
+                    newNode.Y = usedNode.Bottom;
+                    newNode.Height = freeNode.Bottom - usedNode.Bottom;
+                    freeList.Add(newNode);
+                }
+            }
+
+            if (insideY)
+            {
+                // new node at the left side of the used node
+                if (usedNode.X > freeNode.X && usedNode.X < freeNode.Right)
+                {
+                    var newNode = freeNode;
+                    newNode.Width = usedNode.X - newNode.X;
+                    freeList.Add(newNode);
+                }
+
+                // new node at the right side of the used node
+                if (usedNode.Right < freeNode.Right)
+                {
+                    var newNode = freeNode;
+                    newNode.X = usedNode.Right;
+                    newNode.Width = freeNode.Right - usedNode.Right;
+                    freeList.Add(newNode);
+                }
+            }
+
+            return true;
+        }
+    }
+}

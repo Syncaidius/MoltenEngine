@@ -37,9 +37,9 @@ namespace Molten.Font
         public FontHeadFlags Flags { get; private set; }
 
         /// <summary>
-        /// Gets the units-per-em of the font.
+        /// Gets the design units-per-em of the font.
         /// </summary>
-        public ushort UnitsPerEm { get; private set; }
+        public ushort DesignUnitsPerEm { get; private set; }
 
         /// <summary>
         /// Gets the date the font was created. <para/>
@@ -105,7 +105,7 @@ namespace Molten.Font
             ChecksumAdjustment = reader.ReadUInt32();
             MagicNumber = reader.ReadUInt32();
             Flags = (FontHeadFlags)reader.ReadUInt16();
-            UnitsPerEm = reader.ReadUInt16();
+            DesignUnitsPerEm = reader.ReadUInt16();
             Created = FontUtil.FromLongDate(reader.ReadInt64());
             Modified = FontUtil.FromLongDate(reader.ReadInt64());
             MinX = reader.ReadInt16();

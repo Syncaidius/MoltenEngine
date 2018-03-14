@@ -157,10 +157,6 @@
     <Compile Include="UI\UIWindowManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Molten.IO.Windows\Molten.IO.Windows.csproj">
-      <Project>{bda0168b-68ff-4201-8812-9c4ffe1f6a86}</Project>
-      <Name>Molten.IO.Windows</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
       <Project>{64387480-7656-484e-b11f-468ee563176e}</Project>
       <Name>Molten.IO</Name>
