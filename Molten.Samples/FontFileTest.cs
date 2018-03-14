@@ -116,7 +116,7 @@ namespace Molten.Samples
                 using (FontReader reader = new FontReader(stream, Log, fontPath))
                 {
                     fontTimer.Start();
-                    _fontFile = reader.ReadFont();
+                    _fontFile = reader.ReadFont(true);
                     fontTimer.Stop();
                     Log.WriteLine($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read font");
                 }
@@ -132,7 +132,7 @@ namespace Molten.Samples
                 SampleScene.RemoveSprite(_container);
 
             Glyph glyph = _fontFile.GetGlyph(glyphChar);
-             _shapes = glyph.CreateShapes(16, true);
+             _shapes = glyph.CreateShapes(16);
 
             // Add 5 colors. The last color will be used when we have more points than colors.
             List<Color> colors = new List<Color>();
@@ -141,7 +141,7 @@ namespace Molten.Samples
 
             // Draw outline
             Vector2F offset = new Vector2F(300,300);
-            float scale = 0.2f;
+            float scale = 0.15f;
             foreach (Shape s in _shapes)
                 s.ScaleAndOffset(offset, scale);
 
@@ -167,12 +167,22 @@ namespace Molten.Samples
             }
 
             RectangleF glyphBounds = glyph.Bounds;
-            glyphBounds.Top *= scale;
-            glyphBounds.Left *= scale;
-            glyphBounds.X += offset.X;
-            glyphBounds.Y += offset.Y;
+            glyphBounds.X *= scale;
+            glyphBounds.Y *= scale;
             glyphBounds.Width *= scale;
             glyphBounds.Height *= scale;
+            glyphBounds.X += offset.X;
+            glyphBounds.Y += offset.Y;
+
+
+            RectangleF containerBounds = _fontFile.ContainerBounds;
+            containerBounds.X *= scale;
+            containerBounds.Y *= scale;
+            containerBounds.Width *= scale;
+            containerBounds.Height *= scale;
+            containerBounds.X += offset.X;
+            containerBounds.Y += offset.Y;
+
 
             List<Vector2F> glyphTriPoints = new List<Vector2F>();
 
@@ -189,6 +199,28 @@ namespace Molten.Samples
                     sb.DrawLine(glyphBounds.TopRight, glyphBounds.BottomRight, Color.Grey, 1);
                     sb.DrawLine(glyphBounds.BottomRight, glyphBounds.BottomLeft, Color.Grey, 1);                    
                     sb.DrawLine(glyphBounds.BottomLeft, glyphBounds.TopLeft, Color.Grey, 1);
+
+                    // Draw font bounds
+                    sb.DrawLine(containerBounds.TopLeft, containerBounds.TopRight, Color.Pink, 1);
+                    sb.DrawLine(containerBounds.TopRight, containerBounds.BottomRight, Color.Pink, 1);
+                    sb.DrawLine(containerBounds.BottomRight, containerBounds.BottomLeft, Color.Pink, 1);
+                    sb.DrawLine(containerBounds.BottomLeft, containerBounds.TopLeft, Color.Pink, 1);
+
+                    // Top Difference marker
+                    float dif = glyphBounds.Top - containerBounds.Top;
+                    if (dif != 0)
+                    {
+                        sb.DrawLine(new Vector2F(glyphBounds.Right, containerBounds.Top), new Vector2F(glyphBounds.Right, containerBounds.Top + dif), Color.Red, 1);
+                        sb.DrawString(TestFont, $"Dif: {dif}", new Vector2F(glyphBounds.Right, containerBounds.Top + (dif / 2)), Color.White);
+                    }
+
+                    // Bottom difference marker
+                    dif = containerBounds.Bottom - glyphBounds.Bottom;
+                    if (dif != 0)
+                    {
+                        sb.DrawLine(new Vector2F(glyphBounds.Right, containerBounds.Bottom), new Vector2F(glyphBounds.Right, containerBounds.Bottom - dif), Color.Red, 1);
+                        sb.DrawString(TestFont, $"Dif: {dif}", new Vector2F(glyphBounds.Right, containerBounds.Bottom - (dif / 2)), Color.White);
+                    }
 
                     sb.DrawTriangleList(glyphTriPoints, colors);
 

@@ -80,7 +80,7 @@ namespace Molten.Font
         /// </summary>
         /// <param name="pointsPerCurve">The maximum number of points per curve in a glyph contour.</param>
         /// <returns></returns>
-        public List<Shape> CreateShapes(int pointsPerCurve, bool flipYAxis)
+        public List<Shape> CreateShapes(int pointsPerCurve)
         {
             List<Shape> result = new List<Shape>();
             List<Shape> toTest = new List<Shape>();
@@ -149,18 +149,6 @@ namespace Molten.Font
                         else
                             shape.Points.Add(new TriPoint((Vector2F)shape.Points[0]));
                     }
-
-                    // Flip points
-                    if (flipYAxis)
-                    {
-                        for (int j = 0; j < shape.Points.Count; j++)
-                        {
-                            TriPoint tp = shape.Points[j];
-                            tp.Y = _bounds.Height - shape.Points[j].Y;
-                            shape.Points[j] = tp;
-                        }
-                    }
-
                     toTest.Add(shape);
                 }
 

@@ -4,11 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class SpriteFont2 : ISpriteFont
+    public class SpriteFont2
     {
         class CharData
         {
@@ -25,8 +26,10 @@ namespace Molten.Graphics
         FontFile _font;
         ThreadedQueue<char> _pendingCharacters;
         ITexture2D _texture;
+        int _fontSize;
 
         CharData[] _charData;
+        int _lockerval;
 
         public SpriteFont2(IRenderer renderer, FontFile font)
         {
@@ -39,7 +42,33 @@ namespace Molten.Graphics
 
         public Rectangle GetCharRect(char c)
         {
-            throw new NotImplementedException();
+            SpinWait spin = new SpinWait();
+            while (Interlocked.Exchange(ref _lockerval, 1) != 0)
+                spin.SpinOnce();
+
+            if (_charData.Length <= c)
+                Array.Resize(ref _charData, Math.Min(char.MaxValue, c + 100));
+
+            Rectangle rect;
+            if(_charData[c] == null)
+            {
+                rect = new Rectangle(10, 10, 10, 10); // TODO: get bounds using sheet packer.
+                _charData[c] = new CharData()
+                {
+                    GlyphIndex = _font.GetGlyphIndex(c),
+                    Location = rect,
+                };
+
+                // Queue the character for generation.
+                _pendingCharacters.Enqueue(c);
+            }
+            else
+            {
+                rect = _charData[c].Location;
+            }
+
+            Interlocked.Exchange(ref _lockerval, 0);
+            return rect;
         }
 
         public Vector2F MeasureString(string text)
@@ -62,8 +91,14 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public int FontSize => throw new NotImplementedException();
+        /// <summary>
+        /// The font size, in font points (e.g. 12pt, 16pt, 18pt, etc).
+        /// </summary>
+        public int FontSize => _fontSize;
 
-        public string FontName => throw new NotImplementedException();
+        /// <summary>
+        /// Gets the underlying font used to generate the sprite-font.
+        /// </summary>
+        public FontFile Font => _font;
     }
 }
