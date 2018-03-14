@@ -14,16 +14,20 @@ namespace Molten.Font
         FontFlags _flags;
         Glyph[] _glyphs;
         GlyphMetrics[] _metrics;
+        Rectangle _containerBounds;
+
         Cmap _cmap;
         Maxp _maxp;
         Hmtx _hmtx;
         Head _head;
         Prep _prep;
+        bool _flipY;
 
-        internal FontFile(FontTableList tables)
+        internal FontFile(FontTableList tables, bool flipYAxis = false)
         {
             _tables = tables;
             _flags = FontFlags.Invalid;
+            _flipY = flipYAxis;
         }
 
         /// <summary>
@@ -41,6 +45,9 @@ namespace Molten.Font
                 return;
             }
 
+            if (_flipY)
+                _flags |= FontFlags.InvertedYAxis;
+
             Name nameTable = _tables.Get<Name>();
             _info = new FontInfo(nameTable);
             _cmap = _tables.Get<Cmap>();
@@ -49,6 +56,18 @@ namespace Molten.Font
             _head = _tables.Get<Head>();
             _prep = Tables.Get<Prep>();
 
+            if (_head != null)
+            {
+                _containerBounds = new Rectangle()
+                {
+                    Left = _head.MinX,
+                    Right = _head.MaxX,
+                    Top = _head.MinY,
+                    Bottom = _head.MaxY,
+                };
+            }
+
+            // Create a local copy of the glyph array from the glyf table.
             Glyf glyf = _tables.Get<Glyf>();
             if (glyf != null)
             {
@@ -59,6 +78,9 @@ namespace Molten.Font
             // Separate _glyphs null check since there are several TTF/OTF tables that can produce valid glyphs (only glyf supported currently).
             if (_glyphs != null)
             {
+                if (_flipY)
+                    FlipYAxis();
+
                 _metrics = new GlyphMetrics[_glyphs.Length];
                 for (int i = 0; i < _metrics.Length; i++)
                     _metrics[i] = new GlyphMetrics();
@@ -93,6 +115,26 @@ namespace Molten.Font
                 }
 
                 // TODO populate metrics with VMTX (vertical metrics) table data.
+            }
+        }
+
+        private void FlipYAxis()
+        {
+            foreach (Glyph glyph in _glyphs)
+            {
+                Rectangle oldBounds = glyph.Bounds;
+                int difTop = glyph.Bounds.Top - _containerBounds.Top;
+                int difBottom = _containerBounds.Bottom - glyph.Bounds.Bottom;
+                glyph.Bounds = new Rectangle()
+                {
+                    Left = oldBounds.Left,
+                    Right = oldBounds.Right,
+                    Top = _containerBounds.Top + difBottom,
+                    Bottom = _containerBounds.Bottom - difTop,
+                };
+
+                for (int i = 0; i < glyph.Points.Length; i++)
+                    glyph.Points[i].Y = glyph.MaxY - (glyph.Points[i].Y - oldBounds.Top);
             }
         }
 
@@ -151,28 +193,7 @@ namespace Molten.Font
         /// <returns></returns>
         public float CalculateScaleToPixel(float targetPixelSize)
         {
-            //1. return targetPixelSize / UnitsPerEm
             return targetPixelSize / _head.UnitsPerEm;
-        }
-
-        /// <summary>
-        /// Gets the horizontal advance width from the glyph at the specified index (not character code).
-        /// </summary>
-        /// <param name="index">The font glyph index.</param>
-        /// <returns></returns>
-        public ushort GetHAdvanceWidthFromGlyphIndex(int index)
-        {
-            return _hmtx.GetAdvanceWidth(index);
-        }
-
-        /// <summary>
-        /// Gets the front side bearing (FSB) from the glyph at the specified index (not character code).
-        /// </summary>
-        /// <param name="index">The font glyph index.</param>
-        /// <returns></returns>
-        public short GetHFrontSideBearingFromGlyphIndex(int index)
-        {
-            return _hmtx.GetLeftSideBearing(index);
         }
 
         /// <summary>Returns true if the current <see cref="Flags"/> contains the specified flag value.</summary>
@@ -213,6 +234,14 @@ namespace Molten.Font
         /// </summary>
         public Head Header => _head;
 
+        /// <summary>
+        /// [Internal] Gets the control value program, if present.
+        /// </summary>
         internal Prep ControlValueProgram => _prep;
+
+        /// <summary>
+        /// Gets the bounds in which all glyph's individual bounds are restricted to.
+        /// </summary>
+        public Rectangle ContainerBounds => _containerBounds;
     }
 }

@@ -73,7 +73,7 @@ namespace Molten.Font
         /// <summary>Parses a .TTF or .OTF font file and returns a new <see cref="FontFile"/> instance containing detailed information about a font.</summary>
         /// <param name="buildFontWhenDone">If true, the font will be built - by calling <see cref="FontFile.Build"/> - when font data has been completely read.</param>
         /// <param name="ignoredTables">One or more tags (of font tables) to be ignored, if any. Ignored tables will not be parsed/loaded.</param>
-        public FontFile ReadFont(bool buildFontWhenDone = true, params string[] ignoredTables)
+        public FontFile ReadFont(bool flipYAxis = false, bool buildFontWhenDone = true, params string[] ignoredTables)
         {
             OffsetTable offsetTable;
             FontTableList tables = new FontTableList();
@@ -136,7 +136,7 @@ namespace Molten.Font
              * avoids messing up the stream in a situation where multiple files/fonts/data-sets are held in the same file.*/
             _stream.Position = expectedEndPos;
 
-            FontFile font = new FontFile(tables);
+            FontFile font = new FontFile(tables, flipYAxis);
             if (buildFontWhenDone)
                 font.Build();
 

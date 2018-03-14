@@ -44,11 +44,10 @@ namespace Molten.Font
         {
 
             Glyph glyph = _curFont.GetGlyphByIndex(glyphIndex);
-            int horizontalAdv = _curFont.GetHAdvanceWidthFromGlyphIndex(glyphIndex);
-            int hFrontSideBearing = _curFont.GetHFrontSideBearingFromGlyphIndex(glyphIndex);
+            GlyphMetrics metrics = _curFont.GetMetricsByIndex(glyphIndex);
 
-            return HintGlyph(horizontalAdv,
-                hFrontSideBearing,
+            return HintGlyph(metrics.AdvanceWidth,
+                metrics.LeftSideBearing,
                 glyph.MinX,
                 glyph.MaxY,
                 glyph.Points,
