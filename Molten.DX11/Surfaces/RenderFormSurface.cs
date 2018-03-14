@@ -136,14 +136,6 @@ namespace Molten.Graphics
         void _form_Moved(object sender, EventArgs e)
         {
             UpdateFormMode(_mode);
-
-            _bounds = new Rectangle()
-            {
-                X = _form.Location.X,
-                Y = _form.Location.Y,
-                Width = _form.Size.Width,
-                Height = _form.Size.Height,
-            };
         }
 
         void _form_Resized(object sender, EventArgs e)
@@ -187,9 +179,6 @@ namespace Molten.Graphics
                     // Calculate offset due to borders and title bars, based on the current mode of the window.
                     System.Drawing.Rectangle clientArea = _form.ClientRectangle;
                     System.Drawing.Rectangle screenArea = _form.RectangleToScreen(clientArea);
-
-                    // Calculate border size then offset the clienta area to get the exact inner area of the form.
-                    int borderWidth = (_form.Width - clientArea.Width) / 2;
 
                     _bounds = new Rectangle()
                     {

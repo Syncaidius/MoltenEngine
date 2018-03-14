@@ -183,7 +183,6 @@ namespace Molten.Samples
             containerBounds.X += offset.X;
             containerBounds.Y += offset.Y;
 
-
             List<Vector2F> glyphTriPoints = new List<Vector2F>();
 
             foreach (Shape s in _shapes)

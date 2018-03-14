@@ -210,20 +210,20 @@ namespace Molten.IO
                         _position.Y = Cursor.Position.Y;
 
                     // Update cursor visibility
-                    ToggleCursorVisiblity(_requestedVisibility);
+                    SetCursorVisiblity(_requestedVisibility);
                 }
                 else
                 {
                     _position = new Vector2F(winPos.X, winPos.Y);
                     _moved = new Vector2F();
-                    ToggleCursorVisiblity(true);
+                    SetCursorVisiblity(true);
                 }
             }
             else
             {
                 EnterLeave(false);
                 _moved = new Vector2F();
-                ToggleCursorVisiblity(true);
+                SetCursorVisiblity(true);
             }
         }
 
@@ -240,7 +240,7 @@ namespace Molten.IO
         /// <summary>Safely handles the cursor's visibility state, since calls to show and hide are counted. 
         /// Two calls to .Show and a last call to .Hide will not hide the cursor.</summary>
         /// <param name="visible">If true, the cursor will be made visible, if not already.</param>
-        private void ToggleCursorVisiblity(bool visible)
+        private void SetCursorVisiblity(bool visible)
         {
             if (_cursorVisibleState == visible)
                 return;
@@ -255,7 +255,7 @@ namespace Molten.IO
 
         protected override void OnDispose()
         {
-            ToggleCursorVisiblity(true);
+            SetCursorVisiblity(true);
 
             DisposeObject(ref _mouse);
         }
