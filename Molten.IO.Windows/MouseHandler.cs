@@ -15,9 +15,21 @@ using System.Windows.Forms;
 
 namespace Molten.IO
 {
+    public delegate void MouseEventHandler(MouseHandler mouse);
+
     /// <summary>Handles mouse input.</summary>
     public class MouseHandler : InputHandlerBase<MouseButton>
     {
+        /// <summary>
+        /// Occurs when the mouse cursor was inside the parent window/control, but just left it.
+        /// </summary>
+        public event MouseEventHandler OnLeaveControl;
+
+        /// <summary>
+        /// Occurs when the mouse cursor was outside of the parent window/control, but just entered it.
+        /// </summary>
+        public event MouseEventHandler OnEnterControl;
+
         Mouse _mouse;
         MouseState _state;
         MouseState _prevState;
@@ -32,8 +44,8 @@ namespace Molten.IO
 
         MouseUpdate[] _buffer;
 
-        bool _inControl = false;
-        bool _cursorVisible = true;
+        bool _wasInsideControl = false;
+        bool _requestedVisibility = true;
         bool _cursorVisibleState = true;
         IWindowSurface _surface;
 
@@ -99,7 +111,6 @@ namespace Molten.IO
         {
             Rectangle oBounds = _surface.Bounds;
             pos -= new Vector2F(oBounds.X, oBounds.Y);
-
             return pos;
         }
 
@@ -107,7 +118,6 @@ namespace Molten.IO
         {
             Rectangle oBounds = _surface.Bounds;
             pos += new Vector2F(oBounds.X, oBounds.Y);
-
             return pos;
         }
 
@@ -150,18 +160,20 @@ namespace Molten.IO
                 System.Drawing.Point winPos = Cursor.Position;
 
                 // Check if the cursor has gone outside of the control/window 
-                _inControl = true;
+                bool insideControl = true;
                 if (winPos.X < winBounds.Left)
-                    _inControl = false;
+                    insideControl = false;
                 else if (winPos.Y < winBounds.Top)
-                    _inControl = false;
+                    insideControl = false;
                 else if (winPos.X > winBounds.Right)
-                    _inControl = false;
+                    insideControl = false;
                 else if (winPos.Y > winBounds.Bottom)
-                    _inControl = false;
+                    insideControl = false;
+
+                EnterLeave(insideControl);
 
                 // If the mouse is in a valid window, process movement, position, etc
-                if (_inControl || IsConstrained)
+                if (insideControl || IsConstrained)
                 {                    
                     // Send all buffered updates to mouse state
                     for (int i = 0; i < _buffer.Length; i++)
@@ -198,7 +210,7 @@ namespace Molten.IO
                         _position.Y = Cursor.Position.Y;
 
                     // Update cursor visibility
-                    ToggleCursorVisiblity(_cursorVisible);
+                    ToggleCursorVisiblity(_requestedVisibility);
                 }
                 else
                 {
@@ -209,9 +221,20 @@ namespace Molten.IO
             }
             else
             {
+                EnterLeave(false);
                 _moved = new Vector2F();
                 ToggleCursorVisiblity(true);
             }
+        }
+
+        private void EnterLeave(bool insideControl)
+        {
+            if (insideControl && !_wasInsideControl)
+                OnEnterControl?.Invoke(this);
+            else if (!insideControl && _wasInsideControl)
+                OnLeaveControl?.Invoke(this);
+
+            _wasInsideControl = insideControl;
         }
 
         /// <summary>Safely handles the cursor's visibility state, since calls to show and hide are counted. 
@@ -238,28 +261,13 @@ namespace Molten.IO
         }
 
         /// <summary>Returns the amount the mouse cursor has moved a long X and Y since the last frame/update.</summary>
-        public Vector2F Moved
-        {
-            get { return _moved; }
-        }
+        public Vector2F Moved => _moved;
 
         /// <summary>Gets the amount the mouse wheel has been moved since the last frame.</summary>
-        public float WheelDelta
-        {
-            get { return _wheelDelta; }
-        }
+        public float WheelDelta => _wheelDelta;
 
         /// <summary>Gets the current scroll wheel position.</summary>
-        public float WheelPosition
-        {
-            get { return _wheelPos; }
-        }
-
-        /// <summary>Gets whether or not the mouse is inside the application control or window.</summary>
-        public bool InsideControl
-        {
-            get { return _inControl; }
-        }
+        public float WheelPosition => _wheelPos;
 
         /// <summary>Gets or sets the position of the mouse cursor.</summary>
         public Vector2F Position
@@ -278,23 +286,17 @@ namespace Molten.IO
         /// <summary>Gets or sets whether or not the mouse cursor is visible.</summary>
         public bool CursorVisible
         {
-            get { return _cursorVisible; }
-            set { _cursorVisible = value; }
+            get { return _requestedVisibility; }
+            set { _requestedVisibility = value; }
         }
 
         /// <summary>Gets or sets whether or not the mouse is contrained to the bounds of the main output.</summary>
         public bool IsConstrained { get; set; }
 
-        public override string DeviceName
-        {
-            get { return _mouse.Information.ProductName; }
-        }
+        public override string DeviceName => _mouse.Information.ProductName;
 
         /// <summary>Gets whether or not the mouse is attached.</summary>
-        public override bool IsConnected
-        {
-            get { return true; }
-        }
+        public override bool IsConnected => true;
     }
 
     public enum MouseButton : byte
