@@ -237,6 +237,8 @@ namespace Molten.Samples
                         clickRect.Inflate(8);
                         sb.DrawRect(clickRect, _clickColor);
                     }
+
+                    sb.DrawString(TestFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
                 }
             };
             SampleScene.AddSprite(_container);

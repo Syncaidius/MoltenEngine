@@ -134,21 +134,20 @@ namespace Molten.IO
 
             // Store previous position
             _prevPosition = _position;
+            _prevWheelPos = _wheelPos;
 
             // Get latest info from mouse and buffer it
             _mouse.Poll();
             _buffer = _mouse.GetBufferedData();
-             
             IntPtr forewindow = Win32.GetForegroundWindow();
             IntPtr outputHandle = _surface.WindowHandle;
             Rectangle winBounds = _surface.Bounds;
-            //Rectangle displayBounds = _surface.DisplayBounds;
 
             // Make sure the game window is focused before updating movement/position.
             if (forewindow == outputHandle)
             {
                 // The windows cursor position
-                System.Drawing.Point winPos = System.Windows.Forms.Cursor.Position;
+                System.Drawing.Point winPos = Cursor.Position;
 
                 // Check if the cursor has gone outside of the control/window 
                 _inControl = true;
@@ -164,7 +163,7 @@ namespace Molten.IO
                 // If the mouse is in a valid window, process movement, position, etc
                 if (_inControl || IsConstrained)
                 {                    
-                    //send all buffered updates to mouse state
+                    // Send all buffered updates to mouse state
                     for (int i = 0; i < _buffer.Length; i++)
                     {
                         _state.Update(_buffer[i]);
@@ -174,6 +173,7 @@ namespace Molten.IO
                     }
 
                     _position += _moved;
+                    _wheelPos += _wheelDelta;
 
                     if (IsConstrained)
                     {
@@ -186,22 +186,18 @@ namespace Molten.IO
                         if (_position.Y > winBounds.Height)
                             _position.Y = winBounds.Height;
                     }
-                    //else
-                    //{
-                    //    if (_position.X < displayBounds.X)
-                    //        _position.X = displayBounds.X;
-                    //    if (_position.Y < displayBounds.Y)
-                    //        _position.Y = displayBounds.Y;
-                    //    if (_position.X > displayBounds.Width)
-                    //        _position.X = displayBounds.Width;
-                    //    if (_position.Y > displayBounds.Height)
-                    //        _position.Y = displayBounds.Height;
-                    //}
 
-                    //adjust position based on sensitivity
+                    // Apply cursor position.
                     Cursor.Position = new System.Drawing.Point((int)_position.X, (int)_position.Y);
 
-                    //Update cursor visibility
+                    // Perform correction if we exceeded Windows cursor limits.
+                    if (_position.X != Cursor.Position.X)
+                        _position.X = Cursor.Position.X;
+
+                    if (_position.Y != Cursor.Position.Y)
+                        _position.Y = Cursor.Position.Y;
+
+                    // Update cursor visibility
                     ToggleCursorVisiblity(_cursorVisible);
                 }
                 else

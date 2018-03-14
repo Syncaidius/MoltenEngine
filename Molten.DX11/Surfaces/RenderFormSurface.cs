@@ -125,10 +125,6 @@ namespace Molten.Graphics
 
             // Ignore all windows events
             Device.DisplayManager.DxgiFactory.MakeWindowAssociation(_form.Handle, WindowAssociationFlags.IgnoreAltEnter);
-
-            //DisplayMode curRes = _displayMode;
-            //_surface = new SwapChainSurface(_device, _swapChain, curRes.Width, curRes.Height);
-            //_depthSurface = new DepthSurface(_device, curRes.Width, curRes.Height);
         }
 
         private void _form_FormClosing(object sender, FormClosingEventArgs e)
@@ -350,13 +346,6 @@ namespace Molten.Graphics
         {
             get => _requestedMode;
             set => _requestedMode = value;
-        }
-
-        /// <summary>Gets or setsthe current display mode.</summary>
-        public DisplayMode CurrentDisplayMode
-        {
-            get { return _displayMode; }
-            set { _displayMode = value; }
         }
 
         /// <summary>Gets the bounds of the window surface.</summary>
