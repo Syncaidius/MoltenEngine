@@ -13,7 +13,7 @@ namespace Molten.IO
 
         Logger _log;
 
-        List<GamepadHandler> _gamepads;
+        List<GamepadDevice> _gamepads;
         Dictionary<IWindowSurface, SurfaceGroup> _groups;
         SurfaceGroup _activeGroup;
         IWindowSurface _activeSurface;
@@ -27,12 +27,12 @@ namespace Molten.IO
             _log = log;
             _input = new DirectInput();
             _groups = new Dictionary<IWindowSurface, SurfaceGroup>();
-            _gamepads = new List<GamepadHandler>();
+            _gamepads = new List<GamepadDevice>();
             _clipboard = new WindowsClipboard();
 
             for (int i = 0; i < 4; i++)
             {
-                GamepadHandler handler = new GamepadHandler((GamepadIndex)i);
+                GamepadDevice handler = new GamepadDevice((GamepadIndex)i);
                 _gamepads.Add(handler);
                 handler.Initialize(this, _log, null);
             }
@@ -42,7 +42,7 @@ namespace Molten.IO
         /// <typeparam name="T">The type of handler to retrieve.</typeparam>
         /// <param name="surface">The surface for which to bind and return an input handler.</param>
         /// <returns>An input handler of the specified type.</returns>
-        public T GetHandler<T>(IWindowSurface surface) where T : InputHandlerBase, new()
+        public T GetCustomDevice<T>(IWindowSurface surface) where T : class, IInputDevice, new()
         {
             SurfaceGroup grp = null;
             if(!_groups.TryGetValue(surface, out grp))
@@ -51,7 +51,31 @@ namespace Molten.IO
                 _groups.Add(surface, grp);
             }
 
-            return grp.GetHandler<T>();
+            return grp.GetDevice<T>();
+        }
+
+        public IMouseDevice GetMouse(IWindowSurface surface)
+        {
+            return GetCustomDevice<MouseDevice>(surface);
+        }
+
+        public IKeyboardDevice GetKeyboard(IWindowSurface surface)
+        {
+            return GetCustomDevice<KeyboardDevice>(surface);
+        }
+
+        public IGamepadDevice GetGamepad(IWindowSurface surface, GamepadIndex index)
+        {
+            GamepadDevice gamepad = new GamepadDevice(index);
+            SurfaceGroup grp = null;
+            if (!_groups.TryGetValue(surface, out grp))
+            {
+                grp = new SurfaceGroup(this, _log, surface);
+                _groups.Add(surface, grp);
+            }
+
+            grp.AddDevice(gamepad);
+            return gamepad;
         }
 
         /// <summary>Sets the active/focused <see cref="IWindowSurface"/> which will receive input. Only one can receive input at any one time.</summary>
@@ -83,7 +107,7 @@ namespace Molten.IO
         /// <summary>Retrieves a gamepad handler.</summary>
         /// <param name="index">The index of the gamepad.</param>
         /// <returns></returns>
-        public GamepadHandler GetGamepadHandler(GamepadIndex index)
+        public GamepadDevice GetGamepadHandler(GamepadIndex index)
         {
             return _gamepads[(int)index];
         }
@@ -94,7 +118,7 @@ namespace Molten.IO
 
             for (int i = 0; i < _gamepads.Count; i++)
             {
-                GamepadHandler gph = _gamepads[i];
+                GamepadDevice gph = _gamepads[i];
                 DisposeObject(ref gph);
             }
             _gamepads.Clear();
@@ -103,7 +127,7 @@ namespace Molten.IO
         public DirectInput DirectInput { get { return _input; } }
 
         /// <summary>Gets the handler for the gamepad at GamepadIndex.One.</summary>
-        public GamepadHandler GamePad { get { return _gamepads[0]; } }
+        public GamepadDevice GamePad { get { return _gamepads[0]; } }
 
         public IClipboard Clipboard => _clipboard;
     }

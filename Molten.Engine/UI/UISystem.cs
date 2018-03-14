@@ -31,8 +31,8 @@ namespace Molten.UI
         float _dragThreshold = 10.0f;
 
         IWindowSurface _surface;
-        MouseHandler _mouse;
-        KeyboardHandler _keyboard;
+        IMouseDevice _mouse;
+        IKeyboardDevice _keyboard;
         Scene _scene;
         Engine _engine;
 
@@ -298,9 +298,9 @@ namespace Molten.UI
         /// <summary>Gets the window manager bound to the UI system.</summary>
         public UIWindowManager WindowManager { get { return _windowManager; } }
 
-        public MouseHandler Mouse => _mouse;
+        public IMouseDevice Mouse => _mouse;
 
-        public KeyboardHandler Keyboard => _keyboard;
+        public IKeyboardDevice Keyboard => _keyboard;
 
         /// <summary>Gets or sets the number of pixels the mouse must be dragged before it 
         /// begins triggering drag events. Resets when the left mouse button is released.</summary>

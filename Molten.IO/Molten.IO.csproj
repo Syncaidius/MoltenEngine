@@ -63,14 +63,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GamepadIndex.cs" />
     <Compile Include="IClipboard.cs" />
     <Compile Include="IInputManager.cs" />
-    <Compile Include="InputHandlerBase.cs" />
+    <Compile Include="IInputDevice.cs" />
+    <Compile Include="IGamepadDevice.cs" />
+    <Compile Include="IKeyboardDevice.cs" />
+    <Compile Include="IMouseDevice.cs" />
     <Compile Include="InputLoader.cs" />
     <Compile Include="InputSettings.cs" />
+    <Compile Include="Key.cs" />
+    <Compile Include="KeyboardEvents.cs" />
+    <Compile Include="MouseButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Molten.Math\Molten.Math.csproj">
+      <Project>{e59938af-a9d4-4963-b4ac-61e53d05527e}</Project>
+      <Name>Molten.Math</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Molten.Render\Molten.Render.csproj">
       <Project>{11c91c8d-ed1f-40ac-a246-de4796ca2122}</Project>
       <Name>Molten.Render</Name>

@@ -18,7 +18,29 @@ namespace Molten.IO
         /// <typeparam name="T">The type of handler to retrieve.</typeparam>
         /// <param name="surface">The surface for which to bind and return an input handler.</param>
         /// <returns>An input handler of the specified type.</returns>
-        T GetHandler<T>(IWindowSurface surface) where T : InputHandlerBase, new();
+        T GetCustomDevice<T>(IWindowSurface surface) where T : class, IInputDevice, new();
+
+        /// <summary>
+        /// Gets the default mouse handler for the current input library.
+        /// </summary>
+        /// <param name="surface">The window surface the handler will be bound to.</param>
+        /// <returns></returns>
+        IMouseDevice GetMouse(IWindowSurface surface);
+
+        /// <summary>
+        /// Gets the default keyboard handler for the current input library.
+        /// </summary>
+        /// <param name="surface">The window surface the handler will be bound to.</param>
+        /// <returns></returns>
+        IKeyboardDevice GetKeyboard(IWindowSurface surface);
+
+        /// <summary>
+        /// Gets the default gamepad handler for the current input library.
+        /// </summary>
+        /// <param name="surface">The window surface the handler will be bound to.</param>
+        /// <param name="index">The gamepad index.</param>
+        /// <returns></returns>
+        IGamepadDevice GetGamepad(IWindowSurface surface, GamepadIndex index);
 
         /// <summary>Sets the active/focused <see cref="IWindowSurface"/> which will receive input. Only one can receive input at any one time.</summary>
         /// <param name="surface">The surface to be set as active.</param>

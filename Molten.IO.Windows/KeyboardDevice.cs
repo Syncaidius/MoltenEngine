@@ -13,7 +13,7 @@ using Molten.Utilities;
 namespace Molten.IO
 {
     /// <summary>A handler for keyboard input.</summary>
-    public class KeyboardHandler : InputHandlerBase<Key>
+    public class KeyboardDevice : InputHandlerBase<Key>, IKeyboardDevice
     {
         //various Win32 constants that are needed
         const int GWL_WNDPROC = -4;
@@ -64,7 +64,7 @@ namespace Molten.IO
         public event KeyPressHandler OnCharacterKey;
         public event OnKeyHandler OnKeyReleased;
 
-        public override void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
+        internal override void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
         {
             InputManager diManager = manager as InputManager;
 
@@ -212,7 +212,7 @@ namespace Molten.IO
 
         /// <summary>Update input handler.</summary>
         /// <param name="time">The snapshot of game time to use.</param>
-        public override void Update(Timing time)
+        internal override void Update(Timing time)
         {
             // Update previous state with buffer
             if (_buffer != null)

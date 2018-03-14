@@ -15,10 +15,10 @@ using System.Windows.Forms;
 
 namespace Molten.IO
 {
-    public delegate void MouseEventHandler(MouseHandler mouse);
+    public delegate void MouseEventHandler(MouseDevice mouse);
 
     /// <summary>Handles mouse input.</summary>
-    public class MouseHandler : InputHandlerBase<MouseButton>
+    public class MouseDevice : InputHandlerBase<MouseButton>, IMouseDevice
     {
         /// <summary>
         /// Occurs when the mouse cursor was inside the parent window/control, but just left it.
@@ -49,7 +49,7 @@ namespace Molten.IO
         bool _cursorVisibleState = true;
         IWindowSurface _surface;
 
-        public override void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
+        internal override void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
         {
             InputManager diManager = manager as InputManager;
 
@@ -128,7 +128,7 @@ namespace Molten.IO
 
         /// <summary>Update input handler.</summary>
         /// <param name="time">The snapshot of game time to use.</param>
-        public override void Update(Timing time)
+        internal override void Update(Timing time)
         {
             // Update previous state with previous buffer data
             if (_buffer != null)
@@ -297,16 +297,5 @@ namespace Molten.IO
 
         /// <summary>Gets whether or not the mouse is attached.</summary>
         public override bool IsConnected => true;
-    }
-
-    public enum MouseButton : byte
-    {
-        Left = 0,
-        Right = 1,
-        Middle = 2,
-        XButton1 = 3,
-        XButton2 = 4,
-
-        None = 255,
     }
 }

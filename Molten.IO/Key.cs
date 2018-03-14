@@ -8,7 +8,6 @@ namespace Molten.IO
 {
     public enum Key : int
     {
-
         /// <summary>	
         /// No documentation.	
         /// </summary>	

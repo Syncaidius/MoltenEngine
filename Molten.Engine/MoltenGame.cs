@@ -16,8 +16,8 @@ namespace Molten
         Engine _engine;
         EngineThread _gameThread;
         IWindowSurface _gameForm;
-        KeyboardHandler _keyboard;
-        MouseHandler _mouse;
+        IKeyboardDevice _keyboard;
+        IMouseDevice _mouse;
 
         public event StoneGameHandler OnGameExiting;
 
@@ -52,8 +52,8 @@ namespace Molten
             _engine.Renderer.OutputSurfaces.Add(_gameForm);
             _gameForm.Show();
 
-            _keyboard = _engine.Input.GetHandler<KeyboardHandler>(_gameForm);
-            _mouse = _engine.Input.GetHandler<MouseHandler>(_gameForm);
+            _keyboard = _engine.Input.GetKeyboard(_gameForm);
+            _mouse = _engine.Input.GetMouse(_gameForm);
             _engine.Input.SetActiveWindow(_gameForm);
 
             _engine.Renderer.DefaultSurface = _gameForm;
@@ -172,11 +172,11 @@ namespace Molten
 
         public Timing Time => _gameThread.Timing;
 
-        /// <summary>Gets the <see cref="KeyboardHandler"/> attached to the game's main window.</summary>
-        public KeyboardHandler Keyboard => _keyboard;
+        /// <summary>Gets the <see cref="IKeyboardDevice"/> attached to the game's main window.</summary>
+        public IKeyboardDevice Keyboard => _keyboard;
 
-        /// <summary>Gets the <see cref="MouseHandler"/> attached to the game's main window.</summary>
-        public MouseHandler Mouse => _mouse;
+        /// <summary>Gets the <see cref="IMouseDevice"/> attached to the game's main window.</summary>
+        public IMouseDevice Mouse => _mouse;
 
         /// <summary>Gets the <see cref="IWindowSurface"/> that the game renders in to.</summary>
         public IWindowSurface Window => _gameForm;

@@ -14,7 +14,7 @@ namespace Molten.UI
         internal bool InputDragged = false;
         internal float DragThreshold = 10; // Pixels
         internal MouseButton Button;
-        MouseHandler _lastHandler;
+        IMouseDevice _lastHandler;
 
         public UIClickTracker(MouseButton button)
         {

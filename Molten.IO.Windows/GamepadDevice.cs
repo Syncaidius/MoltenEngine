@@ -12,7 +12,7 @@ namespace Molten.IO
     using Molten.Utilities;
     using State = SharpDX.XInput.State;
 
-    public class GamepadHandler : InputHandlerBase<GamepadButtonFlags>
+    public class GamepadDevice : InputHandlerBase<GamepadButtonFlags>, IGamepadDevice
     {
         Gamepad _state;
         Gamepad _statePrev;
@@ -27,12 +27,12 @@ namespace Molten.IO
         Dictionary<int, int> _heldTimers; // keeps track of how long buttons are held for.
         Dictionary<int, int> _cpHeldTimers; // keeps track of how long chat pad buttons are held for.
 
-        public GamepadHandler(GamepadIndex index)
+        public GamepadDevice(GamepadIndex index)
         {
             _padIndex = (int)index;
         }
 
-        public override void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
+        internal override void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
         {
             base.Initialize(manager, log, surface);
             _pad = new Controller((UserIndex)_padIndex);
@@ -176,7 +176,7 @@ namespace Molten.IO
         /// <summary>Update input handler.</summary>
         /// <param name="time">The snapshot of time.</param>
         /// <param name="releaseInput">If set to true, will reset all held timers and stop retrieving the latest state.</param>
-        public override void Update(Timing time)
+        internal override void Update(Timing time)
         {
             if (_isConnected != _pad.IsConnected)
             {

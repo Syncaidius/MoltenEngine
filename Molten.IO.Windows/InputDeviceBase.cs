@@ -6,20 +6,18 @@ using System.Text;
 
 namespace Molten.IO
 {
-    public delegate void InputConnectionHandler<T>(InputHandlerBase<T> device, bool isConnected) where T : struct;
-
-    public abstract class InputHandlerBase : EngineObject
+    public abstract class InputDeviceBase : EngineObject , IInputDevice
     {
         protected IInputManager _manager;
 
-        public virtual void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
+        internal virtual void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
         {
             _manager = manager;
         }
 
         public abstract void ClearState();
 
-        public abstract void Update(Timing time);
+        internal abstract void Update(Timing time);
 
         /// <summary>Attempts to open the associated control pane application for the device. Does nothing if no control app is available.</summary>
         public abstract void OpenControlPanel();
@@ -31,7 +29,7 @@ namespace Molten.IO
         public abstract string DeviceName { get; }
     }
 
-    public abstract class InputHandlerBase<T> : InputHandlerBase where T : struct
+    public abstract class InputHandlerBase<T> : InputDeviceBase, IInputDevice<T> where T : struct
     {
         public event InputConnectionHandler<T> OnConnectionStatusChanged;
 

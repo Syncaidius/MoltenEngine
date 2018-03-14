@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 
 namespace Molten.IO
 {
+    public delegate void KeyPressHandler(CharacterEventArgs e);
+
     public class CharacterEventArgs : EventArgs
     {
         private readonly char character;
@@ -62,6 +63,4 @@ namespace Molten.IO
             get { return (lParam & (1 << 31)) > 0; }
         }
     }
-
-    public delegate void KeyPressHandler(CharacterEventArgs e);
 }

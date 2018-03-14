@@ -9,8 +9,8 @@ namespace Molten.IO
 {
     internal class SurfaceGroup : IDisposable
     {
-        Dictionary<Type, InputHandlerBase> _byType = new Dictionary<Type, InputHandlerBase>();
-        List<InputHandlerBase> _handlers = new List<InputHandlerBase>();
+        Dictionary<Type, InputDeviceBase> _byType = new Dictionary<Type, InputDeviceBase>();
+        List<InputDeviceBase> _handlers = new List<InputDeviceBase>();
 
         InputManager _manager;
         Logger _log;
@@ -23,47 +23,53 @@ namespace Molten.IO
             _surface = surface;
         }
 
-        internal T GetHandler<T>() where T : InputHandlerBase, new()
+        internal T GetDevice<T>() where T : class, IInputDevice, new()
         {
             Type t = typeof(T);
-            if (_byType.TryGetValue(t, out InputHandlerBase handler))
+            if (_byType.TryGetValue(t, out InputDeviceBase device))
             {
-                return handler as T;
+                return device as T;
             }
             else
             {
-                handler = new T();
-                handler.Initialize(_manager, _log, _surface);
-                handler.OnDisposing += Handler_OnDisposing;
-                _byType.Add(t, handler);
-                _handlers.Add(handler);
-                return handler as T;
+                device = new T() as InputDeviceBase;
+                AddDevice(device);
+                return device as T;
             }
         }
 
-        private void Handler_OnDisposing(EngineObject obj)
+        internal void AddDevice(InputDeviceBase device)
         {
-            InputHandlerBase handler = obj as InputHandlerBase;
+            Type t = device.GetType();
+            device.Initialize(_manager, _log, _surface);
+            device.OnDisposing += Device_OnDisposing;
+            _byType.Add(t, device);
+            _handlers.Add(device);
+        }
+
+        private void Device_OnDisposing(EngineObject obj)
+        {
+            InputDeviceBase handler = obj as InputDeviceBase;
             _handlers.Remove(handler);
             _byType.Remove(obj.GetType());
         }
 
         internal void Update(Timing time)
         {
-            foreach (InputHandlerBase handler in _handlers)
-                handler.Update(time);
+            foreach (InputDeviceBase device in _handlers)
+                device.Update(time);
         }
 
         internal void ClearState()
         {
-            foreach (InputHandlerBase handler in _handlers)
-                handler.ClearState();
+            foreach (InputDeviceBase device in _handlers)
+                device.ClearState();
         }
 
         public void Dispose()
         {
-            foreach (InputHandlerBase handler in _byType.Values)
-                handler.Dispose();
+            foreach (InputDeviceBase device in _byType.Values)
+                device.Dispose();
 
             _byType.Clear();
             _log = null;
