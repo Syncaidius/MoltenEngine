@@ -45,7 +45,7 @@ namespace Molten.Graphics
         int _tabSize;
         int _pageSize;
         int _pointsPerCurve;
-        float _glyphScale;
+        int _charPadding;
 
         BinPacker _packer;
         GlyphCache[] _glyphCache;
@@ -65,7 +65,9 @@ namespace Molten.Graphics
         /// <param name="pointsPerCurve">The number of points allowed per curve when generating glyph shapes. This can be used as a detail level for character glyphs. <para/>
         /// A higher number produces smoother curves, while a lower one will produce faceted, low-poly representations of curves. Setting this too low may produce invalid curves.</param>
         /// <param name="initialPages">The initial number of pages in the underlying sprite font texture atlas. Minimum is 1.</param>
-        public SpriteFont2(IRenderer renderer, FontFile font, int ptSize, int tabSize = 3, int texturePageSize = 1024, int pointsPerCurve = 12, int initialPages = 1)
+        /// <param name="charPadding">The number of pixels to add as padding around each character placed on to the font atlas. 
+        /// Default value is 2. Negative padding can cause characters to overlap.</param>
+        public SpriteFont2(IRenderer renderer, FontFile font, int ptSize, int tabSize = 3, int texturePageSize = 1024, int pointsPerCurve = 12, int initialPages = 1, int charPadding = 2)
         {
             Debug.Assert(texturePageSize >= MIN_PAGE_SIZE, $"Texture page size must be at least {MIN_PAGE_SIZE}");
             Debug.Assert(pointsPerCurve >= 2, $"Points per curve must be at least {MIN_POINTS_PER_CURVE}");
@@ -81,12 +83,13 @@ namespace Molten.Graphics
             _pointsPerCurve = pointsPerCurve;
             _packer = new BinPacker(_pageSize, _pageSize);
             _pendingGlyphs = new ThreadedQueue<ushort>();
+            _charPadding = charPadding;
 
             _rt = renderer.Resources.CreateSurface(_pageSize, _pageSize, arraySize: initialPages);
             _rt.Clear(Color.Black);
             _renderData = renderer.CreateRenderData();
             _renderData.IsVisible = false;
-            _renderData.Flags = SceneRenderFlags.TwoD | SceneRenderFlags.DoNotClear;
+            _renderData.Flags = SceneRenderFlags.TwoD | SceneRenderFlags.DoNotClear | SceneRenderFlags.NoDebugOverlay;
             _renderData.AddSprite(new FontContainer(this));
             _renderData.SpriteCamera = new Camera2D()
             {
@@ -184,13 +187,28 @@ namespace Molten.Graphics
         private void AddCharacter(char c)
         {
             ushort gIndex = _font.GetGlyphIndex(c);
+
+            // If the character uses an existing glyph, initialize the character and return.
+            if(_glyphCache[gIndex] != null)
+            {
+                _charData[c] = new CharData(gIndex);
+                return;
+            }
+
             Glyph g = _font.GetGlyphByIndex(gIndex);
             GlyphMetrics gm = _font.GetMetricsByIndex(gIndex);
 
-            int pWidth = ToPixels(g.Bounds.Width);
-            int pHeight = ToPixels(g.Bounds.Height);
-            Rectangle loc = _packer.Insert(pWidth, pHeight);
+            Rectangle gBounds = g.Bounds;
+            int padding2 = _charPadding * 2;
+            int pWidth = ToPixels(gBounds.Width);
+            int pHeight = ToPixels(gBounds.Height);
+            Vector2F glyphScale = new Vector2F()
+            {
+                X = (float)pWidth / gBounds.Width,
+                Y = (float)pHeight / gBounds.Height,
+            };
 
+            Rectangle loc = _packer.Insert(pWidth + padding2, pHeight + padding2);
             _charData[c] = new CharData(gIndex);
             _glyphCache[gIndex] = new GlyphCache()
             {
@@ -200,8 +218,11 @@ namespace Molten.Graphics
             };
 
             List<Shape> shapes = g.CreateShapes(_pointsPerCurve);
-            for(int i = 0; i < shapes.Count; i++)
+            for (int i = 0; i < shapes.Count; i++)
+            {
+                shapes[i].ScaleAndOffset(new Vector2F(loc.X + _charPadding, loc.Y + _charPadding), glyphScale);
                 shapes[i].Triangulate(_glyphCache[gIndex].GlyphMesh, Vector2F.Zero, 1);
+            }
 
             _pendingGlyphs.Enqueue(gIndex);
             _renderData.IsVisible = true;

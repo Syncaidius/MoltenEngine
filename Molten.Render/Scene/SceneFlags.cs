@@ -33,5 +33,10 @@ namespace Molten.Graphics
         /// Render both 2D and 3D scene objects.
         /// </summary>
         TwoAndThreeD = TwoD | ThreeD,
+
+        /// <summary>
+        /// Prevents the renderer from drawing a debug overlay in the scene's output surface.
+        /// </summary>
+        NoDebugOverlay = 1 << 3,
     }
 }

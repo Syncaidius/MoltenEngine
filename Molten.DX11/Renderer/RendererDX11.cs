@@ -290,7 +290,7 @@ namespace Molten.Graphics
                 scene.Render2D(_device, this);
 
                 // Render the debug overlay here so it shows on top of everything else
-                if (_debugOverlayVisible)
+                if (_debugOverlayVisible && !scene.HasFlag(SceneRenderFlags.NoDebugOverlay))
                     _debugOverlay[_debugOverlayPage].Render(_debugFont, this, SpriteBatcher, time, rs);
 
                 SpriteBatcher.Flush(_device, ref spriteViewProj, BlendingPreset.PreMultipliedAlpha);

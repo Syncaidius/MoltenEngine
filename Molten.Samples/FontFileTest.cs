@@ -108,8 +108,8 @@ namespace Molten.Samples
 
         private void LoadFontFile()
         {
-            string fontPath = "assets/euphorigenic.ttf";
-            //string fontPath = "assets/BroshK.ttf";
+            //string fontPath = "assets/euphorigenic.ttf";
+            string fontPath = "assets/BroshK.ttf";
             //string fontPath = "assets/Digitalt.ttf";
 
             Stopwatch fontTimer = new Stopwatch();
@@ -122,7 +122,7 @@ namespace Molten.Samples
                     fontTimer.Stop();
                     Log.WriteLine($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read font");
 
-                    _font2Test = new SpriteFont2(Engine.Renderer, _fontFile, 16);
+                    _font2Test = new SpriteFont2(Engine.Renderer, _fontFile, 20);
                 }
             }
         }
@@ -244,7 +244,7 @@ namespace Molten.Samples
                     sb.DrawString(TestFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
 
                     if (_font2Test != null && _font2Test.UnderlyingTexture != null)
-                        sb.Draw(_font2Test.UnderlyingTexture, new Rectangle(700, 0, 512, 512), Color.White);
+                        sb.Draw(_font2Test.UnderlyingTexture, new Rectangle(700, 0, 1024,1024), Color.White);
                 }
             };
             SampleScene.AddSprite(_container);
