@@ -196,6 +196,14 @@ namespace Molten
             };
         }
 
+        public static TriPoint operator *(TriPoint a, Vector2F scale)
+        {
+            return new TriPoint(a.X * scale.X, a.Y * scale.Y)
+            {
+                EdgeList = a.EdgeList,
+            };
+        }
+
         public static TriPoint operator +(TriPoint a, Vector2F delta)
         {
             return new TriPoint(a.X + delta.X, a.Y + delta.Y)

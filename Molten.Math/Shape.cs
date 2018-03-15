@@ -62,8 +62,6 @@ namespace Molten
         {
             for (int i = 0; i < points.Count; i++)
                 Points.Add(new TriPoint(offset + (points[i] * scale)));
-
-            CalculateBounds();
         }
 
         /// <summary>
@@ -153,27 +151,28 @@ namespace Molten
         public void Scale(float scale)
         {
             for (int i = 0; i < Points.Count; i++)
-            {
                 Points[i] *= scale;
-            }
 
             foreach (Shape h in Holes)
                 h.Scale(scale);
+        }
 
-            CalculateBounds();
+        public void Scale(Vector2F scale)
+        {
+            for (int i = 0; i < Points.Count; i++)
+                Points[i] *= scale;
+
+            foreach (Shape h in Holes)
+                h.Scale(scale);
         }
 
         public void Offset(Vector2F offset)
         {
             for (int i = 0; i < Points.Count; i++)
-            {
                 Points[i] += offset;
-            }
 
             foreach (Shape h in Holes)
                 h.Offset(offset);
-
-            CalculateBounds();
         }
 
         public void ScaleAndOffset(Vector2F offset, float scale)
@@ -186,8 +185,18 @@ namespace Molten
 
             foreach (Shape h in Holes)
                 h.ScaleAndOffset(offset, scale);
+        }
 
-            CalculateBounds();
+        public void ScaleAndOffset(Vector2F offset, Vector2F scale)
+        {
+            for (int i = 0; i < Points.Count; i++)
+            {
+                Points[i] *= scale;
+                Points[i] += offset;
+            }
+
+            foreach (Shape h in Holes)
+                h.ScaleAndOffset(offset, scale);
         }
 
         public bool Contains(Shape shape)

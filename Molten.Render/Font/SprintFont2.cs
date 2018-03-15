@@ -45,6 +45,7 @@ namespace Molten.Graphics
         int _tabSize;
         int _pageSize;
         int _pointsPerCurve;
+        float _glyphScale;
 
         BinPacker _packer;
         GlyphCache[] _glyphCache;
