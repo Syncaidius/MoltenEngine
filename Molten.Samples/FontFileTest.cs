@@ -117,8 +117,8 @@ namespace Molten.Samples
 
         private void LoadFontFile()
         {
-            //string fontPath = "assets/euphorigenic.ttf";
-            string fontPath = "assets/BroshK.ttf";
+            string fontPath = "assets/euphorigenic.ttf";
+            //string fontPath = "assets/BroshK.ttf";
             //string fontPath = "assets/Digitalt.ttf";
 
             Stopwatch fontTimer = new Stopwatch();
@@ -131,7 +131,7 @@ namespace Molten.Samples
                     fontTimer.Stop();
                     Log.WriteLine($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read font");
 
-                    _font2Test = new SpriteFont2(Engine.Renderer, _fontFile, 20);
+                    _font2Test = new SpriteFont2(Engine.Renderer, _fontFile, 40);
                 }
             }
 
@@ -204,6 +204,8 @@ namespace Molten.Samples
                         sb.DrawRectOutline(texBounds, Color.Red, 1);
                         pos.Y += 517;
                         sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
+                        pos.Y += 20;
+                        sb.DrawString(_font2Test, $"Font Name: {_font2Test.Font.Info.FullName}", pos, Color.White);
                     }
                 }
             };

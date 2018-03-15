@@ -163,8 +163,8 @@ namespace Molten.Graphics
 
             for(int i = 0; i < maxLength; i++)
             {
-                GlyphCache gc = GetCharGlyph(text[i]);
-                result.X += gc.AdvanceWidth;
+                GlyphCache cache = GetCharGlyph(text[i]);
+                result.X += cache.AdvanceWidth;
             }
 
             return result;
@@ -210,6 +210,7 @@ namespace Molten.Graphics
             Rectangle gBounds = g.Bounds;
             int padding2 = _charPadding * 2;
             int pWidth, pHeight;
+            int advWidth = ToPixels(gm.AdvanceWidth);
 
             if (customBounds.HasValue)
             {
@@ -228,14 +229,28 @@ namespace Molten.Graphics
                 Y = (float)pHeight / gBounds.Height,
             };
 
-            Rectangle loc = _packer.Insert(pWidth + padding2, pHeight + padding2);
-            _charData[c] = new CharData(gIndex);
-            _glyphCache[gIndex] = new GlyphCache(gm.AdvanceWidth, loc);
+            Rectangle paddedLoc = _packer.Insert(pWidth + padding2, pHeight + padding2);
+            Rectangle loc = new Rectangle()
+            {
+                X = paddedLoc.X + _charPadding,
+                Y = paddedLoc.Y + _charPadding,
+                Width = pWidth,
+                Height = pHeight,
+            };
 
+            Vector2F glyphOffset = new Vector2F()
+            {
+                X = loc.X - ToPixels(g.Bounds.Left),
+                Y = loc.Y - ToPixels(g.Bounds.Top),
+            };
+
+            _charData[c] = new CharData(gIndex);
+            _glyphCache[gIndex] = new GlyphCache(advWidth, loc);
             List<Shape> shapes = g.CreateShapes(_pointsPerCurve);
+
             for (int i = 0; i < shapes.Count; i++)
             {
-                shapes[i].ScaleAndOffset(new Vector2F(loc.X + _charPadding, loc.Y + _charPadding), glyphScale);
+                shapes[i].ScaleAndOffset(glyphOffset, glyphScale);
                 shapes[i].Triangulate(_glyphCache[gIndex].GlyphMesh, Vector2F.Zero, 1);
             }
 

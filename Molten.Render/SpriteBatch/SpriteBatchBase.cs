@@ -178,7 +178,7 @@ namespace Molten.Graphics
                 };
 
                 // Increase pos by size of char (along X)
-                charPos.X += cache.Location.Width;
+                charPos.X += cache.AdvanceWidth;
             }
 
             cluster.SpriteCount += strLength;
