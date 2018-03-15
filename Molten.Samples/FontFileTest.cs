@@ -28,6 +28,15 @@ namespace Molten.Samples
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
         List<Shape> _shapes;
+        RectangleF _glyphBounds;
+        RectangleF _fontBounds;
+        float _scale = 0.3f;
+        List<Vector2F> _glyphTriPoints;
+        List<List<Vector2F>> _linePoints;
+        List<List<Vector2F>> _holePoints;
+        List<Color> _colors;
+        Vector2F _charOffset = new Vector2F(300, 300);
+
         public FontFileTest(EngineSettings settings = null) : base("FontFile Test", settings) { }
 
         protected override void OnInitialize(Engine engine)
@@ -95,14 +104,14 @@ namespace Molten.Samples
             AcceptPlayerInput = false;
 
             LoadFontFile();
-            NewFontSystemTest('{');
+            GenerateChar('{');
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
 
         private void Keyboard_OnCharacterKey(IO.CharacterEventArgs e)
         {
-            NewFontSystemTest(e.Character);
+            GenerateChar(e.Character);
             _font2Test.GetChar(e.Character);
         }
 
@@ -125,72 +134,18 @@ namespace Molten.Samples
                     _font2Test = new SpriteFont2(Engine.Renderer, _fontFile, 20);
                 }
             }
-        }
 
-        /// <summary>
-        /// A test for a new WIP sprite font system.
-        /// </summary>
-        private void NewFontSystemTest(char glyphChar)
-        {
-            if (_container != null)
-                SampleScene.RemoveSprite(_container);
+            _fontBounds = _fontFile.ContainerBounds;
+            _fontBounds.X *= _scale;
+            _fontBounds.Y *= _scale;
+            _fontBounds.Width *= _scale;
+            _fontBounds.Height *= _scale;
+            _fontBounds.X += _charOffset.X;
+            _fontBounds.Y += _charOffset.Y;
 
-            Glyph glyph = _fontFile.GetGlyph(glyphChar);
-             _shapes = glyph.CreateShapes(16);
-
-            // Add 5 colors. The last color will be used when we have more points than colors.
-            List<Color> colors = new List<Color>();
-            colors.Add(Color.Wheat);
-            colors.Add(Color.Yellow);
-
-            // Draw outline
-            Vector2F offset = new Vector2F(300,300);
-            float scale = 0.3f;
-            foreach (Shape s in _shapes)
-                s.ScaleAndOffset(offset, scale);
-
-            List<List<Vector2F>> linePoints = new List<List<Vector2F>>();
-            List<List<Vector2F>> holePoints = new List<List<Vector2F>>();
-            for (int i = 0; i < _shapes.Count; i++)
-            {
-                Shape shape = _shapes[i];
-                List<Vector2F> points = new List<Vector2F>();
-                linePoints.Add(points);
-
-                for (int j = 0; j < shape.Points.Count; j++)
-                    points.Add((Vector2F)shape.Points[j]);
-
-                foreach (Shape h in shape.Holes)
-                {
-                    List<Vector2F> hPoints = new List<Vector2F>();
-                    holePoints.Add(hPoints);
-
-                    for (int j = 0; j < h.Points.Count; j++)
-                        hPoints.Add((Vector2F)h.Points[j]);
-                }
-            }
-
-            RectangleF glyphBounds = glyph.Bounds;
-            glyphBounds.X *= scale;
-            glyphBounds.Y *= scale;
-            glyphBounds.Width *= scale;
-            glyphBounds.Height *= scale;
-            glyphBounds.X += offset.X;
-            glyphBounds.Y += offset.Y;
-
-
-            RectangleF containerBounds = _fontFile.ContainerBounds;
-            containerBounds.X *= scale;
-            containerBounds.Y *= scale;
-            containerBounds.Width *= scale;
-            containerBounds.Height *= scale;
-            containerBounds.X += offset.X;
-            containerBounds.Y += offset.Y;
-
-            List<Vector2F> glyphTriPoints = new List<Vector2F>();
-
-            foreach (Shape s in _shapes)
-                s.Triangulate(glyphTriPoints, Vector2F.Zero, 1);
+            _colors = new List<Color>();
+            _colors.Add(Color.Wheat);
+            _colors.Add(Color.Yellow);
 
             // Use a container for doing some testing.
             _container = new SpriteBatchContainer()
@@ -198,40 +153,46 @@ namespace Molten.Samples
                 OnDraw = (sb) =>
                 {
                     // Draw glyph bounds
-                    sb.DrawLine(glyphBounds.TopLeft, glyphBounds.TopRight, Color.Grey, 1);
-                    sb.DrawLine(glyphBounds.TopRight, glyphBounds.BottomRight, Color.Grey, 1);
-                    sb.DrawLine(glyphBounds.BottomRight, glyphBounds.BottomLeft, Color.Grey, 1);                    
-                    sb.DrawLine(glyphBounds.BottomLeft, glyphBounds.TopLeft, Color.Grey, 1);
+                    sb.DrawLine(_glyphBounds.TopLeft, _glyphBounds.TopRight, Color.Grey, 1);
+                    sb.DrawLine(_glyphBounds.TopRight, _glyphBounds.BottomRight, Color.Grey, 1);
+                    sb.DrawLine(_glyphBounds.BottomRight, _glyphBounds.BottomLeft, Color.Grey, 1);
+                    sb.DrawLine(_glyphBounds.BottomLeft, _glyphBounds.TopLeft, Color.Grey, 1);
 
                     // Draw font bounds
-                    sb.DrawLine(containerBounds.TopLeft, containerBounds.TopRight, Color.Pink, 1);
-                    sb.DrawLine(containerBounds.TopRight, containerBounds.BottomRight, Color.Pink, 1);
-                    sb.DrawLine(containerBounds.BottomRight, containerBounds.BottomLeft, Color.Pink, 1);
-                    sb.DrawLine(containerBounds.BottomLeft, containerBounds.TopLeft, Color.Pink, 1);
+                    sb.DrawLine(_fontBounds.TopLeft, _fontBounds.TopRight, Color.Pink, 1);
+                    sb.DrawLine(_fontBounds.TopRight, _fontBounds.BottomRight, Color.Pink, 1);
+                    sb.DrawLine(_fontBounds.BottomRight, _fontBounds.BottomLeft, Color.Pink, 1);
+                    sb.DrawLine(_fontBounds.BottomLeft, _fontBounds.TopLeft, Color.Pink, 1);
 
                     // Top Difference marker
-                    float dif = glyphBounds.Top - containerBounds.Top;
+                    float dif = _glyphBounds.Top - _fontBounds.Top;
                     if (dif != 0)
                     {
-                        sb.DrawLine(new Vector2F(glyphBounds.Right, containerBounds.Top), new Vector2F(glyphBounds.Right, containerBounds.Top + dif), Color.Red, 1);
-                        sb.DrawString(TestFont, $"Dif: {dif}", new Vector2F(glyphBounds.Right, containerBounds.Top + (dif / 2)), Color.White);
+                        sb.DrawLine(new Vector2F(_glyphBounds.Right, _fontBounds.Top), new Vector2F(_glyphBounds.Right, _fontBounds.Top + dif), Color.Red, 1);
+                        sb.DrawString(TestFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Top + (dif / 2)), Color.White);
                     }
 
                     // Bottom difference marker
-                    dif = containerBounds.Bottom - glyphBounds.Bottom;
+                    dif = _fontBounds.Bottom - _glyphBounds.Bottom;
                     if (dif != 0)
                     {
-                        sb.DrawLine(new Vector2F(glyphBounds.Right, containerBounds.Bottom), new Vector2F(glyphBounds.Right, containerBounds.Bottom - dif), Color.Red, 1);
-                        sb.DrawString(TestFont, $"Dif: {dif}", new Vector2F(glyphBounds.Right, containerBounds.Bottom - (dif / 2)), Color.White);
+                        sb.DrawLine(new Vector2F(_glyphBounds.Right, _fontBounds.Bottom), new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - dif), Color.Red, 1);
+                        sb.DrawString(TestFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - (dif / 2)), Color.White);
                     }
 
-                    sb.DrawTriangleList(glyphTriPoints, colors);
+                    sb.DrawTriangleList(_glyphTriPoints, _colors);
 
-                    for (int i = 0; i < linePoints.Count; i++)
-                        sb.DrawLinePath(linePoints[i], Color.Red, 2);
+                    if (_linePoints != null)
+                    {
+                        for (int i = 0; i < _linePoints.Count; i++)
+                            sb.DrawLinePath(_linePoints[i], Color.Red, 2);
+                    }
 
-                    for (int i = 0; i < holePoints.Count; i++)
-                        sb.DrawLinePath(holePoints[i], Color.SkyBlue, 2);
+                    if (_holePoints != null)
+                    {
+                        for (int i = 0; i < _holePoints.Count; i++)
+                            sb.DrawLinePath(_holePoints[i], Color.SkyBlue, 2);
+                    }
 
                     Rectangle clickRect;
                     if (_shapes != null)
@@ -243,11 +204,61 @@ namespace Molten.Samples
 
                     sb.DrawString(TestFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
 
+                    sb.DrawString(TestFont, $"Font atlas: ", new Vector2F(700, 45), Color.White);
                     if (_font2Test != null && _font2Test.UnderlyingTexture != null)
-                        sb.Draw(_font2Test.UnderlyingTexture, new Rectangle(700, 0, 1024,1024), Color.White);
+                        sb.Draw(_font2Test.UnderlyingTexture, new Rectangle(700, 65, 512, 512), Color.White);
                 }
             };
             SampleScene.AddSprite(_container);
+        }
+
+        /// <summary>
+        /// A test for a new WIP sprite font system.
+        /// </summary>
+        private void GenerateChar(char glyphChar)
+        {
+            Glyph glyph = _fontFile.GetGlyph(glyphChar);
+             _shapes = glyph.CreateShapes(16);
+
+            // Add 5 colors. The last color will be used when we have more points than colors.
+            _linePoints = new List<List<Vector2F>>();
+            _holePoints = new List<List<Vector2F>>();
+
+            // Draw outline
+            foreach (Shape s in _shapes)
+                s.ScaleAndOffset(_charOffset, _scale);
+
+            for (int i = 0; i < _shapes.Count; i++)
+            {
+                Shape shape = _shapes[i];
+                List<Vector2F> points = new List<Vector2F>();
+                _linePoints.Add(points);
+
+                for (int j = 0; j < shape.Points.Count; j++)
+                    points.Add((Vector2F)shape.Points[j]);
+
+                foreach (Shape h in shape.Holes)
+                {
+                    List<Vector2F> hPoints = new List<Vector2F>();
+                    _holePoints.Add(hPoints);
+
+                    for (int j = 0; j < h.Points.Count; j++)
+                        hPoints.Add((Vector2F)h.Points[j]);
+                }
+            }
+
+            _glyphBounds = glyph.Bounds;
+            _glyphBounds.X *= _scale;
+            _glyphBounds.Y *= _scale;
+            _glyphBounds.Width *= _scale;
+            _glyphBounds.Height *= _scale;
+            _glyphBounds.X += _charOffset.X;
+            _glyphBounds.Y += _charOffset.Y;
+
+            _glyphTriPoints = new List<Vector2F>();
+
+            foreach (Shape s in _shapes)
+                s.Triangulate(_glyphTriPoints, Vector2F.Zero, 1);
         }
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)

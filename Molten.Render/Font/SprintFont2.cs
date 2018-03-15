@@ -77,7 +77,7 @@ namespace Molten.Graphics
         /// <param name="initialPages">The initial number of pages in the underlying sprite font texture atlas. Minimum is 1.</param>
         /// <param name="charPadding">The number of pixels to add as padding around each character placed on to the font atlas. 
         /// Default value is 2. Negative padding can cause characters to overlap.</param>
-        public SpriteFont2(IRenderer renderer, FontFile font, int ptSize, int tabSize = 3, int texturePageSize = 1024, int pointsPerCurve = 12, int initialPages = 1, int charPadding = 2)
+        public SpriteFont2(IRenderer renderer, FontFile font, int ptSize, int tabSize = 3, int texturePageSize = 512, int pointsPerCurve = 12, int initialPages = 1, int charPadding = 2)
         {
             Debug.Assert(texturePageSize >= MIN_PAGE_SIZE, $"Texture page size must be at least {MIN_PAGE_SIZE}");
             Debug.Assert(pointsPerCurve >= 2, $"Points per curve must be at least {MIN_POINTS_PER_CURVE}");
@@ -184,12 +184,12 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// 
+        /// Returns the index of the nearest character within the specified string, based on the provided local point position.
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="localPosition"></param>
+        /// <param name="text">A string of text.</param>
+        /// <param name="localPoint">The local point to test, relative to the string's screen or world position.</param>
         /// <returns></returns>
-        public int NearestCharacter(string text, Vector2F localPosition)
+        public int NearestCharacter(string text, Vector2F localPoint)
         {
             throw new NotImplementedException();
         }
