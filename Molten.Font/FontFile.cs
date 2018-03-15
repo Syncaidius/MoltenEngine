@@ -21,12 +21,13 @@ namespace Molten.Font
         Hmtx _hmtx;
         Head _head;
         Prep _prep;
+        Hhea _hhea;
         bool _flipY;
 
         internal FontFile(FontTableList tables, bool flipYAxis = false)
         {
             _tables = tables;
-            _flags = FontFlags.Invalid;
+            _flags = FontFlags.None;
             _flipY = flipYAxis;
         }
 
@@ -49,12 +50,14 @@ namespace Molten.Font
                 _flags |= FontFlags.InvertedYAxis;
 
             Name nameTable = _tables.Get<Name>();
+
             _info = new FontInfo(nameTable);
             _cmap = _tables.Get<Cmap>();
             _maxp = _tables.Get<Maxp>();
             _hmtx = _tables.Get<Hmtx>();
             _head = _tables.Get<Head>();
-            _prep = Tables.Get<Prep>();
+            _prep = _tables.Get<Prep>();
+            _hhea = _tables.Get<Hhea>();
 
             if (_head != null)
             {
@@ -233,6 +236,11 @@ namespace Molten.Font
         /// Gets the <see cref="FontFile"/> header table which contains metric information about the font's overall structure, such as the units-per-em.
         /// </summary>
         public Head Header => _head;
+
+        /// <summary>
+        /// Gets the font's horizontal header (hhea) information.
+        /// </summary>
+        public Hhea HorizonalHeader => _hhea;
 
         /// <summary>
         /// [Internal] Gets the control value program, if present.

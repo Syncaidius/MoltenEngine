@@ -96,6 +96,10 @@ namespace Molten.Samples
             Window.PresentClearColor = new Color(20, 20, 20, 255);
         }
 
+        protected override void OnContentRequested(ContentRequest cr) { }
+
+        protected override void OnContentLoaded(ContentManager content, ContentRequest cr) { }
+
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
         {
             ITexture tex = content.Get<ITexture>(cr.RequestedFiles[0]);

@@ -24,7 +24,10 @@ namespace Molten.Samples
             Window.OnPostResize += Window_OnPostResize;
             _scene = CreateScene("Test");
             SpawnPlayer();
+        }
 
+        protected override void OnContentLoaded(ContentManager content, ContentRequest cr)
+        {
             string text = "[W][A][S][D] to move -- [ESC] Close -- Move mouse to rotate";
             _txtInstructionSize = TestFont.MeasureString(text);
             _txtInstructions = new SpriteText()
@@ -35,7 +38,11 @@ namespace Molten.Samples
             };
             UpdateInstructions();
             _scene.AddSprite(_txtInstructions);
+        }
 
+        protected override void OnContentRequested(ContentRequest cr)
+        {
+           
         }
 
         private void UpdateInstructions()

@@ -11,7 +11,7 @@ namespace Molten.Samples
     public abstract class SampleGame : MoltenGame
     {
         IDepthSurface _formDepthSurface;
-        ISpriteFont _testFont;
+        SpriteFont _testFont;
         int _nextRenderPage;
 
         public SampleGame(string title, EngineSettings settings = null) : base(title, settings)
@@ -24,12 +24,22 @@ namespace Molten.Samples
             base.OnInitialize(engine);
             Window.OnClose += Window_OnClose;
 
-            engine.Renderer.SetDebugOverlayPage(true, 0);
             _formDepthSurface = Engine.Renderer.Resources.CreateDepthSurface(Window.Width, Window.Height);
             Window.OnPostResize += Window_OnPostResize;
-
-            _testFont = engine.Renderer.Resources.CreateFont("arial", 14);
             Window.PresentClearColor = new Color(20, 20, 20, 255);
+
+            ContentRequest cr = engine.Content.StartRequest();
+            cr.Load<SpriteFont>("euphorigenic.ttf;size=14");
+            OnContentRequested(cr);
+            cr.OnCompleted += Cr_OnCompleted;
+            cr.Commit();
+        }
+
+        private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
+        {
+            _testFont = content.Get<SpriteFont>(cr.RequestedFiles[0]);
+            Engine.Renderer.SetDebugOverlayPage(_testFont, true, 0);
+            OnContentLoaded(content, cr);
         }
 
         private void Window_OnPostResize(ITexture texture)
@@ -42,10 +52,14 @@ namespace Molten.Samples
             Exit();
         }
 
+        protected abstract void OnContentRequested(ContentRequest cr);
+
+        protected abstract void OnContentLoaded(ContentManager content, ContentRequest cr);
+
         protected override void OnUpdate(Timing time)
         {
-            if(Keyboard.IsTapped(Key.F1))
-                _nextRenderPage = Engine.Renderer.SetDebugOverlayPage(true, _nextRenderPage);
+            if(Keyboard.IsTapped(Key.F1) && _testFont != null)
+                _nextRenderPage = Engine.Renderer.SetDebugOverlayPage(_testFont, true, _nextRenderPage);
         }
 
         public abstract string Description { get; }
@@ -54,7 +68,7 @@ namespace Molten.Samples
         /// Whenever the main game window is resized, this depth surface is too.</summary>
         public IDepthSurface WindowDepthSurface => _formDepthSurface;
 
-        public ISpriteFont TestFont => _testFont;
+        public SpriteFont TestFont => _testFont;
 
         /// <summary>Gets a random number generator. Used for various samples.</summary>
         public Random Rng { get; private set; } = new Random();

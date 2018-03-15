@@ -29,7 +29,7 @@ namespace Molten.Graphics
 
         List<DebugOverlayPage> _debugOverlay;
         int _debugOverlayPage = 0;
-        ISpriteFont _debugFont;
+        SpriteFont _debugFont;
         bool _debugOverlayVisible = false;
         
         internal SpriteBatchDX11 SpriteBatcher;
@@ -83,14 +83,15 @@ namespace Molten.Graphics
 
         private void InitializeDebugOverlay()
         {
-            _debugFont = _resourceManager.CreateFont("arial", 14);
             _debugOverlay = new List<DebugOverlayPage>();
             _debugOverlay.Add(new DebugStatsPage());
             _debugOverlay.Add(new DebugBuffersPage());
         }
 
-        public int SetDebugOverlayPage(bool visible, int page)
+        public int SetDebugOverlayPage(SpriteFont font, bool visible, int page)
         {
+            _debugFont = font;
+
             if (page >= _debugOverlay.Count)
                 page = _debugOverlay.Count - 1;
 

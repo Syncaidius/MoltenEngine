@@ -20,7 +20,6 @@ namespace Molten.Samples
         Random _rng;
         SceneCameraComponent _cam;
         Camera2D _cam2D;
-        ISpriteFont _font;
         List<ISprite> _sprites;
         IMesh<VertexTexture> _mesh;
 
@@ -47,8 +46,9 @@ namespace Molten.Samples
             _sprites = new List<ISprite>();
             _rng = new Random();
             _positions = new List<Matrix4F>();
-            _font = engine.Renderer.Resources.CreateFont("arial", 36);
-            SetupSprites(_font);
+            throw new NotImplementedException(); // TODO: re-write below
+            //_font = engine.Renderer.Resources.CreateFont("arial", 36);
+            //SetupSprites(_font);
 
             ContentRequest cr = engine.Content.StartRequest();
             cr.Load<ITexture2D>("png_test.png;mipmaps=true");
@@ -105,7 +105,7 @@ namespace Molten.Samples
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
         }
 
-        private void SetupSprites(ISpriteFont font)
+        private void SetupSprites(SpriteFont font)
         {
             for(int i = 0; i < 1000; i++)
             {

@@ -152,7 +152,7 @@ namespace Molten.Graphics
         /// <param name="text">The text to draw.</param>
         /// <param name="position">The position of the text.</param>
         /// <param name="color">The color of the text.</param>
-        public void DrawString(SpriteFont2 font, string text, Vector2F position, Color color, IMaterial material = null)
+        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, IMaterial material = null)
         {
             SpriteClipZone clip = _clipZones[_curClip];
             int spriteID = 0;
@@ -164,12 +164,12 @@ namespace Molten.Graphics
             Vector2F charPos = position;
             for (int i = 0; i < strLength; i++)
             {
-                SpriteFont2.GlyphCache cache = font.GetCharGlyph(text[i]);
+                SpriteFont.GlyphCache cache = font.GetCharGlyph(text[i]);
 
                 // Set the sprite info
                 cluster.Sprites[spriteID++] = new SpriteVertex()
                 {
-                    Position = new Vector2F(charPos.X, charPos.Y),
+                    Position = new Vector2F(charPos.X, charPos.Y + cache.YOffset),
                     Size = new Vector2F(cache.Location.Width, cache.Location.Height),
                     UV = new Vector4F(cache.Location.X, cache.Location.Y, cache.Location.Right, cache.Location.Bottom),
                     Color = color,
@@ -179,44 +179,6 @@ namespace Molten.Graphics
 
                 // Increase pos by size of char (along X)
                 charPos.X += cache.AdvanceWidth;
-            }
-
-            cluster.SpriteCount += strLength;
-        }
-
-        /// <summary>Draws a string of text sprites by using a sprite font to source the needed data..</summary>
-        /// <param name="font">The spritefont from which to retrieve font data.</param>
-        /// <param name="text">The text to draw.</param>
-        /// <param name="position">The position of the text.</param>
-        /// <param name="color">The color of the text.</param>
-        public void DrawString(ISpriteFont font, string text, Vector2F position, Color color, IMaterial material = null)
-        {
-            SpriteClipZone clip = _clipZones[_curClip];
-            int spriteID = 0;
-            int strLength = text.Length;
-            SpriteCluster cluster = GetCluster(clip, font.UnderlyingTexture, material, ClusterFormat.Sprite, strLength, out spriteID);
-
-            // Cycle through all characters in the string and process them
-            Rectangle invalid = Rectangle.Empty;
-            Vector2F charPos = position;
-            for (int i = 0; i < strLength; i++)
-            {
-                char c = text[i];
-                Rectangle charRect = font.GetCharRect(c);
-
-                // Set the sprite info
-                cluster.Sprites[spriteID++] = new SpriteVertex()
-                {
-                    Position = new Vector2F(charPos.X, charPos.Y),
-                    Size = new Vector2F(charRect.Width, charRect.Height),
-                    UV = new Vector4F(charRect.X, charRect.Y, charRect.Right, charRect.Bottom),
-                    Color = color,
-                    Origin = Vector2F.Zero,
-                    Rotation = 0,
-                };
-
-                // Increase pos by size of char (along X)
-                charPos.X += charRect.Width;
             }
 
             cluster.SpriteCount += strLength;

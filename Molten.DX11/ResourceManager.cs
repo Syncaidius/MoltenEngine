@@ -72,56 +72,6 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public ISpriteFont CreateFont(string fontName, int size, SpriteFontWeight weight = SpriteFontWeight.Regular,
-            SpriteFontStretch stretch = SpriteFontStretch.Normal,
-            SpriteFontStyle style = SpriteFontStyle.Normal)
-        {
-            SpriteFont result = null;
-
-            FontWeight fWeight = (FontWeight)weight;
-            FontStretch fStretch = (FontStretch)stretch;
-            FontStyle fStyle = (FontStyle)style;
-
-            //attempt to find a matching font.
-            foreach (SpriteFont font in _fontTable)
-            {
-                string fName = font.FontName.ToLower();
-
-                //test names
-                if (fName == fontName.ToLower())
-                {
-                    //test weight
-                    if (font.Format.FontWeight == fWeight)
-                    {
-                        //test stretch
-                        if (font.Format.FontStretch == fStretch)
-                        {
-                            //test style
-                            if (font.Format.FontStyle == fStyle)
-                            {
-                                //test size
-                                if (font.FontSize == size)
-                                {
-                                    result = font;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // If the result is still null, make a new font
-            if (result == null)
-            {
-                result = new SpriteFont(_device, fontName, fWeight, fStretch, fStyle, size);
-                _fontTable.Add(result);
-            }
-
-            // Return the resultant font.
-            return result;
-        }
-
         public TextureReader GetDefaultTextureReader(FileInfo file)
         {
             return new DefaultTextureReader(_device);

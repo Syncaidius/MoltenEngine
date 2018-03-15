@@ -115,6 +115,9 @@ namespace Molten.Graphics
             {
                 clip = _clipZones[c];
 
+                if (clip.ClusterCount == 0)
+                    continue;
+
                 //reset to-from counters.
                 _drawnFrom = 0;
                 _drawnTo = 0;

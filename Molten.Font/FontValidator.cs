@@ -41,6 +41,8 @@ namespace Molten.Font
         {
             // The first set of required tables is always required. We cannot produce a usable FontFile instance without these.
             FontFlags flags = ValidateRequiredTables(_requirements[0], tables);
+            flags = flags == FontFlags.None ? FontFlags.Invalid : flags;
+
             if (flags == FontFlags.Valid)
             {
                 for (int i = 1; i < _requirements.Length; i++)
@@ -55,7 +57,7 @@ namespace Molten.Font
             for (int i = 0; i < req.Tables.Length; i++)
             {
                 if (tables.Get(req.Tables[i]) == null)
-                    return FontFlags.Invalid;
+                    return FontFlags.None;
             }
 
             return req.Flags;

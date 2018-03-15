@@ -14,7 +14,7 @@ namespace Molten.UI
     [DataContract]
     public class UIRenderedText : EngineObject
     {
-        ISpriteFont _font;
+        SpriteFont _font;
         Color _color = new Color(255,255,255,255);
         Color _shadowColor = new Color(0,0,0,255);
         int _fontSize;
@@ -66,14 +66,14 @@ namespace Molten.UI
         public void RefreshFont()
         {
             _isFontDirty = false;
-            _font = _engine.Renderer.Resources.CreateFont(_fontName, _fontSize, _weight, _stretch, _style);
+            //_font = _engine.Renderer.Resources.CreateFont(_fontName, _fontSize, _weight, _stretch, _style); // TODO: re-write this.
             RefreshText();
         }
 
         private void RefreshText()
         {
             _isTextDirty = false;
-            _textSize = _font.MeasureString(_text);
+            //_textSize = _font.MeasureString(_text); // TODO: re-write this.
             _textPos = new Vector2F(_bounds.X, _bounds.Y);
 
             switch (_hAlignment)
@@ -146,19 +146,20 @@ namespace Molten.UI
             return text._text;
         }
 
-        [DataMember]
-        [Category("Appearance")]
-        [DisplayName("Font Name")]
-        /// <summary>Gets or sets the name of the font to be used.</summary>
-        public string FontName
-        {
-            get { return _font.FontName; }
-            set
-            {
-                _fontName = value;
-                _isFontDirty = true;
-            }
-        }
+        // TODO: Re-write this.
+        //[DataMember]
+        //[Category("Appearance")]
+        //[DisplayName("Font Name")]
+        ///// <summary>Gets or sets the name of the font to be used.</summary>
+        //public string FontName
+        //{
+        //    get { return _font.FontName; }
+        //    set
+        //    {
+        //        _fontName = value;
+        //        _isFontDirty = true;
+        //    }
+        //}
 
         [DataMember]
         [Category("Appearance")]
@@ -296,7 +297,7 @@ namespace Molten.UI
         }
 
         [Browsable(false)]
-        public ISpriteFont Font
+        public SpriteFont Font
         {
             get { return _font; }
         }

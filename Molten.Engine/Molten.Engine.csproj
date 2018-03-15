@@ -75,6 +75,7 @@
     <Compile Include="Content\Processors\ContentProcessor.cs" />
     <Compile Include="Content\Processors\MaterialProcessor.cs" />
     <Compile Include="Content\Processors\TextureDataProcessor.cs" />
+    <Compile Include="Content\Processors\SpriteFontProcessor.cs" />
     <Compile Include="Content\Processors\TextureProcessor.cs" />
     <Compile Include="Content\Serialization\BrowsableStringAttribute.cs" />
     <Compile Include="Content\Serialization\ExpandablePropertyAttribute.cs" />
@@ -155,6 +156,10 @@
     <Compile Include="UI\UIWindowManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Molten.Font\Molten.Font.csproj">
+      <Project>{4fe5b72a-3e02-46b9-ac04-b781c964890a}</Project>
+      <Name>Molten.Font</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
       <Project>{64387480-7656-484e-b11f-468ee563176e}</Project>
       <Name>Molten.IO</Name>

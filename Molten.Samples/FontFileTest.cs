@@ -18,12 +18,11 @@ namespace Molten.Samples
         SceneObject _child;
         List<Matrix4F> _positions;
         Random _rng;
-        ISpriteFont _font;
         List<ISprite> _sprites;
         IMesh<VertexTexture> _mesh;
         SpriteBatchContainer _container;
         FontFile _fontFile;
-        SpriteFont2 _font2Test;
+        SpriteFont _font2Test;
 
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
@@ -46,7 +45,6 @@ namespace Molten.Samples
             _sprites = new List<ISprite>();
             _rng = new Random();
             _positions = new List<Matrix4F>();
-            _font = engine.Renderer.Resources.CreateFont("arial", 36);
 
             ContentRequest cr = engine.Content.StartRequest();
             cr.Load<ITexture2D>("png_test.png;mipmaps=true");
@@ -131,7 +129,7 @@ namespace Molten.Samples
                     fontTimer.Stop();
                     Log.WriteLine($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read font");
 
-                    _font2Test = new SpriteFont2(Engine.Renderer, _fontFile, 40);
+                    _font2Test = new SpriteFont(Engine.Renderer, _fontFile, 20);
                 }
             }
 
@@ -204,7 +202,7 @@ namespace Molten.Samples
                         sb.DrawRectOutline(texBounds, Color.Red, 1);
                         pos.Y += 517;
                         sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
-                        pos.Y += 20;
+                        pos.Y += _font2Test.LineSpace;
                         sb.DrawString(_font2Test, $"Font Name: {_font2Test.Font.Info.FullName}", pos, Color.White);
                     }
                 }

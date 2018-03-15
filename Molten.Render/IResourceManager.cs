@@ -45,17 +45,6 @@ namespace Molten.Graphics
         /// <param name="properties">The data from which to create the texture.</param>
         ITextureCube CreateTextureCube(TextureData data);
 
-        /// <summary>Creates a new sprite font with the specified formatting and size.</summary>
-        /// <param name="fontName">The name of the font to use.</param>
-        /// <param name="size">The size of the font.</param>
-        /// <param name="weight">The weight of the font.</param>
-        /// <param name="stretch">The stretching formula of the font.</param>
-        /// <param name="style">The font style.</param>
-        /// <returns></returns>
-        ISpriteFont CreateFont(string fontName, int size, SpriteFontWeight weight = SpriteFontWeight.Regular,
-            SpriteFontStretch stretch = SpriteFontStretch.Normal,
-            SpriteFontStyle style = SpriteFontStyle.Normal);
-
         /// <summary>Creates a new unindexed mesh. Unindexed meshes do not contain an index buffer to reduce vertex data size.</summary>
         /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
         /// <param name="dedicatedResource">if set to <c>true</c>, the mesh is given its own dedicated resource buffer.</param>

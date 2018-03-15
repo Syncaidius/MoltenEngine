@@ -9,7 +9,7 @@ namespace Molten
 {
     public class SpriteText : ISprite
     {
-        public ISpriteFont Font;
+        public SpriteFont Font;
         public Vector2F Position;
         public Color Color = Color.White;
         public string Text = "";

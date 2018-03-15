@@ -41,6 +41,10 @@ namespace Molten.Samples
             base.OnInitialize(engine);
         }
 
+        protected override void OnContentRequested(ContentRequest cr) { }
+
+        protected override void OnContentLoaded(ContentManager content, ContentRequest cr) { }
+
         private void Window_OnClose(IWindowSurface surface)
         {
             Exit();

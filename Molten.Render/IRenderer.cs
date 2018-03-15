@@ -46,6 +46,6 @@ namespace Molten.Graphics
         /// <param name="visible">If true, the debug overlay will be visible.</param>
         /// <param name="page">The page number.</param>
         /// <returns></returns>
-        int SetDebugOverlayPage(bool visible, int page);
+        int SetDebugOverlayPage(SpriteFont font, bool visible, int page);
     }
 }

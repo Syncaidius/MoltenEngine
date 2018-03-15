@@ -97,6 +97,12 @@ namespace Molten.Font
         /// </summary>
         public ushort NumberOfHMetrics { get; private set; }
 
+        /// <summary>
+        /// Gets the line spacing, in font design units. <para/>
+        /// This is computed from the result of: linespace = Ascender - Descender + LineGap.
+        /// </summary>
+        public int LineSpace { get; private set; }
+
         internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             MajorVersion = reader.ReadUInt16();
@@ -117,6 +123,8 @@ namespace Molten.Font
             Reserved4 = reader.ReadInt16();
             MetricDataFormat = reader.ReadInt16();
             NumberOfHMetrics = reader.ReadUInt16();
+
+            LineSpace = Ascender - Descender + LineGap;
         }
     }
 

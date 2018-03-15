@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class SpriteFont2 : IDisposable
+    public class SpriteFont : IDisposable
     {
         struct CharData
         {
@@ -38,10 +38,14 @@ namespace Molten.Graphics
             /// <summary> The advance width (horizontal advance) of the character glyph, in pixels. </summary>
             public readonly int AdvanceWidth;
 
-            internal GlyphCache(int advWidth, Rectangle location)
+            /// <summary>The number of pixels along the Y-axis that the glyph was offset, before fitting on to the font atlas. </summary>
+            public readonly float YOffset;
+
+            internal GlyphCache(int advWidth, Rectangle location, float yOffset)
             {
                 AdvanceWidth = advWidth;
                 Location = location;
+                YOffset = yOffset;
             }
         }
 
@@ -52,6 +56,7 @@ namespace Molten.Graphics
         int _pageSize;
         int _pointsPerCurve;
         int _charPadding;
+        int _lineSpace;
 
         BinPacker _packer;
         GlyphCache[] _glyphCache;
@@ -59,9 +64,10 @@ namespace Molten.Graphics
         SceneRenderData _renderData;
         IRenderer _renderer;
         ThreadedQueue<ushort> _pendingGlyphs;
+        int _binLocker;
 
         /// <summary>
-        /// Creates a new instance of <see cref="SpriteFont2"/>.
+        /// Creates a new instance of <see cref="SpriteFont"/>.
         /// </summary>
         /// <param name="renderer">The renderer with which to prepare and update the sprite font's character sheet.</param>
         /// <param name="font">The font file from which to source character glyphs.</param>
@@ -73,7 +79,7 @@ namespace Molten.Graphics
         /// <param name="initialPages">The initial number of pages in the underlying sprite font texture atlas. Minimum is 1.</param>
         /// <param name="charPadding">The number of pixels to add as padding around each character placed on to the font atlas. 
         /// Default value is 2. Negative padding can cause characters to overlap.</param>
-        public SpriteFont2(IRenderer renderer, FontFile font, int ptSize, int tabSize = 3, int texturePageSize = 512, int pointsPerCurve = 12, int initialPages = 1, int charPadding = 2)
+        public SpriteFont(IRenderer renderer, FontFile font, int ptSize, int tabSize = 3, int texturePageSize = 512, int pointsPerCurve = 12, int initialPages = 1, int charPadding = 2)
         {
             Debug.Assert(texturePageSize >= MIN_PAGE_SIZE, $"Texture page size must be at least {MIN_PAGE_SIZE}");
             Debug.Assert(pointsPerCurve >= 2, $"Points per curve must be at least {MIN_POINTS_PER_CURVE}");
@@ -90,6 +96,8 @@ namespace Molten.Graphics
             _packer = new BinPacker(_pageSize, _pageSize);
             _pendingGlyphs = new ThreadedQueue<ushort>();
             _charPadding = charPadding;
+
+            _lineSpace = ToPixels(_font.HorizonalHeader.LineSpace);
 
             _rt = renderer.Resources.CreateSurface(_pageSize, _pageSize, arraySize: initialPages);
             _rt.Clear(Color.Transparent);
@@ -229,7 +237,12 @@ namespace Molten.Graphics
                 Y = (float)pHeight / gBounds.Height,
             };
 
+            SpinWait spin = new SpinWait();
+            while (Interlocked.Exchange(ref _binLocker, 1) != 0)
+                spin.SpinOnce();
             Rectangle paddedLoc = _packer.Insert(pWidth + padding2, pHeight + padding2);
+            Interlocked.Exchange(ref _binLocker, 0);
+
             Rectangle loc = new Rectangle()
             {
                 X = paddedLoc.X + _charPadding,
@@ -238,14 +251,15 @@ namespace Molten.Graphics
                 Height = pHeight,
             };
 
+            float yOffset = ToPixels(g.Bounds.Top);
             Vector2F glyphOffset = new Vector2F()
             {
                 X = loc.X - ToPixels(g.Bounds.Left),
-                Y = loc.Y - ToPixels(g.Bounds.Top),
+                Y = loc.Y - yOffset,
             };
 
             _charData[c] = new CharData(gIndex);
-            _glyphCache[gIndex] = new GlyphCache(advWidth, loc);
+            _glyphCache[gIndex] = new GlyphCache(advWidth, loc, yOffset);
             List<Shape> shapes = g.CreateShapes(_pointsPerCurve);
 
             for (int i = 0; i < shapes.Count; i++)
@@ -266,9 +280,9 @@ namespace Molten.Graphics
         /// </summary>
         class FontContainer : ISprite
         {
-            SpriteFont2 _font;
+            SpriteFont _font;
 
-            public FontContainer(SpriteFont2 font) { _font = font; }
+            public FontContainer(SpriteFont font) { _font = font; }
 
             public void Render(SpriteBatch sb)
             {
@@ -294,7 +308,7 @@ namespace Molten.Graphics
         /// </summary>
         public int FontSize => _fontSize;
 
-        /// <summary>
+        /// <summary>ToPixels(g.Bounds.Top)
         /// Gets the underlying font used to generate the sprite-font.
         /// </summary>
         public FontFile Font => _font;
@@ -303,5 +317,10 @@ namespace Molten.Graphics
         /// Gets the underlying texture atlas of the sprite font.
         /// </summary>
         public ITexture2D UnderlyingTexture => _rt;
+
+        /// <summary>
+        /// Gets the font's recommended line spacing between two lines, in pixels.
+        /// </summary>
+        public int LineSpace => _lineSpace;
     }
 }
