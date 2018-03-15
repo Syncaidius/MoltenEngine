@@ -119,6 +119,8 @@ namespace Molten.Samples
                     _fontFile = reader.ReadFont(true);
                     fontTimer.Stop();
                     Log.WriteLine($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read font");
+
+                    SpriteFont2 sfTest = new SpriteFont2(Engine.Renderer, _fontFile, 16);
                 }
             }
         }

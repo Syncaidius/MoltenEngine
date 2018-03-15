@@ -32,7 +32,7 @@ namespace Molten.Graphics
             public Rectangle Location;
 
             // The shapes which make up the character glyph. Required for rendering to sheet or generating a 3D model.
-            public List<Shape> Shapes = new List<Shape>();
+            public List<Vector2F> GlyphMesh = new List<Vector2F>();
 
             public GlyphMetrics Metrics;
 
@@ -66,9 +66,9 @@ namespace Molten.Graphics
         /// <param name="initialPages">The initial number of pages in the underlying sprite font texture atlas. Minimum is 1.</param>
         public SpriteFont2(IRenderer renderer, FontFile font, int ptSize, int tabSize = 3, int texturePageSize = 1024, int pointsPerCurve = 12, int initialPages = 1)
         {
-            Debug.Assert(texturePageSize < MIN_PAGE_SIZE, $"Texture page size must be at least {MIN_PAGE_SIZE}");
-            Debug.Assert(pointsPerCurve < 2, $"Points per curve must be at least {MIN_POINTS_PER_CURVE}");
-            Debug.Assert(initialPages < 1, $"Initial pages must be at least 1");
+            Debug.Assert(texturePageSize >= MIN_PAGE_SIZE, $"Texture page size must be at least {MIN_PAGE_SIZE}");
+            Debug.Assert(pointsPerCurve >= 2, $"Points per curve must be at least {MIN_POINTS_PER_CURVE}");
+            Debug.Assert(initialPages >= 1, $"Initial pages must be at least 1");
 
             _renderer = renderer;
             _font = font;
@@ -81,12 +81,13 @@ namespace Molten.Graphics
             _packer = new BinPacker(_pageSize, _pageSize);
             _pendingGlyphs = new ThreadedQueue<ushort>();
 
-            _rt.Clear(Color.Transparent);
             _rt = renderer.Resources.CreateSurface(_pageSize, _pageSize, arraySize: initialPages);
+            _rt.Clear(Color.Black);
             _renderData = renderer.CreateRenderData();
+            _renderData.Flags = SceneRenderFlags.TwoD | SceneRenderFlags.DoNotClear;
             _renderData.SpriteCamera = new Camera2D()
             {
-                OutputSurface = _rt
+                OutputSurface = _rt,
             };
 
             AddCharacter(' ');
@@ -185,17 +186,22 @@ namespace Molten.Graphics
 
             int pWidth = ToPixels(g.Bounds.Width);
             int pHeight = ToPixels(g.Bounds.Height);
+            Rectangle loc = _packer.Insert(pWidth, pHeight);
 
             _charData[c] = new CharData(gIndex);
             _glyphCache[gIndex] = new GlyphCache()
             {
                 AdvanceWidth = gm.AdvanceWidth,
-                Location = _packer.Insert(pWidth, pHeight),
-                Shapes = g.CreateShapes(_pointsPerCurve),
+                Location = loc,
                 Metrics = gm,
             };
 
+            List<Shape> shapes = g.CreateShapes(_pointsPerCurve);
+            for(int i = 0; i < shapes.Count; i++)
+                shapes[i].Triangulate(_glyphCache[gIndex].GlyphMesh, Vector2F.Zero, 1);
+
             _pendingGlyphs.Enqueue(gIndex);
+            _renderData.IsVisible = true;
         }
 
         /// <summary>
@@ -213,6 +219,8 @@ namespace Molten.Graphics
                 {
                     GlyphCache cache = _font._glyphCache[gIndex];
                 }
+
+                _font._renderData.IsVisible = false;
             }
         }
 

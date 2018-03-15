@@ -252,7 +252,7 @@ namespace Molten.Graphics
                 ds = scene.SpriteCamera.OutputDepthSurface as DepthSurface;
 
                 spriteProj = scene.SpriteCamera.Projection;
-                spriteView = scene.RenderCamera.View;
+                spriteView = scene.SpriteCamera.View;
                 spriteViewProj = scene.SpriteCamera.ViewProjection;
             }
             else
