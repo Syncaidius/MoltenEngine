@@ -90,10 +90,13 @@
     <Compile Include="Font\SpriteFontStretch.cs" />
     <Compile Include="Font\SpriteFontStyle.cs" />
     <Compile Include="Font\SpriteFontWeight.cs" />
+    <Compile Include="Scene\Camera.cs" />
+    <Compile Include="Scene\Camera2D.cs" />
     <Compile Include="Scene\ICamera.cs" />
     <Compile Include="Scene\IRenderable.cs" />
     <Compile Include="Scene\ISprite.cs" />
     <Compile Include="Scene\ObjectRenderData.cs" />
+    <Compile Include="Scene\SceneFlags.cs" />
     <Compile Include="Scene\SceneRenderData.cs" />
     <Compile Include="Shaders\ComparisonMode.cs" />
     <Compile Include="Shaders\Compute\IComputeManager.cs" />

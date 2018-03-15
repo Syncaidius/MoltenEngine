@@ -140,13 +140,6 @@ namespace Molten.Graphics
             while (_tasks.TryDequeue(out task))
                 task.Process(this);
 
-            //// Clear all output surfaces before rendering anything.
-            //_outputSurfaces.ForInterlock(0, 1, (index, surface) =>
-            //{
-            //    surface.Clear(surface.PresentClearColor);
-            //    return false;
-            //});
-
             /* DESIGN NOTES:
              *  - Store a hashset of materials used in each scene so that the renderer can set the "Common" buffer in one pass
              *  
@@ -174,8 +167,12 @@ namespace Molten.Graphics
                 if (scene.IsVisible)
                 {
                     scene.ApplyChanges(_device);
-                    Render3D(scene);
-                    Render2D(scene, time);
+
+                    if (scene.HasFlag(SceneRenderFlags.ThreeD))
+                        Render3D(scene);
+
+                    if (scene.HasFlag(SceneRenderFlags.TwoD))
+                        Render2D(scene, time);
                 }
             }
 
@@ -222,7 +219,7 @@ namespace Molten.Graphics
 
             if (rs != null)
             {
-                if (!_usedSurfaces.Contains(rs))
+                if (!scene.HasFlag(SceneRenderFlags.DoNotClear) && !_usedSurfaces.Contains(rs))
                 {
                     rs.Clear(scene.BackgroundColor);
                     _usedSurfaces.Add(rs);
@@ -271,7 +268,7 @@ namespace Molten.Graphics
 
             if (rs != null)
             {
-                if (!_usedSurfaces.Contains(rs))
+                if (!scene.HasFlag(SceneRenderFlags.DoNotClear) && !_usedSurfaces.Contains(rs))
                 {
                     rs.Clear(scene.BackgroundColor);
                     _usedSurfaces.Add(rs);

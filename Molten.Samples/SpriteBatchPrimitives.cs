@@ -110,7 +110,7 @@ namespace Molten.Samples
                     Origin = new Vector2F(0.5f),
                 };
 
-                SampleScene.RenderData.AddSprite(s);
+                SampleScene.AddSprite(s);
             }
         }
 

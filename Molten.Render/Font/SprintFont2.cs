@@ -49,6 +49,9 @@ namespace Molten.Graphics
         BinPacker _packer;
         GlyphCache[] _glyphCache;
         CharData[] _charData;
+        SceneRenderData _renderData;
+        IRenderer _renderer;
+        ThreadedQueue<ushort> _pendingGlyphs;
 
         /// <summary>
         /// Creates a new instance of <see cref="SpriteFont2"/>.
@@ -67,6 +70,7 @@ namespace Molten.Graphics
             Debug.Assert(pointsPerCurve < 2, $"Points per curve must be at least {MIN_POINTS_PER_CURVE}");
             Debug.Assert(initialPages < 1, $"Initial pages must be at least 1");
 
+            _renderer = renderer;
             _font = font;
             _glyphCache = new GlyphCache[_font.GlyphCount];
             _charData = new CharData[char.MaxValue];
@@ -75,7 +79,15 @@ namespace Molten.Graphics
             _pageSize = texturePageSize;
             _pointsPerCurve = pointsPerCurve;
             _packer = new BinPacker(_pageSize, _pageSize);
+            _pendingGlyphs = new ThreadedQueue<ushort>();
+
+            _rt.Clear(Color.Transparent);
             _rt = renderer.Resources.CreateSurface(_pageSize, _pageSize, arraySize: initialPages);
+            _renderData = renderer.CreateRenderData();
+            _renderData.SpriteCamera = new Camera2D()
+            {
+                OutputSurface = _rt
+            };
 
             AddCharacter(' ');
             AddCharacter('\t');
@@ -180,24 +192,35 @@ namespace Molten.Graphics
                 AdvanceWidth = gm.AdvanceWidth,
                 Location = _packer.Insert(pWidth, pHeight),
                 Shapes = g.CreateShapes(_pointsPerCurve),
+                Metrics = gm,
             };
 
-            QueueRenderTask(gIndex);
+            _pendingGlyphs.Enqueue(gIndex);
         }
 
-        private void QueueRenderTask(ushort glyphID)
+        /// <summary>
+        /// A container sprite for drawing glyphs to the font texture.
+        /// </summary>
+        class FontContainer : ISprite
         {
-            GlyphCache cache = _glyphCache[glyphID];
+            SpriteFont2 _font;
 
-            // TODO queue a render task on on the renderer to draw the character.
-            // SpriteBatchRenderTask task = SpriteBatchRenderTask.Get() -- populate as needed.
-            // _renderer.QueueTask(task);
-            // This would then render the character at the requested location on the sheet, while still allowing it to be used in the meantime.
+            public FontContainer(SpriteFont2 font) { _font = font; }
+
+            public void Render(SpriteBatch batch)
+            {
+                while(_font._pendingGlyphs.TryDequeue(out ushort gIndex))
+                {
+                    GlyphCache cache = _font._glyphCache[gIndex];
+                }
+            }
         }
 
         public void Dispose()
         {
             _rt.Dispose();
+            _renderer.DestroyRenderData(_renderData);
+            _renderData.Dispose();
         }
 
         /// <summary>

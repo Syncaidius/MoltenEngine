@@ -10,11 +10,22 @@ namespace Molten.Graphics
     {
         public bool IsVisible = true;
 
-        /// <summary>Gets or sets the camera that should be used as a view or eye when rendering a scene.</summary>
+        /// <summary>The camera that should be used as a view or eye when rendering 3D objects in a scene.</summary>
         public ICamera RenderCamera;
 
+        /// <summary>
+        /// A camera used for drawing 2D/sprite scene objects.
+        /// </summary>
         public ICamera SpriteCamera;
 
+        /// <summary>
+        /// Flags which describe basic rules for rendering the scene.
+        /// </summary>
+        public SceneRenderFlags Flags = SceneRenderFlags.TwoAndThreeD;
+
+        /// <summary>
+        /// The background color of the scene.
+        /// </summary>
         public Color BackgroundColor = new Color(20,20,20,255);
 
         public abstract void AddObject(IRenderable obj, ObjectRenderData renderData);
@@ -47,5 +58,15 @@ namespace Molten.Graphics
         /// <summary>Gets the last known number of sprite layers available.</summary>
         /// <returns></returns>
         public abstract void GetSpriteLayerCount(Action<int> retrievalCallback);
+
+        /// <summary>
+        /// Returns true if the current <see cref="SceneRenderData"/> has the specified flag(s).
+        /// </summary>
+        /// <param name="flags">The flags to check.</param>
+        /// <returns></returns>
+        public bool HasFlag(SceneRenderFlags flags)
+        {
+            return (Flags & flags) == flags;
+        }
     }
 }
