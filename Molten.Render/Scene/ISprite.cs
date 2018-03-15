@@ -8,6 +8,6 @@ namespace Molten.Graphics
 {
     public interface ISprite
     {
-        void Render(SpriteBatch batch);
+        void Render(SpriteBatch sb);
     }
 }

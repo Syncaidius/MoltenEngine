@@ -84,7 +84,9 @@ namespace Molten.Graphics
             _rt = renderer.Resources.CreateSurface(_pageSize, _pageSize, arraySize: initialPages);
             _rt.Clear(Color.Black);
             _renderData = renderer.CreateRenderData();
+            _renderData.IsVisible = false;
             _renderData.Flags = SceneRenderFlags.TwoD | SceneRenderFlags.DoNotClear;
+            _renderData.AddSprite(new FontContainer(this));
             _renderData.SpriteCamera = new Camera2D()
             {
                 OutputSurface = _rt,
@@ -213,11 +215,12 @@ namespace Molten.Graphics
 
             public FontContainer(SpriteFont2 font) { _font = font; }
 
-            public void Render(SpriteBatch batch)
+            public void Render(SpriteBatch sb)
             {
                 while(_font._pendingGlyphs.TryDequeue(out ushort gIndex))
                 {
                     GlyphCache cache = _font._glyphCache[gIndex];
+                    sb.DrawTriangleList(cache.GlyphMesh, Color.White);
                 }
 
                 _font._renderData.IsVisible = false;

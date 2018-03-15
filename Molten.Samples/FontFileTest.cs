@@ -23,6 +23,7 @@ namespace Molten.Samples
         IMesh<VertexTexture> _mesh;
         SpriteBatchContainer _container;
         FontFile _fontFile;
+        SpriteFont2 _font2Test;
 
         Vector2F _clickPoint;
         Color _clickColor = Color.Red;
@@ -102,6 +103,7 @@ namespace Molten.Samples
         private void Keyboard_OnCharacterKey(IO.CharacterEventArgs e)
         {
             NewFontSystemTest(e.Character);
+            _font2Test.GetCharRect(e.Character);
         }
 
         private void LoadFontFile()
@@ -120,7 +122,7 @@ namespace Molten.Samples
                     fontTimer.Stop();
                     Log.WriteLine($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read font");
 
-                    SpriteFont2 sfTest = new SpriteFont2(Engine.Renderer, _fontFile, 16);
+                    _font2Test = new SpriteFont2(Engine.Renderer, _fontFile, 16);
                 }
             }
         }
@@ -240,6 +242,9 @@ namespace Molten.Samples
                     }
 
                     sb.DrawString(TestFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
+
+                    if (_font2Test != null && _font2Test.UnderlyingTexture != null)
+                        sb.Draw(_font2Test.UnderlyingTexture, new Rectangle(700, 0, 512, 512), Color.White);
                 }
             };
             SampleScene.AddSprite(_container);

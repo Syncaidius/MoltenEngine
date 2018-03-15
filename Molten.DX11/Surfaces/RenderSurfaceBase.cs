@@ -20,7 +20,7 @@ namespace Molten.Graphics
         internal RenderSurfaceBase(GraphicsDevice device, int width, int height, Format format, int mipCount = 1, int arraySize = 1, TextureFlags flags = TextureFlags.None)
             : base(device, width, height, format, mipCount, arraySize, flags)
         {
-
+            VP = new Viewport(0, 0, width, height);
         }
 
         internal virtual void Clear(GraphicsPipe pipe, Color color)
