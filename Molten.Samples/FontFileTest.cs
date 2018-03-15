@@ -112,7 +112,7 @@ namespace Molten.Samples
         private void Keyboard_OnCharacterKey(IO.CharacterEventArgs e)
         {
             GenerateChar(e.Character);
-            _font2Test.GetChar(e.Character);
+            _font2Test.GetCharGlyph(e.Character);
         }
 
         private void LoadFontFile()
@@ -152,17 +152,8 @@ namespace Molten.Samples
             {
                 OnDraw = (sb) =>
                 {
-                    // Draw glyph bounds
-                    sb.DrawLine(_glyphBounds.TopLeft, _glyphBounds.TopRight, Color.Grey, 1);
-                    sb.DrawLine(_glyphBounds.TopRight, _glyphBounds.BottomRight, Color.Grey, 1);
-                    sb.DrawLine(_glyphBounds.BottomRight, _glyphBounds.BottomLeft, Color.Grey, 1);
-                    sb.DrawLine(_glyphBounds.BottomLeft, _glyphBounds.TopLeft, Color.Grey, 1);
-
-                    // Draw font bounds
-                    sb.DrawLine(_fontBounds.TopLeft, _fontBounds.TopRight, Color.Pink, 1);
-                    sb.DrawLine(_fontBounds.TopRight, _fontBounds.BottomRight, Color.Pink, 1);
-                    sb.DrawLine(_fontBounds.BottomRight, _fontBounds.BottomLeft, Color.Pink, 1);
-                    sb.DrawLine(_fontBounds.BottomLeft, _fontBounds.TopLeft, Color.Pink, 1);
+                    sb.DrawRectOutline(_glyphBounds, Color.Grey, 1);
+                    sb.DrawRectOutline(_fontBounds, Color.Pink, 1);
 
                     // Top Difference marker
                     float dif = _glyphBounds.Top - _fontBounds.Top;
@@ -206,7 +197,14 @@ namespace Molten.Samples
 
                     sb.DrawString(TestFont, $"Font atlas: ", new Vector2F(700, 45), Color.White);
                     if (_font2Test != null && _font2Test.UnderlyingTexture != null)
-                        sb.Draw(_font2Test.UnderlyingTexture, new Rectangle(700, 65, 512, 512), Color.White);
+                    {
+                        Vector2I pos = new Vector2I(800, 65);
+                        Rectangle texBounds = new Rectangle(pos.X, pos.Y, 512, 512);
+                        sb.Draw(_font2Test.UnderlyingTexture, texBounds, Color.White);
+                        sb.DrawRectOutline(texBounds, Color.Red, 1);
+                        pos.Y += 517;
+                        sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
+                    }
                 }
             };
             SampleScene.AddSprite(_container);

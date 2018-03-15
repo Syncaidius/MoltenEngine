@@ -152,6 +152,43 @@ namespace Molten.Graphics
         /// <param name="text">The text to draw.</param>
         /// <param name="position">The position of the text.</param>
         /// <param name="color">The color of the text.</param>
+        public void DrawString(SpriteFont2 font, string text, Vector2F position, Color color, IMaterial material = null)
+        {
+            SpriteClipZone clip = _clipZones[_curClip];
+            int spriteID = 0;
+            int strLength = text.Length;
+            SpriteCluster cluster = GetCluster(clip, font.UnderlyingTexture, material, ClusterFormat.Sprite, strLength, out spriteID);
+
+            // Cycle through all characters in the string and process them
+            Rectangle invalid = Rectangle.Empty;
+            Vector2F charPos = position;
+            for (int i = 0; i < strLength; i++)
+            {
+                SpriteFont2.GlyphCache cache = font.GetCharGlyph(text[i]);
+
+                // Set the sprite info
+                cluster.Sprites[spriteID++] = new SpriteVertex()
+                {
+                    Position = new Vector2F(charPos.X, charPos.Y),
+                    Size = new Vector2F(cache.Location.Width, cache.Location.Height),
+                    UV = new Vector4F(cache.Location.X, cache.Location.Y, cache.Location.Right, cache.Location.Bottom),
+                    Color = color,
+                    Origin = Vector2F.Zero,
+                    Rotation = 0,
+                };
+
+                // Increase pos by size of char (along X)
+                charPos.X += cache.Location.Width;
+            }
+
+            cluster.SpriteCount += strLength;
+        }
+
+        /// <summary>Draws a string of text sprites by using a sprite font to source the needed data..</summary>
+        /// <param name="font">The spritefont from which to retrieve font data.</param>
+        /// <param name="text">The text to draw.</param>
+        /// <param name="position">The position of the text.</param>
+        /// <param name="color">The color of the text.</param>
         public void DrawString(ISpriteFont font, string text, Vector2F position, Color color, IMaterial material = null)
         {
             SpriteClipZone clip = _clipZones[_curClip];
@@ -364,6 +401,20 @@ namespace Molten.Graphics
         {
             _singleColorList[0] = color;
             DrawTriangleList(points, _singleColorList);
+        }
+
+        /// <summary>
+        /// Draws a rectangular outline composed of 4 lines.
+        /// </summary>
+        /// <param name="rect">The rectangle.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="thickness">The thickness.</param>
+        public void DrawRectOutline(RectangleF rect, Color color, float thickness)
+        {
+            DrawLine(rect.TopLeft, rect.TopRight, color, thickness);
+            DrawLine(rect.TopRight, rect.BottomRight, color, thickness);
+            DrawLine(rect.BottomRight, rect.BottomLeft, color, thickness);
+            DrawLine(rect.BottomLeft, rect.TopLeft, color, thickness);
         }
 
         public void DrawLineList(IList<Vector2F> points, Color color, float thickness)

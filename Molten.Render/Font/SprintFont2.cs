@@ -14,11 +14,11 @@ namespace Molten.Graphics
     {
         struct CharData
         {
-            public ushort GlyphID;
+            public ushort GlyphIndex;
 
             public bool Initialized;
 
-            public CharData(ushort gIndex) { GlyphID = gIndex; Initialized = true; }
+            public CharData(ushort gIndex) { GlyphIndex = gIndex; Initialized = true; }
         }
 
         public const int MIN_PAGE_SIZE = 128;
@@ -35,17 +35,13 @@ namespace Molten.Graphics
             // The shapes which make up the character glyph. Required for rendering to sheet or generating a 3D model.
             internal List<Vector2F> GlyphMesh = new List<Vector2F>();
 
-            /// <summary>Metrics about the current character glyph.</summary>
-            public readonly GlyphMetrics Metrics;
-
-            /// <summary> The advance width (horizontal advance) of the character glyph. </summary>
+            /// <summary> The advance width (horizontal advance) of the character glyph, in pixels. </summary>
             public readonly int AdvanceWidth;
 
-            internal GlyphCache(int advWidth, Rectangle location, GlyphMetrics gm)
+            internal GlyphCache(int advWidth, Rectangle location)
             {
                 AdvanceWidth = advWidth;
                 Location = location;
-                Metrics = gm;
             }
         }
 
@@ -96,7 +92,7 @@ namespace Molten.Graphics
             _charPadding = charPadding;
 
             _rt = renderer.Resources.CreateSurface(_pageSize, _pageSize, arraySize: initialPages);
-            _rt.Clear(Color.Black);
+            _rt.Clear(Color.Transparent);
             _renderData = renderer.CreateRenderData();
             _renderData.IsVisible = false;
             _renderData.Flags = SceneRenderFlags.TwoD | SceneRenderFlags.DoNotClear | SceneRenderFlags.NoDebugOverlay;
@@ -106,8 +102,11 @@ namespace Molten.Graphics
                 OutputSurface = _rt,
             };
 
-            AddCharacter(' ');
-            AddCharacter('\t');
+            AddCharacter(' ', false);
+
+            Rectangle spaceRect = _glyphCache[_charData[' '].GlyphIndex].Location;
+            spaceRect.Width *= tabSize;
+            AddCharacter('\t', false, spaceRect);
         }
 
         private int ToPixels(float designUnits)
@@ -123,9 +122,9 @@ namespace Molten.Graphics
         public int GetAdvanceWidth(char c)
         {
             if (!_charData[c].Initialized)
-                AddCharacter(c);
+                AddCharacter(c, true);
 
-            return _glyphCache[_charData[c].GlyphID].AdvanceWidth;
+            return _glyphCache[_charData[c].GlyphIndex].AdvanceWidth;
         }
 
         /// <summary>
@@ -133,13 +132,13 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="c"></param>
         /// <returns></returns>
-        public GlyphCache GetChar(char c)
+        public GlyphCache GetCharGlyph(char c)
         {
             Rectangle rect = Rectangle.Empty;
             if (!_charData[c].Initialized)
-                AddCharacter(c);
+                AddCharacter(c, true);
 
-            return _glyphCache[_charData[c].GlyphID];
+            return _glyphCache[_charData[c].GlyphIndex];
         }
         
         /// <summary>
@@ -164,7 +163,7 @@ namespace Molten.Graphics
 
             for(int i = 0; i < maxLength; i++)
             {
-                GlyphCache gc = GetChar(text[i]);
+                GlyphCache gc = GetCharGlyph(text[i]);
                 result.X += gc.AdvanceWidth;
             }
 
@@ -194,12 +193,12 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        private void AddCharacter(char c)
+        private void AddCharacter(char c, bool renderGlyph, Rectangle? customBounds = null)
         {
             ushort gIndex = _font.GetGlyphIndex(c);
 
             // If the character uses an existing glyph, initialize the character and return.
-            if(_glyphCache[gIndex] != null)
+            if (_glyphCache[gIndex] != null)
             {
                 _charData[c] = new CharData(gIndex);
                 return;
@@ -210,8 +209,19 @@ namespace Molten.Graphics
 
             Rectangle gBounds = g.Bounds;
             int padding2 = _charPadding * 2;
-            int pWidth = ToPixels(gBounds.Width);
-            int pHeight = ToPixels(gBounds.Height);
+            int pWidth, pHeight;
+
+            if (customBounds.HasValue)
+            {
+                pWidth = customBounds.Value.Width;
+                pHeight = customBounds.Value.Height;
+            }
+            else
+            {
+                pWidth = ToPixels(gBounds.Width);
+                pHeight = ToPixels(gBounds.Height);
+            }
+
             Vector2F glyphScale = new Vector2F()
             {
                 X = (float)pWidth / gBounds.Width,
@@ -220,7 +230,7 @@ namespace Molten.Graphics
 
             Rectangle loc = _packer.Insert(pWidth + padding2, pHeight + padding2);
             _charData[c] = new CharData(gIndex);
-            _glyphCache[gIndex] = new GlyphCache(gm.AdvanceWidth, loc, gm);
+            _glyphCache[gIndex] = new GlyphCache(gm.AdvanceWidth, loc);
 
             List<Shape> shapes = g.CreateShapes(_pointsPerCurve);
             for (int i = 0; i < shapes.Count; i++)
@@ -229,8 +239,11 @@ namespace Molten.Graphics
                 shapes[i].Triangulate(_glyphCache[gIndex].GlyphMesh, Vector2F.Zero, 1);
             }
 
-            _pendingGlyphs.Enqueue(gIndex);
-            _renderData.IsVisible = true;
+            if (renderGlyph)
+            {
+                _pendingGlyphs.Enqueue(gIndex);
+                _renderData.IsVisible = true;
+            }
         }
 
         /// <summary>
