@@ -25,18 +25,28 @@ namespace Molten.Graphics
 
         public const int MIN_POINTS_PER_CURVE = 2;
 
-        class GlyphCache
+        public class GlyphCache
         {
             // TODO store kerning/GPOS/GSUB offsets in pairs, on-demand.  
 
-            public Rectangle Location;
+            /// <summary>The location of the character glyph on the font atlas texture.</summary>
+            public readonly Rectangle Location;
 
             // The shapes which make up the character glyph. Required for rendering to sheet or generating a 3D model.
-            public List<Vector2F> GlyphMesh = new List<Vector2F>();
+            internal List<Vector2F> GlyphMesh = new List<Vector2F>();
 
-            public GlyphMetrics Metrics;
+            /// <summary>Metrics about the current character glyph.</summary>
+            public readonly GlyphMetrics Metrics;
 
-            public int AdvanceWidth;
+            /// <summary> The advance width (horizontal advance) of the character glyph. </summary>
+            public readonly int AdvanceWidth;
+
+            internal GlyphCache(int advWidth, Rectangle location, GlyphMetrics gm)
+            {
+                AdvanceWidth = advWidth;
+                Location = location;
+                Metrics = gm;
+            }
         }
 
         FontFile _font;
@@ -123,13 +133,13 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="c"></param>
         /// <returns></returns>
-        public Rectangle GetCharRect(char c)
+        public GlyphCache GetChar(char c)
         {
             Rectangle rect = Rectangle.Empty;
             if (!_charData[c].Initialized)
                 AddCharacter(c);
 
-            return _glyphCache[_charData[c].GlyphID].Location;
+            return _glyphCache[_charData[c].GlyphID];
         }
         
         /// <summary>
@@ -154,8 +164,8 @@ namespace Molten.Graphics
 
             for(int i = 0; i < maxLength; i++)
             {
-                char c = text[i];
-                Rectangle getRect = GetCharRect(c);
+                GlyphCache gc = GetChar(text[i]);
+                result.X += gc.AdvanceWidth;
             }
 
             return result;
@@ -210,12 +220,7 @@ namespace Molten.Graphics
 
             Rectangle loc = _packer.Insert(pWidth + padding2, pHeight + padding2);
             _charData[c] = new CharData(gIndex);
-            _glyphCache[gIndex] = new GlyphCache()
-            {
-                AdvanceWidth = gm.AdvanceWidth,
-                Location = loc,
-                Metrics = gm,
-            };
+            _glyphCache[gIndex] = new GlyphCache(gm.AdvanceWidth, loc, gm);
 
             List<Shape> shapes = g.CreateShapes(_pointsPerCurve);
             for (int i = 0; i < shapes.Count; i++)

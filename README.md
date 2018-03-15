@@ -23,18 +23,18 @@ Here's a list of completed or work-in-progress (WIP) features:
 	* [WIP] Sprite font system
   * Content manager
   * [WIP] Modular abstraction layer - remove/replace parts of the engine without touching the core
-  * Complete set of math types. The majority are imported from [SharpDX](https://github.com/sharpdx/SharpDX) with a few additions and changes.
+  * Complete set of math types. The majority are imported from [SharpDX](https://github.com/sharpdx/SharpDX) with a many additions and changes.
   * [WIP] Mouse, keyboard and game-pad input
   * Samples
   
   
 # Long-term Goals
-  1. Develop Molten engine and at least one game, running on Windows 7/8/10 via [SharpDX](http://sharpdx.org)
-  2. Add linux support later in time via Mono. This also means supporting OpenGL via [OpenTK](https://opentk.github.io/) or [OpenGL.NET](https://github.com/luca-piccioni/OpenGL.Net)
-  3. DX12/Vulkan support
-  4. Depending how far the engine has progressed, mobile support may come much later via Xamarin or whatever the best cross-platform framework is at that time.
-
-Any commerially viable games I produce with this engine will obviously not be open-source, but I'll definitely be making some example games to go alongside it, as well as documentation at some point.
+In no particular order:
+  * Develop Molten engine and at least one commerial game (which obviously won't be open source!), running on Windows 7/8/10 via [SharpDX](http://sharpdx.org)
+  * Add linux support later in time via Mono. This also means supporting OpenGL via [OpenTK](https://opentk.github.io/) or [OpenGL.NET](https://github.com/luca-piccioni/OpenGL.Net)
+  * DX12/Vulkan support - DX12 will likely be first due to already being available through SharpDX
+  * Mbile support via Xamarin or whatever the best cross-platform framework is at that time this is put in to action.
+  * An example game or two to demonstrate how things work
 
 # Licensing
 MIT - Basically, do what you want with it. Fork it, chop it up, consume it for dinner (*just kidding*). You get the idea!

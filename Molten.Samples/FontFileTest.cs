@@ -103,7 +103,7 @@ namespace Molten.Samples
         private void Keyboard_OnCharacterKey(IO.CharacterEventArgs e)
         {
             NewFontSystemTest(e.Character);
-            _font2Test.GetCharRect(e.Character);
+            _font2Test.GetChar(e.Character);
         }
 
         private void LoadFontFile()
