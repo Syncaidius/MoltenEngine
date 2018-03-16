@@ -29,7 +29,7 @@ namespace Molten.Samples
             Window.PresentClearColor = new Color(20, 20, 20, 255);
 
             ContentRequest cr = engine.Content.StartRequest();
-            cr.Load<SpriteFont>("euphorigenic.ttf;size=14");
+            cr.Load<SpriteFont>("broshk.ttf;size=14");
             OnContentRequested(cr);
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();

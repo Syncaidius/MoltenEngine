@@ -23,6 +23,7 @@ namespace Molten.Graphics
             DisplayOutputIds = AddSettingList<int>("display_id");
             RendererLibrary = AddSetting<string>("renderer", RENDERER_DX11);
             VSync = AddSetting<bool>("vsync", true);
+            MSAA = AddSetting<int>("msaa", 0);
             BackBufferSize = AddSetting<int>("back_buffer_size", 1);
             EnableDebugLayer = AddSetting<bool>("renderer_debug");
         }
@@ -41,6 +42,9 @@ namespace Molten.Graphics
 
         /// <summary>Gets or sets wether Vsync is enabled.</summary>
         public SettingValue<bool> VSync { get; private set; }
+
+        /// <summary>Gets or sets the multi-sampled anti-aliasing (MSAA) level. A level of 0 will disable MSAA.</summary>
+        public SettingValue<int> MSAA { get; private set; }
 
         /// <summary>Gets or sets the number of back-buffer surfaces. More tend to increase performance, but also consumes more video memory.</summary>
         public SettingValue<int> BackBufferSize { get; private set; }

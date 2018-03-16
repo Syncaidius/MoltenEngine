@@ -63,9 +63,6 @@
     <Reference Include="SharpDX.Desktop, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.Desktop.4.0.1\lib\net45\SharpDX.Desktop.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct2D1, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Direct2D1.4.0.1\lib\net45\SharpDX.Direct2D1.dll</HintPath>
-    </Reference>
     <Reference Include="SharpDX.Direct3D11, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.Direct3D11.4.0.1\lib\net45\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
@@ -102,10 +99,6 @@
     <Compile Include="Buffers\StagingBuffer.cs" />
     <Compile Include="Buffers\StructuredBuffer.cs" />
     <Compile Include="Buffers\TypedBuffer.cs" />
-    <Compile Include="D2D\Brushes\D2DBrush.cs" />
-    <Compile Include="D2D\Brushes\D2DGradientBrush.cs" />
-    <Compile Include="D2D\Brushes\D2DSolidBrush.cs" />
-    <Compile Include="D2D\D2DSurface.cs" />
     <Compile Include="Display\DX11DisplayManager.cs" />
     <Compile Include="Exceptions\GraphicsContextException.cs" />
     <Compile Include="Exceptions\MappedBufferException.cs" />
