@@ -36,6 +36,8 @@ namespace Molten.Graphics
         protected int _height;
         protected int _depth;
         protected int _mipCount;
+        protected int _arraySize;
+        protected int _sampleCount;
 
         protected long _curVramSize;
         protected Resource _resource;
@@ -44,9 +46,7 @@ namespace Molten.Graphics
         protected ShaderResourceView _srv;
         protected UnorderedAccessView _uav;
 
-        internal TextureBase(GraphicsDevice device, int width, int height, int depth, int mipCount = 1, 
-            Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, 
-            TextureFlags flags = TextureFlags.None)
+        internal TextureBase(GraphicsDevice device, int width, int height, int depth, int mipCount, int arraySize, int sampleCount, Format format, TextureFlags flags)
         {
             _flags = flags;
             _device = device;
@@ -58,6 +58,8 @@ namespace Molten.Graphics
             _height = height;
             _depth = depth;
             _mipCount = mipCount;
+            _arraySize = arraySize;
+            _sampleCount = sampleCount;
 
             _format = format;
             IsValid = false;
@@ -914,36 +916,43 @@ namespace Molten.Graphics
         protected virtual void OnCreateUAV() { }
 
         /// <summary>Gets the flags that were passed in when the texture was created.</summary>
-        public TextureFlags Flags { get { return _flags; } }
+        public TextureFlags Flags => _flags;
 
         /// <summary>Gets the format of the texture.</summary>
-        public Format DxFormat { get { return _format; } }
+        public Format DxFormat => _format;
 
-        public GraphicsFormat Format { get { return (GraphicsFormat)_format; } }
+        public GraphicsFormat Format => (GraphicsFormat)_format;
 
         /// <summary>Gets whether or not the texture is using a supported block-compressed format.</summary>
-        public bool IsBlockCompressed { get { return _isBlockCompressed; } }
+        public bool IsBlockCompressed => _isBlockCompressed;
 
         /// <summary>Gets the width of the texture.</summary>
-        public int Width { get { return _width; } }
+        public int Width => _width;
 
         /// <summary>Gets the height of the texture.</summary>
-        public int Height { get { return _height; } }
+        public int Height => _height;
 
         /// <summary>Gets the depth of the texture. For a 3D texture this is the number of slices.</summary>
-        public int Depth
-        {
-            get { return _depth; }
-        }
+        public int Depth => _depth;
 
         /// <summary>Gets the number of mip map levels in the texture.</summary>
-        public abstract int MipMapLevels { get; }
+        public int MipMapLevels => _mipCount;
 
-        /// <summary>Gets the number of array slices in the texture.</summary>
-        public abstract int ArraySize { get; }
+        /// <summary>Gets the number of array slices in the texture. For a cube-map, this value will a multiple of 6. For example, a cube map with 2 array elements will have 12 array slices.</summary>
+        public int ArraySize => _arraySize;
 
         /// <summary>Gets whether or not the texture is a texture array.</summary>
-        public abstract bool IsTextureArray { get; }
+        public bool IsTextureArray => _arraySize > 1;
+
+        /// <summary>
+        /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 
+        /// </summary>
+        public int SampleCount => _sampleCount;
+
+        /// <summary>
+        /// Gets whether or not the texture is multisampled. This is true if <see cref="SampleCount"/> is greater than 1.
+        /// </summary>
+        public bool IsMultisampled => _sampleCount > 1;
 
         internal GraphicsDevice Device => _device;
 

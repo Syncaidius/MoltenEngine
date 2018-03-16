@@ -30,11 +30,6 @@ namespace Molten.Graphics
                 if (State != null)
                     State.Dispose();
 
-
-                // TODO add proper support for per-target blend states
-                //for (int i = 0; i < _device.Features.SimultaneousRenderSurfaces; i++)
-                //    _desc.RenderTarget[i] = _desc.RenderTarget[0];
-
                 // Create new state
                 State = new BlendState(context.Device.D3d, _desc);
             }
@@ -91,7 +86,7 @@ namespace Molten.Graphics
 
         public BlendOperation GetBlendOperation(int rtIndex)
         {
-            return _desc.RenderTarget[0].BlendOperation;
+            return _desc.RenderTarget[rtIndex].BlendOperation;
         }
 
         public void SetBlendOperation(int rtIndex, BlendOperation value)
@@ -102,7 +97,7 @@ namespace Molten.Graphics
 
         public BlendOption GetSourceAlphaBlend(int rtIndex)
         {
-            return _desc.RenderTarget[0].SourceAlphaBlend;
+            return _desc.RenderTarget[rtIndex].SourceAlphaBlend;
         }
 
         public void SetSourceAlphaBlend(int rtIndex, BlendOption value)

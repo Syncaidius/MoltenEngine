@@ -106,7 +106,7 @@ namespace Molten.Graphics
         /// <param name="format">The format to test quality levels against.</param>
         /// <param name="sampleCount">The sample count to test against.</param>
         /// <returns></returns>
-        public int GetQualityLevels(Format format, int sampleCount)
+        public int GetMultisampleQualityLevels(Format format, int sampleCount)
         {
             return _d3d.CheckMultisampleQualityLevels(format, sampleCount);
         }

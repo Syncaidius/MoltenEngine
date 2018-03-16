@@ -30,61 +30,53 @@ namespace Molten.Graphics
         /// <param name="depthBuffer">If true, a depth buffer will be created.</param>
         /// <param name="flags">Texture flags</param>
         internal DepthSurface(GraphicsDevice device, int width, int height, int mipCount = 1, int arraySize = 1,
-            DepthFormat format = DepthFormat.R24G8_Typeless, TextureFlags flags = TextureFlags.None)
+            DepthFormat format = DepthFormat.R24G8_Typeless, TextureFlags flags = TextureFlags.None, int sampleCount = 1)
             : base(device, width, height, SharpDX.DXGI.Format.R24G8_Typeless, mipCount, arraySize, flags)
         {
             _depthFormat = format;
             _description.ArraySize = arraySize;
             _description.Format = GetFormat().ToApi();
 
+            _resourceViewDescription.Format = GetSRVFormat().ToApi();
+            _depthDesc = new DepthStencilViewDescription();
+            _depthDesc.Format = GetDSVFormat().ToApi();
+
             if (arraySize == 1)
             {
-                _resourceViewDescription = new ShaderResourceViewDescription()
+                if (sampleCount > 1)
                 {
-                    Format = GetSRVFormat().ToApi(),
-                    Dimension = ShaderResourceViewDimension.Texture2D,
-                    Texture2D = new ShaderResourceViewDescription.Texture2DResource()
-                    {
-                        MipLevels = mipCount,
-                        MostDetailedMip = 0,
-                    },
-                };
-
-
-                _depthDesc = new DepthStencilViewDescription()
+                    _depthDesc.Dimension = DepthStencilViewDimension.Texture2DMultisampled;
+                    _depthDesc.Flags = DepthStencilViewFlags.None;
+                }
+                else
                 {
-                    Format = GetDSVFormat().ToApi(),
-                    Dimension = DepthStencilViewDimension.Texture2D,
-                    Flags = DepthStencilViewFlags.None,
-                };
+                    _depthDesc.Dimension = DepthStencilViewDimension.Texture2D;
+                    _depthDesc.Flags = DepthStencilViewFlags.None;
+                }
             }
             else
             {
-                _resourceViewDescription = new ShaderResourceViewDescription()
+                if(sampleCount > 1)
                 {
-                    Format = GetSRVFormat().ToApi(),
-                    Dimension = ShaderResourceViewDimension.Texture2DArray,
-                    Texture2DArray = new ShaderResourceViewDescription.Texture2DArrayResource()
+                    _depthDesc.Dimension = DepthStencilViewDimension.Texture2DMultisampledArray;
+                    _depthDesc.Flags = DepthStencilViewFlags.None;
+                    _depthDesc.Texture2DMSArray = new DepthStencilViewDescription.Texture2DMultisampledArrayResource()
                     {
-                        ArraySize = arraySize,
-                        MipLevels = mipCount,
-                        MostDetailedMip = 0,
+                        ArraySize = _description.ArraySize,
                         FirstArraySlice = 0,
-                    },
-                };
-
-                _depthDesc = new DepthStencilViewDescription()
+                    };
+                }
+                else
                 {
-                    Format = GetDSVFormat().ToApi(),
-                    Dimension = DepthStencilViewDimension.Texture2DArray,
-                    Flags = DepthStencilViewFlags.None,
-                    Texture2DArray   = new DepthStencilViewDescription.Texture2DArrayResource()
+                    _depthDesc.Dimension = DepthStencilViewDimension.Texture2DArray;
+                    _depthDesc.Flags = DepthStencilViewFlags.None;
+                    _depthDesc.Texture2DArray = new DepthStencilViewDescription.Texture2DArrayResource()
                     {
                         ArraySize = _description.ArraySize,
                         FirstArraySlice = 0,
                         MipSlice = 0,
-                    }
-                };
+                    };
+                }
             }
 
             UpdateViewport();
@@ -94,18 +86,6 @@ namespace Molten.Graphics
         {
             _vp = new Viewport(0, 0, _description.Width, _description.Height);
         }
-
-        //internal override void ValidateInputBinding<T>(GraphicsPipe pipe, T slot)
-        //{
-        //    if (pipe.GetDepthMode() == GraphicsDepthMode.Enabled)
-        //        UnbindOutSlots(pipe);
-        //}
-
-        //internal override void ValidateOutputbinding<T>(GraphicsPipe pipe, T slot)
-        //{
-        //    if (pipe.GetDepthMode() == GraphicsDepthMode.Enabled)
-        //        UnbindInSlots(pipe);
-        //}
 
         private GraphicsFormat GetFormat()
         {

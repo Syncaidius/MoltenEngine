@@ -195,9 +195,6 @@ namespace Molten
         private void Fill(SweepContext tcx, Node node)
         {
             Triangle triangle = new Triangle(node.Prev.Point, node.Point, node.Next.Point);
-
-            // TODO: should copy the constrained_edge value from neighbor triangles
-            //       for now constrained_edge values are copied during the legalize
             triangle.MarkNeighbor(node.Prev.Triangle);
             triangle.MarkNeighbor(node.Triangle);
 

@@ -12,24 +12,25 @@ namespace Molten.Graphics
 {
     public class TextureAssetCube : TextureBase, ITextureCube
     {
-        protected Texture2D _texture;
-        protected Texture2DDescription _description;
+        Texture2D _texture;
+        Texture2DDescription _description;
+        int _cubeCount;
 
         public event TextureHandler OnPreResize;
         public event TextureHandler OnPostResize;
 
         internal TextureAssetCube(GraphicsDevice device, int width,
-            int height, Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, int mipCount = 1, TextureFlags flags = TextureFlags.None)
-            : base(device, width, height, 1, mipCount, format, flags)
+            int height, Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, int mipCount = 1, int arraySize = 1, TextureFlags flags = TextureFlags.None)
+            : base(device, width, height, 1, mipCount, 6, 1, format, flags)
         {
             _description = new Texture2DDescription()
             {
                 Width = width,
                 Height = height,
                 MipLevels = mipCount,
-                ArraySize = 6,
+                ArraySize = 6 * arraySize,
                 Format = format,
-                BindFlags = SharpDX.Direct3D11.BindFlags.ShaderResource,
+                BindFlags = BindFlags.ShaderResource,
                 CpuAccessFlags = GetAccessFlags(),
                 SampleDescription = new SampleDescription()
                 {
@@ -37,16 +38,31 @@ namespace Molten.Graphics
                     Quality = 0,
                 },
                 Usage = GetUsageFlags(),
-                OptionFlags = GetResourceFlags() | SharpDX.Direct3D11.ResourceOptionFlags.TextureCube,
+                OptionFlags = GetResourceFlags() | ResourceOptionFlags.TextureCube,
             };
 
             _resourceViewDescription.Format = _format;
-            _resourceViewDescription.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCube;
-            _resourceViewDescription.TextureCube = new ShaderResourceViewDescription.TextureCubeResource()
+
+            if (arraySize > 1)
             {
-                MostDetailedMip = 0,
-                MipLevels = _description.MipLevels,
-            };
+                _resourceViewDescription.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCubeArray;
+                _resourceViewDescription.TextureCubeArray = new ShaderResourceViewDescription.TextureCubeArrayResource()
+                {
+                    MostDetailedMip = 0,
+                    MipLevels = _description.MipLevels,
+                    CubeCount = arraySize,
+                    First2DArrayFace = 0,
+                };
+            }
+            else
+            {
+                _resourceViewDescription.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCube;
+                _resourceViewDescription.TextureCube = new ShaderResourceViewDescription.TextureCubeResource()
+                {
+                    MostDetailedMip = 0,
+                    MipLevels = _description.MipLevels,
+                };
+            }
         }
 
         protected override SharpDX.Direct3D11.Resource CreateTextureInternal(bool resize)
@@ -98,13 +114,7 @@ namespace Molten.Graphics
         /// <summary>Gets information about the texture.</summary>
         public Texture2DDescription Description { get { return _description; } }
 
-        /// <summary>Gets the number of array slices in the texture. For a texture cube, this is always 6.</summary>
-        public override int ArraySize { get { return _description.ArraySize; } }
-
-        /// <summary>Gets whether or not the texture is a texture array. This is always true for texture cubes.</summary>
-        public override bool IsTextureArray { get { return true; } }
-
-        /// <summary>Gets the number of mip map levels in the texture.</summary>
-        public override int MipMapLevels { get { return _description.MipLevels; } }
+        /// <summary>Gets the number of cube maps stored in the texture. This is greater than 1 if the texture is a cube-map array.</summary>
+        public int CubeCount => _cubeCount;
     }
 }

@@ -35,55 +35,77 @@ namespace Molten.Graphics
             : this(descTexture.Device, descTexture.Width, descTexture.Height, descTexture.DxFormat, descTexture.MipMapLevels, descTexture.ArraySize, descTexture.Flags)
         { }
 
-        internal TextureAsset2D(GraphicsDevice device, int width,
-            int height, Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, int mipCount = 1, int arraySize = 1, TextureFlags flags = TextureFlags.None)
-            : base(device, width, height, 1, mipCount, format, flags)
+        internal TextureAsset2D(
+            GraphicsDevice device,
+            int width,
+            int height,
+            Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
+            int mipCount = 1,
+            int arraySize = 1,
+            TextureFlags flags = TextureFlags.None,
+            int sampleCount = 1)
+            : base(device, width, height, 1, mipCount, arraySize, sampleCount, format, flags)
         {
             _description = new Texture2DDescription()
             {
                 Width = Math.Max(1, width),
                 Height = Math.Max(1, height),
-                MipLevels = mipCount, // Setting to 0 will generate sub-textures.
+                MipLevels = mipCount,
                 ArraySize = Math.Max(arraySize, 1),
                 Format = format,
                 BindFlags = GetBindFlags(),
                 CpuAccessFlags = GetAccessFlags(),
                 SampleDescription = new SampleDescription()
                 {
-                    Count = 1,
+                    Count = sampleCount,
                     Quality = 0,
                 },
                 Usage = GetUsageFlags(),
                 OptionFlags = GetResourceFlags(),
             };
 
+            _resourceViewDescription = new ShaderResourceViewDescription();
+            _resourceViewDescription.Format = _format;
+
             if (_description.ArraySize > 1)
             {
-                _resourceViewDescription = new ShaderResourceViewDescription()
+                if (sampleCount > 1)
                 {
-                    Format = _format,
-                    Dimension = ShaderResourceViewDimension.Texture2DArray,
-                    Texture2DArray = new ShaderResourceViewDescription.Texture2DArrayResource()
+                    _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DMultisampledArray;
+                    _resourceViewDescription.Texture2DMSArray = new ShaderResourceViewDescription.Texture2DMultisampledArrayResource()
+                    {
+                        ArraySize = arraySize,
+                        FirstArraySlice = 0,
+                    };
+                }
+                else
+                {
+                    _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DArray;
+                    _resourceViewDescription.Texture2DArray = new ShaderResourceViewDescription.Texture2DArrayResource()
                     {
                         ArraySize = _description.ArraySize,
                         MipLevels = _description.MipLevels,
                         MostDetailedMip = 0,
                         FirstArraySlice = 0,
-                    },
-                };
+                    };
+                }
             }
             else
             {
-                _resourceViewDescription = new ShaderResourceViewDescription()
+                if (sampleCount > 1)
                 {
-                    Format = _format,
-                    Dimension = ShaderResourceViewDimension.Texture2D,
-                    Texture2D = new ShaderResourceViewDescription.Texture2DResource()
+                    _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DMultisampled;
+                    _resourceViewDescription.Texture2DMS = new ShaderResourceViewDescription.Texture2DMultisampledResource();
+                }
+                else
+                {
+                    _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2D;
+                    _resourceViewDescription.Texture2D = new ShaderResourceViewDescription.Texture2DResource()
                     {
                         MipLevels = _description.MipLevels,
                         MostDetailedMip = 0,
-                    },
-                };
+                    };
+                }
             }
         }
 
@@ -196,14 +218,5 @@ namespace Molten.Graphics
 
         /// <summary>Gets information about the texture.</summary>
         internal Texture2DDescription Description { get { return _description; } }
-
-        /// <summary>Gets whether or not the texture is a texture array. If the array size is greater than 1, it is considered a texture array.</summary>
-        public override bool IsTextureArray { get { return _description.ArraySize > 1; } }
-
-        /// <summary>Gets the maximum number of array slices in the texture resource.</summary>
-        public override int ArraySize { get { return _description.ArraySize; } }
-
-        /// <summary>Gets the number of mip-maps in the texture.</summary>
-        public override int MipMapLevels { get { return _description.MipLevels; } }
     }
 }

@@ -20,8 +20,14 @@ namespace Molten.Graphics
 
         public event TextureHandler OnPostResize;
 
-        internal TextureAsset1D(GraphicsDevice device, int width, Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, int mipCount = 1, int arraySize = 1, TextureFlags flags = TextureFlags.None)
-            : base(device, width, 1, 1, mipCount, format, flags)
+        internal TextureAsset1D(
+            GraphicsDevice device, 
+            int width, 
+            Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, 
+            int mipCount = 1, 
+            int arraySize = 1,
+            TextureFlags flags = TextureFlags.None)
+            : base(device, width, 1, 1, mipCount, arraySize, 1, format, flags)
         {
             if (_isBlockCompressed)
                 throw new NotSupportedException("1D textures do not supports block-compressed formats.");
@@ -36,7 +42,6 @@ namespace Molten.Graphics
                 Format = format,
                 BindFlags = GetBindFlags(),
                 CpuAccessFlags = GetAccessFlags(),
-
                 Usage = GetUsageFlags(),
                 OptionFlags = GetResourceFlags(),
             };
@@ -139,14 +144,5 @@ namespace Molten.Graphics
                 NewWidth = 1,
             });
         }
-
-        /// <summary>Gets whether or not the texture is a texture array. If the array size is greater than 1, it is considered a texture array.</summary>
-        public override bool IsTextureArray { get { return _description.ArraySize > 1; } }
-
-        /// <summary>Gets the maximum number of textures that the texture can hold.</summary>
-        public override int ArraySize { get { return _description.ArraySize; } }
-
-        /// <summary>Gets the number of mip map levels in the texture.</summary>
-        public override int MipMapLevels { get { return _description.MipLevels; } }
     }
 }

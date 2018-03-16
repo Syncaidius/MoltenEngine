@@ -44,5 +44,16 @@ namespace Molten.Graphics
 
             public TextureBase Destination { get; private set; }
         }
+
+        public class TextureDescriptionException : Exception
+        {
+            public TextureDescriptionException(TextureBase texture, string msg)
+            : base(msg)
+            {
+                Texture = texture;
+            }
+
+            public TextureBase Texture { get; private set; }
+        }
     }
 }
