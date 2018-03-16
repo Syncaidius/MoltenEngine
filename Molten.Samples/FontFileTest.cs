@@ -47,7 +47,7 @@ namespace Molten.Samples
             _positions = new List<Matrix4F>();
 
             ContentRequest cr = engine.Content.StartRequest();
-            cr.Load<ITexture2D>("png_test.png;mipmaps=true");
+            cr.Load<ITexture2D>("dds_test.dds;mipmaps=true");
             cr.Load<IMaterial>("Basictexture.sbm");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
