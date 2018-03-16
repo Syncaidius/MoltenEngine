@@ -79,7 +79,14 @@ namespace Molten.Graphics
         /// <param name="initialPages">The initial number of pages in the underlying sprite font texture atlas. Minimum is 1.</param>
         /// <param name="charPadding">The number of pixels to add as padding around each character placed on to the font atlas. 
         /// Default value is 2. Negative padding can cause characters to overlap.</param>
-        public SpriteFont(IRenderer renderer, FontFile font, int ptSize, int tabSize = 3, int texturePageSize = 512, int pointsPerCurve = 12, int initialPages = 1, int charPadding = 2)
+        public SpriteFont(IRenderer renderer, 
+            FontFile font, 
+            int ptSize, 
+            int tabSize = 3, 
+            int texturePageSize = 512, 
+            int pointsPerCurve = 12, 
+            int initialPages = 1, 
+            int charPadding = 2)
         {
             Debug.Assert(texturePageSize >= MIN_PAGE_SIZE, $"Texture page size must be at least {MIN_PAGE_SIZE}");
             Debug.Assert(pointsPerCurve >= 2, $"Points per curve must be at least {MIN_POINTS_PER_CURVE}");
@@ -98,7 +105,6 @@ namespace Molten.Graphics
             _charPadding = charPadding;
 
             _lineSpace = ToPixels(_font.HorizonalHeader.LineSpace);
-
             _rt = renderer.Resources.CreateSurface(_pageSize, _pageSize, arraySize: initialPages);
             _rt.Clear(Color.Transparent);
             _renderData = renderer.CreateRenderData();

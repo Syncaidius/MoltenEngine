@@ -17,12 +17,10 @@ namespace Molten.Graphics
 
         int _vsync;
 
-        internal SwapChainSurface(GraphicsDevice device, int mipCount = 1)
+        internal SwapChainSurface(GraphicsDevice device, int mipCount, int sampleCount)
             : base(device, 1,
-                  1, SharpDX.DXGI.Format.B8G8R8A8_UNorm, mipCount, 1, TextureFlags.NoShaderResource)
-        {
-
-        }
+                  1, SharpDX.DXGI.Format.B8G8R8A8_UNorm, mipCount, 1, sampleCount, TextureFlags.NoShaderResource)
+        { }
 
         protected void CreateSwapChain(DisplayMode mode, bool windowed, IntPtr controlHandle)
         {

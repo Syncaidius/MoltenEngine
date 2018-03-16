@@ -21,10 +21,15 @@ namespace Molten.Graphics
         /// <param name="height"></param>
         /// <param name="format"></param>
         /// <param name="depthBuffer">If true, a depth buffer will be created.</param>
-        internal RenderSurface(GraphicsDevice device, int width, int height,
+        internal RenderSurface(GraphicsDevice device, 
+            int width, 
+            int height,
             Format format = SharpDX.DXGI.Format.R8G8B8A8_SNorm,
-            int mipCount = 1, int arraySize = 1, TextureFlags flags = TextureFlags.None)
-            : base(device, width, height, format, mipCount, arraySize, flags)
+            int mipCount = 1,
+            int arraySize = 1,
+            int sampleCount = 1,
+            TextureFlags flags = TextureFlags.None)
+            : base(device, width, height, format, mipCount, arraySize, sampleCount, flags)
         {
             _format = format;
         }
@@ -34,7 +39,6 @@ namespace Molten.Graphics
             //create render target texture
             _texture = new Texture2D(Device.D3d, _description);
             RTV = new RenderTargetView(Device.D3d, TextureResource);
-
             return _texture;
         }
     }

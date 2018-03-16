@@ -22,19 +22,33 @@ namespace Molten.Graphics
             _fontTable = new List<SpriteFont>();
         }
 
-        public IDepthSurface CreateDepthSurface(int width, int height, int mipCount = 1, int arraySize = 1, DepthFormat format = DepthFormat.R24G8_Typeless, TextureFlags flags = TextureFlags.None)
+        public IDepthSurface CreateDepthSurface(
+            int width, 
+            int height, 
+            int mipCount = 1, 
+            int arraySize = 1, 
+            int sampleCount = 1, 
+            DepthFormat format = DepthFormat.R24G8_Typeless, 
+            TextureFlags flags = TextureFlags.None)
         {
-            return new DepthSurface(_device, width, height, mipCount, arraySize, format, flags);
+            return new DepthSurface(_device, width, height, mipCount, arraySize, sampleCount, format, flags);
         }
 
-        public IWindowSurface CreateFormSurface(string formTitle, int mipCount = 1)
+        public IWindowSurface CreateFormSurface(string formTitle, int mipCount = 1, int sampleCount = 1)
         {
             return new RenderFormSurface(formTitle, _device, mipCount);
         }
 
-        public IRenderSurface CreateSurface(int width, int height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm, int mipCount = 1, int arraySize = 1, TextureFlags flags = TextureFlags.None)
+        public IRenderSurface CreateSurface(
+            int width, 
+            int height, 
+            GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm, 
+            int mipCount = 1,
+            int arraySize = 1, 
+            int sampleCount = 1,
+            TextureFlags flags = TextureFlags.None)
         {
-            return new RenderSurface(_device, width, height, (Format)format, mipCount, arraySize, flags);
+            return new RenderSurface(_device, width, height, (Format)format, mipCount, arraySize, sampleCount, flags);
         }
 
         public ITexture CreateTexture1D(Texture1DProperties properties)
@@ -51,12 +65,27 @@ namespace Molten.Graphics
 
         public ITexture2D CreateTexture2D(Texture2DProperties properties)
         {
-            return new TextureAsset2D(_device, properties.Width, properties.Height, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
+            return new TextureAsset2D(_device, 
+                properties.Width, 
+                properties.Height, 
+                properties.Format.ToApi(), 
+                properties.MipMapLevels, 
+                properties.ArraySize, 
+                properties.Flags, 
+                properties.SampleCount);
         }
 
         public ITexture2D CreateTexture2D(TextureData data)
         {
-            TextureAsset2D tex = new TextureAsset2D(_device, data.Width, data.Height, data.Format.ToApi(), data.MipMapCount, data.ArraySize, data.Flags, data.SampleCount);
+            TextureAsset2D tex = new TextureAsset2D(_device, 
+                data.Width, 
+                data.Height, 
+                data.Format.ToApi(), 
+                data.MipMapCount, 
+                data.ArraySize, 
+                data.Flags, 
+                data.SampleCount);
+
             tex.SetData(data, 0, 0, data.MipMapCount, data.ArraySize);
             return tex;
         }

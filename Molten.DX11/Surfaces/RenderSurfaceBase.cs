@@ -17,8 +17,16 @@ namespace Molten.Graphics
         /// <summary>The underlying render-target-view (RTV).</summary>
         internal RenderTargetView RTV;
 
-        internal RenderSurfaceBase(GraphicsDevice device, int width, int height, Format format, int mipCount = 1, int arraySize = 1, TextureFlags flags = TextureFlags.None)
-            : base(device, width, height, format, mipCount, arraySize, flags)
+        internal RenderSurfaceBase(
+            GraphicsDevice device, 
+            int width, 
+            int height, 
+            Format format, 
+            int mipCount, 
+            int arraySize,
+            int sampleCount, 
+            TextureFlags flags)
+            : base(device, width, height, format, mipCount, arraySize, flags, sampleCount)
         {
             VP = new Viewport(0, 0, width, height);
         }

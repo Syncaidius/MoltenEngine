@@ -48,8 +48,8 @@ namespace Molten.Graphics
         {
             _description = new Texture2DDescription()
             {
-                Width = Math.Max(1, width),
-                Height = Math.Max(1, height),
+                Width = Math.Max(width, 1),
+                Height = Math.Max(height, 1),
                 MipLevels = mipCount,
                 ArraySize = Math.Max(arraySize, 1),
                 Format = format,
@@ -57,7 +57,7 @@ namespace Molten.Graphics
                 CpuAccessFlags = GetAccessFlags(),
                 SampleDescription = new SampleDescription()
                 {
-                    Count = sampleCount,
+                    Count = Math.Max(sampleCount, 1),
                     Quality = 0,
                 },
                 Usage = GetUsageFlags(),

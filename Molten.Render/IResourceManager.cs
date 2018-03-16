@@ -10,16 +10,16 @@ namespace Molten.Graphics
     public interface IResourceManager : IDisposable
     {
         IRenderSurface CreateSurface(int width, int height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
-            int mipCount = 1, int arraySize = 1, TextureFlags flags = TextureFlags.None);
+            int mipCount = 1, int arraySize = 1, int sampleCount = 1, TextureFlags flags = TextureFlags.None);
 
-        IDepthSurface CreateDepthSurface(int width, int height, int mipCount = 1, int arraySize = 1,
+        IDepthSurface CreateDepthSurface(int width, int height, int mipCount = 1, int arraySize = 1, int sampleCount = 1,
             DepthFormat format = DepthFormat.R24G8_Typeless, TextureFlags flags = TextureFlags.None);
 
         /// <summary>Creates a form with a surface which can be rendered on to.</summary>
         /// <param name="formTitle">The title of the form.</param>
         /// <param name="mipCount">The number of mip map levels of the form surface.</param>
         /// <returns></returns>
-        IWindowSurface CreateFormSurface(string formTitle, int mipCount = 1);
+        IWindowSurface CreateFormSurface(string formTitle, int mipCount = 1, int sampleCount = 1);
 
         /// <summary>Creates a new 1D texture and returns it.</summary>
         /// <param name="properties">A set of 1D texture properties.</param>

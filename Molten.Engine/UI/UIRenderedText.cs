@@ -29,9 +29,6 @@ namespace Molten.UI
         Rectangle _bounds;
         Engine _engine;
 
-        SpriteFontWeight _weight = SpriteFontWeight.Regular;
-        SpriteFontStyle _style = SpriteFontStyle.Normal;
-        SpriteFontStretch _stretch = SpriteFontStretch.Normal;
         UIHorizontalAlignment _hAlignment;
         UIVerticalAlignment _vAlignment;
 
@@ -193,47 +190,47 @@ namespace Molten.UI
             }
         }
 
-        [DataMember]
-        [Category("Appearance")]
-        [DisplayName("Weight")]
-        /// <summary>Gets or sets the weight of the rendered text (e.g. bold, black, etc).</summary>
-        public SpriteFontWeight Weight
-        {
-            get { return _weight; }
-            set
-            {
-                _weight = value;
-                _isFontDirty = true;
-            }
-        }
+        //[DataMember]
+        //[Category("Appearance")]
+        //[DisplayName("Weight")]
+        ///// <summary>Gets or sets the weight of the rendered text (e.g. bold, black, etc).</summary>
+        //public SpriteFontWeight Weight
+        //{
+        //    get { return _weight; }
+        //    set
+        //    {
+        //        _weight = value;
+        //        _isFontDirty = true;
+        //    }
+        //}
 
-        [DataMember]
-        [Category("Appearance")]
-        [DisplayName("Font Style")]
-        /// <summary>Gets or sets the style of the rendered text. </summary>
-        public SpriteFontStyle Style
-        {
-            get { return _style; }
-            set
-            {
-                _style = value;
-                _isFontDirty = true;
-            }
-        }
+        //[DataMember]
+        //[Category("Appearance")]
+        //[DisplayName("Font Style")]
+        ///// <summary>Gets or sets the style of the rendered text. </summary>
+        //public SpriteFontStyle Style
+        //{
+        //    get { return _style; }
+        //    set
+        //    {
+        //        _style = value;
+        //        _isFontDirty = true;
+        //    }
+        //}
 
-        [DataMember]
-        [Category("Appearance")]
-        [DisplayName("Font Stretch")]
-        /// <summary>Gets or sets the stretching mode.</summary>
-        public SpriteFontStretch Stretch
-        {
-            get { return _stretch; }
-            set
-            {
-                _stretch = value;
-                _isFontDirty = true;
-            }
-        }
+        //[DataMember]
+        //[Category("Appearance")]
+        //[DisplayName("Font Stretch")]
+        ///// <summary>Gets or sets the stretching mode.</summary>
+        //public SpriteFontStretch Stretch
+        //{
+        //    get { return _stretch; }
+        //    set
+        //    {
+        //        _stretch = value;
+        //        _isFontDirty = true;
+        //    }
+        //}
 
         [DataMember]
         [Category("Appearance")]
