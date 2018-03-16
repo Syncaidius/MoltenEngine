@@ -1,5 +1,4 @@
-﻿using SharpDX.DirectWrite;
-using SharpDX.DXGI;
+﻿using SharpDX.DXGI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -74,7 +73,7 @@ namespace Molten.Graphics
 
         public TextureReader GetDefaultTextureReader(FileInfo file)
         {
-            return new DefaultTextureReader(_device);
+            return null; // new DefaultTextureReader(_device);
         }
 
         public void SaveAsBitmap(Stream stream, TextureData data)

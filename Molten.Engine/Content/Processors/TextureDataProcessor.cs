@@ -32,6 +32,9 @@ namespace Molten.Content
                         break;
                 }
 
+                if (texReader == null)
+                    return;
+
                 texReader.Read(reader);
 
                 //output error, if one occurred.

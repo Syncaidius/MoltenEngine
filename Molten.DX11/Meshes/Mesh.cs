@@ -90,7 +90,7 @@ namespace Molten.Graphics
                 if(_material != value)
                 {
                     _materialWvp = null;
-                    _material = value ?? _renderer.DefaultMaterial;
+                    _material = value ?? _renderer.DefaultMeshMaterial;
 
                     if (_material != null)
                     {

@@ -1,7 +1,6 @@
 ﻿using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
-using SharpDX.WIC;
 using Molten.Collections;
 using System;
 using System.Collections.Generic;
@@ -11,8 +10,6 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    using Direct2DFactory = SharpDX.Direct2D1.Factory;
-    using DirectWriteFactory = SharpDX.DirectWrite.Factory;
     using Device = SharpDX.Direct3D11.Device;
 
     /// <summary>A Direct3D 11 graphics device.</summary>
@@ -29,10 +26,6 @@ namespace Molten.Graphics
         ThreadedList<GraphicsPipe> _contexts;
         Logger _log;
         VertexFormatBuilder _vertexBuilder;
-
-        ImagingFactory _wicFactory;
-        Direct2DFactory _d2dFactory;
-        DirectWriteFactory _dWriteFactory;
         DX11DisplayManager _displayManager;
         GraphicsSettings _settings;
         ShaderSampler _defaultSampler;
@@ -62,10 +55,6 @@ namespace Molten.Graphics
 
             _features = new GraphicsDeviceFeatures(_d3d);
             Initialize(_log, this, _d3d.ImmediateContext);
-
-            _wicFactory = new ImagingFactory();
-            _d2dFactory = new Direct2DFactory(SharpDX.Direct2D1.FactoryType.SingleThreaded);
-            _dWriteFactory = new DirectWriteFactory(SharpDX.DirectWrite.FactoryType.Shared);
 
             //// Initialize surfaces for the initial outputs.
             //List<IDisplayOutput> initialOutputs = new List<IDisplayOutput>();
@@ -126,9 +115,6 @@ namespace Molten.Graphics
             _contexts.Clear();
 
             DisposeObject(ref _defaultSampler);
-            DisposeObject(ref _wicFactory);
-            DisposeObject(ref _d2dFactory);
-            DisposeObject(ref _dWriteFactory);
             DisposeObject(ref _d3d);
         }
 
@@ -139,15 +125,6 @@ namespace Molten.Graphics
 
         /// <summary>Gets an instance of <see cref="GraphicsDeviceFeatures"/> which provides access to feature support details for the current graphics device.</summary>
         public GraphicsDeviceFeatures Features => _features;
-
-        /// <summary>Returns the Windows Imaging Component (WIC) factory.</summary>
-        public ImagingFactory WICFactory => _wicFactory;
-
-        /// <summary>Gets the Direct2D factory instance.</summary>
-        public Direct2DFactory Direct2D => _d2dFactory;
-
-        /// <summary>Gets the DirectWrite factory instance.</summary>
-        public DirectWriteFactory DirectWrite => _dWriteFactory;
 
         public DX11DisplayManager DisplayManager => _displayManager;
 

@@ -20,6 +20,13 @@ namespace Molten
             _byKey = new ThreadedDictionary<string, SettingValue>();
         }
 
+        public void Log(Logger log, string title)
+        {
+            log.WriteLine($"{title} settings:");
+            foreach(KeyValuePair<string, SettingValue>  p in _byKey)
+                log.WriteLine($"\t {p.Key}: {p.Value}");
+        }
+
         protected bool RemoveSetting(string key)
         {
             SettingValue r = null;

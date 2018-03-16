@@ -22,16 +22,19 @@ namespace Molten.Graphics
         Logger _log;
         RenderProfilerDX _profiler;
         HlslCompiler _shaderCompiler;
-        Material _defaultMaterial;
         ThreadedQueue<RendererTask> _tasks;
         ThreadedList<ISwapChainSurface> _outputSurfaces;
         HashSet<TextureAsset2D> _usedSurfaces;
+        Material _defaultMeshMaterial;
 
         List<DebugOverlayPage> _debugOverlay;
         int _debugOverlayPage = 0;
         SpriteFont _debugFont;
         bool _debugOverlayVisible = false;
-        
+
+
+        int _requestedMultiSampleLevel = 1;
+        internal int MultisampleLevel = 1;
         internal SpriteBatchDX11 SpriteBatcher;
         internal List<SceneRenderDataDX11> Scenes;
         internal GraphicsBuffer StaticVertexBuffer;
@@ -54,6 +57,11 @@ namespace Molten.Graphics
 
         public void InitializeRenderer(GraphicsSettings settings)
         {
+            settings.Log(_log, "Graphics");
+            MultisampleLevel = MathHelper.Clamp(settings.MSAA, 1, 16);
+            _requestedMultiSampleLevel = MultisampleLevel;
+            settings.MSAA.OnChanged += MSAA_OnChanged;
+
             _profiler = new RenderProfilerDX();
             _outputSurfaces = new ThreadedList<ISwapChainSurface>();
             _device = new GraphicsDevice(_log, settings, _profiler, _displayManager, settings.EnableDebugLayer);
@@ -135,6 +143,12 @@ namespace Molten.Graphics
         {
             _profiler.StartCapture();
             _device.Profiler.StartCapture();
+
+            if(_requestedMultiSampleLevel != MultisampleLevel)
+            {
+                // TODO re-create all multi-sampled textures to match the new sample level.
+                MultisampleLevel = _requestedMultiSampleLevel;
+            }
 
             // Perform all queued tasks before proceeding
             RendererTask task = null;
@@ -298,6 +312,11 @@ namespace Molten.Graphics
             }
         }
 
+        private void MSAA_OnChanged(int oldValue, int newValue)
+        {
+            _requestedMultiSampleLevel = newValue;
+        }
+
         public void Dispose()
         {
             _outputSurfaces.ForInterlock(0, 1, (index, surface) =>
@@ -344,7 +363,7 @@ namespace Molten.Graphics
 
         IComputeManager IRenderer.Compute => _compute;
 
-        internal Material DefaultMaterial => _defaultMaterial;
+        internal Material DefaultMeshMaterial => _defaultMeshMaterial;
 
         internal HlslCompiler ShaderCompiler => _shaderCompiler;
 
