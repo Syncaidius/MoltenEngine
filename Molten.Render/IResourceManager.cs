@@ -38,7 +38,7 @@ namespace Molten.Graphics
         ITexture2D CreateTexture2D(TextureData data);
 
         /// <summary>Creates a new cube texture (cube-map) and returns it.</summary>
-        /// <param name="properties">A set of 2D texture properties. the ArraySize property is ignored for cube textures as they always have a size of 6 (1 per side).</param>
+        /// <param name="properties">A set of 2D texture properties.</param>
         ITextureCube CreateTextureCube(Texture2DProperties properties);
 
         /// <summary>Creates a new cube texture (cube-map) and returns it.</summary>

@@ -44,6 +44,7 @@ namespace Molten.Graphics
         public int MipMapCount;
         public int ExpectedMipmapCount;
         public int ArraySize;
+        public int SampleCount;
 
         /// <summary>The most detailed mip map level. by default, this is 0.</summary>
         public int HighestMipMap = 0;
@@ -89,6 +90,7 @@ namespace Molten.Graphics
                 Levels = new Slice[this.Levels.Length],
                 MipMapCount = this.MipMapCount,
                 Width = this.Width,
+                SampleCount = this.SampleCount,
             };
 
             // Copy mip-map level data.

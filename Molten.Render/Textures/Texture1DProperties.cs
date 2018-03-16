@@ -18,6 +18,8 @@ namespace Molten.Graphics
 
         public int ArraySize = 1;
 
+        public int SampleCount = 1;
+
         public TextureFlags Flags = TextureFlags.None;
     }
 }
