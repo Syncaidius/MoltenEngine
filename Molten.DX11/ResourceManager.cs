@@ -56,19 +56,23 @@ namespace Molten.Graphics
 
         public ITexture2D CreateTexture2D(TextureData data)
         {
-            TextureAsset2D tex = new TextureAsset2D(_device, data.Width, data.Height, data.Format.ToApi(), data.MipMapCount, data.ArraySize, data.Flags);
+            TextureAsset2D tex = new TextureAsset2D(_device, data.Width, data.Height, data.Format.ToApi(), data.MipMapCount, data.ArraySize, data.Flags, data.SampleCount);
             tex.SetData(data, 0, 0, data.MipMapCount, data.ArraySize);
             return tex;
         }
 
         public ITextureCube CreateTextureCube(Texture2DProperties properties)
         {
-            throw new NotImplementedException();
+            int cubeCount = Math.Max(properties.ArraySize / 6, 1);
+            return new TextureAssetCube(_device, properties.Width, properties.Height, properties.Format.ToApi(), properties.MipMapLevels, cubeCount, properties.Flags);
         }
 
         public ITextureCube CreateTextureCube(TextureData data)
         {
-            throw new NotImplementedException();
+            int cubeCount = Math.Max(data.ArraySize / 6, 1);
+            TextureAssetCube tex = new TextureAssetCube(_device, data.Width, data.Height, data.Format.ToApi(), data.MipMapCount, cubeCount, data.Flags);
+            tex.SetData(data, 0, 0, data.MipMapCount, data.ArraySize);
+            return tex;
         }
 
         public TextureReader GetDefaultTextureReader(FileInfo file)

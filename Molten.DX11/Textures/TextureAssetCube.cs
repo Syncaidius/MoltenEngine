@@ -20,15 +20,17 @@ namespace Molten.Graphics
         public event TextureHandler OnPostResize;
 
         internal TextureAssetCube(GraphicsDevice device, int width,
-            int height, Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, int mipCount = 1, int arraySize = 1, TextureFlags flags = TextureFlags.None)
+            int height, Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, int mipCount = 1, int cubeCount = 1, TextureFlags flags = TextureFlags.None)
             : base(device, width, height, 1, mipCount, 6, 1, format, flags)
         {
+            _cubeCount = cubeCount;
+
             _description = new Texture2DDescription()
             {
                 Width = width,
                 Height = height,
                 MipLevels = mipCount,
-                ArraySize = 6 * arraySize,
+                ArraySize = 6 * _cubeCount,
                 Format = format,
                 BindFlags = BindFlags.ShaderResource,
                 CpuAccessFlags = GetAccessFlags(),
@@ -43,14 +45,14 @@ namespace Molten.Graphics
 
             _resourceViewDescription.Format = _format;
 
-            if (arraySize > 1)
+            if (cubeCount > 1)
             {
                 _resourceViewDescription.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCubeArray;
                 _resourceViewDescription.TextureCubeArray = new ShaderResourceViewDescription.TextureCubeArrayResource()
                 {
                     MostDetailedMip = 0,
                     MipLevels = _description.MipLevels,
-                    CubeCount = arraySize,
+                    CubeCount = cubeCount,
                     First2DArrayFace = 0,
                 };
             }
