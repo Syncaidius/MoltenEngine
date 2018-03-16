@@ -22,6 +22,11 @@ namespace Molten
         public abstract void Apply();
 
         public abstract void Cancel();
+
+        /// <summary>
+        /// Gets the value as an <see cref="object"/>.
+        /// </summary>
+        public abstract object Object { get; }
     }
 
     /// <summary>A utility class for providing basic value change tracking, with subscribable event.</summary>
@@ -75,5 +80,10 @@ namespace Molten
             get { return _pendingValue; }
             set { _pendingValue = value; }
         }
+
+        /// <summary>
+        /// Gets the value as an <see cref="object"/>.
+        /// </summary>
+        public override object Object => _pendingValue;
     }
 }

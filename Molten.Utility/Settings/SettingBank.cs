@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
+using System.Collections;
 
 namespace Molten
 {
@@ -23,8 +24,29 @@ namespace Molten
         public void Log(Logger log, string title)
         {
             log.WriteLine($"{title} settings:");
-            foreach(KeyValuePair<string, SettingValue>  p in _byKey)
-                log.WriteLine($"\t {p.Key}: {p.Value}");
+            foreach (KeyValuePair<string, SettingValue> p in _byKey)
+            {
+                string msg = "";
+                if (!(p.Value.Object is string) && p.Value.Object is IEnumerable enumerable)
+                {
+                    msg = $"\t {p.Key}: ";
+                    bool first = true;
+                    foreach (object obj in enumerable)
+                    {
+                        if (!first)
+                            msg += ", ";
+                        else
+                            first = false;
+
+                        msg += $"{obj.ToString()}";
+                    }
+                }
+                else {
+                    msg = $"\t {p.Key}: {p.Value.Object}";
+                }
+
+                log.WriteLine(msg);
+            }
         }
 
         protected bool RemoveSetting(string key)

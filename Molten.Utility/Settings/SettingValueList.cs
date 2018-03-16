@@ -67,5 +67,7 @@ namespace Molten
             get { return _pendingValue; }
             set { _pendingValue = value; }
         }
+
+        public override object Object => _pendingValue;
     }
 }
