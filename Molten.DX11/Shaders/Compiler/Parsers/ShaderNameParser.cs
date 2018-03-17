@@ -11,7 +11,7 @@ namespace Molten.Graphics
     {
         public ShaderNameParser(string nodeName) : base(nodeName) { }
 
-        internal override NodeParseResult Parse(HlslShader shader, XmlNode node)
+        internal override NodeParseResult Parse(HlslShader shader, ShaderCompilerContext context, XmlNode node)
         {
             if (string.IsNullOrWhiteSpace(node.InnerText))
                 shader.Name = "Unnamed Material";

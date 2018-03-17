@@ -22,7 +22,7 @@ namespace Molten.Graphics
             ComputeTask compute = new ComputeTask(renderer.Device, context.Filename);
             try
             {
-                ParseHeader(compute, context.Header);
+                ParseHeader(compute, context);
                 CompilationResult computeResult = null;
                 if (Compile(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out computeResult))
                 {

@@ -11,7 +11,7 @@ namespace Molten.Graphics
     {
         public MaterialAuthorParser(string nodeName) : base(nodeName) { }
 
-        internal override NodeParseResult Parse(HlslShader shader, XmlNode node)
+        internal override NodeParseResult Parse(HlslShader shader, ShaderCompilerContext context, XmlNode node)
         {
             shader.Description = string.IsNullOrWhiteSpace(node.InnerText) ? "Unknown" : node.InnerText;
             return new NodeParseResult(NodeParseResultType.Success);

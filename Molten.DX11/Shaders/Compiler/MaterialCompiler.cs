@@ -32,7 +32,7 @@ namespace Molten.Graphics
             Material material = new Material(renderer.Device, context.Filename);
             try
             {
-                ParseHeader(material, context.Header);
+                ParseHeader(material, context);
             }
             catch (Exception e)
             {

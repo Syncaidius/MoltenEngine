@@ -43,10 +43,10 @@ namespace Molten.Graphics
 
         internal abstract ShaderParseResult Parse(RendererDX11 renderer, ShaderCompilerContext context);
 
-        protected void ParseHeader(HlslShader shader, string header)
+        protected void ParseHeader(HlslShader shader, ShaderCompilerContext context)
         {
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(header);
+            doc.LoadXml(context.Header);
 
             XmlNode rootNode = doc.ChildNodes[0];
             foreach (XmlNode node in rootNode.ChildNodes)
@@ -54,7 +54,7 @@ namespace Molten.Graphics
                 string nodeName = node.Name.ToLower();
                 ShaderNodeParser parser = null;
                 if (_parsers.TryGetValue(nodeName, out parser))
-                    parser.Parse(shader, node);
+                    parser.Parse(shader, context, node);
             }
         }
 

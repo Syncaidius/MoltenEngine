@@ -27,17 +27,33 @@ namespace Molten.Graphics
             AddSubCompiler<ComputeCompiler>("compute");
         }
 
-        /* TODO:
-         *  - Attach XML-style metadata to the top of a material file containing:
-         *      - Entry points
-         *      - Shader model version
-         *      - Material name
-         *      - Material Author
-         *      - Description/Instructions
-         *  
+        /*
          *  EXAMPLE:
          *  
          *  <material>
+         *      <rasterizer>
+         *          <cull>clockwise</cull>
+         *          <depthBias>0</depthBias>
+         *          <depthClamp>1.0</depthClamp>
+         *          <fill>solid</fill>
+         *          <aaLine>false</aaLine>                                          // IsAntialiasedLineEnabled
+         *          <depthClip>false</depthClip>                                    // IsDepthClipEnabled
+         *          <front>clockwise</front>                                        // IsFrontCounterClockwise
+         *          <multisample>false</multisample>                                // IsMultisampleEnabled
+         *          <scissor>0,0,512,512</scissor>                                  // IsScissorEnabled + Scissor rectangle -- Do we allow control over this?
+         *          <slopeBias>0</slopeBias>                                        // SlopeScaledDepthBias
+         *      </rasterizer>
+         *      <blend>
+         *          <enabled>true</enabled>                                         // IsBlendEnabled
+         *              OR
+         *          <enabled rt="1">false</enabled>                                 // IsBlendEnabled for RT index 1. If the rt attribute is invalid or not present, treat it as rt index 0.
+         *          <SourceBlend rt="1">InverseDestinationAlpha</SourceBlend>       // InverseDestinationAlpha
+         *          // ... etc
+         *      </blend>
+         *      <depth>
+         *          <comparison>LessEqual</comparison>
+         *          // ... etc
+         *      </depth>
          *      <name>G-Buffer Material</name>
          *      <description>A description of the material</description>
          *      <pass>
@@ -48,6 +64,15 @@ namespace Molten.Graphics
          *          <hull>H_Main</hull>
          *          <domain>Light_Domain</doman>
          *          <pixel>PS_Main</pixel>
+         *          <rasterizer>
+         *              // [Optional] Pass-specific rasterizer state. Placing inside a pass overrides any states defined in the material root. See above for example.
+         *          </rasterizer
+         *          <blend>
+         *              // [Optional] Pass-specific blend state.
+         *          </blend
+         *          <depth>
+         *              // [Optional] Pass-specific depth state.
+         *          </depth
          *      <pass>
          *  </material>
          *  
@@ -57,7 +82,7 @@ namespace Molten.Graphics
          *      <entry>CS_Main</entry>
          *  </compute>
          * 
-         *  shader code goes here
+         *  HLSL code from and onwards.
          */
 
         private void AddSubCompiler<T>(string nodeName) where T : HlslSubCompiler

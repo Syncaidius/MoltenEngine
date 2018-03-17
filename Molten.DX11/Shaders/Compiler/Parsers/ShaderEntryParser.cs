@@ -12,7 +12,7 @@ namespace Molten.Graphics
     {
         public ShaderEntryParser(string nodeName) : base(nodeName) { }
 
-        internal override NodeParseResult Parse(HlslShader shader, XmlNode node)
+        internal override NodeParseResult Parse(HlslShader shader, ShaderCompilerContext context, XmlNode node)
         {
             if (!(shader is ComputeTask))
                 return new NodeParseResult(NodeParseResultType.Ignored);
