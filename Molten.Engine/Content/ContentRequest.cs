@@ -122,6 +122,7 @@ namespace Molten
             Manager = null;
             Elements.Clear();
             RequestedFiles.Clear();
+            OnCompleted = null;
         }
     }
 }
