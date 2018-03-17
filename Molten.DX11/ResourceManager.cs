@@ -158,9 +158,9 @@ namespace Molten.Graphics
         /// <param name="source">The source code to be parsed and compiled.</param>
         /// <param name="filename">The name of the source file. Used as a point of reference in debug/error messages only.</param>
         /// <returns></returns>
-        public ShaderParseResult CreateShaders(string source, string filename = null)
+        public ShaderCompileResult CreateShaders(string source, string filename = null)
         {
-            ShaderParseResult result = _renderer.ShaderCompiler.Parse(source, filename);
+            ShaderCompileResult result = _renderer.ShaderCompiler.Compile(source, filename);
 
             foreach (string error in result.Errors)
                 _renderer.Device.Log.WriteError(error);

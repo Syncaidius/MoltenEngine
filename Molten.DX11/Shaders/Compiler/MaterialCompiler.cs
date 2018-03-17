@@ -26,17 +26,17 @@ namespace Molten.Graphics
             _layoutValidator = new MaterialLayoutValidator();
         }
 
-        internal override ShaderCompileResult Parse(RendererDX11 renderer, string header, string source, string filename = null)
+        internal override ShaderParseResult Parse(RendererDX11 renderer, ShaderCompilerContext context)
         {
-            ShaderCompileResult result = new ShaderCompileResult();
-            Material material = new Material(renderer.Device, filename);
+            ShaderParseResult result = new ShaderParseResult();
+            Material material = new Material(renderer.Device, context.Filename);
             try
             {
-                ParseHeader(material, header);
+                ParseHeader(material, context.Header);
             }
             catch (Exception e)
             {
-                result.Errors.Add($"{filename ?? "Material header error"}: {e.Message}");
+                result.Errors.Add($"{context.Filename ?? "Material header error"}: {e.Message}");
                 return result;
             }
 
@@ -44,7 +44,7 @@ namespace Molten.Graphics
             MaterialPassCompileResult firstPassResult = null;
             foreach (MaterialPass pass in material.Passes)
             {
-                MaterialPassCompileResult passResult = CompilePass(pass, source);
+                MaterialPassCompileResult passResult = CompilePass(pass, context);
                 firstPassResult = firstPassResult ?? passResult;
 
                 result.Warnings.AddRange(passResult.Warnings);
@@ -85,9 +85,8 @@ namespace Molten.Graphics
             return result;
         }
 
-        private MaterialPassCompileResult CompilePass(MaterialPass pass, string source)
+        private MaterialPassCompileResult CompilePass(MaterialPass pass, ShaderCompilerContext context)
         {
-            string fn = pass.Material.Filename;
             MaterialPassCompileResult result = new MaterialPassCompileResult(pass);
 
             // Compile each stage of the material pass.
@@ -96,7 +95,7 @@ namespace Molten.Graphics
                 if (pass.Compositions[i].Optional && string.IsNullOrWhiteSpace(pass.Compositions[i].EntryPoint))
                     continue;
 
-                if (Compile(pass.Compositions[i].EntryPoint, MaterialPass.ShaderTypes[i], source, fn, out result.Results[i]))
+                if (Compile(pass.Compositions[i].EntryPoint, MaterialPass.ShaderTypes[i], context, out result.Results[i]))
                 {
                     result.Reflections[i] = BuildIo(result.Results[i], pass.Compositions[i]);
                     bool hasCommonConstants = CheckForConstantBuffer(result, result.Reflections[i], CONST_COMMON_NAME, CONST_COMMON_VAR_NAMES);
@@ -107,7 +106,7 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    result.Errors.Add($"{fn}: Failed to compile {MaterialPass.ShaderTypes[i]} stage of material pass.");
+                    result.Errors.Add($"{context.Filename}: Failed to compile {MaterialPass.ShaderTypes[i]} stage of material pass.");
                     return result;
                 }
             }

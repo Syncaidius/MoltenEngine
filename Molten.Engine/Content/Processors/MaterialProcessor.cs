@@ -18,7 +18,7 @@ namespace Molten.Content
             using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, true, 2048, true))
             {
                 string source = reader.ReadToEnd();
-                ShaderParseResult r = engine.Renderer.Resources.CreateShaders(source, file.ToString());
+                ShaderCompileResult r = engine.Renderer.Resources.CreateShaders(source, file.ToString());
                 foreach(string group in r.ShaderGroups.Keys)
                 {
                     List<IShader> list = r.ShaderGroups[group];

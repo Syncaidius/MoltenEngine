@@ -16,15 +16,15 @@ namespace Molten.Graphics
             AddParser<ShaderEntryParser>("entry");
         }
 
-        internal override ShaderCompileResult Parse(RendererDX11 renderer, string header, string source, string filename = null)
+        internal override ShaderParseResult Parse(RendererDX11 renderer, ShaderCompilerContext context)
         {
-            ShaderCompileResult result = new ShaderCompileResult();
-            ComputeTask compute = new ComputeTask(renderer.Device, filename);
+            ShaderParseResult result = new ShaderParseResult();
+            ComputeTask compute = new ComputeTask(renderer.Device, context.Filename);
             try
             {
-                ParseHeader(compute, header);
+                ParseHeader(compute, context.Header);
                 CompilationResult computeResult = null;
-                if (Compile(compute.Composition.EntryPoint, ShaderType.ComputeShader, source, filename, out computeResult))
+                if (Compile(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out computeResult))
                 {
                     ShaderReflection shaderRef = new ShaderReflection(computeResult.Bytecode);
                     if (BuildStructure(compute, shaderRef, computeResult, compute.Composition))
@@ -35,7 +35,7 @@ namespace Molten.Graphics
             }
             catch (Exception e)
             {
-                result.Errors.Add($"{filename ?? "Material header error"}: {e.Message}");
+                result.Errors.Add($"{context.Filename ?? "Material header error"}: {e.Message}");
             }
 
             if(result.Errors.Count == 0)

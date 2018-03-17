@@ -107,9 +107,9 @@
     <Compile Include="Shaders\Samplers\IShaderSampler.cs" />
     <Compile Include="Shaders\Samplers\SamplerAddressMode.cs" />
     <Compile Include="Shaders\Samplers\SamplerFilter.cs" />
-    <Compile Include="Shaders\ShaderCompileResult.cs" />
-    <Compile Include="Shaders\ShaderModel.cs" />
     <Compile Include="Shaders\ShaderParseResult.cs" />
+    <Compile Include="Shaders\ShaderModel.cs" />
+    <Compile Include="Shaders\ShaderCompileResult.cs" />
     <Compile Include="Shaders\ShaderType.cs" />
     <Compile Include="Font\SpriteFont.cs" />
     <Compile Include="SpriteBatch\SpriteBatchBase.cs" />

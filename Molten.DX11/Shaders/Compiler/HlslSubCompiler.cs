@@ -41,7 +41,7 @@ namespace Molten.Graphics
             _parsers.Add(nodeName, parser);
         }
 
-        internal abstract ShaderCompileResult Parse(RendererDX11 renderer, string header, string source, string filename = null);
+        internal abstract ShaderParseResult Parse(RendererDX11 renderer, ShaderCompilerContext context);
 
         protected void ParseHeader(HlslShader shader, string header)
         {
@@ -270,16 +270,23 @@ namespace Molten.Graphics
         /// <param name="filename"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        protected bool Compile(string entryPoint, ShaderType type, string source, string filename, out CompilationResult result)
+        protected bool Compile(string entryPoint, ShaderType type, ShaderCompilerContext context, out CompilationResult result)
         {
-            string strProfile = ShaderModel.Model5_0.ToProfile(type);
-            result = ShaderBytecode.Compile(source, entryPoint, strProfile, _compileFlags, EffectFlags.None, filename);
-
-            if (result.Message != null)
+            // Since it's not possible to have two functions in the same file with the same name, we'll just check if
+            // a shader with the same entry-point name is already loaded in the context.
+            if (!context.HlslShaders.TryGetValue(entryPoint, out result))
             {
-                LogHlslMessage($"Material Pass ({entryPoint}) -- {result.Message}", filename);
-                if (result.Message.Contains("error")) // NOTE: Workaround for SharpDX 4.0.1 where .HasErrors appears broken.
-                    return false;
+                string strProfile = ShaderModel.Model5_0.ToProfile(type);
+                result = ShaderBytecode.Compile(context.Source, entryPoint, strProfile, _compileFlags, EffectFlags.None, context.Filename);
+
+                if (result.Message != null)
+                {
+                    LogHlslMessage($"Material Pass ({entryPoint}) -- {result.Message}", context.Filename);
+                    if (result.Message.Contains("error")) // NOTE: Workaround for SharpDX 4.0.1 where .HasErrors appears broken.
+                        return false;
+                }
+
+                context.HlslShaders.Add(entryPoint, result);
             }
 
             return !result.HasErrors;

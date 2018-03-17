@@ -67,9 +67,9 @@ namespace Molten.Graphics
             _subCompilers.Add(nodeName, sub);
         }
 
-        internal ShaderParseResult Parse(string source, string filename = null)
+        internal ShaderCompileResult Compile(string source, string filename = null)
         {
-            ShaderParseResult result = new ShaderParseResult();
+            ShaderCompilerContext context = new ShaderCompilerContext();
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>();
 
             foreach (string nodeName in _subCompilers.Keys)
@@ -99,14 +99,19 @@ namespace Molten.Graphics
             // Proceed if there is no pre-processor errors.
             if (!string.IsNullOrWhiteSpace(hlslError) == false)
             {
+                context.Source = source;
+                context.Filename = filename;
+
                 foreach(string nodeName in headers.Keys)
                 {
                     HlslSubCompiler com = _subCompilers[nodeName];
                     List<string> nodeHeaders = headers[nodeName];
                     foreach(string h in nodeHeaders)
                     {
-                        ShaderCompileResult parseResult = com.Parse(_renderer, h, source, filename);
-                        result.AddResult(nodeName, parseResult);
+                        context.Header = h;
+                        
+                        ShaderParseResult parseResult = com.Parse(_renderer, context);
+                        context.Result.AddResult(nodeName, parseResult);
                     }
                 }
             }
@@ -115,7 +120,7 @@ namespace Molten.Graphics
                 _log.WriteLine($"{filename ?? "Shader source error"}: {hlslError}");
             }
 
-            return result;
+            return context.Result;
         }
 
         private List<string> GetHeaders(string headerTagName, string source)

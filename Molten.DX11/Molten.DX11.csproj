@@ -155,6 +155,7 @@
     <Compile Include="Scene\Changes\SpriteSetLayerCount.cs" />
     <Compile Include="Scene\Changes\SpriteSetLayerVisibility.cs" />
     <Compile Include="Scene\SceneRenderDataDX11.cs" />
+    <Compile Include="Shaders\Compiler\ShaderCompilerContext.cs" />
     <Compile Include="Spritebatch\SpriteBatchDX11.cs" />
     <Compile Include="Scene\SpriteLayer.cs" />
     <Compile Include="ShaderModelExtensionsDX11.cs" />
@@ -258,6 +259,9 @@
       <Project>{1e4854b0-d1a8-40ae-9038-1dea304574a5}</Project>
       <Name>Molten.Utility</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Shaders\Compiler\Parsers\Rasterizer\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

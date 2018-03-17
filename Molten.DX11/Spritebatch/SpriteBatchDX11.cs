@@ -51,7 +51,7 @@ namespace Molten.Graphics
 
             if (!string.IsNullOrWhiteSpace(source))
             {
-                ShaderParseResult result = renderer.ShaderCompiler.Parse(source, namepace);
+                ShaderCompileResult result = renderer.ShaderCompiler.Compile(source, namepace);
                 _defaultMaterial = result["material", "sprite-texture"] as Material;
                 _defaultNoTextureMaterial = result["material", "sprite-no-texture"] as Material;
                 _defaultLineMaterial = result["material", "line"] as Material;
