@@ -138,7 +138,6 @@ namespace Molten
 
                 int remaining = count * Marshal.SizeOf<T>();
                 T[] result = new T[count];
-                int blockOffset = 0;
 
                 while (remaining > 0)
                 {
@@ -146,10 +145,8 @@ namespace Molten
                     BaseStream.Read(_arrayBuffer, 0, toRead);
 
                     Array.Reverse(_arrayBuffer, 0, toRead); // Now the bytes per-element are correct, but the elements themselves are in reversed order.
-                    Buffer.BlockCopy(_arrayBuffer, 0, result, blockOffset, toRead);
-
-                    blockOffset += toRead;
                     remaining -= toRead;
+                    Buffer.BlockCopy(_arrayBuffer, 0, result, remaining, toRead);
                 }
 
                 // Reverse result array to flip elements back to correct ordering.

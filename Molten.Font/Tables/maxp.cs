@@ -90,19 +90,23 @@ namespace Molten.Font
             MajorVersion = reader.ReadUInt16();
             MinorVersion = reader.ReadUInt16();
             NumGlyphs = reader.ReadUInt16();
-            MaxPoints = reader.ReadUInt16();
-            MaxContours = reader.ReadUInt16();
-            MaxCompositePoints = reader.ReadUInt16();
-            MaxCompositeContours = reader.ReadUInt16();
-            MaxZones = reader.ReadUInt16();
-            MaxTwilightPoints = reader.ReadUInt16();
-            MaxStorage = reader.ReadUInt16();
-            MaxFunctionDefs = reader.ReadUInt16();
-            MaxInstructionDefs = reader.ReadUInt16();
-            MaxStackElements = reader.ReadUInt16();
-            MaxSizeOfInstructions = reader.ReadUInt16();
-            MaxComponentElements = reader.ReadUInt16();
-            MaxComponentDepth = reader.ReadUInt16();
+
+            if (MajorVersion == 1 && MinorVersion == 0)
+            {
+                MaxPoints = reader.ReadUInt16();
+                MaxContours = reader.ReadUInt16();
+                MaxCompositePoints = reader.ReadUInt16();
+                MaxCompositeContours = reader.ReadUInt16();
+                MaxZones = reader.ReadUInt16();
+                MaxTwilightPoints = reader.ReadUInt16();
+                MaxStorage = reader.ReadUInt16();
+                MaxFunctionDefs = reader.ReadUInt16();
+                MaxInstructionDefs = reader.ReadUInt16();
+                MaxStackElements = reader.ReadUInt16();
+                MaxSizeOfInstructions = reader.ReadUInt16();
+                MaxComponentElements = reader.ReadUInt16();
+                MaxComponentDepth = reader.ReadUInt16();
+            }
         }
     }
 }

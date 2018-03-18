@@ -71,33 +71,7 @@ namespace Molten.Font
                 else
                     glyphs[id] = ReadCompositeGlyph(reader, log, glyphs, tableStartPos, locaOffsets, bounds, id);
 
-                LogGlyph(log, reader.Position, tableStartPos, locaOffsets, length, id, numContours >= 0);
             }
-        }
-
-        [Conditional("DEBUG")]
-        private void LogGlyph(Logger log, long readerPos, long tableStartPos, uint[] locaOffsets, uint length, ushort id, bool isSimple)
-        {
-            long expectedEndPos = tableStartPos + locaOffsets[id + 1];
-            long dif = readerPos - expectedEndPos;
-
-            // Did we read less than expected? 
-            if (dif < 0)
-            {
-                // Adjust for padding. MS docs: Note that the local offsets should be 32-bit aligned. Offsets which are not 32-bit aligned may seriously degrade performance of some processors. 
-                long expectedPadding = (expectedEndPos - readerPos) % 32;
-                expectedEndPos -= expectedPadding;
-            }
-
-            //if (readerPos != expectedEndPos)
-            //{
-            //    log.WriteDebugLine($"[GLYF] ({(isSimple ? "Simple   " : "Composite")}) Glyph {id} was read/aligned incorrectly. " +
-            //        $"Length: {length}. End Pos -- Expected: {expectedEndPos}. Actual: {readerPos}. Dif: {(dif < 0 ? "" : "+")}{dif} bytes");
-            //}
-            //else
-            //{
-            //    log.WriteDebugLine($"[GLYF] Read ({(isSimple ? "Simple   " : "Composite")}) Glyph {id} Length: {length}. ");
-            //}
         }
 
         private Glyph ReadCompositeGlyph(EnhancedBinaryReader reader, Logger log, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, Rectangle bounds, ushort id)
