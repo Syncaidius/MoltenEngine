@@ -101,7 +101,9 @@ namespace Molten.Samples
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
             AcceptPlayerInput = false;
 
-            LoadFontFile();
+            //LoadFontFile();
+            LoadSystemFontFile("Arial");
+            InitializeFontDebug();
             GenerateChar('{');
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
@@ -132,7 +134,24 @@ namespace Molten.Samples
                     _font2Test = new SpriteFont(Engine.Renderer, _fontFile, 20);
                 }
             }
+        }
 
+        private void LoadSystemFontFile(string fontName)
+        {
+            Stopwatch fontTimer = new Stopwatch();
+            using (FontReader reader = new FontReader(fontName, Log))
+            {
+                fontTimer.Start();
+                _fontFile = reader.ReadFont(true);
+                fontTimer.Stop();
+                Log.WriteLine($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read system font");
+
+                _font2Test = new SpriteFont(Engine.Renderer, _fontFile, 20);
+            }
+        }
+
+        private void InitializeFontDebug()
+        {
             _fontBounds = _fontFile.ContainerBounds;
             _fontBounds.X *= _scale;
             _fontBounds.Y *= _scale;
@@ -295,46 +314,13 @@ namespace Molten.Samples
                 {
                     foreach (Shape s in _shapes)
                     {
-                        if (ContainsTest(s, _clickPoint))
+                        if (s.Contains(_clickPoint))
                             _clickColor = Color.Green;
                     }
                 }
             }
 
             base.OnUpdate(time);
-        }
-
-        public bool ContainsTest(Shape shape, Vector2F point)
-        {
-            for(int i = 0; i < shape.Holes.Count; i++)
-            {
-                if (shape.Holes[i].Contains(point))
-                    return false;
-            }
-
-            int polygonLength = shape.Points.Count;
-            int j = 0;
-            bool inside = false;
-            float pointX = point.X, pointY = point.Y; // x, y for tested point.
-
-            // start / end point for the current polygon segment.
-            float startX, startY, endX, endY;
-            Vector2F endPoint = (Vector2F)shape.Points[polygonLength - 1];
-            endX = endPoint.X;
-            endY = endPoint.Y;
-
-            while (j < polygonLength)
-            {
-                startX = endX; startY = endY;
-                endPoint = (Vector2F)shape.Points[j++];
-                endX = endPoint.X; endY = endPoint.Y;
-                //
-                inside ^= (endY > pointY ^ startY > pointY) /* ? pointY inside [startY;endY] segment ? */
-                          && /* if so, test if it is under the segment */
-                          ((pointX - endX) < (pointY - endY) * (startX - endX) / (startY - endY));
-            }
-
-            return inside;
         }
     }
 }

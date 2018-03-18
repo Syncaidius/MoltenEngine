@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,35 @@ namespace Molten.Font
         Prep _prep;
         Hhea _hhea;
         bool _flipY;
+
+        /// <summary>
+        /// Gets a path to the specified system font, if it exists. Returns null if the font is not installed.
+        /// </summary>
+        /// <param name="fontName">The name of the font. For example: "arial", "Segoe UI", "Times New Roman". <para/>
+        /// Note that the case-sensitivity of the font name depends on OS pathing rules (e.g. Android/Linux are case-sensitive).</param>
+        /// <returns></returns>
+        public static string GetSystemFontPath(string fontName)
+        {
+            string sysFontFolder = Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
+
+            string fn = fontName;
+            if (!fn.EndsWith(".ttf", StringComparison.CurrentCultureIgnoreCase))
+                fn += ".ttf";
+
+            fn = Path.Combine(sysFontFolder, fn);
+            if (File.Exists(fn))
+                return fn;
+
+            fn = fontName;
+            if (!fn.EndsWith(".otf", StringComparison.CurrentCultureIgnoreCase))
+                fn += ".otf";
+
+            fn = Path.Combine(sysFontFolder, fn);
+            if (File.Exists(fn))
+                return fn;
+
+            return null;
+        }
 
         internal FontFile(FontTableList tables, bool flipYAxis = false)
         {

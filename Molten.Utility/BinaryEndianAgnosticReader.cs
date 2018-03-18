@@ -113,6 +113,9 @@ namespace Molten
 
         public ushort[] ReadArrayUInt16(int count)
         {
+            if (count < 0)
+                throw new IndexOutOfRangeException("Count cannot be less than 0");
+
             ushort[] r = new ushort[count];
             for (int i = 0; i < count; i++)
                 r[i] = ReadUInt16();
@@ -127,12 +130,18 @@ namespace Molten
         /// <param name="count">The number of values to read.</param>
         public void ReadArrayUInt16(uint[] dest, int count)
         {
+            if (count < 0)
+                throw new IndexOutOfRangeException("Count cannot be less than 0");
+
             for (int i = 0; i < count; i++)
                 dest[i] = ReadUInt16();
         }
 
         public short[] ReadArrayInt16(int count)
         {
+            if (count < 0)
+                throw new IndexOutOfRangeException("Count cannot be less than 0");
+
             short[] r = new short[count];
             for (int i = 0; i < count; i++)
                 r[i] = ReadInt16();
@@ -147,12 +156,18 @@ namespace Molten
         /// <param name="count">The number of values to read.</param>
         public void ReadArrayInt16(int[] dest, int count)
         {
+            if (count < 0)
+                throw new IndexOutOfRangeException("Count cannot be less than 0");
+
             for (int i = 0; i < count; i++)
                 dest[i] = ReadUInt16();
         }
 
         public uint[] ReadArrayUInt32(int count)
         {
+            if (count < 0)
+                throw new IndexOutOfRangeException("Count cannot be less than 0");
+
             uint[] r = new uint[count];
             for (int i = 0; i < count; i++)
                 r[i] = ReadUInt32();
@@ -162,6 +177,9 @@ namespace Molten
 
         public int[] ReadArrayInt32(int count)
         {
+            if (count < 0)
+                throw new IndexOutOfRangeException("Count cannot be less than 0");
+
             int[] r = new int[count];
             for (int i = 0; i < count; i++)
                 r[i] = ReadInt32();
@@ -171,6 +189,9 @@ namespace Molten
 
         public sbyte[] ReadArraySByte(int count)
         {
+            if (count < 0)
+                throw new IndexOutOfRangeException("Count cannot be less than 0");
+
             sbyte[] r = new sbyte[count];
             for (int i = 0; i < count; i++)
                 r[i] = ReadSByte();

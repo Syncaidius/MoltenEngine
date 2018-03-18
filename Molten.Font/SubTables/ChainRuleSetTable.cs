@@ -57,7 +57,11 @@ namespace Molten.Font
             BacktrackSequence = reader.ReadArrayUInt16(backtrackGlyphCount);
 
             ushort inputGlyphCount = reader.ReadUInt16();
-            InputSequence = reader.ReadArrayUInt16(inputGlyphCount - 1);
+
+            if (inputGlyphCount == 0)
+                InputSequence = new ushort[0];
+            else
+                InputSequence = reader.ReadArrayUInt16(inputGlyphCount - 1);
 
             ushort lookAheadGlyphCount = reader.ReadUInt16();
             LookAheadSequence = reader.ReadArrayUInt16(lookAheadGlyphCount);

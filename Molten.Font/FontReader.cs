@@ -57,6 +57,19 @@ namespace Molten.Font
         BinaryEndianAgnosticReader _reader;
 
         /// <summary>Creates a new instance of <see cref="FontReader"/>.</summary>
+        /// <param name="log">A logger.</param>
+        /// <param name="systemFontName">The name of the system font. For example: "Arial", "Times New Roman", "Segoe UI". <para/>
+        /// Note that the case-sensitivity of the font name depends on OS pathing rules (e.g. Android/Linux are case-sensitive).</param>
+        public FontReader(string systemFontName, Logger log)
+        {
+            _stream = new FileStream(FontFile.GetSystemFontPath(systemFontName), FileMode.Open, FileAccess.Read);
+            _filename = systemFontName;
+            _leaveOpen = false;
+            _log = log;
+            _reader = new BinaryEndianAgnosticReader(_stream, false, _leaveOpen);
+        }
+
+        /// <summary>Creates a new instance of <see cref="FontReader"/>.</summary>
         /// <param name="stream">A stream containing from which to read font data.</param>
         /// <param name="log">A logger.</param>
         /// <param name="filename">An optional filename or label to improve log/debug messages.</param>

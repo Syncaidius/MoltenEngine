@@ -89,15 +89,15 @@ namespace Molten.Font
                 expectedEndPos -= expectedPadding;
             }
 
-            if (readerPos != expectedEndPos)
-            {
-                log.WriteDebugLine($"[GLYF] ({(isSimple ? "Simple   " : "Composite")}) Glyph {id} was read/aligned incorrectly. " +
-                    $"Length: {length}. End Pos -- Expected: {expectedEndPos}. Actual: {readerPos}. Dif: {(dif < 0 ? "" : "+")}{dif} bytes");
-            }
-            else
-            {
-                log.WriteDebugLine($"[GLYF] Read ({(isSimple ? "Simple   " : "Composite")}) Glyph {id} Length: {length}. ");
-            }
+            //if (readerPos != expectedEndPos)
+            //{
+            //    log.WriteDebugLine($"[GLYF] ({(isSimple ? "Simple   " : "Composite")}) Glyph {id} was read/aligned incorrectly. " +
+            //        $"Length: {length}. End Pos -- Expected: {expectedEndPos}. Actual: {readerPos}. Dif: {(dif < 0 ? "" : "+")}{dif} bytes");
+            //}
+            //else
+            //{
+            //    log.WriteDebugLine($"[GLYF] Read ({(isSimple ? "Simple   " : "Composite")}) Glyph {id} Length: {length}. ");
+            //}
         }
 
         private Glyph ReadCompositeGlyph(BinaryEndianAgnosticReader reader, Logger log, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, Rectangle bounds, ushort id)
