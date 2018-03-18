@@ -122,6 +122,47 @@ namespace Molten
             }
         }
 
+        /// <summary>Reads an array and flips the byte order of all it's elements.</summary>
+        /// <typeparam name="T">The type of element in the array.</typeparam>
+        /// <param name="count">The number of elements to read.</param>
+        /// <returns></returns>
+        public override T[] ReadArray<T>(int count)
+        {
+            if (_flipNeeded)
+            {
+                if (count == 0)
+                    return new T[0];
+
+                if (count < 0)
+                    throw new IndexOutOfRangeException("Count cannot be less than 0");
+
+                int remaining = count * Marshal.SizeOf<T>();
+                T[] result = new T[count];
+                int blockOffset = 0;
+
+                while (remaining > 0)
+                {
+                    int toRead = Math.Min(_arrayBuffer.Length, remaining);
+                    BaseStream.Read(_arrayBuffer, 0, toRead);
+
+                    Array.Reverse(_arrayBuffer, 0, toRead); // Now the bytes per-element are correct, but the elements themselves are in reversed order.
+                    Buffer.BlockCopy(_arrayBuffer, 0, result, blockOffset, toRead);
+
+                    blockOffset += toRead;
+                    remaining -= toRead;
+                }
+
+                // Reverse result array to flip elements back to correct ordering.
+                Array.Reverse(result);
+
+                return result;
+            }
+            else
+            {
+                return base.ReadArray<T>(count);
+            }
+        }
+
         private byte[] ReadReverse(int count)
         {
             base.Read(_flipBuffer, 0, count);
