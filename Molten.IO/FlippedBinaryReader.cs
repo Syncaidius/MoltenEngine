@@ -9,97 +9,67 @@ using System.Threading.Tasks;
 namespace Molten
 {
     /// <summary>A reader which automatically flips the bytes of read types if the current system's endian architecture does not match the stream's endian format.</summary>
-    public class BinaryEndianAgnosticReader : EnhancedBinaryReader
+    public class FlippedBinaryReader : EnhancedBinaryReader
     {
-        bool _flipNeeded;
         byte[] _flipBuffer;
         int[] _decimalBuffer;
 
-        /// <summary>Creates a new instance of <see cref="BinaryEndianAgnosticReader"/>.</summary>
-        /// <param name="stream">The stream from which to read data.</param>
-        /// <param name="dataIsLittleEndian">Set to false if the expected data should be big-endian. Default value is true (i.e. data is expected to be little-endian).</param>
-        /// <param name="leaveOpen">If true, the underlying stream will be left open when the <see cref="BinaryEndianAgnosticReader"/> is disposed.</param>
-        /// <param name="encoding">The encoding to use when reading data from the provided stream.</param>
-        public BinaryEndianAgnosticReader(Stream stream, Encoding encoding, bool dataIsLittleEndian = true, bool leaveOpen = false) : base(stream, encoding, leaveOpen)
+        public FlippedBinaryReader(Stream input) : base(input)
         {
-            _flipNeeded = BitConverter.IsLittleEndian != dataIsLittleEndian;
             _flipBuffer = new byte[8];
             _decimalBuffer = new int[4];
         }
 
-        /// <summary>Creates a new instance of <see cref="BinaryEndianAgnosticReader"/>.</summary>
-        /// <param name="stream">The stream from which to read data.</param>
-        /// <param name="dataIsLittleEndian">Set to false if the expected data should be big-endian. Default value is true (i.e. data is expected to be little-endian).</param>
-        /// <param name="leaveOpen">If true, the provided stream will be left open when the <see cref="BinaryEndianAgnosticReader"/> is disposed.</param>
-        public BinaryEndianAgnosticReader(Stream stream, bool dataIsLittleEndian = true, bool leaveOpen = false) : base(stream, new UTF8Encoding(), leaveOpen)
+        public FlippedBinaryReader(Stream input, Encoding encoding) : base(input, encoding)
         {
-            _flipNeeded = BitConverter.IsLittleEndian != dataIsLittleEndian;
+            _flipBuffer = new byte[8];
+            _decimalBuffer = new int[4];
+        }
+
+        public FlippedBinaryReader(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen)
+        {
             _flipBuffer = new byte[8];
             _decimalBuffer = new int[4];
         }
 
         public override short ReadInt16()
         {
-            if (_flipNeeded)
-                return BitConverter.ToInt16(ReadReverse(2), 6);
-            else
-                return base.ReadInt16();
+            return BitConverter.ToInt16(ReadReverse(2), 6);
         }
 
         public override int ReadInt32()
         {
-            if (_flipNeeded)
-                return BitConverter.ToInt32(ReadReverse(4), 4);
-            else
-                return base.ReadInt32();
+            return BitConverter.ToInt32(ReadReverse(4), 4);
         }
 
         public override long ReadInt64()
         {
-            if (_flipNeeded)
-                return BitConverter.ToInt64(ReadReverse(8), 0);
-            else
-                return base.ReadInt64();
+            return BitConverter.ToInt64(ReadReverse(8), 0);
         }
 
         public override ushort ReadUInt16()
         {
-            if (_flipNeeded)
-                return BitConverter.ToUInt16(ReadReverse(2), 6);
-            else
-                return base.ReadUInt16();
+            return BitConverter.ToUInt16(ReadReverse(2), 6);
         }
 
         public override uint ReadUInt32()
         {
-            if (_flipNeeded)
-                return BitConverter.ToUInt32(ReadReverse(4), 4);
-            else
-                return base.ReadUInt32();
+            return BitConverter.ToUInt32(ReadReverse(4), 4);
         }
 
         public override ulong ReadUInt64()
         {
-            if (_flipNeeded)
-                return BitConverter.ToUInt64(ReadReverse(8), 0);
-            else
-                return base.ReadUInt64();
+            return BitConverter.ToUInt64(ReadReverse(8), 0);
         }
 
         public override float ReadSingle()
         {
-            if (_flipNeeded)
-                return BitConverter.ToSingle(ReadReverse(4), 4);
-            else
-                return base.ReadUInt64();
+            return BitConverter.ToSingle(ReadReverse(4), 4);
         }
 
         public override double ReadDouble()
         {
-            if (_flipNeeded)
-                return BitConverter.ToSingle(ReadReverse(8), 0);
-            else
-                return base.ReadDouble();
+            return BitConverter.ToSingle(ReadReverse(8), 0);
         }
 
         public override ushort[] ReadArrayUInt16(int count)
@@ -192,22 +162,15 @@ namespace Molten
 
         public override decimal ReadDecimal()
         {
-            if (_flipNeeded)
+            _decimalBuffer = new int[4]
             {
-                _decimalBuffer = new int[4]
-                {
-                    BitConverter.ToInt32(ReadReverse(4), 4),
-                    BitConverter.ToInt32(ReadReverse(4), 4),
-                    BitConverter.ToInt32(ReadReverse(4), 4),
-                    BitConverter.ToInt32(ReadReverse(4), 4),
-                };
-                Array.Reverse(_decimalBuffer);
-                return new decimal(_decimalBuffer);
-            }
-            else
-            {
-                return base.ReadDecimal();
-            }
+                BitConverter.ToInt32(ReadReverse(4), 4),
+                BitConverter.ToInt32(ReadReverse(4), 4),
+                BitConverter.ToInt32(ReadReverse(4), 4),
+                BitConverter.ToInt32(ReadReverse(4), 4),
+            };
+            Array.Reverse(_decimalBuffer);
+            return new decimal(_decimalBuffer);
         }
 
         private byte[] ReadReverse(int count)
