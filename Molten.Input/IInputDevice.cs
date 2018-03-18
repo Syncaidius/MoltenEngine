@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.IO
+namespace Molten.Input
 {
     public delegate void InputConnectionHandler<T>(IInputDevice<T> device, bool isConnected) where T : struct;
 

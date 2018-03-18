@@ -244,7 +244,7 @@
       <Name>Molten.DX.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
-      <Project>{64387480-7656-484e-b11f-468ee563176e}</Project>
+      <Project>{8df4c894-b793-495e-bc14-53306f8b2972}</Project>
       <Name>Molten.IO</Name>
     </ProjectReference>
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj">

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Molten.Graphics;
 using System.ComponentModel;
-using Molten.IO;
+using Molten.Input;
 using System.Runtime.Serialization;
 
 namespace Molten.UI

@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.IO
+namespace Molten.Input
 {
-    public interface IKeyboardDevice : IInputDevice<Key>
+    public interface IGamepadDevice
     {
-        event KeyPressHandler OnCharacterKey;
     }
 }

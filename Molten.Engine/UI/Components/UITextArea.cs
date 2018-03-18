@@ -1,6 +1,6 @@
 ﻿using Molten.Collections;
 using Molten.Graphics;
-using Molten.IO;
+using Molten.Input;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -217,7 +217,7 @@ namespace Molten.UI
             _linePool.Recycle(line);
         }
 
-        void Keyboard_OnCharacterKey(IO.CharacterEventArgs e)
+        void Keyboard_OnCharacterKey(Input.CharacterEventArgs e)
         {
             if (!_isEditable)
                 return;

@@ -4,9 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.IO
+namespace Molten.Input
 {
-    public interface IGamepadDevice
+    public enum GamepadIndex : byte
     {
+        One = 0,
+
+        Two = 1,
+
+        Three = 2,
+
+        Four = 3,
     }
 }

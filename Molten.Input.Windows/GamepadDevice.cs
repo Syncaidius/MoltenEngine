@@ -6,7 +6,7 @@ using SharpDX.XInput;
 using SharpDX;
 using System.Runtime.InteropServices;
 
-namespace Molten.IO
+namespace Molten.Input
 {
     using Molten.Graphics;
     using Molten.Utilities;

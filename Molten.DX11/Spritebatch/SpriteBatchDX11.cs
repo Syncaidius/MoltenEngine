@@ -1,5 +1,4 @@
 ﻿using SharpDX.Direct3D;
-using Molten.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -5,11 +5,11 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.IO
+namespace Molten.Input
 {
     public class InputSettings : SettingBank
     {
-        internal static string DEFAULT_LIBRARY = "Molten.IO.Windows.dll; Molten.IO.InputManager";
+        internal static string DEFAULT_LIBRARY = "Molten.Input.Windows.dll; Molten.Input.InputManager";
 
         public InputSettings()
         {

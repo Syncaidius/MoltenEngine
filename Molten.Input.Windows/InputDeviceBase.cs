@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Molten.IO
+namespace Molten.Input
 {
     public abstract class InputDeviceBase : EngineObject , IInputDevice
     {

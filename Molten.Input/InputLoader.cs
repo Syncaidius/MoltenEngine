@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.IO
+namespace Molten.Input
 {
     /// <summary>Serves one purpose only: To load a renderer library.</summary>
     public class InputLoader

@@ -109,7 +109,7 @@ namespace Molten.Samples
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
 
-        private void Keyboard_OnCharacterKey(IO.CharacterEventArgs e)
+        private void Keyboard_OnCharacterKey(Input.CharacterEventArgs e)
         {
             GenerateChar(e.Character);
             _font2Test.GetCharGlyph(e.Character);
@@ -305,7 +305,7 @@ namespace Molten.Samples
         {
             RotateParentChild(_parent, _child, time);
 
-            if (Mouse.IsTapped(IO.MouseButton.Left))
+            if (Mouse.IsTapped(Input.MouseButton.Left))
             {
                 _clickPoint = Mouse.Position;
                 _clickColor = Color.Red;

@@ -1,6 +1,6 @@
 ﻿using Molten.Collections;
 using Molten.Graphics;
-using Molten.IO;
+using Molten.Input;
 using Molten.Threading;
 using Molten.UI;
 using System;

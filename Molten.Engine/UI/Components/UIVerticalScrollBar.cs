@@ -1,5 +1,5 @@
 ﻿using Molten.Graphics;
-using Molten.IO;
+using Molten.Input;
 using System;
 using System.ComponentModel;
 using System.Linq;

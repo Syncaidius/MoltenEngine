@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Molten.IO;
 
 namespace Molten.Graphics.Shaders
 {

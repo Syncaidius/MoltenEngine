@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Molten.Graphics;
 using Molten.Graphics.Textures;
-using Molten.IO;
+using Molten.Input;
 
 namespace Molten.UI
 {

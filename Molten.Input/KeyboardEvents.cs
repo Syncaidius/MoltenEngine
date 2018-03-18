@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Molten.IO
+namespace Molten.Input
 {
     public delegate void KeyPressHandler(CharacterEventArgs e);
 

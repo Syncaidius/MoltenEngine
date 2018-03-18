@@ -7,8 +7,8 @@
     <ProjectGuid>{BDA0168B-68FF-4201-8812-9C4FFE1F6A86}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Molten.IO</RootNamespace>
-    <AssemblyName>Molten.IO.Windows</AssemblyName>
+    <RootNamespace>Molten.Input</RootNamespace>
+    <AssemblyName>Molten.Input.Windows</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -93,8 +93,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
+    <ProjectReference Include="..\Molten.Input\Molten.Input.csproj">
       <Project>{64387480-7656-484e-b11f-468ee563176e}</Project>
+      <Name>Molten.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
+      <Project>{8df4c894-b793-495e-bc14-53306f8b2972}</Project>
       <Name>Molten.IO</Name>
     </ProjectReference>
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj">

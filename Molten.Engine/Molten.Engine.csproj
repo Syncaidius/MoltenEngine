@@ -52,8 +52,8 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -160,8 +160,12 @@
       <Project>{4fe5b72a-3e02-46b9-ac04-b781c964890a}</Project>
       <Name>Molten.Font</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
+    <ProjectReference Include="..\Molten.Input\Molten.Input.csproj">
       <Project>{64387480-7656-484e-b11f-468ee563176e}</Project>
+      <Name>Molten.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
+      <Project>{8df4c894-b793-495e-bc14-53306f8b2972}</Project>
       <Name>Molten.IO</Name>
     </ProjectReference>
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj">
@@ -178,10 +182,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

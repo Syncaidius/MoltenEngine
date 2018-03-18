@@ -216,12 +216,16 @@
       <Project>{4fe5b72a-3e02-46b9-ac04-b781c964890a}</Project>
       <Name>Molten.Font</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Molten.IO.Windows\Molten.IO.Windows.csproj">
+    <ProjectReference Include="..\Molten.Input.Windows\Molten.Input.Windows.csproj">
       <Project>{bda0168b-68ff-4201-8812-9c4ffe1f6a86}</Project>
-      <Name>Molten.IO.Windows</Name>
+      <Name>Molten.Input.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.Input\Molten.Input.csproj">
+      <Project>{64387480-7656-484e-b11f-468ee563176e}</Project>
+      <Name>Molten.Input</Name>
     </ProjectReference>
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
-      <Project>{64387480-7656-484e-b11f-468ee563176e}</Project>
+      <Project>{8df4c894-b793-495e-bc14-53306f8b2972}</Project>
       <Name>Molten.IO</Name>
     </ProjectReference>
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj">

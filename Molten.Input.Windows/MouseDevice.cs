@@ -13,7 +13,7 @@ using Molten.Utilities;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace Molten.IO
+namespace Molten.Input
 {
     public delegate void MouseEventHandler(MouseDevice mouse);
 

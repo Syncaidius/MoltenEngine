@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Molten.IO
+namespace Molten.Input
 {
     public class WindowsClipboard : IClipboard
     {

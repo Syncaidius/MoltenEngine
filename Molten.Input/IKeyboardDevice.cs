@@ -4,16 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.IO
+namespace Molten.Input
 {
-    public enum GamepadIndex : byte
+    public interface IKeyboardDevice : IInputDevice<Key>
     {
-        One = 0,
-
-        Two = 1,
-
-        Three = 2,
-
-        Four = 3,
+        event KeyPressHandler OnCharacterKey;
     }
 }

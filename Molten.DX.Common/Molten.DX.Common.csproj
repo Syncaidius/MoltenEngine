@@ -87,6 +87,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
+      <Project>{8df4c894-b793-495e-bc14-53306f8b2972}</Project>
+      <Name>Molten.IO</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj">
       <Project>{e59938af-a9d4-4963-b4ac-61e53d05527e}</Project>
       <Name>Molten.Math</Name>
