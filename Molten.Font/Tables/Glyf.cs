@@ -242,7 +242,7 @@ namespace Molten.Font
 
         private Glyph ReadSimpleGlyph(EnhancedBinaryReader reader, short numContours, Rectangle bounds)
         {
-            ushort[] contourEndPoints = reader.ReadArrayUInt16(numContours);
+            ushort[] contourEndPoints = reader.ReadArray<ushort>(numContours);
             ushort instructionLength = reader.ReadUInt16();
             byte[] instructions = instructionLength > 0 ? reader.ReadBytes(instructionLength) : new byte[0];
 

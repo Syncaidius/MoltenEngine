@@ -16,9 +16,9 @@ namespace Molten.Font
 
         internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            uint valueCount = header.Length / 2; //FWORD -- int16 that describes a quantity in font design units. 
-            Values = new int[valueCount];
-            reader.ReadArrayInt16(Values, (int)valueCount);
+            uint valueCount = header.Length / 2; 
+            short[] shortValues = reader.ReadArray<short>((int)valueCount);
+            Values = Array.ConvertAll(shortValues, item => (int)item);
         }
     }
 }

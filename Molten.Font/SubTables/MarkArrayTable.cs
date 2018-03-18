@@ -54,7 +54,7 @@ namespace Molten.Font
             // Read read offsets for each mark record. 
             // Since each record only contains an array of offsets, we can read them the same way.
             for (int i = 0; i < mark2Count; i++)
-                anchorOffsets[i] = reader.ReadArrayUInt16(markClassCount);
+                anchorOffsets[i] = reader.ReadArray<ushort>(markClassCount);
 
             // Read anchor tables.
             for (int i = 0; i < mark2Count; i++)

@@ -149,7 +149,7 @@ namespace Molten.Font
             {
                 case 1:
                     ushort pairSetCount = reader.ReadUInt16();
-                    ushort[] pairSetOffsets = reader.ReadArrayUInt16(pairSetCount);
+                    ushort[] pairSetOffsets = reader.ReadArray<ushort>(pairSetCount);
                     PairSets = new GPOS.PairSet[pairSetCount];
                     for (int i = 0; i < pairSetCount; i++)
                         PairSets[i] = new GPOS.PairSet(reader, log, this, pairSetOffsets[i], valueFormat1, valueFormat2);
@@ -354,7 +354,7 @@ namespace Molten.Font
                 case 1:
                     coverageOffset = reader.ReadUInt16();
                     ushort posRuleSetCount = reader.ReadUInt16();
-                    ushort[] posRuleSetOffsets = reader.ReadArrayUInt16(posRuleSetCount);
+                    ushort[] posRuleSetOffsets = reader.ReadArray<ushort>(posRuleSetCount);
                     Coverages = new CoverageTable[] { new CoverageTable(reader, log, this, coverageOffset) };
                     RuleSetTables = new RuleSetTable[posRuleSetCount];
 
@@ -367,7 +367,7 @@ namespace Molten.Font
                     coverageOffset = reader.ReadUInt16();
                     ushort classDefOffset = reader.ReadUInt16();
                     ushort posClassSetCount = reader.ReadUInt16();
-                    ushort[] posClassSetOffsets = reader.ReadArrayUInt16(posClassSetCount);
+                    ushort[] posClassSetOffsets = reader.ReadArray<ushort>(posClassSetCount);
 
                     Coverages = new CoverageTable[] { new CoverageTable(reader, log, this, coverageOffset) };
                     ClassDefinitions = new ClassDefinitionTable(reader, log, this, classDefOffset);
@@ -383,7 +383,7 @@ namespace Molten.Font
                 case 3:
                     ushort glyphCount = reader.ReadUInt16();
                     ushort posCount = reader.ReadUInt16();
-                    ushort[] coverageOffsets = reader.ReadArrayUInt16(glyphCount);
+                    ushort[] coverageOffsets = reader.ReadArray<ushort>(glyphCount);
 
                     Records = new RuleLookupRecord[posCount];
                     for(int i = 0; i < posCount; i++)
@@ -429,7 +429,7 @@ namespace Molten.Font
                 case 1: // ChainRuleSets contains glyph IDs.
                     coverageOffset = reader.ReadUInt16();
                     ushort chainPosRuleSetCount = reader.ReadUInt16();
-                    ushort[] chainPosRuleSetOffsets = reader.ReadArrayUInt16(chainPosRuleSetCount);
+                    ushort[] chainPosRuleSetOffsets = reader.ReadArray<ushort>(chainPosRuleSetCount);
                     ChainRuleSets = new ChainRuleSetTable[chainPosRuleSetCount];
                     for (int i = 0; i < chainPosRuleSetCount; i++)
                         ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosRuleSetOffsets[i], existingRules);
@@ -443,7 +443,7 @@ namespace Molten.Font
                     ushort inputClassDefOffset = reader.ReadUInt16();
                     ushort lookAheadClassDefOffset = reader.ReadUInt16();
                     ushort chainPosClassSetCount = reader.ReadUInt16();
-                    ushort[] chainPosClassSetOffsets = reader.ReadArrayUInt16(chainPosClassSetCount);
+                    ushort[] chainPosClassSetOffsets = reader.ReadArray<ushort>(chainPosClassSetCount);
 
                     Coverage = new CoverageTable(reader, log, this, coverageOffset);
                     BacktrackClasses = new ClassDefinitionTable(reader, log, this, backtrackClassDefOffset);
@@ -456,13 +456,13 @@ namespace Molten.Font
 
                 case 3:
                     ushort backtrackGlyphCount = reader.ReadUInt16();
-                    ushort[] backtrackCoverageOffsets = reader.ReadArrayUInt16(backtrackGlyphCount);
+                    ushort[] backtrackCoverageOffsets = reader.ReadArray<ushort>(backtrackGlyphCount);
 
                     ushort inputGlyphCount = reader.ReadUInt16();
-                    ushort[] inputCoverageOffsets = reader.ReadArrayUInt16(inputGlyphCount);
+                    ushort[] inputCoverageOffsets = reader.ReadArray<ushort>(inputGlyphCount);
 
                     ushort lookAheadGlyphCount = reader.ReadUInt16();
-                    ushort[] lookAheadCoverageOffsets = reader.ReadArrayUInt16(lookAheadGlyphCount);
+                    ushort[] lookAheadCoverageOffsets = reader.ReadArray<ushort>(lookAheadGlyphCount);
 
                     ushort posCount = reader.ReadUInt16();
                     Records = new RuleLookupRecord[posCount];

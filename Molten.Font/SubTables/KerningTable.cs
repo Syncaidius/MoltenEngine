@@ -71,8 +71,8 @@ namespace Molten.Font
                     ushort rightClasstableOffset = reader.ReadUInt16();
                     ushort arrayOffset = reader.ReadUInt16();
 
-                    ushort[] leftClasses = ReadClassTable(reader, Header.ReadOffset, leftClassTableOffset);
-                    ushort[] rightClasses = ReadClassTable(reader, Header.ReadOffset, rightClasstableOffset);
+                    ushort[] leftClasses = ReadClassTable(reader, Header.StreamOffset, leftClassTableOffset);
+                    ushort[] rightClasses = ReadClassTable(reader, Header.StreamOffset, rightClasstableOffset);
 
                     // "Un-multiply" the values in each class table to give us the original class values.
                     // Left class table - The values in the left class table are stored pre-multiplied by the number of bytes in one row
@@ -101,7 +101,7 @@ namespace Molten.Font
             reader.Position = tableStart + offset;
             ushort firstGlyph = reader.ReadUInt16(); // ID of the first glyph within the class range
             ushort numGlyphs = reader.ReadUInt16();
-            ushort[] classTable = reader.ReadArrayUInt16(numGlyphs);
+            ushort[] classTable = reader.ReadArray<ushort>(numGlyphs);
 
             return classTable;
         }

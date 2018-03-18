@@ -17,7 +17,7 @@ namespace Molten.Font
             base(reader, log, parent, offset)
         {
             ushort posClassRuleCount = reader.ReadUInt16();
-            ushort[] posClassRuleOffsets = reader.ReadArrayUInt16(posClassRuleCount);
+            ushort[] posClassRuleOffsets = reader.ReadArray<ushort>(posClassRuleCount);
             Tables = new ClassRuleTable[posClassRuleCount];
             for (int i = 0; i < posClassRuleCount; i++)
                 Tables[i] = new ClassRuleTable(reader, log, this, posClassRuleOffsets[i]);
@@ -44,7 +44,7 @@ namespace Molten.Font
         {
             ushort glyphCount = reader.ReadUInt16();
             ushort posCount = reader.ReadUInt16();
-            Classes = reader.ReadArrayUInt16(glyphCount - 1);
+            Classes = reader.ReadArray<ushort>(glyphCount - 1);
             Records = new RuleLookupRecord[posCount];
             for (int i = 0; i < posCount; i++)
             {

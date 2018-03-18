@@ -113,7 +113,7 @@ namespace Molten.Font
 
                 case 2 when MinorVersion == 5:
                     ushort glyphCount = reader.ReadUInt16();
-                    StandardOffsets = reader.ReadArraySByte(glyphCount);
+                    StandardOffsets = reader.ReadArray<sbyte>(glyphCount);
                     break;
 
                 case 4 when MinorVersion == 0:

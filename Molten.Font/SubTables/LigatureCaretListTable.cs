@@ -16,7 +16,7 @@ namespace Molten.Font
         {
             ushort coverageOffset = reader.ReadUInt16();
             ushort ligGlyphCount = reader.ReadUInt16();
-            ushort[] ligGlyphOffsets = reader.ReadArrayUInt16(ligGlyphCount);
+            ushort[] ligGlyphOffsets = reader.ReadArray<ushort>(ligGlyphCount);
 
             // Read the coverage table.
             CoverageTable coverage = new CoverageTable(reader, log, this, coverageOffset);

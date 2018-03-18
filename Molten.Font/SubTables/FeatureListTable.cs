@@ -71,7 +71,7 @@ namespace Molten.Font
         {
             FeatureParams = reader.ReadUInt16();
             ushort lookupIndexCount = reader.ReadUInt16();
-            LookupListIndices = reader.ReadArrayUInt16(lookupIndexCount);
+            LookupListIndices = reader.ReadArray<ushort>(lookupIndexCount);
         }
     }
 }

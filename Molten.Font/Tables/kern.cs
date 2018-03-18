@@ -27,7 +27,7 @@ namespace Molten.Font
             ushort numTables = reader.ReadUInt16();
             Tables = new KerningTable[numTables];
             for (int i = 0; i < numTables; i++)
-                Tables[i] = new KerningTable(reader, log, this, FontUtil.GetOffset(Header.ReadOffset, reader.Position));
+                Tables[i] = new KerningTable(reader, log, this, FontUtil.GetOffset(Header.StreamOffset, reader.Position));
         }
     }
 

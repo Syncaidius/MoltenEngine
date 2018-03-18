@@ -17,7 +17,7 @@ namespace Molten.Font
             base(reader, log, parent, offset)
         {
             ushort ligatureCount = reader.ReadUInt16();
-            ushort[] ligatureOffsets = reader.ReadArrayUInt16(ligatureCount);
+            ushort[] ligatureOffsets = reader.ReadArray<ushort>(ligatureCount);
             Tables = new LigatureTable[ligatureCount];
             for (int i = 0; i < ligatureCount; i++)
                 Tables[i] = new LigatureTable(reader, log, this, ligatureOffsets[i]);
@@ -41,7 +41,7 @@ namespace Molten.Font
         {
             LigatureGlyph = reader.ReadUInt16();
             ushort componentCount = reader.ReadUInt16();
-            ComponentGlyphIDs = reader.ReadArrayUInt16(componentCount - 1);
+            ComponentGlyphIDs = reader.ReadArray<ushort>(componentCount - 1);
         }
     }
 }

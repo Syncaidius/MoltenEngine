@@ -17,7 +17,7 @@ namespace Molten.Font
             base(reader, log, parent, offset)
         {
             ushort glyphCount = reader.ReadUInt16();
-            GlyphIDs = reader.ReadArrayUInt16(glyphCount);
+            GlyphIDs = reader.ReadArray<ushort>(glyphCount);
         }
     }
 }

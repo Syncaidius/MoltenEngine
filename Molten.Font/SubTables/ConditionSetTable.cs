@@ -14,7 +14,7 @@ namespace Molten.Font
             base(reader, log, parent, offset)
         {
             ushort conditionCount = reader.ReadUInt16();
-            uint[] conditionTableOffsets = reader.ReadArrayUInt32(conditionCount);
+            uint[] conditionTableOffsets = reader.ReadArray<uint>(conditionCount);
             Tables = new ConditionTable[conditionCount];
             for (int i = 0; i < conditionCount; i++)
                 Tables[i] = new ConditionTable(reader, log, this, conditionTableOffsets[i]);

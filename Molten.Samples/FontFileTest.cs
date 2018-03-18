@@ -102,7 +102,7 @@ namespace Molten.Samples
             AcceptPlayerInput = false;
 
             LoadFontFile();
-            LoadSystemFontFile("Arial");
+            //LoadSystemFontFile("Arial");
             InitializeFontDebug();
             GenerateChar('{');
 

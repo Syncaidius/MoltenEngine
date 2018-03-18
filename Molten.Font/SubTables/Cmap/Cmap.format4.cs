@@ -26,20 +26,20 @@ namespace Molten.Font
             ushort rangeShift = reader.ReadUInt16();
             int segCount = segCountX2 / 2;
 
-            _endCode = reader.ReadArrayUInt16(segCount);
+            _endCode = reader.ReadArray<ushort>(segCount);
             ushort reservedPad = reader.ReadUInt16();
-            _startCode = reader.ReadArrayUInt16(segCount);
-            _idDelta = reader.ReadArrayInt16(segCount);
+            _startCode = reader.ReadArray<ushort>(segCount);
+            _idDelta = reader.ReadArray<short>(segCount);
 
             // Pre-modulo all the deltas to avoid performing a modulo calculation every time a character is looked up.
             for (int i = 0; i < _idDelta.Length; i++)
                 _idDelta[i] = (short)(_idDelta[i] % 65536);
 
-            _idRangeOffset = reader.ReadArrayUInt16(segCount);
+            _idRangeOffset = reader.ReadArray<ushort>(segCount);
 
-            long tableEndPos = Header.ReadOffset + Header.Length;
+            long tableEndPos = Header.StreamOffset + Header.Length;
             int numGlyphIDs = (int)(tableEndPos - reader.Position) / sizeof(ushort);
-            _glyphIdArray = reader.ReadArrayUInt16(numGlyphIDs);
+            _glyphIdArray = reader.ReadArray<ushort>(numGlyphIDs);
         }
 
         public override ushort CharPairToGlyphIndex(int codepoint, ushort defaultGlyphIndex, int nextCodepoint)

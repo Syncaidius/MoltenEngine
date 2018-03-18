@@ -14,8 +14,8 @@ namespace Molten.Font
         /// <summary>The checksum for the table represented by the current <see cref="TableHeader"/>.</summary>
         public uint CheckSum { get; internal set; }
 
-        /// <summary>The offset of the table, from the beginning of a root/parent table.</summary>
-        public long ReadOffset { get; internal set; }
+        /// <summary>The offset of the table, from the beginning of a root table's stream.</summary>
+        public long StreamOffset { get; internal set; }
 
         /// <summary>The offset from the beginning of the font file.</summary>
         public long FileOffset { get; internal set; }

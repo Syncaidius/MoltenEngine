@@ -14,7 +14,7 @@ namespace Molten.Font
             base(reader, log, parent, offset)
         {
             ushort ligatureCount = reader.ReadUInt16();
-            ushort[] offsets = reader.ReadArrayUInt16(ligatureCount);
+            ushort[] offsets = reader.ReadArray<ushort>(ligatureCount);
             Tables = new LigatureAttachTable[ligatureCount];
 
             for (int i = 0; i < ligatureCount; i++)

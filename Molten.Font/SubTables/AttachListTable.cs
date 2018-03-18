@@ -22,7 +22,7 @@ namespace Molten.Font
             ushort coverageOffset = reader.ReadUInt16();
             ushort glyphCount = reader.ReadUInt16();
             PointTables = new AttachPointTable[glyphCount];
-            ushort[] attachPointOffsets = reader.ReadArrayUInt16(glyphCount);
+            ushort[] attachPointOffsets = reader.ReadArray<ushort>(glyphCount);
 
             // prepare attach point tables with their respective offsets.
             for (int i = 0; i < glyphCount; i++)

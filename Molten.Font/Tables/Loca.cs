@@ -38,7 +38,7 @@ namespace Molten.Font
 
                 default:
                 case FontLocaFormat.UnsignedInt32:
-                    Offsets = reader.ReadArrayUInt32(numGlyphs);
+                    Offsets = reader.ReadArray<uint>(numGlyphs);
                     break;
             }
         }

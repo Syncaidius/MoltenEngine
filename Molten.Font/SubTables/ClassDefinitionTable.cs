@@ -30,7 +30,7 @@ namespace Molten.Font
             {
                 StartGlyphID = reader.ReadUInt16();
                 ushort glyphCount = reader.ReadUInt16();
-                _glyphClassIDs = reader.ReadArrayUInt16(glyphCount);
+                _glyphClassIDs = reader.ReadArray<ushort>(glyphCount);
             }
             else if (Format == 2) // ClassDefFormat2
             {

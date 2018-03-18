@@ -23,7 +23,7 @@ namespace Molten.Font
             uint variationRegionListOffset = reader.ReadUInt32();
             ushort itemVariationDataCount = reader.ReadUInt16();
 
-            uint[] ivdOffsets = reader.ReadArrayUInt32(itemVariationDataCount);
+            uint[] ivdOffsets = reader.ReadArray<uint>(itemVariationDataCount);
             DeltaSets = new ItemVariationData[itemVariationDataCount];
 
             // Read IVD sub-tables
@@ -66,7 +66,7 @@ namespace Molten.Font
             DeltaSets = new short[ItemCount, TotalDeltaSetColumns];
 
             // Read region indices
-            RegionIndices = reader.ReadArrayUInt16(RegionIndexCount);
+            RegionIndices = reader.ReadArray<ushort>(RegionIndexCount);
 
             // Read delta sets
             for(int i = 0; i < ItemCount; i++)

@@ -17,15 +17,15 @@ namespace Molten.Font
             base(reader, log, parent, offset)
         {
             ushort lookupCount = reader.ReadUInt16();
-            ushort[] lookupOffsets = reader.ReadArrayUInt16(lookupCount);
-            log.WriteDebugLine($"Reading lookup list table at {Header.ReadOffset} containing {lookupCount} lookup tables");
+            ushort[] lookupOffsets = reader.ReadArray<ushort>(lookupCount);
+            log.WriteDebugLine($"Reading lookup list table at {Header.StreamOffset} containing {lookupCount} lookup tables");
 
             List<LookupTable> subtables = new List<LookupTable>();
             SubTables = subtables.AsReadOnly();
 
             for (int i = 0; i < lookupCount; i++)
             {
-                long lookupStartPos = Header.ReadOffset + lookupOffsets[i];
+                long lookupStartPos = Header.StreamOffset + lookupOffsets[i];
                 reader.Position = lookupStartPos;
                 ushort lookupType = reader.ReadUInt16();
                 LookupFlags flags = (LookupFlags)reader.ReadUInt16();
@@ -33,21 +33,22 @@ namespace Molten.Font
                 log.WriteDebugLine($"Reading lookup table {i+1}/{lookupCount} at {lookupStartPos} containing {subTableCount} sub-tables");
 
                 // Get the offset's for the lookup subtable's own subtables.
-                uint[] subTableOffsets = new uint[subTableCount];
-                reader.ReadArrayUInt16(subTableOffsets, subTableCount);
+                ushort[] subTableOffsets = reader.ReadArray<ushort>( subTableCount);
                 ushort markFilteringSet = 0;
                 if (HasFlag(flags, LookupFlags.UseMarkFilteringSet))
                     markFilteringSet = reader.ReadUInt16();
 
                 for (int s = 0; s < subTableCount; s++)
                 {
+                    uint subOffset = subTableOffsets[s];
+
                     // Check for extension.
                     // MS Docs: This lookup provides a mechanism whereby any other lookup type's subtables are stored at a 32-bit offset location in the 'GPOS' table
                     if (lookupType == extensionIndex)
                     {
                         ushort posFormat = reader.ReadUInt16();
                         lookupType = reader.ReadUInt16(); // extensionLookupType.
-                        subTableOffsets[s] = reader.ReadUInt32(); // overwrite the offset for this table with the 32-bit offset.
+                        subOffset = reader.ReadUInt32(); // overwrite the offset for this table with the 32-bit offset.
 
                         // ExtensionLookupType must be set to any lookup type other than the extension lookup type.
                         if (lookupType == extensionIndex)
@@ -64,7 +65,7 @@ namespace Molten.Font
                         continue;
                     }
 
-                    long subOffsetFromListStart = lookupOffsets[i] + subTableOffsets[s];
+                    long subOffsetFromListStart = lookupOffsets[i] + subOffset;
                     LookupTable subTable = Activator.CreateInstance(lookupTypeIndex[lookupType], BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
                         new object[] { reader, log, this, subOffsetFromListStart, lookupType, flags, markFilteringSet }, null) as LookupTable;
                     subtables.Add(subTable);

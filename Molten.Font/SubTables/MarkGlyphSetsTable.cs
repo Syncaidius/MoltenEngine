@@ -23,7 +23,7 @@ namespace Molten.Font
             Format = reader.ReadUInt16();
             ushort setCount = reader.ReadUInt16();
 
-            uint[] offsets = reader.ReadArrayUInt32(setCount);
+            uint[] offsets = reader.ReadArray<uint>(setCount);
             Sets = new CoverageTable[setCount];
 
             // Populate coverage tables

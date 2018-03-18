@@ -18,7 +18,7 @@ namespace Molten.Font
             base(reader, log, parent, offset)
         {
             ushort pointCount = reader.ReadUInt16();
-            ContourPointIndices = reader.ReadArrayUInt16(pointCount);
+            ContourPointIndices = reader.ReadArray<ushort>(pointCount);
         }
     }
 }

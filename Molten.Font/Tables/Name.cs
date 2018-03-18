@@ -44,7 +44,7 @@ namespace Molten.Font
 
             ushort nameCount = reader.ReadUInt16();
             ushort stringOffset = reader.ReadUInt16();
-            long stringStorageOffset = header.ReadOffset + stringOffset;
+            long stringStorageOffset = header.StreamOffset + stringOffset;
 
             long returnPos = reader.Position;
             int stringDataLen = (int)(header.Length - stringOffset);

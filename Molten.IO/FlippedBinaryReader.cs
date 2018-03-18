@@ -78,92 +78,38 @@ namespace Molten
             return BitConverter.ToSingle(ReadReverse(8), 0);
         }
 
-        public override ushort[] ReadArrayUInt16(int count)
+        /// <summary>Reads an array and flips the byte order of all it's elements.</summary>
+        /// <typeparam name="T">The type of element in the array.</typeparam>
+        /// <param name="count">The number of elements to read.</param>
+        /// <returns></returns>
+        public override T[] ReadArray<T>(int count)
         {
+            if (count == 0)
+                return new T[0];
+
             if (count < 0)
                 throw new IndexOutOfRangeException("Count cannot be less than 0");
 
-            ushort[] r = new ushort[count];
-            for (int i = 0; i < count; i++)
-                r[i] = ReadUInt16();
+            int remaining = count * Marshal.SizeOf<T>();
+            T[] result = new T[count];
+            int blockOffset = 0;
 
-            return r;
-        }
+            while (remaining > 0)
+            {
+                int toRead = Math.Min(_arrayBuffer.Length, remaining);
+                BaseStream.Read(_arrayBuffer, 0, toRead);
 
-        /// <summary>
-        /// Reads an array of <see cref="ushort"/> into a <see cref="uint"/> array.
-        /// </summary>
-        /// <param name="dest">The destination array.</param>
-        /// <param name="count">The number of values to read.</param>
-        public override void ReadArrayUInt16(uint[] dest, int count)
-        {
-            if (count < 0)
-                throw new IndexOutOfRangeException("Count cannot be less than 0");
+                Array.Reverse(_arrayBuffer, 0, toRead); // Now the bytes per-element are correct, but the elements themselves are in reversed order.
+                Buffer.BlockCopy(_arrayBuffer, 0, result, blockOffset, toRead);
 
-            for (int i = 0; i < count; i++)
-                dest[i] = ReadUInt16();
-        }
+                blockOffset += toRead;
+                remaining -= toRead;
+            }
 
-        public override short[] ReadArrayInt16(int count)
-        {
-            if (count < 0)
-                throw new IndexOutOfRangeException("Count cannot be less than 0");
+            // Reverse result array to flip elements back to correct ordering.
+            Array.Reverse(result);
 
-            short[] r = new short[count];
-            for (int i = 0; i < count; i++)
-                r[i] = ReadInt16();
-
-            return r;
-        }
-
-        /// <summary>
-        /// Reads an array of <see cref="short"/> into a <see cref="int"/> array.
-        /// </summary>
-        /// <param name="dest">The destination array.</param>
-        /// <param name="count">The number of values to read.</param>
-        public override void ReadArrayInt16(int[] dest, int count)
-        {
-            if (count < 0)
-                throw new IndexOutOfRangeException("Count cannot be less than 0");
-
-            for (int i = 0; i < count; i++)
-                dest[i] = ReadUInt16();
-        }
-
-        public override uint[] ReadArrayUInt32(int count)
-        {
-            if (count < 0)
-                throw new IndexOutOfRangeException("Count cannot be less than 0");
-
-            uint[] r = new uint[count];
-            for (int i = 0; i < count; i++)
-                r[i] = ReadUInt32();
-
-            return r;
-        }
-
-        public override int[] ReadArrayInt32(int count)
-        {
-            if (count < 0)
-                throw new IndexOutOfRangeException("Count cannot be less than 0");
-
-            int[] r = new int[count];
-            for (int i = 0; i < count; i++)
-                r[i] = ReadInt32();
-
-            return r;
-        }
-
-        public override sbyte[] ReadArraySByte(int count)
-        {
-            if (count < 0)
-                throw new IndexOutOfRangeException("Count cannot be less than 0");
-
-            sbyte[] r = new sbyte[count];
-            for (int i = 0; i < count; i++)
-                r[i] = ReadSByte();
-
-            return r;
+            return result;
         }
 
         public override decimal ReadDecimal()

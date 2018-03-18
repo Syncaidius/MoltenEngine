@@ -48,7 +48,7 @@ namespace Molten.Font
 
             // NOTE: For some reason this table sometimes fall short of header.Length despite having all the correct data present.
             // If it fell short, jump to the expected table end position for debugging purposes.
-            long expectedEnd = header.ReadOffset + header.Length;
+            long expectedEnd = header.StreamOffset + header.Length;
             if (reader.Position < expectedEnd)
                 reader.Position = expectedEnd;
         }

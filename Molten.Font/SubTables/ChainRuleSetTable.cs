@@ -17,12 +17,12 @@ namespace Molten.Font
             base(reader, log, parent, offset)
         {
             ushort posRuleCount = reader.ReadUInt16();
-            ushort[] posRuleOffsets = reader.ReadArrayUInt16(posRuleCount);
+            ushort[] posRuleOffsets = reader.ReadArray<ushort>(posRuleCount);
             Tables = new ChainRuleTable[posRuleCount];
 
             for (int i = 0; i < posRuleCount; i++)
             {
-                long fileOffset = Header.ReadOffset + posRuleOffsets[i];
+                long fileOffset = Header.StreamOffset + posRuleOffsets[i];
                 if (!existingRules.TryGetValue(fileOffset, out Tables[i]))
                 {
                     Tables[i] = new ChainRuleTable(reader, log, this, posRuleOffsets[i]);
@@ -62,17 +62,17 @@ namespace Molten.Font
             base(reader, log, parent, offset)
         {
             ushort backtrackGlyphCount = reader.ReadUInt16();
-            BacktrackSequence = reader.ReadArrayUInt16(backtrackGlyphCount);
+            BacktrackSequence = reader.ReadArray<ushort>(backtrackGlyphCount);
 
             ushort inputGlyphCount = reader.ReadUInt16();
 
             if (inputGlyphCount == 0)
                 InputSequence = new ushort[0];
             else
-                InputSequence = reader.ReadArrayUInt16(inputGlyphCount - 1);
+                InputSequence = reader.ReadArray<ushort>(inputGlyphCount - 1);
 
             ushort lookAheadGlyphCount = reader.ReadUInt16();
-            LookAheadSequence = reader.ReadArrayUInt16(lookAheadGlyphCount);
+            LookAheadSequence = reader.ReadArray<ushort>(lookAheadGlyphCount);
 
             ushort posCount = reader.ReadUInt16();
             Records = new RuleLookupRecord[posCount];

@@ -21,7 +21,7 @@ namespace Molten.Font
             _startCode = reader.ReadUInt16();
             ushort entryCount = reader.ReadUInt16();
             _endCode = (ushort)(_startCode + (entryCount - 1));
-            _glyphIdArray = reader.ReadArrayUInt16(entryCount);
+            _glyphIdArray = reader.ReadArray<ushort>(entryCount);
         }
 
         public override ushort CharPairToGlyphIndex(int codepoint, ushort defaultGlyphIndex, int nextCodepoint)
