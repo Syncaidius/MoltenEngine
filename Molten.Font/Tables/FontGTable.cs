@@ -63,7 +63,7 @@ namespace Molten.Font
             ScriptList = new ScriptListTable(reader, log, this, scriptListOffset);
             FeatureList = new FeatureListTable(reader, log, this, featureListOffset);
             LookupTable = new LookupListTable(reader, log, this, lookupListOffset, lookupIndex, extensionIndex);
-            reader.Position = header.Offset + header.Length;
+            reader.Position = header.ReadOffset + header.Length;
         }
     }
 }

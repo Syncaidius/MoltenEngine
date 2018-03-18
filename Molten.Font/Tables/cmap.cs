@@ -80,7 +80,7 @@ namespace Molten.Font
             for (int i = 0; i < numRecords; i++)
             {
                 CmapEncodingRecord record = records[i];
-                reader.Position = header.Offset + record.Offset;
+                reader.Position = header.ReadOffset + record.Offset;
                 record.Format = reader.ReadUInt16();
 
                 switch (record.Format)
@@ -95,7 +95,7 @@ namespace Molten.Font
                 }
             }
 
-            reader.Position = header.Offset + header.Length;
+            reader.Position = header.ReadOffset + header.Length;
         }
     }
 

@@ -22,7 +22,7 @@ namespace Molten.Font
 
             for (int i = 0; i < posRuleCount; i++)
             {
-                long fileOffset = Header.Offset + posRuleOffsets[i];
+                long fileOffset = Header.ReadOffset + posRuleOffsets[i];
                 if (!existingRules.TryGetValue(fileOffset, out Tables[i]))
                 {
                     Tables[i] = new ChainRuleTable(reader, log, this, posRuleOffsets[i]);

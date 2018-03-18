@@ -37,7 +37,7 @@ namespace Molten.Font
 
             _idRangeOffset = reader.ReadArrayUInt16(segCount);
 
-            long tableEndPos = Header.Offset + Header.Length;
+            long tableEndPos = Header.ReadOffset + Header.Length;
             int numGlyphIDs = (int)(tableEndPos - reader.Position) / sizeof(ushort);
             _glyphIdArray = reader.ReadArrayUInt16(numGlyphIDs);
         }

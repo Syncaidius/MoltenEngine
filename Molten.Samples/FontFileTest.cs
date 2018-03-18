@@ -101,7 +101,7 @@ namespace Molten.Samples
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
             AcceptPlayerInput = false;
 
-            //LoadFontFile();
+            LoadFontFile();
             LoadSystemFontFile("Arial");
             InitializeFontDebug();
             GenerateChar('{');

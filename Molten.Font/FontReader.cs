@@ -37,7 +37,7 @@ namespace Molten.Font
             }
         }
 
-        static FontTable GetTable(TableHeader header)
+        static FontTable GetTableInstance(TableHeader header)
         {
             if (_tableTypes.TryGetValue(header.Tag, out TableEntry entry))
             {
@@ -54,22 +54,23 @@ namespace Molten.Font
         Logger _log;
         string _filename;
         EnhancedBinaryReader _reader;
+        MemoryStream _tableStream;
+        byte[] _tableStreamBuffer;
 
         /// <summary>Creates a new instance of <see cref="FontReader"/>.</summary>
         /// <param name="log">A logger.</param>
         /// <param name="systemFontName">The name of the system font. For example: "Arial", "Times New Roman", "Segoe UI". <para/>
         /// Note that the case-sensitivity of the font name depends on OS pathing rules (e.g. Android/Linux are case-sensitive).</param>
-        public FontReader(string systemFontName, Logger log)
+        /// <param name="tableStreamBufferSize">The size of the table stream buffer. By default this is 1MB (1024 bytes (1KB) * 1024KB)</param>
+        public FontReader(string systemFontName, Logger log, int tableStreamBufferSize = 1048576)
         {
             _stream = new FileStream(FontFile.GetSystemFontPath(systemFontName), FileMode.Open, FileAccess.Read);
             _stream.Position = 0;
             _filename = systemFontName;
             _log = log;
-
-            if (BitConverter.IsLittleEndian)
-                _reader = new FlippedBinaryReader(_stream, false);
-            else
-                _reader = new EnhancedBinaryReader(_stream, false);
+            _tableStream = new MemoryStream();
+            _tableStreamBuffer = new byte[tableStreamBufferSize];
+            _reader = GetReader(_stream, false);
         }
 
         /// <summary>Creates a new instance of <see cref="FontReader"/>.</summary>
@@ -77,15 +78,15 @@ namespace Molten.Font
         /// <param name="log">A logger.</param>
         /// <param name="filename">An optional filename or label to improve log/debug messages.</param>
         /// <param name="leaveOpen">If true, the underlying stream will not be closed or disposed when the <see cref="FontReader"/> is disposed.</param>
-        public FontReader(Stream stream, Logger log, string filename = null, bool leaveOpen = false)
+        /// <param name="tableStreamBufferSize">The size of the table stream buffer. By default this is 1MB (1024 bytes (1KB) * 1024KB)</param>
+        public FontReader(Stream stream, Logger log, string filename = null, bool leaveOpen = false, int tableStreamBufferSize = 1048576)
         {
             _stream = stream;
             _log = log;
             _filename = filename;
-            if (BitConverter.IsLittleEndian)
-                _reader = new FlippedBinaryReader(_stream, true);
-            else
-                _reader = new EnhancedBinaryReader(_stream, true);
+            _tableStream = new MemoryStream();
+            _tableStreamBuffer = new byte[tableStreamBufferSize];
+            _reader = GetReader(_stream, true);
         }
 
         /// <summary>Parses a .TTF or .OTF font file and returns a new <see cref="FontFile"/> instance containing detailed information about a font.</summary>
@@ -98,7 +99,6 @@ namespace Molten.Font
 
             List<TableHeader> toParse = new List<TableHeader>();
             Dictionary<string, TableHeader> toParseByTag = new Dictionary<string, TableHeader>();
-            MemoryStream memStream = new MemoryStream();
 
             long fontStartPos = _reader.Position;
 
@@ -122,11 +122,11 @@ namespace Molten.Font
                 bool ignored = false;
 
                 // Check if table is ignored.
-                if(ignoredTables != null)
+                if (ignoredTables != null)
                 {
-                    for(int j = 0; j < ignoredTables.Length; j++)
+                    for (int j = 0; j < ignoredTables.Length; j++)
                     {
-                        if(ignoredTables[j] == header.Tag)
+                        if (ignoredTables[j] == header.Tag)
                         {
                             _log.WriteDebugLine($"Ignoring table '{header.Tag}' ({header.Length} bytes)", _filename);
                             ignored = true;
@@ -135,21 +135,22 @@ namespace Molten.Font
                     }
                 }
 
-                if (!ignored) {
+                if (!ignored)
+                {
                     toParse.Add(header);
                     toParseByTag.Add(header.Tag, header);
                 }
             }
 
             // Now parse the tables.
-            while(toParse.Count > 0)
+            while (toParse.Count > 0)
             {
                 TableHeader header = toParse[toParse.Count - 1];
                 LoadTable(fontStartPos, tables, header, toParse, toParseByTag);
             }
 
             // Spit out warnings for unsupported font tables
-            foreach(TableHeader header in tables.UnsupportedTables)
+            foreach (TableHeader header in tables.UnsupportedTables)
                 _log.WriteWarning($"Unsupported table -- {header.ToString()}", _filename);
 
             /* Jump to the end of the font file data within the stream.
@@ -166,7 +167,7 @@ namespace Molten.Font
 
         private void LoadTable(long fontStartPos, FontTableList tables, TableHeader header, List<TableHeader> toParse, Dictionary<string, TableHeader> toParseByTag)
         {
-            FontTable table = GetTable(header);
+            FontTable table = GetTableInstance(header);
             if (table != null)
             {
                 _log.WriteDebugLine($"Supported table '{header.Tag}' found ({header.Length} bytes)", _filename);
@@ -211,11 +212,14 @@ namespace Molten.Font
                 if (dependenciesValid)
                 {
                     // Move to the start of the table and parse it.
-                    _reader.Position = fontStartPos + header.Offset;
-                    table.Read(_reader, header, _log, dependencies);
+                    _reader.Position = fontStartPos + header.FileOffset;
+                    FillTableStream(header);
+                    using (EnhancedBinaryReader tableReader = GetReader(_tableStream, true))
+                        table.Read(tableReader, header, _log, dependencies);
+
                     tables.Add(table);
 
-                    long expectedEnd = header.Offset + header.Length;
+                    long expectedEnd = header.FileOffset + header.Length;
                     long readerPos = _reader.Position;
                     long posDif = readerPos - expectedEnd;
 
@@ -235,6 +239,27 @@ namespace Molten.Font
             toParseByTag.Remove(header.Tag);
         }
 
+        private EnhancedBinaryReader GetReader(Stream stream, bool leaveOpen)
+        {
+            if (BitConverter.IsLittleEndian)
+                return new FlippedBinaryReader(stream, leaveOpen);
+            else
+                return new EnhancedBinaryReader(stream, leaveOpen);
+        }
+
+        private void FillTableStream(TableHeader header)
+        {
+            _tableStream.Position = 0;
+            long bytesRemaining = header.Length;
+            while(bytesRemaining > 0)
+            {
+                int toCopy = (int)Math.Min(bytesRemaining, _tableStreamBuffer.Length);
+                bytesRemaining -= _stream.Read(_tableStreamBuffer, 0, toCopy);
+                _tableStream.Write(_tableStreamBuffer, 0, toCopy);
+            }
+            _tableStream.Position = 0;
+        }
+
         private TableHeader ReadTableHeader(EnhancedBinaryReader reader)
         {
             uint tagCode = reader.ReadUInt32();
@@ -250,7 +275,7 @@ namespace Molten.Font
             {
                 Tag = new string(tagChars).Trim(),
                 CheckSum = reader.ReadUInt32(),
-                Offset = reader.ReadUInt32(),
+                FileOffset = reader.ReadUInt32(),
                 Length = reader.ReadUInt32(),
             };
         }
@@ -259,6 +284,8 @@ namespace Molten.Font
         {
             _reader.Close();
             _stream.Dispose();
+            _tableStream.Dispose();
+            _tableStreamBuffer = null;
         }
     }
 }

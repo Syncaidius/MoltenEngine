@@ -21,6 +21,7 @@ namespace Molten.Threading
         {
             _reset = new AutoResetEvent(false);
             _queue = taskQueue;
+            _engine = engine;
 
             _thread = new Thread(() =>
             {

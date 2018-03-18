@@ -27,6 +27,7 @@ namespace Molten
         public void Run(Engine engine)
         {
             Request.Manager.ProcessRequest(Request);
+            OnCompleted?.Invoke(this);
             _pool.Recycle(this);
         }
     }

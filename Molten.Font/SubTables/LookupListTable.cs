@@ -18,14 +18,14 @@ namespace Molten.Font
         {
             ushort lookupCount = reader.ReadUInt16();
             ushort[] lookupOffsets = reader.ReadArrayUInt16(lookupCount);
-            log.WriteDebugLine($"Reading lookup list table at {Header.Offset} containing {lookupCount} lookup tables");
+            log.WriteDebugLine($"Reading lookup list table at {Header.ReadOffset} containing {lookupCount} lookup tables");
 
             List<LookupTable> subtables = new List<LookupTable>();
             SubTables = subtables.AsReadOnly();
 
             for (int i = 0; i < lookupCount; i++)
             {
-                long lookupStartPos = Header.Offset + lookupOffsets[i];
+                long lookupStartPos = Header.ReadOffset + lookupOffsets[i];
                 reader.Position = lookupStartPos;
                 ushort lookupType = reader.ReadUInt16();
                 LookupFlags flags = (LookupFlags)reader.ReadUInt16();

@@ -66,7 +66,7 @@ namespace Molten.Font
             {
                 SignatureRecord record = sigs[i];
                 // Jump to signature position in stream
-                long sigPos = header.Offset + record.Offset;
+                long sigPos = header.ReadOffset + record.Offset;
                 reader.Position = sigPos;
 
                 Signature sig = new Signature()

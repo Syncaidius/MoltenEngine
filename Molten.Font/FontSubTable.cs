@@ -31,13 +31,13 @@ namespace Molten.Font
             Parent = parent;
             Header = new TableHeader()
             {
-                Offset = parent.Header.Offset + offset,
+                ReadOffset = parent.Header.ReadOffset + offset,
                 Tag = GetType().Name,
                 TableDepth = parent.Header.TableDepth + 1,
             };
 
-            log.WriteDebugLine($"{new string(' ', Header.TableDepth)}[{parent.Header.Tag}] Reading sub-table {Header.Tag} at pos {Header.Offset}");
-            reader.Position = Header.Offset;
+            log.WriteDebugLine($"{new string(' ', Header.TableDepth)}[{parent.Header.Tag}] Reading sub-table {Header.Tag} at pos {Header.ReadOffset}");
+            reader.Position = Header.ReadOffset;
         }
     }
 }
