@@ -20,7 +20,7 @@ namespace Molten.Font
 
         public abstract ushort CharPairToGlyphIndex(int codepoint, ushort defaultGlyphIndex, int nextCodepoint);
 
-        internal CmapSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) :
+        internal CmapSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) :
             base(reader, log, parent, offset)
         {
             Format = record.Format;

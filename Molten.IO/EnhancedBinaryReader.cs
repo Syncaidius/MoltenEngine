@@ -11,17 +11,13 @@ namespace Molten
     /// <summary>A reader which automatically flips the bytes of read types if the current system's endian architecture does not match the stream's endian format.</summary>
     public class EnhancedBinaryReader : BinaryReader
     {
-        public EnhancedBinaryReader(Stream input) : base(input)
-        {
-        }
+        public EnhancedBinaryReader(Stream input) : base(input) { }
 
-        public EnhancedBinaryReader(Stream input, Encoding encoding) : base(input, encoding)
-        {
-        }
+        public EnhancedBinaryReader(Stream input, Encoding encoding) : base(input, encoding) { }
 
-        public EnhancedBinaryReader(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen)
-        {
-        }
+        public EnhancedBinaryReader(Stream input, bool leaveOpen) : base(input, new UTF8Encoding(), leaveOpen) { }
+
+        public EnhancedBinaryReader(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen) { }
 
         /// <summary>Reads a pascal string from the underlying stream. Pascal streams store their length in the first byte, followed by the string data, up to a maximum length of 255 bytes.</summary>
         /// <returns></returns>

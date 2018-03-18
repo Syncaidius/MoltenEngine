@@ -21,7 +21,7 @@ namespace Molten.Font
 
         public FeatureVariationRecord[] Records { get; internal set; }
 
-        internal FeatureVariationsTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal FeatureVariationsTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             MajorVersion = reader.ReadUInt16();

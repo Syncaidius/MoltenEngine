@@ -10,7 +10,7 @@ namespace Molten.Font
     {
         public ConditionTable[] Tables { get; internal set; }
 
-        internal ConditionSetTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) : 
+        internal ConditionSetTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
             base(reader, log, parent, offset)
         {
             ushort conditionCount = reader.ReadUInt16();
@@ -43,7 +43,7 @@ namespace Molten.Font
         /// </summary>
         public float FilterRangeMaxValue { get; internal set; }
 
-        internal ConditionTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal ConditionTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             Format = reader.ReadUInt16();

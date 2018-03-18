@@ -24,11 +24,11 @@ namespace Molten.Font
         /// </summary>
         public TableHeader Header { get; internal set; }
 
-        /// <summary>Populates the table from a stream using as <see cref="BinaryEndianAgnosticReader"/>.</summary>
+        /// <summary>Populates the table from a stream using as <see cref="EnhancedBinaryReader"/>.</summary>
         /// <param name="reader"></param>
         /// <param name="header"></param>
         /// <param name="log"></param>
         /// <param name="dependencies"></param>
-        internal abstract void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies);
+        internal abstract void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies);
     }
 }

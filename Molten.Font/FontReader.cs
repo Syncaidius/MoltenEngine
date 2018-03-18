@@ -53,8 +53,7 @@ namespace Molten.Font
         Stream _stream;
         Logger _log;
         string _filename;
-        bool _leaveOpen;
-        BinaryEndianAgnosticReader _reader;
+        EnhancedBinaryReader _reader;
 
         /// <summary>Creates a new instance of <see cref="FontReader"/>.</summary>
         /// <param name="log">A logger.</param>
@@ -63,10 +62,14 @@ namespace Molten.Font
         public FontReader(string systemFontName, Logger log)
         {
             _stream = new FileStream(FontFile.GetSystemFontPath(systemFontName), FileMode.Open, FileAccess.Read);
+            _stream.Position = 0;
             _filename = systemFontName;
-            _leaveOpen = false;
             _log = log;
-            _reader = new BinaryEndianAgnosticReader(_stream, false, _leaveOpen);
+
+            if (BitConverter.IsLittleEndian)
+                _reader = new FlippedBinaryReader(_stream, false);
+            else
+                _reader = new EnhancedBinaryReader(_stream, false);
         }
 
         /// <summary>Creates a new instance of <see cref="FontReader"/>.</summary>
@@ -79,8 +82,10 @@ namespace Molten.Font
             _stream = stream;
             _log = log;
             _filename = filename;
-            _leaveOpen = leaveOpen;
-            _reader = new BinaryEndianAgnosticReader(_stream, false, leaveOpen);
+            if (BitConverter.IsLittleEndian)
+                _reader = new FlippedBinaryReader(_stream, true);
+            else
+                _reader = new EnhancedBinaryReader(_stream, true);
         }
 
         /// <summary>Parses a .TTF or .OTF font file and returns a new <see cref="FontFile"/> instance containing detailed information about a font.</summary>
@@ -93,6 +98,9 @@ namespace Molten.Font
 
             List<TableHeader> toParse = new List<TableHeader>();
             Dictionary<string, TableHeader> toParseByTag = new Dictionary<string, TableHeader>();
+            MemoryStream memStream = new MemoryStream();
+
+            long fontStartPos = _reader.Position;
 
             // True-type fonts use big-endian.
             offsetTable = new OffsetTable()
@@ -106,7 +114,7 @@ namespace Molten.Font
             };
 
             // Read table header entries and calculate where the end of the font file should be.
-            long expectedEndPos = _stream.Position;
+            long expectedEndPos = fontStartPos;
             for (int i = 0; i < offsetTable.NumTables; i++)
             {
                 TableHeader header = ReadTableHeader(_reader);
@@ -137,7 +145,7 @@ namespace Molten.Font
             while(toParse.Count > 0)
             {
                 TableHeader header = toParse[toParse.Count - 1];
-                LoadTable(tables, header, toParse, toParseByTag);
+                LoadTable(fontStartPos, tables, header, toParse, toParseByTag);
             }
 
             // Spit out warnings for unsupported font tables
@@ -156,7 +164,7 @@ namespace Molten.Font
             return font;
         }
 
-        private void LoadTable(FontTableList tables, TableHeader header, List<TableHeader> toParse, Dictionary<string, TableHeader> toParseByTag)
+        private void LoadTable(long fontStartPos, FontTableList tables, TableHeader header, List<TableHeader> toParse, Dictionary<string, TableHeader> toParseByTag)
         {
             FontTable table = GetTable(header);
             if (table != null)
@@ -178,7 +186,7 @@ namespace Molten.Font
                             if (toParseByTag.TryGetValue(depTag, out TableHeader depHeader))
                             {
                                 _log.WriteDebugLine($"[{header.Tag}] Attempting to load missing dependency '{depTag}'");
-                                LoadTable(tables, depHeader, toParse, toParseByTag);
+                                LoadTable(fontStartPos, tables, depHeader, toParse, toParseByTag);
                                 dep = tables.Get(depTag);
                                 if(dep == null)
                                 {
@@ -203,7 +211,7 @@ namespace Molten.Font
                 if (dependenciesValid)
                 {
                     // Move to the start of the table and parse it.
-                    _reader.Position = header.Offset;
+                    _reader.Position = fontStartPos + header.Offset;
                     table.Read(_reader, header, _log, dependencies);
                     tables.Add(table);
 
@@ -227,7 +235,7 @@ namespace Molten.Font
             toParseByTag.Remove(header.Tag);
         }
 
-        private TableHeader ReadTableHeader(BinaryEndianAgnosticReader reader)
+        private TableHeader ReadTableHeader(EnhancedBinaryReader reader)
         {
             uint tagCode = reader.ReadUInt32();
             char[] tagChars = new char[4]

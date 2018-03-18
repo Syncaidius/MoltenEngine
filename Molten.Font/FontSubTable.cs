@@ -26,7 +26,7 @@ namespace Molten.Font
         /// <param name="log">A logger.</param>
         /// <param name="parent">The parent table.</param>
         /// <param name="offset">The offset in bytes from the start of the parent table.</param>
-        internal FontSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset)
+        internal FontSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset)
         {
             Parent = parent;
             Header = new TableHeader()

@@ -13,7 +13,7 @@ namespace Molten.Font
         /// </summary>
         public ushort[] GlyphIDs { get; internal set; }
 
-        internal SequenceTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) : 
+        internal SequenceTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
             base(reader, log, parent, offset)
         {
             ushort glyphCount = reader.ReadUInt16();

@@ -16,7 +16,7 @@ namespace Molten.Font
         /// </summary>
         public CoverageTable Coverage { get; internal set; }
 
-        internal AttachListTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) : 
+        internal AttachListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
             base(reader, log, parent, offset)
         {
             ushort coverageOffset = reader.ReadUInt16();

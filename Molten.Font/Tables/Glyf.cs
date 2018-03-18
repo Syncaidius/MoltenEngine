@@ -16,7 +16,7 @@ namespace Molten.Font
     {        
         public Glyph[] Glyphs { get; internal set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             long tableStartPos = reader.Position;
             Loca loca = dependencies.Get<Loca>();
@@ -49,7 +49,7 @@ namespace Molten.Font
             reader.Position = tableStartPos + loca.Offsets[numGlyphs];
         }
 
-        private void ReadGlyph(BinaryEndianAgnosticReader reader, Logger log, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, ushort id)
+        private void ReadGlyph(EnhancedBinaryReader reader, Logger log, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, ushort id)
         {
             uint offset = locaOffsets[id];
             uint length = locaOffsets[id + 1] - offset;
@@ -100,7 +100,7 @@ namespace Molten.Font
             //}
         }
 
-        private Glyph ReadCompositeGlyph(BinaryEndianAgnosticReader reader, Logger log, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, Rectangle bounds, ushort id)
+        private Glyph ReadCompositeGlyph(EnhancedBinaryReader reader, Logger log, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, Rectangle bounds, ushort id)
         {
             CompositeGlyphFlags flags;
             Glyph compositeGlyph = null;
@@ -240,7 +240,7 @@ namespace Molten.Font
             return compositeGlyph;
         }
 
-        private Glyph ReadSimpleGlyph(BinaryEndianAgnosticReader reader, short numContours, Rectangle bounds)
+        private Glyph ReadSimpleGlyph(EnhancedBinaryReader reader, short numContours, Rectangle bounds)
         {
             ushort[] contourEndPoints = reader.ReadArrayUInt16(numContours);
             ushort instructionLength = reader.ReadUInt16();
@@ -265,7 +265,7 @@ namespace Molten.Font
             return new Glyph(bounds, contourEndPoints, points, instructions);
         }
 
-        private SimpleGlyphFlags[] ReadFlags(BinaryEndianAgnosticReader reader, ushort pointCount)
+        private SimpleGlyphFlags[] ReadFlags(EnhancedBinaryReader reader, ushort pointCount)
         {
             // Read flags - There will be more flags than the data provides. Expand on-the-fly
             SimpleGlyphFlags[] flags = new SimpleGlyphFlags[pointCount];
@@ -292,7 +292,7 @@ namespace Molten.Font
             return flags;
         }
 
-        private short[] ReadCoordinates(BinaryEndianAgnosticReader reader, ushort pointCount, SimpleGlyphFlags[] flags, SimpleGlyphFlags byteFlag, SimpleGlyphFlags sameFlag)
+        private short[] ReadCoordinates(EnhancedBinaryReader reader, ushort pointCount, SimpleGlyphFlags[] flags, SimpleGlyphFlags byteFlag, SimpleGlyphFlags sameFlag)
         {
             short[] coords = new short[pointCount];
             int i = 0;
@@ -475,7 +475,7 @@ namespace Molten.Font
             Reserved7 = 128,
         }
 
-        private Rectangle ReadBounds(BinaryEndianAgnosticReader reader)
+        private Rectangle ReadBounds(EnhancedBinaryReader reader)
         {
             return new Rectangle()
             {

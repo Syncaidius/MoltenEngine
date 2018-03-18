@@ -90,7 +90,7 @@ namespace Molten.Font
 
         public ushort Format { get; private set; }
 
-        internal GSubLookupSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+        internal GSubLookupSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -125,7 +125,7 @@ namespace Molten.Font
         /// </summary>
         public ushort[] SubstitudeGlyphIDs { get; private set; }
 
-        internal SingleSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, 
+        internal SingleSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, 
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -161,7 +161,7 @@ namespace Molten.Font
 
         public CoverageTable Coverage { get; private set; }
 
-        internal MultipleSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, 
+        internal MultipleSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, 
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -199,7 +199,7 @@ namespace Molten.Font
 
         public CoverageTable Coverage { get; private set; }
 
-        internal AlternateSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+        internal AlternateSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -230,7 +230,7 @@ namespace Molten.Font
     {
         public LigatureSetTable[] Tables { get; private set; }
 
-        internal LigatureSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, 
+        internal LigatureSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, 
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -277,7 +277,7 @@ namespace Molten.Font
         /// </summary>
         public RuleLookupRecord[] Records { get; private set; }
 
-        internal ContextualSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, 
+        internal ContextualSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, 
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -357,11 +357,12 @@ namespace Molten.Font
 
         public RuleLookupRecord[] Records { get; internal set; }
 
-        internal ChainingContextualSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+        internal ChainingContextualSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
             ushort coverageOffset;
+            Dictionary<long, ChainRuleTable> existingRules = new Dictionary<long, ChainRuleTable>();
 
             switch (Format)
             {
@@ -371,7 +372,7 @@ namespace Molten.Font
                     ushort[] chainPosRuleSetOffsets = reader.ReadArrayUInt16(chainPosRuleSetCount);
                     ChainRuleSets = new ChainRuleSetTable[chainPosRuleSetCount];
                     for (int i = 0; i < chainPosRuleSetCount; i++)
-                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosRuleSetOffsets[i]);
+                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosRuleSetOffsets[i], existingRules);
 
                     Coverage = new CoverageTable(reader, log, this, coverageOffset);
                     break;
@@ -390,7 +391,7 @@ namespace Molten.Font
                     LookAheadClasses = new ClassDefinitionTable(reader, log, this, lookAheadClassDefOffset);
                     ChainRuleSets = new ChainRuleSetTable[chainPosClassSetCount];
                     for (int i = 0; i < chainPosClassSetCount; i++)
-                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosClassSetOffsets[i]);
+                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosClassSetOffsets[i], existingRules);
                     break;
 
                 case 3:
@@ -434,7 +435,7 @@ namespace Molten.Font
 
         public ushort[] GlyphIDs { get; private set; }
 
-        internal ReverseChainingContextualSingleSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+        internal ReverseChainingContextualSingleSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {

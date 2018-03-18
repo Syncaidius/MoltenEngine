@@ -16,7 +16,7 @@ namespace Molten.Font
         /// <summary>Gets an array of <see cref="GaspRange"/> instances, sorted by ppem.</summary>
         public GaspRange[] Ranges { get; private set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             Version = reader.ReadUInt16();
             ushort numRanges = reader.ReadUInt16();

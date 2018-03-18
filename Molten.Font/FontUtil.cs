@@ -104,7 +104,7 @@ namespace Molten.Font
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static string ReadTag(BinaryEndianAgnosticReader reader)
+        public static string ReadTag(EnhancedBinaryReader reader)
         {
             byte[] bytes = reader.ReadBytes(4);
             return Encoding.ASCII.GetString(bytes);

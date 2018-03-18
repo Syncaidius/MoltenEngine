@@ -17,7 +17,7 @@ namespace Molten.Font
         /// </summary>
         public FeatureRecord[] Records { get; internal set; }
 
-        internal FeatureListTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal FeatureListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort featureCount = reader.ReadUInt16();
@@ -66,7 +66,7 @@ namespace Molten.Font
         /// </summary>
         public ushort[] LookupListIndices { get; internal set; }
 
-        internal FeatureTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset)  :
+        internal FeatureTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset)  :
             base(reader, log, parent, offset)
         {
             FeatureParams = reader.ReadUInt16();

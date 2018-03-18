@@ -15,7 +15,7 @@ namespace Molten.Font
     {
         public uint[] Offsets { get; internal set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             /* From Apple docs:
              * The size of entries in the 'loca' table must be appropriate for the value of the indexToLocFormat field of the 'head' table. 

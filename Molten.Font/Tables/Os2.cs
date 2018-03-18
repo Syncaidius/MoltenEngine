@@ -142,7 +142,7 @@ namespace Molten.Font
 
         public ushort UsUpperOpticalPointSize { get; internal set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             // Read common table data. This is the same layout for all versions.
             Version = reader.ReadUInt16();

@@ -10,7 +10,7 @@ namespace Molten.Font
     {
         public BaseRecord[] Records { get; private set; }
 
-        internal BaseArrayTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, ushort markClassCount)
+        internal BaseArrayTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, ushort markClassCount)
             : base(reader, log, parent, offset)
         {
             ushort baseCount = reader.ReadUInt16();

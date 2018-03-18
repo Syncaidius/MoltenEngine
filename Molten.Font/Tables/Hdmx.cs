@@ -20,7 +20,7 @@ namespace Molten.Font
         /// </summary>
         public DeviceRecord[] Metrics { get; private set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             Maxp tableMaxp = dependencies.Get<Maxp>();
             ushort numGlyphs = tableMaxp.NumGlyphs;

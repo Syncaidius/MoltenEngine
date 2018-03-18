@@ -13,7 +13,7 @@ namespace Molten.Font
 
         public IReadOnlyCollection<LookupTable> SubTables { get; internal set; }
 
-        internal LookupListTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, Type[] lookupTypeIndex, ushort extensionIndex) : 
+        internal LookupListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, Type[] lookupTypeIndex, ushort extensionIndex) : 
             base(reader, log, parent, offset)
         {
             ushort lookupCount = reader.ReadUInt16();
@@ -80,7 +80,7 @@ namespace Molten.Font
 
     public abstract class LookupTable : FontSubTable
     {
-        internal LookupTable(BinaryEndianAgnosticReader reader,
+        internal LookupTable(EnhancedBinaryReader reader,
             Logger log,
             IFontTable parent,
             long offset,

@@ -13,14 +13,22 @@ namespace Molten.Font
         /// </summary>
         public ChainRuleTable[] Tables { get; internal set; }
 
-        internal ChainRuleSetTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal ChainRuleSetTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, Dictionary<long, ChainRuleTable> existingRules) :
             base(reader, log, parent, offset)
         {
             ushort posRuleCount = reader.ReadUInt16();
             ushort[] posRuleOffsets = reader.ReadArrayUInt16(posRuleCount);
             Tables = new ChainRuleTable[posRuleCount];
+
             for (int i = 0; i < posRuleCount; i++)
-                Tables[i] = new ChainRuleTable(reader, log, this, posRuleOffsets[i]);
+            {
+                long fileOffset = Header.Offset + posRuleOffsets[i];
+                if (!existingRules.TryGetValue(fileOffset, out Tables[i]))
+                {
+                    Tables[i] = new ChainRuleTable(reader, log, this, posRuleOffsets[i]);
+                    existingRules.Add(fileOffset, Tables[i]);
+                }
+            }
         }
     }
 
@@ -50,7 +58,7 @@ namespace Molten.Font
         /// </summary>
         public RuleLookupRecord[] Records { get; internal set; }
 
-        internal ChainRuleTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal ChainRuleTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort backtrackGlyphCount = reader.ReadUInt16();

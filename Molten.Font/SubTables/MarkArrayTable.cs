@@ -10,7 +10,7 @@ namespace Molten.Font
     {
         public MarkRecord[] Records { get; private set; }
 
-        internal MarkArrayTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal MarkArrayTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort markCount = reader.ReadUInt16();
@@ -44,7 +44,7 @@ namespace Molten.Font
     {
         public Mark2Record[] Records { get; private set; }
 
-        internal Mark2ArrayTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, int markClassCount) :
+        internal Mark2ArrayTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, int markClassCount) :
             base(reader, log, parent, offset)
         {
             ushort mark2Count = reader.ReadUInt16();

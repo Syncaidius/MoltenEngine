@@ -14,7 +14,7 @@ namespace Molten.Font
         /// <summary>Gets the table's font program bytecode.</summary>
         public byte[] ByteCode { get; private set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             ByteCode = reader.ReadBytes((int)header.Length);
         }

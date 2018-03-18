@@ -32,6 +32,12 @@ namespace Molten
             _decimalBuffer = new int[4];
         }
 
+        public FlippedBinaryReader(Stream input, bool leaveOpen) : base(input, leaveOpen)
+        {
+            _flipBuffer = new byte[8];
+            _decimalBuffer = new int[4];
+        }
+
         public override short ReadInt16()
         {
             return BitConverter.ToInt16(ReadReverse(2), 6);

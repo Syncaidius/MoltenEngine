@@ -10,7 +10,7 @@ namespace Molten.Font
     {
         public ScriptRecord[] Records { get; internal set; }
 
-        internal ScriptListTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) : 
+        internal ScriptListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
             base(reader, log, parent, offset)
         {
             ushort scriptCount = reader.ReadUInt16();
@@ -48,7 +48,7 @@ namespace Molten.Font
 
         public LangSysTable Default { get; internal set; }
 
-        internal ScriptTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal ScriptTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort defaultLangSys = reader.ReadUInt16();
@@ -101,7 +101,7 @@ namespace Molten.Font
         /// </summary>
         public ushort RequiredFeatureIndex { get; internal set; }
 
-        internal LangSysTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal LangSysTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             LookupOrder = reader.ReadUInt16();

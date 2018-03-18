@@ -38,7 +38,7 @@ namespace Molten.Font
         /// </summary>
         public DeviceVariationIndexTable YDevice { get; internal set; }
 
-        internal AnchorTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal AnchorTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             Format = reader.ReadUInt16();

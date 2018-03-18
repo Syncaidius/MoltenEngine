@@ -34,7 +34,7 @@ namespace Molten.Font
         /// </summary>
         public ushort RangeShift { get; private set; }
 
-        internal KerningTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal KerningTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             Version = reader.ReadUInt16();
@@ -96,7 +96,7 @@ namespace Molten.Font
             }
         }
 
-        private ushort[] ReadClassTable(BinaryEndianAgnosticReader reader, long tableStart, ushort offset)
+        private ushort[] ReadClassTable(EnhancedBinaryReader reader, long tableStart, ushort offset)
         {
             reader.Position = tableStart + offset;
             ushort firstGlyph = reader.ReadUInt16(); // ID of the first glyph within the class range

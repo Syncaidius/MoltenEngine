@@ -12,7 +12,7 @@ namespace Molten.Font
         {
             public PairValueRecord[] PairRecords { get; private set; }
 
-            internal PairSet(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, ValueFormat format1, ValueFormat format2) :
+            internal PairSet(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, ValueFormat format1, ValueFormat format2) :
                 base(reader, log, parent, offset)
             {
                 ushort pairvalueCount = reader.ReadUInt16();

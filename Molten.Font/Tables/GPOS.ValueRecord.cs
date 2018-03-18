@@ -55,7 +55,7 @@ namespace Molten.Font
             /// </summary>
             public ValueFormat Format { get; private set; }
 
-            internal ValueRecord(BinaryEndianAgnosticReader reader, ValueFormat format)
+            internal ValueRecord(EnhancedBinaryReader reader, ValueFormat format)
             {
                 Format = format;
                 if (format == ValueFormat.Empty)

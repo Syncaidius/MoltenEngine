@@ -71,7 +71,7 @@ namespace Molten.Font
             return string.Empty;
         }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             MajorVersion = reader.ReadUInt16();
             MinorVersion = reader.ReadUInt16();

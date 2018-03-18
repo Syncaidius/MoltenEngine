@@ -13,7 +13,7 @@ namespace Molten.Font
         /// </summary>
         public LigatureTable[] Tables { get; internal set; }
 
-        internal LigatureSetTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) : 
+        internal LigatureSetTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
             base(reader, log, parent, offset)
         {
             ushort ligatureCount = reader.ReadUInt16();
@@ -36,7 +36,7 @@ namespace Molten.Font
         /// </summary>
         public ushort[] ComponentGlyphIDs { get; private set; }
 
-        internal LigatureTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) : 
+        internal LigatureTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
             base(reader, log, parent, offset)
         {
             LigatureGlyph = reader.ReadUInt16();

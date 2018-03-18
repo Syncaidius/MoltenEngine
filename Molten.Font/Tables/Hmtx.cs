@@ -18,7 +18,7 @@ namespace Molten.Font
         /// </summary>
         public LongHorMetric[] Metrics => _metrics;
 
-        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             Hhea tableHhea = dependencies.Get<Hhea>();
             Maxp tableMaxp = dependencies.Get<Maxp>();

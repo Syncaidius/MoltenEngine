@@ -21,7 +21,7 @@ namespace Molten.Font
 
         ushort[] _glyphClassIDs;
 
-        internal ClassDefinitionTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal ClassDefinitionTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             Format = reader.ReadUInt16();
@@ -72,7 +72,7 @@ namespace Molten.Font
 
         T[] _glyphClassIDs;
 
-        internal ClassDefinitionTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, T[] classTranslationTable) :
+        internal ClassDefinitionTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, T[] classTranslationTable) :
             base(reader, log, parent, offset)
         {
             Format = reader.ReadUInt16();

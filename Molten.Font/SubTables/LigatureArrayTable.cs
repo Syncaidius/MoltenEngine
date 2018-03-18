@@ -10,7 +10,7 @@ namespace Molten.Font
     {
         public LigatureAttachTable[] Tables { get; private set; }
 
-        internal LigatureArrayTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, long markClassCount):
+        internal LigatureArrayTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, long markClassCount):
             base(reader, log, parent, offset)
         {
             ushort ligatureCount = reader.ReadUInt16();
@@ -26,7 +26,7 @@ namespace Molten.Font
     {
         public ComponentRecord[] Records { get; private set; }
 
-        internal LigatureAttachTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, long markClassCount) :
+        internal LigatureAttachTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, long markClassCount) :
             base(reader, log, parent, offset)
         {
             ushort componentCount = reader.ReadUInt16();

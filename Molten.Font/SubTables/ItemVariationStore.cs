@@ -16,7 +16,7 @@ namespace Molten.Font
         /// The regions are indicated by an array of indices into the variation region list.</summary>
         public ItemVariationData[] DeltaSets { get; private set; }
 
-        internal ItemVariationStore(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) : 
+        internal ItemVariationStore(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
             base(reader, log, parent, offset)
         {
             Format = reader.ReadUInt16();
@@ -55,7 +55,7 @@ namespace Molten.Font
         /// <summary>Gets the sum of <see cref="ShortDeltaCount"/> and <see cref="RegionIndexCount"/>.</summary>
         public int TotalDeltaSetColumns { get; private set; }
 
-        internal ItemVariationData(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal ItemVariationData(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ItemCount = reader.ReadUInt16();

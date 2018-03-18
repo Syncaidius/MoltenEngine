@@ -12,7 +12,7 @@ namespace Molten.Font
         {
             public Class2Record[] Records { get; private set; }
 
-            internal Class1Record(BinaryEndianAgnosticReader reader, ushort class2Count, ValueFormat format1, ValueFormat format2)
+            internal Class1Record(EnhancedBinaryReader reader, ushort class2Count, ValueFormat format1, ValueFormat format2)
             {
                 Records = new Class2Record[class2Count];
                 for (int i = 0; i < class2Count; i++)

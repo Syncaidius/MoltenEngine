@@ -96,7 +96,7 @@ namespace Molten.Font
         /// </summary>
         public short GlyphDataFormat { get; private set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             MajorVersion = reader.ReadUInt16();
             MinorVersion = reader.ReadUInt16();

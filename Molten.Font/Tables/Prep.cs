@@ -16,7 +16,7 @@ namespace Molten.Font
         /// </summary>
         public byte[] Instructions { get; private set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             Instructions = reader.ReadBytes((int)header.Length);
 

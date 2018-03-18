@@ -14,7 +14,7 @@ namespace Molten.Font
 
         public FeatureTableSubstitutionRecord[] Records { get; internal set; }
 
-        internal FeatureTableSubstitutionTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal FeatureTableSubstitutionTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             MajorVersion = reader.ReadUInt16();

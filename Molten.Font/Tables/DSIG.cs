@@ -41,7 +41,7 @@ namespace Molten.Font
             public uint Offset { get; internal set; }
         }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             Version = reader.ReadUInt32();
             NumSignatures = reader.ReadUInt16();

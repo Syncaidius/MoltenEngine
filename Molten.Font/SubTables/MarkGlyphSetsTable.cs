@@ -17,7 +17,7 @@ namespace Molten.Font
         /// Mark glyph sets are used in GSUB and GPOS lookups to filter which marks in a string are considered or ignored</summary>
         public CoverageTable[] Sets {get; private set;}
 
-        internal MarkGlyphSetsTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal MarkGlyphSetsTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             Format = reader.ReadUInt16();

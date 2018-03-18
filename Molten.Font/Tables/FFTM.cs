@@ -25,7 +25,7 @@ namespace Molten.Font
         /// (not always accurate)</summary>
         public DateTime LastModified { get; internal set; }
 
-        internal override void Read(BinaryEndianAgnosticReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             Version = reader.ReadUInt32();
             SourceTimeStamp = FontUtil.FromLongDate(reader.ReadInt64());

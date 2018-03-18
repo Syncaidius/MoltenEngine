@@ -14,7 +14,7 @@ namespace Molten.Font
         ushort[] _idRangeOffset;
         ushort[] _glyphIdArray;
 
-        internal CmapFormat4SubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
+        internal CmapFormat4SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
             base(reader, log, parent, offset, record)
         {
             Header.Length = reader.ReadUInt16() - 2U; // Subtract 2 because it also includes the length value in the byte size...

@@ -10,7 +10,7 @@ namespace Molten.Font
     {
         byte[] _glyphIDs;
 
-        internal CmapFormat0SubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
+        internal CmapFormat0SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
             base(reader, log, parent, offset, record)
         {
             /* This is a simple 1 to 1 mapping of character codes to glyph indices.

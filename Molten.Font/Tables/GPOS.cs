@@ -69,7 +69,7 @@ namespace Molten.Font
 
         public ushort Format { get; private set; }
 
-        internal GPosLookupSubTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, 
+        internal GPosLookupSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, 
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -92,7 +92,7 @@ namespace Molten.Font
         /// </summary>
         public CoverageTable Coverage { get; private set; }
 
-        internal SingleAdjustmentPosTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset, 
+        internal SingleAdjustmentPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, 
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -137,7 +137,7 @@ namespace Molten.Font
 
         public ClassDefinitionTable Class2Definitions { get; internal set; }
 
-        internal PairAdjustmentPosTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+        internal PairAdjustmentPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -191,7 +191,7 @@ namespace Molten.Font
     {
         public GPOS.EntryExitRecord[] Records { get; private set; }
 
-        internal CursiveAttachmentPosTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+        internal CursiveAttachmentPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -228,7 +228,7 @@ namespace Molten.Font
 
         public ushort MarkClassCount { get; internal set; }
 
-        internal MarkToBaseAttachmentPosTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+        internal MarkToBaseAttachmentPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -270,7 +270,7 @@ namespace Molten.Font
 
         public ushort MarkClassCount { get; internal set; }
 
-        internal MarkToLigatureAttachmentPosTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+        internal MarkToLigatureAttachmentPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -311,7 +311,7 @@ namespace Molten.Font
         /// </summary>
         public Mark2ArrayTable Mark2Array { get; internal set; }
 
-        internal MarkToMarkAttachmentPosTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+        internal MarkToMarkAttachmentPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -343,7 +343,7 @@ namespace Molten.Font
         /// </summary>
         public RuleLookupRecord[] Records { get; internal set; }
 
-        internal ContextPosTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+        internal ContextPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
@@ -417,11 +417,12 @@ namespace Molten.Font
 
         public RuleLookupRecord[] Records { get; internal set; }
 
-        internal ChainingContextualPosTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset,
+        internal ChainingContextualPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
             ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
             base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
         {
             ushort coverageOffset;
+            Dictionary<long, ChainRuleTable> existingRules = new Dictionary<long, ChainRuleTable>();
 
             switch (Format)
             {
@@ -431,7 +432,7 @@ namespace Molten.Font
                     ushort[] chainPosRuleSetOffsets = reader.ReadArrayUInt16(chainPosRuleSetCount);
                     ChainRuleSets = new ChainRuleSetTable[chainPosRuleSetCount];
                     for (int i = 0; i < chainPosRuleSetCount; i++)
-                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosRuleSetOffsets[i]);
+                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosRuleSetOffsets[i], existingRules);
 
                     Coverage = new CoverageTable(reader, log, this, coverageOffset);
                     break;
@@ -450,7 +451,7 @@ namespace Molten.Font
                     LookAheadClasses = new ClassDefinitionTable(reader, log, this, lookAheadClassDefOffset);
                     ChainRuleSets = new ChainRuleSetTable[chainPosClassSetCount];
                     for (int i = 0; i < chainPosClassSetCount; i++)
-                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosClassSetOffsets[i]);
+                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosClassSetOffsets[i], existingRules);
                     break;
 
                 case 3:

@@ -13,7 +13,7 @@ namespace Molten.Font
         /// </summary>
         public ClassRuleTable[] Tables { get; internal set; }
 
-        internal ClassSetTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset) :
+        internal ClassSetTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort posClassRuleCount = reader.ReadUInt16();
@@ -40,7 +40,7 @@ namespace Molten.Font
         /// </summary>
         public RuleLookupRecord[] Records { get; internal set; }
 
-        internal ClassRuleTable(BinaryEndianAgnosticReader reader, Logger log, IFontTable parent, long offset)
+        internal ClassRuleTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset)
         {
             ushort glyphCount = reader.ReadUInt16();
             ushort posCount = reader.ReadUInt16();
