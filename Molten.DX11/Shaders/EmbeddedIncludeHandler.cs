@@ -34,13 +34,13 @@ namespace Molten.Graphics.Shaders
         public Stream Open(IncludeType type, string fileName, Stream parentStream)
         {
             string embeddedName = _namespace + "." + fileName;
-            _stream = EmbeddedResourceReader.GetStream(embeddedName, _assembly);
+            _stream = EmbeddedResource.GetStream(embeddedName, _assembly);
 
             // Try again, but this time attempt to load the embedded include from the engine DLL.
             if (_stream == null && _assembly != null)
             {
                 embeddedName = "StoneBolt.Assets." + fileName;
-                _stream = EmbeddedResourceReader.GetStream(embeddedName, null);
+                _stream = EmbeddedResource.GetStream(embeddedName, null);
             }
 
             return _stream;

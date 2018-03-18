@@ -65,7 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinaryEndianAgnosticReader.cs" />
-    <Compile Include="EmbeddedResourceReader.cs" />
+    <Compile Include="EmbeddedResource.cs" />
     <Compile Include="LibraryDetection.cs" />
     <Compile Include="Logging\ILogOutput.cs" />
     <Compile Include="Logging\LogFileWriter.cs" />

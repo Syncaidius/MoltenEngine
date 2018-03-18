@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Molten
 {
-    public static class EmbeddedResourceReader
+    public static class EmbeddedResource
     {
         /// <summary>Reads a resource file embedded into the assembly.</summary>
         /// <param name="name">The name of the resource to load.</param>

@@ -42,7 +42,7 @@ namespace Molten.Graphics
 
             string source = null;
             string namepace = "Molten.Graphics.Assets.sprite.sbm";
-            using (Stream stream = EmbeddedResourceReader.GetStream(namepace, typeof(RendererDX11).Assembly))
+            using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
             {
                 using (StreamReader reader = new StreamReader(stream))
                     source = reader.ReadToEnd();
