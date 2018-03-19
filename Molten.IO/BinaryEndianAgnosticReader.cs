@@ -136,6 +136,9 @@ namespace Molten
                 if (count < 0)
                     throw new IndexOutOfRangeException("Count cannot be less than 0");
 
+                if (!typeof(T).IsPrimitive)
+                    throw new NotSupportedException("EnhancedBinaryReader: Non-primitive types are not supported.");
+
                 int remaining = count * Marshal.SizeOf<T>();
                 T[] result = new T[count];
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Font
 {
     /// <summary>A base implementation for GPOS and GSUB tables.</summary>
-    public abstract class FontGTable : FontTable
+    public abstract class FontGTable<T> : FontTable where T : struct
     {
         public ushort MajorVersion { get; internal set; }
 
@@ -24,7 +24,7 @@ namespace Molten.Font
         /// <summary>
         /// Gets the <see cref="LookupListTable"/> associated with the current table.
         /// </summary>
-        public LookupListTable LookupTable { get; internal set; }
+        public LookupListTable<T> LookupTable { get; internal set; }
 
         /// <summary>
         /// Gets the feature variations table associated with the current table. Optional (may be null).
@@ -37,6 +37,9 @@ namespace Molten.Font
 
         internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
+            if (!typeof(T).IsEnum)
+                throw new NotSupportedException("LookupListTable only supports enumeration lookup types.");
+
             Type[] lookupIndex = GetLookupTypeIndex();
 
             /* Certain structures are used across multiple GPOS Lookup subtable types and formats. All Lookup subtables use the Coverage table, 
@@ -62,7 +65,7 @@ namespace Molten.Font
             ushort extensionIndex = GetExtensionIndex();
             ScriptList = new ScriptListTable(reader, log, this, scriptListOffset);
             FeatureList = new FeatureListTable(reader, log, this, featureListOffset);
-            LookupTable = new LookupListTable(reader, log, this, lookupListOffset, lookupIndex, extensionIndex);
+            LookupTable = new LookupListTable<T>(reader, log, this, lookupListOffset, lookupIndex, extensionIndex);
             reader.Position = header.StreamOffset + header.Length;
         }
     }

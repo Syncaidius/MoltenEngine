@@ -48,11 +48,10 @@ namespace Molten.Font
             Records = new RuleLookupRecord[posCount];
             for (int i = 0; i < posCount; i++)
             {
-                Records[i] = new RuleLookupRecord()
-                {
-                    SequenceIndex = reader.ReadUInt16(),
-                    LookupListIndex = reader.ReadUInt16(),
-                };
+                Records[i] = new RuleLookupRecord(
+                    seqIndex: reader.ReadUInt16(),
+                    lookupIndex: reader.ReadUInt16()
+                );
             }
         }
     }

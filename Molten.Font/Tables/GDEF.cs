@@ -27,7 +27,7 @@ namespace Molten.Font
         public LigatureCaretListTable LigatureCaretList { get; internal set; }
 
         /// <summary>Gets the glyph mark class definition sub-table if available, otherwise null.</summary>
-        public ClassDefinitionTable<GlyphMarkClass> MarkAttachClassDefs { get; internal set; }
+        public ClassDefinitionTable MarkAttachClassDefs { get; internal set; }
 
         /// <summary> Gets the GDEF mark glyph sets sub-table. <para />
         /// Set in table version 1.2 or higher, otherwise null. <para />
@@ -65,7 +65,8 @@ namespace Molten.Font
             }
 
             // Glyph class definition table
-            GlyphClassDefs = new ClassDefinitionTable<GlyphClass>(reader, log, this, glyphClassDefOffset, _classTranslation);
+            if(glyphClassDefOffset > FontUtil.NULL)
+                GlyphClassDefs = new ClassDefinitionTable<GlyphClass>(reader, log, this, glyphClassDefOffset, _classTranslation);
 
             // Attachment point list table
             /*The table consists of an offset to a Coverage table (Coverage) listing all glyphs that define attachment points in the GPOS table, 
@@ -80,7 +81,7 @@ namespace Molten.Font
 
             // Mark attachment class definition sub-
             if (markAttachClassDefOffset > FontUtil.NULL)
-                MarkAttachClassDefs = new ClassDefinitionTable<GlyphMarkClass>(reader, log, this, markAttachClassDefOffset, _markTranslation);
+                MarkAttachClassDefs = new ClassDefinitionTable(reader, log, this, markAttachClassDefOffset);
 
             // Mark glyph sets sub-
             if (markGlyphSetsDefOffset > FontUtil.NULL)

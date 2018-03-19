@@ -7,93 +7,108 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    public class LookupListTable : FontSubTable
+    public class LookupListTable<T> : FontSubTable where T : struct
     {
-        List<LookupTable> _subTables = new List<LookupTable>();
+        public LookupTable<T>[] LookupTables { get; private set; }
 
-        public IReadOnlyCollection<LookupTable> SubTables { get; internal set; }
-
-        internal LookupListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, Type[] lookupTypeIndex, ushort extensionIndex) : 
+        internal LookupListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, Type[] lookupTypeIndex, ushort extensionIndex) :
             base(reader, log, parent, offset)
         {
             ushort lookupCount = reader.ReadUInt16();
             ushort[] lookupOffsets = reader.ReadArray<ushort>(lookupCount);
             log.WriteDebugLine($"Reading lookup list table at {Header.StreamOffset} containing {lookupCount} lookup tables");
 
-            List<LookupTable> subtables = new List<LookupTable>();
-            SubTables = subtables.AsReadOnly();
-
+            LookupTables = new LookupTable<T>[lookupCount];
             for (int i = 0; i < lookupCount; i++)
+                LookupTables[i] = new LookupTable<T>(reader, log, this, lookupOffsets[i], lookupTypeIndex, extensionIndex);
+        }
+    }
+
+    public class LookupTable<T> : FontSubTable where T : struct
+    {
+        public LookupFlags Flags { get; private set; }
+
+        public byte MarkAttachmentType { get; private set; }
+
+        public ushort MarkFilteringSet { get; private set; } 
+
+        public LookupSubTable<T>[] SubTables { get; private set; }
+
+        public T LookupType { get; private set; }
+
+        internal LookupTable(EnhancedBinaryReader reader, Logger log, LookupListTable<T> parent, long offset, Type[] typeLookup, ushort extensionIndex) :
+            base(reader, log, parent, offset)
+        {
+            ushort lookupTypeIndex = reader.ReadUInt16();
+            LookupType = (T)((object)lookupTypeIndex); 
+            Flags = (LookupFlags)reader.ReadByte();
+            MarkAttachmentType = reader.ReadByte();  // MS docs: The high byte (of flags) is set to specify the type of mark attachment.
+            //Flags = (LookupFlags)reader.ReadUInt16();
+            ushort subTableCount = reader.ReadUInt16();
+            log.WriteDebugLine($"Reading lookup table containing {subTableCount} sub-tables");
+
+            // Get the offset's for the lookup subtable's own subtables.
+            ushort[] subTableOffsets = reader.ReadArray<ushort>(subTableCount);
+            if (HasFlag(LookupFlags.UseMarkFilteringSet))
+                MarkFilteringSet = reader.ReadUInt16();
+
+            SubTables = new LookupSubTable<T>[subTableCount];
+            for (int i = 0; i < subTableCount; i++)
             {
-                long lookupStartPos = Header.StreamOffset + lookupOffsets[i];
-                reader.Position = lookupStartPos;
-                ushort lookupType = reader.ReadUInt16();
-                LookupFlags flags = (LookupFlags)reader.ReadUInt16();
-                ushort subTableCount = reader.ReadUInt16();
-                log.WriteDebugLine($"Reading lookup table {i+1}/{lookupCount} at {lookupStartPos} containing {subTableCount} sub-tables");
+                long subTableOffset = subTableOffsets[i];
 
-                // Get the offset's for the lookup subtable's own subtables.
-                ushort[] subTableOffsets = reader.ReadArray<ushort>( subTableCount);
-                ushort markFilteringSet = 0;
-                if (HasFlag(flags, LookupFlags.UseMarkFilteringSet))
-                    markFilteringSet = reader.ReadUInt16();
-
-                for (int s = 0; s < subTableCount; s++)
+                // Check if subtable is an extension table. If true, adjust offset and lookup type accordingly.
+                // MS Docs: This lookup provides a mechanism whereby any other lookup type's subtables are stored at a 32-bit offset location in the 'GPOS' table
+                if (lookupTypeIndex == extensionIndex)
                 {
-                    uint subOffset = subTableOffsets[s];
+                    ushort posFormat = reader.ReadUInt16();
+                    lookupTypeIndex = reader.ReadUInt16(); // extensionLookupType.
+                    uint extensionOffset = reader.ReadUInt32(); // MS docs: Offset to the extension subtable, relative to the start of the ExtensionSubstFormat1 subtable.
+                    subTableOffset += extensionOffset;
 
-                    // Check for extension.
-                    // MS Docs: This lookup provides a mechanism whereby any other lookup type's subtables are stored at a 32-bit offset location in the 'GPOS' table
-                    if (lookupType == extensionIndex)
+                    // ExtensionLookupType must be set to any lookup type other than the extension lookup type.
+                    if (lookupTypeIndex == extensionIndex)
                     {
-                        ushort posFormat = reader.ReadUInt16();
-                        lookupType = reader.ReadUInt16(); // extensionLookupType.
-                        subOffset = reader.ReadUInt32(); // overwrite the offset for this table with the 32-bit offset.
-
-                        // ExtensionLookupType must be set to any lookup type other than the extension lookup type.
-                        if (lookupType == extensionIndex)
-                        {
-                            log.WriteDebugLine($"Nested extension lookup table detected. Ignored.");
-                            continue;
-                        }
-                    }
-
-                    // Skip unsupported tables.
-                    if (lookupType >= lookupTypeIndex.Length || lookupTypeIndex[lookupType] == null)
-                    {
-                        log.WriteDebugLine($"Unsupported lookup sub-table type: {lookupType}");
+                        log.WriteDebugLine($"Nested extension lookup table detected. Ignored.");
                         continue;
                     }
-
-                    long subOffsetFromListStart = lookupOffsets[i] + subOffset;
-                    LookupTable subTable = Activator.CreateInstance(lookupTypeIndex[lookupType], BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
-                        new object[] { reader, log, this, subOffsetFromListStart, lookupType, flags, markFilteringSet }, null) as LookupTable;
-                    subtables.Add(subTable);
                 }
+
+                // Skip unsupported tables.
+                Type subTableType = typeLookup[lookupTypeIndex];
+                if (lookupTypeIndex >= typeLookup.Length || subTableType == null)
+                {
+                    log.WriteDebugLine($"Unsupported lookup sub-table type: {lookupTypeIndex}");
+                    continue;
+                }
+
+                SubTables[i] = Activator.CreateInstance(subTableType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
+                    new object[] { reader, log, this, subTableOffset }, null) as LookupSubTable<T>;
             }
         }
 
-        private bool HasFlag(LookupFlags value, LookupFlags flag)
+        public bool HasFlag(LookupFlags flag)
         {
-            return (value & flag) == flag;
+            return (Flags & flag) == flag;
         }
     }
 
-    public abstract class LookupTable : FontSubTable
+    public abstract class LookupSubTable<T> : FontSubTable where T : struct
     {
-        internal LookupTable(EnhancedBinaryReader reader,
+        public ushort Format { get; private set; }
+
+        internal LookupSubTable(EnhancedBinaryReader reader,
             Logger log,
-            IFontTable parent,
-            long offset,
-            ushort lookupType,
-            LookupFlags flags,
-            ushort markFilteringSet) :
+            LookupTable<T> parent,
+            long offset) :
             base(reader, log, parent, offset)
-        { }
+        {
+            Format = reader.ReadUInt16();
+        }
     }
 
     [Flags]
-    public enum LookupFlags
+    public enum LookupFlags : byte
     {
         None = 0,
 
@@ -107,8 +122,10 @@ namespace Molten.Font
 
         UseMarkFilteringSet = 1 << 4,
 
-        Reserved = 1 << 5,
+        Reserved6 = 1 << 5,
 
-        MarkAttachmentType = 1 << 6,
+        Reserved7 = 1 << 6,
+
+        Reserved8 = 1 << 7,
     }
 }

@@ -92,7 +92,8 @@ namespace Molten.Font
                 {
                     ushort glyphStartID = reader.ReadUInt16();
                     ushort glyphEndID = reader.ReadUInt16();
-                    T glyphClass = classTranslationTable[reader.ReadUInt16()];
+                    ushort classID = reader.ReadUInt16();
+                    T glyphClass = classTranslationTable[classID];
 
                     StartGlyphID = Math.Min(glyphStartID, StartGlyphID);
                     if (Values == null || glyphEndID >= Values.Length)

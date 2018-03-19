@@ -56,11 +56,10 @@ namespace Molten.Font
             Records = new RuleLookupRecord[substitutionCount];
             for (int i = 0; i < substitutionCount; i++)
             {
-                Records[i] = new RuleLookupRecord()
-                {
-                    SequenceIndex = reader.ReadUInt16(),
-                    LookupListIndex = reader.ReadUInt16(),
-                };
+                Records[i] = new RuleLookupRecord(
+                    seqIndex: reader.ReadUInt16(),
+                    lookupIndex: reader.ReadUInt16()
+                );
             }
         }
     }
@@ -69,16 +68,22 @@ namespace Molten.Font
     /// See for SubLookupRecord: https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#substitution-lookup-record <para/>
     /// See for PosLookupRecord: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#position-lookup-record
     /// </summary>
-    public class RuleLookupRecord
+    public struct RuleLookupRecord
     {
         /// <summary>
         /// Gets an index to the current glyph sequence — first glyph = 0.
         /// </summary>
-        public ushort SequenceIndex { get; internal set; }
+        public readonly ushort SequenceIndex;
 
         /// <summary>
         /// Gets a lookup to apply to that position — zero-based index.
         /// </summary>
-        public ushort LookupListIndex { get; internal set; }
+        public readonly ushort LookupListIndex;
+
+        internal RuleLookupRecord(ushort seqIndex, ushort lookupIndex)
+        {
+            SequenceIndex = seqIndex;
+            LookupListIndex = lookupIndex;
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace Molten.Font
     /// <para>By definition, index zero points to the "missing character," which is the character that appears if a character is not found in the font. The missing character is commonly represented by a blank box or a space. If the font does not contain an outline for the missing character, then the first and second offsets should have the same value. This also applies to any other characters without an outline, such as the space character. If a glyph has no outline, then loca[n] = loca [n+1]. In the particular case of the last glyph(s), loca[n] will be equal the length of the glyph data ('glyf') table. The offsets must be in ascending order with loca[n] less-or-equal-to loca[n+1].</para>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos </summary>
     [FontTableTag("GPOS")]
-    public partial class GPOS : FontGTable
+    public partial class GPOS : FontGTable<GPOSLookupType>
     {
         protected override Type[] GetLookupTypeIndex()
         {
@@ -61,28 +61,10 @@ namespace Molten.Font
     }
 
     /// <summary>
-    /// A base class for all GPOS lookup tables.
-    /// </summary>
-    public abstract class GPosLookupSubTable : LookupTable
-    {
-        public GPOSLookupType Type { get; protected set; }
-
-        public ushort Format { get; private set; }
-
-        internal GPosLookupSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, 
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
-        {
-            Type = (GPOSLookupType)lookupType;
-            Format = reader.ReadUInt16();
-        }
-    }
-
-    /// <summary>
     /// GPOS - Lookup Type 1: Single Adjustment Positioning Subtable. <para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-1-single-adjustment-positioning-subtable
     /// </summary>
-    public class SingleAdjustmentPosTable : GPosLookupSubTable
+    public class SingleAdjustmentPosTable : LookupSubTable<GPOSLookupType>
     {
         /// <summary>Gets an array of positioning value records. Each record corresponds to the matching glyph in <see cref="Coverage"/>.</summary>
         public GPOS.ValueRecord[] Records { get; private set; }
@@ -92,9 +74,8 @@ namespace Molten.Font
         /// </summary>
         public CoverageTable Coverage { get; private set; }
 
-        internal SingleAdjustmentPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, 
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal SingleAdjustmentPosTable(EnhancedBinaryReader reader, Logger log, LookupTable<GPOSLookupType> parent, long offset) : 
+            base(reader, log, parent, offset)
         {
             ushort coverageOffset = reader.ReadUInt16();
             GPOS.ValueFormat valueFormat = (GPOS.ValueFormat)reader.ReadUInt16();
@@ -122,7 +103,7 @@ namespace Molten.Font
     /// GPOS - Lookup Type 2: Pair Adjustment Positioning Subtable. <para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-2-pair-adjustment-positioning-subtable
     /// </summary>
-    public class PairAdjustmentPosTable : GPosLookupSubTable
+    public class PairAdjustmentPosTable : LookupSubTable<GPOSLookupType>
     {
         public GPOS.PairSet[] PairSets { get; internal set; }
 
@@ -137,9 +118,8 @@ namespace Molten.Font
 
         public ClassDefinitionTable Class2Definitions { get; internal set; }
 
-        internal PairAdjustmentPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal PairAdjustmentPosTable(EnhancedBinaryReader reader, Logger log, LookupTable<GPOSLookupType> parent, long offset) :
+            base(reader, log, parent, offset)
         {
             ushort coverageOffset = reader.ReadUInt16();
             GPOS.ValueFormat valueFormat1 = (GPOS.ValueFormat)reader.ReadUInt16();
@@ -187,13 +167,12 @@ namespace Molten.Font
     /// the designated exit point of a glyph, and the designated entry point of the following glyph.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-3-cursive-attachment-positioning-subtable
     /// </summary>
-    public class CursiveAttachmentPosTable : GPosLookupSubTable
+    public class CursiveAttachmentPosTable : LookupSubTable<GPOSLookupType>
     {
         public GPOS.EntryExitRecord[] Records { get; private set; }
 
-        internal CursiveAttachmentPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal CursiveAttachmentPosTable(EnhancedBinaryReader reader, Logger log, LookupTable<GPOSLookupType> parent, long offset) :
+            base(reader, log, parent, offset)
         {
             ushort coverageOffset = reader.ReadUInt16();
             ushort entryExitCount = reader.ReadUInt16();
@@ -216,7 +195,7 @@ namespace Molten.Font
     /// For example, the Arabic, Hebrew, and Thai scripts combine vowels, diacritical marks, and tone marks with base glyphs.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-4-mark-to-base-attachment-positioning-subtable
     /// </summary>
-    public class MarkToBaseAttachmentPosTable : GPosLookupSubTable
+    public class MarkToBaseAttachmentPosTable : LookupSubTable<GPOSLookupType>
     {
         public CoverageTable MarkCoverage { get; internal set; }
 
@@ -228,9 +207,8 @@ namespace Molten.Font
 
         public ushort MarkClassCount { get; internal set; }
 
-        internal MarkToBaseAttachmentPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal MarkToBaseAttachmentPosTable(EnhancedBinaryReader reader, Logger log, LookupTable<GPOSLookupType> parent, long offset) :
+            base(reader, log, parent, offset)
         {
             switch (Format)
             {
@@ -258,7 +236,7 @@ namespace Molten.Font
     /// and each component has a separate set of attachment points defined for the different mark classes.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-5-mark-to-ligature-attachment-positioning-subtable
     /// </summary>
-    public class MarkToLigatureAttachmentPosTable : GPosLookupSubTable
+    public class MarkToLigatureAttachmentPosTable : LookupSubTable<GPOSLookupType>
     {
         public CoverageTable MarkCoverage { get; internal set; }
 
@@ -270,9 +248,8 @@ namespace Molten.Font
 
         public ushort MarkClassCount { get; internal set; }
 
-        internal MarkToLigatureAttachmentPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal MarkToLigatureAttachmentPosTable(EnhancedBinaryReader reader, Logger log, LookupTable<GPOSLookupType> parent, long offset) :
+            base(reader, log, parent, offset)
         {
             switch (Format)
             {
@@ -296,7 +273,7 @@ namespace Molten.Font
     /// GPOS - Mark-to-Mark attachment positoning table.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gpos#lookup-type-6-mark-to-mark-attachment-positioning-subtable
     /// </summary>
-    public class MarkToMarkAttachmentPosTable : GPosLookupSubTable
+    public class MarkToMarkAttachmentPosTable : LookupSubTable<GPOSLookupType>
     {
         public CoverageTable Mark1Coverage { get; internal set; }
 
@@ -311,9 +288,8 @@ namespace Molten.Font
         /// </summary>
         public Mark2ArrayTable Mark2Array { get; internal set; }
 
-        internal MarkToMarkAttachmentPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal MarkToMarkAttachmentPosTable(EnhancedBinaryReader reader, Logger log, LookupTable<GPOSLookupType> parent, long offset) :
+            base(reader, log, parent, offset)
         {
             ushort mark1CoverageOffset = reader.ReadUInt16();
             ushort mark2CoverageOffset = reader.ReadUInt16();
@@ -328,7 +304,7 @@ namespace Molten.Font
         }
     }
 
-    public class ContextPosTable : GPosLookupSubTable
+    public class ContextPosTable : LookupSubTable<GPOSLookupType>
     {
         public ClassDefinitionTable ClassDefinitions { get; internal set; }
 
@@ -343,9 +319,8 @@ namespace Molten.Font
         /// </summary>
         public RuleLookupRecord[] Records { get; internal set; }
 
-        internal ContextPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal ContextPosTable(EnhancedBinaryReader reader, Logger log, LookupTable<GPOSLookupType> parent, long offset) :
+            base(reader, log, parent, offset)
         {
             ushort coverageOffset;
 
@@ -388,11 +363,10 @@ namespace Molten.Font
                     Records = new RuleLookupRecord[posCount];
                     for(int i = 0; i < posCount; i++)
                     {
-                        Records[i] = new RuleLookupRecord()
-                        {
-                            SequenceIndex = reader.ReadUInt16(),
-                            LookupListIndex = reader.ReadUInt16(),
-                        };
+                        Records[i] = new RuleLookupRecord(
+                            seqIndex: reader.ReadUInt16(),
+                            lookupIndex: reader.ReadUInt16()
+                        );
                     }
 
                     Coverages = new CoverageTable[glyphCount];
@@ -403,7 +377,7 @@ namespace Molten.Font
         }
     }
 
-    public class ChainingContextualPosTable : GPosLookupSubTable
+    public class ChainingContextualPosTable : LookupSubTable<GPOSLookupType>
     {
         public CoverageTable Coverage { get; internal set; }
 
@@ -417,9 +391,8 @@ namespace Molten.Font
 
         public RuleLookupRecord[] Records { get; internal set; }
 
-        internal ChainingContextualPosTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal ChainingContextualPosTable(EnhancedBinaryReader reader, Logger log, LookupTable<GPOSLookupType> parent, long offset) :
+            base(reader, log, parent, offset)
         {
             ushort coverageOffset;
             Dictionary<long, ChainRuleTable> existingRules = new Dictionary<long, ChainRuleTable>();
@@ -430,11 +403,11 @@ namespace Molten.Font
                     coverageOffset = reader.ReadUInt16();
                     ushort chainPosRuleSetCount = reader.ReadUInt16();
                     ushort[] chainPosRuleSetOffsets = reader.ReadArray<ushort>(chainPosRuleSetCount);
+                    Coverage = new CoverageTable(reader, log, this, coverageOffset);
+
                     ChainRuleSets = new ChainRuleSetTable[chainPosRuleSetCount];
                     for (int i = 0; i < chainPosRuleSetCount; i++)
                         ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosRuleSetOffsets[i], existingRules);
-
-                    Coverage = new CoverageTable(reader, log, this, coverageOffset);
                     break;
 
                 case 2: // ChainRuleSets contains class IDs instead of glyph IDs
@@ -468,11 +441,10 @@ namespace Molten.Font
                     Records = new RuleLookupRecord[posCount];
                     for(int i = 0; i < posCount; i++)
                     {
-                        Records[i] = new RuleLookupRecord()
-                        {
-                            SequenceIndex = reader.ReadUInt16(),
-                            LookupListIndex = reader.ReadUInt16()
-                        };
+                        Records[i] = new RuleLookupRecord(
+                            seqIndex: reader.ReadUInt16(),
+                            lookupIndex: reader.ReadUInt16()
+                        );
                     }
                     break;
             }

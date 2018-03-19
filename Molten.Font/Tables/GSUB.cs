@@ -9,7 +9,7 @@ namespace Molten.Font
     /// <summary>Control value program table .<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/prep </summary>
     [FontTableTag("GSUB")]
-    public class GSUB : FontGTable
+    public class GSUB : FontGTable<GSUBLookupType>
     {
         protected override ushort GetExtensionIndex()
         {
@@ -82,24 +82,6 @@ namespace Molten.Font
     }
 
     /// <summary>
-    /// A base class for all GPOS lookup tables.
-    /// </summary>
-    public abstract class GSubLookupSubTable : LookupTable
-    {
-        public GSUBLookupType Type { get; protected set; }
-
-        public ushort Format { get; private set; }
-
-        internal GSubLookupSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
-        {
-            Type = (GSUBLookupType)lookupType;
-            Format = reader.ReadUInt16();
-        }
-    }
-
-    /// <summary>
     /// GSUB - Single Substitution table.<para/>
     /// Format 1 calculates the indices of the output glyphs, which are not explicitly defined in the subtable. 
     /// To calculate an output glyph index, Format 1 adds a constant delta value to the input glyph index. 
@@ -107,7 +89,7 @@ namespace Molten.Font
     /// This format does not use the Coverage index that is returned from the Coverage table.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#11-single-substitution-format-1
     /// </summary>
-    public class SingleSubTable : GSubLookupSubTable
+    public class SingleSubTable : LookupSubTable<GSUBLookupType>
     {
         /// <summary>
         /// Gets the delta value added to the original glyph ID to get substitute glyph ID.
@@ -125,9 +107,8 @@ namespace Molten.Font
         /// </summary>
         public ushort[] SubstitudeGlyphIDs { get; private set; }
 
-        internal SingleSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, 
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal SingleSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) : 
+            base(reader, log, parent, offset)
         {
             ushort coverageOffset = reader.ReadUInt16();
 
@@ -152,7 +133,7 @@ namespace Molten.Font
     /// A Multiple Substitution (MultipleSubst) subtable replaces a single glyph with more than one glyph, as when multiple glyphs replace a single ligature.
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#lookuptype-2-multiple-substitution-subtable
     /// </summary>
-    public class MultipleSubTable : GSubLookupSubTable
+    public class MultipleSubTable : LookupSubTable<GSUBLookupType>
     {
         /// <summary>
         /// Gets an array of <see cref="SequenceTable"/>, ordered by Coverage index
@@ -161,9 +142,8 @@ namespace Molten.Font
 
         public CoverageTable Coverage { get; private set; }
 
-        internal MultipleSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, 
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal MultipleSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) : 
+            base(reader, log, parent, offset)
         {
             switch (Format)
             {
@@ -193,15 +173,14 @@ namespace Molten.Font
     /// A text-processing client would then have the option of replacing the default glyph with any of the three alternatives.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#lookuptype-3-alternate-substitution-subtable
     /// </summary>
-    public class AlternateSubTable : GSubLookupSubTable
+    public class AlternateSubTable : LookupSubTable<GSUBLookupType>
     {
         public AlternateSetTable[] Tables { get; private set; }
 
         public CoverageTable Coverage { get; private set; }
 
-        internal AlternateSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal AlternateSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) :
+            base(reader, log, parent, offset)
         {
             // Despite this format being identical to the MultipleSubstitutionTable, lets keep the implementation separate for clarity.
             switch (Format)
@@ -226,13 +205,12 @@ namespace Molten.Font
     /// One LigatureSubst subtable can specify any number of ligature substitutions. <para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#lookuptype-4-ligature-substitution-subtable
     /// </summary>
-    public class LigatureSubTable : GSubLookupSubTable
+    public class LigatureSubTable : LookupSubTable<GSUBLookupType>
     {
         public LigatureSetTable[] Tables { get; private set; }
 
-        internal LigatureSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, 
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal LigatureSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) : 
+            base(reader, log, parent, offset)
         {
             switch (Format)
             {
@@ -255,7 +233,7 @@ namespace Molten.Font
     /// it describes glyph substitutions in context that replace one or more glyphs within a certain pattern of glyphs.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#lookuptype-5-contextual-substitution-subtable
     /// </summary>
-    public class ContextualSubTable : GSubLookupSubTable
+    public class ContextualSubTable : LookupSubTable<GSUBLookupType>
     {
         /// <summary>
         /// Gets an array of subsitition rule set tables.
@@ -277,9 +255,8 @@ namespace Molten.Font
         /// </summary>
         public RuleLookupRecord[] Records { get; private set; }
 
-        internal ContextualSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, 
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) : 
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal ContextualSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) : 
+            base(reader, log, parent, offset)
         {
             ushort coverageOffset;
 
@@ -322,11 +299,10 @@ namespace Molten.Font
                     Coverages = new CoverageTable[glyphCount];
                     for (int i = 0; i < substitutionCount; i++)
                     {
-                        Records[i] = new RuleLookupRecord()
-                        {
-                            SequenceIndex = reader.ReadUInt16(),
-                            LookupListIndex = reader.ReadUInt16(),
-                        };
+                        Records[i] = new RuleLookupRecord(
+                            seqIndex: reader.ReadUInt16(),
+                            lookupIndex: reader.ReadUInt16()
+                        );
                     }
 
                     for (int i = 0; i < glyphCount; i++)
@@ -343,7 +319,7 @@ namespace Molten.Font
     /// the subtable stored at the 32-bit offset location is termed the “extension” subtable. <para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#lookuptype-6-chaining-contextual-substitution-subtable
     /// </summary>
-    public class ChainingContextualSubTable : GSubLookupSubTable
+    public class ChainingContextualSubTable : LookupSubTable<GSUBLookupType>
     {
         public CoverageTable Coverage { get; internal set; }
 
@@ -357,9 +333,8 @@ namespace Molten.Font
 
         public RuleLookupRecord[] Records { get; internal set; }
 
-        internal ChainingContextualSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal ChainingContextualSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) :
+            base(reader, log, parent, offset)
         {
             ushort coverageOffset;
             Dictionary<long, ChainRuleTable> existingRules = new Dictionary<long, ChainRuleTable>();
@@ -368,11 +343,11 @@ namespace Molten.Font
             {
                 case 1: // ChainRuleSets contains glyph IDs.
                     coverageOffset = reader.ReadUInt16();
-                    ushort chainPosRuleSetCount = reader.ReadUInt16();
-                    ushort[] chainPosRuleSetOffsets = reader.ReadArray<ushort>(chainPosRuleSetCount);
-                    ChainRuleSets = new ChainRuleSetTable[chainPosRuleSetCount];
-                    for (int i = 0; i < chainPosRuleSetCount; i++)
-                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosRuleSetOffsets[i], existingRules);
+                    ushort chainSubRuleSetCount = reader.ReadUInt16();
+                    ushort[] chainSubRuleSetOffsets = reader.ReadArray<ushort>(chainSubRuleSetCount);
+                    ChainRuleSets = new ChainRuleSetTable[chainSubRuleSetCount];
+                    for (int i = 0; i < chainSubRuleSetCount; i++)
+                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainSubRuleSetOffsets[i], existingRules);
 
                     Coverage = new CoverageTable(reader, log, this, coverageOffset);
                     break;
@@ -382,16 +357,16 @@ namespace Molten.Font
                     ushort backtrackClassDefOffset = reader.ReadUInt16();
                     ushort inputClassDefOffset = reader.ReadUInt16();
                     ushort lookAheadClassDefOffset = reader.ReadUInt16();
-                    ushort chainPosClassSetCount = reader.ReadUInt16();
-                    ushort[] chainPosClassSetOffsets = reader.ReadArray<ushort>(chainPosClassSetCount);
+                    ushort chainSubClassSetCount = reader.ReadUInt16();
+                    ushort[] chainSubClassSetOffsets = reader.ReadArray<ushort>(chainSubClassSetCount);
 
                     Coverage = new CoverageTable(reader, log, this, coverageOffset);
                     BacktrackClasses = new ClassDefinitionTable(reader, log, this, backtrackClassDefOffset);
                     InputClasses = new ClassDefinitionTable(reader, log, this, inputClassDefOffset);
                     LookAheadClasses = new ClassDefinitionTable(reader, log, this, lookAheadClassDefOffset);
-                    ChainRuleSets = new ChainRuleSetTable[chainPosClassSetCount];
-                    for (int i = 0; i < chainPosClassSetCount; i++)
-                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosClassSetOffsets[i], existingRules);
+                    ChainRuleSets = new ChainRuleSetTable[chainSubClassSetCount];
+                    for (int i = 0; i < chainSubClassSetCount; i++)
+                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainSubClassSetOffsets[i], existingRules);
                     break;
 
                 case 3:
@@ -408,11 +383,10 @@ namespace Molten.Font
                     Records = new RuleLookupRecord[posCount];
                     for (int i = 0; i < posCount; i++)
                     {
-                        Records[i] = new RuleLookupRecord()
-                        {
-                            SequenceIndex = reader.ReadUInt16(),
-                            LookupListIndex = reader.ReadUInt16()
-                        };
+                        Records[i] = new RuleLookupRecord(
+                            seqIndex: reader.ReadUInt16(),
+                            lookupIndex: reader.ReadUInt16()
+                        );
                     }
                     break;
             }
@@ -425,7 +399,7 @@ namespace Molten.Font
     /// The major difference between this and other lookup types is that processing of input glyph sequence goes from end to start.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#lookuptype-8-reverse-chaining-contextual-single-substitution-subtable
     /// </summary>
-    public class ReverseChainingContextualSingleSubTable : GSubLookupSubTable
+    public class ReverseChainingContextualSingleSubTable : LookupSubTable<GSUBLookupType>
     {
         public CoverageTable Coverage { get; private set; }
 
@@ -435,9 +409,8 @@ namespace Molten.Font
 
         public ushort[] GlyphIDs { get; private set; }
 
-        internal ReverseChainingContextualSingleSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset,
-            ushort lookupType, LookupFlags flags, ushort markFilteringSet) :
-            base(reader, log, parent, offset, lookupType, flags, markFilteringSet)
+        internal ReverseChainingContextualSingleSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) :
+            base(reader, log, parent, offset)
         {
             switch (Format)
             {

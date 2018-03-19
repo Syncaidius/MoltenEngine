@@ -59,8 +59,12 @@ namespace Molten.Font
             // Read anchor tables.
             for (int i = 0; i < mark2Count; i++)
             {
-                Records[i].Tables = new AnchorTable[markClassCount];
-                for(int j = 0; j < markClassCount; j++)
+                Records[i] = new Mark2Record()
+                {
+                    Tables = new AnchorTable[markClassCount],
+                };
+
+                for (int j = 0; j < markClassCount; j++)
                     Records[i].Tables[j] = new AnchorTable(reader, log, this, anchorOffsets[i][j]);
             }
         }
