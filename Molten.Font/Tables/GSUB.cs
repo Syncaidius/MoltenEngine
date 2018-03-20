@@ -107,7 +107,7 @@ namespace Molten.Font
         /// </summary>
         public ushort[] SubstitudeGlyphIDs { get; private set; }
 
-        internal SingleSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) : 
+        internal SingleSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort coverageOffset = reader.ReadUInt16();
@@ -121,6 +121,10 @@ namespace Molten.Font
                 case 2:
                     ushort glyphCount = reader.ReadUInt16();
                     SubstitudeGlyphIDs = reader.ReadArray<ushort>(glyphCount);
+                    break;
+
+                default:
+                    log.WriteDebugLine($"[GSUB] unsupported SingleSubTable format {Format}");
                     break;
             }
 
@@ -142,7 +146,7 @@ namespace Molten.Font
 
         public CoverageTable Coverage { get; private set; }
 
-        internal MultipleSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) : 
+        internal MultipleSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) :
             base(reader, log, parent, offset)
         {
             switch (Format)
@@ -195,6 +199,10 @@ namespace Molten.Font
 
                     Coverage = new CoverageTable(reader, log, this, coverageOffset);
                     break;
+
+                default:
+                    log.WriteDebugLine($"[GSUB] unsupported AlternateSubTable format {Format}");
+                    break;
             }
         }
     }
@@ -209,7 +217,7 @@ namespace Molten.Font
     {
         public LigatureSetTable[] Tables { get; private set; }
 
-        internal LigatureSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) : 
+        internal LigatureSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) :
             base(reader, log, parent, offset)
         {
             switch (Format)
@@ -222,6 +230,10 @@ namespace Molten.Font
 
                     for (int i = 0; i < ligatureSetCount; i++)
                         Tables[i] = new LigatureSetTable(reader, log, this, ligatureSetOffsets[i]);
+                    break;
+
+                default:
+                    log.WriteDebugLine($"[GSUB] unsupported LigatureSubTable format {Format}");
                     break;
             }
         }
@@ -255,7 +267,7 @@ namespace Molten.Font
         /// </summary>
         public RuleLookupRecord[] Records { get; private set; }
 
-        internal ContextualSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) : 
+        internal ContextualSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort coverageOffset;
@@ -282,7 +294,7 @@ namespace Molten.Font
                     ClassSets = new ClassSetTable[subClassSetCount];
                     for (int i = 0; i < subClassSetCount; i++)
                     {
-                        if(subClassSetOffsets[i] > FontUtil.NULL)
+                        if (subClassSetOffsets[i] > FontUtil.NULL)
                             ClassSets[i] = new ClassSetTable(reader, log, this, subClassSetOffsets[i]);
                     }
 
@@ -308,6 +320,10 @@ namespace Molten.Font
                     for (int i = 0; i < glyphCount; i++)
                         Coverages[i] = new CoverageTable(reader, log, this, coverageOffsets[i]);
                     break;
+
+                default:
+                    log.WriteDebugLine($"[GSUB] unsupported ContextualSubTable format {Format}");
+                    break;
             }
         }
     }
@@ -321,17 +337,23 @@ namespace Molten.Font
     /// </summary>
     public class ChainingContextualSubTable : LookupSubTable<GSUBLookupType>
     {
-        public CoverageTable Coverage { get; internal set; }
+        public CoverageTable Coverage { get; private set; }
 
-        public ChainRuleSetTable[] ChainRuleSets { get; internal set; }
+        public ChainRuleSetTable[] ChainRuleSets { get; private set; }
 
-        public ClassDefinitionTable BacktrackClasses { get; internal set; }
+        public ClassDefinitionTable BacktrackClasses { get; private set; }
 
-        public ClassDefinitionTable InputClasses { get; internal set; }
+        public ClassDefinitionTable InputClasses { get; private set; }
 
-        public ClassDefinitionTable LookAheadClasses { get; internal set; }
+        public ClassDefinitionTable LookAheadClasses { get; private set; }
+        
+        public CoverageTable[] BacktrackCoverages { get; private set; }
 
-        public RuleLookupRecord[] Records { get; internal set; }
+        public CoverageTable[] InputCoverages { get; private set; }
+
+        public CoverageTable[] LookAheadCoverages { get; private set; }
+
+        public RuleLookupRecord[] Records { get; private set; }
 
         internal ChainingContextualSubTable(EnhancedBinaryReader reader, Logger log, LookupTable<GSUBLookupType> parent, long offset) :
             base(reader, log, parent, offset)
@@ -379,15 +401,32 @@ namespace Molten.Font
                     ushort lookAheadGlyphCount = reader.ReadUInt16();
                     ushort[] lookAheadCoverageOffsets = reader.ReadArray<ushort>(lookAheadGlyphCount);
 
-                    ushort posCount = reader.ReadUInt16();
-                    Records = new RuleLookupRecord[posCount];
-                    for (int i = 0; i < posCount; i++)
+                    ushort subCount = reader.ReadUInt16();
+                    Records = new RuleLookupRecord[subCount];
+                    for (int i = 0; i < subCount; i++)
                     {
                         Records[i] = new RuleLookupRecord(
                             seqIndex: reader.ReadUInt16(),
                             lookupIndex: reader.ReadUInt16()
                         );
                     }
+
+                    BacktrackCoverages = new CoverageTable[backtrackGlyphCount];
+                    for (int i = 0; i < backtrackGlyphCount; i++)
+                        BacktrackCoverages[i] = new CoverageTable(reader, log, this, backtrackCoverageOffsets[i]);
+
+                    InputCoverages = new CoverageTable[inputGlyphCount];
+                    for (int i = 0; i < inputGlyphCount; i++)
+                        InputCoverages[i] = new CoverageTable(reader, log, this, inputCoverageOffsets[i]);
+
+                    LookAheadCoverages = new CoverageTable[lookAheadGlyphCount];
+                    for (int i = 0; i < lookAheadGlyphCount; i++)
+                        LookAheadCoverages[i] = new CoverageTable(reader, log, this, lookAheadCoverageOffsets[i]);
+
+                    break;
+
+                default:
+                    log.WriteDebugLine($"[GSUB] unsupported ChainingContextualSubTable format {Format}");
                     break;
             }
         }
@@ -432,6 +471,10 @@ namespace Molten.Font
                     LookAheadCoverages = new CoverageTable[lookAheadGlyphCount];
                     for (int i = 0; i < lookAheadGlyphCount; i++)
                         LookAheadCoverages[i] = new CoverageTable(reader, log, this, lookAheadCoverageOffsets[i]);
+                    break;
+
+                default:
+                    log.WriteDebugLine($"[GSUB] unsupported ReverseChainingContextualSingleSubTable format {Format}");
                     break;
             }
         }

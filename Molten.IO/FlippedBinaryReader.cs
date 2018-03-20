@@ -115,6 +115,7 @@ namespace Molten
 
         public override decimal ReadDecimal()
         {
+            // TODO test this
             _decimalBuffer = new int[4]
             {
                 BitConverter.ToInt32(ReadReverse(4), 4),

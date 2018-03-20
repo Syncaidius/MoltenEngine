@@ -101,12 +101,12 @@ namespace Molten.Samples
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
             AcceptPlayerInput = false;
 
-            LoadFontFile();
-            //LoadSystemFontFile("Arial");
-            InitializeFontDebug();
-            GenerateChar('{');
+            //LoadFontFile();
+            LoadSystemFontFile("Arial");
+            //InitializeFontDebug();
+            //GenerateChar('{');
 
-            Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
+            //Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
 
         private void Keyboard_OnCharacterKey(Input.CharacterEventArgs e)
@@ -139,15 +139,19 @@ namespace Molten.Samples
         private void LoadSystemFontFile(string fontName)
         {
             Stopwatch fontTimer = new Stopwatch();
-            using (FontReader reader = new FontReader(fontName, Log))
+            Logger fontLog = Logger.Get();
+            fontLog.AddOutput(new LogFileWriter("font{0}.txt"));
+
+            using (FontReader reader = new FontReader(fontName, fontLog))
             {
                 fontTimer.Start();
                 _fontFile = reader.ReadFont(true);
                 fontTimer.Stop();
-                Log.WriteLine($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read system font");
+                fontLog.WriteLine($"Took {fontTimer.Elapsed.TotalMilliseconds}ms to read system font");
 
                 _font2Test = new SpriteFont(Engine.Renderer, _fontFile, 20);
             }
+            fontLog.Dispose();
         }
 
         private void InitializeFontDebug()

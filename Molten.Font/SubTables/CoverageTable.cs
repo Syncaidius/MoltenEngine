@@ -24,9 +24,7 @@ namespace Molten.Font
             if (Format == 1) // CoverageFormat1 - list
             {
                 ushort glyphCount = reader.ReadUInt16();
-                _glyphIDs = new ushort[glyphCount];
-                for (ushort i = 0; i < glyphCount; i++)
-                    _glyphIDs[i] = reader.ReadUInt16();
+                _glyphIDs = reader.ReadArray<ushort>(glyphCount);
             }
             else if (Format == 2) // CoverageFormat2 - ranges
             {
@@ -48,6 +46,11 @@ namespace Molten.Font
             {
                 log.WriteWarning($"Unsupported coverage format: {Format}");
             }
+        }
+
+        public override string ToString()
+        {
+            return $"{this.GetType().Name} -- Format: {Format} -- Count: {(_glyphIDs != null ? _glyphIDs.Length.ToString() : "Invalid")}";
         }
     }
 }

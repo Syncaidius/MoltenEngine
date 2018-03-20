@@ -32,7 +32,7 @@ namespace Molten.Samples
             cr.Load<SpriteFont>("broshk.ttf;size=24");
             OnContentRequested(cr);
             cr.OnCompleted += Cr_OnCompleted;
-            cr.Commit();
+            //cr.Commit();
         }
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)

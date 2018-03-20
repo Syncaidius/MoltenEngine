@@ -40,10 +40,10 @@ namespace Molten.Font
             base(reader, log, parent, offset)
         {
             ushort lookupTypeIndex = reader.ReadUInt16();
-            LookupType = (T)((object)lookupTypeIndex); 
-            Flags = (LookupFlags)reader.ReadByte();
+            LookupType = (T)((object)lookupTypeIndex);
+
             MarkAttachmentType = reader.ReadByte();  // MS docs: The high byte (of flags) is set to specify the type of mark attachment.
-            //Flags = (LookupFlags)reader.ReadUInt16();
+            Flags = (LookupFlags)reader.ReadByte();
             ushort subTableCount = reader.ReadUInt16();
             log.WriteDebugLine($"Reading lookup table containing {subTableCount} sub-tables");
 
@@ -56,29 +56,33 @@ namespace Molten.Font
             for (int i = 0; i < subTableCount; i++)
             {
                 long subTableOffset = subTableOffsets[i];
+                ushort subLookupTypeIndex = lookupTypeIndex;
 
                 // Check if subtable is an extension table. If true, adjust offset and lookup type accordingly.
                 // MS Docs: This lookup provides a mechanism whereby any other lookup type's subtables are stored at a 32-bit offset location in the 'GPOS' table
-                if (lookupTypeIndex == extensionIndex)
+                if (subLookupTypeIndex == extensionIndex)
                 {
+                    reader.Position = Header.StreamOffset + subTableOffset;
                     ushort posFormat = reader.ReadUInt16();
-                    lookupTypeIndex = reader.ReadUInt16(); // extensionLookupType.
+                    subLookupTypeIndex = reader.ReadUInt16(); // extensionLookupType.
                     uint extensionOffset = reader.ReadUInt32(); // MS docs: Offset to the extension subtable, relative to the start of the ExtensionSubstFormat1 subtable.
-                    subTableOffset += extensionOffset;
+
+                    log.WriteDebugLine($"Extension table detected -- New type index: {typeLookup[subLookupTypeIndex]} -- extension offset: {extensionOffset}");
 
                     // ExtensionLookupType must be set to any lookup type other than the extension lookup type.
-                    if (lookupTypeIndex == extensionIndex)
+                    if (subLookupTypeIndex == extensionIndex)
                     {
                         log.WriteDebugLine($"Nested extension lookup table detected. Ignored.");
                         continue;
                     }
+                    subTableOffset += extensionOffset;
                 }
 
                 // Skip unsupported tables.
-                Type subTableType = typeLookup[lookupTypeIndex];
-                if (lookupTypeIndex >= typeLookup.Length || subTableType == null)
+                Type subTableType = typeLookup[subLookupTypeIndex];
+                if (subLookupTypeIndex >= typeLookup.Length || subTableType == null)
                 {
-                    log.WriteDebugLine($"Unsupported lookup sub-table type: {lookupTypeIndex}");
+                    log.WriteDebugLine($"Unsupported lookup sub-table type: {subLookupTypeIndex}");
                     continue;
                 }
 
@@ -90,6 +94,11 @@ namespace Molten.Font
         public bool HasFlag(LookupFlags flag)
         {
             return (Flags & flag) == flag;
+        }
+
+        public override string ToString()
+        {
+            return $"{this.GetType().Name} -- Type: {LookupType} -- SubTables: {SubTables.Length} -- Flags: {Flags} -- StreamPos: {Header.StreamOffset}";
         }
     }
 
@@ -104,6 +113,11 @@ namespace Molten.Font
             base(reader, log, parent, offset)
         {
             Format = reader.ReadUInt16();
+        }
+
+        public override string ToString()
+        {
+            return $"{this.GetType().Name} -- Format: {Format} -- StreamPos: {Header.StreamOffset}";
         }
     }
 

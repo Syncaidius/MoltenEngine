@@ -74,7 +74,7 @@ namespace Molten.Font
         /// </summary>
         public CoverageTable Coverage { get; private set; }
 
-        internal SingleAdjustmentPosTable(EnhancedBinaryReader reader, Logger log, LookupTable<GPOSLookupType> parent, long offset) : 
+        internal SingleAdjustmentPosTable(EnhancedBinaryReader reader, Logger log, LookupTable<GPOSLookupType> parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort coverageOffset = reader.ReadUInt16();
@@ -92,6 +92,10 @@ namespace Molten.Font
                     Records = new GPOS.ValueRecord[valueCount];
                     for (int i = 0; i < valueCount; i++)
                         Records[i] = new GPOS.ValueRecord(reader, valueFormat);
+                    break;
+
+                default:
+                    log.WriteDebugLine($"[GPOS] unsupported SingleAdjustmentPosTable format {Format}");
                     break;
             }
 
@@ -142,7 +146,7 @@ namespace Molten.Font
                     ushort classCount2 = reader.ReadUInt16();
 
                     ClassRecords = new GPOS.Class1Record[classCount1];
-                    for(int i = 0; i < classCount1; i++)
+                    for (int i = 0; i < classCount1; i++)
                         ClassRecords[i] = new GPOS.Class1Record(reader, classCount2, valueFormat1, valueFormat2);
 
                     Class1Definitions = new ClassDefinitionTable(reader, log, this, classDef1Offset);
@@ -153,6 +157,10 @@ namespace Molten.Font
                     else
                         Class2Definitions = Class1Definitions;
 
+                    break;
+
+                default:
+                    log.WriteDebugLine($"[GPOS] unsupported PairAdjustmentPosTable format {Format}");
                     break;
             }
 
@@ -177,7 +185,7 @@ namespace Molten.Font
             ushort coverageOffset = reader.ReadUInt16();
             ushort entryExitCount = reader.ReadUInt16();
             Records = new GPOS.EntryExitRecord[entryExitCount];
-            for(int i = 0; i < entryExitCount; i++)
+            for (int i = 0; i < entryExitCount; i++)
             {
                 ushort entryAnchorOffset = reader.ReadUInt16();
                 ushort exitAnchorOffset = reader.ReadUInt16();
@@ -224,6 +232,10 @@ namespace Molten.Font
                     MarkArray = new MarkArrayTable(reader, log, this, markArrayOffset);
                     BaseArray = new BaseArrayTable(reader, log, this, baseArrayOffset, MarkClassCount);
                     break;
+
+                default:
+                    log.WriteDebugLine($"[GPOS] unsupported MarkToBaseAttachmentPosTable format {Format}");
+                    break;
             }
         }
     }
@@ -264,6 +276,10 @@ namespace Molten.Font
                     LigatureCoverage = new CoverageTable(reader, log, this, ligatureCoverageOffset);
                     MarkArray = new MarkArrayTable(reader, log, this, markArrayOffset);
                     LigatureArray = new LigatureArrayTable(reader, log, this, ligatureArrayOffset, MarkClassCount);
+                    break;
+
+                default:
+                    log.WriteDebugLine($"[GPOS] unsupported MarkToLigatureAttachmentPosTable format {Format}");
                     break;
             }
         }
@@ -349,8 +365,8 @@ namespace Molten.Font
                     ClassSets = new ClassSetTable[posClassSetCount];
                     for (int i = 0; i < posClassSetCount; i++)
                     {
-                        if(posClassSetOffsets[i] > FontUtil.NULL)
-                        ClassSets[i] = new ClassSetTable(reader, log, this, posClassSetOffsets[i]);
+                        if (posClassSetOffsets[i] > FontUtil.NULL)
+                            ClassSets[i] = new ClassSetTable(reader, log, this, posClassSetOffsets[i]);
                     }
 
                     break;
@@ -361,7 +377,7 @@ namespace Molten.Font
                     ushort[] coverageOffsets = reader.ReadArray<ushort>(glyphCount);
 
                     Records = new RuleLookupRecord[posCount];
-                    for(int i = 0; i < posCount; i++)
+                    for (int i = 0; i < posCount; i++)
                     {
                         Records[i] = new RuleLookupRecord(
                             seqIndex: reader.ReadUInt16(),
@@ -372,6 +388,10 @@ namespace Molten.Font
                     Coverages = new CoverageTable[glyphCount];
                     for (int i = 0; i < glyphCount; i++)
                         Coverages[i] = new CoverageTable(reader, log, this, coverageOffsets[i]);
+                    break;
+
+                default:
+                    log.WriteDebugLine($"[GPOS] unsupported ContextPosTable format {Format}");
                     break;
             }
         }
@@ -439,13 +459,17 @@ namespace Molten.Font
 
                     ushort posCount = reader.ReadUInt16();
                     Records = new RuleLookupRecord[posCount];
-                    for(int i = 0; i < posCount; i++)
+                    for (int i = 0; i < posCount; i++)
                     {
                         Records[i] = new RuleLookupRecord(
                             seqIndex: reader.ReadUInt16(),
                             lookupIndex: reader.ReadUInt16()
                         );
                     }
+                    break;
+
+                default:
+                    log.WriteDebugLine($"[GPOS] unsupported ChainingContextualPosTable format {Format}");
                     break;
             }
         }
