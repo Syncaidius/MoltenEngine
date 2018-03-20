@@ -16,8 +16,7 @@ namespace Molten.Font
         /// The regions are indicated by an array of indices into the variation region list.</summary>
         public ItemVariationData[] DeltaSets { get; private set; }
 
-        internal ItemVariationStore(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
-            base(reader, log, parent, offset)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
         {
             Format = reader.ReadUInt16();
             uint variationRegionListOffset = reader.ReadUInt32();
@@ -27,11 +26,11 @@ namespace Molten.Font
             DeltaSets = new ItemVariationData[itemVariationDataCount];
 
             // Read IVD sub-tables
-            for(int i = 0; i < itemVariationDataCount; i++)
-                DeltaSets[i] = new ItemVariationData(reader, log, this, ivdOffsets[i]);
+            for (int i = 0; i < itemVariationDataCount; i++)
+                DeltaSets[i] = context.ReadSubTable<ItemVariationData>(ivdOffsets[i]);
 
             // Read region list
-            RegionList = new VariationRegionListTable(reader, log, this, variationRegionListOffset);
+            RegionList = context.ReadSubTable<VariationRegionListTable>(variationRegionListOffset);
         }
     }
 
@@ -55,8 +54,7 @@ namespace Molten.Font
         /// <summary>Gets the sum of <see cref="ShortDeltaCount"/> and <see cref="RegionIndexCount"/>.</summary>
         public int TotalDeltaSetColumns { get; private set; }
 
-        internal ItemVariationData(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
-            base(reader, log, parent, offset)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
         {
             ItemCount = reader.ReadUInt16();
             ShortDeltaCount = reader.ReadUInt16();

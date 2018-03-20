@@ -13,14 +13,15 @@ namespace Molten.Font
         /// </summary>
         public LigatureTable[] Tables { get; internal set; }
 
-        internal LigatureSetTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
-            base(reader, log, parent, offset)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
         {
             ushort ligatureCount = reader.ReadUInt16();
             ushort[] ligatureOffsets = reader.ReadArray<ushort>(ligatureCount);
             Tables = new LigatureTable[ligatureCount];
             for (int i = 0; i < ligatureCount; i++)
-                Tables[i] = new LigatureTable(reader, log, this, ligatureOffsets[i]);
+            {
+                Tables[i] = context.ReadSubTable<LigatureTable>(ligatureOffsets[i]);
+            }
         }
     }
 
@@ -36,8 +37,7 @@ namespace Molten.Font
         /// </summary>
         public ushort[] ComponentGlyphIDs { get; private set; }
 
-        internal LigatureTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
-            base(reader, log, parent, offset)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
         {
             LigatureGlyph = reader.ReadUInt16();
             ushort componentCount = reader.ReadUInt16();

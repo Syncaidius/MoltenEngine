@@ -17,8 +17,7 @@ namespace Molten.Font
         /// </summary>
         public FeatureRecord[] Records { get; internal set; }
 
-        internal FeatureListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
-            base(reader, log, parent, offset)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
         {
             ushort featureCount = reader.ReadUInt16();
             Records = new FeatureRecord[featureCount];
@@ -36,7 +35,7 @@ namespace Molten.Font
 
             // Now populate the record tables using offsets collected above.
             for (int i = 0; i < featureCount; i++)
-                Records[i].Table = new FeatureTable(reader, log, this, featureOffsets[i]);
+                Records[i].Table = context.ReadSubTable<FeatureTable>(featureOffsets[i]);
         }
     }
 
@@ -66,8 +65,7 @@ namespace Molten.Font
         /// </summary>
         public ushort[] LookupListIndices { get; internal set; }
 
-        internal FeatureTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset)  :
-            base(reader, log, parent, offset)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
         {
             FeatureParams = reader.ReadUInt16();
             ushort lookupIndexCount = reader.ReadUInt16();

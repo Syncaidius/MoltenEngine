@@ -37,11 +37,11 @@ namespace Molten.Font
             }
         }
 
-        static FontTable GetTableInstance(TableHeader header)
+        static MainFontTable GetTableInstance(TableHeader header)
         {
             if (_tableTypes.TryGetValue(header.Tag, out TableEntry entry))
             {
-                FontTable table = Activator.CreateInstance(entry.Type) as FontTable;
+                MainFontTable table = Activator.CreateInstance(entry.Type) as MainFontTable;
                 table.Header = header;
                 table.Dependencies = entry.Dependencies.Clone() as string[];
                 return table;
@@ -167,7 +167,7 @@ namespace Molten.Font
 
         private void LoadTable(long fontStartPos, FontTableList tables, TableHeader header, List<TableHeader> toParse, Dictionary<string, TableHeader> toParseByTag)
         {
-            FontTable table = GetTableInstance(header);
+            MainFontTable table = GetTableInstance(header);
             if (table != null)
             {
                 _log.WriteDebugLine($"Supported table '{header.Tag}' found ({header.Length} bytes)", _filename);

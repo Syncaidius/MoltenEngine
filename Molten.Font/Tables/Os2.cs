@@ -11,7 +11,7 @@ namespace Molten.Font
     /// <para>By definition, index zero points to the "missing character," which is the character that appears if a character is not found in the font. The missing character is commonly represented by a blank box or a space. If the font does not contain an outline for the missing character, then the first and second offsets should have the same value. This also applies to any other characters without an outline, such as the space character. If a glyph has no outline, then loca[n] = loca [n+1]. In the particular case of the last glyph(s), loca[n] will be equal the length of the glyph data ('glyf') table. The offsets must be in ascending order with loca[n] less-or-equal-to loca[n+1].</para>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/head </summary>
     [FontTableTag("OS/2")]
-    public class Os2 : FontTable
+    public class Os2 : MainFontTable
     {
         public ushort Version { get; internal set; }
 
@@ -142,7 +142,7 @@ namespace Molten.Font
 
         public ushort UsUpperOpticalPointSize { get; internal set; }
 
-        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
         {
             // Read common table data. This is the same layout for all versions.
             Version = reader.ReadUInt16();

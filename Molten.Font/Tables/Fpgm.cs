@@ -9,12 +9,12 @@ namespace Molten.Font
     /// <summary>The font program table (fpgm).<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/fpgm </summary>
     [FontTableTag("fpgm")]
-    public class Fpgm : FontTable
+    public class Fpgm : MainFontTable
     {
         /// <summary>Gets the table's font program bytecode.</summary>
         public byte[] ByteCode { get; private set; }
 
-        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
         {
             ByteCode = reader.ReadBytes((int)header.Length);
         }

@@ -27,6 +27,10 @@ namespace Molten.Font
     }
     public class DeviceVariationIndexTable : FontSubTable
     {
+        const int BITS_PER_USHORT = 16;
+
+        const int BITS_PER_INT = 32;
+
         public DeviceVariableTableFormat Format { get; private set; }
 
         /// <summary>The smallest size to correct, in ppem (pixels per em). <para/>
@@ -54,8 +58,7 @@ namespace Molten.Font
 
         int[] _deltas;
 
-        internal DeviceVariationIndexTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset)
-            : base(reader, log, parent, offset)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
         {
             DeviceStartSize = reader.ReadUInt16();
             DeviceEndSize = reader.ReadUInt16();
@@ -87,8 +90,8 @@ namespace Molten.Font
 
         private int[] UnpackDeltas(int bitsPerValue, ushort packed)
         {
-            int valCount = sizeof(ushort) / bitsPerValue;
-            int rShift = sizeof(int) - bitsPerValue;
+            int valCount = BITS_PER_USHORT / bitsPerValue;
+            int rShift = BITS_PER_INT - bitsPerValue;
             int[] result = new int[valCount];
 
             for(int i = 0; i < valCount; i++)

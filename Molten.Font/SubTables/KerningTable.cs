@@ -34,8 +34,7 @@ namespace Molten.Font
         /// </summary>
         public ushort RangeShift { get; private set; }
 
-        internal KerningTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
-            base(reader, log, parent, offset)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
         {
             Version = reader.ReadUInt16();
             ushort subHeaderLength = reader.ReadUInt16();
@@ -71,8 +70,9 @@ namespace Molten.Font
                     ushort rightClasstableOffset = reader.ReadUInt16();
                     ushort arrayOffset = reader.ReadUInt16();
 
-                    ushort[] leftClasses = ReadClassTable(reader, Header.StreamOffset, leftClassTableOffset);
-                    ushort[] rightClasses = ReadClassTable(reader, Header.StreamOffset, rightClasstableOffset);
+                    long startPos = context.GetStartPos();
+                    ushort[] leftClasses = ReadClassTable(reader, startPos, leftClassTableOffset);
+                    ushort[] rightClasses = ReadClassTable(reader, startPos, rightClasstableOffset);
 
                     // "Un-multiply" the values in each class table to give us the original class values.
                     // Left class table - The values in the left class table are stored pre-multiplied by the number of bytes in one row
@@ -96,9 +96,9 @@ namespace Molten.Font
             }
         }
 
-        private ushort[] ReadClassTable(EnhancedBinaryReader reader, long tableStart, ushort offset)
+        private ushort[] ReadClassTable(EnhancedBinaryReader reader, long kernTableStart, ushort offset)
         {
-            reader.Position = tableStart + offset;
+            reader.Position = kernTableStart + offset;
             ushort firstGlyph = reader.ReadUInt16(); // ID of the first glyph within the class range
             ushort numGlyphs = reader.ReadUInt16();
             ushort[] classTable = reader.ReadArray<ushort>(numGlyphs);

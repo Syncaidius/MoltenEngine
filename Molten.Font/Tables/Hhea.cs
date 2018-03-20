@@ -9,7 +9,7 @@ namespace Molten.Font
     /// <summary>Font header table .<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/head </summary>
     [FontTableTag("hhea")]
-    public class Hhea : FontTable
+    public class Hhea : MainFontTable
     {
         public ushort MajorVersion { get; private set; }
 
@@ -103,7 +103,7 @@ namespace Molten.Font
         /// </summary>
         public int LineSpace { get; private set; }
 
-        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
         {
             MajorVersion = reader.ReadUInt16();
             MinorVersion = reader.ReadUInt16();

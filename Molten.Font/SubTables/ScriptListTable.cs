@@ -10,8 +10,7 @@ namespace Molten.Font
     {
         public ScriptRecord[] Records { get; internal set; }
 
-        internal ScriptListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
-            base(reader, log, parent, offset)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
         {
             ushort scriptCount = reader.ReadUInt16();
             Records = new ScriptRecord[scriptCount];
@@ -28,7 +27,7 @@ namespace Molten.Font
             }
 
             for (int i = 0; i < scriptCount; i++)
-                Records[i].Table = new ScriptTable(reader, log, this, scriptTableOffsets[i]);
+                Records[i].Table = context.ReadSubTable<ScriptTable>(scriptTableOffsets[i]);
         }
     }
 
@@ -48,8 +47,7 @@ namespace Molten.Font
 
         public LangSysTable Default { get; internal set; }
 
-        internal ScriptTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
-            base(reader, log, parent, offset)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
         {
             ushort defaultLangSys = reader.ReadUInt16();
             ushort langSysCount = reader.ReadUInt16();
@@ -66,10 +64,10 @@ namespace Molten.Font
                 langSysOffsets[i] = reader.ReadUInt16();
             }
 
-            Default = new LangSysTable(reader, log, this, defaultLangSys);
+            Default = context.ReadSubTable<LangSysTable>(defaultLangSys);
 
             for (int i = 0; i < langSysCount; i++)
-                Records[i].Table = new LangSysTable(reader, log, this, langSysOffsets[i]);
+                Records[i].Table = context.ReadSubTable<LangSysTable>(langSysOffsets[i]);
         }
     }
 
@@ -101,8 +99,7 @@ namespace Molten.Font
         /// </summary>
         public ushort RequiredFeatureIndex { get; internal set; }
 
-        internal LangSysTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
-            base(reader, log, parent, offset)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
         {
             LookupOrder = reader.ReadUInt16();
             RequiredFeatureIndex = reader.ReadUInt16();

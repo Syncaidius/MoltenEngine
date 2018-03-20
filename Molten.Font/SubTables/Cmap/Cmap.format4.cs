@@ -14,10 +14,10 @@ namespace Molten.Font
         ushort[] _idRangeOffset;
         ushort[] _glyphIdArray;
 
-        internal CmapFormat4SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
-            base(reader, log, parent, offset, record)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
         {
-            Header.Length = reader.ReadUInt16() - 2U; // Subtract 2 because it also includes the length value in the byte size...
+            long startPos = context.GetStartPos();
+            uint length = reader.ReadUInt16() - 2U; // Subtract 2 because it also includes the length value in the byte size...
             Language = reader.ReadUInt16();
 
             ushort segCountX2 = reader.ReadUInt16();
@@ -37,7 +37,7 @@ namespace Molten.Font
 
             _idRangeOffset = reader.ReadArray<ushort>(segCount);
 
-            long tableEndPos = Header.StreamOffset + Header.Length;
+            long tableEndPos = startPos + length;
             int numGlyphIDs = (int)(tableEndPos - reader.Position) / sizeof(ushort);
             _glyphIdArray = reader.ReadArray<ushort>(numGlyphIDs);
         }

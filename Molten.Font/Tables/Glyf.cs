@@ -12,11 +12,11 @@ namespace Molten.Font
     /// Information regarding the rasterizer (scaler) refers to the TrueType rasterizer. <para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/glyf </summary>
     [FontTableTag("glyf", "loca", "maxp")]
-    public class Glyf : FontTable
+    public class Glyf : MainFontTable
     {        
         public Glyph[] Glyphs { get; internal set; }
 
-        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
         {
             long tableStartPos = reader.Position;
             Loca loca = dependencies.Get<Loca>();
@@ -41,7 +41,7 @@ namespace Molten.Font
                 if (Glyphs[i] != null)
                     continue;
                 else
-                    ReadGlyph(reader, log, Glyphs, tableStartPos, loca.Offsets, i);
+                    ReadGlyph(reader, Glyphs, tableStartPos, loca.Offsets, i);
             }
 
             // Jump to the expected end of the table (last offset in the loca table).
@@ -49,7 +49,7 @@ namespace Molten.Font
             reader.Position = tableStartPos + loca.Offsets[numGlyphs];
         }
 
-        private void ReadGlyph(EnhancedBinaryReader reader, Logger log, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, ushort id)
+        private void ReadGlyph(EnhancedBinaryReader reader, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, ushort id)
         {
             uint offset = locaOffsets[id];
             uint length = locaOffsets[id + 1] - offset;
@@ -69,12 +69,12 @@ namespace Molten.Font
                 if (numContours >= 0)
                     glyphs[id] = ReadSimpleGlyph(reader, numContours, bounds);
                 else
-                    glyphs[id] = ReadCompositeGlyph(reader, log, glyphs, tableStartPos, locaOffsets, bounds, id);
+                    glyphs[id] = ReadCompositeGlyph(reader, glyphs, tableStartPos, locaOffsets, bounds, id);
 
             }
         }
 
-        private Glyph ReadCompositeGlyph(EnhancedBinaryReader reader, Logger log, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, Rectangle bounds, ushort id)
+        private Glyph ReadCompositeGlyph(EnhancedBinaryReader reader, Glyph[] glyphs, long tableStartPos, uint[] locaOffsets, Rectangle bounds, ushort id)
         {
             CompositeGlyphFlags flags;
             Glyph compositeGlyph = null;
@@ -88,7 +88,7 @@ namespace Molten.Font
                 if (glyphs[glyphID] == null)
                 {
                     long curPos = reader.Position;
-                    ReadGlyph(reader, log, glyphs, tableStartPos, locaOffsets, glyphID);
+                    ReadGlyph(reader, glyphs, tableStartPos, locaOffsets, glyphID);
                     reader.Position = curPos;
                 }
 

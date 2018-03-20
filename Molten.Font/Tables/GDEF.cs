@@ -9,7 +9,7 @@ namespace Molten.Font
     /// <summary>Glyph definition table. <para/>
     /// See: https://www.microsoft.com/typography/otspec/gdef.htm </summary>
     [FontTableTag("GDEF")]
-    public class GDEF : FontTable
+    public class GDEF : MainFontTable
     {
         /// <summary>Gets the major version of the table.</summary>
         public ushort MajorVersion { get; internal set; }
@@ -42,7 +42,7 @@ namespace Molten.Font
         static readonly GlyphClass[] _classTranslation = ReflectionHelper.EnumToArray<GlyphClass>();
         static readonly GlyphMarkClass[] _markTranslation = ReflectionHelper.EnumToArray<GlyphMarkClass>();
 
-        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
         {
             MajorVersion = reader.ReadUInt16();
             MinorVersion = reader.ReadUInt16();
@@ -73,23 +73,23 @@ namespace Molten.Font
              * a count of the glyphs with attachment points (GlyphCount), and an array of offsets to AttachPoint tables (AttachPoint). 
              * The array lists the AttachPoint tables, one for each glyph in the Coverage table, in the same order as the Coverage Index.*/
             if (attachListOffset > FontUtil.NULL)
-                AttachList = new AttachListTable(reader, log, this, attachListOffset);
+                AttachList = context.ReadSubTable<AttachListTable>(attachListOffset);
 
             // Ligature caret list sub-
             if (ligCaretListOffset > FontUtil.NULL)
-                LigatureCaretList = new LigatureCaretListTable(reader, log, this, ligCaretListOffset);
+                LigatureCaretList = context.ReadSubTable<LigatureCaretListTable>(ligCaretListOffset);
 
             // Mark attachment class definition sub-
             if (markAttachClassDefOffset > FontUtil.NULL)
-                MarkAttachClassDefs = new ClassDefinitionTable(reader, log, this, markAttachClassDefOffset);
+                MarkAttachClassDefs = context.ReadSubTable<ClassDefinitionTable>(markAttachClassDefOffset);
 
             // Mark glyph sets sub-
             if (markGlyphSetsDefOffset > FontUtil.NULL)
-                MarkGlyphSets = new MarkGlyphSetsTable(reader, log, this, markGlyphSetsDefOffset);
+                MarkGlyphSets = context.ReadSubTable<MarkGlyphSetsTable>(markGlyphSetsDefOffset);
 
             // Item variation store sub-
             if (itemVarStoreOffset > FontUtil.NULL)
-                ItemVarStore = new ItemVariationStore(reader, log, this, itemVarStoreOffset);
+                ItemVarStore = context.ReadSubTable<ItemVariationStore>(itemVarStoreOffset);
         }
     }
 }

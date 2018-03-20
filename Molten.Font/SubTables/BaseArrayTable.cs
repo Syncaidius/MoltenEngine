@@ -15,20 +15,17 @@ namespace Molten.Font
         {
             ushort baseCount = reader.ReadUInt16();
             Records = new BaseRecord[baseCount];
-            ushort[,] anchorOffsets = new ushort[baseCount, markClassCount];
+            ushort[][] anchorOffsets = new ushort[baseCount][];
 
             for (int i = 0; i < baseCount; i++)
-            {
-                for(int j = 0; j < markClassCount; j++)
-                    anchorOffsets[i, j] = reader.ReadUInt16();
-            }
+                anchorOffsets[i] = reader.ReadArray<ushort>(markClassCount);
 
             // Read anchor tables.
             for (int i = 0; i < baseCount; i++)
             {
                 AnchorTable[] tables = new AnchorTable[markClassCount];
                 for (int j = 0; j < markClassCount; j++)
-                    tables[j] = new AnchorTable(reader, log, this, anchorOffsets[i, j]);
+                    tables[j] = new AnchorTable(reader, log, this, anchorOffsets[i][j]);
 
                 Records[i] = new BaseRecord() { Tables = tables };
             }

@@ -9,7 +9,7 @@ namespace Molten.Font
     /// <summary>PostScript table.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/post </summary>
     [FontTableTag("post")]
-    public class Post : FontTable
+    public class Post : MainFontTable
     {
         public ushort MajorVersion { get; private set; }
 
@@ -71,7 +71,7 @@ namespace Molten.Font
             return string.Empty;
         }
 
-        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
         {
             MajorVersion = reader.ReadUInt16();
             MinorVersion = reader.ReadUInt16();
@@ -117,7 +117,7 @@ namespace Molten.Font
                     break;
 
                 case 4 when MinorVersion == 0:
-                    log.WriteDebugLine($"[post] Table format 4.{MinorVersion} (AAT) detected. Ignoring extra data.");
+                    context.WriteLine($"Table format 4.{MinorVersion} (AAT) detected. Ignoring extra data.");
                     // From Apple docs: "As a rule, format 4 'post' tables are no longer necessary and should be avoided."
                     break;
             }

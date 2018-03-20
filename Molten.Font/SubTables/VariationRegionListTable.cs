@@ -21,8 +21,7 @@ namespace Molten.Font
             public float EndCoord { get; internal set; }
         }
 
-        internal VariationRegionListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
-            base(reader, log, parent, offset)
+        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
         {
             ushort axisCount = reader.ReadUInt16();
             ushort regionCount = reader.ReadUInt16();
