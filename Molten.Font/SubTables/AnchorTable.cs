@@ -45,7 +45,14 @@ namespace Molten.Font
 
             switch (Format)
             {
+                case 1:
+                    XCoordinate = reader.ReadInt16();
+                    YCoordinate = reader.ReadInt16();
+                    break;
+
                 case 2:
+                    XCoordinate = reader.ReadInt16();
+                    YCoordinate = reader.ReadInt16();
                     AnchorPoint = reader.ReadUInt16();
                     break;
 
