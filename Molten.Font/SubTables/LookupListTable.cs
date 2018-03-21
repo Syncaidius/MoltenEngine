@@ -67,8 +67,6 @@ namespace Molten.Font
                     subLookupTypeIndex = reader.ReadUInt16(); // extensionLookupType.
                     uint extensionOffset = reader.ReadUInt32(); // MS docs: Offset to the extension subtable, relative to the start of the ExtensionSubstFormat1 subtable.
 
-                    log.WriteDebugLine($"Extension table detected -- New type index: {typeLookup[subLookupTypeIndex]} -- extension offset: {extensionOffset}");
-
                     // ExtensionLookupType must be set to any lookup type other than the extension lookup type.
                     if (subLookupTypeIndex == extensionIndex)
                     {

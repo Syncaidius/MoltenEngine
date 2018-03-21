@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace Molten.Samples
         public static extern bool ShowWindow(System.IntPtr hWnd, int cmdShow);
 
         List<TestEntry> testEntries = new List<TestEntry>();
-        SampleGame curTest;
+        SampleGame _curTest;
         ConsoleColor defaultCol = Console.ForegroundColor;
 
         Type lastTestType;
@@ -53,6 +54,13 @@ namespace Molten.Samples
             lstTests.SelectionChanged += lstTests_SelectionChanged;
 
             LoadLastRun();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            _curTest?.Exit();
+            Application.Current.Shutdown();
+            base.OnClosing(e);
         }
 
         private void SaveLastRun()
@@ -188,8 +196,8 @@ namespace Molten.Samples
             EngineSettings settings = new EngineSettings();
             settings.Graphics.EnableDebugLayer.Value = chkDebugLayer.IsChecked.Value;
             settings.Graphics.VSync.Value = chkVsync.IsChecked.Value;
-            curTest = Activator.CreateInstance(lastTestType, settings) as SampleGame;
-            curTest.Start();
+            _curTest = Activator.CreateInstance(lastTestType, settings) as SampleGame;
+            _curTest.Start();
             Console.ForegroundColor = ConsoleColor.White;
 
             GC.Collect();

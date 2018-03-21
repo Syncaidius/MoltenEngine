@@ -46,7 +46,7 @@ namespace Molten
             _loggers.Clear();
         }
 
-        /// <summary>Adds a <see cref="TextWriter"/> to which the console's output will be written.</summary>
+        /// <summary>Adds a <see cref="TextWriter"/> to which the logger's output will be written.</summary>
         /// <param name="writer"></param>
         public void AddOutput(ILogOutput writer)
         {
@@ -97,22 +97,16 @@ namespace Molten
         {
             SpinWait spin = new SpinWait();
 
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    for (int i = 0; i < _outputs.Count; i++)
-                        _outputs[i].WriteLine(value, color);
-
-#if DEBUG
-                    Console.WriteLine(value);
-#endif
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-
+            while (0 != Interlocked.Exchange(ref _blockingVal, 1))
                 spin.SpinOnce();
-            }
+
+            for (int i = 0; i < _outputs.Count; i++)
+                _outputs[i].WriteLine(value, color);
+#if DEBUG
+            Debug.WriteLine(value);
+#endif
+            Interlocked.Exchange(ref _blockingVal, 0);
+            return;
         }
 
         public void Clear()
@@ -126,9 +120,6 @@ namespace Molten
                     for (int i = 0; i < _outputs.Count; i++)
                         _outputs[i].Clear();
 
-#if DEBUG
-                    Console.Clear();
-#endif
                     Interlocked.Exchange(ref _blockingVal, 0);
                     return;
                 }
@@ -210,7 +201,7 @@ namespace Molten
                         _outputs[i].Write(value, color);
 
 #if DEBUG
-                    Console.Write(value);
+                    Debug.Write(value);
 #endif
                     Interlocked.Exchange(ref _blockingVal, 0);
                     return;
