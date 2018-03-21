@@ -305,6 +305,12 @@ namespace Molten
             }
         }
 
+        protected override void OnDispose()
+        {
+            _workers.Dispose();
+            base.OnDispose();
+        }
+
         public string RootDirectory
         {
             get => _rootDirectory;

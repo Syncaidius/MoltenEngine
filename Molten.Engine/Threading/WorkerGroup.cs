@@ -32,6 +32,11 @@ namespace Molten.Threading
             if (IsDisposed)
                 return;
 
+            for (int i = 0; i < _threads.Count; i++)
+                _threads[i].Exit();
+
+            _threads.Clear();
+
             _manager.DestroyGroup(this);
             IsDisposed = true;
         }

@@ -151,6 +151,7 @@ namespace Molten
             for (int i = 0; i < Scenes.Count; i++)
                 Scenes[i].Dispose();
 
+            _content.Dispose();
             _log.Dispose();
             _settings.Save();
             Current = null;
