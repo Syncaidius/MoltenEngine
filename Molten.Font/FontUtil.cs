@@ -15,6 +15,11 @@ namespace Molten.Font
 
         public const int POINTS_PER_INCH = 72;
 
+        public static bool IsNull(ushort offset)
+        {
+            return offset == NULL;
+        }
+
         /// <summary>Gets an offset from the start position to the current position.</summary>
         /// <param name="startPos">The starting position.</param>
         /// <param name="curPos">The current position.</param>

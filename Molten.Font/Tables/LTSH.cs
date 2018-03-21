@@ -29,5 +29,4 @@ namespace Molten.Font
             YPels = reader.ReadBytes(numGlyphs);
         }
     }
-
 }
