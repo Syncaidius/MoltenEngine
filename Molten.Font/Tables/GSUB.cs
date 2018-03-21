@@ -359,7 +359,6 @@ namespace Molten.Font
             base(reader, log, parent, offset)
         {
             ushort coverageOffset;
-            Dictionary<long, ChainRuleTable> existingRules = new Dictionary<long, ChainRuleTable>();
 
             switch (Format)
             {
@@ -369,7 +368,7 @@ namespace Molten.Font
                     ushort[] chainSubRuleSetOffsets = reader.ReadArray<ushort>(chainSubRuleSetCount);
                     ChainRuleSets = new ChainRuleSetTable[chainSubRuleSetCount];
                     for (int i = 0; i < chainSubRuleSetCount; i++)
-                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainSubRuleSetOffsets[i], existingRules);
+                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainSubRuleSetOffsets[i]);
 
                     Coverage = new CoverageTable(reader, log, this, coverageOffset);
                     break;
@@ -388,7 +387,7 @@ namespace Molten.Font
                     LookAheadClasses = new ClassDefinitionTable(reader, log, this, lookAheadClassDefOffset);
                     ChainRuleSets = new ChainRuleSetTable[chainSubClassSetCount];
                     for (int i = 0; i < chainSubClassSetCount; i++)
-                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainSubClassSetOffsets[i], existingRules);
+                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainSubClassSetOffsets[i]);
                     break;
 
                 case 3:

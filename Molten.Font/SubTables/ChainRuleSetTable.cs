@@ -13,7 +13,7 @@ namespace Molten.Font
         /// </summary>
         public ChainRuleTable[] Tables { get; internal set; }
 
-        internal ChainRuleSetTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, Dictionary<long, ChainRuleTable> existingRules) :
+        internal ChainRuleSetTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort posRuleCount = reader.ReadUInt16();
@@ -23,11 +23,7 @@ namespace Molten.Font
             for (int i = 0; i < posRuleCount; i++)
             {
                 long fileOffset = Header.StreamOffset + posRuleOffsets[i];
-                if (!existingRules.TryGetValue(fileOffset, out Tables[i]))
-                {
-                    Tables[i] = new ChainRuleTable(reader, log, this, posRuleOffsets[i]);
-                    existingRules.Add(fileOffset, Tables[i]);
-                }
+                Tables[i] = new ChainRuleTable(reader, log, this, posRuleOffsets[i]);
             }
         }
     }

@@ -415,7 +415,6 @@ namespace Molten.Font
             base(reader, log, parent, offset)
         {
             ushort coverageOffset;
-            Dictionary<long, ChainRuleTable> existingRules = new Dictionary<long, ChainRuleTable>();
 
             switch (Format)
             {
@@ -427,7 +426,7 @@ namespace Molten.Font
 
                     ChainRuleSets = new ChainRuleSetTable[chainPosRuleSetCount];
                     for (int i = 0; i < chainPosRuleSetCount; i++)
-                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosRuleSetOffsets[i], existingRules);
+                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosRuleSetOffsets[i]);
                     break;
 
                 case 2: // ChainRuleSets contains class IDs instead of glyph IDs
@@ -444,7 +443,7 @@ namespace Molten.Font
                     LookAheadClasses = new ClassDefinitionTable(reader, log, this, lookAheadClassDefOffset);
                     ChainRuleSets = new ChainRuleSetTable[chainPosClassSetCount];
                     for (int i = 0; i < chainPosClassSetCount; i++)
-                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosClassSetOffsets[i], existingRules);
+                        ChainRuleSets[i] = new ChainRuleSetTable(reader, log, this, chainPosClassSetOffsets[i]);
                     break;
 
                 case 3:
