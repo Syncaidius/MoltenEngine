@@ -11,11 +11,11 @@ namespace Molten.Font
     /// <para>By definition, index zero points to the "missing character," which is the character that appears if a character is not found in the font. The missing character is commonly represented by a blank box or a space. If the font does not contain an outline for the missing character, then the first and second offsets should have the same value. This also applies to any other characters without an outline, such as the space character. If a glyph has no outline, then loca[n] = loca [n+1]. In the particular case of the last glyph(s), loca[n] will be equal the length of the glyph data ('glyf') table. The offsets must be in ascending order with loca[n] less-or-equal-to loca[n+1].</para>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/loca </summary>
     [FontTableTag("loca", "head", "maxp")]
-    public class Loca : MainFontTable
+    public class Loca : FontTable
     {
         public uint[] Offsets { get; internal set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             /* From Apple docs:
              * The size of entries in the 'loca' table must be appropriate for the value of the indexToLocFormat field of the 'head' table. 

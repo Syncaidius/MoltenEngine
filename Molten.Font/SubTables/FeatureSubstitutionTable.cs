@@ -14,7 +14,8 @@ namespace Molten.Font
 
         public FeatureTableSubstitutionRecord[] Records { get; internal set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal FeatureTableSubstitutionTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
             MajorVersion = reader.ReadUInt16();
             MinorVersion = reader.ReadUInt16();
@@ -35,7 +36,7 @@ namespace Molten.Font
             // TODO track loaded feature lists in font and use an existing instance here if possible.
             //      Might be loading the same feature table data into multiple FeatureTable instances.
             for (int i = 0; i < substitutionCount; i++)
-                Records[i].AlternateFeatureTable = context.ReadSubTable<FeatureTable>(altFeatureOffsets[i]);
+                Records[i].AlternateFeatureTable = new FeatureTable(reader, log, this, altFeatureOffsets[i]);
         }
     }
 

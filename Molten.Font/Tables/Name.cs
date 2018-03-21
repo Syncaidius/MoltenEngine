@@ -10,7 +10,7 @@ namespace Molten.Font
     /// <summary>Naming (name) table .<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/name </summary>
     [FontTableTag("name")]
-    public class Name : MainFontTable
+    public class Name : FontTable
     {
         public ushort Format { get; private set; }
 
@@ -38,7 +38,7 @@ namespace Molten.Font
 
             return string.Empty;
         }
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             Format = reader.ReadUInt16();
 

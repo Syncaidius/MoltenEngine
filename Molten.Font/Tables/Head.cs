@@ -9,7 +9,7 @@ namespace Molten.Font
     /// <summary>Font header table (head).<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/head </summary>
     [FontTableTag("head")]
-    public class Head : MainFontTable
+    public class Head : FontTable
     {
         /// <summary>
         /// The expected magic number value of a valid <see cref="Head"/> table.
@@ -96,7 +96,7 @@ namespace Molten.Font
         /// </summary>
         public short GlyphDataFormat { get; private set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             MajorVersion = reader.ReadUInt16();
             MinorVersion = reader.ReadUInt16();
@@ -119,7 +119,7 @@ namespace Molten.Font
             GlyphDataFormat = reader.ReadInt16();
 
             if (MagicNumber != EXPECTED_MAGIC_NUMBER)
-                context.WriteLine($"[head] Invalid magic number detected: {MagicNumber} -- Expected: {EXPECTED_MAGIC_NUMBER}");
+                log.WriteDebugLine($"[head] Invalid magic number detected: {MagicNumber} -- Expected: {EXPECTED_MAGIC_NUMBER}");
         }
     }
 

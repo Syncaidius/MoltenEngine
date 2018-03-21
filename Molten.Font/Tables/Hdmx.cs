@@ -9,7 +9,7 @@ namespace Molten.Font
     /// <summary>Horizontal Device Metrics (hdmx) table.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/hdmx </summary>
     [FontTableTag("hdmx", "maxp")]
-    public class Hdmx : MainFontTable
+    public class Hdmx : FontTable
     {
         public ushort Version { get; internal set; }
 
@@ -20,7 +20,7 @@ namespace Molten.Font
         /// </summary>
         public DeviceRecord[] Metrics { get; private set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             Maxp tableMaxp = dependencies.Get<Maxp>();
             ushort numGlyphs = tableMaxp.NumGlyphs;

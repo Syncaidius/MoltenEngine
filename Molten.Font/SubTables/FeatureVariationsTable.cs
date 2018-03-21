@@ -21,7 +21,8 @@ namespace Molten.Font
 
         public FeatureVariationRecord[] Records { get; internal set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal FeatureVariationsTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
             MajorVersion = reader.ReadUInt16();
             MinorVersion = reader.ReadUInt16();
@@ -43,8 +44,8 @@ namespace Molten.Font
             {
                 Records[i] = new FeatureVariationRecord()
                 {
-                    ConditionSet = context.ReadSubTable<ConditionSetTable>(offsets[i].ConditionSetOffset),
-                    FeatureVarSubsitutionTable = context.ReadSubTable<FeatureTableSubstitutionTable>(offsets[i].FeatureTableSubstitutionOffset),
+                    ConditionSet = new ConditionSetTable(reader, log, this, offsets[i].ConditionSetOffset),
+                    FeatureVarSubsitutionTable = new FeatureTableSubstitutionTable(reader, log, this, offsets[i].FeatureTableSubstitutionOffset),
                 };
             }
         }

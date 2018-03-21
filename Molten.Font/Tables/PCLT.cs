@@ -12,7 +12,7 @@ namespace Molten.Font
     /// Extra information on this table can be found in the HP PCL 5 Printer Language Technical Reference Manual available from Hewlett-Packard Boise Printer Division.
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/pclt </summary>
     [FontTableTag("PCLT")]
-    public class PCLT : MainFontTable
+    public class PCLT : FontTable
     {
         public ushort MajorVersion { get; private set; }
 
@@ -59,7 +59,7 @@ namespace Molten.Font
         /// </summary>
         public byte Reserved { get; private set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             MajorVersion = reader.ReadUInt16();
             MinorVersion = reader.ReadUInt16();

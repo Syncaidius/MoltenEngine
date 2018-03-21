@@ -10,7 +10,8 @@ namespace Molten.Font
     {
         public ScriptRecord[] Records { get; internal set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal ScriptListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+            base(reader, log, parent, offset)
         {
             ushort scriptCount = reader.ReadUInt16();
             Records = new ScriptRecord[scriptCount];
@@ -27,7 +28,7 @@ namespace Molten.Font
             }
 
             for (int i = 0; i < scriptCount; i++)
-                Records[i].Table = context.ReadSubTable<ScriptTable>(scriptTableOffsets[i]);
+                Records[i].Table = new ScriptTable(reader, log, this, scriptTableOffsets[i]);
         }
     }
 
@@ -47,7 +48,8 @@ namespace Molten.Font
 
         public LangSysTable Default { get; internal set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal ScriptTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
             ushort defaultLangSys = reader.ReadUInt16();
             ushort langSysCount = reader.ReadUInt16();
@@ -64,10 +66,10 @@ namespace Molten.Font
                 langSysOffsets[i] = reader.ReadUInt16();
             }
 
-            Default = context.ReadSubTable<LangSysTable>(defaultLangSys);
+            Default = new LangSysTable(reader, log, this, defaultLangSys);
 
             for (int i = 0; i < langSysCount; i++)
-                Records[i].Table = context.ReadSubTable<LangSysTable>(langSysOffsets[i]);
+                Records[i].Table = new LangSysTable(reader, log, this, langSysOffsets[i]);
         }
     }
 
@@ -99,7 +101,8 @@ namespace Molten.Font
         /// </summary>
         public ushort RequiredFeatureIndex { get; internal set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal LangSysTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
             LookupOrder = reader.ReadUInt16();
             RequiredFeatureIndex = reader.ReadUInt16();

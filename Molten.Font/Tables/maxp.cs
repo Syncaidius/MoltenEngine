@@ -9,7 +9,7 @@ namespace Molten.Font
     /// <summary>Maximum profile table (maxp).<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/maxp </summary>
     [FontTableTag("maxp")]
-    public class Maxp : MainFontTable
+    public class Maxp : FontTable
     {
         public ushort MajorVersion { get; private set; }
 
@@ -85,7 +85,7 @@ namespace Molten.Font
         /// </summary>
         public ushort MaxComponentDepth { get; private set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             MajorVersion = reader.ReadUInt16();
             MinorVersion = reader.ReadUInt16();

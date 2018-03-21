@@ -47,7 +47,7 @@ namespace Molten.Font
             ushort subTableCount = reader.ReadUInt16();
             log.WriteDebugLine($"Reading lookup table containing {subTableCount} sub-tables");
 
-            // Get the offsets for the lookup subtable's own subtables.
+            // Get the offset's for the lookup subtable's own subtables.
             ushort[] subTableOffsets = reader.ReadArray<ushort>(subTableCount);
             if (HasFlag(LookupFlags.UseMarkFilteringSet))
                 MarkFilteringSet = reader.ReadUInt16();

@@ -21,7 +21,8 @@ namespace Molten.Font
 
         ushort[] _glyphClassIDs;
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal ClassDefinitionTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
             Format = reader.ReadUInt16();
 
@@ -50,7 +51,7 @@ namespace Molten.Font
             }
             else
             {
-                context.WriteWarning($"Unsupported Class-Definition sub-table format: {Format}");
+                log.WriteWarning($"Unsupported Class-Definition sub-table format: {Format}");
             }
         }
     }

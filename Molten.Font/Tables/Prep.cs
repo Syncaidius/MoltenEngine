@@ -9,14 +9,14 @@ namespace Molten.Font
     /// <summary>Control value program table .<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/prep </summary>
     [FontTableTag("prep")]
-    public class Prep : MainFontTable
+    public class Prep : FontTable
     {
         /// <summary>
         /// Gets a set of instructions executed whenever point size or font or transformation change. n is the number of uint8 items that fit in the size of the table.
         /// </summary>
         public byte[] Instructions { get; private set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             Instructions = reader.ReadBytes((int)header.Length);
 

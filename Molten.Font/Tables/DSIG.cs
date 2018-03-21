@@ -8,7 +8,7 @@ namespace Molten.Font
 {
     /// <summary>Digital signature table. See: https://www.microsoft.com/typography/otspec/dsig.htm</summary>
     [FontTableTag("DSIG")]
-    public class DSIG : MainFontTable
+    public class DSIG : FontTable
     {
         public uint Version { get; internal set; }
 
@@ -41,13 +41,13 @@ namespace Molten.Font
             public uint Offset { get; internal set; }
         }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             Version = reader.ReadUInt32();
             NumSignatures = reader.ReadUInt16();
             Flags = reader.ReadUInt16();
 
-            context.WriteLine($"Version {Version} -- {NumSignatures} signatures found");
+            log.WriteDebugLine($"[DSIG] Version {Version} -- {NumSignatures} signatures found");
 
             // Read signature record list.
             List<SignatureRecord> sigs = new List<SignatureRecord>();

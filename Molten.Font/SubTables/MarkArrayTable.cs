@@ -10,7 +10,8 @@ namespace Molten.Font
     {
         public MarkRecord[] Records { get; private set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal MarkArrayTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
             ushort markCount = reader.ReadUInt16();
             Records = new MarkRecord[markCount];
@@ -27,8 +28,8 @@ namespace Molten.Font
             }
 
             // Read anchor tables.
-            for (int i = 0; i < markCount; i++)
-                Records[i].Table = context.ReadSubTable<AnchorTable>(anchorOffsets[i]);
+            for(int i = 0; i < markCount; i++)
+                Records[i].Table = new AnchorTable(reader, log, this, anchorOffsets[i]);
         }
     }
 

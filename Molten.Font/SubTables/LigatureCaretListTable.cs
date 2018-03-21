@@ -11,14 +11,15 @@ namespace Molten.Font
         /// <summary>Gets an array containing AttachPoint tables ordered by coverage index, which hold contour point indices.</summary>
         public LigatureGlyphTable[] GlyphTables { get; private set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal LigatureCaretListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+            base(reader, log, parent, offset)
         {
             ushort coverageOffset = reader.ReadUInt16();
             ushort ligGlyphCount = reader.ReadUInt16();
             ushort[] ligGlyphOffsets = reader.ReadArray<ushort>(ligGlyphCount);
 
             // Read the coverage table.
-            CoverageTable coverage = context.ReadSubTable<CoverageTable>(coverageOffset);
+            CoverageTable coverage = new CoverageTable(reader, log, this, coverageOffset);
             GlyphTables = new LigatureGlyphTable[ligGlyphCount];
 
             // Populate attach points in each AttachPointTable.

@@ -17,13 +17,14 @@ namespace Molten.Font
         /// </summary>
         public RuleTable[] Tables { get; internal set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal RuleSetTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
             ushort posRuleCount = reader.ReadUInt16();
             ushort[] posRuleOffsets = reader.ReadArray<ushort>(posRuleCount);
             Tables = new RuleTable[posRuleCount];
             for (int i = 0; i < posRuleCount; i++)
-                Tables[i] = context.ReadSubTable<RuleTable>(posRuleOffsets[i]);
+                Tables[i] = new RuleTable(reader, log, this, posRuleOffsets[i]);
         }
     }
 
@@ -46,7 +47,8 @@ namespace Molten.Font
         /// </summary>
         public RuleLookupRecord[] Records { get; internal set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal RuleTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
             ushort glyphCount = reader.ReadUInt16();
             ushort substitutionCount = reader.ReadUInt16();

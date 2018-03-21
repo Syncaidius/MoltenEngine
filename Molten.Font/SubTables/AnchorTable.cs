@@ -38,20 +38,14 @@ namespace Molten.Font
         /// </summary>
         public DeviceVariationIndexTable YDevice { get; internal set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal AnchorTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
+            base(reader, log, parent, offset)
         {
             Format = reader.ReadUInt16();
 
             switch (Format)
             {
-                case 1:
-                    XCoordinate = reader.ReadInt16();
-                    YCoordinate = reader.ReadInt16();
-                    break;
-
                 case 2:
-                    XCoordinate = reader.ReadInt16();
-                    YCoordinate = reader.ReadInt16();
                     AnchorPoint = reader.ReadUInt16();
                     break;
 
@@ -60,10 +54,10 @@ namespace Molten.Font
                     ushort yDeviceOffset = reader.ReadUInt16();
 
                     if (xDeviceOffset > FontUtil.NULL)
-                        XDevice = context.ReadSubTable<DeviceVariationIndexTable>(xDeviceOffset);
+                        XDevice = new DeviceVariationIndexTable(reader, log, this, xDeviceOffset);
 
                     if (yDeviceOffset > FontUtil.NULL)
-                        YDevice = context.ReadSubTable<DeviceVariationIndexTable>(yDeviceOffset);
+                        YDevice = new DeviceVariationIndexTable(reader, log, this, yDeviceOffset);
                     break;
             }
         }

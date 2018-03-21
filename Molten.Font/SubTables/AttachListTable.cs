@@ -16,7 +16,8 @@ namespace Molten.Font
         /// </summary>
         public CoverageTable Coverage { get; internal set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal AttachListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+            base(reader, log, parent, offset)
         {
             ushort coverageOffset = reader.ReadUInt16();
             ushort glyphCount = reader.ReadUInt16();
@@ -25,10 +26,10 @@ namespace Molten.Font
 
             // prepare attach point tables with their respective offsets.
             for (int i = 0; i < glyphCount; i++)
-                PointTables[i] = context.ReadSubTable<AttachPointTable>(attachPointOffsets[i]);
+                PointTables[i] = new AttachPointTable(reader, log, this, attachPointOffsets[i]);
 
             // Read the coverage table.
-            CoverageTable coverage = context.ReadSubTable<CoverageTable>(coverageOffset);
+            CoverageTable coverage = new CoverageTable(reader, log, this, coverageOffset);
         }
     }
 }

@@ -16,7 +16,8 @@ namespace Molten.Font
 
         ushort[] _glyphIDs;
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal CoverageTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset):
+            base(reader, log, parent, offset)
         {
             Format = reader.ReadUInt16();
 
@@ -43,7 +44,7 @@ namespace Molten.Font
             }
             else
             {
-                context.WriteWarning($"Unsupported coverage format: {Format}");
+                log.WriteWarning($"Unsupported coverage format: {Format}");
             }
         }
 

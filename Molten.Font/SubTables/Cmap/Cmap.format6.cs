@@ -12,9 +12,11 @@ namespace Molten.Font
         ushort _endCode;
         ushort[] _glyphIdArray;
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal CmapFormat6SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
+            base(reader, log, parent, offset, record)
         {
             ushort length = reader.ReadUInt16();
+
             Language = reader.ReadUInt16();
             _startCode = reader.ReadUInt16();
             ushort entryCount = reader.ReadUInt16();

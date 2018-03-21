@@ -10,12 +10,13 @@ namespace Molten.Font
     {
         byte[] _glyphIDs;
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, FontTable parent)
+        internal CmapFormat0SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
+            base(reader, log, parent, offset, record)
         {
             /* This is a simple 1 to 1 mapping of character codes to glyph indices.
                 * The glyph set is limited to 256. Note that if this format is used to index into a larger glyph set, only the first 256 glyphs will be accessible.*/
 
-            ushort length = reader.ReadUInt16();
+            Header.Length = reader.ReadUInt16();
             Language = reader.ReadUInt16();
 
             // Faster to read all bytes then re-iterate them in to a ushort array, 

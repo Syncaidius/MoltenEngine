@@ -9,7 +9,7 @@ namespace Molten.Font
     /// <summary>Horizontal metrics (hmtx) table.<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/hmtx </summary>
     [FontTableTag("hmtx", "hhea", "maxp")]
-    public class Hmtx : MainFontTable
+    public class Hmtx : FontTable
     {
         LongHorMetric[] _metrics;
 
@@ -18,7 +18,7 @@ namespace Molten.Font
         /// </summary>
         public LongHorMetric[] Metrics => _metrics;
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             Hhea tableHhea = dependencies.Get<Hhea>();
             Maxp tableMaxp = dependencies.Get<Maxp>();

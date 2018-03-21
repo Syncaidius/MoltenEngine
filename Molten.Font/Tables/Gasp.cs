@@ -9,14 +9,14 @@ namespace Molten.Font
     /// <summary>A grid-fitting and scan-conversion procedure table (gasp).<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/gasp </summary>
     [FontTableTag("gasp")]
-    public class Gasp : MainFontTable
+    public class Gasp : FontTable
     {
         public ushort Version { get; private set; }
 
         /// <summary>Gets an array of <see cref="GaspRange"/> instances, sorted by ppem.</summary>
         public GaspRange[] Ranges { get; private set; }
 
-        internal override void Read(EnhancedBinaryReader reader, FontReaderContext context, TableHeader header, FontTableList dependencies)
+        internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
             Version = reader.ReadUInt16();
             ushort numRanges = reader.ReadUInt16();
