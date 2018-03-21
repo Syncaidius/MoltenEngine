@@ -36,6 +36,14 @@ namespace Molten
             return Encoding.ASCII.GetString(body);
         }
 
+        /// <summary>Reads a string of a fixed length.</summary>
+        /// <returns></returns>
+        public string ReadString(int length)
+        {
+            byte[] body = base.ReadBytes(length);
+            return Encoding.ASCII.GetString(body);
+        }
+
         public virtual T[] ReadArray<T>(int count) where T : struct
         {
             if (count == 0)
