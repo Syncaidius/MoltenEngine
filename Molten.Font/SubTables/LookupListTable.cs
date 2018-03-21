@@ -16,7 +16,6 @@ namespace Molten.Font
         {
             ushort lookupCount = reader.ReadUInt16();
             ushort[] lookupOffsets = reader.ReadArray<ushort>(lookupCount);
-            log.WriteDebugLine($"Reading lookup list table at {Header.StreamOffset} containing {lookupCount} lookup tables");
 
             LookupTables = new LookupTable<T>[lookupCount];
             for (int i = 0; i < lookupCount; i++)
@@ -45,7 +44,6 @@ namespace Molten.Font
             MarkAttachmentType = reader.ReadByte();  // MS docs: The high byte (of flags) is set to specify the type of mark attachment.
             Flags = (LookupFlags)reader.ReadByte();
             ushort subTableCount = reader.ReadUInt16();
-            log.WriteDebugLine($"Reading lookup table containing {subTableCount} sub-tables");
 
             // Get the offset's for the lookup subtable's own subtables.
             ushort[] subTableOffsets = reader.ReadArray<ushort>(subTableCount);

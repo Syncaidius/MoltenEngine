@@ -84,11 +84,9 @@ namespace Molten.Font
 
     public abstract class DataMapBase : FontSubTable
     {
-        internal DataMapBase(EnhancedBinaryReader reader, Logger log, IFontTable parent, DataMapRecord record) : 
+        internal DataMapBase(EnhancedBinaryReader reader, Logger log, IFontTable parent, DataMapRecord record) :
             base(reader, log, parent, record.Offset)
-        {
-
-        }
+        { }
 
         /// <summary>
         /// Gets the data-map tag  indicating the type of metadata stored in the table.

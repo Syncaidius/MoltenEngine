@@ -25,7 +25,7 @@ Here's a list of completed or work-in-progress (WIP) features:
   * [WIP] Modular abstraction layer - remove/replace parts of the engine without touching the core
   * Complete set of math types. The majority are imported from [SharpDX](https://github.com/sharpdx/SharpDX) with a many additions and changes.
   * [WIP] Mouse, keyboard and game-pad input
-  * Samples
+  * Example projects
   
   
 # Long-term Goals
@@ -33,7 +33,7 @@ In no particular order:
   * Develop Molten engine and at least one commerial game (which obviously won't be open source!), running on Windows 7/8/10 via [SharpDX](http://sharpdx.org)
   * Add linux support later in time via Mono. This also means supporting OpenGL via [OpenTK](https://opentk.github.io/) or [OpenGL.NET](https://github.com/luca-piccioni/OpenGL.Net)
   * DX12/Vulkan support - DX12 will likely be first due to already being available through SharpDX
-  * Mbile support via Xamarin or whatever the best cross-platform framework is at that time this is put in to action.
+  * Mobile support via Xamarin or whatever the best cross-platform framework is at that time this is put in to action.
   * An example game or two to demonstrate how things work
 
 # Licensing
