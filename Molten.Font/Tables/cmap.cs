@@ -89,6 +89,7 @@ namespace Molten.Font
                     //case 2: ReadFormat2(reader, record); break; // Had no luck finding a font with format_2 cmap subtables. Need one for testing.
                     case 4: Tables[i] = new CmapFormat4SubTable(reader, log, this, record.Offset + 2, record); break;
                     case 6: Tables[i] = new CmapFormat6SubTable(reader, log, this, record.Offset + 2, record); break;
+                    case 12: Tables[i] = new CmapFormat12SubTable(reader, log, this, record.Offset + 2, record); break;
                     default:
                         log.WriteDebugLine($"[CMAP] Unsupported format for sub-table {i}/{numRecords - 1}: Format {record.Format}");
                         break;

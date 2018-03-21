@@ -14,6 +14,7 @@ namespace Molten.Font
         FontTableList _tables;
         FontFlags _flags;
         Glyph[] _glyphs;
+        int _glyphCount;
         GlyphMetrics[] _metrics;
         Rectangle _containerBounds;
 
@@ -105,6 +106,7 @@ namespace Molten.Font
             if (glyf != null)
             {
                 _glyphs = new Glyph[glyf.Glyphs.Length];
+                _glyphCount = _glyphs.Length;
                 Array.Copy(glyf.Glyphs, _glyphs, _glyphs.Length);
             }
 
@@ -254,7 +256,7 @@ namespace Molten.Font
         /// <summary>
         /// Gets the number of glyphs in the font.
         /// </summary>
-        public int GlyphCount => _glyphs.Length;
+        public int GlyphCount => _glyphCount;
 
         /// <summary>
         /// Gets the maximum profile information for the current <see cref="FontFile"/>.<para/>

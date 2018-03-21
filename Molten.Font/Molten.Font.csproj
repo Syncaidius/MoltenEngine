@@ -97,6 +97,7 @@
     <Compile Include="SubTables\AttachListTable.cs" />
     <Compile Include="SubTables\AttachPointTable.cs" />
     <Compile Include="SubTables\ClassDefinitionTable.cs" />
+    <Compile Include="SubTables\Cmap\Cmap.format12.cs" />
     <Compile Include="SubTables\Cmap\CmapSubTable.cs" />
     <Compile Include="SubTables\ConditionSetTable.cs" />
     <Compile Include="SubTables\CoverageTable.cs" />

@@ -36,7 +36,7 @@ namespace Molten
         /// down to the graphics and rendering chain.
         /// </summary>
         event DisplayManagerEvent OnAdapterInitialized;
-
+        
         public Engine(EngineSettings settings = null)
         {
             if (Current != null)
@@ -57,8 +57,15 @@ namespace Molten
             InputLoader inputLoader = new InputLoader();
             _input = inputLoader.GetManager(_log, _settings.Input);
             Scenes = new List<Scene>();
+
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
-        
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Logger.DisposeAll();
+        }
+
         public void LoadRenderer()
         {
             if (_renderer != null)

@@ -27,7 +27,7 @@ namespace Molten
             _blockingVal = 0;
         }
 
-        /// <summary>Gets a new instance of <see cref="Logger"/>. All logs will be closed if <see cref="CloseAll"/> is called.</summary>
+        /// <summary>Gets a new instance of <see cref="Logger"/>. All logs will be closed if <see cref="DisposeAll"/> is called.</summary>
         public static Logger Get()
         {
             Logger log = new Logger();
@@ -35,7 +35,7 @@ namespace Molten
             return log;
         }
 
-        public static void CloseAll()
+        public static void DisposeAll()
         {
             _loggers.ForInterlock(0, 1, (index, item) =>
             {
