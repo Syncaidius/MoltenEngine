@@ -40,5 +40,15 @@ namespace Molten.Font
             //log.WriteDebugLine($"{new string('\t', Header.TableDepth)}[{parent.Header.Tag}] Reading sub-table {Header.Tag} at table pos {Header.StreamOffset}");
             reader.Position = Header.StreamOffset;
         }
+
+        protected uint GetLocalOffset(EnhancedBinaryReader reader)
+        {
+            return (uint)(reader.Position - Header.StreamOffset);
+        }
+
+        protected void SeekToLocalOffset(EnhancedBinaryReader reader, uint offset)
+        {
+            reader.Position = Header.StreamOffset + offset;
+        }
     }
 }

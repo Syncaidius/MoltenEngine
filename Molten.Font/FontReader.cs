@@ -215,18 +215,19 @@ namespace Molten.Font
                     _reader.Position = fontStartPos + header.FileOffset;
                     FillTableStream(header);
                     using (EnhancedBinaryReader tableReader = GetReader(_tableStream, true))
+                    {
                         table.Read(tableReader, header, _log, dependencies);
+                        tables.Add(table);
 
-                    tables.Add(table);
+                        long expectedEnd = header.StreamOffset + header.Length;
+                        long readerPos = tableReader.Position;
+                        long posDif = readerPos - expectedEnd;
 
-                    long expectedEnd = header.FileOffset + header.Length;
-                    long readerPos = _reader.Position;
-                    long posDif = readerPos - expectedEnd;
-
-                    if (expectedEnd != readerPos)
-                        _log.WriteDebugLine($"Parsed table '{header.Tag}' -- [MISMATCH] End pos (byte): {readerPos}. Expected: {expectedEnd} -- dif: {(posDif > 0 ? "+" : "")}{posDif} bytes", _filename);
-                    else
-                        _log.WriteDebugLine($"Parsed table '{header.Tag}' -- [PASS]", _filename);
+                        if (expectedEnd != readerPos)
+                            _log.WriteDebugLine($"Parsed table '{header.Tag}' -- [MISMATCH] End pos (byte): {readerPos}. Expected: {header.Length}. Dif: {posDif} bytes", _filename);
+                        else
+                            _log.WriteDebugLine($"Parsed table '{header.Tag}' -- [PASS]", _filename);
+                    }
                 }
             }
             else

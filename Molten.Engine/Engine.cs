@@ -160,7 +160,7 @@ namespace Molten
                 Scenes[i].Dispose();
 
             _content.Dispose();
-            _log.Dispose();
+            Logger.DisposeAll();
             _settings.Save();
             Current = null;
         }

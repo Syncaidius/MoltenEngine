@@ -143,6 +143,7 @@
     <Compile Include="Tables\Hdmx.cs" />
     <Compile Include="Tables\GPOS.cs" />
     <Compile Include="Tables\JSTF.cs" />
+    <Compile Include="Tables\CFF.cs" />
     <Compile Include="Tables\LTSH.cs" />
     <Compile Include="Tables\VDMX.cs" />
     <Compile Include="Tables\Meta.cs" />
