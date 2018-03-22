@@ -44,6 +44,13 @@ namespace Molten
             return Encoding.ASCII.GetString(body);
         }
 
+        public virtual uint ReadUInt24()
+        {
+            byte[] bytes = new byte[4];
+            base.Read(bytes, 0, 3);
+            return BitConverter.ToUInt32(bytes, 0);
+        }
+
         public virtual T[] ReadArray<T>(int count) where T : struct
         {
             if (count == 0)

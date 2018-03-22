@@ -70,6 +70,19 @@ namespace Molten
                 return base.ReadUInt16();
         }
 
+        public override uint ReadUInt24()
+        {
+            if (_flipNeeded)
+            {
+                base.Read(_flipBuffer, 1, 3);
+                _flipBuffer[0] = 0; // high (4th) byte needs to be zeroed
+                Array.Reverse(_flipBuffer);
+                return BitConverter.ToUInt32(_flipBuffer, 4);
+            }
+            else
+                return base.ReadUInt24();
+        }
+
         public override uint ReadUInt32()
         {
             if (_flipNeeded)

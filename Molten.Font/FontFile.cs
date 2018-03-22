@@ -181,7 +181,7 @@ namespace Molten.Font
         public Glyph GetGlyph(char character)
         {
             int index = _cmap.LookupIndex(character);
-            return _glyphs[index];
+            return _glyphs != null ? _glyphs[index] : Glyph.Empty;
         }
 
         /// <summary>

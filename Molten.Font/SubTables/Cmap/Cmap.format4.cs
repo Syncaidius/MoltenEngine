@@ -17,7 +17,7 @@ namespace Molten.Font
         internal CmapFormat4SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
             base(reader, log, parent, offset, record)
         {
-            Header.Length = reader.ReadUInt16() - 2U; // Subtract 2 because it also includes the length value in the byte size...
+            Header.Length = reader.ReadUInt16();
             Language = reader.ReadUInt16();
 
             ushort segCountX2 = reader.ReadUInt16();
@@ -42,12 +42,12 @@ namespace Molten.Font
             _glyphIdArray = reader.ReadArray<ushort>(numGlyphIDs);
         }
 
-        public override ushort CharPairToGlyphIndex(int codepoint, ushort defaultGlyphIndex, int nextCodepoint)
+        public override ushort CharPairToGlyphIndex(uint codepoint, ushort defaultGlyphIndex, uint nextCodepoint)
         {
             return 0;
         }
 
-        public override ushort CharToGlyphIndex(int codepoint)
+        public override ushort CharToGlyphIndex(uint codepoint)
         {
             // Only 16-bit (or lower) lookups are supported in this format.
             if (codepoint > ushort.MaxValue)
@@ -75,7 +75,7 @@ namespace Molten.Font
                     /* MS docs: The character code offset from startCode is added to the idRangeOffset value. 
                      * This sum is used as an offset from the current location within idRangeOffset itself to index out the correct glyphIdArray value. 
                      * This obscure indexing trick works because glyphIdArray immediately follows idRangeOffset in the font file.*/
-                    int offset = (_idRangeOffset[segID] / 2) + (codepoint - _startCode[segID]);
+                    uint offset = (_idRangeOffset[segID] / 2U) + (codepoint - _startCode[segID]);
                     return _glyphIdArray[offset - _idRangeOffset.Length + segID];
                 }
             }

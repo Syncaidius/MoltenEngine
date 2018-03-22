@@ -20,6 +20,11 @@ namespace Molten.Font
             return offset == NULL;
         }
 
+        public static bool IsNull(uint offset)
+        {
+            return offset == NULL;
+        }
+
         /// <summary>Gets an offset from the start position to the current position.</summary>
         /// <param name="startPos">The starting position.</param>
         /// <param name="curPos">The current position.</param>

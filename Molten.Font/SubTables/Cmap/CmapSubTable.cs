@@ -16,14 +16,14 @@ namespace Molten.Font
 
         public ushort Language { get; protected set; }
 
-        public abstract ushort CharToGlyphIndex(int codepoint);
+        public abstract ushort CharToGlyphIndex(uint codepoint);
 
-        public abstract ushort CharPairToGlyphIndex(int codepoint, ushort defaultGlyphIndex, int nextCodepoint);
+        public abstract ushort CharPairToGlyphIndex(uint codepoint, ushort defaultGlyphIndex, uint nextCodepoint);
 
         internal CmapSubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) :
             base(reader, log, parent, offset)
         {
-            Format = record.Format;
+            Format = reader.ReadUInt16(); // We're reading the format again because the stream was moved back to the start of the table.
             Platform = record.Platform;
             Encoding = record.Encoding;
         }

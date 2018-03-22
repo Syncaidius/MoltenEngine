@@ -31,12 +31,12 @@ namespace Molten.Font
             }
         }
 
-        public override ushort CharPairToGlyphIndex(int codepoint, ushort defaultGlyphIndex, int nextCodepoint)
+        public override ushort CharPairToGlyphIndex(uint codepoint, ushort defaultGlyphIndex, uint nextCodepoint)
         {
             return 0;
         }
 
-        public override ushort CharToGlyphIndex(int codepoint)
+        public override ushort CharToGlyphIndex(uint codepoint)
         {
             // MS docs: You search for the first endCode that is greater than or equal to the character code you want to map. 
             int segID = 0;

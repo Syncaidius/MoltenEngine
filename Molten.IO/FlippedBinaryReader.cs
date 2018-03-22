@@ -58,6 +58,14 @@ namespace Molten
             return BitConverter.ToUInt16(ReadReverse(2), 6);
         }
 
+        public override uint ReadUInt24()
+        {
+            base.Read(_flipBuffer, 1, 3);
+            _flipBuffer[0] = 0; // high (4th) byte needs to be zeroed
+            Array.Reverse(_flipBuffer);
+            return BitConverter.ToUInt32(_flipBuffer, 4);
+        }
+
         public override uint ReadUInt32()
         {
             return BitConverter.ToUInt32(ReadReverse(4), 4);

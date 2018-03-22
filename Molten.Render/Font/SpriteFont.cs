@@ -94,7 +94,18 @@ namespace Molten.Graphics
 
             _renderer = renderer;
             _font = font;
-            _glyphCache = new GlyphCache[_font.GlyphCount];
+
+            if (_font.GlyphCount > 0)
+            {
+                _glyphCache = new GlyphCache[_font.GlyphCount];
+            }
+            else
+            {
+                _glyphCache = new GlyphCache[1];
+                _glyphCache[0] = new GlyphCache(1, new Rectangle(0, 0, 1, 1), 0);
+            }
+
+
             _charData = new CharData[char.MaxValue];
             _tabSize = tabSize;
             _fontSize = ptSize;
@@ -211,10 +222,20 @@ namespace Molten.Graphics
         {
             ushort gIndex = _font.GetGlyphIndex(c);
 
-            // If the character uses an existing glyph, initialize the character and return.
-            if (_glyphCache[gIndex] != null)
+            // Ensure we're within the glyph cache range. Sometimes this may be false due to unsupported font glyph data.
+            if (gIndex < _glyphCache.Length)
             {
-                _charData[c] = new CharData(gIndex);
+                // If the character uses an existing glyph, initialize the character and return.
+                if (_glyphCache[gIndex] != null)
+                {
+                    _charData[c] = new CharData(gIndex);
+                    return;
+                }
+            }
+            else
+            {
+                // Initialize an empty character. Spritefont will be able to use it.
+                _charData[c] = new CharData(0);
                 return;
             }
 

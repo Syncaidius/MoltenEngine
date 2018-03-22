@@ -250,7 +250,7 @@ namespace Molten
                 }
                 catch(Exception ex)
                 {
-                    _log.WriteError($"[CONTENT] {ex.Message}", filePath);
+                    _log.WriteError(ex, true);
                 }
             }
 

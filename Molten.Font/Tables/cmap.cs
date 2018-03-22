@@ -15,9 +15,9 @@ namespace Molten.Font
 
         public CmapSubTable[] Tables { get; internal set; }
 
-        Dictionary<int, ushort> _charIndexToGlyph = new Dictionary<int, ushort>();
+        Dictionary<uint, ushort> _charIndexToGlyph = new Dictionary<uint, ushort>();
 
-        public ushort LookupIndex(int codepoint, int nextCodepoint = 0)
+        public ushort LookupIndex(uint codepoint, uint nextCodepoint = 0)
         {
             // MS Docs: Character codes that do not correspond to any glyph in the font should be mapped to glyph index 0.
             // See: https://www.microsoft.com/typography/OTSPEC/cmap.htm
@@ -81,16 +81,18 @@ namespace Molten.Font
             {
                 CmapEncodingRecord record = records[i];
                 reader.Position = header.StreamOffset + record.Offset;
-                record.Format = reader.ReadUInt16();
+                record.Format = reader.ReadUInt16(); // Peek at the format
 
                 switch (record.Format)
                 {
-                    case 0: Tables[i] = new CmapFormat0SubTable(reader, log, this, record.Offset + 2, record); break;
+                    case 0: Tables[i] = new CmapFormat0SubTable(reader, log, this, record.Offset, record); break;
                     //case 2: ReadFormat2(reader, record); break; // Had no luck finding a font with format_2 cmap subtables. Need one for testing.
-                    case 4: Tables[i] = new CmapFormat4SubTable(reader, log, this, record.Offset + 2, record); break;
-                    case 6: Tables[i] = new CmapFormat6SubTable(reader, log, this, record.Offset + 2, record); break;
-                    case 12: Tables[i] = new CmapFormat12SubTable(reader, log, this, record.Offset + 2, record); break;
+                    case 4: Tables[i] = new CmapFormat4SubTable(reader, log, this, record.Offset, record); break;
+                    case 6: Tables[i] = new CmapFormat6SubTable(reader, log, this, record.Offset, record); break;
+                    case 12: Tables[i] = new CmapFormat12SubTable(reader, log, this, record.Offset, record); break;
+                    case 14: Tables[i] = new CmapFormat14SubTable(reader, log, this, record.Offset, record); break;
                     default:
+                        Tables[i] = new CmapNullSubTable(reader, log, this, 0, record);
                         log.WriteDebugLine($"[CMAP] Unsupported format for sub-table {i}/{numRecords - 1}: Format {record.Format}");
                         break;
                 }

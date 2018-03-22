@@ -24,12 +24,12 @@ namespace Molten.Font
             _glyphIdArray = reader.ReadArray<ushort>(entryCount);
         }
 
-        public override ushort CharPairToGlyphIndex(int codepoint, ushort defaultGlyphIndex, int nextCodepoint)
+        public override ushort CharPairToGlyphIndex(uint codepoint, ushort defaultGlyphIndex, uint nextCodepoint)
         {
             return 0;
         }
 
-        public override ushort CharToGlyphIndex(int codepoint)
+        public override ushort CharToGlyphIndex(uint codepoint)
         {
             /* The firstCode and entryCount values specify a subrange (beginning at firstCode,length = entryCount) within the range of possible character codes. 
              * Codes outside of this subrange are mapped to glyph index 0. 

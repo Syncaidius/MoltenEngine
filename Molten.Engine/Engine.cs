@@ -63,6 +63,7 @@ namespace Molten
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            _log.WriteError(e.ExceptionObject as Exception);
             Logger.DisposeAll();
         }
 
