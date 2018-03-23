@@ -30,5 +30,15 @@ namespace Molten.Font
         /// <param name="log"></param>
         /// <param name="dependencies"></param>
         internal abstract void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies);
+
+        protected uint GetLocalOffset(EnhancedBinaryReader reader)
+        {
+            return (uint)(reader.Position - Header.StreamOffset);
+        }
+
+        protected void SetLocalOffset(EnhancedBinaryReader reader, uint offset)
+        {
+            reader.Position = Header.StreamOffset + offset;
+        }
     }
 }

@@ -6,30 +6,45 @@ using System.Threading.Tasks;
 
 namespace Molten.Font
 {
-    /// <summary>Index-to-location table.<para/>
-    /// <para>The indexToLoc table stores the offsets to the locations of the glyphs in the font, relative to the beginning of the glyphData table. In order to compute the length of the last glyph element, there is an extra entry after the last valid index.</para>
-    /// <para>By definition, index zero points to the "missing character," which is the character that appears if a character is not found in the font. The missing character is commonly represented by a blank box or a space. If the font does not contain an outline for the missing character, then the first and second offsets should have the same value. This also applies to any other characters without an outline, such as the space character. If a glyph has no outline, then loca[n] = loca [n+1]. In the particular case of the last glyph(s), loca[n] will be equal the length of the glyph data ('glyf') table. The offsets must be in ascending order with loca[n] less-or-equal-to loca[n+1].</para>
-    /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/loca </summary>
-    [FontTableTag("CFF")]
+    /// <summary>CFF — Compact Font Format table.<para/>
+    /// See: http://wwwimages.adobe.com/www.adobe.com/content/dam/acom/en/devnet/font/pdfs/5176.CFF.pdf </summary>
+    [FontTableTag("CFF", "maxp")]
     public class CFF : FontTable
     {
+        const uint STANDARD_ID_COUNT = 390; // See Appendix A -- SID/Name count (Standard ID).
+
         public byte MajorVersion { get; private set; }
 
         public byte MinorVersion { get; private set; }
 
+        internal List<CFFIndexTable> CharStrings = new List<CFFIndexTable>();
+
+        int _fontDictLength;
+        Dictionary<ushort, byte> _fdSelect = new Dictionary<ushort, byte>();
+
         internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
+            Maxp maxp = dependencies.Get<Maxp>();
+            ushort numGlyphs = maxp.NumGlyphs;
+
             // Read header
             MajorVersion = reader.ReadByte();
             MinorVersion = reader.ReadByte();
 
             byte headerSize = reader.ReadByte();
             byte offSize = reader.ReadByte();
-            if(MajorVersion == 1 && MinorVersion == 0)
+
+
+            if (MajorVersion == 1 && MinorVersion == 0)
             {
-                IndexTable nameIndex = new IndexTable(reader, log, this, headerSize);
-                IndexTable topDictIndex = new IndexTable(reader, log, this, nameIndex.OffsetToNextBlock);
-                IndexTable stringIndex = new IndexTable(reader, log, this, topDictIndex.OffsetToNextBlock);
+                CFFIndexTable nameIndex = new CFFIndexTable(reader, log, this, headerSize);
+                CFFIndexTable topDictIndex = new CFFIndexTable(reader, log, this, nameIndex.OffsetToNextBlock);
+                CFFIndexTable stringIndex = new CFFIndexTable(reader, log, this, topDictIndex.OffsetToNextBlock);
+                CFFIndexTable globalSubStrIndex = new CFFIndexTable(reader, log, this, stringIndex.OffsetToNextBlock);
+
+                uint sidMax = (uint)stringIndex.Length + STANDARD_ID_COUNT;
+                ParseNameData(reader, nameIndex);
+                ParseDictData(reader, log, topDictIndex, DictDataType.TopLevel, numGlyphs, sidMax);
             }
             else
             {
@@ -37,91 +52,522 @@ namespace Molten.Font
             }
         }
 
-        /// <summary>
-        /// CFF index table. Contains an array of offsets and the offset to the next block of CFF data.
-        /// </summary>
-        private class IndexTable : FontSubTable
+        private void ParseNameData(EnhancedBinaryReader reader, CFFIndexTable index)
         {
-            public ObjectDataOffset[] Objects;
-
-            public long OffsetToNextBlock;
-
-            internal IndexTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
-                base(reader, log, parent, offset)
+            for(int i = 0; i < index.Objects.Length; i++)
             {
-                ushort count = reader.ReadUInt16();
-                Objects = new ObjectDataOffset[count];
-
-                // An empty INDEX is represented by a count field with a 0 value and no additional fields. Thus, the total size of an empty INDEX is 2 bytes.
-                if (count == 0)
-                    return;
-
-                byte offsetSize = reader.ReadByte();
-                uint nextOffset = 0;
-                uint curOffset = 0;
-                uint offsetArraySize = offsetSize * (count + 1U);
-                uint headerSize = GetLocalOffset(reader);
-                uint objectDataOffset = headerSize + offsetArraySize;
-                uint objectDataStreamOffset = objectDataOffset + (uint)Header.StreamOffset;
-
-                switch (offsetSize)
-                {
-                    case 1:
-                        curOffset = objectDataStreamOffset + (reader.ReadByte() - 1U);
-                        for (int i = 0; i < count; i++)
-                        {
-                            nextOffset = objectDataStreamOffset + (reader.ReadByte() - 1U);
-                            Objects[i] = new ObjectDataOffset()
-                            {
-                                Offset = curOffset,
-                                DataSize = nextOffset - curOffset,
-                            };
-
-                            curOffset = nextOffset;
-                        }
-                        break;
-
-                    case 2:
-                        curOffset = objectDataStreamOffset + (reader.ReadUInt16() - 1U);
-                        for (int i = 0; i < count; i++)
-                        {
-                            nextOffset = objectDataStreamOffset + (reader.ReadUInt16() - 1U);
-                            Objects[i] = new ObjectDataOffset()
-                            {
-                                Offset = curOffset,
-                                DataSize = nextOffset - curOffset,
-                            };
-
-                            curOffset = nextOffset;
-                        }
-                        break;
-
-                    case 4:
-                        curOffset = objectDataStreamOffset + (reader.ReadUInt32() - 1U);
-                        for (int i = 0; i < count; i++)
-                        {
-                            nextOffset = objectDataStreamOffset + (reader.ReadUInt32() - 1U);
-                            Objects[i] = new ObjectDataOffset()
-                            {
-                                Offset = curOffset,
-                                DataSize = nextOffset - curOffset,
-                            };
-
-                            curOffset = nextOffset;
-                        }
-                        break;
-                }
-
-                OffsetToNextBlock = nextOffset;
+                SetLocalOffset(reader, index.Objects[i].Offset);
+                string name = reader.ReadString((int)index.Objects[i].DataSize);
             }
         }
 
-        internal class ObjectDataOffset
+        private void ParseDictData(EnhancedBinaryReader reader, Logger log, CFFIndexTable index, DictDataType dataType, ushort numGlyphs, uint sidMax)
         {
-            public uint Offset;
+            for (int i = 0; i < index.Length; i++)
+            {
+                SetLocalOffset(reader, index.Objects[i].Offset);
 
-            public uint DataSize;
+                List<KeyValuePair<uint, DictOperandType>> operands = new List<KeyValuePair<uint, DictOperandType>>();
+                FontFormat fontFormat = FontFormat.Uknown;
+                bool haveRos = false;
+                int charStringGlyphs = 0;
+                uint charSetOffset = 0;
+                uint bytesRead = 0;
+                long curStreamPos = 0;
+                byte format = 0;
+
+                while (bytesRead < index.Objects[i].DataSize)
+                {
+                    uint op = reader.ReadByte();
+
+                    if (op <= 22)
+                    {
+                        // Check if escaped operator.
+                        if (op == 12)
+                        {
+                            op = reader.ReadByte();
+                            if ((op <= 14) || (op >= 17 && op <= 23) || (op >= 30 && op <= 38))
+                                operands.Add(new KeyValuePair<uint, DictOperandType>((12U << 8) + op, DictOperandType.Operator));
+                        }
+                        else
+                        {
+                            operands.Add(new KeyValuePair<uint, DictOperandType>(op, DictOperandType.Operator));
+                        }
+                    }
+                    else if (op <= 27 || op == 31 || op == 255)
+                    {
+                        // Reserved -- Invalid operator?
+                    }
+                    else // Parse number operand.
+                    {
+                        ParseDictDataNumber(reader, op, operands);
+                    }
+
+                    if (operands[operands.Count - 1].Value != DictOperandType.Operator)
+                        continue;
+
+                    // Got operator
+                    op = operands[operands.Count - 1].Key;
+                    operands.RemoveAt(operands.Count - 1);
+
+                    switch (op)
+                    {
+                        // SID
+                        case 0: // version
+                        case 1: // Notice
+                        case 2: // Copyright
+                        case 3: // Full name
+                        case 4: // Family name
+                        case (12U << 8) + 0: // Copyright
+                        case (12U << 8) + 21: // PostScript
+                        case (12U << 8) + 22: // Base font name
+                        case (12U << 8) + 38: // Font name
+                            if (operands.Count != 1)
+                                return; // TODO failure
+
+                            if (!CheckSid(operands[operands.Count - 1], sidMax))
+                                return; // TODO failure
+                            break;
+
+                        // Array
+                        case 5: // Font bounding box
+                        case 14: // XUID
+                        case (12U << 8) + 7: // Font matrix
+                        case (12U << 8) + 23: // Base font blend (delta)
+                            if (operands.Count == 0)
+                                return; // TODO failure
+                            break;
+
+                        // Number
+                        case 13:  // UniqueID
+                        case (12U << 8) + 2:   // ItalicAngle
+                        case (12U << 8) + 3:   // UnderlinePosition
+                        case (12U << 8) + 4:   // UnderlineThickness
+                        case (12U << 8) + 5:   // PaintType
+                        case (12U << 8) + 8:   // StrokeWidth
+                        case (12U << 8) + 20: // SyntheticBase
+                            if (operands.Count != 1)
+                                return; // TODO failure;
+                            break;
+
+                        case (12U << 8) + 31:  // CIDFontVersion
+                        case (12U << 8) + 32:  // CIDFontRevision
+                        case (12U << 8) + 33:  // CIDFontType
+                        case (12U << 8) + 34:  // CIDCount
+                        case (12U << 8) + 35: // UIDBase
+                            if (operands.Count != 1)
+                                return; // TODO failure
+
+                            if (fontFormat != FontFormat.CID_Keyed)
+                                return; // TODO failure
+                            break;
+                        case (12U << 8) + 6: // CharstringType
+                            if (operands.Count != 1)
+                                return; // TODO failure
+
+                            if (operands[operands.Count - 1].Value != DictOperandType.Integer)
+                                return; // TODO failure
+
+                            if (operands[operands.Count - 1].Key != 2) // We only support the "Type 2 Charstring Format." -- TODO: Support Type 1 format? Is that still in use?
+                                return; // TODO failure.
+                            break;
+
+                        // boolean
+                        case (12U << 8) + 1: // isFixedPitch  
+                            if (operands.Count != 1)
+                                return; // TODO failure
+                            if (operands[operands.Count - 1].Value != DictOperandType.Integer)
+                                return; // TODO failure                            
+                            if (operands[operands.Count - 1].Key >= 2)
+                                return; // TODO failure.
+                            break;
+
+                        // offset(0)
+                        case 15: // charset
+                            if (operands.Count != 1)
+                                return; // TODO failure
+                            if (operands[operands.Count - 1].Key <= 2)
+                                break; // Predefined charset, ISOAdobe, Expert or ExpertSubset, is used.
+                            // TODO CheckOffset()
+                            if (charSetOffset > 0)
+                                return; // TODO failure
+                            charSetOffset = operands[operands.Count - 1].Key;
+                            break;
+
+                        // Encoding
+                        case 16:
+                            if (operands.Count != 1)
+                                return; // TODO failure
+                            if (operands[operands.Count - 1].Key <= 1)
+                                break; // predefined encoding, "Standard" or "Expert", is used.
+
+                            // TODO CheckOffset()
+
+                            // Parse sub-dictionary INDEX
+                            SetLocalOffset(reader, operands[operands.Count - 1].Key);
+                            format = reader.ReadByte();
+                            if ((format & 0x80) == 0x80)
+                                return; // TODO failure -- Supplemental encoding is not supported at the moment.
+
+                            // TODO Parse supplemental encoding tables.
+                            break;
+
+                        // CharStrings
+                        case 17:
+                            if (dataType != DictDataType.TopLevel)
+                                return; // TODO failure
+                            if (operands.Count != 1)
+                                return; // TODO failure
+                            // TODO CheckOffset()
+
+                            // Parse Charstrings INDEX
+                            curStreamPos = reader.Position;
+                            uint charStringsIndexOffset = operands[operands.Count - 1].Key;
+                            CFFIndexTable charStringIndex = new CFFIndexTable(reader, log, this, charStringsIndexOffset);
+                            reader.Position = curStreamPos;
+
+                            if (charStringIndex.Length < 2)
+                                return; // TODO failure
+
+                            if (charStringGlyphs > 0)
+                                return; // TODO failure - Multiple charstring tables?
+
+                            charStringGlyphs = charStringIndex.Length;
+                            if (charStringGlyphs != numGlyphs)
+                                return; // TODO failure - CFF and maxp have different number of glyphs?
+                            break;
+
+                        // FDArray
+                        case (12U << 8) + 36:
+                            if (dataType != DictDataType.TopLevel)
+                                return; // TODO failure
+                            if (operands.Count != 1)
+                                return; // TODO failure
+                                        // TODO CheckOffset()
+
+                            // Parse sub-dictionary INDEX
+                            curStreamPos = reader.Position;
+                            uint fdArrayIndexOffset = operands[operands.Count - 1].Key;
+                            CFFIndexTable subDictIndex = new CFFIndexTable(reader, log, this, fdArrayIndexOffset);
+                            ParseDictData(reader, log, subDictIndex, DictDataType.FdArray, numGlyphs, sidMax);
+                            reader.Position = curStreamPos;
+                            if (_fontDictLength > 0)
+                                return; // TODO failure - two or more FDArray found.
+
+                            _fontDictLength = subDictIndex.Length;
+                            break;
+
+                        //FDSelect
+                        case (12U << 8) + 37:
+                            if (dataType != DictDataType.TopLevel)
+                                return; // TODO failure
+                            if (operands.Count != 1)
+                                return; // TODO failure
+                                        // TODO CheckOffset()
+
+                            // Parse FDSelect data structure
+                            curStreamPos = reader.Position;
+                            SetLocalOffset(reader, operands[operands.Count - 1].Key);
+                            format = reader.ReadByte();
+                            if (format == 0)
+                            {
+                                for (ushort j = 0; j < numGlyphs; j++)
+                                {
+                                    byte fdIndex = reader.ReadByte();
+                                    _fdSelect[j] = fdIndex;
+                                }
+                            }
+                            else if (format == 3)
+                            {
+                                ushort nRanges = reader.ReadUInt16();
+                                ushort lastGid = 0;
+                                byte fdIndex = 0;
+                                for (ushort j = 0; j < nRanges; j++)
+                                {
+                                    ushort first = reader.ReadUInt16(); // GID
+                                    // Sanity checks
+                                    if (j == 0 && first != 0)
+                                        return; // TODO failure
+
+                                    if (j != 0 && lastGid >= first)
+                                        return; // TODO failure - not increasing order.
+
+                                    // Copy the mapping to _fdSelect
+                                    if (j != 0)
+                                    {
+                                        for (ushort k = lastGid; k < first; k++)
+                                        {
+                                            _fdSelect.Add(k, fdIndex);
+                                            if (fdIndex == 0)
+                                                return; // TODO failure
+                                        }
+                                    }
+
+                                    fdIndex = reader.ReadByte();
+                                    lastGid = first;
+                                    // TODO Check GID?
+                                }
+
+                                ushort sentinel = reader.ReadUInt16();
+                                if (lastGid >= sentinel)
+                                    return; // TODO Failure
+
+                                for(ushort k = lastGid; k < sentinel; k++)
+                                {
+                                    _fdSelect.Add(k, fdIndex);
+                                    if (fdIndex == 0) // TODO do we use a nullable here? Is 0 a valid number?
+                                        return; // TODO failure
+                                }
+                            }
+                            else
+                            {
+                                return; // TODO failure - unknown format
+                            }
+                            break;
+
+                        // Private DICT (2 * number)
+                        case 18:
+                            if (operands.Count != 2)
+                                return; // TODO failure
+                            if (operands[operands.Count - 1].Value != DictOperandType.Integer)
+                                return; // TODO failure
+
+                            uint privateOffset = operands[operands.Count - 1].Key;
+                            operands.RemoveAt(operands.Count - 1);
+                            if (operands[operands.Count - 1].Value != DictOperandType.Integer)
+                                return; // TODO failure
+
+                            uint privateLength = operands[operands.Count - 1].Key;
+
+                            // Parse pirvate DICT data
+                            if (!ParsePrivateDictData(reader, privateOffset, privateLength, dataType))
+                                return; // TODO failure - invalid private DICT data.
+                            break;
+
+                        // ROS
+                        case (12U << 8) + 30:
+                            if (fontFormat != FontFormat.Uknown)
+                                return; // TODO failure
+                            fontFormat = FontFormat.CID_Keyed;
+                            if (operands.Count != 3)
+                                return; // TODO failure - incorrect operands in ROS data
+
+                            // Check SIDs
+                            operands.RemoveAt(operands.Count - 1); // Ignore first number
+                            if (!CheckSid(operands[operands.Count - 1], sidMax))
+                                return; // TODO failure
+
+                            operands.RemoveAt(operands.Count - 1);
+                            if (!CheckSid(operands[operands.Count - 1], sidMax))
+                                return; // TODO failure
+
+                            if (haveRos)
+                                return; // TODO failure - Multiple ROS tables?
+                            haveRos = true;
+                            break;
+                    }
+
+                    operands.Clear();
+                    if (fontFormat == FontFormat.Uknown)
+                        fontFormat = FontFormat.Other;
+                } // While loop end
+
+                // Parse char sets
+                if(charSetOffset > FontUtil.NULL)
+                {
+                    curStreamPos = reader.Position;
+                    SetLocalOffset(reader, charSetOffset);
+                    format = reader.ReadByte();
+                    switch (format)
+                    {
+                        case 0:
+                            for(ushort j = 1  /* .notdef is omitted */; j < numGlyphs; j++)
+                            {
+                                ushort sid = reader.ReadUInt16();
+                                if (!haveRos && (sid > sidMax))
+                                    return; // TODO failure
+
+                                // TODO Check CIDs when haveRos is true.
+                            }
+                            break;
+
+                        case 1:
+                        case 2:
+                            uint total = 1; // .notdef is omitted.
+                            while(total < numGlyphs)
+                            {
+                                ushort sid = reader.ReadUInt16();
+                                if (!haveRos && sid > sidMax)
+                                    return; // TODO failure
+
+                                // TODO Check CIDs when haveRos is true.
+
+                                if (format == 1) // TODO clean this IF block up
+                                {
+                                    byte left = reader.ReadByte();
+                                    total += (left + 1U);
+                                }
+                                else
+                                {
+                                    ushort left = reader.ReadUInt16();
+                                    total += (left + 1U);
+                                }
+                            }
+                            break;
+                        default:
+                            return; // TODO failure - unknown/invalid CharSet format
+                    }
+                }
+            }
+        }
+
+        private bool ParsePrivateDictData(EnhancedBinaryReader reader, uint privateOffset, uint privateLength, DictDataType dataType)
+        {
+
+            return true;
+        }
+
+        private bool CheckSid(KeyValuePair<uint, DictOperandType> operand, uint sidMax)
+        {
+            if (operand.Value != DictOperandType.Integer)
+                return false;
+
+            if (operand.Key > sidMax)
+                return false;
+
+            return true;
+        }
+
+        private void ParseDictDataNumber(EnhancedBinaryReader reader, uint b0, List<KeyValuePair<uint, DictOperandType>> operands)
+        {
+            uint b1 = 0, b2 = 0, b3 = 0, b4 = 0;
+
+            switch (b0)
+            {
+                case 28: // shortint
+                    b1 = reader.ReadByte();
+                    b2 = reader.ReadByte();
+                    operands.Add(new KeyValuePair<uint, DictOperandType>((b1 << 8) + b2, DictOperandType.Integer)); // TODO replace with .ReadUInt16() when confirmed to work.
+                    return;
+
+                case 29: // longint
+                    b1 = reader.ReadByte();
+                    b2 = reader.ReadByte();
+                    b3 = reader.ReadByte();
+                    b4 = reader.ReadByte();
+                    operands.Add(new KeyValuePair<uint, DictOperandType>((b1 << 24) + (b2 << 16) + (b3 << 8) + b4, DictOperandType.Integer));// TODO replace with .ReadUInt32() when confirmed to work.
+                    return;
+
+                case 30: // binary coded decimal (BCD)
+                    ParseDictDataBcd(reader, operands);
+                    return;
+            }
+
+            uint result = 0;
+            if(b0 >= 32 && b0 <= 246)
+            {
+                result = b0 - 139;
+            }else if(b0 >= 247 && b0 <= 250)
+            {
+                b1 = reader.ReadByte();
+                result = (b0 - 247) * 256 + b1 + 108;
+            }else if(b0 >= 251 && b0 <= 254)
+            {
+                b1 = reader.ReadByte();
+                result = (uint)(-(b0 - 251U) * 256U + b1 - 108U);
+            }
+            else
+            {
+                // Something went wrong. Failed.
+                return; // TODO failure
+            }
+
+            operands.Add(new KeyValuePair<uint, DictOperandType>(result, DictOperandType.Integer));
+        }
+
+        private void ParseDictDataBcd(EnhancedBinaryReader reader, List<KeyValuePair<uint, DictOperandType>> operands)
+        {
+            bool readDecimalPoint = false;
+            bool readE = false; // exponential
+
+            // TODO try replacing all this with reader.ReadFloat or ReadDouble. 
+            byte nibble = 0;
+            uint count = 0;
+            while (true)
+            {
+                nibble = reader.ReadByte();
+                if((nibble & 0xf0) == 0xf0)
+                {
+                    if((nibble & 0xf) == 0xf)
+                    {
+                        // TODO: would be better to store actual double value, rather than the dummy integer.
+                        operands.Add(new KeyValuePair<uint, DictOperandType>(0, DictOperandType.Real));
+                        return;
+                    }
+                }
+
+                if((nibble & 0x0f) == 0x0f)
+                {
+                    operands.Add(new KeyValuePair<uint, DictOperandType>(0, DictOperandType.Real));
+                    return;
+                }
+
+                // Check number format
+                uint[] nibbles = new uint[2];
+                nibbles[0] = (nibble & 0xf0U) >> 8;
+                nibbles[1] = (nibble & 0x0fU);
+                for(int i = 0; i < 2; i++)
+                {
+                    if(nibbles[i] == 0xD) // Reserved number
+                        return;// TODO failure
+
+                    if ((nibbles[i] == 0xE) && (count > 0 || i > 0))
+                        return; // TODO failure - minus sign should be the first character.
+
+                    if(nibbles[i] == 0xA) // Decimal point
+                    {
+                        if (!readDecimalPoint)
+                            readDecimalPoint = true;
+                        else
+                            return; // TODO failure - two or more decimal points.
+                    }
+
+                    if(nibbles[i] == 0xB || nibbles[i] == 0XC) // E+ or E- (same order in IF condition)
+                    {
+                        if (!readE)
+                            readE = true;
+                        else
+                            return; // TODO failure - two or more E's (exponential).
+                    }
+                }
+
+                count++;
+            }
+        }
+
+        private enum DictDataType
+        {
+            TopLevel = 0,
+
+            FdArray = 1,
+        }
+
+        private enum DictOperandType
+        {
+            Integer = 0,
+
+            Real = 1,
+
+            Operator = 2,
+        }
+
+        private enum FontFormat
+        {
+            Uknown = 0,
+
+            CID_Keyed = 1,
+
+            Other = 2, // Including synthetic fonts.
         }
     }
-
 }

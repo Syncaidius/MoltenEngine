@@ -46,7 +46,7 @@ namespace Molten.Font
             return (uint)(reader.Position - Header.StreamOffset);
         }
 
-        protected void SeekToLocalOffset(EnhancedBinaryReader reader, uint offset)
+        protected void SetLocalOffset(EnhancedBinaryReader reader, uint offset)
         {
             reader.Position = Header.StreamOffset + offset;
         }
