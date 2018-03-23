@@ -118,9 +118,9 @@ namespace Molten.Samples
         private void LoadFontFile()
         {
             //string fontPath = "assets/euphorigenic.ttf";
-            //string fontPath = "assets/BroshK.ttf";
+            string fontPath = "assets/BroshK.ttf";
             //string fontPath = "assets/Digitalt.ttf";
-            string fontPath = "assets/NotoSansCJKkr-Regular.otf";
+            //string fontPath = "assets/NotoSansCJKkr-Regular.otf";
 
             Logger fontLog = Logger.Get();
             fontLog.AddOutput(new LogFileWriter("font{0}.txt"));

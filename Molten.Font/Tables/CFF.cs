@@ -17,7 +17,20 @@ namespace Molten.Font
 
         public byte MinorVersion { get; private set; }
 
-        internal List<CFFIndexTable> CharStrings = new List<CFFIndexTable>();
+        public string FontName { get; private set; }
+
+
+        List<CFFIndexTable> CharStrings = new List<CFFIndexTable>();
+
+        /// <summary>
+        /// A list of Local Subrs associated with FDArrays. Can be empty.
+        /// </summary>
+        List<CFFIndexTable> LocalSubrsPerFont = new List<CFFIndexTable>();
+
+        /// <summary>
+        /// // A Local Subrs associated with Top DICT. Can be NULL.
+        /// </summary>
+        CFFIndexTable LocalSubrs;
 
         int _fontDictLength;
         Dictionary<ushort, byte> _fdSelect = new Dictionary<ushort, byte>();
@@ -57,7 +70,7 @@ namespace Molten.Font
             for(int i = 0; i < index.Objects.Length; i++)
             {
                 SetLocalOffset(reader, index.Objects[i].Offset);
-                string name = reader.ReadString((int)index.Objects[i].DataSize);
+                FontName = reader.ReadString((int)index.Objects[i].DataSize);
             }
         }
 
@@ -72,42 +85,20 @@ namespace Molten.Font
                 bool haveRos = false;
                 int charStringGlyphs = 0;
                 uint charSetOffset = 0;
-                uint bytesRead = 0;
                 long curStreamPos = 0;
                 byte format = 0;
 
-                while (bytesRead < index.Objects[i].DataSize)
+                long endPos = GetLocalOffset(reader) + index.Objects[i].DataSize;
+                while (GetLocalOffset(reader) < endPos)
                 {
-                    uint op = reader.ReadByte();
-
-                    if (op <= 22)
-                    {
-                        // Check if escaped operator.
-                        if (op == 12)
-                        {
-                            op = reader.ReadByte();
-                            if ((op <= 14) || (op >= 17 && op <= 23) || (op >= 30 && op <= 38))
-                                operands.Add(new KeyValuePair<uint, DictOperandType>((12U << 8) + op, DictOperandType.Operator));
-                        }
-                        else
-                        {
-                            operands.Add(new KeyValuePair<uint, DictOperandType>(op, DictOperandType.Operator));
-                        }
-                    }
-                    else if (op <= 27 || op == 31 || op == 255)
-                    {
-                        // Reserved -- Invalid operator?
-                    }
-                    else // Parse number operand.
-                    {
-                        ParseDictDataNumber(reader, op, operands);
-                    }
+                    if (!ParseDictDataReadNext(reader, operands))
+                        return; // TODO failure
 
                     if (operands[operands.Count - 1].Value != DictOperandType.Operator)
                         continue;
 
                     // Got operator
-                    op = operands[operands.Count - 1].Key;
+                    uint op = operands[operands.Count - 1].Key;
                     operands.RemoveAt(operands.Count - 1);
 
                     switch (op)
@@ -340,7 +331,7 @@ namespace Molten.Font
                             uint privateLength = operands[operands.Count - 1].Key;
 
                             // Parse pirvate DICT data
-                            if (!ParsePrivateDictData(reader, privateOffset, privateLength, dataType))
+                            if (!ParsePrivateDictData(reader, log, privateOffset, privateLength, dataType))
                                 return; // TODO failure - invalid private DICT data.
                             break;
 
@@ -421,9 +412,113 @@ namespace Molten.Font
             }
         }
 
-        private bool ParsePrivateDictData(EnhancedBinaryReader reader, uint privateOffset, uint privateLength, DictDataType dataType)
+        private bool ParsePrivateDictData(EnhancedBinaryReader reader, Logger log, uint offset, uint privateLength, DictDataType dataType)
         {
+            uint dataStartPos = GetLocalOffset(reader);
+            uint startPos = 0;
 
+            SetLocalOffset(reader, offset);
+            List<KeyValuePair<uint, DictOperandType>> operands = new List<KeyValuePair<uint, DictOperandType>>();
+            long endPos = GetLocalOffset(reader) + privateLength;
+            while(GetLocalOffset(reader) < endPos)
+            {
+                if (!ParseDictDataReadNext(reader, operands))
+                    return false; // TODO failure
+
+                if (operands.Count == 0)
+                    return false; // TODO failure
+
+                if (operands.Count > 48) // An operator may be preceded by up to a maximum of 48 operands.
+                    return false; // TODO failure
+
+                if (operands[operands.Count - 1].Value != DictOperandType.Operator)
+                    continue;
+
+                // Got operator
+                uint op = operands[operands.Count - 1].Key;
+                operands.RemoveAt(operands.Count - 1);
+                switch (op)
+                {
+                    // Hints
+                    case 6:  // BlueValues
+                    case 7:  // OtherBlues
+                    case 8:  // FamilyBlues
+                    case 9: // FamilyOtherBlues
+                        if (operands.Count % 2 != 0)
+                            return false; // TODO failure
+                        break;
+
+                    // Array
+                    case (12U << 8) + 12:  // StemSnapH (delta)
+                    case (12U << 8) + 13: // StemSnapV (delta)
+                        if (operands.Count == 0)
+                            return false; // TODO failure
+                        break;
+
+                    // Number
+                    case 10:  // StdHW
+                    case 11:  // StdVW
+                    case 20:  // defaultWidthX
+                    case 21:  // nominalWidthX
+                    case (12U << 8) + 9:   // BlueScale
+                    case (12U << 8) + 10:  // BlueShift
+                    case (12U << 8) + 11:  // BlueFuzz
+                    case (12U << 8) + 17:  // LanguageGroup
+                    case (12U << 8) + 18:  // ExpansionFactor
+                    case (12U << 8) + 19: // initialRandomSeed
+                        if (operands.Count != 1)
+                            return false; // TODO failure
+                        break;
+
+                    // Local Subrs INDEX, offset(self)
+                    case 19:
+                        if (operands.Count != 1)
+                            return false; // TODO failure
+
+                        if (operands[operands.Count - 1].Value != DictOperandType.Integer)
+                            return false; // TODO failure
+
+                        if (operands[operands.Count - 1].Key >= (1024 * 1024 * 1024)) // TODO cache product of multiplication in constant
+                            return false; // TODO failure
+
+                        if (operands[operands.Count - 1].Key + offset >= reader.BaseStream.Length)
+                            return false; // TODO failure - offset out of bounds of table.
+
+                        // Parse local subrs INDEX
+                        startPos = GetLocalOffset(reader);
+                        CFFIndexTable localSubrsIndex = new CFFIndexTable(reader, log, this, operands[operands.Count - 1].Key + offset);
+                        SetLocalOffset(reader, startPos);
+                        LocalSubrsPerFont.Add(localSubrsIndex);
+                        if (dataType == DictDataType.FdArray)
+                        {
+                            // Nothing to check. LocalSubRsPerFont is never empty at this point.
+                        }
+                        else // dataType == DictOperandType.TopLevel
+                        {
+                            if (LocalSubrs != null)
+                                return false; // TODO failure -- Two or more LocalSubrs?
+
+                            LocalSubrs = localSubrsIndex;
+                        }
+                        break;
+
+                    // boolean
+                    case (12U << 8) + 14: // ForceBold
+                        if (operands.Count != 1)
+                            return false; // TODO failure
+                        if (operands[operands.Count - 1].Value != DictOperandType.Integer)
+                            return false; // TODO failure
+                        if (operands[operands.Count - 1].Key >= 2)
+                            return false; // TODO failure
+                        break;
+
+                    default:
+                        return false; // TODO failure
+                }
+                operands.Clear();
+            }
+
+            SetLocalOffset(reader, dataStartPos);
             return true;
         }
 
@@ -435,6 +530,34 @@ namespace Molten.Font
             if (operand.Key > sidMax)
                 return false;
 
+            return true;
+        }
+
+        private bool ParseDictDataReadNext(EnhancedBinaryReader reader, List<KeyValuePair<uint, DictOperandType>> operands)
+        {
+            uint op = reader.ReadByte();
+
+            if (op <= 22)
+            {
+                // Check if escaped operator.
+                if (op == 12)
+                {
+                    op = reader.ReadByte();
+                    if ((op <= 14) || (op >= 17 && op <= 23) || (op >= 30 && op <= 38))
+                        operands.Add(new KeyValuePair<uint, DictOperandType>((12U << 8) + op, DictOperandType.Operator));
+                }
+                else
+                {
+                    operands.Add(new KeyValuePair<uint, DictOperandType>(op, DictOperandType.Operator));
+                }
+            }
+            else if (op <= 27 || op == 31 || op == 255)
+            {
+                // Reserved 
+                return false; // TODO failure -- Invalid operator?
+            }
+
+            ParseDictDataNumber(reader, op, operands);
             return true;
         }
 
