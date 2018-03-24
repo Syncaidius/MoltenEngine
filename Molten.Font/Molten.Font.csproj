@@ -131,6 +131,7 @@
     <Compile Include="SubTables\Cmap\Cmap.format6.cs" />
     <Compile Include="SubTables\Cmap\Cmap.format4.cs" />
     <Compile Include="SubTables\Cmap\Cmap.format0.cs" />
+    <Compile Include="Tables\CFFOld.cs" />
     <Compile Include="Tables\DSIG.cs" />
     <Compile Include="Tables\FontGTable.cs" />
     <Compile Include="Tables\Fpgm.cs" />
