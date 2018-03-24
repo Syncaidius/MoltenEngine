@@ -12,7 +12,7 @@ namespace Molten.Font
     /// </summary>
     public class CFFIndexTable : FontSubTable
     {
-        internal ObjectDataOffset[] Objects;
+        internal ObjectEntry[] Objects;
 
         internal long OffsetToNextBlock;
 
@@ -23,14 +23,14 @@ namespace Molten.Font
         /// </summary>
         internal CFFIndexTable(EnhancedBinaryReader reader, IFontTable parent) : base(reader, null, parent, 0)
         {
-            Objects = new ObjectDataOffset[0];
+            Objects = new ObjectEntry[0];
         }
 
         internal CFFIndexTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort count = reader.ReadUInt16();
-            Objects = new ObjectDataOffset[count];
+            Objects = new ObjectEntry[count];
 
             // An empty INDEX is represented by a count field with a 0 value and no additional fields. Thus, the total size of an empty INDEX is 2 bytes.
             if (count == 0)
@@ -51,7 +51,7 @@ namespace Molten.Font
                     for (int i = 0; i < count; i++)
                     {
                         nextOffset = objectDataStreamOffset + (reader.ReadByte() - 1U);
-                        Objects[i] = new ObjectDataOffset()
+                        Objects[i] = new ObjectEntry()
                         {
                             Offset = curOffset,
                             DataSize = nextOffset - curOffset,
@@ -66,7 +66,7 @@ namespace Molten.Font
                     for (int i = 0; i < count; i++)
                     {
                         nextOffset = objectDataStreamOffset + (reader.ReadUInt16() - 1U);
-                        Objects[i] = new ObjectDataOffset()
+                        Objects[i] = new ObjectEntry()
                         {
                             Offset = curOffset,
                             DataSize = nextOffset - curOffset,
@@ -81,7 +81,7 @@ namespace Molten.Font
                     for (int i = 0; i < count; i++)
                     {
                         nextOffset = objectDataStreamOffset + (reader.ReadUInt32() - 1U);
-                        Objects[i] = new ObjectDataOffset()
+                        Objects[i] = new ObjectEntry()
                         {
                             Offset = curOffset,
                             DataSize = nextOffset - curOffset,
@@ -95,7 +95,7 @@ namespace Molten.Font
             OffsetToNextBlock = nextOffset;
         }
 
-        internal class ObjectDataOffset
+        internal class ObjectEntry
         {
             public uint Offset;
 

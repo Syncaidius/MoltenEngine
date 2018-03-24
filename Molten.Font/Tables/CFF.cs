@@ -13,6 +13,8 @@ namespace Molten.Font
     {
         const uint STANDARD_ID_COUNT = 390; // See Appendix A -- SID/Name count (Standard ID).
 
+        const uint MAX_SUBR_NESTING = 10;
+
         public byte MajorVersion { get; private set; }
 
         public byte MinorVersion { get; private set; }
@@ -20,17 +22,17 @@ namespace Molten.Font
         public string FontName { get; private set; }
 
 
-        List<CFFIndexTable> CharStrings = new List<CFFIndexTable>();
+        List<CFFIndexTable> _charStrings = new List<CFFIndexTable>();
 
         /// <summary>
         /// A list of Local Subrs associated with FDArrays. Can be empty.
         /// </summary>
-        List<CFFIndexTable> LocalSubrsPerFont = new List<CFFIndexTable>();
+        List<CFFIndexTable> _localSubrsPerFont = new List<CFFIndexTable>();
 
         /// <summary>
         /// // A Local Subrs associated with Top DICT. Can be NULL.
         /// </summary>
-        CFFIndexTable LocalSubrs;
+        CFFIndexTable _localSubrs;
 
         int _fontDictLength;
         Dictionary<ushort, byte> _fdSelect = new Dictionary<ushort, byte>();
@@ -58,11 +60,132 @@ namespace Molten.Font
                 uint sidMax = (uint)stringIndex.Length + STANDARD_ID_COUNT;
                 ParseNameData(reader, nameIndex);
                 ParseDictData(reader, log, topDictIndex, DictDataType.TopLevel, numGlyphs, sidMax);
+
+                // Check if all fdIndex in FDSelect are valid
+                foreach(byte b in _fdSelect.Values)
+                {
+                    if (b >= _fontDictLength)
+                        return; // TODO failure
+                }
+
+                // Check if all charstrings (font hinting code for each glyph) are valid.
+                for(int i = 0; i < _charStrings.Count; i++)
+                {
+                    if (!ValidateType2CharStringIndex(reader, _charStrings[i], globalSubStrIndex))
+                        return; // TODO failure - $"failed validating charstring set {i}";
+                }
             }
             else
             {
                 log.WriteDebugLine($"[CFF] Unsupported CFF version {MajorVersion}.{MinorVersion}");
             }
+        }
+
+        private bool ValidateType2CharStringIndex(EnhancedBinaryReader reader, CFFIndexTable charStringIndex, CFFIndexTable globalSubStrIndex)
+        {
+            for(ushort g = 0; g < charStringIndex.Length; g++)
+            {
+                if (charStringIndex.Objects[g].DataSize > ushort.MaxValue) // Max char string length
+                    return false; // TODO failure
+                // Get a local subrs for the glyph
+                CFFIndexTable localSubrsToUse = null;
+                if (!SelectLocalSubr(out localSubrsToUse, g))
+                    return false; // TODO failure
+
+                // If localSubrsTouse is still null, use an empty one.
+                localSubrsToUse = new CFFIndexTable(reader, this);
+
+
+                // Check a charstring for the [i]-th glyph
+                Stack<uint> argStack = new Stack<uint>();
+                bool foundEndChar = false;
+                bool foundWidth = false;
+                uint numStems = 0;
+                if (!ExecuteType2CharString(reader, 0, globalSubStrIndex, localSubrsToUse, charStringIndex.Objects[g], argStack, out foundEndChar, out foundWidth, out numStems))
+                    return false;  // TODO failure
+
+                if (!foundEndChar)
+                    return false; // TODO failure
+            }
+
+            return true;
+        }
+
+        private bool ExecuteType2CharString(EnhancedBinaryReader reader, uint callDepth, CFFIndexTable globalSubStrIndex, 
+            CFFIndexTable localSubrsTouse, CFFIndexTable.ObjectEntry charString, Stack<uint> argStack, 
+            out bool foundEndChar, out bool foundWidth, out uint numStems)
+        {
+            foundEndChar = false;
+            foundWidth = false;
+            numStems = 0;
+
+            if (callDepth > MAX_SUBR_NESTING)
+                return false; // TODO failure - exceeded maximum nesting
+
+            uint length = charString.DataSize;
+            uint curPos = GetLocalOffset(reader);
+            uint endPos = charString.Offset + length;
+            SetLocalOffset(reader, charString.Offset);
+            SetLocalOffset(reader, curPos);
+
+
+            while (GetLocalOffset(reader) < endPos)
+            {
+                uint operatorOrOperand = 0;
+                bool isOperator = false;
+                if (!ReadNextNumberFromType2CharString(reader, out operatorOrOperand, out isOperator))
+                    return false; // TODO failure
+
+#if DUMP_T2CHARSTRING
+                /*
+                  You can dump all operators and operands (except mask bytes for hintmask
+                  and cntrmask) by the following code:
+                */
+
+                if(!isOperator){
+
+#endif
+            }
+
+            return true;
+        }
+
+        private bool ReadNextNumberFromType2CharString(EnhancedBinaryReader reader, out uint outNumber, out bool isOperator)
+        {
+            outNumber = 0;
+            isOperator = false;
+
+            return false;
+        }
+
+        private bool SelectLocalSubr(out CFFIndexTable indexToUse, ushort glyphIndex)
+        {
+            indexToUse = null;
+
+            if(_fdSelect.Count > 0 && _localSubrsPerFont.Count == 0)
+            {
+                byte fdIndex = 0;
+                if (!_fdSelect.TryGetValue(glyphIndex, out fdIndex))
+                    return false; // TODO failure -- glyph Index not found
+
+                if (fdIndex >= _localSubrsPerFont.Count)
+                    return false; // TODO failure - fdIndex exceeds local subrs per font list size.
+
+                indexToUse = _localSubrsPerFont[fdIndex];
+            }else if(_localSubrs != null)
+            {
+                // Second, try to use |local_subrs|. Most Latin fonts don't have FDSelect
+                // entries. If The font has a local subrs index associated with the Top
+                // DICT (not FDArrays), use it.
+                indexToUse = _localSubrs;
+            }
+            else
+            {
+                // Just return null
+                indexToUse = null;
+            }
+
+            return true;
         }
 
         private void ParseNameData(EnhancedBinaryReader reader, CFFIndexTable index)
@@ -488,17 +611,17 @@ namespace Molten.Font
                         startPos = GetLocalOffset(reader);
                         CFFIndexTable localSubrsIndex = new CFFIndexTable(reader, log, this, operands[operands.Count - 1].Key + offset);
                         SetLocalOffset(reader, startPos);
-                        LocalSubrsPerFont.Add(localSubrsIndex);
+                        _localSubrsPerFont.Add(localSubrsIndex);
                         if (dataType == DictDataType.FdArray)
                         {
                             // Nothing to check. LocalSubRsPerFont is never empty at this point.
                         }
                         else // dataType == DictOperandType.TopLevel
                         {
-                            if (LocalSubrs != null)
+                            if (_localSubrs != null)
                                 return false; // TODO failure -- Two or more LocalSubrs?
 
-                            LocalSubrs = localSubrsIndex;
+                            _localSubrs = localSubrsIndex;
                         }
                         break;
 
