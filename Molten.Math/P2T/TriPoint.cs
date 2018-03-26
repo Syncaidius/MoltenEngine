@@ -129,7 +129,7 @@ namespace Molten
 
         public static explicit operator Vector2F(TriPoint p)
         {
-            return new Vector2F((float)p.X, (float)p.Y);
+            return new Vector2F(p.X, p.Y);
         }
 
         public class Comparer : IComparer<TriPoint>

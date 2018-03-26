@@ -244,41 +244,5 @@ namespace Molten
 
             return inside;
         }
-
-
-        /// <summary>
-        /// Creates constraints and populates the context with points
-        /// </summary>
-        /// <param name="tcx">The context</param>
-        //internal void Prepare(TriangulationContext tcx)
-        //{
-        //    _triangles.Clear();
-
-        //    if (Points.Count < 3)
-        //        throw new InvalidOperationException("Shape has fewer than 3 points");
-
-        //    // Outer constraints
-        //    for (int i = 0; i < Points.Count - 1; i++)
-        //        tcx.NewConstraint(Points[i], Points[i + 1]);
-
-        //    tcx.NewConstraint(Points[0], Points[Points.Count - 1]);
-        //    tcx.Points.AddRange(Points);
-
-        //    // Hole constraints
-        //    if (Holes != null)
-        //    {
-        //        foreach (Shape p in Holes)
-        //        {
-        //            for (int i = 0; i < p.Points.Count - 1; i++)
-        //                tcx.NewConstraint(p.Points[i], p.Points[i + 1]);
-
-        //            tcx.NewConstraint(p.Points[0], p.Points[p.Points.Count - 1]);
-        //            tcx.Points.AddRange(p.Points);
-        //        }
-        //    }
-
-        //    if (SteinerPoints != null)
-        //        tcx.Points.AddRange(SteinerPoints);
-        //}
     }
 }

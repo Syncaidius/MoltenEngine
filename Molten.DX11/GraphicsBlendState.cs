@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>Stores a blend state for use with a <see cref="GraphicsPipe"/>.</summary>
-    internal class GraphicsBlendState : PipelineObject
+    internal class GraphicsBlendState : PipelineObject, IEquatable<GraphicsBlendState>
     {
         internal BlendState State;
         bool _dirty;
@@ -18,6 +18,43 @@ namespace Molten.Graphics
         {
             _desc = BlendStateDescription.Default();
             _dirty = true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is GraphicsBlendState other)
+                return Equals(other);
+            else
+                return false;
+        }
+
+        public bool Equals(GraphicsBlendState other)
+        {
+            if (_desc.IndependentBlendEnable != other.IndependentBlendEnable)
+                return false;
+
+            if (_desc.AlphaToCoverageEnable != other.AlphaToCoverageEnable)
+                return false;
+
+            // Equality check against all RT blend states
+            for(int i = 0; i < _desc.RenderTarget.Length; i++)
+            {
+                RenderTargetBlendDescription rt = _desc.RenderTarget[i];
+                RenderTargetBlendDescription otherRt = other._desc.RenderTarget[i];
+
+                if (rt.AlphaBlendOperation != otherRt.AlphaBlendOperation ||
+                    rt.BlendOperation != otherRt.BlendOperation ||
+                    rt.DestinationAlphaBlend != otherRt.DestinationAlphaBlend ||
+                    rt.DestinationBlend != otherRt.DestinationBlend ||
+                    rt.IsBlendEnabled != otherRt.IsBlendEnabled ||
+                    rt.RenderTargetWriteMask != otherRt.RenderTargetWriteMask ||
+                    rt.SourceAlphaBlend != otherRt.SourceAlphaBlend ||
+                    rt.SourceBlend != otherRt.SourceBlend)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         internal override void Refresh(GraphicsPipe context, PipelineBindSlot slot)

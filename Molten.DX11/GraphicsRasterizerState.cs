@@ -20,6 +20,28 @@ namespace Molten.Graphics
             _dirty = true;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is GraphicsRasterizerState other)
+                return Equals(other);
+            else
+                return false;
+        }
+
+        public bool Equals(GraphicsRasterizerState other)
+        {
+            return _desc.CullMode == other._desc.CullMode &&
+                _desc.DepthBias == other._desc.DepthBias &&
+                _desc.DepthBiasClamp == other._desc.DepthBiasClamp &&
+                _desc.FillMode == other._desc.FillMode &&
+                _desc.IsAntialiasedLineEnabled == other._desc.IsAntialiasedLineEnabled &&
+                _desc.IsDepthClipEnabled == other._desc.IsDepthClipEnabled &&
+                _desc.IsFrontCounterClockwise == other._desc.IsFrontCounterClockwise &&
+                _desc.IsMultisampleEnabled == other._desc.IsMultisampleEnabled &&
+                _desc.IsScissorEnabled == other._desc.IsScissorEnabled &&
+                _desc.SlopeScaledDepthBias == other._desc.SlopeScaledDepthBias;
+        }
+
         internal override void Refresh(GraphicsPipe pipe, PipelineBindSlot slot)
         {
             if (State == null || _dirty)

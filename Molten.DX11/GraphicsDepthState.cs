@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>Stores a depth-stencil state for use with a <see cref="GraphicsPipe"/>.</summary>
-    internal class GraphicsDepthState : PipelineObject
+    internal class GraphicsDepthState : PipelineObject, IEquatable<GraphicsDepthState>
     {
         public class Face
         {
@@ -74,6 +74,34 @@ namespace Molten.Graphics
             _desc = DepthStencilStateDescription.Default();
             _frontFace = new Face(this, _desc.FrontFace);
             _backFace = new Face(this, _desc.BackFace);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is GraphicsDepthState other)
+                return Equals(other);
+            else
+                return false;
+        }
+
+        public bool Equals(GraphicsDepthState other)
+        {
+            if (!CompareOperation(_desc.BackFace, other._desc.BackFace) || !CompareOperation(_desc.FrontFace, other._desc.FrontFace))
+                return false;
+
+            return _desc.DepthComparison == other._desc.DepthComparison &&
+                _desc.IsDepthEnabled == other._desc.IsDepthEnabled &&
+                _desc.IsStencilEnabled == other._desc.IsStencilEnabled &&
+                _desc.StencilReadMask == other._desc.StencilReadMask &&
+                _desc.StencilWriteMask == other._desc.StencilWriteMask;
+        }
+
+        private static bool CompareOperation(DepthStencilOperationDescription op, DepthStencilOperationDescription other)
+        {
+            return op.Comparison == other.Comparison &&
+                op.DepthFailOperation == other.DepthFailOperation &&
+                op.FailOperation == other.FailOperation &&
+                op.PassOperation == other.PassOperation;
         }
 
         public void SetFrontFace(DepthStencilOperationDescription desc)

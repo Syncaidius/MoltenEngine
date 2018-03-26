@@ -30,7 +30,7 @@ Here's a list of completed or work-in-progress (WIP) features:
   
 # Long-term Goals
 In no particular order:
-  * Develop Molten engine and at least one commerial game (which obviously won't be open source!), running on Windows 7/8/10 via [SharpDX](http://sharpdx.org)
+  * Develop core engine (renderer, audio, input, I/O, etc) to a usable state.
   * Add linux support later in time via Mono. This also means supporting OpenGL via [OpenTK](https://opentk.github.io/) or [OpenGL.NET](https://github.com/luca-piccioni/OpenGL.Net)
   * DX12/Vulkan support - DX12 will likely be first due to already being available through SharpDX
   * Mobile support via Xamarin or whatever the best cross-platform framework is at that time this is put in to action.
