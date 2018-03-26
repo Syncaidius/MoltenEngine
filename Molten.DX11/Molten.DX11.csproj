@@ -156,6 +156,7 @@
     <Compile Include="Scene\Changes\SpriteSetLayerVisibility.cs" />
     <Compile Include="Scene\SceneRenderDataDX11.cs" />
     <Compile Include="Shaders\Compiler\ShaderCompilerContext.cs" />
+    <Compile Include="Shaders\Compiler\StateParsers\RasterizerNodeParser.cs" />
     <Compile Include="Spritebatch\SpriteBatchDX11.cs" />
     <Compile Include="Scene\SpriteLayer.cs" />
     <Compile Include="ShaderModelExtensionsDX11.cs" />
@@ -236,6 +237,7 @@
     <EmbeddedResource Include="Assets\sprite.sbm" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Assets\sprite_aa.sbm" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

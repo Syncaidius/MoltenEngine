@@ -70,6 +70,12 @@ namespace Molten.Graphics
 
         internal ShaderComposition<PixelShader> PixelShader;
 
+        internal GraphicsRasterizerState RasterizerState;
+
+        internal GraphicsBlendState BlendState;
+
+        internal GraphicsDepthState DepthState;
+
         internal InputPrimitive GeometryPrimitive;
 
         /// <summary>Gets or sets whether or not the pass will be run.</summary>

@@ -31,6 +31,12 @@ namespace Molten.Graphics
 
         public Dictionary<string, string> Metadata => _metadata;
 
+        internal GraphicsRasterizerState RasterizerState { get; set; }
+
+        internal GraphicsBlendState BlendState { get; set; }
+
+        internal GraphicsDepthState DepthState { get; set; }
+
         internal HlslShader(GraphicsDevice device, string filename = null)
         {
             _filename = filename ?? "";

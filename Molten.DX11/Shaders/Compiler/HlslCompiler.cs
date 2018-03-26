@@ -16,12 +16,16 @@ namespace Molten.Graphics
         RendererDX11 _renderer;
         MaterialIncludeHandler _includer;
 
+        internal readonly RasterizerNodeParser RasterizerParser;
+
         internal HlslCompiler(RendererDX11 renderer, Logger log)
         {
             _renderer = renderer;
             _log = log;
             _subCompilers = new Dictionary<string, HlslSubCompiler>();
             _includer = new MaterialIncludeHandler();
+
+            RasterizerParser = new RasterizerNodeParser();
 
             AddSubCompiler<MaterialCompiler>("material");
             AddSubCompiler<ComputeCompiler>("compute");
@@ -94,7 +98,7 @@ namespace Molten.Graphics
 
         internal ShaderCompileResult Compile(string source, string filename = null)
         {
-            ShaderCompilerContext context = new ShaderCompilerContext();
+            ShaderCompilerContext context = new ShaderCompilerContext(this);
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>();
 
             foreach (string nodeName in _subCompilers.Keys)

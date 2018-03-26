@@ -36,6 +36,13 @@ namespace Molten.Graphics
         /// </summary>
         internal Dictionary<string, ShaderSampler> Samplers = new Dictionary<string, ShaderSampler>();
 
+        internal ShaderCompilerContext(HlslCompiler compiler)
+        {
+            Compiler = compiler;
+        }
+
+        internal HlslCompiler Compiler { get; private set; }
+
         internal string Filename;
 
         internal string Source;

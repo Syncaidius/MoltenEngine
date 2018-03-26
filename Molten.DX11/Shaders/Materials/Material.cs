@@ -72,5 +72,6 @@ namespace Molten.Graphics
         internal bool HasCommonConstants { get; set; }
 
         internal bool HasObjectConstants { get; set; }
+
     }
 }

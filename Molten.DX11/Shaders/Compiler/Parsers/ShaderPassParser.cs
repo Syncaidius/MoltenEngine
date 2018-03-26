@@ -62,6 +62,10 @@ namespace Molten.Graphics
                     case "pixel":
                         pass.PixelShader.EntryPoint = child.InnerText;
                         break;
+
+                    case "rasterizer":
+                        pass.RasterizerState = context.Compiler.RasterizerParser.Parse(shader, context, child);
+                        break;
                 }
             }
 
