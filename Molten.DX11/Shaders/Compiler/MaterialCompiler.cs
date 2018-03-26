@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using SharpDX.D3DCompiler;
 using SharpDX.Direct3D11;
 
@@ -24,6 +25,20 @@ namespace Molten.Graphics
             AddParser<ShaderPassParser>("pass");
 
             _layoutValidator = new MaterialLayoutValidator();
+        }
+
+        protected override void ParseHeaderNode(string nodeName, XmlNode node, HlslShader shader, ShaderCompilerContext context)
+        {
+            switch (nodeName)
+            {
+                case "rasterizer":
+                    shader.RasterizerState = context.Compiler.RasterizerParser.Parse(shader, context, node);
+                    break;
+
+                default:
+                    base.ParseHeaderNode(nodeName, node, shader, context);
+                    break;
+            }
         }
 
         internal override ShaderParseResult Parse(RendererDX11 renderer, ShaderCompilerContext context)

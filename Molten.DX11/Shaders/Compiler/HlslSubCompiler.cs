@@ -52,21 +52,17 @@ namespace Molten.Graphics
             foreach (XmlNode node in rootNode.ChildNodes)
             {
                 string nodeName = node.Name.ToLower();
-
-                switch (nodeName)
-                {
-                    case "rasterizer":
-                        shader.RasterizerState = context.Compiler.RasterizerParser.Parse(shader, context, node);
-                        break;
-
-                    default:
-                        ShaderNodeParser parser = null;
-                        if (_parsers.TryGetValue(nodeName, out parser))
-                            parser.Parse(shader, context, node);
-                        break;
-                }
-
+                ParseHeaderNode(nodeName, node, shader, context); ShaderNodeParser parser = null;
+                if (_parsers.TryGetValue(nodeName, out parser))
+                    parser.Parse(shader, context, node);
             }
+        }
+
+        protected virtual void ParseHeaderNode(string nodeName, XmlNode node, HlslShader shader, ShaderCompilerContext context)
+        {
+            ShaderNodeParser parser = null;
+            if (_parsers.TryGetValue(nodeName, out parser))
+                parser.Parse(shader, context, node);
         }
 
         protected ShaderReflection BuildIo(CompilationResult code, ShaderComposition composition)

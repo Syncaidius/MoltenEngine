@@ -72,12 +72,17 @@ namespace Molten.Graphics
             }
 
             // Check if an identical state exists before returning the new one.
-            foreach(GraphicsRasterizerState existing in context.RasterStates.Values)
+            foreach(GraphicsRasterizerState existing in context.RasterStates)
             {
                 if (existing.Equals(state))
-                    return state;
+                {
+                    state.Dispose();
+                    return existing;
+                }
             }
 
+            // If we've reached this far, the state is new and unique.
+            context.RasterStates.Add(state);
             return state;
         }
     }

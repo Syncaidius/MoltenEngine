@@ -16,25 +16,13 @@ namespace Molten.Graphics
         /// </summary>
         internal Dictionary<string, CompilationResult> HlslShaders = new Dictionary<string, CompilationResult>();
 
-        /// <summary>
-        /// Rasterizer states, stored by their .ToString() result.
-        /// </summary>
-        internal Dictionary<string, GraphicsRasterizerState> RasterStates = new Dictionary<string, GraphicsRasterizerState>();
+        internal List<GraphicsRasterizerState> RasterStates = new List<GraphicsRasterizerState>();
 
-        /// <summary>
-        /// Blend states, stored by their .ToString() result.
-        /// </summary>
-        internal Dictionary<string, GraphicsBlendState> BlendStates = new Dictionary<string, GraphicsBlendState>();
+        internal List<GraphicsBlendState> BlendStates = new List<GraphicsBlendState>();
 
-        /// <summary>
-        /// Depth states, stored by their .ToString() result.
-        /// </summary>
-        internal Dictionary<string, GraphicsDepthState> DepthStates = new Dictionary<string, GraphicsDepthState>();
+        internal List<GraphicsDepthState> DepthStates = new List<GraphicsDepthState>();
 
-        /// <summary>
-        /// Sampler states, stored by their .ToString() result.
-        /// </summary>
-        internal Dictionary<string, ShaderSampler> Samplers = new Dictionary<string, ShaderSampler>();
+        internal List<ShaderSampler> Samplers = new List<ShaderSampler>();
 
         internal ShaderCompilerContext(HlslCompiler compiler)
         {
