@@ -6,8 +6,20 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
+    public delegate void SceneRenderDataHandler(IRenderer renderer, SceneRenderData data);
+
     public abstract class SceneRenderData : EngineObject
     {
+        /// <summary>
+        /// Occurs just before the scene is about to be rendered.
+        /// </summary>
+        public event SceneRenderDataHandler OnPreRender;
+
+        /// <summary>
+        /// Occurs just after the scene has been rendered.
+        /// </summary>
+        public event SceneRenderDataHandler OnPostRender;
+
         public bool IsVisible = true;
 
         /// <summary>The camera that should be used as a view or eye when rendering 3D objects in a scene.</summary>
@@ -68,5 +80,15 @@ namespace Molten.Graphics
         {
             return (Flags & flags) == flags;
         }
+
+        /// <summary>
+        /// Invokes <see cref="OnPreRender"/> event.
+        /// </summary>
+        protected void PreRenderInvoke(IRenderer renderer) => OnPreRender?.Invoke(renderer, this);
+
+        /// <summary>
+        /// Invokes <see cref="OnPostRender"/> event.
+        /// </summary>
+        protected void PostRenderInvoke(IRenderer renderer) => OnPostRender?.Invoke(renderer, this);
     }
 }

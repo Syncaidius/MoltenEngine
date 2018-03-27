@@ -29,10 +29,15 @@ namespace Molten.Graphics
 
         protected override void ParseHeaderNode(string nodeName, XmlNode node, HlslShader shader, ShaderCompilerContext context)
         {
+            Material mat = shader as Material;
+
             switch (nodeName)
             {
                 case "rasterizer":
                     shader.RasterizerState = context.Compiler.RasterizerParser.Parse(shader, context, node);
+                    // Run through existing passes and apply the rasterizer state to them if they don't have their own yet
+                    foreach (MaterialPass p in mat.Passes)
+                        p.RasterizerState = p.RasterizerState ?? shader.RasterizerState;
                     break;
 
                 default:

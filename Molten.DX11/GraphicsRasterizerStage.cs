@@ -62,6 +62,17 @@ namespace Molten.Graphics
             {
                 CullMode = CullMode.None,
             };
+
+            _presets[(int)RasterizerPreset.DefaultMultisample] = new GraphicsRasterizerState()
+            {
+                IsMultisampleEnabled = true,
+            };
+
+            _presets[(int)RasterizerPreset.ScissorTestMultisample] = new GraphicsRasterizerState()
+            {
+                IsScissorEnabled = true,
+                IsMultisampleEnabled = true,
+            };
         }
 
         private void _slotState_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
@@ -207,5 +218,15 @@ namespace Molten.Graphics
 
         /// <summary>Culling is disabled. Back and front faces will be drawn.</summary>
         NoCulling = 3,
+
+        /// <summary>
+        /// The same as <see cref="Default"/> but with multisampling enabled.
+        /// </summary>
+        DefaultMultisample = 4,
+
+        /// <summary>
+        /// The same as <see cref="ScissorTest"/> but with multisampling enabled.
+        /// </summary>
+        ScissorTestMultisample = 5,
     }
 }

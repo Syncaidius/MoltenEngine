@@ -103,8 +103,9 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        internal void ApplyChanges(GraphicsPipe pipe)
+        internal void PreRender(RendererDX11 renderer, GraphicsPipe pipe)
         {
+            PreRenderInvoke(renderer);
             while (_pendingChanges.TryDequeue(out RenderSceneChange change))
                 change.Process(this);
         }
@@ -151,6 +152,11 @@ namespace Molten.Graphics
                 foreach (ISprite s in layer.Sprites)
                     s.Render(renderer.SpriteBatcher);
             }
+        }
+
+        internal void PostRender(RendererDX11 renderer)
+        {
+            PostRenderInvoke(renderer);
         }
 
         internal Matrix4F View = Matrix4F.Identity;

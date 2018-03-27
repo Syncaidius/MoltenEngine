@@ -16,6 +16,7 @@ namespace Molten.Graphics
         int _drawnFrom;
         int _drawnTo;
         int _spriteCapacity;
+        bool _multisampled;
 
         Material _defaultMaterial;
         Material _defaultNoTextureMaterial;
@@ -89,23 +90,17 @@ namespace Molten.Graphics
 
         /// <summary>Finalizes a batch of sprites, sorts them (if enabled) and then draws them.</summary>
         /// <param name="sortMode"></param>
-        internal void Flush(GraphicsPipe pipe, ref Matrix4F viewProjection,
-            BlendingPreset blend,
-            DepthStencilPreset depth = DepthStencilPreset.ZDisabled,
-            RasterizerPreset raster = RasterizerPreset.Default)
+        internal void Flush(GraphicsPipe pipe, ref Matrix4F viewProjection, bool multisample)
         {
             //if nothing was added to the batch, don't bother with any draw operations.
             if (_clusterCount == 0)
                 return;
 
             _viewProjection = viewProjection;
-
-            // Swap the default depth mode for Sprite2D mode, if attemping to use .Default as it is no good for rendering sprites efficiently.
-            DepthStencilPreset depthPreset = depth == DepthStencilPreset.Default ? DepthStencilPreset.Sprite2D : depth;
              
             pipe.PushState();
-            pipe.DepthStencil.SetPreset(depthPreset);
-            pipe.BlendState.SetPreset(blend);
+            pipe.DepthStencil.SetPreset(DepthStencilPreset.ZDisabled);
+            pipe.BlendState.SetPreset(BlendingPreset.PreMultipliedAlpha);
             pipe.SetVertexSegment(_segment, 0);
 
             // Run through all clip zones
@@ -121,8 +116,18 @@ namespace Molten.Graphics
                 _drawnFrom = 0;
                 _drawnTo = 0;
 
+                if(multisample)
+                {
+                    int derp = 0;
+                }
                 // Set rasterizer state + scissor rect
-                pipe.Rasterizer.SetPreset(clip.Active ? RasterizerPreset.ScissorTest : raster);
+                RasterizerPreset rasterPreset = RasterizerPreset.Default;
+                if (clip.Active)
+                    rasterPreset = multisample ? RasterizerPreset.ScissorTestMultisample : RasterizerPreset.ScissorTest;
+                else
+                    rasterPreset = multisample ? RasterizerPreset.DefaultMultisample : RasterizerPreset.Default;
+
+                pipe.Rasterizer.SetPreset(rasterPreset);
                 pipe.Rasterizer.SetScissorRectangle(clip.ClipBounds);
 
                 //// Flush cluster within current clip-zone.

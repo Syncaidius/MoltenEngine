@@ -104,6 +104,17 @@ namespace Molten.Graphics
             return tex;
         }
 
+        public void ResolveTexture(ITexture source, ITexture destination)
+        {
+            if (source.Format != destination.Format)
+                throw new Exception("The source and destination texture must be the same format.");
+
+            TextureResolve task = TextureResolve.Get();
+            task.Source = source as TextureBase;
+            task.Destination = destination as TextureBase;
+            _renderer.PushTask(task);
+        }
+
         public TextureReader GetDefaultTextureReader(FileInfo file)
         {
             return null; // new DefaultTextureReader(_device);

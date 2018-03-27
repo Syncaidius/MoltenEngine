@@ -37,4 +37,4 @@ In no particular order:
   * An example game or two to demonstrate how things work
 
 # Licensing
-MIT - Basically, do what you want with it. Fork it, chop it up, consume it for dinner (*just kidding*). You get the idea!
+MIT - Basically, do what you want with it. Fork it, chop it up and consume it for dinner. You get the idea!

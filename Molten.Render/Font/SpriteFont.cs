@@ -51,6 +51,7 @@ namespace Molten.Graphics
 
         FontFile _font;
         IRenderSurface _rt;
+        ITexture2D _tex;
         int _fontSize;
         int _tabSize;
         int _pageSize;
@@ -105,7 +106,6 @@ namespace Molten.Graphics
                 _glyphCache[0] = new GlyphCache(1, new Rectangle(0, 0, 1, 1), 0);
             }
 
-
             _charData = new CharData[char.MaxValue];
             _tabSize = tabSize;
             _fontSize = ptSize;
@@ -116,12 +116,21 @@ namespace Molten.Graphics
             _charPadding = charPadding;
 
             _lineSpace = ToPixels(_font.HorizonalHeader.LineSpace);
-            _rt = renderer.Resources.CreateSurface(_pageSize, _pageSize, arraySize: initialPages);
+            _rt = renderer.Resources.CreateSurface(_pageSize, _pageSize, arraySize: initialPages, sampleCount: 8);
+            _tex = renderer.Resources.CreateTexture2D(new Texture2DProperties()
+            {
+                Width = _pageSize,
+                Height = _pageSize,
+                ArraySize = initialPages,
+                Format = _rt.Format,
+            });
+
             _rt.Clear(Color.Transparent);
             _renderData = renderer.CreateRenderData();
             _renderData.IsVisible = false;
             _renderData.Flags = SceneRenderFlags.TwoD | SceneRenderFlags.DoNotClear | SceneRenderFlags.NoDebugOverlay;
             _renderData.AddSprite(new FontContainer(this));
+            _renderData.OnPostRender += _renderData_OnPostRender;
             _renderData.SpriteCamera = new Camera2D()
             {
                 OutputSurface = _rt,
@@ -132,6 +141,11 @@ namespace Molten.Graphics
             Rectangle spaceRect = _glyphCache[_charData[' '].GlyphIndex].Location;
             spaceRect.Width *= tabSize;
             AddCharacter('\t', false, spaceRect);
+        }
+
+        private void _renderData_OnPostRender(IRenderer renderer, SceneRenderData data)
+        {
+            _renderer.Resources.ResolveTexture(_rt, _tex);
         }
 
         private int ToPixels(float designUnits)
@@ -326,6 +340,7 @@ namespace Molten.Graphics
         public void Dispose()
         {
             _rt.Dispose();
+            _tex.Dispose();
             _renderer.DestroyRenderData(_renderData);
             _renderData.Dispose();
         }
@@ -343,7 +358,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the underlying texture atlas of the sprite font.
         /// </summary>
-        public ITexture2D UnderlyingTexture => _rt;
+        public ITexture2D UnderlyingTexture => _tex;
 
         /// <summary>
         /// Gets the font's recommended line spacing between two lines, in pixels.

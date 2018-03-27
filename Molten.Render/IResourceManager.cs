@@ -45,6 +45,15 @@ namespace Molten.Graphics
         /// <param name="properties">The data from which to create the texture.</param>
         ITextureCube CreateTextureCube(TextureData data);
 
+        /// <summary>
+        /// Resolves a source texture into a destination texture. <para/>
+        /// This is most useful when re-using the resulting rendertarget of one render pass as an input to a second render pass. <para/>
+        /// Another common use is transferring (resolving) a multisampled texture into a non-multisampled texture.
+        /// </summary>
+        /// <param name="source">The source texture.</param>
+        /// <param name="destination">The destination texture.</param>
+        void ResolveTexture(ITexture source, ITexture destination);
+
         /// <summary>Creates a new unindexed mesh. Unindexed meshes do not contain an index buffer to reduce vertex data size.</summary>
         /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
         /// <param name="dedicatedResource">if set to <c>true</c>, the mesh is given its own dedicated resource buffer.</param>

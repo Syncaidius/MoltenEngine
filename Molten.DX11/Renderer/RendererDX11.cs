@@ -181,13 +181,15 @@ namespace Molten.Graphics
                 SceneRenderDataDX11 scene = Scenes[i];
                 if (scene.IsVisible)
                 {
-                    scene.ApplyChanges(_device);
+                    scene.PreRender(this, _device);
 
                     if (scene.HasFlag(SceneRenderFlags.ThreeD))
                         Render3D(scene);
 
                     if (scene.HasFlag(SceneRenderFlags.TwoD))
                         Render2D(scene, time);
+
+                    scene.PostRender(this);
                 }
             }
 
@@ -308,7 +310,7 @@ namespace Molten.Graphics
                 if (_debugOverlayVisible && !scene.HasFlag(SceneRenderFlags.NoDebugOverlay))
                     _debugOverlay[_debugOverlayPage].Render(_debugFont, this, SpriteBatcher, time, rs);
 
-                SpriteBatcher.Flush(_device, ref spriteViewProj, BlendingPreset.PreMultipliedAlpha);
+                SpriteBatcher.Flush(_device, ref spriteViewProj, rs.SampleCount > 1);
             }
         }
 

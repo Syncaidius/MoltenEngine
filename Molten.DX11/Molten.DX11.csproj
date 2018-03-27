@@ -140,6 +140,7 @@
     <Compile Include="Renderer\Debug\DebugStatsPage.cs" />
     <Compile Include="Renderer\Renderable.cs" />
     <Compile Include="Renderer\RendererDX11.cs" />
+    <Compile Include="Renderer\Tasks\TextureResolve.cs" />
     <Compile Include="Renderer\Tasks\RendererAddScene.cs" />
     <Compile Include="Renderer\Tasks\RendererRemoveScene.cs" />
     <Compile Include="Renderer\Tasks\RendererTask.cs" />
@@ -237,7 +238,6 @@
     <EmbeddedResource Include="Assets\sprite.sbm" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\sprite_aa.sbm" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
