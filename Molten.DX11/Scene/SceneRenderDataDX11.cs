@@ -124,7 +124,6 @@ namespace Molten.Graphics
                 }
             }
 
-
             /* TODO: 
              *  Procedure:
              *      1) Calculate:

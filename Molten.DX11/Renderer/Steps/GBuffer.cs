@@ -37,7 +37,7 @@ namespace Molten.Graphics
             Scene?.Dispose();
             Normals?.Dispose();
             Specular?.Dispose();
-            Emissive.Dispose();
+            Emissive?.Dispose();
         }
 
         public override void Dispose()

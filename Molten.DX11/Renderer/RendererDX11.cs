@@ -38,6 +38,9 @@ namespace Molten.Graphics
         Dictionary<Type, DeferredRenderStep> _steps;
         List<DeferredRenderStep> _stepList;
 
+        // Core deferred renderer steps
+        GBuffer _gBuffer;
+
         AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
         internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
         internal SpriteBatchDX11 SpriteBatcher;
@@ -94,7 +97,7 @@ namespace Molten.Graphics
             SpriteBatcher = new SpriteBatchDX11(this, 3000);
 
             // Setup deferred render chain
-            AddRenderStep<GBuffer>();
+            _gBuffer = GetRenderStep<GBuffer>();
              
             /* TODO: 
              *  - Allow the renderer to iterate over sprite layers instead of inside SceneData.Render2D().
@@ -111,7 +114,6 @@ namespace Molten.Graphics
              *      
              *  
              *  - iterate over _stepList for every active scene. 
-             * -  Deferred render chain should run for each scene.
              */
 
             InitializeDebugOverlay();
@@ -165,11 +167,6 @@ namespace Molten.Graphics
         internal void PushTask(RendererTask task)
         {
             _tasks.Enqueue(task);
-        }
-
-        internal void AddRenderStep<T>() where T : DeferredRenderStep, new()
-        {
-            GetRenderStep<T>();
         }
 
         internal T GetRenderStep<T>() where T : DeferredRenderStep, new()
@@ -257,10 +254,24 @@ namespace Molten.Graphics
              *  - Prepare rendering of these on worker threads.
              */
 
-            // TODO do renderer stuff here (i.e. render scenes, do deferred rendering, do post-processing, etc, etc).
+            // NEW RENDER LOOP
+            SceneRenderDataDX11 scene;
+            //DeferredRenderStep step;
+            //for (int i = 0; i < Scenes.Count; i++)
+            //{
+            //    scene = Scenes[i];
+            //    scene.PreRender(this, _device);
+
+            //    for (int j = 0; j < _stepList.Count; j++)
+            //        _stepList[j].Render(this, scene);
+
+            //    scene.PostRender(this);
+            //}
+
+            // OLD RENDER LOOP -- To be removed when the above is ready
             for (int i = 0; i < Scenes.Count; i++)
             {
-                SceneRenderDataDX11 scene = Scenes[i];
+                scene = Scenes[i];
                 if (scene.IsVisible)
                 {
                     scene.PreRender(this, _device);
