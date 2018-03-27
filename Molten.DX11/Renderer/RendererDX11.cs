@@ -33,8 +33,8 @@ namespace Molten.Graphics
         bool _debugOverlayVisible = false;
 
 
-        int _requestedMultiSampleLevel = 1;
-        internal int MultisampleLevel = 1;
+        AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
+        internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
         internal SpriteBatchDX11 SpriteBatcher;
         internal List<SceneRenderDataDX11> Scenes;
         internal GraphicsBuffer StaticVertexBuffer;
@@ -58,8 +58,8 @@ namespace Molten.Graphics
         public void InitializeRenderer(GraphicsSettings settings)
         {
             settings.Log(_log, "Graphics");
-            MultisampleLevel = MathHelper.Clamp(settings.MSAA, 1, 16);
-            _requestedMultiSampleLevel = MultisampleLevel;
+            MsaaLevel = 
+            _requestedMultiSampleLevel = MsaaLevel;
             settings.MSAA.OnChanged += MSAA_OnChanged;
 
             _profiler = new RenderProfilerDX();
@@ -144,10 +144,11 @@ namespace Molten.Graphics
             _profiler.StartCapture();
             _device.Profiler.StartCapture();
 
-            if(_requestedMultiSampleLevel != MultisampleLevel)
+            if(_requestedMultiSampleLevel != MsaaLevel)
             {
-                // TODO re-create all multi-sampled textures to match the new sample level.
-                MultisampleLevel = _requestedMultiSampleLevel;
+                // TODO re-create all internal surfaces/textures to match the new sample level.
+                // TODO adjust rasterizer mode accordingly (multisample enabled/disabled).
+                MsaaLevel = _requestedMultiSampleLevel;
             }
 
             // Perform all queued tasks before proceeding
@@ -314,7 +315,7 @@ namespace Molten.Graphics
             }
         }
 
-        private void MSAA_OnChanged(int oldValue, int newValue)
+        private void MSAA_OnChanged(AntiAliasMode oldValue, AntiAliasMode newValue)
         {
             _requestedMultiSampleLevel = newValue;
         }

@@ -64,6 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AntiAliasMode.cs" />
     <Compile Include="Buffers\BufferMode.cs" />
     <Compile Include="Buffers\IndexBufferFormat.cs" />
     <Compile Include="Buffers\StagingBufferFlags.cs" />
