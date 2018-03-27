@@ -31,11 +31,11 @@ namespace Molten.Graphics
         /// <param name="flags">Texture flags</param>
         internal DepthSurface(GraphicsDevice device,
             int width, 
-            int height, 
+            int height,
+            DepthFormat format = DepthFormat.R24G8_Typeless,
             int mipCount = 1, 
             int arraySize = 1, 
             int sampleCount = 1,
-            DepthFormat format = DepthFormat.R24G8_Typeless, 
             TextureFlags flags = TextureFlags.None)
             : base(device, width, height, SharpDX.DXGI.Format.R24G8_Typeless, mipCount, arraySize, flags)
         {

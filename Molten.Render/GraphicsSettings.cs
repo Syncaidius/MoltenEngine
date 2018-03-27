@@ -52,6 +52,7 @@ namespace Molten.Graphics
         public SettingValue<int> BackBufferSize { get; private set; }
 
         /// <summary>Gets or sets whether to enable a renderer's debug layer, if available.</summary>
+        [DataMember]
         public SettingValue<bool> EnableDebugLayer { get; private set; }
     }
 }

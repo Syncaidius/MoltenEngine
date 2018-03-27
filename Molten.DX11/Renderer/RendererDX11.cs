@@ -14,6 +14,10 @@ namespace Molten.Graphics
         static readonly Matrix4F _defaultView2D = Matrix4F.Identity;
         static readonly Matrix4F _defaultView3D = Matrix4F.LookAtLH(new Vector3F(0, 0, -5), new Vector3F(0, 0, 0), Vector3F.UnitY);
 
+        int _biggestWidth = 1;
+        int _biggestHeight = 1;
+        bool _surfacesDirty;
+
         DX11DisplayManager _displayManager;
         ResourceManager _resourceManager;
         MaterialManager _materials;
@@ -31,7 +35,8 @@ namespace Molten.Graphics
         int _debugOverlayPage = 0;
         SpriteFont _debugFont;
         bool _debugOverlayVisible = false;
-
+        Dictionary<Type, DeferredRenderStep> _steps;
+        List<DeferredRenderStep> _stepList;
 
         AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
         internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
@@ -47,6 +52,8 @@ namespace Molten.Graphics
         {
             _log = Logger.Get();
             _log.AddOutput(new LogFileWriter("renderer_dx11{0}.txt"));
+            _steps = new Dictionary<Type, DeferredRenderStep>();
+            _stepList = new List<DeferredRenderStep>();
         }
 
         public void InitializeAdapter(GraphicsSettings settings)
@@ -85,6 +92,27 @@ namespace Molten.Graphics
 
             StagingBuffer = new StagingBuffer(_device, StagingBufferFlags.Write, maxVertexBytesStatic / 4);
             SpriteBatcher = new SpriteBatchDX11(this, 3000);
+
+            // Setup deferred render chain
+            AddRenderStep<GBuffer>();
+             
+            /* TODO: 
+             *  - Allow the renderer to iterate over sprite layers instead of inside SceneData.Render2D().
+             *  - Remove 2D layer system and add render flags to SceneData to control how/where 2D is rendered (e.g. behind post-processing, ahead (default) or behind 3D).
+             *  - Add normal map support to GBUFFER
+             *  - Add standard texture properties to IMesh (Albedo, normal, specular, emissive, PBR, etc)
+             *  - Stages:
+             *      -- GBUFFER - WIP
+             *      -- lighting
+             *      -- emssive
+             *      -- HDR/Bloom
+             *      -- Tone mapping
+             *      -- Output/finalize (render 2D here)
+             *      
+             *  
+             *  - iterate over _stepList for every active scene. 
+             * -  Deferred render chain should run for each scene.
+             */
 
             InitializeDebugOverlay();
         }
@@ -139,6 +167,25 @@ namespace Molten.Graphics
             _tasks.Enqueue(task);
         }
 
+        internal void AddRenderStep<T>() where T : DeferredRenderStep, new()
+        {
+            GetRenderStep<T>();
+        }
+
+        internal T GetRenderStep<T>() where T : DeferredRenderStep, new()
+        {
+            Type t = typeof(T);
+            DeferredRenderStep step;
+            if (!_steps.TryGetValue(t, out step))
+            {
+                step = new T();
+                step.Initialize(this, _biggestWidth, _biggestHeight);
+                _steps.Add(t, step);
+            }
+
+            return step as T;
+        }
+
         public void Present(Timing time)
         {
             _profiler.StartCapture();
@@ -149,12 +196,46 @@ namespace Molten.Graphics
                 // TODO re-create all internal surfaces/textures to match the new sample level.
                 // TODO adjust rasterizer mode accordingly (multisample enabled/disabled).
                 MsaaLevel = _requestedMultiSampleLevel;
+                _surfacesDirty = true;
             }
 
             // Perform all queued tasks before proceeding
             RendererTask task = null;
             while (_tasks.TryDequeue(out task))
                 task.Process(this);
+
+            // Ensure the backbuffer is always big enough for the largest scene render surface.
+            foreach (SceneRenderDataDX11 data in Scenes)
+            {
+                RenderSurfaceBase rs = _device.DefaultSurface;
+                if (data.RenderCamera != null)
+                    rs = data.RenderCamera.OutputSurface as RenderSurfaceBase ?? rs;
+
+                if (rs == null)
+                    continue;
+
+                // Cache the surface we'll be using to render the scene data.
+                data.ChosenSurface = rs;
+
+                if (rs.Width > _biggestWidth)
+                {
+                    _surfacesDirty = true;
+                    _biggestWidth = rs.Width;
+                }
+
+                if (rs.Height > _biggestHeight)
+                {
+                    _surfacesDirty = true;
+                    _biggestHeight = rs.Height;
+                }
+            }
+
+            // Update surfaces if dirty. This may involve resizing or changing their format.
+            if (_surfacesDirty)
+            {
+                for (int i = 0; i < _stepList.Count; i++)
+                    _stepList[i].UpdateSurfaces(this, _biggestWidth, _biggestHeight);
+            }
 
             /* DESIGN NOTES:
              *  - Store a hashset of materials used in each scene so that the renderer can set the "Common" buffer in one pass
@@ -322,6 +403,9 @@ namespace Molten.Graphics
 
         public void Dispose()
         {
+            for (int i = 0; i < _stepList.Count; i++)
+                _stepList[i].Dispose();
+
             _outputSurfaces.ForInterlock(0, 1, (index, surface) =>
             {
                 surface.Dispose();

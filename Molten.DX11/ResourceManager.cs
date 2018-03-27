@@ -24,14 +24,14 @@ namespace Molten.Graphics
 
         public IDepthSurface CreateDepthSurface(
             int width, 
-            int height, 
+            int height,
+            DepthFormat format = DepthFormat.R24G8_Typeless,
             int mipCount = 1, 
             int arraySize = 1, 
             int sampleCount = 1, 
-            DepthFormat format = DepthFormat.R24G8_Typeless, 
             TextureFlags flags = TextureFlags.None)
         {
-            return new DepthSurface(_device, width, height, mipCount, arraySize, sampleCount, format, flags);
+            return new DepthSurface(_device, width, height, format, mipCount, arraySize, sampleCount, flags);
         }
 
         public IWindowSurface CreateFormSurface(string formTitle, int mipCount = 1, int sampleCount = 1)

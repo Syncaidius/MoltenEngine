@@ -164,5 +164,7 @@ namespace Molten.Graphics
         internal Matrix4F Projection;
 
         internal Matrix4F ViewProjection;
+
+        internal RenderSurfaceBase ChosenSurface;
     }
 }
