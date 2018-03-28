@@ -26,6 +26,7 @@ namespace Molten.Graphics
         ThreadedQueue<RendererTask> _tasks;
         ThreadedList<ISwapChainSurface> _outputSurfaces;
         HashSet<TextureAsset2D> _clearedSurfaces;
+
         Material _defaultMeshMaterial;
 
         List<DebugOverlayPage> _debugOverlay;

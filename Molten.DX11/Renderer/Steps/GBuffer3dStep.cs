@@ -1,6 +1,7 @@
 ﻿using SharpDX.DXGI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,9 +16,30 @@ namespace Molten.Graphics
         internal RenderSurface Emissive;
         internal DepthSurface Depth;
 
+        Material _matStandard;
+        Material _matSansNormalMap;
+        IShaderValue _texDiffuse;
+        IShaderValue _texNormal;
+        IShaderValue _texEmissive;
+
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
             UpdateSurfaces(renderer, width, height);
+
+            string source = null;
+            string namepace = "Molten.Graphics.Assets.gbuffer.sbm";
+            using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                    source = reader.ReadToEnd();
+            }
+
+            if (!string.IsNullOrWhiteSpace(source))
+            {
+                ShaderCompileResult result = renderer.ShaderCompiler.Compile(source, namepace);
+                _matStandard = result["material", "gbuffer"] as Material;
+                _matSansNormalMap = result["material", "gbuffer-sans-nmap"] as Material;
+            }
         }
 
         internal override void UpdateSurfaces(RendererDX11 renderer,int width, int height)
@@ -52,6 +74,8 @@ namespace Molten.Graphics
             Normals.Clear(renderer.Device, Color.White * 0.5f);
             Specular.Clear(renderer.Device, Color.Black);
             Emissive.Clear(renderer.Device, Color.Black);
+
+
         }
     }
 }

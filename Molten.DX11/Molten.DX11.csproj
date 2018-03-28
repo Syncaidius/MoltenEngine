@@ -243,6 +243,8 @@
     <EmbeddedResource Include="Assets\sprite.sbm" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Assets\gbuffer.sbm" />
+    <EmbeddedResource Include="Assets\gbuffer_common.sbm" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

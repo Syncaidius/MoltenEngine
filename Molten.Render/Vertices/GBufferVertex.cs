@@ -7,12 +7,12 @@ using System.Text;
 namespace Molten.Graphics
 {
     [StructLayout(LayoutKind.Sequential, Pack=1)]
-    /// <summary>A vertex type containing position, color, normal and UV data.</summary>
-    public struct EngineVertex : IVertexType
+    /// <summary>A vertex type containing position, color, normal and UV data. For use with deferred rendering.</summary>
+    public struct GBufferVertex : IVertexType
     {
         [VertexElement(VertexElementType.Vector4, VertexElementUsage.Position, 0)]
         /// <summary>Gets or sets the position as a Vector4</summary>
-        Vector4F Position4;
+        public Vector4F Position4;
 
         [VertexElement(VertexElementType.Vector3, VertexElementUsage.Normal, 0)]
         public Vector3F Normal;
@@ -26,7 +26,13 @@ namespace Molten.Graphics
         [VertexElement(VertexElementType.Vector2, VertexElementUsage.TextureCoordinate, 0)]
         public Vector2F UV;
 
-        public EngineVertex(Vector4F position, Vector3F normal, Vector2F textureCoordinates)
+        public Vector3F Position
+        {
+            get => (Vector3F)Position4;
+            set => Position4 = new Vector4F(value, Position4.W);
+        }
+
+        public GBufferVertex(Vector4F position, Vector3F normal, Vector2F textureCoordinates)
         {
             this.Position4 = position;
             this.Normal = normal;
@@ -35,7 +41,7 @@ namespace Molten.Graphics
             this.UV = textureCoordinates;
         }
 
-        public EngineVertex(Vector3F position, Vector3F normal, Vector2F textureCoordinates)
+        public GBufferVertex(Vector3F position, Vector3F normal, Vector2F textureCoordinates)
         {
             this.Position4 = new Vector4F(position, 1);
             this.Normal = normal;
