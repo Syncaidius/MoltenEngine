@@ -321,10 +321,10 @@ namespace Molten.Graphics
             }
             else
             {
-                if (scene.HasFlag(SceneRenderFlags.ThreeD))
+                if (scene.HasFlag(SceneRenderFlags.Render3D))
                     chain.Next<Immediate3dStep>();
 
-                if (scene.HasFlag(SceneRenderFlags.TwoD))
+                if (scene.HasFlag(SceneRenderFlags.Render2D))
                     chain.Next<Render2dStep>();
             }
         }
