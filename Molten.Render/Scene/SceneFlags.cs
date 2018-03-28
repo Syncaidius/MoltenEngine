@@ -30,13 +30,13 @@ namespace Molten.Graphics
         ThreeD = 1 << 2,
 
         /// <summary>
-        /// Render both 2D and 3D scene objects.
+        /// Renders the 3D scene via the deferred rendering chain.
         /// </summary>
-        TwoAndThreeD = TwoD | ThreeD,
+        Deferred = 1 << 3,
 
         /// <summary>
         /// Prevents the renderer from drawing a debug overlay in the scene's output surface.
         /// </summary>
-        NoDebugOverlay = 1 << 3,
+        NoDebugOverlay = 1 << 4,
     }
 }

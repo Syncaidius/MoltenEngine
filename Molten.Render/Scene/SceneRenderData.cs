@@ -33,7 +33,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Flags which describe basic rules for rendering the scene.
         /// </summary>
-        public SceneRenderFlags Flags = SceneRenderFlags.TwoAndThreeD;
+        public SceneRenderFlags Flags = SceneRenderFlags.TwoD | SceneRenderFlags.ThreeD;
 
         /// <summary>
         /// The background color of the scene.

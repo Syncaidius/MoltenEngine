@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class GBuffer : DeferredRenderStep
+    internal class GBuffer3dStep : DeferredRenderStep
     {
         internal RenderSurface Scene;
         internal RenderSurface Normals;
@@ -45,7 +45,7 @@ namespace Molten.Graphics
             DisposeSurfaces();
         }
 
-        internal override void Render(RendererDX11 renderer, SceneRenderDataDX11 scene)
+        protected override void OnRender(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time)
         {
             // Clear surfaces
             Scene.Clear(renderer.Device, scene.BackgroundColor);

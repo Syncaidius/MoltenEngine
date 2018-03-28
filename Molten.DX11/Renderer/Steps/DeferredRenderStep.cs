@@ -11,11 +11,19 @@ namespace Molten.Graphics
     /// </summary>
     internal abstract class DeferredRenderStep : IDisposable
     {
+        internal DeferredRenderStep Next;
+
         internal abstract void Initialize(RendererDX11 renderer, int width, int height);
 
         internal abstract void UpdateSurfaces(RendererDX11 renderer, int width, int height);
 
-        internal abstract void Render(RendererDX11 renderer, SceneRenderDataDX11 scene);
+        internal void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time)
+        {
+            OnRender(renderer, scene, time);
+            Next?.Render(renderer, scene, time);
+        }
+
+        protected abstract void OnRender(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time);
 
         public abstract void Dispose();
     }

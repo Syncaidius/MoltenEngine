@@ -11,9 +11,6 @@ namespace Molten.Graphics
 {
     public class RendererDX11 : IRenderer
     {
-        static readonly Matrix4F _defaultView2D = Matrix4F.Identity;
-        static readonly Matrix4F _defaultView3D = Matrix4F.LookAtLH(new Vector3F(0, 0, -5), new Vector3F(0, 0, 0), Vector3F.UnitY);
-
         int _biggestWidth = 1;
         int _biggestHeight = 1;
         bool _surfacesDirty;
@@ -28,7 +25,7 @@ namespace Molten.Graphics
         HlslCompiler _shaderCompiler;
         ThreadedQueue<RendererTask> _tasks;
         ThreadedList<ISwapChainSurface> _outputSurfaces;
-        HashSet<TextureAsset2D> _usedSurfaces;
+        HashSet<TextureAsset2D> _clearedSurfaces;
         Material _defaultMeshMaterial;
 
         List<DebugOverlayPage> _debugOverlay;
@@ -39,7 +36,7 @@ namespace Molten.Graphics
         List<DeferredRenderStep> _stepList;
 
         // Core deferred renderer steps
-        GBuffer _gBuffer;
+        RenderChain _mainChain;
 
         AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
         internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
@@ -80,7 +77,8 @@ namespace Molten.Graphics
             _compute = new ComputeManager(this.Device);
             _shaderCompiler = new HlslCompiler(this, _log);
             _tasks = new ThreadedQueue<RendererTask>();
-            _usedSurfaces = new HashSet<TextureAsset2D>();
+            _clearedSurfaces = new HashSet<TextureAsset2D>();
+            _mainChain = new RenderChain(this);
             Scenes = new List<SceneRenderDataDX11>();
 
             int maxVertexBytesStatic = 1024 * 512;
@@ -95,9 +93,6 @@ namespace Molten.Graphics
 
             StagingBuffer = new StagingBuffer(_device, StagingBufferFlags.Write, maxVertexBytesStatic / 4);
             SpriteBatcher = new SpriteBatchDX11(this, 3000);
-
-            // Setup deferred render chain
-            _gBuffer = GetRenderStep<GBuffer>();
              
             /* TODO: 
              *  - Allow the renderer to iterate over sprite layers instead of inside SceneData.Render2D().
@@ -142,6 +137,13 @@ namespace Molten.Graphics
             return next;
         }
 
+        internal void DrawDebugOverlay(SpriteBatch sb, SceneRenderDataDX11 scene, Timing time, IRenderSurface rs)
+        {
+            // Render the debug overlay here so it shows on top of everything else
+            if (_debugOverlayVisible && !scene.HasFlag(SceneRenderFlags.NoDebugOverlay))
+                _debugOverlay[_debugOverlayPage].Render(_debugFont, this, SpriteBatcher, time, rs);
+        }
+
         public void DispatchCompute(IComputeTask task, int x, int y, int z)
         {
             _device.ExternalContext.Dispatch(task as ComputeTask, x, y, z);
@@ -178,9 +180,23 @@ namespace Molten.Graphics
                 step = new T();
                 step.Initialize(this, _biggestWidth, _biggestHeight);
                 _steps.Add(t, step);
+                _stepList.Add(step);
             }
 
             return step as T;
+        }
+
+        private void SetNextStep<T, NEXT>() where T : DeferredRenderStep, new()
+            where NEXT : DeferredRenderStep, new()
+        {
+            if(_steps.TryGetValue(typeof(T), out DeferredRenderStep step))
+                step.Next = GetRenderStep<NEXT>();
+        }
+
+        private void SetNoNextStep<T>() where T : DeferredRenderStep, new()
+        {
+            if (_steps.TryGetValue(typeof(T), out DeferredRenderStep step))
+                step.Next = null;
         }
 
         public void Present(Timing time)
@@ -232,6 +248,8 @@ namespace Molten.Graphics
             {
                 for (int i = 0; i < _stepList.Count; i++)
                     _stepList[i].UpdateSurfaces(this, _biggestWidth, _biggestHeight);
+
+                _surfacesDirty = false;
             }
 
             /* DESIGN NOTES:
@@ -254,35 +272,14 @@ namespace Molten.Graphics
              *  - Prepare rendering of these on worker threads.
              */
 
-            // NEW RENDER LOOP
             SceneRenderDataDX11 scene;
-            //DeferredRenderStep step;
-            //for (int i = 0; i < Scenes.Count; i++)
-            //{
-            //    scene = Scenes[i];
-            //    scene.PreRender(this, _device);
-
-            //    for (int j = 0; j < _stepList.Count; j++)
-            //        _stepList[j].Render(this, scene);
-
-            //    scene.PostRender(this);
-            //}
-
-            // OLD RENDER LOOP -- To be removed when the above is ready
             for (int i = 0; i < Scenes.Count; i++)
             {
                 scene = Scenes[i];
                 if (scene.IsVisible)
                 {
-                    scene.PreRender(this, _device);
-
-                    if (scene.HasFlag(SceneRenderFlags.ThreeD))
-                        Render3D(scene);
-
-                    if (scene.HasFlag(SceneRenderFlags.TwoD))
-                        Render2D(scene, time);
-
-                    scene.PostRender(this);
+                    BuildChain(scene, _mainChain);
+                    _mainChain.Render(this, scene, time);
                 }
             }
 
@@ -294,116 +291,41 @@ namespace Molten.Graphics
             });
 
             // Clear the list of used surfaces, ready for the next frame.
-            _usedSurfaces.Clear();
+            _clearedSurfaces.Clear();
 
             _profiler.AddData(_device.Profiler.CurrentFrame);
             _device.Profiler.EndCapture(time);
             _profiler.EndCapture(time);
         }
 
-        private void Render3D(SceneRenderDataDX11 scene)
+        internal void ClearIfFirstUse(TextureAsset2D surface, Action callback)
         {
-            RenderSurfaceBase rs = null;
-            DepthSurface ds = null;
-
-            if (scene.RenderCamera != null)
+            if(!_clearedSurfaces.Contains(surface))
             {
-                rs = scene.RenderCamera.OutputSurface as RenderSurfaceBase;
-                ds = scene.RenderCamera.OutputDepthSurface as DepthSurface;
-                rs = rs ?? _device.DefaultSurface;
-
-                scene.Projection = scene.RenderCamera.Projection;
-                scene.View = scene.RenderCamera.View;
-                scene.ViewProjection = scene.RenderCamera.ViewProjection;
-            }
-            else
-            {
-                rs = _device.DefaultSurface;
-                if (rs == null)
-                    return;
-
-                scene.View = _defaultView3D;
-                scene.Projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, rs.Width / (float)rs.Height, 0.1f, 100.0f);
-                scene.ViewProjection = Matrix4F.Multiply(scene.View, scene.Projection);
-            }
-
-            if (rs != null)
-            {
-                if (!scene.HasFlag(SceneRenderFlags.DoNotClear) && !_usedSurfaces.Contains(rs))
-                {
-                    rs.Clear(scene.BackgroundColor);
-                    _usedSurfaces.Add(rs);
-                }
-
-                // Clear the depth surface if it hasn't already been cleared
-                if (ds != null && !_usedSurfaces.Contains(ds))
-                {
-                    ds.Clear(DepthClearFlags.Depth | DepthClearFlags.Stencil);
-                    _usedSurfaces.Add(ds);
-                }
-
-                _device.SetRenderSurface(rs, 0);
-                _device.SetDepthSurface(ds, GraphicsDepthMode.Enabled);
-                _device.DepthStencil.SetPreset(DepthStencilPreset.Default);
-                _device.Rasterizer.SetViewports(rs.Viewport);
-                scene.Render3D(_device, this);
+                callback();
+                _clearedSurfaces.Add(surface);
             }
         }
 
-        private void Render2D(SceneRenderDataDX11 scene, Timing time)
+        private void BuildChain(SceneRenderDataDX11 scene, RenderChain chain)
         {
-            Matrix4F spriteView, spriteProj, spriteViewProj;
-            RenderSurfaceBase rs = null;
-            DepthSurface ds = null;
+            // TODO if the current scene has the same flags as the previous scene, skip rebuilding chain.
+            // TODO consider moving/caching render chain construction in to SceneRenderDataDX11. If the flags are changed, (re)build it on the next render cycle.
 
-            if (scene.SpriteCamera != null)
+            chain.Clear();
+
+            if (scene.HasFlag(SceneRenderFlags.Deferred))
             {
-                rs = scene.SpriteCamera.OutputSurface as RenderSurfaceBase;
-                ds = scene.SpriteCamera.OutputDepthSurface as DepthSurface;
-
-                spriteProj = scene.SpriteCamera.Projection;
-                spriteView = scene.SpriteCamera.View;
-                spriteViewProj = scene.SpriteCamera.ViewProjection;
+                chain.Next<GBuffer3dStep>();
+                // TODO complete deferred chain here
             }
             else
             {
-                rs = _device.DefaultSurface;
-                if (rs == null)
-                    return;
+                if (scene.HasFlag(SceneRenderFlags.ThreeD))
+                    chain.Next<Immediate3dStep>();
 
-                spriteProj = _defaultView2D;
-                spriteView = Matrix4F.OrthoOffCenterLH(0, rs.Width, -rs.Height, 0, 0, 1);
-                spriteViewProj = Matrix4F.Multiply(spriteView, spriteProj);
-            }
-
-            if (rs != null)
-            {
-                if (!scene.HasFlag(SceneRenderFlags.DoNotClear) && !_usedSurfaces.Contains(rs))
-                {
-                    rs.Clear(scene.BackgroundColor);
-                    _usedSurfaces.Add(rs);
-                }
-
-                // Clear the depth surface if it hasn't already been cleared
-                if (ds != null && !_usedSurfaces.Contains(ds))
-                {
-                    ds.Clear(DepthClearFlags.Depth | DepthClearFlags.Stencil);
-                    _usedSurfaces.Add(ds);
-                }
-
-                _device.SetRenderSurface(rs, 0);
-                _device.SetDepthSurface(ds, GraphicsDepthMode.Enabled);
-                _device.DepthStencil.SetPreset(DepthStencilPreset.Default);
-                _device.Rasterizer.SetViewports(rs.Viewport);
-
-                SpriteBatcher.Begin(rs.Viewport);
-                scene.Render2D(_device, this);
-
-                // Render the debug overlay here so it shows on top of everything else
-                if (_debugOverlayVisible && !scene.HasFlag(SceneRenderFlags.NoDebugOverlay))
-                    _debugOverlay[_debugOverlayPage].Render(_debugFont, this, SpriteBatcher, time, rs);
-
-                SpriteBatcher.Flush(_device, ref spriteViewProj, rs.SampleCount > 1);
+                if (scene.HasFlag(SceneRenderFlags.TwoD))
+                    chain.Next<Render2dStep>();
             }
         }
 

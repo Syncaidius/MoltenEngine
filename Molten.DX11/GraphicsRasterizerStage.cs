@@ -120,7 +120,33 @@ namespace Molten.Graphics
             _scissorRectsDirty = true;
         }
 
-        public void SetViewports(params ViewportF[] viewports)
+        /// <summary>
+        /// Applies the provided viewport value to the specified viewport slot.
+        /// </summary>
+        /// <param name="vp">The viewport value.</param>
+        public void SetViewport(ViewportF vp, int slot)
+        {
+                _viewports[slot] = vp;
+        }
+
+        /// <summary>
+        /// Applies the specified viewport to all viewport slots.
+        /// </summary>
+        /// <param name="vp">The viewport value.</param>
+        public void SetViewports(ViewportF vp)
+        {
+            for (int i = 0; i < _viewports.Length; i++)
+                _viewports[i] = vp;
+
+            _viewportsDirty = true;
+        }
+
+        /// <summary>
+        /// Sets the provided viewports on to their respective viewport slots. <para/>
+        /// If less than the total number of viewport slots was provided, the remaining ones will be set to whatever the same value as the first viewport slot.
+        /// </summary>
+        /// <param name="viewports"></param>
+        public void SetViewports(ViewportF[] viewports)
         {
             if (viewports == null)
             {
@@ -130,7 +156,7 @@ namespace Molten.Graphics
                 for (int i = 0; i < _viewports.Length; i++)
                 {
                     surface = Pipe.Output.GetRenderSurface(i);
-                    _viewports[i] = surface != null ? surface.Viewport : surfaceZero.Viewport; // TODO set this to whatever the viewport of each render target is (iterate over them).
+                    _viewports[i] = surface != null ? surface.Viewport : surfaceZero.Viewport;
                 }
             }
             else
@@ -150,6 +176,7 @@ namespace Molten.Graphics
         {
             Array.Copy(_viewports, outArray, _viewports.Length);
         }
+
         public ViewportF GetViewport(int index)
         {
             return _viewports[index];
