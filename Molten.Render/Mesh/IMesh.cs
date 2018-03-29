@@ -57,5 +57,6 @@ namespace Molten.Graphics
         /// <param name="data">The data to be copied.</param>
         /// <param name="startIndex">The element within the data array to start copying from.</param>
         void SetVertices(T[] data, int offset, int count);
+
     }
 }

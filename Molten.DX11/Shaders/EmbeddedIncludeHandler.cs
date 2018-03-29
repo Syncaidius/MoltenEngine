@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Molten.Graphics.Shaders
+namespace Molten.Graphics
 {
     internal class EmbeddedIncludeHandler : Include
     {
@@ -20,13 +20,13 @@ namespace Molten.Graphics.Shaders
         /// </summary>
         /// <param name="assembly"></param>
         /// <param name="nSpace">The namespace from which the include handler will load files out of.</param>
-        public EmbeddedIncludeHandler(Assembly assembly, string nSpace)
+        public EmbeddedIncludeHandler(Assembly assembly, string nSpace = "Molten.Graphics.Assets")
         {
             _assembly = assembly;
             _namespace = nSpace;
         }
 
-        public void Close(System.IO.Stream stream)
+        public void Close(Stream stream)
         {
             _stream.Close();
         }
@@ -39,7 +39,7 @@ namespace Molten.Graphics.Shaders
             // Try again, but this time attempt to load the embedded include from the engine DLL.
             if (_stream == null && _assembly != null)
             {
-                embeddedName = "StoneBolt.Assets." + fileName;
+                embeddedName = "Molten.Graphics.Assets." + fileName;
                 _stream = EmbeddedResource.GetStream(embeddedName, null);
             }
 

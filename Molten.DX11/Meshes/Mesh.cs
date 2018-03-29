@@ -90,12 +90,16 @@ namespace Molten.Graphics
                 if(_material != value)
                 {
                     _materialWvp = null;
-                    _material = value ?? _renderer.DefaultMeshMaterial;
+                    _material = value;
 
                     if (_material != null)
                     {
                         if (_material.HasObjectConstants)
                             _materialWvp = _material["wvp"];
+                    }
+                    else
+                    {
+                        _materialWvp = null;
                     }
                 }                
             }

@@ -1,4 +1,5 @@
-﻿using SharpDX.DXGI;
+﻿using SharpDX.Direct3D11;
+using SharpDX.DXGI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,9 +13,7 @@ namespace Molten.Graphics
     {
         internal RenderSurface Scene;
         internal RenderSurface Normals;
-        internal RenderSurface Specular;
         internal RenderSurface Emissive;
-        internal DepthSurface Depth;
 
         Material _matStandard;
         Material _matSansNormalMap;
@@ -49,16 +48,13 @@ namespace Molten.Graphics
 
             Scene = new RenderSurface(renderer.Device, width, height, Format.R8G8B8A8_UNorm);
             Normals = new RenderSurface(renderer.Device, width, height, Format.R11G11B10_Float);
-            Specular = new RenderSurface(renderer.Device, width, height, Format.R8G8B8A8_UNorm);
             Emissive = new RenderSurface(renderer.Device, width, height, Format.R8G8B8A8_UNorm);
-            Depth = new DepthSurface(renderer.Device, width, height, DepthFormat.R24G8_Typeless);
         }
 
         private void DisposeSurfaces()
         {
             Scene?.Dispose();
             Normals?.Dispose();
-            Specular?.Dispose();
             Emissive?.Dispose();
         }
 
@@ -69,13 +65,49 @@ namespace Molten.Graphics
 
         protected override void OnRender(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time)
         {
+            GraphicsDevice device = renderer.Device;
+            DepthSurface ds = null;
+            RenderSurfaceBase rs = null;
+
+            if (scene.RenderCamera != null)
+            {
+                rs = scene.RenderCamera.OutputSurface as RenderSurfaceBase;
+                ds = scene.RenderCamera.OutputDepthSurface as DepthSurface;
+                rs = rs ?? device.DefaultSurface;
+
+                scene.Projection = scene.RenderCamera.Projection;
+                scene.View = scene.RenderCamera.View;
+                scene.ViewProjection = scene.RenderCamera.ViewProjection;
+            }
+            else
+            {
+                rs = device.DefaultSurface;
+                if (rs == null)
+                    return;
+
+                scene.View = RendererDX11.DefaultView3D;
+                scene.Projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, rs.Width / (float)rs.Height, 0.1f, 100.0f);
+                scene.ViewProjection = Matrix4F.Multiply(scene.View, scene.Projection);
+            }
+
             // Clear surfaces
             Scene.Clear(renderer.Device, scene.BackgroundColor);
             Normals.Clear(renderer.Device, Color.White * 0.5f);
-            Specular.Clear(renderer.Device, Color.Black);
             Emissive.Clear(renderer.Device, Color.Black);
 
+            // Clear the depth surface if it hasn't already been cleared
+            renderer.ClearIfFirstUse(Scene, () => Scene.Clear(device, scene.BackgroundColor));
+            renderer.ClearIfFirstUse(Normals, () => Normals.Clear(device, scene.BackgroundColor));
+            renderer.ClearIfFirstUse(Emissive, () => Emissive.Clear(device, scene.BackgroundColor));
+            renderer.ClearIfFirstUse(ds, () => ds.Clear(device, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil));
 
+            device.SetRenderSurface(Scene, 0);
+            device.SetRenderSurface(Normals, 1);
+            device.SetRenderSurface(Emissive, 2);
+            device.SetDepthSurface(ds, GraphicsDepthMode.Enabled);
+            device.DepthStencil.SetPreset(DepthStencilPreset.Default);
+            device.Rasterizer.SetViewports(rs.Viewport);
+            scene.Render3D(device, renderer);
         }
     }
 }

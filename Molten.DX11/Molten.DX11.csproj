@@ -183,7 +183,7 @@
     <Compile Include="Shaders\EmbeddedIncludeHandler.cs" />
     <Compile Include="Shaders\HlslShader.cs" />
     <Compile Include="Shaders\Materials\Material.cs" />
-    <Compile Include="Shaders\Materials\MaterialIncludeHandler.cs" />
+    <Compile Include="Shaders\HlslIncludeHandler.cs" />
     <Compile Include="Shaders\Materials\MaterialLayoutValidator.cs" />
     <Compile Include="Shaders\Materials\MaterialManager.cs" />
     <Compile Include="Shaders\Materials\MaterialPass.cs" />

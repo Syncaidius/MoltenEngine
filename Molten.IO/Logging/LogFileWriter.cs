@@ -14,6 +14,7 @@ namespace Molten
         StreamWriter _writer;
         string _strFormat = "[{0}] {1}";
         string _logFile = "log{0}.txt";
+        bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LogFileWriter"/> class.
@@ -59,6 +60,10 @@ namespace Molten
         /// <summary>Closes the underlying file stream and disposes of the <see cref="LogFileWriter"/>.</summary>
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
+            _disposed = true;
             SaveToFile();
             _stream.Dispose();
         }

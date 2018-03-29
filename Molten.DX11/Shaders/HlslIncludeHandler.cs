@@ -7,10 +7,16 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    internal class MaterialIncludeHandler : Include
+    internal class HlslIncludeHandler : Include
     {
         Stream _stream;
         IDisposable _disposable;
+        string _directory;
+
+        internal HlslIncludeHandler(string directory)
+        {
+            _directory = directory ?? "";
+        }
 
         public void Close(System.IO.Stream stream)
         {
@@ -19,7 +25,7 @@ namespace Molten.Graphics
 
         public Stream Open(IncludeType type, string filename, Stream parentStream)
         {
-            _stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
+            _stream = new FileStream(Path.Combine(_directory, filename), FileMode.Open, FileAccess.Read, FileShare.Read);
             return _stream;
         }
 

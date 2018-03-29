@@ -23,9 +23,34 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
 
+            SampleScene.RenderData.Flags |= SceneRenderFlags.Deferred;
+            ContentRequest cr = engine.Content.StartRequest();
+            cr.Load<ITexture2D>("dds_test.dds;mipmaps=true");
+            cr.Load<IMaterial>("gbuffer.sbm"); // TODO TEMP until the shader is used by default from within the renderer.
+            cr.OnCompleted += Cr_OnCompleted;
+            cr.Commit();
+
             _mesh = MeshHelper.Cube(engine.Renderer);
 
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
+        }
+
+        private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
+        {
+            if (cr.RequestedFiles.Count == 0)
+                return;
+
+            ITexture2D tex = content.Get<ITexture2D>(cr.RequestedFiles[0]);
+            IMaterial mat = content.Get<IMaterial>(cr.RequestedFiles[1]);
+
+            if (mat == null)
+            {
+                Exit();
+                return;
+            }
+
+            mat.SetDefaultResource(tex, 0);
+            _mesh.Material = mat;
         }
 
         protected override void OnUpdate(Timing time)

@@ -11,12 +11,14 @@ namespace Molten.Graphics
     public sealed class SceneRenderDataDX11 : SceneRenderData
     {
         ThreadedQueue<RenderSceneChange> _pendingChanges;
+        RenderChain _chain;
+        SceneRenderFlags _previousFlags;
 
         internal Dictionary<Renderable, List<ObjectRenderData>> Renderables;
-
         internal SpriteLayer[] SpriteLayers;
 
-        public SceneRenderDataDX11()
+
+        internal SceneRenderDataDX11(RendererDX11 renderer)
         {
             _pendingChanges = new ThreadedQueue<RenderSceneChange>();
             Renderables = new Dictionary<Renderable, List<ObjectRenderData>>();
@@ -24,6 +26,9 @@ namespace Molten.Graphics
             // Set up one sprite layer.
             SpriteLayers = new SpriteLayer[1];
             SpriteLayers[0] = new SpriteLayer();
+            _previousFlags = Flags;
+            _chain = new RenderChain(renderer, this);
+            _chain.Rebuild();
         }
 
         public override void AddObject(IRenderable obj, ObjectRenderData renderData)
@@ -103,11 +108,20 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        internal void PreRender(RendererDX11 renderer, GraphicsPipe pipe)
+        internal void Render(GraphicsPipe pipe, RendererDX11 renderer, Timing time)
         {
             PreRenderInvoke(renderer);
+            if (Flags != _previousFlags)
+            {
+                _chain.Rebuild();
+                _previousFlags = Flags;
+            }
+
             while (_pendingChanges.TryDequeue(out RenderSceneChange change))
                 change.Process(this);
+
+            _chain.Render(this, time);
+            PostRenderInvoke(renderer);
         }
 
         internal void Render3D(GraphicsPipe pipe, RendererDX11 renderer)
@@ -151,11 +165,6 @@ namespace Molten.Graphics
                 foreach (ISprite s in layer.Sprites)
                     s.Render(renderer.SpriteBatcher);
             }
-        }
-
-        internal void PostRender(RendererDX11 renderer)
-        {
-            PostRenderInvoke(renderer);
         }
 
         internal Matrix4F View = Matrix4F.Identity;

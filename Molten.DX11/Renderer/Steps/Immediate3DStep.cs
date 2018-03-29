@@ -1,4 +1,5 @@
-﻿using SharpDX.DXGI;
+﻿using SharpDX.Direct3D11;
+using SharpDX.DXGI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,6 @@ namespace Molten.Graphics
     /// </summary>
     internal class Immediate3dStep : DeferredRenderStep
     {
-        static readonly Matrix4F _defaultView3D = Matrix4F.LookAtLH(new Vector3F(0, 0, -5), new Vector3F(0, 0, 0), Vector3F.UnitY);
-
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
             UpdateSurfaces(renderer, width, height);
@@ -47,7 +46,7 @@ namespace Molten.Graphics
                 if (rs == null)
                     return;
 
-                scene.View = _defaultView3D;
+                scene.View = RendererDX11.DefaultView3D;
                 scene.Projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, rs.Width / (float)rs.Height, 0.1f, 100.0f);
                 scene.ViewProjection = Matrix4F.Multiply(scene.View, scene.Projection);
             }
@@ -59,7 +58,7 @@ namespace Molten.Graphics
 
                 // Clear the depth surface if it hasn't already been cleared
                 if (ds != null)
-                    renderer.ClearIfFirstUse(ds, () => ds.Clear(DepthClearFlags.Depth | DepthClearFlags.Stencil));
+                    renderer.ClearIfFirstUse(ds, () => ds.Clear(device, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil));
 
                 device.SetRenderSurface(rs, 0);
                 device.SetDepthSurface(ds, GraphicsDepthMode.Enabled);

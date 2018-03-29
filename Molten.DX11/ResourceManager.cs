@@ -1,4 +1,5 @@
-﻿using SharpDX.DXGI;
+﻿using SharpDX.D3DCompiler;
+using SharpDX.DXGI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -171,7 +172,16 @@ namespace Molten.Graphics
         /// <returns></returns>
         public ShaderCompileResult CreateShaders(string source, string filename = null)
         {
-            ShaderCompileResult result = _renderer.ShaderCompiler.Compile(source, filename);
+            Include includer = null;
+
+            if (!string.IsNullOrWhiteSpace(filename))
+            {
+                FileInfo fInfo = new FileInfo(filename);
+                DirectoryInfo dir = fInfo.Directory;
+                includer = new HlslIncludeHandler(dir.ToString());
+            }
+
+            ShaderCompileResult result = _renderer.ShaderCompiler.Compile(source, filename, includer);
 
             foreach (string error in result.Errors)
                 _renderer.Device.Log.WriteError(error);

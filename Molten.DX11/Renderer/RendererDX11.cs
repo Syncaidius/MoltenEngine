@@ -11,6 +11,8 @@ namespace Molten.Graphics
 {
     public class RendererDX11 : IRenderer
     {
+        internal static readonly Matrix4F DefaultView3D = Matrix4F.LookAtLH(new Vector3F(0, 0, -5), new Vector3F(0, 0, 0), Vector3F.UnitY);
+
         int _biggestWidth = 1;
         int _biggestHeight = 1;
         bool _surfacesDirty;
@@ -27,17 +29,12 @@ namespace Molten.Graphics
         ThreadedList<ISwapChainSurface> _outputSurfaces;
         HashSet<TextureAsset2D> _clearedSurfaces;
 
-        Material _defaultMeshMaterial;
-
         List<DebugOverlayPage> _debugOverlay;
         int _debugOverlayPage = 0;
         SpriteFont _debugFont;
         bool _debugOverlayVisible = false;
         Dictionary<Type, DeferredRenderStep> _steps;
         List<DeferredRenderStep> _stepList;
-
-        // Core deferred renderer steps
-        RenderChain _mainChain;
 
         AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
         internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
@@ -79,7 +76,6 @@ namespace Molten.Graphics
             _shaderCompiler = new HlslCompiler(this, _log);
             _tasks = new ThreadedQueue<RendererTask>();
             _clearedSurfaces = new HashSet<TextureAsset2D>();
-            _mainChain = new RenderChain(this);
             Scenes = new List<SceneRenderDataDX11>();
 
             int maxVertexBytesStatic = 1024 * 512;
@@ -152,7 +148,7 @@ namespace Molten.Graphics
 
         public SceneRenderData CreateRenderData()
         {
-            SceneRenderDataDX11 rd = new SceneRenderDataDX11();
+            SceneRenderDataDX11 rd = new SceneRenderDataDX11(this);
             RendererAddScene task = RendererAddScene.Get();
             task.Data = rd;
             PushTask(task);
@@ -278,10 +274,7 @@ namespace Molten.Graphics
             {
                 scene = Scenes[i];
                 if (scene.IsVisible)
-                {
-                    BuildChain(scene, _mainChain);
-                    _mainChain.Render(this, scene, time);
-                }
+                    scene.Render(_device, this, time);
             }
 
             // Present all output surfaces
@@ -305,28 +298,6 @@ namespace Molten.Graphics
             {
                 callback();
                 _clearedSurfaces.Add(surface);
-            }
-        }
-
-        private void BuildChain(SceneRenderDataDX11 scene, RenderChain chain)
-        {
-            // TODO if the current scene has the same flags as the previous scene, skip rebuilding chain.
-            // TODO consider moving/caching render chain construction in to SceneRenderDataDX11. If the flags are changed, (re)build it on the next render cycle.
-
-            chain.Clear();
-
-            if (scene.HasFlag(SceneRenderFlags.Deferred))
-            {
-                chain.Next<GBuffer3dStep>();
-                // TODO complete deferred chain here
-            }
-            else
-            {
-                if (scene.HasFlag(SceneRenderFlags.Render3D))
-                    chain.Next<Immediate3dStep>();
-
-                if (scene.HasFlag(SceneRenderFlags.Render2D))
-                    chain.Next<Render2dStep>();
             }
         }
 
@@ -383,8 +354,6 @@ namespace Molten.Graphics
         internal ComputeManager Compute => _compute;
 
         IComputeManager IRenderer.Compute => _compute;
-
-        internal Material DefaultMeshMaterial => _defaultMeshMaterial;
 
         internal HlslCompiler ShaderCompiler => _shaderCompiler;
 

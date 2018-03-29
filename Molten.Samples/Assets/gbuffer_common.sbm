@@ -49,8 +49,6 @@ Texture2D<float3> mapNormal		: register(t1);
 Texture2D<float4> mapGlow		: register(t2);
 Texture2D<float> mapDepth		: register(t3);
 
-static const float2 g_SpecPowerRange = { 10.0, 250.0 };
-
 struct MATERIAL{
 	float3 colorData;
 	float4 worldPos;
@@ -70,7 +68,7 @@ MATERIAL UnpackGBuffer(float3 screenPos){
 	// The texture coordinates need to be in [0,1]*[0,1]
 	o.uv = 0.5f * (float2(screenPos.x, -screenPos.y) + 1);
 
-	// Get color and specular
+	// Get color and normal
 	float4 colorData = mapDiffuse.Sample(texSampler, o.uv);
 	float3 normalData = mapNormal.Sample(texSampler, o.uv);
 
