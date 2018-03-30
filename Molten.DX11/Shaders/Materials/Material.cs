@@ -12,7 +12,6 @@ namespace Molten.Graphics
     {
         internal MaterialPass[] Passes = new MaterialPass[0];
         internal byte[] InputStructureByteCode;
-        internal IShaderResource[] DefaultResources;
 
         Dictionary<string, MaterialPass> _passesByName;
 
@@ -21,7 +20,6 @@ namespace Molten.Graphics
         internal Material(GraphicsDevice device, string filename) : base(device, filename)
         {
             _passesByName = new Dictionary<string, MaterialPass>();
-            DefaultResources = new IShaderResource[0];
         }
 
         internal void AddPass(MaterialPass pass)
@@ -50,28 +48,10 @@ namespace Molten.Graphics
             return _passesByName[name];
         }
 
-        public void SetDefaultResource(IShaderResource resource, int slot)
-        {
-            if(slot >= Device.Features.MaxInputResourceSlots)
-                throw new IndexOutOfRangeException("The maximum slot number must be less than the maximum supported by the graphics device.");
-
-            if (slot >= DefaultResources.Length)
-                Array.Resize(ref DefaultResources, slot + 1);
-
-            DefaultResources[slot] = resource;
-        }
-
-        public IShaderResource GetDefaultResource(int slot)
-        {
-            if (slot >= DefaultResources.Length)
-                return null;
-            else
-                return DefaultResources[slot];
-        }
-
         internal bool HasCommonConstants { get; set; }
 
         internal bool HasObjectConstants { get; set; }
 
+        internal bool HasGBufferTextures { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿<material>
 	<name>position-texture</name>
-	<description>A simple shader which renders meshes with position and 2D UV data</description>
+	<description>A simple shader which renders 3D meshes with position and 2D UV data</description>
 	<pass>
 		<name>main</name>
 		<iterations>1</iterations>

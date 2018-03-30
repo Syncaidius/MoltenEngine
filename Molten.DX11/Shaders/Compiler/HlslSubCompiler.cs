@@ -65,6 +65,54 @@ namespace Molten.Graphics
                 parser.Parse(shader, context, node);
         }
 
+        protected bool HasResource(HlslShader shader, string resourceName)
+        {
+            foreach (ShaderResourceVariable resource in shader.Resources)
+            {
+                if (resource == null)
+                    continue;
+
+                if (resource.Name == resourceName)
+                    return true;
+            }
+
+            return false;
+        }
+
+        protected bool HasConstantBuffer(HlslShader shader, ShaderParseResult result, string bufferName, string[] varNames)
+        {
+            foreach (ShaderConstantBuffer buffer in shader.ConstBuffers)
+            {
+                if (buffer == null)
+                    continue;
+
+                if (buffer.BufferName == bufferName)
+                {
+                    if (buffer.Variables.Length != varNames.Length)
+                    {
+                        result.Errors.Add($"Material '{bufferName}' constant buffer does not have the correct number of variables ({varNames.Length})");
+                        return false;
+                    }
+
+                    for (int i = 0; i < buffer.Variables.Length; i++)
+                    {
+                        ShaderConstantVariable variable = buffer.Variables[i];
+                        string expectedName = varNames[i];
+
+                        if (variable.Name != expectedName)
+                        {
+                            result.Errors.Add($"Material '{bufferName}' constant variable #{i + 1} is incorrect: Named '{variable.Name}' instead of '{expectedName}'");
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         protected ShaderReflection BuildIo(CompilationResult code, ShaderComposition composition)
         {
             ShaderReflection shaderRef = new ShaderReflection(code);

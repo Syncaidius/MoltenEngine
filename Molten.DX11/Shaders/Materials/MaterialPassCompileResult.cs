@@ -50,9 +50,5 @@ namespace Molten.Graphics
         internal List<string> Errors = new List<string>();
 
         internal List<string> Warnings = new List<string>();
-
-        internal bool HasCommonConstants = false;
-
-        internal bool HasObjectConstants = false;
     }
 }

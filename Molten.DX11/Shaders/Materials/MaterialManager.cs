@@ -14,7 +14,6 @@ namespace Molten.Graphics
         ThreadedDictionary<string, Material> _materialsByName = new ThreadedDictionary<string, Material>();
         ThreadedList<Material> _materials = new ThreadedList<Material>();
 
-
         internal void AddMaterial(Material material)
         {
             _materials.Add(material);

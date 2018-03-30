@@ -140,6 +140,11 @@ namespace Molten.Graphics
                         context.Header = h;
                         
                         ShaderParseResult parseResult = com.Parse(_renderer, context);
+
+                        // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
+                        foreach(HlslShader shader in parseResult.Shaders)
+                            shader.DefaultResources = new IShaderResource[shader.Resources.Length];
+
                         context.Result.AddResult(nodeName, parseResult);
                     }
                 }

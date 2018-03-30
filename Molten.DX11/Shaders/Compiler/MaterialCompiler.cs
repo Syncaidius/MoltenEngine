@@ -5,12 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using SharpDX.D3DCompiler;
+using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 
 namespace Molten.Graphics
 {
     internal class MaterialCompiler : HlslSubCompiler
     {
+        internal const string MAP_DIFFUSE = "mapDiffuse";
+        internal const string MAP_NORMAL = "mapNormal";
+        internal const string MAP_EMISSIVE = "mapEmissive";
+
         // The names for expected constant buffers within each material pass.
         const string CONST_COMMON_NAME = "Common";
         const string CONST_OBJECT_NAME = "Object";
@@ -74,10 +79,15 @@ namespace Molten.Graphics
                     result.Errors.AddRange(passResult.Errors);
                     return result;
                 }
-
-                material.HasCommonConstants = material.HasCommonConstants || passResult.HasCommonConstants;
-                material.HasObjectConstants = material.HasObjectConstants || passResult.HasObjectConstants;
             }
+
+            // Populate metadata
+            material.HasCommonConstants = HasConstantBuffer(material, result, CONST_COMMON_NAME, CONST_COMMON_VAR_NAMES);
+            material.HasObjectConstants = HasConstantBuffer(material, result, CONST_OBJECT_NAME, CONST_OBJECT_VAR_NAMES);
+            bool hasDiffuse = HasResource(material, MAP_DIFFUSE);
+            bool hasNormal = HasResource(material, MAP_NORMAL);
+            bool hasEmissive = HasResource(material, MAP_EMISSIVE);
+            material.HasGBufferTextures = hasDiffuse && hasNormal && hasEmissive;
 
             // Validate the vertex input structure of all passes. Should match structure of first pass.
             // Only run this if there is more than 1 pass.
@@ -95,7 +105,8 @@ namespace Molten.Graphics
             }
 
             // No issues arose, lets add it to the material manager
-            if (result.Errors.Count == 0) {
+            if (result.Errors.Count == 0)
+            {
                 material.InputStructure = material.Passes[0].VertexShader.InputStructure;
                 material.InputStructureByteCode = firstPassResult.VertexResult.Bytecode;
                 result.Shaders.Add(material);
@@ -118,11 +129,6 @@ namespace Molten.Graphics
                 if (Compile(pass.Compositions[i].EntryPoint, MaterialPass.ShaderTypes[i], context, out result.Results[i]))
                 {
                     result.Reflections[i] = BuildIo(result.Results[i], pass.Compositions[i]);
-                    bool hasCommonConstants = CheckForConstantBuffer(result, result.Reflections[i], CONST_COMMON_NAME, CONST_COMMON_VAR_NAMES);
-                    bool hasObjectConstants = CheckForConstantBuffer(result, result.Reflections[i], CONST_OBJECT_NAME, CONST_OBJECT_VAR_NAMES);
-
-                    result.HasCommonConstants = result.HasCommonConstants || hasCommonConstants;
-                    result.HasObjectConstants = result.HasObjectConstants || hasObjectConstants;
                 }
                 else
                 {
@@ -132,7 +138,7 @@ namespace Molten.Graphics
             }
 
             // Fill in any extra metadata
-            if(result.Reflections[MaterialPass.ID_GEOMETRY] != null)
+            if (result.Reflections[MaterialPass.ID_GEOMETRY] != null)
                 pass.GeometryPrimitive = result.Reflections[MaterialPass.ID_GEOMETRY].GeometryShaderSInputPrimitive;
 
             // Validate I/O structure of each shader stage.
@@ -140,51 +146,6 @@ namespace Molten.Graphics
                 BuildPassStructure(result);
 
             return result;
-        }
-
-        private bool CheckForConstantBuffer(MaterialPassCompileResult result, ShaderReflection reflection, string bufferName, string[] varNames)
-        {
-            ConstantBuffer buffer = reflection.GetConstantBuffer(bufferName);
-            ConstantBufferDescription desc;
-            try
-            {
-                desc = buffer.Description;
-            }
-            catch
-            {
-                return false;
-            }
-
-            // Validate layout of common buffer
-            int varCount = desc.VariableCount;
-            if (varCount != varNames.Length)
-            {
-                result.Errors.Add($"Material '{bufferName}' constant buffer does not have the correct number of variables ({varNames.Length})");
-                return false;
-            }
-
-            for (int i = 0; i < varCount; i++)
-            {
-                ShaderReflectionVariable varDesc = buffer.GetVariable(i);
-                ShaderReflectionType varType = varDesc.GetVariableType();
-                ShaderTypeDescription typeDesc = varType.Description;
-
-                string name = varDesc.Description.Name;
-                string expectedName = varNames[i];
-                if (name != expectedName)
-                {
-                    result.Errors.Add($"Material '{bufferName}' constant variable #{i + 1} is incorrect: Named '{name}' instead of '{expectedName}'");
-                    return false;
-                }
-
-                if (typeDesc.Type != ShaderVariableType.Float || typeDesc.RowCount != 4 || typeDesc.ColumnCount != 4)
-                {
-                    result.Errors.Add($"Material '{bufferName}' constant variable #{i + 1}'s type is incorrect: '{typeDesc.Type.ToString().ToLower()}{typeDesc.RowCount}x{typeDesc.ColumnCount}' instead of 'float4x4'");
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         private void BuildPassStructure(MaterialPassCompileResult pResult)

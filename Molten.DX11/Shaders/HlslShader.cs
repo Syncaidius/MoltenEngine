@@ -14,6 +14,9 @@ namespace Molten.Graphics
         internal Dictionary<string, PipelineShaderObject> ResourcePool = new Dictionary<string, PipelineShaderObject>();
         internal Dictionary<string, IShaderValue> Variables = new Dictionary<string, IShaderValue>();
 
+
+        internal IShaderResource[] DefaultResources;
+
         GraphicsDevice _device;
         string _filename;
         internal ShaderIOStructure InputStructure;
@@ -42,6 +45,23 @@ namespace Molten.Graphics
             _filename = filename ?? "";
             _device = device;
             _metadata = new Dictionary<string, string>();
+        }
+
+        public void SetDefaultResource(IShaderResource resource, int slot)
+        {
+            if (slot >= DefaultResources.Length)
+                throw new IndexOutOfRangeException($"The highest slot number must be less than the number of resources in the material ({DefaultResources.Length}).");
+
+            Array.Resize(ref DefaultResources, slot + 1);
+            DefaultResources[slot] = resource;
+        }
+
+        public IShaderResource GetDefaultResource(int slot)
+        {
+            if (slot >= DefaultResources.Length)
+                throw new IndexOutOfRangeException($"The highest slot number must be less than the number of resources in the material ({DefaultResources.Length}).");
+            else
+                return DefaultResources[slot];
         }
 
         /// <summary>Gets or sets the value of a material parameter.</summary>

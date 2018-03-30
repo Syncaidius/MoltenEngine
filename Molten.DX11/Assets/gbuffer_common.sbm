@@ -31,11 +31,18 @@ cbuffer commonLight : register(b0)
 	float4x4 InvertViewProjection;
 }
 
-cbuffer commonGBuffer : register(b0)
+cbuffer Common : register(b0)
 {
-	float4x4 world;
-	float4x4 view;
-	float4x4 projection;
+  float4x4 view   : packoffset(c0);
+  float4x4 projection : packoffset(c4);
+  float4x4 viewProjection : packoffset(c8);
+  float4x4 invViewProjection: packoffset(c12);
+}
+
+cbuffer Object : register(b1)
+{
+  float4x4 wvp : packoffset(c0);
+  float4x4 world : packoffset(c4);
 }
 
 cbuffer cbGBufferPixel : register(b1)

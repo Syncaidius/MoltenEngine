@@ -16,9 +16,11 @@ namespace Molten.Graphics
         private protected int _maxVertices;
         private protected PrimitiveTopology _topology;
         private protected Material _material;
-        private protected IShaderValue _materialWvp;
         private protected int _vertexCount;
         private protected bool _isDynamic;
+
+        private protected IShaderValue _matWvp;
+        private protected IShaderValue _matWorld;
 
         internal Mesh(RendererDX11 renderer, int maxVertices, VertexTopology topology, bool dynamic) : base(renderer.Device)
         {
@@ -61,8 +63,11 @@ namespace Molten.Graphics
             ApplyBuffers(pipe);
             ApplyResources(_material);
 
-            if (_materialWvp != null)
-                _materialWvp.Value = Matrix4F.Multiply(data.RenderTransform, sceneData.ViewProjection);
+            if (_material.HasObjectConstants)
+            {
+                _matWvp.Value = Matrix4F.Multiply(data.RenderTransform, sceneData.ViewProjection);
+                _matWorld.Value = data.RenderTransform;
+            }
 
             renderer.Device.Draw(_material, _vertexCount, _topology);
 
@@ -70,6 +75,17 @@ namespace Molten.Graphics
             *  - A buffer can be bound as both a vertex and index buffer
             *  - If offsets and formats for each segment are correct, a single buffer can be bound at multiple pipeline stages.
             */
+        }
+
+        protected virtual void OnSetMaterial(Material newMaterial)
+        {
+            // TODO enforce the below as requirements.
+            // TODO set material to null if invalid. Scene will use default render shader if one was not provided (or set to null due to being invalid).
+            if (newMaterial.HasObjectConstants)
+            {
+                _matWvp = newMaterial["wvp"];
+                _matWorld = newMaterial["world"];
+            }
         }
 
         public virtual void Dispose()
@@ -87,21 +103,16 @@ namespace Molten.Graphics
             get => _material;
             set
             {
-                if(_material != value)
+                if (_material != value)
                 {
-                    _materialWvp = null;
-                    _material = value;
+                    _matWvp = null;
+                    _matWorld = null;
 
-                    if (_material != null)
-                    {
-                        if (_material.HasObjectConstants)
-                            _materialWvp = _material["wvp"];
-                    }
-                    else
-                    {
-                        _materialWvp = null;
-                    }
-                }                
+                    if (value != null)
+                        OnSetMaterial(value);
+
+                    _material = value;
+                }    
             }
         }
 

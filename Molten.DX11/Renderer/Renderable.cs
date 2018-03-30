@@ -9,7 +9,6 @@ namespace Molten.Graphics
     public abstract class Renderable : IRenderable
     {
         bool _isVisible;
-        SceneRenderDataDX11 _scene;
         IShaderResource[] _resources;
 
         internal Renderable(GraphicsDevice device)
@@ -40,14 +39,13 @@ namespace Molten.Graphics
 
         protected void ApplyResources(Material material)
         {
+            int resCount = Math.Min(_resources.Length, material.Resources.Length);
+
             // Set as many custom resources from the renderable as possible, or use the material's default when needed.
-            for(int i = 0; i < _resources.Length; i++)
+            for (int i = 0; i < _resources.Length; i++)
                 material.Resources[i].Value = _resources[i] ?? material.DefaultResources[i];
 
-            // Continue applying any other default resources from the material, if any.
-            int max = Math.Min(material.Resources.Length, material.DefaultResources.Length);
-
-            for (int i = _resources.Length; i < max; i++)
+            for (int i = _resources.Length; i < material.Resources.Length; i++)
                 material.Resources[i].Value = material.DefaultResources[i];
         }
 
