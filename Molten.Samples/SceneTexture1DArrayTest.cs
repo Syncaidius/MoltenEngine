@@ -15,7 +15,7 @@ namespace Molten.Samples
 
         SceneObject _parent;
         SceneObject _child;
-        IMesh<CubeArrayVertex> _mesh;
+        ICustomMesh<CubeArrayVertex> _mesh;
 
         public SceneTexture1DArrayTest(EngineSettings settings = null) : base("1D Texture Array", settings) { }
 
@@ -23,7 +23,7 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);    
 
-            _mesh = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
+            _mesh = Engine.Renderer.Resources.CreateCustomMesh<CubeArrayVertex>(36);
             CubeArrayVertex[] verts = new CubeArrayVertex[]{
                new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(0,1,0)), //front
                new CubeArrayVertex(new Vector3F(-1,1,-1), new Vector3F(0,0,0)),

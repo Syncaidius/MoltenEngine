@@ -15,7 +15,7 @@ namespace Molten.Samples
 
         SceneObject _parent;
         SceneObject _child;
-        IMesh<GBufferVertex> _mesh;
+        ICustomMesh<GBufferVertex> _mesh;
 
         public DeferredRenderingSample(EngineSettings settings = null) : base("Deferred Rendering", settings) { }
 

@@ -15,7 +15,7 @@ namespace Molten.Samples
 
         SceneObject _parent;
         SceneObject _child;
-        IMesh<VertexColor> _mesh;
+        ICustomMesh<VertexColor> _mesh;
 
         public SceneParentingTest(EngineSettings settings = null) : base("Scene Parenting", settings) { }
 
@@ -28,7 +28,7 @@ namespace Molten.Samples
             cr.OnCompleted += Cr_OnCompleted; ;
             cr.Commit();
 
-            _mesh = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
+            _mesh = Engine.Renderer.Resources.CreateCustomMesh<VertexColor>(36);
             VertexColor[] verts = new VertexColor[]{
                 new VertexColor(new Vector3F(-1,-1,-1), Color.Red), //front
                 new VertexColor(new Vector3F(-1,1,-1), Color.Red),

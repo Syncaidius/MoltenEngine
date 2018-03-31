@@ -149,13 +149,18 @@ namespace Molten.Graphics
             _fontTable.Clear();
         }
 
-        public IMesh<T> CreateMesh<T>(int maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
+        public IStandardMesh CreateMesh(int maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false)
+        {
+            return new StandardMesh(_renderer, maxVertices, topology, dynamic);
+        }
+
+        public ICustomMesh<T> CreateCustomMesh<T>(int maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
             where T : struct, IVertexType
         {
             return new Mesh<T>(_renderer, maxVertices, topology, dynamic);
         }
 
-        public IIndexedMesh<T> CreateIndexedMesh<T>(
+        public ICustomIndexedMesh<T> CreateCustomIndexedMesh<T>(
             int maxVertices, 
             int maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 

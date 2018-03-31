@@ -11,7 +11,7 @@ namespace Molten.Graphics
     /// <typeparam name="T">The vertex type in the form of a <see cref="IVertexType"/> type.</typeparam>
     /// <seealso cref="Molten.Graphics.Mesh{T}" />
     /// <seealso cref="Molten.Graphics.IIndexedMesh" />
-    public class IndexedMesh<T> : Mesh<T>, IIndexedMesh<T> where T : struct, IVertexType
+    public class IndexedMesh<T> : Mesh<T>, ICustomIndexedMesh<T> where T : struct, IVertexType
     {
         BufferSegment _ib;
         int _maxIndices;

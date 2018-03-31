@@ -14,7 +14,7 @@ namespace Molten.Samples
         public override string Description => "A simple scene test using colored cubes with";
 
         List<SceneObject> _objects;
-        IMesh<VertexColor> _mesh;
+        ICustomMesh<VertexColor> _mesh;
 
         public SceneStressTest(EngineSettings settings = null) : base("Scene Stress", settings) { }
 
@@ -29,7 +29,7 @@ namespace Molten.Samples
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
-            _mesh = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
+            _mesh = Engine.Renderer.Resources.CreateCustomMesh<VertexColor>(36);
             VertexColor[] vertices = new VertexColor[]{
                         new VertexColor(new Vector3F(-1,-1,-1), Color.Red), //front
                         new VertexColor(new Vector3F(-1,1,-1), Color.Red),

@@ -54,11 +54,23 @@ namespace Molten.Graphics
         /// <param name="destination">The destination texture.</param>
         void ResolveTexture(ITexture source, ITexture destination);
 
+        /// <summary>
+        /// Creates a standard mesh. Standard meshes enforce stricter rules aimed at deferred rendering.
+        /// </summary>
+        /// <param name="maxVertices"></param>
+        /// <param name="topology"></param>
+        /// <param name="dynamic"></param>
+        /// <returns></returns>
+        IStandardMesh CreateMesh(int maxVertices,
+            VertexTopology topology = VertexTopology.TriangleList,
+            bool dynamic = false);
+
+
         /// <summary>Creates a new unindexed mesh. Unindexed meshes do not contain an index buffer to reduce vertex data size.</summary>
         /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
         /// <param name="dedicatedResource">if set to <c>true</c>, the mesh is given its own dedicated resource buffer.</param>
         /// <returns></returns>
-        IMesh<T> CreateMesh<T>(
+        ICustomMesh<T> CreateCustomMesh<T>(
             int maxVertices, 
             VertexTopology topology = VertexTopology.TriangleList,
             bool dynamic = false) 
@@ -70,7 +82,7 @@ namespace Molten.Graphics
         /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
         /// <param name="dedicatedResource">if set to <c>true</c> [dedicated resource].</param>
         /// <returns></returns>
-        IIndexedMesh<T> CreateIndexedMesh<T>(int maxVertices, int maxIndices, 
+        ICustomIndexedMesh<T> CreateCustomIndexedMesh<T>(int maxVertices, int maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit,
             bool dynamic = false) 

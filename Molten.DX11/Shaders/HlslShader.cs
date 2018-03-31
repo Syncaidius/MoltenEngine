@@ -50,7 +50,7 @@ namespace Molten.Graphics
         public void SetDefaultResource(IShaderResource resource, int slot)
         {
             if (slot >= DefaultResources.Length)
-                throw new IndexOutOfRangeException($"The highest slot number must be less than the number of resources in the material ({DefaultResources.Length}).");
+                throw new IndexOutOfRangeException($"The highest slot number must be less-or-equal to the highest slot number used in the shader source code ({DefaultResources.Length}).");
 
             Array.Resize(ref DefaultResources, slot + 1);
             DefaultResources[slot] = resource;
@@ -59,7 +59,7 @@ namespace Molten.Graphics
         public IShaderResource GetDefaultResource(int slot)
         {
             if (slot >= DefaultResources.Length)
-                throw new IndexOutOfRangeException($"The highest slot number must be less than the number of resources in the material ({DefaultResources.Length}).");
+                throw new IndexOutOfRangeException($"The highest slot number must be less-or-equal to the highest slot number used in the shader source code ({DefaultResources.Length}).");
             else
                 return DefaultResources[slot];
         }

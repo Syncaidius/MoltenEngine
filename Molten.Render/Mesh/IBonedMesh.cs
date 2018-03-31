@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public interface IBonedMesh<T> : IIndexedMesh<T> where T : struct, IVertexType
+    public interface IBonedMesh<T> : ICustomIndexedMesh<T> where T : struct, IVertexType
     {
         void SetBones<T>(T[] data) where T : struct;
 

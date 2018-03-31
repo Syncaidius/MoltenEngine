@@ -9,7 +9,7 @@ namespace Molten.Graphics
     /// <summary>A mesh which uses an index buffer to reduce the amount of vertex data, by referring to vertices by their ID in the index buffer, 
     /// essentially allowing the same vertex to be referenced multiple times.</summary>
     /// <typeparam name="T">The type of vertex data that the mesh is to expect.</typeparam>
-    public interface IIndexedMesh<T> : IMesh<T> where T : struct, IVertexType
+    public interface ICustomIndexedMesh<T> : ICustomMesh<T> where T : struct, IVertexType
     {
         /// <summary>Copies the provided index data to the current mesh.</summary>
         /// <typeparam name="I">The type of data to set.</typeparam>

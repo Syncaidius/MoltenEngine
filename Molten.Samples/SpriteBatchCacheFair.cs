@@ -16,7 +16,7 @@ namespace Molten.Samples
         SceneObject _child;
         List<Matrix4F> _positions;
         Camera2D _cam2D;
-        IMesh<VertexTexture> _mesh;
+        ICustomMesh<VertexTexture> _mesh;
 
         public SpriteBatchCacheFair(EngineSettings settings = null) : base("Sprite Batch Cache", settings)
         {
@@ -39,7 +39,7 @@ namespace Molten.Samples
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
-            _mesh = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
+            _mesh = Engine.Renderer.Resources.CreateCustomMesh<VertexTexture>(36);
 
             VertexTexture[] verts = new VertexTexture[]{
                new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)), //front

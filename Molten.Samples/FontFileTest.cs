@@ -19,7 +19,7 @@ namespace Molten.Samples
         List<Matrix4F> _positions;
         Random _rng;
         List<ISprite> _sprites;
-        IMesh<VertexTexture> _mesh;
+        ICustomMesh<VertexTexture> _mesh;
         SpriteBatchContainer _container;
         FontFile _fontFile;
         SpriteFont _font2Test;
@@ -52,7 +52,7 @@ namespace Molten.Samples
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
-            _mesh = Engine.Renderer.Resources.CreateMesh<VertexTexture>(36);
+            _mesh = Engine.Renderer.Resources.CreateCustomMesh<VertexTexture>(36);
 
             VertexTexture[] verts = new VertexTexture[]{
                new VertexTexture(new Vector3F(-1,-1,-1), new Vector2F(0,1)), //front
