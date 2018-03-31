@@ -33,8 +33,8 @@ namespace Molten.Graphics
         int _debugOverlayPage = 0;
         SpriteFont _debugFont;
         bool _debugOverlayVisible = false;
-        Dictionary<Type, DeferredRenderStep> _steps;
-        List<DeferredRenderStep> _stepList;
+        Dictionary<Type, RenderStepBase> _steps;
+        List<RenderStepBase> _stepList;
 
         AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
         internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
@@ -50,8 +50,8 @@ namespace Molten.Graphics
         {
             _log = Logger.Get();
             _log.AddOutput(new LogFileWriter("renderer_dx11{0}.txt"));
-            _steps = new Dictionary<Type, DeferredRenderStep>();
-            _stepList = new List<DeferredRenderStep>();
+            _steps = new Dictionary<Type, RenderStepBase>();
+            _stepList = new List<RenderStepBase>();
         }
 
         public void InitializeAdapter(GraphicsSettings settings)
@@ -138,7 +138,7 @@ namespace Molten.Graphics
         {
             // Render the debug overlay here so it shows on top of everything else
             if (_debugOverlayVisible && !scene.HasFlag(SceneRenderFlags.NoDebugOverlay))
-                _debugOverlay[_debugOverlayPage].Render(_debugFont, this, SpriteBatcher, time, rs);
+                _debugOverlay[_debugOverlayPage].Render(_debugFont, this, SpriteBatcher, scene, time, rs);
         }
 
         public void DispatchCompute(IComputeTask task, int x, int y, int z)
@@ -168,10 +168,10 @@ namespace Molten.Graphics
             _tasks.Enqueue(task);
         }
 
-        internal T GetRenderStep<T>() where T : DeferredRenderStep, new()
+        internal T GetRenderStep<T>() where T : RenderStepBase, new()
         {
             Type t = typeof(T);
-            DeferredRenderStep step;
+            RenderStepBase step;
             if (!_steps.TryGetValue(t, out step))
             {
                 step = new T();
@@ -181,19 +181,6 @@ namespace Molten.Graphics
             }
 
             return step as T;
-        }
-
-        private void SetNextStep<T, NEXT>() where T : DeferredRenderStep, new()
-            where NEXT : DeferredRenderStep, new()
-        {
-            if(_steps.TryGetValue(typeof(T), out DeferredRenderStep step))
-                step.Next = GetRenderStep<NEXT>();
-        }
-
-        private void SetNoNextStep<T>() where T : DeferredRenderStep, new()
-        {
-            if (_steps.TryGetValue(typeof(T), out DeferredRenderStep step))
-                step.Next = null;
         }
 
         public void Present(Timing time)
@@ -217,15 +204,24 @@ namespace Molten.Graphics
             // Ensure the backbuffer is always big enough for the largest scene render surface.
             foreach (SceneRenderDataDX11 data in Scenes)
             {
+                if (!data.IsVisible)
+                    continue;
+
                 RenderSurfaceBase rs = _device.DefaultSurface;
+                DepthSurface ds = null;
+
                 if (data.RenderCamera != null)
+                {
                     rs = data.RenderCamera.OutputSurface as RenderSurfaceBase ?? rs;
+                    ds = data.RenderCamera.OutputDepthSurface as DepthSurface;
+                }
 
                 if (rs == null)
                     continue;
 
                 // Cache the surface we'll be using to render the scene data.
-                data.ChosenSurface = rs;
+                data.FinalSurface = rs;
+                data.FinalDepthSurface = ds;
 
                 if (rs.Width > _biggestWidth)
                 {
@@ -273,8 +269,11 @@ namespace Molten.Graphics
             for (int i = 0; i < Scenes.Count; i++)
             {
                 scene = Scenes[i];
-                if (scene.IsVisible)
+                if (scene.IsVisible && scene.FinalSurface != null)
                     scene.Render(_device, this, time);
+
+                scene.FinalDepthSurface = null;
+                scene.FinalSurface = null;
             }
 
             // Present all output surfaces

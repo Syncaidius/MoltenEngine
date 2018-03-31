@@ -41,16 +41,7 @@ namespace Molten.Samples
                 return;
 
             ITexture2D tex = content.Get<ITexture2D>(cr.RequestedFiles[0]);
-            IMaterial mat = content.Get<IMaterial>(cr.RequestedFiles[1]);
-
-            if (mat == null)
-            {
-                Exit();
-                return;
-            }
-
-            mat.SetDefaultResource(tex, 0);
-            _mesh.Material = mat;
+            _mesh.SetResource(tex, 0);
         }
 
         protected override void OnUpdate(Timing time)

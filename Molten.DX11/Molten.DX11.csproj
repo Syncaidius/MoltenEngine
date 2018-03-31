@@ -142,10 +142,12 @@
     <Compile Include="Renderer\Renderable.cs" />
     <Compile Include="Renderer\RenderChain.cs" />
     <Compile Include="Renderer\RendererDX11.cs" />
+    <Compile Include="Renderer\Steps\FinalizeStep.cs" />
+    <Compile Include="Renderer\Steps\StartStep.cs" />
     <Compile Include="Renderer\Steps\Immediate3dStep.cs" />
     <Compile Include="Renderer\Steps\Render2dStep.cs" />
     <Compile Include="Renderer\Steps\GBuffer3dStep.cs" />
-    <Compile Include="Renderer\Steps\DeferredRenderStep.cs" />
+    <Compile Include="Renderer\Steps\RenderStepBase.cs" />
     <Compile Include="Renderer\Tasks\TextureResolve.cs" />
     <Compile Include="Renderer\Tasks\RendererAddScene.cs" />
     <Compile Include="Renderer\Tasks\RendererRemoveScene.cs" />

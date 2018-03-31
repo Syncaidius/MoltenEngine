@@ -147,8 +147,15 @@ namespace Molten.Graphics
         /// <param name="count">The number of surfaces to set.</param>
         public void SetRenderSurfaces(RenderSurfaceBase[] surfaces, int count)
         {
-            for (int i = 0; i < count; i++)
-                _surfaces[i] = surfaces[i];
+            if (surfaces != null)
+            {
+                for (int i = 0; i < count; i++)
+                    _surfaces[i] = surfaces[i];
+            }
+            else
+            {
+                count = 0;
+            }
 
             // Set the remaining surfaces to null.
             for (int i = count; i < _surfaces.Length; i++)

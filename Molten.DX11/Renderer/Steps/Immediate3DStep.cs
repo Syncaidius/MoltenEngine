@@ -11,7 +11,7 @@ namespace Molten.Graphics
     /// <summary>
     /// Renders the 3D scene directly to it's output.
     /// </summary>
-    internal class Immediate3dStep : DeferredRenderStep
+    internal class Immediate3dStep : RenderStepBase
     {
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
@@ -24,7 +24,7 @@ namespace Molten.Graphics
         public override void Dispose()
         { }
 
-        protected override void OnRender(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time)
+        internal override void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time, RenderChain.Link link)
         {
             RenderSurfaceBase rs = null;
             DepthSurface ds = null;

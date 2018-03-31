@@ -102,7 +102,7 @@ namespace Molten.Graphics
         public void SetRenderSurfaces(params RenderSurfaceBase[] surfaces)
         {
             if (surfaces == null)
-                _output.SetRenderSurfaces(surfaces, 0);
+                _output.SetRenderSurfaces(null, 0);
             else
                 _output.SetRenderSurfaces(surfaces, surfaces.Length);
         }

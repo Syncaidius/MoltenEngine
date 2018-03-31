@@ -8,9 +8,16 @@ namespace Molten.Graphics
 {
     internal class RenderChain
     {
+        internal class Link
+        {
+            public Link Previous;
+            public Link Next;
+            public RenderStepBase Step;
+        }
+
         RendererDX11 _renderer;
-        DeferredRenderStep _first;
-        DeferredRenderStep _last;
+        Link _first;
+        Link _last;
         SceneRenderDataDX11 _scene;
 
         internal RenderChain(RendererDX11 renderer, SceneRenderDataDX11 scene)
@@ -19,24 +26,27 @@ namespace Molten.Graphics
             _scene = scene;
         }
 
-        private RenderChain Next(DeferredRenderStep step)
+        private void Next(RenderStepBase step)
         {
-            if(_first == null)
+            Link link = new Link() { Step = step };
+            if (_first == null)
             {
-                _first = step;
-                _last = step;
+                _first = link;
+                _last = _first;
             }
-
-            _last.Next = step;
-            _last = _last.Next;
-            _last.Next = null;
-            return this;
+            else
+            {
+                link.Previous = _last;
+                _last.Next = link;
+                _last = link;
+                _last.Next = null;
+            }
         }
 
-        private RenderChain Next<T>() where T : DeferredRenderStep, new()
+        private void Next<T>() where T : RenderStepBase, new()
         {
-            DeferredRenderStep step = _renderer.GetRenderStep<T>();
-            return Next(step);
+            RenderStepBase step = _renderer.GetRenderStep<T>();
+            Next(step);
         }
 
         internal void Rebuild()
@@ -46,9 +56,13 @@ namespace Molten.Graphics
             _first = null;
             _last = null;
 
+            Next<StartStep>();
+
             if (_scene.HasFlag(SceneRenderFlags.Deferred))
             {
                 Next<GBuffer3dStep>();
+                //Next<FinalizeStep>();
+                Next<Render2dStep>();
                 // TODO complete deferred chain here
             }
             else
@@ -63,7 +77,12 @@ namespace Molten.Graphics
 
         internal void Render(SceneRenderDataDX11 scene, Timing time)
         {
-            _first.Render(_renderer, scene, time);
+            Link link = _first;
+            while(link != null)
+            {
+                link.Step.Render(_renderer, scene, time, link);
+                link = link.Next;
+            }
         }
     }
 }

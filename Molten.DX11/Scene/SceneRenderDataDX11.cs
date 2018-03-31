@@ -173,6 +173,8 @@ namespace Molten.Graphics
 
         internal Matrix4F ViewProjection;
 
-        internal RenderSurfaceBase ChosenSurface;
+        internal RenderSurfaceBase FinalSurface;
+
+        internal DepthSurface FinalDepthSurface;
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class Render2dStep : DeferredRenderStep
+    internal class Render2dStep : RenderStepBase
     {
         static readonly Matrix4F _defaultView2D = Matrix4F.Identity;
 
@@ -26,7 +26,7 @@ namespace Molten.Graphics
 
         }
 
-        protected override void OnRender(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time)
+        internal override void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time, RenderChain.Link link)
         {
             Matrix4F spriteView, spriteProj, spriteViewProj;
             RenderSurfaceBase rs = null;
@@ -35,7 +35,7 @@ namespace Molten.Graphics
 
             if (scene.SpriteCamera != null)
             {
-                rs = scene.SpriteCamera.OutputSurface as RenderSurfaceBase;
+                rs = scene.SpriteCamera.OutputSurface as RenderSurfaceBase ?? scene.FinalSurface;
                 ds = scene.SpriteCamera.OutputDepthSurface as DepthSurface;
 
                 spriteProj = scene.SpriteCamera.Projection;
@@ -62,14 +62,15 @@ namespace Molten.Graphics
                 if (ds != null)
                     renderer.ClearIfFirstUse(ds, () => ds.Clear(DepthClearFlags.Depth | DepthClearFlags.Stencil));
 
+                device.SetRenderSurfaces(null);
                 device.SetRenderSurface(rs, 0);
                 device.SetDepthSurface(ds, GraphicsDepthMode.Enabled);
                 device.DepthStencil.SetPreset(DepthStencilPreset.Default);
                 device.Rasterizer.SetViewports(rs.Viewport);
 
-               renderer.SpriteBatcher.Begin(rs.Viewport);
+                renderer.SpriteBatcher.Begin(rs.Viewport);
                 scene.Render2D(device, renderer);
-                renderer.DrawDebugOverlay(renderer.SpriteBatcher, scene, time, rs);
+                renderer.DrawDebugOverlay(renderer.SpriteBatcher, scene, time, scene.FinalSurface);
                 renderer.SpriteBatcher.Flush(device, ref spriteViewProj, rs.SampleCount > 1);
             }
         }

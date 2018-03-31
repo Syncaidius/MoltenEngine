@@ -10,8 +10,9 @@ namespace Molten.Graphics
     {
         Color _bgColor = new Color(40, 40, 40, 240);
         Color _segColor = Color.Lime;
+        StartStep _gBuffer;
 
-        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatchDX11 sb, Timing time, IRenderSurface surface)
+        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatchDX11 sb, SceneRenderDataDX11 scene, Timing time, IRenderSurface surface)
         {
             int width = surface.Width / 2;
             int height = 32;
@@ -29,6 +30,16 @@ namespace Molten.Graphics
 
             dest.Y += height + 5; DrawBar("Static Index", font, sb, renderer.StaticIndexBuffer, dest);
             dest.Y += height + 5; DrawBar("Dynamic Index", font, sb, renderer.DynamicIndexBuffer, dest);
+
+            if (scene.HasFlag(SceneRenderFlags.Deferred))
+            {
+                _gBuffer = _gBuffer ?? renderer.GetRenderStep<StartStep>();
+                int size = 256;
+                dest = new Rectangle(0, surface.Height - size, size, size);
+                sb.Draw(_gBuffer.Scene, dest, Color.White);
+                dest.X += size; sb.Draw(_gBuffer.Normals, dest, Color.White);
+                dest.X += size; sb.Draw(_gBuffer.Emissive, dest, Color.White);
+            }
         }
 
         private void DrawBar(string label, SpriteFont font, SpriteBatchDX11 sb, GraphicsBuffer buffer, Rectangle destination)
