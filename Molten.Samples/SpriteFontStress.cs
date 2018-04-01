@@ -21,7 +21,7 @@ namespace Molten.Samples
         SceneCameraComponent _cam;
         Camera2D _cam2D;
         List<ISprite> _sprites;
-        ICustomMesh<VertexTexture> _mesh;
+        IMesh<VertexTexture> _mesh;
 
         public SpriteFontStress(EngineSettings settings = null) : base("SpriteFont Stress Test", settings)
         {

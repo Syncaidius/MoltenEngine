@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Molten.Graphics
 {
@@ -45,6 +46,9 @@ namespace Molten.Graphics
         internal GraphicsBuffer DynamicVertexBuffer;
         internal GraphicsBuffer DynamicIndexBuffer;
         internal StagingBuffer StagingBuffer;
+        
+        internal Material StandardMeshMaterial;
+        internal Material StandardMeshMaterial_NoNormalMap;
 
         public RendererDX11()
         {
@@ -109,6 +113,25 @@ namespace Molten.Graphics
              */
 
             InitializeDebugOverlay();
+            LoadDefaultShaders();
+        }
+
+        private void LoadDefaultShaders()
+        {
+            string source = null;
+            string namepace = "Molten.Graphics.Assets.gbuffer.sbm";
+            using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                    source = reader.ReadToEnd();
+            }
+
+            if (!string.IsNullOrWhiteSpace(source))
+            {
+                ShaderCompileResult result = _shaderCompiler.Compile(source, namepace);
+                StandardMeshMaterial = result["material", "gbuffer"] as Material;
+                StandardMeshMaterial_NoNormalMap = result["material", "gbuffer-sans-nmap"] as Material;
+            }
         }
 
         private void InitializeDebugOverlay()

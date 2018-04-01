@@ -19,7 +19,7 @@ namespace Molten.Samples
         List<Matrix4F> _positions;
         Random _rng;
         SceneObject _player;
-        ICustomMesh<VertexTexture> _mesh;
+        IMesh<VertexTexture> _mesh;
 
         public OneDTextureTest(EngineSettings settings = null) : base("1D Texture", settings) { }
 

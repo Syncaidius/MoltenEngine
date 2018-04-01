@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class StandardMesh : Mesh<GBufferVertex>, IStandardMesh
+    public class StandardMesh : Mesh<GBufferVertex>
     {
-        IShaderValue _matDiffuse;
-        IShaderValue _matNormal;
-        IShaderValue _matEmissive;
-
         internal StandardMesh(RendererDX11 renderer, int maxVertices, VertexTopology topology, bool dynamic) : 
             base(renderer, maxVertices, topology, dynamic)
         {
@@ -20,32 +16,31 @@ namespace Molten.Graphics
 
         internal override void Render(GraphicsPipe pipe, RendererDX11 renderer, ObjectRenderData data, SceneRenderDataDX11 sceneData)
         {
-            if (_material == null)
+            ApplyBuffers(pipe);
+            IShaderResource normal = GetResource(1);
+            Material mat = _material;
+
+            if (mat == null)
             {
-                // use whichever default one fits the current configuration.
-            }
-            else
-            {
-                // TODO improve method of getting/setting resources
-                _matDiffuse.Value = GetResource(0);
-                _matNormal.Value = GetResource(1);
-                _matEmissive.Value = GetResource(2);
+                // Use whichever default one fits the current configuration.
+                if (normal == null)
+                    mat = renderer.StandardMeshMaterial_NoNormalMap;
+                else
+                    mat = renderer.StandardMeshMaterial;
             }
 
-            base.Render(pipe, renderer, data, sceneData);
+            mat.World.Value = data.RenderTransform;
+            mat.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, sceneData.ViewProjection);
+
+            ApplyResources(mat);
+            renderer.Device.Draw(mat, _vertexCount, _topology);
         }
-
+    
         protected override void OnSetMaterial(Material newMaterial)
         {
             base.OnSetMaterial(newMaterial);
 
-            if (newMaterial.HasGBufferTextures && newMaterial.HasCommonConstants && newMaterial.HasObjectConstants)
-            {
-                _matDiffuse = newMaterial[MaterialCompiler.MAP_DIFFUSE];
-                _matNormal = newMaterial[MaterialCompiler.MAP_NORMAL];
-                _matEmissive = newMaterial[MaterialCompiler.MAP_EMISSIVE];
-            }
-            else
+            if (!newMaterial.HasGBufferTextures || !newMaterial.HasCommonConstants || !newMaterial.HasObjectConstants)
             {
                 if (!newMaterial.HasGBufferTextures)
                     _renderer.Device.Log.WriteLine($"Attempt to set material '{newMaterial.Name}' on standard mesh failed: Missing G-Buffer texture variables.");
@@ -57,9 +52,6 @@ namespace Molten.Graphics
                     _renderer.Device.Log.WriteLine($"Attempt to set material '{newMaterial.Name}' on standard mesh failed: Missing object constants.");
 
                 _material = null;
-                _matDiffuse = null;
-                _matNormal = null;
-                _matEmissive = null;
             }
         }
     }

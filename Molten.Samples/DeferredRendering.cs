@@ -15,7 +15,7 @@ namespace Molten.Samples
 
         SceneObject _parent;
         SceneObject _child;
-        ICustomMesh<GBufferVertex> _mesh;
+        IMesh<GBufferVertex> _mesh;
 
         public DeferredRenderingSample(EngineSettings settings = null) : base("Deferred Rendering", settings) { }
 
@@ -25,14 +25,14 @@ namespace Molten.Samples
 
             SampleScene.RenderData.Flags |= SceneRenderFlags.Deferred;
             ContentRequest cr = engine.Content.StartRequest();
-            cr.Load<ITexture2D>("dds_test.dds;mipmaps=true");
-            cr.Load<IMaterial>("gbuffer.sbm"); // TODO TEMP until the shader is used by default from within the renderer.
+            cr.Load<ITexture2D>("dds_test.dds");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
             _mesh = MeshHelper.Cube(engine.Renderer);
-
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
+            AcceptPlayerInput = false;
+            Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
         }
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)

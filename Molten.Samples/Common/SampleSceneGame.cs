@@ -40,10 +40,7 @@ namespace Molten.Samples
             _scene.AddSprite(_txtInstructions);
         }
 
-        protected override void OnContentRequested(ContentRequest cr)
-        {
-           
-        }
+        protected override void OnContentRequested(ContentRequest cr) { }
 
         private void UpdateInstructions()
         {

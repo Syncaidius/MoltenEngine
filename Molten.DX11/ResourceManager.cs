@@ -24,12 +24,12 @@ namespace Molten.Graphics
         }
 
         public IDepthSurface CreateDepthSurface(
-            int width, 
+            int width,
             int height,
             DepthFormat format = DepthFormat.R24G8_Typeless,
-            int mipCount = 1, 
-            int arraySize = 1, 
-            int sampleCount = 1, 
+            int mipCount = 1,
+            int arraySize = 1,
+            int sampleCount = 1,
             TextureFlags flags = TextureFlags.None)
         {
             return new DepthSurface(_device, width, height, format, mipCount, arraySize, sampleCount, flags);
@@ -41,11 +41,11 @@ namespace Molten.Graphics
         }
 
         public IRenderSurface CreateSurface(
-            int width, 
-            int height, 
-            GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm, 
+            int width,
+            int height,
+            GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
             int mipCount = 1,
-            int arraySize = 1, 
+            int arraySize = 1,
             int sampleCount = 1,
             TextureFlags flags = TextureFlags.None)
         {
@@ -66,25 +66,25 @@ namespace Molten.Graphics
 
         public ITexture2D CreateTexture2D(Texture2DProperties properties)
         {
-            return new TextureAsset2D(_device, 
-                properties.Width, 
-                properties.Height, 
-                properties.Format.ToApi(), 
-                properties.MipMapLevels, 
-                properties.ArraySize, 
-                properties.Flags, 
+            return new TextureAsset2D(_device,
+                properties.Width,
+                properties.Height,
+                properties.Format.ToApi(),
+                properties.MipMapLevels,
+                properties.ArraySize,
+                properties.Flags,
                 properties.SampleCount);
         }
 
         public ITexture2D CreateTexture2D(TextureData data)
         {
-            TextureAsset2D tex = new TextureAsset2D(_device, 
-                data.Width, 
-                data.Height, 
-                data.Format.ToApi(), 
-                data.MipMapCount, 
-                data.ArraySize, 
-                data.Flags, 
+            TextureAsset2D tex = new TextureAsset2D(_device,
+                data.Width,
+                data.Height,
+                data.Format.ToApi(),
+                data.MipMapCount,
+                data.ArraySize,
+                data.Flags,
                 data.SampleCount);
 
             tex.SetData(data, 0, 0, data.MipMapCount, data.ArraySize);
@@ -149,18 +149,26 @@ namespace Molten.Graphics
             _fontTable.Clear();
         }
 
-        public IStandardMesh CreateMesh(int maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false)
+        IMesh<GBufferVertex> IResourceManager.CreateMesh(int maxVertices, VertexTopology topology, bool dynamic)
         {
             return new StandardMesh(_renderer, maxVertices, topology, dynamic);
         }
 
-        public ICustomMesh<T> CreateCustomMesh<T>(int maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
+        public IIndexedMesh<GBufferVertex> CreateIndexedMesh(int maxVertices,
+            int maxIndices, 
+            VertexTopology topology = VertexTopology.TriangleList, 
+            bool dynamic = false)
+        {
+            return new StandardIndexedMesh(_renderer, maxVertices, maxIndices, topology, IndexBufferFormat.Unsigned32Bit, dynamic);
+        }
+
+        public IMesh<T> CreateCustomMesh<T>(int maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
             where T : struct, IVertexType
         {
             return new Mesh<T>(_renderer, maxVertices, topology, dynamic);
         }
 
-        public ICustomIndexedMesh<T> CreateCustomIndexedMesh<T>(
+        public IIndexedMesh<T> CreateCustomIndexedMesh<T>(
             int maxVertices, 
             int maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 

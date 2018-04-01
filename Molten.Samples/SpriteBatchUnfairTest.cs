@@ -16,7 +16,7 @@ namespace Molten.Samples
         SceneObject _child;
         List<Matrix4F> _positions;
         Camera2D _cam2D;
-        ICustomMesh<VertexTexture> _mesh;
+        IMesh<VertexTexture> _mesh;
 
         public SpriteBatchUnfairTest(EngineSettings settings = null) : base("Sprite Batch (Unfair)", settings)
         {

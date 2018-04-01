@@ -15,7 +15,7 @@ namespace Molten.Samples
 
         SceneObject _parent;
         SceneObject _child;
-        ICustomMesh<VertexColor> _mesh;
+        IMesh<VertexColor> _mesh;
 
         public SceneParentingTest(EngineSettings settings = null) : base("Scene Parenting", settings) { }
 

@@ -61,8 +61,8 @@ namespace Molten.Graphics
 
             // Clear the depth surface if it hasn't already been cleared
             renderer.ClearIfFirstUse(Scene, () => Scene.Clear(device, scene.BackgroundColor));
-            renderer.ClearIfFirstUse(Normals, () => Normals.Clear(device, scene.BackgroundColor));
-            renderer.ClearIfFirstUse(Emissive, () => Emissive.Clear(device, scene.BackgroundColor));
+            renderer.ClearIfFirstUse(Normals, () => Normals.Clear(device, Color.White * 0.5f));
+            renderer.ClearIfFirstUse(Emissive, () => Emissive.Clear(device, Color.Black));
 
             if(scene.FinalDepthSurface != null)
                 renderer.ClearIfFirstUse(scene.FinalDepthSurface, () => scene.FinalDepthSurface.Clear(device, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil));

@@ -15,7 +15,7 @@ namespace Molten.Samples
         SceneObject _parent;
         SceneObject _child;
         Camera2D _cam2D;
-        ICustomMesh<VertexTexture> _mesh;
+        IMesh<VertexTexture> _mesh;
 
         public SpriteBatchPrimitives(EngineSettings settings = null) : base("Sprite Batch Primitives", settings) { }
 

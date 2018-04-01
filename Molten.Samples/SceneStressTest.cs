@@ -14,7 +14,7 @@ namespace Molten.Samples
         public override string Description => "A simple scene test using colored cubes with";
 
         List<SceneObject> _objects;
-        ICustomMesh<VertexColor> _mesh;
+        IMesh<VertexColor> _mesh;
 
         public SceneStressTest(EngineSettings settings = null) : base("Scene Stress", settings) { }
 

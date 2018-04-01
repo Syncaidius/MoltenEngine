@@ -111,6 +111,27 @@ namespace Molten.Graphics
                 material.InputStructureByteCode = firstPassResult.VertexResult.Bytecode;
                 result.Shaders.Add(material);
                 renderer.Materials.AddMaterial(material);
+
+                if (material.HasCommonConstants)
+                {
+                    material.View = material["view"];
+                    material.Projection = material["projection"];
+                    material.ViewProjection = material["viewProjection"];
+                    material.InvViewProjection = material["invViewProjection"];
+                }
+
+                if (material.HasObjectConstants)
+                {
+                    material.World = material["world"];
+                    material.Wvp = material["wvp"];
+                }
+
+                if (material.HasGBufferTextures)
+                {
+                    material.DiffuseTexture = material["mapDiffuse"];
+                    material.NormalTexture = material["mapNormal"];
+                    material.EmissiveTexture = material["mapEmissive"];
+                }
             }
 
             return result;

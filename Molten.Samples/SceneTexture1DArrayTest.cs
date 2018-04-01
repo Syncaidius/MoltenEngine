@@ -15,7 +15,7 @@ namespace Molten.Samples
 
         SceneObject _parent;
         SceneObject _child;
-        ICustomMesh<CubeArrayVertex> _mesh;
+        IMesh<CubeArrayVertex> _mesh;
 
         public SceneTexture1DArrayTest(EngineSettings settings = null) : base("1D Texture Array", settings) { }
 

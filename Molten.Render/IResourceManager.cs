@@ -61,16 +61,25 @@ namespace Molten.Graphics
         /// <param name="topology"></param>
         /// <param name="dynamic"></param>
         /// <returns></returns>
-        IStandardMesh CreateMesh(int maxVertices,
+        IMesh<GBufferVertex> CreateMesh(int maxVertices,
             VertexTopology topology = VertexTopology.TriangleList,
             bool dynamic = false);
 
+        /// <summary>
+        /// Creates the indexed mesh.
+        /// </summary>
+        /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
+        /// <param name="dedicatedResource">if set to <c>true</c> [dedicated resource].</param>
+        /// <returns></returns>
+        IIndexedMesh<GBufferVertex> CreateIndexedMesh(int maxVertices, int maxIndices,
+            VertexTopology topology = VertexTopology.TriangleList,
+            bool dynamic = false);
 
         /// <summary>Creates a new unindexed mesh. Unindexed meshes do not contain an index buffer to reduce vertex data size.</summary>
         /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
         /// <param name="dedicatedResource">if set to <c>true</c>, the mesh is given its own dedicated resource buffer.</param>
         /// <returns></returns>
-        ICustomMesh<T> CreateCustomMesh<T>(
+        IMesh<T> CreateCustomMesh<T>(
             int maxVertices, 
             VertexTopology topology = VertexTopology.TriangleList,
             bool dynamic = false) 
@@ -82,7 +91,7 @@ namespace Molten.Graphics
         /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
         /// <param name="dedicatedResource">if set to <c>true</c> [dedicated resource].</param>
         /// <returns></returns>
-        ICustomIndexedMesh<T> CreateCustomIndexedMesh<T>(int maxVertices, int maxIndices, 
+        IIndexedMesh<T> CreateCustomIndexedMesh<T>(int maxVertices, int maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit,
             bool dynamic = false) 

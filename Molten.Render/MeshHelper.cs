@@ -23,7 +23,7 @@ namespace Molten.Graphics
             return normal;
         }
 
-        public static ICustomIndexedMesh<GBufferVertex> Cube(IRenderer renderer)
+        public static IIndexedMesh<GBufferVertex> Cube(IRenderer renderer)
         {
             Vector3F nFront = new Vector3F(0, 0, -1);
             Vector3F nBack = new Vector3F(0, 0, 1);
@@ -75,13 +75,13 @@ namespace Molten.Graphics
 
             CalculateTangents(vertices, indices);
 
-            ICustomIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateCustomIndexedMesh<GBufferVertex>(vertices.Length, indices.Length);
+            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh(vertices.Length, indices.Length);
             mesh.SetVertices(vertices);
             mesh.SetIndices(indices);
             return mesh;
         }
 
-        public static ICustomIndexedMesh<GBufferVertex> PlainCentered(IRenderer renderer, float uvTiling = 1.0f)
+        public static IIndexedMesh<GBufferVertex> PlainCentered(IRenderer renderer, float uvTiling = 1.0f)
         {
             GBufferVertex[] vertices = new GBufferVertex[4];
             Vector3F normal = new Vector3F(0, 1, 0);
@@ -101,13 +101,13 @@ namespace Molten.Graphics
 
             CalculateTangents(vertices, indices);
 
-            ICustomIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateCustomIndexedMesh<GBufferVertex>(vertices.Length, indices.Length);
+            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateCustomIndexedMesh<GBufferVertex>(vertices.Length, indices.Length);
             mesh.SetVertices(vertices);
             mesh.SetIndices(indices);
             return mesh;
         }
 
-        public static ICustomIndexedMesh<GBufferVertex> Plain(IRenderer renderer, float uvTiling = 1.0f)
+        public static IIndexedMesh<GBufferVertex> Plain(IRenderer renderer, float uvTiling = 1.0f)
         {
             GBufferVertex[] vertices = new GBufferVertex[4];
             Vector3F normal = new Vector3F(0, 1, 0);
@@ -127,7 +127,7 @@ namespace Molten.Graphics
 
             CalculateTangents(vertices, indices);
 
-            ICustomIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateCustomIndexedMesh<GBufferVertex>(vertices.Length, indices.Length);
+            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateCustomIndexedMesh<GBufferVertex>(vertices.Length, indices.Length);
             mesh.SetVertices(vertices);
             mesh.SetIndices(indices);
             return mesh;

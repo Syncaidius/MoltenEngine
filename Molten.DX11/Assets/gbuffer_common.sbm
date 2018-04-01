@@ -25,12 +25,6 @@ struct PS_OUT
 	float4 emissive		: SV_Target2;
 };
 
-//Variables used across multiple light shaders.
-cbuffer commonLight : register(b0)
-{
-	float4x4 InvertViewProjection;
-}
-
 cbuffer Common : register(b0)
 {
   float4x4 view   : packoffset(c0);
@@ -45,7 +39,7 @@ cbuffer Object : register(b1)
   float4x4 world : packoffset(c4);
 }
 
-cbuffer cbGBufferPixel : register(b1)
+cbuffer cbGBufferPixel : register(b2)
 {
 	float EmissivePower : packoffset(c0);
 }
@@ -100,7 +94,7 @@ MATERIAL UnpackGBuffer(float3 screenPos){
 	o.worldPos.w = 1.0f;
 
 	// Transform to world space
-	o.worldPos = mul(o.worldPos, InvertViewProjection);
+	o.worldPos = mul(o.worldPos, invViewProjection);
 	o.worldPos /= o.worldPos.w;
 
 	return o;

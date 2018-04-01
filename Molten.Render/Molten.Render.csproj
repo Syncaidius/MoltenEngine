@@ -82,9 +82,7 @@
     <Compile Include="IResourceManager.cs" />
     <Compile Include="MeshHelper.cs" />
     <Compile Include="Mesh\IBonedMesh.cs" />
-    <Compile Include="Mesh\ICustomIndexedMesh.cs" />
-    <Compile Include="Mesh\IStandardMesh.cs" />
-    <Compile Include="Mesh\ICustomMesh.cs" />
+    <Compile Include="Mesh\IIndexedMesh.cs" />
     <Compile Include="Mesh\IMesh.cs" />
     <Compile Include="ObjectUpdateFlags.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

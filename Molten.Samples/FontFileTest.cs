@@ -19,7 +19,7 @@ namespace Molten.Samples
         List<Matrix4F> _positions;
         Random _rng;
         List<ISprite> _sprites;
-        ICustomMesh<VertexTexture> _mesh;
+        IMesh<VertexTexture> _mesh;
         SpriteBatchContainer _container;
         FontFile _fontFile;
         SpriteFont _font2Test;
@@ -97,9 +97,11 @@ namespace Molten.Samples
                new VertexTexture(new Vector3F(1,1,-1), new Vector2F(0, 0)),
                new VertexTexture(new Vector3F(1,1,1), new Vector2F(0,1)),
             };
+
             _mesh.SetVertices(verts);
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
             AcceptPlayerInput = false;
+            Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
 
             //LoadFontFile();
             LoadSystemFontFile("Arial");
@@ -278,7 +280,6 @@ namespace Molten.Samples
             _glyphBounds.Height *= _scale;
             _glyphBounds.X += _charOffset.X;
             _glyphBounds.Y += _charOffset.Y;
-
             _glyphTriPoints = new List<Vector2F>();
 
             foreach (Shape s in _shapes)

@@ -120,6 +120,7 @@
     <Compile Include="Hardware\GraphicsDeviceFeatures.cs" />
     <Compile Include="Hardware\GraphicsShaderFeatures.cs" />
     <Compile Include="InternalConstants.cs" />
+    <Compile Include="Meshes\StandardIndexedMesh.cs" />
     <Compile Include="Meshes\StandardMesh.cs" />
     <Compile Include="Meshes\IndexedMesh.cs" />
     <Compile Include="Meshes\Mesh.cs" />

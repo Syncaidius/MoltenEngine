@@ -53,5 +53,23 @@ namespace Molten.Graphics
         internal bool HasObjectConstants { get; set; }
 
         internal bool HasGBufferTextures { get; set; }
+
+        internal IShaderValue World { get; set; }
+
+        internal IShaderValue Wvp { get; set; }
+
+        internal IShaderValue View { get; set; }
+
+        internal IShaderValue Projection { get; set; }
+
+        internal IShaderValue ViewProjection { get; set; }
+
+        internal IShaderValue InvViewProjection { get; set; }
+
+        internal IShaderValue DiffuseTexture { get; set; }
+
+        internal IShaderValue NormalTexture { get; set; }
+
+        internal IShaderValue EmissiveTexture { get; set; }
     }
 }
