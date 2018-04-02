@@ -21,7 +21,7 @@ namespace Molten.Samples
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-            _mesh = Engine.Renderer.Resources.CreateCustomMesh<CubeArrayVertex>(36);
+            _mesh = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
             CubeArrayVertex[] verts = new CubeArrayVertex[]{
                new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(0,1,0)), //front
                new CubeArrayVertex(new Vector3F(-1,1,-1), new Vector3F(0,0,0)),

@@ -19,9 +19,11 @@ namespace Molten.Graphics
         // The names for expected constant buffers within each material pass.
         const string CONST_COMMON_NAME = "Common";
         const string CONST_OBJECT_NAME = "Object";
+        const string CONST_GBUFFER_NAME = "GBuffer";
 
         static string[] CONST_COMMON_VAR_NAMES = new string[] { "view", "projection", "viewProjection", "invViewProjection" };
         static string[] CONST_OBJECT_VAR_NAMES = new string[] { "wvp", "world" };
+        static string[] CONST_GBUFFER_VAR_NAMES = new string[] { "emissivePower" };
 
         MaterialLayoutValidator _layoutValidator;
 
@@ -82,12 +84,13 @@ namespace Molten.Graphics
             }
 
             // Populate metadata
-            material.HasCommonConstants = HasConstantBuffer(material, result, CONST_COMMON_NAME, CONST_COMMON_VAR_NAMES);
-            material.HasObjectConstants = HasConstantBuffer(material, result, CONST_OBJECT_NAME, CONST_OBJECT_VAR_NAMES);
+            material.Flags |= HasConstantBuffer(material, result, CONST_COMMON_NAME, CONST_COMMON_VAR_NAMES) ? MaterialCommonFlags.Common : MaterialCommonFlags.None;
+            material.Flags |= HasConstantBuffer(material, result, CONST_OBJECT_NAME, CONST_OBJECT_VAR_NAMES) ? MaterialCommonFlags.Object : MaterialCommonFlags.None;
+            material.Flags |= HasConstantBuffer(material, result, CONST_GBUFFER_NAME, CONST_GBUFFER_VAR_NAMES) ? MaterialCommonFlags.GBuffer : MaterialCommonFlags.None;
             bool hasDiffuse = HasResource(material, MAP_DIFFUSE);
             bool hasNormal = HasResource(material, MAP_NORMAL);
             bool hasEmissive = HasResource(material, MAP_EMISSIVE);
-            material.HasGBufferTextures = hasDiffuse && hasNormal && hasEmissive;
+            material.Flags |= hasDiffuse && hasNormal && hasEmissive ? MaterialCommonFlags.GBufferTextures : MaterialCommonFlags.None;
 
             // Validate the vertex input structure of all passes. Should match structure of first pass.
             // Only run this if there is more than 1 pass.
@@ -112,7 +115,7 @@ namespace Molten.Graphics
                 result.Shaders.Add(material);
                 renderer.Materials.AddMaterial(material);
 
-                if (material.HasCommonConstants)
+                if (material.HasFlags(MaterialCommonFlags.Common))
                 {
                     material.View = material["view"];
                     material.Projection = material["projection"];
@@ -120,17 +123,22 @@ namespace Molten.Graphics
                     material.InvViewProjection = material["invViewProjection"];
                 }
 
-                if (material.HasObjectConstants)
+                if (material.HasFlags(MaterialCommonFlags.Object))
                 {
                     material.World = material["world"];
                     material.Wvp = material["wvp"];
                 }
 
-                if (material.HasGBufferTextures)
+                if (material.HasFlags(MaterialCommonFlags.GBufferTextures))
                 {
                     material.DiffuseTexture = material["mapDiffuse"];
                     material.NormalTexture = material["mapNormal"];
                     material.EmissiveTexture = material["mapEmissive"];
+                }
+
+                if (material.HasFlags(MaterialCommonFlags.GBuffer))
+                {
+                    material.EmissivePower = material["emissivePower"];
                 }
             }
 

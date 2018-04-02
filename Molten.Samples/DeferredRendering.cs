@@ -26,6 +26,8 @@ namespace Molten.Samples
             SampleScene.RenderData.Flags |= SceneRenderFlags.Deferred;
             ContentRequest cr = engine.Content.StartRequest();
             cr.Load<ITexture2D>("dds_test.dds");
+            cr.Load<ITexture2D>("dds_test_n.dds");
+            cr.Load<ITexture2D>("dds_test_e.dds");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
@@ -40,8 +42,14 @@ namespace Molten.Samples
             if (cr.RequestedFiles.Count == 0)
                 return;
 
-            ITexture2D tex = content.Get<ITexture2D>(cr.RequestedFiles[0]);
-            _mesh.SetResource(tex, 0);
+            ITexture2D diffuseMap = content.Get<ITexture2D>(cr.RequestedFiles[0]);
+            _mesh.SetResource(diffuseMap, 0);
+
+            ITexture2D normalMap = content.Get<ITexture2D>(cr.RequestedFiles[1]);
+            _mesh.SetResource(normalMap, 1);
+
+            ITexture2D emssiveMap = content.Get<ITexture2D>(cr.RequestedFiles[2]);
+            _mesh.SetResource(emssiveMap, 2);
         }
 
         protected override void OnUpdate(Timing time)

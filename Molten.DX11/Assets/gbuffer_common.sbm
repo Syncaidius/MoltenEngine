@@ -39,9 +39,9 @@ cbuffer Object : register(b1)
   float4x4 world : packoffset(c4);
 }
 
-cbuffer cbGBufferPixel : register(b2)
+cbuffer GBuffer : register(b2)
 {
-	float EmissivePower : packoffset(c0);
+	float emissivePower : packoffset(c0);
 }
 
 SamplerState texSampler : register(s1);

@@ -32,7 +32,7 @@ namespace Molten.Samples
             ShaderCompileResult shaders = engine.Renderer.Resources.CreateShaders(source, fn);
             IMaterial material = shaders["material", 0] as IMaterial;
 
-            IIndexedMesh<VertexColor> mesh = Engine.Renderer.Resources.CreateCustomIndexedMesh<VertexColor>(24, 36);
+            IIndexedMesh<VertexColor> mesh = Engine.Renderer.Resources.CreateIndexedMesh<VertexColor>(24, 36);
             if (material == null)
             {
                 Exit();

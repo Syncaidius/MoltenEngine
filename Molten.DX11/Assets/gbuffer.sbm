@@ -77,7 +77,7 @@ PS_OUT PS(VS_OUT input)
 	  normal = normalize(normal);
 
   o.normal.rgb = 0.5 * (normal + 1.0);
-  o.emissive.rgb = glow * EmissivePower;
+  o.emissive.rgb = glow * emissivePower;
 
   // UNUSED
   // colorData.a

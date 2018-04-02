@@ -63,7 +63,7 @@ namespace Molten.Graphics
             ApplyBuffers(pipe);
             ApplyResources(_material);
 
-            if (_material.HasObjectConstants)
+            if (_material.HasFlags(MaterialCommonFlags.Object))
             {
                 _matWvp.Value = Matrix4F.Multiply(data.RenderTransform, sceneData.ViewProjection);
                 _matWorld.Value = data.RenderTransform;
@@ -81,7 +81,7 @@ namespace Molten.Graphics
         {
             // TODO enforce the below as requirements.
             // TODO set material to null if invalid. Scene will use default render shader if one was not provided (or set to null due to being invalid).
-            if (newMaterial.HasObjectConstants)
+            if (newMaterial.HasFlags(MaterialCommonFlags.Object))
             {
                 _matWvp = newMaterial["wvp"];
                 _matWorld = newMaterial["world"];
@@ -125,5 +125,7 @@ namespace Molten.Graphics
         public int VertexCount => _vertexCount;
 
         public bool IsDynamic => _isDynamic;
+
+        public float EmissivePower { get; set; } = 1.0f;
     }
 }

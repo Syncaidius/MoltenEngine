@@ -131,18 +131,18 @@ namespace Molten.Graphics
                 context.Source = source;
                 context.Filename = filename;
 
-                foreach(string nodeName in headers.Keys)
+                foreach (string nodeName in headers.Keys)
                 {
                     HlslSubCompiler com = _subCompilers[nodeName];
                     List<string> nodeHeaders = headers[nodeName];
-                    foreach(string h in nodeHeaders)
+                    foreach (string h in nodeHeaders)
                     {
                         context.Header = h;
-                        
+
                         ShaderParseResult parseResult = com.Parse(_renderer, context);
 
                         // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
-                        foreach(HlslShader shader in parseResult.Shaders)
+                        foreach (HlslShader shader in parseResult.Shaders)
                             shader.DefaultResources = new IShaderResource[shader.Resources.Length];
 
                         context.Result.AddResult(nodeName, parseResult);
@@ -151,8 +151,12 @@ namespace Molten.Graphics
             }
             else
             {
-                _log.WriteLine($"{filename ?? "Shader source error"}: {hlslError}");
+                context.Result.Errors.Add($"{filename ?? "Shader source error"}: {hlslError}");
             }
+
+
+            foreach (string error in context.Result.Errors)
+                _log.WriteError(error);
 
             return context.Result;
         }

@@ -57,5 +57,10 @@ namespace Molten.Graphics
         /// <param name="data">The data to be copied.</param>
         /// <param name="startIndex">The element within the data array to start copying from.</param>
         void SetVertices(T[] data, int offset, int count);
+
+        /// <summary>
+        /// Gets or sets the emissive power of the mesh, if it uses emissive mapping.
+        /// </summary>
+        float EmissivePower { get; set; }
     }
 }

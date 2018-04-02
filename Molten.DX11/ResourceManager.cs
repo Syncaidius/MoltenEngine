@@ -162,13 +162,13 @@ namespace Molten.Graphics
             return new StandardIndexedMesh(_renderer, maxVertices, maxIndices, topology, IndexBufferFormat.Unsigned32Bit, dynamic);
         }
 
-        public IMesh<T> CreateCustomMesh<T>(int maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
+        public IMesh<T> CreateMesh<T>(int maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
             where T : struct, IVertexType
         {
             return new Mesh<T>(_renderer, maxVertices, topology, dynamic);
         }
 
-        public IIndexedMesh<T> CreateCustomIndexedMesh<T>(
+        public IIndexedMesh<T> CreateIndexedMesh<T>(
             int maxVertices, 
             int maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 

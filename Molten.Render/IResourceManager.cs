@@ -79,7 +79,7 @@ namespace Molten.Graphics
         /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
         /// <param name="dedicatedResource">if set to <c>true</c>, the mesh is given its own dedicated resource buffer.</param>
         /// <returns></returns>
-        IMesh<T> CreateCustomMesh<T>(
+        IMesh<T> CreateMesh<T>(
             int maxVertices, 
             VertexTopology topology = VertexTopology.TriangleList,
             bool dynamic = false) 
@@ -91,7 +91,7 @@ namespace Molten.Graphics
         /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
         /// <param name="dedicatedResource">if set to <c>true</c> [dedicated resource].</param>
         /// <returns></returns>
-        IIndexedMesh<T> CreateCustomIndexedMesh<T>(int maxVertices, int maxIndices, 
+        IIndexedMesh<T> CreateIndexedMesh<T>(int maxVertices, int maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit,
             bool dynamic = false) 

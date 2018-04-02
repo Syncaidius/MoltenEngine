@@ -48,11 +48,12 @@ namespace Molten.Graphics
             return _passesByName[name];
         }
 
-        internal bool HasCommonConstants { get; set; }
+        internal bool HasFlags(MaterialCommonFlags flags)
+        {
+            return (Flags & flags) == flags;
+        }
 
-        internal bool HasObjectConstants { get; set; }
-
-        internal bool HasGBufferTextures { get; set; }
+        internal MaterialCommonFlags Flags { get; set; }
 
         internal IShaderValue World { get; set; }
 
@@ -71,5 +72,24 @@ namespace Molten.Graphics
         internal IShaderValue NormalTexture { get; set; }
 
         internal IShaderValue EmissiveTexture { get; set; }
+
+        internal IShaderValue EmissivePower { get; set; }
+    }
+
+    /// <summary>
+    /// Represents various optional/mandatory properties a material might have, which the renderer can automatically use.
+    /// </summary>
+    [Flags]
+    internal enum MaterialCommonFlags
+    {
+        None = 0,
+
+        Common = 1,
+
+        Object = 1 << 1,
+
+        GBuffer = 1 << 2,
+
+        GBufferTextures = 1 << 3,
     }
 }
