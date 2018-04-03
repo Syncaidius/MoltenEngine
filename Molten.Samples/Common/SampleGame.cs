@@ -23,7 +23,7 @@ namespace Molten.Samples
             base.OnInitialize(engine);
             Window.OnClose += Window_OnClose;
 
-            UIScene = CreateScene("UI");
+            UIScene = CreateScene("UI", SceneRenderFlags.Render2D);
 
             _formDepthSurface = Engine.Renderer.Resources.CreateDepthSurface(Window.Width, Window.Height);
             Window.OnPostResize += Window_OnPostResize;
