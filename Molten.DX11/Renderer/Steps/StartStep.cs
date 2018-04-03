@@ -46,11 +46,11 @@ namespace Molten.Graphics
         {
             GraphicsDevice device = renderer.Device;
 
-            if (scene.RenderCamera != null)
+            if (scene.Camera != null)
             {
-                scene.Projection = scene.RenderCamera.Projection;
-                scene.View = scene.RenderCamera.View;
-                scene.ViewProjection = scene.RenderCamera.ViewProjection;
+                scene.Projection = scene.Camera.Projection;
+                scene.View = scene.Camera.View;
+                scene.ViewProjection = scene.Camera.ViewProjection;
             }
             else
             {

@@ -39,50 +39,9 @@ namespace Molten.Samples
                 return;
             }
 
-            VertexColor[] vertices = new VertexColor[]{
-                new VertexColor(new Vector3F(-1,-1,-1), Color.Red), //front
-                new VertexColor(new Vector3F(-1,1,-1), Color.Red),
-                new VertexColor(new Vector3F(1,1,-1), Color.Red),
-                new VertexColor(new Vector3F(1,-1,-1), Color.Red),
-
-                new VertexColor(new Vector3F(-1,-1,1), Color.Green), //back
-                new VertexColor(new Vector3F(1,1,1), Color.Green),
-                new VertexColor(new Vector3F(-1,1,1), Color.Green),
-                new VertexColor(new Vector3F(1,-1,1), Color.Green),
-
-                new VertexColor(new Vector3F(-1,1,-1), Color.Blue), //top
-                new VertexColor(new Vector3F(-1,1,1), Color.Blue),
-                new VertexColor(new Vector3F(1,1,1), Color.Blue),
-                new VertexColor(new Vector3F(1,1,-1), Color.Blue),
-
-                new VertexColor(new Vector3F(-1,-1,-1), Color.Yellow), //bottom
-                new VertexColor(new Vector3F(1,-1,1), Color.Yellow),
-                new VertexColor(new Vector3F(-1,-1,1), Color.Yellow),
-                new VertexColor(new Vector3F(1,-1,-1), Color.Yellow),
-
-                new VertexColor(new Vector3F(-1,-1,-1), Color.Purple), //left
-                new VertexColor(new Vector3F(-1,-1,1), Color.Purple),
-                new VertexColor(new Vector3F(-1,1,1), Color.Purple),
-                new VertexColor(new Vector3F(-1,1,-1), Color.Purple),
-
-                new VertexColor(new Vector3F(1,-1,-1), Color.White), //right
-                new VertexColor(new Vector3F(1,1,1), Color.White),
-                new VertexColor(new Vector3F(1,-1,1), Color.White),
-                new VertexColor(new Vector3F(1,1,-1), Color.White),
-            };
-
-            int[] indices = new int[]{
-                0, 1, 2, 0, 2, 3,
-                4, 5, 6, 4, 7, 5,
-                8, 9, 10, 8, 10, 11,
-                12, 13, 14, 12, 15, 13,
-                16,17,18, 16, 18, 19,
-                20, 21, 22, 20, 23, 21,
-            };
-
             mesh.Material = material;
-            mesh.SetVertices(vertices);
-            mesh.SetIndices(indices);
+            mesh.SetVertices(SampleVertexData.IndexedTexturedCubeVertices);
+            mesh.SetIndices(SampleVertexData.TexturedCubeIndices);
             for (int i = 0; i < 6000; i++)
                 SpawnRandomTestCube(material, mesh, 70);
 

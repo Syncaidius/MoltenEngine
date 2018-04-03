@@ -258,10 +258,10 @@ namespace Molten.Graphics
                 RenderSurfaceBase rs = _device.DefaultSurface;
                 DepthSurface ds = null;
 
-                if (data.RenderCamera != null)
+                if (data.Camera != null)
                 {
-                    rs = data.RenderCamera.OutputSurface as RenderSurfaceBase ?? rs;
-                    ds = data.RenderCamera.OutputDepthSurface as DepthSurface;
+                    rs = data.Camera.OutputSurface as RenderSurfaceBase ?? rs;
+                    ds = data.Camera.OutputDepthSurface as DepthSurface;
                 }
 
                 if (rs == null)

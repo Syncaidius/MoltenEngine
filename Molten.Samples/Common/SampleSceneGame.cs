@@ -51,7 +51,7 @@ namespace Molten.Samples
             _txtInstructions.Position = new Vector2F()
             {
                 X = Window.Width / 2 + (-_txtInstructionSize.X / 2),
-                Y = Window.Height - _txtInstructionSize.Y,
+                Y = Window.Height - _txtInstructionSize.Y - 20,
             };
         }
 

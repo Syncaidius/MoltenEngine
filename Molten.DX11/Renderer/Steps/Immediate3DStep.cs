@@ -30,15 +30,15 @@ namespace Molten.Graphics
             DepthSurface ds = null;
             GraphicsDevice device = renderer.Device;
 
-            if (scene.RenderCamera != null)
+            if (scene.Camera != null)
             {
-                rs = scene.RenderCamera.OutputSurface as RenderSurfaceBase;
-                ds = scene.RenderCamera.OutputDepthSurface as DepthSurface;
+                rs = scene.Camera.OutputSurface as RenderSurfaceBase;
+                ds = scene.Camera.OutputDepthSurface as DepthSurface;
                 rs = rs ?? device.DefaultSurface;
 
-                scene.Projection = scene.RenderCamera.Projection;
-                scene.View = scene.RenderCamera.View;
-                scene.ViewProjection = scene.RenderCamera.ViewProjection;
+                scene.Projection = scene.Camera.Projection;
+                scene.View = scene.Camera.View;
+                scene.ViewProjection = scene.Camera.ViewProjection;
             }
             else
             {

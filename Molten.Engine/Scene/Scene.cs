@@ -126,16 +126,8 @@ namespace Molten
         /// Scenes without a camera are rendered from a default view that is positioned at 0,0,5 and facing 0,0,0.</summary>
         public ICamera OutputCamera
         {
-            get => _data.RenderCamera;
-            set => _data.RenderCamera = value;
-        }
-
-        /// <summary>Gets or sets the scene's sprite camera. This is used when rendering <see cref="ISprite"/> objects over the 3D scene.
-        /// If no sprite camera is set, the scene's output surface will be used as the default view.</summary>
-        public ICamera SpriteCamera
-        {
-            get => _data.SpriteCamera;
-            set => _data.SpriteCamera = value;
+            get => _data.Camera;
+            set => _data.Camera = value;
         }
 
         /// <summary>Gets the <see cref="Engine"/> instance that the <see cref="Scene"/> is bound to.</summary>

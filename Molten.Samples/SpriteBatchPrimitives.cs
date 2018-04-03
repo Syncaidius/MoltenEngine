@@ -14,7 +14,6 @@ namespace Molten.Samples
 
         SceneObject _parent;
         SceneObject _child;
-        Camera2D _cam2D;
         IMesh<VertexTexture> _mesh;
 
         public SpriteBatchPrimitives(EngineSettings settings = null) : base("Sprite Batch Primitives", settings) { }
@@ -22,12 +21,6 @@ namespace Molten.Samples
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-
-            _cam2D = new Camera2D()
-            {
-                OutputSurface = Window,
-                OutputDepthSurface = WindowDepthSurface,
-            };
 
             ContentRequest cr = engine.Content.StartRequest();
             cr.Load<IMaterial>("BasicTexture.sbm");

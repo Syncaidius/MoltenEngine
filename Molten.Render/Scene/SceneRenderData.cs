@@ -23,12 +23,7 @@ namespace Molten.Graphics
         public bool IsVisible = true;
 
         /// <summary>The camera that should be used as a view or eye when rendering 3D objects in a scene.</summary>
-        public ICamera RenderCamera;
-
-        /// <summary>
-        /// A camera used for drawing 2D/sprite scene objects.
-        /// </summary>
-        public ICamera SpriteCamera;
+        public ICamera Camera;
 
         /// <summary>
         /// Flags which describe basic rules for rendering the scene.

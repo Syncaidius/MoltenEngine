@@ -83,6 +83,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\SampleSceneGame.cs" />
+    <Compile Include="Common\SampleVertexData.cs" />
     <Compile Include="Common\SpriteBatchContainer.cs" />
     <Compile Include="Common\SpriteCacheTestObject.cs" />
     <Compile Include="Common\UnfairSpriteCacheTestObject.cs" />

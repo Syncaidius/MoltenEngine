@@ -30,51 +30,7 @@ namespace Molten.Samples
             cr.Commit();
 
             _mesh = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
-            VertexColor[] vertices = new VertexColor[]{
-                        new VertexColor(new Vector3F(-1,-1,-1), Color.Red), //front
-                        new VertexColor(new Vector3F(-1,1,-1), Color.Red),
-                        new VertexColor(new Vector3F(1,1,-1), Color.Red),
-                        new VertexColor(new Vector3F(-1,-1,-1), Color.Red),
-                        new VertexColor(new Vector3F(1,1,-1), Color.Red),
-                        new VertexColor(new Vector3F(1,-1,-1), Color.Red),
-
-                        new VertexColor(new Vector3F(-1,-1,1), Color.Blue), //back
-                        new VertexColor(new Vector3F(1,1,1), Color.Blue),
-                        new VertexColor(new Vector3F(-1,1,1), Color.Blue),
-                        new VertexColor(new Vector3F(-1,-1,1),Color.Blue),
-                        new VertexColor(new Vector3F(1,-1,1), Color.Blue),
-                        new VertexColor(new Vector3F(1,1,1), Color.Blue),
-
-                        new VertexColor(new Vector3F(-1,1,-1), Color.Yellow), //top
-                        new VertexColor(new Vector3F(-1,1,1), Color.Yellow),
-                        new VertexColor(new Vector3F(1,1,1), Color.Yellow),
-                        new VertexColor(new Vector3F(-1,1,-1), Color.Yellow),
-                        new VertexColor(new Vector3F(1,1,1), Color.Yellow),
-                        new VertexColor(new Vector3F(1,1,-1), Color.Yellow),
-
-                        new VertexColor(new Vector3F(-1,-1,-1), Color.Purple), //bottom
-                        new VertexColor(new Vector3F(1,-1,1), Color.Purple),
-                        new VertexColor(new Vector3F(-1,-1,1), Color.Purple),
-                        new VertexColor(new Vector3F(-1,-1,-1), Color.Purple),
-                        new VertexColor(new Vector3F(1,-1,-1), Color.Purple),
-                        new VertexColor(new Vector3F(1,-1,1), Color.Purple),
-
-                        new VertexColor(new Vector3F(-1,-1,-1), Color.Green), //left
-                        new VertexColor(new Vector3F(-1,-1,1), Color.Green),
-                        new VertexColor(new Vector3F(-1,1,1), Color.Green),
-                        new VertexColor(new Vector3F(-1,-1,-1), Color.Green),
-                        new VertexColor(new Vector3F(-1,1,1), Color.Green),
-                        new VertexColor(new Vector3F(-1,1,-1), Color.Green),
-
-                        new VertexColor(new Vector3F(1,-1,-1), Color.White), //right
-                        new VertexColor(new Vector3F(1,1,1), Color.White),
-                        new VertexColor(new Vector3F(1,-1,1), Color.White),
-                        new VertexColor(new Vector3F(1,-1,-1), Color.White),
-                        new VertexColor(new Vector3F(1,1,-1), Color.White),
-                        new VertexColor(new Vector3F(1,1,1), Color.White),
-                    };
-
-            _mesh.SetVertices(vertices);
+            _mesh.SetVertices(SampleVertexData.ColoredCube);
             Window.PresentClearColor = new Color(20, 20, 20, 255);
             for (int i = 0; i < 6000; i++)
                 SpawnRandomTestCube(_mesh, 70);

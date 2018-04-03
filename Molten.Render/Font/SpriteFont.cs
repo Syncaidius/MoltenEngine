@@ -131,7 +131,7 @@ namespace Molten.Graphics
             _renderData.Flags = SceneRenderFlags.Render2D | SceneRenderFlags.DoNotClear | SceneRenderFlags.NoDebugOverlay;
             _renderData.AddSprite(new FontContainer(this));
             _renderData.OnPostRender += _renderData_OnPostRender;
-            _renderData.SpriteCamera = new Camera2D()
+            _renderData.Camera = new Camera2D()
             {
                 OutputSurface = _rt,
             };

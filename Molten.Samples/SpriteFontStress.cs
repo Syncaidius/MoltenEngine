@@ -16,10 +16,7 @@ namespace Molten.Samples
 
         SceneObject _parent;
         SceneObject _child;
-        List<Matrix4F> _positions;
         Random _rng;
-        SceneCameraComponent _cam;
-        Camera2D _cam2D;
         List<ISprite> _sprites;
         IMesh<VertexTexture> _mesh;
 
@@ -31,21 +28,9 @@ namespace Molten.Samples
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-            _cam = new SceneCameraComponent()
-            {
-                OutputSurface = Window,
-                OutputDepthSurface = WindowDepthSurface,
-            };
-
-            _cam2D = new Camera2D()
-            {
-                OutputSurface = Window,
-                OutputDepthSurface = WindowDepthSurface,
-            };
 
             _sprites = new List<ISprite>();
             _rng = new Random();
-            _positions = new List<Matrix4F>();
             throw new NotImplementedException(); // TODO: re-write below
             //_font = engine.Renderer.Resources.CreateFont("arial", 36);
             //SetupSprites(_font);

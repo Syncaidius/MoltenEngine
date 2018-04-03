@@ -22,51 +22,7 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
             _mesh = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
-            CubeArrayVertex[] verts = new CubeArrayVertex[]{
-               new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(0,1,0)), //front
-               new CubeArrayVertex(new Vector3F(-1,1,-1), new Vector3F(0,0,0)),
-               new CubeArrayVertex(new Vector3F(1,1,-1), new Vector3F(1,0,0)),
-               new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(0,1,0)),
-               new CubeArrayVertex(new Vector3F(1,1,-1), new Vector3F(1, 0,0)),
-               new CubeArrayVertex(new Vector3F(1,-1,-1), new Vector3F(1,1,0)),
-
-               new CubeArrayVertex(new Vector3F(-1,-1,1), new Vector3F(1,0,1)), //back
-               new CubeArrayVertex(new Vector3F(1,1,1), new Vector3F(0,1,1)),
-               new CubeArrayVertex(new Vector3F(-1,1,1), new Vector3F(1,1,1)),
-               new CubeArrayVertex(new Vector3F(-1,-1,1), new Vector3F(1,0,1)),
-               new CubeArrayVertex(new Vector3F(1,-1,1), new Vector3F(0, 0,1)),
-               new CubeArrayVertex(new Vector3F(1,1,1), new Vector3F(0,1,1)),
-
-               new CubeArrayVertex(new Vector3F(-1,1,-1), new Vector3F(0,1,2)), //top
-               new CubeArrayVertex(new Vector3F(-1,1,1), new Vector3F(0,0,2)),
-               new CubeArrayVertex(new Vector3F(1,1,1), new Vector3F(1,0,2)),
-               new CubeArrayVertex(new Vector3F(-1,1,-1), new Vector3F(0,1,2)),
-               new CubeArrayVertex(new Vector3F(1,1,1), new Vector3F(1, 0,2)),
-               new CubeArrayVertex(new Vector3F(1,1,-1), new Vector3F(1,1,2)),
-
-               new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(1,0,0)), //bottom
-               new CubeArrayVertex(new Vector3F(1,-1,1), new Vector3F(0,1,0)),
-               new CubeArrayVertex(new Vector3F(-1,-1,1), new Vector3F(1,1,0)),
-               new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(1,0,0)),
-               new CubeArrayVertex(new Vector3F(1,-1,-1), new Vector3F(0, 0,0)),
-               new CubeArrayVertex(new Vector3F(1,-1,1), new Vector3F(0,1,0)),
-
-               new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(0,1,1)), //left
-               new CubeArrayVertex(new Vector3F(-1,-1,1), new Vector3F(0,0,1)),
-               new CubeArrayVertex(new Vector3F(-1,1,1), new Vector3F(1,0,1)),
-               new CubeArrayVertex(new Vector3F(-1,-1,-1), new Vector3F(0,1,1)),
-               new CubeArrayVertex(new Vector3F(-1,1,1), new Vector3F(1, 0,1)),
-               new CubeArrayVertex(new Vector3F(-1,1,-1), new Vector3F(1,1,1)),
-
-               new CubeArrayVertex(new Vector3F(1,-1,-1), new Vector3F(1,0,2)), //right
-               new CubeArrayVertex(new Vector3F(1,1,1), new Vector3F(0,1,2)),
-               new CubeArrayVertex(new Vector3F(1,-1,1), new Vector3F(1,1,2)),
-               new CubeArrayVertex(new Vector3F(1,-1,-1), new Vector3F(1,0,2)),
-               new CubeArrayVertex(new Vector3F(1,1,-1), new Vector3F(0, 0,2)),
-               new CubeArrayVertex(new Vector3F(1,1,1), new Vector3F(0,1,2)),
-            };
-
-            _mesh.SetVertices(verts);
+            _mesh.SetVertices(SampleVertexData.TextureArrayCubeVertices);
 
             ContentRequest cr = engine.Content.StartRequest();
             cr.Load<IMaterial>("BasicTextureArray2D.sbm");
