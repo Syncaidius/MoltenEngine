@@ -11,8 +11,6 @@ namespace Molten.Graphics
     {
         public ISprite Sprite;
 
-        public int Layer;
-
         public override void Clear()
         {
             Sprite = null;
@@ -20,7 +18,7 @@ namespace Molten.Graphics
 
         public override void Process(SceneRenderDataDX11 scene)
         {
-            scene.SpriteLayers[Layer].Sprites.Remove(Sprite);
+            scene.Sprites.Remove(Sprite);
             Recycle(this);
         }
     }

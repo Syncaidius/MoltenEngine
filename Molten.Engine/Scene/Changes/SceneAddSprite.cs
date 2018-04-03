@@ -22,7 +22,7 @@ namespace Molten
         public override void Process(Scene scene)
         {
             scene.Sprites.Add(Sprite);
-            scene.RenderData.AddSprite(Sprite, Layer);
+            scene.RenderData.AddSprite(Sprite);
 
             // UI components are always IUpdatable, which we don't actually want in the scene's updatables list.
             // The scene's UI system will update it's root components at the correct time.

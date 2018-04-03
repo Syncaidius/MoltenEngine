@@ -22,7 +22,7 @@ namespace Molten
         public override void Process(Scene scene)
         {
             scene.Sprites.Remove(Sprite);
-            scene.RenderData.RemoveSprite(Sprite, Layer);
+            scene.RenderData.RemoveSprite(Sprite);
 
             // UI components are always IUpdatable.
             if (Sprite is UIComponent com)

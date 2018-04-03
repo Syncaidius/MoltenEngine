@@ -15,7 +15,7 @@ namespace Molten.Graphics
         SceneRenderFlags _previousFlags;
 
         internal Dictionary<Renderable, List<ObjectRenderData>> Renderables;
-        internal SpriteLayer[] SpriteLayers;
+        internal List<ISprite> Sprites;
 
 
         internal SceneRenderDataDX11(RendererDX11 renderer)
@@ -24,8 +24,7 @@ namespace Molten.Graphics
             Renderables = new Dictionary<Renderable, List<ObjectRenderData>>();
 
             // Set up one sprite layer.
-            SpriteLayers = new SpriteLayer[1];
-            SpriteLayers[0] = new SpriteLayer();
+            Sprites = new List<ISprite>();
             _previousFlags = Flags;
             _chain = new RenderChain(renderer, this);
             _chain.Rebuild();
@@ -47,64 +46,17 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        public override void AddSprite(ISprite sprite, int layer = 0)
+        public override void AddSprite(ISprite sprite)
         {
             SpriteAdd change = SpriteAdd.Get();
             change.Sprite = sprite;
-            change.Layer = layer;
             _pendingChanges.Enqueue(change);
         }
 
-        public override void RemoveSprite(ISprite sprite, int layer = 0)
+        public override void RemoveSprite(ISprite sprite)
         {
             SpriteRemove change = SpriteRemove.Get();
             change.Sprite = sprite;
-            change.Layer = layer;
-            _pendingChanges.Enqueue(change);
-        }
-
-        public override void ClearSpriteLayer(int layer)
-        {
-            if (layer < SpriteLayers.Length)
-                SpriteLayers[layer].Sprites.Clear();
-        }
-
-        public override void SetSpriteLayerVisibility(int layer, bool visible)
-        {
-            SpriteSetLayerVisibility change = SpriteSetLayerVisibility.Get();
-            change.LayerID = layer;
-            change.Visibility = visible;
-            _pendingChanges.Enqueue(change);
-        }
-
-        public override void GetVisibleSpriteLayers(List<int> output, Action<List<int>> retrievalCallback)
-        {
-            SpriteGetVisibleLayers change = SpriteGetVisibleLayers.Get();
-            change.Output = output;
-            change.RetrievalCallback = retrievalCallback;
-            _pendingChanges.Enqueue(change);
-        }
-
-        public override void SetSpriteLayerCount(int layerCount)
-        {
-            SpriteSetLayerCount change = SpriteSetLayerCount.Get();
-            change.LayerCount = layerCount;
-            _pendingChanges.Enqueue(change);
-        }
-
-        public override void ChangeSpriteLayer(ISprite sprite, int oldLayer, int newLayer)
-        {
-            SpriteChangeLayer change = SpriteChangeLayer.Get();
-            change.Sprite = sprite;
-            change.OldLayer = oldLayer;
-            change.NewLayer = newLayer;
-            _pendingChanges.Enqueue(change);
-        }
-
-        public override void GetSpriteLayerCount(Action<int> retrievalCallback)
-        {
-            SpriteGetLayerCount change = SpriteGetLayerCount.Get();
-            change.RetrievalCallback = retrievalCallback;
             _pendingChanges.Enqueue(change);
         }
 
@@ -160,11 +112,8 @@ namespace Molten.Graphics
 
         internal void Render2D(GraphicsPipe pipe, RendererDX11 renderer)
         {
-            foreach (SpriteLayer layer in SpriteLayers)
-            {
-                foreach (ISprite s in layer.Sprites)
-                    s.Render(renderer.SpriteBatcher);
-            }
+            for(int i = 0; i < Sprites.Count; i++)
+                Sprites[i].Render(renderer.SpriteBatcher);
         }
 
         internal Matrix4F View = Matrix4F.Identity;

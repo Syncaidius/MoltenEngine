@@ -159,17 +159,11 @@
     <Compile Include="Scene\Changes\RenderableRemove.cs" />
     <Compile Include="Scene\Changes\RenderSceneChange.cs" />
     <Compile Include="Scene\Changes\SpriteAdd.cs" />
-    <Compile Include="Scene\Changes\SpriteChangeLayer.cs" />
-    <Compile Include="Scene\Changes\SpriteGetLayerCount.cs" />
-    <Compile Include="Scene\Changes\SpriteGetVisibleLayers.cs" />
     <Compile Include="Scene\Changes\SpriteRemove.cs" />
-    <Compile Include="Scene\Changes\SpriteSetLayerCount.cs" />
-    <Compile Include="Scene\Changes\SpriteSetLayerVisibility.cs" />
     <Compile Include="Scene\SceneRenderDataDX11.cs" />
     <Compile Include="Shaders\Compiler\ShaderCompilerContext.cs" />
     <Compile Include="Shaders\Compiler\StateParsers\RasterizerNodeParser.cs" />
     <Compile Include="Spritebatch\SpriteBatchDX11.cs" />
-    <Compile Include="Scene\SpriteLayer.cs" />
     <Compile Include="ShaderModelExtensionsDX11.cs" />
     <Compile Include="Shaders\Compiler\ComputeCompiler.cs" />
     <Compile Include="Shaders\Compiler\HlslCompiler.cs" />

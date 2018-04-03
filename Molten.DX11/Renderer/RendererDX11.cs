@@ -96,8 +96,6 @@ namespace Molten.Graphics
             SpriteBatcher = new SpriteBatchDX11(this, 3000);
              
             /* TODO: 
-             *  - Allow the renderer to iterate over sprite layers instead of inside SceneData.Render2D().
-             *  - Remove 2D layer system and add render flags to SceneData to control how/where 2D is rendered (e.g. behind post-processing, ahead (default) or behind 3D).
              *  - Add normal map support to GBUFFER
              *  - Add standard texture properties to IMesh (Albedo, normal, specular, emissive, PBR, etc)
              *  - Stages:
