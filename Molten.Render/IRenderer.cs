@@ -42,6 +42,30 @@ namespace Molten.Graphics
 
         void DestroyRenderData(SceneRenderData data);
 
+        /// <summary>
+        /// brings a scene to the front. This means it will be rendered (last) in front of all other scenes.
+        /// </summary>
+        /// <param name="data">The scene's render data instance.</param>
+        void BringToFront(SceneRenderData data);
+        
+        /// <summary>
+        /// Sends a scene to the back. This means it will be rendered (first) behind all other scenes.
+        /// </summary>
+        /// <param name="data">The scene's render data instance.</param>
+        void SendToBack(SceneRenderData data);
+        
+        /// <summary>
+        /// Swaps a scene's render order with the scene in front it (if any).
+        /// </summary>
+        /// <param name="data">The scene's render data instance.</param>
+        void PushForward(SceneRenderData data);
+
+        /// <summary>
+        /// Swaps a scene's render order with the scene behind it (if any).
+        /// </summary>
+        /// <param name="data">The scene's render data instance.</param>
+        void PushBackward(SceneRenderData data);
+
         /// <summary>Sets the current debug overlay page. Returns the ID of the next page.</summary>
         /// <param name="visible">If true, the debug overlay will be visible.</param>
         /// <param name="page">The page number.</param>

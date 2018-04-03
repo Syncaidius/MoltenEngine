@@ -16,13 +16,14 @@ namespace Molten.Samples
 
         public SampleGame(string title, EngineSettings settings = null) : base(title, settings)
         {
-
         }
 
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
             Window.OnClose += Window_OnClose;
+
+            UIScene = CreateScene("UI");
 
             _formDepthSurface = Engine.Renderer.Resources.CreateDepthSurface(Window.Width, Window.Height);
             Window.OnPostResize += Window_OnPostResize;
@@ -72,5 +73,10 @@ namespace Molten.Samples
 
         /// <summary>Gets a random number generator. Used for various samples.</summary>
         public Random Rng { get; private set; } = new Random();
+
+        /// <summary>
+        /// Gets the sample's UI scene.
+        /// </summary>
+        public Scene UIScene { get; private set; }
     }
 }

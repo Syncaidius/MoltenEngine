@@ -23,6 +23,7 @@ namespace Molten.Samples
 
             Window.OnPostResize += Window_OnPostResize;
             _scene = CreateScene("Test");
+            _scene.SendToBack();
             SpawnPlayer();
         }
 
@@ -37,7 +38,7 @@ namespace Molten.Samples
                 Color = Color.White,
             };
             UpdateInstructions();
-            _scene.AddSprite(_txtInstructions);
+            UIScene.AddSprite(_txtInstructions);
         }
 
         protected override void OnContentRequested(ContentRequest cr) { }
@@ -50,7 +51,7 @@ namespace Molten.Samples
             _txtInstructions.Position = new Vector2F()
             {
                 X = Window.Width / 2 + (-_txtInstructionSize.X / 2),
-                Y = 3,
+                Y = Window.Height - _txtInstructionSize.Y,
             };
         }
 

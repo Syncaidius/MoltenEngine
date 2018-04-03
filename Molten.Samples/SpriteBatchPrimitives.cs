@@ -110,7 +110,7 @@ namespace Molten.Samples
                     Origin = new Vector2F(0.5f),
                 };
 
-                SampleScene.AddSprite(s);
+                UIScene.AddSprite(s);
             }
         }
 
@@ -271,7 +271,7 @@ namespace Molten.Samples
                     }
                 }
             };
-            SampleScene.AddSprite(sbContainer);
+            UIScene.AddSprite(sbContainer);
         }
 
         protected override void OnUpdate(Timing time)

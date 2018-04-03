@@ -180,10 +180,37 @@ namespace Molten.Graphics
 
         public void DestroyRenderData(SceneRenderData data)
         {
-            SceneRenderDataDX11 rd = data as SceneRenderDataDX11;
             RendererRemoveScene task = RendererRemoveScene.Get();
-            task.Data = rd;
+            task.Data = data as SceneRenderDataDX11;
             PushTask(task);
+        }
+
+        private void PushSceneReorder(SceneRenderData data, SceneReorderMode mode)
+        {
+            RendererReorderScene task = RendererReorderScene.Get();
+            task.Data = data as SceneRenderDataDX11;
+            task.Mode = mode;
+            PushTask(task);
+        }
+
+        public void BringToFront(SceneRenderData data)
+        {
+            PushSceneReorder(data, SceneReorderMode.BringToFront);
+        }
+
+        public void SendToBack(SceneRenderData data)
+        {
+            PushSceneReorder(data, SceneReorderMode.SendToBack);
+        }
+
+        public void PushForward(SceneRenderData data)
+        {
+            PushSceneReorder(data, SceneReorderMode.PushForward);
+        }
+
+        public void PushBackward(SceneRenderData data)
+        {
+            PushSceneReorder(data, SceneReorderMode.PushBackward);
         }
 
         internal void PushTask(RendererTask task)

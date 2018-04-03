@@ -130,7 +130,7 @@ namespace Molten.Samples
                 };
 
                 _sprites.Add(s);
-                SampleScene.AddSprite(s);
+                UIScene.AddSprite(s);
             }
         }
 

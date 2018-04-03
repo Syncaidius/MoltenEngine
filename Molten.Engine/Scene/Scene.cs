@@ -39,6 +39,16 @@ namespace Molten
             engine.Log.WriteLine($"Created scene '{name}'");
         }
 
+        public void BringToFront()
+        {
+            Engine.Renderer?.BringToFront(_data);
+        }
+
+        public void SendToBack()
+        {
+            Engine.Renderer?.SendToBack(_data);
+        }
+
         /// <summary>Adds a <see cref="SceneObject"/> to the scene.</summary>
         /// <param name="obj">The object to be added.</param>
         public void AddObject(SceneObject obj)

@@ -149,6 +149,7 @@
     <Compile Include="Renderer\Steps\Render2dStep.cs" />
     <Compile Include="Renderer\Steps\GBuffer3dStep.cs" />
     <Compile Include="Renderer\Steps\RenderStepBase.cs" />
+    <Compile Include="Renderer\Tasks\RendererReorderScene.cs" />
     <Compile Include="Renderer\Tasks\TextureResolve.cs" />
     <Compile Include="Renderer\Tasks\RendererAddScene.cs" />
     <Compile Include="Renderer\Tasks\RendererRemoveScene.cs" />

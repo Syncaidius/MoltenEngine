@@ -235,7 +235,7 @@ namespace Molten.Samples
                     }
                 }
             };
-            SampleScene.AddSprite(_container);
+            UIScene.AddSprite(_container);
         }
 
         /// <summary>
