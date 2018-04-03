@@ -19,11 +19,15 @@ namespace Molten
 
         int _blockingVal;
 
+        static Logger()
+        {
+            _loggers = new ThreadedList<Logger>();
+        }
+
         internal Logger()
         {
             _errorBuilder = new StringBuilder();
             _outputs = new List<ILogOutput>();
-            _loggers = new ThreadedList<Logger>();
             _blockingVal = 0;
         }
 

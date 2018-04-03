@@ -14,9 +14,7 @@ namespace Molten.Samples
         SpriteFont _testFont;
         int _nextRenderPage;
 
-        public SampleGame(string title, EngineSettings settings = null) : base(title, settings)
-        {
-        }
+        public SampleGame(string title, EngineSettings settings = null) : base(title, settings) { }
 
         protected override void OnInitialize(Engine engine)
         {
