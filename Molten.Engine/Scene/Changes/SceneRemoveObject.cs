@@ -21,6 +21,7 @@ namespace Molten
             if (Object.Scene == scene)
             {
                 scene.Objects.Remove(Object);
+                scene.Updatables.Remove(Object);
                 Object.Scene = null;
             }
 

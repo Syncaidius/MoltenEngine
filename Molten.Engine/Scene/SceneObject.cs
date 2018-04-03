@@ -3,6 +3,7 @@ using Molten.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace Molten
     public delegate void SceneObjectVisibilityHandler(SceneObject obj, bool visible);
     public delegate void SceneObjectSceneHandler(SceneObject obj, Scene scene);
 
-    public sealed class SceneObject
+    public sealed class SceneObject : IUpdatable
     {
         Engine _engine;
         Scene _scene;
@@ -119,7 +120,7 @@ namespace Molten
             }
         }
 
-        internal void Update(Timing time)
+        private void Update(Timing time)
         {
             // Update own transform.
             _transform.Update(time);
@@ -151,6 +152,11 @@ namespace Molten
             }
 
             _transform.ResetFlags();
+        }
+
+        void IUpdatable.Update(Timing time)
+        {
+            Update(time);
         }
 
         /// <summary>Gets or sets whether the object is rendered. The object will still be updated if <see cref="UpdateFlags"/> is true.</summary>

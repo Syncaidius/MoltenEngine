@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    /// <summary>Represents an implementation of an updatable <see cref="ISprite"/> object.</summary>
+    /// <summary>Represents an implementation of an updatable scene object.</summary>
     public interface IUpdatable
     {
-        /// <summary>Called when </summary>
-        /// <param name="time"></param>
+        /// <summary>Called when a the <see cref="IUpdatable"/> is enabled and it's parent scene is updated.</summary>
+        /// <param name="time">A <see cref="Timing"/> instance.</param>
         void Update(Timing time);
     }
 }

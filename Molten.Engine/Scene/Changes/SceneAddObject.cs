@@ -26,6 +26,7 @@ namespace Molten
 
                 Object.Scene = scene;
                 scene.Objects.Add(Object);
+                scene.Updatables.Add(Object);
             }
 
             Recycle(this);

@@ -84,11 +84,6 @@ namespace Molten
             while (_pendingChanges.TryDequeue(out SceneChange change))
                 change.Process(this);
 
-            // Update root objects - Updated separately because it's safer/faster to assume at least 1 child object may need updating.
-            foreach(SceneObject obj in Objects)
-                obj.Update(time);
-
-            // Updatable sprites
             foreach (IUpdatable up in Updatables)
                 up.Update(time);
         }
@@ -114,8 +109,7 @@ namespace Molten
         /// <summary>Gets the name of the scene.</summary>
         public string Name { get; private set; }
 
-        /// <summary>Gets rendering information about the scene. Although some members of this object can be modified, please do not modify them outside of a renderer. 
-        /// Doing so will cause unexpected behaviour.</summary>
+        /// <summary>Gets rendering information about the scene.</summary>
         public SceneRenderData RenderData => _data;
 
         /// <summary>Gets or sets the scene's out camera. This acts as an eye when rendering the scene, allowing it to be viewed from the perspective of the camera.
