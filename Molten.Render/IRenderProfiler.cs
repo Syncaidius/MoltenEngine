@@ -20,7 +20,9 @@ namespace Molten.Graphics
         /// <summary>Gets the stats so far for the current second of time being measured.</summary>
         RenderFrameSnapshot CurrentSecond { get; }
 
-        /// <summary>Gets the estimated amount of VRAM currently in use on the GPU.</summary>
-        long AllocatedVRAM { get; }
+        /// <summary>
+        /// Gets the number of frames recorded with the current <see cref="IRenderProfiler"/>.
+        /// </summary>
+        ulong FrameCount { get; }
     }
 }

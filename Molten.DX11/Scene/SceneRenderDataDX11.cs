@@ -16,7 +16,12 @@ namespace Molten.Graphics
 
         internal Dictionary<Renderable, List<ObjectRenderData>> Renderables;
         internal List<ISprite> Sprites;
-
+        internal Matrix4F View = Matrix4F.Identity;
+        internal Matrix4F Projection;
+        internal Matrix4F ViewProjection;
+        internal RenderSurfaceBase FinalSurface;
+        internal DepthSurface FinalDepthSurface;
+        internal RenderProfilerDX Profiler;
 
         internal SceneRenderDataDX11(RendererDX11 renderer)
         {
@@ -28,6 +33,7 @@ namespace Molten.Graphics
             _previousFlags = Flags;
             _chain = new RenderChain(renderer, this);
             _chain.Rebuild();
+            Profiler = new RenderProfilerDX();
         }
 
         public override void AddObject(IRenderable obj, ObjectRenderData renderData)
@@ -115,15 +121,5 @@ namespace Molten.Graphics
             for(int i = 0; i < Sprites.Count; i++)
                 Sprites[i].Render(renderer.SpriteBatcher);
         }
-
-        internal Matrix4F View = Matrix4F.Identity;
-
-        internal Matrix4F Projection;
-
-        internal Matrix4F ViewProjection;
-
-        internal RenderSurfaceBase FinalSurface;
-
-        internal DepthSurface FinalDepthSurface;
     }
 }

@@ -12,8 +12,6 @@ namespace Molten
     {
         public ISprite Sprite;
 
-        public int Layer;
-
         public override void Clear()
         {
             Sprite = null;

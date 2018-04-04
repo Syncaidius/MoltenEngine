@@ -289,7 +289,7 @@ namespace Molten.Graphics
             // Dispose of old static buffer
             if (_buffer != null)
             {
-                _device.Profiler.TrackDeallocation(_buffer.Description.SizeInBytes);
+                _device.DeallocateVRAM(_buffer.Description.SizeInBytes);
                 _buffer.Dispose();
             }
 
@@ -305,7 +305,7 @@ namespace Molten.Graphics
             else
                 _buffer = new Buffer(_device.D3d, Description);
 
-            _device.Profiler.TrackAllocation(Description.SizeInBytes);
+            _device.AllocateVRAM(Description.SizeInBytes);
 
             _firstSegment = new BufferSegment()
             {
@@ -580,7 +580,7 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             if (_buffer != null)
-                _device.Profiler.TrackDeallocation(_byteCapacity);
+                _device.DeallocateVRAM(_byteCapacity);
 
             base.OnDispose();
         }

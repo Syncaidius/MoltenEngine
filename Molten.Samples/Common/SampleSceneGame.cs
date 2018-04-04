@@ -23,6 +23,7 @@ namespace Molten.Samples
 
             Window.OnPostResize += Window_OnPostResize;
             _scene = CreateScene("Test");
+            DebugOverlay.SetScene(_scene.RenderData);
             _scene.SendToBack();
             SpawnPlayer();
         }

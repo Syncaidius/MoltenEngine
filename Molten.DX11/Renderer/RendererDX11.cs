@@ -29,11 +29,6 @@ namespace Molten.Graphics
         ThreadedQueue<RendererTask> _tasks;
         ThreadedList<ISwapChainSurface> _outputSurfaces;
         HashSet<TextureAsset2D> _clearedSurfaces;
-
-        List<DebugOverlayPage> _debugOverlay;
-        int _debugOverlayPage = 0;
-        SpriteFont _debugFont;
-        bool _debugOverlayVisible = false;
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
 
@@ -110,7 +105,6 @@ namespace Molten.Graphics
              *  - iterate over _stepList for every active scene. 
              */
 
-            InitializeDebugOverlay();
             LoadDefaultShaders();
         }
 
@@ -132,34 +126,12 @@ namespace Molten.Graphics
             }
         }
 
-        private void InitializeDebugOverlay()
+
+        public ISceneDebugOverlay GetDebugOverlay(SceneRenderData data = null)
         {
-            _debugOverlay = new List<DebugOverlayPage>();
-            _debugOverlay.Add(new DebugStatsPage());
-            _debugOverlay.Add(new DebugBuffersPage());
-        }
-
-        public int SetDebugOverlayPage(SpriteFont font, bool visible, int page)
-        {
-            _debugFont = font;
-
-            if (page >= _debugOverlay.Count)
-                page = _debugOverlay.Count - 1;
-
-            int next = page + 1;
-            if (next >= _debugOverlay.Count)
-                next = 0;
-
-            _debugOverlayPage = page;
-            _debugOverlayVisible = visible;
-            return next;
-        }
-
-        internal void DrawDebugOverlay(SpriteBatch sb, SceneRenderDataDX11 scene, Timing time, IRenderSurface rs)
-        {
-            // Render the debug overlay here so it shows on top of everything else
-            if (_debugOverlayVisible && !scene.HasFlag(SceneRenderFlags.NoDebugOverlay))
-                _debugOverlay[_debugOverlayPage].Render(_debugFont, this, SpriteBatcher, scene, time, rs);
+            SceneDebugOverlay overlay = new SceneDebugOverlay(this);
+            overlay.SetScene(data);
+            return overlay;
         }
 
         public void DispatchCompute(IComputeTask task, int x, int y, int z)
@@ -234,7 +206,6 @@ namespace Molten.Graphics
         public void Present(Timing time)
         {
             _profiler.StartCapture();
-            _device.Profiler.StartCapture();
 
             if(_requestedMultiSampleLevel != MsaaLevel)
             {
@@ -317,11 +288,15 @@ namespace Molten.Graphics
             for (int i = 0; i < Scenes.Count; i++)
             {
                 scene = Scenes[i];
+                _device.Profiler = scene.Profiler;
+                _device.Profiler.StartCapture();
+
                 if (scene.IsVisible && scene.FinalSurface != null)
                     scene.Render(_device, this, time);
 
-                scene.FinalDepthSurface = null;
-                scene.FinalSurface = null;
+                _profiler.AddData(scene.Profiler.CurrentFrame);
+                _device.Profiler.EndCapture(time);
+                _device.Profiler = null;
             }
 
             // Present all output surfaces
@@ -331,11 +306,19 @@ namespace Molten.Graphics
                 return false;
             });
 
+            // Clear references to final surfaces. 
+            // This is done separately so that any debug overlays rendered by scenes can still access final surface information during their render call.
+            for(int i = 0; i < Scenes.Count; i++)
+            {
+                scene = Scenes[i];
+                scene.FinalDepthSurface = null;
+                scene.FinalSurface = null;
+            }
+
             // Clear the list of used surfaces, ready for the next frame.
             _clearedSurfaces.Clear();
 
             _profiler.AddData(_device.Profiler.CurrentFrame);
-            _device.Profiler.EndCapture(time);
             _profiler.EndCapture(time);
         }
 

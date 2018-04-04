@@ -66,10 +66,12 @@ namespace Molten.Graphics
         /// <param name="data">The scene's render data instance.</param>
         void PushBackward(SceneRenderData data);
 
-        /// <summary>Sets the current debug overlay page. Returns the ID of the next page.</summary>
-        /// <param name="visible">If true, the debug overlay will be visible.</param>
-        /// <param name="page">The page number.</param>
+        /// <summary>
+        /// Retrieves a new render debug overlay instance, which can optionally be set to display statistics for a scene initially.
+        /// </summary>
+        /// <param name="font">The <see cref="SpriteFont"/> to use when drawing the debug overlay.</param>
+        /// <param name="initialScene">The scene to display statistics/information for after creation of the debug overlay. Can be null.</param>
         /// <returns></returns>
-        int SetDebugOverlayPage(SpriteFont font, bool visible, int page);
+        ISceneDebugOverlay GetDebugOverlay(SceneRenderData initialScene = null);
     }
 }

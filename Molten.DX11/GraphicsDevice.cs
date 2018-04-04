@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Molten.Graphics
 {
@@ -29,6 +30,7 @@ namespace Molten.Graphics
         DX11DisplayManager _displayManager;
         GraphicsSettings _settings;
         ShaderSampler _defaultSampler;
+        long _allocatedVRAM;
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
@@ -67,6 +69,20 @@ namespace Molten.Graphics
 
             CreateDefaultResources();
             ExternalContext = this;
+        }
+
+        /// <summary>Track a VRAM allocation.</summary>
+        /// <param name="bytes">The number of bytes that were allocated.</param>
+        public void AllocateVRAM(long bytes)
+        {
+            Interlocked.Add(ref _allocatedVRAM, bytes);
+        }
+
+        /// <summary>Track a VRAM deallocation.</summary>
+        /// <param name="bytes">The number of bytes that were deallocated.</param>
+        public void DeallocateVRAM(long bytes)
+        {
+            Interlocked.Add(ref _allocatedVRAM, -bytes);
         }
 
         private void CreateDefaultResources()
@@ -141,5 +157,7 @@ namespace Molten.Graphics
         {
             get => _defaultSampler;
         }
+
+        internal long AllocatedVRAM => _allocatedVRAM;
     }
 }

@@ -82,20 +82,6 @@ namespace Molten
             _renderer.InitializeRenderer(_settings.Graphics);
         }
 
-        internal void AddScene(Scene scene)
-        {
-            EngineAddScene task = EngineAddScene.Get();
-            task.Scene = scene;
-            _taskQueue.Enqueue(task);
-        }
-
-        internal void RemoveScene(Scene scene)
-        {
-            EngineRemoveScene task = EngineRemoveScene.Get();
-            task.Scene = scene;
-            _taskQueue.Enqueue(task);
-        }
-
         /// <summary>Starts the renderer thread.</summary>
         public void StartRenderer()
         {
@@ -131,6 +117,20 @@ namespace Molten
 
             _threadRenderer.Dispose();
             _threadRenderer = null;
+        }
+
+        internal void AddScene(Scene scene)
+        {
+            EngineAddScene task = EngineAddScene.Get();
+            task.Scene = scene;
+            _taskQueue.Enqueue(task);
+        }
+
+        internal void RemoveScene(Scene scene)
+        {
+            EngineRemoveScene task = EngineRemoveScene.Get();
+            task.Scene = scene;
+            _taskQueue.Enqueue(task);
         }
 
         internal void Update(Timing time)

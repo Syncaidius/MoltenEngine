@@ -70,22 +70,20 @@ namespace Molten
         /// <summary>Adds a sprite to the scene. This is a deferred action which will be performed on the scene's next update.</summary>
         /// <param name="sprite">The sprite to be added.</param>
         /// <param name="layer">The layer to which the sprite should be added.</param>
-        public void AddSprite(ISprite sprite, int layer = 0)
+        public void AddSprite(ISprite sprite)
         {
             SceneAddSprite change = SceneAddSprite.Get();
             change.Sprite = sprite;
-            change.Layer = layer;
             _pendingChanges.Enqueue(change);
         }
 
         /// <summary>Removes a sprite from the scene. This is a deferred action which will be performed on the scene's next update.</summary>
         /// <param name="sprite">The sprite to be removed.</param>
         /// <param name="layer">The layer from which the sprite should be removed.</param>
-        public void RemoveSprite(ISprite sprite, int layer = 0)
+        public void RemoveSprite(ISprite sprite)
         {
             SceneRemoveSprite change = SceneRemoveSprite.Get();
             change.Sprite = sprite;
-            change.Layer = layer;
             _pendingChanges.Enqueue(change);
         }
 

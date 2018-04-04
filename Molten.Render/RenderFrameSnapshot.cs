@@ -20,6 +20,21 @@ namespace Molten.Graphics
         /// <summary>The time it took to render the previous frame.</summary>
         public double Time;
 
+        /// <summary>
+        /// The target frame time during the frame that the snapshot was recorded.
+        /// </summary>
+        public double TargetTime;
+
+        /// <summary>
+        /// Gets the frame's ID at the time the snapshot was saved.
+        /// </summary>
+        public ulong FrameID;
+
+        /// <summary>
+        /// The amount of VRAM allocated during the frame.
+        /// </summary>
+        public ulong AllocatedVRAM;
+
         public void Add(RenderFrameSnapshot other)
         {
             DrawCalls += other.DrawCalls;

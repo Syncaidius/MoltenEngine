@@ -12,7 +12,7 @@ namespace Molten.Samples
     {
         IDepthSurface _formDepthSurface;
         SpriteFont _testFont;
-        int _nextRenderPage;
+        bool _baseContentLoaded;
 
         public SampleGame(string title, EngineSettings settings = null) : base(title, settings) { }
 
@@ -22,6 +22,8 @@ namespace Molten.Samples
             Window.OnClose += Window_OnClose;
 
             UIScene = CreateScene("UI", SceneRenderFlags.Render2D);
+            DebugOverlay = Engine.Renderer.GetDebugOverlay(UIScene.RenderData);
+            UIScene.AddSprite(DebugOverlay);
 
             _formDepthSurface = Engine.Renderer.Resources.CreateDepthSurface(Window.Width, Window.Height);
             Window.OnPostResize += Window_OnPostResize;
@@ -37,8 +39,10 @@ namespace Molten.Samples
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
         {
             _testFont = content.Get<SpriteFont>(cr.RequestedFiles[0]);
-            Engine.Renderer.SetDebugOverlayPage(_testFont, true, 0);
+            DebugOverlay.Font = _testFont;
+
             OnContentLoaded(content, cr);
+            _baseContentLoaded = true;
         }
 
         private void Window_OnPostResize(ITexture texture)
@@ -57,8 +61,12 @@ namespace Molten.Samples
 
         protected override void OnUpdate(Timing time)
         {
+            // Don't update until the base content is loaded.
+            if (!_baseContentLoaded)
+                return;
+
             if(Keyboard.IsTapped(Key.F1) && _testFont != null)
-                _nextRenderPage = Engine.Renderer.SetDebugOverlayPage(_testFont, true, _nextRenderPage);
+                DebugOverlay.NextPage();
         }
 
         public abstract string Description { get; }
@@ -76,5 +84,7 @@ namespace Molten.Samples
         /// Gets the sample's UI scene.
         /// </summary>
         public Scene UIScene { get; private set; }
+
+        public ISceneDebugOverlay DebugOverlay { get; private set; }
     }
 }

@@ -13,11 +13,13 @@ namespace Molten.Graphics
             public Link Previous;
             public Link Next;
             public RenderStepBase Step;
+            public RenderChain Chain;
         }
 
+        internal Link First;
+        internal Link Last;
+
         RendererDX11 _renderer;
-        Link _first;
-        Link _last;
         SceneRenderDataDX11 _scene;
 
         internal RenderChain(RendererDX11 renderer, SceneRenderDataDX11 scene)
@@ -28,18 +30,18 @@ namespace Molten.Graphics
 
         private void Next(RenderStepBase step)
         {
-            Link link = new Link() { Step = step };
-            if (_first == null)
+            Link link = new Link() { Chain = this, Step = step };
+            if (First == null)
             {
-                _first = link;
-                _last = _first;
+                First = link;
+                Last = First;
             }
             else
             {
-                link.Previous = _last;
-                _last.Next = link;
-                _last = link;
-                _last.Next = null;
+                link.Previous = Last;
+                Last.Next = link;
+                Last = link;
+                Last.Next = null;
             }
         }
 
@@ -53,17 +55,17 @@ namespace Molten.Graphics
         {
             // TODO if the current scene has the same flags as the previous scene, skip rebuilding chain.
             // TODO consider moving/caching render chain construction in to SceneRenderDataDX11. If the flags are changed, (re)build it on the next render cycle.
-            _first = null;
-            _last = null;
+            First = null;
+            Last = null;
 
             Next<StartStep>();
 
             if (_scene.HasFlag(SceneRenderFlags.Deferred))
             {
                 Next<GBuffer3dStep>();
-                //Next<FinalizeStep>();
                 Next<Render2dStep>();
                 // TODO complete deferred chain here
+                Next<FinalizeStep>();
             }
             else
             {
@@ -77,7 +79,7 @@ namespace Molten.Graphics
 
         internal void Render(SceneRenderDataDX11 scene, Timing time)
         {
-            Link link = _first;
+            Link link = First;
             while(link != null)
             {
                 link.Step.Render(_renderer, scene, time, link);

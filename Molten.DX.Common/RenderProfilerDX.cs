@@ -18,7 +18,6 @@ namespace Molten.Graphics
         int _curSecondShot;
         int _prevSecondShot;
         double _timing;
-        long _vramUsed;
         Stopwatch _frameTimer;
 
         /// <summary>
@@ -40,22 +39,7 @@ namespace Molten.Graphics
             _prevShot = 0;
             _curSecondShot = 0;
             _prevSecondShot = 0;
-            _vramUsed = 0;
             _timing = 0;
-        }
-
-        /// <summary>Track a VRAM allocation.</summary>
-        /// <param name="bytes">The number of bytes that were allocated.</param>
-        public void TrackAllocation(long bytes)
-        {
-            Interlocked.Add(ref _vramUsed, bytes);
-        }
-
-        /// <summary>Track a VRAM deallocation.</summary>
-        /// <param name="bytes">The number of bytes that were deallocated.</param>
-        public void TrackDeallocation(long bytes)
-        {
-            Interlocked.Add(ref _vramUsed, -bytes);
         }
 
         /// <summary>Adds a frame snapshot to the data for the current frame. Useful for collating snapshots from multiple device contexts into one snapshot.</summary>
@@ -75,6 +59,8 @@ namespace Molten.Graphics
 
             // Accumulate into per-second. Reset for next frame.
             _frameSnaps[_curShot].Time = _frameTimer.Elapsed.TotalMilliseconds;
+            _frameSnaps[_curShot].TargetTime = time.TargetFrameTime;
+            _frameSnaps[_curShot].FrameID = FrameCount;
             _secondSnaps[_curSecondShot].Add(_frameSnaps[_curShot]);
 
             // Handle per-second timing updates.
@@ -94,7 +80,9 @@ namespace Molten.Graphics
             _prevShot = _curShot++;
             if (_curShot == _frameSnaps.Length)
                 _curShot = 0;
+
             _frameSnaps[_curShot] = new RenderFrameSnapshot();
+            FrameCount++;
         }
 
         public RenderFrameSnapshot PreviousFrame
@@ -192,7 +180,9 @@ namespace Molten.Graphics
             get { return _secondSnaps[_curSecondShot].ShaderSwaps; }
         }
 
-        /// <summary>Gets the estimated amount of VRAM currently in use on the GPU.</summary>
-        public long AllocatedVRAM { get { return _vramUsed; } }
+        /// <summary>
+        /// Gets the number of frames recorded with this profiler.
+        /// </summary>
+        public ulong FrameCount { get; private set; }
     }
 }

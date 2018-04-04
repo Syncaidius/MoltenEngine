@@ -12,7 +12,8 @@ namespace Molten.Graphics
         Color _segColor = Color.Lime;
         StartStep _gBuffer;
 
-        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatchDX11 sb, SceneRenderDataDX11 scene, Timing time, IRenderSurface surface)
+
+        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch sb, SceneRenderDataDX11 scene, IRenderSurface surface)
         {
             int width = surface.Width / 2;
             int height = 32;
@@ -42,7 +43,7 @@ namespace Molten.Graphics
             }
         }
 
-        private void DrawBar(string label, SpriteFont font, SpriteBatchDX11 sb, GraphicsBuffer buffer, Rectangle destination)
+        private void DrawBar(string label, SpriteFont font, SpriteBatch sb, GraphicsBuffer buffer, Rectangle destination)
         {
             sb.DrawRect(destination, _bgColor);
 

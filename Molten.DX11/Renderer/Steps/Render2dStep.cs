@@ -29,25 +29,19 @@ namespace Molten.Graphics
         internal override void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time, RenderChain.Link link)
         {
             Matrix4F spriteView, spriteProj, spriteViewProj;
-            RenderSurfaceBase rs = null;
-            DepthSurface ds = null;
+            RenderSurfaceBase rs = scene.FinalSurface;
+            DepthSurface ds = scene.FinalDepthSurface;
+
             GraphicsDevice device = renderer.Device;
 
             if (scene.Camera != null)
             {
-                rs = scene.Camera.OutputSurface as RenderSurfaceBase ?? scene.FinalSurface;
-                ds = scene.Camera.OutputDepthSurface as DepthSurface;
-
                 spriteProj = scene.Camera.Projection;
                 spriteView = scene.Camera.View;
                 spriteViewProj = scene.Camera.ViewProjection;
             }
             else
             {
-                rs = device.DefaultSurface;
-                if (rs == null)
-                    return;
-
                 spriteProj = _defaultView2D;
                 spriteView = Matrix4F.OrthoOffCenterLH(0, rs.Width, -rs.Height, 0, 0, 1);
                 spriteViewProj = Matrix4F.Multiply(spriteView, spriteProj);
@@ -70,7 +64,6 @@ namespace Molten.Graphics
 
                 renderer.SpriteBatcher.Begin(rs.Viewport);
                 scene.Render2D(device, renderer);
-                renderer.DrawDebugOverlay(renderer.SpriteBatcher, scene, time, scene.FinalSurface);
                 renderer.SpriteBatcher.Flush(device, ref spriteViewProj, rs.SampleCount > 1);
             }
         }
