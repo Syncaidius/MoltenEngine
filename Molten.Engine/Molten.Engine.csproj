@@ -87,13 +87,14 @@
     <Compile Include="GameRunState.cs" />
     <Compile Include="ObjectHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scene\Components\SceneCameraComponent.cs" />
+    <Compile Include="MoltenGame.cs" />
     <Compile Include="Scene\Changes\SceneAddObject.cs" />
     <Compile Include="Scene\Changes\SceneAddSprite.cs" />
     <Compile Include="Scene\Changes\SceneChange.cs" />
     <Compile Include="Scene\Changes\SceneRemoveObject.cs" />
     <Compile Include="Scene\Changes\SceneRemoveSprite.cs" />
     <Compile Include="Scene\Components\MeshComponent.cs" />
+    <Compile Include="Scene\Components\SceneCameraComponent.cs" />
     <Compile Include="Scene\Components\SceneComponent.cs" />
     <Compile Include="Scene\Components\SceneSingleton.cs" />
     <Compile Include="Scene\Components\SingletonComponent.cs" />
@@ -105,7 +106,6 @@
     <Compile Include="Scene\TwoD\RectangleSprite.cs" />
     <Compile Include="Scene\TwoD\Sprite.cs" />
     <Compile Include="Scene\TwoD\SpriteText.cs" />
-    <Compile Include="MoltenGame.cs" />
     <Compile Include="Tasks\EngineAddScene.cs" />
     <Compile Include="Tasks\EngineRemoveScene.cs" />
     <Compile Include="Tasks\EngineTask.cs" />

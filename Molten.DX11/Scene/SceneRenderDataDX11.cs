@@ -22,6 +22,7 @@ namespace Molten.Graphics
         internal RenderSurfaceBase FinalSurface;
         internal DepthSurface FinalDepthSurface;
         internal RenderProfilerDX Profiler;
+        SceneDebugOverlay _overlay;
 
         internal SceneRenderDataDX11(RendererDX11 renderer)
         {
@@ -34,6 +35,7 @@ namespace Molten.Graphics
             _chain = new RenderChain(renderer, this);
             _chain.Rebuild();
             Profiler = new RenderProfilerDX();
+            _overlay = new SceneDebugOverlay(renderer, this);
         }
 
         public override void AddObject(IRenderable obj, ObjectRenderData renderData)
@@ -121,5 +123,10 @@ namespace Molten.Graphics
             for(int i = 0; i < Sprites.Count; i++)
                 Sprites[i].Render(renderer.SpriteBatcher);
         }
+
+        /// <summary>
+        /// Gets the scene's debug overlay.
+        /// </summary>
+        public override ISceneDebugOverlay DebugOverlay => _overlay;
     }
 }

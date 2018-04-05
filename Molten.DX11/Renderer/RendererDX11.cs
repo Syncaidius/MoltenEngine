@@ -45,12 +45,18 @@ namespace Molten.Graphics
         internal Material StandardMeshMaterial;
         internal Material StandardMeshMaterial_NoNormalMap;
 
+        internal List<DebugOverlayPage> DebugOverlayPages;
+
         public RendererDX11()
         {
             _log = Logger.Get();
             _log.AddOutput(new LogFileWriter("renderer_dx11{0}.txt"));
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
+
+            DebugOverlayPages = new List<DebugOverlayPage>();
+            DebugOverlayPages.Add(new DebugStatsPage());
+            DebugOverlayPages.Add(new DebugBuffersPage());
         }
 
         public void InitializeAdapter(GraphicsSettings settings)
@@ -124,14 +130,6 @@ namespace Molten.Graphics
                 StandardMeshMaterial = result["material", "gbuffer"] as Material;
                 StandardMeshMaterial_NoNormalMap = result["material", "gbuffer-sans-nmap"] as Material;
             }
-        }
-
-
-        public ISceneDebugOverlay GetDebugOverlay(SceneRenderData data = null)
-        {
-            SceneDebugOverlay overlay = new SceneDebugOverlay(this);
-            overlay.SetScene(data);
-            return overlay;
         }
 
         public void DispatchCompute(IComputeTask task, int x, int y, int z)

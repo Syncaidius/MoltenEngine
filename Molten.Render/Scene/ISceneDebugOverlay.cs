@@ -9,12 +9,6 @@ namespace Molten.Graphics
     public interface ISceneDebugOverlay : ISprite
     {
         /// <summary>
-        /// Sets the current scene for scene-specific information in the debug overlay.
-        /// </summary>
-        /// <param name="data"></param>
-        void SetScene(SceneRenderData data);
-
-        /// <summary>
         /// Sets the current debug overlay page.
         /// </summary>
         /// <param name="pageID"></param>

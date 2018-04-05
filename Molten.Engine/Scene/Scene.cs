@@ -12,11 +12,10 @@ namespace Molten
     /// <summary>Manages and controls a scene composed of 3D and 2D objects, while also feeding the needed data to a renderer if available.</summary>
     public class Scene : EngineObject
     {
-        SceneRenderData _data;
-
+        internal SceneRenderData RenderData;
         internal List<SceneObject> Objects;
         internal List<ISprite> Sprites;
-        internal  HashSet<IUpdatable> Updatables;
+        internal HashSet<IUpdatable> Updatables;
 
         ThreadedQueue<SceneChange> _pendingChanges;
         UISystem _ui;
@@ -24,11 +23,13 @@ namespace Molten
         /// <summary>Creates a new instance of <see cref="Scene"/></summary>
         /// <param name="name">The name of the scene.</param>
         /// <param name="engine">The engine instance to which the scene will be bound.</param>
-        internal Scene(string name, Engine engine)
+        internal Scene(string name, Engine engine, SceneRenderFlags flags)
         {
             Name = name;
             Engine = engine;
-            _data = engine.Renderer.CreateRenderData();
+            RenderData = engine.Renderer.CreateRenderData();
+            RenderData.Flags = flags;
+
             engine.AddScene(this);
             Objects = new List<SceneObject>();
             Sprites = new List<ISprite>();
@@ -41,12 +42,12 @@ namespace Molten
 
         public void BringToFront()
         {
-            Engine.Renderer?.BringToFront(_data);
+            Engine.Renderer?.BringToFront(RenderData);
         }
 
         public void SendToBack()
         {
-            Engine.Renderer?.SendToBack(_data);
+            Engine.Renderer?.SendToBack(RenderData);
         }
 
         /// <summary>Adds a <see cref="SceneObject"/> to the scene.</summary>
@@ -99,7 +100,7 @@ namespace Molten
         protected override void OnDispose()
         {
             Engine.RemoveScene(this);
-            Engine.Renderer.DestroyRenderData(_data);
+            Engine.Renderer.DestroyRenderData(RenderData);
             Engine.Log.WriteLine($"Destroyed scene '{Name}'");
             base.OnDispose();
         }
@@ -110,22 +111,19 @@ namespace Molten
         /// <summary>Gets or sets whether the scene is rendered.</summary>
         public virtual bool IsVisible
         {
-            get => _data.IsVisible;
-            set => _data.IsVisible = value;
+            get => RenderData.IsVisible;
+            set => RenderData.IsVisible = value;
         }
 
         /// <summary>Gets the name of the scene.</summary>
         public string Name { get; private set; }
 
-        /// <summary>Gets rendering information about the scene.</summary>
-        public SceneRenderData RenderData => _data;
-
         /// <summary>Gets or sets the scene's out camera. This acts as an eye when rendering the scene, allowing it to be viewed from the perspective of the camera.
         /// Scenes without a camera are rendered from a default view that is positioned at 0,0,5 and facing 0,0,0.</summary>
         public ICamera OutputCamera
         {
-            get => _data.Camera;
-            set => _data.Camera = value;
+            get => RenderData.Camera;
+            set => RenderData.Camera = value;
         }
 
         /// <summary>Gets the <see cref="Engine"/> instance that the <see cref="Scene"/> is bound to.</summary>
@@ -134,11 +132,35 @@ namespace Molten
         /// <summary>Gets or sets the background color of the scene.</summary>
         public Color BackgroundColor
         {
-            get => _data.BackgroundColor;
-            set => _data.BackgroundColor = value;
+            get => RenderData.BackgroundColor;
+            set => RenderData.BackgroundColor = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the ambient light color of the scene.
+        /// </summary>
+        public Color AmbientColor
+        {
+            get => RenderData.AmbientLightColor;
+            set => RenderData.AmbientLightColor = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the scene's render flags.
+        /// </summary>
+        public SceneRenderFlags RenderFlags
+        {
+            get => RenderData.Flags;
+            set => RenderData.Flags = value;
         }
 
         /// <summary>Gets the <see cref="UISystem"/> bound to the current <see cref="Scene"/> instance.</summary>
         internal UISystem UI => _ui;
+
+        /// <summary>
+        /// Gets the scene's debug overlay. 
+        /// The overlay can be added to another scene as an <see cref="ISprite"/> object if you want to render the overlay into a different scene.
+        /// </summary>
+        public ISceneDebugOverlay DebugOverlay => RenderData.DebugOverlay;
     }
 }

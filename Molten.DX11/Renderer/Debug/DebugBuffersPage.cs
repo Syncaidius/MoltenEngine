@@ -12,7 +12,6 @@ namespace Molten.Graphics
         Color _segColor = Color.Lime;
         StartStep _gBuffer;
 
-
         public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch sb, SceneRenderDataDX11 scene, IRenderSurface surface)
         {
             int width = surface.Width / 2;

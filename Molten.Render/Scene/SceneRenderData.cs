@@ -8,6 +8,9 @@ namespace Molten.Graphics
 {
     public delegate void SceneRenderDataHandler(IRenderer renderer, SceneRenderData data);
 
+    /// <summary>
+    /// A class for storing renderer-specific information about a scene.
+    /// </summary>
     public abstract class SceneRenderData : EngineObject
     {
         /// <summary>
@@ -20,6 +23,9 @@ namespace Molten.Graphics
         /// </summary>
         public event SceneRenderDataHandler OnPostRender;
 
+        /// <summary>
+        /// If true, the scene will be rendered.
+        /// </summary>
         public bool IsVisible = true;
 
         /// <summary>The camera that should be used as a view or eye when rendering 3D objects in a scene.</summary>
@@ -34,6 +40,11 @@ namespace Molten.Graphics
         /// The background color of the scene.
         /// </summary>
         public Color BackgroundColor = new Color(20,20,20,255);
+
+        /// <summary>
+        /// The ambient light color.
+        /// </summary>
+        public Color AmbientLightColor = Color.Black;
 
         public abstract void AddObject(IRenderable obj, ObjectRenderData renderData);
 
@@ -62,5 +73,10 @@ namespace Molten.Graphics
         /// Invokes <see cref="OnPostRender"/> event.
         /// </summary>
         protected void PostRenderInvoke(IRenderer renderer) => OnPostRender?.Invoke(renderer, this);
+
+        /// <summary>
+        /// Gets the debug overlay which displays information for the current scene.
+        /// </summary>
+        public abstract ISceneDebugOverlay DebugOverlay { get; }
     }
 }

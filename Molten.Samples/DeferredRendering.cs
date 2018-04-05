@@ -23,7 +23,7 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
 
-            SampleScene.RenderData.Flags = SceneRenderFlags.Deferred | SceneRenderFlags.Render3D;
+            SampleScene.RenderFlags = SceneRenderFlags.Deferred | SceneRenderFlags.Render3D;
             ContentRequest cr = engine.Content.StartRequest();
             cr.Load<ITexture2D>("dds_test.dds");
             cr.Load<ITexture2D>("dds_test_n.dds");

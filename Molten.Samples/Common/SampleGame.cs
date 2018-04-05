@@ -13,6 +13,7 @@ namespace Molten.Samples
         IDepthSurface _formDepthSurface;
         SpriteFont _testFont;
         bool _baseContentLoaded;
+        ISceneDebugOverlay _mainOverlay;
 
         public SampleGame(string title, EngineSettings settings = null) : base(title, settings) { }
 
@@ -23,7 +24,7 @@ namespace Molten.Samples
 
             SpriteScene = CreateScene("Sprite", SceneRenderFlags.Render2D);
             UIScene = CreateScene("UI", SceneRenderFlags.Render2D);
-            DebugOverlay = Engine.Renderer.GetDebugOverlay(UIScene.RenderData);
+            DebugOverlay = UIScene.DebugOverlay;
             UIScene.AddSprite(DebugOverlay);
 
             _formDepthSurface = Engine.Renderer.Resources.CreateDepthSurface(Window.Width, Window.Height);
@@ -91,6 +92,25 @@ namespace Molten.Samples
         /// </summary>
         public Scene SpriteScene { get; private set; }
 
-        public ISceneDebugOverlay DebugOverlay { get; private set; }
+        /// <summary>
+        /// Gets or sets the sample's main debug overlay.
+        /// </summary>
+        public ISceneDebugOverlay DebugOverlay
+        {
+            get => _mainOverlay;
+            set
+            {
+                if(_mainOverlay != value)
+                {
+                    if (_mainOverlay != null)
+                        UIScene.RemoveSprite(_mainOverlay);
+
+                    if (value != null)
+                        UIScene.AddSprite(value);
+
+                    _mainOverlay = value;
+                }
+            }
+        }
     }
 }

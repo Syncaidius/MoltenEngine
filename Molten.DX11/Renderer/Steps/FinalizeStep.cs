@@ -9,11 +9,8 @@ namespace Molten.Graphics
 {
     internal class FinalizeStep : RenderStepBase
     {
-        GBuffer3dStep _gBuffer;
-
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
-            _gBuffer = renderer.GetRenderStep<GBuffer3dStep>();
             UpdateSurfaces(renderer, width, height);
         }
 
