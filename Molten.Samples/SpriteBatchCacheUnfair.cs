@@ -55,7 +55,7 @@ namespace Molten.Samples
             _mesh.Material = mat;
 
             UnfairSpriteCacheTestObject obj = new UnfairSpriteCacheTestObject(this, tex);
-            UIScene.AddSprite(obj);
+            SpriteScene.AddSprite(obj);
         }
 
         protected override void OnUpdate(Timing time)

@@ -100,7 +100,7 @@ namespace Molten.Samples
             _mesh.Material = mat;
 
             SpriteCacheTestObject obj = new SpriteCacheTestObject(this, tex);
-            UIScene.AddSprite(obj);
+            SpriteScene.AddSprite(obj);
         }
 
         protected override void OnUpdate(Timing time)

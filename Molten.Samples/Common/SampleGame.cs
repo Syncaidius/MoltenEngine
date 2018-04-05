@@ -21,6 +21,7 @@ namespace Molten.Samples
             base.OnInitialize(engine);
             Window.OnClose += Window_OnClose;
 
+            SpriteScene = CreateScene("Sprite", SceneRenderFlags.Render2D);
             UIScene = CreateScene("UI", SceneRenderFlags.Render2D);
             DebugOverlay = Engine.Renderer.GetDebugOverlay(UIScene.RenderData);
             UIScene.AddSprite(DebugOverlay);
@@ -84,6 +85,11 @@ namespace Molten.Samples
         /// Gets the sample's UI scene.
         /// </summary>
         public Scene UIScene { get; private set; }
+
+        /// <summary>
+        /// Gets the sample's sprite scene. This is rendered before <see cref="UIScene"/>.
+        /// </summary>
+        public Scene SpriteScene { get; private set; }
 
         public ISceneDebugOverlay DebugOverlay { get; private set; }
     }

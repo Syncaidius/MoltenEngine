@@ -38,27 +38,22 @@ namespace Molten.Graphics
         Deferred = 1 << 3,
 
         /// <summary>
-        /// Prevents the renderer from drawing a debug overlay in the scene's output surface.
-        /// </summary>
-        NoDebugOverlay = 1 << 4,
-
-        /// <summary>
         /// Renders 2D scene objects behind post-processing, resulting in all 2D objects being affected by the scene's attached post-process effects.
         /// </summary>
-        Render2DBeforePostProcess = 1 << 5,
+        Render2DBeforePostProcess = 1 << 4,
 
         /// <summary>
         /// Skips post-processing on the current scene.
         /// </summary>
-        NoPostProcessing = 1 << 6,
+        NoPostProcessing = 1 << 5,
 
         /// <summary>Skips the lighting stage on the current scene. This will result in the scene being rendered full-bright (fully lit).</summary>
-        NoLighting = 1 << 7,
+        NoLighting = 1 << 6,
 
         /// <summary>
         /// Skips the shadow-casting stage on the current scene, which will result in the final scene having no shadows.<para/>
         /// Overrides any graphics settings which enable shadows.
         /// </summary>
-        NoShadows = 1 << 8,
+        NoShadows = 1 << 7,
     }
 }

@@ -84,7 +84,7 @@ namespace Molten
         /// <param name="name"></param>
         /// <returns></returns>
         public Scene CreateScene(string name, 
-            SceneRenderFlags flags = SceneRenderFlags.Render2D | SceneRenderFlags.Render3D | SceneRenderFlags.NoDebugOverlay)
+            SceneRenderFlags flags = SceneRenderFlags.Render2D | SceneRenderFlags.Render3D)
         {
             Scene scene = new Scene(name, Engine);
             scene.RenderData.Flags = flags;
