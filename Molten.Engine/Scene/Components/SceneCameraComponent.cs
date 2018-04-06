@@ -23,6 +23,7 @@ namespace Molten
             _nearClip = 0.1f;
             _farClip = 1000.0f;
             _view = Matrix4F.Identity;
+            _fov = (float)Math.PI / 4.0f;
         }
 
         protected override void OnInitialize(SceneObject obj)
@@ -39,7 +40,7 @@ namespace Molten
 
         private void CalculateProjection()
         {
-            _projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, _surface.Width / (float)_surface.Height, _nearClip, _farClip);
+            _projection = Matrix4F.PerspectiveFovLH(_fov, _surface.Width / (float)_surface.Height, _nearClip, _farClip);
         }
 
         public override void OnUpdate(Timing time)
@@ -120,7 +121,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets or sets the camera's field-of-view (FoV).
+        /// Gets or sets the camera's field-of-view (FoV), in radians.
         /// </summary>
         public float FieldOfView
         {
