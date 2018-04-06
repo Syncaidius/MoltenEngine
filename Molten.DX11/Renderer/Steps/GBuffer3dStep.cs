@@ -23,12 +23,14 @@ namespace Molten.Graphics
         internal override void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time, RenderChain.Link link)
         {
             GraphicsDevice device = renderer.Device;
+
             switch (link.Previous.Step)
             {
                 case StartStep start:
                     device.SetRenderSurface(start.Scene, 0);
                     device.SetRenderSurface(start.Normals, 1);
                     device.SetRenderSurface(start.Emissive, 2);
+                    device.SetDepthSurface(start.Depth, GraphicsDepthMode.Enabled);
 
                     SetMaterialCommon(renderer.StandardMeshMaterial, scene);
                     SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, scene);
@@ -36,7 +38,9 @@ namespace Molten.Graphics
 
                     // TODO add alternate HDR start step here (which should be used in conjunction HDR textures, HDR RTs and so on).
             }
-            
+
+            device.DepthStencil.SetPreset(DepthStencilPreset.Default);
+            device.Rasterizer.SetViewports(scene.FinalSurface.Viewport);
             scene.Render3D(device, renderer);
         }
 

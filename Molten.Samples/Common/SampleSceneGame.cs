@@ -66,7 +66,6 @@ namespace Molten.Samples
             _player = CreateObject();
             SceneCameraComponent cam = _player.AddComponent<SceneCameraComponent>();
             cam.OutputSurface = Window;
-            cam.OutputDepthSurface = WindowDepthSurface;
             _scene.AddObject(_player);
             _scene.OutputCamera = cam;
         }
@@ -91,7 +90,7 @@ namespace Molten.Samples
             child = SpawnTestCube(mesh);
 
             child.Transform.LocalScale = new Vector3F(0.5f);
-            child.Transform.LocalPosition = new Vector3F(0, 0, 4);
+            child.Transform.LocalPosition = new Vector3F(0, 0, 2);
             parent.Transform.LocalPosition = origin;
             parent.Children.Add(child);
         }
@@ -122,7 +121,7 @@ namespace Molten.Samples
             // Keyboard input - Again messy code for now
             Vector3F moveDelta = Vector3F.Zero;
             float rotSpeed = 0.25f;
-            float speed = 1.0f;
+            float speed = 0.5f;
 
             if (AcceptPlayerInput)
             {

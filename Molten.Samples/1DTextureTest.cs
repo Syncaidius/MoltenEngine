@@ -76,7 +76,6 @@ namespace Molten.Samples
             _player = CreateObject();
             SceneCameraComponent cam = _player.AddComponent<SceneCameraComponent>();
             cam.OutputSurface = Window;
-            cam.OutputDepthSurface = WindowDepthSurface;
             _scene.AddObject(_player);
             _scene.OutputCamera = cam;
         }

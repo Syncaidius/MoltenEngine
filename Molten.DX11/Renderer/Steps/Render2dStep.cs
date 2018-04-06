@@ -30,7 +30,6 @@ namespace Molten.Graphics
         {
             Matrix4F spriteView, spriteProj, spriteViewProj;
             RenderSurfaceBase rs = scene.FinalSurface;
-            DepthSurface ds = scene.FinalDepthSurface;
 
             GraphicsDevice device = renderer.Device;
 
@@ -52,13 +51,9 @@ namespace Molten.Graphics
                 if (!scene.HasFlag(SceneRenderFlags.DoNotClear))
                     renderer.ClearIfFirstUse(rs, () => rs.Clear(scene.BackgroundColor));
 
-                // Clear the depth surface if it hasn't already been cleared
-                if (ds != null)
-                    renderer.ClearIfFirstUse(ds, () => ds.Clear(DepthClearFlags.Depth | DepthClearFlags.Stencil));
-
                 device.SetRenderSurfaces(null);
                 device.SetRenderSurface(rs, 0);
-                device.SetDepthSurface(ds, GraphicsDepthMode.Enabled);
+                device.SetDepthSurface(null, GraphicsDepthMode.Disabled);
                 device.DepthStencil.SetPreset(DepthStencilPreset.Default);
                 device.Rasterizer.SetViewports(rs.Viewport);
 

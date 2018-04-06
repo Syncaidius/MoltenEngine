@@ -38,17 +38,13 @@ namespace Molten.Graphics
                     if (!scene.HasFlag(SceneRenderFlags.DoNotClear))
                         renderer.ClearIfFirstUse(scene.FinalSurface, () => scene.FinalSurface.Clear(scene.BackgroundColor));
 
-                    // Clear the depth surface if it hasn't already been cleared
-                    if (scene.FinalDepthSurface != null)
-                        renderer.ClearIfFirstUse(scene.FinalDepthSurface, () => scene.FinalDepthSurface.Clear(DepthClearFlags.Depth | DepthClearFlags.Stencil));
-
                     device.SetRenderSurface(scene.FinalSurface, 0);
-                    device.SetDepthSurface(scene.FinalDepthSurface, GraphicsDepthMode.Enabled);
+                    device.SetDepthSurface(null, GraphicsDepthMode.Disabled);
                     device.DepthStencil.SetPreset(DepthStencilPreset.Default);
                     device.Rasterizer.SetViewports(scene.FinalSurface.Viewport);
 
                     renderer.SpriteBatcher.Begin(scene.FinalSurface.Viewport);
-                    renderer.SpriteBatcher.Draw(start.Scene, bounds, Color.White);
+                    renderer.SpriteBatcher.Draw(start.Scene, bounds, bounds, Color.White, 0, Vector2F.Zero, null);
                     renderer.SpriteBatcher.Flush(device, ref spriteViewProj, scene.FinalSurface.SampleCount > 1);
                     break;
             }

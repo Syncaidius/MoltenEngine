@@ -27,13 +27,11 @@ namespace Molten.Graphics
         internal override void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time, RenderChain.Link link)
         {
             RenderSurfaceBase rs = null;
-            DepthSurface ds = null;
             GraphicsDevice device = renderer.Device;
 
             if (scene.Camera != null)
             {
                 rs = scene.Camera.OutputSurface as RenderSurfaceBase;
-                ds = scene.Camera.OutputDepthSurface as DepthSurface;
                 rs = rs ?? device.DefaultSurface;
 
                 scene.Projection = scene.Camera.Projection;
@@ -53,18 +51,20 @@ namespace Molten.Graphics
 
             if (rs != null)
             {
-                if (!scene.HasFlag(SceneRenderFlags.DoNotClear))
-                    renderer.ClearIfFirstUse(rs, () => rs.Clear(scene.BackgroundColor));
+                switch (link.Previous.Step)
+                {
+                    case StartStep start:
 
-                // Clear the depth surface if it hasn't already been cleared
-                if (ds != null)
-                    renderer.ClearIfFirstUse(ds, () => ds.Clear(device, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil));
+                        if (!scene.HasFlag(SceneRenderFlags.DoNotClear))
+                            renderer.ClearIfFirstUse(rs, () => rs.Clear(scene.BackgroundColor));
 
-                device.SetRenderSurface(rs, 0);
-                device.SetDepthSurface(ds, GraphicsDepthMode.Enabled);
-                device.DepthStencil.SetPreset(DepthStencilPreset.Default);
-                device.Rasterizer.SetViewports(rs.Viewport);
-                scene.Render3D(device, renderer);
+                        device.SetRenderSurface(rs, 0);
+                        device.SetDepthSurface(start.Depth, GraphicsDepthMode.Enabled);
+                        device.DepthStencil.SetPreset(DepthStencilPreset.Default);
+                        device.Rasterizer.SetViewports(rs.Viewport);
+                        scene.Render3D(device, renderer);
+                        break;
+                }
             }
         }
     }

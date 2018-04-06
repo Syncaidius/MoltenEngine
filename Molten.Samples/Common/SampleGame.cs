@@ -10,7 +10,6 @@ namespace Molten.Samples
 {
     public abstract class SampleGame : MoltenGame
     {
-        IDepthSurface _formDepthSurface;
         SpriteFont _testFont;
         bool _baseContentLoaded;
         ISceneDebugOverlay _mainOverlay;
@@ -27,8 +26,6 @@ namespace Molten.Samples
             DebugOverlay = UIScene.DebugOverlay;
             UIScene.AddSprite(DebugOverlay);
 
-            _formDepthSurface = Engine.Renderer.Resources.CreateDepthSurface(Window.Width, Window.Height);
-            Window.OnPostResize += Window_OnPostResize;
             Window.PresentClearColor = new Color(20, 20, 20, 255);
 
             ContentRequest cr = engine.Content.StartRequest();
@@ -45,11 +42,6 @@ namespace Molten.Samples
 
             OnContentLoaded(content, cr);
             _baseContentLoaded = true;
-        }
-
-        private void Window_OnPostResize(ITexture texture)
-        {
-            _formDepthSurface.Resize(Window.Width, Window.Height);
         }
 
         private void Window_OnClose(IWindowSurface surface)
@@ -72,10 +64,6 @@ namespace Molten.Samples
         }
 
         public abstract string Description { get; }
-
-        /// <summary>Gets the <see cref="IDepthSurface"/> which is meant to be used when rendering to the game's main window.
-        /// Whenever the main game window is resized, this depth surface is too.</summary>
-        public IDepthSurface WindowDepthSurface => _formDepthSurface;
 
         public SpriteFont TestFont => _testFont;
 

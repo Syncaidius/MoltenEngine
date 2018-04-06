@@ -20,7 +20,6 @@ namespace Molten.Graphics
         internal Matrix4F Projection;
         internal Matrix4F ViewProjection;
         internal RenderSurfaceBase FinalSurface;
-        internal DepthSurface FinalDepthSurface;
         internal RenderProfilerDX Profiler;
         SceneDebugOverlay _overlay;
 

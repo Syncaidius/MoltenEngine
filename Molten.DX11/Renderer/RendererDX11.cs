@@ -41,7 +41,7 @@ namespace Molten.Graphics
         internal GraphicsBuffer DynamicVertexBuffer;
         internal GraphicsBuffer DynamicIndexBuffer;
         internal StagingBuffer StagingBuffer;
-        
+
         internal Material StandardMeshMaterial;
         internal Material StandardMeshMaterial_NoNormalMap;
 
@@ -230,7 +230,6 @@ namespace Molten.Graphics
                 if (data.Camera != null)
                 {
                     rs = data.Camera.OutputSurface as RenderSurfaceBase ?? rs;
-                    ds = data.Camera.OutputDepthSurface as DepthSurface;
                 }
 
                 if (rs == null)
@@ -238,7 +237,6 @@ namespace Molten.Graphics
 
                 // Cache the surface we'll be using to render the scene data.
                 data.FinalSurface = rs;
-                data.FinalDepthSurface = ds;
 
                 if (rs.Width > _biggestWidth)
                 {
@@ -309,7 +307,6 @@ namespace Molten.Graphics
             for(int i = 0; i < Scenes.Count; i++)
             {
                 scene = Scenes[i];
-                scene.FinalDepthSurface = null;
                 scene.FinalSurface = null;
             }
 
@@ -320,13 +317,16 @@ namespace Molten.Graphics
             _profiler.EndCapture(time);
         }
 
-        internal void ClearIfFirstUse(TextureAsset2D surface, Action callback)
+        internal bool ClearIfFirstUse(TextureAsset2D surface, Action callback)
         {
             if(!_clearedSurfaces.Contains(surface))
             {
                 callback();
                 _clearedSurfaces.Add(surface);
+                return true;
             }
+
+            return false;
         }
 
         private void MSAA_OnChanged(AntiAliasMode oldValue, AntiAliasMode newValue)

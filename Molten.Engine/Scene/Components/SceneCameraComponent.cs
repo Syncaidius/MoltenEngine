@@ -16,6 +16,7 @@ namespace Molten
         IRenderSurface _surface;
         float _nearClip;
         float _farClip;
+        float _fov;
 
         public SceneCameraComponent()
         {
@@ -44,6 +45,7 @@ namespace Molten
         public override void OnUpdate(Timing time)
         {
             base.OnUpdate(time);
+            CalculateProjection();
             CalculateView();
         }
 
@@ -102,7 +104,11 @@ namespace Molten
         public float MinimumDrawDistance
         {
             get => _nearClip;
-            set => _nearClip = value;
+            set
+            {
+                _nearClip = value;
+                CalculateProjection();
+            }
         }
 
         /// <summary>Gets or sets the maximum draw distance. Also known as the far-clip plane. 
@@ -110,7 +116,16 @@ namespace Molten
         public float MaximumDrawDistance
         {
             get => _farClip;
-            set => _farClip = value;
+            set =>_farClip = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the camera's field-of-view (FoV).
+        /// </summary>
+        public float FieldOfView
+        {
+            get => _fov;
+            set => _fov = value;
         }
     }
 }

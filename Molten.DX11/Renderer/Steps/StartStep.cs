@@ -14,6 +14,7 @@ namespace Molten.Graphics
         internal RenderSurface Scene;
         internal RenderSurface Normals;
         internal RenderSurface Emissive;
+        internal DepthSurface Depth;
 
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
@@ -28,6 +29,7 @@ namespace Molten.Graphics
             Scene = new RenderSurface(renderer.Device, width, height, Format.R8G8B8A8_UNorm);
             Normals = new RenderSurface(renderer.Device, width, height, Format.R11G11B10_Float);
             Emissive = new RenderSurface(renderer.Device, width, height, Format.R8G8B8A8_UNorm);
+            Depth = new DepthSurface(renderer.Device, width, height, DepthFormat.R24G8_Typeless);
         }
 
         private void DisposeSurfaces()
@@ -35,6 +37,7 @@ namespace Molten.Graphics
             Scene?.Dispose();
             Normals?.Dispose();
             Emissive?.Dispose();
+            Depth?.Dispose();
         }
 
         public override void Dispose()
@@ -48,28 +51,34 @@ namespace Molten.Graphics
 
             if (scene.Camera != null)
             {
-                scene.Projection = scene.Camera.Projection;
                 scene.View = scene.Camera.View;
-                scene.ViewProjection = scene.Camera.ViewProjection;
+                if (scene.FinalSurface != scene.Camera.OutputSurface)
+                {
+                    scene.Projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, scene.FinalSurface.Width / (float)scene.FinalSurface.Height, 0.1f, 1000.0f);
+                    scene.ViewProjection = Matrix4F.Multiply(scene.View, scene.Projection);
+                }
+                else
+                {
+                    scene.Projection = scene.Camera.Projection;
+                    scene.ViewProjection = scene.Camera.ViewProjection;
+                }
             }
             else
             {
                 scene.View = RendererDX11.DefaultView3D;
-                scene.Projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, scene.FinalSurface.Width / (float)scene.FinalSurface.Height, 0.1f, 100.0f);
+                scene.Projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, scene.FinalSurface.Width / (float)scene.FinalSurface.Height, 0.1f, 1000.0f);
                 scene.ViewProjection = Matrix4F.Multiply(scene.View, scene.Projection);
             }
 
             // Clear the depth surface if it hasn't already been cleared
-            renderer.ClearIfFirstUse(Scene, () => Scene.Clear(device, scene.BackgroundColor));
+            bool newSurface = renderer.ClearIfFirstUse(Scene, () => Scene.Clear(device, scene.BackgroundColor));
             renderer.ClearIfFirstUse(Normals, () => Normals.Clear(device, Color.White * 0.5f));
             renderer.ClearIfFirstUse(Emissive, () => Emissive.Clear(device, Color.Black));
 
-            if(scene.FinalDepthSurface != null)
-                renderer.ClearIfFirstUse(scene.FinalDepthSurface, () => scene.FinalDepthSurface.Clear(device, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil));
-
-            device.Rasterizer.SetViewports(scene.FinalSurface.Viewport);
-            device.SetDepthSurface(scene.FinalDepthSurface, GraphicsDepthMode.Enabled);
-            device.DepthStencil.SetPreset(DepthStencilPreset.Default);
+            // Always clear the depth surface at the start of each scene unless otherwise instructed.
+            // Will also be cleared if we've just switched to a previously un-rendered surface during this frame.
+            if(!scene.HasFlag(SceneRenderFlags.DoNotClearDepth) || newSurface)
+                Depth.Clear(device, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil);
         }
     }
 }
