@@ -17,6 +17,16 @@ namespace Molten.Graphics
         /// <summary>The name of the default DX12 renderer library.</summary>
         public const string RENDERER_DX12 = "Molten.DX12.dll; Molten.Graphics.RendererDX12";
 
+        /// <summary>
+        /// The minimum tessellation factor for batched lights.
+        /// </summary>
+        public const float MIN_LIGHT_TESS_FACTOR = 4.0f;
+
+        /// <summary>
+        /// The maximum tessellation factor for batched lights.
+        /// </summary>
+        public const float MAX_LIGHT_TESS_FACTOR = 4.0f;
+
         public GraphicsSettings()
         {
             GraphicsAdapterID = AddSetting<int>("adapter_id", -1);

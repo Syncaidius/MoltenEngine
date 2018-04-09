@@ -1,4 +1,5 @@
 ﻿using Molten.Collections;
+using Molten.Graphics.Scene.Lights;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace Molten.Graphics
         internal Matrix4F ViewProjection;
         internal RenderSurfaceBase FinalSurface;
         internal RenderProfilerDX Profiler;
+
         SceneDebugOverlay _overlay;
 
         internal SceneRenderDataDX11(RendererDX11 renderer)

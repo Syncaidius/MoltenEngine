@@ -12,7 +12,7 @@ namespace Molten.Collections
     public class RawList<T>
     {
         /// <summary>The raw array containing the contents of the list. Accessing the items held within the list via this 
-        /// array will be significantly faster, but unmanaged.</summary>
+        /// array will be faster, but unmanaged.</summary>
         public T[] Data;
         private int _itemCount;
         private int _actualCount;
@@ -28,7 +28,8 @@ namespace Molten.Collections
         /// <summary>Creates a new instance of SpeedList</summary>
         /// <param name="initialCapacity">The initial capacity of the list.</param>
         /// <param name="expansionMode">How to expand the list when it is full.</param>
-        /// <param name="expansion">The value to increment or multiply the list capacity by when it is full.</param>
+        /// <param name="expansion">The value to increment or multiply the list capacity by when it is full.<para/>
+        /// If the expansion mode is multiply, the value is a multiplier. If the expansion mode is increment, the value is an increment.</param>
         public RawList(int initialCapacity = 5, ExpansionMode expansionMode = ExpansionMode.Multiply, int expansionValue = 2)
         {
             _expansionMode = expansionMode;
@@ -66,9 +67,8 @@ namespace Molten.Collections
             //check for a free ID
             if (_freeCount > 0)
             {
-                //pull the last ID off the free array
-                _freeCount--;
-                id = _freeIDs[_freeCount];
+                // Pull the last ID off the free array
+                id = _freeIDs[--_freeCount];
             }
             else
             {
@@ -91,7 +91,6 @@ namespace Molten.Collections
             }
 
             _actualCount++;
-
             Data[id] = item;
 
             //return the ID

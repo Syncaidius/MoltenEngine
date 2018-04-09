@@ -90,6 +90,8 @@ namespace Molten
 
         public Matrix4F Global => _globalTransform;
 
+        public Vector3F GlobalPosition => _globalPosition;
+
         public Matrix4F Local => _localTransform;
 
         public Vector3F LocalPosition

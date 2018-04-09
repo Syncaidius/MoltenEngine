@@ -11,6 +11,7 @@ namespace Molten.Graphics
         Color _bgColor = new Color(40, 40, 40, 240);
         Color _segColor = Color.Lime;
         StartStep _gBuffer;
+        LightingStep _lighting;
 
         public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch sb, SceneRenderDataDX11 scene, IRenderSurface surface)
         {
@@ -34,11 +35,13 @@ namespace Molten.Graphics
             if (scene.HasFlag(SceneRenderFlags.Deferred))
             {
                 _gBuffer = _gBuffer ?? renderer.GetRenderStep<StartStep>();
+                _lighting = _lighting ?? renderer.GetRenderStep<LightingStep>();
                 int size = 256;
                 dest = new Rectangle(0, surface.Height - size, size, size);
                 sb.Draw(_gBuffer.Scene, dest, Color.White);
                 dest.X += size; sb.Draw(_gBuffer.Normals, dest, Color.White);
                 dest.X += size; sb.Draw(_gBuffer.Emissive, dest, Color.White);
+                dest.X += size; sb.Draw(_lighting.Lighting, dest, Color.White);
             }
         }
 

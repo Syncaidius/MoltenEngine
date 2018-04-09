@@ -64,7 +64,7 @@ namespace Molten.Graphics
             {
                 Next<GBuffer3dStep>();
                 Next<Render2dStep>();
-                // TODO complete deferred chain here
+                Next<LightingStep>();
                 Next<FinalizeStep>();
             }
             else

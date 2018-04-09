@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.Graphics.Scene.Lights;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,10 @@ namespace Molten.Graphics
         /// Occurs just after the scene has been rendered.
         /// </summary>
         public event SceneRenderDataHandler OnPostRender;
+
+        public LightList<PointLightData> PointLights = new LightList<PointLightData>(100, 100);
+
+        public LightList<CapsuleLightData> CapsuleLights = new LightList<CapsuleLightData>(100, 100);
 
         /// <summary>
         /// If true, the scene will be rendered.
@@ -78,5 +83,10 @@ namespace Molten.Graphics
         /// Gets the debug overlay which displays information for the current scene.
         /// </summary>
         public abstract ISceneDebugOverlay DebugOverlay { get; }
+
+        /* TODO:
+        *  - Edit PointLights and CapsuleLights.Data directly in light scene components (e.g. PointLightComponent).
+        *  - Renderer will upload the latest data to the GPU 
+        */
     }
 }
