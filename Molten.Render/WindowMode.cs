@@ -13,8 +13,5 @@ namespace Molten.Graphics
 
         /// <summary>Removes the window border and allows the program to fill the whole screen.</summary>
         Borderless = 1,
-
-        /// <summary>Spread across all possible display outputs.</summary>
-        Spread = 2,
     }
 }

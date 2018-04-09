@@ -59,8 +59,19 @@ namespace Molten.Samples
             if (!_baseContentLoaded)
                 return;
 
+            // Cycle through debug overlay pages.
             if(Keyboard.IsTapped(Key.F1) && _testFont != null)
                 DebugOverlay.NextPage();
+
+            // Cycle through window modes.
+            if (Keyboard.IsTapped(Key.F2))
+            {
+                switch (Window.Mode)
+                {
+                    case WindowMode.Borderless: Window.Mode = WindowMode.Windowed; break;
+                    case WindowMode.Windowed: Window.Mode = WindowMode.Borderless; break;
+                }
+            }
         }
 
         public abstract string Description { get; }

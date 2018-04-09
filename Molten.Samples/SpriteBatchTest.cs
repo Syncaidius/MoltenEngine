@@ -109,7 +109,7 @@ namespace Molten.Samples
 
         private void SetupRectangles()
         {
-            for (int i = 0; i < 100000; i++)
+            for (int i = 0; i < 25000; i++)
             {
                 RectangleSprite s = new RectangleSprite()
                 {

@@ -500,7 +500,7 @@ namespace Molten.Graphics
         /// <summary>Applies any pending changes onto the buffer.</summary>
         /// <param name="pipe">The graphics pipe to use when process changes.</param>
         /// <param name="forceInitialize">If set to true, the buffer will be initialized if not done so already.</param>
-        internal void ApplyChanges(GraphicsPipe pipe)
+        protected void ApplyChanges(GraphicsPipe pipe)
         {
             if (_pendingChanges.Count > 0)
             {
@@ -508,14 +508,6 @@ namespace Molten.Graphics
                 while (_pendingChanges.TryDequeue(out op))
                     op.Process(pipe);
             }
-        }
-
-        /// <summary>
-        /// Resets the discard flag, ready for the draw call or frame.
-        /// </summary>
-        internal void ResetDiscard()
-        {
-            _firstDiscardDone = false;
         }
 
         internal void Clear()
@@ -596,7 +588,7 @@ namespace Molten.Graphics
         internal override void Refresh(GraphicsPipe pipe, PipelineBindSlot slot)
         {
             ApplyChanges(pipe);
-            ResetDiscard();
+            _firstDiscardDone = false;
         }
 
         protected override void OnDispose()

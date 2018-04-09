@@ -174,6 +174,7 @@ namespace Molten.Graphics
             switch (_mode)
             {
                 case WindowMode.Windowed:
+                    _form.WindowState = FormWindowState.Maximized;
                     _form.FormBorderStyle = FormBorderStyle.FixedSingle;
 
                     // Calculate offset due to borders and title bars, based on the current mode of the window.
@@ -193,7 +194,7 @@ namespace Molten.Graphics
                 case WindowMode.Borderless:
                     System.Drawing.Rectangle dBounds = Screen.GetBounds(_form);
 
-                    _form.WindowState = FormWindowState.Maximized;
+                    _form.WindowState = FormWindowState.Normal;
                     _form.FormBorderStyle = FormBorderStyle.None;
                     _form.TopMost = true;
 
@@ -204,22 +205,6 @@ namespace Molten.Graphics
                         Y = dBounds.Y,
                         Width = dBounds.Width,
                         Height = dBounds.Height,
-                    };
-                    break;
-
-                case WindowMode.Spread:
-                    _form.WindowState = FormWindowState.Maximized;
-                    _form.FormBorderStyle = FormBorderStyle.None;
-
-                    System.Drawing.Rectangle desk = SystemInformation.VirtualScreen;
-                    _form.Bounds = desk;
-
-                    _bounds = new Rectangle()
-                    {
-                        X = desk.X,
-                        Y = desk.Y,
-                        Width = desk.Width,
-                        Height = desk.Height,
                     };
                     break;
             }
