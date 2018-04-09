@@ -21,6 +21,7 @@ namespace Molten.Graphics
         protected Buffer _buffer;
         BufferSegment _firstSegment;
         GraphicsDevice _device;
+        bool _firstDiscardDone;
 
         BufferMode _mode;
 
@@ -250,18 +251,18 @@ namespace Molten.Graphics
             // Buffer mode.
             switch (_mode)
             {
-                case Graphics.BufferMode.Default:
+                case BufferMode.Default:
                     Description.Usage = ResourceUsage.Default;
                     Description.CpuAccessFlags = CpuAccessFlags.None;
                     break;
 
-                case Graphics.BufferMode.Dynamic:
+                case BufferMode.Dynamic:
                     Description.Usage = ResourceUsage.Dynamic;
                     Description.CpuAccessFlags = CpuAccessFlags.Write;
                     break;
 
 
-                case Graphics.BufferMode.Immutable:
+                case BufferMode.Immutable:
                     Description.Usage = ResourceUsage.Immutable;
                     Description.CpuAccessFlags = CpuAccessFlags.None;
                     break;
@@ -395,7 +396,19 @@ namespace Molten.Graphics
             {
                 // Write updated data into buffer
                 if (isDynamic)
-                    pipe.Context.MapSubresource(_buffer, MapMode.WriteDiscard, MapFlags.None, out mappedData);
+                {
+                    // NOTE: D3D11_MAP_WRITE_NO_OVERWRITE is only valid on vertex and index buffers. 
+                    // See: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476181(v=vs.85).aspx
+                    if (_firstDiscardDone && (HasFlags(BindFlags.VertexBuffer) || HasFlags(BindFlags.IndexBuffer)))
+                    {
+                        pipe.Context.MapSubresource(_buffer, MapMode.WriteNoOverwrite, MapFlags.None, out mappedData);
+                    }
+                    else
+                    {
+                        _firstDiscardDone = true;
+                        pipe.Context.MapSubresource(_buffer, MapMode.WriteDiscard, MapFlags.None, out mappedData);
+                    }
+                }
                 else
                     pipe.Context.MapSubresource(_buffer, MapMode.Write, MapFlags.None, out mappedData);
 
@@ -419,7 +432,7 @@ namespace Molten.Graphics
                     throw new GraphicsBufferException($"The provided staging buffer is not large enough ({staging.Description.SizeInBytes} bytes) to fit the provided data ({dataSize} bytes).");
 
                 // Write updated data into buffer
-                if (isDynamic)
+                if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
                     pipe.Context.MapSubresource(staging._buffer, MapMode.WriteDiscard, MapFlags.None, out mappedData);
                 else
                     pipe.Context.MapSubresource(staging._buffer, MapMode.Write, MapFlags.None, out mappedData);
@@ -497,6 +510,14 @@ namespace Molten.Graphics
             }
         }
 
+        /// <summary>
+        /// Resets the discard flag, ready for the draw call or frame.
+        /// </summary>
+        internal void ResetDiscard()
+        {
+            _firstDiscardDone = false;
+        }
+
         internal void Clear()
         {
             _pendingChanges.Clear();
@@ -504,10 +525,10 @@ namespace Molten.Graphics
 
         private void CreateResources(BufferSegment segment)
         {
-            if (HasFlag(BindFlags.VertexBuffer))
+            if (HasFlags(BindFlags.VertexBuffer))
                 segment.VertexBinding = new VertexBufferBinding(segment.Buffer, segment.Stride, segment.ByteOffset);
 
-            if (HasFlag(BindFlags.ShaderResource))
+            if (HasFlags(BindFlags.ShaderResource))
             {
                 segment.SRV = new ShaderResourceView(_device.D3d, _buffer, new ShaderResourceViewDescription()
                 {
@@ -521,7 +542,7 @@ namespace Molten.Graphics
                 });
             }
 
-            if (HasFlag(BindFlags.UnorderedAccess))
+            if (HasFlags(BindFlags.UnorderedAccess))
             {
                 segment.UAV = new UnorderedAccessView(_device.D3d, _buffer, new UnorderedAccessViewDescription()
                 {
@@ -562,7 +583,7 @@ namespace Molten.Graphics
 
         protected virtual void OnSegmentResized(BufferSegment segment, int oldByteCount, int newByteCount, int oldElementCount, int newElementCount) { }
 
-        internal bool HasFlag(BindFlags flag)
+        internal bool HasFlags(BindFlags flag)
         {
             return (Description.BindFlags & flag) == flag;
         }
@@ -575,6 +596,7 @@ namespace Molten.Graphics
         internal override void Refresh(GraphicsPipe pipe, PipelineBindSlot slot)
         {
             ApplyChanges(pipe);
+            ResetDiscard();
         }
 
         protected override void OnDispose()

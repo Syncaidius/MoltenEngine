@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.Scene.Lights
+namespace Molten.Graphics
 {
     /// <summary>
     /// A vertex structure for storing point light data.

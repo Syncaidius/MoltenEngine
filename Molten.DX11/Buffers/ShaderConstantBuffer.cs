@@ -69,13 +69,6 @@ namespace Molten.Graphics
             // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
             if (DirtyVariables)
             {
-                // Initialize buffer if not already done.
-                //if (_buffer == null)
-                //{
-                //    Description.SizeInBytes = _stride;
-                //    InitializeBuffer(new IntPtr(), false);
-                //}
-
                 // Reset variable-specific dirty flag
                 DirtyVariables = false;
 

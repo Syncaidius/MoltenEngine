@@ -1,5 +1,4 @@
 ﻿using Molten.Collections;
-using Molten.Graphics.Scene.Lights;
 using System;
 using System.Collections.Generic;
 using System.Linq;

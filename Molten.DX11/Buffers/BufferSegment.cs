@@ -243,7 +243,7 @@ namespace Molten.Graphics
 
         internal override void Refresh(GraphicsPipe pipe, PipelineBindSlot slot)
         {
-            Parent.ApplyChanges(pipe);
+            Parent.Refresh(pipe, slot);
         }
 
         /// <summary>Releases the buffer space reserved by the segment.</summary>
