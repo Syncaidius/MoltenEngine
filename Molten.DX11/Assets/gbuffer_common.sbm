@@ -48,7 +48,8 @@ SamplerState texSampler : register(s1);
 Texture2D<float4> mapDiffuse	: register(t0);
 Texture2D<float3> mapNormal		: register(t1);
 Texture2D<float4> mapGlow		: register(t2);
-Texture2D<float> mapDepth		: register(t3);
+Texture2D<float4> mapSpecular	: register(t3);
+Texture2D<float> mapDepth		: register(t4);
 
 static const float2 g_SpecPowerRange = { 10.0, 250.0 };
 
@@ -56,6 +57,7 @@ struct MATERIAL{
 	float3 colorData;
 	float4 worldPos;
 	float3 normal;
+	float3 specular;
 	float2 uv;
 	float depth;
 };
@@ -74,11 +76,13 @@ MATERIAL UnpackGBuffer(float3 screenPos){
 	// Get color and specular
 	float4 colorData = mapDiffuse.Sample(texSampler, o.uv);
 	float3 normalData = mapNormal.Sample(texSampler, o.uv);
+	float4 specData = mapSpecular.Sample(texSampler, o.uv);
 
 	// Tranform normal back into [-1,1] range
 	o.normal = 2.0f * normalData.xyz - 1.0f;
 
 	o.colorData = colorData.rgb;
+	o.specular = specData.rgb;
 
 	// UNUSED
 	// colorData.a

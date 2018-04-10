@@ -14,7 +14,7 @@ namespace Molten.Graphics
 {
     internal abstract class HlslSubCompiler
     {
-        static string[] _newLine = new string[] { "\r", "\n", "\r\n", Environment.NewLine };
+
 
         Dictionary<string, ShaderNodeParser> _parsers = new Dictionary<string, ShaderNodeParser>();
 
@@ -346,7 +346,7 @@ namespace Molten.Graphics
 
         protected void LogHlslMessage(ShaderCompilerContext context, string txt)
         {
-            string[] lines = txt.Split(_newLine, StringSplitOptions.RemoveEmptyEntries);
+            string[] lines = txt.Split(HlslCompiler.NewLineSeparators, StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 0; i < lines.Length; i++)
             {

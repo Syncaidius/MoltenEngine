@@ -11,6 +11,7 @@ namespace Molten.Graphics
 {
     internal class HlslCompiler
     {
+        internal static readonly string[] NewLineSeparators = new string[] { "\n", Environment.NewLine };
         Dictionary<string, HlslSubCompiler> _subCompilers;
         Logger _log;
         RendererDX11 _renderer;
@@ -101,6 +102,8 @@ namespace Molten.Graphics
             ShaderCompilerContext context = new ShaderCompilerContext(this);
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>();
 
+            string finalSource = source;
+
             foreach (string nodeName in _subCompilers.Keys)
             {
                 List<string> nodeHeaders = GetHeaders(nodeName, source);
@@ -110,7 +113,21 @@ namespace Molten.Graphics
 
                     // Remove the headers from the source. This reduces the source we need to check through to find other headear types.
                     foreach (string h in nodeHeaders)
-                        source = source.Replace(h, "");
+                    {
+                        // TODO can this be improved?
+                        /* Get the end-line of the header within the original source and
+                         * replace it with a HLSL #line pre-processor tag. This ensures that HLSL errors have the correct line numbers.
+                         */
+                        int index = source.IndexOf(h);
+                        string[] lines = source.Substring(0, index).Split(NewLineSeparators, StringSplitOptions.None);
+                        string[] hLines = h.Split(NewLineSeparators, StringSplitOptions.None);
+                        int endLine = lines.Length + (hLines.Length - 1);
+
+                        if (filename == null)
+                            finalSource = finalSource.Replace(h, $"#line {endLine}");
+                        else
+                            finalSource = finalSource.Replace(h, $"#line {endLine} \"{filename}\"");
+                    }
                 }
             }
 
@@ -118,7 +135,7 @@ namespace Molten.Graphics
             string hlslError = "";
             try
             {
-                source = ShaderBytecode.Preprocess(source, null, includer ?? _defaultIncluder, out hlslError);
+                finalSource = ShaderBytecode.Preprocess(finalSource, null, includer ?? _defaultIncluder, out hlslError);
             }
             catch (Exception e)
             {
@@ -128,7 +145,7 @@ namespace Molten.Graphics
             // Proceed if there is no pre-processor errors.
             if (!string.IsNullOrWhiteSpace(hlslError) == false)
             {
-                context.Source = source;
+                context.Source = finalSource;
                 context.Filename = filename;
 
                 foreach (string nodeName in headers.Keys)

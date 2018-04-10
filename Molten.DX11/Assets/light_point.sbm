@@ -104,8 +104,8 @@ cbuffer cbLight : register(b1)
 
 float3 CalcLight(MATERIAL g, uint lightID)
 {
-	float3 ToLight = LightData[lightID].Position - g.worldPos;
-	float3 ToEye = cameraPosition - g.worldPos;
+	float3 ToLight = LightData[lightID].Position - g.worldPos.xyz;
+	float3 ToEye = cameraPosition - g.worldPos.xyz;
 	float DistToLight = length(ToLight);
 
 	ToLight /= DistToLight;

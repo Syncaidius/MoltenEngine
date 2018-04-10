@@ -197,6 +197,5 @@ float3 pbr_cook_torrance
 	float3 finalS = saturate(S) * 4;
 	finalS = min(finalS, S);
 
-	float3  Final = cLightCol.rgb * max(0.0f, NormalDotLight) * (cDiffuse + finalS);
-	return float4(Final, 1.0f);
+	return cLightCol.rgb * max(0.0f, NormalDotLight) * (cDiffuse + finalS);
 }
