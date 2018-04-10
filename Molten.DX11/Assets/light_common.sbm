@@ -198,6 +198,5 @@ float3 pbr_cook_torrance
 	finalS = min(finalS, S);
 
 	float3  Final = cLightCol.rgb * max(0.0f, NormalDotLight) * (cDiffuse + finalS);
-
 	return float4(Final, 1.0f);
 }

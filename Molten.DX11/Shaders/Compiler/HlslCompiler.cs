@@ -154,7 +154,6 @@ namespace Molten.Graphics
                 context.Result.Errors.Add($"{filename ?? "Shader source error"}: {hlslError}");
             }
 
-
             foreach (string error in context.Result.Errors)
                 _log.WriteError(error);
 

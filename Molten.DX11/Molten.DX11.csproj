@@ -271,8 +271,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\light_common.fx" />
-    <EmbeddedResource Include="Assets\light_point.fx" />
+    <EmbeddedResource Include="Assets\light_common.sbm" />
+    <EmbeddedResource Include="Assets\light_point.sbm" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

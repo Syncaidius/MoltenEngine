@@ -22,7 +22,7 @@ namespace Molten.Graphics
         private void LoadShaders(RendererDX11 renderer)
         {
             string source = null;
-            string namepace = "Molten.Graphics.Assets.gbuffer.sbm";
+            string namepace = "Molten.Graphics.Assets.light_point.sbm";
             using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
             {
                 using (StreamReader reader = new StreamReader(stream))
@@ -32,7 +32,7 @@ namespace Molten.Graphics
             if (!string.IsNullOrWhiteSpace(source))
             {
                 ShaderCompileResult result = renderer.ShaderCompiler.Compile(source, namepace);
-                _matPoint = result["material", "gbuffer"] as Material;
+                _matPoint = result["material", "light-point"] as Material;
             }
         }
 
