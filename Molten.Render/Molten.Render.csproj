@@ -93,10 +93,8 @@
     <Compile Include="Scene\ICamera.cs" />
     <Compile Include="Scene\IRenderable.cs" />
     <Compile Include="Scene\ISprite.cs" />
-    <Compile Include="Scene\Lights\ILightData.cs" />
-    <Compile Include="Scene\Lights\CapsuleLightData.cs" />
+    <Compile Include="Scene\Lights\LightData.cs" />
     <Compile Include="Scene\Lights\LightList.cs" />
-    <Compile Include="Scene\Lights\PointLightData.cs" />
     <Compile Include="Scene\ObjectRenderData.cs" />
     <Compile Include="Scene\SceneRenderFlags.cs" />
     <Compile Include="Scene\SceneRenderData.cs" />

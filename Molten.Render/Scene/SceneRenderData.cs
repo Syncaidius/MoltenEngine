@@ -23,9 +23,9 @@ namespace Molten.Graphics
         /// </summary>
         public event SceneRenderDataHandler OnPostRender;
 
-        public LightList<PointLightData> PointLights = new LightList<PointLightData>(100, 100);
+        public LightList PointLights = new LightList(100, 100);
 
-        public LightList<CapsuleLightData> CapsuleLights = new LightList<CapsuleLightData>(100, 100);
+        public LightList CapsuleLights = new LightList(50, 100);
 
         /// <summary>
         /// If true, the scene will be rendered.

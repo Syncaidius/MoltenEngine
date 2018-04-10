@@ -9,9 +9,9 @@ namespace Molten.Graphics
     /// <summary>
     /// A list 
     /// </summary>
-    public class LightList<T> where T : ILightData
+    public class LightList
     {
-        public T[] Data;
+        public LightData[] Data;
         int[] _free;
         int _freeCount;
         int _elementCount; // Number of elements initialized at least once.
@@ -20,11 +20,11 @@ namespace Molten.Graphics
 
         internal LightList(int initialCapacity, int resizeIncrement)
         {
-            Data = new T[initialCapacity];
+            Data = new LightData[initialCapacity];
             _free = new int[10];
         }
 
-        public int Add(T data)
+        public int Add(LightData data)
         {
             int id = 0;
             if(_freeCount > 0)
@@ -44,7 +44,7 @@ namespace Molten.Graphics
 
         public void Remove(int id)
         {
-            Data[id].Remove();
+            Data[id].TessFactor = 0; // Lights with a tess factor of 0 will be skipped.
 
             if (_freeCount == _free.Length)
                 Array.Resize(ref _free, _free.Length * 2);

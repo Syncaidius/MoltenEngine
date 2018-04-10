@@ -11,8 +11,13 @@ namespace Molten.Graphics
     /// A vertex structure for storing capsule light data.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class CapsuleLightData : ILightData, IVertexType
+    public class LightData : IVertexType
     {
+        /// <summary>
+        /// The light transform.
+        /// </summary>
+        public Matrix4F Transform;
+
         /// <summary>
         /// The light position.
         /// </summary>
@@ -39,37 +44,18 @@ namespace Molten.Graphics
         public Vector3F Forward;
 
         /// <summary>
-        /// The length of the capsule length.
-        /// </summary>
-        public float Length;
-
-        /// <summary>
-        /// The light transform.
-        /// </summary>
-        public Matrix4F Transform;
-
-        /// <summary>
-        /// The half-length of the capsule light.
-        /// </summary>
-        public float HalfLength;
-
-        /// <summary>
         /// The tessellation factor. A Factor of 0 will disable the light.
         /// </summary>
         public float TessFactor;
 
         /// <summary>
-        /// Gets or sets the light color.
+        /// The length of the capsule length.
         /// </summary>
-        public Color Color
-        {
-            get => (Color)Color3;
-            set => Color3 = (Color3)value;
-        }
+        public float Length;
 
-        public void Remove()
-        {
-            TessFactor = 0;
-        }
+        /// <summary>
+        /// The half-length of the capsule light.
+        /// </summary>
+        public float HalfLength;
     }
 }

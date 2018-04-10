@@ -9,18 +9,20 @@ namespace Molten
 {
     public class CapsuleLightComponent : SceneComponent
     {
-        CapsuleLightData _data;
+        LightData _data;
         int _lightID = -1;
         bool _visible = false;
         float _range;
+        Color _color;
 
         protected override void OnInitialize(SceneObject obj)
         {
             _range = 1.0f;
+            _color = Color.White;
 
-            _data = new CapsuleLightData()
+            _data = new LightData()
             {
-                Color = Color.White,
+                Color3 = _color.ToColor3(),
                 Intensity = 1.0f,
                 Position = Vector3F.Zero,
                 RangeRcp = 1.0f / _range,
@@ -119,8 +121,12 @@ namespace Molten
         /// </summary>
         public Color Color
         {
-            get => _data.Color;
-            set => _data.Color = value;
+            get => _color;
+            set
+            {
+                _color = value;
+                _data.Color3 = _color.ToColor3();
+            }
         }
 
         /// <summary>

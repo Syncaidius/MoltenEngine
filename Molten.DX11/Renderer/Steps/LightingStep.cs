@@ -1,6 +1,7 @@
 ﻿using SharpDX.DXGI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,11 +11,31 @@ namespace Molten.Graphics
     internal class LightingStep : RenderStepBase
     {
         internal RenderSurface Lighting;
+        Material _matPoint;
 
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
             UpdateSurfaces(renderer, width, height);
+            LoadShaders(renderer);
         }
+
+        private void LoadShaders(RendererDX11 renderer)
+        {
+            string source = null;
+            string namepace = "Molten.Graphics.Assets.gbuffer.sbm";
+            using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                    source = reader.ReadToEnd();
+            }
+
+            if (!string.IsNullOrWhiteSpace(source))
+            {
+                ShaderCompileResult result = renderer.ShaderCompiler.Compile(source, namepace);
+                _matPoint = result["material", "gbuffer"] as Material;
+            }
+        }
+
 
         internal override void UpdateSurfaces(RendererDX11 renderer, int width, int height)
         {
