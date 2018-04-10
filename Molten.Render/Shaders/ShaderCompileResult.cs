@@ -10,13 +10,9 @@ namespace Molten.Graphics
     {
         public Dictionary<string, List<IShader>> ShaderGroups = new Dictionary<string, List<IShader>>();
 
-        public List<string> Errors = new List<string>();
-
-        public List<string> Warnings = new List<string>();
-
-        public void AddResult(string nodeName, ShaderParseResult result)
+        public void AddResult(string nodeName, List<IShader> result)
         {
-            if (result.Shaders.Count > 0)
+            if (result.Count > 0)
             {
                 List<IShader> group = null;
                 if (!ShaderGroups.TryGetValue(nodeName, out group))
@@ -25,11 +21,8 @@ namespace Molten.Graphics
                     ShaderGroups.Add(nodeName, group);
                 }
 
-                group.AddRange(result.Shaders);
+                group.AddRange(result);
             }
-
-            Errors.AddRange(result.Errors);
-            Warnings.AddRange(result.Warnings);
         }
 
         public List<IShader> this[string groupName]

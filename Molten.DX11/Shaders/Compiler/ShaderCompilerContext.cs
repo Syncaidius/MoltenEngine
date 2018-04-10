@@ -24,6 +24,10 @@ namespace Molten.Graphics
 
         internal List<ShaderSampler> Samplers = new List<ShaderSampler>();
 
+        internal List<string> Errors = new List<string>();
+
+        internal List<string> Messages = new List<string>();
+
         internal ShaderCompilerContext(HlslCompiler compiler)
         {
             Compiler = compiler;

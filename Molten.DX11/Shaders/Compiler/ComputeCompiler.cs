@@ -11,14 +11,14 @@ namespace Molten.Graphics
 {
     internal class ComputeCompiler : HlslSubCompiler
     {
-        internal ComputeCompiler(Logger log) : base(log)
+        internal ComputeCompiler()
         {
             AddParser<ShaderEntryParser>("entry");
         }
 
-        internal override ShaderParseResult Parse(RendererDX11 renderer, ShaderCompilerContext context)
+        internal override List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer)
         {
-            ShaderParseResult result = new ShaderParseResult();
+            List<IShader> result = new List<IShader>();
             ComputeTask compute = new ComputeTask(renderer.Device, context.Filename);
             try
             {
@@ -27,7 +27,7 @@ namespace Molten.Graphics
                 if (Compile(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out computeResult))
                 {
                     ShaderReflection shaderRef = new ShaderReflection(computeResult.Bytecode);
-                    if (BuildStructure(compute, shaderRef, computeResult, compute.Composition))
+                    if (BuildStructure(context, compute, shaderRef, computeResult, compute.Composition))
                     {
                         compute.Composition.RawShader = new ComputeShader(renderer.Device.D3d, computeResult.Bytecode);
                     }
@@ -35,19 +35,19 @@ namespace Molten.Graphics
             }
             catch (Exception e)
             {
-                result.Errors.Add($"{context.Filename ?? "Material header error"}: {e.Message}");
+                context.Errors.Add($"{context.Filename ?? "Material header error"}: {e.Message}");
             }
 
-            if(result.Errors.Count == 0)
+            if(context.Errors.Count == 0)
             {
-                result.Shaders.Add(compute);
+                result.Add(compute);
                 renderer.Compute.AddTask(compute);
             }
 
             return result;
         }
 
-        protected override void OnBuildVariableStructure(HlslShader shader, ShaderReflection reflection, InputBindingDescription binding, ShaderInputType inputType)
+        protected override void OnBuildVariableStructure(ShaderCompilerContext context, HlslShader shader, ShaderReflection reflection, InputBindingDescription binding, ShaderInputType inputType)
         {
             ComputeTask ct = shader as ComputeTask;
 
@@ -55,19 +55,19 @@ namespace Molten.Graphics
             {
                 case ShaderInputType.UnorderedAccessViewRWStructured:
                     if (ct != null)
-                        OnBuildRWStructuredVariable(ct, binding);
+                        OnBuildRWStructuredVariable(context, ct, binding);
                     break;
 
                 case ShaderInputType.UnorderedAccessViewRWTyped:
                     if (ct != null)
-                        OnBuildRWTypedVariable(ct, binding);
+                        OnBuildRWTypedVariable(context, ct, binding);
                     break;
             }
         }
 
-        protected void OnBuildRWStructuredVariable(ComputeTask shader, InputBindingDescription binding)
+        protected void OnBuildRWStructuredVariable(ShaderCompilerContext context, ComputeTask shader, InputBindingDescription binding)
         {
-            RWBufferVariable rwBuffer = GetVariableResource<RWBufferVariable>(shader, binding);
+            RWBufferVariable rwBuffer = GetVariableResource<RWBufferVariable>(context, shader, binding);
             int bindPoint = binding.BindPoint;
 
             if (bindPoint >= shader.UAVs.Length)
@@ -76,7 +76,7 @@ namespace Molten.Graphics
             shader.UAVs[bindPoint] = rwBuffer;
         }
 
-        protected void OnBuildRWTypedVariable(ComputeTask shader, InputBindingDescription binding)
+        protected void OnBuildRWTypedVariable(ShaderCompilerContext context, ComputeTask shader, InputBindingDescription binding)
         {
             RWVariable resource = null;
             int bindPoint = binding.BindPoint;
@@ -84,11 +84,11 @@ namespace Molten.Graphics
             switch (binding.Dimension)
             {
                 case ShaderResourceViewDimension.Texture1D:
-                    resource = GetVariableResource<RWTexture1DVariable>(shader, binding);
+                    resource = GetVariableResource<RWTexture1DVariable>(context, shader, binding);
                     break;
 
                 case ShaderResourceViewDimension.Texture2D:
-                    resource = GetVariableResource<RWTexture2DVariable>(shader, binding);
+                    resource = GetVariableResource<RWTexture2DVariable>(context, shader, binding);
                     break;
             }
 

@@ -194,15 +194,7 @@ namespace Molten.Graphics
                 includer = new HlslIncludeHandler(dir.ToString());
             }
 
-            ShaderCompileResult result = _renderer.ShaderCompiler.Compile(source, filename, includer);
-
-            foreach (string error in result.Errors)
-                _renderer.Device.Log.WriteError(error);
-
-            foreach (string warning in result.Warnings)
-                _renderer.Device.Log.WriteWarning(warning);
-
-            return result;
+            return _renderer.ShaderCompiler.Compile(source, filename, includer);
         }
     }
 }
