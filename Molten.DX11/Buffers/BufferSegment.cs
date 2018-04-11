@@ -31,7 +31,7 @@ namespace Molten.Graphics
         internal int Stride;
 
         /// <summary>The mapped buffer that the segment belongs to.</summary>
-        internal GraphicsBuffer Parent;
+        internal SegmentedBuffer Parent;
 
         internal Buffer Buffer => Parent.Buffer;
 
@@ -295,7 +295,7 @@ namespace Molten.Graphics
             if(Previous.ByteCount == 0)
             {
                 LinkPrevious(Previous.Previous);
-                GraphicsBuffer.SegmentPool.Recycle(Previous);
+                SegmentedBuffer.SegmentPool.Recycle(Previous);
             }
         }
 
@@ -312,13 +312,13 @@ namespace Molten.Graphics
             if (Next.ByteCount == 0)
             {
                 LinkNext(Next.Next);
-                GraphicsBuffer.SegmentPool.Recycle(Next);
+                SegmentedBuffer.SegmentPool.Recycle(Next);
             }
         }
 
         internal BufferSegment SplitFromBack(int bytesToTake)
         {
-            BufferSegment seg = GraphicsBuffer.SegmentPool.GetInstance();
+            BufferSegment seg = SegmentedBuffer.SegmentPool.GetInstance();
             seg.LinkNext(this);
             seg.LinkPrevious(Previous);
 
@@ -334,7 +334,7 @@ namespace Molten.Graphics
 
         internal BufferSegment SplitFromFront(int bytesToTake)
         {
-            BufferSegment seg = GraphicsBuffer.SegmentPool.GetInstance();
+            BufferSegment seg = SegmentedBuffer.SegmentPool.GetInstance();
             seg.LinkNext(Next);
             seg.LinkPrevious(this);
 
@@ -348,7 +348,7 @@ namespace Molten.Graphics
 
         public object Clone()
         {
-            BufferSegment clone = GraphicsBuffer.SegmentPool.GetInstance();
+            BufferSegment clone = SegmentedBuffer.SegmentPool.GetInstance();
             CloneTo(clone);
 
             return clone;

@@ -85,8 +85,9 @@ namespace Molten.Graphics
             throw new InvalidOperationException("Typed buffers only accept scalar, vector and Matrix2x2 value types.");
         }
 
-        protected override void OnSegmentAllocated(BufferSegment segment, Type allocatedType)
+        internal override void CreateResources(int stride, int byteoffset, int elementCount)
         {
+            Type allocatedType = typeof(T);
             if (allocatedType != _bufferType)
                 throw new InvalidOperationException("Typed buffers can only accept the type they were initialized to accept.");
             
@@ -95,11 +96,11 @@ namespace Molten.Graphics
                 return;
 
             // Create a new shader resource view
-            SRV = new ShaderResourceView(Device.D3d, segment.Buffer, new ShaderResourceViewDescription()
+            SRV = new ShaderResourceView(Device.D3d, _buffer, new ShaderResourceViewDescription()
             {
                 BufferEx = new ShaderResourceViewDescription.ExtendedBufferResource()
                 {
-                    ElementCount = segment.ElementCount,
+                    ElementCount = elementCount,
                     FirstElement = 0,
                     Flags = ShaderResourceViewExtendedBufferFlags.None,
                 },

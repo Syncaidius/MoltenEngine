@@ -42,7 +42,7 @@ namespace Molten.Samples
         private void SetupLightObjects(Vector3F origin)
         {
             int numLights = 10;
-            float radius = 5;
+            float radius = 5.5f;
 
             float angInc = MathHelper.DegreesToRadians(360.0f / numLights);
             float angle = 0;

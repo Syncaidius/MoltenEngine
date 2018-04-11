@@ -95,6 +95,7 @@
     <Compile Include="Buffers\Operations\BufferGetOperation.cs" />
     <Compile Include="Buffers\Operations\BufferSetOperation.cs" />
     <Compile Include="Buffers\Operations\IBufferOperation.cs" />
+    <Compile Include="Buffers\SegmentedBuffer.cs" />
     <Compile Include="Buffers\ShaderConstantBuffer.cs" />
     <Compile Include="Buffers\StagingBuffer.cs" />
     <Compile Include="Buffers\StructuredBuffer.cs" />
@@ -274,5 +275,6 @@
     <EmbeddedResource Include="Assets\light_common.sbm" />
     <EmbeddedResource Include="Assets\light_point.sbm" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

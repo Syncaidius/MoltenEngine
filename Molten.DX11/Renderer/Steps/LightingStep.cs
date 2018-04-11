@@ -34,6 +34,14 @@ namespace Molten.Graphics
                 ShaderCompileResult result = renderer.ShaderCompiler.Compile(source, namepace);
                 _matPoint = result["material", "light-point"] as Material;
             }
+
+            /* TODO 
+             * - rework/implement dynamic ring-buffer (Write using NO_OVERWRITE, DISCARD once full (or first map)).
+             * - implement mapping strategy system in GraphicsBuffer. Implement different strategies based on:
+             *      -- Dynamic or static (static can allocate to wherever is free in the buffer).
+             *      -- Hardware vendor/series (This should come much later down the line).
+             *      -- 
+             */
         }
 
         internal override void UpdateSurfaces(RendererDX11 renderer, int width, int height)
