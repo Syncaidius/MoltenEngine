@@ -11,7 +11,7 @@ namespace Molten.Graphics
     /// A vertex structure for storing capsule light data.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class LightData : IVertexType
+    public struct LightData : IVertexType
     {
         /// <summary>
         /// The light transform.

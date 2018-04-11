@@ -11,7 +11,7 @@ namespace Molten
     {
         LightData _data;
         int _lightID = -1;
-        bool _visible = false;
+        bool _visible = true;
         float _range;
         Color _color;
 

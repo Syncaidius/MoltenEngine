@@ -35,6 +35,33 @@ namespace Molten.Samples
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
             AcceptPlayerInput = false;
             Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
+
+            SetupLightObjects(Vector3F.Zero);
+        }
+
+        private void SetupLightObjects(Vector3F origin)
+        {
+            int numLights = 10;
+            float radius = 5;
+
+            float angInc = MathHelper.DegreesToRadians(360.0f / numLights);
+            float angle = 0;
+
+            for(int i = 0; i < numLights; i++)
+            {
+                Vector3F pos = origin + new Vector3F()
+                {
+                    X = (float)Math.Sin(angle) * radius,
+                    Y = 0,
+                    Z = (float)Math.Cos(angle) * radius,
+                };
+
+                SceneObject obj = CreateObject(pos, SampleScene);
+                PointLightComponent lightCom = obj.AddComponent<PointLightComponent>();
+                lightCom.Range = 5.0f;
+
+                angle += angInc;
+            }
         }
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)

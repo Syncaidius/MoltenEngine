@@ -119,7 +119,7 @@ namespace Molten
         public string Name { get; private set; }
 
         /// <summary>Gets or sets the scene's out camera. This acts as an eye when rendering the scene, allowing it to be viewed from the perspective of the camera.
-        /// Scenes without a camera are rendered from a default view that is positioned at 0,0,5 and facing 0,0,0.</summary>
+        /// Scenes without a camera will not be updated or rendered.</summary>
         public ICamera OutputCamera
         {
             get => RenderData.Camera;

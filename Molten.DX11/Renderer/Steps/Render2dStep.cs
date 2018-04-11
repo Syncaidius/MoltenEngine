@@ -33,7 +33,7 @@ namespace Molten.Graphics
 
             GraphicsDevice device = renderer.Device;
 
-            if (scene.Camera != null)
+            if (scene.Camera != null && scene.Camera.OutputSurface != null)
             {
                 spriteProj = scene.Camera.Projection;
                 spriteView = scene.Camera.View;

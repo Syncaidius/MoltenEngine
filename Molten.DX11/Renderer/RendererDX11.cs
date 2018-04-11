@@ -218,36 +218,36 @@ namespace Molten.Graphics
             while (_tasks.TryDequeue(out task))
                 task.Process(this);
 
-            // Ensure the backbuffer is always big enough for the largest scene render surface.
+            // Perform preliminary checks on active scene data.
+            // Also ensure the backbuffer is always big enough for the largest scene render surface.
             foreach (SceneRenderDataDX11 data in Scenes)
             {
-                if (!data.IsVisible)
-                    continue;
+                data.Skip = false;
 
-                RenderSurfaceBase rs = _device.DefaultSurface;
-                DepthSurface ds = null;
-
-                if (data.Camera != null)
+                if (!data.IsVisible || data.Camera == null)
                 {
-                    rs = data.Camera.OutputSurface as RenderSurfaceBase ?? rs;
+                    data.Skip = true;
+                    continue;
                 }
 
-                if (rs == null)
-                    continue;
-
-                // Cache the surface we'll be using to render the scene data.
-                data.FinalSurface = rs;
-
-                if (rs.Width > _biggestWidth)
+                // Check for valid final surface.
+                data.FinalSurface = data.Camera.OutputSurface as RenderSurfaceBase ?? _device.DefaultSurface;
+                if (data.FinalSurface == null)
                 {
-                    _surfacesDirty = true;
-                    _biggestWidth = rs.Width;
+                    data.Skip = true;
+                    continue;
                 }
 
-                if (rs.Height > _biggestHeight)
+                if (data.FinalSurface.Width > _biggestWidth)
                 {
                     _surfacesDirty = true;
-                    _biggestHeight = rs.Height;
+                    _biggestWidth = data.FinalSurface.Width;
+                }
+
+                if (data.FinalSurface.Height > _biggestHeight)
+                {
+                    _surfacesDirty = true;
+                    _biggestHeight = data.FinalSurface.Height;
                 }
             }
 
@@ -284,11 +284,12 @@ namespace Molten.Graphics
             for (int i = 0; i < Scenes.Count; i++)
             {
                 scene = Scenes[i];
+                if (scene.Skip)
+                    continue;
+
                 _device.Profiler = scene.Profiler;
                 _device.Profiler.StartCapture();
-
-                if (scene.IsVisible && scene.FinalSurface != null)
-                    scene.Render(_device, this, time);
+                scene.Render(_device, this, time);
 
                 _profiler.AddData(scene.Profiler.CurrentFrame);
                 _device.Profiler.EndCapture(time);

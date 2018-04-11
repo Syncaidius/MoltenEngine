@@ -13,6 +13,7 @@ namespace Molten.Samples
         SpriteFont _testFont;
         bool _baseContentLoaded;
         ISceneDebugOverlay _mainOverlay;
+        Camera2D _uiCamera;
 
         public SampleGame(string title, EngineSettings settings = null) : base(title, settings) { }
 
@@ -23,6 +24,10 @@ namespace Molten.Samples
 
             SpriteScene = CreateScene("Sprite", SceneRenderFlags.Render2D);
             UIScene = CreateScene("UI", SceneRenderFlags.Render2D);
+
+            // Use the same camera for both the sprite and UI scenes.
+            UIScene.OutputCamera = SpriteScene.OutputCamera = new Camera2D();
+
             DebugOverlay = UIScene.DebugOverlay;
             UIScene.AddSprite(DebugOverlay);
 
