@@ -45,7 +45,7 @@ namespace Molten.Graphics
             }
         }
 
-        private void DrawBar(string label, SpriteFont font, SpriteBatch sb, SegmentedBuffer buffer, Rectangle destination)
+        private void DrawBar(string label, SpriteFont font, SpriteBatch sb, GraphicsBuffer buffer, Rectangle destination)
         {
             sb.DrawRect(destination, _bgColor);
 

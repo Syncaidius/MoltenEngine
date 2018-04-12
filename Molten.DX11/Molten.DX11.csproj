@@ -95,7 +95,6 @@
     <Compile Include="Buffers\Operations\BufferGetOperation.cs" />
     <Compile Include="Buffers\Operations\BufferSetOperation.cs" />
     <Compile Include="Buffers\Operations\IBufferOperation.cs" />
-    <Compile Include="Buffers\SegmentedBuffer.cs" />
     <Compile Include="Buffers\ShaderConstantBuffer.cs" />
     <Compile Include="Buffers\StagingBuffer.cs" />
     <Compile Include="Buffers\StructuredBuffer.cs" />

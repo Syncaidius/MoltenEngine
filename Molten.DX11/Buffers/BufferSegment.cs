@@ -15,6 +15,8 @@ namespace Molten.Graphics
 
     internal class BufferSegment : PipelineShaderObject, IPoolable, ICloneable
     {
+        internal static ObjectPool<BufferSegment> Pool = new ObjectPool<BufferSegment>(() => new BufferSegment());
+
         UnorderedAccessView _uav;
         ShaderResourceView _srv;
 
@@ -31,7 +33,7 @@ namespace Molten.Graphics
         internal int Stride;
 
         /// <summary>The mapped buffer that the segment belongs to.</summary>
-        internal SegmentedBuffer Parent;
+        internal GraphicsBuffer Parent;
 
         internal Buffer Buffer => Parent.Buffer;
 
@@ -295,7 +297,7 @@ namespace Molten.Graphics
             if(Previous.ByteCount == 0)
             {
                 LinkPrevious(Previous.Previous);
-                SegmentedBuffer.SegmentPool.Recycle(Previous);
+                Pool.Recycle(Previous);
             }
         }
 
@@ -312,13 +314,13 @@ namespace Molten.Graphics
             if (Next.ByteCount == 0)
             {
                 LinkNext(Next.Next);
-                SegmentedBuffer.SegmentPool.Recycle(Next);
+                BufferSegment.Pool.Recycle(Next);
             }
         }
 
         internal BufferSegment SplitFromBack(int bytesToTake)
         {
-            BufferSegment seg = SegmentedBuffer.SegmentPool.GetInstance();
+            BufferSegment seg = BufferSegment.Pool.GetInstance();
             seg.LinkNext(this);
             seg.LinkPrevious(Previous);
 
@@ -334,7 +336,7 @@ namespace Molten.Graphics
 
         internal BufferSegment SplitFromFront(int bytesToTake)
         {
-            BufferSegment seg = SegmentedBuffer.SegmentPool.GetInstance();
+            BufferSegment seg = BufferSegment.Pool.GetInstance();
             seg.LinkNext(Next);
             seg.LinkPrevious(this);
 
@@ -348,7 +350,7 @@ namespace Molten.Graphics
 
         public object Clone()
         {
-            BufferSegment clone = SegmentedBuffer.SegmentPool.GetInstance();
+            BufferSegment clone = BufferSegment.Pool.GetInstance();
             CloneTo(clone);
 
             return clone;

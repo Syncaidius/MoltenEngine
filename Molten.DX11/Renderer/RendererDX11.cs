@@ -36,10 +36,10 @@ namespace Molten.Graphics
         internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
         internal SpriteBatchDX11 SpriteBatcher;
         internal List<SceneRenderDataDX11> Scenes;
-        internal SegmentedBuffer StaticVertexBuffer;
-        internal SegmentedBuffer StaticIndexBuffer;
-        internal SegmentedBuffer DynamicVertexBuffer;
-        internal SegmentedBuffer DynamicIndexBuffer;
+        internal GraphicsBuffer StaticVertexBuffer;
+        internal GraphicsBuffer StaticIndexBuffer;
+        internal GraphicsBuffer DynamicVertexBuffer;
+        internal GraphicsBuffer DynamicIndexBuffer;
         internal StagingBuffer StagingBuffer;
 
         internal Material StandardMeshMaterial;
@@ -85,13 +85,13 @@ namespace Molten.Graphics
 
             int maxVertexBytesStatic = 1024 * 512;
             int maxIndexBytesStatic = 1024 * 300;
-            StaticVertexBuffer = new SegmentedBuffer(_device, BufferMode.Default, BindFlags.VertexBuffer, maxVertexBytesStatic);
-            StaticIndexBuffer = new SegmentedBuffer(_device, BufferMode.Default, BindFlags.IndexBuffer, maxIndexBytesStatic);
+            StaticVertexBuffer = new GraphicsBuffer(_device, BufferMode.Default, BindFlags.VertexBuffer, maxVertexBytesStatic);
+            StaticIndexBuffer = new GraphicsBuffer(_device, BufferMode.Default, BindFlags.IndexBuffer, maxIndexBytesStatic);
 
             int maxVertexBytesDynamic = 1024 * 512;
             int maxIndexBytesDynamic = 1024 * 300;
-            DynamicVertexBuffer = new SegmentedBuffer(_device, BufferMode.Dynamic, BindFlags.VertexBuffer, maxVertexBytesDynamic);
-            DynamicIndexBuffer = new SegmentedBuffer(_device, BufferMode.Dynamic, BindFlags.IndexBuffer, maxIndexBytesDynamic);
+            DynamicVertexBuffer = new GraphicsBuffer(_device, BufferMode.Dynamic, BindFlags.VertexBuffer, maxVertexBytesDynamic);
+            DynamicIndexBuffer = new GraphicsBuffer(_device, BufferMode.Dynamic, BindFlags.IndexBuffer, maxIndexBytesDynamic);
 
             StagingBuffer = new StagingBuffer(_device, StagingBufferFlags.Write, maxVertexBytesStatic / 4);
             SpriteBatcher = new SpriteBatchDX11(this, 3000);

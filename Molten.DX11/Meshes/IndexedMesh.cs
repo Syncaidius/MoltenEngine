@@ -24,7 +24,7 @@ namespace Molten.Graphics
             _maxIndices = maxIndices;
             _iFormat = indexFormat;
 
-            SegmentedBuffer iBuffer = dynamic ? renderer.DynamicIndexBuffer : renderer.StaticIndexBuffer;
+            GraphicsBuffer iBuffer = dynamic ? renderer.DynamicIndexBuffer : renderer.StaticIndexBuffer;
 
             switch (_iFormat)
             {

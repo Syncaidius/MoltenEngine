@@ -28,7 +28,7 @@ namespace Molten.Graphics
             _maxVertices = maxVertices;
             _topology = topology.ToApi();
 
-            SegmentedBuffer vBuffer = dynamic ? renderer.DynamicVertexBuffer : renderer.StaticVertexBuffer;
+            GraphicsBuffer vBuffer = dynamic ? renderer.DynamicVertexBuffer : renderer.StaticVertexBuffer;
 
             _vb = vBuffer.Allocate<T>(maxVertices);
             _vb.SetVertexFormat<T>();
