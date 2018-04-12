@@ -90,8 +90,8 @@ namespace Molten.Graphics
 
             int maxVertexBytesDynamic = 1024 * 512;
             int maxIndexBytesDynamic = 1024 * 300;
-            DynamicVertexBuffer = new GraphicsBuffer(_device, BufferMode.Dynamic, BindFlags.VertexBuffer, maxVertexBytesDynamic);
-            DynamicIndexBuffer = new GraphicsBuffer(_device, BufferMode.Dynamic, BindFlags.IndexBuffer, maxIndexBytesDynamic);
+            DynamicVertexBuffer = new GraphicsBuffer(_device, BufferMode.DynamicDiscard, BindFlags.VertexBuffer, maxVertexBytesDynamic);
+            DynamicIndexBuffer = new GraphicsBuffer(_device, BufferMode.DynamicDiscard, BindFlags.IndexBuffer, maxIndexBytesDynamic);
 
             StagingBuffer = new StagingBuffer(_device, StagingBufferFlags.Write, maxVertexBytesStatic / 4);
             SpriteBatcher = new SpriteBatchDX11(this, 3000);

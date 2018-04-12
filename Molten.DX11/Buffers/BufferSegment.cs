@@ -166,7 +166,11 @@ namespace Molten.Graphics
 
         internal void Map(GraphicsPipe pipe, Action<GraphicsBuffer, DataStream> callback, GraphicsBuffer staging = null)
         {
-            Parent.Map(pipe, ByteOffset, Stride * ElementCount, callback, staging); 
+            Parent.Map(pipe, ByteOffset, Stride * ElementCount, (buffer, stream) =>
+            {
+                ByteOffset = (int)stream.Position;
+                callback(buffer, stream);
+            }, staging); 
         }
 
         internal void GetData<T>(GraphicsPipe pipe, T[] destination, int startIndex, int count, int elementOffset = 0, Action<T[]> completionCallback = null) where T : struct

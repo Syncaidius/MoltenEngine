@@ -89,7 +89,7 @@ namespace Molten.Graphics
         {
             Type allocatedType = typeof(T);
             if (allocatedType != _bufferType)
-                throw new InvalidOperationException("Typed buffers can only accept the type they were initialized to accept.");
+                throw new InvalidOperationException("Typed buffers can only accept the data type they were initialized with.");
             
             // No SRV if the shader resource flag isn't present.
             if ((Description.BindFlags & BindFlags.ShaderResource) != BindFlags.ShaderResource)

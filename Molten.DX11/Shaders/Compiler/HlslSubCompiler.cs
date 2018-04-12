@@ -138,7 +138,7 @@ namespace Molten.Graphics
                         // Skip binding info buffers
                         if (buffer.Description.Type != ConstantBufferType.ResourceBindInformation)
                         {
-                            ShaderConstantBuffer cBuffer = GetConstantBuffer(context, shader, BufferMode.Dynamic, buffer);
+                            ShaderConstantBuffer cBuffer = GetConstantBuffer(context, shader, buffer);
 
                             if (bindPoint >= shader.ConstBuffers.Length)
                                 Array.Resize(ref shader.ConstBuffers, bindPoint + 1);
@@ -230,9 +230,9 @@ namespace Molten.Graphics
             shader.Resources[bindPoint] = obj;
         }
 
-        private ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext context, HlslShader shader, BufferMode mode, ConstantBuffer buffer)
+        private ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext context, HlslShader shader, ConstantBuffer buffer)
         {
-            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader, BufferMode.Dynamic, buffer);
+            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader, BufferMode.DynamicDiscard, buffer);
             PipelineShaderObject existing = null;
 
             // Duplication checks.

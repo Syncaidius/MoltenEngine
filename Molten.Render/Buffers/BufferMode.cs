@@ -22,7 +22,14 @@ namespace Molten.Graphics
         /// This is an extremely expensive operation.</summary>
         Immutable = 1,
 
-        /// <summary>A dynamic buffer can be written to (but not read from) by the CPU. Useful for data that will change every frame.</summary>
-        Dynamic = 2,
+        /// <summary>A dynamic buffer can be written to (but not read from) by the CPU. Useful for data that will change every frame. <para/>
+        /// In this mode, every map call will discard the buffer on the GPU and be pointed to a new area of VRAM.</summary>
+        DynamicDiscard = 2,
+
+        /// <summary>A dynamic buffer can be written to (but not read from) by the CPU. Useful for data that will change every frame. <para/>
+        /// In this mode, each map call will be pointed to an uninitialized/unwritten area of buffer memory. 
+        /// Once the buffer is full, the next map call will discard the buffer on the GPU and point to a new area of VRAM.
+        /// This cycle of filling and discarding ensures dynamic data can always be written.</summary>
+        DynamicRing = 3,
     }
 }

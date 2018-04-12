@@ -19,9 +19,9 @@ namespace Molten.Graphics
         protected Array _initialData;
         protected Buffer _buffer;
         protected GraphicsDevice _device;
-        bool _firstDiscardDone;
-
+        
         BufferMode _mode;
+        int _ringPos;
 
         internal BufferDescription Description;
         internal VertexBufferBinding VertexBinding;
@@ -92,7 +92,8 @@ namespace Molten.Graphics
                     Description.CpuAccessFlags = CpuAccessFlags.None;
                     break;
 
-                case BufferMode.Dynamic:
+                case BufferMode.DynamicDiscard:
+                case BufferMode.DynamicRing:
                     Description.Usage = ResourceUsage.Dynamic;
                     Description.CpuAccessFlags = CpuAccessFlags.Write;
                     break;
@@ -230,25 +231,43 @@ namespace Molten.Graphics
             // Check if the buffer is a dynamic-writable
             if (isDynamic || isStaged)
             {
-                // Write updated data into buffer
-                if (isDynamic)
+                switch (_mode)
                 {
-                    // NOTE: D3D11_MAP_WRITE_NO_OVERWRITE is only valid on vertex and index buffers. 
-                    // See: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476181(v=vs.85).aspx
-                    if (_firstDiscardDone && (HasFlags(BindFlags.VertexBuffer) || HasFlags(BindFlags.IndexBuffer)))
-                    {
-                        pipe.Context.MapSubresource(_buffer, MapMode.WriteNoOverwrite, MapFlags.None, out mappedData);
-                    }
-                    else
-                    {
-                        _firstDiscardDone = true;
+                    case BufferMode.DynamicDiscard:
                         pipe.Context.MapSubresource(_buffer, MapMode.WriteDiscard, MapFlags.None, out mappedData);
-                    }
-                }
-                else
-                    pipe.Context.MapSubresource(_buffer, MapMode.Write, MapFlags.None, out mappedData);
+                        mappedData.Position = byteOffset;
+                        break;
 
-                mappedData.Position = byteOffset;
+                    case BufferMode.DynamicRing:
+                        // NOTE: D3D11_MAP_WRITE_NO_OVERWRITE is only valid on vertex and index buffers. 
+                        // See: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476181(v=vs.85).aspx
+                        if (HasFlags(BindFlags.VertexBuffer) || HasFlags(BindFlags.IndexBuffer))
+                        {
+                            if (_ringPos > 0 && _ringPos + dataSize < _byteCapacity)
+                            {
+                                pipe.Context.MapSubresource(_buffer, MapMode.WriteNoOverwrite, MapFlags.None, out mappedData);
+                                mappedData.Position = _ringPos;
+                                _ringPos += dataSize;
+                            }
+                            else
+                            {                                
+                                pipe.Context.MapSubresource(_buffer, MapMode.WriteDiscard, MapFlags.None, out mappedData);
+                                mappedData.Position = 0;
+                                _ringPos = dataSize;
+                            }
+                        }
+                        else
+                        {
+                            pipe.Context.MapSubresource(_buffer, MapMode.WriteDiscard, MapFlags.None, out mappedData);
+                            mappedData.Position = byteOffset;
+                        }
+                        break;
+
+                    default:
+                        pipe.Context.MapSubresource(_buffer, MapMode.Write, MapFlags.None, out mappedData);
+                        break;
+                }     
+                
                 callback(this, mappedData);
                 pipe.Context.UnmapSubresource(_buffer, 0);
             }
@@ -364,7 +383,6 @@ namespace Molten.Graphics
         internal override void Refresh(GraphicsPipe pipe, PipelineBindSlot slot)
         {
             ApplyChanges(pipe);
-            _firstDiscardDone = false;
         }
 
         protected override void OnDispose()
