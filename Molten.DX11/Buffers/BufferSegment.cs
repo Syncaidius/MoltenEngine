@@ -168,7 +168,13 @@ namespace Molten.Graphics
         {
             Parent.Map(pipe, ByteOffset, Stride * ElementCount, (buffer, stream) =>
             {
-                ByteOffset = (int)stream.Position;
+                if (Parent.Mode == BufferMode.DynamicRing)
+                {
+                    ByteOffset = (int)stream.Position;
+                    if (Parent.HasFlags(BindFlags.VertexBuffer))
+                        VertexBinding = new VertexBufferBinding(Buffer, Stride, ByteOffset);
+                }
+
                 callback(buffer, stream);
             }, staging); 
         }

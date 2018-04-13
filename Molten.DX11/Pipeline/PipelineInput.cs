@@ -20,6 +20,7 @@ namespace Molten.Graphics
         PipelineBindSlot<BufferSegment> _slotIndexBuffer;
 
         BufferSegment[] _vertexSegments;
+        VertexBufferBinding[] _vertexBindings;
         BufferSegment _indexSegment;
         VertexInputLayout _vertexLayout;
         MaterialPass _pass;
@@ -36,6 +37,7 @@ namespace Molten.Graphics
             int vSlots = Device.Features.MaxVertexBufferSlots;
             _slotVertexBuffers = new PipelineBindSlot<BufferSegment>[vSlots];
             _vertexSegments = new BufferSegment[vSlots];
+            _vertexBindings = new VertexBufferBinding[vSlots];
 
             for (int i = 0; i < vSlots; i++)
             {
@@ -64,28 +66,33 @@ namespace Molten.Graphics
             _materialStage.Refresh();
 
             // Update vertex buffers
-            bool hasVBChanged = false;
+            bool anyVbChanged = false;
             BufferSegment vb = null;
             for (int i = 0; i < _vertexSlotCount; i++)
             {
                 vb = _vertexSegments[i];
-
-                bool vbChanged = false;
-
-                if (vb == null)
-                    vbChanged = _slotVertexBuffers[i].Bind(Pipe, null);
-                else
-                    vbChanged = _slotVertexBuffers[i].Bind(Pipe, vb);
+                bool vbChanged = _slotVertexBuffers[i].Bind(Pipe, vb);
 
                 // Check for change
                 if (vbChanged)
                 {
-                    hasVBChanged = true;
+                    anyVbChanged = true;
 
                     if (vb == null)
+                    {
+                        _vertexBindings[i] = _nullVertexBuffer;
                         Pipe.Context.InputAssembler.SetVertexBuffers(i, _nullVertexBuffer);
+                    }
                     else
+                    {
+                        _vertexBindings[i] = vb.VertexBinding;
                         Pipe.Context.InputAssembler.SetVertexBuffers(i, vb.VertexBinding);
+                    }
+                }
+                else if(vb != null && _vertexBindings[i].Offset != vb.VertexBinding.Offset)
+                {
+                    _vertexBindings[i] = vb.VertexBinding;
+                    Pipe.Context.InputAssembler.SetVertexBuffers(i, vb.VertexBinding);
                 }
             }
 
@@ -102,7 +109,7 @@ namespace Molten.Graphics
             }
 
             // Check if a change of layout is required
-            if (hasVBChanged || _materialStage.HasMaterialChanged)
+            if (anyVbChanged || _materialStage.HasMaterialChanged)
             {
                 _vertexLayout = GetInputLayout();
                 Pipe.Context.InputAssembler.InputLayout = _vertexLayout.Layout;

@@ -16,7 +16,7 @@ namespace Molten.Samples
         List<SceneObject> _objects;
         IMesh<VertexColor> _mesh;
 
-        public SceneStressTest(EngineSettings settings = null) : base("Scene Stress", settings) { }
+        public SceneStressTest(EngineSettings settings = null) : base("Scene Stress - un-indexed, un-instanced", settings) { }
 
         protected override void OnInitialize(Engine engine)
         {

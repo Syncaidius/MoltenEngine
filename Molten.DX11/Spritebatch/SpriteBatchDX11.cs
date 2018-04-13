@@ -31,8 +31,8 @@ namespace Molten.Graphics
         IShaderValue _valLineWvp;
         IShaderValue _valCircleWvp;
         IShaderValue _valTriWvp;
-        Matrix4F _viewProjection;
 
+        Matrix4F _viewProjection;
         Action<GraphicsPipe, SpriteCluster>[] _clusterFlushes;
 
         internal SpriteBatchDX11(RendererDX11 renderer, int spriteBufferSize = 2000)

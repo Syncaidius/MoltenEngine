@@ -165,25 +165,6 @@ namespace Molten.Graphics
             }
         }
 
-        protected void CreateSegmentUav(BufferSegment segment)
-        {
-            // Create a new unordered-access view
-            if ((Description.BindFlags & BindFlags.UnorderedAccess) == BindFlags.UnorderedAccess)
-            {
-                segment.UAV = new UnorderedAccessView(_device.D3d, segment.Buffer, new UnorderedAccessViewDescription()
-                {
-                    Format = SharpDX.DXGI.Format.Unknown,
-                    Dimension = UnorderedAccessViewDimension.Buffer,
-                    Buffer = new UnorderedAccessViewDescription.BufferResource()
-                    {
-                        ElementCount = segment.ElementCount,
-                        FirstElement = _structuredStride,
-                        Flags = UnorderedAccessViewBufferFlags.None,
-                    }
-                });
-            }
-        }
-
         /// <summary>Copies all the data in the current <see cref="GraphicsBuffer"/> to the destination <see cref="GraphicsBuffer"/>.</summary>
         /// <param name="pipe">The <see cref="GraphicsPipe"/> that will perform the copy.</param>
         /// <param name="destination">The <see cref="GraphicsBuffer"/> to copy to.</param>
@@ -430,6 +411,9 @@ namespace Molten.Graphics
 
         private void CreateResources(BufferSegment segment)
         {
+            segment.SRV?.Dispose();
+            segment.UAV?.Dispose();
+
             if (HasFlags(BindFlags.VertexBuffer))
                 segment.VertexBinding = new VertexBufferBinding(segment.Buffer, segment.Stride, segment.ByteOffset);
 
@@ -456,7 +440,7 @@ namespace Molten.Graphics
                     Buffer = new UnorderedAccessViewDescription.BufferResource()
                     {
                         ElementCount = segment.ElementCount,
-                        FirstElement = segment.ByteOffset / segment.Parent.StructuredStride,
+                        FirstElement = _structuredStride,
                         Flags = UnorderedAccessViewBufferFlags.None,
                     }
                 });
@@ -486,9 +470,7 @@ where T : struct
                         BufferSegment newSeg = seg.SplitFromFront(byteCount);
                         newSeg.ElementCount = count;
                         newSeg.Stride = stride;
-
-                        CreateSegmentUav(newSeg);
-                        SegmentAllocated(newSeg, allocatedType);
+                        CreateResources(newSeg);
                         return newSeg;
                     }
                     else if (seg.ElementCount == byteCount) // Perfect. Use it without any resizing.
@@ -498,9 +480,7 @@ where T : struct
                         seg.Stride = stride;
 
                         _freeSegments.Remove(seg);
-
-                        CreateSegmentUav(seg);
-                        SegmentAllocated(seg, allocatedType);
+                        CreateResources(seg);
                         return seg;
                     }
                 }
@@ -626,17 +606,6 @@ where T : struct
             }
         }
 
-        private void SegmentAllocated(BufferSegment segment, Type allocatedType)
-        {
-            CreateResources(segment);
-            OnSegmentAllocated(segment, allocatedType);
-        }
-
-        private void SegmentDeallocated(BufferSegment segment)
-        {
-            OnSegmentDeallocated(segment);
-        }
-
         private void SegmentResized(BufferSegment segment, int oldByteCount, int newByteCount, int oldElementCount, int newElementCount)
         {
             segment.UAV?.Dispose();
@@ -644,12 +613,6 @@ where T : struct
             CreateResources(segment);
             OnSegmentResized(segment, oldByteCount, newByteCount, oldElementCount, newElementCount);
         }
-
-
-
-        protected virtual void OnSegmentAllocated(BufferSegment segment, Type allocatedType) { }
-
-        protected virtual void OnSegmentDeallocated(BufferSegment segment) { }
 
         protected virtual void OnSegmentResized(BufferSegment segment, int oldByteCount, int newByteCount, int oldElementCount, int newElementCount) { }
 
