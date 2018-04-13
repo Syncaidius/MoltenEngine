@@ -137,7 +137,7 @@ namespace Molten.Graphics
             }
 
             OnSetShader?.Invoke(shader, composition, _stage);
-            _pipe.Profiler.ShaderSwaps++;
+            _pipe.Profiler.CurrentFrame.ShaderSwaps++;
         }
 
         /// <summary>Gets the underlying DX11 <see cref="CommonShaderStage"/> instance.</summary>

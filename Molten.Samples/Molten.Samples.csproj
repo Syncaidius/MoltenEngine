@@ -211,10 +211,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Molten.DX.Common\Molten.DX.Common.csproj">
-      <Project>{23ffc330-bc09-443d-9e30-4148a69ad199}</Project>
-      <Name>Molten.DX.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Molten.DX11\Molten.DX11.csproj">
       <Project>{8800afbc-8be4-4145-803e-ef8c1026a17b}</Project>
       <Name>Molten.DX11</Name>

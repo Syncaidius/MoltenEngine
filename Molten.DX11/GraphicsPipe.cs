@@ -194,7 +194,7 @@ namespace Molten.Graphics
                 if (_drawResult == GraphicsValidationResult.Successful)
                 {
                     _context.Draw(vertexCount, vertexStartIndex);
-                    Profiler.DrawCalls++;
+                    Profiler.CurrentFrame.DrawCalls++;
                 }
             }
         }
@@ -214,7 +214,7 @@ namespace Molten.Graphics
                 if (_drawResult == GraphicsValidationResult.Successful)
                 {
                     _context.DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
-                    Profiler.DrawCalls++;
+                    Profiler.CurrentFrame.DrawCalls++;
                 }
             }
         }
@@ -236,7 +236,7 @@ namespace Molten.Graphics
                 if (_drawResult == GraphicsValidationResult.Successful)
                 {
                     _context.DrawIndexed(indexCount, startIndex, vertexIndexOffset);
-                    Profiler.DrawCalls++;
+                    Profiler.CurrentFrame.DrawCalls++;
                 }
             }
         }
@@ -256,7 +256,7 @@ namespace Molten.Graphics
                 if (_drawResult == GraphicsValidationResult.Successful)
                 {
                     _context.DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex);
-                    Profiler.DrawCalls++;
+                    Profiler.CurrentFrame.DrawCalls++;
                 }
             }
         }

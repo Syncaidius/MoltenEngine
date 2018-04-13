@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Render", "Molten.Ren
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Math", "Molten.Math\Molten.Math.csproj", "{E59938AF-A9D4-4963-B4AC-61E53D05527E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.DX.Common", "Molten.DX.Common\Molten.DX.Common.csproj", "{23FFC330-BC09-443D-9E30-4148A69AD199}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Utility", "Molten.Utility\Molten.Utility.csproj", "{1E4854B0-D1A8-40AE-9038-1DEA304574A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.DX11", "Molten.DX11\Molten.DX11.csproj", "{8800AFBC-8BE4-4145-803E-EF8C1026A17B}"
@@ -34,7 +32,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Input.Windows", "Mol
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.IO", "Molten.IO\Molten.IO.csproj", "{8DF4C894-B793-495E-BC14-53306F8B2972}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Molten.DX.Shared", "Molten.DX.Shared\Molten.DX.Shared.shproj", "{C091D168-7BAF-4542-92F1-63472FF326A4}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Molten.DX.Shared\Molten.DX.Shared.projitems*{8800afbc-8be4-4145-803e-ef8c1026a17b}*SharedItemsImports = 4
+		Molten.DX.Shared\Molten.DX.Shared.projitems*{c091d168-7baf-4542-92f1-63472ff326a4}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
@@ -74,14 +78,6 @@ Global
 		{E59938AF-A9D4-4963-B4AC-61E53D05527E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E59938AF-A9D4-4963-B4AC-61E53D05527E}.Release|x64.ActiveCfg = Release|x64
 		{E59938AF-A9D4-4963-B4AC-61E53D05527E}.Release|x64.Build.0 = Release|x64
-		{23FFC330-BC09-443D-9E30-4148A69AD199}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{23FFC330-BC09-443D-9E30-4148A69AD199}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{23FFC330-BC09-443D-9E30-4148A69AD199}.Debug|x64.ActiveCfg = Debug|x64
-		{23FFC330-BC09-443D-9E30-4148A69AD199}.Debug|x64.Build.0 = Debug|x64
-		{23FFC330-BC09-443D-9E30-4148A69AD199}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{23FFC330-BC09-443D-9E30-4148A69AD199}.Release|Any CPU.Build.0 = Release|Any CPU
-		{23FFC330-BC09-443D-9E30-4148A69AD199}.Release|x64.ActiveCfg = Release|x64
-		{23FFC330-BC09-443D-9E30-4148A69AD199}.Release|x64.Build.0 = Release|x64
 		{1E4854B0-D1A8-40AE-9038-1DEA304574A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1E4854B0-D1A8-40AE-9038-1DEA304574A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E4854B0-D1A8-40AE-9038-1DEA304574A5}.Debug|x64.ActiveCfg = Debug|x64

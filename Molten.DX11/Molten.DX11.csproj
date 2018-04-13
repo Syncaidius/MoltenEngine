@@ -249,10 +249,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Molten.DX.Common\Molten.DX.Common.csproj">
-      <Project>{23ffc330-bc09-443d-9e30-4148a69ad199}</Project>
-      <Name>Molten.DX.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
       <Project>{8df4c894-b793-495e-bc14-53306f8b2972}</Project>
       <Name>Molten.IO</Name>
@@ -275,5 +271,6 @@
     <EmbeddedResource Include="Assets\light_point.sbm" />
   </ItemGroup>
   <ItemGroup />
+  <Import Project="..\Molten.DX.Shared\Molten.DX.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -12,13 +12,14 @@ namespace Molten.Graphics
     {
         RenderFrameSnapshot[] _frameSnaps;
         RenderFrameSnapshot[] _secondSnaps;
-        int _curShot;
-        int _prevShot;
+        int _nextSlot;
+        int _prevSlot;
 
         int _curSecondShot;
         int _prevSecondShot;
         double _timing;
         Stopwatch _frameTimer;
+        public RenderFrameSnapshot CurrentFrame;
 
         /// <summary>
         /// 
@@ -35,8 +36,8 @@ namespace Molten.Graphics
         {
             Array.Clear(_frameSnaps, 0, _frameSnaps.Length);
             Array.Clear(_secondSnaps, 0, _secondSnaps.Length);
-            _curShot = 0;
-            _prevShot = 0;
+            _nextSlot = 0;
+            _prevSlot = 0;
             _curSecondShot = 0;
             _prevSecondShot = 0;
             _timing = 0;
@@ -45,7 +46,7 @@ namespace Molten.Graphics
         /// <summary>Adds a frame snapshot to the data for the current frame. Useful for collating snapshots from multiple device contexts into one snapshot.</summary>
         public void AddData(RenderFrameSnapshot snap)
         {
-            _frameSnaps[_curShot].Add(snap);
+            CurrentFrame.Add(snap);
         }
 
         public void StartCapture()
@@ -58,10 +59,11 @@ namespace Molten.Graphics
             _frameTimer.Stop();
 
             // Accumulate into per-second. Reset for next frame.
-            _frameSnaps[_curShot].Time = _frameTimer.Elapsed.TotalMilliseconds;
-            _frameSnaps[_curShot].TargetTime = time.TargetFrameTime;
-            _frameSnaps[_curShot].FrameID = FrameCount;
-            _secondSnaps[_curSecondShot].Add(_frameSnaps[_curShot]);
+            CurrentFrame.Time = _frameTimer.Elapsed.TotalMilliseconds;
+            CurrentFrame.TargetTime = time.TargetFrameTime;
+            CurrentFrame.FrameID = FrameCount;
+            _frameSnaps[_nextSlot] = CurrentFrame;
+            _secondSnaps[_curSecondShot].Add(CurrentFrame);
 
             // Handle per-second timing updates.
             _timing += time.ElapsedTime.TotalMilliseconds;
@@ -77,22 +79,22 @@ namespace Molten.Graphics
                 _secondSnaps[_curSecondShot] = new RenderFrameSnapshot();
             }
 
-            _prevShot = _curShot++;
-            if (_curShot == _frameSnaps.Length)
-                _curShot = 0;
+            _prevSlot = _nextSlot++;
+            if (_nextSlot == _frameSnaps.Length)
+                _nextSlot = 0;
 
-            _frameSnaps[_curShot] = new RenderFrameSnapshot();
+            CurrentFrame = new RenderFrameSnapshot();
             FrameCount++;
         }
 
         public RenderFrameSnapshot PreviousFrame
         {
-            get { return _frameSnaps[_prevShot]; }
+            get { return _frameSnaps[_prevSlot]; }
         }
 
-        public RenderFrameSnapshot CurrentFrame
+        RenderFrameSnapshot IRenderProfiler.CurrentFrame
         {
-            get { return _frameSnaps[_curShot]; }
+            get { return CurrentFrame; }
         }
 
         public RenderFrameSnapshot PreviousSecond
@@ -103,47 +105,6 @@ namespace Molten.Graphics
         public RenderFrameSnapshot CurrentSecond
         {
             get { return _secondSnaps[_curSecondShot]; }
-        }
-
-        /// <summary>Gets or sets the number of draw calls for the current frame.</summary>
-        public int DrawCalls
-        {
-            get { return _frameSnaps[_curShot].DrawCalls; }
-            set { _frameSnaps[_curShot].DrawCalls = value; }
-        }
-
-        /// <summary>Gets or sets the number of times a resource was bound to the device.</summary>
-        public int Bindings
-        {
-            get { return _frameSnaps[_curShot].Bindings; }
-            set { _frameSnaps[_curShot].Bindings = value; }
-        }
-
-        /// <summary>Gets or sets the number of render target swaps for the current frame.</summary>
-        public int RTSwaps
-        {
-            get { return _frameSnaps[_curShot].RTSwaps; }
-            set { _frameSnaps[_curShot].RTSwaps = value; }
-        }
-
-        /// <summary>Gets or sets the triangle count for the current frame.</summary>
-        public int TriangleCount
-        {
-            get { return _frameSnaps[_curShot].TriCount; }
-            set { _frameSnaps[_curShot].TriCount = value; }
-        }
-
-        /// <summary>Gets or sets the number of buffer swaps during the current frame.</summary>
-        public int BufferSwaps
-        {
-            get { return _frameSnaps[_curShot].BufferSwaps; }
-            set { _frameSnaps[_curShot].BufferSwaps = value; }
-        }
-
-        public int ShaderSwaps
-        {
-            get { return _frameSnaps[_curShot].ShaderSwaps; }
-            set { _frameSnaps[_curShot].ShaderSwaps = value; }
         }
 
         /// <summary>Gets the number of draw calls for the current second.</summary>

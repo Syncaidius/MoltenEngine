@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public enum RenderSurfaceResetMode
+    internal enum RenderSurfaceResetMode
     {
         OutputSurface = 0,
 
