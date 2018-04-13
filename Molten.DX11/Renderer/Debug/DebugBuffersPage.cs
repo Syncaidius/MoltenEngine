@@ -29,9 +29,6 @@ namespace Molten.Graphics
             dest.Y += 22; DrawBar("Static Vertex", font, sb, renderer.StaticVertexBuffer, dest);
             dest.Y += height + 2; DrawBar("Dynamic Vertex", font, sb, renderer.DynamicVertexBuffer, dest);
 
-            dest.Y += height + 5; DrawBar("Static Index", font, sb, renderer.StaticIndexBuffer, dest);
-            dest.Y += height + 5; DrawBar("Dynamic Index", font, sb, renderer.DynamicIndexBuffer, dest);
-
             if (scene.HasFlag(SceneRenderFlags.Deferred))
             {
                 _gBuffer = _gBuffer ?? renderer.GetRenderStep<StartStep>();

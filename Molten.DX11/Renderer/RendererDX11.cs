@@ -37,9 +37,7 @@ namespace Molten.Graphics
         internal SpriteBatchDX11 SpriteBatcher;
         internal List<SceneRenderDataDX11> Scenes;
         internal GraphicsBuffer StaticVertexBuffer;
-        internal GraphicsBuffer StaticIndexBuffer;
         internal GraphicsBuffer DynamicVertexBuffer;
-        internal GraphicsBuffer DynamicIndexBuffer;
         internal StagingBuffer StagingBuffer;
 
         internal Material StandardMeshMaterial;
@@ -83,33 +81,12 @@ namespace Molten.Graphics
             _clearedSurfaces = new HashSet<TextureAsset2D>();
             Scenes = new List<SceneRenderDataDX11>();
 
-            int maxVertexBytesStatic = 1024 * 512;
-            int maxIndexBytesStatic = 1024 * 300;
-            StaticVertexBuffer = new GraphicsBuffer(_device, BufferMode.Default, BindFlags.VertexBuffer, maxVertexBytesStatic);
-            StaticIndexBuffer = new GraphicsBuffer(_device, BufferMode.Default, BindFlags.IndexBuffer, maxIndexBytesStatic);
+            int maxBufferSize = (int)ByteMath.FromMegabytes(3.5);
+            StaticVertexBuffer = new GraphicsBuffer(_device, BufferMode.Default, BindFlags.VertexBuffer | BindFlags.IndexBuffer, maxBufferSize);
+            DynamicVertexBuffer = new GraphicsBuffer(_device, BufferMode.DynamicRing, BindFlags.VertexBuffer | BindFlags.IndexBuffer, maxBufferSize);
 
-            int maxVertexBytesDynamic = (int)ByteMath.FromMegabytes(3.5);
-            int maxIndexBytesDynamic = (int)ByteMath.FromMegabytes(3.5);
-            DynamicVertexBuffer = new GraphicsBuffer(_device, BufferMode.DynamicRing, BindFlags.VertexBuffer, maxVertexBytesDynamic);
-            DynamicIndexBuffer = new GraphicsBuffer(_device, BufferMode.DynamicRing, BindFlags.IndexBuffer, maxIndexBytesDynamic);
-
-            StagingBuffer = new StagingBuffer(_device, StagingBufferFlags.Write, maxVertexBytesStatic / 4);
+            StagingBuffer = new StagingBuffer(_device, StagingBufferFlags.Write, maxBufferSize);
             SpriteBatcher = new SpriteBatchDX11(this, 3000);
-             
-            /* TODO: 
-             *  - Add normal map support to GBUFFER
-             *  - Add standard texture properties to IMesh (Albedo, normal, specular, emissive, PBR, etc)
-             *  - Stages:
-             *      -- GBUFFER - WIP
-             *      -- lighting
-             *      -- emssive
-             *      -- HDR/Bloom
-             *      -- Tone mapping
-             *      -- Output/finalize (render 2D here)
-             *      
-             *  
-             *  - iterate over _stepList for every active scene. 
-             */
 
             LoadDefaultShaders();
         }
@@ -353,10 +330,7 @@ namespace Molten.Graphics
             SpriteBatcher.Dispose();
 
             StaticVertexBuffer.Dispose();
-            StaticIndexBuffer.Dispose();
-
             DynamicVertexBuffer.Dispose();
-            DynamicIndexBuffer.Dispose();
         }
 
         /// <summary>
