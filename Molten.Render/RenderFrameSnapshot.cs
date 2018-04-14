@@ -35,6 +35,18 @@ namespace Molten.Graphics
         /// </summary>
         public ulong AllocatedVRAM;
 
+        public int MapDiscardCount;
+
+        public int MapNoOverwriteCount;
+
+        public int MapWriteCount;
+
+        public int MapReadCount;
+
+        public int UpdateSubresourceCount;
+
+        public int CopySubresourceCount;
+
         public void Add(RenderFrameSnapshot other)
         {
             DrawCalls += other.DrawCalls;
@@ -44,6 +56,12 @@ namespace Molten.Graphics
             BufferSwaps += other.BufferSwaps;
             ShaderSwaps += other.ShaderSwaps;
             Time += other.Time;
+            MapDiscardCount += other.MapDiscardCount;
+            MapNoOverwriteCount += other.MapNoOverwriteCount;
+            MapWriteCount += other.MapWriteCount;
+            MapReadCount += other.MapReadCount;
+            UpdateSubresourceCount += other.UpdateSubresourceCount;
+            CopySubresourceCount += other.CopySubresourceCount;
         }
     }
 }

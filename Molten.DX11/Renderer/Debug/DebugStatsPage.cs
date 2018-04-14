@@ -26,7 +26,13 @@ namespace Molten.Graphics
             pos.Y += 20; batch.DrawString(font, $"Bindings: {frame.Bindings}", pos, Color.Yellow);
 
             RenderProfilerDX profiler = renderer.Device.Profiler;
-            pos.Y += 20; batch.DrawString(font, $" Swaps -- Buffer: {frame.BufferSwaps} -- Shader: {frame.ShaderSwaps} -- RT: {frame.RTSwaps}", pos, Color.Yellow);
+            pos.Y += 20; batch.DrawString(font, $"Swaps -- Buffer: {frame.BufferSwaps} -- Shader: {frame.ShaderSwaps} -- RT: {frame.RTSwaps}", pos, Color.Yellow);
+            pos.Y += 20; batch.DrawString(font, $"Maps: ", pos, Color.Yellow);
+            pos.Y += 20; batch.DrawString(font, $"   Discard: {frame.MapDiscardCount}", pos, Color.Yellow);
+            pos.Y += 20; batch.DrawString(font, $"   No-overwrite: {frame.MapNoOverwriteCount}", pos, Color.Yellow);
+            pos.Y += 20; batch.DrawString(font, $"   Write: {frame.MapWriteCount}", pos, Color.Yellow);
+            pos.Y += 20; batch.DrawString(font, $"   Update Subresource: {frame.UpdateSubresourceCount}", pos, Color.Yellow);
+            pos.Y += 20; batch.DrawString(font, $"   Copy Subresource: {frame.CopySubresourceCount}", pos, Color.Yellow);
         }
     }
 }

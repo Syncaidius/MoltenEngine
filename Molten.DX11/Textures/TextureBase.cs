@@ -577,8 +577,11 @@ namespace Molten.Graphics
             int subWidth = _width >> level;
             int subHeight = _height >> level;
 
-            if(copySubresource)
+            if (copySubresource)
+            {
                 pipe.Context.CopySubresourceRegion(_resource, subID, null, stagingTexture._resource, subID);
+                pipe.Profiler.CurrentFrame.CopySubresourceCount++;
+            }
 
             // Now pull data from it
             DataStream mappedData;
@@ -655,6 +658,7 @@ namespace Molten.Graphics
                 {
                     DataStream stream = null;
                     DataBox destBox = pipe.Context.MapSubresource(_resource, subLevel, MapMode.WriteDiscard, SharpDX.Direct3D11.MapFlags.None, out stream);
+                    pipe.Profiler.CurrentFrame.MapDiscardCount++;
 
                     // Are we constrained to an area of the texture?
                     if (area != null)
@@ -696,6 +700,7 @@ namespace Molten.Graphics
                             throw new NotImplementedException("Area-based SetData on block-compressed texture is currently unsupported. Sorry!");
 
                         pipe.Context.UpdateSubresource(box, _resource, subLevel);
+                        pipe.Profiler.CurrentFrame.UpdateSubresourceCount++;
                     }
                     else
                     {
@@ -792,6 +797,7 @@ namespace Molten.Graphics
             destination.ApplyChanges(pipe);
 
             pipe.Context.CopySubresourceRegion(_resource, srcSub, null, destination._resource, destSub);
+            pipe.Profiler.CurrentFrame.CopySubresourceCount++;
         }
 
         /// <summary>Returns the data contained within a texture via a staging texture or directly from the texture itself if possible.</summary>

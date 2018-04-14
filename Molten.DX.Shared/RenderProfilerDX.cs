@@ -19,7 +19,7 @@ namespace Molten.Graphics
         int _prevSecondShot;
         double _timing;
         Stopwatch _frameTimer;
-        public RenderFrameSnapshot CurrentFrame;
+        internal RenderFrameSnapshot CurrentFrame;
 
         /// <summary>
         /// 
