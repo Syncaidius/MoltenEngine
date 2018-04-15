@@ -1,4 +1,6 @@
-﻿using SharpDX.DXGI;
+﻿using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
+using SharpDX.DXGI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,10 +14,47 @@ namespace Molten.Graphics
     {
         internal RenderSurface Lighting;
         Material _matPoint;
+        StartStep _startStep;
+        GraphicsRasterizerState _lightRasterState;
+        GraphicsDepthState _lightDepthState;
+        BufferSegment _lightSegment;
 
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
-            UpdateSurfaces(renderer, width, height);
+            _startStep = renderer.GetRenderStep<StartStep>();
+            _lightRasterState = new GraphicsRasterizerState()
+            {
+                FillMode = FillMode.Solid,
+                CullMode = CullMode.Front,
+                IsFrontCounterClockwise = false,
+                IsDepthClipEnabled = false,
+                IsAntialiasedLineEnabled = false,
+                IsMultisampleEnabled = false,
+                IsScissorEnabled = false,
+            };
+
+            _lightDepthState = new GraphicsDepthState()
+            {
+                DepthComparison = Comparison.GreaterEqual,
+                DepthWriteMask = DepthWriteMask.Zero,
+                IsDepthEnabled = true,
+                IsStencilEnabled = true,
+            };
+
+            // Light less
+            DepthStencilOperationDescription noSkyStencilOp = new DepthStencilOperationDescription()
+            {
+                Comparison = Comparison.Equal,
+                DepthFailOperation = StencilOperation.Keep,
+                FailOperation = StencilOperation.Keep,
+                PassOperation = StencilOperation.Keep,
+            };
+
+            _lightDepthState.SetFrontFace(noSkyStencilOp);
+            _lightDepthState.SetBackFace(noSkyStencilOp);
+
+            Lighting = new RenderSurface(renderer.Device, width, height, Format.R16G16B16A16_Float);
+            _lightSegment = renderer.DynamicVertexBuffer.Allocate<LightData>(20000);
             LoadShaders(renderer);
         }
 
@@ -46,17 +85,67 @@ namespace Molten.Graphics
 
         internal override void UpdateSurfaces(RendererDX11 renderer, int width, int height)
         {
-            Lighting = new RenderSurface(renderer.Device, width, height, Format.R16G16B16A16_Float);
+            Lighting.Resize(width, height);
         }
 
         public override void Dispose()
         {
             Lighting.Dispose();
+            _lightRasterState.Dispose();
+            _lightDepthState.Dispose();
         }
 
         internal override void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time, RenderChain.Link link)
         {
+            GraphicsDevice device = renderer.Device;
+
             Lighting.Clear(renderer.Device, scene.AmbientLightColor);
+            device.ResetRenderSurfaces(RenderSurfaceResetMode.NullSurface);
+            device.SetRenderSurface(Lighting, 0);
+
+            device.PushState();
+            device.SetDepthSurface(_startStep.Depth, GraphicsDepthMode.ReadOnly);
+            device.BlendState.SetPreset(BlendingPreset.Additive);
+            device.Rasterizer.Current = _lightRasterState;
+            device.DepthStencil.Current = _lightDepthState;
+            device.DepthStencil.StencilReference = 0;
+
+            RenderPointLights(device, scene);
+
+            renderer.Device.PopState();
+        }
+
+        private void RenderPointLights(GraphicsPipe pipe, SceneRenderDataDX11 scene)
+        {
+            //_lightSegment.SetData(pipe, scene.PointLights.Data);
+
+            //// Set data buffer on domain and pixel shaders
+            //_matPoint["LightData"].Value = _lightSegment; // TODO Need to implement a dynamic structured buffer we can reuse here.
+            //_matPoint["mapDiffuse"].Value = _startStep.Scene;
+            //_matPoint["mapNormal"].Value = _startStep.Normals;
+            ////_matPoint["mapSpecular"].Value = _startStep.Specular;
+            //_matPoint["mapDepth"].Value = _startStep.Depth;
+            ////_matPoint["mapAOcclusion"].Value = _manager.AmbientOcclusion.Texture;
+
+            //_matPoint["InvertViewProjection"].Value = scene.InvViewProjection;
+            //_matPoint["cameraPosition"].Value = scene.Camera.View.Translation;
+
+            ////set correct buffers and shaders
+            //pipe.SetVertexSegment(null, 0);
+            //pipe.SetIndexSegment(null);
+            //int pointCount = scene.PointLights.Data.Length * 2;
+
+            //pipe.Draw(_matPoint, pointCount, PrimitiveTopology.PatchListWith1ControlPoints, 0);
+
+            ////// Draw debug light volumes
+            ////if (_manager.ShowLightVolumes)
+            ////{
+            ////    pipe.Rasterizer.Current = _renderer.RasterStates.LightDebugRaster;
+            ////    pipe.PixelShader = _manager.DebugPixelEffect;
+            ////    pipe.DepthStencil.SetPreset(DepthStencilPreset.DefaultNoStencil);
+
+            ////    pipe.Draw(pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
+            ////}
         }
     }
 }

@@ -128,5 +128,7 @@ namespace Molten
             get => _fov;
             set => _fov = value;
         }
+
+        public Vector3F Position => Object.Transform.GlobalPosition;
     }
 }

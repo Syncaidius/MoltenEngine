@@ -45,5 +45,10 @@ namespace Molten.Graphics
         /// Gets or sets the camera's field-of-view (FoV).
         /// </summary>
         float FieldOfView { get; set; }
+
+        /// <summary>
+        /// Gets the position of the camera, based on it's current view.
+        /// </summary>
+        Vector3F Position { get; }
     }
 }

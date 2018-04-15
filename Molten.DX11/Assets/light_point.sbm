@@ -109,7 +109,7 @@ float3 CalcLight(MATERIAL g, uint lightID)
 	float DistToLight = length(ToLight);
 
 	ToLight /= DistToLight;
-	float3 finalColor = pbr_cook_torrance(g.normal, ToEye, ToLight, LightData[lightID].Color, g.colorData, g.specular);
+	float3 finalColor = pbr_cook_torrance(g.normal, ToEye, ToLight, LightData[lightID].Color, g.colorData, float3(1,1,1)); // TODO: Replace specular value with g.specular
 
 	// Attenuation
 	float DistToLightNorm = 1.0 - saturate(DistToLight * LightData[lightID].RangeRcp);

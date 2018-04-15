@@ -19,6 +19,7 @@ namespace Molten.Graphics
         internal Matrix4F View = Matrix4F.Identity;
         internal Matrix4F Projection;
         internal Matrix4F ViewProjection;
+        internal Matrix4F InvViewProjection;
         internal RenderSurfaceBase FinalSurface;
         internal RenderProfilerDX Profiler;
         internal bool Skip;

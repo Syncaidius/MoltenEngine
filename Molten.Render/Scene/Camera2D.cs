@@ -16,6 +16,7 @@ namespace Molten.Graphics
         protected IRenderSurface _surface;
         protected float _nearClip = 0.1f;
         protected float _farClip = 1000f;
+        protected Vector3F _position;
 
         public Camera2D()
         {
@@ -104,5 +105,7 @@ namespace Molten.Graphics
             get => 0;
             set { }
         }
+
+        public Vector3F Position => _position;
     }
 }

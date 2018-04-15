@@ -22,6 +22,14 @@ namespace Molten.Graphics
         {
             Data = new LightData[initialCapacity];
             _free = new int[10];
+            _resizeIncrement = resizeIncrement;
+            _itemCount = 0;
+        }
+
+        public void EnsureCapacity(int capacity)
+        {
+            if (capacity >= Data.Length)
+                Array.Resize(ref Data, capacity);
         }
 
         public int Add(LightData data)
@@ -39,6 +47,7 @@ namespace Molten.Graphics
             }
 
             Data[id] = data;
+            _itemCount++;
             return id;
         }
 
@@ -50,6 +59,13 @@ namespace Molten.Graphics
                 Array.Resize(ref _free, _free.Length * 2);
 
             _free[_freeCount++] = id;
+            _itemCount--;
         }
+
+        public int ItemCount => _itemCount;
+
+        public int ElementCount => _elementCount;
+
+        public int ResizeIncrement => _resizeIncrement;
     }
 }
