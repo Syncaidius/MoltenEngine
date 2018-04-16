@@ -58,7 +58,11 @@ namespace Molten.Graphics
             if (_freeCount == _free.Length)
                 Array.Resize(ref _free, _free.Length * 2);
 
-            _free[_freeCount++] = id;
+            if (id == _elementCount - 1)
+                _elementCount--;
+            else
+                _free[_freeCount++] = id;
+
             _itemCount--;
         }
 

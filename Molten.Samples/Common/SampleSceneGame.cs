@@ -77,10 +77,9 @@ namespace Molten.Samples
 
         protected SceneObject SpawnTestCube(IMesh mesh, Vector3F pos)
         {
-            SceneObject obj = CreateObject(pos);
+            SceneObject obj = CreateObject(pos, _scene);
             MeshComponent meshCom = obj.AddComponent<MeshComponent>();
             meshCom.Mesh = mesh;
-            _scene.AddObject(obj);
             return obj;
         }
 

@@ -138,12 +138,12 @@ namespace Molten.Graphics
             //_matPoint["mapAOcclusion"].Value = _manager.AmbientOcclusion.Texture;
 
             _matPoint["invViewProjection"].Value = scene.InvViewProjection;
-            _matPoint["cameraPosition"].Value = scene.Camera.View.Translation;
+            _matPoint["cameraPosition"].Value = scene.Camera.Position;
 
             //set correct buffers and shaders
             pipe.SetVertexSegment(null, 0);
             pipe.SetIndexSegment(null);
-            int pointCount = scene.PointLights.Data.Length * 2;
+            int pointCount = scene.PointLights.ElementCount * 2;
 
             pipe.Draw(_matPoint, pointCount, PrimitiveTopology.PatchListWith1ControlPoints, 0);
 

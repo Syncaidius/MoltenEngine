@@ -16,6 +16,7 @@ namespace Molten.Samples
         SceneObject _parent;
         SceneObject _child;
         IMesh<GBufferVertex> _mesh;
+        IMesh<GBufferVertex> _floorMesh;
 
         public DeferredRenderingSample(EngineSettings settings = null) : base("Deferred Rendering", settings) { }
 
@@ -23,20 +24,37 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
 
+            _mesh = MeshHelper.Cube(engine.Renderer);
+            SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
+            AcceptPlayerInput = false;
+            Player.Transform.LocalPosition = new Vector3F(0, 3, -8);
+            Player.Transform.LocalRotationX = -15;
+
+            SetupLightObjects(Vector3F.Zero);
+            SetupFloor(Vector3F.Zero);
+
             SampleScene.RenderFlags = SceneRenderFlags.Deferred | SceneRenderFlags.Render3D;
             ContentRequest cr = engine.Content.StartRequest();
             cr.Load<ITexture2D>("dds_test.dds");
             cr.Load<ITexture2D>("dds_test_n.dds");
             cr.Load<ITexture2D>("dds_test_e.dds");
+            cr.Load<ITexture2D>("metal.dds");
+            cr.Load<ITexture2D>("metal_n.dds");
+            cr.Load<ITexture2D>("metal_e.dds");
+            cr.Load<ITexture2D>("metal_s.dds");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
+        }
 
-            _mesh = MeshHelper.Cube(engine.Renderer);
-            SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
-            AcceptPlayerInput = false;
-            Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
+        private void SetupFloor(Vector3F origin)
+        {
+            _floorMesh = MeshHelper.PlainCentered(Engine.Renderer, 3);
+            SceneObject floorObj = CreateObject(origin, SampleScene);
+            floorObj.Transform.LocalPosition = origin;
+            floorObj.Transform.LocalScale = new Vector3F(10);
 
-            SetupLightObjects(Vector3F.Zero);
+            MeshComponent floorCom = floorObj.AddComponent<MeshComponent>();
+            floorCom.Mesh = _floorMesh;
         }
 
         private void SetupLightObjects(Vector3F origin)
@@ -77,6 +95,18 @@ namespace Molten.Samples
 
             ITexture2D emssiveMap = content.Get<ITexture2D>(cr.RequestedFiles[2]);
             _mesh.SetResource(emssiveMap, 2);
+            
+            diffuseMap = content.Get<ITexture2D>(cr.RequestedFiles[3]);
+            _floorMesh.SetResource(diffuseMap, 0);
+
+            normalMap = content.Get<ITexture2D>(cr.RequestedFiles[4]);
+            _floorMesh.SetResource(normalMap, 1);
+
+            emssiveMap = content.Get<ITexture2D>(cr.RequestedFiles[5]);
+            _floorMesh.SetResource(emssiveMap, 2);
+
+            //ITexture2D specular = content.Get<ITexture2D>(cr.RequestedFiles[6]);
+            //_floorMesh.SetResource(specular, 3);
         }
 
         protected override void OnUpdate(Timing time)

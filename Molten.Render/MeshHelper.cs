@@ -101,7 +101,7 @@ namespace Molten.Graphics
 
             CalculateTangents(vertices, indices);
 
-            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh<GBufferVertex>(vertices.Length, indices.Length);
+            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh(vertices.Length, indices.Length);
             mesh.SetVertices(vertices);
             mesh.SetIndices(indices);
             return mesh;

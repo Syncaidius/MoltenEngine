@@ -7,7 +7,7 @@
     <vertex>VS</vertex>
 	<hull>HS</hull>
 	<domain>DS</domain>
-    <pixel>PS</pixel>
+  <pixel>PS</pixel>
   </pass>
 </material>
 
