@@ -36,6 +36,7 @@ namespace Molten.Graphics
         internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
         internal SpriteBatchDX11 SpriteBatcher;
         internal List<SceneRenderDataDX11> Scenes;
+
         internal GraphicsBuffer StaticVertexBuffer;
         internal GraphicsBuffer DynamicVertexBuffer;
         internal StagingBuffer StagingBuffer;

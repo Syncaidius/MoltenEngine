@@ -43,9 +43,13 @@ namespace Molten
                 throw new Exception("Cannot create more than one active instance of Engine. Dispose of the previous one first.");
 
             Current = this;
+            _settings = settings;
 
-            _settings = settings ?? new EngineSettings();
-            _settings.Load();
+            if (_settings == null)
+            {
+                _settings = new EngineSettings();
+                _settings.Load();
+            }
 
             _log = Logger.Get();
             _log.AddOutput(new LogFileWriter("engine_log{0}.txt"));

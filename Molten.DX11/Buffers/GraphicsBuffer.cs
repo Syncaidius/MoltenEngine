@@ -44,6 +44,7 @@ namespace Molten.Graphics
             _byteCapacity = byteCapacity;
             _mode = mode;
             _pendingChanges = new ThreadedQueue<IBufferOperation>();
+            _structuredStride = structuredStride;
 
             if (mode == BufferMode.Immutable && initialData == null)
                 throw new ArgumentNullException("Initial data cannot be null when buffer mode is Immutable.");
@@ -487,7 +488,7 @@ where T : struct
                         CreateResources(newSeg);
                         return newSeg;
                     }
-                    else if (seg.ElementCount == byteCount) // Perfect. Use it without any resizing.
+                    else if (seg.ByteCount == byteCount) // Perfect. Use it without any resizing.
                     {
                         seg.IsFree = false;
                         seg.ElementCount = count;

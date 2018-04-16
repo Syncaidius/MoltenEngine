@@ -9,13 +9,13 @@ namespace Molten.Graphics
 {
     internal class RWBufferVariable : RWVariable
     {
-        StructuredBuffer _buffer;
+        GraphicsBuffer _buffer;
 
         internal RWBufferVariable(HlslShader shader) : base(shader) { }
 
         protected override PipelineShaderObject OnSetUnorderedResource(object value)
         {
-            _buffer = value as StructuredBuffer;
+            _buffer = value as GraphicsBuffer;
             if (_buffer != null && _buffer.IsUnorderedAccess == false)
                 throw new InvalidOperationException("A structured buffer with unordered access must be set to '" + nameof(RWBufferVariable) + "'");
 

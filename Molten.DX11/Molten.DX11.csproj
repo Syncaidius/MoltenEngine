@@ -97,7 +97,6 @@
     <Compile Include="Buffers\Operations\IBufferOperation.cs" />
     <Compile Include="Buffers\ShaderConstantBuffer.cs" />
     <Compile Include="Buffers\StagingBuffer.cs" />
-    <Compile Include="Buffers\StructuredBuffer.cs" />
     <Compile Include="Buffers\TypedBuffer.cs" />
     <Compile Include="Display\DX11DisplayManager.cs" />
     <Compile Include="Exceptions\GraphicsContextException.cs" />

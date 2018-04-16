@@ -102,10 +102,17 @@ namespace Molten.Graphics
             bool ibChanged = _slotIndexBuffer.Bind(Pipe, _indexSegment);
             if (ibChanged)
             {
-                Pipe.Context.InputAssembler.SetIndexBuffer(
-                    _indexSegment.Buffer,
-                    _indexSegment.DataFormat,
-                    _indexSegment.ByteOffset);
+                if (_indexSegment != null)
+                {
+                    Pipe.Context.InputAssembler.SetIndexBuffer(
+                        _indexSegment.Buffer,
+                        _indexSegment.DataFormat,
+                        _indexSegment.ByteOffset);
+                }
+                else
+                {
+                    Pipe.Context.InputAssembler.SetIndexBuffer(null, SharpDX.DXGI.Format.Unknown, 0);
+                }
             }
 
             // Check if a change of layout is required
@@ -222,8 +229,11 @@ namespace Molten.Graphics
 
         internal void SetVertexSegment(BufferSegment seg, int slot)
         {
-            if((seg.Parent.Description.BindFlags & BindFlags.VertexBuffer) != BindFlags.VertexBuffer)
-                throw new InvalidOperationException("The provided buffer segment is not part of a vertex buffer.");
+            if (seg != null)
+            {
+                if ((seg.Parent.Description.BindFlags & BindFlags.VertexBuffer) != BindFlags.VertexBuffer)
+                    throw new InvalidOperationException("The provided buffer segment is not part of a vertex buffer.");
+            }
 
             EnsureVertexSlots(slot + 1);
             _vertexSegments[slot] = seg;
