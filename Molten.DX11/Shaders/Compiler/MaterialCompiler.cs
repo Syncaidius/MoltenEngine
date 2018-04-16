@@ -39,6 +39,10 @@ namespace Molten.Graphics
 
             switch (nodeName)
             {
+                case "sampler":
+                    // TODO implement
+                    break;
+
                 case "rasterizer":
                     shader.RasterizerState = context.Compiler.RasterizerParser.Parse(shader, context, node);
                     // Run through existing passes and apply the rasterizer state to them if they don't have their own yet

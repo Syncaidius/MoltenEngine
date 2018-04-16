@@ -87,7 +87,7 @@ namespace Molten.Graphics
 
         private void CreateDefaultResources()
         {
-            _defaultSampler = new ShaderSampler(this, false);
+            _defaultSampler = new ShaderSampler();
         }
 
         /// <summary>Gets a new deferred <see cref="GraphicsPipe"/>.</summary>

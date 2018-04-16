@@ -14,7 +14,7 @@ namespace Molten.Graphics
         internal Dictionary<string, PipelineShaderObject> ResourcePool = new Dictionary<string, PipelineShaderObject>();
         internal Dictionary<string, IShaderValue> Variables = new Dictionary<string, IShaderValue>();
 
-
+        internal ShaderSampler[] DefaultSamplers;
         internal IShaderResource[] DefaultResources;
 
         GraphicsDevice _device;

@@ -9,7 +9,6 @@ namespace Molten.Graphics
 {
     public class ShaderSampler : PipelineObject, IShaderSampler
     {
-        GraphicsDevice _device;
         SamplerState _state;
         SamplerStateDescription _description;
         bool _isDirty;
@@ -21,23 +20,10 @@ namespace Molten.Graphics
         Comparison _comparison;
         Filter _filter;
 
-        internal ShaderSampler(GraphicsDevice device, bool isComparison)
+        internal ShaderSampler()
         {
             _description = SamplerStateDescription.Default();
             _isDirty = true;
-            _isComparison = isComparison;
-            _device = device;
-
-            if (_isComparison)
-            {
-                ComparisonFunc = ComparisonMode.LessEqual;
-                Filter = SamplerFilter.ComparisonMinMagMipLinear;
-            }
-            else
-            {
-                ComparisonFunc = _description.ComparisonFunction.FromApi();
-                Filter = _description.Filter.FromApi();
-            }
 
             _wrapU = _description.AddressU;
             _wrapV = _description.AddressV;
@@ -55,35 +41,10 @@ namespace Molten.Graphics
                 {
                     int fVal = (int)_description.Filter;
 
-                    if (_isComparison)
-                    {
-                        // Enforce comparison filter.
-                        if ((fVal >= 128 && fVal <= 213) == false)
-                        {
-#if DEBUG
-                            throw new InvalidOperationException("A comparison filter cannot be set to a non-comparison filter mode.");
-#else
-                            _description.Filter = SharpDX.Direct3D11.Filter.ComparisonMinMagMipLinear;
-#endif
-                        }
-                    }
-                    else
-                    {
-                        // Enforce non-comparison filter.
-                        if ((fVal >= 128 && fVal <= 213))
-                        {
-#if DEBUG
-                            throw new InvalidOperationException("A non-comparison filter cannot be set to a comparison filter mode.");
-#else
-                            _description.Filter = SharpDX.Direct3D11.Filter.MinMagMipLinear;
-#endif
-                        }
-                    }
-
                     // Dispose the old sampler
                     DisposeObject(ref _state);
 
-                    _state = new SamplerState(_device.D3d, _description);
+                    _state = new SamplerState(pipe.Device.D3d, _description);
                 }
 
                 _isDirty = false;
@@ -173,6 +134,9 @@ namespace Molten.Graphics
             {
                 _filter = value.ToApi();
                 _description.Filter = _filter;
+
+                int fVal = (int)_description.Filter;
+                _isComparison = fVal >= 128 && fVal <= 213;
                 _isDirty = true;
             }
         }
@@ -230,9 +194,7 @@ namespace Molten.Graphics
         /// <summary>Gets the underlying sampler state.</summary>
         internal SamplerState State { get { return _state; } }
 
-        /// <summary>Gets whether or not the sampler expects a comparison configuration.</summary>
-        public bool IsComparisonSampler { get { return _isComparison; } }
-
-        public string Name { get; set; }
+        /// <summary>Gets whether or not the sampler a comparison sampler. This is determined by the <see cref="Filter"/> mode.</summary>
+        public bool IsComparisonSampler => _isComparison;
     }
 }
