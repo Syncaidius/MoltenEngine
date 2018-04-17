@@ -102,7 +102,7 @@ namespace Molten.Graphics
          *      <entry>CS_Main</entry>
          *  </compute>
          * 
-         *  HLSL code from and onwards.
+         *  HLSL code from here and onwards.
          */
 
         private void AddSubCompiler<T>(string nodeName) where T : HlslSubCompiler

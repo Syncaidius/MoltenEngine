@@ -1,5 +1,5 @@
 # Molten Engine
-Molten is a engine project I've been working on in my spare time as a means to eventually produce my own games without using a third party engine or graphics framework such as [MonoGame](http://monogame.net) or [Unity3D](https://unity3d.com/).
+Molten is a engine project I'm working on in my spare time as a means to eventually produce my own games without using a third party engine or graphics framework such as [MonoGame](http://monogame.net) or [Unity3D](https://unity3d.com/).
 
 In the past I've used MonoGame, XNA and Unity3D to produce a game but never felt quite satisfied with the fact that I didn't actually create the framework or foundation myself, as well as feeling frustrated at times by the limitations of third-party frameworks.
 
@@ -11,14 +11,13 @@ I've previously attempted a game engine back in 2015 using SharpDX and while it 
 This is my second attempt at such an engine, so I would like to extend the learning experience further by it opening up to everyone. More importantly, it allows others to learn from my code (and mistakes) and perhaps even use the engine as a base for their own games and engine variants.
 
 # Current State
-The engine is pretty rough around the edges at this point in time. There is no audio system, AI, cross-platform, collision/physics, deferred rendering or post-processing. Simply put, it's a giant ball of molten rock which is probably no use to anyone yet.
+The engine is rough around the edges at this point in time. There is no audio system, AI, cross-platform, collision/physics, deferred rendering or post-processing. Simply put, it's a giant ball of molten rock which is probably no use for producing a game yet, but it may be a good starting point for something.
 
 Here's a list of completed or work-in-progress (WIP) features:
   * A basic renderer with:
     * [WIP] Entity-component-system (ECS)
     * Sprite/primitive batcher
     * [WIP] Material system
-	* Support for popular texture formats - DDS, PNG and JEG
 	* Compressed texture support
 	* [WIP] Sprite font system
   * Content manager
