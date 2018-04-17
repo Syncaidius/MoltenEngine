@@ -1,14 +1,14 @@
 # Molten Engine
-Molten is a engine project I'm working on in my spare time as a means to eventually produce my own games without using a third party engine or graphics framework such as [MonoGame](http://monogame.net) or [Unity3D](https://unity3d.com/).
+Molten is a engine project I'm working on in my spare time as a means to eventually produce my own games without using a third party engine or framework such as [Unity3D](https://unity3d.com/) or [MonoGame](http://monogame.net).
 
-In the past I've used MonoGame, XNA and Unity3D to produce a game but never felt quite satisfied with the fact that I didn't actually create the framework or foundation myself, as well as feeling frustrated at times by the limitations of third-party frameworks.
+In the past I've used MonoGame, XNA and Unity3D to produce a game but never felt quite satisfied with the fact that I didn't actually create the foundations myself, as well as feeling frustrated at times by the limitations of third-party frameworks.
 
-Despite sounding like a classic case of reinventing the wheel, I'm treating it more as a learning experience in the short to mid-term, with the end-goal of producing at least one game with it in the long-term.
+While parts of this project will inevitably be a classic case of re-inventing the wheel, I'm teating it as a chance to gain more experience in the area of game engine development. 
 
 # Why Open-Source?
 I've previously attempted a game engine back in 2015 using SharpDX and while it inevitably ended in failure, I learned a great deal in terms of game engine architecture and the way a GPU works under the hood, as well as things like multi-threading, tasking and other high-performance system design.
 
-This is my second attempt at such an engine, so I would like to extend the learning experience further by it opening up to everyone. More importantly, it allows others to learn from my code (and mistakes) and perhaps even use the engine as a base for their own games and engine variants.
+This is my second attempt at such an engine, so being able to share the code for others to learn from and perhaps even contribute to, seems like the right thing to do. Hopefully you'll find something useful around here!
 
 # Current State
 The engine is rough around the edges at this point in time. There is no audio system, AI, cross-platform, collision/physics, deferred rendering or post-processing. Simply put, it's a giant ball of molten rock which is probably no use for producing a game yet, but it may be a good starting point for something.
@@ -22,7 +22,7 @@ Here's a list of completed or work-in-progress (WIP) features:
 	* [WIP] Sprite font system
   * Content manager
   * [WIP] Modular abstraction layer - remove/replace parts of the engine without touching the core
-  * Complete set of math types. The majority are imported from [SharpDX](https://github.com/sharpdx/SharpDX) with a many additions and changes.
+  * Complete set of math types. The majority are imported from [SharpDX](https://github.com/sharpdx/SharpDX) with many additions and changes.
   * [WIP] Mouse, keyboard and game-pad input
   * Example projects
   
