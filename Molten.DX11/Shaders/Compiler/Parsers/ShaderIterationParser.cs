@@ -7,12 +7,18 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal class ShaderNameParser : ShaderNodeParser
+    internal class ShaderIterationParser : ShaderNodeParser
     {
-        public ShaderNameParser(string nodeName) : base(nodeName) { }
+        public ShaderIterationParser(string nodeName) : base(nodeName) { }
 
         internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
         {
+            int val = 1;
+            if (int.TryParse(node.InnerText, out val))
+                foundation.Iterations = val;
+            else
+                context.Messages.Add($"Invalid iteration number format for {foundation.GetType().Name}. Should be an integer value.");
+
             if (string.IsNullOrWhiteSpace(node.InnerText))
                 foundation.Name = "Unnamed Material";
             else

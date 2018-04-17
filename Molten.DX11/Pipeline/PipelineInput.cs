@@ -23,7 +23,6 @@ namespace Molten.Graphics
         VertexBufferBinding[] _vertexBindings;
         BufferSegment _indexSegment;
         VertexInputLayout _vertexLayout;
-        MaterialPass _pass;
 
         int _vertexSlotCount = 0;
 

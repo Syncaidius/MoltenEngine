@@ -12,18 +12,22 @@ namespace Molten.Graphics
     {
         public ShaderEntryParser(string nodeName) : base(nodeName) { }
 
-        internal override NodeParseResult Parse(HlslShader shader, ShaderCompilerContext context, XmlNode node)
+        internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
         {
-            if (!(shader is ComputeTask))
-                return new NodeParseResult(NodeParseResultType.Ignored);
+            if (foundation is ComputeTask)
+            {
+                ComputeTask cTask = foundation as ComputeTask;
+                if (string.IsNullOrWhiteSpace(node.InnerText))
+                    return new NodeParseResult(NodeParseResultType.Error, "Compute task <entry> tag is missing or empty.");
+                else
+                    cTask.Composition.EntryPoint = node.InnerText;
 
-            ComputeTask cTask = shader as ComputeTask;
-            if (string.IsNullOrWhiteSpace(node.InnerText))
-                return new NodeParseResult(NodeParseResultType.Error, "Compute task <entry> tag is missing or empty.");
+                return new NodeParseResult(NodeParseResultType.Success);
+            }
             else
-                cTask.Composition.EntryPoint = node.InnerText;
-
-            return new NodeParseResult(NodeParseResultType.Success);
+            {
+                return new NodeParseResult(NodeParseResultType.Ignored);
+            }
         }
     }
 }

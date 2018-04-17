@@ -6,23 +6,20 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public abstract class HlslShader : PipelineObject, IShader
+    public abstract class HlslShader : HlslFoundation, IShader
     {
         internal ShaderConstantBuffer[] ConstBuffers = new ShaderConstantBuffer[0];
         internal ShaderResourceVariable[] Resources = new ShaderResourceVariable[0];
-        internal ShaderSamplerVariable[] Samplers = new ShaderSamplerVariable[0];
+        internal ShaderSamplerVariable[] SamplerVariables = new ShaderSamplerVariable[0];
         internal Dictionary<string, PipelineShaderObject> ResourcePool = new Dictionary<string, PipelineShaderObject>();
         internal Dictionary<string, IShaderValue> Variables = new Dictionary<string, IShaderValue>();
-
-        internal ShaderSampler[] DefaultSamplers;
+        
         internal IShaderResource[] DefaultResources;
 
         GraphicsDevice _device;
         string _filename;
         internal ShaderIOStructure InputStructure;
         Dictionary<string, string> _metadata;
-
-        public string Name { get; internal set; }
 
         public string Description { get; internal set; }
 
@@ -33,12 +30,6 @@ namespace Molten.Graphics
         internal GraphicsDevice Device => _device;
 
         public Dictionary<string, string> Metadata => _metadata;
-
-        internal GraphicsRasterizerState RasterizerState { get; set; }
-
-        internal GraphicsBlendState BlendState { get; set; }
-
-        internal GraphicsDepthState DepthState { get; set; }
 
         internal HlslShader(GraphicsDevice device, string filename = null)
         {

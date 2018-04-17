@@ -16,6 +16,6 @@ namespace Molten.Graphics
             NodeName = nodeName;
         }
 
-        internal abstract NodeParseResult Parse(HlslShader shader, ShaderCompilerContext context, XmlNode node);
+        internal abstract NodeParseResult Parse(HlslFoundation shader, ShaderCompilerContext context, XmlNode node);
     }
 }

@@ -14,8 +14,6 @@ namespace Molten.Graphics
 {
     internal abstract class HlslSubCompiler
     {
-
-
         Dictionary<string, ShaderNodeParser> _parsers = new Dictionary<string, ShaderNodeParser>();
 
 #if RELEASE
@@ -29,6 +27,7 @@ namespace Molten.Graphics
             AddParser<ShaderNameParser>("name");
             AddParser<MaterialDescParser>("description");
             AddParser<MaterialAuthorParser>("author");
+            AddParser<ShaderIterationParser>("iterations");
         }
 
         protected void AddParser<T>(string nodeName) where T : ShaderNodeParser
@@ -159,10 +158,10 @@ namespace Molten.Graphics
 
                         ShaderSamplerVariable sampler = GetVariableResource<ShaderSamplerVariable>(context, shader, binding);
 
-                        if (bindPoint >= shader.Samplers.Length)
-                            Array.Resize(ref shader.Samplers, bindPoint + 1);
+                        if (bindPoint >= shader.SamplerVariables.Length)
+                            Array.Resize(ref shader.SamplerVariables, bindPoint + 1);
 
-                        shader.Samplers[bindPoint] = sampler;
+                        shader.SamplerVariables[bindPoint] = sampler;
                         composition.SamplerIds.Add(bindPoint);
                         break;
 
@@ -182,13 +181,7 @@ namespace Molten.Graphics
 
             }
 
-            //VertexShader d3dShader = new VertexShader();
-            //T rawShader = Activator.CreateInstance(typeof(T), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { shader.Device.D3d, code.Bytecode.Data, null }) as T;
-            // If we've reached this far, instanciate the DX11 shader object
-            //composition.RawShader = rawShader;
-
             composition.RawShader = Activator.CreateInstance(typeof(T), shader.Device.D3d, code.Bytecode.Data, null) as T;
-
             return true;
         }
 

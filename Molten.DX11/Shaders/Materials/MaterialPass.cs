@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class MaterialPass : PipelineObject, IMaterialPass
+    public class MaterialPass : HlslFoundation, IMaterialPass
     {
         internal const int ID_VERTEX = 0;
         internal const int ID_HULL = 1;
@@ -70,12 +70,6 @@ namespace Molten.Graphics
 
         internal ShaderComposition<PixelShader> PixelShader;
 
-        internal GraphicsRasterizerState RasterizerState;
-
-        internal GraphicsBlendState BlendState;
-
-        internal GraphicsDepthState DepthState;
-
         internal InputPrimitive GeometryPrimitive;
 
         /// <summary>Gets or sets whether or not the pass will be run.</summary>
@@ -84,10 +78,7 @@ namespace Molten.Graphics
         /// </value>
         public bool IsEnabled { get; set; }
 
-        public string Name { get; internal set; }
-
-        public int Iterations { get; internal set; }
-
         public IMaterial Material => _parent;
+
     }
 }

@@ -162,9 +162,11 @@
     <Compile Include="Scene\Changes\SpriteAdd.cs" />
     <Compile Include="Scene\Changes\SpriteRemove.cs" />
     <Compile Include="Scene\SceneRenderDataDX11.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\ShaderIterationParser.cs" />
     <Compile Include="Shaders\Compiler\ShaderCompilerContext.cs" />
     <Compile Include="Shaders\Compiler\StateParsers\SamplerNodeParser.cs" />
     <Compile Include="Shaders\Compiler\StateParsers\RasterizerNodeParser.cs" />
+    <Compile Include="Shaders\HlslFoundation.cs" />
     <Compile Include="Spritebatch\SpriteBatchDX11.cs" />
     <Compile Include="ShaderModelExtensionsDX11.cs" />
     <Compile Include="Shaders\Compiler\ComputeCompiler.cs" />

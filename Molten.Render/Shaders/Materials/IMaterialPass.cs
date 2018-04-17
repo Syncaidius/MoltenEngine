@@ -10,7 +10,7 @@ namespace Molten.Graphics
     {
         string Name { get; }
 
-        int Iterations { get; }
+        int Iterations { get; set; }
 
         IMaterial Material { get; }
     }

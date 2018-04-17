@@ -116,10 +116,6 @@ namespace Molten.Graphics
                     // Remove the headers from the source. This reduces the source we need to check through to find other headear types.
                     foreach (string h in nodeHeaders)
                     {
-                        // TODO can this be improved?
-                        /* Get the end-line of the header within the original source and
-                         * replace it with a HLSL #line pre-processor tag. This ensures that HLSL errors have the correct line numbers.
-                         */
                         int index = source.IndexOf(h);
                         string[] lines = source.Substring(0, index).Split(NewLineSeparators, StringSplitOptions.None);
                         string[] hLines = h.Split(NewLineSeparators, StringSplitOptions.None);

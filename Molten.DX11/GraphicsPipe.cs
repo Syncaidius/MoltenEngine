@@ -185,16 +185,19 @@ namespace Molten.Graphics
         /// <param name="topology">The primitive topolog to use when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
         public void Draw(Material material, int vertexCount, PrimitiveTopology topology, int vertexStartIndex = 0)
         {
-            for (int i = 0; i < material.PassCount; i++)
+            for (int i = 0; i < material.Iterations; i++)
             {
-                //TODO pass in the context of whichever render-pipe is doing the draw call.
-                _drawResult = ApplyData(material, i, GraphicsValidationMode.Unindexed, topology);
-
-                // If data application was successful, draw.
-                if (_drawResult == GraphicsValidationResult.Successful)
+                for (int j = 0; j < material.PassCount; j++)
                 {
-                    _context.Draw(vertexCount, vertexStartIndex);
-                    Profiler.CurrentFrame.DrawCalls++;
+                    //TODO pass in the context of whichever render-pipe is doing the draw call.
+                    _drawResult = ApplyData(material, j, GraphicsValidationMode.Unindexed, topology);
+
+                    // If data application was successful, draw.
+                    if (_drawResult == GraphicsValidationResult.Successful)
+                    {
+                        _context.Draw(vertexCount, vertexStartIndex);
+                        Profiler.CurrentFrame.DrawCalls++;
+                    }
                 }
             }
         }
@@ -207,14 +210,17 @@ namespace Molten.Graphics
         /// <param name="instanceStartIndex">The index of the first instance element</param>
         public void DrawInstanced(Material material, int vertexCountPerInstance, int instanceCount, PrimitiveTopology topology, int vertexStartIndex = 0, int instanceStartIndex = 0)
         {
-            for (int i = 0; i < material.PassCount; i++)
+            for (int i = 0; i < material.Iterations; i++)
             {
-                _drawResult = ApplyData(material, i, GraphicsValidationMode.Instanced, topology);
-
-                if (_drawResult == GraphicsValidationResult.Successful)
+                for (int j = 0; j < material.PassCount; j++)
                 {
-                    _context.DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
-                    Profiler.CurrentFrame.DrawCalls++;
+                    _drawResult = ApplyData(material, j, GraphicsValidationMode.Instanced, topology);
+
+                    if (_drawResult == GraphicsValidationResult.Successful)
+                    {
+                        _context.DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
+                        Profiler.CurrentFrame.DrawCalls++;
+                    }
                 }
             }
         }
@@ -227,16 +233,19 @@ namespace Molten.Graphics
         /// <param name="topology">The toplogy to apply when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
         public void DrawIndexed(Material material, int indexCount, PrimitiveTopology topology, int vertexIndexOffset = 0, int startIndex = 0)
         {
-            for (int i = 0; i < material.PassCount; i++)
+            for (int i = 0; i < material.Iterations; i++)
             {
-                //TODO pass in the context of whichever render-pipe is doing the draw call.
-                _drawResult = ApplyData(material, i, GraphicsValidationMode.Indexed, topology);
-
-                // If data application was successful, draw.
-                if (_drawResult == GraphicsValidationResult.Successful)
+                for (int j = 0; j < material.PassCount; j++)
                 {
-                    _context.DrawIndexed(indexCount, startIndex, vertexIndexOffset);
-                    Profiler.CurrentFrame.DrawCalls++;
+                    //TODO pass in the context of whichever render-pipe is doing the draw call.
+                    _drawResult = ApplyData(material, j, GraphicsValidationMode.Indexed, topology);
+
+                    // If data application was successful, draw.
+                    if (_drawResult == GraphicsValidationResult.Successful)
+                    {
+                        _context.DrawIndexed(indexCount, startIndex, vertexIndexOffset);
+                        Profiler.CurrentFrame.DrawCalls++;
+                    }
                 }
             }
         }

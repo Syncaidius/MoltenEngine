@@ -68,20 +68,12 @@ namespace Molten.Graphics
 
             if (_shader.BoundValue != null)
             {
-                // Return to pass 0 if the material has already completed all it's passes.
-                if (_passNumber == _shader.Value.PassCount)
-                    _passNumber = 0;
-
                 MaterialPass pass = _shader.BoundValue.Passes[_passNumber];
                 _vStage.Refresh(_shader.Value, pass.VertexShader);
                 _gStage.Refresh(_shader.Value, pass.GeometryShader);
                 _hStage.Refresh(_shader.Value, pass.HullShader);
                 _dStage.Refresh(_shader.Value, pass.DomainShader);
                 _pStage.Refresh(_shader.Value, pass.PixelShader);
-            }
-            else
-            {
-                _passNumber = 0;
             }
         }
 

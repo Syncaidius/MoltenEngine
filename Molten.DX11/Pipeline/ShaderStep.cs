@@ -129,7 +129,7 @@ namespace Molten.Graphics
             {
                 int slotId = composition.SamplerIds[i];
 
-                s = shader.Samplers[slotId].Sampler;
+                s = shader.SamplerVariables[slotId].Sampler;
 
                 bool sChanged = _slotSamplers[i].Bind(_pipe, s);
                 if (sChanged)
