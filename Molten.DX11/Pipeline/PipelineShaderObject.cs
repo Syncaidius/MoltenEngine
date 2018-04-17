@@ -12,13 +12,8 @@ namespace Molten.Graphics
     {
         protected override void OnDispose()
         {
-            Binds.ForInterlock(0, 1, (index, slot) =>
-            {
-                slot.BoundObjectDisposed(this);
-                return false;
-            });
-
-            Binds.Clear();
+            UAV?.Dispose();
+            SRV?.Dispose();
 
             base.OnDispose();
         }

@@ -11,18 +11,13 @@ namespace Molten.Graphics
 {
     internal class ComputeCompiler : HlslSubCompiler
     {
-        internal ComputeCompiler()
-        {
-            AddParser<ShaderEntryParser>("entry");
-        }
-
-        internal override List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer)
+        internal override List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header)
         {
             List<IShader> result = new List<IShader>();
             ComputeTask compute = new ComputeTask(renderer.Device, context.Filename);
             try
             {
-                ParseHeader(compute, context);
+                context.Compiler.ParserHeader(compute, ref header, context);
                 CompilationResult computeResult = null;
                 if (Compile(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out computeResult))
                 {

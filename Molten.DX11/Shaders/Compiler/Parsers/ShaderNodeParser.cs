@@ -9,13 +9,8 @@ namespace Molten.Graphics
 {
     internal abstract class ShaderNodeParser
     {
-        internal string NodeName { get; private set; }
+        internal abstract string[] SupportedNodes { get; }
 
-        public ShaderNodeParser(string nodeName)
-        {
-            NodeName = nodeName;
-        }
-
-        internal abstract NodeParseResult Parse(HlslFoundation shader, ShaderCompilerContext context, XmlNode node);
+        internal abstract NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node);
     }
 }

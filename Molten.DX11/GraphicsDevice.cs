@@ -118,7 +118,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Disposes of the <see cref="GraphicsDevice"/> and any deferred contexts and resources bound to it.</summary>
-        public override void Dispose()
+        protected override void OnDispose()
         {
             // TODO dispose of all bound IGraphicsResource
 
@@ -132,6 +132,8 @@ namespace Molten.Graphics
 
             DisposeObject(ref _defaultSampler);
             DisposeObject(ref _d3d);
+
+            base.OnDispose();
         }
 
         /// <summary>Gets the underlying D3D device.</summary>

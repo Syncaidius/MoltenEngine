@@ -25,22 +25,24 @@ namespace Molten.Graphics
         static string[] CONST_OBJECT_VAR_NAMES = new string[] { "wvp", "world" };
         static string[] CONST_GBUFFER_VAR_NAMES = new string[] { "emissivePower" };
 
-        MaterialLayoutValidator _layoutValidator;
+        MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
 
-        internal MaterialCompiler()
-        {
-            AddParser<ShaderPassParser>("pass");
-
-            _layoutValidator = new MaterialLayoutValidator();
-        }
-
-        internal override List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer)
+        internal override List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header)
         {
             List<IShader> result = new List<IShader>();
             Material material = new Material(renderer.Device, context.Filename);
             try
             {
-                ParseHeader(material, context);
+                context.Compiler.ParserHeader(material, ref header, context);
+                if (material.Passes == null || material.Passes.Length == 0)
+                {
+                    material.AddDefaultPass();
+                    if (string.IsNullOrWhiteSpace(material.Passes[0].VertexShader.EntryPoint))
+                    {
+                        context.Errors.Add($"Material '{material.Name}' does not have a defined vertex shader entry point. Must be defined in the material or it's first pass.");
+                        return result;
+                    }
+                }
             }
             catch (Exception e)
             {

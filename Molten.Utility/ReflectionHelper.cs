@@ -27,6 +27,19 @@ namespace Molten
             return result;
         }
 
+        /// <summary>Finds all types that derive from the provided class type.</summary>
+        /// <typeparam name="T">The base type of other classes to search for.</typeparam>
+        /// <returns></returns>
+        public static List<Type> FindTypeInParentAssembly<T>()
+        {
+            Type bType = typeof(T);
+            List<Type> result = new List<Type>();
+            IEnumerable<Type> types = bType.Assembly.GetTypes().Where(t => t.IsSubclassOf(bType));
+            result.AddRange(types);
+
+            return result;
+        }
+
         public static IEnumerable<Type> FindType<T>(Assembly assembly)
         {
             Type bType = typeof(T);

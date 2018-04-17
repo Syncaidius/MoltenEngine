@@ -9,13 +9,13 @@ namespace Molten.Graphics
 {
     internal class MaterialDescParser : ShaderNodeParser
     {
-        public MaterialDescParser(string nodeName) : base(nodeName) { }
+        internal override string[] SupportedNodes => new string[] { "description" };
 
         internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
         {
             if (foundation is HlslShader shader)
             {
-                shader.Author = node.InnerText;
+                shader.Description = node.InnerText;
                 return new NodeParseResult(NodeParseResultType.Success);
             }
             else

@@ -14,7 +14,6 @@ namespace Molten.Graphics
 {
     internal abstract class HlslSubCompiler
     {
-        Dictionary<string, ShaderNodeParser> _parsers = new Dictionary<string, ShaderNodeParser>();
 
 #if RELEASE
          ShaderFlags _compileFlags = ShaderFlags.OptimizationLevel3;
@@ -22,37 +21,7 @@ namespace Molten.Graphics
         ShaderFlags _compileFlags = ShaderFlags.WarningsAreErrors;
 #endif
 
-        internal HlslSubCompiler()
-        {
-            AddParser<ShaderNameParser>("name");
-            AddParser<MaterialDescParser>("description");
-            AddParser<MaterialAuthorParser>("author");
-            AddParser<ShaderIterationParser>("iterations");
-        }
-
-        protected void AddParser<T>(string nodeName) where T : ShaderNodeParser
-        {
-            nodeName = nodeName.ToLower();
-            T parser = Activator.CreateInstance(typeof(T), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { nodeName }, null) as T;
-            _parsers.Add(nodeName, parser);
-        }
-
-        internal abstract List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer);
-
-        protected void ParseHeader(HlslShader shader, ShaderCompilerContext context)
-        {
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(context.Header);
-
-            XmlNode rootNode = doc.ChildNodes[0];
-            foreach (XmlNode node in rootNode.ChildNodes)
-            {
-                string nodeName = node.Name.ToLower();
-                ShaderNodeParser parser = null;
-                if (_parsers.TryGetValue(nodeName, out parser))
-                    parser.Parse(shader, context, node);
-            }
-        }
+        internal abstract List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header);
 
         protected bool HasResource(HlslShader shader, string resourceName)
         {

@@ -19,7 +19,8 @@ namespace Molten.Graphics
 
         internal virtual void Unbind(GraphicsPipe pipe, PipelineBindSlot slot)
         {
-            Binds.Remove(slot);
+            if (!Binds.Remove(slot))
+                throw new Exception();
         }
 
         /// <summary>Invoked when the object is given a chance to refresh while bound to a pipeline slot.</summary>

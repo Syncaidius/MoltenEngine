@@ -18,6 +18,11 @@ namespace Molten.Graphics
         /// <returns></returns>
         IMaterialPass GetPass(string name);
 
+        /// <summary>
+        /// sets the default resource to be used when an object does not provide it's own resource for a particular slot.
+        /// </summary>
+        /// <param name="resource">The resource.</param>
+        /// <param name="slot">The slot number.</param>
         void SetDefaultResource(IShaderResource resource, int slot);
 
         IShaderResource GetDefaultResource(int slot);

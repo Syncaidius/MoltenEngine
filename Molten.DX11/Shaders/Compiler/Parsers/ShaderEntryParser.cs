@@ -10,7 +10,7 @@ namespace Molten.Graphics
     /// <summary>An entry-point tag parser used by <see cref="ComputeTask"/> headers.</summary>
     internal class ShaderEntryParser : ShaderNodeParser
     {
-        public ShaderEntryParser(string nodeName) : base(nodeName) { }
+        internal override string[] SupportedNodes => new string[] { "entry" };
 
         internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
         {
@@ -24,10 +24,8 @@ namespace Molten.Graphics
 
                 return new NodeParseResult(NodeParseResultType.Success);
             }
-            else
-            {
-                return new NodeParseResult(NodeParseResultType.Ignored);
-            }
+
+            return new NodeParseResult(NodeParseResultType.Ignored);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Molten.Collections
     {
         static readonly T[] _emptyArray = new T[0];
 
-        T[] _items;
+        public T[] _items;
         int _count;
         int _capacity;
         int _version;
@@ -503,6 +503,10 @@ namespace Molten.Collections
             {
                 Array.Copy(_items, index + 1, _items, index, _count - index); // Move items ahead of the index, back one element.
                 _items[_count] = default(T); // Clear last element, since it moved back by one index.
+            }
+            else
+            {
+                _items[index] = default(T);
             }
         }
 

@@ -162,6 +162,11 @@
     <Compile Include="Scene\Changes\SpriteAdd.cs" />
     <Compile Include="Scene\Changes\SpriteRemove.cs" />
     <Compile Include="Scene\SceneRenderDataDX11.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\ShaderPSParser.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\ShaderHSParser.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\ShaderDSParser.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\ShaderGSParser.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\ShaderVSParser.cs" />
     <Compile Include="Shaders\Compiler\Parsers\ShaderIterationParser.cs" />
     <Compile Include="Shaders\Compiler\ShaderCompilerContext.cs" />
     <Compile Include="Shaders\Compiler\StateParsers\SamplerNodeParser.cs" />

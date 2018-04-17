@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal class MaterialAuthorParser : ShaderNodeParser
     {
-        public MaterialAuthorParser(string nodeName) : base(nodeName) { }
+        internal override string[] SupportedNodes => new string[] { "author" };
 
         internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
         {

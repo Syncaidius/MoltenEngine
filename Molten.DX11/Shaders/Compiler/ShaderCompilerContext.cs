@@ -28,17 +28,10 @@ namespace Molten.Graphics
 
         internal List<string> Messages = new List<string>();
 
-        internal ShaderCompilerContext(HlslCompiler compiler)
-        {
-            Compiler = compiler;
-        }
-
-        internal HlslCompiler Compiler { get; private set; }
+        internal HlslCompiler Compiler;
 
         internal string Filename;
 
         internal string Source;
-
-        internal string Header;
     }
 }

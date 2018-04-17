@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal class ShaderNameParser : ShaderNodeParser
     {
-        public ShaderNameParser(string nodeName) : base(nodeName) { }
+        internal override string[] SupportedNodes => new string[] {"name"};
 
         internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
         {

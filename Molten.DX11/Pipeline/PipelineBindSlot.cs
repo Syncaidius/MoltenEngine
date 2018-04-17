@@ -22,8 +22,11 @@ namespace Molten.Graphics
 
         internal void BoundObjectDisposed(PipelineObject obj)
         {
-            if(obj == Object)
+            if (obj == Object)
+            {
                 OnBoundObjectDisposed?.Invoke(this, obj);
+                UnbindDisposedObject(obj);
+            }
         }
 
         /// <summary>Refreshes the object bound to the current slot, if any.</summary>
@@ -32,6 +35,12 @@ namespace Molten.Graphics
         {
             Object?.Refresh(pipe, this);
         }
+
+        /// <summary>
+        /// Occurs when the bound object is disposed.
+        /// </summary>
+        /// <param name="obj">The object which was just disposed</param>
+        protected abstract void UnbindDisposedObject(PipelineObject obj);
 
         internal PipelineSlotType Type { get; private set; }
 
@@ -47,6 +56,11 @@ namespace Molten.Graphics
         internal PipelineBindSlot(PipelineComponent parent, PipelineSlotType type, int slotID) :
             base(parent, type, slotID)
         { }
+
+        protected override void UnbindDisposedObject(PipelineObject obj)
+        {
+            BoundObject = null;
+        }
 
         /// <summary>Binds a new object to the slot. If null, the existing object (if any) will be unbound.</summary>
         /// <param name="pipe">The <see cref="GraphicsPipe"/> to use to perform any binding operations..</param>
