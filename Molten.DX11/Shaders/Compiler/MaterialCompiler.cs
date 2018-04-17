@@ -34,28 +34,6 @@ namespace Molten.Graphics
             _layoutValidator = new MaterialLayoutValidator();
         }
 
-        protected override void ParseHeaderNode(string nodeName, XmlNode node, HlslShader shader, ShaderCompilerContext context)
-        {
-            Material mat = shader as Material;
-            switch (nodeName)
-            {
-                //case "sampler":
-                //    // TODO implement
-                //    break;
-
-                ////case "rasterizer":
-                ////    //shader.RasterizerState = context.Compiler.RasterizerParser.Parse(shader, context, node);
-                ////    //// Run through existing passes and apply the rasterizer state to them if they don't have their own yet
-                ////    //foreach (MaterialPass p in mat.Passes)
-                ////    //    p.RasterizerState = p.RasterizerState ?? shader.RasterizerState;
-                ////    break;
-
-                default:
-                    base.ParseHeaderNode(nodeName, node, shader, context);
-                    break;
-            }
-        }
-
         internal override List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer)
         {
             List<IShader> result = new List<IShader>();
