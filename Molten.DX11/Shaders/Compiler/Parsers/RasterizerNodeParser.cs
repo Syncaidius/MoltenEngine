@@ -37,7 +37,7 @@ namespace Molten.Graphics
                 switch (nodeName)
                 {
                     case "cullmode":
-                        if (Enum.TryParse(child.InnerText, out CullMode mode))
+                        if (Enum.TryParse(child.InnerText, true, out CullMode mode))
                             state.CullMode = mode;
                         break;
 
@@ -52,7 +52,7 @@ namespace Molten.Graphics
                         break;
 
                     case "fillmode":
-                        if (Enum.TryParse(child.InnerText, out FillMode fillMode))
+                        if (Enum.TryParse(child.InnerText, true, out FillMode fillMode))
                             state.FillMode = fillMode;
                         break;
 

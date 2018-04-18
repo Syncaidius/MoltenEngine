@@ -69,6 +69,13 @@ namespace Molten.Graphics
         Face _frontFace;
         Face _backFace;
 
+        internal GraphicsDepthState(GraphicsDepthState source)
+        {
+            _desc = source._desc;
+            _frontFace = new Face(this, _desc.FrontFace);
+            _backFace = new Face(this, _desc.BackFace);
+        }
+
         internal GraphicsDepthState()
         {
             _desc = DepthStencilStateDescription.Default();
