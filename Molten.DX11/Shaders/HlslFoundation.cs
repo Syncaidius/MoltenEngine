@@ -11,6 +11,11 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class HlslFoundation : PipelineObject
     {
+        internal HlslFoundation(GraphicsDevice device)
+        {
+            Device = device;
+        }
+
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
@@ -40,5 +45,7 @@ namespace Molten.Graphics
         /// Gets or sets the texture samplers to be used with the shader/component.
         /// </summary>
         internal ShaderSampler[] Samplers { get; set; }
+
+        internal GraphicsDevice Device { get; private set; }
     }
 }

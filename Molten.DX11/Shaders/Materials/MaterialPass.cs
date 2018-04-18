@@ -28,7 +28,7 @@ namespace Molten.Graphics
 
         Material _parent;
 
-        internal MaterialPass(Material material)
+        internal MaterialPass(Material material) : base(material.Device)
         {
             _parent = material;
 

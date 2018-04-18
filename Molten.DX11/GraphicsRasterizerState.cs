@@ -14,7 +14,17 @@ namespace Molten.Graphics
         RasterizerStateDescription _desc;
         bool _dirty;
 
-        public GraphicsRasterizerState()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source">An existing <see cref="GraphicsRasterizerState"/> instance from which to copy settings."/></param>
+        internal GraphicsRasterizerState(GraphicsRasterizerState source)
+        {
+            _desc = source._desc;
+            _dirty = true;
+        }
+
+        internal GraphicsRasterizerState()
         {
             _desc = RasterizerStateDescription.Default();
             _dirty = true;

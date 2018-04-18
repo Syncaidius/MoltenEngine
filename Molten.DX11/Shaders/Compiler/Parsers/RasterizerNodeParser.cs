@@ -17,13 +17,19 @@ namespace Molten.Graphics
             if (foundation is ComputeTask)
                 return new NodeParseResult(NodeParseResultType.Ignored);
 
-            GraphicsRasterizerState state = new GraphicsRasterizerState();
+            GraphicsRasterizerState state = new GraphicsRasterizerState(foundation.Device.GetPreset(RasterizerPreset.Default));
 
-            // TODO add support for using a preset as a base:
-            /*    <rasterizer preset="default">
-                    <fillmode>Wireframe</fillmode>
-                  </rasterizer>
-             */
+            foreach(XmlAttribute attribute in node.Attributes)
+            {
+                string attName = attribute.Name.ToLower();
+                switch (attName)
+                {
+                    case "preset":
+                        if (Enum.TryParse(attribute.InnerText, true, out RasterizerPreset preset))
+                            state = new GraphicsRasterizerState(foundation.Device.GetPreset(preset));
+                        break;
+                }
+            }
 
             foreach (XmlNode child in node.ChildNodes)
             {
