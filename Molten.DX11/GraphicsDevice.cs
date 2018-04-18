@@ -32,6 +32,10 @@ namespace Molten.Graphics
         ShaderSampler _defaultSampler;
         long _allocatedVRAM;
 
+        RasterizerPresetBank _rasterizerPresets;
+        BlendPresetBank _blendPresets;
+        DepthPresetBank _depthPresets;
+
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
         internal GraphicsDevice(Logger log, GraphicsSettings settings, RenderProfilerDX profiler, DX11DisplayManager manager, bool enableDebugLayer)
@@ -56,31 +60,57 @@ namespace Molten.Graphics
                 _d3d = defaultDevice.QueryInterface<Device>();
 
             _features = new GraphicsDeviceFeatures(_d3d);
+
+            _rasterizerPresets = new RasterizerPresetBank();
+            _blendPresets = new BlendPresetBank();
+            _depthPresets = new DepthPresetBank();
+
             Initialize(_log, this, _d3d.ImmediateContext);
-
-            //// Initialize surfaces for the initial outputs.
-            //List<IDisplayOutput> initialOutputs = new List<IDisplayOutput>();
-            //_adapter.GetActiveOutputs(initialOutputs);
-            //foreach (GraphicsOutput output in initialOutputs)
-            //    CreateOutputSurface(output);
-
-            //_adapter.OnOutputAdded += _adapter_OnOutputAdded;
-            //_adapter.OnOutputRemoved += _adapter_OnOutputRemoved;
 
             CreateDefaultResources();
             ExternalContext = this;
         }
 
+        /// <summary>
+        /// Retrieves a rasterizer state preset.
+        /// </summary>
+        /// <param name="preset">The preset name/ID.</param>
+        /// <returns></returns>
+        internal GraphicsRasterizerState GetPreset(RasterizerPreset preset)
+        {
+            return _rasterizerPresets.GetPreset(preset);
+        }
+
+        /// <summary>
+        /// Retrieves a blend state preset.
+        /// </summary>
+        /// <param name="preset">The preset name/ID.</param>
+        /// <returns></returns>
+        internal GraphicsBlendState GetPreset(BlendingPreset preset)
+        {
+            return _blendPresets.GetPreset(preset);
+        }
+
+        /// <summary>
+        /// Retrieves a depth-stencil state preset.
+        /// </summary>
+        /// <param name="preset">The preset name/ID.</param>
+        /// <returns></returns>
+        internal GraphicsDepthState GetPreset(DepthStencilPreset preset)
+        {
+            return _depthPresets.GetPreset(preset);
+        }
+
         /// <summary>Track a VRAM allocation.</summary>
         /// <param name="bytes">The number of bytes that were allocated.</param>
-        public void AllocateVRAM(long bytes)
+        internal void AllocateVRAM(long bytes)
         {
             Interlocked.Add(ref _allocatedVRAM, bytes);
         }
 
         /// <summary>Track a VRAM deallocation.</summary>
         /// <param name="bytes">The number of bytes that were deallocated.</param>
-        public void DeallocateVRAM(long bytes)
+        internal void DeallocateVRAM(long bytes)
         {
             Interlocked.Add(ref _allocatedVRAM, -bytes);
         }
@@ -92,7 +122,7 @@ namespace Molten.Graphics
 
         /// <summary>Gets a new deferred <see cref="GraphicsPipe"/>.</summary>
         /// <returns></returns>
-        public GraphicsPipe GetDeferredContext()
+        internal GraphicsPipe GetDeferredContext()
         {
             GraphicsPipe context = new GraphicsPipe();
             context.Initialize(_log, this, new DeviceContext(_d3d));
@@ -100,7 +130,7 @@ namespace Molten.Graphics
             return context;
         }
 
-        public bool RemoveContext(GraphicsPipe context)
+        internal bool RemoveContext(GraphicsPipe context)
         {
             if(context == this)
                 throw new GraphicsContextException("Cannot remove the graphics device from itself.");
@@ -108,7 +138,7 @@ namespace Molten.Graphics
             return _contexts.Remove(context);
         }
 
-        public void SubmitContext(GraphicsPipe context)
+        internal void SubmitContext(GraphicsPipe context)
         {
             if (context.Type != GraphicsContextType.Deferred)
                 throw new Exception("Cannot submit immediate graphics contexts, only deferred.");
@@ -130,6 +160,9 @@ namespace Molten.Graphics
 
             _contexts.Clear();
 
+            DisposeObject(ref _rasterizerPresets);
+            DisposeObject(ref _blendPresets);
+            DisposeObject(ref _depthPresets);
             DisposeObject(ref _defaultSampler);
             DisposeObject(ref _d3d);
 
@@ -142,11 +175,11 @@ namespace Molten.Graphics
         internal ThreadedList<GraphicsPipe> ActiveContexts => _contexts;
 
         /// <summary>Gets an instance of <see cref="GraphicsDeviceFeatures"/> which provides access to feature support details for the current graphics device.</summary>
-        public GraphicsDeviceFeatures Features => _features;
+        internal GraphicsDeviceFeatures Features => _features;
 
-        public DX11DisplayManager DisplayManager => _displayManager;
+        internal DX11DisplayManager DisplayManager => _displayManager;
 
-        public GraphicsSettings Settings => _settings;
+        internal GraphicsSettings Settings => _settings;
 
         /// <summary>Gets or sets the default render surface. This is the surface that <see cref="GraphicsPipe"/> instances revert to
         /// when a render surface is set to null.</summary>

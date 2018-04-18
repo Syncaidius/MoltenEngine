@@ -19,6 +19,12 @@ namespace Molten.Graphics
 
             GraphicsRasterizerState state = new GraphicsRasterizerState();
 
+            // TODO add support for using a preset as a base:
+            /*    <rasterizer preset="default">
+                    <fillmode>Wireframe</fillmode>
+                  </rasterizer>
+             */
+
             foreach (XmlNode child in node.ChildNodes)
             {
                 string nodeName = child.Name.ToLower();

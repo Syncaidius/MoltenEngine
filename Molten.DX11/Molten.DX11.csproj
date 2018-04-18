@@ -132,6 +132,10 @@
     <Compile Include="Pipeline\PipelineObject.cs" />
     <Compile Include="Pipeline\PipelineOutput.cs" />
     <Compile Include="Pipeline\PipelineShaderObject.cs" />
+    <Compile Include="Pipeline\Presets\DepthPresetBank.cs" />
+    <Compile Include="Pipeline\Presets\GraphicsPresetBank.cs" />
+    <Compile Include="Pipeline\Presets\BlendPresetBank.cs" />
+    <Compile Include="Pipeline\Presets\RasterizerPresetBank.cs" />
     <Compile Include="Pipeline\ShaderInputStage.cs" />
     <Compile Include="Pipeline\ShaderStep.cs" />
     <Compile Include="PipeStateStack.cs" />

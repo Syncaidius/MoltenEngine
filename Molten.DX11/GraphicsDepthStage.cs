@@ -8,8 +8,6 @@ namespace Molten.Graphics
 {
     internal class GraphicsDepthStage : PipelineComponent
     {
-        GraphicsDepthState[] _presets;
-
         PipelineBindSlot<GraphicsDepthState> _slotState;
         GraphicsDepthState _currentState = null;
         int _stencilRef = 0;
@@ -19,34 +17,6 @@ namespace Molten.Graphics
         {
             _slotState = AddSlot<GraphicsDepthState>(PipelineSlotType.Output, 0);
             _slotState.OnBoundObjectDisposed += _slotState_OnBoundObjectDisposed;
-
-            //init preset array
-            DepthStencilPreset last = EnumHelper.GetLastValue<DepthStencilPreset>();
-            int presetArraySize = (int)last + 1;
-            _presets = new GraphicsDepthState[presetArraySize];
-
-            //default stencil-enabled preset
-            _presets[(int)DepthStencilPreset.Default] = new GraphicsDepthState()
-            {
-                IsStencilEnabled = true,
-            };
-
-            //default preset
-            _presets[(int)DepthStencilPreset.DefaultNoStencil] = new GraphicsDepthState();
-
-            //Z-disabled preset
-            _presets[(int)DepthStencilPreset.ZDisabled] = new GraphicsDepthState()
-            {
-                IsDepthEnabled = false,
-                DepthWriteMask = DepthWriteMask.Zero,
-            };
-
-            _presets[(int)DepthStencilPreset.Sprite2D] = new GraphicsDepthState()
-            {
-                IsDepthEnabled = true,
-                IsStencilEnabled = true,
-                DepthComparison = Comparison.LessEqual,
-            };
         }
 
         private void _slotState_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
@@ -54,38 +24,25 @@ namespace Molten.Graphics
             Pipe.Context.OutputMerger.DepthStencilState = null;
         }
 
-        public GraphicsDepthState GetPresetState(DepthStencilPreset preset)
-        {
-            return _presets[(int)preset];
-        }
-
         protected override void OnDispose()
         {
-            for (int i = 0; i < _presets.Length; i++)
-                _presets[i].Dispose();
-
             _currentState = null;
-
             base.OnDispose();
         }
 
         public void SetPreset(DepthStencilPreset preset)
         {
-            _currentState = _presets[(int)preset];
+            _currentState = Device.GetPreset(preset);
         }
 
         /// <summary>Applies the current state to the device. Called internally.</summary>
         internal override void Refresh()
         {
-            int defaultID = (int)BlendingPreset.Default;
+            // Ensure the default preset is used if a null state was requested.
+            _currentState = _currentState ?? Device.GetPreset(DepthStencilPreset.Default);
+            bool stateChanged = _slotState.Bind(Pipe, _currentState);
 
-            //ensure the default preset is used if a null state was requested.
-            if (_currentState == null)
-                _currentState = _presets[defaultID];
-
-            bool changed = _slotState.Bind(Pipe, _currentState);
-
-            if (changed)
+            if (stateChanged)
             {
                 Pipe.Context.OutputMerger.SetDepthStencilState(_slotState.BoundObject.State, _stencilRef);
                 _stencilRefChanged = false;
@@ -117,20 +74,5 @@ namespace Molten.Graphics
                 }
             }
         }
-    }
-
-    public enum DepthStencilPreset
-    {
-        /// <summary>Default depth stencil state with stencil testing enabled.</summary>
-        Default = 0,
-
-        /// <summary>The default depth stencil state, but with stencil testing disabled.</summary>
-        DefaultNoStencil = 1,
-
-        /// <summary>The same as default, but with the z-buffer disabled.</summary>
-        ZDisabled = 2,
-
-        /// <summary>A state used for drawing 2D sprites. Stenicl testing is enabled.</summary>
-        Sprite2D = 3,
     }
 }

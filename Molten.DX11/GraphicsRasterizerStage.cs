@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal class GraphicsRasterizerStage : PipelineComponent
     {
-        GraphicsRasterizerState[] _presets;
+
 
         PipelineBindSlot<GraphicsRasterizerState> _slotState;
         GraphicsRasterizerState _currentState = null;
@@ -36,43 +36,6 @@ namespace Molten.Graphics
 
             _slotState = AddSlot<GraphicsRasterizerState>(PipelineSlotType.Output, 0);
             _slotState.OnBoundObjectDisposed += _slotState_OnBoundObjectDisposed;
-
-            //init preset array
-            RasterizerPreset last = EnumHelper.GetLastValue<RasterizerPreset>();
-            int presetArraySize = (int)last + 1;
-            _presets = new GraphicsRasterizerState[presetArraySize];
-
-            //default preset
-            _presets[(int)RasterizerPreset.Default] = new GraphicsRasterizerState();
-
-            //wireframe preset.
-            _presets[(int)RasterizerPreset.Wireframe] = new GraphicsRasterizerState()
-            {
-                FillMode = FillMode.Wireframe,
-            };
-
-            //scissor test preset
-            _presets[(int)RasterizerPreset.ScissorTest] = new GraphicsRasterizerState()
-            {
-                IsScissorEnabled = true,
-            };
-
-            //no culling preset.
-            _presets[(int)RasterizerPreset.NoCulling] = new GraphicsRasterizerState()
-            {
-                CullMode = CullMode.None,
-            };
-
-            _presets[(int)RasterizerPreset.DefaultMultisample] = new GraphicsRasterizerState()
-            {
-                IsMultisampleEnabled = true,
-            };
-
-            _presets[(int)RasterizerPreset.ScissorTestMultisample] = new GraphicsRasterizerState()
-            {
-                IsScissorEnabled = true,
-                IsMultisampleEnabled = true,
-            };
         }
 
         private void _slotState_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
@@ -80,16 +43,8 @@ namespace Molten.Graphics
             Pipe.Context.Rasterizer.State = null;
         }
 
-        public GraphicsRasterizerState GetPresetState(RasterizerPreset preset)
-        {
-            return _presets[(int)preset];
-        }
-
         protected override void OnDispose()
         {
-            for (int i = 0; i < _presets.Length; i++)
-                _presets[i].Dispose();
-
             _currentState = null;
 
             base.OnDispose();
@@ -99,7 +54,7 @@ namespace Molten.Graphics
         /// <param name="preset"></param>
         public void SetPreset(RasterizerPreset preset)
         {
-            _currentState = _presets[(int)preset];
+            _currentState = Device.GetPreset(preset);
         }
 
         public void SetScissorRectangle(Rectangle rect, int slot = 0)
@@ -185,15 +140,11 @@ namespace Molten.Graphics
         /// <summary>Applies the current state to the device. Called internally.</summary>
         internal override void Refresh()
         {
-            int defaultID = (int)BlendingPreset.Default;
-
-            //ensure the default preset is used if a null state was requested.
-            if (_currentState == null)
-                _currentState = _presets[defaultID];
-
-            // Update rasterizer state.
+            // Ensure the default preset is used if a null state was requested.
+            _currentState = _currentState ?? Device.GetPreset(RasterizerPreset.Default);
             bool stateChanged = _slotState.Bind(Pipe, _currentState);
-            if (stateChanged)
+
+            if (stateChanged)   // Update rasterizer state.
                 Pipe.Context.Rasterizer.State = _slotState.BoundObject.State;
 
             // Check if scissor rects need updating
@@ -229,31 +180,5 @@ namespace Molten.Graphics
         {
             get { return _viewports.Length; }
         }
-    }
-
-    /// <summary>Represents several rasterizer state presets.</summary>
-    public enum RasterizerPreset
-    {
-        /// <summary>The default rasterizer state.</summary>
-        Default = 0,
-
-        /// <summary>The same as the default rasterizer state, but with wireframe enabled.</summary>
-        Wireframe = 1,
-
-        /// <summary>The same as the default rasterizer state, but with scissor testing enabled.</summary>
-        ScissorTest = 2,
-
-        /// <summary>Culling is disabled. Back and front faces will be drawn.</summary>
-        NoCulling = 3,
-
-        /// <summary>
-        /// The same as <see cref="Default"/> but with multisampling enabled.
-        /// </summary>
-        DefaultMultisample = 4,
-
-        /// <summary>
-        /// The same as <see cref="ScissorTest"/> but with multisampling enabled.
-        /// </summary>
-        ScissorTestMultisample = 5,
     }
 }
