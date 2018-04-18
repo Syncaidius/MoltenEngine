@@ -8,10 +8,15 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal class RasterizerNodeParser
+    internal class RasterizerNodeParser : ShaderNodeParser
     {
-        internal GraphicsRasterizerState Parse(HlslShader shader, ShaderCompilerContext context, XmlNode node)
+        internal override string[] SupportedNodes => new string[] { "rasterizer" };
+
+        internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
         {
+            if (foundation is ComputeTask)
+                return new NodeParseResult(NodeParseResultType.Ignored);
+
             GraphicsRasterizerState state = new GraphicsRasterizerState();
 
             foreach (XmlNode child in node.ChildNodes)
@@ -21,7 +26,7 @@ namespace Molten.Graphics
                 {
                     case "cullmode":
                         if (Enum.TryParse(child.InnerText, out CullMode mode))
-                            state.CullMode = mode;                        
+                            state.CullMode = mode;
                         break;
 
                     case "depthbias":
@@ -55,8 +60,8 @@ namespace Molten.Graphics
                         break;
 
                     case "multisample":
-                        if(bool.TryParse(child.InnerText, out bool multisampleEnabled))
-                        state.IsMultisampleEnabled = multisampleEnabled;
+                        if (bool.TryParse(child.InnerText, out bool multisampleEnabled))
+                            state.IsMultisampleEnabled = multisampleEnabled;
                         break;
 
                     case "scissortest":
@@ -71,19 +76,41 @@ namespace Molten.Graphics
                 }
             }
 
+            bool existingState = false;
             // Check if an identical state exists before returning the new one.
-            foreach(GraphicsRasterizerState existing in context.RasterStates)
+            foreach (GraphicsRasterizerState existing in context.RasterStates)
             {
                 if (existing.Equals(state))
                 {
                     state.Dispose();
-                    return existing;
+                    existingState = true;
+                    state = existing;
+                    break;
                 }
             }
 
-            // If we've reached this far, the state is new and unique.
-            context.RasterStates.Add(state);
-            return state;
+            if (!existingState)
+                context.RasterStates.Add(state);
+
+            switch (foundation)
+            {
+                case Material material:
+                    material.RasterizerState = state;
+
+                    // Apply to existing passes which do not have a rasterizer state yet.
+                    foreach(MaterialPass p in material.Passes)
+                    {
+                        if (p.RasterizerState == null)
+                            p.RasterizerState = state;
+                    }
+                    break;
+
+                case MaterialPass pass:
+                    pass.RasterizerState = state;
+                    break;
+            }
+
+            return new NodeParseResult(NodeParseResultType.Success);
         }
     }
 }

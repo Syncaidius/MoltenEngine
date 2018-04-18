@@ -16,7 +16,6 @@ namespace Molten.Graphics
         int _drawnFrom;
         int _drawnTo;
         int _spriteCapacity;
-        bool _multisampled;
 
         Material _defaultMaterial;
         Material _defaultNoTextureMaterial;
