@@ -20,6 +20,12 @@ namespace Molten.Graphics
         Comparison _comparison;
         Filter _filter;
 
+        internal ShaderSampler(ShaderSampler source)
+        {
+            _description = source._description;
+            _isDirty = true;
+        }
+
         internal ShaderSampler()
         {
             _description = SamplerStateDescription.Default();
@@ -59,7 +65,7 @@ namespace Molten.Graphics
 
         /// <summary>Sets the entire sampler state description.</summary>
         /// <param name="description">The description to apply to the state.</param>
-        public void SetDescription(SamplerStateDescription description)
+        internal void SetDescription(SamplerStateDescription description)
         {
             _description = description;
             _isDirty = true;

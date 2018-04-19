@@ -15,7 +15,16 @@ namespace Molten.Graphics
         {
             if (shader is Material material)
             {
-                MaterialPass pass = new MaterialPass(material);
+                MaterialPass pass = new MaterialPass(material)
+                {
+                    RasterizerState = material.RasterizerState,
+                    BlendState = material.BlendState,
+                    DepthState = material.DepthState,
+                };
+
+                for (int i = 0; i < material.Samplers.Length; i++)
+                    pass.Samplers[i] = material.Samplers[i];
+
                 context.Compiler.ParseNode(pass, node, context);
 
                 // Add the pass once for each iteration it is meant to run.

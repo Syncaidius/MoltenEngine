@@ -165,6 +165,7 @@
     <Compile Include="Scene\Changes\SpriteAdd.cs" />
     <Compile Include="Scene\Changes\SpriteRemove.cs" />
     <Compile Include="Scene\SceneRenderDataDX11.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\SamplerNodeParser.cs" />
     <Compile Include="Shaders\Compiler\Parsers\BlendNodeParser.cs" />
     <Compile Include="Shaders\Compiler\Parsers\DepthNodeParser.cs" />
     <Compile Include="Shaders\Compiler\Parsers\ShaderPSParser.cs" />
@@ -174,7 +175,6 @@
     <Compile Include="Shaders\Compiler\Parsers\ShaderVSParser.cs" />
     <Compile Include="Shaders\Compiler\Parsers\ShaderIterationParser.cs" />
     <Compile Include="Shaders\Compiler\ShaderCompilerContext.cs" />
-    <Compile Include="Shaders\Compiler\StateParsers\SamplerNodeParser.cs" />
     <Compile Include="Shaders\Compiler\Parsers\RasterizerNodeParser.cs" />
     <Compile Include="Shaders\HlslFoundation.cs" />
     <Compile Include="Spritebatch\SpriteBatchDX11.cs" />
@@ -201,7 +201,7 @@
     <Compile Include="Shaders\Materials\MaterialManager.cs" />
     <Compile Include="Shaders\Materials\MaterialPass.cs" />
     <Compile Include="Shaders\Materials\MaterialPassCompileResult.cs" />
-    <Compile Include="Shaders\Materials\Samplers\ShaderSampler.cs" />
+    <Compile Include="Shaders\Materials\ShaderSampler.cs" />
     <Compile Include="Shaders\ShaderComposition.cs" />
     <Compile Include="Shaders\ShaderIOStructure.cs" />
     <Compile Include="Shaders\Variables\BufferVariable.cs" />
@@ -282,7 +282,9 @@
     <EmbeddedResource Include="Assets\light_common.sbm" />
     <EmbeddedResource Include="Assets\light_point.sbm" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Shaders\Compiler\StateParsers\" />
+  </ItemGroup>
   <Import Project="..\Molten.DX.Shared\Molten.DX.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

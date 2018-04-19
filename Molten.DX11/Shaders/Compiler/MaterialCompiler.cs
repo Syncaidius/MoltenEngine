@@ -47,6 +47,7 @@ namespace Molten.Graphics
             catch (Exception e)
             {
                 context.Errors.Add($"{context.Filename ?? "Material header error"}: {e.Message}");
+                renderer.Device.Log.WriteError(e);
                 return result;
             }
 

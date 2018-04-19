@@ -60,46 +60,64 @@ namespace Molten.Graphics
                     case "enabled":
                         if (bool.TryParse(child.InnerText, out bool blendEnabled))
                             state.SetIsBlendEnabled(rtIndex, blendEnabled);
+                        else
+                            InvalidValueMessage(context, child, "blend enabled", "boolean");
                         break;
 
                     case "alphatocoverage":
                         if (bool.TryParse(child.InnerText, out bool alphaToCoverage))
                             state.AlphaToCoverageEnable = alphaToCoverage;
+                        else
+                            InvalidValueMessage(context, child, "alpha-to-coverage enabled", "boolean");
                         break;
 
                     case "source":
                         if (Enum.TryParse(child.InnerText, true, out BlendOption sourceBlend))
                             state.SetSourceBlend(rtIndex, sourceBlend);
+                        else
+                            InvalidEnumMessage<BlendOption>(context, child, "source blend option");
                         break;
 
                     case "destination":
                         if (Enum.TryParse(child.InnerText, true, out BlendOption destBlend))
                             state.SetDestinationBlend(rtIndex, destBlend);
+                        else
+                            InvalidEnumMessage<BlendOption>(context, child, "destination blend option");
                         break;
 
                     case "operation":
                         if (Enum.TryParse(child.InnerText, true, out BlendOperation blendOp))
                             state.SetBlendOperation(rtIndex, blendOp);
+                        else
+                            InvalidEnumMessage<BlendOperation>(context, child, "blend operation");
                         break;
 
                     case "sourcealpha":
                         if (Enum.TryParse(child.InnerText, true, out BlendOption sourceAlpha))
                             state.SetSourceAlphaBlend(rtIndex, sourceAlpha);
+                        else
+                            InvalidEnumMessage<BlendOption>(context, child, "source alpha option");
                         break;
 
                     case "destinationalpha":
                         if (Enum.TryParse(child.InnerText, true, out BlendOption destAlpha))
                             state.SetDestinationAlphaBlend(rtIndex, destAlpha);
+                        else
+                            InvalidEnumMessage<BlendOption>(context, child, "destination alpha option");
                         break;
 
                     case "alphaoperation":
                         if (Enum.TryParse(child.InnerText, true, out BlendOperation alphaOperation))
                             state.SetAlphaBlendOperation(rtIndex, alphaOperation);
+                        else
+                            InvalidEnumMessage<BlendOperation>(context, child, "alpha-blend operation");
                         break;
 
                     case "writemask":
                         if (Enum.TryParse(child.InnerText, true, out ColorWriteMaskFlags rtWriteMask))
                             state.SetRenderTargetWriteMask(rtIndex, rtWriteMask);
+                        else
+                            InvalidEnumMessage<ColorWriteMaskFlags>(context, child, "render surface/target write mask");
                         break;
                 }
             }

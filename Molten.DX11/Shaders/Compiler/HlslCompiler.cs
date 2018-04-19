@@ -18,9 +18,6 @@ namespace Molten.Graphics
         RendererDX11 _renderer;
         Include _defaultIncluder;
 
-        internal readonly RasterizerNodeParser RasterizerParser;
-        internal readonly SamplerNodeParser SamplerParser;
-
         Dictionary<string, ShaderNodeParser> _parsers;
 
         internal HlslCompiler(RendererDX11 renderer, Logger log)
@@ -39,9 +36,6 @@ namespace Molten.Graphics
             _log = log;
             _subCompilers = new Dictionary<string, HlslSubCompiler>();
             _defaultIncluder = new EmbeddedIncludeHandler(typeof(EmbeddedIncludeHandler).Assembly);
-
-            RasterizerParser = new RasterizerNodeParser();
-            SamplerParser = new SamplerNodeParser();
 
             AddSubCompiler<MaterialCompiler>("material");
             AddSubCompiler<ComputeCompiler>("compute");
@@ -181,6 +175,9 @@ namespace Molten.Graphics
 
             foreach (string error in context.Errors)
                 _log.WriteError(error);
+
+            foreach (string msg in context.Messages)
+                _log.WriteLine(msg);
 
             return context.Result;
         }

@@ -149,7 +149,7 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-        public bool IsDepthEnabled
+        internal bool IsDepthEnabled
         {
             get { return _desc.IsDepthEnabled; }
             set
@@ -159,7 +159,7 @@ namespace Molten.Graphics
             }
         }
 
-        public bool IsStencilEnabled
+        internal bool IsStencilEnabled
         {
             get { return _desc.IsStencilEnabled; }
             set
@@ -169,7 +169,7 @@ namespace Molten.Graphics
             }
         }
 
-        public DepthWriteMask DepthWriteMask
+        internal DepthWriteMask DepthWriteMask
         {
             get { return _desc.DepthWriteMask; }
             set
@@ -179,7 +179,7 @@ namespace Molten.Graphics
             }
         }
 
-        public Comparison DepthComparison
+        internal Comparison DepthComparison
         {
             get { return _desc.DepthComparison; }
             set
@@ -189,7 +189,7 @@ namespace Molten.Graphics
             }
         }
 
-        public byte StencilReadMask
+        internal byte StencilReadMask
         {
             get { return _desc.StencilReadMask; }
             set
@@ -199,7 +199,7 @@ namespace Molten.Graphics
             }
         }
 
-        public byte StencilWriteMask
+        internal byte StencilWriteMask
         {
             get { return _desc.StencilWriteMask; }
             set
@@ -210,13 +210,13 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets the description for the front-face depth operation description.</summary>
-        public Face FrontFace
+        internal Face FrontFace
         {
             get { return _frontFace; }
         }
 
         /// <summary>Gets the description for the back-face depth operation description.</summary>
-        public Face BackFace
+        internal Face BackFace
         {
             get { return _backFace; }
         }

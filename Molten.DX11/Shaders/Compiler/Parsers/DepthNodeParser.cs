@@ -40,39 +40,51 @@ namespace Molten.Graphics
                     case "enabled":
                         if (bool.TryParse(child.InnerText, out bool depthEnabled))
                             state.IsDepthEnabled = depthEnabled;
+                        else
+                            InvalidValueMessage(context, child, "depth-testing enabled", "boolean");
                         break;
 
                     case "stencilenabled":
                         if (bool.TryParse(child.InnerText, out bool stencilEnabled))
-                            state.IsDepthEnabled = stencilEnabled;
+                            state.IsStencilEnabled = stencilEnabled;
+                        else
+                            InvalidValueMessage(context, child, "stencil-testing enabled", "boolean");
                         break;
 
                     case "writemask":
-                        if (Enum.TryParse(child.InnerText, true, out DepthWriteMask fillMode))
-                            state.DepthWriteMask = fillMode;
+                        if (Enum.TryParse(child.InnerText, true, out DepthWriteMask writeMask))
+                            state.DepthWriteMask = writeMask;
+                        else
+                            InvalidEnumMessage<DepthWriteMask>(context, child, "depth write mask");
                         break;
 
                     case "comparison":
                         if (Enum.TryParse(child.InnerText, true, out Comparison comparison))
                             state.DepthComparison = comparison;
+                        else
+                            InvalidEnumMessage<DepthWriteMask>(context, child, "depth comparison");
                         break;
 
                     case "stencilreadmask":
                         if (byte.TryParse(child.InnerText, out byte stencilReadMask))
                             state.StencilReadMask = stencilReadMask;
+                        else
+                            InvalidValueMessage(context, child, "stencil read mask", "byte");
                         break;
 
                     case "stencilwritemask":
                         if (byte.TryParse(child.InnerText, out byte stencilWriteMask))
                             state.StencilWriteMask = stencilWriteMask;
+                        else
+                            InvalidValueMessage(context, child, "stencil write mask", "byte");
                         break;
 
                     case "front":
-                        ParseFaceNode(child, state.FrontFace);
+                        ParseFaceNode(context, child, state.FrontFace);
                         break;
 
                     case "back":
-                        ParseFaceNode(child, state.BackFace);
+                        ParseFaceNode(context, child, state.BackFace);
                         break;
                 }
             }
@@ -114,7 +126,7 @@ namespace Molten.Graphics
             return new NodeParseResult(NodeParseResultType.Success);
         }
 
-        private void ParseFaceNode(XmlNode faceNode, GraphicsDepthState.Face face)
+        private void ParseFaceNode(ShaderCompilerContext context, XmlNode faceNode, GraphicsDepthState.Face face)
         {
             foreach(XmlNode child in faceNode.ChildNodes)
             {
@@ -123,21 +135,29 @@ namespace Molten.Graphics
                     case "comparison":
                         if (Enum.TryParse(child.InnerText, true, out Comparison comparison))
                             face.Comparison = comparison;
+                        else
+                            InvalidEnumMessage<Comparison>(context, child, $"{faceNode.Name}-face comparison");
                         break;
 
                     case "stencilpass":
                         if (Enum.TryParse(child.InnerText, true, out StencilOperation stencilpassOp))
                             face.PassOperation = stencilpassOp;
+                        else
+                            InvalidEnumMessage<StencilOperation>(context, child, $"{faceNode.Name}-face stencil pass operation");
                         break;
 
                     case "stencilfail":
                         if (Enum.TryParse(child.InnerText, true, out StencilOperation stencilFailOp))
                             face.FailOperation = stencilFailOp;
+                        else
+                            InvalidEnumMessage<StencilOperation>(context, child, $"{faceNode.Name}-face stencil fail operation");
                         break;
 
                     case "fail":
                         if (Enum.TryParse(child.InnerText, true, out StencilOperation failOp))
                             face.DepthFailOperation = failOp;
+                        else
+                            InvalidEnumMessage<StencilOperation>(context, child, $"{faceNode.Name}-face depth fail operation");
                         break;
                 }
             }
