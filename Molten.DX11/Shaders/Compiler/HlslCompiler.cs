@@ -173,11 +173,22 @@ namespace Molten.Graphics
                 context.Errors.Add($"{filename ?? "Shader source error"}: {hlslError}");
             }
 
-            foreach (string error in context.Errors)
-                _log.WriteError(error);
+            if (string.IsNullOrWhiteSpace(filename))
+            {
+                foreach (string error in context.Errors)
+                    _log.WriteError(error);
 
-            foreach (string msg in context.Messages)
-                _log.WriteLine(msg);
+                foreach (string msg in context.Messages)
+                    _log.WriteLine(msg);
+            }
+            else
+            {
+                foreach (string error in context.Errors)
+                    _log.WriteError($"{filename}: {error}");
+
+                foreach (string msg in context.Messages)
+                    _log.WriteLine($"{filename}: {msg}");
+            }
 
             return context.Result;
         }
