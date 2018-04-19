@@ -17,8 +17,7 @@ namespace Molten.Graphics
             if (foundation is ComputeTask)
                 return new NodeParseResult(NodeParseResultType.Ignored);
 
-            GraphicsDepthState state = new GraphicsDepthState(foundation.Device.GetPreset(DepthStencilPreset.Default));
-
+            GraphicsDepthState state = null;
             foreach (XmlAttribute attribute in node.Attributes)
             {
                 string attName = attribute.Name.ToLower();
@@ -30,6 +29,8 @@ namespace Molten.Graphics
                         break;
                 }
             }
+
+            state = state ?? new GraphicsDepthState(foundation.Device.GetPreset(DepthStencilPreset.Default));
 
             foreach (XmlNode child in node.ChildNodes)
             {

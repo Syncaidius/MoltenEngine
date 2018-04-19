@@ -35,14 +35,14 @@ namespace Molten.Graphics
 
         /// <summary>Sets the blending state of the device via a preset.</summary>
         /// <param name="preset"></param>
-        public void SetPreset(BlendingPreset preset)
+        public void SetPreset(BlendPreset preset)
         {
             _currentState = Device.GetPreset(preset);
         }
 
         internal override void Refresh()
         {
-            _currentState = _currentState ?? Device.GetPreset(BlendingPreset.Default);
+            _currentState = _currentState ?? Device.GetPreset(BlendPreset.Default);
             bool stateChanged = _slotState.Bind(Pipe, _currentState);
 
             if (stateChanged)

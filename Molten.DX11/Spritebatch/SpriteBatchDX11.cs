@@ -99,7 +99,7 @@ namespace Molten.Graphics
              
             pipe.PushState();
             pipe.DepthStencil.SetPreset(DepthStencilPreset.ZDisabled);
-            pipe.BlendState.SetPreset(BlendingPreset.PreMultipliedAlpha);
+            pipe.BlendState.SetPreset(BlendPreset.PreMultipliedAlpha);
             pipe.SetVertexSegment(_segment, 0);
 
             // Run through all clip zones

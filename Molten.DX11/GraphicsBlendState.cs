@@ -14,10 +14,14 @@ namespace Molten.Graphics
         bool _dirty;
         BlendStateDescription _desc;
 
+        internal GraphicsBlendState(GraphicsBlendState source)
+        {
+            _desc = source._desc;
+        }
+
         internal GraphicsBlendState()
         {
             _desc = BlendStateDescription.Default();
-            _dirty = true;
         }
 
         public override bool Equals(object obj)
@@ -174,6 +178,16 @@ namespace Molten.Graphics
         {
             _desc.RenderTarget[rtIndex].RenderTargetWriteMask = value;
             _dirty = true;
+        }
+
+        /// <summary>
+        /// Sets the blend state of a specific render target slot based on slot 0 of the provided source state.
+        /// </summary>
+        /// <param name="rtIndex">The render target index to set.</param>
+        /// <param name="source">The source blend state from which to copy the state of slot index 0 to the specified destination slot.</param>
+        internal void Set(int rtIndex, GraphicsBlendState source)
+        {
+            _desc.RenderTarget[rtIndex] = source._desc.RenderTarget[0];
         }
 
         public void ApplyRenderTargetZeroToAll()

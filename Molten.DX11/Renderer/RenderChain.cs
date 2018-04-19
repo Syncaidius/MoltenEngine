@@ -53,8 +53,6 @@ namespace Molten.Graphics
 
         internal void Rebuild()
         {
-            // TODO if the current scene has the same flags as the previous scene, skip rebuilding chain.
-            // TODO consider moving/caching render chain construction in to SceneRenderDataDX11. If the flags are changed, (re)build it on the next render cycle.
             First = null;
             Last = null;
 

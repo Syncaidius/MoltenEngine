@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class BlendPresetBank : GraphicsPresetBank<GraphicsBlendState, BlendingPreset>
+    internal class BlendPresetBank : GraphicsPresetBank<GraphicsBlendState, BlendPreset>
     {
         internal BlendPresetBank()
         {
-            AddPreset(BlendingPreset.Default, new GraphicsBlendState());
+            AddPreset(BlendPreset.Default, new GraphicsBlendState());
 
             // Additive blending preset.
-            AddPreset(BlendingPreset.Additive, new GraphicsBlendState()
+            AddPreset(BlendPreset.Additive, new GraphicsBlendState()
             {
                 AlphaToCoverageEnable = false,
                 IndependentBlendEnable = false,
@@ -29,7 +29,7 @@ namespace Molten.Graphics
             });
 
             // Pre-multiplied alpha
-            AddPreset(BlendingPreset.PreMultipliedAlpha, new GraphicsBlendState()
+            AddPreset(BlendPreset.PreMultipliedAlpha, new GraphicsBlendState()
             {
                 AlphaToCoverageEnable = false,
                 IndependentBlendEnable = false,
@@ -46,13 +46,13 @@ namespace Molten.Graphics
             });
         }
 
-        internal override GraphicsBlendState GetPreset(BlendingPreset value)
+        internal override GraphicsBlendState GetPreset(BlendPreset value)
         {
             return _presets[(int)value];
         }
     }
 
-    public enum BlendingPreset
+    public enum BlendPreset
     {
         /// <summary>The default blend mode.</summary>
         Default = 0,

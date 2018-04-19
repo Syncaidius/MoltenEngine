@@ -86,7 +86,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="preset">The preset name/ID.</param>
         /// <returns></returns>
-        internal GraphicsBlendState GetPreset(BlendingPreset preset)
+        internal GraphicsBlendState GetPreset(BlendPreset preset)
         {
             return _blendPresets.GetPreset(preset);
         }

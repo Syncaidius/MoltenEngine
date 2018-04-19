@@ -27,8 +27,6 @@ namespace Molten.Graphics
         
         public string Filename => _filename;
 
-        internal GraphicsDevice Device => _device;
-
         public Dictionary<string, string> Metadata => _metadata;
 
         internal HlslShader(GraphicsDevice device, string filename = null) : base(device)

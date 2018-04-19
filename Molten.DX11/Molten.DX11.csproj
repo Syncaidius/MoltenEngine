@@ -118,7 +118,6 @@
     <Compile Include="Hardware\GraphicsComputeFeatures.cs" />
     <Compile Include="Hardware\GraphicsDeviceFeatures.cs" />
     <Compile Include="Hardware\GraphicsShaderFeatures.cs" />
-    <Compile Include="InternalConstants.cs" />
     <Compile Include="Meshes\StandardIndexedMesh.cs" />
     <Compile Include="Meshes\StandardMesh.cs" />
     <Compile Include="Meshes\IndexedMesh.cs" />
@@ -166,6 +165,7 @@
     <Compile Include="Scene\Changes\SpriteAdd.cs" />
     <Compile Include="Scene\Changes\SpriteRemove.cs" />
     <Compile Include="Scene\SceneRenderDataDX11.cs" />
+    <Compile Include="Shaders\Compiler\Parsers\BlendNodeParser.cs" />
     <Compile Include="Shaders\Compiler\Parsers\DepthNodeParser.cs" />
     <Compile Include="Shaders\Compiler\Parsers\ShaderPSParser.cs" />
     <Compile Include="Shaders\Compiler\Parsers\ShaderHSParser.cs" />
