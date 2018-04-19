@@ -86,6 +86,10 @@ namespace Molten.Graphics
                     case "back":
                         ParseFaceNode(context, child, state.BackFace);
                         break;
+
+                    default:
+                        UnsupportedTagMessage(context, child);
+                        break;
                 }
             }
 
@@ -158,6 +162,10 @@ namespace Molten.Graphics
                             face.DepthFailOperation = failOp;
                         else
                             InvalidEnumMessage<StencilOperation>(context, child, $"{faceNode.Name}-face depth fail operation");
+                        break;
+
+                    default:
+                        UnsupportedTagMessage(context, child);
                         break;
                 }
             }

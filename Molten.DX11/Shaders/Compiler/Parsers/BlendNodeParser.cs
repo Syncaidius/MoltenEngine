@@ -119,6 +119,10 @@ namespace Molten.Graphics
                         else
                             InvalidEnumMessage<ColorWriteMaskFlags>(context, child, "render surface/target write mask");
                         break;
+
+                    default:
+                        UnsupportedTagMessage(context, child);
+                        break;
                 }
             }
 

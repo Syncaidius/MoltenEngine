@@ -223,7 +223,16 @@ namespace Molten.Graphics
                 string nodeName = node.Name.ToLower();
                 ShaderNodeParser parser = null;
                 if (_parsers.TryGetValue(nodeName, out parser))
+                {
                     parser.Parse(foundation, context, node);
+                }
+                else
+                {
+                    if (parentNode.ParentNode != null)
+                        context.Messages.Add($"Ignoring unsupported {parentNode.ParentNode.Name} tag '{parentNode.Name}'");
+                    else
+                        context.Messages.Add($"Ignoring unsupported root tag '{parentNode.Name}'");
+                }
             }
         }
     }

@@ -18,6 +18,14 @@ namespace Molten.Graphics
             context.Messages.Add($"Tag '{node.Name}' ({friendlyTagName}) has invalid value '{node.InnerText}'. Must be a {friendlyValueName} value");
         }
 
+        protected void UnsupportedTagMessage(ShaderCompilerContext context, XmlNode node)
+        {
+            if(node.ParentNode != null)
+                context.Messages.Add($"Ignoring unsupported {node.ParentNode.Name} tag '{node.Name}'.");
+            else
+                context.Messages.Add($"Ignoring unsupported root tag '{node.Name}'.");
+        }
+
         protected void InvalidEnumMessage<T>(ShaderCompilerContext context, XmlNode node, string friendlyTagName)
             where T : struct, IComparable
         {

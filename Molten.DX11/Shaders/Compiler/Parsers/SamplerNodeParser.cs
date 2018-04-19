@@ -132,6 +132,10 @@ namespace Molten.Graphics
                         else
                             InvalidValueMessage(context, child, "level-of-detail (LoD) bias", "floating-point");
                         break;
+
+                    default:
+                        UnsupportedTagMessage(context, child);
+                        break;
                 }
             }
 
