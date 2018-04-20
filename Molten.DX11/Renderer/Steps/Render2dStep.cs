@@ -59,7 +59,7 @@ namespace Molten.Graphics
 
                 renderer.SpriteBatcher.Begin(rs.Viewport);
                 scene.Render2D(device, renderer);
-                renderer.SpriteBatcher.Flush(device, ref spriteViewProj, rs.SampleCount > 1);
+                renderer.SpriteBatcher.Flush(device, ref spriteViewProj, rs.SampleCount > 1, rs);
             }
         }
     }

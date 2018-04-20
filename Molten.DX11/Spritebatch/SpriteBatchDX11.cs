@@ -89,7 +89,7 @@ namespace Molten.Graphics
 
         /// <summary>Finalizes a batch of sprites, sorts them (if enabled) and then draws them.</summary>
         /// <param name="sortMode"></param>
-        internal void Flush(GraphicsPipe pipe, ref Matrix4F viewProjection, bool multisample)
+        internal void Flush(GraphicsPipe pipe, ref Matrix4F viewProjection, bool multisample, RenderSurfaceBase destination)
         {
             //if nothing was added to the batch, don't bother with any draw operations.
             if (_clusterCount == 0)
@@ -115,16 +115,12 @@ namespace Molten.Graphics
                 _drawnFrom = 0;
                 _drawnTo = 0;
 
-                if(multisample)
-                {
-                    int derp = 0;
-                }
                 // Set rasterizer state + scissor rect
                 RasterizerPreset rasterPreset = RasterizerPreset.Default;
-                if (clip.Active)
-                    rasterPreset = multisample ? RasterizerPreset.ScissorTestMultisample : RasterizerPreset.ScissorTest;
-                else
-                    rasterPreset = multisample ? RasterizerPreset.DefaultMultisample : RasterizerPreset.Default;
+                rasterPreset = multisample ? RasterizerPreset.ScissorTestMultisample : RasterizerPreset.ScissorTest;
+
+                if (!clip.Active)
+                    clip.ClipBounds = destination.Viewport.Bounds;
 
                 pipe.Rasterizer.SetPreset(rasterPreset);
                 pipe.Rasterizer.SetScissorRectangle(clip.ClipBounds);

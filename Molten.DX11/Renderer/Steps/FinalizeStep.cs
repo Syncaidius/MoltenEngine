@@ -45,7 +45,7 @@ namespace Molten.Graphics
 
                     renderer.SpriteBatcher.Begin(scene.FinalSurface.Viewport);
                     renderer.SpriteBatcher.Draw(start.Scene, bounds, bounds, Color.White, 0, Vector2F.Zero, null);
-                    renderer.SpriteBatcher.Flush(device, ref spriteViewProj, scene.FinalSurface.SampleCount > 1);
+                    renderer.SpriteBatcher.Flush(device, ref spriteViewProj, scene.FinalSurface.SampleCount > 1, scene.FinalSurface);
                     break;
             }
         }
