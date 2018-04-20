@@ -29,7 +29,10 @@ namespace Molten.Graphics
         protected void InvalidEnumMessage<T>(ShaderCompilerContext context, XmlNode node, string friendlyTagName)
             where T : struct, IComparable
         {
-            T[] possibleVals = Enum.GetValues(typeof(T)) as T[];
+            Type t = typeof(T);
+            bool isFlags = t.GetCustomAttributes(typeof(FlagsAttribute), false).Length > 0;
+
+            T[] possibleVals = Enum.GetValues(t) as T[];
             if (possibleVals.Length == 0)
                 return;
 
@@ -38,14 +41,17 @@ namespace Molten.Graphics
             for (int i = 0; i < possibleVals.Length; i++)
             {
                 if (i == last)
-                    strPossibleVals += " or ";
+                    strPossibleVals += isFlags ? " and " : " or ";
                 else if (i > 0)
                     strPossibleVals += ", ";
 
                 strPossibleVals += possibleVals[i].ToString();
             }
 
-            context.Messages.Add($"Tag '{node.Name}' ({friendlyTagName}) has invalid value '{node.InnerText}'. Must be {strPossibleVals}");
+            if (isFlags)
+                context.Messages.Add($"Tag '{node.Name}' ({friendlyTagName}) has invalid value '{node.InnerText}'. Must be a combination of {strPossibleVals}");
+            else
+                context.Messages.Add($"Tag '{node.Name}' ({friendlyTagName}) has invalid value '{node.InnerText}'. Must be {strPossibleVals}");
         }
     }
 }

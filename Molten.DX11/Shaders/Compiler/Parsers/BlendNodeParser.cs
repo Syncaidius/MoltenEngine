@@ -17,16 +17,31 @@ namespace Molten.Graphics
             if (foundation is ComputeTask)
                 return new NodeParseResult(NodeParseResultType.Ignored);
 
+            StateConditions conditions = StateConditions.None;
+
+            // Prerequisit attributes
+            foreach (XmlAttribute attribute in node.Attributes)
+            {
+                string attName = attribute.Name.ToLower();
+                switch (attName)
+                {
+                    case "condition":
+                        if (!Enum.TryParse(attribute.InnerText, true, out conditions))
+                            InvalidEnumMessage<StateConditions>(context, attribute, "state condition");
+                        break;
+                }
+            }
+
             // Check if an existing state was already set.
             GraphicsBlendState state = null;
             switch (foundation)
             {
                 case Material material:
-                    state = material.BlendState;
+                    state = material.BlendState[conditions];
                     break;
 
                 case MaterialPass pass:
-                    state = pass.BlendState;
+                    state = pass.BlendState[conditions];
                     break;
             }
 
@@ -148,18 +163,18 @@ namespace Molten.Graphics
             switch (foundation)
             {
                 case Material material:
-                    material.BlendState = state;
+                    material.BlendState[conditions] = state;
 
                     // Apply to existing passes which do not have a rasterizer state yet.
                     foreach (MaterialPass p in material.Passes)
                     {
                         if (p.BlendState == null)
-                            p.BlendState = state;
+                            p.BlendState[conditions] = state;
                     }
                     break;
 
                 case MaterialPass pass:
-                    pass.BlendState = state;
+                    pass.BlendState[conditions] = state;
                     break;
             }
 

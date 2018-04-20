@@ -111,7 +111,7 @@ namespace Molten.Graphics
                 if (clip.ClusterCount == 0)
                     continue;
 
-                //reset to-from counters.
+                // Reset to-from counters.
                 _drawnFrom = 0;
                 _drawnTo = 0;
 
@@ -125,7 +125,7 @@ namespace Molten.Graphics
                 pipe.Rasterizer.SetPreset(rasterPreset);
                 pipe.Rasterizer.SetScissorRectangle(clip.ClipBounds);
 
-                //// Flush cluster within current clip-zone.
+                // Flush cluster within current clip-zone.
                 int clustersDone = 0;
                 bool finishedDrawing = false;
                 do
@@ -143,7 +143,7 @@ namespace Molten.Graphics
                             int canFit = _spriteCapacity - _vertexCount;
                             int to = Math.Min(cluster.SpriteCount, from + canFit);
 
-                            //assign the start vertex to the cluster
+                            // Assign the start vertex to the cluster
                             cluster.startVertex = _vertexCount;
 
                             // Process until the end of the cluster, or until the buffer is full
@@ -153,7 +153,7 @@ namespace Molten.Graphics
                                 stream.WriteRange(cluster.Sprites, from, copyCount);
                                 _vertexCount += copyCount;
 
-                                //update cluster counters
+                                // Update cluster counters
                                 cluster.drawnFrom = from;
                                 cluster.drawnTo = to;
                             }

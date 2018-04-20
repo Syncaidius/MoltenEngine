@@ -18,6 +18,8 @@ namespace Molten.Graphics
                 return new NodeParseResult(NodeParseResultType.Ignored);
 
             GraphicsDepthState state = null;
+            StateConditions conditions = StateConditions.None;
+
             foreach (XmlAttribute attribute in node.Attributes)
             {
                 string attName = attribute.Name.ToLower();
@@ -26,6 +28,11 @@ namespace Molten.Graphics
                     case "preset":
                         if (Enum.TryParse(attribute.InnerText, true, out DepthStencilPreset preset))
                             state = new GraphicsDepthState(foundation.Device.GetPreset(preset));
+                        break;
+
+                    case "condition":
+                        if (!Enum.TryParse(attribute.InnerText, true, out conditions))
+                            InvalidEnumMessage<StateConditions>(context, attribute, "state condition");
                         break;
                 }
             }
@@ -112,18 +119,18 @@ namespace Molten.Graphics
             switch (foundation)
             {
                 case Material material:
-                    material.DepthState = state;
+                    material.DepthState[conditions] = state;
 
                     // Apply to existing passes which do not have a rasterizer state yet.
                     foreach (MaterialPass p in material.Passes)
                     {
                         if (p.DepthState == null)
-                            p.DepthState = state;
+                            p.DepthState[conditions] = state;
                     }
                     break;
 
                 case MaterialPass pass:
-                    pass.DepthState = state;
+                    pass.DepthState[conditions] = state;
                     break;
             }
 

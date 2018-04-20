@@ -20,6 +20,8 @@ namespace Molten.Graphics
                 return new NodeParseResult(NodeParseResultType.Ignored);
 
             int sIndex = 0;
+            StateConditions conditions = StateConditions.None;
+
             foreach (XmlAttribute attribute in node.Attributes)
             {
                 string attName = attribute.Name.ToLower();
@@ -27,6 +29,11 @@ namespace Molten.Graphics
                 {
                     case "index": // The blend state RT index. Blend states can provide per-render target/surface configuration.
                         int.TryParse(attribute.InnerText, out sIndex);
+                        break;
+
+                    case "condition":
+                        if (!Enum.TryParse(attribute.InnerText, true, out conditions))
+                            InvalidEnumMessage<StateConditions>(context, attribute, "sampler condition");
                         break;
                 }
             }
@@ -37,12 +44,12 @@ namespace Molten.Graphics
             {
                 case Material material:
                     if(sIndex < material.Samplers.Length)
-                        sampler = material.Samplers[sIndex];
+                        sampler = material.Samplers[sIndex][conditions];
                     break;
 
                 case MaterialPass pass:
                     if(sIndex < pass.Samplers.Length)
-                        sampler = pass.Samplers[sIndex];
+                        sampler = pass.Samplers[sIndex][conditions];
                     break;
             }
 
@@ -162,9 +169,13 @@ namespace Molten.Graphics
             {
                 case Material material:
                     if (sIndex >= material.Samplers.Length)
+                    {
                         Array.Resize(ref material.Samplers, sIndex + 1);
+                        for (int i = sIndex; i < material.Samplers.Length; i++)
+                            material.Samplers[i] = new ShaderStateBank<ShaderSampler>();
+                    }
 
-                    material.Samplers[sIndex] = sampler;
+                    material.Samplers[sIndex][conditions] = sampler;
 
                     // Apply to existing passes which do not have a rasterizer state yet.
                     foreach (MaterialPass p in material.Passes)
@@ -172,13 +183,17 @@ namespace Molten.Graphics
                         if (sIndex >= p.Samplers.Length)
                         {
                             if (sIndex >= p.Samplers.Length)
+                            {
                                 Array.Resize(ref p.Samplers, sIndex + 1);
+                                for (int i = sIndex; i < p.Samplers.Length; i++)
+                                    p.Samplers[i] = new ShaderStateBank<ShaderSampler>();
+                            }
 
-                            p.Samplers[sIndex] = sampler;
+                            p.Samplers[sIndex][conditions] = sampler;
                         }
                         else if (p.Samplers[sIndex] == null) // Only overwrite with root sampler if pass does not already have on for the current index.
                         {
-                            p.Samplers[sIndex] = sampler;
+                            p.Samplers[sIndex][conditions] = sampler;
                         }
                     }
                     break;
@@ -186,7 +201,7 @@ namespace Molten.Graphics
                 case MaterialPass pass:
                     if (sIndex >= pass.Samplers.Length)
                         Array.Resize(ref pass.Samplers, sIndex + 1);
-                    pass.Samplers[sIndex] = sampler;
+                    pass.Samplers[sIndex][conditions] = sampler;
                     break;
             }
 

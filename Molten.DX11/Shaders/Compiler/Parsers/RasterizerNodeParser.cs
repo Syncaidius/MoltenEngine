@@ -18,6 +18,8 @@ namespace Molten.Graphics
                 return new NodeParseResult(NodeParseResultType.Ignored);
 
             GraphicsRasterizerState state = null;
+            StateConditions conditions = StateConditions.None;
+
             foreach(XmlAttribute attribute in node.Attributes)
             {
                 string attName = attribute.Name.ToLower();
@@ -26,6 +28,11 @@ namespace Molten.Graphics
                     case "preset":
                         if (Enum.TryParse(attribute.InnerText, true, out RasterizerPreset preset))
                             state = new GraphicsRasterizerState(foundation.Device.GetPreset(preset));
+                        break;
+
+                    case "condition":
+                        if (!Enum.TryParse(attribute.InnerText, true, out conditions))
+                            InvalidEnumMessage<StateConditions>(context, attribute, "state condition");
                         break;
                 }
             }
@@ -130,18 +137,18 @@ namespace Molten.Graphics
             switch (foundation)
             {
                 case Material material:
-                    material.RasterizerState = state;
+                    material.RasterizerState[conditions] = state;
 
                     // Apply to existing passes which do not have a rasterizer state yet.
                     foreach(MaterialPass p in material.Passes)
                     {
                         if (p.RasterizerState == null)
-                            p.RasterizerState = state;
+                            p.RasterizerState[conditions] = state;
                     }
                     break;
 
                 case MaterialPass pass:
-                    pass.RasterizerState = state;
+                    pass.RasterizerState[conditions] = state;
                     break;
             }
 

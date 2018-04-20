@@ -177,6 +177,8 @@
     <Compile Include="Shaders\Compiler\ShaderCompilerContext.cs" />
     <Compile Include="Shaders\Compiler\Parsers\RasterizerNodeParser.cs" />
     <Compile Include="Shaders\HlslFoundation.cs" />
+    <Compile Include="Shaders\ShaderStateBank.cs" />
+    <Compile Include="Shaders\StateConditions.cs" />
     <Compile Include="Spritebatch\SpriteBatchDX11.cs" />
     <Compile Include="ShaderModelExtensionsDX11.cs" />
     <Compile Include="Shaders\Compiler\ComputeCompiler.cs" />

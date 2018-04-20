@@ -14,29 +14,29 @@ namespace Molten.Graphics
         /// <summary>
         /// The texture samplers to be used with the shader/component.
         /// </summary>
-        internal ShaderSampler[] Samplers;
+        internal ShaderStateBank<ShaderSampler>[] Samplers;
 
         /// <summary>
-        /// The rasterizer state.
+        /// The available rasterizer state.
         /// </summary>
-        internal GraphicsRasterizerState RasterizerState;
+        internal ShaderStateBank<GraphicsRasterizerState> RasterizerState = new ShaderStateBank<GraphicsRasterizerState>();
 
         /// <summary>
-        /// The blend state.
+        /// The available blend state.
         /// </summary>
-        internal GraphicsBlendState BlendState;
+        internal ShaderStateBank<GraphicsBlendState> BlendState = new ShaderStateBank<GraphicsBlendState>();
 
         /// <summary>
-        ///The depth state.
+        ///The available depth state.
         /// </summary>
-        internal GraphicsDepthState DepthState;
+        internal ShaderStateBank<GraphicsDepthState> DepthState = new ShaderStateBank<GraphicsDepthState>();
 
         internal GraphicsDevice Device { get; private set; }
 
         internal HlslFoundation(GraphicsDevice device)
         {
             Device = device;
-            Samplers = new ShaderSampler[0];
+            Samplers = new ShaderStateBank<ShaderSampler>[0];
         }
 
         /// <summary>
