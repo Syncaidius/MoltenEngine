@@ -177,6 +177,11 @@
     <Compile Include="Shaders\Compiler\ShaderCompilerContext.cs" />
     <Compile Include="Shaders\Compiler\Parsers\RasterizerNodeParser.cs" />
     <Compile Include="Shaders\HlslFoundation.cs" />
+    <Compile Include="Shaders\Materials\Properties\CommonMaterialProperties.cs" />
+    <Compile Include="Shaders\Materials\Properties\SpriteBatchMaterialProperties.cs" />
+    <Compile Include="Shaders\Materials\Properties\GBufferTextureProperties.cs" />
+    <Compile Include="Shaders\Materials\Properties\GBufferMaterialProperties.cs" />
+    <Compile Include="Shaders\Materials\Properties\ObjectMaterialProperties.cs" />
     <Compile Include="Shaders\ShaderStateBank.cs" />
     <Compile Include="Shaders\StateConditions.cs" />
     <Compile Include="Spritebatch\SpriteBatchDX11.cs" />

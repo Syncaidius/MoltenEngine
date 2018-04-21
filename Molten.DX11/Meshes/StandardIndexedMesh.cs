@@ -31,12 +31,12 @@ namespace Molten.Graphics
 
                 if (mat.HasFlags(MaterialCommonFlags.GBuffer))
                 {
-                    mat.EmissivePower.Value = EmissivePower;
+                    mat.GBuffer.EmissivePower.Value = EmissivePower;
                 }
             }
 
-            mat.World.Value = data.RenderTransform;
-            mat.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, sceneData.ViewProjection);
+            mat.Object.World.Value = data.RenderTransform;
+            mat.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, sceneData.ViewProjection);
 
             ApplyResources(mat);
             renderer.Device.DrawIndexed(mat, _indexCount, _topology);

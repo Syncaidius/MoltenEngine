@@ -75,8 +75,8 @@ struct PS_IN
 	float2 uv : TEXCOORD;
 };
 
-Texture2D albedo;
-SamplerState albedoSampler;
+Texture2D diffuse;
+SamplerState diffuseSampler;
 
 float4x4 worldViewProj;
 float2 textureSize;
@@ -259,7 +259,7 @@ void GS_Tri(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
 
 float4 PS( PS_IN input ) : SV_Target
 {
-	float4 col = albedo.Sample(albedoSampler, input.uv);
+	float4 col = diffuse.Sample(diffuseSampler, input.uv);
 	return col * input.col;
 }
 

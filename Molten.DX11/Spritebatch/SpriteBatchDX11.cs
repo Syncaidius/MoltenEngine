@@ -57,7 +57,7 @@ namespace Molten.Graphics
                 _defaultCircleMaterial = result["material", "circle"] as Material;
                 _defaultTriMaterial = result["material", "triangle"] as Material;
 
-                _valDefaultAlbedo = _defaultMaterial["albedo"];
+                _valDefaultAlbedo = _defaultMaterial["diffuse"];
                 _valDefaultTexSize = _defaultMaterial["textureSize"];
                 _valDefaultWvp = _defaultMaterial["worldViewProj"];
 
@@ -205,7 +205,7 @@ namespace Molten.Graphics
                 {
                     // TODO improve this to avoid dictionary lookups.
                     mat["worldViewProj"].Value = _viewProjection;
-                    mat["albedo"].Value = cluster.Texture;
+                    mat["diffuse"].Value = cluster.Texture;
                     mat["textureSize"].Value = texSize;
                 }
                 else

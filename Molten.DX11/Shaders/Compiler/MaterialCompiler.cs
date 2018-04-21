@@ -100,30 +100,19 @@ namespace Molten.Graphics
                 renderer.Materials.AddMaterial(material);
 
                 if (material.HasFlags(MaterialCommonFlags.Common))
-                {
-                    material.View = material["view"];
-                    material.Projection = material["projection"];
-                    material.ViewProjection = material["viewProjection"];
-                    material.InvViewProjection = material["invViewProjection"];
-                }
+                    material.Common = new CommonMaterialProperties(material);
 
                 if (material.HasFlags(MaterialCommonFlags.Object))
-                {
-                    material.World = material["world"];
-                    material.Wvp = material["wvp"];
-                }
+                    material.Object = new ObjectMaterialProperties(material);
 
                 if (material.HasFlags(MaterialCommonFlags.GBufferTextures))
-                {
-                    material.DiffuseTexture = material["mapDiffuse"];
-                    material.NormalTexture = material["mapNormal"];
-                    material.EmissiveTexture = material["mapEmissive"];
-                }
+                    material.GBufferTextures = new GBufferTextureProperties(material);
 
                 if (material.HasFlags(MaterialCommonFlags.GBuffer))
-                {
-                    material.EmissivePower = material["emissivePower"];
-                }
+                    material.GBuffer = new GBufferMaterialProperties(material);
+
+                if (material.HasFlags(MaterialCommonFlags.SpriteBatch))
+                    material.SpriteBatchProperties = new SpriteBatchMaterialProperties(material);
             }
 
             return result;
