@@ -67,15 +67,6 @@ namespace Molten.Graphics
                 }
             }
 
-            // Populate metadata
-            material.Flags |= HasConstantBuffer(context, material, CONST_COMMON_NAME, CONST_COMMON_VAR_NAMES) ? MaterialCommonFlags.Common : MaterialCommonFlags.None;
-            material.Flags |= HasConstantBuffer(context, material, CONST_OBJECT_NAME, CONST_OBJECT_VAR_NAMES) ? MaterialCommonFlags.Object : MaterialCommonFlags.None;
-            material.Flags |= HasConstantBuffer(context, material, CONST_GBUFFER_NAME, CONST_GBUFFER_VAR_NAMES) ? MaterialCommonFlags.GBuffer : MaterialCommonFlags.None;
-            bool hasDiffuse = HasResource(material, MAP_DIFFUSE);
-            bool hasNormal = HasResource(material, MAP_NORMAL);
-            bool hasEmissive = HasResource(material, MAP_EMISSIVE);
-            material.Flags |= hasDiffuse && hasNormal && hasEmissive ? MaterialCommonFlags.GBufferTextures : MaterialCommonFlags.None;
-
             // Validate the vertex input structure of all passes. Should match structure of first pass.
             // Only run this if there is more than 1 pass.
             if (material.PassCount > 1)
@@ -99,20 +90,11 @@ namespace Molten.Graphics
                 result.Add(material);
                 renderer.Materials.AddMaterial(material);
 
-                if (material.HasFlags(MaterialCommonFlags.Common))
-                    material.Common = new CommonMaterialProperties(material);
-
-                if (material.HasFlags(MaterialCommonFlags.Object))
-                    material.Object = new ObjectMaterialProperties(material);
-
-                if (material.HasFlags(MaterialCommonFlags.GBufferTextures))
-                    material.GBufferTextures = new GBufferTextureProperties(material);
-
-                if (material.HasFlags(MaterialCommonFlags.GBuffer))
-                    material.GBuffer = new GBufferMaterialProperties(material);
-
-                if (material.HasFlags(MaterialCommonFlags.SpriteBatch))
-                    material.SpriteBatchProperties = new SpriteBatchMaterialProperties(material);
+                material.Scene = new SceneMaterialProperties(material);
+                material.Object = new ObjectMaterialProperties(material);
+                material.Textures = new GBufferTextureProperties(material);
+                material.GBuffer = new GBufferMaterialProperties(material);
+                material.SpriteBatch = new SpriteBatchMaterialProperties(material);
             }
 
             return result;

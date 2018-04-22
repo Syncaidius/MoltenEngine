@@ -75,10 +75,10 @@ struct PS_IN
 	float2 uv : TEXCOORD;
 };
 
-Texture2D diffuse;
+Texture2D mapDiffuse;
 SamplerState diffuseSampler;
 
-float4x4 worldViewProj;
+float4x4 wvp;
 float2 textureSize;
 
 static float degToRad360 = 6.28319;
@@ -163,7 +163,7 @@ void GS(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
 		p = mul(size * (spriteCorners[i] - origin), rot);
 		p += pos;
 		v.pos = float4(p, 0, 1);
-		v.pos = mul(v.pos, worldViewProj);
+		v.pos = mul(v.pos, wvp);
 		v.uv.x = uv[uvTable[i].x];
 		v.uv.y = uv[uvTable[i].y];
 		spriteStream.Append(v);
@@ -184,23 +184,23 @@ void GS_Line(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
   
   // Vertex p1 vertex 0 (v0)
   v.pos = float4(p1 - (thickness * normal), 0, 1);
-  v.pos = mul(v.pos, worldViewProj);
+  v.pos = mul(v.pos, wvp);
   spriteStream.Append(v);
   
   // Vertex p1 vertex 1 (v1)
   v.pos = float4(p1 + (thickness * normal), 0, 1);
-  v.pos = mul(v.pos, worldViewProj);
+  v.pos = mul(v.pos, wvp);
   spriteStream.Append(v);
   
   // Vertex p2 vertex 0 (v2)
   v.col = input[0].uv;
   v.pos = float4(p2 - (thickness * normal), 0, 1);
-  v.pos = mul(v.pos, worldViewProj);
+  v.pos = mul(v.pos, wvp);
   spriteStream.Append(v);
   
   // Vertex p2 vertex 1 (v3)
   v.pos = float4(p2 + (thickness * normal), 0, 1);
-  v.pos = mul(v.pos, worldViewProj);
+  v.pos = mul(v.pos, wvp);
   spriteStream.Append(v);
 }
 
@@ -227,7 +227,7 @@ void GS_Circle(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
   for (int i = 0; i < vCount; i++)
   {
 	  v.pos = center + (doEdge * float4(sin(angle) * radius.x, cos(angle) * radius.y, 0, 0));
-	  v.pos = mul(v.pos, worldViewProj);	  
+	  v.pos = mul(v.pos, wvp);	  
 
       inc = min(angleInc, remaining);
 	  angle += inc * doEdge;
@@ -245,21 +245,21 @@ void GS_Tri(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
   v.uv = float2(0,0);
   
   // p1
-  v.pos = mul(float4(input[0].pos, 0, 1), worldViewProj);
+  v.pos = mul(float4(input[0].pos, 0, 1), wvp);
   spriteStream.Append(v);
   
   // p3
-  v.pos = mul(float4(input[0].origin, 0, 1), worldViewProj);
+  v.pos = mul(float4(input[0].origin, 0, 1), wvp);
   spriteStream.Append(v);
   
   // p2
-  v.pos = mul(float4(input[0].size, 0, 1), worldViewProj);
+  v.pos = mul(float4(input[0].size, 0, 1), wvp);
   spriteStream.Append(v);
 }
 
 float4 PS( PS_IN input ) : SV_Target
 {
-	float4 col = diffuse.Sample(diffuseSampler, input.uv);
+	float4 col = mapDiffuse.Sample(diffuseSampler, input.uv);
 	return col * input.col;
 }
 

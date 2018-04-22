@@ -29,10 +29,7 @@ namespace Molten.Graphics
                 else
                     mat = renderer.StandardMeshMaterial;
 
-                if (mat.HasFlags(MaterialCommonFlags.GBuffer))
-                {
-                    mat.GBuffer.EmissivePower.Value = EmissivePower;
-                }
+                mat.GBuffer.EmissivePower.Value = EmissivePower;
             }
 
             mat.Object.World.Value = data.RenderTransform;
@@ -40,25 +37,6 @@ namespace Molten.Graphics
 
             ApplyResources(mat);
             renderer.Device.DrawIndexed(mat, _indexCount, _topology);
-        }
-
-        protected override void OnSetMaterial(Material newMaterial)
-        {
-            base.OnSetMaterial(newMaterial);
-
-            if (!newMaterial.HasFlags(MaterialCommonFlags.GBufferTextures | MaterialCommonFlags.GBuffer | MaterialCommonFlags.Common))
-            {
-                if (!newMaterial.HasFlags(MaterialCommonFlags.GBufferTextures))
-                    _renderer.Device.Log.WriteLine($"Attempt to set material '{newMaterial.Name}' on standard mesh failed: Missing G-Buffer texture variables.");
-
-                if (!newMaterial.HasFlags(MaterialCommonFlags.Common))
-                    _renderer.Device.Log.WriteLine($"Attempt to set material '{newMaterial.Name}' on standard mesh failed: Missing common scene constants.");
-
-                if (!newMaterial.HasFlags(MaterialCommonFlags.Object))
-                    _renderer.Device.Log.WriteLine($"Attempt to set material '{newMaterial.Name}' on standard mesh failed: Missing object constants.");
-
-                _material = null;
-            }
         }
     }
 }

@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class SpriteBatchMaterialProperties
+    internal class SpriteBatchMaterialProperties : CommonShaderProperties
     {
-        internal IShaderValue EmissivePower { get; set; }
+        internal IShaderValue TextureSize { get; set; }
 
-        internal SpriteBatchMaterialProperties(Material material)
+        internal SpriteBatchMaterialProperties(Material material) : base(material)
         {
-            EmissivePower = material["emissivePower"];
+            TextureSize = MapValue(material, "textureSize");
         }
     }
 }

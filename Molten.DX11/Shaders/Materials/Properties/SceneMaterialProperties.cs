@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    /// <summary>
-    /// A helper class for storing references to common material properties.
-    /// </summary>
-    internal class CommonMaterialProperties
+    internal class SceneMaterialProperties : CommonShaderProperties
     {
         internal IShaderValue View { get; private set; }
 
@@ -19,12 +16,12 @@ namespace Molten.Graphics
 
         internal IShaderValue InvViewProjection { get; private set; }
 
-        internal CommonMaterialProperties(Material material)
+        internal SceneMaterialProperties(Material material) : base(material)
         {
-            View = material["view"];
-            Projection = material["projection"];
-            ViewProjection = material["viewProjection"];
-            InvViewProjection = material["invViewProjection"];
+            View = MapValue(material, "view");
+            Projection = MapValue(material, "projection");
+            ViewProjection = MapValue(material, "viewProjection");
+            InvViewProjection = MapValue(material, "invViewProjection");
         }
     }
 }

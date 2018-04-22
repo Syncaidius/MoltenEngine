@@ -19,9 +19,6 @@ namespace Molten.Graphics
         private protected int _vertexCount;
         private protected bool _isDynamic;
 
-        private protected IShaderValue _matWvp;
-        private protected IShaderValue _matWorld;
-
         internal Mesh(RendererDX11 renderer, int maxVertices, VertexTopology topology, bool dynamic) : base(renderer.Device)
         {
             _renderer = renderer;
@@ -62,12 +59,8 @@ namespace Molten.Graphics
 
             ApplyBuffers(pipe);
             ApplyResources(_material);
-
-            if (_material.HasFlags(MaterialCommonFlags.Object))
-            {
-                _matWvp.Value = Matrix4F.Multiply(data.RenderTransform, sceneData.ViewProjection);
-                _matWorld.Value = data.RenderTransform;
-            }
+            _material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, sceneData.ViewProjection);
+            _material.Object.World.Value = data.RenderTransform;
 
             renderer.Device.Draw(_material, _vertexCount, _topology);
 
@@ -75,17 +68,6 @@ namespace Molten.Graphics
             *  - A buffer can be bound as both a vertex and index buffer
             *  - If offsets and formats for each segment are correct, a single buffer can be bound at multiple pipeline stages.
             */
-        }
-
-        protected virtual void OnSetMaterial(Material newMaterial)
-        {
-            // TODO enforce the below as requirements.
-            // TODO set material to null if invalid. Scene will use default render shader if one was not provided (or set to null due to being invalid).
-            if (newMaterial.HasFlags(MaterialCommonFlags.Object))
-            {
-                _matWvp = newMaterial["wvp"];
-                _matWorld = newMaterial["world"];
-            }
         }
 
         public virtual void Dispose()
@@ -101,19 +83,7 @@ namespace Molten.Graphics
         internal Material Material
         {
             get => _material;
-            set
-            {
-                if (_material != value)
-                {
-                    _matWvp = null;
-                    _matWorld = null;
-
-                    if (value != null)
-                        OnSetMaterial(value);
-
-                    _material = value;
-                }    
-            }
+            set => _material = value;
         }
 
         IMaterial IMesh.Material

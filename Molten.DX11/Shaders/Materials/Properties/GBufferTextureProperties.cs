@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class GBufferTextureProperties
+    internal class GBufferTextureProperties : CommonShaderProperties
     {
         internal IShaderValue DiffuseTexture { get; set; }
 
@@ -14,11 +14,11 @@ namespace Molten.Graphics
 
         internal IShaderValue EmissiveTexture { get; set; }
 
-        internal GBufferTextureProperties(Material material)
+        internal GBufferTextureProperties(Material material)  : base(material)
         {
-            DiffuseTexture = material["mapDiffuse"];
-            NormalTexture = material["mapNormal"];
-            EmissiveTexture = material["mapEmissive"];
+            DiffuseTexture = MapValue(material, "mapDiffuse");
+            NormalTexture = MapValue(material, "mapNormal");
+            EmissiveTexture = MapValue(material, "mapEmissive");
         }
     }
 }

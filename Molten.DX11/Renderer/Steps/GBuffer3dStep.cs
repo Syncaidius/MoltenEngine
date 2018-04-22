@@ -46,10 +46,10 @@ namespace Molten.Graphics
 
         private void SetMaterialCommon(Material material, SceneRenderDataDX11 scene)
         {
-            material.Common.View.Value = scene.View;
-            material.Common.Projection.Value = scene.Projection;
-            material.Common.InvViewProjection.Value = Matrix4F.Invert(scene.ViewProjection);
-            material.Common.ViewProjection.Value = scene.ViewProjection;
+            material.Scene.View.Value = scene.View;
+            material.Scene.Projection.Value = scene.Projection;
+            material.Scene.InvViewProjection.Value = Matrix4F.Invert(scene.ViewProjection);
+            material.Scene.ViewProjection.Value = scene.ViewProjection;
         }
     }
 }

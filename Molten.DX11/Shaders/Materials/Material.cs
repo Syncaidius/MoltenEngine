@@ -73,43 +73,14 @@ namespace Molten.Graphics
             return _passesByName[name];
         }
 
-        internal bool HasFlags(MaterialCommonFlags flags)
-        {
-            return (Flags & flags) == flags;
-        }
-
-        internal MaterialCommonFlags Flags { get; set; }
-
         internal ObjectMaterialProperties Object { get; set; }
 
-        internal CommonMaterialProperties Common { get; set; }
+        internal SceneMaterialProperties Scene { get; set; }
 
         internal GBufferMaterialProperties GBuffer { get; set; }
 
-        internal GBufferTextureProperties GBufferTextures { get; set; }
+        internal GBufferTextureProperties Textures { get; set; }
 
-        internal SpriteBatchMaterialProperties SpriteBatchProperties { get; set; }
-    }
-
-    /// <summary>
-    /// Represents various optional/mandatory properties a material might have, which the renderer can automatically use.
-    /// </summary>
-    [Flags]
-    internal enum MaterialCommonFlags
-    {
-        None = 0,
-
-        Common = 1,
-
-        Object = 1 << 1,
-
-        GBuffer = 1 << 2,
-
-        GBufferTextures = 1 << 3,
-
-        /// <summary>
-        /// The material contains the neccessary sprite-batch properties/variables.
-        /// </summary>
-        SpriteBatch = 1 << 4,
+        internal SpriteBatchMaterialProperties SpriteBatch { get; set; }
     }
 }

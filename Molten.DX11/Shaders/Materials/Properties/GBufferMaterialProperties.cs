@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class GBufferMaterialProperties
+    internal class GBufferMaterialProperties : CommonShaderProperties
     {
         internal IShaderValue EmissivePower { get; set; }
 
-        internal GBufferMaterialProperties(Material material)
+        internal GBufferMaterialProperties(Material material) : base(material)
         {
-            EmissivePower = material["emissivePower"];
+            EmissivePower = MapValue(material, "emissivePower");
         }
     }
 }
