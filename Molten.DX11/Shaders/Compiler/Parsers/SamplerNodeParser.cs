@@ -9,9 +9,7 @@ using System.Xml;
 namespace Molten.Graphics
 {
     internal class SamplerNodeParser : ShaderNodeParser
-    {
-        static string[] _colorDelimiters = new string[] { ",", " " };
-
+    { 
         internal override string[] SupportedNodes => new string[] { "sampler" };
 
         internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
@@ -84,18 +82,7 @@ namespace Molten.Graphics
                         break;
 
                     case "border": // Border color to use if SharpDX.Direct3D11.TextureAddressMode.Border is specified.
-                        string[] vals = child.InnerText.Split(_colorDelimiters, StringSplitOptions.RemoveEmptyEntries);
-                        Color col = Color.Black;
-                        int maxVals = Math.Min(4, vals.Length);
-                        for (int i = 0; i < maxVals; i++)
-                        {
-                            if (byte.TryParse(vals[i], out byte cVal))
-                                col[i] = cVal;
-                            else
-                                context.Messages.Add($"Invalid sampler border color component '{vals[i]}'. A maximum of 4 space-separated values is allowed, each between 0 and 255.");
-                        }
-
-                        sampler.BorderColor = col.ToColor4();
+                        sampler.BorderColor = ParseColor4(context, child, true);
                         break;
 
                     case "comparison":

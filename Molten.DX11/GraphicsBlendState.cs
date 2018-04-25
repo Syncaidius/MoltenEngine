@@ -1,4 +1,5 @@
 ﻿using SharpDX.Direct3D11;
+using SharpDX.Mathematics.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,15 +14,21 @@ namespace Molten.Graphics
         internal BlendState State;
         bool _dirty;
         BlendStateDescription _desc;
+        Color4 _blendFactor;
+        uint _blendSampleMask;
 
         internal GraphicsBlendState(GraphicsBlendState source)
         {
             _desc = source._desc;
+            _blendFactor = source._blendFactor;
+            _blendSampleMask = source._blendSampleMask;
         }
 
         internal GraphicsBlendState()
         {
             _desc = BlendStateDescription.Default();
+            _blendFactor = new Color4(1, 1, 1, 1);
+            _blendSampleMask = 0xffffffff;
         }
 
         public override bool Equals(object obj)
@@ -262,6 +269,24 @@ namespace Molten.Graphics
         {
             get => GetRenderTargetWriteMask(0);
             set => SetRenderTargetWriteMask(0, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the blend sample mask.
+        /// </summary>
+        public uint BlendSampleMask
+        {
+            get => _blendSampleMask;
+            set => _blendSampleMask = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the blend factor.
+        /// </summary>
+        public Color4 BlendFactor
+        {
+            get => _blendFactor;
+            set => _blendFactor = value;
         }
 
         public RenderTargetBlendDescription this[int rtIndex]

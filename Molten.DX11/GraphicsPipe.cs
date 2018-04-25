@@ -180,6 +180,14 @@ namespace Molten.Graphics
             _input.Topology = topology;
             _input.Refresh(passID);
 
+            /* TODO:
+             *  - Add support for control of _depthStencil.StencilReference in material files.
+             *  - Add support for BlendState.BlendFactor and .BlendSampleMask.
+             * 
+             * 
+             * 
+             */
+
             // Apply render targets and states.
             _depthStencil.Refresh();
             _blendState.Refresh();

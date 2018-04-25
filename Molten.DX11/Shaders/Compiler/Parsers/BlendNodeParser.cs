@@ -124,6 +124,17 @@ namespace Molten.Graphics
                             InvalidEnumMessage<ColorWriteMaskFlags>(context, child, "render surface/target write mask");
                         break;
 
+                    case "samplemask":
+                        if (uint.TryParse(child.InnerText, out uint mask))
+                            state.BlendSampleMask = mask;
+                        else
+                            InvalidValueMessage(context, child, "sample mask", "unsigned integer");
+                        break;
+
+                    case "factor":
+                        state.BlendFactor = ParseColor4(context, node, false);
+                        break;
+
                     default:
                         UnsupportedTagMessage(context, child);
                         break;

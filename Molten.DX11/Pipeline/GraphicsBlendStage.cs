@@ -12,8 +12,8 @@ namespace Molten.Graphics
         PipelineBindSlot<GraphicsBlendState> _slotState;
         GraphicsBlendState _currentState;
 
-        bool _blendFactorDirty;
-        int _blendSampleMask;
+        BlendState _state;
+        uint _blendSampleMask;
         Color4 _blendFactor;
 
         internal GraphicsBlendStage(GraphicsPipe context) : base(context)
@@ -45,39 +45,11 @@ namespace Molten.Graphics
             _currentState = _currentState ?? Device.GetPreset(BlendPreset.Default);
             bool stateChanged = _slotState.Bind(Pipe, _currentState);
 
-            if (stateChanged)
-                Pipe.Context.OutputMerger.BlendState = _slotState.BoundObject.State;
-
-            if (_blendFactorDirty)
+            if (_state != _currentState.State || _blendFactor != _currentState.BlendFactor || _blendSampleMask != _currentState.BlendSampleMask)
             {
-                Pipe.Context.OutputMerger.BlendFactor = _blendFactor.ToRawApi();
-                Pipe.Context.OutputMerger.BlendSampleMask = _blendSampleMask;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the blend sample mask.
-        /// </summary>
-        public int BlendSampleMask
-        {
-            get => _blendSampleMask;
-            set
-            {
-                _blendSampleMask = value;
-                _blendFactorDirty = true;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the blend factor.
-        /// </summary>
-        public Color4 BlendFactor
-        {
-            get => _blendFactor;
-            set
-            {
-                _blendFactor = value;
-                _blendFactorDirty = true;
+                _blendFactor = _currentState.BlendFactor;
+                _blendSampleMask = _currentState.BlendSampleMask;
+                Pipe.Context.OutputMerger.SetBlendState(_currentState.State, _blendFactor.ToRawApi(), _blendSampleMask);
             }
         }
 

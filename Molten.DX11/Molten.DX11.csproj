@@ -291,9 +291,7 @@
     <EmbeddedResource Include="Assets\light_common.sbm" />
     <EmbeddedResource Include="Assets\light_point.sbm" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Shaders\Compiler\StateParsers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="..\Molten.DX.Shared\Molten.DX.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
