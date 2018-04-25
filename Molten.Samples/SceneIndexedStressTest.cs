@@ -42,7 +42,7 @@ namespace Molten.Samples
             mesh.Material = material;
             mesh.SetVertices(SampleVertexData.IndexedTexturedCubeVertices);
             mesh.SetIndices(SampleVertexData.TexturedCubeIndices);
-            for (int i = 0; i < 6000; i++)
+            for (int i = 0; i < 10000; i++)
                 SpawnRandomTestCube(material, mesh, 70);
 
             Window.PresentClearColor = new Color(20, 20, 20, 255);

@@ -12,7 +12,7 @@ namespace Molten.Graphics
         where S : DeviceChild
         where C : CommonShaderStage;
 
-    internal class ShaderStep<S, C, H>
+    internal class ShaderStep<S, C, H> : PipelineComponent
         where S : DeviceChild
         where C: CommonShaderStage
         where H : HlslShader
@@ -24,11 +24,11 @@ namespace Molten.Graphics
 
         C _stage;
         GraphicsPipe _pipe;
-        bool _isValid;
+        H _boundShader;
 
         internal event ShaderStepHandler<H, S, C> OnSetShader;
 
-        internal ShaderStep(GraphicsPipe pipe, ShaderInputStage<H> input, C shaderStage)
+        internal ShaderStep(GraphicsPipe pipe, ShaderInputStage<H> input, C shaderStage) : base(pipe)
         {
             // Setup slots
             GraphicsDeviceFeatures features = pipe.Device.Features;
@@ -133,11 +133,15 @@ namespace Molten.Graphics
 
                 bool sChanged = _slotSamplers[i].Bind(_pipe, s);
                 if (sChanged)
-                    _stage.SetSampler(i, s != null ? s.State : null);
+                    _stage.SetSampler(i, s?.State);
             }
 
-            OnSetShader?.Invoke(shader, composition, _stage);
-            _pipe.Profiler.CurrentFrame.ShaderSwaps++;
+            if (_boundShader != shader)
+            {
+                _boundShader = shader;
+                OnSetShader?.Invoke(shader, composition, _stage);
+                _pipe.Profiler.CurrentFrame.ShaderSwaps++;
+            }
         }
 
         /// <summary>Gets the underlying DX11 <see cref="CommonShaderStage"/> instance.</summary>

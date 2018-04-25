@@ -27,10 +27,10 @@ namespace Molten.Graphics
             _gStage.OnSetShader += _gStage_OnSetShader;
 
             _hStage = CreateStep<HullShader, HullShaderStage>(pipe.Context.HullShader);
-            _hStage.OnSetShader += _hStage_OnSetShader; ;
+            _hStage.OnSetShader += _hStage_OnSetShader;
 
             _dStage = CreateStep<DomainShader, DomainShaderStage>(pipe.Context.DomainShader);
-            _dStage.OnSetShader += _dStage_OnSetShader; ;
+            _dStage.OnSetShader += _dStage_OnSetShader; 
 
             _pStage = CreateStep<PixelShader, PixelShaderStage>(pipe.Context.PixelShader);
             _pStage.OnSetShader += _pStage_OnSetShader;
