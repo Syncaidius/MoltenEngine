@@ -14,9 +14,7 @@ namespace Molten.Graphics
 
         internal ComputeInputStage(GraphicsPipe pipe) : base(pipe)
         {
-            _cStage = CreateStep<ComputeShader, ComputeShaderStage>(pipe.Context.ComputeShader);
-            _cStage.OnSetShader += _cStage_OnSetShader;
-
+            _cStage = CreateStep<ComputeShader, ComputeShaderStage>(pipe.Context.ComputeShader, (stage, composition) => stage.Set(composition.RawShader));
             _slotUAVs = new PipelineBindSlot<PipelineShaderObject>[Device.Features.MaxUnorderedAccessViews];
 
             for (int i = 0; i < Device.Features.MaxUnorderedAccessViews; i++)

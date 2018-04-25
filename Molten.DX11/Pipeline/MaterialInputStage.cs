@@ -20,20 +20,11 @@ namespace Molten.Graphics
 
         internal MaterialInputStage(GraphicsPipe pipe) : base(pipe)
         {
-            _vStage = CreateStep<VertexShader, VertexShaderStage>(pipe.Context.VertexShader);
-            _vStage.OnSetShader += _vStage_OnSetShader;
-
-            _gStage = CreateStep<GeometryShader, GeometryShaderStage>(pipe.Context.GeometryShader);
-            _gStage.OnSetShader += _gStage_OnSetShader;
-
-            _hStage = CreateStep<HullShader, HullShaderStage>(pipe.Context.HullShader);
-            _hStage.OnSetShader += _hStage_OnSetShader;
-
-            _dStage = CreateStep<DomainShader, DomainShaderStage>(pipe.Context.DomainShader);
-            _dStage.OnSetShader += _dStage_OnSetShader; 
-
-            _pStage = CreateStep<PixelShader, PixelShaderStage>(pipe.Context.PixelShader);
-            _pStage.OnSetShader += _pStage_OnSetShader;
+            _vStage = CreateStep<VertexShader, VertexShaderStage>(pipe.Context.VertexShader, (stage, composition) => stage.Set(composition.RawShader));
+            _gStage = CreateStep<GeometryShader, GeometryShaderStage>(pipe.Context.GeometryShader, (stage, composition) => stage.Set(composition.RawShader));
+            _hStage = CreateStep<HullShader, HullShaderStage>(pipe.Context.HullShader, (stage, composition) => stage.Set(composition.RawShader));
+            _dStage = CreateStep<DomainShader, DomainShaderStage>(pipe.Context.DomainShader, (stage, composition) => stage.Set(composition.RawShader));
+            _pStage = CreateStep<PixelShader, PixelShaderStage>(pipe.Context.PixelShader, (stage, composition) => stage.Set(composition.RawShader));
         }
 
         private void _pStage_OnSetShader(Material shader, ShaderComposition<PixelShader> composition, PixelShaderStage shaderStage)
@@ -84,7 +75,7 @@ namespace Molten.Graphics
             set => _passNumber = value;
         }
 
-        internal MaterialPass CurrentPass => _shader.BoundValue != null ? _shader.BoundValue.Passes[_passNumber] : null;
+        internal MaterialPass CurrentPass => _shader.BoundValue?.Passes[_passNumber];
 
         /// <summary>Gets whether or not the material was changed during the last refresh call.</summary>
         internal bool HasMaterialChanged => _hasMaterialChanged;

@@ -7,12 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal delegate void ShaderStepHandler<H, S, C>(H shader, ShaderComposition<S> composition, C shaderStage)
-        where H : HlslShader
-        where S : DeviceChild
-        where C : CommonShaderStage;
-
-    internal class ShaderStep<S, C, H> : PipelineComponent
+    internal class ShaderStep<S, C, H>
         where S : DeviceChild
         where C: CommonShaderStage
         where H : HlslShader
@@ -25,15 +20,15 @@ namespace Molten.Graphics
         C _stage;
         GraphicsPipe _pipe;
         H _boundShader;
+        Action<C, ShaderComposition<S>> _setCallback;
 
-        internal event ShaderStepHandler<H, S, C> OnSetShader;
-
-        internal ShaderStep(GraphicsPipe pipe, ShaderInputStage<H> input, C shaderStage) : base(pipe)
+        internal ShaderStep(GraphicsPipe pipe, ShaderInputStage<H> input, C shaderStage, Action<C, ShaderComposition<S>> setCallback)
         {
             // Setup slots
             GraphicsDeviceFeatures features = pipe.Device.Features;
             _stage = shaderStage;
             _pipe = pipe;
+            _setCallback = setCallback;
 
             _slotResources = new PipelineBindSlot<PipelineShaderObject>[features.MaxInputResourceSlots];
             _resViews = new ShaderResourceView[_slotResources.Length];
@@ -87,7 +82,7 @@ namespace Molten.Graphics
                 bool cbChanged = _slotConstants[slotID].Bind(_pipe, cb);
 
                 if (cbChanged)
-                    _stage.SetConstantBuffer(slotID, cb != null ? cb.Buffer : null);
+                    _stage.SetConstantBuffer(slotID, cb?.Buffer);
             }
 
             // Bind all resources
@@ -99,7 +94,7 @@ namespace Molten.Graphics
                 int resID = composition.ResourceIds[i];
 
                 variable = shader.Resources[resID];
-                resource = variable != null ? variable.Resource : null;
+                resource = variable?.Resource;
 
                 bool resChanged = _slotResources[resID].Bind(_pipe, resource);
 
@@ -139,7 +134,7 @@ namespace Molten.Graphics
             if (_boundShader != shader)
             {
                 _boundShader = shader;
-                OnSetShader?.Invoke(shader, composition, _stage);
+                _setCallback(_stage, composition);
                 _pipe.Profiler.CurrentFrame.ShaderSwaps++;
             }
         }
