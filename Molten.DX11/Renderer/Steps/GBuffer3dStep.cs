@@ -41,7 +41,10 @@ namespace Molten.Graphics
 
             device.DepthStencil.SetPreset(DepthStencilPreset.Default);
             device.Rasterizer.SetViewports(scene.FinalSurface.Viewport);
+
+            device.BeginDraw();
             scene.Render3D(device, renderer);
+            device.EndDraw();
         }
 
         private void SetMaterialCommon(Material material, SceneRenderDataDX11 scene)

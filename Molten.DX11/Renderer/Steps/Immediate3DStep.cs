@@ -62,7 +62,10 @@ namespace Molten.Graphics
                         device.SetDepthSurface(start.Depth, GraphicsDepthMode.Enabled);
                         device.DepthStencil.SetPreset(DepthStencilPreset.Default);
                         device.Rasterizer.SetViewports(rs.Viewport);
+
+                        device.BeginDraw();
                         scene.Render3D(device, renderer);
+                        device.EndDraw();
                         break;
                 }
             }

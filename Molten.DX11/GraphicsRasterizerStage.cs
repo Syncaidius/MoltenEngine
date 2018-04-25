@@ -19,7 +19,6 @@ namespace Molten.Graphics
         SharpDX.Mathematics.Interop.RawViewportF[] _apiViewports;
         ViewportF[] _viewports;
         bool _viewportsDirty;
-
         ViewportF[] _nullViewport;
 
         internal GraphicsRasterizerStage(GraphicsPipe pipe) : base(pipe)
