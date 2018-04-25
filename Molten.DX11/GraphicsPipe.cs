@@ -193,14 +193,21 @@ namespace Molten.Graphics
 
         internal void BeginDraw()
         {
+#if DEBUG
+            if (_drawInfo.Began)
+                throw new GraphicsContextException("GraphicsPipe: EndDraw() must be called before the next BeginDraw() call.");
+#endif
+
             _output.Refresh();
             _drawInfo.Began = true;
         }
 
         internal void EndDraw()
         {
+#if DEBUG
             if (!_drawInfo.Began)
                 throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before EndDraw().");
+#endif
 
             _drawInfo.Reset();
         }
@@ -211,8 +218,10 @@ namespace Molten.Graphics
         /// <param name="topology">The primitive topolog to use when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
         public void Draw(Material material, int vertexCount, PrimitiveTopology topology, int vertexStartIndex = 0)
         {
+#if DEBUG
             if (!_drawInfo.Began)
                 throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before calling a Draw___() method.");
+#endif
 
             // Re-render the same material for I iterations.
             for (int i = 0; i < material.Iterations; i++)
