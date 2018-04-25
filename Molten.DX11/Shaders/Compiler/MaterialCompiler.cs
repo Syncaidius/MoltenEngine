@@ -12,19 +12,6 @@ namespace Molten.Graphics
 {
     internal class MaterialCompiler : HlslSubCompiler
     {
-        internal const string MAP_DIFFUSE = "mapDiffuse";
-        internal const string MAP_NORMAL = "mapNormal";
-        internal const string MAP_EMISSIVE = "mapEmissive";
-
-        // The names for expected constant buffers within each material pass.
-        const string CONST_COMMON_NAME = "Common";
-        const string CONST_OBJECT_NAME = "Object";
-        const string CONST_GBUFFER_NAME = "GBuffer";
-
-        static string[] CONST_COMMON_VAR_NAMES = new string[] { "view", "projection", "viewProjection", "invViewProjection" };
-        static string[] CONST_OBJECT_VAR_NAMES = new string[] { "wvp", "world" };
-        static string[] CONST_GBUFFER_VAR_NAMES = new string[] { "emissivePower" };
-
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
 
         internal override List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header)
@@ -57,7 +44,6 @@ namespace Molten.Graphics
             {
                 MaterialPassCompileResult passResult = CompilePass(context, pass);
                 firstPassResult = firstPassResult ?? passResult;
-
                 context.Messages.AddRange(passResult.Messages);
 
                 if (passResult.Errors.Count > 0)
@@ -75,10 +61,7 @@ namespace Molten.Graphics
                 for (int i = 1; i < material.PassCount; i++)
                 {
                     if (!material.Passes[i].VertexShader.InputStructure.IsCompatible(iStructure))
-                    {
                         context.Errors.Add($"Vertex input structure in Pass #{i + 1} in material '{material.Name}' does not match structure of pass #1");
-                        break;
-                    }
                 }
             }
 

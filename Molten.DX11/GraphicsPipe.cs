@@ -155,7 +155,10 @@ namespace Molten.Graphics
             _stateStack.Pop();
         }
 
-        private GraphicsValidationResult ApplyData(Material material, int passID, GraphicsValidationMode mode, PrimitiveTopology topology)
+        private GraphicsValidationResult ApplyData(Material material, 
+            int passID, 
+            GraphicsValidationMode mode, 
+            PrimitiveTopology topology)
         {
             if (topology == PrimitiveTopology.Undefined)
                 return GraphicsValidationResult.UndefinedTopology;
@@ -168,7 +171,7 @@ namespace Molten.Graphics
             _input.PassNumber = passID;
             _input.Refresh();
 
-            //apply render targets and states.
+            // Apply render targets and states.
             _depthStencil.Refresh();
             _blendState.Refresh();
             _rasterizer.Refresh();
@@ -177,6 +180,37 @@ namespace Molten.Graphics
             result |= _input.Validate(mode);
 
             return result;
+        }
+
+        public class DrawInfo { }
+        public void BeginDraw(Material material, DrawInfo info, bool preservePreviousState = false)
+        {
+            /* TODO:
+             *  - Separate material stage from input stage
+             *  - In BeginDraw():
+             *      -- Call _output.Refresh() - no internal changes needed
+             *      -- Call ApplyData() once - Remove state.Refresh() from here
+             *      -- Call _inputStage.Refresh() - Updates vertex buffer bindings
+             *      
+             *  - in Draw() methods:
+             *      -- Do rasterizer, blend and depth state Refresh() per material pass
+             *      -- Call _materialStage.Refresh() per pass
+             *      
+             *  - Support BeginDraw nesting with the state stack.
+             */
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="restorePreviousStage"></param>
+        public void EndDraw()
+        {
+            /* TODO:
+             *  - Clear DrawInfo instance (set any material or state references to null).
+             *  - Restore state if DrawInfo.PreservePreviousState is true - restores render state to whatever it was before BeginDraw was called.
+             * 
+             */
         }
 
         /// <summary>Draw non-indexed, non-instanced primitives. All queued compute shader dispatch requests are also processed</summary>
@@ -214,7 +248,12 @@ namespace Molten.Graphics
         /// <param name="topology">The expected topology of the indexed vertex data.</param>
         /// <param name="vertexStartIndex">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public void DrawInstanced(Material material, int vertexCountPerInstance, int instanceCount, PrimitiveTopology topology, int vertexStartIndex = 0, int instanceStartIndex = 0)
+        public void DrawInstanced(Material material, 
+            int vertexCountPerInstance, 
+            int instanceCount, 
+            PrimitiveTopology topology, 
+            int vertexStartIndex = 0, 
+            int instanceStartIndex = 0)
         {
             // Re-render the same material for I iterations.
             for (int i = 0; i < material.Iterations; i++)
@@ -243,7 +282,11 @@ namespace Molten.Graphics
         /// <param name="indexCount">The number of indices to be drawn.</param>
         /// <param name="startIndex">The index to start drawing from.</param>
         /// <param name="topology">The toplogy to apply when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
-        public void DrawIndexed(Material material, int indexCount, PrimitiveTopology topology, int vertexIndexOffset = 0, int startIndex = 0)
+        public void DrawIndexed(Material material, 
+            int indexCount, 
+            PrimitiveTopology topology, 
+            int vertexIndexOffset = 0, 
+            int startIndex = 0)
         {
             // Re-render the same material for I iterations.
             for (int i = 0; i < material.Iterations; i++)
@@ -275,7 +318,13 @@ namespace Molten.Graphics
         /// <param name="startIndex">The start index.</param>
         /// <param name="vertexIndexOffset">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public void DrawIndexedInstanced(Material material, int indexCountPerInstance, int instanceCount, PrimitiveTopology topology, int startIndex = 0, int vertexIndexOffset = 0, int instanceStartIndex = 0)
+        public void DrawIndexedInstanced(Material material, 
+            int indexCountPerInstance, 
+            int instanceCount, 
+            PrimitiveTopology topology, 
+            int startIndex = 0, 
+            int vertexIndexOffset = 0,
+            int instanceStartIndex = 0)
         {
             // Re-render the same material for I iterations.
             for (int i = 0; i < material.Iterations; i++)

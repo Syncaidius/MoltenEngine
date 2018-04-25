@@ -9,8 +9,6 @@ namespace Molten.Graphics
 {
     internal class GraphicsRasterizerStage : PipelineComponent
     {
-
-
         PipelineBindSlot<GraphicsRasterizerState> _slotState;
         GraphicsRasterizerState _currentState = null;
 
