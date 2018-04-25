@@ -59,10 +59,10 @@ namespace Molten.Graphics
             Pipe.Context.InputAssembler.SetVertexBuffers(slot.SlotID, _nullVertexBuffer);
         }
 
-        internal override void Refresh()
+        internal void Refresh(int passID)
         {
             // Update shader pipeline stages
-            _materialStage.Refresh();
+            _materialStage.Refresh(passID);
 
             // Update vertex buffers
             bool anyVbChanged = false;
@@ -315,12 +315,6 @@ namespace Molten.Graphics
         {
             get { return _currentTopology; }
             set { _currentTopology = value; }
-        }
-
-        internal int PassNumber
-        {
-            get => _materialStage.PassNumber;
-            set => _materialStage.PassNumber = value;
         }
     }
 }

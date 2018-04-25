@@ -60,7 +60,7 @@ namespace Molten.Graphics
             Pipe.Profiler.CurrentFrame.RTSwaps++;
         }
 
-        internal override void Refresh()
+        internal void Refresh()
         {
             bool rtChangeDetected = false;
 

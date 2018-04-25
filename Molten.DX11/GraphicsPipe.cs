@@ -12,10 +12,21 @@ namespace Molten.Graphics
     /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="DeviceContext"/>.</summary>
     internal class GraphicsPipe : EngineObject
     {
+        class DrawInfo
+        {
+            public bool Began;
+
+            public void Reset()
+            {
+                VertexBuffersChanged = false;
+                Began = false;
+            }
+        }
+
         GraphicsDepthStage _depthStencil;
         GraphicsBlendStage _blendState;
         GraphicsRasterizerStage _rasterizer;
-        
+
         ComputeInputStage _computeStage;
         PipelineInput _input;
         PipelineOutput _output;
@@ -28,7 +39,7 @@ namespace Molten.Graphics
         PipeStateStack _stateStack;
         RenderProfilerDX _profiler;
         RenderProfilerDX _defaultProfiler;
-        bool _began;
+        DrawInfo _drawInfo;
 
         internal static RawList<GraphicsPipe> ActivePipes = new RawList<GraphicsPipe>(1, ExpansionMode.Increment, 1);
 
@@ -38,6 +49,7 @@ namespace Molten.Graphics
             _context = context;
             _device = device;
             _defaultProfiler = _profiler = new RenderProfilerDX();
+            _drawInfo = new DrawInfo();
             Log = log;
 
             if (Context.TypeInfo == DeviceContextType.Immediate)
@@ -72,8 +84,7 @@ namespace Molten.Graphics
 
             // TODO fix null UAV on depth texture (possibly issue with TextureBase).
 
-            _output.Refresh();
-            _computeStage.Refresh();
+            _output.Refresh(); // TODO Why is this here??? Compute shaders don't output to surfaces/RTs?
             _computeStage.Dispatch(x, y, z);
         }
 
@@ -156,9 +167,9 @@ namespace Molten.Graphics
             _stateStack.Pop();
         }
 
-        private GraphicsValidationResult ApplyState(Material material, 
-            int passID, 
-            GraphicsValidationMode mode, 
+        private GraphicsValidationResult ApplyState(Material material,
+            int passID,
+            GraphicsValidationMode mode,
             PrimitiveTopology topology)
         {
             if (topology == PrimitiveTopology.Undefined)
@@ -168,15 +179,14 @@ namespace Molten.Graphics
 
             _input.Material = material;
             _input.Topology = topology;
-            _input.PassNumber = passID;
-            _input.Refresh();
+            _input.Refresh(passID);
 
             // Apply render targets and states.
             _depthStencil.Refresh();
             _blendState.Refresh();
             _rasterizer.Refresh();
 
-            //validate all pipeline components.
+            // Validate all pipeline components.
             result |= _input.Validate(mode);
 
             return result;
@@ -185,15 +195,15 @@ namespace Molten.Graphics
         internal void BeginDraw()
         {
             _output.Refresh();
-            _began = true;
+            _drawInfo.Began = true;
         }
 
         internal void EndDraw()
         {
-            if (!_began)
+            if (!_drawInfo.Began)
                 throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before EndDraw().");
 
-            _began = false;
+            _drawInfo.Reset();
         }
 
         /// <summary>Draw non-indexed, non-instanced primitives. All queued compute shader dispatch requests are also processed</summary>
@@ -202,7 +212,7 @@ namespace Molten.Graphics
         /// <param name="topology">The primitive topolog to use when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
         public void Draw(Material material, int vertexCount, PrimitiveTopology topology, int vertexStartIndex = 0)
         {
-            if (!_began)
+            if (!_drawInfo.Began)
                 throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before calling a Draw___() method.");
 
             // Re-render the same material for I iterations.
@@ -210,15 +220,15 @@ namespace Molten.Graphics
             {
                 for (int j = 0; j < material.PassCount; j++)
                 {
-                    // Re-render the same pass for K iterations.
-                    MaterialPass pass = material.Passes[j];
-                    for (int k = 0; k < pass.Iterations; k++)
-                    {
-                        //TODO pass in the context of whichever render-pipe is doing the draw call.
-                        _drawResult = ApplyState(material, j, GraphicsValidationMode.Unindexed, topology);
+                    //TODO pass in the context of whichever render-pipe is doing the draw call.
+                    _drawResult = ApplyState(material, j, GraphicsValidationMode.Unindexed, topology);
 
-                        // If data application was successful, draw.
-                        if (_drawResult == GraphicsValidationResult.Successful)
+                    // If data application was successful, draw.
+                    if (_drawResult == GraphicsValidationResult.Successful)
+                    {
+                        // Re-render the same pass for K iterations.
+                        MaterialPass pass = material.Passes[j];
+                        for (int k = 0; k < pass.Iterations; k++)
                         {
                             _context.Draw(vertexCount, vertexStartIndex);
                             Profiler.CurrentFrame.DrawCalls++;
@@ -234,14 +244,14 @@ namespace Molten.Graphics
         /// <param name="topology">The expected topology of the indexed vertex data.</param>
         /// <param name="vertexStartIndex">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public void DrawInstanced(Material material, 
-            int vertexCountPerInstance, 
-            int instanceCount, 
-            PrimitiveTopology topology, 
-            int vertexStartIndex = 0, 
+        public void DrawInstanced(Material material,
+            int vertexCountPerInstance,
+            int instanceCount,
+            PrimitiveTopology topology,
+            int vertexStartIndex = 0,
             int instanceStartIndex = 0)
         {
-            if (!_began)
+            if (!_drawInfo.Began)
                 throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before calling a Draw___() method.");
 
             // Re-render the same material for I iterations.
@@ -249,13 +259,13 @@ namespace Molten.Graphics
             {
                 for (int j = 0; j < material.PassCount; j++)
                 {
-                    // Re-render the same pass for K iterations.
-                    MaterialPass pass = material.Passes[j];
-                    for (int k = 0; k < pass.Iterations; k++)
-                    {
-                        _drawResult = ApplyState(material, j, GraphicsValidationMode.Instanced, topology);
+                    _drawResult = ApplyState(material, j, GraphicsValidationMode.Instanced, topology);
 
-                        if (_drawResult == GraphicsValidationResult.Successful)
+                    if (_drawResult == GraphicsValidationResult.Successful)
+                    {
+                        // Re-render the same pass for K iterations.
+                        MaterialPass pass = material.Passes[j];
+                        for (int k = 0; k < pass.Iterations; k++)
                         {
                             _context.DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
                             Profiler.CurrentFrame.DrawCalls++;
@@ -271,13 +281,13 @@ namespace Molten.Graphics
         /// <param name="indexCount">The number of indices to be drawn.</param>
         /// <param name="startIndex">The index to start drawing from.</param>
         /// <param name="topology">The toplogy to apply when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
-        public void DrawIndexed(Material material, 
-            int indexCount, 
-            PrimitiveTopology topology, 
-            int vertexIndexOffset = 0, 
+        public void DrawIndexed(Material material,
+            int indexCount,
+            PrimitiveTopology topology,
+            int vertexIndexOffset = 0,
             int startIndex = 0)
         {
-            if (!_began)
+            if (!_drawInfo.Began)
                 throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before calling a Draw___() method.");
 
             // Re-render the same material for I iterations.
@@ -285,15 +295,14 @@ namespace Molten.Graphics
             {
                 for (int j = 0; j < material.PassCount; j++)
                 {
-                    // Re-render the same pass for K iterations.
-                    MaterialPass pass = material.Passes[j];
-                    for (int k = 0; k < pass.Iterations; k++)
+                    //TODO pass in the context of whichever render-pipe is doing the draw call.
+                    _drawResult = ApplyState(material, j, GraphicsValidationMode.Indexed, topology);
+                    // If data application was successful, draw.
+                    if (_drawResult == GraphicsValidationResult.Successful)
                     {
-                        //TODO pass in the context of whichever render-pipe is doing the draw call.
-                        _drawResult = ApplyState(material, j, GraphicsValidationMode.Indexed, topology);
-
-                        // If data application was successful, draw.
-                        if (_drawResult == GraphicsValidationResult.Successful)
+                        // Re-render the same pass for K iterations.
+                        MaterialPass pass = material.Passes[j];
+                        for (int k = 0; k < pass.Iterations; k++)
                         {
                             _context.DrawIndexed(indexCount, startIndex, vertexIndexOffset);
                             Profiler.CurrentFrame.DrawCalls++;
@@ -310,15 +319,15 @@ namespace Molten.Graphics
         /// <param name="startIndex">The start index.</param>
         /// <param name="vertexIndexOffset">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public void DrawIndexedInstanced(Material material, 
-            int indexCountPerInstance, 
-            int instanceCount, 
-            PrimitiveTopology topology, 
-            int startIndex = 0, 
+        public void DrawIndexedInstanced(Material material,
+            int indexCountPerInstance,
+            int instanceCount,
+            PrimitiveTopology topology,
+            int startIndex = 0,
             int vertexIndexOffset = 0,
             int instanceStartIndex = 0)
         {
-            if (!_began)
+            if (!_drawInfo.Began)
                 throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before calling a Draw___() method.");
 
             // Re-render the same material for I iterations.
@@ -326,12 +335,12 @@ namespace Molten.Graphics
             {
                 for (int j = 0; j < material.PassCount; j++)
                 {
-                    // Re-render the same pass for K iterations.
-                    MaterialPass pass = material.Passes[j];
-                    for (int k = 0; k < pass.Iterations; k++)
+                    _drawResult = ApplyState(material, j, GraphicsValidationMode.InstancedIndexed, topology);
+                    if (_drawResult == GraphicsValidationResult.Successful)
                     {
-                        _drawResult = ApplyState(material, j, GraphicsValidationMode.InstancedIndexed, topology);
-                        if (_drawResult == GraphicsValidationResult.Successful)
+                        // Re-render the same pass for K iterations.
+                        MaterialPass pass = material.Passes[j];
+                        for (int k = 0; k < pass.Iterations; k++)
                         {
                             _context.DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex);
                             Profiler.CurrentFrame.DrawCalls++;

@@ -41,7 +41,7 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-        internal virtual void Refresh()
+        protected void RefreshSlots()
         {
             for (int i = 0; i < _slots.Count; i++)
                 _slots[i].Refresh(Pipe);

@@ -40,7 +40,7 @@ namespace Molten.Graphics
             _currentState = Device.GetPreset(preset);
         }
 
-        internal override void Refresh()
+        internal void Refresh()
         {
             _currentState = _currentState ?? Device.GetPreset(BlendPreset.Default);
             bool stateChanged = _slotState.Bind(Pipe, _currentState);

@@ -52,27 +52,20 @@ namespace Molten.Graphics
             shaderStage.Set(composition.RawShader);
         }
 
-        internal override void Refresh()
+        internal void Refresh(int passID)
         {
             // Reset pass number to 0 if the shader just changed.
             _hasMaterialChanged = _shader.Bind();
 
             if (_shader.BoundValue != null)
             {
-                MaterialPass pass = _shader.BoundValue.Passes[_passNumber];
+                MaterialPass pass = _shader.BoundValue.Passes[passID];
                 _vStage.Refresh(_shader.Value, pass.VertexShader);
                 _gStage.Refresh(_shader.Value, pass.GeometryShader);
                 _hStage.Refresh(_shader.Value, pass.HullShader);
                 _dStage.Refresh(_shader.Value, pass.DomainShader);
                 _pStage.Refresh(_shader.Value, pass.PixelShader);
             }
-        }
-
-        /// <summary>Gets or sets the current number of completed passes on the current material.</summary>
-        internal int PassNumber
-        {
-            get => _passNumber;
-            set => _passNumber = value;
         }
 
         internal MaterialPass CurrentPass => _shader.BoundValue?.Passes[_passNumber];

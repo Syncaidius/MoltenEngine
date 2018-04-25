@@ -135,7 +135,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Applies the current state to the device. Called internally.</summary>
-        internal override void Refresh()
+        internal void Refresh()
         {
             // Ensure the default preset is used if a null state was requested.
             _currentState = _currentState ?? Device.GetPreset(RasterizerPreset.Default);

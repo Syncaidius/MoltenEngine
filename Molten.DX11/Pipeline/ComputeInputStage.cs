@@ -99,7 +99,7 @@ namespace Molten.Graphics
             }
             else if (_shader.BoundValue != null)
             {                
-                Refresh();
+                RefreshSlots();
             }
         }
     }
