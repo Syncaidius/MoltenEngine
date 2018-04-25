@@ -18,7 +18,6 @@ namespace Molten.Graphics
 
             public void Reset()
             {
-                VertexBuffersChanged = false;
                 Began = false;
             }
         }
