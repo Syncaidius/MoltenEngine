@@ -161,16 +161,6 @@ namespace Molten.Graphics
                 context.BlendStates.Add(state);
 
             foundation.BlendState[conditions] = state;
-            if (foundation is Material material)
-            {
-                // Apply to existing passes which do not have a rasterizer state yet.
-                foreach (MaterialPass p in material.Passes)
-                {
-                    if (p.BlendState == null)
-                        p.BlendState[conditions] = state;
-                }
-            }
-
             return new NodeParseResult(NodeParseResultType.Success);
         }
     }

@@ -135,16 +135,6 @@ namespace Molten.Graphics
                 context.RasterStates.Add(state);
 
             foundation.RasterizerState[conditions] = state;
-            if(foundation is Material material)
-            {
-                // Apply to existing passes which do not have a rasterizer state yet.
-                foreach (MaterialPass p in material.Passes)
-                {
-                    if (p.RasterizerState == null)
-                        p.RasterizerState[conditions] = state;
-                }
-            }
-
             return new NodeParseResult(NodeParseResultType.Success);
         }
     }

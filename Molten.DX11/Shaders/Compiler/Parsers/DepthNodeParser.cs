@@ -124,16 +124,6 @@ namespace Molten.Graphics
                 context.DepthStates.Add(state);
 
             foundation.DepthState[conditions] = state;
-            if(foundation is Material material)
-            {
-                // Apply to existing passes which do not have a rasterizer state yet.
-                foreach (MaterialPass p in material.Passes)
-                {
-                    if (p.DepthState == null)
-                        p.DepthState[conditions] = state;
-                }
-            }
-
             return new NodeParseResult(NodeParseResultType.Success);
         }
 
