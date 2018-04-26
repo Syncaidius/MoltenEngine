@@ -110,7 +110,7 @@ namespace Molten.Graphics
             device.BlendState.SetPreset(BlendPreset.Additive);
             device.Rasterizer.Current = _lightRasterState;
             device.DepthStencil.Current = _lightDepthState;
-            device.DepthStencil.StencilReference = 0;
+            //device.DepthStencil.StencilReference = 0; // Move to in-file depth state.
 
             RenderPointLights(device, scene);
 

@@ -11,7 +11,6 @@ namespace Molten.Graphics
         PipelineBindSlot<GraphicsDepthState> _slotState;
         GraphicsDepthState _currentState = null;
         int _stencilRef = 0;
-        bool _stencilRefChanged = false;
 
         internal GraphicsDepthStage(GraphicsPipe pipe) : base(pipe)
         {
@@ -42,15 +41,10 @@ namespace Molten.Graphics
             _currentState = _currentState ?? Device.GetPreset(DepthStencilPreset.Default);
             bool stateChanged = _slotState.Bind(Pipe, _currentState);
 
-            if (stateChanged)
+            if (stateChanged || _stencilRef != _currentState.StencilReference)
             {
-                Pipe.Context.OutputMerger.SetDepthStencilState(_slotState.BoundObject.State, _stencilRef);
-                _stencilRefChanged = false;
-            }
-            else if (_stencilRefChanged)
-            {
-                Pipe.Context.OutputMerger.DepthStencilReference = _stencilRef;
-                _stencilRefChanged = false;
+                _stencilRef = _currentState.StencilReference;
+                Pipe.Context.OutputMerger.SetDepthStencilState(_currentState.State, _stencilRef);
             }
         }
 
@@ -59,20 +53,6 @@ namespace Molten.Graphics
         {
             get { return _currentState; }
             set { _currentState = value; }
-        }
-
-        /// <summary>Gets or sets the stencil reference value. The default value is 0.</summary>
-        public int StencilReference
-        {
-            get { return _stencilRef; }
-            set
-            {
-                if (_stencilRef != value)
-                {
-                    _stencilRef = value;
-                    _stencilRefChanged = true;
-                }
-            }
         }
     }
 }

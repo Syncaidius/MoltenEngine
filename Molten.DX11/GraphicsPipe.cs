@@ -182,7 +182,9 @@ namespace Molten.Graphics
 
             /* TODO:
              *  - Add support for control of _depthStencil.StencilReference in material files.
-             *  - Add support for BlendState.BlendFactor and .BlendSampleMask.
+             *  - Apply the states provided in a material/pass.
+             *  - Remove methods for setting states directly.
+             *  - Remove null state checks in blend, rasterizer and depth-stencil stages; States will never be null.
              * 
              * 
              * 

@@ -13,7 +13,6 @@ namespace Molten.Graphics
         GraphicsBlendState _blendState;
         GraphicsDepthState _depthState;
         GraphicsRasterizerState _rasterState;
-        int _stencilReference;
 
         BufferSegment[] _vSegments;
         BufferSegment _iSegment;
@@ -39,7 +38,6 @@ namespace Molten.Graphics
         {
             _blendState = _pipe.BlendState.Current;
             _depthState = _pipe.DepthStencil.Current;
-            _stencilReference = _pipe.DepthStencil.StencilReference;
             _rasterState = _pipe.Rasterizer.Current;
 
             _pipe.GetVertexSegments(_vSegments);
@@ -63,7 +61,6 @@ namespace Molten.Graphics
             //states
             _pipe.BlendState.Current = _blendState;
             _pipe.DepthStencil.Current = _depthState;
-            _pipe.DepthStencil.StencilReference = _stencilReference;
             _pipe.Rasterizer.Current = _rasterState;
 
             //buffers

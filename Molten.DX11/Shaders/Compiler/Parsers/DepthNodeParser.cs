@@ -86,6 +86,13 @@ namespace Molten.Graphics
                             InvalidValueMessage(context, child, "stencil write mask", "byte");
                         break;
 
+                    case "reference":
+                        if (byte.TryParse(child.InnerText, out byte stencilRef))
+                            state.StencilReference = stencilRef;
+                        else
+                            InvalidValueMessage(context, child, "stencil reference", "integer");
+                        break;
+
                     case "front":
                         ParseFaceNode(context, child, state.FrontFace);
                         break;

@@ -220,5 +220,8 @@ namespace Molten.Graphics
         {
             get { return _backFace; }
         }
+
+        /// <summary>Gets or sets the stencil reference value. The default value is 0.</summary>
+        public int StencilReference { get; set; }
     }
 }
