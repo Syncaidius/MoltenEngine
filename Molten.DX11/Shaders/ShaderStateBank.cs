@@ -16,6 +16,18 @@ namespace Molten.Graphics
             _states = new T[(int)StateConditions.All + 1];
         }
 
+        internal void FillMissingWith(T state)
+        {
+            for (int i = 0; i < _states.Length; i++)
+                _states[i] = _states[i] ?? state;
+        }
+
+        internal void FillMissingWith(ShaderStateBank<T> source)
+        {
+            for (int i = 0; i < _states.Length; i++)
+                _states[i] = _states[i] ?? source._states[i];
+        }
+
         protected override void OnDispose()
         {
             for (int i = 0; i < _states.Length; i++)

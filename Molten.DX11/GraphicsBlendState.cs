@@ -12,8 +12,9 @@ namespace Molten.Graphics
     internal class GraphicsBlendState : PipelineObject, IEquatable<GraphicsBlendState>
     {
         internal BlendState State;
-        bool _dirty;
         BlendStateDescription _desc;
+
+        bool _dirty;
         Color4 _blendFactor;
         uint _blendSampleMask;
 
@@ -29,6 +30,16 @@ namespace Molten.Graphics
             _desc = BlendStateDescription.Default();
             _blendFactor = new Color4(1, 1, 1, 1);
             _blendSampleMask = 0xffffffff;
+        }
+
+        internal void SetSurfaceBlendState(RenderTargetBlendDescription desc, int index)
+        {
+            _desc.RenderTarget[index] = desc;
+        }
+
+        internal RenderTargetBlendDescription GetSurfaceBlendState(int index)
+        {
+            return _desc.RenderTarget[index];
         }
 
         public override bool Equals(object obj)

@@ -68,12 +68,17 @@ namespace Molten.Graphics
             // No issues arose, lets add it to the material manager
             if (context.Errors.Count == 0)
             {
-                // Populate any missing render states in passes
-                foreach(MaterialPass pass in material.Passes)
-                {
-                    pass.DepthState = pass.DepthState ?? material.DepthState;
-                    pass.RasterizerState = pass.RasterizerState ?? material.RasterizerState;
-                    pass.BlendState = pass.BlendState ?? material.BlendState;
+                // Populate missing material states with default.
+                material.DepthState.FillMissingWith(renderer.Device.GetPreset(DepthStencilPreset.Default));
+                material.RasterizerState.FillMissingWith(renderer.Device.GetPreset(RasterizerPreset.Default));
+                material.BlendState.FillMissingWith(renderer.Device.GetPreset(BlendPreset.Default));
+
+                // Populate missing pass states with ones from the material.
+                foreach (MaterialPass pass in material.Passes)
+                {                    
+                    pass.DepthState.FillMissingWith(material.DepthState);
+                    pass.RasterizerState.FillMissingWith(material.RasterizerState);
+                    pass.BlendState.FillMissingWith(material.BlendState);
                 }
 
                 material.InputStructure = material.Passes[0].VertexShader.InputStructure;

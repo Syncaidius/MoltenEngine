@@ -18,6 +18,10 @@ namespace Molten.Graphics
                 return new NodeParseResult(NodeParseResultType.Ignored);
 
             StateConditions conditions = StateConditions.None;
+            int rtIndex = 0;
+
+            GraphicsBlendState template = foundation.Device.GetPreset(BlendPreset.Default);
+            RenderTargetBlendDescription rtBlendDesc = template.GetSurfaceBlendState(0); // Use the default preset's first (0) RT blend description.
 
             // Prerequisit attributes
             foreach (XmlAttribute attribute in node.Attributes)
@@ -29,32 +33,26 @@ namespace Molten.Graphics
                         if (!Enum.TryParse(attribute.InnerText, true, out conditions))
                             InvalidEnumMessage<StateConditions>(context, attribute, "state condition");
                         break;
-                }
-            }
 
-            // Check if an existing state was already set.
-            GraphicsBlendState state = foundation.BlendState[conditions];
-            int rtIndex = 0;
-            bool existingState = state != null;
-
-            foreach (XmlAttribute attribute in node.Attributes)
-            {
-                string attName = attribute.Name.ToLower();
-                switch (attName)
-                {
                     case "preset":
                         if (Enum.TryParse(attribute.InnerText, true, out BlendPreset preset))
-                            state = new GraphicsBlendState(foundation.Device.GetPreset(preset));
+                        {
+                            // Use a template preset's first (0) RT blend description.
+                            template = foundation.Device.GetPreset(preset);
+                            rtBlendDesc = template.GetSurfaceBlendState(0);
+                        }
                         break;
 
                     case "index": // The blend state RT index. Blend states can provide per-render target/surface configuration.
                         int.TryParse(attribute.InnerText, out rtIndex);
-                        break;                            
+                        break;
                 }
             }
 
-            state = state ?? new GraphicsBlendState(foundation.Device.GetPreset(BlendPreset.Default));
-            state.IndependentBlendEnable = state.IndependentBlendEnable || (rtIndex > 0);
+            // Use existing state if present, or create a new one.
+            GraphicsBlendState state = foundation.BlendState[conditions] ?? new GraphicsBlendState(foundation.Device.GetPreset(BlendPreset.Default));
+            bool existingState = (foundation.BlendState[conditions] == state);
+            state.IndependentBlendEnable = (state.IndependentBlendEnable || (rtIndex > 0));
 
             foreach (XmlNode child in node.ChildNodes)
             {
@@ -63,7 +61,7 @@ namespace Molten.Graphics
                 {
                     case "enabled":
                         if (bool.TryParse(child.InnerText, out bool blendEnabled))
-                            state.SetIsBlendEnabled(rtIndex, blendEnabled);
+                            rtBlendDesc.IsBlendEnabled = blendEnabled;
                         else
                             InvalidValueMessage(context, child, "blend enabled", "boolean");
                         break;
@@ -77,49 +75,49 @@ namespace Molten.Graphics
 
                     case "source":
                         if (Enum.TryParse(child.InnerText, true, out BlendOption sourceBlend))
-                            state.SetSourceBlend(rtIndex, sourceBlend);
+                            rtBlendDesc.SourceBlend = sourceBlend;
                         else
                             InvalidEnumMessage<BlendOption>(context, child, "source blend option");
                         break;
 
                     case "destination":
                         if (Enum.TryParse(child.InnerText, true, out BlendOption destBlend))
-                            state.SetDestinationBlend(rtIndex, destBlend);
+                            rtBlendDesc.DestinationBlend = destBlend;
                         else
                             InvalidEnumMessage<BlendOption>(context, child, "destination blend option");
                         break;
 
                     case "operation":
                         if (Enum.TryParse(child.InnerText, true, out BlendOperation blendOp))
-                            state.SetBlendOperation(rtIndex, blendOp);
+                            rtBlendDesc.BlendOperation = blendOp;
                         else
                             InvalidEnumMessage<BlendOperation>(context, child, "blend operation");
                         break;
 
                     case "sourcealpha":
                         if (Enum.TryParse(child.InnerText, true, out BlendOption sourceAlpha))
-                            state.SetSourceAlphaBlend(rtIndex, sourceAlpha);
+                            rtBlendDesc.SourceAlphaBlend = sourceAlpha;
                         else
                             InvalidEnumMessage<BlendOption>(context, child, "source alpha option");
                         break;
 
                     case "destinationalpha":
                         if (Enum.TryParse(child.InnerText, true, out BlendOption destAlpha))
-                            state.SetDestinationAlphaBlend(rtIndex, destAlpha);
+                            rtBlendDesc.DestinationAlphaBlend = destAlpha;
                         else
                             InvalidEnumMessage<BlendOption>(context, child, "destination alpha option");
                         break;
 
                     case "alphaoperation":
                         if (Enum.TryParse(child.InnerText, true, out BlendOperation alphaOperation))
-                            state.SetAlphaBlendOperation(rtIndex, alphaOperation);
+                            rtBlendDesc.AlphaBlendOperation = alphaOperation;
                         else
                             InvalidEnumMessage<BlendOperation>(context, child, "alpha-blend operation");
                         break;
 
                     case "writemask":
                         if (Enum.TryParse(child.InnerText, true, out ColorWriteMaskFlags rtWriteMask))
-                            state.SetRenderTargetWriteMask(rtIndex, rtWriteMask);
+                            rtBlendDesc.RenderTargetWriteMask = rtWriteMask;
                         else
                             InvalidEnumMessage<ColorWriteMaskFlags>(context, child, "render surface/target write mask");
                         break;
@@ -140,6 +138,9 @@ namespace Molten.Graphics
                         break;
                 }
             }
+
+            // Update RT blend description on main description.
+            state.SetSurfaceBlendState(rtBlendDesc, rtIndex);
 
             // Check if an identical state exists (if we don't already have one) before returning the new one.
             if (!existingState)

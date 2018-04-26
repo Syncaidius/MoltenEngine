@@ -9,6 +9,9 @@ namespace Molten.Graphics
     [Flags]
     public enum StateConditions : byte
     {
+        /// <summary>
+        /// No conditions.
+        /// </summary>
         None = 0,
 
         Multisampling = 1,
