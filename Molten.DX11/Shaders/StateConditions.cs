@@ -14,10 +14,21 @@ namespace Molten.Graphics
         /// </summary>
         None = 0,
 
+        /// <summary>
+        /// Multisampling is enabled.
+        /// </summary>
         Multisampling = 1,
 
+        /// <summary>
+        /// Anisotropic filtering is enabled
+        /// </summary>
         AnisotropicFiltering = 1 << 1,
 
-        All = Multisampling | AnisotropicFiltering,
+        /// <summary>
+        /// Scissor testing is enabled
+        /// </summary>
+        ScissorTest = 1 << 2,
+
+        All = Multisampling | AnisotropicFiltering | ScissorTest,
     }
 }

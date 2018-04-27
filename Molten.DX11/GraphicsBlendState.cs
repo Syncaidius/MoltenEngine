@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
         internal GraphicsBlendState(GraphicsBlendState source)
         {
-            _desc = source._desc;
+            _desc = source._desc.Clone();
             _blendFactor = source._blendFactor;
             _blendSampleMask = source._blendSampleMask;
         }
@@ -32,9 +32,9 @@ namespace Molten.Graphics
             _blendSampleMask = 0xffffffff;
         }
 
-        internal void SetSurfaceBlendState(RenderTargetBlendDescription desc, int index)
+        internal void SetSurfaceBlendDescription(RenderTargetBlendDescription surfaceBlendDesc, int index)
         {
-            _desc.RenderTarget[index] = desc;
+            _desc.RenderTarget[index] = surfaceBlendDesc;
         }
 
         internal RenderTargetBlendDescription GetSurfaceBlendState(int index)

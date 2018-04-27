@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class BlendPresetBank : GraphicsPresetBank<GraphicsBlendState, BlendPreset>
+    internal class BlendStateBank : GraphicsStateBank<GraphicsBlendState, BlendPreset>
     {
-        internal BlendPresetBank()
+        internal BlendStateBank()
         {
             AddPreset(BlendPreset.Default, new GraphicsBlendState());
 

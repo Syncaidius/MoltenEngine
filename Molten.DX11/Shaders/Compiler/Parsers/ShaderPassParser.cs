@@ -21,8 +21,6 @@ namespace Molten.Graphics
                     pass.Samplers[i] = material.Samplers[i];
 
                 context.Compiler.ParseNode(pass, node, context);
-
-                // Add the pass once for each iteration it is meant to run.
                 material.AddPass(pass);
 
                 return new NodeParseResult(NodeParseResultType.Success);

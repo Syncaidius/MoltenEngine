@@ -27,7 +27,7 @@ namespace Molten.Graphics
                 {
                     case "preset":
                         if (Enum.TryParse(attribute.InnerText, true, out DepthStencilPreset preset))
-                            state = new GraphicsDepthState(foundation.Device.GetPreset(preset));
+                            state = new GraphicsDepthState(foundation.Device.DepthBank.GetPreset(preset));
                         break;
 
                     case "condition":
@@ -37,7 +37,7 @@ namespace Molten.Graphics
                 }
             }
 
-            state = state ?? new GraphicsDepthState(foundation.Device.GetPreset(DepthStencilPreset.Default));
+            state = state ?? new GraphicsDepthState(foundation.Device.DepthBank.GetPreset(DepthStencilPreset.Default));
 
             foreach (XmlNode child in node.ChildNodes)
             {
@@ -107,23 +107,13 @@ namespace Molten.Graphics
                 }
             }
 
-            bool existingState = false;
-            // Check if an identical state exists before returning the new one.
-            foreach (GraphicsDepthState existing in context.DepthStates)
-            {
-                if (existing.Equals(state))
-                {
-                    state.Dispose();
-                    existingState = true;
-                    state = existing;
-                    break;
-                }
-            }
+            state = foundation.Device.DepthBank.AddOrRetrieveExisting(state);
 
-            if (!existingState)
-                context.DepthStates.Add(state);
+            if (conditions == StateConditions.None)
+                foundation.DepthState.FillMissingWith(state);
+            else
+                foundation.DepthState[conditions] = state;
 
-            foundation.DepthState[conditions] = state;
             return new NodeParseResult(NodeParseResultType.Success);
         }
 

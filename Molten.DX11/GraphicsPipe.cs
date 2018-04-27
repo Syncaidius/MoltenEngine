@@ -15,10 +15,12 @@ namespace Molten.Graphics
         class DrawInfo
         {
             public bool Began;
+            public StateConditions Conditions;
 
             public void Reset()
             {
                 Began = false;
+                Conditions = StateConditions.None;
             }
         }
 
@@ -181,9 +183,8 @@ namespace Molten.Graphics
             _input.Refresh(passID);
 
             /* TODO:
-             *  - Add support for control of _depthStencil.StencilReference in material files.
              *  - Apply the states provided in a material/pass.
-             *  - Remove methods for setting states directly.
+             *  - Remove methods for setting states and their properties directly.
              *  - Remove null state checks in blend, rasterizer and depth-stencil stages; States will never be null.
              * 
              * 
@@ -201,7 +202,7 @@ namespace Molten.Graphics
             return result;
         }
 
-        internal void BeginDraw()
+        internal void BeginDraw(StateConditions conditions)
         {
 #if DEBUG
             if (_drawInfo.Began)
@@ -210,6 +211,7 @@ namespace Molten.Graphics
 
             _output.Refresh();
             _drawInfo.Began = true;
+            _drawInfo.Conditions = conditions;
         }
 
         internal void EndDraw()
@@ -238,14 +240,16 @@ namespace Molten.Graphics
             {
                 for (int j = 0; j < material.PassCount; j++)
                 {
+                    MaterialPass pass = material.Passes[j];
+                    _blendState.Current = pass.BlendState[_drawInfo.Conditions];
+                    _rasterizer.Current = pass.RasterizerState[_drawInfo.Conditions];
+                    _depthStencil.Current = pass.DepthState[_drawInfo.Conditions];
+
                     //TODO pass in the context of whichever render-pipe is doing the draw call.
                     _drawResult = ApplyState(material, j, GraphicsValidationMode.Unindexed, topology);
-
-                    // If data application was successful, draw.
                     if (_drawResult == GraphicsValidationResult.Successful)
                     {
                         // Re-render the same pass for K iterations.
-                        MaterialPass pass = material.Passes[j];
                         for (int k = 0; k < pass.Iterations; k++)
                         {
                             _context.Draw(vertexCount, vertexStartIndex);
@@ -277,12 +281,15 @@ namespace Molten.Graphics
             {
                 for (int j = 0; j < material.PassCount; j++)
                 {
-                    _drawResult = ApplyState(material, j, GraphicsValidationMode.Instanced, topology);
+                    MaterialPass pass = material.Passes[j];
+                    _blendState.Current = pass.BlendState[_drawInfo.Conditions];
+                    _rasterizer.Current = pass.RasterizerState[_drawInfo.Conditions];
+                    _depthStencil.Current = pass.DepthState[_drawInfo.Conditions];
 
+                    _drawResult = ApplyState(material, j, GraphicsValidationMode.Instanced, topology);
                     if (_drawResult == GraphicsValidationResult.Successful)
                     {
                         // Re-render the same pass for K iterations.
-                        MaterialPass pass = material.Passes[j];
                         for (int k = 0; k < pass.Iterations; k++)
                         {
                             _context.DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
@@ -313,13 +320,16 @@ namespace Molten.Graphics
             {
                 for (int j = 0; j < material.PassCount; j++)
                 {
+                    MaterialPass pass = material.Passes[j];
+                    _blendState.Current = pass.BlendState[_drawInfo.Conditions];
+                    _rasterizer.Current = pass.RasterizerState[_drawInfo.Conditions];
+                    _depthStencil.Current = pass.DepthState[_drawInfo.Conditions];
+
                     //TODO pass in the context of whichever render-pipe is doing the draw call.
                     _drawResult = ApplyState(material, j, GraphicsValidationMode.Indexed, topology);
-                    // If data application was successful, draw.
                     if (_drawResult == GraphicsValidationResult.Successful)
                     {
                         // Re-render the same pass for K iterations.
-                        MaterialPass pass = material.Passes[j];
                         for (int k = 0; k < pass.Iterations; k++)
                         {
                             _context.DrawIndexed(indexCount, startIndex, vertexIndexOffset);
@@ -341,6 +351,7 @@ namespace Molten.Graphics
             int indexCountPerInstance,
             int instanceCount,
             PrimitiveTopology topology,
+            StateConditions conditions,
             int startIndex = 0,
             int vertexIndexOffset = 0,
             int instanceStartIndex = 0)
@@ -353,11 +364,15 @@ namespace Molten.Graphics
             {
                 for (int j = 0; j < material.PassCount; j++)
                 {
+                    MaterialPass pass = material.Passes[j];
+                    _blendState.Current = pass.BlendState[_drawInfo.Conditions];
+                    _rasterizer.Current = pass.RasterizerState[_drawInfo.Conditions];
+                    _depthStencil.Current = pass.DepthState[_drawInfo.Conditions];
+
                     _drawResult = ApplyState(material, j, GraphicsValidationMode.InstancedIndexed, topology);
                     if (_drawResult == GraphicsValidationResult.Successful)
                     {
                         // Re-render the same pass for K iterations.
-                        MaterialPass pass = material.Passes[j];
                         for (int k = 0; k < pass.Iterations; k++)
                         {
                             _context.DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex);

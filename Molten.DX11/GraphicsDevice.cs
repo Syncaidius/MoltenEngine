@@ -32,9 +32,9 @@ namespace Molten.Graphics
         ShaderSampler _defaultSampler;
         long _allocatedVRAM;
 
-        RasterizerPresetBank _rasterizerPresets;
-        BlendPresetBank _blendPresets;
-        DepthPresetBank _depthPresets;
+        RasterizerStateBank _rasterizerBank;
+        BlendStateBank _blendBank;
+        DepthStateBank _depthBank;
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
@@ -61,44 +61,14 @@ namespace Molten.Graphics
 
             _features = new GraphicsDeviceFeatures(_d3d);
 
-            _rasterizerPresets = new RasterizerPresetBank();
-            _blendPresets = new BlendPresetBank();
-            _depthPresets = new DepthPresetBank();
+            _rasterizerBank = new RasterizerStateBank();
+            _blendBank = new BlendStateBank();
+            _depthBank = new DepthStateBank();
 
             Initialize(_log, this, _d3d.ImmediateContext);
 
             CreateDefaultResources();
             ExternalContext = this;
-        }
-
-        /// <summary>
-        /// Retrieves a rasterizer state preset.
-        /// </summary>
-        /// <param name="preset">The preset name/ID.</param>
-        /// <returns></returns>
-        internal GraphicsRasterizerState GetPreset(RasterizerPreset preset)
-        {
-            return _rasterizerPresets.GetPreset(preset);
-        }
-
-        /// <summary>
-        /// Retrieves a blend state preset.
-        /// </summary>
-        /// <param name="preset">The preset name/ID.</param>
-        /// <returns></returns>
-        internal GraphicsBlendState GetPreset(BlendPreset preset)
-        {
-            return _blendPresets.GetPreset(preset);
-        }
-
-        /// <summary>
-        /// Retrieves a depth-stencil state preset.
-        /// </summary>
-        /// <param name="preset">The preset name/ID.</param>
-        /// <returns></returns>
-        internal GraphicsDepthState GetPreset(DepthStencilPreset preset)
-        {
-            return _depthPresets.GetPreset(preset);
         }
 
         /// <summary>Track a VRAM allocation.</summary>
@@ -160,9 +130,9 @@ namespace Molten.Graphics
 
             _contexts.Clear();
 
-            DisposeObject(ref _rasterizerPresets);
-            DisposeObject(ref _blendPresets);
-            DisposeObject(ref _depthPresets);
+            DisposeObject(ref _rasterizerBank);
+            DisposeObject(ref _blendBank);
+            DisposeObject(ref _depthBank);
             DisposeObject(ref _defaultSampler);
             DisposeObject(ref _d3d);
 
@@ -194,5 +164,11 @@ namespace Molten.Graphics
         }
 
         internal long AllocatedVRAM => _allocatedVRAM;
+
+        public BlendStateBank BlendBank => _blendBank;
+
+        public RasterizerStateBank RasterizerBank => _rasterizerBank;
+
+        public DepthStateBank DepthBank => _depthBank;
     }
 }

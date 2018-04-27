@@ -37,12 +37,12 @@ namespace Molten.Graphics
         /// <param name="preset"></param>
         public void SetPreset(BlendPreset preset)
         {
-            _currentState = Device.GetPreset(preset);
+            _currentState = Device.BlendBank.GetPreset(preset);
         }
 
         internal void Refresh()
         {
-            _currentState = _currentState ?? Device.GetPreset(BlendPreset.Default);
+            _currentState = _currentState ?? Device.BlendBank.GetPreset(BlendPreset.Default);
             bool stateChanged = _slotState.Bind(Pipe, _currentState);
 
             if (_state != _currentState.State || _blendFactor != _currentState.BlendFactor || _blendSampleMask != _currentState.BlendSampleMask)

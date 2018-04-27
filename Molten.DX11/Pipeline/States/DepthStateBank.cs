@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class DepthPresetBank : GraphicsPresetBank<GraphicsDepthState, DepthStencilPreset>
+    internal class DepthStateBank : GraphicsStateBank<GraphicsDepthState, DepthStencilPreset>
     {
-        internal DepthPresetBank()
+        internal DepthStateBank()
         {
             AddPreset(DepthStencilPreset.Default, new GraphicsDepthState()
             {

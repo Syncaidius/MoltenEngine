@@ -27,7 +27,7 @@ namespace Molten.Graphics
                 {
                     case "preset":
                         if (Enum.TryParse(attribute.InnerText, true, out RasterizerPreset preset))
-                            state = new GraphicsRasterizerState(foundation.Device.GetPreset(preset));
+                            state = new GraphicsRasterizerState(foundation.Device.RasterizerBank.GetPreset(preset));
                         break;
 
                     case "condition":
@@ -37,7 +37,7 @@ namespace Molten.Graphics
                 }
             }
 
-            state = state ?? new GraphicsRasterizerState(foundation.Device.GetPreset(RasterizerPreset.Default));
+            state = state ?? new GraphicsRasterizerState(foundation.Device.RasterizerBank.GetPreset(RasterizerPreset.Default));
 
             foreach (XmlNode child in node.ChildNodes)
             {
@@ -117,24 +117,13 @@ namespace Molten.Graphics
                         break;
                 }
             }
+            state = foundation.Device.RasterizerBank.AddOrRetrieveExisting(state);
 
-            bool existingState = false;
-            // Check if an identical state exists before returning the new one.
-            foreach (GraphicsRasterizerState existing in context.RasterStates)
-            {
-                if (existing.Equals(state))
-                {
-                    state.Dispose();
-                    existingState = true;
-                    state = existing;
-                    break;
-                }
-            }
+            if (conditions == StateConditions.None)
+                foundation.RasterizerState.FillMissingWith(state);
+            else
+                foundation.RasterizerState[conditions] = state;
 
-            if (!existingState)
-                context.RasterStates.Add(state);
-
-            foundation.RasterizerState[conditions] = state;
             return new NodeParseResult(NodeParseResultType.Success);
         }
     }

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class RasterizerPresetBank : GraphicsPresetBank<GraphicsRasterizerState, RasterizerPreset>
+    internal class RasterizerStateBank : GraphicsStateBank<GraphicsRasterizerState, RasterizerPreset>
     {
-        internal RasterizerPresetBank()
+        internal RasterizerStateBank()
         {
             AddPreset(RasterizerPreset.Default, new GraphicsRasterizerState());
 

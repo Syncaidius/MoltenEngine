@@ -69,15 +69,21 @@ namespace Molten.Graphics
             if (context.Errors.Count == 0)
             {
                 // Populate missing material states with default.
-                material.DepthState.FillMissingWith(renderer.Device.GetPreset(DepthStencilPreset.Default));
-                material.RasterizerState.FillMissingWith(renderer.Device.GetPreset(RasterizerPreset.Default));
-                material.BlendState.FillMissingWith(renderer.Device.GetPreset(BlendPreset.Default));
+                material.DepthState.FillMissingWith(renderer.Device.DepthBank.GetPreset(DepthStencilPreset.Default));
+                material.RasterizerState.FillMissingWith(renderer.Device.RasterizerBank.GetPreset(RasterizerPreset.Default));
+                material.BlendState.FillMissingWith(renderer.Device.BlendBank.GetPreset(BlendPreset.Default));
 
-                // Populate missing pass states with ones from the material.
+                // First, attempt to populate pass states with their first conditional state. 
+                // If that fails, fill remaining gaps with ones from material.
                 foreach (MaterialPass pass in material.Passes)
-                {                    
+                {
+                    pass.DepthState.FillMissingWith(pass.DepthState[StateConditions.None]);
                     pass.DepthState.FillMissingWith(material.DepthState);
+
+                    pass.RasterizerState.FillMissingWith(pass.RasterizerState[StateConditions.None]);
                     pass.RasterizerState.FillMissingWith(material.RasterizerState);
+
+                    pass.BlendState.FillMissingWith(pass.BlendState[StateConditions.None]);
                     pass.BlendState.FillMissingWith(material.BlendState);
                 }
 

@@ -57,10 +57,13 @@ namespace Molten.Graphics
                 device.DepthStencil.SetPreset(DepthStencilPreset.Default);
                 device.Rasterizer.SetViewports(rs.Viewport);
 
-                device.BeginDraw();
+                StateConditions conditions = StateConditions.ScissorTest;
+                conditions |= rs.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
+
+                device.BeginDraw(conditions);
                 renderer.SpriteBatcher.Begin(rs.Viewport);
                 scene.Render2D(device, renderer);
-                renderer.SpriteBatcher.Flush(device, ref spriteViewProj, rs.SampleCount > 1, rs);
+                renderer.SpriteBatcher.Flush(device, ref spriteViewProj, rs);
                 device.EndDraw();
             }
         }

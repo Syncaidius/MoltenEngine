@@ -72,7 +72,7 @@ namespace Molten.Graphics
 
         /// <summary>Finalizes a batch of sprites, sorts them (if enabled) and then draws them.</summary>
         /// <param name="sortMode"></param>
-        internal void Flush(GraphicsPipe pipe, ref Matrix4F viewProjection, bool multisample, RenderSurfaceBase destination)
+        internal void Flush(GraphicsPipe pipe, ref Matrix4F viewProjection, RenderSurfaceBase destination)
         {
             //if nothing was added to the batch, don't bother with any draw operations.
             if (_clusterCount == 0)
@@ -80,9 +80,9 @@ namespace Molten.Graphics
 
             _viewProjection = viewProjection;
              
-            pipe.PushState();
-            pipe.DepthStencil.SetPreset(DepthStencilPreset.ZDisabled);
-            pipe.BlendState.SetPreset(BlendPreset.PreMultipliedAlpha);
+            //pipe.PushState();
+            //pipe.DepthStencil.SetPreset(DepthStencilPreset.ZDisabled);
+            //pipe.BlendState.SetPreset(BlendPreset.PreMultipliedAlpha);
             pipe.SetVertexSegment(_segment, 0);
 
             // Run through all clip zones
@@ -99,13 +99,13 @@ namespace Molten.Graphics
                 _drawnTo = 0;
 
                 // Set rasterizer state + scissor rect
-                RasterizerPreset rasterPreset = RasterizerPreset.Default;
-                rasterPreset = multisample ? RasterizerPreset.ScissorTestMultisample : RasterizerPreset.ScissorTest;
+                //RasterizerPreset rasterPreset = RasterizerPreset.Default;
+                //rasterPreset = multisample ? RasterizerPreset.ScissorTestMultisample : RasterizerPreset.ScissorTest;
 
                 if (!clip.Active)
                     clip.ClipBounds = destination.Viewport.Bounds;
 
-                pipe.Rasterizer.SetPreset(rasterPreset);
+                //pipe.Rasterizer.SetPreset(rasterPreset);
                 pipe.Rasterizer.SetScissorRectangle(clip.ClipBounds);
 
                 // Flush cluster within current clip-zone.
@@ -156,7 +156,7 @@ namespace Molten.Graphics
                 } while (!finishedDrawing);
             }
 
-            pipe.PopState();
+            //pipe.PopState();
 
             //reset counters
             Reset();

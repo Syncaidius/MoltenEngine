@@ -63,7 +63,8 @@ namespace Molten.Graphics
                         device.DepthStencil.SetPreset(DepthStencilPreset.Default);
                         device.Rasterizer.SetViewports(rs.Viewport);
 
-                        device.BeginDraw();
+                        StateConditions conditions = StateConditions.None; // TODO expand
+                        device.BeginDraw(conditions);
                         scene.Render3D(device, renderer);
                         device.EndDraw();
                         break;

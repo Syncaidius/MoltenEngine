@@ -93,7 +93,7 @@ namespace Molten.Graphics
 
         public bool Equals(GraphicsDepthState other)
         {
-            if (!CompareOperation(_desc.BackFace, other._desc.BackFace) || !CompareOperation(_desc.FrontFace, other._desc.FrontFace))
+            if (!CompareOperation(ref _desc.BackFace, ref other._desc.BackFace) || !CompareOperation(ref _desc.FrontFace, ref other._desc.FrontFace))
                 return false;
 
             return _desc.DepthComparison == other._desc.DepthComparison &&
@@ -103,7 +103,7 @@ namespace Molten.Graphics
                 _desc.StencilWriteMask == other._desc.StencilWriteMask;
         }
 
-        private static bool CompareOperation(DepthStencilOperationDescription op, DepthStencilOperationDescription other)
+        private static bool CompareOperation(ref DepthStencilOperationDescription op, ref DepthStencilOperationDescription other)
         {
             return op.Comparison == other.Comparison &&
                 op.DepthFailOperation == other.DepthFailOperation &&

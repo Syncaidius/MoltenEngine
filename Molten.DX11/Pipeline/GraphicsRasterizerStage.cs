@@ -51,7 +51,7 @@ namespace Molten.Graphics
         /// <param name="preset"></param>
         public void SetPreset(RasterizerPreset preset)
         {
-            _currentState = Device.GetPreset(preset);
+            _currentState = Device.RasterizerBank.GetPreset(preset);
         }
 
         public void SetScissorRectangle(Rectangle rect, int slot = 0)
@@ -138,7 +138,7 @@ namespace Molten.Graphics
         internal void Refresh()
         {
             // Ensure the default preset is used if a null state was requested.
-            _currentState = _currentState ?? Device.GetPreset(RasterizerPreset.Default);
+            _currentState = _currentState ?? Device.RasterizerBank.GetPreset(RasterizerPreset.Default);
             bool stateChanged = _slotState.Bind(Pipe, _currentState);
 
             if (stateChanged)   // Update rasterizer state.

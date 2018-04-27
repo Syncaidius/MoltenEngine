@@ -7,6 +7,9 @@
 		<vertex>VS</vertex>
 		<geometry>GS</geometry>
 		<pixel>PS</pixel>
+    <blend preset="PreMultipliedAlpha" />
+    <rasterizer preset="ScissorTest" />
+    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
 	</pass>
 </material>
 
@@ -19,6 +22,9 @@
 		<vertex>VS</vertex>
 		<geometry>GS</geometry>
 		<pixel>PS_NoTexture</pixel>
+    <blend preset="PreMultipliedAlpha" />
+    <rasterizer preset="ScissorTest" />
+    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
 	</pass>
 </material>
 
@@ -31,6 +37,9 @@
     <vertex>VS_Line</vertex>
     <geometry>GS_Line</geometry>
     <pixel>PS_NoTexture</pixel>
+    <blend preset="PreMultipliedAlpha" />
+    <rasterizer preset="ScissorTest" />
+    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
   </pass>
 </material>
 
@@ -43,6 +52,9 @@
     <vertex>VS_Circle</vertex>
     <geometry>GS_Circle</geometry>
     <pixel>PS_NoTexture</pixel>
+    <blend preset="PreMultipliedAlpha" />
+    <rasterizer preset="ScissorTest" />
+    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
   </pass>
 </material>
 
@@ -55,6 +67,9 @@
     <vertex>VS_Tri</vertex>
     <geometry>GS_Tri</geometry>
     <pixel>PS_NoTexture</pixel>
+    <blend preset="PreMultipliedAlpha" />
+    <rasterizer preset="ScissorTest" />
+    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
   </pass>
 </material>
 

@@ -20,7 +20,7 @@ namespace Molten.Graphics
             StateConditions conditions = StateConditions.None;
             int rtIndex = 0;
 
-            GraphicsBlendState template = foundation.Device.GetPreset(BlendPreset.Default);
+            GraphicsBlendState template = foundation.Device.BlendBank.GetPreset(BlendPreset.Default);
             RenderTargetBlendDescription rtBlendDesc = template.GetSurfaceBlendState(0); // Use the default preset's first (0) RT blend description.
 
             // Prerequisit attributes
@@ -38,7 +38,7 @@ namespace Molten.Graphics
                         if (Enum.TryParse(attribute.InnerText, true, out BlendPreset preset))
                         {
                             // Use a template preset's first (0) RT blend description.
-                            template = foundation.Device.GetPreset(preset);
+                            template = foundation.Device.BlendBank.GetPreset(preset);
                             rtBlendDesc = template.GetSurfaceBlendState(0);
                         }
                         break;
@@ -50,8 +50,7 @@ namespace Molten.Graphics
             }
 
             // Use existing state if present, or create a new one.
-            GraphicsBlendState state = foundation.BlendState[conditions] ?? new GraphicsBlendState(foundation.Device.GetPreset(BlendPreset.Default));
-            bool existingState = (foundation.BlendState[conditions] == state);
+            GraphicsBlendState state = new GraphicsBlendState(foundation.BlendState[conditions] ?? foundation.Device.BlendBank.GetPreset(BlendPreset.Default));
             state.IndependentBlendEnable = (state.IndependentBlendEnable || (rtIndex > 0));
 
             foreach (XmlNode child in node.ChildNodes)
@@ -140,28 +139,14 @@ namespace Molten.Graphics
             }
 
             // Update RT blend description on main description.
-            state.SetSurfaceBlendState(rtBlendDesc, rtIndex);
+            state.SetSurfaceBlendDescription(rtBlendDesc, rtIndex);
+            state = foundation.Device.BlendBank.AddOrRetrieveExisting(state);
 
-            // Check if an identical state exists (if we don't already have one) before returning the new one.
-            if (!existingState)
-            {
-                foreach (GraphicsBlendState existing in context.BlendStates)
-                {
-                    if (existing.Equals(state))
-                    {
-                        state.Dispose();
-                        existingState = true;
-                        state = existing;
-                        break;
-                    }
-                }
-            }
+            if (conditions == StateConditions.None)
+                foundation.BlendState.FillMissingWith(state);
+            else
+                foundation.BlendState[conditions] = state;
 
-            // If the defined state still isn't an existing one, add it to the context.
-            if (!existingState)
-                context.BlendStates.Add(state);
-
-            foundation.BlendState[conditions] = state;
             return new NodeParseResult(NodeParseResultType.Success);
         }
     }
