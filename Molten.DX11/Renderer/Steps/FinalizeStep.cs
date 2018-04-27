@@ -40,7 +40,6 @@ namespace Molten.Graphics
 
                     device.SetRenderSurface(scene.FinalSurface, 0);
                     device.SetDepthSurface(null, GraphicsDepthMode.Disabled);
-                    device.DepthStencil.SetPreset(DepthStencilPreset.Default);
                     device.Rasterizer.SetViewports(scene.FinalSurface.Viewport);
 
                     renderer.SpriteBatcher.Begin(scene.FinalSurface.Viewport);
@@ -48,7 +47,10 @@ namespace Molten.Graphics
 
                     StateConditions conditions = StateConditions.ScissorTest;
                     conditions |= scene.FinalSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
+
+                    renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
                     renderer.SpriteBatcher.Flush(device, ref spriteViewProj, scene.FinalSurface);
+                    renderer.Device.EndDraw();
                     break;
             }
         }

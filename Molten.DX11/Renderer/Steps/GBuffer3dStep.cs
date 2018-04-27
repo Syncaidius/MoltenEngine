@@ -39,7 +39,6 @@ namespace Molten.Graphics
                     // TODO add alternate HDR start step here (which should be used in conjunction HDR textures, HDR RTs and so on).
             }
 
-            device.DepthStencil.SetPreset(DepthStencilPreset.Default);
             device.Rasterizer.SetViewports(scene.FinalSurface.Viewport);
 
             StateConditions conditions = StateConditions.None; // TODO expand

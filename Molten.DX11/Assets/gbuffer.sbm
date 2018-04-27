@@ -6,6 +6,8 @@
 		<iterations>1</iterations>
 		<vertex>VS</vertex>
 		<pixel>PS</pixel>
+    <rasterizer preset="default" />
+    <depth preset="default" />
 	</pass>
 </material>
 
@@ -17,6 +19,8 @@
     <iterations>1</iterations>
     <vertex>VS</vertex>
     <pixel>PS</pixel>
+    <rasterizer preset="default" />
+    <depth preset="default" />
   </pass>
 </material>
 

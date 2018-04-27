@@ -55,6 +55,10 @@ namespace Molten.Graphics
             _lightDepthState.SetFrontFace(noSkyStencilOp);
             _lightDepthState.SetBackFace(noSkyStencilOp);
 
+            /*=====================================
+             * TODO move the above into material files
+             *=====================================*/
+
             Lighting = new RenderSurface(renderer.Device, width, height, Format.R16G16B16A16_Float);
 
             int stride = Marshal.SizeOf<LightData>();
@@ -107,10 +111,8 @@ namespace Molten.Graphics
 
             device.PushState();
             device.SetDepthSurface(_startStep.Depth, GraphicsDepthMode.ReadOnly);
-            device.BlendState.SetPreset(BlendPreset.Additive);
             device.Rasterizer.Current = _lightRasterState;
             device.DepthStencil.Current = _lightDepthState;
-            //device.DepthStencil.StencilReference = 0; // Move to in-file depth state.
 
             RenderPointLights(device, scene);
 
@@ -137,8 +139,9 @@ namespace Molten.Graphics
             pipe.SetIndexSegment(null);
             int pointCount = scene.PointLights.ElementCount * 2;
 
+            pipe.BeginDraw(StateConditions.None); // TODO expand use of conditions here
             pipe.Draw(_matPoint, pointCount, PrimitiveTopology.PatchListWith1ControlPoints, 0);
-
+            pipe.EndDraw();
             //// Draw debug light volumes
             //if (_manager.ShowLightVolumes)
             //{

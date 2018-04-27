@@ -29,11 +29,6 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-        public void SetPreset(DepthStencilPreset preset)
-        {
-            _currentState = Device.DepthBank.GetPreset(preset);
-        }
-
         /// <summary>Applies the current state to the device. Called internally.</summary>
         internal void Refresh()
         {

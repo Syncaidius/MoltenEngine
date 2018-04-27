@@ -79,10 +79,6 @@ namespace Molten.Graphics
                 return;
 
             _viewProjection = viewProjection;
-             
-            //pipe.PushState();
-            //pipe.DepthStencil.SetPreset(DepthStencilPreset.ZDisabled);
-            //pipe.BlendState.SetPreset(BlendPreset.PreMultipliedAlpha);
             pipe.SetVertexSegment(_segment, 0);
 
             // Run through all clip zones
@@ -98,14 +94,9 @@ namespace Molten.Graphics
                 _drawnFrom = 0;
                 _drawnTo = 0;
 
-                // Set rasterizer state + scissor rect
-                //RasterizerPreset rasterPreset = RasterizerPreset.Default;
-                //rasterPreset = multisample ? RasterizerPreset.ScissorTestMultisample : RasterizerPreset.ScissorTest;
-
                 if (!clip.Active)
                     clip.ClipBounds = destination.Viewport.Bounds;
 
-                //pipe.Rasterizer.SetPreset(rasterPreset);
                 pipe.Rasterizer.SetScissorRectangle(clip.ClipBounds);
 
                 // Flush cluster within current clip-zone.
@@ -156,9 +147,6 @@ namespace Molten.Graphics
                 } while (!finishedDrawing);
             }
 
-            //pipe.PopState();
-
-            //reset counters
             Reset();
         }
 

@@ -54,7 +54,6 @@ namespace Molten.Graphics
                 device.SetRenderSurfaces(null);
                 device.SetRenderSurface(rs, 0);
                 device.SetDepthSurface(null, GraphicsDepthMode.Disabled);
-                device.DepthStencil.SetPreset(DepthStencilPreset.Default);
                 device.Rasterizer.SetViewports(rs.Viewport);
 
                 StateConditions conditions = StateConditions.ScissorTest;

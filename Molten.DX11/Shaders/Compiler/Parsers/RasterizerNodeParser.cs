@@ -65,7 +65,7 @@ namespace Molten.Graphics
                             InvalidValueMessage(context, child, "depth bias clamp", "floating-point");
                         break;
 
-                    case "fillmode":
+                    case "fill":
                         if (Enum.TryParse(child.InnerText, true, out FillMode fillMode))
                             state.FillMode = fillMode;
                         else

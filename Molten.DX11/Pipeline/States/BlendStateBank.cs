@@ -14,11 +14,8 @@ namespace Molten.Graphics
             AddPreset(BlendPreset.Default, new GraphicsBlendState());
 
             // Additive blending preset.
-            AddPreset(BlendPreset.Additive, new GraphicsBlendState()
+            GraphicsBlendState state = new GraphicsBlendState(new RenderTargetBlendDescription()
             {
-                AlphaToCoverageEnable = false,
-                IndependentBlendEnable = false,
-                IsBlendEnabled = true,
                 SourceBlend = BlendOption.One,
                 DestinationBlend = BlendOption.One,
                 BlendOperation = BlendOperation.Add,
@@ -26,13 +23,18 @@ namespace Molten.Graphics
                 DestinationAlphaBlend = BlendOption.One,
                 AlphaBlendOperation = BlendOperation.Add,
                 RenderTargetWriteMask = ColorWriteMaskFlags.All,
-            });
-
-            // Pre-multiplied alpha
-            AddPreset(BlendPreset.PreMultipliedAlpha, new GraphicsBlendState()
+                IsBlendEnabled = true,
+            })
             {
                 AlphaToCoverageEnable = false,
                 IndependentBlendEnable = false,
+
+            };
+            AddPreset(BlendPreset.Additive, state);
+
+            // Pre-multiplied alpha
+            state = new GraphicsBlendState(new RenderTargetBlendDescription()
+            {
                 SourceBlend = BlendOption.SourceAlpha,
                 DestinationBlend = BlendOption.InverseSourceAlpha,
                 BlendOperation = BlendOperation.Add,
@@ -43,7 +45,12 @@ namespace Molten.Graphics
 
                 RenderTargetWriteMask = ColorWriteMaskFlags.All,
                 IsBlendEnabled = true,
-            });
+            })
+            {
+                AlphaToCoverageEnable = false,
+                IndependentBlendEnable = false,
+            };
+            AddPreset(BlendPreset.PreMultipliedAlpha, state);
         }
 
         internal override GraphicsBlendState GetPreset(BlendPreset value)

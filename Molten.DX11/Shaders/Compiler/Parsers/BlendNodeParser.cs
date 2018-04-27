@@ -139,7 +139,7 @@ namespace Molten.Graphics
             }
 
             // Update RT blend description on main description.
-            state.SetSurfaceBlendDescription(rtBlendDesc, rtIndex);
+            state[rtIndex] = rtBlendDesc;
             state = foundation.Device.BlendBank.AddOrRetrieveExisting(state);
 
             if (conditions == StateConditions.None)

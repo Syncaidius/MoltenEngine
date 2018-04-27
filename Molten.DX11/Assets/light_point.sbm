@@ -8,6 +8,10 @@
 	<hull>HS</hull>
 	<domain>DS</domain>
   <pixel>PS</pixel>
+    <blend preset="additive" />
+    <depth preset="default">
+      <reference>0</reference>
+    </depth>
   </pass>
 </material>
 

@@ -33,13 +33,6 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-        /// <summary>Sets the blending state of the device via a preset.</summary>
-        /// <param name="preset"></param>
-        public void SetPreset(BlendPreset preset)
-        {
-            _currentState = Device.BlendBank.GetPreset(preset);
-        }
-
         internal void Refresh()
         {
             _currentState = _currentState ?? Device.BlendBank.GetPreset(BlendPreset.Default);

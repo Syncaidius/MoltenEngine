@@ -60,7 +60,6 @@ namespace Molten.Graphics
 
                         device.SetRenderSurface(rs, 0);
                         device.SetDepthSurface(start.Depth, GraphicsDepthMode.Enabled);
-                        device.DepthStencil.SetPreset(DepthStencilPreset.Default);
                         device.Rasterizer.SetViewports(rs.Viewport);
 
                         StateConditions conditions = StateConditions.None; // TODO expand

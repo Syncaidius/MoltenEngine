@@ -51,8 +51,7 @@ namespace Molten.Graphics
 
                     return existing;
                 }
-            }
-            
+            }            
 
             _states.Add(state);
             return state;
