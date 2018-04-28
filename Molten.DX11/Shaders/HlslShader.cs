@@ -11,7 +11,6 @@ namespace Molten.Graphics
         internal ShaderConstantBuffer[] ConstBuffers = new ShaderConstantBuffer[0];
         internal ShaderResourceVariable[] Resources = new ShaderResourceVariable[0];
         internal ShaderSamplerVariable[] SamplerVariables = new ShaderSamplerVariable[0];
-        internal Dictionary<string, PipelineShaderObject> ResourcePool = new Dictionary<string, PipelineShaderObject>();
         internal Dictionary<string, IShaderValue> Variables = new Dictionary<string, IShaderValue>();
         
         internal IShaderResource[] DefaultResources;
@@ -34,6 +33,11 @@ namespace Molten.Graphics
             _filename = filename ?? "";
             _device = device;
             _metadata = new Dictionary<string, string>();
+        }
+
+        public override string ToString()
+        {
+            return $"{this.GetType().Name} shader -- {Name}";
         }
 
         public void SetDefaultResource(IShaderResource resource, int slot)

@@ -99,12 +99,10 @@ namespace Molten.Graphics
                         // Skip binding info buffers
                         if (buffer.Description.Type != ConstantBufferType.ResourceBindInformation)
                         {
-                            ShaderConstantBuffer cBuffer = GetConstantBuffer(context, shader, buffer);
-
                             if (bindPoint >= shader.ConstBuffers.Length)
                                 Array.Resize(ref shader.ConstBuffers, bindPoint + 1);
 
-                            shader.ConstBuffers[bindPoint] = cBuffer;
+                            shader.ConstBuffers[bindPoint] = GetConstantBuffer(context, shader, buffer);
                             composition.ConstBufferIds.Add(bindPoint);
                         }
 
@@ -194,31 +192,32 @@ namespace Molten.Graphics
         private ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext context, HlslShader shader, ConstantBuffer buffer)
         {
             ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader, BufferMode.DynamicDiscard, buffer);
-            PipelineShaderObject existing = null;
+            string localName = cBuffer.BufferName;
+
+            if (cBuffer.BufferName == "$Globals")
+                localName += $"_{shader.Name}";
 
             // Duplication checks.
-            if (shader.ResourcePool.TryGetValue(cBuffer.BufferName, out existing))
+            if (context.ConstantBuffers.TryGetValue(localName, out ShaderConstantBuffer existing))
             {
-                ShaderConstantBuffer other = existing as ShaderConstantBuffer;
-
                 // Check for duplicates
-                if (other != null)
+                if (existing != null)
                 {
                     // Compare buffers. If identical, 
-                    if (other.Hash == cBuffer.Hash)
+                    if (existing.Hash == cBuffer.Hash)
                     {
                         // Dispose of new buffer, use existing.
                         cBuffer.Dispose();
-                        cBuffer = other;
+                        cBuffer = existing;
                     }
                     else
                     {
-                        LogHlslMessage(context, string.Format("Constant buffers with the same name ('{0}') do not match. Differing layouts.", cBuffer.BufferName));
+                        LogHlslMessage(context, string.Format("Constant buffers with the same name ('{0}') do not match. Differing layouts.", localName));
                     }
                 }
                 else
                 {
-                    LogHlslMessage(context, string.Format("Constant buffer creation failed. A resource with the name '{0}' already exists!", cBuffer.BufferName));
+                    LogHlslMessage(context, string.Format("Constant buffer creation failed. A resource with the name '{0}' already exists!", localName));
                 }
             }
             else
@@ -237,7 +236,7 @@ namespace Molten.Graphics
                 }
 
                 // Register the new buffer
-                shader.ResourcePool.Add(cBuffer.BufferName, cBuffer);
+                context.ConstantBuffers.Add(localName, cBuffer);
             }
 
             return cBuffer;

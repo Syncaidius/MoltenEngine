@@ -16,6 +16,8 @@ namespace Molten.Graphics
         /// </summary>
         internal Dictionary<string, CompilationResult> HlslShaders = new Dictionary<string, CompilationResult>();
 
+        internal Dictionary<string, ShaderConstantBuffer> ConstantBuffers = new Dictionary<string, ShaderConstantBuffer>();
+
         internal List<string> Errors = new List<string>();
 
         internal List<string> Messages = new List<string>();
