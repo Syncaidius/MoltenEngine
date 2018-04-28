@@ -8,11 +8,6 @@
 		<pixel>PS</pixel>
     <rasterizer preset="default" />
     <depth preset="default" />
-    <sampler slot="1" preset="default">
-      <addressu>wrap</addressu>
-      <addressv>clamp</addressv>
-      <addressw>clamp</addressw>
-    </sampler>
 	</pass>
 </material>
 
@@ -26,11 +21,6 @@
     <pixel>PS</pixel>
     <rasterizer preset="default" />
     <depth preset="default" />
-    <sampler slot="1" preset="default">
-      <addressu>clamp</addressu>
-      <addressv>clamp</addressv>
-      <addressw>clamp</addressw>
-    </sampler>
   </pass>
 </material>
 

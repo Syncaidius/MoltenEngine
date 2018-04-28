@@ -59,10 +59,10 @@ namespace Molten.Graphics
             Pipe.Context.InputAssembler.SetVertexBuffers(slot.SlotID, _nullVertexBuffer);
         }
 
-        internal void Refresh(int passID, StateConditions conditions)
+        internal void Refresh(MaterialPass pass, StateConditions conditions)
         {
             // Update shader pipeline stages
-            _materialStage.Refresh(passID, conditions);
+            _materialStage.Refresh(pass, conditions);
 
             // Update vertex buffers
             bool anyVbChanged = false;

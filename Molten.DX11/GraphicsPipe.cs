@@ -168,8 +168,7 @@ namespace Molten.Graphics
             _stateStack.Pop();
         }
 
-        private GraphicsValidationResult ApplyState(Material material,
-            int passID,
+        private GraphicsValidationResult ApplyState(Material material, MaterialPass pass,
             GraphicsValidationMode mode,
             PrimitiveTopology topology)
         {
@@ -180,7 +179,11 @@ namespace Molten.Graphics
 
             _input.Material = material;
             _input.Topology = topology;
-            _input.Refresh(passID, _drawInfo.Conditions);
+            _input.Refresh(pass, _drawInfo.Conditions);
+
+            _blendState.Current = pass.BlendState[_drawInfo.Conditions];
+            _rasterizer.Current = pass.RasterizerState[_drawInfo.Conditions];
+            _depthStencil.Current = pass.DepthState[_drawInfo.Conditions];
 
             // Apply render targets and states.
             _depthStencil.Refresh();
@@ -232,12 +235,7 @@ namespace Molten.Graphics
                 for (int j = 0; j < material.PassCount; j++)
                 {
                     MaterialPass pass = material.Passes[j];
-                    _blendState.Current = pass.BlendState[_drawInfo.Conditions];
-                    _rasterizer.Current = pass.RasterizerState[_drawInfo.Conditions];
-                    _depthStencil.Current = pass.DepthState[_drawInfo.Conditions];
-
-                    //TODO pass in the context of whichever render-pipe is doing the draw call.
-                    _drawResult = ApplyState(material, j, GraphicsValidationMode.Unindexed, topology);
+                    _drawResult = ApplyState(material, pass, GraphicsValidationMode.Unindexed, topology);
                     if (_drawResult == GraphicsValidationResult.Successful)
                     {
                         // Re-render the same pass for K iterations.
@@ -273,11 +271,7 @@ namespace Molten.Graphics
                 for (int j = 0; j < material.PassCount; j++)
                 {
                     MaterialPass pass = material.Passes[j];
-                    _blendState.Current = pass.BlendState[_drawInfo.Conditions];
-                    _rasterizer.Current = pass.RasterizerState[_drawInfo.Conditions];
-                    _depthStencil.Current = pass.DepthState[_drawInfo.Conditions];
-
-                    _drawResult = ApplyState(material, j, GraphicsValidationMode.Instanced, topology);
+                    _drawResult = ApplyState(material, pass, GraphicsValidationMode.Instanced, topology);
                     if (_drawResult == GraphicsValidationResult.Successful)
                     {
                         // Re-render the same pass for K iterations.
@@ -312,12 +306,7 @@ namespace Molten.Graphics
                 for (int j = 0; j < material.PassCount; j++)
                 {
                     MaterialPass pass = material.Passes[j];
-                    _blendState.Current = pass.BlendState[_drawInfo.Conditions];
-                    _rasterizer.Current = pass.RasterizerState[_drawInfo.Conditions];
-                    _depthStencil.Current = pass.DepthState[_drawInfo.Conditions];
-
-                    //TODO pass in the context of whichever render-pipe is doing the draw call.
-                    _drawResult = ApplyState(material, j, GraphicsValidationMode.Indexed, topology);
+                    _drawResult = ApplyState(material, pass, GraphicsValidationMode.Indexed, topology);
                     if (_drawResult == GraphicsValidationResult.Successful)
                     {
                         // Re-render the same pass for K iterations.
@@ -356,17 +345,7 @@ namespace Molten.Graphics
                 for (int j = 0; j < material.PassCount; j++)
                 {
                     MaterialPass pass = material.Passes[j];
-                    _blendState.Current = pass.BlendState[_drawInfo.Conditions];
-                    _rasterizer.Current = pass.RasterizerState[_drawInfo.Conditions];
-                    _depthStencil.Current = pass.DepthState[_drawInfo.Conditions];
-
-                    // Apply samplers to current pass
-                    for(int s = 0; s < pass.Samplers.Length; s++)
-                    {
-
-                    }
-
-                    _drawResult = ApplyState(material, j, GraphicsValidationMode.InstancedIndexed, topology);
+                    _drawResult = ApplyState(material, pass, GraphicsValidationMode.InstancedIndexed, topology);
                     if (_drawResult == GraphicsValidationResult.Successful)
                     {
                         // Re-render the same pass for K iterations.
