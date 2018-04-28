@@ -17,7 +17,7 @@ namespace Molten.Graphics
             if (foundation is ComputeTask)
                 return new NodeParseResult(NodeParseResultType.Ignored);
 
-            int sIndex = 0;
+            int slotID = 0;
             StateConditions conditions = StateConditions.None;
 
             foreach (XmlAttribute attribute in node.Attributes)
@@ -25,8 +25,9 @@ namespace Molten.Graphics
                 string attName = attribute.Name.ToLower();
                 switch (attName)
                 {
-                    case "index": // The blend state RT index. Blend states can provide per-render target/surface configuration.
-                        int.TryParse(attribute.InnerText, out sIndex);
+                    case "slot": // The blend state RT index. Blend states can provide per-render target/surface configuration.
+                        if (!int.TryParse(attribute.InnerText, out slotID))
+                            InvalidValueMessage(context, attribute, "sampler slot", "integer");
                         break;
 
                     case "condition":
@@ -38,21 +39,10 @@ namespace Molten.Graphics
 
             // Retrieve existing state
             ShaderSampler sampler = null;
-            switch (foundation)
-            {
-                case Material material:
-                    if(sIndex < material.Samplers.Length)
-                        sampler = material.Samplers[sIndex][conditions];
-                    break;
-
-                case MaterialPass pass:
-                    if(sIndex < pass.Samplers.Length)
-                        sampler = pass.Samplers[sIndex][conditions];
-                    break;
-            }
-
+            if (slotID < foundation.Samplers.Length)
+                sampler = foundation.Samplers[slotID][conditions];
             
-            bool existingState = sampler != null;
+            bool existingSampler = sampler != null;
             sampler = sampler ?? new ShaderSampler();
 
             foreach (XmlNode child in node.ChildNodes)
@@ -134,14 +124,14 @@ namespace Molten.Graphics
             }
 
             // Check if an identical state exists (if we don't already have one) before returning the new one.
-            if (!existingState)
+            if (!existingSampler)
             {
                 foreach (ShaderSampler existing in context.Samplers)
                 {
                     if (existing.Equals(sampler))
                     {
                         sampler.Dispose();
-                        existingState = true;
+                        existingSampler = true;
                         sampler = existing;
                         break;
                     }
@@ -149,47 +139,39 @@ namespace Molten.Graphics
             }
 
             // If the defined state still isn't an existing one, add it to the context.
-            if (!existingState)
+            if (!existingSampler)
                 context.Samplers.Add(sampler);
 
-            switch (foundation)
+            if (slotID >= foundation.Samplers.Length)
             {
-                case Material material:
-                    if (sIndex >= material.Samplers.Length)
+                int oldLength = foundation.Samplers.Length;
+                Array.Resize(ref foundation.Samplers, slotID + 1);
+                for (int i = oldLength; i < foundation.Samplers.Length; i++)
+                    foundation.Samplers[i] = new ShaderStateBank<ShaderSampler>();
+            }
+            foundation.Samplers[slotID][conditions] = sampler;
+
+            if (foundation is Material material)
+            {
+                // Apply to existing passes which do not have a rasterizer state yet.
+                foreach (MaterialPass p in material.Passes)
+                {
+                    if (slotID >= p.Samplers.Length)
                     {
-                        Array.Resize(ref material.Samplers, sIndex + 1);
-                        for (int i = sIndex; i < material.Samplers.Length; i++)
-                            material.Samplers[i] = new ShaderStateBank<ShaderSampler>();
+                        if (slotID >= p.Samplers.Length)
+                        {
+                            Array.Resize(ref p.Samplers, slotID + 1);
+                            for (int i = slotID; i < p.Samplers.Length; i++)
+                                p.Samplers[i] = new ShaderStateBank<ShaderSampler>();
+                        }
+
+                        p.Samplers[slotID][conditions] = sampler;
                     }
-
-                    material.Samplers[sIndex][conditions] = sampler;
-
-                    // Apply to existing passes which do not have a rasterizer state yet.
-                    foreach (MaterialPass p in material.Passes)
+                    else if (p.Samplers[slotID] == null) // Only overwrite with root sampler if pass does not already have on for the current index.
                     {
-                        if (sIndex >= p.Samplers.Length)
-                        {
-                            if (sIndex >= p.Samplers.Length)
-                            {
-                                Array.Resize(ref p.Samplers, sIndex + 1);
-                                for (int i = sIndex; i < p.Samplers.Length; i++)
-                                    p.Samplers[i] = new ShaderStateBank<ShaderSampler>();
-                            }
-
-                            p.Samplers[sIndex][conditions] = sampler;
-                        }
-                        else if (p.Samplers[sIndex] == null) // Only overwrite with root sampler if pass does not already have on for the current index.
-                        {
-                            p.Samplers[sIndex][conditions] = sampler;
-                        }
+                        p.Samplers[slotID][conditions] = sampler;
                     }
-                    break;
-
-                case MaterialPass pass:
-                    if (sIndex >= pass.Samplers.Length)
-                        Array.Resize(ref pass.Samplers, sIndex + 1);
-                    pass.Samplers[sIndex][conditions] = sampler;
-                    break;
+                }
             }
 
             return new NodeParseResult(NodeParseResultType.Success);

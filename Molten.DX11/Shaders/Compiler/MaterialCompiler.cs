@@ -73,6 +73,10 @@ namespace Molten.Graphics
                 material.RasterizerState.FillMissingWith(renderer.Device.RasterizerBank.GetPreset(RasterizerPreset.Default));
                 material.BlendState.FillMissingWith(renderer.Device.BlendBank.GetPreset(BlendPreset.Default));
 
+                ShaderSampler defaultSampler = renderer.Device.SamplerBank.GetPreset(SamplerPreset.Default);
+                for (int i = 0; i < material.Samplers.Length; i++)
+                    material.Samplers[i].FillMissingWith(defaultSampler);
+
                 // First, attempt to populate pass states with their first conditional state. 
                 // If that fails, fill remaining gaps with ones from material.
                 foreach (MaterialPass pass in material.Passes)
@@ -85,6 +89,16 @@ namespace Molten.Graphics
 
                     pass.BlendState.FillMissingWith(pass.BlendState[StateConditions.None]);
                     pass.BlendState.FillMissingWith(material.BlendState);
+
+                    for (int i = 0; i < pass.Samplers.Length; i++)
+                    {
+                        pass.Samplers[i].FillMissingWith(pass.Samplers[i][StateConditions.None]);
+
+                        if (i >= material.Samplers.Length)
+                            pass.Samplers[i].FillMissingWith(defaultSampler);
+                        else
+                            pass.Samplers[i].FillMissingWith(material.Samplers[i]);
+                    }
                 }
 
                 material.InputStructure = material.Passes[0].VertexShader.InputStructure;

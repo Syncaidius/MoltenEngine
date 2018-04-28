@@ -103,6 +103,7 @@
     <Compile Include="Exceptions\MappedBufferException.cs" />
     <Compile Include="Exceptions\UnsupportedFeatureException.cs" />
     <Compile Include="Pipeline\GraphicsBlendStage.cs" />
+    <Compile Include="Pipeline\States\SamplerBank.cs" />
     <Compile Include="Pipeline\States\GraphicsBlendState.cs" />
     <Compile Include="GraphicsContextType.cs" />
     <Compile Include="GraphicsDepthMode.cs" />

@@ -92,29 +92,32 @@ namespace Molten.Graphics
             for (int i = 0; i < composition.ResourceIds.Count; i++)
             {
                 int resID = composition.ResourceIds[i];
+                PipelineBindSlot<PipelineShaderObject> slot = _slotResources[resID];
+                int slotID = slot.SlotID;
 
                 variable = shader.Resources[resID];
                 resource = variable?.Resource;
 
-                bool resChanged = _slotResources[resID].Bind(_pipe, resource);
+
+                bool resChanged = slot.Bind(_pipe, resource);
 
                 if (resChanged)
                 {
                     if (resource != null)
                     {
-                        _resViews[resID] = resource.SRV;
-                        _stage.SetShaderResource(_slotResources[resID].SlotID, resource.SRV);
+                        _resViews[slotID] = resource.SRV;
+                        _stage.SetShaderResource(slotID, resource.SRV);
                     }
                     else
                     {
-                        _resViews[i] = null;
+                        _resViews[slotID] = null;
                         _stage.SetShaderResource(i, null);
                     }
                 }
-                else if (resource != null && _resViews[i] != resource.SRV)
+                else if (resource != null && _resViews[slotID] != resource.SRV)
                 {
-                    _resViews[i] = resource.SRV;
-                    _stage.SetShaderResource(_slotResources[resID].SlotID, resource.SRV);
+                    _resViews[slotID] = resource.SRV;
+                    _stage.SetShaderResource(slotID, resource.SRV);
                 }
             }
 
@@ -126,9 +129,9 @@ namespace Molten.Graphics
 
                 s = shader.SamplerVariables[slotId].Sampler;
 
-                bool sChanged = _slotSamplers[i].Bind(_pipe, s);
+                bool sChanged = _slotSamplers[slotId].Bind(_pipe, s);
                 if (sChanged)
-                    _stage.SetSampler(i, s?.State);
+                    _stage.SetSampler(slotId, s?.State);
             }
 
             if (_boundShader != shader)

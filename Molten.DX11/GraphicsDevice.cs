@@ -29,12 +29,12 @@ namespace Molten.Graphics
         VertexFormatBuilder _vertexBuilder;
         DX11DisplayManager _displayManager;
         GraphicsSettings _settings;
-        ShaderSampler _defaultSampler;
         long _allocatedVRAM;
 
         RasterizerStateBank _rasterizerBank;
         BlendStateBank _blendBank;
         DepthStateBank _depthBank;
+        SamplerBank _samplerBank;
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
@@ -64,10 +64,9 @@ namespace Molten.Graphics
             _rasterizerBank = new RasterizerStateBank();
             _blendBank = new BlendStateBank();
             _depthBank = new DepthStateBank();
+            _samplerBank = new SamplerBank();
 
             Initialize(_log, this, _d3d.ImmediateContext);
-
-            CreateDefaultResources();
             ExternalContext = this;
         }
 
@@ -83,11 +82,6 @@ namespace Molten.Graphics
         internal void DeallocateVRAM(long bytes)
         {
             Interlocked.Add(ref _allocatedVRAM, -bytes);
-        }
-
-        private void CreateDefaultResources()
-        {
-            _defaultSampler = new ShaderSampler();
         }
 
         /// <summary>Gets a new deferred <see cref="GraphicsPipe"/>.</summary>
@@ -133,7 +127,7 @@ namespace Molten.Graphics
             DisposeObject(ref _rasterizerBank);
             DisposeObject(ref _blendBank);
             DisposeObject(ref _depthBank);
-            DisposeObject(ref _defaultSampler);
+            DisposeObject(ref _samplerBank);
             DisposeObject(ref _d3d);
 
             base.OnDispose();
@@ -157,12 +151,6 @@ namespace Molten.Graphics
 
         internal VertexFormatBuilder VertexBuilder => _vertexBuilder;
 
-        /// <summary>Gets the default shader sampler.</summary>
-        internal ShaderSampler DefaultSampler
-        {
-            get => _defaultSampler;
-        }
-
         internal long AllocatedVRAM => _allocatedVRAM;
 
         public BlendStateBank BlendBank => _blendBank;
@@ -170,5 +158,7 @@ namespace Molten.Graphics
         public RasterizerStateBank RasterizerBank => _rasterizerBank;
 
         public DepthStateBank DepthBank => _depthBank;
+
+        public SamplerBank SamplerBank => _samplerBank;
     }
 }

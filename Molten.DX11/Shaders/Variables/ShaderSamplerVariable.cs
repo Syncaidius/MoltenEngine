@@ -14,7 +14,7 @@ namespace Molten.Graphics
         internal ShaderSamplerVariable(HlslShader shader)
         {
             Parent = shader;
-            Sampler = shader.Device.DefaultSampler;
+            Sampler = shader.Device.SamplerBank.GetPreset(SamplerPreset.Default);
         }
 
         public IShader Parent { get; private set; }
