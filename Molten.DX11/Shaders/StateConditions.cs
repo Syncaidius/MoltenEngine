@@ -29,6 +29,14 @@ namespace Molten.Graphics
         /// </summary>
         ScissorTest = 1 << 2,
 
-        All = Multisampling | AnisotropicFiltering | ScissorTest,
+        /// <summary>
+        /// Skybox rendering is enabled.
+        /// </summary>
+        Skybox = 1 << 3,
+
+        /// <summary>
+        /// All conditions are present.
+        /// </summary>
+        All = Multisampling | AnisotropicFiltering | ScissorTest | Skybox
     }
 }

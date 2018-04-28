@@ -16,49 +16,12 @@ namespace Molten.Graphics
         internal RenderSurface Lighting;
         Material _matPoint;
         StartStep _startStep;
-        GraphicsRasterizerState _lightRasterState;
-        GraphicsDepthState _lightDepthState;
         GraphicsBuffer _lightDataBuffer;
         BufferSegment _lightSegment;
 
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
             _startStep = renderer.GetRenderStep<StartStep>();
-            _lightRasterState = new GraphicsRasterizerState()
-            {
-                FillMode = FillMode.Solid,
-                CullMode = CullMode.Front,
-                IsFrontCounterClockwise = false,
-                IsDepthClipEnabled = false,
-                IsAntialiasedLineEnabled = false,
-                IsMultisampleEnabled = false,
-                IsScissorEnabled = false,
-            };
-
-            _lightDepthState = new GraphicsDepthState()
-            {
-                DepthComparison = Comparison.GreaterEqual,
-                DepthWriteMask = DepthWriteMask.Zero,
-                IsDepthEnabled = true,
-                IsStencilEnabled = true,
-            };
-
-            // Light less
-            DepthStencilOperationDescription noSkyStencilOp = new DepthStencilOperationDescription()
-            {
-                Comparison = Comparison.Equal,
-                DepthFailOperation = StencilOperation.Keep,
-                FailOperation = StencilOperation.Keep,
-                PassOperation = StencilOperation.Keep,
-            };
-
-            _lightDepthState.SetFrontFace(noSkyStencilOp);
-            _lightDepthState.SetBackFace(noSkyStencilOp);
-
-            /*=====================================
-             * TODO move the above into material files
-             *=====================================*/
-
             Lighting = new RenderSurface(renderer.Device, width, height, Format.R16G16B16A16_Float);
 
             int stride = Marshal.SizeOf<LightData>();
@@ -94,9 +57,6 @@ namespace Molten.Graphics
         public override void Dispose()
         {
             Lighting.Dispose();
-            _lightRasterState.Dispose();
-            _lightDepthState.Dispose();
-
             _lightSegment.Dispose();
             _lightDataBuffer.Dispose();
         }
@@ -111,8 +71,6 @@ namespace Molten.Graphics
 
             device.PushState();
             device.SetDepthSurface(_startStep.Depth, GraphicsDepthMode.ReadOnly);
-            device.Rasterizer.Current = _lightRasterState;
-            device.DepthStencil.Current = _lightDepthState;
 
             RenderPointLights(device, scene);
 

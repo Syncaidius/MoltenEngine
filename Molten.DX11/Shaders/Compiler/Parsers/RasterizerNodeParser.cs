@@ -44,7 +44,7 @@ namespace Molten.Graphics
                 string nodeName = child.Name.ToLower();
                 switch (nodeName)
                 {
-                    case "cullmode":
+                    case "cull":
                         if (Enum.TryParse(child.InnerText, true, out CullMode mode))
                             state.CullMode = mode;
                         else

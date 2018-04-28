@@ -9,8 +9,33 @@
 	<domain>DS</domain>
   <pixel>PS</pixel>
     <blend preset="additive" />
+    <rasterizer preset="default">
+      <fill>solid</fill>
+      <cull>front</cull>
+      <frontIsCCW>false</frontIsCCW>
+      <depthclip>false</depthclip>
+      <aaline>false</aaline>
+      <multisample>false</multisample>
+      <scissortest>false</scissortest>
+    </rasterizer>
     <depth preset="default">
       <reference>0</reference>
+      <comparison>GreaterEqual</comparison>
+      <writemask>Zero</writemask>
+      <enabled>true</enabled>
+      <stencilenabled>true</stencilenabled>
+      <front>
+        <comparison>Equal</comparison>
+        <fail>Keep</fail>
+        <stencilfail>Keep</stencilfail>
+        <stencilpass>Keep</stencilpass>
+      </front>
+      <back>
+        <comparison>Equal</comparison>
+        <fail>Keep</fail>
+        <stencilfail>Keep</stencilfail>
+        <stencilpass>Keep</stencilpass>
+      </back>
     </depth>
   </pass>
 </material>
