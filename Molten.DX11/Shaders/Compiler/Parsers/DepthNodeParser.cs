@@ -121,7 +121,7 @@ namespace Molten.Graphics
         {
             foreach(XmlNode child in faceNode.ChildNodes)
             {
-                string nodeName = faceNode.Name.ToLower();
+                string nodeName = child.Name.ToLower();
                 switch (nodeName) {
                     case "comparison":
                         if (Enum.TryParse(child.InnerText, true, out Comparison comparison))
