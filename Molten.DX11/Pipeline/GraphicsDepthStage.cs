@@ -32,8 +32,6 @@ namespace Molten.Graphics
         /// <summary>Applies the current state to the device. Called internally.</summary>
         internal void Refresh()
         {
-            // Ensure the default preset is used if a null state was requested.
-            _currentState = _currentState ?? Device.DepthBank.GetPreset(DepthStencilPreset.Default);
             bool stateChanged = _slotState.Bind(Pipe, _currentState);
 
             if (stateChanged || _stencilRef != _currentState.StencilReference)

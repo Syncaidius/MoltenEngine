@@ -122,16 +122,15 @@ namespace Molten.Graphics
             }
 
             // Bind all samplers
-            ShaderSampler s = null;
+            ShaderSampler sampler = null;
             for (int i = 0; i < composition.SamplerIds.Count; i++)
             {
                 int slotId = composition.SamplerIds[i];
+                sampler = shader.SamplerVariables[slotId].Sampler;
 
-                s = shader.SamplerVariables[slotId].Sampler;
-
-                bool sChanged = _slotSamplers[slotId].Bind(_pipe, s);
+                bool sChanged = _slotSamplers[slotId].Bind(_pipe, sampler);
                 if (sChanged)
-                    _stage.SetSampler(slotId, s?.State);
+                    _stage.SetSampler(slotId, sampler?.State);
             }
 
             if (_boundShader != shader)

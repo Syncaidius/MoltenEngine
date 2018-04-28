@@ -153,12 +153,24 @@ namespace Molten.Graphics
 
         internal long AllocatedVRAM => _allocatedVRAM;
 
+        /// <summary>
+        /// Gets the device's blend state bank.
+        /// </summary>
         public BlendStateBank BlendBank => _blendBank;
 
+        /// <summary>
+        /// Gets the device's rasterizer state bank.
+        /// </summary>
         public RasterizerStateBank RasterizerBank => _rasterizerBank;
 
+        /// <summary>
+        /// Gets the device's depth-stencil state bank.
+        /// </summary>
         public DepthStateBank DepthBank => _depthBank;
 
+        /// <summary>
+        /// Gets the device's texture sampler bank.
+        /// </summary>
         public SamplerBank SamplerBank => _samplerBank;
     }
 }

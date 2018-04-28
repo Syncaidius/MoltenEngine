@@ -90,6 +90,15 @@ namespace Molten.Graphics
                     pass.BlendState.FillMissingWith(pass.BlendState[StateConditions.None]);
                     pass.BlendState.FillMissingWith(material.BlendState);
 
+                    // Ensure the pass can at least fit all of the base material samplers (if any).
+                    if(pass.Samplers.Length < material.Samplers.Length)
+                    {
+                        int oldLength = pass.Samplers.Length;
+                        Array.Resize(ref pass.Samplers, material.Samplers.Length);
+                        for (int i = oldLength; i < pass.Samplers.Length; i++)
+                            pass.Samplers[i] = new ShaderStateBank<ShaderSampler>();
+                    }
+
                     for (int i = 0; i < pass.Samplers.Length; i++)
                     {
                         pass.Samplers[i].FillMissingWith(pass.Samplers[i][StateConditions.None]);

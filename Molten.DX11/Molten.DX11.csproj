@@ -211,7 +211,7 @@
     <Compile Include="Shaders\Materials\MaterialManager.cs" />
     <Compile Include="Shaders\Materials\MaterialPass.cs" />
     <Compile Include="Shaders\Materials\MaterialPassCompileResult.cs" />
-    <Compile Include="Shaders\Materials\ShaderSampler.cs" />
+    <Compile Include="Shaders\ShaderSampler.cs" />
     <Compile Include="Shaders\ShaderComposition.cs" />
     <Compile Include="Shaders\ShaderIOStructure.cs" />
     <Compile Include="Shaders\Variables\BufferVariable.cs" />

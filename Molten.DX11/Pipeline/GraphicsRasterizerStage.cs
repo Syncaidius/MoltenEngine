@@ -131,7 +131,6 @@ namespace Molten.Graphics
         internal void Refresh()
         {
             // Ensure the default preset is used if a null state was requested.
-            _currentState = _currentState ?? Device.RasterizerBank.GetPreset(RasterizerPreset.Default);
             bool stateChanged = _slotState.Bind(Pipe, _currentState);
 
             if (stateChanged)   // Update rasterizer state.

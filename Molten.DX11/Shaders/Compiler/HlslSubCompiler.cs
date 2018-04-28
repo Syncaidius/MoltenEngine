@@ -117,13 +117,19 @@ namespace Molten.Graphics
 
                     case ShaderInputType.Sampler:
                         bool isComparison = (binding.Flags & ShaderInputFlags.ComparisonSampler) == ShaderInputFlags.ComparisonSampler;
-
                         ShaderSamplerVariable sampler = GetVariableResource<ShaderSamplerVariable>(context, shader, binding);
 
                         if (bindPoint >= shader.SamplerVariables.Length)
+                        {
+                            int oldLength = shader.SamplerVariables.Length;
                             Array.Resize(ref shader.SamplerVariables, bindPoint + 1);
-
-                        shader.SamplerVariables[bindPoint] = sampler;
+                            for (int i = oldLength; i < shader.SamplerVariables.Length; i++)
+                                shader.SamplerVariables[i] = (i ==  bindPoint ? sampler : new ShaderSamplerVariable(shader));
+                        }
+                        else
+                        {
+                            shader.SamplerVariables[bindPoint] = sampler;
+                        }
                         composition.SamplerIds.Add(bindPoint);
                         break;
 

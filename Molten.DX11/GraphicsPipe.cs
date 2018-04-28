@@ -180,16 +180,7 @@ namespace Molten.Graphics
 
             _input.Material = material;
             _input.Topology = topology;
-            _input.Refresh(passID);
-
-            /* TODO:
-             *  - Apply the states provided in a material/pass.
-             *  - Remove methods for setting states and their properties directly.
-             *  - Remove null state checks in blend, rasterizer and depth-stencil stages; States will never be null.
-             * 
-             * 
-             * 
-             */
+            _input.Refresh(passID, _drawInfo.Conditions);
 
             // Apply render targets and states.
             _depthStencil.Refresh();
@@ -368,6 +359,12 @@ namespace Molten.Graphics
                     _blendState.Current = pass.BlendState[_drawInfo.Conditions];
                     _rasterizer.Current = pass.RasterizerState[_drawInfo.Conditions];
                     _depthStencil.Current = pass.DepthState[_drawInfo.Conditions];
+
+                    // Apply samplers to current pass
+                    for(int s = 0; s < pass.Samplers.Length; s++)
+                    {
+
+                    }
 
                     _drawResult = ApplyState(material, j, GraphicsValidationMode.InstancedIndexed, topology);
                     if (_drawResult == GraphicsValidationResult.Successful)

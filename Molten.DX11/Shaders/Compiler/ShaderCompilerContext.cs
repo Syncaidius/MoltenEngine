@@ -16,8 +16,6 @@ namespace Molten.Graphics
         /// </summary>
         internal Dictionary<string, CompilationResult> HlslShaders = new Dictionary<string, CompilationResult>();
 
-        internal List<ShaderSampler> Samplers = new List<ShaderSampler>();
-
         internal List<string> Errors = new List<string>();
 
         internal List<string> Messages = new List<string>();

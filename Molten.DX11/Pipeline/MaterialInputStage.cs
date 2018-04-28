@@ -52,7 +52,7 @@ namespace Molten.Graphics
             shaderStage.Set(composition.RawShader);
         }
 
-        internal void Refresh(int passID)
+        internal void Refresh(int passID, StateConditions conditions)
         {
             // Reset pass number to 0 if the shader just changed.
             _hasMaterialChanged = _shader.Bind();
@@ -60,6 +60,13 @@ namespace Molten.Graphics
             if (_shader.BoundValue != null)
             {
                 MaterialPass pass = _shader.BoundValue.Passes[passID];
+
+                // Update samplers with those of the current pass
+                int maxSamplers = Math.Min(_shader.BoundValue.SamplerVariables.Length, pass.Samplers.Length);
+                for(int i = 0; i < maxSamplers; i++)
+                    _shader.BoundValue.SamplerVariables[i].Value = pass.Samplers[i][conditions];
+
+                // Refresh shader stages
                 _vStage.Refresh(_shader.Value, pass.VertexShader);
                 _gStage.Refresh(_shader.Value, pass.GeometryShader);
                 _hStage.Refresh(_shader.Value, pass.HullShader);

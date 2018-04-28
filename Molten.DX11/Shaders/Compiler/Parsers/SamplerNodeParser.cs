@@ -19,6 +19,7 @@ namespace Molten.Graphics
 
             int slotID = 0;
             StateConditions conditions = StateConditions.None;
+            ShaderSampler sampler = null;
 
             foreach (XmlAttribute attribute in node.Attributes)
             {
@@ -34,16 +35,18 @@ namespace Molten.Graphics
                         if (!Enum.TryParse(attribute.InnerText, true, out conditions))
                             InvalidEnumMessage<StateConditions>(context, attribute, "sampler condition");
                         break;
+
+                    case "preset":
+                        if (Enum.TryParse(attribute.InnerText, true, out SamplerPreset preset))
+                            sampler = new ShaderSampler(foundation.Device.SamplerBank.GetPreset(preset));
+                        else
+                            InvalidEnumMessage<SamplerPreset>(context, attribute, "sampler preset");
+                        break;
                 }
             }
 
-            // Retrieve existing state
-            ShaderSampler sampler = null;
-            if (slotID < foundation.Samplers.Length)
-                sampler = foundation.Samplers[slotID][conditions];
-            
-            bool existingSampler = sampler != null;
-            sampler = sampler ?? new ShaderSampler();
+            // Retrieve existing state if available and create a new one from it to avoid editing the existing one.
+            sampler = sampler ?? foundation.Device.SamplerBank.GetPreset(SamplerPreset.Default);
 
             foreach (XmlNode child in node.ChildNodes)
             {
@@ -59,14 +62,14 @@ namespace Molten.Graphics
 
                     case "addressv":
                         if (Enum.TryParse(child.InnerText, true, out SamplerAddressMode vMode))
-                            sampler.AddressU = vMode;
+                            sampler.AddressV = vMode;
                         else
                             InvalidEnumMessage<SamplerAddressMode>(context, child, "V address mode");
                         break;
 
                     case "addressw":
                         if (Enum.TryParse(child.InnerText, true, out SamplerAddressMode wMode))
-                            sampler.AddressU = wMode;
+                            sampler.AddressW = wMode;
                         else
                             InvalidEnumMessage<SamplerAddressMode>(context, child, "W address mode");
                         break;
@@ -123,25 +126,8 @@ namespace Molten.Graphics
                 }
             }
 
-            // Check if an identical state exists (if we don't already have one) before returning the new one.
-            if (!existingSampler)
-            {
-                foreach (ShaderSampler existing in context.Samplers)
-                {
-                    if (existing.Equals(sampler))
-                    {
-                        sampler.Dispose();
-                        existingSampler = true;
-                        sampler = existing;
-                        break;
-                    }
-                }
-            }
 
-            // If the defined state still isn't an existing one, add it to the context.
-            if (!existingSampler)
-                context.Samplers.Add(sampler);
-
+            // Initialize shader state bank for the sampler if needed.
             if (slotID >= foundation.Samplers.Length)
             {
                 int oldLength = foundation.Samplers.Length;
@@ -149,31 +135,9 @@ namespace Molten.Graphics
                 for (int i = oldLength; i < foundation.Samplers.Length; i++)
                     foundation.Samplers[i] = new ShaderStateBank<ShaderSampler>();
             }
+
+            sampler = foundation.Device.SamplerBank.AddOrRetrieveExisting(sampler);
             foundation.Samplers[slotID][conditions] = sampler;
-
-            if (foundation is Material material)
-            {
-                // Apply to existing passes which do not have a rasterizer state yet.
-                foreach (MaterialPass p in material.Passes)
-                {
-                    if (slotID >= p.Samplers.Length)
-                    {
-                        if (slotID >= p.Samplers.Length)
-                        {
-                            Array.Resize(ref p.Samplers, slotID + 1);
-                            for (int i = slotID; i < p.Samplers.Length; i++)
-                                p.Samplers[i] = new ShaderStateBank<ShaderSampler>();
-                        }
-
-                        p.Samplers[slotID][conditions] = sampler;
-                    }
-                    else if (p.Samplers[slotID] == null) // Only overwrite with root sampler if pass does not already have on for the current index.
-                    {
-                        p.Samplers[slotID][conditions] = sampler;
-                    }
-                }
-            }
-
             return new NodeParseResult(NodeParseResultType.Success);
         }
     }
