@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class NormalsOverlay : DebugOverlayPage
+    internal class LightingOverlay : DebugOverlayPage
     {
         public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch batch, SceneRenderDataDX11 scene, IRenderSurface surface)
         {
-            StartStep start = renderer.GetRenderStep<StartStep>();
-            batch.DrawString(font, $"Normals", new Vector2F(3, 3), Color.Yellow);
-            batch.Draw(start.Normals, surface.Viewport.Bounds, Color.White);
+            LightingStep lightStep = renderer.GetRenderStep<LightingStep>();
+            batch.Draw(lightStep.Lighting, surface.Viewport.Bounds, Color.White);
+            batch.DrawString(font, $"Lighting", new Vector2F(3, 3), Color.Yellow);
         }
     }
 }

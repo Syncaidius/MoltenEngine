@@ -58,6 +58,10 @@ namespace Molten.Graphics
             DebugOverlayPages.Add(new DebugStatsPage());
             DebugOverlayPages.Add(new DebugBuffersPage());
             DebugOverlayPages.Add(new DebugFeaturesPage());
+            DebugOverlayPages.Add(new RawSceneOverlay());
+            DebugOverlayPages.Add(new NormalsOverlay());
+            DebugOverlayPages.Add(new EmissiveOverlay());
+            DebugOverlayPages.Add(new LightingOverlay());
         }
 
         public void InitializeAdapter(GraphicsSettings settings)
