@@ -83,7 +83,7 @@ namespace Molten
             RenderLoader renderLoader = new RenderLoader();
             _renderer = renderLoader.GetRenderer(_log, _settings.Graphics);
             OnAdapterInitialized?.Invoke(_renderer.DisplayManager);
-            _renderer.InitializeRenderer(_settings.Graphics);
+            _renderer.Initialize(_settings.Graphics);
         }
 
         /// <summary>Starts the renderer thread.</summary>

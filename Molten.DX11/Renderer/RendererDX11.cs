@@ -17,6 +17,7 @@ namespace Molten.Graphics
         int _biggestWidth = 1;
         int _biggestHeight = 1;
         bool _surfacesDirty;
+        bool _initialized;
 
         DX11DisplayManager _displayManager;
         ResourceManager _resourceManager;
@@ -65,7 +66,7 @@ namespace Molten.Graphics
             _displayManager.Initialize(_log, settings);
         }
 
-        public void InitializeRenderer(GraphicsSettings settings)
+        public void Initialize(GraphicsSettings settings)
         {
             settings.Log(_log, "Graphics");
             MsaaLevel = 

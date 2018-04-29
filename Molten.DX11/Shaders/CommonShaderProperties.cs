@@ -11,11 +11,11 @@ namespace Molten.Graphics
     /// </summary>
     internal abstract class CommonShaderProperties
     {
-        internal CommonShaderProperties(Material material) { }
+        internal CommonShaderProperties(HlslShader shader) { }
 
-        protected IShaderValue MapValue(Material material, string name)
+        protected IShaderValue MapValue(HlslShader shader, string name)
         {
-            return material[name] ?? new DummyShaderValue(material);
+            return shader[name] ?? new DummyShaderValue(shader);
         }
     }
 }

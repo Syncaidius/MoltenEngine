@@ -11,7 +11,7 @@ namespace Molten.Graphics
     {
         void InitializeAdapter(GraphicsSettings settings);
 
-        void InitializeRenderer(GraphicsSettings settings);
+        void Initialize(GraphicsSettings settings);
 
         void Present(Timing time);
 
