@@ -178,8 +178,7 @@ namespace Molten.Graphics
             GraphicsValidationResult result = GraphicsValidationResult.Successful;
 
             _input.Material = material;
-            _input.Topology = topology;
-            _input.Refresh(pass, _drawInfo.Conditions);
+            _input.Refresh(pass, _drawInfo.Conditions, topology);
 
             _blendState.Current = pass.BlendState[_drawInfo.Conditions];
             _rasterizer.Current = pass.RasterizerState[_drawInfo.Conditions];

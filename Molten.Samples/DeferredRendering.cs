@@ -70,13 +70,14 @@ namespace Molten.Samples
                 Vector3F pos = origin + new Vector3F()
                 {
                     X = (float)Math.Sin(angle) * radius,
-                    Y = 0,
+                    Y = 1f,
                     Z = (float)Math.Cos(angle) * radius,
                 };
 
                 SceneObject obj = CreateObject(pos, SampleScene);
                 PointLightComponent lightCom = obj.AddComponent<PointLightComponent>();
-                lightCom.Range = 5.0f;
+                lightCom.Range = radius + 1;
+                lightCom.Intensity = 2.0f;
 
                 angle += angInc;
             }

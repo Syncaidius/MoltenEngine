@@ -25,13 +25,15 @@ namespace Molten.Graphics
         VertexInputLayout _vertexLayout;
 
         int _vertexSlotCount = 0;
+        InputAssemblerStage _inputAssembler;
 
-        PrimitiveTopology _currentTopology = PrimitiveTopology.TriangleList;
+        PrimitiveTopology _prevTopology = PrimitiveTopology.Undefined;
         List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
 
         public PipelineInput(GraphicsPipe pipe) : base(pipe)
         {
             _materialStage = new MaterialInputStage(pipe);
+            _inputAssembler = pipe.Context.InputAssembler;
 
             int vSlots = Device.Features.MaxVertexBufferSlots;
             _slotVertexBuffers = new PipelineBindSlot<BufferSegment>[vSlots];
@@ -59,7 +61,7 @@ namespace Molten.Graphics
             Pipe.Context.InputAssembler.SetVertexBuffers(slot.SlotID, _nullVertexBuffer);
         }
 
-        internal void Refresh(MaterialPass pass, StateConditions conditions)
+        internal void Refresh(MaterialPass pass, StateConditions conditions, PrimitiveTopology topology)
         {
             // Update shader pipeline stages
             _materialStage.Refresh(pass, conditions);
@@ -80,22 +82,26 @@ namespace Molten.Graphics
                     if (vb == null)
                     {
                         _vertexBindings[i] = _nullVertexBuffer;
-                        Pipe.Context.InputAssembler.SetVertexBuffers(i, _nullVertexBuffer);
+                        _inputAssembler.SetVertexBuffers(i, _nullVertexBuffer);
                     }
                     else
                     {
                         _vertexBindings[i] = vb.VertexBinding;
-                        Pipe.Context.InputAssembler.SetVertexBuffers(i, vb.VertexBinding);
+                        _inputAssembler.SetVertexBuffers(i, vb.VertexBinding);
                     }
                 }
                 else if(vb != null && _vertexBindings[i].Offset != vb.VertexBinding.Offset)
                 {
                     _vertexBindings[i] = vb.VertexBinding;
-                    Pipe.Context.InputAssembler.SetVertexBuffers(i, vb.VertexBinding);
+                    _inputAssembler.SetVertexBuffers(i, vb.VertexBinding);
                 }
             }
 
-            Pipe.Context.InputAssembler.PrimitiveTopology = _currentTopology;
+            if (_prevTopology != topology)
+            {
+                _inputAssembler.PrimitiveTopology = topology;
+                _prevTopology = topology;
+            }
 
             // Update index buffers
             bool ibChanged = _slotIndexBuffer.Bind(Pipe, _indexSegment);
@@ -103,14 +109,14 @@ namespace Molten.Graphics
             {
                 if (_indexSegment != null)
                 {
-                    Pipe.Context.InputAssembler.SetIndexBuffer(
+                    _inputAssembler.SetIndexBuffer(
                         _indexSegment.Buffer,
                         _indexSegment.DataFormat,
                         _indexSegment.ByteOffset);
                 }
                 else
                 {
-                    Pipe.Context.InputAssembler.SetIndexBuffer(null, SharpDX.DXGI.Format.Unknown, 0);
+                    _inputAssembler.SetIndexBuffer(null, SharpDX.DXGI.Format.Unknown, 0);
                 }
             }
 
@@ -151,20 +157,21 @@ namespace Molten.Graphics
         {
             GraphicsValidationResult result = GraphicsValidationResult.Successful;
 
-            result |= CheckVertexSegment();
-
             // Validate and update mode-specific data if needed.
             switch (mode)
             {
                 case GraphicsValidationMode.Indexed:
+                    result |= CheckVertexSegment();
                     result |= CheckIndexSegment();
                     break;
 
                 case GraphicsValidationMode.Instanced:
+                    result |= CheckVertexSegment();
                     result |= CheckInstancing();
                     break;
 
                 case GraphicsValidationMode.InstancedIndexed:
+                    result |= CheckVertexSegment();
                     result |= CheckIndexSegment();
                     result |= CheckInstancing();
                     break;
@@ -308,13 +315,6 @@ namespace Molten.Graphics
         {
             get => _materialStage.Shader;
             set => _materialStage.Shader = value;
-        }
-
-        /// <summary>Gets or sets the primitive topology.</summary>
-        internal PrimitiveTopology Topology
-        {
-            get { return _currentTopology; }
-            set { _currentTopology = value; }
         }
     }
 }
