@@ -142,6 +142,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer\Debug\DebugOverlayPage.cs" />
     <Compile Include="Renderer\Debug\DebugBuffersPage.cs" />
+    <Compile Include="Renderer\Debug\DebugFeaturesPage.cs" />
     <Compile Include="Renderer\Debug\DebugStatsPage.cs" />
     <Compile Include="Renderer\Debug\SceneDebugOverlay.cs" />
     <Compile Include="Renderer\Renderable.cs" />

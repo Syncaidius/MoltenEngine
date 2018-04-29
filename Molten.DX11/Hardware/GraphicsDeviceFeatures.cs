@@ -49,7 +49,7 @@ namespace Molten.Graphics
                     MaxVolumeExtent = 2048;
                     MaxTextureRepeat = 16384;
                     MaxAnisotropy = 16;
-                    MaxPrimitiveCount = (int)Math.Pow(2, 32);
+                    MaxPrimitiveCount = (uint)(Math.Pow(2, 32) - 1);
                     MaxInputResourceSlots = 128;
                     MaxInputSamplerSlots = 16;
                     OcclusionQueries = true;
@@ -144,7 +144,7 @@ namespace Molten.Graphics
         public int MaxAnisotropy { get; private set; }
 
         /// <summary>Gets the maximum number of primitives (triangles) the device can render in a single draw call.</summary>
-        public int MaxPrimitiveCount { get; private set; }
+        public uint MaxPrimitiveCount { get; private set; }
 
         /// <summary>Gets the max number of shader resource input slots that the device supports for all shader stages.</summary>
         public int MaxInputResourceSlots { get; private set; }

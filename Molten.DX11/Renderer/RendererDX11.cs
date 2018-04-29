@@ -56,6 +56,7 @@ namespace Molten.Graphics
             DebugOverlayPages = new List<DebugOverlayPage>();
             DebugOverlayPages.Add(new DebugStatsPage());
             DebugOverlayPages.Add(new DebugBuffersPage());
+            DebugOverlayPages.Add(new DebugFeaturesPage());
         }
 
         public void InitializeAdapter(GraphicsSettings settings)
