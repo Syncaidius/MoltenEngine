@@ -15,6 +15,7 @@ namespace Molten.Graphics
     {
         internal RenderSurface Lighting;
         Material _matPoint;
+        Material _matDebugPoint;
         StartStep _startStep;
         GraphicsBuffer _lightDataBuffer;
         BufferSegment _lightSegment;
@@ -46,6 +47,7 @@ namespace Molten.Graphics
             {
                 ShaderCompileResult result = renderer.ShaderCompiler.Compile(source, namepace);
                 _matPoint = result["material", "light-point"] as Material;
+                _matDebugPoint = result["material", "light-point-debug"] as Material;
             }
         }
 
@@ -100,15 +102,11 @@ namespace Molten.Graphics
             pipe.BeginDraw(StateConditions.None); // TODO expand use of conditions here
             pipe.Draw(_matPoint, pointCount, PrimitiveTopology.PatchListWith1ControlPoints, 0);
             pipe.EndDraw();
-            //// Draw debug light volumes
-            //if (_manager.ShowLightVolumes)
-            //{
-            //    pipe.Rasterizer.Current = _renderer.RasterStates.LightDebugRaster;
-            //    pipe.PixelShader = _manager.DebugPixelEffect;
-            //    pipe.DepthStencil.SetPreset(DepthStencilPreset.DefaultNoStencil);
 
-            //    pipe.Draw(pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
-            //}
+            // Draw debug light volumes
+            pipe.BeginDraw(StateConditions.Debug);
+            pipe.Draw(_matDebugPoint, pointCount, PrimitiveTopology.PatchListWith1ControlPoints, 0);
+            pipe.EndDraw();
         }
     }
 }

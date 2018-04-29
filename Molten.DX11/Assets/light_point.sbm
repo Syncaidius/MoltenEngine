@@ -40,6 +40,30 @@
   </pass>
 </material>
 
+<material>
+  <name>light-point-debug</name>
+  <description>Debug shader for deferred point lighting.</description>
+  <pass>
+    <name>main</name>
+    <iterations>1</iterations>
+    <vertex>VS</vertex>
+	<hull>HS</hull>
+	<domain>DS</domain>
+  <pixel>PS_Debug</pixel>
+    <blend preset="additive" />
+    <depth preset="defaultNoStencil" condition="debug" />
+    <rasterizer preset="default" condition="debug">
+      <fill>wireframe</fill>
+      <cull>back</cull>
+      <frontIsCCW>false</frontIsCCW>
+      <depthclip>true</depthclip>
+      <aaline>false</aaline>
+      <multisample>false</multisample>
+      <scissortest>false</scissortest>
+    </rasterizer>
+  </pass>
+</material>
+
 #include "gbuffer_common.sbm"
 #include "light_common.sbm"
 
@@ -158,4 +182,9 @@ float4 PS(DS_OUTPUT input) : SV_TARGET
 	float3 finalColor = CalcLight(g, input.LightID);// * ao;
 
 	return float4(finalColor, 1);
+}
+
+float4 PS_Debug() : SV_TARGET
+{
+	return float4(1.0, 1.0, 1.0, 1.0);
 }

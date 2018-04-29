@@ -236,6 +236,7 @@ namespace Molten.Graphics
                 {
                     MaterialPass pass = material.Passes[j];
                     _drawResult = ApplyState(material, pass, GraphicsValidationMode.Unindexed, topology);
+
                     if (_drawResult == GraphicsValidationResult.Successful)
                     {
                         // Re-render the same pass for K iterations.
@@ -244,6 +245,12 @@ namespace Molten.Graphics
                             _context.Draw(vertexCount, vertexStartIndex);
                             Profiler.CurrentFrame.DrawCalls++;
                         }
+                    }
+                    else
+                    {
+                        _device.Log.WriteWarning($"Draw() call failed with result: {_drawResult} -- Iteration: M{i}/{material.Iterations}P{j}/{material.PassCount} -- " +
+                            $"Material: {material.Name} -- Topology: {topology} -- VertexCount: { vertexCount}");
+                        break;
                     }
                 }
             }
@@ -281,6 +288,12 @@ namespace Molten.Graphics
                             Profiler.CurrentFrame.DrawCalls++;
                         }
                     }
+                    else
+                    {
+                        _device.Log.WriteWarning($"DrawInstanced() call failed with result: {_drawResult} -- Iteration: M{i}/{material.Iterations}P{j}/{material.PassCount} -- Material: {material.Name} -- " +
+                            $"Topology: {topology} -- VertexCount: { vertexCountPerInstance} -- Instances: {instanceCount}");
+                        break;
+                    }
                 }
             }
         }
@@ -315,6 +328,12 @@ namespace Molten.Graphics
                             _context.DrawIndexed(indexCount, startIndex, vertexIndexOffset);
                             Profiler.CurrentFrame.DrawCalls++;
                         }
+                    }
+                    else
+                    {
+                        _device.Log.WriteWarning($"DrawIndexed() call failed with result: {_drawResult} -- Iteration: M{i}/{material.Iterations}P{j}/{material.PassCount}" +
+                            $" -- Material: {material.Name} -- Topology: {topology} -- indexCount: { indexCount}");
+                        break;
                     }
                 }
             }
