@@ -9,8 +9,6 @@ namespace Molten.Graphics
 {
     public abstract class ShaderConstantVariable : IShaderValue
     {
-        ShaderConstantBuffer _parent;
-
         /// <summary>Gets the byte offset of the variable.</summary>
         internal int ByteOffset;
 
@@ -19,13 +17,13 @@ namespace Molten.Graphics
 
         internal ShaderConstantVariable(ShaderConstantBuffer parent)
         {
-            _parent = parent;
+            ParentBuffer = parent;
         }
 
         /// <summary>Marks the parent buffer as dirty.</summary>
         protected void DirtyParent()
         {
-            _parent.DirtyVariables = true;
+            ParentBuffer.DirtyVariables = true;
         }
 
         /// <summary>Gets or sets the value of the variable.</summary>
@@ -36,9 +34,7 @@ namespace Molten.Graphics
         internal abstract void Write(DataStream stream);
 
         /// <summary>Gets the shader buffer which owns the variable.</summary>
-        internal ShaderConstantBuffer ParentBuffer { get { return _parent; } }
-
-        public IShader Parent => _parent.Parent;
+        internal ShaderConstantBuffer ParentBuffer { get; private set; }
 
         public string Name { get; set; }
     }

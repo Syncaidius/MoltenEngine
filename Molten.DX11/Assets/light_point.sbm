@@ -159,33 +159,15 @@ cbuffer cbLight : register(b4)
 	float3 cameraPosition			: packoffset(c0);
 }
 
-float3 CalcLight(MATERIAL g, uint lightID)
-{
-	float3 ToLight = LightData[lightID].Position - g.worldPos.xyz;
-	float3 ToEye = cameraPosition - g.worldPos.xyz;
-	float DistToLight = length(ToLight);
-
-	ToLight /= DistToLight;
-	float3 finalColor = pbr_cook_torrance(g.normal, ToEye, ToLight, LightData[lightID].Color, g.colorData, float3(1,1,1)); // TODO: Replace specular value with g.specular
-
-	// Attenuation
-	float DistToLightNorm = 1.0 - saturate(DistToLight * LightData[lightID].RangeRcp);
-	float Attn = DistToLightNorm * DistToLightNorm;
-	finalColor *= Attn;
-	finalColor *= LightData[lightID].Intensity;
-
-	return finalColor;
-}
-
 float4 PS(DS_OUTPUT input) : SV_TARGET
 {
 	MATERIAL g = UnpackGBuffer(input.PositionXYW);
-
-	// Get the ambient occlusion value
-	//float ao = mapAOcclusion.Sample(texSampler, g.uv);
-	float3 finalColor = CalcLight(g, input.LightID);// * ao;
-
-	return float4(finalColor, 1);
+  uint lightID = input.LightID;
+  
+  float3 l = normalize(LightData[lightID].Position - g.worldPos.xyz);
+  float3 diffuse = max(0, dot(l, g.normal)) * LightData[lightID].Color * g.colorData;
+  
+  return float4(diffuse, 1);
 }
 
 float4 PS_Debug() : SV_TARGET

@@ -47,10 +47,10 @@ namespace Molten.Samples
 
         private void SetupFloor(Vector3F origin)
         {
-            _floorMesh = MeshHelper.PlainCentered(Engine.Renderer, 3);
+            _floorMesh = MeshHelper.PlainCentered(Engine.Renderer, 5);
             SceneObject floorObj = CreateObject(origin, SampleScene);
             floorObj.Transform.LocalPosition = origin;
-            floorObj.Transform.LocalScale = new Vector3F(10);
+            floorObj.Transform.LocalScale = new Vector3F(20);
 
             MeshComponent floorCom = floorObj.AddComponent<MeshComponent>();
             floorCom.Mesh = _floorMesh;
@@ -58,7 +58,7 @@ namespace Molten.Samples
 
         private void SetupLightObjects(Vector3F origin)
         {
-            int numLights = 10;
+            int numLights = 3;
             float radius = 5.5f;
 
             float angInc = MathHelper.DegreesToRadians(360.0f / numLights);
@@ -77,7 +77,6 @@ namespace Molten.Samples
                 PointLightComponent lightCom = obj.AddComponent<PointLightComponent>();
                 lightCom.Range = radius + 1;
                 lightCom.Intensity = 2.0f;
-
                 angle += angInc;
             }
         }

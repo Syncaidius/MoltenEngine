@@ -19,7 +19,7 @@ namespace Molten.Graphics
 
         C _stage;
         GraphicsPipe _pipe;
-        H _boundShader;
+        S _boundShader;
         Action<C, ShaderComposition<S>> _setCallback;
 
         internal ShaderStep(GraphicsPipe pipe, ShaderInputStage<H> input, C shaderStage, Action<C, ShaderComposition<S>> setCallback)
@@ -133,9 +133,9 @@ namespace Molten.Graphics
                     _stage.SetSampler(slotId, sampler?.State);
             }
 
-            if (_boundShader != shader)
+            if (_boundShader != composition.RawShader)
             {
-                _boundShader = shader;
+                _boundShader = composition.RawShader;
                 _setCallback(_stage, composition);
                 _pipe.Profiler.CurrentFrame.ShaderSwaps++;
             }

@@ -13,12 +13,7 @@ namespace Molten.Graphics
     /// </summary>
     internal class DummyShaderValue : IShaderValue
     {
-        internal DummyShaderValue(HlslShader foundation)
-        {
-            Parent = foundation;
-        }
-
-        public IShader Parent { get; private set; }
+        internal DummyShaderValue() { }
 
         public string Name { get; set; }
 

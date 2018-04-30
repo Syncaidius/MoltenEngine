@@ -19,12 +19,10 @@ namespace Molten.Graphics
         internal Dictionary<string, ShaderConstantVariable> _varLookup;
         internal string BufferName;
         internal int Hash;
-        internal IShader Parent;
 
-        internal ShaderConstantBuffer(HlslShader parentShader, BufferMode flags, ConstantBuffer desc)
-            : base(parentShader.Device, flags, BindFlags.ConstantBuffer, desc.Description.Size)
+        internal ShaderConstantBuffer(GraphicsDevice device, BufferMode flags, ConstantBuffer desc)
+            : base(device, flags, BindFlags.ConstantBuffer, desc.Description.Size)
         {
-            Parent = parentShader;
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
 
             // Read sdescription data

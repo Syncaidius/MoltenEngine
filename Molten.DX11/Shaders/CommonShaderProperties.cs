@@ -15,7 +15,7 @@ namespace Molten.Graphics
 
         protected IShaderValue MapValue(HlslShader shader, string name)
         {
-            return shader[name] ?? new DummyShaderValue(shader);
+            return shader[name] ?? new DummyShaderValue();
         }
     }
 }

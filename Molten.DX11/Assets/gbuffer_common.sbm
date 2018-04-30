@@ -25,7 +25,7 @@ struct PS_OUT
 	float4 emissive		: SV_Target2;
 };
 
-cbuffer Common : register(b0)
+cbuffer Common : register(b1)
 {
   float4x4 view   : packoffset(c0);
   float4x4 projection : packoffset(c4);
@@ -33,13 +33,13 @@ cbuffer Common : register(b0)
   float4x4 invViewProjection: packoffset(c12);
 }
 
-cbuffer Object : register(b1)
+cbuffer Object : register(b2)
 {
   float4x4 wvp : packoffset(c0);
   float4x4 world : packoffset(c4);
 }
 
-cbuffer GBuffer : register(b2)
+cbuffer GBuffer : register(b3)
 {
 	float emissivePower : packoffset(c0);
 }

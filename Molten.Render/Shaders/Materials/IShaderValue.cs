@@ -8,8 +8,6 @@ namespace Molten.Graphics
 {
     public interface IShaderValue
     {
-        IShader Parent { get; }
-
         string Name { get; set; }
 
         object Value { get; set; }
