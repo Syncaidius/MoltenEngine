@@ -9,13 +9,16 @@ namespace Molten
     public class SceneObjectTransform
     {
         SceneObject _obj;
-        Matrix4F _globalTransform;
+        Matrix4F _globalTransform = Matrix4F.Identity;
         Vector3F _globalPosition;
 
-        Matrix4F _localTransform;
+        Matrix4F _localTransform = Matrix4F.Identity;
         Vector3F _localPosition;
         Vector3F _localScale = Vector3F.One;
+        Vector3F _localUp = Vector3F.Up;
+
         Vector3F _angles;
+        QuaternionF _orientation = QuaternionF.Identity;
 
         bool _globalChanged = true;
         bool _localChanged = true;
@@ -27,11 +30,8 @@ namespace Molten
 
         internal void CalculateLocal()
         {
-            QuaternionF qRot = QuaternionF.RotationAxis(Vector3F.Left, MathHelper.DegreesToRadians(_angles.X)) * 
-                QuaternionF.RotationAxis(Vector3F.Up, MathHelper.DegreesToRadians(_angles.Y)) *
-                QuaternionF.RotationAxis(Vector3F.ForwardLH, MathHelper.DegreesToRadians(_angles.Z));
-
-            _localTransform = Matrix4F.Scaling(_localScale) * Matrix4F.FromQuaternion(qRot) * Matrix4F.CreateTranslation(_localPosition);
+            _orientation = QuaternionF.RotationYawPitchRoll(MathHelper.DegreesToRadians(_angles.Y), MathHelper.DegreesToRadians(_angles.X), MathHelper.DegreesToRadians(_angles.Z));
+            _localTransform = Matrix4F.Scaling(_localScale) * Matrix4F.FromQuaternion(_orientation) * Matrix4F.CreateTranslation(_localPosition);
         }
 
         /// <summary>Calculate the global transform at the exact same position as the global one, relative to the ex-parent.</summary>

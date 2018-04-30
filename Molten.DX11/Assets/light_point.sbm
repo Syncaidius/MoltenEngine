@@ -37,6 +37,10 @@
         <stencilpass>Keep</stencilpass>
       </back>
     </depth>
+    <sampler slot="1" preset="default">
+      <comparison>Always</comparison>
+      <filter>MinMagPointMipLinear</filter>
+    </sampler>
   </pass>
 </material>
 
@@ -150,7 +154,7 @@ DS_OUTPUT DS(HS_CONSTANT_DATA_OUTPUT input, float2 UV : SV_DomainLocation, const
 /////////////////////////////////////////////////////////////////////////////
 // Pixel shader
 /////////////////////////////////////////////////////////////////////////////
-cbuffer cbLight : register(b1)
+cbuffer cbLight : register(b4)
 {
 	float3 cameraPosition			: packoffset(c0);
 }

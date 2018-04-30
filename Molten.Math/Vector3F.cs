@@ -296,6 +296,28 @@ namespace Molten
         }
 
         /// <summary>
+        /// Returns a normalized unit vector of the original vector.
+        /// </summary>
+        public Vector3F Normalized()
+        {
+            float length = Length();
+            if (!MathHelper.IsZero(length))
+            {
+                float inv = 1.0f / length;
+                return new Vector3F()
+                {
+                    X = this.X * inv,
+                    Y = this.Y * inv,
+                    Z = this.Z * inv,
+                };
+            }
+            else
+            {
+                return new Vector3F();
+            }
+        }
+
+        /// <summary>
         /// Converts the vector into a unit vector.
         /// </summary>
         public void Normalize()

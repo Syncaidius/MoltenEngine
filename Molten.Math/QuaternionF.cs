@@ -820,7 +820,7 @@ namespace Molten
         /// <param name="axis">The axis of rotation.</param>
         /// <param name="angle">The angle of rotation.</param>
         /// <param name="result">When the method completes, contains the newly created quaternion.</param>
-        public static void RotationAxis(ref Vector3F axis, float angle, out QuaternionF result)
+        public static void FromAxisAngle(ref Vector3F axis, float angle, out QuaternionF result)
         {
             Vector3F normalized;
             Vector3F.Normalize(ref axis, out normalized);
@@ -841,10 +841,10 @@ namespace Molten
         /// <param name="axis">The axis of rotation.</param>
         /// <param name="angle">The angle of rotation.</param>
         /// <returns>The newly created quaternion.</returns>
-        public static QuaternionF RotationAxis(Vector3F axis, float angle)
+        public static QuaternionF FromAxisAngle(Vector3F axis, float angle)
         {
             QuaternionF result;
-            RotationAxis(ref axis, angle, out result);
+            FromAxisAngle(ref axis, angle, out result);
             return result;
         }
 

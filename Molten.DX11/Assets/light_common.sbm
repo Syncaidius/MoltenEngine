@@ -191,7 +191,8 @@ float3 pbr_cook_torrance
 	float  R = A * B;
 
 	// Compute the final term
-	float3  S = cSpecular * ((G * F * R) / (NormalDotLight * NormalDotView));
+	//float3  S = cSpecular * ((G * F * R) / (NormalDotLight * NormalDotView));
+	float3  S = ((G * F * R) / (NormalDotLight * NormalDotView));
 
 	// Clamp specular into a reasonable range to prevent patchy bloom glitches.
 	float3 finalS = saturate(S) * 4;

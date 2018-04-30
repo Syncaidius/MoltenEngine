@@ -26,7 +26,6 @@ namespace Molten.Samples
 
             _mesh = MeshHelper.Cube(engine.Renderer);
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
-            AcceptPlayerInput = false;
             Player.Transform.LocalPosition = new Vector3F(0, 3, -8);
             Player.Transform.LocalRotationX = -15;
 
@@ -70,7 +69,7 @@ namespace Molten.Samples
                 Vector3F pos = origin + new Vector3F()
                 {
                     X = (float)Math.Sin(angle) * radius,
-                    Y = 1f,
+                    Y = 2f,
                     Z = (float)Math.Cos(angle) * radius,
                 };
 

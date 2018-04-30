@@ -70,13 +70,8 @@ namespace Molten.Graphics
             Lighting.Clear(renderer.Device, scene.AmbientLightColor);
             device.ResetRenderSurfaces(RenderSurfaceResetMode.NullSurface);
             device.SetRenderSurface(Lighting, 0);
-
-            device.PushState();
             device.SetDepthSurface(_startStep.Depth, GraphicsDepthMode.ReadOnly);
-
             RenderPointLights(device, scene);
-
-            renderer.Device.PopState();
         }
 
         private void RenderPointLights(GraphicsPipe pipe, SceneRenderDataDX11 scene)
@@ -84,15 +79,15 @@ namespace Molten.Graphics
             _lightSegment.SetData(pipe, scene.PointLights.Data);
 
             // Set data buffer on domain and pixel shaders
-            _matPoint["LightData"].Value = _lightSegment; // TODO Need to implement a dynamic structured buffer we can reuse here.
-            _matPoint["mapDiffuse"].Value = _startStep.Scene;
-            _matPoint["mapNormal"].Value = _startStep.Normals;
+            _matPoint.Light.Data.Value = _lightSegment; // TODO Need to implement a dynamic structured buffer we can reuse here.
+            _matPoint.Light.MapDiffuse.Value = _startStep.Scene;
+            _matPoint.Light.MapNormal.Value =  _startStep.Normals;
+            _matPoint.Light.MapDepth.Value = _startStep.Depth;
             //_matPoint["mapSpecular"].Value = _startStep.Specular;
-            _matPoint["mapDepth"].Value = _startStep.Depth;
             //_matPoint["mapAOcclusion"].Value = _manager.AmbientOcclusion.Texture;
 
-            _matPoint["invViewProjection"].Value = scene.InvViewProjection;
-            _matPoint["cameraPosition"].Value = scene.Camera.Position;
+            _matPoint.Light.InvViewProjection.Value = scene.InvViewProjection;
+            _matPoint.Light.CameraPosition.Value = scene.Camera.Position;
 
             //set correct buffers and shaders
             pipe.SetVertexSegment(null, 0);

@@ -55,7 +55,7 @@ namespace Molten.Graphics
                 if (scene.FinalSurface != scene.Camera.OutputSurface)
                 {
                     scene.Projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, scene.FinalSurface.Width / (float)scene.FinalSurface.Height, 0.1f, 1000.0f);
-                    scene.ViewProjection = Matrix4F.Multiply(scene.View, scene.Projection);
+                    scene.ViewProjection = scene.View * scene.Projection;
                 }
                 else
                 {
@@ -67,10 +67,11 @@ namespace Molten.Graphics
             {
                 scene.View = RendererDX11.DefaultView3D;
                 scene.Projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, scene.FinalSurface.Width / (float)scene.FinalSurface.Height, 0.1f, 1000.0f);
-                scene.ViewProjection = Matrix4F.Multiply(scene.View, scene.Projection);
+                scene.ViewProjection = scene.View * scene.Projection;
             }
 
             // Clear the depth surface if it hasn't already been cleared
+            Matrix4F vp = Matrix4F.Invert(scene.View * scene.Projection);
             scene.InvViewProjection = Matrix4F.Invert(scene.ViewProjection);
             bool newSurface = renderer.ClearIfFirstUse(Scene, () => Scene.Clear(device, scene.BackgroundColor));
             renderer.ClearIfFirstUse(Normals, () => Normals.Clear(device, Color.White * 0.5f));

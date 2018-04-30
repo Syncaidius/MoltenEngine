@@ -24,6 +24,10 @@ namespace Molten.Graphics
         {
             _description = source._description;
             _isDirty = true;
+
+            _wrapU = _description.AddressU;
+            _wrapV = _description.AddressV;
+            _wrapW = _description.AddressW;
         }
 
         internal ShaderSampler()

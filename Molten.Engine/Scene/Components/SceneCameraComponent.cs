@@ -40,7 +40,16 @@ namespace Molten
 
         private void CalculateProjection()
         {
-            _projection = Matrix4F.PerspectiveFovLH(_fov, _surface.Width / (float)_surface.Height, _nearClip, _farClip);
+            float width = 10;
+            float height = 10;
+
+            if (_surface != null)
+            {
+                width = _surface.Width;
+                height = _surface.Height;
+            }
+
+            _projection = Matrix4F.PerspectiveFovLH(_fov, width / height, _nearClip, _farClip);
         }
 
         public override void OnUpdate(Timing time)

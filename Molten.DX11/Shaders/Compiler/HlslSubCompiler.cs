@@ -102,6 +102,9 @@ namespace Molten.Graphics
                             if (bindPoint >= shader.ConstBuffers.Length)
                                 Array.Resize(ref shader.ConstBuffers, bindPoint + 1);
 
+                            if(shader.ConstBuffers[bindPoint] != null && shader.ConstBuffers[bindPoint].BufferName != binding.Name)
+                                context.Messages.Add($"Material constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{binding.Name}' at the same register (b{bindPoint}).");
+
                             shader.ConstBuffers[bindPoint] = GetConstantBuffer(context, shader, buffer);
                             composition.ConstBufferIds.Add(bindPoint);
                         }

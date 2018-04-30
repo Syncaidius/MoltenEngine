@@ -122,20 +122,20 @@ namespace Molten.Samples
             float rotSpeed = 0.25f;
             float speed = 0.5f;
 
-            if (AcceptPlayerInput)
+            if (AcceptPlayerInput && Mouse.IsPressed(MouseButton.Left))
             {
                 // Mouse input - Messy for now - We're just testing input
                 _player.Transform.LocalRotationX += Mouse.Moved.Y * rotSpeed;
                 _player.Transform.LocalRotationY += Mouse.Moved.X * rotSpeed;
-                Mouse.CenterInWindow();
-
-                if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * speed;
-                if (Keyboard.IsPressed(Key.S)) moveDelta += _player.Transform.Global.Forward * speed;
-                if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * speed;
-                if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * speed;
-
-                _player.Transform.LocalPosition += moveDelta * time.Delta * speed;
+                //Mouse.CenterInWindow();
             }
+
+            if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * speed;
+            if (Keyboard.IsPressed(Key.S)) moveDelta += _player.Transform.Global.Forward * speed;
+            if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * speed;
+            if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * speed;
+
+            _player.Transform.LocalPosition += moveDelta * time.Delta * speed;
         }
 
         public Scene SampleScene => _scene;

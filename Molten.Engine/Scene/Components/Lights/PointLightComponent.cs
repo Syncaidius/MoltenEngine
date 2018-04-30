@@ -87,7 +87,7 @@ namespace Molten
             {
                 ICamera cam = Object.Scene.OutputCamera;
                 _data.Position = Object.Transform.GlobalPosition;
-                float distFromCam = Vector3F.Distance(cam.View.Translation, _data.Position);
+                float distFromCam = Vector3F.Distance(cam.Position, _data.Position);
                 float distPercent = Math.Min(1.0f, distFromCam / cam.MaximumDrawDistance);
                 _data.TessFactor = Math.Max(GraphicsSettings.MIN_LIGHT_TESS_FACTOR, GraphicsSettings.MAX_LIGHT_TESS_FACTOR - (GraphicsSettings.MAX_LIGHT_TESS_FACTOR * distPercent));
                 _data.Transform = Matrix4F.Scaling(_range) * Matrix4F.CreateTranslation(_data.Position) * cam.ViewProjection;

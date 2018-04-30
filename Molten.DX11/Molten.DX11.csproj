@@ -184,6 +184,7 @@
     <Compile Include="Shaders\Compiler\Parsers\RasterizerNodeParser.cs" />
     <Compile Include="Shaders\HlslFoundation.cs" />
     <Compile Include="Shaders\CommonShaderProperties.cs" />
+    <Compile Include="Shaders\Materials\Properties\LightMaterialProperties.cs" />
     <Compile Include="Shaders\Materials\Properties\SceneMaterialProperties.cs" />
     <Compile Include="Shaders\Materials\Properties\SpriteBatchMaterialProperties.cs" />
     <Compile Include="Shaders\Materials\Properties\GBufferTextureProperties.cs" />
