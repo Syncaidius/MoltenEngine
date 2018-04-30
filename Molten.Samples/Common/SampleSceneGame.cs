@@ -30,7 +30,7 @@ namespace Molten.Samples
 
         protected override void OnContentLoaded(ContentManager content, ContentRequest cr)
         {
-            string text = "[W][A][S][D] to move -- [ESC] Close -- Move mouse to rotate";
+            string text = "[W][A][S][D] to move -- [ESC] Close -- [LMB] and [MOUSE] to rotate";
             _txtInstructionSize = TestFont.MeasureString(text);
             _txtInstructions = new SpriteText()
             {

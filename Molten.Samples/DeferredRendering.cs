@@ -27,7 +27,7 @@ namespace Molten.Samples
             _mesh = MeshHelper.Cube(engine.Renderer);
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
             Player.Transform.LocalPosition = new Vector3F(0, 3, -8);
-            Player.Transform.LocalRotationX = -15;
+            Player.Transform.LocalRotationX = 15;
 
             SetupLightObjects(Vector3F.Zero);
             SetupFloor(Vector3F.Zero);
