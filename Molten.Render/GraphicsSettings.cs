@@ -25,7 +25,9 @@ namespace Molten.Graphics
         /// <summary>
         /// The maximum tessellation factor for batched lights.
         /// </summary>
-        public const float MAX_LIGHT_TESS_FACTOR = 4.0f;
+        public const float MAX_LIGHT_TESS_FACTOR = 8.0f;
+
+        public const float LIGHT_TESS_FACTOR_RANGE = MAX_LIGHT_TESS_FACTOR - MIN_LIGHT_TESS_FACTOR;
 
         public GraphicsSettings()
         {
