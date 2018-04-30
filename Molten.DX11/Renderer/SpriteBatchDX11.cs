@@ -70,9 +70,9 @@ namespace Molten.Graphics
             ConfigureNewClip(viewBounds.Bounds, false); // Initial clip zone
         }
 
-        /// <summary>Finalizes a batch of sprites, sorts them (if enabled) and then draws them.</summary>
+        /// <summary>Flushes the sprite batch by rendering it's contents.</summary>
         /// <param name="sortMode"></param>
-        internal void Flush(GraphicsPipe pipe, ref Matrix4F viewProjection, RenderSurfaceBase destination)
+        internal void End(GraphicsPipe pipe, ref Matrix4F viewProjection, RenderSurfaceBase destination)
         {
             //if nothing was added to the batch, don't bother with any draw operations.
             if (_clusterCount == 0)

@@ -49,7 +49,7 @@ namespace Molten.Graphics
                     conditions |= scene.FinalSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
                     renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
-                    renderer.SpriteBatcher.Flush(device, ref spriteViewProj, scene.FinalSurface);
+                    renderer.SpriteBatcher.End(device, ref spriteViewProj, scene.FinalSurface);
                     renderer.Device.EndDraw();
                     break;
             }

@@ -39,7 +39,7 @@
     </depth>
     <sampler slot="1" preset="default">
       <comparison>Always</comparison>
-      <filter>MinMagPointMipLinear</filter>
+      <filter>MinMagMipPoint</filter>
     </sampler>
   </pass>
 </material>
@@ -164,8 +164,8 @@ float4 PS(DS_OUTPUT input) : SV_TARGET
 	MATERIAL g = UnpackGBuffer(input.PositionXYW);
   uint lightID = input.LightID;
   
-  float3 l = normalize(LightData[lightID].Position - g.worldPos.xyz);
-  float3 diffuse = max(0, dot(l, g.normal)) * LightData[lightID].Color * g.colorData;
+  float3 lightDir = normalize(LightData[lightID].Position - g.worldPos.xyz);
+  float3 diffuse = max(0, dot(lightDir, g.normal)) * LightData[lightID].Color;
   
   return float4(diffuse, 1);
 }

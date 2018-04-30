@@ -1388,7 +1388,7 @@ namespace Molten
         /// <returns>The inverse of the specified matrix.</returns>
         public static Matrix4F Invert(Matrix4F value)
         {
-            value.Invert();
+            Invert(ref value, out value);
             return value;
         }
 

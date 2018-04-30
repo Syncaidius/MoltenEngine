@@ -143,6 +143,7 @@
     <Compile Include="Renderer\Debug\DebugOverlayPage.cs" />
     <Compile Include="Renderer\Debug\DebugBuffersPage.cs" />
     <Compile Include="Renderer\Debug\DebugFeaturesPage.cs" />
+    <Compile Include="Renderer\Debug\DepthOverlay.cs" />
     <Compile Include="Renderer\Debug\EmissiveOverlay.cs" />
     <Compile Include="Renderer\Debug\LightingOverlay.cs" />
     <Compile Include="Renderer\Debug\NormalsOverlay.cs" />

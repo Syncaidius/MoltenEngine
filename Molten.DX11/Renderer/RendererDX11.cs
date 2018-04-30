@@ -17,7 +17,6 @@ namespace Molten.Graphics
         int _biggestWidth = 1;
         int _biggestHeight = 1;
         bool _surfacesDirty;
-        bool _initialized;
 
         DX11DisplayManager _displayManager;
         ResourceManager _resourceManager;
@@ -59,6 +58,7 @@ namespace Molten.Graphics
             DebugOverlayPages.Add(new DebugBuffersPage());
             DebugOverlayPages.Add(new DebugFeaturesPage());
             DebugOverlayPages.Add(new RawSceneOverlay());
+            DebugOverlayPages.Add(new DepthOverlay());
             DebugOverlayPages.Add(new NormalsOverlay());
             DebugOverlayPages.Add(new EmissiveOverlay());
             DebugOverlayPages.Add(new LightingOverlay());

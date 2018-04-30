@@ -77,6 +77,12 @@ namespace Molten.Samples
                 PointLightComponent lightCom = obj.AddComponent<PointLightComponent>();
                 lightCom.Range = radius + 1;
                 lightCom.Intensity = 2.0f;
+                lightCom.Color = new Color()
+                {
+                    R = (byte)Rng.Next(128, 255),
+                    G = (byte)Rng.Next(128, 255),
+                    B = (byte)Rng.Next(128, 255),
+                };
                 angle += angInc;
             }
         }
