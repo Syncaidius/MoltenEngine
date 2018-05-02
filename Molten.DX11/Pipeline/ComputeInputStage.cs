@@ -19,8 +19,8 @@ namespace Molten.Graphics
 
             for (int i = 0; i < Device.Features.MaxUnorderedAccessViews; i++)
             {
-                _slotUAVs[i] = new PipelineBindSlot<PipelineShaderObject>(this, PipelineSlotType.Output, i);
-                _slotUAVs[i].OnBoundObjectDisposed += ComputeStage_OnBoundObjectDisposed;
+                _slotUAVs[i] = new PipelineBindSlot<PipelineShaderObject>(this, i);
+                _slotUAVs[i].OnObjectForcedUnbind += ComputeStage_OnBoundObjectDisposed;
             }
         }
 
@@ -40,8 +40,8 @@ namespace Molten.Graphics
                 if (u == null)
                     continue;
 
-                bool uChanged = _slotUAVs[slotID].Bind(Pipe, u.Resource);
-                if (uChanged)
+                bool uavChanged = _slotUAVs[slotID].Bind(Pipe, u.Resource, PipelineBindType.Output);
+                if (uavChanged)
                 {
                     if (u.UnorderedResource.UAV == null)
                         shaderStage.SetUnorderedAccessView(slotID, null);

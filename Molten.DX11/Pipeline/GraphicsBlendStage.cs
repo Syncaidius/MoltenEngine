@@ -18,8 +18,8 @@ namespace Molten.Graphics
 
         internal GraphicsBlendStage(GraphicsPipe context) : base(context)
         {
-            _slotState = AddSlot<GraphicsBlendState>(PipelineSlotType.Output, 0);
-            _slotState.OnBoundObjectDisposed += _slotState_OnBoundObjectDisposed;
+            _slotState = AddSlot<GraphicsBlendState>(0);
+            _slotState.OnObjectForcedUnbind += _slotState_OnBoundObjectDisposed;
         }
 
         private void _slotState_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
@@ -35,7 +35,7 @@ namespace Molten.Graphics
 
         internal void Refresh()
         {
-            bool stateChanged = _slotState.Bind(Pipe, _currentState);
+            bool stateChanged = _slotState.Bind(Pipe, _currentState, PipelineBindType.Output);
 
             if (_state != _currentState.State || _blendFactor != _currentState.BlendFactor || _blendSampleMask != _currentState.BlendSampleMask)
             {

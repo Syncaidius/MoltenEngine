@@ -31,8 +31,8 @@ namespace Molten.Graphics
             _apiScissorRects = new SharpDX.Rectangle[maxRTs];
             _apiViewports = new SharpDX.Mathematics.Interop.RawViewportF[maxRTs];
 
-            _slotState = AddSlot<GraphicsRasterizerState>(PipelineSlotType.Output, 0);
-            _slotState.OnBoundObjectDisposed += _slotState_OnBoundObjectDisposed;
+            _slotState = AddSlot<GraphicsRasterizerState>(0);
+            _slotState.OnObjectForcedUnbind += _slotState_OnBoundObjectDisposed;
         }
 
         private void _slotState_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
@@ -131,7 +131,7 @@ namespace Molten.Graphics
         internal void Refresh()
         {
             // Ensure the default preset is used if a null state was requested.
-            bool stateChanged = _slotState.Bind(Pipe, _currentState);
+            bool stateChanged = _slotState.Bind(Pipe, _currentState, PipelineBindType.Output);
 
             if (stateChanged)   // Update rasterizer state.
                 Pipe.Context.Rasterizer.State = _slotState.BoundObject.State;

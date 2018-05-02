@@ -38,20 +38,20 @@ namespace Molten.Graphics
 
             for (int i = 0; i < features.MaxInputResourceSlots; i++)
             {
-                _slotResources[i] = input.AddSlot<PipelineShaderObject>(PipelineSlotType.Input, i);
-                _slotResources[i].OnBoundObjectDisposed += SlotResources_OnBoundObjectDisposed;
+                _slotResources[i] = input.AddSlot<PipelineShaderObject>(i);
+                _slotResources[i].OnObjectForcedUnbind += SlotResources_OnBoundObjectDisposed;
             }
 
             for (int i = 0; i < features.MaxConstantBufferSlots; i++)
             {
-                _slotConstants[i] = input.AddSlot<ShaderConstantBuffer>(PipelineSlotType.Input, i);
-                _slotConstants[i].OnBoundObjectDisposed += SlotConstants_OnBoundObjectDisposed;
+                _slotConstants[i] = input.AddSlot<ShaderConstantBuffer>(i);
+                _slotConstants[i].OnObjectForcedUnbind += SlotConstants_OnBoundObjectDisposed;
             }
 
             for (int i = 0; i < features.MaxInputSamplerSlots; i++)
             {
-                _slotSamplers[i] = input.AddSlot<ShaderSampler>(PipelineSlotType.Input, i);
-                _slotSamplers[i].OnBoundObjectDisposed += EffectStageBase_OnBoundObjectDisposed;
+                _slotSamplers[i] = input.AddSlot<ShaderSampler>(i);
+                _slotSamplers[i].OnObjectForcedUnbind += EffectStageBase_OnBoundObjectDisposed;
             }
         }
 
@@ -79,7 +79,7 @@ namespace Molten.Graphics
             {
                 int slotID = composition.ConstBufferIds[i];
                 cb = shader.ConstBuffers[slotID];
-                bool cbChanged = _slotConstants[slotID].Bind(_pipe, cb);
+                bool cbChanged = _slotConstants[slotID].Bind(_pipe, cb, PipelineBindType.Input);
 
                 if (cbChanged)
                     _stage.SetConstantBuffer(slotID, cb?.Buffer);
@@ -99,7 +99,7 @@ namespace Molten.Graphics
                 resource = variable?.Resource;
 
 
-                bool resChanged = slot.Bind(_pipe, resource);
+                bool resChanged = slot.Bind(_pipe, resource, PipelineBindType.Input);
 
                 if (resChanged)
                 {
@@ -107,6 +107,7 @@ namespace Molten.Graphics
                     {
                         _resViews[slotID] = resource.SRV;
                         _stage.SetShaderResource(slotID, resource.SRV);
+
                     }
                     else
                     {
@@ -139,7 +140,7 @@ namespace Molten.Graphics
                 int slotId = composition.SamplerIds[i];
                 sampler = shader.SamplerVariables[slotId].Sampler;
 
-                bool sChanged = _slotSamplers[slotId].Bind(_pipe, sampler);
+                bool sChanged = _slotSamplers[slotId].Bind(_pipe, sampler, PipelineBindType.Input);
                 if (sChanged)
                     _stage.SetSampler(slotId, sampler?.State);
             }

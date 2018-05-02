@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal enum PipelineSlotType
+    internal enum PipelineBindType : int
     {
         Input = 0,
 
-        Output = 0,
+        OutputReadOnly = 1,
+
+        Output = 2,
     }
 }

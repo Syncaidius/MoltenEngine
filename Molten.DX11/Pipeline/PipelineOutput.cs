@@ -38,12 +38,12 @@ namespace Molten.Graphics
 
             for (int i = 0; i < maxRTs; i++)
             {
-                _slotSurfaces[i] = AddSlot<RenderSurfaceBase>(PipelineSlotType.Output, i);
-                _slotSurfaces[i].OnBoundObjectDisposed += SurfaceSlot_OnBoundObjectDisposed;
+                _slotSurfaces[i] = AddSlot<RenderSurfaceBase>(i);
+                _slotSurfaces[i].OnObjectForcedUnbind += SurfaceSlot_OnBoundObjectDisposed;
             }
 
-            _slotDepth = AddSlot<DepthSurface>(PipelineSlotType.Output, 0);
-            _slotDepth.OnBoundObjectDisposed += _slotDepth_OnBoundObjectDisposed;
+            _slotDepth = AddSlot<DepthSurface>(0);
+            _slotDepth.OnObjectForcedUnbind += _slotDepth_OnBoundObjectDisposed;
         }
 
         private void SurfaceSlot_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
@@ -64,26 +64,8 @@ namespace Molten.Graphics
         {
             bool rtChangeDetected = false;
 
-            // Check for render surface changes
-            RenderTargetView rtv = null;
-            for (int i = 0; i < _surfaces.Length; i++)
-            {
-                bool rtChanged = _slotSurfaces[i].Bind(_pipe, _surfaces[i]);
-                rtv = _slotSurfaces[i].BoundObject != null ? _slotSurfaces[i].BoundObject.RTV : null;
-
-                if (rtChanged || rtv != _rtViews[i])
-                {
-                    rtChangeDetected = true;
-
-                    if (_slotSurfaces[i].BoundObject == null)
-                        _rtViews[i] = null;
-                    else
-                        _rtViews[i] = _slotSurfaces[i].BoundObject.RTV;
-                }
-            }
-
             // Check depth surface for changes
-            bool depthChanged = _slotDepth.Bind(_pipe, _depthSurface);
+            bool depthChanged = _slotDepth.Bind(_pipe, _depthSurface, _depthMode == GraphicsDepthMode.ReadOnly ? PipelineBindType.OutputReadOnly : PipelineBindType.Output);
             if (_slotDepth.BoundObject == null)
             {
                 _depthView = null;
@@ -109,6 +91,24 @@ namespace Molten.Graphics
                 }
 
                 depthChanged = depthChanged || _depthView != oldDepthView;
+            }
+
+            // Check for render surface changes
+            RenderTargetView rtv = null;
+            for (int i = 0; i < _surfaces.Length; i++)
+            {
+                bool rtChanged = _slotSurfaces[i].Bind(_pipe, _surfaces[i], PipelineBindType.Output);
+                rtv = _slotSurfaces[i].BoundObject != null ? _slotSurfaces[i].BoundObject.RTV : null;
+
+                if (rtChanged || rtv != _rtViews[i])
+                {
+                    rtChangeDetected = true;
+
+                    if (_slotSurfaces[i].BoundObject == null)
+                        _rtViews[i] = null;
+                    else
+                        _rtViews[i] = _slotSurfaces[i].BoundObject.RTV;
+                }
             }
 
             // Check if changes need to be forwarded to the GPU.

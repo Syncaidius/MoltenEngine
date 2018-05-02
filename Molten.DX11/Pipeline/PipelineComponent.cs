@@ -25,9 +25,9 @@ namespace Molten.Graphics
         /// <param name="type">The type.</param>
         /// <param name="slotId">The slot identifier.</param>
         /// <returns></returns>
-        internal PipelineBindSlot<T> AddSlot<T>(PipelineSlotType type, int slotId) where T : PipelineObject
+        internal PipelineBindSlot<T> AddSlot<T>(int slotId) where T : PipelineObject
         {
-            PipelineBindSlot<T> slot = new PipelineBindSlot<T>(this, type, slotId);
+            PipelineBindSlot<T> slot = new PipelineBindSlot<T>(this, slotId);
             _slots.Add(slot);
             return slot;
         }

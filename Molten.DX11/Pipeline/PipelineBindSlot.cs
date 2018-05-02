@@ -11,11 +11,10 @@ namespace Molten.Graphics
     internal abstract class PipelineBindSlot
     {
         /// <summary>Invoked when the object bound to the slot is disposed.</summary>
-        public event PipelineBindSlotDelegate OnBoundObjectDisposed;
+        public event PipelineBindSlotDelegate OnObjectForcedUnbind;
 
-        internal PipelineBindSlot(PipelineComponent parent, PipelineSlotType type, int slotID)
+        internal PipelineBindSlot(PipelineComponent parent, int slotID)
         {
-            Type = type;
             SlotID = slotID;
             Parent = parent;
         }
@@ -24,7 +23,7 @@ namespace Molten.Graphics
         {
             if (obj == Object)
             {
-                OnBoundObjectDisposed?.Invoke(this, obj);
+                OnObjectForcedUnbind?.Invoke(this, obj);
                 UnbindDisposedObject(obj);
             }
         }
@@ -37,24 +36,36 @@ namespace Molten.Graphics
         }
 
         /// <summary>
+        /// Triggers a mandatory unbinding of any object currently bound to the slot.
+        /// </summary>
+        /// <param name="pipe"></param>
+        internal void ForceUnbind(GraphicsPipe pipe)
+        {
+            OnObjectForcedUnbind?.Invoke(this, Object);
+            OnForceUnbind(pipe);
+        }
+
+        /// <summary>
         /// Occurs when the bound object is disposed.
         /// </summary>
         /// <param name="obj">The object which was just disposed</param>
         protected abstract void UnbindDisposedObject(PipelineObject obj);
 
-        internal PipelineSlotType Type { get; private set; }
+        protected abstract void OnForceUnbind(GraphicsPipe pipe);
 
         internal int SlotID { get; private set; }
 
         internal PipelineComponent Parent { get; private set; }
 
         internal abstract PipelineObject Object { get; }
+
+        internal PipelineBindType BindType { get; private protected set; }
     }
 
     internal class PipelineBindSlot<T> : PipelineBindSlot where T : PipelineObject
     {
-        internal PipelineBindSlot(PipelineComponent parent, PipelineSlotType type, int slotID) :
-            base(parent, type, slotID)
+        internal PipelineBindSlot(PipelineComponent parent, int slotID) :
+            base(parent, slotID)
         { }
 
         protected override void UnbindDisposedObject(PipelineObject obj)
@@ -62,23 +73,38 @@ namespace Molten.Graphics
             BoundObject = null;
         }
 
+        protected override void OnForceUnbind(GraphicsPipe pipe)
+        {
+            BoundObject?.Unbind(pipe, this);
+            BoundObject = null;
+        }
+
         /// <summary>Binds a new object to the slot. If null, the existing object (if any) will be unbound.</summary>
         /// <param name="pipe">The <see cref="GraphicsPipe"/> to use to perform any binding operations..</param>
         /// <param name="obj">The <see cref="PipelineObject"/> to be bound to the object, or null to clear the existing one.</param>
         /// <returns></returns>
-        internal bool Bind(GraphicsPipe pipe, T obj)
+        internal bool Bind(GraphicsPipe pipe, T obj, PipelineBindType bindType)
         {
-            // Allow the new resource to refresh
-            obj?.Refresh(pipe, this);
+            if(obj != null)
+            {
+                obj.Refresh(pipe, this);
+                if (BoundObject == obj && BindType == bindType)
+                    return false;
 
-            // If the same resource is already bound, return false to signal no change.
-            if (BoundObject == obj)
-                return false;
+                BoundObject?.Unbind(pipe, this);
+                BoundObject = obj;
+                BindType = bindType;
+                obj.Bind(pipe, this);
+            }
+            else
+            {
+                if (BoundObject == null && BindType == bindType)
+                    return false;
 
-            // If an object is already bound, unbind it, then bind the new one (if any).
-            BoundObject?.Unbind(pipe, this);
-            BoundObject = obj;
-            obj?.Bind(pipe, this);
+                BoundObject?.Unbind(pipe, this);
+                BoundObject = obj;
+                BindType = bindType;
+            }            
 
             // Return true to signal a difference between old and new object.
             pipe.Profiler.CurrentFrame.Bindings++;

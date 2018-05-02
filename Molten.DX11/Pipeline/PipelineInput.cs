@@ -42,13 +42,13 @@ namespace Molten.Graphics
 
             for (int i = 0; i < vSlots; i++)
             {
-                _slotVertexBuffers[i] = AddSlot<BufferSegment>(PipelineSlotType.Input, i);
-                _slotVertexBuffers[i].OnBoundObjectDisposed += PipelineInput_OnBoundObjectDisposed;
+                _slotVertexBuffers[i] = AddSlot<BufferSegment>(i);
+                _slotVertexBuffers[i].OnObjectForcedUnbind += PipelineInput_OnBoundObjectDisposed;
             }
 
             int iSlots = Device.Features.MaxIndexBufferSlots;
-            _slotIndexBuffer = new PipelineBindSlot<BufferSegment>(this, PipelineSlotType.Input, 0);
-            _slotIndexBuffer.OnBoundObjectDisposed += _slotIndexBuffer_OnBoundObjectDisposed;
+            _slotIndexBuffer = new PipelineBindSlot<BufferSegment>(this, 0);
+            _slotIndexBuffer.OnObjectForcedUnbind += _slotIndexBuffer_OnBoundObjectDisposed;
         }
 
         private void _slotIndexBuffer_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
@@ -72,7 +72,7 @@ namespace Molten.Graphics
             for (int i = 0; i < _vertexSlotCount; i++)
             {
                 vb = _vertexSegments[i];
-                bool vbChanged = _slotVertexBuffers[i].Bind(Pipe, vb);
+                bool vbChanged = _slotVertexBuffers[i].Bind(Pipe, vb, PipelineBindType.Input);
 
                 // Check for change
                 if (vbChanged)
@@ -104,7 +104,7 @@ namespace Molten.Graphics
             }
 
             // Update index buffers
-            bool ibChanged = _slotIndexBuffer.Bind(Pipe, _indexSegment);
+            bool ibChanged = _slotIndexBuffer.Bind(Pipe, _indexSegment, PipelineBindType.Input);
             if (ibChanged)
             {
                 if (_indexSegment != null)

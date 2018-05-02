@@ -10,16 +10,37 @@ namespace Molten.Graphics
 {
     public abstract class PipelineObject : EngineObject
     {
-        internal ThreadedList<PipelineBindSlot> Binds = new ThreadedList<PipelineBindSlot>();
+        const int BIND_LIST_COUNT = (int)PipelineBindType.Output + 1;
+        List<PipelineBindSlot>[] _binds;
 
-        internal virtual void Bind(GraphicsPipe pipe, PipelineBindSlot slot)
+        public PipelineObject()
         {
-            Binds.Add(slot);
+            _binds = new List<PipelineBindSlot>[BIND_LIST_COUNT];
+            for (int i = 0; i < _binds.Length; i++)
+                _binds[i] = new List<PipelineBindSlot>();
         }
 
-        internal virtual void Unbind(GraphicsPipe pipe, PipelineBindSlot slot)
+        internal void Bind(GraphicsPipe pipe, PipelineBindSlot slot)
         {
-            if (!Binds.Remove(slot))
+            _binds[(int)slot.BindType].Add(slot);
+
+            if (slot.BindType == PipelineBindType.Input)
+            {
+                List<PipelineBindSlot> unbinds = _binds[(int)PipelineBindType.Output];
+                for (int i = 0; i < unbinds.Count; i++)
+                    unbinds[i].ForceUnbind(pipe);
+            }
+            else if (slot.BindType == PipelineBindType.Output)
+            {
+                List<PipelineBindSlot> unbinds = _binds[(int)PipelineBindType.Input];
+                for (int i = 0; i < unbinds.Count; i++)
+                    unbinds[i].ForceUnbind(pipe);
+            }
+        }
+
+        internal void Unbind(GraphicsPipe pipe, PipelineBindSlot slot)
+        {
+            if (!_binds[(int)slot.BindType].Remove(slot))
                 throw new Exception();
         }
 
@@ -30,13 +51,13 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            Binds.ForInterlock(0, 1, (index, slot) =>
+            foreach (List<PipelineBindSlot> bindList in _binds)
             {
-                slot.BoundObjectDisposed(this);
-                return false;
-            });
+                for (int j = 0; j < bindList.Count; j++)
+                    bindList[j].BoundObjectDisposed(this);
 
-            Binds.Clear();
+                bindList.Clear();
+            }
             base.OnDispose();
         }
     }
