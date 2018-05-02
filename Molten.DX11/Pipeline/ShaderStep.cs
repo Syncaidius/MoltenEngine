@@ -111,13 +111,24 @@ namespace Molten.Graphics
                     else
                     {
                         _resViews[slotID] = null;
-                        _stage.SetShaderResource(i, null);
+                        _stage.SetShaderResource(slotID, null);
                     }
                 }
-                else if (resource != null && _resViews[slotID] != resource.SRV)
+                else
                 {
-                    _resViews[slotID] = resource.SRV;
-                    _stage.SetShaderResource(slotID, resource.SRV);
+                    if (resource != null)
+                    {
+                        if (_resViews[slotID] != resource.SRV)
+                        {
+                            _resViews[slotID] = resource.SRV;
+                            _stage.SetShaderResource(slotID, resource.SRV);
+                        }
+                    }
+                    else if (_resViews[slotID] != null)
+                    {
+                        _resViews[slotID] = null;
+                        _stage.SetShaderResource(slotID, null);
+                    }
                 }
             }
 

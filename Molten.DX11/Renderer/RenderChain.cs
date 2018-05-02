@@ -60,8 +60,12 @@ namespace Molten.Graphics
 
             if (_scene.HasFlag(SceneRenderFlags.Deferred))
             {
-                Next<GBuffer3dStep>();
-                Next<Render2dStep>();
+                if (_scene.HasFlag(SceneRenderFlags.Render3D))
+                    Next<GBuffer3dStep>();
+
+                if (_scene.HasFlag(SceneRenderFlags.Render2D))
+                    Next<Render2dStep>();
+
                 Next<LightingStep>();
                 Next<FinalizeStep>();
             }

@@ -36,6 +36,8 @@ namespace Molten.Graphics
                     _ib = iBuffer.Allocate<uint>(maxIndices);
                     break;
             }
+
+            _ib.SetIndexFormat(indexFormat);
         }
 
         public void SetIndices<I>(I[] data) where I : struct

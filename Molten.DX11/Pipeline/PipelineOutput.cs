@@ -91,8 +91,6 @@ namespace Molten.Graphics
             else
             {
                 DepthStencilView oldDepthView = _depthView;
-                GraphicsDepthMode oldDepthMode = _depthMode;
-
                 _boundMode = _depthMode;
 
                 switch (_depthMode)
@@ -110,7 +108,7 @@ namespace Molten.Graphics
                         break;
                 }
 
-                depthChanged = _depthMode != oldDepthMode || _depthView != oldDepthView;
+                depthChanged = depthChanged || _depthView != oldDepthView;
             }
 
             // Check if changes need to be forwarded to the GPU.
