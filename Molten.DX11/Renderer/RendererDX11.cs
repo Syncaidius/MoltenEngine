@@ -24,7 +24,7 @@ namespace Molten.Graphics
         ComputeManager _compute;
         GraphicsDevice _device;
         Logger _log;
-        RenderProfilerDX _profiler;
+        RenderProfiler _profiler;
         HlslCompiler _shaderCompiler;
         ThreadedQueue<RendererTask> _tasks;
         ThreadedList<ISwapChainSurface> _outputSurfaces;
@@ -77,7 +77,7 @@ namespace Molten.Graphics
             _requestedMultiSampleLevel = MsaaLevel;
             settings.MSAA.OnChanged += MSAA_OnChanged;
 
-            _profiler = new RenderProfilerDX();
+            _profiler = new RenderProfiler();
             _outputSurfaces = new ThreadedList<ISwapChainSurface>();
             _device = new GraphicsDevice(_log, settings, _profiler, _displayManager, settings.EnableDebugLayer);
             _resourceManager = new ResourceManager(this);
@@ -353,7 +353,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets profiling data attached to the renderer.
         /// </summary>
-        public IRenderProfiler Profiler => _profiler;
+        public RenderProfiler Profiler => _profiler;
 
         internal GraphicsDevice Device => _device;
 

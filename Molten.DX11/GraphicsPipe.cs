@@ -38,8 +38,8 @@ namespace Molten.Graphics
         GraphicsDevice _device;
         DeviceContext _context;
         PipeStateStack _stateStack;
-        RenderProfilerDX _profiler;
-        RenderProfilerDX _defaultProfiler;
+        RenderProfiler _profiler;
+        RenderProfiler _defaultProfiler;
         DrawInfo _drawInfo;
 
         internal static RawList<GraphicsPipe> ActivePipes = new RawList<GraphicsPipe>(1, ExpansionMode.Increment, 1);
@@ -49,7 +49,7 @@ namespace Molten.Graphics
             ID = ActivePipes.Add(this);
             _context = context;
             _device = device;
-            _defaultProfiler = _profiler = new RenderProfilerDX();
+            _defaultProfiler = _profiler = new RenderProfiler();
             _drawInfo = new DrawInfo();
             Log = log;
 
@@ -469,7 +469,7 @@ namespace Molten.Graphics
         internal Logger Log { get; private set; }
 
         /// <summary>Gets the profiler bound to the current <see cref="GraphicsPipe"/>. Contains statistics for this pipe alone.</summary>
-        internal RenderProfilerDX Profiler
+        internal RenderProfiler Profiler
         {
             get => _profiler;
             set => _profiler = value ?? _defaultProfiler;

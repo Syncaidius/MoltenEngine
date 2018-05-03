@@ -77,10 +77,10 @@
     <Compile Include="Exceptions\AdapterOutputException.cs" />
     <Compile Include="GraphicsFormat.cs" />
     <Compile Include="GraphicsSettings.cs" />
+    <Compile Include="RenderProfiler.cs" />
     <Compile Include="Scene\Camera2D.cs" />
     <Compile Include="Scene\ISceneDebugOverlay.cs" />
     <Compile Include="IRenderer.cs" />
-    <Compile Include="IRenderProfiler.cs" />
     <Compile Include="IResourceManager.cs" />
     <Compile Include="MeshHelper.cs" />
     <Compile Include="Mesh\IBonedMesh.cs" />

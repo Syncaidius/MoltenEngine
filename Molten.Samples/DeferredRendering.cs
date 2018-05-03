@@ -11,10 +11,15 @@ namespace Molten.Samples
 {
     public class DeferredRenderingSample : SampleSceneGame
     {
+        class ParentChildPair
+        {
+            public SceneObject Parent;
+            public SceneObject Child;
+        }
+
         public override string Description => "A test/sample for deferred rendering";
 
-        SceneObject _parent;
-        SceneObject _child;
+        List<ParentChildPair> _pairs;
         IMesh<GBufferVertex> _mesh;
         IMesh<GBufferVertex> _floorMesh;
 
@@ -24,13 +29,16 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
 
+            _pairs = new List<ParentChildPair>();
             _mesh = MeshHelper.Cube(engine.Renderer);
-            SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
+
             Player.Transform.LocalPosition = new Vector3F(0, 3, -8);
             Player.Transform.LocalRotationX = 15;
 
+            SpawnParentChildren(5, new Vector3F(0,2.5f,0), 10);
+
             SetupLightObjects(Vector3F.Zero);
-            SetupFloor(Vector3F.Zero);
+            SetupFloor(Vector3F.Zero, 30);
 
             SampleScene.RenderFlags = SceneRenderFlags.Deferred | SceneRenderFlags.Render3D;
             ContentRequest cr = engine.Content.StartRequest();
@@ -45,12 +53,41 @@ namespace Molten.Samples
             cr.Commit();
         }
 
-        private void SetupFloor(Vector3F origin)
+        private void SpawnParentChildren(int count, Vector3F origin, float outerRadius)
         {
-            _floorMesh = MeshHelper.PlainCentered(Engine.Renderer, 5);
+            ParentChildPair pair = new ParentChildPair();
+            SpawnParentChild(_mesh, origin, out pair.Parent, out pair.Child);
+            _pairs.Add(pair);
+
+            float angle = 0;
+            float angleIncrement = 360f / count;
+
+            // Spawn more around the center pair
+            for(int i = 0; i < count; i++)
+            {
+                pair = new ParentChildPair();
+                float angRad = angle * MathHelper.DegToRad;
+                Vector3F pos = origin + new Vector3F()
+                {
+                    X = (float)Math.Sin(angRad) * outerRadius,
+                    Y = 0,
+                    Z = (float)Math.Cos(angRad) * outerRadius,
+                };
+                SpawnParentChild(_mesh, pos, out pair.Parent, out pair.Child);
+                pair.Parent.Transform.LocalRotationZ = Rng.Next(0, 360);
+                pair.Parent.Transform.LocalRotationX = Rng.Next(0, 360);
+
+                _pairs.Add(pair);
+                angle += angleIncrement;
+            }
+        }
+
+        private void SetupFloor(Vector3F origin, float size)
+        {
+            _floorMesh = MeshHelper.PlainCentered(Engine.Renderer, size / 4);
             SceneObject floorObj = CreateObject(origin, SampleScene);
             floorObj.Transform.LocalPosition = origin;
-            floorObj.Transform.LocalScale = new Vector3F(20);
+            floorObj.Transform.LocalScale = new Vector3F(size);
 
             MeshComponent floorCom = floorObj.AddComponent<MeshComponent>();
             floorCom.Mesh = _floorMesh;
@@ -116,7 +153,8 @@ namespace Molten.Samples
 
         protected override void OnUpdate(Timing time)
         {
-            RotateParentChild(_parent, _child, time);
+            foreach (ParentChildPair pair in _pairs)
+                RotateParentChild(pair.Parent, pair.Child, time);
 
             base.OnUpdate(time);
         }

@@ -38,7 +38,7 @@ namespace Molten.Graphics
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
-        internal GraphicsDevice(Logger log, GraphicsSettings settings, RenderProfilerDX profiler, DX11DisplayManager manager, bool enableDebugLayer)
+        internal GraphicsDevice(Logger log, GraphicsSettings settings, RenderProfiler profiler, DX11DisplayManager manager, bool enableDebugLayer)
         {
             _log = log;
             _displayManager = manager;

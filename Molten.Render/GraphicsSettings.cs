@@ -18,6 +18,11 @@ namespace Molten.Graphics
         public const string RENDERER_DX12 = "Molten.DX12.dll; Molten.Graphics.RendererDX12";
 
         /// <summary>
+        /// The name of the default OpenGL renderer library.
+        /// </summary>
+        public const string RENDERER_OPENGL = "Molten.OpenGL.dll; Molten.Graphics.RendererOpenGL";
+
+        /// <summary>
         /// The minimum tessellation factor for batched lights.
         /// </summary>
         public const float MIN_LIGHT_TESS_FACTOR = 4.0f;

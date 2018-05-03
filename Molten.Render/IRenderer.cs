@@ -30,7 +30,7 @@ namespace Molten.Graphics
         string Name { get; }
 
         /// <summary>Gets profiling data attached to the renderer.</summary>
-        IRenderProfiler Profiler { get; }
+        RenderProfiler Profiler { get; }
 
         /// <summary>Gets a list of <see cref="ISwapChainSurface"/> objects which are presented to display devices. This list is safe to modify from any thread.</summary>
         ThreadedList<ISwapChainSurface> OutputSurfaces { get; }

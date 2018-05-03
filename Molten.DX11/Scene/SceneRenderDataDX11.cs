@@ -21,7 +21,7 @@ namespace Molten.Graphics
         internal Matrix4F ViewProjection;
         internal Matrix4F InvViewProjection;
         internal RenderSurfaceBase FinalSurface;
-        internal RenderProfilerDX Profiler;
+        internal RenderProfiler Profiler;
         internal bool Skip;
 
         SceneDebugOverlay _overlay;
@@ -36,7 +36,7 @@ namespace Molten.Graphics
             _previousFlags = Flags;
             _chain = new RenderChain(renderer, this);
             _chain.Rebuild();
-            Profiler = new RenderProfilerDX();
+            Profiler = new RenderProfiler();
             _overlay = new SceneDebugOverlay(renderer, this);
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.Graphics;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -53,6 +54,21 @@ namespace Molten.Samples
             lstTests.MouseDoubleClick += lstTests_MouseDoubleClick;
             lstTests.SelectionChanged += lstTests_SelectionChanged;
 
+            cboRenderer.Items.Add(new RendererComboItem()
+            {
+                Content = "DirectX 11",
+                LibraryName = GraphicsSettings.RENDERER_DX11,
+            });
+
+            cboRenderer.Items.Add(new RendererComboItem()
+            {
+                Content = "OpenGL",
+                LibraryName = GraphicsSettings.RENDERER_OPENGL,
+            });
+
+            if (cboRenderer.SelectedItem == null)
+                cboRenderer.SelectedIndex = 0;
+
             LoadLastRun();
         }
 
@@ -75,6 +91,7 @@ namespace Molten.Samples
                     writer.Write(typeName);
                     writer.Write(chkDebugLayer.IsChecked.Value);
                     writer.Write(chkVsync.IsChecked.Value);
+                    writer.Write(cboRenderer.SelectedIndex);
                 }
             }
         }
@@ -94,6 +111,7 @@ namespace Molten.Samples
                     {
                         chkDebugLayer.IsChecked = reader.ReadBoolean();
                         chkVsync.IsChecked = reader.ReadBoolean();
+                        cboRenderer.SelectedIndex = reader.ReadInt32();
                         lastTestType = Type.GetType(typeName);
                         SetLastTestText(lastTestType);
                     }
@@ -102,6 +120,7 @@ namespace Molten.Samples
                         lastTestType = null; //just to be sure...
                         chkDebugLayer.IsChecked = false;
                         chkVsync.IsChecked = false;
+                        cboRenderer.SelectedIndex = 0;
                     }
                 }
             }
@@ -191,17 +210,31 @@ namespace Molten.Samples
             //save type of test as the last run type.
             SaveLastRun();
 
+            RendererComboItem renderItem = cboRenderer.SelectedItem as RendererComboItem;
+
             //disable list view and enable again after the test ends.
             lstTests.IsEnabled = false;
             EngineSettings settings = new EngineSettings();
             settings.Graphics.EnableDebugLayer.Value = chkDebugLayer.IsChecked.Value;
             settings.Graphics.VSync.Value = chkVsync.IsChecked.Value;
+            settings.Graphics.RendererLibrary.Value = renderItem.LibraryName;
+
             _curTest = Activator.CreateInstance(lastTestType, settings) as SampleGame;
             _curTest.Start();
             Console.ForegroundColor = ConsoleColor.White;
 
             GC.Collect();
             lstTests.IsEnabled = true;
+        }
+
+        class RendererComboItem : ComboBoxItem
+        {
+            public string LibraryName;
+
+            public override string ToString()
+            {
+                return Content.ToString();
+            }
         }
     }
 }

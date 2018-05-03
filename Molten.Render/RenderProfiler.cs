@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class RenderProfilerDX : IRenderProfiler
+    public class RenderProfiler
     {
         RenderFrameSnapshot[] _frameSnaps;
         RenderFrameSnapshot[] _secondSnaps;
@@ -19,13 +19,13 @@ namespace Molten.Graphics
         int _prevSecondShot;
         double _timing;
         Stopwatch _frameTimer;
-        internal RenderFrameSnapshot CurrentFrame;
+        public RenderFrameSnapshot CurrentFrame;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="snapshots">The number of previous frames of which to keep snapshots.</param>
-        public RenderProfilerDX(int snapshots = 20)
+        public RenderProfiler(int snapshots = 20)
         {
             _frameTimer = new Stopwatch();
             _frameSnaps = new RenderFrameSnapshot[snapshots];
@@ -90,11 +90,6 @@ namespace Molten.Graphics
         public RenderFrameSnapshot PreviousFrame
         {
             get { return _frameSnaps[_prevSlot]; }
-        }
-
-        RenderFrameSnapshot IRenderProfiler.CurrentFrame
-        {
-            get { return CurrentFrame; }
         }
 
         public RenderFrameSnapshot PreviousSecond

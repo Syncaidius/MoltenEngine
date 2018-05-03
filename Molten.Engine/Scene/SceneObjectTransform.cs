@@ -30,7 +30,9 @@ namespace Molten
 
         internal void CalculateLocal()
         {
-            _orientation = QuaternionF.RotationYawPitchRoll(MathHelper.DegreesToRadians(_angles.Y), MathHelper.DegreesToRadians(_angles.X), MathHelper.DegreesToRadians(_angles.Z));
+            _orientation = QuaternionF.RotationYawPitchRoll(_angles.Y * MathHelper.DegToRad, 
+                _angles.X * MathHelper.DegToRad,
+                _angles.Z * MathHelper.DegToRad);
             _localTransform = Matrix4F.Scaling(_localScale) * Matrix4F.FromQuaternion(_orientation) * Matrix4F.CreateTranslation(_localPosition);
         }
 

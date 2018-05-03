@@ -95,20 +95,17 @@ namespace Molten.Samples
             parent.Children.Add(child);
         }
 
-        protected void RotateParentChild(SceneObject parent, SceneObject child, Timing time)
+        protected void RotateParentChild(SceneObject parent, SceneObject child, Timing time, float speed = 0.5f, float childSpeed = 1.0f)
         {
             var rotateTime = (float)time.TotalTime.TotalSeconds;
 
-            parent.Transform.LocalRotationY += 0.5f;
+            parent.Transform.LocalRotationY += speed;
             if (parent.Transform.LocalRotationY >= 360)
                 parent.Transform.LocalRotationY -= 360;
 
-            child.Transform.LocalRotationX += 1f;
+            child.Transform.LocalRotationX += childSpeed;
             if (child.Transform.LocalRotationX >= 360)
                 child.Transform.LocalRotationX -= 360;
-
-            parent.Transform.LocalPosition = new Vector3F(0, 1, 0);
-            child.Transform.LocalPosition = new Vector3F(-3, 0, 0);
         }
 
         protected override void OnUpdate(Timing time)

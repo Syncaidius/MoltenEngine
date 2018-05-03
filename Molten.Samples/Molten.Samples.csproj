@@ -251,6 +251,10 @@
       <Project>{e59938af-a9d4-4963-b4ac-61e53d05527e}</Project>
       <Name>Molten.Math</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Molten.OpenGL\Molten.OpenGL.csproj">
+      <Project>{051563bb-29ac-4903-ae21-72184cd18955}</Project>
+      <Name>Molten.OpenGL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Molten.Render\Molten.Render.csproj">
       <Project>{11c91c8d-ed1f-40ac-a246-de4796ca2122}</Project>
       <Name>Molten.Render</Name>
