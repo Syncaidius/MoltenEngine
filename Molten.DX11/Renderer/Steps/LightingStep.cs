@@ -83,8 +83,6 @@ namespace Molten.Graphics
             _matPoint.Light.MapDiffuse.Value = _startStep.Scene;
             _matPoint.Light.MapNormal.Value =  _startStep.Normals;
             _matPoint.Light.MapDepth.Value = _startStep.Depth;
-            //_matPoint["mapSpecular"].Value = _startStep.Specular;
-            //_matPoint["mapAOcclusion"].Value = _manager.AmbientOcclusion.Texture;
 
             _matPoint.Light.InvViewProjection.Value = scene.InvViewProjection;
             _matPoint.Light.CameraPosition.Value = scene.Camera.Position;

@@ -139,7 +139,7 @@ namespace Molten
             set
             {
                 _range = value;
-                _data.RangeRcp = 1.0f / _range;
+                _data.RangeRcp = 1.0f / (_range * _range);
             }
         }
 
