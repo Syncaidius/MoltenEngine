@@ -19,7 +19,7 @@ namespace Molten.Graphics
             return factory.Adapters1;
         }
 
-        protected override GraphicsAdapter<Adapter1, AdapterDescription1, Output1> InstanciateAdapter(Adapter1 adapter, AdapterDescription1 desc, int id)
+        protected override GraphicsAdapterDX<Adapter1, AdapterDescription1, Output1> InstanciateAdapter(Adapter1 adapter, AdapterDescription1 desc, int id)
         {
             // Get the adapter's outputs and convert them to the correct type.
             Output[] outputs = adapter.Outputs;
@@ -27,7 +27,7 @@ namespace Molten.Graphics
             for (int i = 0; i < result.Length; i++)
                 result[i] = new Output1(outputs[i].NativePointer);
 
-            return new GraphicsAdapter<Adapter1, AdapterDescription1, Output1>(this, adapter, desc, result, id);
+            return new GraphicsAdapterDX<Adapter1, AdapterDescription1, Output1>(this, adapter, desc, result, id);
         }
     }
 }

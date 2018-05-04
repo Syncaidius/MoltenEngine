@@ -17,5 +17,10 @@ namespace Molten.Graphics
 
         /// <summary>Gets the <see cref="IDisplayAdapter"/> the <see cref="IDisplayOutput"/> is attached to.</summary>
         IDisplayAdapter Adapter { get; }
+
+        /// <summary>
+        /// Gets the desktop bounds of the display.
+        /// </summary>
+        Rectangle DesktopBounds { get; }
     }
 }

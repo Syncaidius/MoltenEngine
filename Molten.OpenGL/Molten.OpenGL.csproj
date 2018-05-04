@@ -60,6 +60,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -69,8 +70,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Hardware\DisplayManagerOGL.cs" />
-    <Compile Include="Hardware\OpenGLAdapter.cs" />
+    <Compile Include="Hardware\DisplayManagerGL.cs" />
+    <Compile Include="Hardware\DisplayOutputGL.cs" />
+    <Compile Include="Hardware\GraphicsAdapterGL.cs" />
+    <Compile Include="OpenTKInterop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer\RendererOpenGL.cs" />
   </ItemGroup>
@@ -78,6 +81,10 @@
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
       <Project>{8df4c894-b793-495e-bc14-53306f8b2972}</Project>
       <Name>Molten.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.Math\Molten.Math.csproj">
+      <Project>{E59938AF-A9D4-4963-B4AC-61E53D05527E}</Project>
+      <Name>Molten.Math</Name>
     </ProjectReference>
     <ProjectReference Include="..\Molten.Render\Molten.Render.csproj">
       <Project>{11c91c8d-ed1f-40ac-a246-de4796ca2122}</Project>

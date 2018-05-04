@@ -8,11 +8,11 @@ namespace Molten.Graphics
 {
     public interface IDisplayAdapter
     {
-        /// <summary>Occurs when an <see cref="IDisplayOutput"/> is connected to the current <see cref="IDisplayAdapter"/>.</summary>
-        event DisplayOutputChanged OnOutputAdded;
+        /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is activated on the current <see cref="IDisplayAdapter"/>.</summary>
+        event DisplayOutputChanged OnOutputActivated;
 
-        /// <summary>Occurs when an <see cref="IDisplayOutput"/> is disconnected from the current <see cref="IDisplayAdapter"/>.</summary>
-        event DisplayOutputChanged OnOutputRemoved;
+        /// <summary>Occurs when a connected <see cref="IDisplayOutput"/> is deactivated on the current <see cref="IDisplayAdapter"/>.</summary>
+        event DisplayOutputChanged OnOutputDeactivated;
 
         /// <summary>Gets all <see cref="IDisplayOutput"/> devices attached to the current <see cref="IDisplayAdapter"/>.</summary>
         /// <param name="outputList">The output list.</param>
@@ -43,8 +43,8 @@ namespace Molten.Graphics
         /// <summary>Gets the listing ID of the <see cref="IDisplayAdapter"/>.</summary>
         int ID { get; }
 
-        /// <summary>The PCI ID of the hardware vendor.</summary>
-        int VendorID { get; }
+        /// <summary>The hardware vendor.</summary>
+        GraphicsAdapterVendor Vendor { get; }
 
         /// <summary>The PCI ID of the hardware adapter.</summary>
         int DeviceID { get; }

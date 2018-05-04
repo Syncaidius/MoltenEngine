@@ -10,8 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Hardware\DisplayMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Hardware\DisplayOutput.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Hardware\GraphicsAdapter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Hardware\DisplayOutputDX.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Hardware\GraphicsAdapterDX.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Hardware\GraphicsDisplayManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Hardware\GraphicsOutput.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharpDXInterop.cs" />

@@ -11,16 +11,16 @@ namespace Molten.Graphics
     /// <seealso cref="Molten.IDisplayOutput" />
     /// <typeparam name="A">The DXGI Adapter type</typeparam>
     /// <typeparam name="D">The type of adapter description</typeparam>
-    public class DisplayOutput<A,D, O> : GraphicsOutput
+    public class DisplayOutputDX<A,D, O> : GraphicsOutput
         where A : Adapter
         where D : struct
         where O : Output
     {
         O _output;
         OutputDescription _desc;
-        GraphicsAdapter<A, D, O> _adapter;
+        GraphicsAdapterDX<A, D, O> _adapter;
 
-        internal DisplayOutput(GraphicsAdapter<A, D, O> adapter, O output) : base(adapter)
+        internal DisplayOutputDX(GraphicsAdapterDX<A, D, O> adapter, O output) : base(adapter)
         {
             _adapter = adapter;
             _output = output;
@@ -44,7 +44,7 @@ namespace Molten.Graphics
         internal O Output => _output;
 
         /// <summary>Gets the resolution/size of the dekstop bound to the output, if any.</summary>
-        public Rectangle DesktopBounds => _desc.DesktopBounds.FromRawApi();
+        public override Rectangle DesktopBounds => _desc.DesktopBounds.FromRawApi();
 
         /// <summary>Gets whether or not the output is bound to a desktop.</summary>
         public bool IsBoundToDesktop { get { return _desc.IsAttachedToDesktop; } }

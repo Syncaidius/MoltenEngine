@@ -21,7 +21,7 @@ namespace Molten.Graphics
         internal GraphicsPipe ExternalContext;
 
         Device _d3d;
-        GraphicsAdapter<Adapter1, AdapterDescription1, Output1> _adapter;
+        GraphicsAdapterDX<Adapter1, AdapterDescription1, Output1> _adapter;
         List<SwapChainSurface> _swapChains;
         GraphicsDeviceFeatures _features;
         ThreadedList<GraphicsPipe> _contexts;
@@ -42,7 +42,7 @@ namespace Molten.Graphics
         {
             _log = log;
             _displayManager = manager;
-            _adapter = _displayManager.SelectedAdapter as GraphicsAdapter<Adapter1, AdapterDescription1, Output1>;
+            _adapter = _displayManager.SelectedAdapter as GraphicsAdapterDX<Adapter1, AdapterDescription1, Output1>;
             _contexts = new ThreadedList<GraphicsPipe>();
             _swapChains = new List<SwapChainSurface>();
             _vertexBuilder = new VertexFormatBuilder();

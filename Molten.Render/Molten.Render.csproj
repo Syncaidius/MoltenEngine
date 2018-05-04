@@ -68,11 +68,12 @@
     <Compile Include="Buffers\BufferMode.cs" />
     <Compile Include="Buffers\IndexBufferFormat.cs" />
     <Compile Include="Buffers\StagingBufferFlags.cs" />
-    <Compile Include="Display\DisplayDelagates.cs" />
-    <Compile Include="Display\DisplayOrientation.cs" />
-    <Compile Include="Display\IDisplayAdapter.cs" />
-    <Compile Include="Display\IDisplayManager.cs" />
-    <Compile Include="Display\IDisplayOutput.cs" />
+    <Compile Include="Hardware\DisplayDelagates.cs" />
+    <Compile Include="Hardware\DisplayOrientation.cs" />
+    <Compile Include="Hardware\GraphicsAdapterVendor.cs" />
+    <Compile Include="Hardware\IDisplayAdapter.cs" />
+    <Compile Include="Hardware\IDisplayManager.cs" />
+    <Compile Include="Hardware\IDisplayOutput.cs" />
     <Compile Include="Exceptions\AdapterException.cs" />
     <Compile Include="Exceptions\AdapterOutputException.cs" />
     <Compile Include="GraphicsFormat.cs" />

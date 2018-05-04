@@ -23,7 +23,7 @@ namespace Molten.Graphics
     {
         F _dxgiFactory;
         List<int> _usable;
-        List<GraphicsAdapter<A, D, O>> _adapters;
+        List<GraphicsAdapterDX<A, D, O>> _adapters;
         Logger _log;
         int _defaultID = -1;
         int _selectedID = -1;
@@ -37,7 +37,7 @@ namespace Molten.Graphics
         {
             _dxgiFactory = new F();
             _usable = new List<int>();
-            _adapters = new List<GraphicsAdapter<A, D, O>>();
+            _adapters = new List<GraphicsAdapterDX<A, D, O>>();
             _log = logger;
 
             // Detect adapters.
@@ -45,7 +45,7 @@ namespace Molten.Graphics
             for (int i = 0; i < detected.Length; i++)
             {
                 D desc = GetAdapterDescription(detected[i]);
-                GraphicsAdapter<A, D, O> adapter = InstanciateAdapter(detected[i], desc, i);
+                GraphicsAdapterDX<A, D, O> adapter = InstanciateAdapter(detected[i], desc, i);
                 _adapters.Add(adapter);
 
                 if (adapter.OutputCount > 0)
@@ -107,7 +107,7 @@ namespace Molten.Graphics
 
         protected abstract A[] GetDxgiAdapters(F factory);
 
-        protected abstract GraphicsAdapter<A, D, O> InstanciateAdapter(A adapter, D desc, int id);
+        protected abstract GraphicsAdapterDX<A, D, O> InstanciateAdapter(A adapter, D desc, int id);
 
         protected abstract D GetAdapterDescription(A adapter);
 

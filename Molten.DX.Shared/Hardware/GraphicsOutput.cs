@@ -28,5 +28,10 @@ namespace Molten.Graphics
 
         /// <summary>Gets the adapter that the display device is connected to.</summary>
         public IDisplayAdapter Adapter { get { return _adapter; } }
+
+        /// <summary>
+        /// Gets the desktop bounds of the display.
+        /// </summary>
+        public abstract Rectangle DesktopBounds { get; }
     }
 }

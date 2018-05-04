@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    public class GraphicsAdapter<A, D, O> : IDisplayAdapter
+    public class GraphicsAdapterDX<A, D, O> : IDisplayAdapter
         where A : Adapter
         where D : struct
         where O : Output
@@ -15,36 +15,64 @@ namespace Molten.Graphics
         A _adapter;
         AdapterDescription _desc;
 
-        DisplayOutput<A,D, O>[] _connectedOutputs;
+        DisplayOutputDX<A,D, O>[] _connectedOutputs;
         List<GraphicsOutput> _activeOutputs;
 
         IDisplayManager _manager;
-        int _id;
         string _name;
+        
 
         /// <summary> Occurs when an <see cref="T:Molten.IDisplayOutput" /> is connected to the current <see cref="T:Molten.IDisplayAdapter" />.</summary>
-        public event DisplayOutputChanged OnOutputAdded;
+        public event DisplayOutputChanged OnOutputActivated;
 
         /// <summary>Occurs when an <see cref="T:Molten.IDisplayOutput" /> is disconnected from the current <see cref="T:Molten.IDisplayAdapter" />. </summary>
-        public event DisplayOutputChanged OnOutputRemoved;
+        public event DisplayOutputChanged OnOutputDeactivated;
 
-        public GraphicsAdapter(IDisplayManager manager, A adapter, D desc, O[] outputs, int id)
+        public GraphicsAdapterDX(IDisplayManager manager, A adapter, D desc, O[] outputs, int id)
         {
             _manager = manager;
             _adapter = adapter;
             _activeOutputs = new List<GraphicsOutput>();
-            _id = id;
+            ID = id;
             _desc = _adapter.Description;
             _name = _desc.Description.Replace("\0", string.Empty);
+            PopulateVendor();
 
             long shared = _desc.SharedSystemMemory;
             if (shared < 0)
                 _desc.SharedSystemMemory = 0;
 
-            _connectedOutputs = new DisplayOutput<A, D, O>[outputs.Length];
+            _connectedOutputs = new DisplayOutputDX<A, D, O>[outputs.Length];
 
             for (int i = 0; i < _connectedOutputs.Length; i++)
-                _connectedOutputs[i] = new DisplayOutput<A, D, O>(this, outputs[i]);
+                _connectedOutputs[i] = new DisplayOutputDX<A, D, O>(this, outputs[i]);
+        }
+
+        private void PopulateVendor()
+        {
+            // See: https://pcisig.com/membership/member-companies
+            // See: https://gamedev.stackexchange.com/a/31626/116135
+            switch (_desc.VendorId)
+            {
+                case 0x1002:
+                case 0x1022:
+                    Vendor = GraphicsAdapterVendor.AMD;
+                    break;
+
+                case 0x163C:
+                case 0x8086:
+                case 0x8087:
+                    Vendor = GraphicsAdapterVendor.Intel;
+                    break;
+
+                case 0x10DE:
+                    Vendor = GraphicsAdapterVendor.Nvidia;
+                    break;
+
+                default:
+                    Vendor = GraphicsAdapterVendor.Unknown;
+                    break;
+            }
         }
 
         public IDisplayOutput GetOutput(int id)
@@ -71,7 +99,7 @@ namespace Molten.Graphics
             if (!_activeOutputs.Contains(output))
             {
                 _activeOutputs.Add(output as GraphicsOutput);
-                OnOutputAdded?.Invoke(output);
+                OnOutputActivated?.Invoke(output);
             }
         }
 
@@ -80,16 +108,16 @@ namespace Molten.Graphics
             if (output.Adapter != this)
                 throw new AdapterOutputException(output, "Cannot remove active output: Bound to another adapter.");
 
-            _activeOutputs.Remove(output as GraphicsOutput);
-            OnOutputRemoved?.Invoke(output);
+            if (_activeOutputs.Remove(output as GraphicsOutput))
+                OnOutputDeactivated?.Invoke(output);
         }
 
         public void RemoveAllActiveOutputs()
         {
-            if (OnOutputRemoved != null)
+            if (OnOutputDeactivated != null)
             {
                 for (int i = 0; i < _activeOutputs.Count; i++)
-                    OnOutputRemoved.Invoke(_activeOutputs[i]);
+                    OnOutputDeactivated.Invoke(_activeOutputs[i]);
             }
 
             _activeOutputs.Clear();
@@ -123,10 +151,10 @@ namespace Molten.Graphics
         public double SharedSystemMemory => ByteMath.ToMegabytes((long)_desc.SharedSystemMemory);
 
         /// <summary>Gets the ID of the adapter.</summary>
-        public int ID => _id;
+        public int ID { get; private set; }
 
-        /// <summary>The PCI ID of the hardware vendor.</summary>
-        public int VendorID => _desc.VendorId;
+        /// <summary>The hardware vendor.</summary>
+        public GraphicsAdapterVendor Vendor { get; private set; }
 
         /// <summary>The PCI ID of the hardware adapter.</summary>
         public int DeviceID => _desc.DeviceId;

@@ -39,12 +39,12 @@ namespace Molten.Graphics
             _title = formTitle;
         }
 
-        internal void MoveToOutput(DisplayOutput<Adapter1, AdapterDescription1, Output1> output)
+        internal void MoveToOutput(DisplayOutputDX<Adapter1, AdapterDescription1, Output1> output)
         {
             MoveToOutput(output, _mode);
         }
 
-        internal void MoveToOutput(DisplayOutput<Adapter1, AdapterDescription1, Output1> output, WindowMode mode)
+        internal void MoveToOutput(DisplayOutputDX<Adapter1, AdapterDescription1, Output1> output, WindowMode mode)
         {
             // TODO move the surface's render form to the specified output
             // TODO resize the window to fit if it's too big.

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Collections;
+using OpenTK;
 
 namespace Molten.Graphics
 {
@@ -12,7 +13,7 @@ namespace Molten.Graphics
         ThreadedList<ISwapChainSurface> _outputSurfaces;
         RenderProfiler _profiler;
         Logger _log;
-        DisplayManagerOGL _displayManager;
+        DisplayManagerGL _displayManager;
 
         public RendererOpenGL()
         {
@@ -28,8 +29,10 @@ namespace Molten.Graphics
 
         public void InitializeAdapter(GraphicsSettings settings)
         {
-            _displayManager = new DisplayManagerOGL();
+            GameWindow dummyWindow = new GameWindow();
+            _displayManager = new DisplayManagerGL();
             _displayManager.Initialize(_log, settings);
+            dummyWindow.Dispose();
         }
 
         public void BringToFront(SceneRenderData data)
