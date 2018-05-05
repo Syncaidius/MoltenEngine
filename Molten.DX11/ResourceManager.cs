@@ -12,7 +12,7 @@ namespace Molten.Graphics
     /// <summary>DirectX 11 implementation of <see cref="IResourceManager"/>.</summary>
     public class ResourceManager : IResourceManager
     {
-        GraphicsDevice _device;
+        GraphicsDeviceDX11 _device;
         RendererDX11 _renderer;
         List<SpriteFont> _fontTable;
 

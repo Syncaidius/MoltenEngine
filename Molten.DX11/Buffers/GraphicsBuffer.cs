@@ -18,7 +18,7 @@ namespace Molten.Graphics
         protected int _structuredStride = 0;
         protected Array _initialData;
         protected Buffer _buffer;
-        protected GraphicsDevice _device;
+        protected GraphicsDeviceDX11 _device;
         
         BufferMode _mode;
         int _ringPos;
@@ -30,7 +30,7 @@ namespace Molten.Graphics
         BufferSegment _firstSegment;
         List<BufferSegment> _freeSegments;
 
-        internal GraphicsBuffer(GraphicsDevice device,
+        internal GraphicsBuffer(GraphicsDeviceDX11 device,
             BufferMode mode,
             BindFlags bindFlags,
             int byteCapacity,
@@ -650,7 +650,7 @@ where T : struct
         /// <summary>Gets the underlying DirectX 11 buffer. </summary>
         internal Buffer Buffer => _buffer;
 
-        internal GraphicsDevice Device => _device;
+        internal GraphicsDeviceDX11 Device => _device;
 
         /// <summary>Gets or sets the <see cref="GraphicsBuffer"/>'s <see cref="ShaderResourceView"/>. By default, this value is null.</summary>
         internal override ShaderResourceView SRV { get; set; }

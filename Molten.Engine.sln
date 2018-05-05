@@ -38,9 +38,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.OpenGL", "Molten.Ope
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Renderers", "Renderers", "{FD459CC4-7A29-4329-88DA-FA326783FD0A}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Molten.Render.Shared", "Molten.Render.Shared\Molten.Render.Shared.shproj", "{035457C8-3C75-4592-8B9B-D8BB4A95E99B}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Molten.Render.Shared\Molten.Render.Shared.projitems*{035457c8-3c75-4592-8b9b-d8bb4a95e99b}*SharedItemsImports = 13
+		Molten.Render.Shared\Molten.Render.Shared.projitems*{051563bb-29ac-4903-ae21-72184cd18955}*SharedItemsImports = 4
 		Molten.DX.Shared\Molten.DX.Shared.projitems*{8800afbc-8be4-4145-803e-ef8c1026a17b}*SharedItemsImports = 4
+		Molten.Render.Shared\Molten.Render.Shared.projitems*{8800afbc-8be4-4145-803e-ef8c1026a17b}*SharedItemsImports = 4
 		Molten.DX.Shared\Molten.DX.Shared.projitems*{c091d168-7baf-4542-92f1-63472ff326a4}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -151,9 +156,11 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{11C91C8D-ED1F-40AC-A246-DE4796CA2122} = {FD459CC4-7A29-4329-88DA-FA326783FD0A}
 		{8800AFBC-8BE4-4145-803E-EF8C1026A17B} = {FD459CC4-7A29-4329-88DA-FA326783FD0A}
 		{C091D168-7BAF-4542-92F1-63472FF326A4} = {FD459CC4-7A29-4329-88DA-FA326783FD0A}
 		{051563BB-29AC-4903-AE21-72184CD18955} = {FD459CC4-7A29-4329-88DA-FA326783FD0A}
+		{035457C8-3C75-4592-8B9B-D8BB4A95E99B} = {FD459CC4-7A29-4329-88DA-FA326783FD0A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC16AE48-8B66-43B4-9033-C95D608AA215}

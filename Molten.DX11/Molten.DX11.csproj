@@ -109,7 +109,7 @@
     <Compile Include="GraphicsDepthMode.cs" />
     <Compile Include="Pipeline\GraphicsDepthStage.cs" />
     <Compile Include="Pipeline\States\GraphicsDepthState.cs" />
-    <Compile Include="GraphicsDevice.cs" />
+    <Compile Include="GraphicsDeviceDX11.cs" />
     <Compile Include="GraphicsPipe.cs" />
     <Compile Include="GraphicsPipeState.cs" />
     <Compile Include="Pipeline\GraphicsRasterizerStage.cs" />
@@ -117,7 +117,7 @@
     <Compile Include="GraphicsValidationMode.cs" />
     <Compile Include="GraphicsValidationResult.cs" />
     <Compile Include="Hardware\GraphicsComputeFeatures.cs" />
-    <Compile Include="Hardware\GraphicsDeviceFeatures.cs" />
+    <Compile Include="Hardware\GraphicsDX11Features.cs" />
     <Compile Include="Hardware\GraphicsShaderFeatures.cs" />
     <Compile Include="Meshes\StandardIndexedMesh.cs" />
     <Compile Include="Meshes\StandardMesh.cs" />
@@ -301,5 +301,6 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Molten.DX.Shared\Molten.DX.Shared.projitems" Label="Shared" />
+  <Import Project="..\Molten.Render.Shared\Molten.Render.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

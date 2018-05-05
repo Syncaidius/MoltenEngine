@@ -15,15 +15,11 @@ namespace Molten.Graphics
 
     /// <summary>A Direct3D 11 graphics device.</summary>
     /// <seealso cref="Molten.Graphics.GraphicsPipe" />
-    internal class GraphicsDevice : GraphicsPipe
+    internal class GraphicsDeviceDX11 : GraphicsPipe
     {
-        /// <summary>Gets the pipe/context that is to be used by callers outside of the renderer.</summary>
-        internal GraphicsPipe ExternalContext;
-
         Device _d3d;
         GraphicsAdapterDX<Adapter1, AdapterDescription1, Output1> _adapter;
         List<SwapChainSurface> _swapChains;
-        GraphicsDeviceFeatures _features;
         ThreadedList<GraphicsPipe> _contexts;
         Logger _log;
         VertexFormatBuilder _vertexBuilder;
@@ -38,7 +34,7 @@ namespace Molten.Graphics
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
-        internal GraphicsDevice(Logger log, GraphicsSettings settings, RenderProfiler profiler, DX11DisplayManager manager, bool enableDebugLayer)
+        internal GraphicsDeviceDX11(Logger log, GraphicsSettings settings, RenderProfiler profiler, DX11DisplayManager manager, bool enableDebugLayer)
         {
             _log = log;
             _displayManager = manager;
@@ -59,15 +55,13 @@ namespace Molten.Graphics
             using (var defaultDevice = new Device(_adapter.Adapter, flags, FeatureLevel.Level_11_0))
                 _d3d = defaultDevice.QueryInterface<Device>();
 
-            _features = new GraphicsDeviceFeatures(_d3d);
-
+            Features = new GraphicsDX11Features(_d3d);
             _rasterizerBank = new RasterizerStateBank();
             _blendBank = new BlendStateBank();
             _depthBank = new DepthStateBank();
             _samplerBank = new SamplerBank();
 
             Initialize(_log, this, _d3d.ImmediateContext);
-            ExternalContext = this;
         }
 
         /// <summary>Track a VRAM allocation.</summary>
@@ -111,7 +105,7 @@ namespace Molten.Graphics
             // TODO add the context's profiler stats to the device's main profiler.
         }
 
-        /// <summary>Disposes of the <see cref="GraphicsDevice"/> and any deferred contexts and resources bound to it.</summary>
+        /// <summary>Disposes of the <see cref="GraphicsDeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
             // TODO dispose of all bound IGraphicsResource
@@ -138,8 +132,8 @@ namespace Molten.Graphics
 
         internal ThreadedList<GraphicsPipe> ActiveContexts => _contexts;
 
-        /// <summary>Gets an instance of <see cref="GraphicsDeviceFeatures"/> which provides access to feature support details for the current graphics device.</summary>
-        internal GraphicsDeviceFeatures Features => _features;
+        /// <summary>Gets an instance of <see cref="GraphicsDX11Features"/> which provides access to feature support details for the current graphics device.</summary>
+        internal GraphicsDX11Features Features { get; private set; }
 
         internal DX11DisplayManager DisplayManager => _displayManager;
 

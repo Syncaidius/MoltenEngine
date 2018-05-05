@@ -10,19 +10,16 @@ namespace Molten.Graphics
 {
     using Device = SharpDX.Direct3D11.Device;
 
-    public class GraphicsDeviceFeatures
+    internal class GraphicsDX11Features : GraphicsDeviceFeatures
     {
         Device _d3d;
-
-        bool _concurrentResources;
-        bool _commandLists;
 
         FeatureLevel _featureLevel;
         CounterCapabilities _counterCap;
 
         // DX11 resource limits: https://msdn.microsoft.com/en-us/library/windows/desktop/ff819065%28v=vs.85%29.aspx
 
-        internal GraphicsDeviceFeatures(Device d3dDevice)
+        internal GraphicsDX11Features(Device d3dDevice)
         {
             _d3d = d3dDevice;
             _featureLevel = _d3d.FeatureLevel;
@@ -51,7 +48,7 @@ namespace Molten.Graphics
                     MaxAnisotropy = 16;
                     MaxPrimitiveCount = (uint)(Math.Pow(2, 32) - 1);
                     MaxInputResourceSlots = 128;
-                    MaxInputSamplerSlots = 16;
+                    MaxSamplerSlots = 16;
                     OcclusionQueries = true;
                     HardwareInstancing = true;
                     TextureArrays = true;
@@ -72,13 +69,17 @@ namespace Molten.Graphics
                     break;
             }
 
-            _d3d.CheckThreadingSupport(out _concurrentResources, out _commandLists);
+            if (_d3d.CheckThreadingSupport(out bool cResources, out bool cLists).Success)
+            {
+                ConcurrentResources = cResources;
+                CommandLists = cLists;
+            }
         }
 
         /// <summary>Returns a set of format support flags for the specified format, or none if format support checks are not supported.</summary>
         /// <param name="format"></param>
         /// <returns></returns>
-        public FormatSupport GetSupportedFormatFeatures(Format format)
+        internal FormatSupport GetSupportedFormatFeatures(Format format)
         {
             return _d3d.CheckFormatSupport(format);
         }
@@ -86,7 +87,7 @@ namespace Molten.Graphics
         /// <summary>Returns true if core features of the provided format are supported by the graphics device.</summary>
         /// <param name="format">The format to check for support on the device.</param>
         /// <returns></returns>
-        public bool IsFormatSupported(Format format)
+        internal bool IsFormatSupported(Format format)
         {
             FormatSupport support = _d3d.CheckFormatSupport(format);
 
@@ -106,86 +107,78 @@ namespace Molten.Graphics
         /// <param name="format">The format to test quality levels against.</param>
         /// <param name="sampleCount">The sample count to test against.</param>
         /// <returns></returns>
-        public int GetMultisampleQualityLevels(Format format, int sampleCount)
+        internal int GetMultisampleQualityLevels(Format format, int sampleCount)
         {
             return _d3d.CheckMultisampleQualityLevels(format, sampleCount);
         }
 
         /// <summary>Gets a <see cref="CounterCapabilities>"/> containing details of the device's counter support.</summary>
-        public CounterCapabilities CounterSupport => _counterCap;
+        internal CounterCapabilities CounterSupport => _counterCap;
+
+        /// <summary>Gets the feature level of the current device.</summary>
+        internal FeatureLevel Level { get; private set; }
+
+        /// <summary>Gets an instance of <see cref="GraphicsComputeFeatures"/> which contains the supported compute features of a <see cref="GraphicsDeviceDX11"/>.</summary>
+        internal GraphicsComputeFeatures Compute { get; private set; }
+
+        internal GraphicsShaderFeatures Shaders { get; private set; }
+
+        internal FeatureDataD3D11Options MiscFeatures { get; private set; }
+
+        /// <summary>Undocumented.</summary>
+        internal int MaxVolumeExtent { get; private set; }
+
+        /// <summary>The maximum number of times a texture is allowed to repeat.</summary>
+        internal int MaxTextureRepeat { get; private set; }
+
+        /// <summary>The maximum anisotropy level that the device supports.</summary>
+        internal int MaxAnisotropy { get; private set; }
+
+        /// <summary>Gets the maximum number of primitives (triangles) the device can render in a single draw call.</summary>
+        internal uint MaxPrimitiveCount { get; private set; }
+
+        /// <summary>Gets the max number of shader resource input slots that the device supports for all shader stages.</summary>
+        internal int MaxInputResourceSlots { get; private set; }
+
+        /// <summary>Gets the max number of sampler slots that the device supports for all shader stages.</summary>
+        internal int MaxSamplerSlots { get; private set; }
+
+        /// <summary>Gets whether or not the device supports occlusion queries.</summary>
+        internal bool OcclusionQueries { get; private set; }
+
+        /// <summary>Gets whether or not texture arrays are supported.</summary>
+        internal bool TextureArrays { get; private set; }
+
+        /// <summary>Gets whether or not cube map arrays are supported. </summary>
+        internal bool CubeMapArrays { get; private set; }
+
+        /// <summary>Gets whether or not non-power of 2 textures are supported.</summary>
+        internal bool NonPowerOfTwoTextures { get; private set; }
+
+        /// <summary>Gets the maximum shader model supported by the graphics device.</summary>
+        internal ShaderModel MaximumShaderModel { get; private set; }
+
+        /// <summary>Gets the maximum supported number of index buffer slots.</summary>
+        internal int MaxIndexBufferSlots { get; private set; }
+
+        /// <summary>Gets the maximum supported number of vertex buffer slots.</summary>
+        internal int MaxVertexBufferSlots { get; private set; }
+
+        /// <summary>Gets the maximum supported number of constant buffer slots.</summary>
+        internal int MaxConstantBufferSlots { get; private set; }
+
+        /// <summary>Gets the maximum number of supported un-ordered access views in a compute shader.</summary>
+        internal int MaxUnorderedAccessViews { get; private set; }
+
+        /// <summary>Gets whether or not the device supports hardware instances.</summary>
+        internal bool HardwareInstancing { get; private set; }
 
         /// <summary>Gets whether or not concurrent resource creation is supported. If false, the driver cannot render while creating resources at the same time.
         /// Loading resources will stall rendering until creation is finished.</summary>
-        public bool ConcurrentResources => _concurrentResources;
+        internal bool ConcurrentResources { get; private set; }
 
         /// <summary>Gets whether or not command lists are supported. That is, rendering commands issued by an immediate context can be concurrent with 
         /// object creation on separate threads with low risk of a frame rate stutter.</summary>
-        public bool CommandLists => _commandLists;
-
-        /// <summary>Gets the feature level of the current device.</summary>
-        public FeatureLevel Level { get; private set; }
-
-        /// <summary>Gets ther number of render targets that can be drawn to at the same time.</summary>
-        public int SimultaneousRenderSurfaces { get; private set; }
-
-        /// <summary>Gets the maximum size of a single texture dimension i.e 2048 would mean the max texture size is 2048x2048.</summary>
-        public int MaxTextureDimension { get; private set; }
-
-        /// <summary>Gets the maximum size of a single cube map dimension i.e 2048 would mean the max map size is 2048x2048.</summary>
-        public int MaxCubeMapDimension { get; private set; }
-
-        /// <summary>Undocumented.</summary>
-        public int MaxVolumeExtent { get; private set; }
-
-        /// <summary>The maximum number of times a texture is allowed to repeat.</summary>
-        public int MaxTextureRepeat { get; private set; }
-
-        /// <summary>The maximum anisotropy level that the device supports.</summary>
-        public int MaxAnisotropy { get; private set; }
-
-        /// <summary>Gets the maximum number of primitives (triangles) the device can render in a single draw call.</summary>
-        public uint MaxPrimitiveCount { get; private set; }
-
-        /// <summary>Gets the max number of shader resource input slots that the device supports for all shader stages.</summary>
-        public int MaxInputResourceSlots { get; private set; }
-
-        public int MaxInputSamplerSlots { get; private set; }
-
-        /// <summary>Gets whether or not the device supports occlusion queries.</summary>
-        public bool OcclusionQueries { get; private set; }
-
-        /// <summary>Gets whether or not texture arrays are supported.</summary>
-        public bool TextureArrays { get; private set; }
-
-        /// <summary>Gets whether or not cube map arrays are supported. </summary>
-        public bool CubeMapArrays { get; private set; }
-
-        /// <summary>Gets whether or not non-power of 2 textures are supported.</summary>
-        public bool NonPowerOfTwoTextures { get; private set; }
-
-        /// <summary>Gets the maximum shader model supported by the graphics device.</summary>
-        public ShaderModel MaximumShaderModel { get; private set; }
-
-        /// <summary>Gets the maximum supported number of index buffer slots.</summary>
-        public int MaxIndexBufferSlots { get; private set; }
-
-        /// <summary>Gets the maximum supported number of vertex buffer slots.</summary>
-        public int MaxVertexBufferSlots { get; private set; }
-
-        /// <summary>Gets the maximum supported number of constant buffer slots.</summary>
-        public int MaxConstantBufferSlots { get; private set; }
-
-        /// <summary>Gets the maximum number of supported un-ordered access views in a compute shader.</summary>
-        public int MaxUnorderedAccessViews { get; private set; }
-
-        /// <summary>Gets whether or not the device supports hardware instances.</summary>
-        public bool HardwareInstancing { get; private set; }
-
-        /// <summary>Gets an instance of <see cref="GraphicsComputeFeatures"/> which contains the supported compute features of a <see cref="GraphicsDevice"/>.</summary>
-        public GraphicsComputeFeatures Compute { get; private set; }
-
-        public GraphicsShaderFeatures Shaders { get; private set; }
-
-        public FeatureDataD3D11Options MiscFeatures { get; private set; }
+        internal bool CommandLists { get; private set; }
     }
 }

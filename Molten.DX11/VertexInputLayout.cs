@@ -16,7 +16,7 @@ namespace Molten.Graphics
         bool _isInstanced = false;
         ulong[] _hashKeys;
 
-        internal VertexInputLayout(GraphicsDevice device, 
+        internal VertexInputLayout(GraphicsDeviceDX11 device, 
             PipelineBindSlot<BufferSegment>[] slots, 
             byte[] vertexBytecode,
             ShaderIOStructure io)

@@ -19,7 +19,7 @@ namespace Molten.Graphics
         public event TextureHandler OnPreResize;
         public event TextureHandler OnPostResize;
 
-        internal TextureAssetCube(GraphicsDevice device, int width,
+        internal TextureAssetCube(GraphicsDeviceDX11 device, int width,
             int height, Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, int mipCount = 1, int cubeCount = 1, TextureFlags flags = TextureFlags.None)
             : base(device, width, height, 1, mipCount, 6, 1, format, flags)
         {

@@ -34,7 +34,7 @@ namespace Molten.Graphics
                     Matrix4F spriteViewProj = Matrix4F.Multiply(spriteView, spriteProj);
 
                     Rectangle bounds = new Rectangle(0, 0, scene.FinalSurface.Width, scene.FinalSurface.Height);
-                    GraphicsDevice device = renderer.Device;
+                    GraphicsDeviceDX11 device = renderer.Device;
                     if (!scene.HasFlag(SceneRenderFlags.DoNotClear))
                         renderer.ClearIfFirstUse(scene.FinalSurface, () => scene.FinalSurface.Clear(scene.BackgroundColor));
 

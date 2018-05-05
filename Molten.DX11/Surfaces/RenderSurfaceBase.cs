@@ -18,7 +18,7 @@ namespace Molten.Graphics
         internal RenderTargetView RTV;
 
         internal RenderSurfaceBase(
-            GraphicsDevice device, 
+            GraphicsDeviceDX11 device, 
             int width, 
             int height, 
             Format format, 

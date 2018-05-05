@@ -11,7 +11,7 @@ namespace Molten.Graphics
         bool _isVisible;
         IShaderResource[] _resources;
 
-        internal Renderable(GraphicsDevice device)
+        internal Renderable(GraphicsDeviceDX11 device)
         {
             Device = device;
             IsVisible = false;
@@ -54,6 +54,6 @@ namespace Molten.Graphics
         /// <summary>Gets or sets whether or not the renderable should be drawn.</summary>
         public bool IsVisible { get; set; }
 
-        internal GraphicsDevice Device { get; private set; }
+        internal GraphicsDeviceDX11 Device { get; private set; }
     }
 }

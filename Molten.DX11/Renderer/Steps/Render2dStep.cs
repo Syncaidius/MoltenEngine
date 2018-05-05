@@ -31,7 +31,7 @@ namespace Molten.Graphics
             Matrix4F spriteView, spriteProj, spriteViewProj;
             RenderSurfaceBase rs = scene.FinalSurface;
 
-            GraphicsDevice device = renderer.Device;
+            GraphicsDeviceDX11 device = renderer.Device;
 
             if (scene.Camera != null && scene.Camera.OutputSurface != null)
             {

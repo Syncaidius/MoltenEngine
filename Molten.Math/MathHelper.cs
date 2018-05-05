@@ -37,4 +37,39 @@ namespace Molten {     public static class MathHelper     {         /// 
                 return -1;
 
             return 1;
+        }
+
+        /// <summary>
+        /// Returns the largest value out of all of the provided values.
+        /// </summary>
+        /// <param name="first">The first value to be compared.</param>
+        /// <param name="otherValues">The other values to be compared.</param>
+        /// <returns></returns>         public static int Max(int first, params int[] otherValues)
+        {
+            if (otherValues.Length == 0)
+                throw new Exception("At least one other value must be provided.");
+
+            int max = first;
+            for (int i = 0; i < otherValues.Length; i++)
+                max = Math.Max(max, otherValues[i]);
+
+            return max;
+        }
+
+        /// <summary>
+        /// Returns the smallest value out of all of the provided values.
+        /// </summary>
+        /// <param name="first">The first value to be compared.</param>
+        /// <param name="otherValues">The other values to be compared.</param>
+        /// <returns></returns>
+        public static int Min(int first, params int[] otherValues)
+        {
+            if (otherValues.Length == 0)
+                throw new Exception("At least one other value must be provided.");
+
+            int min = first;
+            for (int i = 0; i < otherValues.Length; i++)
+                min = Math.Min(min, otherValues[i]);
+
+            return min;
         }     } } 

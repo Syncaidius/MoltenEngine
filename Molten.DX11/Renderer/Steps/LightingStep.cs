@@ -65,7 +65,7 @@ namespace Molten.Graphics
 
         internal override void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time, RenderChain.Link link)
         {
-            GraphicsDevice device = renderer.Device;
+            GraphicsDeviceDX11 device = renderer.Device;
 
             Lighting.Clear(renderer.Device, scene.AmbientLightColor);
             device.ResetRenderSurfaces(RenderSurfaceResetMode.NullSurface);

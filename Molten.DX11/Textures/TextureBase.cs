@@ -41,12 +41,12 @@ namespace Molten.Graphics
 
         protected long _curVramSize;
         protected Resource _resource;
-        GraphicsDevice _device;
+        GraphicsDeviceDX11 _device;
 
         protected ShaderResourceView _srv;
         protected UnorderedAccessView _uav;
 
-        internal TextureBase(GraphicsDevice device, int width, int height, int depth, int mipCount, int arraySize, int sampleCount, Format format, TextureFlags flags)
+        internal TextureBase(GraphicsDeviceDX11 device, int width, int height, int depth, int mipCount, int arraySize, int sampleCount, Format format, TextureFlags flags)
         {
             _flags = flags;
             _device = device;
@@ -805,7 +805,7 @@ namespace Molten.Graphics
         /// with the staging flag set will work.</param>
         public TextureData GetData(ITexture stagingTexture)
         {
-            return GetData(Device.ExternalContext, stagingTexture as TextureBase);
+            return GetData(Device, stagingTexture as TextureBase);
         }
 
         /// <summary>Returns the data from a single mip-map level within a slice of the texture. For 2D, non-array textures, this will always be slice 0.</summary>
@@ -815,7 +815,7 @@ namespace Molten.Graphics
         /// <returns></returns>
         public TextureData.Slice GetData(ITexture stagingTexture, int level, int arraySlice)
         {
-            return GetData(Device.ExternalContext, stagingTexture as TextureBase, level, arraySlice);
+            return GetData(Device, stagingTexture as TextureBase, level, arraySlice);
         }
 
         /// <summary>Gets the block-compressed byte size of a mip-map level</summary>
@@ -968,7 +968,7 @@ namespace Molten.Graphics
         /// </summary>
         public bool IsMultisampled => _sampleCount > 1;
 
-        internal GraphicsDevice Device => _device;
+        internal GraphicsDeviceDX11 Device => _device;
 
         public bool IsValid { get; protected set; }
 

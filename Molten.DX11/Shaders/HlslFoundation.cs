@@ -31,9 +31,9 @@ namespace Molten.Graphics
         /// </summary>
         internal ShaderStateBank<GraphicsDepthState> DepthState = new ShaderStateBank<GraphicsDepthState>();
 
-        internal GraphicsDevice Device { get; private set; }
+        internal GraphicsDeviceDX11 Device { get; private set; }
 
-        internal HlslFoundation(GraphicsDevice device)
+        internal HlslFoundation(GraphicsDeviceDX11 device)
         {
             Device = device;
             Samplers = new ShaderStateBank<ShaderSampler>[0];

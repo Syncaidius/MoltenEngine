@@ -53,7 +53,7 @@ namespace Molten.Graphics
         public void SetIndices<I>(I[] data, int startIndex, int count) where I : struct
         {
             _indexCount = count;
-            _ib.SetData(_renderer.Device.ExternalContext, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _ib.SetData(_renderer.Device, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         internal override void ApplyBuffers(GraphicsPipe pipe)

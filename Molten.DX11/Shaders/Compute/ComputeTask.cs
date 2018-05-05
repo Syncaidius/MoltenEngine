@@ -12,7 +12,7 @@ namespace Molten.Graphics
         internal RWVariable[] UAVs;
         internal ShaderComposition<ComputeShader> Composition = new ShaderComposition<ComputeShader>(false);
 
-        internal ComputeTask(GraphicsDevice device, string filename = null) : base(device, filename)
+        internal ComputeTask(GraphicsDeviceDX11 device, string filename = null) : base(device, filename)
         {
             UAVs = new RWVariable[0];
         }

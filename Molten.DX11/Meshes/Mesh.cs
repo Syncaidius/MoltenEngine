@@ -44,7 +44,7 @@ namespace Molten.Graphics
         public void SetVertices(T[] data, int startIndex, int count)
         {
             _vertexCount = count;
-            _vb.SetData(_renderer.Device.ExternalContext, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _vb.SetData(_renderer.Device, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         internal virtual void ApplyBuffers(GraphicsPipe pipe)

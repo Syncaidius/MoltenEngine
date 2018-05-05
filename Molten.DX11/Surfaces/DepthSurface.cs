@@ -29,7 +29,7 @@ namespace Molten.Graphics
         /// <param name="format"></param>
         /// <param name="depthBuffer">If true, a depth buffer will be created.</param>
         /// <param name="flags">Texture flags</param>
-        internal DepthSurface(GraphicsDevice device,
+        internal DepthSurface(GraphicsDeviceDX11 device,
             int width, 
             int height,
             DepthFormat format = DepthFormat.R24G8_Typeless,
@@ -176,7 +176,7 @@ namespace Molten.Graphics
 
         public void Clear(DepthClearFlags clearFlags = DepthClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
         {
-            Clear(Device.ExternalContext, (DepthStencilClearFlags)clearFlags, depth, stencil);
+            Clear(Device, (DepthStencilClearFlags)clearFlags, depth, stencil);
         }
 
         protected override void OnDispose()

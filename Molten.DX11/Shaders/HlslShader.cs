@@ -15,7 +15,7 @@ namespace Molten.Graphics
         
         internal IShaderResource[] DefaultResources;
 
-        GraphicsDevice _device;
+        GraphicsDeviceDX11 _device;
         string _filename;
         internal ShaderIOStructure InputStructure;
         Dictionary<string, string> _metadata;
@@ -28,7 +28,7 @@ namespace Molten.Graphics
 
         public Dictionary<string, string> Metadata => _metadata;
 
-        internal HlslShader(GraphicsDevice device, string filename = null) : base(device)
+        internal HlslShader(GraphicsDeviceDX11 device, string filename = null) : base(device)
         {
             _filename = filename ?? "";
             _device = device;

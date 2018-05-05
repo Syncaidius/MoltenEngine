@@ -47,8 +47,8 @@ namespace Molten.Graphics
                 _slots[i].Refresh(Pipe);
         }
 
-        /// <summary>Gets the <see cref="GraphicsDevice"/> that the current <see cref="PipelineComponent"/> is bound to.</summary>
-        public GraphicsDevice Device { get; private set; }
+        /// <summary>Gets the <see cref="GraphicsDeviceDX11"/> that the current <see cref="PipelineComponent"/> is bound to.</summary>
+        public GraphicsDeviceDX11 Device { get; private set; }
 
         /// <summary>Gets the <see cref="GraphicsPipe"/> that the current <see cref="PipelineComponent"/> is bound to.</summary>
         internal GraphicsPipe Pipe { get; private set; }

@@ -24,7 +24,7 @@ namespace Molten.Graphics
 
         public int PassCount => Passes.Length;
 
-        internal Material(GraphicsDevice device, string filename) : base(device, filename)
+        internal Material(GraphicsDeviceDX11 device, string filename) : base(device, filename)
         {
             _passesByName = new Dictionary<string, MaterialPass>();
         }

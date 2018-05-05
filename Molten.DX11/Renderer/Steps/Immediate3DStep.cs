@@ -27,7 +27,7 @@ namespace Molten.Graphics
         internal override void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time, RenderChain.Link link)
         {
             RenderSurfaceBase rs = null;
-            GraphicsDevice device = renderer.Device;
+            GraphicsDeviceDX11 device = renderer.Device;
 
             if (scene.Camera != null)
             {

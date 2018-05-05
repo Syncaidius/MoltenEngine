@@ -70,10 +70,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GraphicsDeviceGL.cs" />
     <Compile Include="Hardware\DisplayManagerGL.cs" />
     <Compile Include="Hardware\DisplayOutputGL.cs" />
     <Compile Include="Hardware\GraphicsAdapterGL.cs" />
+    <Compile Include="Hardware\GraphicsGLFeatures.cs" />
     <Compile Include="OpenTKInterop.cs" />
+    <Compile Include="GraphicsPipeGL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer\RendererOpenGL.cs" />
   </ItemGroup>
@@ -99,5 +102,9 @@
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <Import Project="..\Molten.Render.Shared\Molten.Render.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

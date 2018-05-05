@@ -11,7 +11,7 @@ namespace Molten.Graphics
         public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch batch, SceneRenderDataDX11 scene, IRenderSurface surface)
         {
             Vector2F pos = new Vector2F(3, 3);
-            GraphicsDeviceFeatures features = renderer.Device.Features;
+            GraphicsDX11Features features = renderer.Device.Features;
             IDisplayAdapter adapter = renderer.Device.DisplayManager.SelectedAdapter;
 
             batch.DrawString(font, $"Device: {adapter.Name}", pos, Color.Yellow);
@@ -30,7 +30,7 @@ namespace Molten.Graphics
             pos.Y += 20; batch.DrawString(font, $"   Max shader model: {features.MaximumShaderModel}", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"   Max index buffer slots: {features.MaxIndexBufferSlots}", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"   Max input resource slots: {features.MaxInputResourceSlots}", pos, Color.Yellow);
-            pos.Y += 20; batch.DrawString(font, $"   Max input sampler slots: {features.MaxInputSamplerSlots}", pos, Color.Yellow);
+            pos.Y += 20; batch.DrawString(font, $"   Max input sampler slots: {features.MaxSamplerSlots}", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"   Max primitive count: {features.MaxPrimitiveCount}", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"   Max texture dimension: {features.MaxTextureDimension}", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"   Max texture repeat: {features.MaxTextureRepeat}", pos, Color.Yellow);

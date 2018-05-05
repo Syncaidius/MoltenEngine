@@ -21,7 +21,7 @@ namespace Molten.Graphics
         /// <param name="height"></param>
         /// <param name="format"></param>
         /// <param name="depthBuffer">If true, a depth buffer will be created.</param>
-        internal RenderSurface(GraphicsDevice device, 
+        internal RenderSurface(GraphicsDeviceDX11 device, 
             int width, 
             int height,
             Format format = SharpDX.DXGI.Format.R8G8B8A8_SNorm,

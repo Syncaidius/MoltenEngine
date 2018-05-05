@@ -25,7 +25,7 @@ namespace Molten.Graphics
         internal ShaderStep(GraphicsPipe pipe, ShaderInputStage<H> input, C shaderStage, Action<C, ShaderComposition<S>> setCallback)
         {
             // Setup slots
-            GraphicsDeviceFeatures features = pipe.Device.Features;
+            GraphicsDX11Features features = pipe.Device.Features;
             _stage = shaderStage;
             _pipe = pipe;
             _setCallback = setCallback;
@@ -34,7 +34,7 @@ namespace Molten.Graphics
             _resViews = new ShaderResourceView[_slotResources.Length];
 
             _slotConstants = new PipelineBindSlot<ShaderConstantBuffer>[features.MaxConstantBufferSlots];
-            _slotSamplers = new PipelineBindSlot<ShaderSampler>[features.MaxInputSamplerSlots];
+            _slotSamplers = new PipelineBindSlot<ShaderSampler>[features.MaxSamplerSlots];
 
             for (int i = 0; i < features.MaxInputResourceSlots; i++)
             {
@@ -48,7 +48,7 @@ namespace Molten.Graphics
                 _slotConstants[i].OnObjectForcedUnbind += SlotConstants_OnBoundObjectDisposed;
             }
 
-            for (int i = 0; i < features.MaxInputSamplerSlots; i++)
+            for (int i = 0; i < features.MaxSamplerSlots; i++)
             {
                 _slotSamplers[i] = input.AddSlot<ShaderSampler>(i);
                 _slotSamplers[i].OnObjectForcedUnbind += EffectStageBase_OnBoundObjectDisposed;

@@ -35,7 +35,7 @@ namespace Molten.Graphics
         VertexInputLayout _curInputLayout;
         GraphicsValidationResult _drawResult;
 
-        GraphicsDevice _device;
+        GraphicsDeviceDX11 _device;
         DeviceContext _context;
         PipeStateStack _stateStack;
         RenderProfiler _profiler;
@@ -44,7 +44,7 @@ namespace Molten.Graphics
 
         internal static RawList<GraphicsPipe> ActivePipes = new RawList<GraphicsPipe>(1, ExpansionMode.Increment, 1);
 
-        internal void Initialize(Logger log, GraphicsDevice device, DeviceContext context)
+        internal void Initialize(Logger log, GraphicsDeviceDX11 device, DeviceContext context)
         {
             ID = ActivePipes.Add(this);
             _context = context;
@@ -462,7 +462,7 @@ namespace Molten.Graphics
         /// <summary>Gets the current <see cref="GraphicsPipe"/> type. This value will not change during the context's life.</summary>
         public GraphicsContextType Type { get; private set; }
 
-        internal GraphicsDevice Device => _device;
+        internal GraphicsDeviceDX11 Device => _device;
 
         internal DeviceContext Context => _context;
 

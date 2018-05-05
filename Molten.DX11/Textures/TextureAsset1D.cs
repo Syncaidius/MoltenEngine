@@ -21,7 +21,7 @@ namespace Molten.Graphics
         public event TextureHandler OnPostResize;
 
         internal TextureAsset1D(
-            GraphicsDevice device, 
+            GraphicsDeviceDX11 device, 
             int width, 
             Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, 
             int mipCount = 1, 

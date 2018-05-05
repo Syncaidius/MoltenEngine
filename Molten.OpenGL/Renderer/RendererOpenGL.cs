@@ -32,6 +32,7 @@ namespace Molten.Graphics
             GameWindow dummyWindow = new GameWindow();
             _displayManager = new DisplayManagerGL();
             _displayManager.Initialize(_log, settings);
+
             dummyWindow.Dispose();
         }
 

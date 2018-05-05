@@ -36,7 +36,7 @@ namespace Molten.Graphics
         { }
 
         internal TextureAsset2D(
-            GraphicsDevice device,
+            GraphicsDeviceDX11 device,
             int width,
             int height,
             Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,

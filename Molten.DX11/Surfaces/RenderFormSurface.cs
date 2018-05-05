@@ -33,7 +33,7 @@ namespace Molten.Graphics
 
         //public event FormSurfaceHandler OnResize;
 
-        internal RenderFormSurface(string formTitle, GraphicsDevice device, int mipCount = 1, int sampleCount = 1)
+        internal RenderFormSurface(string formTitle, GraphicsDeviceDX11 device, int mipCount = 1, int sampleCount = 1)
             : base(device, mipCount, sampleCount)
         {
             _title = formTitle;
