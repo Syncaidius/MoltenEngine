@@ -46,17 +46,6 @@ namespace Molten.Graphics
         /// <summary>The hardware vendor.</summary>
         GraphicsAdapterVendor Vendor { get; }
 
-        /// <summary>The PCI ID of the hardware adapter.</summary>
-        int DeviceID { get; }
-        /// <summary>Gets a unique value that identifies the adapter hardware.</summary>
-        long UniqueID { get; }
-
-        /// <summary>Gets the PCI ID of the revision number of the adapter.</summary>
-        int Revision { get; }
-
-        /// <summary>Gets the PCI ID of the sub-system.</summary>
-        int SubsystemID { get; }
-
         /// <summary>Gets the number of <see cref="IDisplayOutput"/> connected to the current <see cref="IDisplayAdapter"/>.</summary>
         int OutputCount { get; }
 

@@ -17,8 +17,7 @@ namespace Molten.Graphics
             batch.DrawString(font, $"Device: {adapter.Name}", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"Total VRAM: {adapter.DedicatedVideoMemory}MB", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"Shared RAM: {adapter.SharedSystemMemory}MB", pos, Color.Yellow);
-            pos.Y += 20; batch.DrawString(font, $"Vendor ID: {adapter.Vendor}", pos, Color.Yellow);
-            pos.Y += 20; batch.DrawString(font, $"Device ID: {adapter.DeviceID}", pos, Color.Yellow);
+            pos.Y += 20; batch.DrawString(font, $"Vendor: {adapter.Vendor}", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, "Supported features: ", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"   Feature level: {features.Level}", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"   Command lists: {features.CommandLists}", pos, Color.Yellow);

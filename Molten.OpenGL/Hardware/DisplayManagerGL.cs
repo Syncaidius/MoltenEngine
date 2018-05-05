@@ -40,7 +40,6 @@ namespace Molten.Graphics
                 output.Add(_adapter);
         }
 
-
         public int AdapterCount => 1;
 
         public IDisplayAdapter DefaultAdapter => _adapter;

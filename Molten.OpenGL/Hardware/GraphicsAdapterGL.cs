@@ -17,6 +17,7 @@ namespace Molten.Graphics
         List<DisplayOutputGL> _activeOutputs;
 
         DisplayManagerGL _manager;
+        List<string> _extensions;
 
         internal GraphicsAdapterGL(DisplayManagerGL manager, int id)
         {
@@ -24,6 +25,7 @@ namespace Molten.Graphics
             _manager = manager;
             _connectedOutputs = new List<DisplayOutputGL>();
             _activeOutputs = new List<DisplayOutputGL>();
+            _extensions = new List<string>();
             PopulateInfo();
 
             HashSet<DisplayDevice> displays = new HashSet<DisplayDevice>();
@@ -56,6 +58,16 @@ namespace Molten.Graphics
                 else
                     Vendor = GraphicsAdapterVendor.Unknown;
             }
+
+            string etensions = GL.GetString(StringName.Extensions);
+            _extensions.AddRange(etensions.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+            for (int i = 0; i < _extensions.Count; i++)
+                _extensions[i] = _extensions[i].ToLower();
+        }
+
+        internal bool HasExtension(string extensionName)
+        {
+            return _extensions.Contains(extensionName.ToLower());
         }
 
         /// <summary>Gets all <see cref="T:Molten.IDisplayOutput" /> devices attached to the current <see cref="T:Molten.IDisplayAdapter" />.</summary>
@@ -115,23 +127,15 @@ namespace Molten.Graphics
 
         public string Name { get; private set; }
 
-        public double DedicatedVideoMemory => throw new NotImplementedException();
+        public double DedicatedVideoMemory => 0;
 
-        public double DedicatedSystemMemory => throw new NotImplementedException();
+        public double DedicatedSystemMemory => 0;
 
-        public double SharedSystemMemory => throw new NotImplementedException();
+        public double SharedSystemMemory => 0;
 
         public int ID { get; private set; }
 
         public GraphicsAdapterVendor Vendor { get; private set; }
-
-        public int DeviceID => throw new NotImplementedException();
-
-        public long UniqueID => throw new NotImplementedException();
-
-        public int Revision => throw new NotImplementedException();
-
-        public int SubsystemID => throw new NotImplementedException();
 
         public int OutputCount => _connectedOutputs.Count;
 
