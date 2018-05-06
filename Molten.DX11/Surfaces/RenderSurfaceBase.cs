@@ -56,11 +56,10 @@ namespace Molten.Graphics
         }
 
         /// <summary>Called when the render target needs to be disposed.</summary>
-        protected override void OnDispose()
+        private protected override void OnPipelineDispose()
         {
             DisposeObject(ref RTV);
-
-            base.OnDispose();
+            base.OnPipelineDispose();
         }
 
         /// <summary>Gets the viewport that defines the renderable area of the render target.</summary>

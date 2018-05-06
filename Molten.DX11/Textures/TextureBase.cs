@@ -41,15 +41,13 @@ namespace Molten.Graphics
 
         protected long _curVramSize;
         protected Resource _resource;
-        GraphicsDeviceDX11 _device;
 
         protected ShaderResourceView _srv;
         protected UnorderedAccessView _uav;
 
-        internal TextureBase(GraphicsDeviceDX11 device, int width, int height, int depth, int mipCount, int arraySize, int sampleCount, Format format, TextureFlags flags)
+        internal TextureBase(GraphicsDeviceDX11 device, int width, int height, int depth, int mipCount, int arraySize, int sampleCount, Format format, TextureFlags flags) : base(device)
         {
             _flags = flags;
-            _device = device;
             ValidateFlagCombination();
 
             _pendingChanges = new ThreadedQueue<ITextureChange>();
@@ -320,15 +318,14 @@ namespace Molten.Graphics
 
         protected virtual void OnDisposeForRecreation()
         {
-            OnDispose();
+            OnPipelineDispose();
         }
 
-        protected override void OnDispose()
+        private protected override void OnPipelineDispose()
         {
-            //TrackDeallocation();
+            base.OnPipelineDispose();
 
-            DisposeObject(ref _srv);
-            DisposeObject(ref _uav);
+            //TrackDeallocation();
             DisposeObject(ref _resource);
         }
 
@@ -968,20 +965,6 @@ namespace Molten.Graphics
         /// </summary>
         public bool IsMultisampled => _sampleCount > 1;
 
-        internal GraphicsDeviceDX11 Device => _device;
-
         public bool IsValid { get; protected set; }
-
-        internal override ShaderResourceView SRV
-        {
-            get => _srv;
-            set => _srv = value;
-        }
-
-        internal override UnorderedAccessView UAV
-        {
-            get => _uav;
-            set => _uav = value;
-        }
     }
 }

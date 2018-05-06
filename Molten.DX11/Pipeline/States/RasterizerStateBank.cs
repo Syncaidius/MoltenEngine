@@ -9,34 +9,34 @@ namespace Molten.Graphics
 {
     internal class RasterizerStateBank : GraphicsStateBank<GraphicsRasterizerState, RasterizerPreset>
     {
-        internal RasterizerStateBank()
+        internal RasterizerStateBank(GraphicsDeviceDX11 device)
         {
-            AddPreset(RasterizerPreset.Default, new GraphicsRasterizerState());
+            AddPreset(RasterizerPreset.Default, new GraphicsRasterizerState(device));
 
             //wireframe preset.
-             AddPreset(RasterizerPreset.Wireframe, new GraphicsRasterizerState()
+             AddPreset(RasterizerPreset.Wireframe, new GraphicsRasterizerState(device)
             {
                 FillMode = FillMode.Wireframe,
             });
 
             //scissor test preset
-             AddPreset(RasterizerPreset.ScissorTest, new GraphicsRasterizerState()
+             AddPreset(RasterizerPreset.ScissorTest, new GraphicsRasterizerState(device)
             {
                 IsScissorEnabled = true,
             });
 
             //no culling preset.
-             AddPreset(RasterizerPreset.NoCulling, new GraphicsRasterizerState()
+             AddPreset(RasterizerPreset.NoCulling, new GraphicsRasterizerState(device)
             {
                 CullMode = CullMode.None,
             });
 
-             AddPreset(RasterizerPreset.DefaultMultisample, new GraphicsRasterizerState()
+             AddPreset(RasterizerPreset.DefaultMultisample, new GraphicsRasterizerState(device)
             {
                 IsMultisampleEnabled = true,
             });
 
-             AddPreset(RasterizerPreset.ScissorTestMultisample, new GraphicsRasterizerState()
+             AddPreset(RasterizerPreset.ScissorTestMultisample, new GraphicsRasterizerState(device)
             {
                 IsScissorEnabled = true,
                 IsMultisampleEnabled = true,

@@ -27,7 +27,7 @@ namespace Molten.Graphics
                 {
                     case "preset":
                         if (Enum.TryParse(attribute.InnerText, true, out DepthStencilPreset preset))
-                            state = new GraphicsDepthState(foundation.Device.DepthBank.GetPreset(preset));
+                            state = new GraphicsDepthState(foundation.Device, foundation.Device.DepthBank.GetPreset(preset));
                         break;
 
                     case "condition":
@@ -37,7 +37,7 @@ namespace Molten.Graphics
                 }
             }
 
-            state = state ?? new GraphicsDepthState(foundation.Device.DepthBank.GetPreset(DepthStencilPreset.Default));
+            state = state ?? new GraphicsDepthState(foundation.Device, foundation.Device.DepthBank.GetPreset(DepthStencilPreset.Default));
 
             foreach (XmlNode child in node.ChildNodes)
             {

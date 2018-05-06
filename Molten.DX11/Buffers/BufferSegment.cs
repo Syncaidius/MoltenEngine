@@ -15,11 +15,6 @@ namespace Molten.Graphics
 
     internal class BufferSegment : PipelineShaderObject, IPoolable, ICloneable
     {
-        internal static ObjectPool<BufferSegment> Pool = new ObjectPool<BufferSegment>(() => new BufferSegment());
-
-        UnorderedAccessView _uav;
-        ShaderResourceView _srv;
-
         /// <summary>The start byte of the segment within it's parent section buffer.</summary>
         internal int ByteOffset;
 
@@ -43,18 +38,6 @@ namespace Molten.Graphics
         /// <summary>The next segment (if any) within the mapped buffer.</summary>
         internal BufferSegment Next;
 
-        internal override UnorderedAccessView UAV
-        {
-            get => _uav;
-            set => _uav = value;
-        }
-
-        internal override ShaderResourceView SRV
-        {
-            get => _srv;
-            set => _srv = value;
-        }
-
         internal VertexBufferBinding VertexBinding;
 
         internal VertexFormat VertexFormat;
@@ -63,6 +46,8 @@ namespace Molten.Graphics
 
         /// <summary>If true, the segment is not used.</summary>
         internal bool IsFree;
+
+        internal BufferSegment(GraphicsDeviceDX11 device) : base(device) { }
 
         internal void SetVertexFormat<T>() where T: struct, IVertexType
         {
@@ -273,8 +258,11 @@ namespace Molten.Graphics
             VertexBinding = new VertexBufferBinding();
             SetIndexFormat(IndexBufferFormat.Unsigned32Bit);
 
-            DisposeObject(ref _uav);
-            DisposeObject(ref _srv);
+            UAV?.Dispose();
+            UAV = null;
+
+            SRV?.Dispose();
+            SRV = null;
         }
 
         /// <summary>Sets the next segment to the one specified and also sets it's previous to the current segment.</summary>
@@ -307,7 +295,7 @@ namespace Molten.Graphics
             if(Previous.ByteCount == 0)
             {
                 LinkPrevious(Previous.Previous);
-                Pool.Recycle(Previous);
+                Device.RecycleBufferSegment(Previous);
             }
         }
 
@@ -324,13 +312,13 @@ namespace Molten.Graphics
             if (Next.ByteCount == 0)
             {
                 LinkNext(Next.Next);
-                BufferSegment.Pool.Recycle(Next);
+                Device.RecycleBufferSegment(Next);
             }
         }
 
         internal BufferSegment SplitFromBack(int bytesToTake)
         {
-            BufferSegment seg = BufferSegment.Pool.GetInstance();
+            BufferSegment seg = Device.GetBufferSegment();
             seg.LinkNext(this);
             seg.LinkPrevious(Previous);
 
@@ -346,7 +334,7 @@ namespace Molten.Graphics
 
         internal BufferSegment SplitFromFront(int bytesToTake)
         {
-            BufferSegment seg = BufferSegment.Pool.GetInstance();
+            BufferSegment seg = Device.GetBufferSegment();
             seg.LinkNext(Next);
             seg.LinkPrevious(this);
 
@@ -354,15 +342,13 @@ namespace Molten.Graphics
             seg.ByteCount = bytesToTake;
             seg.ByteOffset = ByteOffset + ByteCount;
             seg.Parent = Parent;
-
             return seg;
         }
 
         public object Clone()
         {
-            BufferSegment clone = BufferSegment.Pool.GetInstance();
+            BufferSegment clone = Device.GetBufferSegment();
             CloneTo(clone);
-
             return clone;
         }
 

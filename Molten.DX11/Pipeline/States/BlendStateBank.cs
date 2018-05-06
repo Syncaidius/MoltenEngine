@@ -9,12 +9,12 @@ namespace Molten.Graphics
 {
     internal class BlendStateBank : GraphicsStateBank<GraphicsBlendState, BlendPreset>
     {
-        internal BlendStateBank()
+        internal BlendStateBank(GraphicsDeviceDX11 device)
         {
-            AddPreset(BlendPreset.Default, new GraphicsBlendState());
+            AddPreset(BlendPreset.Default, new GraphicsBlendState(device));
 
             // Additive blending preset.
-            GraphicsBlendState state = new GraphicsBlendState(new RenderTargetBlendDescription()
+            GraphicsBlendState state = new GraphicsBlendState(device, new RenderTargetBlendDescription()
             {
                 SourceBlend = BlendOption.One,
                 DestinationBlend = BlendOption.One,
@@ -33,7 +33,7 @@ namespace Molten.Graphics
             AddPreset(BlendPreset.Additive, state);
 
             // Pre-multiplied alpha
-            state = new GraphicsBlendState(new RenderTargetBlendDescription()
+            state = new GraphicsBlendState(device, new RenderTargetBlendDescription()
             {
                 SourceBlend = BlendOption.SourceAlpha,
                 DestinationBlend = BlendOption.InverseSourceAlpha,

@@ -30,7 +30,7 @@ namespace Molten
             if (disposable != null)
             {
                 disposable.Dispose();
-                disposable = default(T);
+                disposable = default;
             }
         }
 

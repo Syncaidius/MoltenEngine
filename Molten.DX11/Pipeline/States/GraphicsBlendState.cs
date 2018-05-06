@@ -18,21 +18,21 @@ namespace Molten.Graphics
         Color4 _blendFactor;
         uint _blendSampleMask;
 
-        internal GraphicsBlendState(GraphicsBlendState source)
+        internal GraphicsBlendState(GraphicsDeviceDX11 device, GraphicsBlendState source) : base(device)
         {
             _desc = source._desc.Clone();
             _blendFactor = source._blendFactor;
             _blendSampleMask = source._blendSampleMask;
         }
 
-        internal GraphicsBlendState()
+        internal GraphicsBlendState(GraphicsDeviceDX11 device) : base(device)
         {
             _desc = BlendStateDescription.Default();
             _blendFactor = new Color4(1, 1, 1, 1);
             _blendSampleMask = 0xffffffff;
         }
 
-        internal GraphicsBlendState(RenderTargetBlendDescription rtDesc)
+        internal GraphicsBlendState(GraphicsDeviceDX11 device, RenderTargetBlendDescription rtDesc) : base(device)
         {
             _desc = BlendStateDescription.Default();
             _desc.RenderTarget[0] = rtDesc;
@@ -97,11 +97,9 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnDispose()
+        private protected override void OnPipelineDispose()
         {
             DisposeObject(ref State);
-
-            base.OnDispose();
         }
 
         public bool AlphaToCoverageEnable

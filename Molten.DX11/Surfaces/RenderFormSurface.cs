@@ -262,7 +262,7 @@ namespace Molten.Graphics
                 return false;
             }
 
-            if(_mode != _requestedMode)
+            if (_mode != _requestedMode)
                 UpdateFormMode(_requestedMode);
 
             if (_loop.NextFrame())
@@ -288,15 +288,15 @@ namespace Molten.Graphics
         protected override void OnDisposeForRecreation()
         {
             // Avoid calling RenderFormSurface's OnDispose implementation by skipping it. Jump straight to base.
-            base.OnDispose();
+            base.OnPipelineDispose();
         }
 
-        protected override void OnDispose()
+        private protected override void OnPipelineDispose()
         {
-            if(_swapChain != null)
+            if (_swapChain != null)
                 _disposing = true;
 
-            base.OnDispose();
+            base.OnPipelineDispose();
         }
 
         /// <summary>Gets or sets the form title.</summary>

@@ -20,7 +20,7 @@ namespace Molten.Graphics
         Comparison _comparison;
         Filter _filter;
 
-        internal ShaderSampler(ShaderSampler source)
+        internal ShaderSampler(GraphicsDeviceDX11 device, ShaderSampler source) : base(device)
         {
             _description = source._description;
             _isDirty = true;
@@ -30,7 +30,7 @@ namespace Molten.Graphics
             _wrapW = _description.AddressW;
         }
 
-        internal ShaderSampler()
+        internal ShaderSampler(GraphicsDeviceDX11 device) : base(device)
         {
             _description = SamplerStateDescription.Default();
             _isDirty = true;
@@ -61,7 +61,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnDispose()
+        private protected override void OnPipelineDispose()
         {
             if(_state != null)
                 _state.Dispose();

@@ -38,7 +38,7 @@ namespace Molten.Graphics
 
                     case "preset":
                         if (Enum.TryParse(attribute.InnerText, true, out SamplerPreset preset))
-                            sampler = new ShaderSampler(foundation.Device.SamplerBank.GetPreset(preset));
+                            sampler = new ShaderSampler(foundation.Device, foundation.Device.SamplerBank.GetPreset(preset));
                         else
                             InvalidEnumMessage<SamplerPreset>(context, attribute, "sampler preset");
                         break;

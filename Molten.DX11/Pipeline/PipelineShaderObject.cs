@@ -10,18 +10,21 @@ namespace Molten.Graphics
 {
     public abstract class PipelineShaderObject : PipelineObject
     {
-        protected override void OnDispose()
+        internal PipelineShaderObject(GraphicsDeviceDX11 device) : base(device) { }
+
+        private protected override void OnPipelineDispose()
         {
             UAV?.Dispose();
             SRV?.Dispose();
 
-            base.OnDispose();
+            UAV = null;
+            SRV = null;
         }
 
         /// <summary>Gets or sets the <see cref="UnorderedAccessView"/> attached to the object.</summary>
-        internal abstract UnorderedAccessView UAV { get; set; }
+        internal UnorderedAccessView UAV { get; set; }
 
         /// <summary>Gets the <see cref="ShaderResourceView"/> attached to the object.</summary>
-        internal abstract ShaderResourceView SRV { get; set; }
+        internal ShaderResourceView SRV { get; set; }
     }
 }

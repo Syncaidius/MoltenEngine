@@ -18,13 +18,13 @@ namespace Molten.Graphics
         /// 
         /// </summary>
         /// <param name="source">An existing <see cref="GraphicsRasterizerState"/> instance from which to copy settings."/></param>
-        internal GraphicsRasterizerState(GraphicsRasterizerState source)
+        internal GraphicsRasterizerState(GraphicsDeviceDX11 device, GraphicsRasterizerState source) : base(device)
         {
             _desc = source._desc;
             _dirty = true;
         }
 
-        internal GraphicsRasterizerState()
+        internal GraphicsRasterizerState(GraphicsDeviceDX11 device) : base(device)
         {
             _desc = RasterizerStateDescription.Default();
             _dirty = true;
@@ -67,11 +67,9 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnDispose()
+        private protected override void OnPipelineDispose()
         {
             DisposeObject(ref State);
-
-            base.OnDispose();
         }
 
         public CullMode CullMode

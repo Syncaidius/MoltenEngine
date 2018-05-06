@@ -179,12 +179,12 @@ namespace Molten.Graphics
             Clear(Device, (DepthStencilClearFlags)clearFlags, depth, stencil);
         }
 
-        protected override void OnDispose()
+        private protected override void OnPipelineDispose()
         {
             DisposeObject(ref _depthView);
             DisposeObject(ref _readOnlyView);
 
-            base.OnDispose();
+            base.OnPipelineDispose();
         }
 
         /// <summary>Gets the DepthStencilView instance associated with this surface.</summary>

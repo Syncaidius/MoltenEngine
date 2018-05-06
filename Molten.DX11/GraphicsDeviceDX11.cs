@@ -32,6 +32,9 @@ namespace Molten.Graphics
         DepthStateBank _depthBank;
         SamplerBank _samplerBank;
 
+        ObjectPool<BufferSegment> _bufferSegmentPool;
+        ThreadedQueue<PipelineObject> _objectsToDispose;
+
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
         internal GraphicsDeviceDX11(Logger log, GraphicsSettings settings, RenderProfiler profiler, DX11DisplayManager manager, bool enableDebugLayer)
@@ -43,6 +46,8 @@ namespace Molten.Graphics
             _swapChains = new List<SwapChainSurface>();
             _vertexBuilder = new VertexFormatBuilder();
             _settings = settings;
+            _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
+            _objectsToDispose = new ThreadedQueue<PipelineObject>();
 
             DeviceCreationFlags flags = DeviceCreationFlags.BgraSupport;
 
@@ -56,12 +61,33 @@ namespace Molten.Graphics
                 _d3d = defaultDevice.QueryInterface<Device>();
 
             Features = new GraphicsDX11Features(_d3d);
-            _rasterizerBank = new RasterizerStateBank();
-            _blendBank = new BlendStateBank();
-            _depthBank = new DepthStateBank();
-            _samplerBank = new SamplerBank();
+            _rasterizerBank = new RasterizerStateBank(this);
+            _blendBank = new BlendStateBank(this);
+            _depthBank = new DepthStateBank(this);
+            _samplerBank = new SamplerBank(this);
 
             Initialize(_log, this, _d3d.ImmediateContext);
+        }
+
+        internal BufferSegment GetBufferSegment()
+        {
+            return _bufferSegmentPool.GetInstance();
+        }
+
+        internal void RecycleBufferSegment(BufferSegment segment)
+        {
+            _bufferSegmentPool.Recycle(segment);
+        }
+
+        internal void MarkForDisposal(PipelineObject pObject)
+        {
+            _objectsToDispose.Enqueue(pObject);
+        }
+
+        internal void DisposeMarkedObjects()
+        {
+            while (_objectsToDispose.TryDequeue(out PipelineObject obj))
+                obj.PipelineDispose();
         }
 
         /// <summary>Track a VRAM allocation.</summary>
@@ -123,6 +149,9 @@ namespace Molten.Graphics
             DisposeObject(ref _depthBank);
             DisposeObject(ref _samplerBank);
             DisposeObject(ref _d3d);
+
+            _bufferSegmentPool.Dispose();
+            DisposeMarkedObjects();
 
             base.OnDispose();
         }

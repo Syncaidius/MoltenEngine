@@ -31,13 +31,12 @@ namespace Molten.Graphics
         /// </summary>
         internal ShaderStateBank<GraphicsDepthState> DepthState = new ShaderStateBank<GraphicsDepthState>();
 
-        internal GraphicsDeviceDX11 Device { get; private set; }
-
-        internal HlslFoundation(GraphicsDeviceDX11 device)
+        internal HlslFoundation(GraphicsDeviceDX11 device) : base(device)
         {
-            Device = device;
             Samplers = new ShaderStateBank<ShaderSampler>[0];
         }
+
+        private protected override void OnPipelineDispose() { }
 
         /// <summary>
         /// Gets or sets the name.

@@ -18,7 +18,6 @@ namespace Molten.Graphics
         protected int _structuredStride = 0;
         protected Array _initialData;
         protected Buffer _buffer;
-        protected GraphicsDeviceDX11 _device;
         
         BufferMode _mode;
         int _ringPos;
@@ -37,10 +36,9 @@ namespace Molten.Graphics
             ResourceOptionFlags optionFlags = ResourceOptionFlags.None, 
             StagingBufferFlags stagingType = StagingBufferFlags.None, 
             int structuredStride = 0, 
-            Array initialData = null)
+            Array initialData = null) : base(device)
         {
             _freeSegments = new List<BufferSegment>();
-            _device = device;
             _byteCapacity = byteCapacity;
             _mode = mode;
             _pendingChanges = new ThreadedQueue<IBufferOperation>();
@@ -128,7 +126,7 @@ namespace Molten.Graphics
             // Dispose of old static buffer
             if (_buffer != null)
             {
-                _device.DeallocateVRAM(_buffer.Description.SizeInBytes);
+                Device.DeallocateVRAM(_buffer.Description.SizeInBytes);
                 _buffer.Dispose();
             }
 
@@ -140,19 +138,17 @@ namespace Molten.Graphics
                 Description.StructureByteStride = _structuredStride;
 
             if (initialDataPtr != null)
-                _buffer = new Buffer(_device.D3d, initialDataPtr.Value, Description);
+                _buffer = new Buffer(Device.D3d, initialDataPtr.Value, Description);
             else
-                _buffer = new Buffer(_device.D3d, Description);
+                _buffer = new Buffer(Device.D3d, Description);
 
-            _device.AllocateVRAM(Description.SizeInBytes);
+            Device.AllocateVRAM(Description.SizeInBytes);
 
-            _firstSegment = new BufferSegment()
-            {
-                Parent = this,
-                ByteOffset = 0,
-                ByteCount = _byteCapacity,
-                IsFree = true,
-            };
+            _firstSegment = Device.GetBufferSegment();
+            _firstSegment.Parent = this;
+            _firstSegment.ByteOffset = 0;
+            _firstSegment.ByteCount = _byteCapacity;
+            _firstSegment.IsFree = true;
 
             _freeSegments.Add(_firstSegment);
         }
@@ -381,12 +377,12 @@ namespace Molten.Graphics
             ApplyChanges(pipe);
         }
 
-        protected override void OnDispose()
+        private protected override void OnPipelineDispose()
         {
             if (_buffer != null)
-                _device.DeallocateVRAM(_byteCapacity);
+                Device.DeallocateVRAM(_byteCapacity);
 
-            base.OnDispose();
+            base.OnPipelineDispose();
         }
 
         internal virtual void CreateResources(int stride, int byteoffset, int elementCount)
@@ -396,7 +392,7 @@ namespace Molten.Graphics
 
             if (HasFlags(BindFlags.ShaderResource))
             {
-                SRV = new ShaderResourceView(_device.D3d, _buffer, new ShaderResourceViewDescription()
+                SRV = new ShaderResourceView(Device.D3d, _buffer, new ShaderResourceViewDescription()
                 {
                     Buffer = new ShaderResourceViewDescription.BufferResource()
                     {
@@ -410,7 +406,7 @@ namespace Molten.Graphics
 
             if (HasFlags(BindFlags.UnorderedAccess))
             {
-                UAV = new UnorderedAccessView(_device.D3d, _buffer, new UnorderedAccessViewDescription()
+                UAV = new UnorderedAccessView(Device.D3d, _buffer, new UnorderedAccessViewDescription()
                 {
                     Format = SharpDX.DXGI.Format.Unknown,
                     Dimension = UnorderedAccessViewDimension.Buffer,
@@ -434,7 +430,7 @@ namespace Molten.Graphics
 
             if (HasFlags(BindFlags.ShaderResource))
             {
-                segment.SRV = new ShaderResourceView(_device.D3d, _buffer, new ShaderResourceViewDescription()
+                segment.SRV = new ShaderResourceView(Device.D3d, _buffer, new ShaderResourceViewDescription()
                 {
                     Buffer = new ShaderResourceViewDescription.BufferResource()
                     {
@@ -448,7 +444,7 @@ namespace Molten.Graphics
 
             if (HasFlags(BindFlags.UnorderedAccess))
             {
-                segment.UAV = new UnorderedAccessView(_device.D3d, _buffer, new UnorderedAccessViewDescription()
+                segment.UAV = new UnorderedAccessView(Device.D3d, _buffer, new UnorderedAccessViewDescription()
                 {
                     Format = SharpDX.DXGI.Format.Unknown,
                     Dimension = UnorderedAccessViewDimension.Buffer,
@@ -519,14 +515,14 @@ where T : struct
                 segment.Previous.ByteCount += segment.ByteCount;
                 segment.Previous.ByteCount += segment.Next.ByteCount;
                 segment.Previous.LinkNext(segment.Next.Next);
-                BufferSegment.Pool.Recycle(segment.Next);
-                BufferSegment.Pool.Recycle(segment);
+                Device.RecycleBufferSegment(segment.Next);
+                Device.RecycleBufferSegment(segment);
             }
             else if (mergePrev)
             {
                 segment.Previous.ByteCount += segment.ByteCount;
                 segment.Previous.LinkNext(segment.Next);
-                BufferSegment.Pool.Recycle(segment);
+                Device.RecycleBufferSegment(segment);
             }
             else if (mergeNext)
             {
@@ -534,7 +530,7 @@ where T : struct
                 segment.LinkNext(segment.Next.Next);
                 segment.IsFree = true;
 
-                BufferSegment.Pool.Recycle(segment.Next);
+                Device.RecycleBufferSegment(segment.Next);
                 _freeSegments.Add(segment);
             }
         }
@@ -649,14 +645,6 @@ where T : struct
 
         /// <summary>Gets the underlying DirectX 11 buffer. </summary>
         internal Buffer Buffer => _buffer;
-
-        internal GraphicsDeviceDX11 Device => _device;
-
-        /// <summary>Gets or sets the <see cref="GraphicsBuffer"/>'s <see cref="ShaderResourceView"/>. By default, this value is null.</summary>
-        internal override ShaderResourceView SRV { get; set; }
-
-        /// <summary>Gets or sets the <see cref="GraphicsBuffer"/>'s <see cref="UnorderedAccessView"/>. By default, this value is null.</summary>
-        internal override UnorderedAccessView UAV { get; set; }
 
         /// <summary>Gets the resource usage flags associated with the buffer.</summary>
         public ResourceOptionFlags ResourceFlags => Description.OptionFlags;

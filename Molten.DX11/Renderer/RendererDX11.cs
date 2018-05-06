@@ -188,6 +188,7 @@ namespace Molten.Graphics
         public void Present(Timing time)
         {
             _profiler.StartCapture();
+            _device.DisposeMarkedObjects();
 
             if(_requestedMultiSampleLevel != MsaaLevel)
             {

@@ -584,6 +584,16 @@ namespace Molten.Graphics
 
         /// <summary>Adds a sprite to the batch.</summary>
         /// <param name="texture"></param>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        /// <param name="color"></param>
+        public void Draw(ITexture2D texture, Rectangle source, Rectangle destination, Color color, IMaterial material = null)
+        {
+            Draw(texture, source, destination, color, 0, new Vector2F(), material);
+        }
+
+        /// <summary>Adds a sprite to the batch.</summary>
+        /// <param name="texture"></param>
         /// <param name="destination"></param>
         /// <param name="color"></param>
         public void Draw(ITexture2D texture, Rectangle destination, Color color, IMaterial material = null)

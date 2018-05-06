@@ -50,7 +50,7 @@ namespace Molten.Graphics
             }
 
             // Use existing state if present, or create a new one.
-            GraphicsBlendState state = new GraphicsBlendState(foundation.BlendState[conditions] ?? foundation.Device.BlendBank.GetPreset(BlendPreset.Default));
+            GraphicsBlendState state = new GraphicsBlendState(foundation.Device, foundation.BlendState[conditions] ?? foundation.Device.BlendBank.GetPreset(BlendPreset.Default));
             state.IndependentBlendEnable = (state.IndependentBlendEnable || (rtIndex > 0));
 
             foreach (XmlNode child in node.ChildNodes)

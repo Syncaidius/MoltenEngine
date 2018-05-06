@@ -69,14 +69,14 @@ namespace Molten.Graphics
         Face _frontFace;
         Face _backFace;
 
-        internal GraphicsDepthState(GraphicsDepthState source)
+        internal GraphicsDepthState(GraphicsDeviceDX11 device, GraphicsDepthState source) : base(device)
         {
             _desc = source._desc;
             _frontFace = new Face(this, _desc.FrontFace);
             _backFace = new Face(this, _desc.BackFace);
         }
 
-        internal GraphicsDepthState()
+        internal GraphicsDepthState(GraphicsDeviceDX11 device) : base(device)
         {
             _desc = DepthStencilStateDescription.Default();
             _frontFace = new Face(this, _desc.FrontFace);
@@ -142,11 +142,9 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnDispose()
+        private protected override void OnPipelineDispose()
         {
             DisposeObject(ref State);
-
-            base.OnDispose();
         }
 
         internal bool IsDepthEnabled
