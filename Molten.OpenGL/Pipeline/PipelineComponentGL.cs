@@ -8,15 +8,14 @@ namespace Molten.Graphics
 {
     /// <summary>Represents a base for a critical GPU pipeline component.</summary>
     /// <seealso cref="Molten.EngineObject" />
-    internal abstract class PipelineComponent : EngineObject
+    internal abstract class PipelineComponentGL : EngineObject
     {
-        List<PipelineBindSlot> _slots;
+        List<PipelineBindSlotGL> _slots;
 
-        public PipelineComponent(GraphicsPipe pipe)
+        public PipelineComponentGL(GraphicsDeviceGL device)
         {
-            Pipe = pipe;
-            Device = pipe.Device;
-            _slots = new List<PipelineBindSlot>();
+            Device = device;
+            _slots = new List<PipelineBindSlotGL>();
         }
 
         /// <summary>Adds a pipeline bind slot to the current <see cref="PipelineComponent"/>. 
@@ -25,9 +24,9 @@ namespace Molten.Graphics
         /// <param name="type">The type.</param>
         /// <param name="slotId">The slot identifier.</param>
         /// <returns></returns>
-        internal PipelineBindSlot<T> AddSlot<T>(int slotId) where T : PipelineObject
+        internal PipelineBindSlotGL<T> AddSlot<T>(int slotId) where T : PipelineObjectGL
         {
-            PipelineBindSlot<T> slot = new PipelineBindSlot<T>(this, slotId);
+            PipelineBindSlotGL<T> slot = new PipelineBindSlotGL<T>(this, slotId);
             _slots.Add(slot);
             return slot;
         }
@@ -35,17 +34,14 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             // Remove the slot bindings from their objects, if any.
-            foreach (PipelineBindSlot slot in _slots)
+            foreach (PipelineBindSlotGL slot in _slots)
                 slot.Object?.Unbind(slot);
 
             base.OnDispose();
         }
 
         /// <summary>Gets the <see cref="GraphicsDeviceDX11"/> that the current <see cref="PipelineComponent"/> is bound to.</summary>
-        public GraphicsDeviceDX11 Device { get; private set; }
-
-        /// <summary>Gets the <see cref="GraphicsPipe"/> that the current <see cref="PipelineComponent"/> is bound to.</summary>
-        internal GraphicsPipe Pipe { get; private set; }
+        public GraphicsDeviceGL Device { get; private set; }
 
         /// <summary>Gets whether or not the current <see cref="PipelineComponent"/> is in a valid state.</summary>
         internal virtual bool IsValid { get { return true; } }

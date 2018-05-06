@@ -55,17 +55,17 @@ namespace Molten.Graphics
             }
         }
 
-        private void EffectStageBase_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
+        private void EffectStageBase_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
         {
             _stage.SetSampler(slot.SlotID, null);
         }
 
-        private void SlotConstants_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
+        private void SlotConstants_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
         {
             _stage.SetConstantBuffer(slot.SlotID, null);
         }
 
-        private void SlotResources_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
+        private void SlotResources_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
         {
             _stage.SetShaderResource(slot.SlotID, null);
             _resViews[slot.SlotID] = null;

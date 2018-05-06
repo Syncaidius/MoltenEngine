@@ -10,5 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)GraphicsDeviceFeatures.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pipeline\PipelineBindSlotBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pipeline\PipelineBindType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pipeline\PipelineObjectBase.cs" />
   </ItemGroup>
 </Project>

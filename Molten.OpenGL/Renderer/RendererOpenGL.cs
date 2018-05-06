@@ -29,7 +29,7 @@ namespace Molten.Graphics
 
         public void InitializeAdapter(GraphicsSettings settings)
         {
-            GameWindow dummyWindow = new GameWindow();
+            NativeWindow dummyWindow = new NativeWindow();
             _displayManager = new DisplayManagerGL();
             _displayManager.Initialize(_log, settings);
 

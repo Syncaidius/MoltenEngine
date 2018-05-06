@@ -76,9 +76,12 @@
     <Compile Include="Hardware\GraphicsAdapterGL.cs" />
     <Compile Include="Hardware\GraphicsGLFeatures.cs" />
     <Compile Include="OpenTKInterop.cs" />
-    <Compile Include="GraphicsPipeGL.cs" />
+    <Compile Include="Pipeline\PipelineBindSlotGL.cs" />
+    <Compile Include="Pipeline\PipelineComponentGL.cs" />
+    <Compile Include="Pipeline\PipelineObjectGL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer\RendererOpenGL.cs" />
+    <Compile Include="Textures\TextureBaseGL.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
@@ -105,6 +108,7 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\Molten.Render.Shared\Molten.Render.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

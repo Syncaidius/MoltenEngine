@@ -24,7 +24,7 @@ namespace Molten.Graphics
             }
         }
 
-        private void ComputeStage_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
+        private void ComputeStage_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
         {
             _cStage.RawStage.SetUnorderedAccessView(slot.SlotID, null);
         }
@@ -99,7 +99,7 @@ namespace Molten.Graphics
             }
             else if (_shader.BoundValue != null)
             {                
-                RefreshSlots();
+                //RefreshSlots();
             }
         }
     }

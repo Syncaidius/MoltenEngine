@@ -6,19 +6,14 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal abstract class PipelineBindSlot : PipelineBindSlotBase
+    internal abstract class PipelineBindSlotGL : PipelineBindSlotBase
     {
-        internal PipelineBindSlot(PipelineComponent parent, int slotID) : base(slotID)
-        {
-            Parent = parent;
-        }
-
-        public PipelineComponent Parent { get; private set; }
+        internal PipelineBindSlotGL(PipelineComponentGL parent, int slotID) : base(slotID) { }
     }
 
-    internal class PipelineBindSlot<T> : PipelineBindSlot where T : PipelineObject
+    internal class PipelineBindSlotGL<T> : PipelineBindSlotGL where T : PipelineObjectGL
     {
-        internal PipelineBindSlot(PipelineComponent parent, int slotID) :
+        internal PipelineBindSlotGL(PipelineComponentGL parent, int slotID) :
             base(parent, slotID)
         { }
 
@@ -34,14 +29,14 @@ namespace Molten.Graphics
         }
 
         /// <summary>Binds a new object to the slot. If null, the existing object (if any) will be unbound.</summary>
-        /// <param name="pipe">The <see cref="GraphicsPipe"/> to use to perform any binding operations..</param>
+        /// <param name="device">The <see cref="GraphicsPipe"/> to use to perform any binding operations..</param>
         /// <param name="obj">The <see cref="PipelineObject"/> to be bound to the object, or null to clear the existing one.</param>
         /// <returns></returns>
-        internal bool Bind(GraphicsPipe pipe, T obj, PipelineBindType bindType)
+        internal bool Bind(GraphicsDeviceGL device, T obj, PipelineBindType bindType)
         {
             if(obj != null)
             {
-                obj.Refresh(pipe, this);
+                obj.Refresh(device, this);
                 if (BoundObject == obj && BindType == bindType)
                     return false;
 
@@ -61,7 +56,7 @@ namespace Molten.Graphics
             }            
 
             // Return true to signal a difference between old and new object.
-            pipe.Profiler.CurrentFrame.Bindings++;
+            device.Profiler.CurrentFrame.Bindings++;
             return true;
         }
 

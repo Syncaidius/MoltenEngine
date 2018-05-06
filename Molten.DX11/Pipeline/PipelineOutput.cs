@@ -46,14 +46,14 @@ namespace Molten.Graphics
             _slotDepth.OnObjectForcedUnbind += _slotDepth_OnBoundObjectDisposed;
         }
 
-        private void SurfaceSlot_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
+        private void SurfaceSlot_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
         {
             _rtViews[slot.SlotID] = null;
             _pipe.Context.OutputMerger.SetTargets(_depthView, _rtViews);
             Pipe.Profiler.CurrentFrame.RTSwaps++;
         }
 
-        private void _slotDepth_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
+        private void _slotDepth_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
         {
             _depthView = null;
             _pipe.Context.OutputMerger.SetTargets(_depthView, _rtViews);

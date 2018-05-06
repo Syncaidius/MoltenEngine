@@ -35,7 +35,7 @@ namespace Molten.Graphics
             _slotState.OnObjectForcedUnbind += _slotState_OnBoundObjectDisposed;
         }
 
-        private void _slotState_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
+        private void _slotState_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
         {
             Pipe.Context.Rasterizer.State = null;
         }

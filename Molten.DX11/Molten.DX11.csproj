@@ -103,6 +103,8 @@
     <Compile Include="Exceptions\MappedBufferException.cs" />
     <Compile Include="Exceptions\UnsupportedFeatureException.cs" />
     <Compile Include="Pipeline\GraphicsBlendStage.cs" />
+    <Compile Include="Pipeline\PipelineBindSlot.cs" />
+    <Compile Include="Pipeline\PipelineObject.cs" />
     <Compile Include="Pipeline\States\SamplerBank.cs" />
     <Compile Include="Pipeline\States\GraphicsBlendState.cs" />
     <Compile Include="GraphicsContextType.cs" />
@@ -125,11 +127,8 @@
     <Compile Include="Meshes\Mesh.cs" />
     <Compile Include="Pipeline\ComputeInputStage.cs" />
     <Compile Include="Pipeline\MaterialInputStage.cs" />
-    <Compile Include="Pipeline\PipelineBindSlot.cs" />
-    <Compile Include="Pipeline\PipelineBindType.cs" />
     <Compile Include="Pipeline\PipelineComponent.cs" />
     <Compile Include="Pipeline\PipelineInput.cs" />
-    <Compile Include="Pipeline\PipelineObject.cs" />
     <Compile Include="Pipeline\PipelineOutput.cs" />
     <Compile Include="Pipeline\PipelineShaderObject.cs" />
     <Compile Include="Pipeline\States\DepthStateBank.cs" />

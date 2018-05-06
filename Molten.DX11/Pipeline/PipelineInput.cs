@@ -51,12 +51,12 @@ namespace Molten.Graphics
             _slotIndexBuffer.OnObjectForcedUnbind += _slotIndexBuffer_OnBoundObjectDisposed;
         }
 
-        private void _slotIndexBuffer_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
+        private void _slotIndexBuffer_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
         {
             Pipe.Context.InputAssembler.SetIndexBuffer(null, SharpDX.DXGI.Format.Unknown, 0);
         }
 
-        private void PipelineInput_OnBoundObjectDisposed(PipelineBindSlot slot, PipelineObject obj)
+        private void PipelineInput_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
         {
             Pipe.Context.InputAssembler.SetVertexBuffers(slot.SlotID, _nullVertexBuffer);
         }
