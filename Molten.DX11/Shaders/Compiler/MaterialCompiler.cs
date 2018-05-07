@@ -118,7 +118,6 @@ namespace Molten.Graphics
                 material.Scene = new SceneMaterialProperties(material);
                 material.Object = new ObjectMaterialProperties(material);
                 material.Textures = new GBufferTextureProperties(material);
-                material.GBuffer = new GBufferMaterialProperties(material);
                 material.SpriteBatch = new SpriteBatchMaterialProperties(material);
                 material.Light = new LightMaterialProperties(material);
             }

@@ -79,8 +79,6 @@ namespace Molten.Graphics
 
         internal SceneMaterialProperties Scene { get; set; }
 
-        internal GBufferMaterialProperties GBuffer { get; set; }
-
         internal GBufferTextureProperties Textures { get; set; }
 
         internal SpriteBatchMaterialProperties SpriteBatch { get; set; }

@@ -32,8 +32,8 @@ namespace Molten.Graphics
                     device.SetRenderSurface(start.Emissive, 2);
                     device.SetDepthSurface(start.Depth, GraphicsDepthMode.Enabled);
 
-                    SetMaterialCommon(renderer.StandardMeshMaterial, scene);
-                    SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, scene);
+                    SetMaterialCommon(renderer.StandardMeshMaterial, scene, start.Scene);
+                    SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, scene, start.Scene);
                     break;
 
                     // TODO add alternate HDR start step here (which should be used in conjunction HDR textures, HDR RTs and so on).
@@ -46,12 +46,17 @@ namespace Molten.Graphics
             device.EndDraw();
         }
 
-        private void SetMaterialCommon(Material material, SceneRenderDataDX11 scene)
+        private void SetMaterialCommon(Material material, SceneRenderDataDX11 scene, RenderSurface gBufferScene)
         {
             material.Scene.View.Value = scene.View;
             material.Scene.Projection.Value = scene.Projection;
             material.Scene.InvViewProjection.Value = Matrix4F.Invert(scene.ViewProjection);
             material.Scene.ViewProjection.Value = scene.ViewProjection;
+            material.Scene.MaxSurfaceUV.Value = new Vector2F()
+            {
+                X = (float)scene.FinalSurface.Width / gBufferScene.Width,
+                Y = (float)scene.FinalSurface.Height / gBufferScene.Height,
+            };
         }
     }
 }

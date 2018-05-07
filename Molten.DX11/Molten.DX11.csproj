@@ -188,7 +188,6 @@
     <Compile Include="Shaders\Materials\Properties\SceneMaterialProperties.cs" />
     <Compile Include="Shaders\Materials\Properties\SpriteBatchMaterialProperties.cs" />
     <Compile Include="Shaders\Materials\Properties\GBufferTextureProperties.cs" />
-    <Compile Include="Shaders\Materials\Properties\GBufferMaterialProperties.cs" />
     <Compile Include="Shaders\Materials\Properties\ObjectMaterialProperties.cs" />
     <Compile Include="Shaders\ShaderStateBank.cs" />
     <Compile Include="Shaders\StateConditions.cs" />

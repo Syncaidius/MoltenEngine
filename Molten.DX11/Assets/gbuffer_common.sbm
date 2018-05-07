@@ -27,21 +27,18 @@ struct PS_OUT
 
 cbuffer Common : register(b1)
 {
-  float4x4 view   : packoffset(c0);
-  float4x4 projection : packoffset(c4);
-  float4x4 viewProjection : packoffset(c8);
-  float4x4 invViewProjection: packoffset(c12);
+	float4x4 view   : packoffset(c0);
+	float4x4 projection : packoffset(c4);
+	float4x4 viewProjection : packoffset(c8);
+	float4x4 invViewProjection: packoffset(c12);
+	float2 maxSurfaceUV : packoffset(c16);
 }
 
 cbuffer Object : register(b2)
 {
-  float4x4 wvp : packoffset(c0);
-  float4x4 world : packoffset(c4);
-}
-
-cbuffer GBuffer : register(b3)
-{
-	float emissivePower : packoffset(c0);
+	float4x4 wvp : packoffset(c0);
+	float4x4 world : packoffset(c4);
+	float emissivePower : packoffset(c8);
 }
 
 SamplerState texSampler : register(s1);
@@ -72,6 +69,7 @@ MATERIAL UnpackGBuffer(float3 screenPos){
 	// The screen coordinates are in [-1,1]*[1,-1]
 	// The texture coordinates need to be in [0,1]*[0,1]
 	o.uv = 0.5f * (float2(screenPos.x, -screenPos.y) + 1);
+	o.uv *= maxSurfaceUV;
 
 	// Get color and specular
 	float4 colorData = mapDiffuse.Sample(texSampler, o.uv);

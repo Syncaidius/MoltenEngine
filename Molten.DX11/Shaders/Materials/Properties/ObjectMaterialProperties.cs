@@ -12,10 +12,13 @@ namespace Molten.Graphics
 
         internal IShaderValue Wvp { get; set; }
 
+        internal IShaderValue EmissivePower { get; set; }
+
         internal ObjectMaterialProperties(Material material) : base(material)
         {
             World = MapValue(material, "world");
             Wvp = MapValue(material, "wvp");
+            EmissivePower = MapValue(material, "emissivePower");
         }
     }
 }

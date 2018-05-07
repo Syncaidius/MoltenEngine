@@ -29,7 +29,7 @@ namespace Molten.Graphics
                 else
                     mat = renderer.StandardMeshMaterial;
 
-                mat.GBuffer.EmissivePower.Value = EmissivePower;
+                mat.Object.EmissivePower.Value = EmissivePower;
             }
 
             mat.Object.World.Value = data.RenderTransform;
