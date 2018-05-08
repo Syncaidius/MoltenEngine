@@ -58,6 +58,19 @@ namespace Molten.Graphics.Hardware.Tests
             GraphicsPipe otherPipe = otherDevice.GetDeferredPipe();
 
             _device.RemoveDeferredPipe(otherPipe);
+
+            otherPipe.Dispose();
+            otherDevice.Dispose();
+        }
+
+        [TestMethod]
+        public void DeferredPipeDisposal()
+        {
+            GraphicsPipe pipe = _device.GetDeferredPipe();
+            pipe.Dispose();
+
+            if (_device.ActivePipes.Contains(pipe))
+                Assert.Fail("Disposed graphics pipe is still in active list");
         }
 
         public void GetRecycleBufferSegment()

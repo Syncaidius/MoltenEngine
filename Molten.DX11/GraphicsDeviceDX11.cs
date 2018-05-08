@@ -20,7 +20,12 @@ namespace Molten.Graphics
         Device _d3d;
         GraphicsAdapterDX<Adapter1, AdapterDescription1, Output1> _adapter;
         List<SwapChainSurface> _swapChains;
-        ThreadedList<GraphicsPipe> _contexts;
+
+        GraphicsPipe[] _pipes;
+        int[] _freePipes;
+        int _freePipeCount;
+        int _pipeCount;
+
         Logger _log;
         VertexFormatBuilder _vertexBuilder;
         DisplayManagerDX11 _displayManager;
@@ -42,7 +47,8 @@ namespace Molten.Graphics
             _log = log;
             _displayManager = manager;
             _adapter = _displayManager.SelectedAdapter as GraphicsAdapterDX<Adapter1, AdapterDescription1, Output1>;
-            _contexts = new ThreadedList<GraphicsPipe>();
+            _pipes = new GraphicsPipe[0];
+            _freePipes = new int[0];
             _swapChains = new List<SwapChainSurface>();
             _vertexBuilder = new VertexFormatBuilder();
             _settings = settings;
@@ -66,7 +72,7 @@ namespace Molten.Graphics
             _depthBank = new DepthStateBank(this);
             _samplerBank = new SamplerBank(this);
 
-            Initialize(_log, this, _d3d.ImmediateContext);
+            Initialize(_log, this, _d3d.ImmediateContext, 0);
         }
 
         internal BufferSegment GetBufferSegment()
@@ -108,13 +114,22 @@ namespace Molten.Graphics
         /// <returns></returns>
         internal GraphicsPipe GetDeferredPipe()
         {
-            GraphicsPipe context = new GraphicsPipe();
-            context.Initialize(_log, this, new DeviceContext(_d3d));
-            _contexts.Add(context);
-            return context;
+            int id = 0;
+            if (_freePipeCount > 0)
+                id = _freePipes[--_freePipeCount];
+            else
+            {
+                id = _pipeCount++;
+                Array.Resize(ref _pipes, _pipes.Length + 1);
+            }
+
+            GraphicsPipe pipe = new GraphicsPipe();
+            pipe.Initialize(_log, this, new DeviceContext(_d3d), id);
+            _pipes[id] = pipe;
+            return pipe;
         }
 
-        internal bool RemoveDeferredPipe(GraphicsPipe pipe)
+        internal void RemoveDeferredPipe(GraphicsPipe pipe)
         {
             if(pipe == this)
                 throw new GraphicsContextException("Cannot remove the graphics device from itself.");
@@ -125,7 +140,12 @@ namespace Molten.Graphics
             if (!pipe.IsDisposed)
                 pipe.Dispose();
 
-            return _contexts.Remove(pipe);
+            int freeID = _freePipeCount++;
+            if (_freePipeCount >= _freePipes.Length)
+                Array.Resize(ref _freePipes, _freePipes.Length + 1);
+
+            _freePipes[freeID] = pipe.ID;
+            _pipes[pipe.ID] = null;
         }
 
         internal void SubmitContext(GraphicsPipe context)
@@ -140,15 +160,10 @@ namespace Molten.Graphics
         /// <summary>Disposes of the <see cref="GraphicsDeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
+            for (int i = 0; i < _pipes.Length; i++)
+                _pipes[i]?.Dispose();
+
             // TODO dispose of all bound IGraphicsResource
-
-            _contexts.ForInterlock(0, 1, (index, context) =>
-            {
-                context.Dispose();
-                return false;
-            });
-
-            _contexts.Clear();
 
             DisposeObject(ref _rasterizerBank);
             DisposeObject(ref _blendBank);
@@ -165,7 +180,7 @@ namespace Molten.Graphics
         /// <summary>Gets the underlying D3D device.</summary>
         internal Device D3d => _d3d;
 
-        internal ThreadedList<GraphicsPipe> ActiveContexts => _contexts;
+        internal GraphicsPipe[] ActivePipes => _pipes;
 
         /// <summary>Gets an instance of <see cref="GraphicsDX11Features"/> which provides access to feature support details for the current graphics device.</summary>
         internal GraphicsDX11Features Features { get; private set; }

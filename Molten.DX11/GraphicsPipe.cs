@@ -42,11 +42,9 @@ namespace Molten.Graphics
         RenderProfiler _defaultProfiler;
         DrawInfo _drawInfo;
 
-        internal static RawList<GraphicsPipe> ActivePipes = new RawList<GraphicsPipe>(1, ExpansionMode.Increment, 1);
-
-        internal void Initialize(Logger log, GraphicsDeviceDX11 device, DeviceContext context)
+        internal void Initialize(Logger log, GraphicsDeviceDX11 device, DeviceContext context, int id)
         {
-            ID = ActivePipes.Add(this);
+            ID = id;
             _context = context;
             _device = device;
             _defaultProfiler = _profiler = new RenderProfiler();
@@ -452,9 +450,10 @@ namespace Molten.Graphics
 
             // Dispose context.
             if (Type != GraphicsContextType.Immediate)
+            {
                 DisposeObject(ref _context);
-
-            ActivePipes.Remove(this);
+                _device.RemoveDeferredPipe(this);
+            }
 
             base.OnDispose();
         }

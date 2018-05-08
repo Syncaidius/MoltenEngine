@@ -40,9 +40,9 @@ namespace Molten
             if (_isDisposed)
                 throw new ObjectDisposedException("Object has already been disposed.");
 
+            _isDisposed = true;
             OnDisposing?.Invoke(this);
             OnDispose();
-            _isDisposed = true;
 
             // TODO free object ID
         }
