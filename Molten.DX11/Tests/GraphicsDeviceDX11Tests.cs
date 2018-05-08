@@ -51,10 +51,13 @@ namespace Molten.Graphics.Hardware.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(GraphicsContextException), "Incorrectly handled graphics pipe from different device")]
         public void DeferredContextOwnership()
         {
             GraphicsDeviceDX11 otherDevice = new GraphicsDeviceDX11(Logger.Get(), new GraphicsSettings(), new RenderProfiler(), _manager, false);
-            GraphicsPipe pipe = otherDevice.GetDeferredPipe();
+            GraphicsPipe otherPipe = otherDevice.GetDeferredPipe();
+
+            _device.RemoveDeferredPipe(otherPipe);
         }
 
         public void GetRecycleBufferSegment()

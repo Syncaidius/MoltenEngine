@@ -119,6 +119,9 @@ namespace Molten.Graphics
             if(pipe == this)
                 throw new GraphicsContextException("Cannot remove the graphics device from itself.");
 
+            if (pipe.Device != this)
+                throw new GraphicsContextException("Graphics pipe is owned by another device.");
+
             if (!pipe.IsDisposed)
                 pipe.Dispose();
 
