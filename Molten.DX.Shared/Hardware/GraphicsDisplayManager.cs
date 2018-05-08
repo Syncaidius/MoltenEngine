@@ -170,6 +170,9 @@ namespace Molten.Graphics
             get => _adapters[_selectedID];
             set
             {
+                if (value.Manager != this)
+                    throw new AdapterException(value, "The adapter not owned by the current display manager.");
+
                 _selectedID = value.ID;
             }
         }

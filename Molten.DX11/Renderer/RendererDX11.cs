@@ -18,7 +18,7 @@ namespace Molten.Graphics
         int _biggestHeight = 1;
         bool _surfacesDirty;
 
-        DX11DisplayManager _displayManager;
+        DisplayManagerDX11 _displayManager;
         ResourceManager _resourceManager;
         MaterialManager _materials;
         ComputeManager _compute;
@@ -66,7 +66,7 @@ namespace Molten.Graphics
 
         public void InitializeAdapter(GraphicsSettings settings)
         {
-            _displayManager = new DX11DisplayManager();
+            _displayManager = new DisplayManagerDX11();
             _displayManager.Initialize(_log, settings);
         }
 

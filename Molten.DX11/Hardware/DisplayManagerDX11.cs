@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class DX11DisplayManager : GraphicsDisplayManager<Factory1, Adapter1, AdapterDescription1, Output1>
+    public class DisplayManagerDX11 : GraphicsDisplayManager<Factory1, Adapter1, AdapterDescription1, Output1>
     {
         protected override AdapterDescription1 GetAdapterDescription(Adapter1 adapter)
         {

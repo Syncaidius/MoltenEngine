@@ -23,7 +23,7 @@ namespace Molten.Graphics
         ThreadedList<GraphicsPipe> _contexts;
         Logger _log;
         VertexFormatBuilder _vertexBuilder;
-        DX11DisplayManager _displayManager;
+        DisplayManagerDX11 _displayManager;
         GraphicsSettings _settings;
         long _allocatedVRAM;
 
@@ -37,7 +37,7 @@ namespace Molten.Graphics
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
-        internal GraphicsDeviceDX11(Logger log, GraphicsSettings settings, RenderProfiler profiler, DX11DisplayManager manager, bool enableDebugLayer)
+        internal GraphicsDeviceDX11(Logger log, GraphicsSettings settings, RenderProfiler profiler, DisplayManagerDX11 manager, bool enableDebugLayer)
         {
             _log = log;
             _displayManager = manager;
@@ -164,7 +164,7 @@ namespace Molten.Graphics
         /// <summary>Gets an instance of <see cref="GraphicsDX11Features"/> which provides access to feature support details for the current graphics device.</summary>
         internal GraphicsDX11Features Features { get; private set; }
 
-        internal DX11DisplayManager DisplayManager => _displayManager;
+        internal DisplayManagerDX11 DisplayManager => _displayManager;
 
         internal GraphicsSettings Settings => _settings;
 
