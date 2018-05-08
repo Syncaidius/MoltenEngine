@@ -106,7 +106,7 @@ namespace Molten.Graphics
 
         /// <summary>Gets a new deferred <see cref="GraphicsPipe"/>.</summary>
         /// <returns></returns>
-        internal GraphicsPipe GetDeferredContext()
+        internal GraphicsPipe GetDeferredPipe()
         {
             GraphicsPipe context = new GraphicsPipe();
             context.Initialize(_log, this, new DeviceContext(_d3d));
@@ -114,12 +114,15 @@ namespace Molten.Graphics
             return context;
         }
 
-        internal bool RemoveContext(GraphicsPipe context)
+        internal bool RemoveDeferredPipe(GraphicsPipe pipe)
         {
-            if(context == this)
+            if(pipe == this)
                 throw new GraphicsContextException("Cannot remove the graphics device from itself.");
 
-            return _contexts.Remove(context);
+            if (!pipe.IsDisposed)
+                pipe.Dispose();
+
+            return _contexts.Remove(pipe);
         }
 
         internal void SubmitContext(GraphicsPipe context)
