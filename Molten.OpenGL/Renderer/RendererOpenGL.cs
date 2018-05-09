@@ -96,8 +96,6 @@ namespace Molten.Graphics
 
         public IResourceManager Resources => null;
 
-        public IMaterialManager Materials => null;
-
         public IComputeManager Compute => null;
 
         public string Name => "OpenGL Renderer";

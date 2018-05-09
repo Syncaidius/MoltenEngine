@@ -106,7 +106,6 @@
     <Compile Include="Shaders\IShader.cs" />
     <Compile Include="Shaders\IShaderResource.cs" />
     <Compile Include="Shaders\Materials\IMaterial.cs" />
-    <Compile Include="Shaders\Materials\IMaterialManager.cs" />
     <Compile Include="Shaders\Materials\IMaterialPass.cs" />
     <Compile Include="Shaders\Materials\IShaderValue.cs" />
     <Compile Include="Shaders\Samplers\IShaderSampler.cs" />

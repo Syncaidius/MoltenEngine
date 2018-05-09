@@ -22,8 +22,6 @@ namespace Molten.Graphics
         /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.</summary>
         IResourceManager Resources { get; }
 
-        IMaterialManager Materials { get; }
-
         IComputeManager Compute { get; }
 
         /// <summary>Gets the name of the renderer.</summary>

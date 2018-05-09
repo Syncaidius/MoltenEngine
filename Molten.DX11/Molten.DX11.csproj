@@ -216,7 +216,6 @@
     <Compile Include="Shaders\Materials\Material.cs" />
     <Compile Include="Shaders\HlslIncludeHandler.cs" />
     <Compile Include="Shaders\Materials\MaterialLayoutValidator.cs" />
-    <Compile Include="Shaders\Materials\MaterialManager.cs" />
     <Compile Include="Shaders\Materials\MaterialPass.cs" />
     <Compile Include="Shaders\Materials\MaterialPassCompileResult.cs" />
     <Compile Include="Shaders\ShaderSampler.cs" />

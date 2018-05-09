@@ -20,7 +20,6 @@ namespace Molten.Graphics
 
         DisplayManagerDX11 _displayManager;
         ResourceManager _resourceManager;
-        MaterialManager _materials;
         ComputeManager _compute;
         GraphicsDeviceDX11 _device;
         Logger _log;
@@ -81,7 +80,6 @@ namespace Molten.Graphics
             _outputSurfaces = new ThreadedList<ISwapChainSurface>();
             _device = new GraphicsDeviceDX11(_log, settings, _profiler, _displayManager, settings.EnableDebugLayer);
             _resourceManager = new ResourceManager(this);
-            _materials = new MaterialManager();
             _compute = new ComputeManager(this.Device);
             _shaderCompiler = new HlslCompiler(this, _log);
             _tasks = new ThreadedQueue<RendererTask>();
@@ -357,10 +355,6 @@ namespace Molten.Graphics
         public RenderProfiler Profiler => _profiler;
 
         internal GraphicsDeviceDX11 Device => _device;
-
-        internal MaterialManager Materials => _materials;
-
-        IMaterialManager IRenderer.Materials => _materials;
 
         internal ComputeManager Compute => _compute;
 
