@@ -24,7 +24,7 @@ namespace Molten
         static ObjectPool<ContentRequest> _requestPool;
 
         Dictionary<Type, ContentProcessor> _customProcessors;
-        Dictionary<Type, Dictionary<string, List<object>>> _content;
+        Dictionary<Type, ContentTypeGroup> _content;
         int _lockerVal;
         WorkerGroup _workers;
         Logger _log;
@@ -69,7 +69,7 @@ namespace Molten
 
             // Store all the provided custom processors by type.
             _customProcessors = new Dictionary<Type, ContentProcessor>();
-            _content = new Dictionary<Type, Dictionary<string, List<object>>>();
+            _content = new Dictionary<Type, ContentTypeGroup>();
             _workers = engine.Threading.SpawnWorkerGroup("content workers", workerThreads);
             _log = log;
             _jsonSettings = jsonSettings ?? JsonHelper.GetDefaultSettings(_log);
@@ -98,7 +98,7 @@ namespace Molten
 
         internal void Commit(ContentRequest request)
         {
-            if(request.Elements.Count == 0)
+            if(request.RequestElements.Count == 0)
             {
                 request.Complete();
                 _requestPool.Recycle(request);
@@ -117,13 +117,13 @@ namespace Molten
             path = path.ToLower();
 
             Type t = typeof(T);
-            Dictionary<string, List<object>> group;
+            ContentTypeGroup group;
 
             if (!_content.TryGetValue(t, out group))
                 return default(T);
 
-            List<object> groupContent;
-            if (!group.TryGetValue(path, out groupContent))
+            ContentSegment contentFile;
+            if (!group.Files.TryGetValue(path, out contentFile))
                 return default(T);
 
             // Since the content exists, we know there's either a custom or default processor for it.
@@ -131,7 +131,7 @@ namespace Molten
 
             if (proc != null)
             {
-                T obj = (T)proc.OnGet(_engine, t, meta, groupContent);
+                T obj = (T)proc.OnGet(_engine, t, meta, contentFile.Objects);
                 return obj;
             }
             else
@@ -162,25 +162,25 @@ namespace Molten
             return path;
         }
 
-        private List<object> GetOrCreateGroup(string fn, Type type)
+        private ContentSegment GetContentFile(string fn, Type type)
         {
             fn = fn.ToLower();
-            Dictionary<string, List<object>> group;
+            ContentTypeGroup group;
 
             if(!_content.TryGetValue(type, out group))
             {
-                group = new Dictionary<string, List<object>>();
+                group = new ContentTypeGroup(type);
                 _content.Add(type, group);
             }
 
-            List<object> groupContent;
-            if(!group.TryGetValue(fn, out groupContent))
+            ContentSegment contentFile;
+            if(!group.Files.TryGetValue(fn, out contentFile))
             {
-                groupContent = new List<object>();
-                group.Add(fn, groupContent);
+                contentFile = new ContentSegment(fn);
+                group.Files.Add(fn, contentFile);
             }
 
-            return groupContent;
+            return contentFile;
         }
 
         private ContentProcessor GetProcessor(Type type)
@@ -212,9 +212,9 @@ namespace Molten
         internal void ProcessRequest(ContentRequest request)
         {
             ContentProcessor proc = null;
-            foreach (ContentRequestElement e in request.Elements)
+            foreach (ContentRequestElement e in request.RequestElements)
             {
-                if (request.Cancelled)
+                if (request.State == ContentRequestState.Cancelled)
                     return;
 
                 proc = GetProcessor(e.ContentType);
@@ -270,8 +270,8 @@ namespace Molten
                 try
                 {
                     object result = JsonConvert.DeserializeObject(json, e.ContentType, _jsonSettings);
-                    List<object> group = GetOrCreateGroup(e.FileRequestString, e.ContentType);
-                    group.Add(result);
+                    ContentSegment group = GetContentFile(e.FilePathString, e.ContentType);
+                    group.Objects.Add(result);
                     _log.WriteLine($"[CONTENT] [JSON] Loaded '{result.GetType().Name}' from '{path}'");
                 }
                 catch (Exception ex)
@@ -295,9 +295,9 @@ namespace Molten
                 {
                     foreach (Type t in e.Result.Objects.Keys)
                     {
-                        List<object> group = GetOrCreateGroup(e.FileRequestString, e.ContentType);
+                        ContentSegment contentFile = GetContentFile(e.FilePathString, e.ContentType);
                         List<object> result = e.Result.Objects[t];
-                        group.AddRange(result);
+                        contentFile.Objects.AddRange(result);
                         for (int i = 0; i < result.Count; i++)
                             _log.WriteLine($"[CONTENT]    {result[i].GetType().Name} - {result[i].ToString()}");
                     }

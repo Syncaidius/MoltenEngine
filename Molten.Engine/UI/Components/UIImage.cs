@@ -38,7 +38,7 @@ namespace Molten.UI
 
         void request_OnCompleted(ContentManager content, ContentRequest request)
         {
-            _texture = content.Get<ITexture2D>(request.RequestedFiles[0]);
+            _texture = content.Get<ITexture2D>(request[0]);
 
             if (!_surpassSourceUpdate)
                 _source = new Rectangle(0, 0, _texture.Width, _texture.Height);

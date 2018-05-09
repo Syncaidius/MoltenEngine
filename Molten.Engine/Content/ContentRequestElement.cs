@@ -16,7 +16,7 @@ namespace Molten
 
         public FileInfo Info { get; internal set; }
 
-        public string FileRequestString { get; internal set; }
+        public string FilePathString { get; internal set; }
 
         public Dictionary<string, string> Metadata { get; internal set; } = new Dictionary<string, string>();
 
@@ -28,7 +28,7 @@ namespace Molten
             Metadata.Clear();
             Info = null;
             ContentType = null;
-            FileRequestString = null;
+            FilePathString = null;
         }
     }
 }

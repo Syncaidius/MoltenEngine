@@ -39,7 +39,7 @@ namespace Molten.Samples
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
         {
-            IMaterial mat = content.Get<IMaterial>(cr.RequestedFiles[0]);
+            IMaterial mat = content.Get<IMaterial>(cr[0]);
 
             if (mat == null)
             {
@@ -48,7 +48,7 @@ namespace Molten.Samples
             }
 
             // Manually construct a 2D texture array from the 3 textures we requested earlier
-            TextureData texData = content.Get<TextureData>(cr.RequestedFiles[1]);
+            TextureData texData = content.Get<TextureData>(cr[1]);
             ITexture texture = Engine.Renderer.Resources.CreateTexture1D(new Texture1DProperties()
             {
                 Width = texData.Width,
@@ -59,10 +59,10 @@ namespace Molten.Samples
             });
             texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 0);
 
-            texData = content.Get<TextureData>(cr.RequestedFiles[2]);
+            texData = content.Get<TextureData>(cr[2]);
             texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 1);
 
-            texData = content.Get<TextureData>(cr.RequestedFiles[3]);
+            texData = content.Get<TextureData>(cr[3]);
             texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 2);
 
             mat.SetDefaultResource(texture, 0);

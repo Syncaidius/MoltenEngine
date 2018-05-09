@@ -42,7 +42,7 @@ namespace Molten.Samples
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
         {
-            _testFont = content.Get<SpriteFont>(cr.RequestedFiles[0]);
+            _testFont = content.Get<SpriteFont>(cr[0]);
             DebugOverlay.Font = _testFont;
 
             OnContentLoaded(content, cr);

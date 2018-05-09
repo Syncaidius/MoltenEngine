@@ -8,39 +8,57 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public delegate void ContentRequestHandler(ContentManager content, ContentRequest cr);
+    public delegate void ContentRequestHandler(ContentManager manager, ContentRequest request);
+    
+    public enum ContentRequestState
+    {
+        NotCommited = 0,
+
+        Committed = 1,
+
+        Completed = 2,
+
+        Cancelled = 3,
+    }
 
     public class ContentRequest : IPoolable
     {
         public event ContentRequestHandler OnCompleted;
 
-        public List<string> RequestedFiles { get; private set; } = new List<string>();
-
-        internal List<ContentRequestElement> Elements = new List<ContentRequestElement>();
+        internal List<ContentRequestElement> RequestElements = new List<ContentRequestElement>();
 
         internal ContentManager Manager;
 
-        internal bool Cancelled;
+        internal ContentRequestState State;
+
+        List<string> _requestedFiles = new List<string>();
 
         internal ContentRequest() { }
 
         /// <summary>Commits the request to it's parent content manager. It will be queued for processing as soon as possible.</summary>
         public void Commit()
         {
+            if (State != ContentRequestState.NotCommited)
+                throw new ContentException("Content request has already been commited.");
+
+            State = ContentRequestState.Committed;
             Manager.Commit(this);
         }
 
         public void Cancel()
         {
-            Cancelled = true;
+            if (State == ContentRequestState.Committed)
+                State = ContentRequestState.Cancelled;
         }
 
         internal void Complete()
         {
+            State = ContentRequestState.Completed;
             OnCompleted?.Invoke(Manager, this);
         }
 
-        /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>.</summary>
+        /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>. </para>
+        /// If the content was already loaded from a previous request, the existing object will be retrieved.</summary>
         /// <param name="fn">The relative file path from the content manager's root directory.</param>
         public void Load<T>(string fn)
         {
@@ -80,10 +98,8 @@ namespace Molten
             });
         }
 
-
-
         /// <summary>
-        /// 
+        /// Requests the deletion of a file.
         /// </summary>
         /// <param name="fn">The relative file path from the content manager's root directory.</param>
         public void Delete(string fn)
@@ -105,24 +121,39 @@ namespace Molten
                     return;
                 }
 
-                RequestedFiles.Add(path);
+                _requestedFiles.Add(path);
             }
             
             e.ContentType = contentType;
-            e.FileRequestString = path;
+            e.FilePathString = path;
             e.Type = type;
             e.Info = new FileInfo(contentPath);
 
             populator?.Invoke(e);
-            Elements.Add(e);
+            RequestElements.Add(e);
         }
 
         public void Clear()
         {
             Manager = null;
-            Elements.Clear();
-            RequestedFiles.Clear();
+            RequestElements.Clear();
+            _requestedFiles.Clear();
             OnCompleted = null;
         }
+
+        /// <summary>
+        /// Gets a requested content file path at the specified index.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public string this[int index]
+        {
+            get => _requestedFiles[index];
+        }
+
+        /// <summary>
+        /// Gets the number of files that were requested
+        /// </summary>
+        public int RequestedFileCount => _requestedFiles.Count;
     }
 }

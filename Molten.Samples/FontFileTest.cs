@@ -241,11 +241,11 @@ namespace Molten.Samples
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
         {
-            if (cr.RequestedFiles.Count == 0)
+            if (cr.RequestedFileCount == 0)
                 return;
 
-            ITexture2D tex = content.Get<ITexture2D>(cr.RequestedFiles[0]);
-            IMaterial mat = content.Get<IMaterial>(cr.RequestedFiles[1]);
+            ITexture2D tex = content.Get<ITexture2D>(cr[0]);
+            IMaterial mat = content.Get<IMaterial>(cr[1]);
 
             if (mat == null)
             {

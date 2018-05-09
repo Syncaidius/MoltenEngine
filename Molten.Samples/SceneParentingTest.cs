@@ -36,7 +36,7 @@ namespace Molten.Samples
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
         {
-            IMaterial mat = content.Get<IMaterial>(cr.RequestedFiles[0]);
+            IMaterial mat = content.Get<IMaterial>(cr[0]);
 
             if (mat == null)
             {

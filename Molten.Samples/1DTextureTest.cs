@@ -58,8 +58,8 @@ namespace Molten.Samples
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
         {
-            ITexture tex = content.Get<ITexture>(cr.RequestedFiles[0]);
-            IMaterial mat = content.Get<IMaterial>(cr.RequestedFiles[1]);
+            ITexture tex = content.Get<ITexture>(cr[0]);
+            IMaterial mat = content.Get<IMaterial>(cr[1]);
 
             if (mat == null)
             {

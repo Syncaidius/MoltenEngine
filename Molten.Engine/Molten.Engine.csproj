@@ -66,6 +66,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Content\ContentException.cs" />
+    <Compile Include="Content\ContentSegment.cs" />
+    <Compile Include="Content\ContentTypeGroup.cs" />
     <Compile Include="Content\ContentManager.cs" />
     <Compile Include="Content\ContentRequest.cs" />
     <Compile Include="Content\ContentRequestElement.cs" />

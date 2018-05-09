@@ -126,28 +126,28 @@ namespace Molten.Samples
 
         private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
         {
-            if (cr.RequestedFiles.Count == 0)
+            if (cr.RequestedFileCount == 0)
                 return;
 
-            ITexture2D diffuseMap = content.Get<ITexture2D>(cr.RequestedFiles[0]);
+            ITexture2D diffuseMap = content.Get<ITexture2D>(cr[0]);
             _mesh.SetResource(diffuseMap, 0);
 
-            ITexture2D normalMap = content.Get<ITexture2D>(cr.RequestedFiles[1]);
+            ITexture2D normalMap = content.Get<ITexture2D>(cr[1]);
             _mesh.SetResource(normalMap, 1);
 
-            ITexture2D emssiveMap = content.Get<ITexture2D>(cr.RequestedFiles[2]);
+            ITexture2D emssiveMap = content.Get<ITexture2D>(cr[2]);
             _mesh.SetResource(emssiveMap, 2);
             
-            diffuseMap = content.Get<ITexture2D>(cr.RequestedFiles[3]);
+            diffuseMap = content.Get<ITexture2D>(cr[3]);
             _floorMesh.SetResource(diffuseMap, 0);
 
-            normalMap = content.Get<ITexture2D>(cr.RequestedFiles[4]);
+            normalMap = content.Get<ITexture2D>(cr[4]);
             _floorMesh.SetResource(normalMap, 1);
 
-            emssiveMap = content.Get<ITexture2D>(cr.RequestedFiles[5]);
+            emssiveMap = content.Get<ITexture2D>(cr[5]);
             _floorMesh.SetResource(emssiveMap, 2);
 
-            //ITexture2D specular = content.Get<ITexture2D>(cr.RequestedFiles[6]);
+            //ITexture2D specular = content.Get<ITexture2D>(cr[6]);
             //_floorMesh.SetResource(specular, 3);
         }
 
