@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,14 +9,17 @@ namespace Molten
 {
     internal class ContentSegment
     {
-        internal List<object> Objects;
+        internal ThreadedList<object> Objects;
 
         internal string FilePath;
 
-        internal ContentSegment(string filePath)
+        internal Type ObjectType;
+
+        internal ContentSegment(Type objType, string filePath)
         {
-            Objects = new List<object>();
+            Objects = new ThreadedList<object>();
             FilePath = filePath;
+            ObjectType = objType;
         }
     }
 }

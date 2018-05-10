@@ -123,8 +123,12 @@ namespace Molten.Collections
                 {
                     if (0 == Interlocked.Exchange(ref _blockingVal, 1))
                     {
-                        V result = default(V);
-                        _dictionary.TryGetValue(key, out result);
+                        try
+                        {
+                            _dictionary[key] = value;
+                        }
+                        catch { }
+
                         Interlocked.Exchange(ref _blockingVal, 0);
                         return;
                     }

@@ -81,7 +81,7 @@ namespace Molten.Samples
 
         public abstract string Description { get; }
 
-        public SpriteFont TestFont => _testFont;
+        public SpriteFont SampleFont => _testFont;
 
         /// <summary>Gets a random number generator. Used for various samples.</summary>
         public Random Rng { get; private set; } = new Random();

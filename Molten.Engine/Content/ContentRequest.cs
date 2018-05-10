@@ -25,7 +25,7 @@ namespace Molten
     {
         public event ContentRequestHandler OnCompleted;
 
-        internal List<ContentRequestElement> RequestElements = new List<ContentRequestElement>();
+        internal List<ContentContext> RequestElements = new List<ContentContext>();
 
         internal ContentManager Manager;
 
@@ -74,7 +74,7 @@ namespace Molten
         {
             AddElement(fn, ContentRequestType.Write, typeof(T), (e) =>
             {
-                e.Result.AddResult<T>(obj);
+                e.AddInput<T>(obj);
             });
         }
 
@@ -94,7 +94,7 @@ namespace Molten
         {
             AddElement(fn, ContentRequestType.Serialize, typeof(T), (e) =>
             {
-                e.Result.AddResult<T>(obj);
+                e.AddInput<T>(obj);
             });
         }
 
@@ -107,10 +107,10 @@ namespace Molten
             AddElement(fn, ContentRequestType.Delete, null);
         }
 
-        private void AddElement(string requestString, ContentRequestType type, Type contentType, Action<ContentRequestElement> populator = null)
+        private void AddElement(string requestString, ContentRequestType type, Type contentType, Action<ContentContext> populator = null)
         {
-            ContentRequestElement e = ContentManager.ElementPool.GetInstance();
-            string path = Manager.ParseRequestString(requestString, e.Metadata);
+            ContentContext c = ContentManager.ContextPool.GetInstance();
+            string path = Manager.ParseRequestString(requestString, c.Metadata);
             string contentPath = Path.Combine(Manager.RootDirectory, path);
 
             if (type == ContentRequestType.Read || type == ContentRequestType.Deserialize)
@@ -124,17 +124,17 @@ namespace Molten
                 _requestedFiles.Add(path);
             }
             
-            e.ContentType = contentType;
-            e.FilePathString = path;
-            e.Type = type;
-            e.Info = new FileInfo(contentPath);
+            c.ContentType = contentType;
+            c.Type = type;
+            c.File = new FileInfo(contentPath);
 
-            populator?.Invoke(e);
-            RequestElements.Add(e);
+            populator?.Invoke(c);
+            RequestElements.Add(c);
         }
 
         public void Clear()
         {
+            State = ContentRequestState.NotCommited;
             Manager = null;
             RequestElements.Clear();
             _requestedFiles.Clear();

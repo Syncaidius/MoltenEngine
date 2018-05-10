@@ -14,22 +14,22 @@ namespace Molten.Content
     {
         public override Type[] AcceptedTypes { get; protected set; } = new Type[] { typeof(SpriteFont)};
 
-        public override void OnRead(Engine engine, Logger log, Type contentType, Stream stream, Dictionary<string,string> metadata, FileInfo file, ContentResult output)
+        public override void OnRead(ContentContext context)
         {
             int size = 18;
             string strSize = "";
-            if (metadata.TryGetValue("size", out strSize))
+            if (context.Metadata.TryGetValue("size", out strSize))
                 int.TryParse(strSize, out size);
 
             FontFile font = null;
-            using (FontReader reader = new FontReader(stream, log, file.FullName))
+            using (FontReader reader = new FontReader(context.Stream, context.Log, context.Filename))
                 font = reader.ReadFont(true);
 
             if (!font.HasFlag(FontFlags.Invalid))
-                output.AddResult(new SpriteFont(engine.Renderer, font, size));
+                context.AddOutput(new SpriteFont(context.Engine.Renderer, font, size));
         }
 
-        public override void OnWrite(Engine engine, Logger log, Type t, Stream stream, FileInfo file)
+        public override void OnWrite(ContentContext context)
         {
             throw new NotImplementedException();
         }

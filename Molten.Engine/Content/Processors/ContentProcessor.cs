@@ -14,11 +14,11 @@ namespace Molten
         /// <param name="metadata">An array of metadata strings that were attached to the request.</param>
         /// <param name="groupContent">A list of viable objects which match the requested filename</param>
         /// <returns></returns>
-        public virtual object OnGet(Engine engine, Type contentType, Dictionary<string, string> metadata, List<object> groupContent) { return groupContent[0]; }
+        public virtual object OnGet(Engine engine, Type contentType, Dictionary<string, string> metadata, IList<object> groupContent) { return groupContent[0]; }
 
-        public abstract void OnRead(Engine engine, Logger log, Type contentType, Stream stream, Dictionary<string, string> metadata, FileInfo file, ContentResult output);
+        public abstract void OnRead(ContentContext context);
 
-        public abstract void OnWrite(Engine engine, Logger log, Type contentType, Stream stream, FileInfo file);
+        public abstract void OnWrite(ContentContext context);
 
         /// <summary>Gets a list of accepted </summary>
         public abstract Type[] AcceptedTypes { get; protected set; }

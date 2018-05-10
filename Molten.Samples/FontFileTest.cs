@@ -139,7 +139,7 @@ namespace Molten.Samples
                     if (dif != 0)
                     {
                         sb.DrawLine(new Vector2F(_glyphBounds.Right, _fontBounds.Top), new Vector2F(_glyphBounds.Right, _fontBounds.Top + dif), Color.Red, 1);
-                        sb.DrawString(TestFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Top + (dif / 2)), Color.White);
+                        sb.DrawString(SampleFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Top + (dif / 2)), Color.White);
                     }
 
                     // Bottom difference marker
@@ -147,7 +147,7 @@ namespace Molten.Samples
                     if (dif != 0)
                     {
                         sb.DrawLine(new Vector2F(_glyphBounds.Right, _fontBounds.Bottom), new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - dif), Color.Red, 1);
-                        sb.DrawString(TestFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - (dif / 2)), Color.White);
+                        sb.DrawString(SampleFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - (dif / 2)), Color.White);
                     }
 
                     sb.DrawTriangleList(_glyphTriPoints, _colors);
@@ -172,9 +172,9 @@ namespace Molten.Samples
                         sb.DrawRect(clickRect, _clickColor);
                     }
 
-                    sb.DrawString(TestFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
+                    sb.DrawString(SampleFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
 
-                    sb.DrawString(TestFont, $"Font atlas: ", new Vector2F(700, 45), Color.White);
+                    sb.DrawString(SampleFont, $"Font atlas: ", new Vector2F(700, 45), Color.White);
                     if (_font2Test != null && _font2Test.UnderlyingTexture != null)
                     {
                         Vector2I pos = new Vector2I(800, 65);

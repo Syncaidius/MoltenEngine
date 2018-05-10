@@ -13,27 +13,27 @@ namespace Molten.Content
     {
         public override Type[] AcceptedTypes { get; protected set; } = new Type[] { typeof(IShader)};
 
-        public override void OnRead(Engine engine, Logger log, Type t, Stream stream, Dictionary<string,string> metadata, FileInfo file, ContentResult output)
+        public override void OnRead(ContentContext context)
         {
-            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, true, 2048, true))
+            using (StreamReader reader = new StreamReader(context.Stream, Encoding.UTF8, true, 2048, true))
             {
                 string source = reader.ReadToEnd();
-                ShaderCompileResult r = engine.Renderer.Resources.CreateShaders(source, file.ToString());
+                ShaderCompileResult r = context.Engine.Renderer.Resources.CreateShaders(source, context.Filename);
                 foreach(string group in r.ShaderGroups.Keys)
                 {
                     List<IShader> list = r.ShaderGroups[group];
                     foreach (IShader shader in list)
-                        output.AddResult(shader);
+                        context.AddOutput(shader);
                 }
             }
         }
 
-        public override void OnWrite(Engine engine, Logger log, Type t, Stream stream, FileInfo file)
+        public override void OnWrite(ContentContext context)
         {
             throw new NotImplementedException();
         }
 
-        public override object OnGet(Engine engine, Type t, Dictionary<string, string> metadata, List<object> groupContent)
+        public override object OnGet(Engine engine, Type t, Dictionary<string, string> metadata, IList<object> groupContent)
         {
             string materialName = "";
             if (metadata.TryGetValue("name", out materialName))
