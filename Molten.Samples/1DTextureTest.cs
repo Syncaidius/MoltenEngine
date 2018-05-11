@@ -32,7 +32,7 @@ namespace Molten.Samples
             _scene = CreateScene("Test");
             SpawnPlayer();
 
-            ContentRequest cr = engine.Content.StartRequest();
+            ContentRequest cr = engine.Content.StartRequest("assets/");
             cr.Load<ITexture>("1d_1.png;mipmaps=true");
             cr.Load<IMaterial>("BasicTexture1D.sbm");
             cr.OnCompleted += Cr_OnCompleted;
@@ -54,12 +54,12 @@ namespace Molten.Samples
 
         protected override void OnContentRequested(ContentRequest cr) { }
 
-        protected override void OnContentLoaded(ContentManager content, ContentRequest cr) { }
+        protected override void OnContentLoaded(ContentRequest cr) { }
 
-        private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
+        private void Cr_OnCompleted(ContentRequest cr)
         {
-            ITexture tex = content.Get<ITexture>(cr[0]);
-            IMaterial mat = content.Get<IMaterial>(cr[1]);
+            ITexture tex = cr.Get<ITexture>(0);
+            IMaterial mat = cr.Get<IMaterial>(1);
 
             if (mat == null)
             {

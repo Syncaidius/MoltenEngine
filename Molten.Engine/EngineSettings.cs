@@ -63,9 +63,6 @@ namespace Molten
         /// <summary>Gets or sets the settings file name.</summary>
         public string Filename { get; set; } = "settings.json";
 
-        /// <summary>Gets or sets the content root directory.</summary>
-        public string ContentRootDirectory { get; set; } = "/Assets/";
-
         /// <summary>Gets or sets the number of content worker threads.</summary>
         public int ContentWorkerThreads { get; set; } = 1;
 

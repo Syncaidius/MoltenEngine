@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public delegate void ContentRequestHandler(ContentManager manager, ContentRequest request);
+    public delegate void ContentRequestHandler(ContentRequest request);
     
     public enum ContentRequestState
     {
@@ -29,9 +29,13 @@ namespace Molten
 
         internal ContentManager Manager;
 
+        internal string RootDirectory;
+
         internal ContentRequestState State;
 
         List<string> _requestedFiles = new List<string>();
+
+        internal Dictionary<string, ContentFile> RetrievedContent = new Dictionary<string, ContentFile>();
 
         internal ContentRequest() { }
 
@@ -54,7 +58,7 @@ namespace Molten
         internal void Complete()
         {
             State = ContentRequestState.Completed;
-            OnCompleted?.Invoke(Manager, this);
+            OnCompleted?.Invoke(this);
         }
 
         /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>. </para>
@@ -111,7 +115,7 @@ namespace Molten
         {
             ContentContext c = ContentManager.ContextPool.GetInstance();
             string path = Manager.ParseRequestString(requestString, c.Metadata);
-            string contentPath = Path.Combine(Manager.RootDirectory, path);
+            string contentPath = Path.Combine(RootDirectory, path);
 
             if (type == ContentRequestType.Read || type == ContentRequestType.Deserialize)
             {
@@ -138,11 +142,53 @@ namespace Molten
             Manager = null;
             RequestElements.Clear();
             _requestedFiles.Clear();
+            RetrievedContent.Clear();
             OnCompleted = null;
+            RootDirectory = null;
         }
 
         /// <summary>
-        /// Gets a requested content file path at the specified index.
+        /// Returns a content object that was loaded or retrieved as part of the request.
+        /// </summary>
+        /// <typeparam name="T">The type of object expected to be returned.</typeparam>
+        /// <param name="requestString">The path or request string.</param>
+        /// <returns></returns>
+        public T Get<T>(string requestString)
+        {
+            Dictionary<string, string> meta = new Dictionary<string, string>();
+            string path = Path.Combine(RootDirectory, Manager.ParseRequestString(requestString, meta));
+            path = path.ToLower();
+
+            Type t = typeof(T);
+
+            if (RetrievedContent.TryGetValue(path, out ContentFile file))
+            {
+                if (file.Segments.TryGetValue(t, out ContentSegment segment))
+                {
+                    // Since the content exists, we know there's either a custom or default processor for it.
+                    ContentProcessor proc = Manager.GetProcessor(t);
+                    if (proc != null)
+                    {
+                        T obj = (T)proc.OnGet(Manager.Engine, t, meta, segment.Objects);
+                        return obj;
+                    }
+                    else
+                    {
+                        Manager.Log.WriteError($"[CONTENT] [GET] unable to fulfil content request from {path}: No content processor available for type {t} or any of its derivatives.");
+                    }
+                }
+            }
+
+            return default;
+        }
+
+        public T Get<T>(int index)
+        {
+            return Get<T>(_requestedFiles[index]);
+        }
+
+        /// <summary>
+        /// Gets the path of a file that was loaded via the current content request.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>

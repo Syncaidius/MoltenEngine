@@ -43,7 +43,7 @@ namespace Molten.Samples
 
         protected override void OnContentRequested(ContentRequest cr) { }
 
-        protected override void OnContentLoaded(ContentManager content, ContentRequest cr) { }
+        protected override void OnContentLoaded(ContentRequest cr) { }
 
         private void Window_OnClose(IWindowSurface surface)
         {

@@ -13,7 +13,6 @@ namespace Molten.Samples
         SpriteFont _testFont;
         bool _baseContentLoaded;
         ISceneDebugOverlay _mainOverlay;
-        Camera2D _uiCamera;
 
         public SampleGame(string title, EngineSettings settings = null) : base(title, settings) { }
 
@@ -27,25 +26,24 @@ namespace Molten.Samples
 
             // Use the same camera for both the sprite and UI scenes.
             UIScene.OutputCamera = SpriteScene.OutputCamera = new Camera2D();
-
             DebugOverlay = UIScene.DebugOverlay;
             UIScene.AddSprite(DebugOverlay);
 
             Window.PresentClearColor = new Color(20, 20, 20, 255);
 
-            ContentRequest cr = engine.Content.StartRequest();
+            ContentRequest cr = engine.Content.StartRequest("assets/");
             cr.Load<SpriteFont>("BroshK.ttf;size=24");
             OnContentRequested(cr);
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
         }
 
-        private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
+        private void Cr_OnCompleted(ContentRequest cr)
         {
-            _testFont = content.Get<SpriteFont>(cr[0]);
+            _testFont = cr.Get<SpriteFont>(0);
             DebugOverlay.Font = _testFont;
 
-            OnContentLoaded(content, cr);
+            OnContentLoaded(cr);
             _baseContentLoaded = true;
         }
 
@@ -56,7 +54,7 @@ namespace Molten.Samples
 
         protected abstract void OnContentRequested(ContentRequest cr);
 
-        protected abstract void OnContentLoaded(ContentManager content, ContentRequest cr);
+        protected abstract void OnContentLoaded(ContentRequest cr);
 
         protected override void OnUpdate(Timing time)
         {

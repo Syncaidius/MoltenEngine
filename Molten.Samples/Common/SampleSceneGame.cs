@@ -28,7 +28,7 @@ namespace Molten.Samples
             SpawnPlayer();
         }
 
-        protected override void OnContentLoaded(ContentManager content, ContentRequest cr)
+        protected override void OnContentLoaded(ContentRequest cr)
         {
             string text = "[W][A][S][D] to move -- [ESC] Close -- [LMB] and [MOUSE] to rotate";
             _txtInstructionSize = SampleFont.MeasureString(text);

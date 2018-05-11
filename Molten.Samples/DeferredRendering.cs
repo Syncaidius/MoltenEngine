@@ -41,7 +41,7 @@ namespace Molten.Samples
             SetupFloor(Vector3F.Zero, 30);
 
             SampleScene.RenderFlags = SceneRenderFlags.Deferred | SceneRenderFlags.Render3D;
-            ContentRequest cr = engine.Content.StartRequest();
+            ContentRequest cr = engine.Content.StartRequest("assets/");
             cr.Load<ITexture2D>("dds_test.dds");
             cr.Load<ITexture2D>("dds_test_n.dds");
             cr.Load<ITexture2D>("dds_test_e.dds");
@@ -124,27 +124,27 @@ namespace Molten.Samples
             }
         }
 
-        private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
+        private void Cr_OnCompleted(ContentRequest cr)
         {
             if (cr.RequestedFileCount == 0)
                 return;
 
-            ITexture2D diffuseMap = content.Get<ITexture2D>(cr[0]);
+            ITexture2D diffuseMap = cr.Get<ITexture2D>(0);
             _mesh.SetResource(diffuseMap, 0);
 
-            ITexture2D normalMap = content.Get<ITexture2D>(cr[1]);
+            ITexture2D normalMap = cr.Get<ITexture2D>(1);
             _mesh.SetResource(normalMap, 1);
 
-            ITexture2D emssiveMap = content.Get<ITexture2D>(cr[2]);
+            ITexture2D emssiveMap = cr.Get<ITexture2D>(2);
             _mesh.SetResource(emssiveMap, 2);
             
-            diffuseMap = content.Get<ITexture2D>(cr[3]);
+            diffuseMap = cr.Get<ITexture2D>(3);
             _floorMesh.SetResource(diffuseMap, 0);
 
-            normalMap = content.Get<ITexture2D>(cr[4]);
+            normalMap = cr.Get<ITexture2D>(4);
             _floorMesh.SetResource(normalMap, 1);
 
-            emssiveMap = content.Get<ITexture2D>(cr[5]);
+            emssiveMap = cr.Get<ITexture2D>(5);
             _floorMesh.SetResource(emssiveMap, 2);
 
             //ITexture2D specular = content.Get<ITexture2D>(cr[6]);

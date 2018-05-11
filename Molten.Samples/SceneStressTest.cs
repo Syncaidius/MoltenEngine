@@ -24,7 +24,7 @@ namespace Molten.Samples
 
             _objects = new List<SceneObject>();
 
-            ContentRequest cr = engine.Content.StartRequest();
+            ContentRequest cr = engine.Content.StartRequest("assets/");
             cr.Load<IMaterial>("BasicColor.sbm");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
@@ -36,9 +36,9 @@ namespace Molten.Samples
                 SpawnRandomTestCube(_mesh, 70);
         }
 
-        private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
+        private void Cr_OnCompleted(ContentRequest cr)
         {
-            IMaterial mat = content.Get<IMaterial>(cr[0]);
+            IMaterial mat = cr.Get<IMaterial>(0);
 
             if (mat == null)
             {

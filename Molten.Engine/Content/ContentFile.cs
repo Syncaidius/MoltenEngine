@@ -9,5 +9,12 @@ namespace Molten
     internal class ContentFile
     {
         internal Dictionary<Type, ContentSegment> Segments = new Dictionary<Type, ContentSegment>();
+
+        internal string Path;
+
+        internal ContentFile(string path)
+        {
+            Path = path;
+        }
     }
 }

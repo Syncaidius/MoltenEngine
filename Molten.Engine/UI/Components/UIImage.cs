@@ -30,15 +30,15 @@ namespace Molten.UI
 
         private void GetSourceFile()
         {
-            ContentRequest cr = _engine.Content.StartRequest();
+            ContentRequest cr = _engine.Content.StartRequest("Assets/");
             cr.Load<ITexture2D>(_sourceFile);
             cr.OnCompleted += request_OnCompleted;
             cr.Commit();
         }
 
-        void request_OnCompleted(ContentManager content, ContentRequest request)
+        void request_OnCompleted(ContentRequest request)
         {
-            _texture = content.Get<ITexture2D>(request[0]);
+            _texture = request.Get<ITexture2D>(0);
 
             if (!_surpassSourceUpdate)
                 _source = new Rectangle(0, 0, _texture.Width, _texture.Height);

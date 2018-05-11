@@ -23,14 +23,12 @@ namespace Molten
         internal static ObjectPool<ContentContext> ContextPool;
 
         Dictionary<Type, ContentProcessor> _customProcessors;
-        Dictionary<Type, ContentTypeGroup> _content;
-        Dictionary<string, ContentFile> _contentByFile;
+        Dictionary<string, ContentFile> _content;
         Dictionary<string, ContentDirectory> _directories;
 
         int _lockerVal;
         WorkerGroup _workers;
         Logger _log;
-        string _rootDirectory;
         Engine _engine;
         JsonSerializerSettings _jsonSettings;
 
@@ -65,15 +63,13 @@ namespace Molten
         /// <param name="customProcessors">A list of custom processors to override the default ones with. Default value is null.</param>
         /// <param name="engine"></param>
         /// <param name="workerThreads">The number of worker threads that will be used to fulfil content requests.</param>
-        public ContentManager(Logger log, Engine engine, string rootDirectory, List<ContentProcessor> customProcessors = null, int workerThreads = 1, JsonSerializerSettings jsonSettings = null)
+        public ContentManager(Logger log, Engine engine, List<ContentProcessor> customProcessors = null, int workerThreads = 1, JsonSerializerSettings jsonSettings = null)
         {
             _engine = engine;
-            _rootDirectory = rootDirectory.StartsWith("/") ? rootDirectory.Substring(1, rootDirectory.Length - 1) : rootDirectory;
 
             // Store all the provided custom processors by type.
             _customProcessors = new Dictionary<Type, ContentProcessor>();
-            _content = new Dictionary<Type, ContentTypeGroup>();
-            _contentByFile = new Dictionary<string, ContentFile>();
+            _content = new Dictionary<string, ContentFile>();
             _directories = new Dictionary<string, ContentDirectory>();
             _workers = engine.Threading.SpawnWorkerGroup("content workers", workerThreads);
             _log = log;
@@ -94,9 +90,15 @@ namespace Molten
             }
         }
 
-        public ContentRequest StartRequest()
+        /// <summary>
+        /// Spawns a new content request and returns it for the provided directory.
+        /// </summary>
+        /// <param name="rootDirectory">The root directory of all operations added to the request.</param>
+        /// <returns></returns>
+        public ContentRequest StartRequest(string rootDirectory)
         {
             ContentRequest request = _requestPool.GetInstance();
+            request.RootDirectory = Path.GetFullPath(rootDirectory.StartsWith("/") ? rootDirectory.Substring(1, rootDirectory.Length - 1) : rootDirectory);
             request.Manager = this;
             return request;
         }
@@ -115,39 +117,11 @@ namespace Molten
             _workers.QueueTask(task);
         }
 
-        public T Get<T>(string requestString)
+
+
+        private void Watcher_Changed(ContentDirectory dir, FileSystemEventArgs e)
         {
-            Dictionary<string, string> meta = new Dictionary<string, string>();
-            string path = Path.Combine(_rootDirectory, ParseRequestString(requestString, meta));
-            path = path.ToLower();
 
-            Type t = typeof(T);
-            ContentTypeGroup group;
-
-            if (!_content.TryGetValue(t, out group))
-                return default(T);
-
-            ContentSegment segment;
-            if (!group.Files.TryGetValue(path, out segment))
-                return default(T);
-
-            // Since the content exists, we know there's either a custom or default processor for it.
-            ContentProcessor proc = GetProcessor(t);
-            if (proc != null)
-            {
-                T obj = (T)proc.OnGet(_engine, t, meta, segment.Objects);
-                return obj;
-            }
-            else
-            {
-                _log.WriteError($"[CONTENT] [GET] unable to fulfil content request from {path}: No content processor available for type {t} or any of its derivatives.");
-                return default(T);
-            }
-        }
-
-        private void Watcher_Changed(object sender, FileSystemEventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         internal string ParseRequestString(string requestString, Dictionary<string, string> metadataOut)
@@ -171,48 +145,41 @@ namespace Molten
             return path;
         }
 
-        private ContentSegment GetSegment(FileInfo info, string fn, Type type)
+        private ContentSegment GetSegment(FileInfo info, string fn, Type type, ContentRequest request = null)
         {
             fn = fn.ToLower();
-            ContentTypeGroup group;
-
-            if(!_content.TryGetValue(type, out group))
+            ContentFile file;
+            if (!_content.TryGetValue(fn, out file))
             {
-                group = new ContentTypeGroup(type);
-                _content.Add(type, group);
-            }
-
-            ContentSegment segment;
-            if(!group.Files.TryGetValue(fn, out segment))
-            {
-                segment = new ContentSegment(type, fn);
-
-                ContentFile file;
-                if (!_contentByFile.TryGetValue(fn, out file))
-                {
-                    file = new ContentFile();
-                    _contentByFile.Add(fn, file);
-                }
+                file = new ContentFile(fn);
 
                 ContentDirectory directory;
                 string strDirectory = info.Directory.ToString();
-                if(!_directories.TryGetValue(strDirectory, out directory))
+                if (!_directories.TryGetValue(strDirectory, out directory))
                 {
                     directory = new ContentDirectory(strDirectory);
-                    directory.Watcher.Changed += Watcher_Changed;
+                    directory.OnChanged += Watcher_Changed;
                     _directories.Add(strDirectory, directory);
                 }
 
+                _content.Add(fn, file);
                 directory.AddFile(file);
+            }
 
+            if (request != null)
+                request.RetrievedContent[fn] = file;
+
+            ContentSegment segment;
+            if(!file.Segments.TryGetValue(type, out segment))
+            {
+                segment = new ContentSegment(type, fn);              
                 file.Segments.Add(type, segment);
-                group.Files.Add(fn, segment);
             }
 
             return segment;
         }
 
-        private ContentProcessor GetProcessor(Type type)
+        internal ContentProcessor GetProcessor(Type type)
         {
             ContentProcessor proc = null;
 
@@ -261,11 +228,11 @@ namespace Molten
                     switch (context.Type)
                     {
                         case ContentRequestType.Read:
-                            DoRead(context, proc);
+                            DoRead(request, context, proc);
                             break;
 
                         case ContentRequestType.Deserialize:
-                            DoDeserialize(context);
+                            DoDeserialize(request, context);
                             break;
 
                         case ContentRequestType.Write:
@@ -292,7 +259,7 @@ namespace Molten
             _requestPool.Recycle(request);
         }
 
-        private void DoDeserialize(ContentContext c)
+        private void DoDeserialize(ContentRequest request, ContentContext c)
         {
             using (FileStream stream = new FileStream(c.Filename, FileMode.Open, FileAccess.Read))
             {
@@ -303,8 +270,8 @@ namespace Molten
                 try
                 {
                     object result = JsonConvert.DeserializeObject(json, c.ContentType, _jsonSettings);
-                    ContentSegment group = GetSegment(c.File, c.Filename, c.ContentType);
-                    group.Objects.Add(result);
+                    ContentSegment segment = GetSegment(c.File, c.Filename, c.ContentType, request);
+                    segment.Objects.Add(result);
                     _log.WriteLine($"[CONTENT] [JSON] Loaded '{result.GetType().Name}' from '{c.Filename}'");
                 }
                 catch (Exception ex)
@@ -314,7 +281,7 @@ namespace Molten
             }
         }
 
-        private void DoRead(ContentContext context, ContentProcessor proc)
+        private void DoRead(ContentRequest request, ContentContext context, ContentProcessor proc)
         {
             using (context.Stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
                 proc.OnRead(context);
@@ -327,9 +294,9 @@ namespace Molten
                 {
                     foreach (Type t in context.Output.Keys)
                     {
-                        ContentSegment contentFile = GetSegment(context.File, context.Filename, context.ContentType);
+                        ContentSegment segment = GetSegment(context.File, context.Filename, context.ContentType, request);
                         List<object> result = context.Output[t];
-                        contentFile.Objects.AddRange(result);
+                        segment.Objects.AddRange(result);
                         for (int i = 0; i < result.Count; i++)
                             _log.WriteLine($"[CONTENT]    {result[i].GetType().Name} - {result[i].ToString()}");
                     }
@@ -343,12 +310,8 @@ namespace Molten
             base.OnDispose();
         }
 
-        public string RootDirectory
-        {
-            get => _rootDirectory;
-            set => _rootDirectory = value;
-        }
-
         internal Logger Log => _log;
+
+        internal Engine Engine => _engine;
     }
 }

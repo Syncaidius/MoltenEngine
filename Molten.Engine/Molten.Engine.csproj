@@ -71,11 +71,9 @@
     <Compile Include="Content\ContentFile.cs" />
     <Compile Include="Content\ContentException.cs" />
     <Compile Include="Content\ContentSegment.cs" />
-    <Compile Include="Content\ContentTypeGroup.cs" />
     <Compile Include="Content\ContentManager.cs" />
     <Compile Include="Content\ContentRequest.cs" />
     <Compile Include="Content\ContentRequestType.cs" />
-    <Compile Include="Content\ContentWatcher.cs" />
     <Compile Include="Content\ContentWorkerTask.cs" />
     <Compile Include="Content\Processors\ContentProcessor.cs" />
     <Compile Include="Content\Processors\MaterialProcessor.cs" />

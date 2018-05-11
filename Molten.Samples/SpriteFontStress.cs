@@ -35,7 +35,7 @@ namespace Molten.Samples
             //_font = engine.Renderer.Resources.CreateFont("arial", 36);
             //SetupSprites(_font);
 
-            ContentRequest cr = engine.Content.StartRequest();
+            ContentRequest cr = engine.Content.StartRequest("assets/");
             cr.Load<ITexture2D>("dds_test.dds;mipmaps=true");
             cr.Load<IMaterial>("Basictexture.sbm");
             cr.OnCompleted += Cr_OnCompleted;
@@ -119,13 +119,13 @@ namespace Molten.Samples
             }
         }
 
-        private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
+        private void Cr_OnCompleted(ContentRequest cr)
         {
             if (cr.RequestedFileCount == 0)
                 return;
 
-            ITexture2D tex = content.Get<ITexture2D>(cr[0]);
-            IMaterial mat = content.Get<IMaterial>(cr[1]);
+            ITexture2D tex = cr.Get<ITexture2D>(0);
+            IMaterial mat = cr.Get<IMaterial>(1);
 
             if (mat == null)
             {

@@ -23,7 +23,7 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
 
-            ContentRequest cr = engine.Content.StartRequest();
+            ContentRequest cr = engine.Content.StartRequest("assets/");
             cr.Load<IMaterial>("BasicColor.sbm");
             cr.OnCompleted += Cr_OnCompleted; ;
             cr.Commit();
@@ -34,9 +34,9 @@ namespace Molten.Samples
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
         }
 
-        private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
+        private void Cr_OnCompleted(ContentRequest cr)
         {
-            IMaterial mat = content.Get<IMaterial>(cr[0]);
+            IMaterial mat = cr.Get<IMaterial>(0);
 
             if (mat == null)
             {

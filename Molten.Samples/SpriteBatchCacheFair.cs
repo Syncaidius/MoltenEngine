@@ -25,7 +25,7 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
 
-            ContentRequest cr = engine.Content.StartRequest();
+            ContentRequest cr = engine.Content.StartRequest("assets/");
             cr.Load<IMaterial>("BasicTexture.sbm");
             cr.Load<ITexture2D>("dds_test.dds;mipmaps=true");
             cr.OnCompleted += Cr_OnCompleted;
@@ -83,19 +83,19 @@ namespace Molten.Samples
 
 
 
-        private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
+        private void Cr_OnCompleted(ContentRequest cr)
         {
             if (cr.RequestedFileCount == 0)
                 return;
 
-            IMaterial mat = content.Get<IMaterial>(cr[0]);
+            IMaterial mat = cr.Get<IMaterial>(0);
             if (mat == null)
             {
                 Exit();
                 return;
             }
 
-            ITexture2D tex = content.Get<ITexture2D>(cr[1]);
+            ITexture2D tex = cr.Get<ITexture2D>(1);
             mat.SetDefaultResource(tex, 0);
             _mesh.Material = mat;
 

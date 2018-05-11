@@ -24,7 +24,7 @@ namespace Molten.Samples
             _mesh = Engine.Renderer.Resources.CreateMesh<CubeArrayVertex>(36);
             _mesh.SetVertices(SampleVertexData.TextureArrayCubeVertices);
 
-            ContentRequest cr = engine.Content.StartRequest();
+            ContentRequest cr = engine.Content.StartRequest("assets/");
             cr.Load<IMaterial>("BasicTextureArray2D.sbm");
             cr.Load<TextureData>("128_1.dds");
             cr.Load<TextureData>("128_2.dds");
@@ -35,9 +35,9 @@ namespace Molten.Samples
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
         }
 
-        private void Cr_OnCompleted(ContentManager content, ContentRequest cr)
+        private void Cr_OnCompleted(ContentRequest cr)
         {
-            IMaterial mat = content.Get<IMaterial>(cr[0]);
+            IMaterial mat = cr.Get<IMaterial>(0);
 
             if (mat == null)
             {
@@ -46,7 +46,7 @@ namespace Molten.Samples
             }
 
             // Manually construct a 2D texture array from the 3 textures we requested earlier
-            TextureData texData = content.Get<TextureData>(cr[1]);
+            TextureData texData = cr.Get<TextureData>(cr[1]);
             ITexture2D texture = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
             {
                 Width = texData.Width,
@@ -58,10 +58,10 @@ namespace Molten.Samples
             });
             texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 0);
 
-            texData = content.Get<TextureData>(cr[2]);
+            texData = cr.Get<TextureData>(2);
             texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 1);
 
-            texData = content.Get<TextureData>(cr[3]);
+            texData = cr.Get<TextureData>(3);
             texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 2);
 
             mat.SetDefaultResource(texture, 0);
