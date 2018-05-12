@@ -12,9 +12,12 @@ namespace Molten
 
         internal string Path;
 
-        internal ContentFile(string path)
+        internal ContentRequestType Type;
+
+        internal ContentFile(string path, ContentRequestType type)
         {
             Path = path;
+            Type = type;
         }
     }
 }

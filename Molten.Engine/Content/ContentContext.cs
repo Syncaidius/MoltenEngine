@@ -69,7 +69,7 @@ namespace Molten
             group.Add(obj);
         }
 
-        internal ContentRequestType Type { get; set; }
+        internal ContentRequestType RequestType { get; set; }
 
         public Engine Engine { get; internal set; }
 

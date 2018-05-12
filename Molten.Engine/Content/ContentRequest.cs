@@ -63,16 +63,22 @@ namespace Molten
 
         /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>. </para>
         /// If the content was already loaded from a previous request, the existing object will be retrieved.</summary>
-        /// <param name="fn">The relative file path from the content manager's root directory.</param>
+        /// <param name="fn">The relative file path from the request's root directory.</param>
         public void Load<T>(string fn)
         {
             AddElement(fn, ContentRequestType.Read, typeof(T));
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="fn">The relative file path from the content manager's root directory.</param>
+        /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>. </para>
+        /// If the content was already loaded from a previous request, the existing object will be retrieved.</summary>
+        /// <param name="fn">The relative file path from the request's root directory.</param>
+        public void Load(string fn, Type t)
+        {
+            AddElement(fn, ContentRequestType.Read, t);
+        }
+
+        /// <summary>Adds a write request for the provided object.</summary>
+        /// <param name="fn">The relative file path from the request's root directory.</param>
         /// <param name="obj">The object to be written.</param>
         public void Write<T>(string fn, T obj)
         {
@@ -83,11 +89,19 @@ namespace Molten
         }
 
         /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="fn"></param>
+        /// <typeparam name="T">The type of object to be deserialized.</typeparam>
+        /// <param name="fn">The relative file path from the request's root directory.</param>
         public void Deserialize<T>(string fn)
         {
             AddElement(fn, ContentRequestType.Deserialize, typeof(T));
+        }
+
+        /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
+        /// <param name="t">The type of object to be deserialized.</typeparam>
+        /// <param name="fn">The file name and path.</param>
+        public void Deserialize(string fn, Type t)
+        {
+            AddElement(fn, ContentRequestType.Deserialize, t);
         }
 
         /// <summary>Adds a serialization operation to the current <see cref="ContentRequest"/>. This will serialize an object into JSON and write it to the specified file.</summary>
@@ -129,7 +143,7 @@ namespace Molten
             }
             
             c.ContentType = contentType;
-            c.Type = type;
+            c.RequestType = type;
             c.File = new FileInfo(contentPath);
 
             populator?.Invoke(c);

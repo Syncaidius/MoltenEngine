@@ -117,9 +117,17 @@ namespace Molten
             _workers.QueueTask(task);
         }
 
-
-
         private void Watcher_Changed(ContentDirectory dir, FileSystemEventArgs e)
+        {
+            if (_content.TryGetValue(e.FullPath.ToLower(), out ContentFile file))
+            {
+                ContentReloadTask task = ContentReloadTask.Get();
+                task.File = file;
+                task.Manager = this;
+            }
+        }
+
+        internal void ReloadFile(ContentFile file)
         {
 
         }
@@ -145,16 +153,17 @@ namespace Molten
             return path;
         }
 
-        private ContentSegment GetSegment(FileInfo info, string fn, Type type, ContentRequest request = null)
+        private ContentSegment GetSegment(ContentContext context, ContentRequest request = null)
         {
-            fn = fn.ToLower();
             ContentFile file;
-            if (!_content.TryGetValue(fn, out file))
+            string fnLower = context.Filename.ToLower();
+
+            if (!_content.TryGetValue(fnLower, out file))
             {
-                file = new ContentFile(fn);
+                file = new ContentFile(context.Filename, context.RequestType);
 
                 ContentDirectory directory;
-                string strDirectory = info.Directory.ToString();
+                string strDirectory = context.File.Directory.ToString();
                 if (!_directories.TryGetValue(strDirectory, out directory))
                 {
                     directory = new ContentDirectory(strDirectory);
@@ -162,18 +171,18 @@ namespace Molten
                     _directories.Add(strDirectory, directory);
                 }
 
-                _content.Add(fn, file);
+                _content.Add(context.Filename, file);
                 directory.AddFile(file);
             }
 
             if (request != null)
-                request.RetrievedContent[fn] = file;
+                request.RetrievedContent[fnLower] = file;
 
             ContentSegment segment;
-            if(!file.Segments.TryGetValue(type, out segment))
+            if(!file.Segments.TryGetValue(context.ContentType, out segment))
             {
-                segment = new ContentSegment(type, fn);              
-                file.Segments.Add(type, segment);
+                segment = new ContentSegment(context.ContentType, context.Filename);              
+                file.Segments.Add(context.ContentType, segment);
             }
 
             return segment;
@@ -225,7 +234,7 @@ namespace Molten
 
                 try
                 {
-                    switch (context.Type)
+                    switch (context.RequestType)
                     {
                         case ContentRequestType.Read:
                             DoRead(request, context, proc);
@@ -259,9 +268,9 @@ namespace Molten
             _requestPool.Recycle(request);
         }
 
-        private void DoDeserialize(ContentRequest request, ContentContext c)
+        private void DoDeserialize(ContentRequest request, ContentContext context)
         {
-            using (FileStream stream = new FileStream(c.Filename, FileMode.Open, FileAccess.Read))
+            using (FileStream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
             {
                 string json;
                 using (StreamReader reader = new StreamReader(stream))
@@ -269,14 +278,14 @@ namespace Molten
 
                 try
                 {
-                    object result = JsonConvert.DeserializeObject(json, c.ContentType, _jsonSettings);
-                    ContentSegment segment = GetSegment(c.File, c.Filename, c.ContentType, request);
+                    object result = JsonConvert.DeserializeObject(json, context.ContentType, _jsonSettings);
+                    ContentSegment segment = GetSegment(context, request);
                     segment.Objects.Add(result);
-                    _log.WriteLine($"[CONTENT] [JSON] Loaded '{result.GetType().Name}' from '{c.Filename}'");
+                    _log.WriteLine($"[CONTENT] [JSON] Loaded '{result.GetType().Name}' from '{context.Filename}'");
                 }
                 catch (Exception ex)
                 {
-                    _log.WriteError($"[CONTENT] [JSON] { ex.Message}", c.Filename);
+                    _log.WriteError($"[CONTENT] [JSON] { ex.Message}", context.Filename);
                 }
             }
         }
@@ -294,7 +303,7 @@ namespace Molten
                 {
                     foreach (Type t in context.Output.Keys)
                     {
-                        ContentSegment segment = GetSegment(context.File, context.Filename, context.ContentType, request);
+                        ContentSegment segment = GetSegment(context, request);
                         List<object> result = context.Output[t];
                         segment.Objects.AddRange(result);
                         for (int i = 0; i < result.Count; i++)

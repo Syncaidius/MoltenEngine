@@ -74,6 +74,7 @@
     <Compile Include="Content\ContentManager.cs" />
     <Compile Include="Content\ContentRequest.cs" />
     <Compile Include="Content\ContentRequestType.cs" />
+    <Compile Include="Content\ContentReloadTask.cs" />
     <Compile Include="Content\ContentWorkerTask.cs" />
     <Compile Include="Content\Processors\ContentProcessor.cs" />
     <Compile Include="Content\Processors\MaterialProcessor.cs" />
