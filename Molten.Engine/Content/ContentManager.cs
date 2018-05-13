@@ -23,10 +23,9 @@ namespace Molten
         internal static ObjectPool<ContentContext> ContextPool;
 
         Dictionary<Type, ContentProcessor> _customProcessors;
-        Dictionary<string, ContentFile> _content;
-        Dictionary<string, ContentDirectory> _directories;
+        ThreadedDictionary<string, ContentFile> _content;
+        ThreadedDictionary<string, ContentDirectory> _directories;
 
-        int _lockerVal;
         WorkerGroup _workers;
         Logger _log;
         Engine _engine;
@@ -69,8 +68,8 @@ namespace Molten
 
             // Store all the provided custom processors by type.
             _customProcessors = new Dictionary<Type, ContentProcessor>();
-            _content = new Dictionary<string, ContentFile>();
-            _directories = new Dictionary<string, ContentDirectory>();
+            _content = new ThreadedDictionary<string, ContentFile>();
+            _directories = new ThreadedDictionary<string, ContentDirectory>();
             _workers = engine.Threading.SpawnWorkerGroup("content workers", workerThreads);
             _log = log;
             _jsonSettings = jsonSettings ?? JsonHelper.GetDefaultSettings(_log);
@@ -95,7 +94,7 @@ namespace Molten
         /// </summary>
         /// <param name="rootDirectory">The root directory of all operations added to the request.</param>
         /// <returns></returns>
-        public ContentRequest StartRequest(string rootDirectory)
+        public ContentRequest BeginRequest(string rootDirectory)
         {
             ContentRequest request = _requestPool.GetInstance();
             request.RootDirectory = Path.GetFullPath(rootDirectory.StartsWith("/") ? rootDirectory.Substring(1, rootDirectory.Length - 1) : rootDirectory);
@@ -130,8 +129,7 @@ namespace Molten
 
         internal void ReloadFile(ContentFile file)
         {
-            ContentContext context = ContextPool.GetInstance();
-
+            ContentContext context = ContextPool.GetInstance();            
         }
 
         private ContentSegment GetSegment(ContentContext context, ContentRequest request = null)
@@ -280,17 +278,14 @@ namespace Molten
             {
                 _log.WriteLine($"[CONTENT] Loaded from '{context.Filename}':");
 
-                ThreadingHelper.InterlockSpinWait(ref _lockerVal, () =>
+                foreach (Type t in context.Output.Keys)
                 {
-                    foreach (Type t in context.Output.Keys)
-                    {
-                        ContentSegment segment = GetSegment(context, request);
-                        List<object> result = context.Output[t];
-                        segment.Objects.AddRange(result);
-                        for (int i = 0; i < result.Count; i++)
-                            _log.WriteLine($"[CONTENT]    {result[i].GetType().Name} - {result[i].ToString()}");
-                    }
-                });
+                    ContentSegment segment = GetSegment(context, request);
+                    List<object> result = context.Output[t];
+                    segment.Objects.AddRange(result);
+                    for (int i = 0; i < result.Count; i++)
+                        _log.WriteLine($"[CONTENT]    {result[i].GetType().Name} - {result[i].ToString()}");
+                }
             }
         }
 

@@ -31,7 +31,7 @@ namespace Molten.Samples
 
             Window.PresentClearColor = new Color(20, 20, 20, 255);
 
-            ContentRequest cr = engine.Content.StartRequest("assets/");
+            ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<SpriteFont>("BroshK.ttf;size=24");
             OnContentRequested(cr);
             cr.OnCompleted += Cr_OnCompleted;

@@ -30,7 +30,7 @@ namespace Molten.UI
 
         private void GetSourceFile()
         {
-            ContentRequest cr = _engine.Content.StartRequest("Assets/");
+            ContentRequest cr = _engine.Content.BeginRequest("Assets/");
             cr.Load<ITexture2D>(_sourceFile);
             cr.OnCompleted += request_OnCompleted;
             cr.Commit();

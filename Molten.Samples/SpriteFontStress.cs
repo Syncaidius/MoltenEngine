@@ -35,7 +35,7 @@ namespace Molten.Samples
             //_font = engine.Renderer.Resources.CreateFont("arial", 36);
             //SetupSprites(_font);
 
-            ContentRequest cr = engine.Content.StartRequest("assets/");
+            ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<ITexture2D>("dds_test.dds;mipmaps=true");
             cr.Load<IMaterial>("Basictexture.sbm");
             cr.OnCompleted += Cr_OnCompleted;

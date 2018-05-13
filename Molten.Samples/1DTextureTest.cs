@@ -32,7 +32,7 @@ namespace Molten.Samples
             _scene = CreateScene("Test");
             SpawnPlayer();
 
-            ContentRequest cr = engine.Content.StartRequest("assets/");
+            ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<ITexture>("1d_1.png;mipmaps=true");
             cr.Load<IMaterial>("BasicTexture1D.sbm");
             cr.OnCompleted += Cr_OnCompleted;

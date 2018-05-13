@@ -44,7 +44,7 @@ namespace Molten.Samples
             _sprites = new List<ISprite>();
             _rng = new Random();
 
-            ContentRequest cr = engine.Content.StartRequest("assets/");
+            ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<ITexture2D>("dds_test.dds;mipmaps=true");
             cr.Load<IMaterial>("Basictexture.sbm");
             cr.OnCompleted += Cr_OnCompleted;
