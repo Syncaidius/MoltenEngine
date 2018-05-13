@@ -124,33 +124,14 @@ namespace Molten
                 ContentReloadTask task = ContentReloadTask.Get();
                 task.File = file;
                 task.Manager = this;
+                _workers.QueueTask(task);
             }
         }
 
         internal void ReloadFile(ContentFile file)
         {
+            ContentContext context = ContextPool.GetInstance();
 
-        }
-
-        internal string ParseRequestString(string requestString, Dictionary<string, string> metadataOut)
-        {
-            string[] parts = requestString.Split(ContentManager.REQUEST_SPLITTER, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length == 0)
-                return requestString;
-
-            string path = parts[0];
-            for (int i = 1; i < parts.Length; i++)
-            {
-                string[] metaParts = parts[i].Split(ContentManager.METADATA_ASSIGNMENT, StringSplitOptions.RemoveEmptyEntries);
-                if (metaParts.Length != 2)
-                {
-                    _log.WriteError($"Invalid metadata segment in content request: {parts[i]}");
-                    continue;
-                }
-                metadataOut.Add(metaParts[0], metaParts[1]);
-            }
-
-            return path;
         }
 
         private ContentSegment GetSegment(ContentContext context, ContentRequest request = null)

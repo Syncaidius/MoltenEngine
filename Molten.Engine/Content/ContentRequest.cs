@@ -128,7 +128,7 @@ namespace Molten
         private void AddElement(string requestString, ContentRequestType type, Type contentType, Action<ContentContext> populator = null)
         {
             ContentContext c = ContentManager.ContextPool.GetInstance();
-            string path = Manager.ParseRequestString(requestString, c.Metadata);
+            string path = ParseRequestString(Manager.Log, requestString, c.Metadata);
             string contentPath = Path.Combine(RootDirectory, path);
 
             if (type == ContentRequestType.Read || type == ContentRequestType.Deserialize)
@@ -170,7 +170,7 @@ namespace Molten
         public T Get<T>(string requestString)
         {
             Dictionary<string, string> meta = new Dictionary<string, string>();
-            string path = Path.Combine(RootDirectory, Manager.ParseRequestString(requestString, meta));
+            string path = Path.Combine(RootDirectory, ParseRequestString(Manager.Log, requestString, meta));
             path = path.ToLower();
 
             Type t = typeof(T);
@@ -194,6 +194,27 @@ namespace Molten
             }
 
             return default;
+        }
+
+        internal static string ParseRequestString(Logger log, string requestString, Dictionary<string, string> metadataOut)
+        {
+            string[] parts = requestString.Split(ContentManager.REQUEST_SPLITTER, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0)
+                return requestString;
+
+            string path = parts[0];
+            for (int i = 1; i < parts.Length; i++)
+            {
+                string[] metaParts = parts[i].Split(ContentManager.METADATA_ASSIGNMENT, StringSplitOptions.RemoveEmptyEntries);
+                if (metaParts.Length != 2)
+                {
+                    log.WriteError($"Invalid metadata segment in content request: {parts[i]}");
+                    continue;
+                }
+                metadataOut.Add(metaParts[0], metaParts[1]);
+            }
+
+            return path;
         }
 
         public T Get<T>(int index)

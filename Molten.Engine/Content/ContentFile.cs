@@ -8,7 +8,7 @@ namespace Molten
 {
     internal class ContentFile
     {
-        internal Dictionary<Type, ContentSegment> Segments = new Dictionary<Type, ContentSegment>();
+        internal ThreadedDictionary<Type, ContentSegment> Segments = new ThreadedDictionary<Type, ContentSegment>();
 
         internal string Path;
 

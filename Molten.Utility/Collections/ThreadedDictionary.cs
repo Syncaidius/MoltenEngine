@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Molten.Collections
 {
-    /// <summary>A thread-safe Dictionary implementation. Basically wraps thread-safety around the vanilla dictionary.</summary>
+    /// <summary>A thread-safe, lock-free wrap of a standard <see cref="Dictionary{K, V}"/></summary>
     /// <typeparam name="K">The key type.</typeparam>
     /// <typeparam name="V">The value type.</typeparam>
     public class ThreadedDictionary<K, V> : IDictionary<K, V>, ICollection<KeyValuePair<K, V>>, IDictionary,
@@ -137,7 +137,7 @@ namespace Molten.Collections
             }
         }
 
-        /// <summary>Gets the number of entries in the dictionary.</summary>
+        /// <summary>Gets the number of entries stored in the dictionary.</summary>
         public int Count
         {
             get { return _dictionary.Count; }
@@ -155,6 +155,9 @@ namespace Molten.Collections
             get { return false; }
         }
 
+        /// <summary>
+        /// Gets whether or not the dictionary is synchronized. Always true.
+        /// </summary>
         public bool IsSynchronized
         {
             get { return true; }
@@ -179,7 +182,6 @@ namespace Molten.Collections
             }
         }
 
-
         public object SyncRoot
         {
             get { throw new NotSupportedException("ThreadedDictionary does not support a SyncRoot object. The collection is thread-safe by design."); }
@@ -203,35 +205,53 @@ namespace Molten.Collections
                 }
             }
         }
-
+        /// <summary>
+        /// Gets a read-only collection containing all of the values stored within the dictionary.
+        /// </summary>
         IEnumerable<K> IReadOnlyDictionary<K, V>.Keys
         {
             get { return this.Keys; }
         }
 
+        /// <summary>
+        /// Gets a collection containing all of the keys stored within the dictionary.
+        /// </summary>
         ICollection IDictionary.Keys
         {
             get { return this.Keys as ICollection; }
         }
 
+        /// <summary>
+        /// Gets a read-only collection containing all of the values stored within the dictionary.
+        /// </summary>
         IEnumerable<V> IReadOnlyDictionary<K, V>.Values
         {
             get { return this.Values; }
         }
 
+        /// <summary>
+        /// Gets a collection containing all of the values stored within the dictionary.
+        /// </summary>
         ICollection IDictionary.Values
         {
             get { return this.Values as ICollection; }
         }
 
-        public void Add(KeyValuePair<K, V> item)
+        /// <summary>Attempts to add the item to the dictionary. Does nothing if the item has already been added.</summary>
+        /// <param name="pair">The key-value pair to be added.</param>
+        public void Add(KeyValuePair<K, V> pair)
         {
             SpinWait spin = new SpinWait();
             while (true)
             {
                 if (0 == Interlocked.Exchange(ref _blockingVal, 1))
                 {
-                    _dictionary.Add(item.Key, item.Value);
+                    if (pair.Key == null)
+                        ThrowReleaseLock<ArgumentNullException>("Key cannot be null");
+
+                    if (!_dictionary.ContainsKey(pair.Key))
+                        _dictionary.Add(pair.Key, pair.Value);
+
                     Interlocked.Exchange(ref _blockingVal, 0);
                     return;
                 }
@@ -246,13 +266,17 @@ namespace Molten.Collections
             {
                 if (0 == Interlocked.Exchange(ref _blockingVal, 1))
                 {
-                    if (key.GetType() != _keyType)
+                    if (key == null)
+                        ThrowReleaseLock<ArgumentNullException>("Key cannot be null");
+
+                    if (!_keyType.IsAssignableFrom(key.GetType()))
                         ThrowReleaseLock<ArgumentException>("Key is not of a compatible type.");
 
-                    if (value.GetType() != _valueType)
+                    if (!_valueType.IsAssignableFrom(value.GetType()))
                         ThrowReleaseLock<ArgumentException>("Value is not a compatible type.");
 
-                    _dictionary.Add((K)key, (V)value);
+                    if (!_dictionary.ContainsKey((K)key))
+                        _dictionary.Add((K)key, (V)value);
                     Interlocked.Exchange(ref _blockingVal, 0);
                     return;
                 }
@@ -267,14 +291,12 @@ namespace Molten.Collections
             {
                 if (0 == Interlocked.Exchange(ref _blockingVal, 1))
                 {
-                    try
-                    {
+                    if (key == null)
+                        ThrowReleaseLock<ArgumentNullException>("Key cannot be null");
+
+                    if (!_dictionary.ContainsKey(key))
                         _dictionary.Add(key, value);
-                    }
-                    catch (Exception e)
-                    {
-                        ThrowReleaseLock(e);
-                    }
+
                     Interlocked.Exchange(ref _blockingVal, 0);
                     return;
                 }
@@ -289,6 +311,9 @@ namespace Molten.Collections
             {
                 if (0 == Interlocked.Exchange(ref _blockingVal, 1))
                 {
+                    if (key == null)
+                        ThrowReleaseLock<ArgumentNullException>("Key cannot be null");
+
                     bool result = !_dictionary.ContainsKey(key);
                     if (result)
                         _dictionary.Add(key, value);
