@@ -40,9 +40,18 @@ namespace Molten
 
             _engine = new Engine(Settings);
             _engine.LoadRenderer();
+            _engine.LoadInput();
+
+            if (_engine.Input == null)
+            {
+                _engine.Log.WriteError("Input library failed to initialize. Forcing game exit.");
+                ForceExit();
+                return;
+            }
 
             if (_engine.Renderer == null)
             {
+                _engine.Log.WriteError("Renderer failed to initialize. Forcing game exit.");
                 ForceExit();
                 return;
             }

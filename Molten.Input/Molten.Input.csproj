@@ -70,7 +70,6 @@
     <Compile Include="IGamepadDevice.cs" />
     <Compile Include="IKeyboardDevice.cs" />
     <Compile Include="IMouseDevice.cs" />
-    <Compile Include="InputLoader.cs" />
     <Compile Include="InputSettings.cs" />
     <Compile Include="Key.cs" />
     <Compile Include="KeyboardEvents.cs" />

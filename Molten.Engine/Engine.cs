@@ -22,7 +22,6 @@ namespace Molten
         EngineThread _threadRenderer;
         ContentManager _content;
         IInputManager _input;
-        UISystem _ui;
 
         internal List<Scene> Scenes;
 
@@ -56,10 +55,7 @@ namespace Molten
             _log.WriteDebugLine("Engine Instantiated");
             _threadManager = new ThreadManager(this, _log);
             _taskQueue = new ThreadedQueue<EngineTask>();
-            _content = new ContentManager(_log, this, null, settings.ContentWorkerThreads);
-
-            InputLoader inputLoader = new InputLoader();
-            _input = inputLoader.GetManager(_log, _settings.Input);
+            _content = new ContentManager(_log, this, null, _settings.ContentWorkerThreads);
             Scenes = new List<Scene>();
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -71,19 +67,61 @@ namespace Molten
             Logger.DisposeAll();
         }
 
-        public void LoadRenderer()
+        public void LoadInput()
+        {
+            Assembly inputAssembly;
+            _input = LibraryDetection.LoadInstance<IInputManager>(_log, "input", "input manager", 
+                _settings.Input.InputLibrary, 
+                _settings.Input, 
+                InputSettings.DEFAULT_LIBRARY, 
+                out inputAssembly);
+
+            // Initialize
+            try
+            {
+                _input.Initialize(_settings.Input, _log);
+                _log.WriteLine($"Initialized input manager");
+            }
+            catch (Exception e)
+            {
+                _log.WriteLine("Failed to initialize input manager");
+                _log.WriteError(e);
+                _input = null;
+            }
+        }
+
+        public bool LoadRenderer()
         {
             if (_renderer != null)
             {
                 _log.WriteLine("Attempted to load renderer when one is already loaded!");
-                return;
+                return false;
             }
 
-            // Load renderer library
-            RenderLoader renderLoader = new RenderLoader();
-            _renderer = renderLoader.GetRenderer(_log, _settings.Graphics);
+            // TODO default to OpenGL if on a non-windows platform.
+            Assembly renderAssembly;
+            _renderer = LibraryDetection.LoadInstance<IRenderer>(_log, "render", "renderer", 
+                _settings.Graphics.RendererLibrary, 
+                _settings.Graphics, 
+                GraphicsSettings.RENDERER_DX11, 
+                out renderAssembly);
+
+            try
+            {
+                _renderer.InitializeAdapter(_settings.Graphics);
+                _log.WriteLine($"Initialized renderer");
+            }
+            catch (Exception e)
+            {
+                _log.WriteLine("Failed to initialize renderer");
+                _log.WriteError(e);
+                _renderer = null;
+                return false;
+            }
+
             OnAdapterInitialized?.Invoke(_renderer.DisplayManager);
             _renderer.Initialize(_settings.Graphics);
+            return true;
         }
 
         /// <summary>Starts the renderer thread.</summary>

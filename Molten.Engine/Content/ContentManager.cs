@@ -138,10 +138,12 @@ namespace Molten
             {
                 ContentSegment seg = file.Segments[t];
                 context.Input.Add(t, new List<object>(seg.Objects));
+
+                ContentProcessor proc = GetProcessor(t);
             }
         }
 
-        private ContentSegment GetSegment(ContentContext context, ContentRequest request = null)
+        private ContentSegment GetSegment(Type t, ContentContext context, ContentRequest request = null)
         {
             ContentFile file;
             string fnLower = context.Filename.ToLower();
@@ -167,7 +169,7 @@ namespace Molten
                 request.RetrievedContent[fnLower] = file;
 
             ContentSegment segment;
-            if(!file.Segments.TryGetValue(context.ContentType, out segment))
+            if(!file.Segments.TryGetValue(t, out segment))
             {
                 segment = new ContentSegment(context.ContentType, context.Filename);              
                 file.Segments.Add(context.ContentType, segment);
@@ -211,6 +213,22 @@ namespace Molten
                 {
                     _log.WriteError($"[CONTENT] {context.File}: Unable to load unsupported content of type '{context.ContentType.Name}'");
                     continue;
+                }
+
+                // First check if the content already exists
+                string fnLower = context.Filename.ToLower();
+                if (_content.TryGetValue(fnLower, out ContentFile file))
+                {
+                    if (file.Segments.TryGetValue(context.ContentType, out ContentSegment segment))
+                    {
+                        object existing = proc.OnGet(_engine, context.ContentType, context.Metadata, segment.Objects);
+
+                        if (existing != null)
+                        {
+                            request.RetrievedContent[fnLower] = file;
+                            continue;
+                        }
+                    }
                 }
 
                 context.Engine = _engine;
@@ -264,7 +282,7 @@ namespace Molten
                 try
                 {
                     object result = JsonConvert.DeserializeObject(json, context.ContentType, _jsonSettings);
-                    ContentSegment segment = GetSegment(context, request);
+                    ContentSegment segment = GetSegment(context.ContentType, context, request);
                     segment.Objects.Add(result);
                     _log.WriteLine($"[CONTENT] [DESERIALIZE] '{result.GetType().Name}' from {context.Filename}");
                 }
@@ -287,7 +305,7 @@ namespace Molten
 
                 foreach (Type t in context.Output.Keys)
                 {
-                    ContentSegment segment = GetSegment(context, request);
+                    ContentSegment segment = GetSegment(t, context, request);
                     List<object> result = context.Output[t];
                     segment.Objects.AddRange(result);
                     _log.WriteLine($"[CONTENT] [READ]    {result.Count}x {t.FullName}");

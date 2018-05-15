@@ -23,6 +23,11 @@ namespace Molten
 
         public abstract void Cancel();
 
+        public override string ToString()
+        {
+            return Object != null ? Object.ToString() : base.ToString();
+        }
+
         /// <summary>
         /// Gets the value as an <see cref="object"/>.
         /// </summary>
