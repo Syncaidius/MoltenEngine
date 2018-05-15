@@ -39,20 +39,23 @@ namespace Molten.Tests
         }
 
         [TestMethod]
-        public void Serialize()
+        public void SerializeDeserialize()
         {
             ContentRequest cr = _engine.Content.BeginRequest("tests");
             cr.Serialize("test_object.txt", new TestObject());
-            cr.OnCompleted += Cr_OnCompleted;
+            cr.Deserialize<TestObject>("test_object.txt");
+            cr.OnCompleted += Serialize_OnCompleted;
             cr.Commit();
 
             while (!_done)
                 Thread.Sleep(5);
         }
 
-        private void Cr_OnCompleted(ContentRequest request)
+        private void Serialize_OnCompleted(ContentRequest request)
         {
+            TestObject result = request.Get<TestObject>("test_object.txt");
             _done = true;
+            Assert.AreNotEqual(null, result);
         }
     }
 }

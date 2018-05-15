@@ -174,16 +174,19 @@ namespace Molten
             {
                 if (file.Segments.TryGetValue(t, out ContentSegment segment))
                 {
-                    // Since the content exists, we know there's either a custom or default processor for it.
+                    // Check if a processor was used to load the object.
                     ContentProcessor proc = Manager.GetProcessor(t);
                     if (proc != null)
                     {
                         T obj = (T)proc.OnGet(Manager.Engine, t, meta, segment.Objects);
                         return obj;
                     }
-                    else
+                    else // Assume the object was loaded via deserialization.
                     {
-                        Manager.Log.WriteError($"[CONTENT] [GET] unable to fulfil content request from {path}: No content processor available for type {t} or any of its derivatives.");
+                        if (segment.Objects.Count > 0)
+                            return (T)segment.Objects[0];
+                        else
+                            Manager.Log.WriteError($"[CONTENT] [GET] unable to fulfil request from {path}: No content processor available for type {t} or any of its derivatives.");
                     }
                 }
             }
