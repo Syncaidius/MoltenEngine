@@ -217,7 +217,10 @@ namespace Molten
                         object existing = null;
 
                         if (file.Type == ContentRequestType.Read)
+                        {
+                            proc = GetProcessor(context.ContentType);
                             existing = proc.OnGet(_engine, context.ContentType, context.Metadata, segment.Objects);
+                        }
                         else if (file.Type == ContentRequestType.Deserialize)
                             existing = segment.Objects[0];
 
@@ -231,7 +234,7 @@ namespace Molten
 
                 if (context.RequestType != ContentRequestType.Deserialize && context.RequestType != ContentRequestType.Serialize)
                 {
-                    proc = GetProcessor(context.ContentType);
+                    proc = proc ?? GetProcessor(context.ContentType);
                     if (proc == null)
                     {
                         _log.WriteError($"[CONTENT] {context.File}: Unable to load unsupported content of type '{context.ContentType.Name}'");

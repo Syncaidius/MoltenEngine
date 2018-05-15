@@ -15,38 +15,35 @@ namespace Molten.Content
 
         public override void OnRead(ContentContext context)
         {
-            if (context.Input.TryGetValue(AcceptedTypes[0], out List<object> strings))
+            bool isBinary = false;
+
+            if (context.Metadata.TryGetValue("binary", out string binaryStr))
+                bool.TryParse(binaryStr, out isBinary);
+
+            if (isBinary)
             {
-                bool isBinary = false;
-
-                if (context.Metadata.TryGetValue("binary", out string binaryStr))
-                    bool.TryParse(binaryStr, out isBinary);
-
-                if (isBinary)
+                using (BinaryReader reader = new BinaryReader(context.Stream))
                 {
-                    using (BinaryReader reader = new BinaryReader(context.Stream))
-                    {
-                        while(reader.BaseStream.Position < reader.BaseStream.Length)
-                            context.AddOutput<string>(reader.ReadString());
-                    }
+                    while (reader.BaseStream.Position < reader.BaseStream.Length)
+                        context.AddOutput<string>(reader.ReadString());
                 }
-                else
-                {
-                    bool perLine = false;
-                    if (context.Metadata.TryGetValue("perline", out string perLineStr))
-                        bool.TryParse(binaryStr, out perLine);
+            }
+            else
+            {
+                bool perLine = false;
+                if (context.Metadata.TryGetValue("perline", out string perLineStr))
+                    bool.TryParse(binaryStr, out perLine);
 
-                    using (StreamReader reader = new StreamReader(context.Stream))
+                using (StreamReader reader = new StreamReader(context.Stream))
+                {
+                    if (perLine)
                     {
-                        if (perLine)
-                        {
-                            while (!reader.EndOfStream)
-                                context.AddOutput<string>(reader.ReadLine());
-                        }
-                        else
-                        {
-                            context.AddOutput<string>(reader.ReadToEnd());
-                        }
+                        context.AddOutput<string>(reader.ReadToEnd());
+                    }
+                    else
+                    {
+                        while (!reader.EndOfStream)
+                            context.AddOutput<string>(reader.ReadLine());
                     }
                 }
             }

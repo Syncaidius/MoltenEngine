@@ -25,6 +25,7 @@ namespace Molten.Tests
 
         Engine _engine;
         bool _done;
+        object _result;
 
         [TestInitialize]
         public void TestInit()
@@ -49,12 +50,14 @@ namespace Molten.Tests
 
             while (!_done)
                 Thread.Sleep(5);
+
+            Assert.AreNotEqual(TEST_STRING, _result);
         }
 
         const string TEST_STRING = "This is a test";
 
         [TestMethod]
-        public void WriteRead()
+        public void SaveLoad()
         {
             ContentRequest cr = _engine.Content.BeginRequest("tests");
             cr.Save<string>("binary_object.txt", TEST_STRING);
@@ -64,20 +67,45 @@ namespace Molten.Tests
 
             while (!_done)
                 Thread.Sleep(5);
+
+            Assert.AreEqual(TEST_STRING, _result);
+        }
+
+        [TestMethod]
+        public void LoadDuplicate()
+        {
+            ContentRequest cr = _engine.Content.BeginRequest("tests");
+            cr.Save<string>("dup_object.txt", TEST_STRING);
+            cr.Load<string>("dup_object.txt");
+            cr.Commit();
+
+            cr = _engine.Content.BeginRequest("tests");
+            cr.Load<string>("dup_object.txt");
+            cr.OnCompleted += LoadDuplicate_OnCompleted;
+            cr.Commit();
+
+            while (!_done)
+                Thread.Sleep(5);
+
+            Assert.AreEqual(TEST_STRING, _result);
+        }
+
+        private void LoadDuplicate_OnCompleted(ContentRequest request)
+        {
+            _result = request.Get<string>("dup_object.txt");
+            _done = true;
         }
 
         private void WriteRead_OnCompleted(ContentRequest request)
         {
-            string testString = request.Get<string>("binary_object.txt");
+            _result = request.Get<string>("binary_object.txt");
             _done = true;
-            Assert.AreNotEqual(TEST_STRING, testString);
         }
 
         private void SerializeDeserialize_OnCompleted(ContentRequest request)
         {
-            TestObject result = request.Get<TestObject>("test_object.txt");
+            _result = request.Get<TestObject>("test_object.txt");
             _done = true;
-            Assert.AreNotEqual(null, result);
         }
     }
 }
