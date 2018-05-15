@@ -15,9 +15,6 @@ namespace Molten
     /// <summary>Manages the loading, unloading and reusing of content.</summary>
     public class ContentManager : EngineObject
     {
-        internal static char[] REQUEST_SPLITTER = new char[] { ';' };
-        internal static char[] METADATA_ASSIGNMENT = new char[] { '=' };
-
         static Dictionary<Type, ContentProcessor> _defaultProcessors;
         static ObjectPool<ContentRequest> _requestPool;
         internal static ObjectPool<ContentContext> ContextPool;
@@ -118,7 +115,8 @@ namespace Molten
 
         private void Watcher_Changed(ContentDirectory dir, FileSystemEventArgs e)
         {
-            if (_content.TryGetValue(e.FullPath.ToLower(), out ContentFile file))
+            string pathLower = e.FullPath.ToLower();
+            if (_content.TryGetValue(pathLower, out ContentFile file))
             {
                 ContentReloadTask task = ContentReloadTask.Get();
                 task.File = file;
@@ -129,7 +127,18 @@ namespace Molten
 
         internal void ReloadFile(ContentFile file)
         {
-            ContentContext context = ContextPool.GetInstance();            
+            ContentContext context = ContextPool.GetInstance();
+
+            // Create a local copy of the keys to avoid threading issues
+            Type[] types = file.Segments.Keys.ToArray();
+
+            // Add as input objects, all that were loaded from the original version of the file.
+            // It is up to the content processor to update existing object instances and output them.
+            foreach(Type t in types)
+            {
+                ContentSegment seg = file.Segments[t];
+                context.Input.Add(t, new List<object>(seg.Objects));
+            }
         }
 
         private ContentSegment GetSegment(ContentContext context, ContentRequest request = null)
@@ -150,7 +159,7 @@ namespace Molten
                     _directories.Add(strDirectory, directory);
                 }
 
-                _content.Add(context.Filename, file);
+                _content.Add(fnLower, file);
                 directory.AddFile(file);
             }
 
@@ -170,7 +179,6 @@ namespace Molten
         internal ContentProcessor GetProcessor(Type type)
         {
             ContentProcessor proc = null;
-
             if (_customProcessors.TryGetValue(type, out proc) || _defaultProcessors.TryGetValue(type, out proc))
                 return proc;
             else
@@ -198,9 +206,6 @@ namespace Molten
             ContentProcessor proc = null;
             foreach (ContentContext context in request.RequestElements)
             {
-                if (request.State == ContentRequestState.Cancelled)
-                    return;
-
                 proc = GetProcessor(context.ContentType);
                 if (proc == null)
                 {
@@ -223,11 +228,12 @@ namespace Molten
                             DoDeserialize(request, context);
                             break;
 
+                        case ContentRequestType.Serialize:
+                            DoDeserialize(request, context);
+                            break;
+
                         case ContentRequestType.Write:
-                            using (context.Stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
-                            {
-                                proc.OnWrite(context);
-                            }
+                            DoWrite(context, proc);
                             break;
 
                         case ContentRequestType.Delete:
@@ -249,10 +255,10 @@ namespace Molten
 
         private void DoDeserialize(ContentRequest request, ContentContext context)
         {
-            using (FileStream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
+            using (context.Stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
             {
                 string json;
-                using (StreamReader reader = new StreamReader(stream))
+                using (StreamReader reader = new StreamReader(context.Stream))
                     json = reader.ReadToEnd();
 
                 try
@@ -260,11 +266,12 @@ namespace Molten
                     object result = JsonConvert.DeserializeObject(json, context.ContentType, _jsonSettings);
                     ContentSegment segment = GetSegment(context, request);
                     segment.Objects.Add(result);
-                    _log.WriteLine($"[CONTENT] [JSON] Loaded '{result.GetType().Name}' from '{context.Filename}'");
+                    _log.WriteLine($"[CONTENT] [DESERIALIZE] '{result.GetType().Name}' from {context.Filename}");
                 }
                 catch (Exception ex)
                 {
-                    _log.WriteError($"[CONTENT] [JSON] { ex.Message}", context.Filename);
+                    _log.WriteError($"[CONTENT] [DESERIALIZE] { ex.Message}", context.Filename);
+                    _log.WriteError(ex, true);
                 }
             }
         }
@@ -274,18 +281,47 @@ namespace Molten
             using (context.Stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
                 proc.OnRead(context);
 
-            if(context.Output.Count > 0)
+            if (context.Output.Count > 0)
             {
-                _log.WriteLine($"[CONTENT] Loaded from '{context.Filename}':");
+                _log.WriteLine($"[CONTENT] [READ] {context.Filename}:");
 
                 foreach (Type t in context.Output.Keys)
                 {
                     ContentSegment segment = GetSegment(context, request);
                     List<object> result = context.Output[t];
                     segment.Objects.AddRange(result);
-                    for (int i = 0; i < result.Count; i++)
-                        _log.WriteLine($"[CONTENT]    {result[i].GetType().Name} - {result[i].ToString()}");
+                    _log.WriteLine($"[CONTENT] [READ]    {result.Count}x {t.FullName}");
                 }
+            }
+        }
+
+        private void DoWrite(ContentContext context, ContentProcessor proc)
+        {
+            using (context.Stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
+                proc.OnWrite(context);
+
+            _log.WriteLine($"[CONTENT] [WRITE] {context.Filename}");
+        }
+
+        private void DoSerialize(ContentRequest request, ContentContext context)
+        {
+            try
+            {
+                string json = JsonConvert.SerializeObject(context.Input[context.ContentType][0], _jsonSettings);
+                using (context.Stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
+                {
+                    using (StreamWriter writer = new StreamWriter(context.Stream))
+                    {
+                        writer.Write(json);
+                    }
+                }
+
+                _log.WriteLine($"[CONTENT] [SERIALIZE] {context.Filename}");
+            }
+            catch (Exception ex)
+            {
+                _log.WriteError($"[CONTENT] [SERIALIZE] { ex.Message}", context.Filename);
+                _log.WriteError(ex, true);
             }
         }
 

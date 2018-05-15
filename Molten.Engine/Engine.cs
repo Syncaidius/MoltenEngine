@@ -184,8 +184,8 @@ namespace Molten
         /// <summary>
         /// Gets the main content manager bound to the current engine instance. <para/>
         /// It is recommended that you use this to load assets that are unlikely to be unloaded throughout the lifetime of the current session. 
-        /// You may wish to use separate <see cref="ContentManager"/> instances for level-specific content or content which is likely to have a short lifespan, 
-        /// since disposing of a <see cref="ContentManager"/> instance will unload all of the content that was loaded by it.
+        /// You should use separate <see cref="ContentManager"/> instances for level-specific or short-lifespan content. 
+        /// Disposing of a <see cref="ContentManager"/> instance will unload all of the content that was loaded by it.<para />
         /// </summary>
         public ContentManager Content => _content;
 

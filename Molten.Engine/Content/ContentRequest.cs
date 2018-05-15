@@ -17,12 +17,13 @@ namespace Molten
         Committed = 1,
 
         Completed = 2,
-
-        Cancelled = 3,
     }
 
     public class ContentRequest : IPoolable
     {
+        static char[] REQUEST_SPLITTER = new char[] { ';' };
+        static char[] METADATA_ASSIGNMENT = new char[] { '=' };
+
         public event ContentRequestHandler OnCompleted;
 
         internal List<ContentContext> RequestElements = new List<ContentContext>();
@@ -47,12 +48,6 @@ namespace Molten
 
             State = ContentRequestState.Committed;
             Manager.Commit(this);
-        }
-
-        public void Cancel()
-        {
-            if (State == ContentRequestState.Committed)
-                State = ContentRequestState.Cancelled;
         }
 
         internal void Complete()
@@ -198,14 +193,14 @@ namespace Molten
 
         internal static string ParseRequestString(Logger log, string requestString, Dictionary<string, string> metadataOut)
         {
-            string[] parts = requestString.Split(ContentManager.REQUEST_SPLITTER, StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = requestString.Split(REQUEST_SPLITTER, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length == 0)
                 return requestString;
 
             string path = parts[0];
             for (int i = 1; i < parts.Length; i++)
             {
-                string[] metaParts = parts[i].Split(ContentManager.METADATA_ASSIGNMENT, StringSplitOptions.RemoveEmptyEntries);
+                string[] metaParts = parts[i].Split(METADATA_ASSIGNMENT, StringSplitOptions.RemoveEmptyEntries);
                 if (metaParts.Length != 2)
                 {
                     log.WriteError($"Invalid metadata segment in content request: {parts[i]}");

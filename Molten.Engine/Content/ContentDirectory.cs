@@ -26,6 +26,7 @@ namespace Molten
             _watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.CreationTime | NotifyFilters.Size;
             _watcher.EnableRaisingEvents = true;
             _watcher.Changed += Watcher_Changed;
+            _watcher.Created += Watcher_Changed;
         }
 
         private void Watcher_Changed(object sender, FileSystemEventArgs e)

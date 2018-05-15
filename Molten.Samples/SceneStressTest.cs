@@ -23,7 +23,6 @@ namespace Molten.Samples
             base.OnInitialize(engine);
 
             _objects = new List<SceneObject>();
-
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<IMaterial>("BasicColor.sbm");
             cr.OnCompleted += Cr_OnCompleted;

@@ -6,7 +6,7 @@ In the past I've used MonoGame, XNA and Unity3D to produce a game but never felt
 While parts of this project will inevitably be a classic case of re-inventing the wheel, I'm teating it as a chance to gain more experience in the area of game engine development. 
 
 # Why Open-Source?
-I've previously attempted a game engine back in 2015 using SharpDX and while it inevitably ended in failure, I learned a great deal in terms of game engine architecture and the way a GPU works under the hood, as well as things like multi-threading, tasking and other high-performance system design.
+I've previously attempted a game engine back in 2015 using SharpDX and while it inevitably ended in failure, I learned a great deal in terms of game engine architecture and the way a GPU works under the hood, as well as things like multi-threading, tasking and other high-performance system design elements.
 
 This is my second attempt at such an engine, so being able to share the code for others to learn from and perhaps even contribute to, seems like the right thing to do. Hopefully you'll find something useful around here!
 

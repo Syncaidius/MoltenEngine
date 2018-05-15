@@ -185,6 +185,19 @@ namespace Molten.Collections
         /// <param name="index">The index within array to copy to.</param>
         public void CopyTo(Array array, int index)
         {
+            CopyToInternal(array, index);
+        }
+
+        /// <summary>Copies the contents of the list to the provided array.</summary>
+        /// <param name="array">The array to copy to.</param>
+        /// <param name="arrayIndex">The index within array to copy to.</param>
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            CopyToInternal(array, arrayIndex);
+        }
+
+        private void CopyToInternal(Array array, int index)
+        {
             SpinWait spin = new SpinWait();
             while (true)
             {
@@ -195,7 +208,8 @@ namespace Molten.Collections
                     {
                         ThrowReleaseLock<IndexOutOfRangeException>("Target array does not have enough free space.");
                     }
-                    else {
+                    else
+                    {
                         Array.Copy(_items, 0, array, index, _count);
 
                         _version++;
@@ -205,14 +219,6 @@ namespace Molten.Collections
                 }
                 spin.SpinOnce();
             }
-        }
-
-        /// <summary>Copies the contents of the list to the provided array.</summary>
-        /// <param name="array">The array to copy to.</param>
-        /// <param name="arrayIndex">The index within array to copy to.</param>
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            CopyTo(array, arrayIndex);
         }
 
 
