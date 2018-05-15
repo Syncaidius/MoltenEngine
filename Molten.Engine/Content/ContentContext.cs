@@ -57,13 +57,13 @@ namespace Molten
             AddResult(Input, t, obj);
         }
 
-        private void AddResult(Dictionary<Type, List<object>> dictionary, Type t, object obj)
+        private void AddResult(Dictionary<Type, List<object>> dest, Type t, object obj)
         {
             List<object> group = null;
-            if (!Output.TryGetValue(t, out group))
+            if (!dest.TryGetValue(t, out group))
             {
                 group = new List<object>();
-                Output.Add(t, group);
+                dest.Add(t, group);
             }
 
             group.Add(obj);

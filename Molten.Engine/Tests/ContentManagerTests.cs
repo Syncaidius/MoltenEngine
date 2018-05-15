@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Molten.Tests
@@ -13,7 +14,6 @@ namespace Molten.Tests
     public class ContentManagerTests
     {
         [DataContract]
-        [DeploymentItem("../../../Molten.Input.Windows/bin/x64/debug/Molten.Input.Windows.dll", "Molten.Input.Windows.dll")]
         class TestObject
         {
             [DataMember]
@@ -24,11 +24,11 @@ namespace Molten.Tests
         }
 
         Engine _engine;
+        bool _done;
+
         [TestInitialize]
         public void TestInit()
         {
-            bool fileExists = File.Exists("../../../Molten.Input.Windows/bin/x64/debug/Molten.Input.Windows.dll");
-            string test = Path.GetFullPath("../../../Molten.Input.Windows/bin/x64/debug/Molten.Input.Windows.dll");
             _engine = new Engine();
         }
 
@@ -43,7 +43,16 @@ namespace Molten.Tests
         {
             ContentRequest cr = _engine.Content.BeginRequest("tests");
             cr.Serialize("test_object.txt", new TestObject());
+            cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
+
+            while (!_done)
+                Thread.Sleep(5);
+        }
+
+        private void Cr_OnCompleted(ContentRequest request)
+        {
+            _done = true;
         }
     }
 }

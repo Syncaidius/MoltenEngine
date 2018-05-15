@@ -33,6 +33,7 @@ namespace Molten
                 },
                 Converters = _customConverters,
                 CheckAdditionalContent = false,
+                Formatting = Formatting.Indented,
             };
         }
 

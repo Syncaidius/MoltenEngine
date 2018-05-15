@@ -208,26 +208,34 @@ namespace Molten
             ContentProcessor proc = null;
             foreach (ContentContext context in request.RequestElements)
             {
-                proc = GetProcessor(context.ContentType);
-                if (proc == null)
-                {
-                    _log.WriteError($"[CONTENT] {context.File}: Unable to load unsupported content of type '{context.ContentType.Name}'");
-                    continue;
-                }
-
                 // First check if the content already exists
                 string fnLower = context.Filename.ToLower();
                 if (_content.TryGetValue(fnLower, out ContentFile file))
                 {
                     if (file.Segments.TryGetValue(context.ContentType, out ContentSegment segment))
                     {
-                        object existing = proc.OnGet(_engine, context.ContentType, context.Metadata, segment.Objects);
+                        object existing = null;
+
+                        if (file.Type == ContentRequestType.Read)
+                            existing = proc.OnGet(_engine, context.ContentType, context.Metadata, segment.Objects);
+                        else if (file.Type == ContentRequestType.Deserialize)
+                            existing = segment.Objects[0];
 
                         if (existing != null)
                         {
                             request.RetrievedContent[fnLower] = file;
                             continue;
                         }
+                    }
+                }
+
+                if (context.RequestType != ContentRequestType.Deserialize && context.RequestType != ContentRequestType.Serialize)
+                {
+                    proc = GetProcessor(context.ContentType);
+                    if (proc == null)
+                    {
+                        _log.WriteError($"[CONTENT] {context.File}: Unable to load unsupported content of type '{context.ContentType.Name}'");
+                        continue;
                     }
                 }
 
@@ -247,7 +255,7 @@ namespace Molten
                             break;
 
                         case ContentRequestType.Serialize:
-                            DoDeserialize(request, context);
+                            DoSerialize(request, context);
                             break;
 
                         case ContentRequestType.Write:
@@ -326,6 +334,10 @@ namespace Molten
             try
             {
                 string json = JsonConvert.SerializeObject(context.Input[context.ContentType][0], _jsonSettings);
+
+                if (!context.File.Directory.Exists)
+                    context.File.Directory.Create();
+
                 using (context.Stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
                 {
                     using (StreamWriter writer = new StreamWriter(context.Stream))

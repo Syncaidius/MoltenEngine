@@ -107,7 +107,7 @@ namespace Molten
         {
             AddElement(fn, ContentRequestType.Serialize, typeof(T), (e) =>
             {
-                e.AddInput<T>(obj);
+                e.AddInput(obj);
             });
         }
 
