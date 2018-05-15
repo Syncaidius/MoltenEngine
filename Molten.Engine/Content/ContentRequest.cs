@@ -75,7 +75,7 @@ namespace Molten
         /// <summary>Adds a write request for the provided object.</summary>
         /// <param name="fn">The relative file path from the request's root directory.</param>
         /// <param name="obj">The object to be written.</param>
-        public void Write<T>(string fn, T obj)
+        public void Save<T>(string fn, T obj)
         {
             AddElement(fn, ContentRequestType.Write, typeof(T), (e) =>
             {

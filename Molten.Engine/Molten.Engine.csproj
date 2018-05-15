@@ -81,6 +81,7 @@
     <Compile Include="Content\Processors\MaterialProcessor.cs" />
     <Compile Include="Content\Processors\TextureDataProcessor.cs" />
     <Compile Include="Content\Processors\SpriteFontProcessor.cs" />
+    <Compile Include="Content\Processors\StringProcessor.cs" />
     <Compile Include="Content\Processors\TextureProcessor.cs" />
     <Compile Include="Content\Serialization\BrowsableStringAttribute.cs" />
     <Compile Include="Content\Serialization\ExpandablePropertyAttribute.cs" />

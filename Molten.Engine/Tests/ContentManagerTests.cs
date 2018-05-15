@@ -44,14 +44,36 @@ namespace Molten.Tests
             ContentRequest cr = _engine.Content.BeginRequest("tests");
             cr.Serialize("test_object.txt", new TestObject());
             cr.Deserialize<TestObject>("test_object.txt");
-            cr.OnCompleted += Serialize_OnCompleted;
+            cr.OnCompleted += SerializeDeserialize_OnCompleted;
             cr.Commit();
 
             while (!_done)
                 Thread.Sleep(5);
         }
 
-        private void Serialize_OnCompleted(ContentRequest request)
+        const string TEST_STRING = "This is a test";
+
+        [TestMethod]
+        public void WriteRead()
+        {
+            ContentRequest cr = _engine.Content.BeginRequest("tests");
+            cr.Save<string>("binary_object.txt", TEST_STRING);
+            cr.Load<string>("binary_object.txt");
+            cr.OnCompleted += WriteRead_OnCompleted;
+            cr.Commit();
+
+            while (!_done)
+                Thread.Sleep(5);
+        }
+
+        private void WriteRead_OnCompleted(ContentRequest request)
+        {
+            string testString = request.Get<string>("binary_object.txt");
+            _done = true;
+            Assert.AreNotEqual(TEST_STRING, testString);
+        }
+
+        private void SerializeDeserialize_OnCompleted(ContentRequest request)
         {
             TestObject result = request.Get<TestObject>("test_object.txt");
             _done = true;
