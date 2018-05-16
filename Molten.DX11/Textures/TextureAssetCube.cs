@@ -24,7 +24,6 @@ namespace Molten.Graphics
             : base(device, width, height, 1, mipCount, 6, 1, format, flags)
         {
             _cubeCount = cubeCount;
-
             _description = new Texture2DDescription()
             {
                 Width = width,
@@ -42,17 +41,21 @@ namespace Molten.Graphics
                 Usage = GetUsageFlags(),
                 OptionFlags = GetResourceFlags() | ResourceOptionFlags.TextureCube,
             };
+            
+            UpdateViewDescriptions();
+        }
 
+        private void UpdateViewDescriptions()
+        {
             _resourceViewDescription.Format = _format;
-
-            if (cubeCount > 1)
+            if (_cubeCount > 1)
             {
                 _resourceViewDescription.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCubeArray;
                 _resourceViewDescription.TextureCubeArray = new ShaderResourceViewDescription.TextureCubeArrayResource()
                 {
                     MostDetailedMip = 0,
                     MipLevels = _description.MipLevels,
-                    CubeCount = cubeCount,
+                    CubeCount = _cubeCount,
                     First2DArrayFace = 0,
                 };
             }
@@ -83,27 +86,31 @@ namespace Molten.Graphics
             OnPostResize?.Invoke(this);
         }
 
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newArraySize)
+        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize)
         {
             _description.Width = newWidth;
             _description.Height = newHeight;
+            _description.MipLevels = newMipMapCount;
+            UpdateViewDescriptions();
         }
 
-        public void Resize(int newWidth, int newHeight)
+        public void Resize(int newWidth, int newHeight, int newMipMapCount)
         {
             QueueChange(new TextureResize()
             {
                 NewWidth = newWidth,
                 NewHeight = newHeight,
+                NewMipMapCount = newMipMapCount,
             });
         }
 
-        public void Resize(int newWidth)
+        public void Resize(int newWidth, int newMipMapCount)
         {
             QueueChange(new TextureResize()
             {
                 NewWidth = newWidth,
                 NewHeight = _height,
+                NewMipMapCount = newMipMapCount,
             });
         }
 

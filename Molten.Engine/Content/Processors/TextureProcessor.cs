@@ -34,7 +34,7 @@ namespace Molten.Content
 
                 texReader.Read(reader);
 
-                //output error, if one occurred.
+                // Output error, if one occurred.
                 string error = texReader.Error;
                 if (error != null)
                 {
@@ -48,6 +48,8 @@ namespace Molten.Content
 
                 //output error, if one occurred.
                 error = texReader.Error;
+                texReader.Dispose();
+
                 if (error != null)
                 {
                     context.Log.WriteError(error, context.Filename);
@@ -67,21 +69,70 @@ namespace Molten.Content
                         }
                     }
 
+                    // Check if an existing texture was passed in.
                     ITexture tex = null;
-                    if (context.ContentType == typeof(ITexture2D))
-                        tex = context.Engine.Renderer.Resources.CreateTexture2D(data);
-                    else if (context.ContentType == typeof(ITextureCube))
-                        tex = context.Engine.Renderer.Resources.CreateTextureCube(data);
-                    else if (context.ContentType == typeof(ITexture))
-                        tex = context.Engine.Renderer.Resources.CreateTexture1D(data);
+                    if(context.Input.TryGetValue(context.ContentType, out List<object> existingObjects))
+                    {
+                        if (existingObjects.Count > 0)
+                            tex = existingObjects[0] as ITexture;
+                    }
+
+                    if (tex != null)
+                    {
+                        OnReload(tex, data);
+                    }
                     else
-                        context.Log.WriteError($"Unsupported texture type {context.ContentType}", context.Filename);
+                    {
+                        if (context.ContentType == typeof(ITexture2D))
+                            tex = context.Engine.Renderer.Resources.CreateTexture2D(data);
+                        else if (context.ContentType == typeof(ITextureCube))
+                            tex = context.Engine.Renderer.Resources.CreateTextureCube(data);
+                        else if (context.ContentType == typeof(ITexture))
+                            tex = context.Engine.Renderer.Resources.CreateTexture1D(data);
+                        else
+                            context.Log.WriteError($"Unsupported texture type {context.ContentType}", context.Filename);
 
-                    if(tex != null)
-                        context.AddOutput(context.ContentType, tex);
-
-                    texReader.Dispose();
+                        if (tex != null)
+                            context.AddOutput(context.ContentType, tex);
+                    }
                 }
+            }
+        }
+
+        private void OnReload(ITexture tex, TextureData data)
+        {
+            switch (tex)
+            {
+                case ITextureCube texCube:
+                    // TODO include mip-map count in resize
+                    if (texCube.Width != data.Width || 
+                        texCube.Height != data.Height || 
+                        tex.MipMapCount != data.MipMapCount)
+                        texCube.Resize(data.Width, data.Height, data.MipMapCount);
+
+                    texCube.SetData(data, 0, 0, data.MipMapCount, Math.Min(data.ArraySize, 6), 0, 0);
+                    break;
+
+                case ITexture2D tex2d:
+                    // TODO include mip-map count in resize
+                    if (tex2d.Width != data.Width ||
+                        tex2d.Height != data.Height ||
+                        tex2d.ArraySize != data.ArraySize ||
+                        tex.MipMapCount != data.MipMapCount)
+                    {
+                        tex2d.Resize(data.Width, data.Height, data.MipMapCount, data.ArraySize);
+                    }
+
+                    tex2d.SetData(data, 0, 0, data.MipMapCount, data.ArraySize, 0, 0);
+                    break;
+
+                default:
+                    // TODO include mip-map count in resize
+                    if (tex.Width != data.Width || tex.MipMapCount != data.MipMapCount)
+                        tex.Resize(data.Width, data.MipMapCount);
+
+                    tex.SetData(data, 0, 0, data.MipMapCount, data.ArraySize, 0, 0);
+                    break;
             }
         }
 

@@ -220,7 +220,7 @@ namespace Molten.Graphics
             base.AfterResize();
         }
 
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newArraySize)
+        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize)
         {
             if (_displayMode.Width != newWidth || _displayMode.Height != newHeight)
             {
@@ -239,7 +239,7 @@ namespace Molten.Graphics
                 UpdateFormMode(_mode);
             }
 
-            base.OnSetSize(newWidth, newHeight, newDepth, newArraySize);
+            base.OnSetSize(newWidth, newHeight, newDepth, newMipMapCount, newArraySize);
         }
 
         public void Show()

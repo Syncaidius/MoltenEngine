@@ -25,14 +25,14 @@ namespace Molten.Graphics
         /// <param name="descTexture"></param>
         /// <param name="flags">A set of flags to override those of the provided texture.</param>
         internal TextureAsset2D(TextureAsset2D descTexture, TextureFlags flags)
-            : this(descTexture.Device, descTexture.Width, descTexture.Height, descTexture.DxFormat, descTexture.MipMapLevels, descTexture.ArraySize, flags)
+            : this(descTexture.Device, descTexture.Width, descTexture.Height, descTexture.DxFormat, descTexture.MipMapCount, descTexture.ArraySize, flags)
         { }
 
         /// <summary>Creates a new instance of <see cref="TextureAsset2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
         /// <param name="descTexture"></param>
         internal TextureAsset2D(TextureAsset2D descTexture)
-            : this(descTexture.Device, descTexture.Width, descTexture.Height, descTexture.DxFormat, descTexture.MipMapLevels, descTexture.ArraySize, descTexture.Flags)
+            : this(descTexture.Device, descTexture.Width, descTexture.Height, descTexture.DxFormat, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags)
         { }
 
         internal TextureAsset2D(
@@ -64,17 +64,22 @@ namespace Molten.Graphics
                 OptionFlags = GetResourceFlags(),
             };
 
+            UpdateViewDescriptions();
+        }
+
+        private void UpdateViewDescriptions()
+        {
             _resourceViewDescription = new ShaderResourceViewDescription();
             _resourceViewDescription.Format = _format;
 
             if (_description.ArraySize > 1)
             {
-                if (sampleCount > 1)
+                if (_description.SampleDescription.Count > 1)
                 {
                     _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DMultisampledArray;
                     _resourceViewDescription.Texture2DMSArray = new ShaderResourceViewDescription.Texture2DMultisampledArrayResource()
                     {
-                        ArraySize = arraySize,
+                        ArraySize = _description.ArraySize,
                         FirstArraySlice = 0,
                     };
                 }
@@ -92,7 +97,7 @@ namespace Molten.Graphics
             }
             else
             {
-                if (sampleCount > 1)
+                if (_description.SampleDescription.Count > 1)
                 {
                     _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DMultisampled;
                     _resourceViewDescription.Texture2DMS = new ShaderResourceViewDescription.Texture2DMultisampledResource();
@@ -119,7 +124,8 @@ namespace Molten.Graphics
 
         protected override void OnCreateUAV()
         {
-            DisposeObject(ref _uav);
+            UAV?.Dispose();
+            UAV = null;
 
             UnorderedAccessViewDescription uDesc;
 
@@ -173,39 +179,44 @@ namespace Molten.Graphics
             OnPostResize?.Invoke(this);
         }
 
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newArraySize)
+        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize)
         {
             _description.ArraySize = newArraySize;
             _description.Width = newWidth;
             _description.Height = newHeight;
+            _description.MipLevels = newMipMapCount;
+            UpdateViewDescriptions();
         }
 
-        public void Resize(int newWidth, int newHeight)
+        public void Resize(int newWidth, int newHeight, int newMipMapCount)
         {
             QueueChange(new TextureResize()
             {
                 NewWidth = newWidth,
                 NewHeight = newHeight,
+                NewMipMapCount = newMipMapCount,
                 NewArraySize = _description.ArraySize,
             });
         }
 
-        public void Resize(int newWidth)
+        public void Resize(int newWidth, int newMipMapCount)
         {
             QueueChange(new TextureResize()
             {
                 NewWidth = newWidth,
                 NewHeight = _height,
+                NewMipMapCount = newMipMapCount,
                 NewArraySize = _description.ArraySize,
             });
         }
 
-        public void Resize(int newWidth, int newHeight, int newArraySize)
+        public void Resize(int newWidth, int newHeight, int newMipMapCount, int newArraySize)
         {
             QueueChange(new TextureResize()
             {
                 NewWidth = newWidth,
                 NewHeight = newHeight,
+                NewMipMapCount = newMipMapCount,
                 NewArraySize = newArraySize,
             });
         }

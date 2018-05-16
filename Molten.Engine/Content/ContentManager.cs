@@ -128,29 +128,56 @@ namespace Molten
         internal void ReloadFile(ContentFile file)
         {
             ContentContext context = ContextPool.GetInstance();
+            context.File = file.File;
+            context.ContentType = file.OriginalContentType;
 
             // Create a local copy of the keys to avoid threading issues
             Type[] types = file.Segments.Keys.ToArray();
 
             // Add as input objects, all that were loaded from the original version of the file.
             // It is up to the content processor to update existing object instances and output them.
-            foreach(Type t in types)
+            if (file.Type == ContentRequestType.Read)
             {
-                ContentSegment seg = file.Segments[t];
-                context.Input.Add(t, new List<object>(seg.Objects));
+                if (file.OriginalProcessor == null)
+                {
+                    _log.WriteWarning($"[CONTENT] [RELOAD] Unable to reload {file.Path}. Not loaded via content manager.");
+                    return;
+                }
 
-                ContentProcessor proc = GetProcessor(t);
+                foreach (Type t in types)
+                {
+                    ContentSegment seg = file.Segments[t];
+                    context.Input.Add(t, new List<object>(seg.Objects));
+                    _log.WriteLine($"[CONTENT] [RELOAD] {file.Path}");
+                    DoRead(null, context, file.OriginalProcessor);
+                }
+            }
+            else if (file.Type == ContentRequestType.Deserialize)
+            {
+                foreach(Type t in types)
+                {
+                    ContentSegment seg = file.Segments[t];
+                    context.Input.Add(t, new List<object>(seg.Objects));
+                    _log.WriteLine($"[CONTENT] [RELOAD] {file.Path}");
+                    DoDeserialize(null, context);
+                }
             }
         }
 
-        private ContentSegment GetSegment(Type t, ContentContext context, ContentRequest request = null)
+        private ContentSegment GetSegment(Type t, ContentContext context, ContentRequest request = null, ContentProcessor processor = null)
         {
             ContentFile file;
             string fnLower = context.Filename.ToLower();
 
             if (!_content.TryGetValue(fnLower, out file))
             {
-                file = new ContentFile(context.Filename, context.RequestType);
+                file = new ContentFile()
+                {
+                    OriginalProcessor = processor,
+                    OriginalContentType = context.ContentType,
+                    File = context.File,
+                    Type = context.RequestType,
+                };
 
                 ContentDirectory directory;
                 string strDirectory = context.File.Directory.ToString();
@@ -316,7 +343,7 @@ namespace Molten
 
                 foreach (Type t in context.Output.Keys)
                 {
-                    ContentSegment segment = GetSegment(t, context, request);
+                    ContentSegment segment = GetSegment(t, context, request, proc);
                     List<object> result = context.Output[t];
                     segment.Objects.AddRange(result);
                     _log.WriteLine($"[CONTENT] [READ]    {result.Count}x {t.FullName}");

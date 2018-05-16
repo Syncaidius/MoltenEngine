@@ -8,9 +8,9 @@ namespace Molten.Graphics
 {
     public interface ITexture2D : ITexture
     {
-        void Resize(int newWidth, int newHeight);
+        void Resize(int newWidth, int newHeight, int newMipMapCount);
 
-        void Resize(int newWidth, int newHeight, int newArraySize);
+        void Resize(int newWidth, int newHeight, int newMipMapCount, int newArraySize);
 
         /// <summary>Gets the height of the texture.</summary>
         int Height { get; }

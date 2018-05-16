@@ -14,11 +14,13 @@ namespace Molten.Graphics
 
         public int NewDepth;
 
+        public int NewMipMapCount;
+
         public int NewArraySize;
 
         public void Process(GraphicsPipe pipe, TextureBase texture)
         {
-            texture.SetSize(NewWidth, NewHeight, NewDepth, NewArraySize);
+            texture.SetSize(NewWidth, NewHeight, NewDepth, NewMipMapCount, NewArraySize);
         }
     }
 }

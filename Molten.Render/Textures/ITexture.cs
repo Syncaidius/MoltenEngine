@@ -16,21 +16,19 @@ namespace Molten.Graphics
 
         event TextureHandler OnPostResize;
 
-        void Resize(int newWidth);
+        void Resize(int newWidth, int newMipMapCount);
 
         /// <summary>Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="TextureFlags.AllowMipMapGeneration"/>.</summary>
         void GenerateMipMaps();
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary>Copies data fom the provided <see cref="TextureData"/> instance into the current texture.</summary>
         /// <param name="data"></param>
-        /// <param name="srcMipIndex"></param>
-        /// <param name="srcArraySlice"></param>
-        /// <param name="mipCount"></param>
-        /// <param name="arrayCount"></param>
-        /// <param name="destMipIndex"></param>
-        /// <param name="destArraySlice"></param>
+        /// <param name="srcMipIndex">The starting mip-map index within the provided <see cref="TextureData"/>.</param>
+        /// <param name="srcArraySlice">The starting array slice index within the provided <see cref="TextureData"/>.</param>
+        /// <param name="mipCount">The number of mip-map levels to copy per array slice, from the provided <see cref="TextureData"/>.</param>
+        /// <param name="arrayCount">The number of array slices to copy from the provided <see cref="TextureData"/>.</param>
+        /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
+        /// <param name="destArraySlice">The array slice index within the current texture to start copying to.<</param>
         void SetData(TextureData data, int srcMipIndex, int srcArraySlice, int mipCount, int arrayCount, int destMipIndex = 0, int destArraySlice = 0);
 
         /// <summary>Copies the provided data into the texture.</summary>
@@ -74,7 +72,7 @@ namespace Molten.Graphics
         int Width { get; }
 
         /// <summary>Gets the number of mip map levels in the texture.</summary>
-        int MipMapLevels { get; }
+        int MipMapCount { get; }
 
         /// <summary>Gets the number of array slices in the texture.</summary>
         int ArraySize { get; }

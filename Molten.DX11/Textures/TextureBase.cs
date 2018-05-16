@@ -42,9 +42,6 @@ namespace Molten.Graphics
         protected long _curVramSize;
         protected Resource _resource;
 
-        protected ShaderResourceView _srv;
-        protected UnorderedAccessView _uav;
-
         internal TextureBase(GraphicsDeviceDX11 device, int width, int height, int depth, int mipCount, int arraySize, int sampleCount, Format format, TextureFlags flags) : base(device)
         {
             _flags = flags;
@@ -311,8 +308,7 @@ namespace Molten.Graphics
         protected virtual void CreateSRV()
         {
             // Dispose of old SRV.
-            DisposeObject(ref _srv);
-
+            SRV?.Dispose();
             SRV = new ShaderResourceView(Device.D3d, _resource, _resourceViewDescription);
         }
 
@@ -357,8 +353,8 @@ namespace Molten.Graphics
 
         internal void GenerateMipMaps(GraphicsPipe pipe)
         {
-            if (_srv != null)
-                pipe.Context.GenerateMips(_srv);
+            if (SRV != null)
+                pipe.Context.GenerateMips(SRV);
         }
 
         /// <summary>
@@ -406,16 +402,14 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary>Copies data fom the provided <see cref="TextureData"/> instance into the current texture.</summary>
         /// <param name="data"></param>
-        /// <param name="srcMipIndex"></param>
-        /// <param name="srcArraySlice"></param>
-        /// <param name="mipCount"></param>
-        /// <param name="arrayCount"></param>
-        /// <param name="destMipIndex"></param>
-        /// <param name="destArraySlice"></param>
+        /// <param name="srcMipIndex">The starting mip-map index within the provided <see cref="TextureData"/>.</param>
+        /// <param name="srcArraySlice">The starting array slice index within the provided <see cref="TextureData"/>.</param>
+        /// <param name="mipCount">The number of mip-map levels to copy per array slice, from the provided <see cref="TextureData"/>.</param>
+        /// <param name="arrayCount">The number of array slices to copy from the provided <see cref="TextureData"/>.</param>
+        /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
+        /// <param name="destArraySlice">The array slice index within the current texture to start copying to.<</param>
         public void SetData(TextureData data, int srcMipIndex, int srcArraySlice, int mipCount, int arrayCount, int destMipIndex = 0, int destArraySlice = 0)
         {
             TextureData.Slice level = null;
@@ -507,8 +501,8 @@ namespace Molten.Graphics
                 Height = _height,
                 HighestMipMap = 0,
                 IsCompressed = _isBlockCompressed,
-                Levels = new TextureData.Slice[this.ArraySize * this.MipMapLevels],
-                MipMapCount = this.MipMapLevels,
+                Levels = new TextureData.Slice[this.ArraySize * this.MipMapCount],
+                MipMapCount = this.MipMapCount,
                 Width = _width,
             };
 
@@ -518,9 +512,9 @@ namespace Molten.Graphics
             for (int a = 0; a < this.ArraySize; a++)
             {
                 // Iterate over all mip-map levels of the array slice.
-                for (int i = 0; i < this.MipMapLevels; i++)
+                for (int i = 0; i < this.MipMapCount; i++)
                 {
-                    levelID = (a * this.MipMapLevels) + i;
+                    levelID = (a * this.MipMapCount) + i;
                     data.Levels[levelID] = GetSliceData(pipe, stagingTexture, i, a, false);
                 }
             }
@@ -546,7 +540,7 @@ namespace Molten.Graphics
                 stagingTexture._depth != this._depth)
                 throw new TextureCopyException(this, stagingTexture, "Staging texture dimensions do not match current texture.");
 
-            if (level >= MipMapLevels)
+            if (level >= MipMapCount)
                 throw new TextureCopyException(this, stagingTexture, "mip-map level must be less than the total mip-map levels of the texture.");
 
             if (arraySlice >= ArraySize)
@@ -569,7 +563,7 @@ namespace Molten.Graphics
         {
             TextureData.Slice result = null;
 
-            int subID = (arraySlice * MipMapLevels) + level;
+            int subID = (arraySlice * MipMapCount) + level;
 
             int subWidth = _width >> level;
             int subHeight = _height >> level;
@@ -775,20 +769,20 @@ namespace Molten.Graphics
                 destination._depth != this._depth)
                 throw new TextureCopyException(this, destination, "The source and destination textures must have the same dimensions.");
 
-            if (sourceLevel >= this.MipMapLevels)
+            if (sourceLevel >= this.MipMapCount)
                 throw new TextureCopyException(this, destination, "The source mip-map level exceeds the total number of levels in the source texture.");
 
             if(sourceSlice >= this.ArraySize)
                 throw new TextureCopyException(this, destination, "The source array slice exceeds the total number of slices in the source texture.");
 
-            if (destLevel >= destination.MipMapLevels)
+            if (destLevel >= destination.MipMapCount)
                 throw new TextureCopyException(this, destination, "The destination mip-map level exceeds the total number of levels in the destination texture.");
 
             if (destSlice >= destination.ArraySize)
                 throw new TextureCopyException(this, destination, "The destination array slice exceeds the total number of slices in the destination texture.");
 
-            int srcSub = (sourceSlice * this.MipMapLevels) + sourceLevel;
-            int destSub = (destSlice * destination.MipMapLevels) + destLevel;
+            int srcSub = (sourceSlice * this.MipMapCount) + sourceLevel;
+            int destSub = (destSlice * destination.MipMapCount) + destLevel;
 
             ApplyChanges(pipe);
             destination.ApplyChanges(pipe);
@@ -874,14 +868,15 @@ namespace Molten.Graphics
         /// <param name="newHeight"></param>
         /// <param name="newDepth">The number of slices on a 3D texture.</param>
         /// <param name="newArraySize">The number of array slices in an array texture. This will likely be ignored by non-array textures.</param>
-        internal void SetSize(int newWidth, int newHeight, int newDepth, int newArraySize)
+        internal void SetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize)
         {
             BeforeResize();
             _width = Math.Max(1, newWidth);
             _height = Math.Max(1, newHeight);
             _depth = Math.Max(1, newDepth);
+            _mipCount = Math.Max(1, newMipMapCount);
 
-            OnSetSize(_width, _height, _depth, Math.Max(1, newArraySize));
+            OnSetSize(_width, _height, _depth, Math.Max(1, newMipMapCount), Math.Max(1, newArraySize));
             CreateTexture(true);
             AfterResize();
         }
@@ -890,7 +885,7 @@ namespace Molten.Graphics
 
         protected virtual void AfterResize() { }
 
-        protected virtual void OnSetSize(int newWidth, int newHeight, int newDepth, int newArraySize) { }
+        protected virtual void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize) { }
 
         protected abstract Resource CreateTextureInternal(bool isResizing);
 
@@ -947,7 +942,7 @@ namespace Molten.Graphics
         public int Depth => _depth;
 
         /// <summary>Gets the number of mip map levels in the texture.</summary>
-        public int MipMapLevels => _mipCount;
+        public int MipMapCount => _mipCount;
 
         /// <summary>Gets the number of array slices in the texture. For a cube-map, this value will a multiple of 6. For example, a cube map with 2 array elements will have 12 array slices.</summary>
         public int ArraySize => _arraySize;

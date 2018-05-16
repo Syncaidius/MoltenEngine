@@ -27,6 +27,7 @@ namespace Molten
             _watcher.EnableRaisingEvents = true;
             _watcher.Changed += Watcher_Changed;
             _watcher.Created += Watcher_Changed;
+            _watcher.Renamed += Watcher_Changed;
         }
 
         private void Watcher_Changed(object sender, FileSystemEventArgs e)

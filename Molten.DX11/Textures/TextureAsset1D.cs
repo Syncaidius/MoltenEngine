@@ -46,8 +46,13 @@ namespace Molten.Graphics
                 OptionFlags = GetResourceFlags(),
             };
 
+            UpdateViewDescriptions();
+        }
+
+        private void UpdateViewDescriptions()
+        {
             // Setup SRV description
-            if (arraySize > 1)
+            if (_description.ArraySize > 1)
             {
                 _resourceViewDescription = new ShaderResourceViewDescription()
                 {
@@ -131,17 +136,20 @@ namespace Molten.Graphics
             OnPostResize?.Invoke(this);
         }
 
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newArraySize)
+        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize)
         {
             _description.Width = newWidth;
             _description.ArraySize = newArraySize;
+            _description.MipLevels = newMipMapCount;
+            UpdateViewDescriptions();
         }
 
-        public void Resize(int newWidth)
+        public void Resize(int newWidth, int newMipMapCount)
         {
             QueueChange(new TextureResize()
             {
                 NewWidth = 1,
+                NewMipMapCount = newMipMapCount,
             });
         }
     }
