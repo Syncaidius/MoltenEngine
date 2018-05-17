@@ -120,7 +120,7 @@ namespace Molten.Content
                         tex2d.ArraySize != data.ArraySize ||
                         tex.MipMapCount != data.MipMapCount)
                     {
-                        tex2d.Resize(data.Width, data.Height, data.MipMapCount, data.ArraySize);
+                        tex2d.Resize(data.Width, data.Height, data.MipMapCount, data.ArraySize, data.Format);
                     }
 
                     tex2d.SetData(data, 0, 0, data.MipMapCount, data.ArraySize, 0, 0);
@@ -129,7 +129,7 @@ namespace Molten.Content
                 default:
                     // TODO include mip-map count in resize
                     if (tex.Width != data.Width || tex.MipMapCount != data.MipMapCount)
-                        tex.Resize(data.Width, data.MipMapCount);
+                        tex.Resize(data.Width, data.MipMapCount, data.Format);
 
                     tex.SetData(data, 0, 0, data.MipMapCount, data.ArraySize, 0, 0);
                     break;

@@ -160,9 +160,9 @@ namespace Molten.Graphics
             return _texture;
         }
 
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize)
+        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
-            base.OnSetSize(newWidth, newHeight, newDepth, newMipMapCount, newArraySize);
+            base.OnSetSize(newWidth, newHeight, newDepth, newMipMapCount, newArraySize, newFormat);
             UpdateViewport();
         }
 

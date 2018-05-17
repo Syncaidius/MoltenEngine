@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpDX.DXGI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,9 +19,11 @@ namespace Molten.Graphics
 
         public int NewArraySize;
 
+        public Format NewFormat;
+
         public void Process(GraphicsPipe pipe, TextureBase texture)
         {
-            texture.SetSize(NewWidth, NewHeight, NewDepth, NewMipMapCount, NewArraySize);
+            texture.SetSizeInternal(NewWidth, NewHeight, NewDepth, NewMipMapCount, NewArraySize, NewFormat);
         }
     }
 }

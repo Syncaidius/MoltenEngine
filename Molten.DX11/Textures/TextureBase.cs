@@ -38,8 +38,6 @@ namespace Molten.Graphics
         protected int _mipCount;
         protected int _arraySize;
         protected int _sampleCount;
-
-        protected long _curVramSize;
         protected Resource _resource;
 
         internal TextureBase(GraphicsDeviceDX11 device, int width, int height, int depth, int mipCount, int arraySize, int sampleCount, Format format, TextureFlags flags) : base(device)
@@ -586,20 +584,25 @@ namespace Molten.Graphics
             pipe.Profiler.CurrentFrame.CopySubresourceCount++;
         }
 
-        /// <summary>Immediately changes the size of the underlying texture resource.</summary>
-        /// <param name="newWidth"></param>
-        /// <param name="newHeight"></param>
-        /// <param name="newDepth">The number of slices on a 3D texture.</param>
-        /// <param name="newArraySize">The number of array slices in an array texture. This will likely be ignored by non-array textures.</param>
-        internal void SetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize)
+        internal void SetSizeInternal(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
+            // Avoid resizing/recreation if nothing has actually changed.
+            if (_width == newWidth && 
+                _height == newHeight && 
+                _depth == newDepth && 
+                _mipCount == newMipMapCount && 
+                _arraySize == newArraySize && 
+                _format == newFormat)
+                return;
+
             BeforeResize();
             _width = Math.Max(1, newWidth);
             _height = Math.Max(1, newHeight);
             _depth = Math.Max(1, newDepth);
             _mipCount = Math.Max(1, newMipMapCount);
+            _format = newFormat;
 
-            OnSetSize(_width, _height, _depth, Math.Max(1, newMipMapCount), Math.Max(1, newArraySize));
+            OnSetSize(_width, _height, _depth, Math.Max(1, newMipMapCount), Math.Max(1, newArraySize), newFormat);
             CreateTexture(true);
             AfterResize();
         }
@@ -608,13 +611,31 @@ namespace Molten.Graphics
 
         protected virtual void AfterResize() { }
 
-        protected virtual void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize) { }
+        protected virtual void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat) { }
 
         protected abstract Resource CreateTextureInternal(bool isResizing);
 
-        internal void QueueChange(ITextureChange change)
+        private protected void QueueChange(ITextureChange change)
         {
             _pendingChanges.Enqueue(change);
+        }
+
+
+        public void Resize(int newWidth)
+        {
+            Resize(newWidth, _mipCount, _format.FromApi());
+        }
+
+        public void Resize(int newWidth, int newMipMapCount, GraphicsFormat newFormat)
+        {
+            QueueChange(new TextureResize()
+            {
+                NewWidth = newWidth,
+                NewHeight = _height,
+                NewMipMapCount = newMipMapCount,
+                NewArraySize = _arraySize,
+                NewFormat = _format,
+            });
         }
 
         /// <summary>Applies all pending changes to the texture. Take care when calling this method in multi-threaded code. Calling while the

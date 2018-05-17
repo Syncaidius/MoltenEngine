@@ -16,7 +16,9 @@ namespace Molten.Graphics
 
         event TextureHandler OnPostResize;
 
-        void Resize(int newWidth, int newMipMapCount);
+        void Resize(int newWidth, int newMipMapCount, GraphicsFormat format);
+
+        void Resize(int newWidth);
 
         /// <summary>Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="TextureFlags.AllowMipMapGeneration"/>.</summary>
         void GenerateMipMaps();

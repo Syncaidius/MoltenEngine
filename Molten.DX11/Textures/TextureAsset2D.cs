@@ -179,13 +179,27 @@ namespace Molten.Graphics
             OnPostResize?.Invoke(this);
         }
 
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize)
+        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
             _description.ArraySize = newArraySize;
             _description.Width = newWidth;
             _description.Height = newHeight;
             _description.MipLevels = newMipMapCount;
+            _description.Format = newFormat;
+
             UpdateViewDescriptions();
+        }
+
+        public void Resize(int newWidth, int newHeight)
+        {
+            QueueChange(new TextureResize()
+            {
+                NewWidth = newWidth,
+                NewHeight = newHeight,
+                NewMipMapCount = _mipCount,
+                NewArraySize = _description.ArraySize,
+                NewFormat = _format
+            });
         }
 
         public void Resize(int newWidth, int newHeight, int newMipMapCount)
@@ -196,21 +210,11 @@ namespace Molten.Graphics
                 NewHeight = newHeight,
                 NewMipMapCount = newMipMapCount,
                 NewArraySize = _description.ArraySize,
+                NewFormat = _format
             });
         }
 
-        public void Resize(int newWidth, int newMipMapCount)
-        {
-            QueueChange(new TextureResize()
-            {
-                NewWidth = newWidth,
-                NewHeight = _height,
-                NewMipMapCount = newMipMapCount,
-                NewArraySize = _description.ArraySize,
-            });
-        }
-
-        public void Resize(int newWidth, int newHeight, int newMipMapCount, int newArraySize)
+        public void Resize(int newWidth, int newHeight, int newMipMapCount, int newArraySize, GraphicsFormat newFormat)
         {
             QueueChange(new TextureResize()
             {
@@ -218,6 +222,7 @@ namespace Molten.Graphics
                 NewHeight = newHeight,
                 NewMipMapCount = newMipMapCount,
                 NewArraySize = newArraySize,
+                NewFormat = newFormat.ToApi(),
             });
         }
 

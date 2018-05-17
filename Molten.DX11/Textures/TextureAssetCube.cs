@@ -86,11 +86,13 @@ namespace Molten.Graphics
             OnPostResize?.Invoke(this);
         }
 
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize)
+        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
             _description.Width = newWidth;
             _description.Height = newHeight;
             _description.MipLevels = newMipMapCount;
+            _description.Format = newFormat;
+
             UpdateViewDescriptions();
         }
 

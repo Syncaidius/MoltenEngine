@@ -39,10 +39,11 @@ namespace Molten.Graphics
                 pipe.Context.ClearRenderTargetView(RTV, color.ToApi());
         }
 
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize)
+        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
             _description.Width = newWidth;
             _description.Height = newHeight;
+            _description.Format = newFormat;
             //_description.MipLevels = newMipMapCount; // NOTE: Do we set this on render targets?
             VP = new Viewport(0, 0, newWidth, newHeight);
         }

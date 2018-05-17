@@ -10,7 +10,7 @@ namespace Molten.Graphics
     {
         void Resize(int newWidth, int newHeight, int newMipMapCount);
 
-        void Resize(int newWidth, int newHeight, int newMipMapCount, int newArraySize);
+        void Resize(int newWidth, int newHeight, int newMipMapCount, int newArraySize, GraphicsFormat newFormat);
 
         /// <summary>Gets the height of the texture.</summary>
         int Height { get; }

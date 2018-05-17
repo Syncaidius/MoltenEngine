@@ -136,21 +136,13 @@ namespace Molten.Graphics
             OnPostResize?.Invoke(this);
         }
 
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize)
+        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
             _description.Width = newWidth;
             _description.ArraySize = newArraySize;
             _description.MipLevels = newMipMapCount;
+            _description.Format = newFormat;
             UpdateViewDescriptions();
-        }
-
-        public void Resize(int newWidth, int newMipMapCount)
-        {
-            QueueChange(new TextureResize()
-            {
-                NewWidth = 1,
-                NewMipMapCount = newMipMapCount,
-            });
         }
     }
 }
