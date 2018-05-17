@@ -25,7 +25,7 @@ namespace Molten.Content
                 using (BinaryReader reader = new BinaryReader(context.Stream))
                 {
                     while (reader.BaseStream.Position < reader.BaseStream.Length)
-                        context.AddOutput<string>(reader.ReadString());
+                        context.AddOutput(reader.ReadString());
                 }
             }
             else
@@ -38,12 +38,12 @@ namespace Molten.Content
                 {
                     if (perLine)
                     {
-                        context.AddOutput<string>(reader.ReadToEnd());
+                        while (!reader.EndOfStream)
+                            context.AddOutput(reader.ReadLine());
                     }
                     else
                     {
-                        while (!reader.EndOfStream)
-                            context.AddOutput<string>(reader.ReadLine());
+                        context.AddOutput(reader.ReadToEnd());
                     }
                 }
             }

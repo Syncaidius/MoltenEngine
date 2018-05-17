@@ -77,9 +77,39 @@ namespace Molten
         /// <param name="obj">The object to be written.</param>
         public void Save<T>(string fn, T obj)
         {
-            AddElement(fn, ContentRequestType.Write, typeof(T), (e) =>
+            Save(fn, typeof(T), obj);
+        }
+
+        /// <summary>Adds a write request for the provided object.</summary>
+        /// <param name="fn">The relative file path from the request's root directory.</param>
+        /// <param name="obj">The object to be written.</param>
+        public void Save(string fn, Type type, object obj)
+        {
+            AddElement(fn, ContentRequestType.Write, type, (e) =>
             {
-                e.AddInput<T>(obj);
+                e.AddInput(type, obj);
+            });
+        }
+
+        /// <summary>Adds a write request for the provided object.</summary>
+        /// <param name="fn">The relative file path from the request's root directory.</param>
+        /// <param name="obj">The object to be written.</param>
+        public void Save<T>(string fn, params T[] obj)
+        {
+            Save(fn, typeof(T), obj);
+        }
+        /// <summary>Adds a write request for the provided object.</summary>
+        /// <param name="fn">The relative file path from the request's root directory.</param>
+        /// <param name="obj">The object to be written.</param>
+        public void Save(string fn, Type type, params object[] obj)
+        {
+            if (obj == null)
+                return;
+
+            AddElement(fn, ContentRequestType.Write, type, (e) =>
+            {
+                for(int i = 0; i < obj.Length; i++)
+                    e.AddInput(type, obj[i]);
             });
         }
 
