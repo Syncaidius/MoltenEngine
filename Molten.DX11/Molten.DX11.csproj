@@ -253,6 +253,8 @@
     <Compile Include="Textures\Changes\ITextureChange.cs" />
     <Compile Include="Textures\Changes\SurfaceClearChange.cs" />
     <Compile Include="Textures\Changes\TextureGenMipMaps.cs" />
+    <Compile Include="Textures\Changes\TextureGetSlice.cs" />
+    <Compile Include="Textures\Changes\TextureGet.cs" />
     <Compile Include="Textures\Changes\TextureResize.cs" />
     <Compile Include="Textures\Changes\TextureSet.cs" />
     <Compile Include="Textures\DefaultTextureReader.cs" />
@@ -262,7 +264,7 @@
     <Compile Include="Textures\TextureAsset2D.cs" />
     <Compile Include="Textures\TextureAssetCube.cs" />
     <Compile Include="Textures\TextureBase.cs" />
-    <Compile Include="Textures\TextureBase.Exceptions.cs" />
+    <Compile Include="Textures\TextureExceptions.cs" />
     <Compile Include="Textures\WICFormatConverter.cs" />
     <Compile Include="VertexInputLayout.cs" />
     <Compile Include="Vertices\VertexFormat.cs" />

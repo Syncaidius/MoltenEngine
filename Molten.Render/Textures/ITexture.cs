@@ -51,13 +51,15 @@ namespace Molten.Graphics
         /// <summary>Returns the data contained within a texture via a staging texture or directly from the texture itself if possible.</summary>
         /// <param name="stagingTexture">A staging texture to use when retrieving data from the GPU. Only textures
         /// with the staging flag set will work.</param>
-        TextureData GetData(ITexture stagingTexture);
+        /// <param name="callback">The callback for when the data retrieval is completed.</param>
+        void GetData(ITexture stagingTexture, Action<TextureData> callback);
 
         /// <summary>Returns the data from a single mip-map level within a slice of the texture. For 2D, non-array textures, this will always be slice 0.</summary>
         /// <param name="stagingTexture">The staging texture to copy the data to, from the GPU.</param>
         /// <param name="level">The mip-map level to retrieve.</param>
-        /// <param name="arraySlice">The array slice to access.</param>
-        TextureData.Slice GetData(ITexture stagingTexture, int level, int arraySlice);
+        /// <param name="arrayIndex">The array slice/index to access.</param>
+        /// <param name="callback">The callback for when the data retrieval is completed.</param>
+        void GetData(ITexture stagingTexture, int level, int arrayIndex, Action<TextureData.Slice> callback);
 
         /// <summary>Gets the flags that were passed in when the texture was created.</summary>
         TextureFlags Flags { get; }

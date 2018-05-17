@@ -180,26 +180,6 @@ namespace Molten.Graphics
             Parent.QueueOperation(op);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="pipe"></param>
-        /// <param name="startIndex"></param>
-        /// <param name="count"></param>
-        /// <param name="elementOffset">The offset within the <see cref="BufferSegment"/> at which to begin retrieving data. 
-        /// The offset is based on the stride of the return type of the current call. This is calculated automatically.</param>
-        /// <returns></returns>
-        internal T[] GetDataImmediate<T>(GraphicsPipe pipe, int startIndex, int count, int elementOffset = 0) where T : struct
-        {
-            T[] destination = new T[count];
-
-            int tStride = Marshal.SizeOf<T>();
-            int getByteOffset = elementOffset * tStride;
-            Parent.Get<T>(pipe, destination, startIndex, count, tStride, getByteOffset);
-            return destination;
-        }
-
         internal void CopyTo(GraphicsPipe pipe, int sourceByteOffset, BufferSegment destination, int destByteOffset, int count, bool isImmediate = false, Action completionCallback = null)
         {
             int bytesToCopy = Stride * count;

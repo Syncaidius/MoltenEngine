@@ -463,84 +463,24 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        /// <summary>Writes texture data to a stream. NOTE: This is an extremely expensive operation, which is not thread-safe.</summary>
-        /// <param name="mipLevel">The mip map level to write to the provided stream.</param>
-        /// <param name="stagingTexture">A staging texture to use when retrieving data from the GPU. Only textures
-        /// with the staging flag set will work.</param>
-        internal TextureData GetData(GraphicsPipe pipe, TextureBase stagingTexture)
+        public void GetData(ITexture stagingTexture, Action<TextureData> callback)
         {
-            if (!stagingTexture.HasFlags(TextureFlags.Staging))
-                throw new TextureFlagException(stagingTexture.Flags, "Provided staging texture does not have the staging flag set.");
-
-            // Validate dimensions.
-            if (stagingTexture._width != this._width ||
-                stagingTexture._height != this._height ||
-                stagingTexture._depth != this._depth)
-                throw new TextureCopyException(this, stagingTexture, "Staging texture dimensions do not match current texture.");
-
-            ApplyChanges(pipe);
-            stagingTexture.ApplyChanges(pipe);
-
-            // Copy the texture into the staging texture.
-            Device.Context.CopyResource(_resource, stagingTexture._resource);
-
-            TextureData data = new TextureData()
+            _pendingChanges.Enqueue(new TextureGet()
             {
-                ArraySize = this.ArraySize,
-                Flags = _flags,
-                Format = _format.FromApi(),
-                Height = _height,
-                HighestMipMap = 0,
-                IsCompressed = _isBlockCompressed,
-                Levels = new TextureData.Slice[this.ArraySize * this.MipMapCount],
-                MipMapCount = this.MipMapCount,
-                Width = _width,
-            };
-
-            int levelID = 0;
-
-            // Iterate over each array slice.
-            for (int a = 0; a < this.ArraySize; a++)
-            {
-                // Iterate over all mip-map levels of the array slice.
-                for (int i = 0; i < this.MipMapCount; i++)
-                {
-                    levelID = (a * this.MipMapCount) + i;
-                    data.Levels[levelID] = GetSliceData(pipe, stagingTexture, i, a, false);
-                }
-            }
-
-            // Return resulting data
-            return data;
+                StagingTexture = stagingTexture as TextureBase,
+                Callback = callback,
+            });
         }
 
-        /// <summary>Returns the data from a single mip-map level within a slice of the texture. For 2D, non-array textures, this will always be slice 0.</summary>
-        /// <param name="pipe">The graphics pipe to perform the retrieval.</param>
-        /// <param name="stagingTexture">The staging texture to copy the data to, from the GPU.</param>
-        /// <param name="level">The mip-map level to retrieve.</param>
-        /// <param name="arraySlice">The array slice to access.</param>
-        /// <returns></returns>
-        internal TextureData.Slice GetData(GraphicsPipe pipe, TextureBase stagingTexture, int level, int arraySlice)
+        public void GetData(ITexture stagingTexture, int mipLevel, int arrayIndex, Action<TextureData.Slice> callback)
         {
-            if (!stagingTexture.HasFlags(TextureFlags.Staging))
-                throw new TextureFlagException(stagingTexture.Flags, "Provided staging texture does not have the staging flag set.");
-
-            // Validate dimensions.
-            if (stagingTexture._width != this._width ||
-                stagingTexture._height != this._height ||
-                stagingTexture._depth != this._depth)
-                throw new TextureCopyException(this, stagingTexture, "Staging texture dimensions do not match current texture.");
-
-            if (level >= MipMapCount)
-                throw new TextureCopyException(this, stagingTexture, "mip-map level must be less than the total mip-map levels of the texture.");
-
-            if (arraySlice >= ArraySize)
-                throw new TextureCopyException(this, stagingTexture, "array slice must be less than the array size of the texture.");
-
-            ApplyChanges(pipe);
-            stagingTexture.ApplyChanges(pipe);
-
-            return GetSliceData(pipe, stagingTexture, level, arraySlice, true);
+            _pendingChanges.Enqueue(new TextureGetSlice()
+            {
+                StagingTexture = stagingTexture as TextureBase,
+                Callback = callback,
+                ArrayIndex = arrayIndex,
+                MipMapLevel = mipLevel,
+            });
         }
 
         /// <summary>A private helper method for retrieving the data of a subresource.</summary>
@@ -550,7 +490,7 @@ namespace Molten.Graphics
         /// <param name="arraySlice">The array slice.</param>
         /// <param name="copySubresource">Copies the data via the provided staging texture. If this is true, the staging texture cannot be null.</param>
         /// <returns></returns>
-        private TextureData.Slice GetSliceData(GraphicsPipe pipe, TextureBase stagingTexture, int level, int arraySlice, bool copySubresource)
+        internal TextureData.Slice GetSliceData(GraphicsPipe pipe, TextureBase stagingTexture, int level, int arraySlice, bool copySubresource)
         {
             TextureData.Slice result = null;
 
@@ -644,24 +584,6 @@ namespace Molten.Graphics
 
             pipe.Context.CopySubresourceRegion(_resource, srcSub, null, destination._resource, destSub);
             pipe.Profiler.CurrentFrame.CopySubresourceCount++;
-        }
-
-        /// <summary>Returns the data contained within a texture via a staging texture or directly from the texture itself if possible.</summary>
-        /// <param name="stagingTexture">A staging texture to use when retrieving data from the GPU. Only textures
-        /// with the staging flag set will work.</param>
-        public TextureData GetData(ITexture stagingTexture)
-        {
-            return GetData(Device, stagingTexture as TextureBase);
-        }
-
-        /// <summary>Returns the data from a single mip-map level within a slice of the texture. For 2D, non-array textures, this will always be slice 0.</summary>
-        /// <param name="stagingTexture">The staging texture to copy the data to, from the GPU.</param>
-        /// <param name="level">The mip-map level to retrieve.</param>
-        /// <param name="arraySlice">The array slice to access.</param>
-        /// <returns></returns>
-        public TextureData.Slice GetData(ITexture stagingTexture, int level, int arraySlice)
-        {
-            return GetData(Device, stagingTexture as TextureBase, level, arraySlice);
         }
 
         /// <summary>Immediately changes the size of the underlying texture resource.</summary>
