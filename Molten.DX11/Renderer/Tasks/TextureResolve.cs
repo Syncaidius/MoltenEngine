@@ -11,7 +11,15 @@ namespace Molten.Graphics
     {
         public TextureBase Source;
 
+        public int SourceArraySlice;
+
+        public int SourceMipLevel;
+
         public TextureBase Destination;
+
+        public int DestArraySlice;
+
+        public int DestMipLevel;
 
         public override void Clear()
         {
@@ -21,7 +29,12 @@ namespace Molten.Graphics
 
         public override void Process(RendererDX11 renderer)
         {
-            Source.Resolve(renderer.Device, 0, Destination, 0);
+            int subSource = (Source.MipMapCount * SourceArraySlice) + SourceMipLevel;
+            int subDest = (Destination.MipMapCount * DestArraySlice) + DestMipLevel;
+
+            renderer.Device.Context.ResolveSubresource(Source.UnderlyingResource, subSource, 
+                Destination.UnderlyingResource, subDest, 
+                Source.DxFormat);
             Recycle(this);
         }
     }

@@ -54,6 +54,15 @@ namespace Molten.Graphics
         /// <param name="destination">The destination texture.</param>
         void ResolveTexture(ITexture source, ITexture destination);
 
+        /// <summary>Resources the specified sub-resource of a source texture into the sub-resource of a destination texture.</summary>
+        /// <param name="source">The source texture.</param>
+        /// <param name="destination">The destination texture.</param>
+        /// <param name="sourceMipLevel">The source mip-map level.</param>
+        /// <param name="sourceArraySlice">The source array slice.</param>
+        /// <param name="destMiplevel">The destination mip-map level.</param>
+        /// <param name="destArraySlice">The destination array slice.</param>
+        void ResolveTexture(ITexture source, ITexture destination, int sourceMipLevel, int sourceArraySlice, int destMiplevel, int destArraySlice);
+
         /// <summary>
         /// Creates a standard mesh. Standard meshes enforce stricter rules aimed at deferred rendering.
         /// </summary>

@@ -105,7 +105,49 @@ namespace Molten.Graphics
             return tex;
         }
 
+        /// <summary>
+        /// Resolves a source texture into a destination texture. <para/>
+        /// This is most useful when re-using the resulting rendertarget of one render pass as an input to a second render pass. <para/>
+        /// Another common use is transferring (resolving) a multisampled texture into a non-multisampled texture.
+        /// </summary>
+        /// <param name="source">The source texture.</param>
+        /// <param name="destination">The destination texture.</param>
         public void ResolveTexture(ITexture source, ITexture destination)
+        {
+            if (source.Format != destination.Format)
+                throw new Exception("The source and destination texture must be the same format.");
+
+            int arrayLevels = Math.Min(source.ArraySize, destination.ArraySize);
+            int mipLevels = Math.Min(source.MipMapCount, destination.MipMapCount);
+
+            for (int i = 0; i < arrayLevels; i++)
+            {
+                for (int j = 0; j < mipLevels; j++)
+                {
+                    TextureResolve task = TextureResolve.Get();
+                    task.Source = source as TextureBase;
+                    task.Destination = destination as TextureBase;
+                    task.SourceMipLevel = j;
+                    task.SourceArraySlice = i;
+                    task.DestMipLevel = j;
+                    task.DestArraySlice = i;
+                    _renderer.PushTask(task);
+                }
+            }
+        }
+
+        /// <summary>Resources the specified sub-resource of a source texture into the sub-resource of a destination texture.</summary>
+        /// <param name="source">The source texture.</param>
+        /// <param name="destination">The destination texture.</param>
+        /// <param name="sourceMipLevel">The source mip-map level.</param>
+        /// <param name="sourceArraySlice">The source array slice.</param>
+        /// <param name="destMiplevel">The destination mip-map level.</param>
+        /// <param name="destArraySlice">The destination array slice.</param>
+        public void ResolveTexture(ITexture source, ITexture destination,
+            int sourceMipLevel,
+            int sourceArraySlice,
+            int destMiplevel,
+            int destArraySlice)
         {
             if (source.Format != destination.Format)
                 throw new Exception("The source and destination texture must be the same format.");

@@ -357,15 +357,6 @@ namespace Molten.Graphics
                 pipe.Context.GenerateMips(SRV);
         }
 
-        /// <summary>
-        /// Resolves the current texture into the destination texture. Generally used for transferring a multisampled texture into a non-multisampled texture.
-        /// </summary>
-        /// <param name="destination">The destination texture</param>
-        internal void Resolve(GraphicsPipe pipe, int subresource, TextureBase destination, int destSubresource)
-        {
-            pipe.Context.ResolveSubresource(_resource, subresource, destination._resource, destSubresource, _format);
-        }
-
         public void SetData<T>(Rectangle area, T[] data, int bytesPerPixel, int level, int arrayIndex = 0) where T : struct
         {
             int eSize = Marshal.SizeOf(typeof(T));
@@ -671,26 +662,6 @@ namespace Molten.Graphics
         public TextureData.Slice GetData(ITexture stagingTexture, int level, int arraySlice)
         {
             return GetData(Device, stagingTexture as TextureBase, level, arraySlice);
-        }
-
-        /// <summary>Gets the block-compressed byte size of a mip-map level</summary>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="blockSize">The number of bytes per block.</param>
-        /// <returns></returns>
-        private int GetBCSize(int width, int height, int blockSize)
-        {
-            int blockCountX = (width + 3) / 4;
-            int blockCountY = (height + 3) / 4;
-
-            int numBlocksWide = Math.Max(1, blockCountX);
-            int numBlocksHigh = Math.Max(1, blockCountY);
-
-            int numRows = numBlocksHigh;
-
-            int blockPitch = numBlocksWide * blockSize;
-
-            return blockPitch * numRows;
         }
 
         /// <summary>Immediately changes the size of the underlying texture resource.</summary>
