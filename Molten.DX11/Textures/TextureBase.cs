@@ -598,142 +598,6 @@ namespace Molten.Graphics
             return result;
         }
 
-        /// <summary></summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="level">The mip level to set the data.</param>
-        /// <param name="data">The data.</param>
-        /// <param name="startIndex">The byte offset in the data array to copy from.</param>
-        /// <param name="elementCount">The number of data elements to copy.</param>
-        /// <param name="pitch">The size of 1 row, in bytes.</param>
-        /// <param name="arrayIndex">The index in the texture's array to set the data. 
-        /// Ordinary textures generally have 1 array element, with an index of 0. Cube maps usually have an array size of 6, 
-        /// where one element is 1 side of the cube map.</param>
-        internal void SetDataInternal<T>(GraphicsPipe pipe, T[] data, int startIndex, int count, int stride, int mipLevel, int arrayIndex, int pitch, Rectangle? area = null) where T: struct
-        {
-            //calculate size of a single level
-            int sliceBytes = 0;
-            int blockSize = 8; // default block size
-            int levelWidth = _width;
-            int levelHeight = _height;
-
-            if (_isBlockCompressed)
-            {
-                blockSize = DDSHelper.GetBlockSize(_format.FromApi());
-
-                // Collect total level size.
-                for (int i = 0; i < _mipCount; i++)
-                {
-                    sliceBytes += GetBCLevelSize(levelWidth, levelHeight, blockSize);
-                    levelWidth /= 2;
-                    levelHeight /= 2;
-                }
-            }
-            else
-            {
-                for (int i = 0; i < _mipCount; i++)
-                {
-                    sliceBytes += levelWidth * levelHeight * 4; //4 color channels. 1 byte each. Width * height * colorByteSize.
-                    levelWidth /= 2;
-                    levelHeight /= 2;
-                }
-            }
-
-            //======DATA TRANSFER===========
-            EngineInterop.PinObject(data, (ptr) =>
-            {
-                int startBytes = startIndex * stride;
-                IntPtr dataPtr = ptr + startBytes;
-                int subLevel = (_mipCount * arrayIndex) + mipLevel;
-
-                if (HasFlags(TextureFlags.Dynamic))
-                {
-                    DataStream stream = null;
-                    DataBox destBox = pipe.Context.MapSubresource(_resource, subLevel, MapMode.WriteDiscard, SharpDX.Direct3D11.MapFlags.None, out stream);
-                    pipe.Profiler.CurrentFrame.MapDiscardCount++;
-
-                    // Are we constrained to an area of the texture?
-                    if (area != null)
-                    {
-                        Rectangle rect = area.Value;
-                        int areaPitch = stride * rect.Width;
-                        int aX = rect.X;
-                        int aY = rect.Y;
-                        
-
-                        for (int y = aY, end = rect.Bottom; y < end; y++)
-                        {
-                            stream.Position = (pitch * aY) + (aX * stride);
-                            stream.WriteRange(dataPtr, areaPitch);
-
-                            dataPtr += areaPitch;
-                            aY++;
-                        }
-                    }
-                    else
-                    {
-                        stream.WriteRange(dataPtr, count);
-                    }
-
-                    pipe.Context.UnmapSubresource(_resource, subLevel);
-                }
-                else
-                {
-                    if (_isBlockCompressed)
-                    {
-                        // Calculate mip-map level size.
-                        levelWidth = _width >> mipLevel;
-                        levelHeight = _height >> mipLevel;
-
-                        int bcPitch = GetBCPitch(levelWidth, levelHeight, blockSize);
-                        DataBox box = new DataBox(dataPtr, bcPitch, sliceBytes);
-
-                        if (area != null)
-                            throw new NotImplementedException("Area-based SetData on block-compressed texture is currently unsupported. Sorry!");
-
-                        pipe.Context.UpdateSubresource(box, _resource, subLevel);
-                        pipe.Profiler.CurrentFrame.UpdateSubresourceCount++;
-                    }
-                    else
-                    {
-                        if (area != null)
-                        {
-                            Rectangle rect = area.Value;
-                            int areaPitch = stride * rect.Width;
-                            DataBox box = new DataBox(dataPtr, areaPitch, data.Length);
-
-                            ResourceRegion region = new ResourceRegion();
-                            region.Top = rect.Y;
-                            region.Front = 0;
-                            region.Back = 1;
-                            region.Bottom = rect.Bottom;
-                            region.Left = rect.X;
-                            region.Right = rect.Right;
-                            pipe.Context.UpdateSubresource(box, _resource, subLevel, region);
-                        }
-                        else
-                        {
-                            int x = 0;
-                            int y = 0;
-                            int w = Math.Max(_width >> mipLevel, 1);
-                            int h = Math.Max(_height >> mipLevel, 1);
-
-                            DataBox box = new DataBox(dataPtr, pitch, sliceBytes);
-
-                            ResourceRegion region = new ResourceRegion();
-                            region.Top = y;
-                            region.Front = 0;
-                            region.Back = 1;
-                            region.Bottom = y + h;
-                            region.Left = x;
-                            region.Right = x + w;
-
-                            pipe.Context.UpdateSubresource(box, _resource, subLevel, region);
-                        }
-                    }
-                }
-            });
-        }
-
         internal void CopyTo(GraphicsPipe pipe, TextureBase destination)
         {
             if (destination.HasFlags(TextureFlags.Dynamic))
@@ -826,40 +690,6 @@ namespace Molten.Graphics
 
             int blockPitch = numBlocksWide * blockSize;
 
-            return blockPitch * numRows;
-        }
-
-        /// <summary>Gets the block-compressed pitch size of a mip-map level</summary>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="blockSize">The number of bytes per block.</param>
-        /// <returns></returns>
-        private int GetBCPitch(int width, int height, int blockSize)
-        {
-            int blockCountX = (width + 3) / 4;
-            int numBlocksWide = Math.Max(1, blockCountX);
-            int blockPitch = numBlocksWide * blockSize;
-
-            return blockPitch;
-        }
-
-        /// <summary>Gets the block-compressed size of a mip-map level, in bytes.</summary>
-        /// <param name="width">The width of the level.</param>
-        /// <param name="height">The height of the level.</param>
-        /// <param name="blockSize">The block size of the compression format.</param>
-        /// <returns></returns>
-        private int GetBCLevelSize(int width, int height, int blockSize)
-        {
-            int blockCountX = (width + 3) / 4;
-            int blockCountY = (height + 3) / 4;
-
-            int numBlocksWide = Math.Max(1, blockCountX);
-            int numBlocksHigh = Math.Max(1, blockCountY);
-            int numRows = numBlocksHigh;
-
-            int blockPitch = numBlocksWide * blockSize;
-
-            int pitch = width * 4;
             return blockPitch * numRows;
         }
 
@@ -961,5 +791,10 @@ namespace Molten.Graphics
         public bool IsMultisampled => _sampleCount > 1;
 
         public bool IsValid { get; protected set; }
+
+        /// <summary>
+        /// Gets the underlying texture resource.
+        /// </summary>
+        internal Resource UnderlyingResource => _resource;
     }
 }

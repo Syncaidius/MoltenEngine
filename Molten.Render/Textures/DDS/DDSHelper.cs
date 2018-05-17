@@ -146,5 +146,39 @@ namespace Molten.Graphics.Textures.DDS
 
             return (blockCountX * blockSize) * blockCountY;
         }
+
+        /// <summary>Gets the block-compressed pitch size of a mip-map level</summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="blockSize">The number of bytes per block.</param>
+        /// <returns></returns>
+        public static int GetBCPitch(int width, int height, int blockSize)
+        {
+            int blockCountX = (width + 3) / 4;
+            int numBlocksWide = Math.Max(1, blockCountX);
+            int blockPitch = numBlocksWide * blockSize;
+
+            return blockPitch;
+        }
+
+        /// <summary>Gets the block-compressed size of a mip-map level, in bytes.</summary>
+        /// <param name="width">The width of the level.</param>
+        /// <param name="height">The height of the level.</param>
+        /// <param name="blockSize">The block size of the compression format.</param>
+        /// <returns></returns>
+        public static int GetBCLevelSize(int width, int height, int blockSize)
+        {
+            int blockCountX = (width + 3) / 4;
+            int blockCountY = (height + 3) / 4;
+
+            int numBlocksWide = Math.Max(1, blockCountX);
+            int numBlocksHigh = Math.Max(1, blockCountY);
+            int numRows = numBlocksHigh;
+
+            int blockPitch = numBlocksWide * blockSize;
+
+            int pitch = width * 4;
+            return blockPitch * numRows;
+        }
     }
 }
