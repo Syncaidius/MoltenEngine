@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Content
 {
-    public class MaterialProcessor : ContentProcessor
+    public class ShaderProcessor : ContentProcessor
     {
         public override Type[] AcceptedTypes { get; protected set; } = new Type[] { typeof(IShader)};
 
@@ -23,7 +23,14 @@ namespace Molten.Content
                 {
                     List<IShader> list = r.ShaderGroups[group];
                     foreach (IShader shader in list)
+                    {
+                        if (shader is IMaterial mat)
+                            context.AddOutput(mat);
+                        else if (shader is IComputeTask ct)
+                            context.AddOutput(ct);
+
                         context.AddOutput(shader);
+                    }
                 }
             }
         }

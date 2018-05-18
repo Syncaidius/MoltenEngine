@@ -132,11 +132,11 @@ namespace Molten
             context.ContentType = file.OriginalContentType;
 
             // Create a local copy of the keys to avoid threading issues
-            Type[] types = file.Segments.Keys.ToArray();
+            Type[] types = file.GetTypeArray();
 
             // Add as input objects, all that were loaded from the original version of the file.
             // It is up to the content processor to update existing object instances and output them.
-            if (file.Type == ContentRequestType.Read)
+            if (file.OriginalRequestType == ContentRequestType.Read)
             {
                 if (file.OriginalProcessor == null)
                 {
@@ -146,25 +146,25 @@ namespace Molten
 
                 foreach (Type t in types)
                 {
-                    ContentSegment seg = file.Segments[t];
-                    context.Input.Add(t, new List<object>(seg.Objects));
+                    IList<object> existingObjects = file.GetObjects(t);
+                    context.Input.Add(t, new List<object>(existingObjects));
                     _log.WriteLine($"[CONTENT] [RELOAD] {file.Path}");
                     DoRead(null, context, file.OriginalProcessor);
                 }
             }
-            else if (file.Type == ContentRequestType.Deserialize)
+            else if (file.OriginalRequestType == ContentRequestType.Deserialize)
             {
                 foreach(Type t in types)
                 {
-                    ContentSegment seg = file.Segments[t];
-                    context.Input.Add(t, new List<object>(seg.Objects));
+                    IList<object> existingObjects = file.GetObjects(t);
+                    context.Input.Add(t, new List<object>(existingObjects));
                     _log.WriteLine($"[CONTENT] [RELOAD] {file.Path}");
                     DoDeserialize(null, context);
                 }
             }
         }
 
-        private ContentSegment GetSegment(Type t, ContentContext context, ContentRequest request = null, ContentProcessor processor = null)
+        private ContentFile GetContentFile(ContentContext context, ContentRequest request = null, ContentProcessor processor = null)
         {
             ContentFile file;
             string fnLower = context.Filename.ToLower();
@@ -176,7 +176,7 @@ namespace Molten
                     OriginalProcessor = processor,
                     OriginalContentType = context.ContentType,
                     File = context.File,
-                    Type = context.RequestType,
+                    OriginalRequestType = context.RequestType,
                 };
 
                 ContentDirectory directory;
@@ -195,14 +195,7 @@ namespace Molten
             if (request != null)
                 request.RetrievedContent[fnLower] = file;
 
-            ContentSegment segment;
-            if(!file.Segments.TryGetValue(t, out segment))
-            {
-                segment = new ContentSegment(context.ContentType, context.Filename);              
-                file.Segments.Add(context.ContentType, segment);
-            }
-
-            return segment;
+            return file;
         }
 
         internal ContentProcessor GetProcessor(Type type)
@@ -240,23 +233,11 @@ namespace Molten
                 string fnLower = context.Filename.ToLower();
                 if (_content.TryGetValue(fnLower, out ContentFile file))
                 {
-                    if (file.Segments.TryGetValue(context.ContentType, out ContentSegment segment))
+                    object existing = file.GetObject(_engine, context.ContentType, context.Metadata);
+                    if (existing != null)
                     {
-                        object existing = null;
-
-                        if (file.Type == ContentRequestType.Read)
-                        {
-                            proc = GetProcessor(context.ContentType);
-                            existing = proc.OnGet(_engine, context.ContentType, context.Metadata, segment.Objects);
-                        }
-                        else if (file.Type == ContentRequestType.Deserialize)
-                            existing = segment.Objects[0];
-
-                        if (existing != null)
-                        {
-                            request.RetrievedContent[fnLower] = file;
-                            continue;
-                        }
+                        request.RetrievedContent[fnLower] = file;
+                        continue;
                     }
                 }
 
@@ -321,8 +302,8 @@ namespace Molten
                 try
                 {
                     object result = JsonConvert.DeserializeObject(json, context.ContentType, _jsonSettings);
-                    ContentSegment segment = GetSegment(context.ContentType, context, request);
-                    segment.Objects.Add(result);
+                    ContentFile file = GetContentFile(context, request);
+                    file.AddObject(context.ContentType, result);
                     _log.WriteLine($"[CONTENT] [DESERIALIZE] '{result.GetType().Name}' from {context.Filename}");
                 }
                 catch (Exception ex)
@@ -344,9 +325,9 @@ namespace Molten
 
                 foreach (Type t in context.Output.Keys)
                 {
-                    ContentSegment segment = GetSegment(t, context, request, proc);
+                    ContentFile file = GetContentFile(context, request, proc);
                     List<object> result = context.Output[t];
-                    segment.Objects.AddRange(result);
+                    file.AddObjects(t, result);
                     _log.WriteLine($"[CONTENT] [READ]    {result.Count}x {t.FullName}");
                 }
             }

@@ -71,14 +71,13 @@
     <Compile Include="Content\ContentDirectory.cs" />
     <Compile Include="Content\ContentFile.cs" />
     <Compile Include="Content\ContentException.cs" />
-    <Compile Include="Content\ContentSegment.cs" />
     <Compile Include="Content\ContentManager.cs" />
     <Compile Include="Content\ContentRequest.cs" />
     <Compile Include="Content\ContentRequestType.cs" />
     <Compile Include="Content\ContentReloadTask.cs" />
     <Compile Include="Content\ContentWorkerTask.cs" />
     <Compile Include="Content\Processors\ContentProcessor.cs" />
-    <Compile Include="Content\Processors\MaterialProcessor.cs" />
+    <Compile Include="Content\Processors\ShaderProcessor.cs" />
     <Compile Include="Content\Processors\SpriteFontProcessor.cs" />
     <Compile Include="Content\Processors\StringProcessor.cs" />
     <Compile Include="Content\Processors\TextureProcessor.cs" />
@@ -198,5 +197,6 @@
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

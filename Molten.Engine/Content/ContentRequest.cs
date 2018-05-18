@@ -201,25 +201,7 @@ namespace Molten
             Type t = typeof(T);
 
             if (RetrievedContent.TryGetValue(path, out ContentFile file))
-            {
-                if (file.Segments.TryGetValue(t, out ContentSegment segment))
-                {
-                    // Check if a processor was used to load the object.
-                    ContentProcessor proc = Manager.GetProcessor(t);
-                    if (proc != null)
-                    {
-                        T obj = (T)proc.OnGet(Manager.Engine, t, meta, segment.Objects);
-                        return obj;
-                    }
-                    else // Assume the object was loaded via deserialization.
-                    {
-                        if (segment.Objects.Count > 0)
-                            return (T)segment.Objects[0];
-                        else
-                            Manager.Log.WriteError($"[CONTENT] [GET] unable to fulfil request from {path}: No content processor available for type {t} or any of its derivatives.");
-                    }
-                }
-            }
+                return (T)file.GetObject(Manager.Engine, t, meta);
 
             return default;
         }

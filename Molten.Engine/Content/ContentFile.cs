@@ -11,7 +11,54 @@ namespace Molten
     {
         FileInfo _file;
 
-        internal ThreadedDictionary<Type, ContentSegment> Segments = new ThreadedDictionary<Type, ContentSegment>();
+        ThreadedDictionary<Type, ThreadedList<object>> _segments = new ThreadedDictionary<Type, ThreadedList<object>>();
+
+        internal Type[] GetTypeArray()
+        {
+            return _segments.Keys.ToArray();
+        }
+
+        internal void AddObject(Type t, object obj)
+        {
+            ThreadedList<object> list;
+            if (!_segments.TryGetValue(t, out list))
+            {
+                list = new ThreadedList<object>();
+                _segments.Add(t, list);
+            }
+
+            list.Add(obj);
+        }
+
+        internal void AddObjects(Type t, IList<object> objects)
+        {
+            ThreadedList<object> list;
+            if (!_segments.TryGetValue(t, out list))
+            {
+                list = new ThreadedList<object>();
+                _segments.Add(t, list);
+            }
+
+            list.AddRange(objects);
+        }
+
+        internal IList<object> GetObjects(Type t)
+        {
+            return _segments[t];
+        }
+
+        internal object GetObject(Engine engine, Type t, Dictionary<string, string> metadata)
+        {
+            if (_segments.TryGetValue(t, out ThreadedList<object> list))
+            {
+                if (OriginalRequestType == ContentRequestType.Read)
+                    return OriginalProcessor.OnGet(engine, t, metadata, list);
+                else if (OriginalRequestType == ContentRequestType.Deserialize)
+                    return list[0];
+            }
+
+            return default;
+        }
 
         internal FileInfo File
         {
@@ -25,7 +72,7 @@ namespace Molten
 
         internal string Path { get; private set; }
 
-        internal ContentRequestType Type;
+        internal ContentRequestType OriginalRequestType;
 
         /// <summary>
         /// The content processor which loaded the file, if any.
