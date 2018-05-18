@@ -225,7 +225,7 @@ namespace Molten.Graphics
         /// <param name="source">The source code to be parsed and compiled.</param>
         /// <param name="filename">The name of the source file. Used as a point of reference in debug/error messages only.</param>
         /// <returns></returns>
-        public ShaderCompileResult CreateShaders(string source, string filename = null)
+        public ShaderCompileResult CompileShaders(string source, string filename = null)
         {
             Include includer = null;
 

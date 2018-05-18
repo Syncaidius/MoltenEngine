@@ -232,9 +232,10 @@ namespace Molten
 
         internal void ProcessRequest(ContentRequest request)
         {
-            ContentProcessor proc = null;
             foreach (ContentContext context in request.RequestElements)
             {
+                ContentProcessor proc = null;
+
                 // First check if the content already exists
                 string fnLower = context.Filename.ToLower();
                 if (_content.TryGetValue(fnLower, out ContentFile file))

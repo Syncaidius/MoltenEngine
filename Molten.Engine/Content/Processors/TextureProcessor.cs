@@ -11,7 +11,7 @@ namespace Molten.Content
 {
     public class TextureProcessor : ContentProcessor
     {
-        public override Type[] AcceptedTypes { get; protected set; } = new Type[] { typeof(ITexture)};
+        public override Type[] AcceptedTypes { get; protected set; } = new Type[] { typeof(ITexture), typeof(TextureData) };
 
         public override void OnRead(ContentContext context)
         {
@@ -69,6 +69,13 @@ namespace Molten.Content
                         }
                     }
 
+
+                    if (context.ContentType == typeof(TextureData))
+                    {
+                        context.AddOutput(data);
+                        return;
+                    }
+
                     // Check if an existing texture was passed in.
                     ITexture tex = null;
                     if(context.Input.TryGetValue(context.ContentType, out List<object> existingObjects))
@@ -79,7 +86,7 @@ namespace Molten.Content
 
                     if (tex != null)
                     {
-                        OnReload(tex, data);
+                        OnReloadTexture(tex, data);
                     }
                     else
                     {
@@ -99,7 +106,7 @@ namespace Molten.Content
             }
         }
 
-        private void OnReload(ITexture tex, TextureData data)
+        private void OnReloadTexture(ITexture tex, TextureData data)
         {
             switch (tex)
             {

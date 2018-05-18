@@ -79,7 +79,6 @@
     <Compile Include="Content\ContentWorkerTask.cs" />
     <Compile Include="Content\Processors\ContentProcessor.cs" />
     <Compile Include="Content\Processors\MaterialProcessor.cs" />
-    <Compile Include="Content\Processors\TextureDataProcessor.cs" />
     <Compile Include="Content\Processors\SpriteFontProcessor.cs" />
     <Compile Include="Content\Processors\StringProcessor.cs" />
     <Compile Include="Content\Processors\TextureProcessor.cs" />

@@ -116,10 +116,10 @@ namespace Molten.Graphics
 
         TextureReader GetDefaultTextureReader(FileInfo file);
 
-        /// <summary>Compiels a set of shaders from the provided source string.</summary>
+        /// <summary>Compiles a set of shaders from the provided source string.</summary>
         /// <param name="source">The source code to be parsed and compiled.</param>
         /// <param name="filename">The name of the source file. Used as a point of reference in debug/error messages only.</param>
         /// <returns></returns>
-        ShaderCompileResult CreateShaders(string source, string filename = null);
+        ShaderCompileResult CompileShaders(string source, string filename = null);
     }
 }
