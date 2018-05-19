@@ -19,31 +19,33 @@ namespace Molten.Content
 
             if (context.Metadata.TryGetValue("binary", out string binaryStr))
                 bool.TryParse(binaryStr, out isBinary);
-
-            if (isBinary)
+            using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
             {
-                using (BinaryReader reader = new BinaryReader(context.Stream))
+                if (isBinary)
                 {
-                    while (reader.BaseStream.Position < reader.BaseStream.Length)
-                        context.AddOutput(reader.ReadString());
-                }
-            }
-            else
-            {
-                bool perLine = false;
-                if (context.Metadata.TryGetValue("perline", out string perLineStr))
-                    bool.TryParse(binaryStr, out perLine);
-
-                using (StreamReader reader = new StreamReader(context.Stream))
-                {
-                    if (perLine)
+                    using (BinaryReader reader = new BinaryReader(stream))
                     {
-                        while (!reader.EndOfStream)
-                            context.AddOutput(reader.ReadLine());
+                        while (reader.BaseStream.Position < reader.BaseStream.Length)
+                            context.AddOutput(reader.ReadString());
                     }
-                    else
+                }
+                else
+                {
+                    bool perLine = false;
+                    if (context.Metadata.TryGetValue("perline", out string perLineStr))
+                        bool.TryParse(binaryStr, out perLine);
+
+                    using (StreamReader reader = new StreamReader(stream))
                     {
-                        context.AddOutput(reader.ReadToEnd());
+                        if (perLine)
+                        {
+                            while (!reader.EndOfStream)
+                                context.AddOutput(reader.ReadLine());
+                        }
+                        else
+                        {
+                            context.AddOutput(reader.ReadToEnd());
+                        }
                     }
                 }
             }
@@ -58,20 +60,23 @@ namespace Molten.Content
                 if (context.Metadata.TryGetValue("binary", out string binaryStr))
                     bool.TryParse(binaryStr, out isBinary);
 
-                if (isBinary)
+                using (Stream stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
                 {
-                    using (BinaryWriter writer = new BinaryWriter(context.Stream))
+                    if (isBinary)
                     {
-                        foreach (string str in strings)
-                            writer.Write(str);
+                        using (BinaryWriter writer = new BinaryWriter(stream))
+                        {
+                            foreach (string str in strings)
+                                writer.Write(str);
+                        }
                     }
-                }
-                else
-                {
-                    using (StreamWriter writer = new StreamWriter(context.Stream))
+                    else
                     {
-                        foreach (string str in strings)
-                            writer.WriteLine(str);
+                        using (StreamWriter writer = new StreamWriter(stream))
+                        {
+                            foreach (string str in strings)
+                                writer.WriteLine(str);
+                        }
                     }
                 }
             }

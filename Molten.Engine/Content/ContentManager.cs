@@ -293,10 +293,10 @@ namespace Molten
 
         private void DoDeserialize(ContentRequest request, ContentContext context)
         {
-            using (context.Stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
+            using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
             {
                 string json;
-                using (StreamReader reader = new StreamReader(context.Stream))
+                using (StreamReader reader = new StreamReader(stream))
                     json = reader.ReadToEnd();
 
                 try
@@ -316,8 +316,7 @@ namespace Molten
 
         private void DoRead(ContentRequest request, ContentContext context, ContentProcessor proc)
         {
-            using (context.Stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
-                proc.OnRead(context);
+            proc.OnRead(context);
 
             if (context.Output.Count > 0)
             {
@@ -335,9 +334,7 @@ namespace Molten
 
         private void DoWrite(ContentContext context, ContentProcessor proc)
         {
-            using (context.Stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
-                proc.OnWrite(context);
-
+             proc.OnWrite(context);
             _log.WriteLine($"[CONTENT] [WRITE] {context.Filename}");
         }
 
@@ -350,9 +347,9 @@ namespace Molten
                 if (!context.File.Directory.Exists)
                     context.File.Directory.Create();
 
-                using (context.Stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
+                using (Stream stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
                 {
-                    using (StreamWriter writer = new StreamWriter(context.Stream))
+                    using (StreamWriter writer = new StreamWriter(stream))
                     {
                         writer.Write(json);
                     }

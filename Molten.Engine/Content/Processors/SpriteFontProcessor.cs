@@ -22,8 +22,11 @@ namespace Molten.Content
                 int.TryParse(strSize, out size);
 
             FontFile font = null;
-            using (FontReader reader = new FontReader(context.Stream, context.Log, context.Filename))
-                font = reader.ReadFont(true);
+            using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
+            {
+                using (FontReader reader = new FontReader(stream, context.Log, context.Filename))
+                    font = reader.ReadFont(true);
+            }
 
             if (!font.HasFlag(FontFlags.Invalid))
                 context.AddOutput(new SpriteFont(context.Engine.Renderer, font, size));

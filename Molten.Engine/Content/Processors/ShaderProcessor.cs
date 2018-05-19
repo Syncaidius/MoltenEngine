@@ -15,21 +15,24 @@ namespace Molten.Content
 
         public override void OnRead(ContentContext context)
         {
-            using (StreamReader reader = new StreamReader(context.Stream, Encoding.UTF8, true, 2048, true))
+            using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
             {
-                string source = reader.ReadToEnd();
-                ShaderCompileResult r = context.Engine.Renderer.Resources.CompileShaders(source, context.Filename);
-                foreach(string group in r.ShaderGroups.Keys)
+                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8, true, 2048, true))
                 {
-                    List<IShader> list = r.ShaderGroups[group];
-                    foreach (IShader shader in list)
+                    string source = reader.ReadToEnd();
+                    ShaderCompileResult r = context.Engine.Renderer.Resources.CompileShaders(source, context.Filename);
+                    foreach (string group in r.ShaderGroups.Keys)
                     {
-                        if (shader is IMaterial mat)
-                            context.AddOutput(mat);
-                        else if (shader is IComputeTask ct)
-                            context.AddOutput(ct);
+                        List<IShader> list = r.ShaderGroups[group];
+                        foreach (IShader shader in list)
+                        {
+                            if (shader is IMaterial mat)
+                                context.AddOutput(mat);
+                            else if (shader is IComputeTask ct)
+                                context.AddOutput(ct);
 
-                        context.AddOutput(shader);
+                            context.AddOutput(shader);
+                        }
                     }
                 }
             }

@@ -19,88 +19,91 @@ namespace Molten.Content
             TextureData data = null;
             TextureReader texReader = null;
 
-            using (BinaryReader reader = new BinaryReader(context.Stream, Encoding.UTF8, true))
+            using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
             {
-                switch (extension)
+                using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, true))
                 {
-                    case ".dds":
-                        texReader = new DDSReader(false);
-                        break;
-
-                    default:
-                        texReader = context.Engine.Renderer.Resources.GetDefaultTextureReader(context.File);
-                        break;
-                }
-
-                texReader.Read(reader);
-
-                // Output error, if one occurred.
-                string error = texReader.Error;
-                if (error != null)
-                {
-                    context.Log.WriteError(error, context.Filename);
-                    return;
-                }
-                else
-                {
-                    data = texReader.GetData();
-                }
-
-                //output error, if one occurred.
-                error = texReader.Error;
-                texReader.Dispose();
-
-                if (error != null)
-                {
-                    context.Log.WriteError(error, context.Filename);
-                }
-                else
-                {
-                    if (data.MipMapCount == 1)
+                    switch (extension)
                     {
-                        string genMipsVal = "";
-                        if (context.Metadata.TryGetValue("mipmaps", out genMipsVal))
-                        {
-                            if (genMipsVal == "true")
-                            {
-                                //if (!data.GenerateMipMaps())
-                                 //   log.WriteError("[CONTENT] Unable to generate mip-maps for non-power-of-two texture.", file.ToString());
-                            }
-                        }
+                        case ".dds":
+                            texReader = new DDSReader(false);
+                            break;
+
+                        default:
+                            texReader = context.Engine.Renderer.Resources.GetDefaultTextureReader(context.File);
+                            break;
                     }
 
+                    texReader.Read(reader);
 
-                    if (context.ContentType == typeof(TextureData))
+                    // Output error, if one occurred.
+                    string error = texReader.Error;
+                    if (error != null)
                     {
-                        context.AddOutput(data);
+                        context.Log.WriteError(error, context.Filename);
                         return;
-                    }
-
-                    // Check if an existing texture was passed in.
-                    ITexture tex = null;
-                    if(context.Input.TryGetValue(context.ContentType, out List<object> existingObjects))
-                    {
-                        if (existingObjects.Count > 0)
-                            tex = existingObjects[0] as ITexture;
-                    }
-
-                    if (tex != null)
-                    {
-                        OnReloadTexture(tex, data);
                     }
                     else
                     {
-                        if (context.ContentType == typeof(ITexture2D))
-                            tex = context.Engine.Renderer.Resources.CreateTexture2D(data);
-                        else if (context.ContentType == typeof(ITextureCube))
-                            tex = context.Engine.Renderer.Resources.CreateTextureCube(data);
-                        else if (context.ContentType == typeof(ITexture))
-                            tex = context.Engine.Renderer.Resources.CreateTexture1D(data);
-                        else
-                            context.Log.WriteError($"Unsupported texture type {context.ContentType}", context.Filename);
+                        data = texReader.GetData();
+                    }
+
+                    //output error, if one occurred.
+                    error = texReader.Error;
+                    texReader.Dispose();
+
+                    if (error != null)
+                    {
+                        context.Log.WriteError(error, context.Filename);
+                    }
+                    else
+                    {
+                        if (data.MipMapCount == 1)
+                        {
+                            string genMipsVal = "";
+                            if (context.Metadata.TryGetValue("mipmaps", out genMipsVal))
+                            {
+                                if (genMipsVal == "true")
+                                {
+                                    //if (!data.GenerateMipMaps())
+                                    //   log.WriteError("[CONTENT] Unable to generate mip-maps for non-power-of-two texture.", file.ToString());
+                                }
+                            }
+                        }
+
+
+                        if (context.ContentType == typeof(TextureData))
+                        {
+                            context.AddOutput(data);
+                            return;
+                        }
+
+                        // Check if an existing texture was passed in.
+                        ITexture tex = null;
+                        if (context.Input.TryGetValue(context.ContentType, out List<object> existingObjects))
+                        {
+                            if (existingObjects.Count > 0)
+                                tex = existingObjects[0] as ITexture;
+                        }
 
                         if (tex != null)
-                            context.AddOutput(context.ContentType, tex);
+                        {
+                            OnReloadTexture(tex, data);
+                        }
+                        else
+                        {
+                            if (context.ContentType == typeof(ITexture2D))
+                                tex = context.Engine.Renderer.Resources.CreateTexture2D(data);
+                            else if (context.ContentType == typeof(ITextureCube))
+                                tex = context.Engine.Renderer.Resources.CreateTextureCube(data);
+                            else if (context.ContentType == typeof(ITexture))
+                                tex = context.Engine.Renderer.Resources.CreateTexture1D(data);
+                            else
+                                context.Log.WriteError($"Unsupported texture type {context.ContentType}", context.Filename);
+
+                            if (tex != null)
+                                context.AddOutput(context.ContentType, tex);
+                        }
                     }
                 }
             }
