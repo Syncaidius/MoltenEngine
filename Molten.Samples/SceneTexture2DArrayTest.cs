@@ -43,33 +43,7 @@ namespace Molten.Samples
                 return;
             }
 
-            // Manually construct a 2D texture array from the 3 textures we requested earlier
             ITexture2D texture = cr.Get<ITexture2D>(1);
-            //TextureData texData = cr.Get<TextureData>(cr[1]);
-            //ITexture2D texture = null;
-
-            //if (texData != null)
-            //{
-            //    texture = Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
-            //    {
-            //        Width = texData.Width,
-            //        Height = texData.Height,
-            //        MipMapLevels = texData.MipMapCount,
-            //        ArraySize = 3,
-            //        Flags = texData.Flags,
-            //        Format = texData.Format,
-            //    });
-            //    texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 0);
-            //}
-
-            //texData = cr.Get<TextureData>(2);
-            //if (texData != null)
-            //    texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 1);
-
-            //texData = cr.Get<TextureData>(3);
-            //if (texture != null)
-            //    texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 2);
-
             mat.SetDefaultResource(texture, 0);
             _mesh.Material = mat;
         }

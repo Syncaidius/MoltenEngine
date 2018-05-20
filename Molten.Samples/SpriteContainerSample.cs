@@ -11,9 +11,6 @@ namespace Molten.Samples
     public class SpriteContainerSample : SampleGame
     {
         public override string Description => "A sprite container demonstration.";
-
-        SceneObject _parent;
-        SceneObject _child;
         IMesh<VertexTexture> _mesh;
 
         public SpriteContainerSample(EngineSettings settings = null) : base("Sprite Container", settings) { }
