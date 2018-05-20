@@ -93,5 +93,10 @@ namespace Molten.Graphics
         /// Gets whether or not the texture is multisampled. This is true if <see cref="SampleCount"/> is greater than 1.
         /// </summary>
         bool IsMultisampled { get; }
+
+        /// <summary>
+        /// Gets or sets the tag object.
+        /// </summary>
+        object Tag { get; set; }
     }
 }

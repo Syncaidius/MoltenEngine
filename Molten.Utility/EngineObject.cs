@@ -67,5 +67,10 @@ namespace Molten
 
         /// <summary>Gets whether or not the object has been disposed.</summary>
         public bool IsDisposed => _isDisposed;
+
+        /// <summary>
+        /// Gets or sets the tag object.
+        /// </summary>
+        public object Tag { get; set; }
     }
 }
