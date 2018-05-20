@@ -30,7 +30,7 @@
         <GroupBox Grid.Column="1" Header="Start-up Settings" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Height="230" Width="144">
             <Grid Margin="0,10,0,0">
                 <CheckBox x:Name="chkDebugLayer" Content="DX Debug Layer" HorizontalAlignment="Left" Margin="10,10,-2,0" VerticalAlignment="Top" Width="124" ToolTip="Enables the DirectX debug layer. Performance will be reduced. Requires native code debugging to be enabled on the project."/>
-                <CheckBox x:Name="chkVsync" Content="V-Sync" HorizontalAlignment="Left" Margin="10,30,-2,0" VerticalAlignment="Top" Width="124" ToolTip="Enables vertical synchronization (V-Sync)."/>
+                <CheckBox x:Name="chkVsync" IsChecked="true" Content="V-Sync" HorizontalAlignment="Left" Margin="10,30,-2,0" VerticalAlignment="Top" Width="124" ToolTip="Enables vertical synchronization (V-Sync)."/>
                 <Label Content="Renderer:" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Width="60" RenderTransformOrigin="0.444,0.59"/>
                 <ComboBox x:Name="cboRenderer" HorizontalAlignment="Left" Margin="10,76,0,0" VerticalAlignment="Top" Width="119"/>
             </Grid>
