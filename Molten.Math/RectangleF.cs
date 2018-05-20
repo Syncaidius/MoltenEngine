@@ -312,25 +312,6 @@ namespace Molten
             }
         }
 
-        /// <summary>
-        /// Gets or sets the location.
-        /// </summary>
-        /// <value>
-        /// The location.
-        /// </value>
-        public Vector2F Location
-        {
-            get
-            {
-                return new Vector2F(X, Y);
-            }
-            set
-            {
-                X = value.X;
-                Y = value.Y;
-            }
-        }
-
         /// <summary>Changes the position of the rectangle.</summary>
         /// <param name="amount">The values to adjust the position of the rectangle by.</param>
         public void Offset(Vector2I amount)
