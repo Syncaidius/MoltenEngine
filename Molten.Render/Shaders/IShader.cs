@@ -25,5 +25,10 @@ namespace Molten.Graphics
         /// <param name="key">The value key</param>
         /// <returns></returns>
         IShaderValue this[string key] { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tag object.
+        /// </summary>
+        object Tag { get; set; }
     }
 }
