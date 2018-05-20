@@ -166,15 +166,7 @@ namespace Molten
             string contentPath = Path.Combine(RootDirectory, path);
 
             if (type == ContentRequestType.Read || type == ContentRequestType.Deserialize)
-            {
-                if (!File.Exists(contentPath))
-                {
-                    Manager.Log.WriteError($"Requested content file '{requestString}' does not exist");
-                    return;
-                }
-
                 _requestedFiles.Add(path);
-            }
             
             c.ContentType = contentType;
             c.RequestType = type;
@@ -224,6 +216,28 @@ namespace Molten
             return default;
         }
 
+        /// <summary>
+        /// Returns a content object that was loaded or retrieved as part of the request.
+        /// </summary>
+        /// <typeparam name="T">The type of object expected to be returned.</typeparam>
+        /// <param name="index">The request index of the object to be retrieved.</param>
+        /// <returns></returns>
+        public T Get<T>(int index)
+        {
+            return Get<T>(_requestedFiles[index]);
+        }
+
+        /// <summary>
+        /// Returns a content object that was loaded or retrieved as part of the request.
+        /// </summary>
+        /// <param name="type">The type of object expected to be returned.</param>
+        /// <param name="index">The request index of the object to be retrieved.</param>
+        /// <returns></returns>
+        public object Get(Type type, int index)
+        {
+            return Get(type, _requestedFiles[index]);
+        }
+
         internal static string ParseRequestString(Logger log, string requestString, Dictionary<string, string> metadataOut)
         {
             string[] parts = requestString.Split(REQUEST_SPLITTER, StringSplitOptions.RemoveEmptyEntries);
@@ -245,10 +259,7 @@ namespace Molten
             return path;
         }
 
-        public T Get<T>(int index)
-        {
-            return Get<T>(_requestedFiles[index]);
-        }
+
 
         /// <summary>
         /// Gets the path of a file that was loaded via the current content request.
