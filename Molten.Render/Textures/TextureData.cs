@@ -42,7 +42,6 @@ namespace Molten.Graphics
         public int Width;
         public int Height;
         public int MipMapCount;
-        public int ExpectedMipmapCount;
         public int ArraySize;
         public int SampleCount;
 
@@ -76,9 +75,28 @@ namespace Molten.Graphics
             return this.Clone();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary>Sets the configuration and data of the current <see cref="TextureData"/> instance to that of the provided <see cref="TextureData"/> instance.</summary>
+        /// <param name="data"></param>
+        /// <param name="arraySlice"></param>
+        public void Set(TextureData data)
+        {
+            ArraySize = data.ArraySize;
+            Format = data.Format;
+            Flags = data.Flags;
+            IsCompressed = data.IsCompressed;
+            Height = data.Height;
+            MipMapCount = data.MipMapCount;
+            Width = data.Width;
+            SampleCount = data.SampleCount;
+
+            if (Levels.Length != data.Levels.Length)
+                Array.Resize(ref Levels, data.Levels.Length);
+
+            for (int i = 0; i < data.Levels.Length; i++)
+                Levels[i] = data.Levels[i].Clone();
+        }
+
+        /// <summary>Uses another <see cref="TextureData"/> instance to set texture data for the specified array slice of the current <see cref="TextureData"/> instance.</summary>
         /// <param name="data"></param>
         /// <param name="arraySlice"></param>
         public void Set(TextureData data, int arraySlice)
@@ -86,8 +104,10 @@ namespace Molten.Graphics
             if (data.Width != Width || data.Height != Height || data.MipMapCount != MipMapCount)
                 throw new Exception("Texture data must match the dimensions (i.e. width, height, depth, mip-map levels) of the destination data.");
 
-            if (Levels == null || ArraySize <= arraySlice)
-                Array.Resize(ref Levels, (MipMapCount * (arraySlice + 1)));
+            int requiredLevels = (MipMapCount * (arraySlice + 1));
+
+            if (Levels == null || ArraySize <= arraySlice || Levels.Length < requiredLevels)
+                Array.Resize(ref Levels, requiredLevels);
 
             for(int i = 0; i < data.Levels.Length; i++)
             {

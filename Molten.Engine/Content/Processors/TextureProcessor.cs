@@ -19,22 +19,30 @@ namespace Molten.Content
             TextureData finalData = null;
             TextureReader texReader = null;
             bool isArray = false;
-            int arraySize = 1;
+            int arrayCount = 1;
             string fn = context.Filename;
 
             if (context.Metadata.TryGetValue("array", out string strIsArray))
                 bool.TryParse(strIsArray, out isArray);
 
+            if (context.Metadata.TryGetValue("count", out string strCount))
+                int.TryParse(strCount, out arrayCount);
+
             if (isArray)
             {
                 fn = context.File.Name.Replace(context.File.Extension, "");
-                fn = context.Filename.Replace(context.File.Name, $"fn_{{0}}{context.File.Extension}");
+                fn = context.Filename.Replace(context.File.Name, $"{fn}_{{0}}{context.File.Extension}");
             }
 
-            for (int i = 0; i < arraySize; i++)
+            for (int i = 0; i < arrayCount; i++)
             {
+                string finalFn = string.Format(fn, i + 1);
+
+                if (!File.Exists(finalFn))
+                    continue;
+
                 TextureData data = null;
-                using (Stream stream = new FileStream(string.Format(fn, i), FileMode.Open, FileAccess.Read))
+                using (Stream stream = new FileStream(finalFn, FileMode.Open, FileAccess.Read))
                 {
                     using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, true))
                     {
@@ -85,12 +93,6 @@ namespace Molten.Content
                                     }
                                 }
                             }
-
-                            if (context.ContentType == typeof(TextureData))
-                            {
-                                context.AddOutput(data);
-                                return;
-                            }
                         }
                     }
                 }
@@ -101,24 +103,46 @@ namespace Molten.Content
                     Height = data.Height,
                     MipMapCount = data.MipMapCount,
                     Format = data.Format,
-                    ArraySize = arraySize,
+                    ArraySize = arrayCount,
                 };
                 finalData.Set(data, i);
             }
 
             // TODO improve for texture arrays - Only update the array slice(s) that have changed.
             // Check if an existing texture was passed in.
-            ITexture tex = null;
-            if (context.Input.TryGetValue(context.ContentType, out List<object> existingObjects))
+            if (context.ContentType == typeof(TextureData))
             {
-                if (existingObjects.Count > 0)
-                    tex = existingObjects[0] as ITexture;
-            }
+                if (context.Input.TryGetValue(context.ContentType, out List<object> existingObjects))
+                {
+                    if (existingObjects.Count > 0)
+                    {
+                        TextureData existingData = existingObjects[0] as TextureData;
+                        existingData.Set(finalData);
 
-            if (tex != null)
-                ReloadTexture(tex, finalData);
+                        for (int i = 0; i < finalData.Levels.Length; i++)
+                            existingData.Set(finalData, 0);
+                    }
+                }
+                else
+                {
+                    context.AddOutput(finalData);
+                }
+                return;
+            }
             else
-                CreateTexture(context, finalData);
+            {
+                ITexture tex = null;
+                if (context.Input.TryGetValue(context.ContentType, out List<object> existingObjects))
+                {
+                    if (existingObjects.Count > 0)
+                        tex = existingObjects[0] as ITexture;
+                }
+
+                if (tex != null)
+                    ReloadTexture(tex, finalData);
+                else
+                    CreateTexture(context, finalData);
+            }
         }
 
         private void CreateTexture(ContentContext context, TextureData data)
