@@ -221,7 +221,6 @@ namespace Molten.Samples
 
             _curTest = Activator.CreateInstance(lastTestType, settings) as SampleGame;
             _curTest.Start();
-            Console.ForegroundColor = ConsoleColor.White;
 
             GC.Collect();
             lstTests.IsEnabled = true;

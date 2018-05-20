@@ -94,7 +94,8 @@ namespace Molten
         public ContentRequest BeginRequest(string rootDirectory)
         {
             ContentRequest request = _requestPool.GetInstance();
-            request.RootDirectory = Path.GetFullPath(rootDirectory.StartsWith("/") ? rootDirectory.Substring(1, rootDirectory.Length - 1) : rootDirectory);
+            rootDirectory = rootDirectory.StartsWith("/") ? rootDirectory.Substring(1, rootDirectory.Length - 1) : rootDirectory;
+            request.RootDirectory = Path.GetFullPath(rootDirectory);
             request.Manager = this;
             return request;
         }
@@ -281,6 +282,7 @@ namespace Molten
                 }
                 catch(Exception ex)
                 {
+                    _log.WriteError($"An error occurred while processing content {context.Filename}");
                     _log.WriteError(ex, true);
                 }
 

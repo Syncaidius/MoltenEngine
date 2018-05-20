@@ -67,7 +67,7 @@ namespace Molten
         /// <summary>Adds file load operation to the current <see cref="ContentRequest"/>. </para>
         /// If the content was already loaded from a previous request, the existing object will be retrieved.</summary>
         /// <param name="fn">The relative file path from the request's root directory.</param>
-        public void Load(string fn, Type t)
+        public void Load(Type t, string fn)
         {
             AddElement(fn, ContentRequestType.Read, t);
         }
@@ -77,13 +77,13 @@ namespace Molten
         /// <param name="obj">The object to be written.</param>
         public void Save<T>(string fn, T obj)
         {
-            Save(fn, typeof(T), obj);
+            Save(typeof(T), fn, obj);
         }
 
         /// <summary>Adds a write request for the provided object.</summary>
         /// <param name="fn">The relative file path from the request's root directory.</param>
         /// <param name="obj">The object to be written.</param>
-        public void Save(string fn, Type type, object obj)
+        public void Save(Type type, string fn, object obj)
         {
             AddElement(fn, ContentRequestType.Write, type, (e) =>
             {
@@ -96,12 +96,12 @@ namespace Molten
         /// <param name="obj">The object to be written.</param>
         public void Save<T>(string fn, params T[] obj)
         {
-            Save(fn, typeof(T), obj);
+            Save(typeof(T), fn, obj);
         }
         /// <summary>Adds a write request for the provided object.</summary>
         /// <param name="fn">The relative file path from the request's root directory.</param>
         /// <param name="obj">The object to be written.</param>
-        public void Save(string fn, Type type, params object[] obj)
+        public void Save(Type type, string fn, params object[] obj)
         {
             if (obj == null)
                 return;
@@ -122,11 +122,11 @@ namespace Molten
         }
 
         /// <summary>Adds a deserialize operation to the current <see cref="ContentRequest"/>. This will deserialize an object from the specified JSON file.</summary>
-        /// <param name="t">The type of object to be deserialized.</typeparam>
+        /// <param name="type">The type of object to be deserialized.</typeparam>
         /// <param name="fn">The file name and path.</param>
-        public void Deserialize(string fn, Type t)
+        public void Deserialize(Type type, string fn)
         {
-            AddElement(fn, ContentRequestType.Deserialize, t);
+            AddElement(fn, ContentRequestType.Deserialize, type);
         }
 
         /// <summary>Adds a serialization operation to the current <see cref="ContentRequest"/>. This will serialize an object into JSON and write it to the specified file.</summary>
@@ -135,9 +135,18 @@ namespace Molten
         /// <param name="obj"></param>
         public void Serialize<T>(string fn, T obj)
         {
-            AddElement(fn, ContentRequestType.Serialize, typeof(T), (e) =>
+            Serialize(typeof(T), fn, obj);
+        }
+
+        /// <summary>Adds a serialization operation to the current <see cref="ContentRequest"/>. This will serialize an object into JSON and write it to the specified file.</summary>
+        /// <param name="fn"></param>
+        /// <param name="obj"></param>
+        /// <param name="type">The type of object to be serialized.</param>
+        public void Serialize(Type type, string fn, object obj)
+        {
+            AddElement(fn, ContentRequestType.Serialize, type, (e) =>
             {
-                e.AddInput(obj);
+                e.AddInput(type, obj);
             });
         }
 
@@ -160,7 +169,7 @@ namespace Molten
             {
                 if (!File.Exists(contentPath))
                 {
-                    Manager.Log.WriteError($"[ERROR] Requested content file '{requestString}' does not exist");
+                    Manager.Log.WriteError($"Requested content file '{requestString}' does not exist");
                     return;
                 }
 
@@ -194,14 +203,23 @@ namespace Molten
         /// <returns></returns>
         public T Get<T>(string requestString)
         {
+            return (T)Get(typeof(T), requestString);
+        }
+
+        /// <summary>
+        /// Returns a content object that was loaded or retrieved as part of the request.
+        /// </summary>
+        /// <typeparam name="T">The type of object expected to be returned.</typeparam>
+        /// <param name="requestString">The path or request string.</param>
+        /// <returns></returns>
+        public object Get(Type type, string requestString)
+        {
             Dictionary<string, string> meta = new Dictionary<string, string>();
             string path = Path.Combine(RootDirectory, ParseRequestString(Manager.Log, requestString, meta));
             path = path.ToLower();
 
-            Type t = typeof(T);
-
             if (RetrievedContent.TryGetValue(path, out ContentFile file))
-                return (T)file.GetObject(Manager.Engine, t, meta);
+                return file.GetObject(Manager.Engine, type, meta);
 
             return default;
         }

@@ -59,16 +59,7 @@ namespace Molten
             AddResult(Output, t, obj);
         }
 
-        public void AddInput<T>(T obj)
-        {
-            if (obj == null)
-                return;
-
-            Type t = typeof(T);
-            AddResult(Input, t, obj);
-        }
-
-        public void AddInput(Type t, object obj)
+        internal void AddInput(Type t, object obj)
         {
             AddResult(Input, t, obj);
         }
