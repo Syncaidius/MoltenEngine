@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Samples
+namespace Molten.Graphics
 {
     /// <summary>
     /// A helper object for testing or drawing with sprite batch.
