@@ -88,6 +88,7 @@
     <Compile Include="Common\SpriteCacheTestObject.cs" />
     <Compile Include="Common\UnfairSpriteCacheTestObject.cs" />
     <Compile Include="DeferredRendering.cs" />
+    <Compile Include="SpriteContainerSample.cs" />
     <Compile Include="SpriteFontStress.cs" />
     <Compile Include="FontFileTest.cs" />
     <Compile Include="MultiWindowGame.cs" />

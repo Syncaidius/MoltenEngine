@@ -36,6 +36,16 @@ namespace Molten
         public static readonly Vector2I Zero = new Vector2I(0, 0);
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Vector2F"/> struct.
+        /// </summary>
+        /// <param name="value">The value that will be assigned to all components.</param>
+        public Vector2I(int value)
+        {
+            X = value;
+            Y = value;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Vector2I"/> struct.
         /// </summary>
         /// <param name="x">The x.</param>

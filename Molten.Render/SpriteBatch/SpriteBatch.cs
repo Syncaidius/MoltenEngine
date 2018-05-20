@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -147,12 +148,24 @@ namespace Molten.Graphics
             return cluster;
         }
 
-        /// <summary>Draws a string of text sprites by using a sprite font to source the needed data..</summary>
+        /// <summary>Draws a string of text sprites by using a <see cref="SpriteFont"/> to source the needed data.</summary>
         /// <param name="font">The spritefont from which to retrieve font data.</param>
         /// <param name="text">The text to draw.</param>
         /// <param name="position">The position of the text.</param>
         /// <param name="color">The color of the text.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void DrawString(SpriteFont font, string text, Vector2F position, Color color, IMaterial material = null)
+        {
+            DrawString(font, text, position, color, Vector2F.One, material);
+        }
+
+        /// <summary>Draws a string of text sprites by using a <see cref="SpriteFont"/> to source the needed data..</summary>
+        /// <param name="font">The spritefont from which to retrieve font data.</param>
+        /// <param name="text">The text to draw.</param>
+        /// <param name="position">The position of the text.</param>
+        /// <param name="color">The color of the text.</param>
+        /// <param name="scale">The text scale. 1.0f is equivilent to the default size. 0.5f will half the size. 2.0f will double the size.</param>
+        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Vector2F scale, IMaterial material = null)
         {
             SpriteClipZone clip = _clipZones[_curClip];
             int spriteID = 0;
@@ -170,7 +183,7 @@ namespace Molten.Graphics
                 cluster.Sprites[spriteID++] = new SpriteVertex()
                 {
                     Position = new Vector2F(charPos.X, charPos.Y + cache.YOffset),
-                    Size = new Vector2F(cache.Location.Width, cache.Location.Height),
+                    Size = new Vector2F(cache.Location.Width, cache.Location.Height) * scale,
                     UV = new Vector4F(cache.Location.X, cache.Location.Y, cache.Location.Right, cache.Location.Bottom),
                     Color = color,
                     Origin = Vector2F.Zero,
@@ -178,7 +191,7 @@ namespace Molten.Graphics
                 };
 
                 // Increase pos by size of char (along X)
-                charPos.X += cache.AdvanceWidth;
+                charPos.X += cache.AdvanceWidth * scale.X;
             }
 
             cluster.SpriteCount += strLength;

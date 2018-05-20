@@ -33,6 +33,25 @@ namespace Molten.Samples
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
         }
 
+        private void Cr_OnCompleted(ContentRequest cr)
+        {
+            if (cr.RequestedFileCount == 0)
+                return;
+
+            IMaterial mat = cr.Get<IMaterial>(0);
+            if (mat == null)
+            {
+                Exit();
+                return;
+            }
+
+            ITexture2D tex = cr.Get<ITexture2D>(1);
+            mat.SetDefaultResource(tex, 0);
+            _mesh.Material = mat;
+            SetupTexturedSprites(tex);
+            SetupRectangles();
+        }
+
         private void SetupTexturedSprites(ITexture2D tex)
         {
             for(int i = 0; i < 100; i++)
@@ -89,25 +108,6 @@ namespace Molten.Samples
 
                 SpriteScene.AddSprite(s);
             }
-        }
-
-        private void Cr_OnCompleted(ContentRequest cr)
-        {
-            if (cr.RequestedFileCount == 0)
-                return;
-
-            IMaterial mat = cr.Get<IMaterial>(0);
-            if (mat == null)
-            {
-                Exit();
-                return;
-            }
-
-            ITexture2D tex = cr.Get<ITexture2D>(1);
-            mat.SetDefaultResource(tex, 0);
-            _mesh.Material = mat;
-            SetupTexturedSprites(tex);
-            SetupRectangles();
         }
 
         protected override void OnUpdate(Timing time)

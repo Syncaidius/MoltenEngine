@@ -66,6 +66,19 @@ namespace Molten
         /// <summary>
         /// Initializes a new instance of the <see cref="Rectangle"/> struct.
         /// </summary>
+        /// <param name="position">The position of the rectangle.</param>
+        /// <param name="size">The size of the rectangle.</param>
+        public Rectangle(Vector2I position, Vector2I size)
+        {
+            Left = position.X;
+            Top = position.Y;
+            Right = position.X + size.X;
+            Bottom = position.Y + size.Y;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
+        /// </summary>
         /// <param name="x">The left.</param>
         /// <param name="y">The top.</param>
         /// <param name="width">The width.</param>
@@ -84,10 +97,7 @@ namespace Molten
         /// <value>The X position.</value>
         public int X
         {
-            get
-            {
-                return Left;
-            }
+            get => Left;
             set
             {
                 Right = value + Width;
@@ -101,10 +111,7 @@ namespace Molten
         /// <value>The Y position.</value>
         public int Y
         {
-            get
-            {
-                return Top;
-            }
+            get => Top;
             set
             {
                 Bottom = value + Height;
@@ -118,8 +125,8 @@ namespace Molten
         /// <value>The width.</value>
         public int Width
         {
-            get { return Right - Left; }
-            set { Right = Left + value; }
+            get => Right - Left;
+            set => Right = Left + value;
         }
 
         /// <summary>
@@ -128,8 +135,8 @@ namespace Molten
         /// <value>The height.</value>
         public int Height
         {
-            get { return Bottom - Top; }
-            set { Bottom = Top + value; }
+            get => Bottom - Top;
+            set => Bottom = Top + value;
         }
 
 
@@ -141,57 +148,108 @@ namespace Molten
         /// </value>
         public bool IsEmpty
         {
-            get
-            {
-                return (Width == 0) && (Height == 0) && (X == 0) && (Y == 0);
-            }
+            get => (Width == 0) && (Height == 0) && (X == 0) && (Y == 0);
         }
 
         /// <summary>
-        /// Gets the Point that specifies the center of the rectangle.
+        /// Gets or sets the Point that specifies the center of the rectangle. ,para/>
+        /// Setting this will move the rectangle without resizing, so that it is centered at the specified position.
         /// </summary>
         /// <value>
         /// The center.
         /// </value>
         public Vector2I Center
         {
-            get
+            get => new Vector2I(Left + (Width / 2), Top + (Height / 2));
+            set
             {
-                return new Vector2I(X + (Width / 2), Y + (Height / 2));
+                Vector2I centerDif = value - Center;
+                Left += centerDif.X;
+                Right += centerDif.X;
+                Top += centerDif.Y;
+                Bottom += centerDif.Y;
             }
         }
 
         /// <summary>
-        /// Gets the position of the top-left corner of the rectangle.
+        /// Gets or sets the size of the rectangle.
+        /// </summary>
+        public Vector2I Size
+        {
+            get => new Vector2I(Right - Left, Bottom - Top);
+            set
+            {
+                Right = Left + value.X;
+                Bottom = Top + value.Y;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the position of the top-left corner of the rectangle. Setting this will move the rectangle without resizing.
         /// </summary>
         /// <value>The top-left corner of the rectangle.</value>
-        public Vector2I TopLeft { get { return new Vector2I(Left, Top); } }
+        public Vector2I TopLeft
+        {
+            get => new Vector2I(Left, Top);
+            set
+            {
+                Bottom = value.Y + Height;
+                Right = value.X + Width;
+
+                Top = value.Y;
+                Left = value.X;
+            }
+        }
 
         /// <summary>
-        /// Gets the position of the top-right corner of the rectangle.
+        /// Gets or sets the position of the top-right corner of the rectangle. Setting this will move the rectangle without resizing.
         /// </summary>
         /// <value>The top-right corner of the rectangle.</value>
-        public Vector2I TopRight { get { return new Vector2I(Right, Top); } }
+        public Vector2I TopRight
+        {
+            get => new Vector2I(Right, Top);
+            set
+            {
+                Left = value.X - Width;
+                Bottom = value.Y - Height;
+
+                Top = value.Y;
+                Right = value.X;
+            }
+        }
 
         /// <summary>
-        /// Gets the position of the bottom-left corner of the rectangle.
+        /// Gets or sets the position of the bottom-left corner of the rectangle. Setting this will move the rectangle without resizing.
         /// </summary>
         /// <value>The bottom-left corner of the rectangle.</value>
-        public Vector2I BottomLeft { get { return new Vector2I(Left, Bottom); } }
+        public Vector2I BottomLeft
+        {
+            get => new Vector2I(Left, Bottom);
+            set
+            {
+                Top = value.Y - Height;
+                Right = value.X + Width;
+
+                Bottom = value.Y;
+                Left = value.X;
+            }
+        }
 
         /// <summary>
-        /// Gets the position of the bottom-right corner of the rectangle.
+        /// Gets or sets the position of the bottom-right corner of the rectangle. Setting this will move the rectangle without resizing.
         /// </summary>
         /// <value>The bottom-right corner of the rectangle.</value>
-        public Vector2I BottomRight { get { return new Vector2I(Right, Bottom); } }
-
-        /// <summary>Changes the position of the rectangle.</summary>
-        /// <param name="offsetX">Change in the x-position.</param>
-        /// <param name="offsetY">Change in the y-position.</param>
-        public void Offset(int offsetX, int offsetY)
+        public Vector2I BottomRight
         {
-            X += offsetX;
-            Y += offsetY;
+            get => new Vector2I(Right, Bottom);
+            set
+            {
+                Top = value.Y - Height;
+                Left = value.X - Width;
+
+                Bottom = value.Y;
+                Right = value.X;
+            }
         }
 
         /// <summary>

@@ -76,6 +76,26 @@ namespace Molten.Graphics
             return this.Clone();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="arraySlice"></param>
+        public void Set(TextureData data, int arraySlice)
+        {
+            if (data.Width != Width || data.Height != Height || data.MipMapCount != MipMapCount)
+                throw new Exception("Texture data must match the dimensions (i.e. width, height, depth, mip-map levels) of the destination data.");
+
+            if (Levels == null || ArraySize <= arraySlice)
+                Array.Resize(ref Levels, (MipMapCount * (arraySlice + 1)));
+
+            for(int i = 0; i < data.Levels.Length; i++)
+            {
+                int lID = (arraySlice * MipMapCount) + i;
+                Levels[lID] = data.Levels[i].Clone();
+            }
+        }
+
         /// <summary>Creates an exact copy of the texture data and returns the new instance.</summary>
         /// <returns></returns>
         public TextureData Clone()

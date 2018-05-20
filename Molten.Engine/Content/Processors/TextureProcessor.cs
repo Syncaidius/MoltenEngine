@@ -16,100 +16,129 @@ namespace Molten.Content
         public override void OnRead(ContentContext context)
         {
             string extension = context.File.Extension.ToLower();
-            TextureData data = null;
+            TextureData finalData = null;
             TextureReader texReader = null;
+            bool isArray = false;
+            int arraySize = 1;
+            string fn = context.Filename;
 
-            using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))
+            if (context.Metadata.TryGetValue("array", out string strIsArray))
+                bool.TryParse(strIsArray, out isArray);
+
+            if (isArray)
             {
-                using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, true))
+                fn = context.File.Name.Replace(context.File.Extension, "");
+                fn = context.Filename.Replace(context.File.Name, $"fn_{{0}}{context.File.Extension}");
+            }
+
+            for (int i = 0; i < arraySize; i++)
+            {
+                TextureData data = null;
+                using (Stream stream = new FileStream(string.Format(fn, i), FileMode.Open, FileAccess.Read))
                 {
-                    switch (extension)
+                    using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8, true))
                     {
-                        case ".dds":
-                            texReader = new DDSReader(false);
-                            break;
-
-                        default:
-                            texReader = context.Engine.Renderer.Resources.GetDefaultTextureReader(context.File);
-                            break;
-                    }
-
-                    texReader.Read(reader);
-
-                    // Output error, if one occurred.
-                    string error = texReader.Error;
-                    if (error != null)
-                    {
-                        context.Log.WriteError(error, context.Filename);
-                        return;
-                    }
-                    else
-                    {
-                        data = texReader.GetData();
-                    }
-
-                    //output error, if one occurred.
-                    error = texReader.Error;
-                    texReader.Dispose();
-
-                    if (error != null)
-                    {
-                        context.Log.WriteError(error, context.Filename);
-                    }
-                    else
-                    {
-                        if (data.MipMapCount == 1)
+                        switch (extension)
                         {
-                            string genMipsVal = "";
-                            if (context.Metadata.TryGetValue("mipmaps", out genMipsVal))
-                            {
-                                if (genMipsVal == "true")
-                                {
-                                    //if (!data.GenerateMipMaps())
-                                    //   log.WriteError("[CONTENT] Unable to generate mip-maps for non-power-of-two texture.", file.ToString());
-                                }
-                            }
+                            case ".dds":
+                                texReader = new DDSReader(false);
+                                break;
+
+                            default:
+                                texReader = context.Engine.Renderer.Resources.GetDefaultTextureReader(context.File);
+                                break;
                         }
 
+                        texReader.Read(reader);
 
-                        if (context.ContentType == typeof(TextureData))
+                        // Output error, if one occurred.
+                        string error = texReader.Error;
+                        if (error != null)
                         {
-                            context.AddOutput(data);
+                            context.Log.WriteError(error, context.Filename);
                             return;
-                        }
-
-                        // Check if an existing texture was passed in.
-                        ITexture tex = null;
-                        if (context.Input.TryGetValue(context.ContentType, out List<object> existingObjects))
-                        {
-                            if (existingObjects.Count > 0)
-                                tex = existingObjects[0] as ITexture;
-                        }
-
-                        if (tex != null)
-                        {
-                            OnReloadTexture(tex, data);
                         }
                         else
                         {
-                            if (context.ContentType == typeof(ITexture2D))
-                                tex = context.Engine.Renderer.Resources.CreateTexture2D(data);
-                            else if (context.ContentType == typeof(ITextureCube))
-                                tex = context.Engine.Renderer.Resources.CreateTextureCube(data);
-                            else if (context.ContentType == typeof(ITexture))
-                                tex = context.Engine.Renderer.Resources.CreateTexture1D(data);
-                            else
-                                context.Log.WriteError($"Unsupported texture type {context.ContentType}", context.Filename);
+                            data = texReader.GetData();
+                        }
 
-                            if (tex != null)
-                                context.AddOutput(context.ContentType, tex);
+                        //output error, if one occurred.
+                        error = texReader.Error;
+                        texReader.Dispose();
+
+                        if (error != null)
+                        {
+                            context.Log.WriteError(error, context.Filename);
+                        }
+                        else
+                        {
+                            if (data.MipMapCount == 1)
+                            {
+                                string genMipsVal = "";
+                                if (context.Metadata.TryGetValue("mipmaps", out genMipsVal))
+                                {
+                                    if (genMipsVal == "true")
+                                    {
+                                        //if (!data.GenerateMipMaps())
+                                        //   log.WriteError("[CONTENT] Unable to generate mip-maps for non-power-of-two texture.", file.ToString());
+                                    }
+                                }
+                            }
+
+                            if (context.ContentType == typeof(TextureData))
+                            {
+                                context.AddOutput(data);
+                                return;
+                            }
                         }
                     }
                 }
+
+                finalData = finalData ?? new TextureData()
+                {
+                    Width = data.Width,
+                    Height = data.Height,
+                    MipMapCount = data.MipMapCount,
+                    Format = data.Format,
+                    ArraySize = arraySize,
+                };
+                finalData.Set(data, i);
             }
+
+            // TODO improve for texture arrays - Only update the array slice(s) that have changed.
+            // Check if an existing texture was passed in.
+            ITexture tex = null;
+            if (context.Input.TryGetValue(context.ContentType, out List<object> existingObjects))
+            {
+                if (existingObjects.Count > 0)
+                    tex = existingObjects[0] as ITexture;
+            }
+
+            if (tex != null)
+                ReloadTexture(tex, finalData);
+            else
+                CreateTexture(context, finalData);
         }
 
-        private void OnReloadTexture(ITexture tex, TextureData data)
+        private void CreateTexture(ContentContext context, TextureData data)
+        {
+            ITexture tex = null;
+
+            if (context.ContentType == typeof(ITexture2D))
+                tex = context.Engine.Renderer.Resources.CreateTexture2D(data);
+            else if (context.ContentType == typeof(ITextureCube))
+                tex = context.Engine.Renderer.Resources.CreateTextureCube(data);
+            else if (context.ContentType == typeof(ITexture))
+                tex = context.Engine.Renderer.Resources.CreateTexture1D(data);
+            else
+                context.Log.WriteError($"Unsupported texture type {context.ContentType}", context.Filename);
+
+            if (tex != null)
+                context.AddOutput(context.ContentType, tex);
+        }
+
+        private void ReloadTexture(ITexture tex, TextureData data)
         {
             switch (tex)
             {

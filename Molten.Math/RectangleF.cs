@@ -80,6 +80,19 @@ namespace Molten
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Rectangle"/> struct.
+        /// </summary>
+        /// <param name="position">The position of the rectangle.</param>
+        /// <param name="size">The size of the rectangle.</param>
+        public RectangleF(Vector2F position, Vector2F size)
+        {
+            Left = position.X;
+            Top = position.Y;
+            Right = position.X + size.X;
+            Bottom = position.Y + size.Y;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="RectangleF"/> struct.
         /// </summary>
         /// <param name="x">The left.</param>
@@ -137,16 +150,14 @@ namespace Molten
                 Bottom = p.Bottom;
         }
 
+
         /// <summary>
         /// Gets or sets the X position.
         /// </summary>
         /// <value>The X position.</value>
         public float X
         {
-            get
-            {
-                return Left;
-            }
+            get => Left;
             set
             {
                 Right = value + Width;
@@ -160,10 +171,7 @@ namespace Molten
         /// <value>The Y position.</value>
         public float Y
         {
-            get
-            {
-                return Top;
-            }
+            get => Top;
             set
             {
                 Bottom = value + Height;
@@ -177,8 +185,8 @@ namespace Molten
         /// <value>The width.</value>
         public float Width
         {
-            get { return Right - Left; }
-            set { Right = Left + value; }
+            get => Right - Left;
+            set => Right = Left + value;
         }
 
         /// <summary>
@@ -187,8 +195,121 @@ namespace Molten
         /// <value>The height.</value>
         public float Height
         {
-            get { return Bottom - Top; }
-            set { Bottom = Top + value; }
+            get => Bottom - Top;
+            set => Bottom = Top + value;
+        }
+
+
+        /// <summary>
+        /// Gets a value that indicates whether the rectangle is empty.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [is empty]; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsEmpty
+        {
+            get => (Width == 0.0f) && (Height == 0.0f) && (X == 0.0f) && (Y == 0.0f);
+        }
+
+        /// <summary>
+        /// Gets or sets the Point that specifies the center of the rectangle. ,para/>
+        /// Setting this will move the rectangle without resizing, so that it is centered at the specified position.
+        /// </summary>
+        /// <value>
+        /// The center.
+        /// </value>
+        public Vector2F Center
+        {
+            get => new Vector2F(Left + (Width / 2), Top + (Height / 2));
+            set
+            {
+                Vector2F centerDif = value - Center;
+                Left += centerDif.X;
+                Right += centerDif.X;
+                Top += centerDif.Y;
+                Bottom += centerDif.Y;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the size of the rectangle.
+        /// </summary>
+        public Vector2F Size
+        {
+            get => new Vector2F(Right - Left, Bottom - Top);
+            set
+            {
+                Right = Left + value.X;
+                Bottom = Top + value.Y;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the position of the top-left corner of the rectangle. Setting this will move the rectangle without resizing.
+        /// </summary>
+        /// <value>The top-left corner of the rectangle.</value>
+        public Vector2F TopLeft
+        {
+            get => new Vector2F(Left, Top);
+            set
+            {
+                Bottom = value.Y + Height;
+                Right = value.X + Width;
+
+                Top = value.Y;
+                Left = value.X;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the position of the top-right corner of the rectangle. Setting this will move the rectangle without resizing.
+        /// </summary>
+        /// <value>The top-right corner of the rectangle.</value>
+        public Vector2F TopRight
+        {
+            get => new Vector2F(Right, Top);
+            set
+            {
+                Left = value.X - Width;
+                Bottom = value.Y - Height;
+
+                Top = value.Y;
+                Right = value.X;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the position of the bottom-left corner of the rectangle. Setting this will move the rectangle without resizing.
+        /// </summary>
+        /// <value>The bottom-left corner of the rectangle.</value>
+        public Vector2F BottomLeft
+        {
+            get => new Vector2F(Left, Bottom);
+            set
+            {
+                Top = value.Y - Height;
+                Right = value.X + Width;
+
+                Bottom = value.Y;
+                Left = value.X;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the position of the bottom-right corner of the rectangle. Setting this will move the rectangle without resizing.
+        /// </summary>
+        /// <value>The bottom-right corner of the rectangle.</value>
+        public Vector2F BottomRight
+        {
+            get => new Vector2F(Right, Bottom);
+            set
+            {
+                Top = value.Y - Height;
+                Left = value.X - Width;
+
+                Bottom = value.Y;
+                Right = value.X;
+            }
         }
 
         /// <summary>
@@ -209,75 +330,6 @@ namespace Molten
                 Y = value.Y;
             }
         }
-
-        /// <summary>
-        /// Gets the Point that specifies the center of the rectangle.
-        /// </summary>
-        /// <value>
-        /// The center.
-        /// </value>
-        public Vector2F Center
-        {
-            get
-            {
-                return new Vector2F(X + (Width / 2), Y + (Height / 2));
-            }
-        }
-
-        /// <summary>
-        /// Gets a value that indicates whether the rectangle is empty.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [is empty]; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsEmpty
-        {
-            get
-            {
-                return (Width == 0.0f) && (Height == 0.0f) && (X == 0.0f) && (Y == 0.0f);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the size of the rectangle.
-        /// </summary>
-        /// <value>The size of the rectangle.</value>
-        public Vector2F Size
-        {
-            get
-            {
-                return new Vector2F(Width, Height);
-            }
-            set
-            {
-                Width = value.X;
-                Height = value.Y;
-            }
-        }
-
-        /// <summary>
-        /// Gets the position of the top-left corner of the rectangle.
-        /// </summary>
-        /// <value>The top-left corner of the rectangle.</value>
-        public Vector2F TopLeft { get { return new Vector2F(Left, Top); } }
-
-        /// <summary>
-        /// Gets the position of the top-right corner of the rectangle.
-        /// </summary>
-        /// <value>The top-right corner of the rectangle.</value>
-        public Vector2F TopRight { get { return new Vector2F(Right, Top); } }
-
-        /// <summary>
-        /// Gets the position of the bottom-left corner of the rectangle.
-        /// </summary>
-        /// <value>The bottom-left corner of the rectangle.</value>
-        public Vector2F BottomLeft { get { return new Vector2F(Left, Bottom); } }
-
-        /// <summary>
-        /// Gets the position of the bottom-right corner of the rectangle.
-        /// </summary>
-        /// <value>The bottom-right corner of the rectangle.</value>
-        public Vector2F BottomRight { get { return new Vector2F(Right, Bottom); } }
 
         /// <summary>Changes the position of the rectangle.</summary>
         /// <param name="amount">The values to adjust the position of the rectangle by.</param>
