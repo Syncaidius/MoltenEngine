@@ -40,6 +40,17 @@ namespace Molten
 
         internal ContentRequest() { }
 
+        /// <summary>Commits and immediately processes the <see cref="ContentRequest"/> on the calling thread.</summary>
+        public void CommitImmediate()
+        {
+            if (State != ContentRequestState.NotCommited)
+                throw new ContentException("Content request has already been commited.");
+
+            State = ContentRequestState.Committed;
+            Manager.CommitImmediate(this);
+            State = ContentRequestState.Completed;
+        }
+
         /// <summary>Commits the request to it's parent content manager. It will be queued for processing as soon as possible.</summary>
         public void Commit()
         {

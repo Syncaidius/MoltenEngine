@@ -126,6 +126,18 @@ namespace Molten
             return request;
         }
 
+        internal void CommitImmediate(ContentRequest request)
+        {
+            if (request.RequestElements.Count == 0)
+            {
+                request.Complete();
+                _requestPool.Recycle(request);
+                return;
+            }
+
+            ProcessRequest(request);
+        }
+
         internal void Commit(ContentRequest request)
         {
             if(request.RequestElements.Count == 0)
