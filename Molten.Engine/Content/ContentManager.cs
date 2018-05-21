@@ -28,7 +28,6 @@ namespace Molten
         Engine _engine;
         JsonSerializerSettings _jsonSettings;
 
-
         static ContentManager()
         {
             _defaultProcessors = new Dictionary<Type, ContentProcessor>();
@@ -84,8 +83,8 @@ namespace Molten
                 Formatting = Formatting.Indented,
             };
 
-            AddCustomJsonConverters(engine.Settings.JsonConverters);
-            AddCustomJsonConverters(customJsonConverters);
+            AddCustomJsonConverters(_jsonSettings, engine.Settings.JsonConverters);
+            AddCustomJsonConverters(_jsonSettings, customJsonConverters);
 
             AddCustomProcessors(engine.Settings.CustomContentProcessors);
             AddCustomProcessors(customProcessors);
@@ -103,13 +102,13 @@ namespace Molten
             }
         }
 
-        private void AddCustomJsonConverters(IList<JsonConverter> converters)
+        private void AddCustomJsonConverters(JsonSerializerSettings settings, IList<JsonConverter> converters)
         {
             if (converters == null)
                 return;
 
             foreach (JsonConverter jc in converters)
-                _jsonSettings.Converters.Add(jc);
+                settings.Converters.Add(jc);
         }
 
         /// <summary>
@@ -119,7 +118,29 @@ namespace Molten
         /// <returns></returns>
         public ContentRequest BeginRequest(string rootDirectory)
         {
+            return BeginRequest(rootDirectory, null);
+        }
+
+        /// <summary>
+        /// Spawns a new content request and returns it for the provided directory.
+        /// </summary>
+        /// <param name="rootDirectory">The root directory of all operations added to the request.</param>
+        /// <param name="customJsonSettings">Custom Json settings to be applied to any serialization or deserialization operation performed by the <see cref="ContentRequest"/>.</param>
+        /// <returns></returns>
+        public ContentRequest BeginRequest(string rootDirectory, JsonSerializerSettings customJsonSettings)
+        {
             ContentRequest request = _requestPool.GetInstance();
+
+            if (customJsonSettings != null)
+            {
+                request.JsonSettings = customJsonSettings.Clone();
+                AddCustomJsonConverters(request.JsonSettings, _jsonSettings.Converters);
+            }
+            else
+            {
+                request.JsonSettings = _jsonSettings;
+            }
+            
             rootDirectory = rootDirectory.StartsWith("/") ? rootDirectory.Substring(1, rootDirectory.Length - 1) : rootDirectory;
             request.RootDirectory = Path.GetFullPath(rootDirectory);
             request.Manager = this;
@@ -341,7 +362,7 @@ namespace Molten
 
                 try
                 {
-                    object result = JsonConvert.DeserializeObject(json, context.ContentType, _jsonSettings);
+                    object result = JsonConvert.DeserializeObject(json, context.ContentType, request.JsonSettings);
                     ContentFile file = GetContentFile(context, request);
                     file.AddObject(context.ContentType, result);
                     _log.WriteLine($"[CONTENT] [DESERIALIZE] '{result.GetType().Name}' from {context.Filename}");
@@ -382,7 +403,7 @@ namespace Molten
         {
             try
             {
-                string json = JsonConvert.SerializeObject(context.Input[context.ContentType][0], _jsonSettings);
+                string json = JsonConvert.SerializeObject(context.Input[context.ContentType][0], request.JsonSettings);
 
                 if (!context.File.Directory.Exists)
                     context.File.Directory.Create();

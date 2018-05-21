@@ -1,4 +1,5 @@
 ﻿using Molten.Collections;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,6 +31,8 @@ namespace Molten
 
         internal ContentManager Manager;
 
+        internal JsonSerializerSettings JsonSettings;
+
         internal string RootDirectory;
 
         internal ContentRequestState State;
@@ -44,18 +47,16 @@ namespace Molten
         public void CommitImmediate()
         {
             if (State != ContentRequestState.NotCommited)
-                throw new ContentException("Content request has already been commited.");
+                throw new ContentException("Content request has already been committed.");
 
-            State = ContentRequestState.Committed;
             Manager.CommitImmediate(this);
-            State = ContentRequestState.Completed;
         }
 
         /// <summary>Commits the request to it's parent content manager. It will be queued for processing as soon as possible.</summary>
         public void Commit()
         {
             if (State != ContentRequestState.NotCommited)
-                throw new ContentException("Content request has already been commited.");
+                throw new ContentException("Content request has already been committed.");
 
             State = ContentRequestState.Committed;
             Manager.Commit(this);

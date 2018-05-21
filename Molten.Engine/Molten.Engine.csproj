@@ -76,6 +76,7 @@
     <Compile Include="Content\ContentRequestType.cs" />
     <Compile Include="Content\ContentReloadTask.cs" />
     <Compile Include="Content\ContentWorkerTask.cs" />
+    <Compile Include="Content\JsonExtensions.cs" />
     <Compile Include="Content\Processors\ContentProcessor.cs" />
     <Compile Include="Content\Processors\ShaderProcessor.cs" />
     <Compile Include="Content\Processors\SpriteFontProcessor.cs" />
