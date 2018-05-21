@@ -49,6 +49,7 @@ namespace Molten
             if (State != ContentRequestState.NotCommited)
                 throw new ContentException("Content request has already been committed.");
 
+            State = ContentRequestState.Committed;
             Manager.CommitImmediate(this);
         }
 
