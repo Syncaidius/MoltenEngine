@@ -28,6 +28,7 @@ namespace Molten
         Engine _engine;
         JsonSerializerSettings _jsonSettings;
 
+
         static ContentManager()
         {
             _defaultProcessors = new Dictionary<Type, ContentProcessor>();
@@ -56,10 +57,11 @@ namespace Molten
 
         /// <summary>Creates a new instance of <see cref="ContentManager"/>.</summary>
         /// <param name="rootDirectory">The root directory of the new <see cref="ContentManager"/> instance.</param>
-        /// <param name="customProcessors">A list of custom processors to override the default ones with. Default value is null.</param>
-        /// <param name="engine"></param>
+        /// <param name="customProcessors">A list of custom processors to add to the current <see cref="ContentManager"/>.</param>
+        /// <param name="log">A logger to output content information.</param>
+        /// <param name="engine">The engine instance to which the content manager will be bound.</param>
         /// <param name="workerThreads">The number of worker threads that will be used to fulfil content requests.</param>
-        public ContentManager(Logger log, Engine engine, List<ContentProcessor> customProcessors = null, int workerThreads = 1, JsonSerializerSettings jsonSettings = null)
+        public ContentManager(Logger log, Engine engine, IList<ContentProcessor> customProcessors = null, IList<JsonConverter> customJsonConverters = null, int workerThreads = 1)
         {
             _engine = engine;
 
@@ -69,21 +71,45 @@ namespace Molten
             _directories = new ThreadedDictionary<string, ContentDirectory>();
             _workers = engine.Threading.SpawnWorkerGroup("content workers", workerThreads);
             _log = log;
-            _jsonSettings = jsonSettings ?? JsonHelper.GetDefaultSettings(_log);
-
-            if(customProcessors != null)
+            _jsonSettings = new JsonSerializerSettings()
             {
-                foreach(ContentProcessor p in customProcessors)
+                TypeNameHandling = TypeNameHandling.None,
+                Error = (sender, args) =>
                 {
-                    foreach(Type t in p.AcceptedTypes)
-                    {
-                        if (_customProcessors.ContainsKey(t))
-                            continue;
-                        else
-                            _customProcessors.Add(t, p);
-                    }
-                }
+                    log.WriteError(args.ErrorContext.Error, true);
+                    args.ErrorContext.Handled = true;
+                },
+                Converters = new List<JsonConverter>(),
+                CheckAdditionalContent = false,
+                Formatting = Formatting.Indented,
+            };
+
+            AddCustomJsonConverters(engine.Settings.JsonConverters);
+            AddCustomJsonConverters(customJsonConverters);
+
+            AddCustomProcessors(engine.Settings.CustomContentProcessors);
+            AddCustomProcessors(customProcessors);
+        }
+
+        private void AddCustomProcessors(IList<ContentProcessor> processors)
+        {
+            if (processors == null)
+                return;
+
+            foreach (ContentProcessor p in processors)
+            {
+                foreach (Type t in p.AcceptedTypes)
+                    _customProcessors[t] = p;
             }
+        }
+
+        private void AddCustomJsonConverters(IList<JsonConverter> converters)
+        {
+            if (converters == null)
+                return;
+
+            foreach (JsonConverter jc in converters)
+                _jsonSettings.Converters.Add(jc);
         }
 
         /// <summary>

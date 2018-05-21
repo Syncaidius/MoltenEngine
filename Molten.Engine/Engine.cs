@@ -55,7 +55,7 @@ namespace Molten
             _log.WriteDebugLine("Engine Instantiated");
             _threadManager = new ThreadManager(this, _log);
             _taskQueue = new ThreadedQueue<EngineTask>();
-            _content = new ContentManager(_log, this, null, _settings.ContentWorkerThreads);
+            _content = new ContentManager(_log, this, null, null, _settings.ContentWorkerThreads);
             Scenes = new List<Scene>();
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;

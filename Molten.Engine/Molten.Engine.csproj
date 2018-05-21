@@ -83,7 +83,6 @@
     <Compile Include="Content\Processors\TextureProcessor.cs" />
     <Compile Include="Content\Serialization\BrowsableStringAttribute.cs" />
     <Compile Include="Content\Serialization\ExpandablePropertyAttribute.cs" />
-    <Compile Include="Content\Serialization\JsonHelper.cs" />
     <Compile Include="Content\Serialization\MathConverter.cs" />
     <Compile Include="Content\Serialization\UIJsonConverter.cs" />
     <Compile Include="Engine.cs" />

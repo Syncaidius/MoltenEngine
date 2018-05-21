@@ -1,6 +1,7 @@
 ﻿using Molten.Collections;
 using Molten.Graphics;
 using Molten.Input;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,6 +66,20 @@ namespace Molten
 
         /// <summary>Gets or sets the number of content worker threads.</summary>
         public int ContentWorkerThreads { get; set; } = 1;
+
+        /// <summary>
+        /// Gets a list of <see cref="ContentProcessor"/> instances that will be added to every new instantiation of <see cref="ContentManager"/>.
+        /// </summary>
+        public List<ContentProcessor> CustomContentProcessors { get; private set; } = new List<ContentProcessor>();
+
+        /// <summary>
+        /// Gets a list of <see cref="JsonConverter"/> instances that will be to added every new instantiation of <see cref="ContentManager"/>.
+        /// </summary>
+        public List<JsonConverter> JsonConverters { get; private set; } = new List<JsonConverter>()
+        {
+            new MathConverter(),
+            new UIJsonConverter(),
+        };
 
         /// <summary>Gets or sets the product name.</summary>
         public string ProductName { get; set; } = "Stone Bolt Game";
