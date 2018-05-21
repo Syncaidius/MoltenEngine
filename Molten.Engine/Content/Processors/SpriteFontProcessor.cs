@@ -20,6 +20,8 @@ namespace Molten.Content
             string strSize = "";
             if (context.Metadata.TryGetValue("size", out strSize))
                 int.TryParse(strSize, out size);
+            else
+                context.Log.WriteLine($"No font size specified. Using default of {size}");
 
             FontFile font = null;
             using (Stream stream = new FileStream(context.Filename, FileMode.Open, FileAccess.Read))

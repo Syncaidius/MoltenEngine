@@ -34,9 +34,9 @@ namespace Molten.Input
         MouseState _state;
         MouseState _prevState;
 
-        Vector2F _position;
-        Vector2F _prevPosition;
-        Vector2F _moved;
+        Vector2I _position;
+        Vector2I _prevPosition;
+        Vector2I _moved;
 
         float _wheelPos;
         float _prevWheelPos;
@@ -74,7 +74,7 @@ namespace Molten.Input
             Rectangle winBounds = _surface.Bounds;
             Vector2I p = winBounds.Center;
 
-            _position = new Vector2F(p.X, p.Y);
+            _position = new Vector2I(p.X, p.Y);
         }
 
         /// <summary>Returns true if the given buttonboard button is pressed.</summary>
@@ -107,17 +107,17 @@ namespace Molten.Input
             return _state.Buttons[butval] && _prevState.Buttons[butval];
         }
 
-        private Vector2F ToLocalPosition(Vector2F pos)
+        private Vector2I ToLocalPosition(Vector2I pos)
         {
             Rectangle oBounds = _surface.Bounds;
-            pos -= new Vector2F(oBounds.X, oBounds.Y);
+            pos -= new Vector2I(oBounds.X, oBounds.Y);
             return pos;
         }
 
-        private Vector2F ToDesktopPosition(Vector2F pos)
+        private Vector2I ToDesktopPosition(Vector2I pos)
         {
             Rectangle oBounds = _surface.Bounds;
-            pos += new Vector2F(oBounds.X, oBounds.Y);
+            pos += new Vector2I(oBounds.X, oBounds.Y);
             return pos;
         }
 
@@ -135,7 +135,7 @@ namespace Molten.Input
                 for (int i = 0; i < _buffer.Length; i++)
                     _prevState.Update(_buffer[i]);
 
-            _moved = new Vector2F();
+            _moved = new Vector2I();
             _wheelDelta = 0f;
 
             _state.X = 0;
@@ -170,7 +170,7 @@ namespace Molten.Input
                 else if (winPos.Y > winBounds.Bottom)
                     insideControl = false;
 
-                EnterLeave(insideControl);
+                CheckInside(insideControl);
 
                 // If the mouse is in a valid window, process movement, position, etc
                 if (insideControl || IsConstrained)
@@ -214,20 +214,20 @@ namespace Molten.Input
                 }
                 else
                 {
-                    _position = new Vector2F(winPos.X, winPos.Y);
-                    _moved = new Vector2F();
+                    _position = new Vector2I(winPos.X, winPos.Y);
+                    _moved = new Vector2I();
                     SetCursorVisiblity(true);
                 }
             }
             else
             {
-                EnterLeave(false);
-                _moved = new Vector2F();
+                CheckInside(false);
+                _moved = new Vector2I();
                 SetCursorVisiblity(true);
             }
         }
 
-        private void EnterLeave(bool insideControl)
+        private void CheckInside(bool insideControl)
         {
             if (insideControl && !_wasInsideControl)
                 OnEnterControl?.Invoke(this);
@@ -256,12 +256,11 @@ namespace Molten.Input
         protected override void OnDispose()
         {
             SetCursorVisiblity(true);
-
             DisposeObject(ref _mouse);
         }
 
         /// <summary>Returns the amount the mouse cursor has moved a long X and Y since the last frame/update.</summary>
-        public Vector2F Moved => _moved;
+        public Vector2I Moved => _moved;
 
         /// <summary>Gets the amount the mouse wheel has been moved since the last frame.</summary>
         public float WheelDelta => _wheelDelta;
@@ -270,7 +269,7 @@ namespace Molten.Input
         public float WheelPosition => _wheelPos;
 
         /// <summary>Gets or sets the position of the mouse cursor.</summary>
-        public Vector2F Position
+        public Vector2I Position
         {
             get
             {
