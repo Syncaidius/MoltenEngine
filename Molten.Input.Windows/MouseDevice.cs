@@ -179,12 +179,15 @@ namespace Molten.Input
                     for (int i = 0; i < _buffer.Length; i++)
                     {
                         _state.Update(_buffer[i]);
-                        _moved.X += _state.X;
-                        _moved.Y += _state.Y;
+                        //_moved.X += _state.X;
+                        //_moved.Y += _state.Y;
                         _wheelDelta += _state.Z;
                     }
 
-                    _position += _moved;
+                    System.Drawing.Point osPos = Cursor.Position;
+                    Vector2I newPos = new Vector2I(osPos.X, osPos.Y);
+                    _moved = newPos - _position;
+                    _position = newPos;
                     _wheelPos += _wheelDelta;
 
                     if (IsConstrained)
@@ -200,14 +203,14 @@ namespace Molten.Input
                     }
 
                     // Apply cursor position.
-                    Cursor.Position = new System.Drawing.Point((int)_position.X, (int)_position.Y);
+                    //Cursor.Position = new System.Drawing.Point(_position.X, _position.Y);
 
-                    // Perform correction if we exceeded Windows cursor limits.
-                    if (_position.X != Cursor.Position.X)
-                        _position.X = Cursor.Position.X;
+                    //// Perform correction if we exceeded Windows cursor limits.
+                    //if (_position.X != Cursor.Position.X)
+                    //    _position.X = Cursor.Position.X;
 
-                    if (_position.Y != Cursor.Position.Y)
-                        _position.Y = Cursor.Position.Y;
+                    //if (_position.Y != Cursor.Position.Y)
+                    //    _position.Y = Cursor.Position.Y;
 
                     // Update cursor visibility
                     SetCursorVisiblity(_requestedVisibility);
