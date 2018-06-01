@@ -7,6 +7,6 @@ This documentation is a work in progress.
  * Molten.Input
  * Molten.IO 
  * Molten.Math
- * [Molten.Render](molten.render.md)
+ * [Molten.Render](Molten.Render.md)
  * Molten.Utility
    
