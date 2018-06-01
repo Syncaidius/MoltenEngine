@@ -6,6 +6,7 @@
     -  [IInputDevice](/Molten.Input/Molten/Input/IInputDevice.md)  
     -  [IInputDevice`1](/Molten.Input/Molten/Input/IInputDevice`1.md)  
     -  [IMouseDevice](/Molten.Input/Molten/Input/IMouseDevice.md)  
+    -  [IMouseDevice](/Molten.Input/Molten/Input/IMouseDevice.md)  
     -  [InputSettings](/Molten.Input/Molten/Input/InputSettings.md)  
     -  [Key](/Molten.Input/Molten/Input/Key.md)  
     -  [CharacterEventArgs](/Molten.Input/Molten/Input/CharacterEventArgs.md)
