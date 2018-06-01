@@ -1,11 +1,11 @@
-﻿  
- - Molten  
- - Molten.Input  
-    -  [IClipboard](/Molten.Input/Molten/Input/IClipboard.md)  
-    -  [IInputManager](/Molten.Input/Molten/Input/IInputManager.md)  
-    -  [IInputDevice](/Molten.Input/Molten/Input/IInputDevice.md)  
-    -  [IInputDevice`1](/Molten.Input/Molten/Input/IInputDevice`1.md)  
-    -  [IMouseDevice](/Molten.Input/Molten/Input/IMouseDevice.md)  
-    -  [InputSettings](/Molten.Input/Molten/Input/InputSettings.md)  
-    -  [Key](/Molten.Input/Molten/Input/Key.md)  
-    -  [CharacterEventArgs](/Molten.Input/Molten/Input/CharacterEventArgs.md)
+﻿# Molten.Input  
+* Molten  
+* Molten.Input  
+    *  [IClipboard](/Molten.Input/Molten/Input/IClipboard.md)  
+    *  [IInputManager](/Molten.Input/Molten/Input/IInputManager.md)  
+    *  [IInputDevice](/Molten.Input/Molten/Input/IInputDevice.md)  
+    *  [IInputDevice&lt;T&gt;](/Molten.Input/Molten/Input/IInputDevice&lt;T&gt;.md)  
+    *  [IMouseDevice](/Molten.Input/Molten/Input/IMouseDevice.md)  
+    *  [InputSettings](/Molten.Input/Molten/Input/InputSettings.md)  
+    *  [Key](/Molten.Input/Molten/Input/Key.md)  
+    *  [CharacterEventArgs](/Molten.Input/Molten/Input/CharacterEventArgs.md)

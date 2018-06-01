@@ -1,14 +1,14 @@
-﻿  
- - Molten  
-        -  [BinaryEndianAgnosticReader](/Molten.IO/Molten/BinaryEndianAgnosticReader.md)  
-        -  [FlippedBinaryReader](/Molten.IO/Molten/FlippedBinaryReader.md)  
-        -  [EnhancedBinaryReader](/Molten.IO/Molten/EnhancedBinaryReader.md)  
-        -  [EmbeddedResource](/Molten.IO/Molten/EmbeddedResource.md)  
-        -  [ILogOutput](/Molten.IO/Molten/ILogOutput.md)  
-        -  [LogFileWriter](/Molten.IO/Molten/LogFileWriter.md)  
-        -  [Logger](/Molten.IO/Molten/Logger.md)  
-        -  [SettingBank](/Molten.IO/Molten/SettingBank.md)  
-        -  [SubscribedValueHandler`1](/Molten.IO/Molten/SubscribedValueHandler`1.md)  
-        -  [SettingValue](/Molten.IO/Molten/SettingValue.md)  
-        -  [SettingValue`1](/Molten.IO/Molten/SettingValue`1.md)  
-        -  [SettingValueList`1](/Molten.IO/Molten/SettingValueList`1.md)
+﻿# Molten.IO  
+* Molten  
+    *  [BinaryEndianAgnosticReader](/Molten.IO/Molten/BinaryEndianAgnosticReader.md)  
+    *  [FlippedBinaryReader](/Molten.IO/Molten/FlippedBinaryReader.md)  
+    *  [EnhancedBinaryReader](/Molten.IO/Molten/EnhancedBinaryReader.md)  
+    *  [EmbeddedResource](/Molten.IO/Molten/EmbeddedResource.md)  
+    *  [ILogOutput](/Molten.IO/Molten/ILogOutput.md)  
+    *  [LogFileWriter](/Molten.IO/Molten/LogFileWriter.md)  
+    *  [Logger](/Molten.IO/Molten/Logger.md)  
+    *  [SettingBank](/Molten.IO/Molten/SettingBank.md)  
+    *  [SubscribedValueHandler&lt;T&gt;](/Molten.IO/Molten/SubscribedValueHandler&lt;T&gt;.md)  
+    *  [SettingValue](/Molten.IO/Molten/SettingValue.md)  
+    *  [SettingValue&lt;T&gt;](/Molten.IO/Molten/SettingValue&lt;T&gt;.md)  
+    *  [SettingValueList&lt;T&gt;](/Molten.IO/Molten/SettingValueList&lt;T&gt;.md)
