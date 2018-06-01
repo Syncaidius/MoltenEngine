@@ -1,10 +1,7 @@
 ﻿  
  - Molten  
         -  [BinaryEndianAgnosticReader](/Molten.IO/Molten/BinaryEndianAgnosticReader.md)  
-        -  [BinaryEndianAgnosticReader](/Molten.IO/Molten/BinaryEndianAgnosticReader.md)  
         -  [FlippedBinaryReader](/Molten.IO/Molten/FlippedBinaryReader.md)  
-        -  [FlippedBinaryReader](/Molten.IO/Molten/FlippedBinaryReader.md)  
-        -  [EnhancedBinaryReader](/Molten.IO/Molten/EnhancedBinaryReader.md)  
         -  [EnhancedBinaryReader](/Molten.IO/Molten/EnhancedBinaryReader.md)  
         -  [EmbeddedResource](/Molten.IO/Molten/EmbeddedResource.md)  
         -  [ILogOutput](/Molten.IO/Molten/ILogOutput.md)  
@@ -13,8 +10,5 @@
         -  [SettingBank](/Molten.IO/Molten/SettingBank.md)  
         -  [SubscribedValueHandler`1](/Molten.IO/Molten/SubscribedValueHandler`1.md)  
         -  [SettingValue](/Molten.IO/Molten/SettingValue.md)  
-        -  [SettingValue](/Molten.IO/Molten/SettingValue.md)  
         -  [SettingValue`1](/Molten.IO/Molten/SettingValue`1.md)  
-        -  [SettingValue`1](/Molten.IO/Molten/SettingValue`1.md)  
-        -  [SettingValueList`1](/Molten.IO/Molten/SettingValueList`1.md)  
         -  [SettingValueList`1](/Molten.IO/Molten/SettingValueList`1.md)
