@@ -1,7 +1,6 @@
 ﻿  
 # Molten.Math  
--  Molten
- <details><summary>[AffineTransform](/Molten.Math/Molten/AffineTransform.md)</summary>  
+-  Molten<details><summary> <a href="/Molten.Math/Molten/AffineTransform.md">AffineTransform</a></summary>  
         -  Translation  
         -  LinearTransform  
         -  #ctor  
@@ -21,8 +20,7 @@
         -  Multiply  
         -  Transform  
         -  CreateFromRigidTransform  
-        -  CreateFromRigidTransform</details>
- <details><summary>[AngleF](/Molten.Math/Molten/AngleF.md)</summary>  
+        -  CreateFromRigidTransform</details><details><summary> <a href="/Molten.Math/Molten/AngleF.md">AngleF</a></summary>  
         -  Degree  
         -  Minute  
         -  Second  
@@ -82,8 +80,7 @@
         -  ToString  
         -  ToString  
         -  GetHashCode  
-        -  Equals</details>
- <details><summary>[BezierCurve2D](/Molten.Math/Molten/BezierCurve2D.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/BezierCurve2D.md">BezierCurve2D</a></summary>  
         -  Start  
         -  End  
         -  ControlPoint1  
@@ -93,8 +90,7 @@
         -  CalculateCubic  
         -  CalculateCubic  
         -  CalculateQuadratic  
-        -  CalculateQuadratic</details>
- <details><summary>[BezierCurve3D](/Molten.Math/Molten/BezierCurve3D.md)</summary>  
+        -  CalculateQuadratic</details><details><summary> <a href="/Molten.Math/Molten/BezierCurve3D.md">BezierCurve3D</a></summary>  
         -  Start  
         -  End  
         -  ControlPoint1  
@@ -104,9 +100,7 @@
         -  CalculateCubic  
         -  CalculateCubic  
         -  CalculateQuadratic  
-        -  CalculateQuadratic</details>
- <details><summary>[BinPacker](/Molten.Math/Molten/BinPacker.md)</summary></details>
- <details><summary>[Bool4](/Molten.Math/Molten/Bool4.md)</summary>  
+        -  CalculateQuadratic</details><details><summary> <a href="/Molten.Math/Molten/BinPacker.md">BinPacker</a></summary></details><details><summary> <a href="/Molten.Math/Molten/Bool4.md">Bool4</a></summary>  
         -  SizeInBytes  
         -  False  
         -  UnitX  
@@ -134,12 +128,9 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Bool4/op_Implicit~Molten.md)</summary>  
-            -  Bool4</details>
- <details><summary>[op_Implicit~System](/Molten.Math/Molten/Bool4/op_Implicit~System.md)</summary>  
-            -  Boolean[]</details></details>
- <details><summary>[BoundingBox](/Molten.Math/Molten/BoundingBox.md)</summary>  
+        -  Equals<details><summary> <a href="/Molten.Math/Molten/Bool4/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
+            -  Bool4</details><details><summary> <a href="/Molten.Math/Molten/Bool4/op_Implicit~System.md">op_Implicit~System</a></summary>  
+            -  Boolean[]</details></details><details><summary> <a href="/Molten.Math/Molten/BoundingBox.md">BoundingBox</a></summary>  
         -  Min  
         -  Max  
         -  #ctor  
@@ -189,8 +180,7 @@
         -  Encapsulate  
         -  Encapsulate  
         -  Encapsulate  
-        -  Encapsulate</details>
- <details><summary>[BoundingFrustum](/Molten.Math/Molten/BoundingFrustum.md)</summary>  
+        -  Encapsulate</details><details><summary> <a href="/Molten.Math/Molten/BoundingFrustum.md">BoundingFrustum</a></summary>  
         -  Matrix  
         -  Near  
         -  Far  
@@ -237,8 +227,7 @@
         -  GetZoomToExtentsShiftDistance  
         -  GetZoomToExtentsShiftVector  
         -  GetZoomToExtentsShiftVector  
-        -  IsOrthographic</details>
- <details><summary>[BoundingSphere](/Molten.Math/Molten/BoundingSphere.md)</summary>  
+        -  IsOrthographic</details><details><summary> <a href="/Molten.Math/Molten/BoundingSphere.md">BoundingSphere</a></summary>  
         -  Center  
         -  Radius  
         -  #ctor  
@@ -271,8 +260,7 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals</details>
- <details><summary>[ByteMath](/Molten.Math/Molten/ByteMath.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/ByteMath.md">ByteMath</a></summary>  
         -  ToKilobytes  
         -  ToMegabytes  
         -  ToMegabytes  
@@ -286,8 +274,7 @@
         -  FromTerabytes  
         -  FromPetabytes  
         -  ToBits  
-        -  FromBits</details>
- <details><summary>[CollisionHelper](/Molten.Math/Molten/CollisionHelper.md)</summary>  
+        -  FromBits</details><details><summary> <a href="/Molten.Math/Molten/CollisionHelper.md">CollisionHelper</a></summary>  
         -  ClosestPointPointTriangle  
         -  ClosestPointPlanePoint  
         -  ClosestPointBoxPoint  
@@ -331,8 +318,7 @@
         -  SphereContainsBox  
         -  SphereContainsSphere  
         -  IsPointInsideTriangle  
-        -  IsPointInsideTriangle</details>
- <details><summary>[Color](/Molten.Math/Molten/Color.md)</summary>  
+        -  IsPointInsideTriangle</details><details><summary> <a href="/Molten.Math/Molten/Color.md">Color</a></summary>  
         -  R  
         -  G  
         -  B  
@@ -404,8 +390,7 @@
         -  op_Multiply  
         -  op_Multiply  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Color/op_Explicit~Molten.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/Color/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
             -  Color3  
             -  Vector3F  
             -  Vector4F  
@@ -414,10 +399,8 @@
             -  Color  
             -  Color  
             -  Color</details>  
-        -  ToColor4
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Color/op_Implicit~Molten.md)</summary>  
-            -  Color4</details>
- <details><summary>[op_Explicit~System](/Molten.Math/Molten/Color/op_Explicit~System.md)</summary>  
+        -  ToColor4<details><summary> <a href="/Molten.Math/Molten/Color/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
+            -  Color4</details><details><summary> <a href="/Molten.Math/Molten/Color/op_Explicit~System.md">op_Explicit~System</a></summary>  
             -  Int32</details>  
         -  ToString  
         -  ToString  
@@ -571,8 +554,7 @@
         -  White  
         -  WhiteSmoke  
         -  Yellow  
-        -  YellowGreen</details>
- <details><summary>[Color3](/Molten.Math/Molten/Color3.md)</summary>  
+        -  YellowGreen</details><details><summary> <a href="/Molten.Math/Molten/Color3.md">Color3</a></summary>  
         -  Black  
         -  White  
         -  R  
@@ -622,11 +604,9 @@
         -  op_Multiply  
         -  op_Multiply  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Color3/op_Explicit~Molten.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/Color3/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
             -  Color4  
-            -  Color3</details>
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Color3/op_Implicit~Molten.md)</summary>  
+            -  Color3</details><details><summary> <a href="/Molten.Math/Molten/Color3/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
             -  Vector3F  
             -  Color3</details>  
         -  ToString  
@@ -636,8 +616,7 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals</details>
- <details><summary>[Color4](/Molten.Math/Molten/Color4.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/Color4.md">Color4</a></summary>  
         -  Black  
         -  White  
         -  R  
@@ -694,18 +673,15 @@
         -  op_Multiply  
         -  op_Multiply  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Color4/op_Explicit~Molten.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/Color4/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
             -  Color3  
             -  Vector3F  
             -  Color4  
             -  Color4  
             -  Color4  
             -  ColorBGRA  
-            -  Color4</details>
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Color4/op_Implicit~Molten.md)</summary>  
-            -  Vector4F</details>
- <details><summary>[op_Explicit~System](/Molten.Math/Molten/Color4/op_Explicit~System.md)</summary>  
+            -  Color4</details><details><summary> <a href="/Molten.Math/Molten/Color4/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
+            -  Vector4F</details><details><summary> <a href="/Molten.Math/Molten/Color4/op_Explicit~System.md">op_Explicit~System</a></summary>  
             -  Int32</details>  
         -  ToString  
         -  ToString  
@@ -714,8 +690,7 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals</details>
- <details><summary>[ColorBGRA](/Molten.Math/Molten/ColorBGRA.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/ColorBGRA.md">ColorBGRA</a></summary>  
         -  B  
         -  G  
         -  R  
@@ -778,8 +753,7 @@
         -  op_Multiply  
         -  op_Multiply  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/ColorBGRA/op_Explicit~Molten.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/ColorBGRA/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
             -  Color3  
             -  Vector3F  
             -  Vector4F  
@@ -788,11 +762,9 @@
             -  ColorBGRA  
             -  ColorBGRA  
             -  ColorBGRA  
-            -  ColorBGRA</details>
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/ColorBGRA/op_Implicit~Molten.md)</summary>  
+            -  ColorBGRA</details><details><summary> <a href="/Molten.Math/Molten/ColorBGRA/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
             -  ColorBGRA  
-            -  Color</details>
- <details><summary>[op_Explicit~System](/Molten.Math/Molten/ColorBGRA/op_Explicit~System.md)</summary>  
+            -  Color</details><details><summary> <a href="/Molten.Math/Molten/ColorBGRA/op_Explicit~System.md">op_Explicit~System</a></summary>  
             -  Int32</details>  
         -  ToString  
         -  ToString  
@@ -801,8 +773,7 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals</details>.DoublePrecision  
- <details><summary>[AngleD](/Molten.Math/Molten/DoublePrecision/AngleD.md)</summary>  
+        -  Equals</details>.DoublePrecision  <details><summary> <a href="/Molten.Math/Molten/DoublePrecision/AngleD.md">AngleD</a></summary>  
         -  Degree  
         -  Minute  
         -  Second  
@@ -862,8 +833,7 @@
         -  ToString  
         -  ToString  
         -  GetHashCode  
-        -  Equals</details>
- <details><summary>[DoubleHelper](/Molten.Math/Molten/DoublePrecision/DoubleHelper.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/DoublePrecision/DoubleHelper.md">DoubleHelper</a></summary>  
         -  ZeroTolerance  
         -  Pi  
         -  TwoPi  
@@ -916,8 +886,7 @@
         -  GetVelocityOfPoint  
         -  GetVelocityOfPoint  
         -  BarycentricCoordinates  
-        -  GetWinding</details>
- <details><summary>[Matrix3D](/Molten.Math/Molten/DoublePrecision/Matrix3D.md)</summary>  
+        -  GetWinding</details><details><summary> <a href="/Molten.Math/Molten/DoublePrecision/Matrix3D.md">Matrix3D</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  Identity  
@@ -1041,8 +1010,7 @@
         -  To4x4  
         -  From4x4  
         -  From4x4  
-        -  op_Explicit~Molten
- <details><summary>[DoublePrecision](/Molten.Math/Molten/DoublePrecision/Matrix3D/op_Explicit~Molten/DoublePrecision.md)</summary>  
+        -  op_Explicit~Molten<details><summary> <a href="/Molten.Math/Molten/DoublePrecision/Matrix3D/op_Explicit~Molten/DoublePrecision.md">DoublePrecision</a></summary>  
                 -  Matrix4D  
                 -  Matrix3D</details>  
         -  ToString  
@@ -1059,8 +1027,7 @@
         -  Forward  
         -  Left  
         -  Right  
-        -  Up</details>
- <details><summary>[Matrix4D](/Molten.Math/Molten/DoublePrecision/Matrix4D.md)</summary>  
+        -  Up</details><details><summary> <a href="/Molten.Math/Molten/DoublePrecision/Matrix4D.md">Matrix4D</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  Identity  
@@ -1232,8 +1199,7 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals</details>
- <details><summary>[QuaternionD](/Molten.Math/Molten/DoublePrecision/QuaternionD.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/DoublePrecision/QuaternionD.md">QuaternionD</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  One  
@@ -1335,8 +1301,7 @@
         -  Equals  
         -  Equals  
         -  GetAngleFromQuaternion  
-        -  Abs</details>
- <details><summary>[RectangleD](/Molten.Math/Molten/DoublePrecision/RectangleD.md)</summary>  
+        -  Abs</details><details><summary> <a href="/Molten.Math/Molten/DoublePrecision/RectangleD.md">RectangleD</a></summary>  
         -  Left  
         -  Top  
         -  Right  
@@ -1381,10 +1346,8 @@
         -  Equals  
         -  GetHashCode  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/DoublePrecision/RectangleD/op_Explicit~Molten.md)</summary>  
-            -  Rectangle</details></details>
- <details><summary>[Vector2D](/Molten.Math/Molten/DoublePrecision/Vector2D.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/DoublePrecision/RectangleD/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
+            -  Rectangle</details></details><details><summary> <a href="/Molten.Math/Molten/DoublePrecision/Vector2D.md">Vector2D</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  UnitX  
@@ -1483,8 +1446,7 @@
         -  op_Subtraction  
         -  op_Equality  
         -  op_Inequality  
-        -  op_Explicit~Molten
- <details><summary>[DoublePrecision](/Molten.Math/Molten/DoublePrecision/Vector2D/op_Explicit~Molten/DoublePrecision.md)</summary>  
+        -  op_Explicit~Molten<details><summary> <a href="/Molten.Math/Molten/DoublePrecision/Vector2D/op_Explicit~Molten/DoublePrecision.md">DoublePrecision</a></summary>  
                 -  Vector3D  
                 -  Vector4D</details>  
         -  Truncate  
@@ -1502,8 +1464,7 @@
         -  Pow  
         -  Clamp  
         -  Floor  
-        -  Ceiling</details>
- <details><summary>[Vector3D](/Molten.Math/Molten/DoublePrecision/Vector3D.md)</summary>  
+        -  Ceiling</details><details><summary> <a href="/Molten.Math/Molten/DoublePrecision/Vector3D.md">Vector3D</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  UnitX  
@@ -1625,8 +1586,7 @@
         -  op_Subtraction  
         -  op_Equality  
         -  op_Inequality  
-        -  op_Explicit~Molten
- <details><summary>[DoublePrecision](/Molten.Math/Molten/DoublePrecision/Vector3D/op_Explicit~Molten/DoublePrecision.md)</summary>  
+        -  op_Explicit~Molten<details><summary> <a href="/Molten.Math/Molten/DoublePrecision/Vector3D/op_Explicit~Molten/DoublePrecision.md">DoublePrecision</a></summary>  
                 -  Vector2D  
                 -  Vector4D</details>  
         -  Truncate  
@@ -1643,8 +1603,7 @@
         -  Pow  
         -  Clamp  
         -  Floor  
-        -  Ceiling</details>
- <details><summary>[Vector4D](/Molten.Math/Molten/DoublePrecision/Vector4D.md)</summary>  
+        -  Ceiling</details><details><summary> <a href="/Molten.Math/Molten/DoublePrecision/Vector4D.md">Vector4D</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  UnitX  
@@ -1738,8 +1697,7 @@
         -  op_Subtraction  
         -  op_Equality  
         -  op_Inequality  
-        -  op_Explicit~Molten
- <details><summary>[DoublePrecision](/Molten.Math/Molten/DoublePrecision/Vector4D/op_Explicit~Molten/DoublePrecision.md)</summary>  
+        -  op_Explicit~Molten<details><summary> <a href="/Molten.Math/Molten/DoublePrecision/Vector4D/op_Explicit~Molten/DoublePrecision.md">DoublePrecision</a></summary>  
                 -  Vector2D  
                 -  Vector3D</details>  
         -  Truncate  
@@ -1757,29 +1715,24 @@
         -  Pow  
         -  Clamp  
         -  Floor  
-        -  Ceiling</details>
- <details><summary>[PlaneIntersectionType](/Molten.Math/Molten/PlaneIntersectionType.md)</summary>  
+        -  Ceiling</details><details><summary> <a href="/Molten.Math/Molten/PlaneIntersectionType.md">PlaneIntersectionType</a></summary>  
         -  Back  
         -  Front  
-        -  Intersecting</details>
- <details><summary>[ContainmentType](/Molten.Math/Molten/ContainmentType.md)</summary>  
+        -  Intersecting</details><details><summary> <a href="/Molten.Math/Molten/ContainmentType.md">ContainmentType</a></summary>  
         -  Disjoint  
         -  Contains  
-        -  Intersects</details>
- <details><summary>[AngleType](/Molten.Math/Molten/AngleType.md)</summary>  
+        -  Intersects</details><details><summary> <a href="/Molten.Math/Molten/AngleType.md">AngleType</a></summary>  
         -  Revolution  
         -  Degree  
         -  Radian  
-        -  Gradian</details>
- <details><summary>[FrustumCameraParams](/Molten.Math/Molten/FrustumCameraParams.md)</summary>  
+        -  Gradian</details><details><summary> <a href="/Molten.Math/Molten/FrustumCameraParams.md">FrustumCameraParams</a></summary>  
         -  Position  
         -  LookAtDir  
         -  UpDir  
         -  FOV  
         -  ZNear  
         -  ZFar  
-        -  AspectRatio</details>
- <details><summary>[Half](/Molten.Math/Molten/Half.md)</summary>  
+        -  AspectRatio</details><details><summary> <a href="/Molten.Math/Molten/Half.md">Half</a></summary>  
         -  PrecisionDigits  
         -  MantissaBits  
         -  MaximumDecimalExponent  
@@ -1795,10 +1748,8 @@
         -  #ctor  
         -  RawValue  
         -  ConvertToFloat  
-        -  ConvertToHalf
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Half/op_Implicit~Molten.md)</summary>  
-            -  Half</details>
- <details><summary>[op_Implicit~System](/Molten.Math/Molten/Half/op_Implicit~System.md)</summary>  
+        -  ConvertToHalf<details><summary> <a href="/Molten.Math/Molten/Half/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
+            -  Half</details><details><summary> <a href="/Molten.Math/Molten/Half/op_Implicit~System.md">op_Implicit~System</a></summary>  
             -  Single</details>  
         -  op_Equality  
         -  op_Inequality  
@@ -1806,16 +1757,14 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals</details>
- <details><summary>[Half2](/Molten.Math/Molten/Half2.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/Half2.md">Half2</a></summary>  
         -  X  
         -  Y  
         -  #ctor  
         -  #ctor  
         -  #ctor  
         -  #ctor  
-        -  #ctor
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Half2/op_Implicit~Molten.md)</summary>  
+        -  #ctor<details><summary> <a href="/Molten.Math/Molten/Half2/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
             -  Half2  
             -  Vector2F</details>  
         -  op_Equality  
@@ -1823,19 +1772,16 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals</details>
- <details><summary>[Half3](/Molten.Math/Molten/Half3.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/Half3.md">Half3</a></summary>  
         -  X  
         -  Y  
         -  Z  
         -  #ctor  
         -  #ctor  
         -  #ctor  
-        -  #ctor
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Half3/op_Implicit~Molten.md)</summary>  
+        -  #ctor<details><summary> <a href="/Molten.Math/Molten/Half3/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
             -  Half3  
-            -  Vector3F</details>
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Half3/op_Explicit~Molten.md)</summary>  
+            -  Vector3F</details><details><summary> <a href="/Molten.Math/Molten/Half3/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
             -  Half3  
             -  Vector2F</details>  
         -  op_Equality  
@@ -1843,8 +1789,7 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals</details>
- <details><summary>[Half4](/Molten.Math/Molten/Half4.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/Half4.md">Half4</a></summary>  
         -  X  
         -  Y  
         -  Z  
@@ -1852,11 +1797,9 @@
         -  #ctor  
         -  #ctor  
         -  #ctor  
-        -  #ctor
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Half4/op_Implicit~Molten.md)</summary>  
+        -  #ctor<details><summary> <a href="/Molten.Math/Molten/Half4/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
             -  Half4  
-            -  Vector4F</details>
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Half4/op_Explicit~Molten.md)</summary>  
+            -  Vector4F</details><details><summary> <a href="/Molten.Math/Molten/Half4/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
             -  Half4  
             -  Vector3F  
             -  Half4  
@@ -1866,11 +1809,9 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals</details>
- <details><summary>[HalfUtils](/Molten.Math/Molten/HalfUtils.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/HalfUtils.md">HalfUtils</a></summary>  
         -  Unpack  
-        -  Pack</details>
- <details><summary>[Vector2I](/Molten.Math/Molten/Vector2I.md)</summary>  
+        -  Pack</details><details><summary> <a href="/Molten.Math/Molten/Vector2I.md">Vector2I</a></summary>  
         -  Zero  
         -  #ctor  
         -  #ctor  
@@ -1890,16 +1831,13 @@
         -  op_Addition  
         -  op_UnaryNegation  
         -  op_Subtraction  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Vector2I/op_Explicit~Molten.md)</summary>  
-            -  Vector2I</details>
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Vector2I/op_Implicit~Molten.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/Vector2I/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
+            -  Vector2I</details><details><summary> <a href="/Molten.Math/Molten/Vector2I/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
             -  Vector2F</details>  
         -  Transform  
         -  Transform  
         -  Distance  
-        -  Distance</details>
- <details><summary>[Vector3I](/Molten.Math/Molten/Vector3I.md)</summary>  
+        -  Distance</details><details><summary> <a href="/Molten.Math/Molten/Vector3I.md">Vector3I</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  UnitX  
@@ -1940,10 +1878,8 @@
         -  op_Multiply  
         -  op_Division  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Vector3I/op_Explicit~Molten.md)</summary>  
-            -  Vector2F</details>
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Vector3I/op_Implicit~Molten.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/Vector3I/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
+            -  Vector2F</details><details><summary> <a href="/Molten.Math/Molten/Vector3I/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
             -  Vector3F  
             -  Vector3I</details>  
         -  ToString  
@@ -1953,10 +1889,8 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals
- <details><summary>[op_Implicit~System](/Molten.Math/Molten/Vector3I/op_Implicit~System.md)</summary>  
-            -  Int32[]</details></details>
- <details><summary>[Vector4I](/Molten.Math/Molten/Vector4I.md)</summary>  
+        -  Equals<details><summary> <a href="/Molten.Math/Molten/Vector3I/op_Implicit~System.md">op_Implicit~System</a></summary>  
+            -  Int32[]</details></details><details><summary> <a href="/Molten.Math/Molten/Vector4I.md">Vector4I</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  UnitX  
@@ -1999,8 +1933,7 @@
         -  op_Multiply  
         -  op_Division  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Vector4I/op_Explicit~Molten.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/Vector4I/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
             -  Vector2I  
             -  Vector3I  
             -  Vector2F  
@@ -2013,12 +1946,9 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Vector4I/op_Implicit~Molten.md)</summary>  
-            -  Vector4I</details>
- <details><summary>[op_Implicit~System](/Molten.Math/Molten/Vector4I/op_Implicit~System.md)</summary>  
-            -  Int32[]</details></details>
- <details><summary>[MathHelper](/Molten.Math/Molten/MathHelper.md)</summary>  
+        -  Equals<details><summary> <a href="/Molten.Math/Molten/Vector4I/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
+            -  Vector4I</details><details><summary> <a href="/Molten.Math/Molten/Vector4I/op_Implicit~System.md">op_Implicit~System</a></summary>  
+            -  Int32[]</details></details><details><summary> <a href="/Molten.Math/Molten/MathHelper.md">MathHelper</a></summary>  
         -  ZeroTolerance  
         -  Pi  
         -  TwoPi  
@@ -2082,8 +2012,7 @@
         -  BarycentricCoordinates  
         -  GetWinding  
         -  Max  
-        -  Min</details>
- <details><summary>[Matrix4F](/Molten.Math/Molten/Matrix4F.md)</summary>  
+        -  Min</details><details><summary> <a href="/Molten.Math/Molten/Matrix4F.md">Matrix4F</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  Identity  
@@ -2255,8 +2184,7 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals</details>
- <details><summary>[Matrix2F](/Molten.Math/Molten/Matrix2F.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/Matrix2F.md">Matrix2F</a></summary>  
         -  Identity  
         -  M11  
         -  M12  
@@ -2279,8 +2207,7 @@
         -  Transpose  
         -  Transpose  
         -  ToString  
-        -  Determinant</details>
- <details><summary>[Matrix2x3F](/Molten.Math/Molten/Matrix2x3F.md)</summary>  
+        -  Determinant</details><details><summary> <a href="/Molten.Math/Molten/Matrix2x3F.md">Matrix2x3F</a></summary>  
         -  M11  
         -  M12  
         -  M13  
@@ -2296,8 +2223,7 @@
         -  Transform  
         -  Transform  
         -  Transpose  
-        -  ToString</details>
- <details><summary>[Matrix3x2F](/Molten.Math/Molten/Matrix3x2F.md)</summary>  
+        -  ToString</details><details><summary> <a href="/Molten.Math/Molten/Matrix3x2F.md">Matrix3x2F</a></summary>  
         -  Identity  
         -  M11  
         -  M12  
@@ -2379,10 +2305,8 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Matrix3x2F/op_Implicit~Molten.md)</summary>  
-            -  Matrix3x2F</details></details>
- <details><summary>[Matrix3F](/Molten.Math/Molten/Matrix3F.md)</summary>  
+        -  Equals<details><summary> <a href="/Molten.Math/Molten/Matrix3x2F/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
+            -  Matrix3x2F</details></details><details><summary> <a href="/Molten.Math/Molten/Matrix3F.md">Matrix3F</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  Identity  
@@ -2505,8 +2429,7 @@
         -  To4x4  
         -  To4x4  
         -  From4x4  
-        -  From4x4
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Matrix3F/op_Explicit~Molten.md)</summary>  
+        -  From4x4<details><summary> <a href="/Molten.Math/Molten/Matrix3F/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
             -  Matrix4F  
             -  Matrix3F</details>  
         -  ToString  
@@ -2523,8 +2446,7 @@
         -  Forward  
         -  Left  
         -  Right  
-        -  Up</details>
- <details><summary>[Matrix5x4](/Molten.Math/Molten/Matrix5x4.md)</summary>  
+        -  Up</details><details><summary> <a href="/Molten.Math/Molten/Matrix5x4.md">Matrix5x4</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  Identity  
@@ -2599,8 +2521,7 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals</details>
- <details><summary>[OrientedBoundingBox](/Molten.Math/Molten/OrientedBoundingBox.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/OrientedBoundingBox.md">OrientedBoundingBox</a></summary>  
         -  Extents  
         -  Transformation  
         -  #ctor  
@@ -2641,12 +2562,9 @@
         -  ToString  
         -  ToString  
         -  ToString  
-        -  ToString</details>
- <details><summary>[Edge](/Molten.Math/Molten/Edge.md)</summary>  
-        -  #ctor</details>
- <details><summary>[Sweep](/Molten.Math/Molten/Sweep.md)</summary>  
-        -  RotateTrianglePair</details>
- <details><summary>[Triangle](/Molten.Math/Molten/Triangle.md)</summary>  
+        -  ToString</details><details><summary> <a href="/Molten.Math/Molten/Edge.md">Edge</a></summary>  
+        -  #ctor</details><details><summary> <a href="/Molten.Math/Molten/Sweep.md">Sweep</a></summary>  
+        -  RotateTrianglePair</details><details><summary> <a href="/Molten.Math/Molten/Triangle.md">Triangle</a></summary>  
         -  MarkNeighbor  
         -  MarkNeighbor  
         -  Legalize  
@@ -2654,21 +2572,17 @@
         -  MarkConstrainedEdge  
         -  PointCW  
         -  PointCCW  
-        -  NeighborCW</details>
- <details><summary>[TriPoint](/Molten.Math/Molten/TriPoint.md)</summary>  
+        -  NeighborCW</details><details><summary> <a href="/Molten.Math/Molten/TriPoint.md">TriPoint</a></summary>  
         -  Empty  
         -  GetNegated  
         -  Add  
         -  Subtract  
         -  Multiply  
         -  Length  
-        -  Normalize</details>
- <details><summary>[PerlinNoise2D](/Molten.Math/Molten/PerlinNoise2D.md)</summary>  
-        -  Noise</details>
- <details><summary>[PerlinNoise](/Molten.Math/Molten/PerlinNoise.md)</summary>  
+        -  Normalize</details><details><summary> <a href="/Molten.Math/Molten/PerlinNoise2D.md">PerlinNoise2D</a></summary>  
+        -  Noise</details><details><summary> <a href="/Molten.Math/Molten/PerlinNoise.md">PerlinNoise</a></summary>  
         -  Seed  
-        -  Seed</details>
- <details><summary>[Plane](/Molten.Math/Molten/Plane.md)</summary>  
+        -  Seed</details><details><summary> <a href="/Molten.Math/Molten/Plane.md">Plane</a></summary>  
         -  Normal  
         -  D  
         -  #ctor  
@@ -2725,8 +2639,7 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals</details>
- <details><summary>[Shape](/Molten.Math/Molten/Shape.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/Shape.md">Shape</a></summary>  
         -  Points  
         -  SteinerPoints  
         -  Holes  
@@ -2738,9 +2651,7 @@
         -  #ctor  
         -  CalculateBounds  
         -  Triangulate  
-        -  Triangulate</details>
- <details><summary>[Winding](/Molten.Math/Molten/Winding.md)</summary></details>
- <details><summary>[QuaternionF](/Molten.Math/Molten/QuaternionF.md)</summary>  
+        -  Triangulate</details><details><summary> <a href="/Molten.Math/Molten/Winding.md">Winding</a></summary></details><details><summary> <a href="/Molten.Math/Molten/QuaternionF.md">QuaternionF</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  One  
@@ -2842,8 +2753,7 @@
         -  Equals  
         -  Equals  
         -  GetAngleFromQuaternion  
-        -  Abs</details>
- <details><summary>[RandomNumber](/Molten.Math/Molten/RandomNumber.md)</summary>  
+        -  Abs</details><details><summary> <a href="/Molten.Math/Molten/RandomNumber.md">RandomNumber</a></summary>  
         -  Next  
         -  NextFloat  
         -  NextDouble  
@@ -2855,8 +2765,7 @@
         -  NextColor  
         -  NextColor  
         -  NextPoint  
-        -  NextTime</details>
- <details><summary>[Ray](/Molten.Math/Molten/Ray.md)</summary>  
+        -  NextTime</details><details><summary> <a href="/Molten.Math/Molten/Ray.md">Ray</a></summary>  
         -  Position  
         -  Direction  
         -  #ctor  
@@ -2887,12 +2796,10 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals</details>
- <details><summary>[RayHit](/Molten.Math/Molten/RayHit.md)</summary>  
+        -  Equals</details><details><summary> <a href="/Molten.Math/Molten/RayHit.md">RayHit</a></summary>  
         -  Location  
         -  Normal  
-        -  T</details>
- <details><summary>[Rectangle](/Molten.Math/Molten/Rectangle.md)</summary>  
+        -  T</details><details><summary> <a href="/Molten.Math/Molten/Rectangle.md">Rectangle</a></summary>  
         -  Left  
         -  Top  
         -  Right  
@@ -2933,10 +2840,8 @@
         -  Equals  
         -  GetHashCode  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Rectangle/op_Implicit~Molten.md)</summary>  
-            -  RectangleF</details></details>
- <details><summary>[RectangleF](/Molten.Math/Molten/RectangleF.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/Rectangle/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
+            -  RectangleF</details></details><details><summary> <a href="/Molten.Math/Molten/RectangleF.md">RectangleF</a></summary>  
         -  Left  
         -  Top  
         -  Right  
@@ -2981,10 +2886,8 @@
         -  Equals  
         -  GetHashCode  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/RectangleF/op_Explicit~Molten.md)</summary>  
-            -  Rectangle</details></details>
- <details><summary>[RigidTransform](/Molten.Math/Molten/RigidTransform.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/RectangleF/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
+            -  Rectangle</details></details><details><summary> <a href="/Molten.Math/Molten/RigidTransform.md">RigidTransform</a></summary>  
         -  Position  
         -  Orientation  
         -  #ctor  
@@ -2997,12 +2900,10 @@
         -  Multiply  
         -  MultiplyByInverse  
         -  Transform  
-        -  TransformByInverse</details>
- <details><summary>[TriangleSidedness](/Molten.Math/Molten/TriangleSidedness.md)</summary>  
+        -  TransformByInverse</details><details><summary> <a href="/Molten.Math/Molten/TriangleSidedness.md">TriangleSidedness</a></summary>  
         -  DoubleSided  
         -  Clockwise  
-        -  Counterclockwise</details>
- <details><summary>[Vector2UI](/Molten.Math/Molten/Vector2UI.md)</summary>  
+        -  Counterclockwise</details><details><summary> <a href="/Molten.Math/Molten/Vector2UI.md">Vector2UI</a></summary>  
         -  Zero  
         -  #ctor  
         -  X  
@@ -3012,12 +2913,9 @@
         -  Equals  
         -  GetHashCode  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Vector2UI/op_Explicit~Molten.md)</summary>  
-            -  Vector2UI</details>
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Vector2UI/op_Implicit~Molten.md)</summary>  
-            -  Vector2F</details></details>
- <details><summary>[Vector3UI](/Molten.Math/Molten/Vector3UI.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/Vector2UI/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
+            -  Vector2UI</details><details><summary> <a href="/Molten.Math/Molten/Vector2UI/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
+            -  Vector2F</details></details><details><summary> <a href="/Molten.Math/Molten/Vector3UI.md">Vector3UI</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  UnitX  
@@ -3055,8 +2953,7 @@
         -  op_Multiply  
         -  op_Division  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Vector3UI/op_Explicit~Molten.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/Vector3UI/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
             -  Vector2F  
             -  Vector3F</details>  
         -  ToString  
@@ -3066,12 +2963,9 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Vector3UI/op_Implicit~Molten.md)</summary>  
-            -  Vector3UI</details>
- <details><summary>[op_Implicit~System](/Molten.Math/Molten/Vector3UI/op_Implicit~System.md)</summary>  
-            -  UInt32[]</details></details>
- <details><summary>[Vector4UI](/Molten.Math/Molten/Vector4UI.md)</summary>  
+        -  Equals<details><summary> <a href="/Molten.Math/Molten/Vector3UI/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
+            -  Vector3UI</details><details><summary> <a href="/Molten.Math/Molten/Vector3UI/op_Implicit~System.md">op_Implicit~System</a></summary>  
+            -  UInt32[]</details></details><details><summary> <a href="/Molten.Math/Molten/Vector4UI.md">Vector4UI</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  UnitX  
@@ -3111,8 +3005,7 @@
         -  op_Multiply  
         -  op_Division  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Vector4UI/op_Explicit~Molten.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/Vector4UI/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
             -  Vector2F  
             -  Vector3F  
             -  Vector4F</details>  
@@ -3123,12 +3016,9 @@
         -  GetHashCode  
         -  Equals  
         -  Equals  
-        -  Equals
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/Vector4UI/op_Implicit~Molten.md)</summary>  
-            -  Vector4UI</details>
- <details><summary>[op_Implicit~System](/Molten.Math/Molten/Vector4UI/op_Implicit~System.md)</summary>  
-            -  UInt32[]</details></details>
- <details><summary>[Vector2F](/Molten.Math/Molten/Vector2F.md)</summary>  
+        -  Equals<details><summary> <a href="/Molten.Math/Molten/Vector4UI/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
+            -  Vector4UI</details><details><summary> <a href="/Molten.Math/Molten/Vector4UI/op_Implicit~System.md">op_Implicit~System</a></summary>  
+            -  UInt32[]</details></details><details><summary> <a href="/Molten.Math/Molten/Vector2F.md">Vector2F</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  UnitX  
@@ -3226,8 +3116,7 @@
         -  op_Subtraction  
         -  op_Subtraction  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Vector2F/op_Explicit~Molten.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/Vector2F/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
             -  Vector3F  
             -  Vector4F</details>  
         -  Truncate  
@@ -3245,8 +3134,7 @@
         -  Pow  
         -  Clamp  
         -  Floor  
-        -  Ceiling</details>
- <details><summary>[Vector3F](/Molten.Math/Molten/Vector3F.md)</summary>  
+        -  Ceiling</details><details><summary> <a href="/Molten.Math/Molten/Vector3F.md">Vector3F</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  UnitX  
@@ -3368,8 +3256,7 @@
         -  op_Subtraction  
         -  op_Subtraction  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Vector3F/op_Explicit~Molten.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/Vector3F/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
             -  Vector2F  
             -  Vector4F</details>  
         -  Truncate  
@@ -3386,8 +3273,7 @@
         -  Pow  
         -  Clamp  
         -  Floor  
-        -  Ceiling</details>
- <details><summary>[Vector4F](/Molten.Math/Molten/Vector4F.md)</summary>  
+        -  Ceiling</details><details><summary> <a href="/Molten.Math/Molten/Vector4F.md">Vector4F</a></summary>  
         -  SizeInBytes  
         -  Zero  
         -  UnitX  
@@ -3480,8 +3366,7 @@
         -  op_Subtraction  
         -  op_Subtraction  
         -  op_Equality  
-        -  op_Inequality
- <details><summary>[op_Explicit~Molten](/Molten.Math/Molten/Vector4F/op_Explicit~Molten.md)</summary>  
+        -  op_Inequality<details><summary> <a href="/Molten.Math/Molten/Vector4F/op_Explicit~Molten.md">op_Explicit~Molten</a></summary>  
             -  Vector2F  
             -  Vector3F</details>  
         -  Truncate  
@@ -3499,8 +3384,7 @@
         -  Pow  
         -  Clamp  
         -  Floor  
-        -  Ceiling</details>
- <details><summary>[Viewport](/Molten.Math/Molten/Viewport.md)</summary>  
+        -  Ceiling</details><details><summary> <a href="/Molten.Math/Molten/Viewport.md">Viewport</a></summary>  
         -  X  
         -  Y  
         -  Width  
@@ -3522,8 +3406,7 @@
         -  Project  
         -  Unproject  
         -  Unproject  
-        -  AspectRatio</details>
- <details><summary>[ViewportF](/Molten.Math/Molten/ViewportF.md)</summary>  
+        -  AspectRatio</details><details><summary> <a href="/Molten.Math/Molten/ViewportF.md">ViewportF</a></summary>  
         -  X  
         -  Y  
         -  Width  
@@ -3545,6 +3428,5 @@
         -  Project  
         -  Unproject  
         -  Unproject  
-        -  AspectRatio
- <details><summary>[op_Implicit~Molten](/Molten.Math/Molten/ViewportF/op_Implicit~Molten.md)</summary>  
+        -  AspectRatio<details><summary> <a href="/Molten.Math/Molten/ViewportF/op_Implicit~Molten.md">op_Implicit~Molten</a></summary>  
             -  ViewportF</details></details>
