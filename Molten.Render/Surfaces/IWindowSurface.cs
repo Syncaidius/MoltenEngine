@@ -6,38 +6,42 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public delegate void FormSurfaceHandler(IWindowSurface surface);
+    public delegate void WindowSurfaceHandler(IWindowSurface surface);
 
+    /// <summary>
+    /// Represents a custom implementation of a native window-based render surface.
+    /// </summary>
     public interface IWindowSurface : ISwapChainSurface
     {
-        /// <summary>Invoked when the user tries to close the form.</summary>
-        event FormSurfaceHandler OnClose;
+        /// <summary>
+        /// Occurs when the underlying <see cref="Handle"/> has changed. Invoked by the renderer it is bound to.
+        /// </summary>
+        event WindowSurfaceHandler OnHandleChanged;
 
-        /// <summary>Invoked when the user minimizes the form.</summary>
-        event FormSurfaceHandler OnMinimize;
+        /// <summary>Invoked when the user tries to close the form. Invoked by the renderer it is bound to.</summary>
+        event WindowSurfaceHandler OnClose;
 
-        /// <summary>Invoked when the users restores the form.</summary>
-        event FormSurfaceHandler OnRestore;
+        /// <summary>Invoked when the user minimizes the form. Invoked by the renderer it is bound to.</summary>
+        event WindowSurfaceHandler OnMinimize;
 
-        ///// <summary>Invoked when the form is resized either by the user or by the game/engine.</summary>
-        //event FormSurfaceHandler OnResize;
-
-        /// <summary>Shows the surface's form if not already visible.</summary>
-        void Show();
-
-        /// <summary>Conceals the surface's form from the user if not already hidden.</summary>
-        void Hide();
+        /// <summary>Invoked when the users restores the form. Invoked by the renderer it is bound to.</summary>
+        event WindowSurfaceHandler OnRestore;
 
         /// <summary>Gets or sets the title of the underlying form.</summary>
         string Title { get; set; }
 
-        /// <summary>Gets an <see cref="IntPtr"/> to the handle of the underlying form.</summary>
-        IntPtr WindowHandle { get; }
-
         /// <summary>Gets or sets the mode of the underlying form.</summary>
         WindowMode Mode { get; set; }
 
+        /// <summary>Gets an <see cref="IntPtr"/> to the handle of the underlying form.</summary>
+        IntPtr Handle { get; }
+
         /// <summary>Gets the bounds of the window surface.</summary>
         Rectangle Bounds { get; }
+
+        /// <summary>
+        /// Gets or sets whether or not the form is visible.
+        /// </summary>
+        bool Visible { get; set; }
     }
 }

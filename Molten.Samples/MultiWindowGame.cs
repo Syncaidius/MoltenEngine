@@ -35,7 +35,7 @@ namespace Molten.Samples
                 _extraWindows.Add(window);
                 window.Mode = WindowMode.Windowed;
                 window.OnClose += Window_OnClose;
-                window.Show();
+                window.Visible = true;
             }
 
             base.OnInitialize(engine);

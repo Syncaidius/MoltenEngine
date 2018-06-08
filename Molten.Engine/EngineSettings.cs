@@ -89,5 +89,10 @@ namespace Molten
 
         /// <summary>Gets or sets the default font size.</summary>
         public int DefaultFontSize { get; set; } = 16;
+
+        /// <summary>
+        /// Gets or sets whether the engine should render into a native GUI control.
+        /// </summary>
+        public bool UseGuiControl { get; set; } = false;
     }
 }

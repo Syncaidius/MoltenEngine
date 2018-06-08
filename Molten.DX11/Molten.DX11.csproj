@@ -103,6 +103,7 @@
     <Compile Include="Exceptions\GraphicsContextException.cs" />
     <Compile Include="Exceptions\MappedBufferException.cs" />
     <Compile Include="Exceptions\UnsupportedFeatureException.cs" />
+    <Compile Include="Surfaces\RenderControlSurface.cs" />
     <Compile Include="Tests\GraphicsDeviceDX11Tests.cs" />
     <Compile Include="Tests\DisplayManagerDX11Tests.cs" />
     <Compile Include="Pipeline\GraphicsBlendStage.cs" />

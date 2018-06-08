@@ -87,7 +87,7 @@ namespace Molten.Input
 
         private void CreateHook()
         {
-            if (_hookProcDelegate != null || _surface.WindowHandle == IntPtr.Zero)
+            if (_hookProcDelegate != null || _surface.Handle == IntPtr.Zero)
                 return;
 
             _prevWndProc = IntPtr.Zero;
@@ -98,7 +98,7 @@ namespace Molten.Input
             //    _hookProcDelegate.Reference();
 
             SetWindowLongDelegate(_hookProcDelegate);
-            _hIMC = ImmGetContext(_surface.WindowHandle);
+            _hIMC = ImmGetContext(_surface.Handle);
         }
 
         public override void ClearState()
@@ -115,9 +115,9 @@ namespace Molten.Input
                 if (_prevWndProc == IntPtr.Zero)
                 {
                     if (IntPtr.Size == 8) // 64-bit
-                        _prevWndProc = (IntPtr)SetWindowLongPtr(_surface.WindowHandle, GWL_WNDPROC, ptrVal);
+                        _prevWndProc = (IntPtr)SetWindowLongPtr(_surface.Handle, GWL_WNDPROC, ptrVal);
                     else 
-                        _prevWndProc = (IntPtr)SetWindowLong(_surface.WindowHandle, GWL_WNDPROC, ptrVal.ToInt32());
+                        _prevWndProc = (IntPtr)SetWindowLong(_surface.Handle, GWL_WNDPROC, ptrVal.ToInt32());
                 }
             }
         }
@@ -127,9 +127,9 @@ namespace Molten.Input
             if (_prevWndProc != null)
             {
                 if (IntPtr.Size == 8) // 64-bit
-                    SetWindowLongPtr(_surface.WindowHandle, GWL_WNDPROC, _prevWndProc);
+                    SetWindowLongPtr(_surface.Handle, GWL_WNDPROC, _prevWndProc);
                 else 
-                    SetWindowLong(_surface.WindowHandle, GWL_WNDPROC, _prevWndProc.ToInt32());
+                    SetWindowLong(_surface.Handle, GWL_WNDPROC, _prevWndProc.ToInt32());
             }
         }
 
@@ -225,7 +225,7 @@ namespace Molten.Input
             IntPtr forewindow = Win32.GetForegroundWindow();
 
             // Get the current game window + foreground window.
-            IntPtr winHandle = _surface.WindowHandle;
+            IntPtr winHandle = _surface.Handle;
 
             // Compare the foreground window to the current engine window.
             if (winHandle == forewindow)

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Molten.Samples
 {
@@ -13,6 +14,7 @@ namespace Molten.Samples
         SpriteFont _testFont;
         bool _baseContentLoaded;
         ISceneDebugOverlay _mainOverlay;
+        ControlSampleForm _form;
 
         public SampleGame(string title, EngineSettings settings = null) : base(title, settings) { }
 
@@ -20,6 +22,7 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
             Window.OnClose += Window_OnClose;
+            Window.OnHandleChanged += Window_OnHandleChanged;
 
             SpriteScene = CreateScene("Sprite", SceneRenderFlags.Render2D);
             UIScene = CreateScene("UI", SceneRenderFlags.Render2D);
@@ -36,6 +39,28 @@ namespace Molten.Samples
             OnContentRequested(cr);
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
+        }
+
+        private void Window_OnHandleChanged(IWindowSurface surface)
+        {
+            if (Settings.UseGuiControl && _form == null)
+            {
+                // Create form and find placeholder panel.
+                _form = new ControlSampleForm();
+                Control[] panelsToReplace = _form.Controls.Find("panelToReplace", true);
+
+                if (panelsToReplace.Length > 0)
+                {
+                    // Replace the placeholder panel with our game's control surface.
+                    Control gameControl = Control.FromHandle(Window.Handle);
+                    gameControl.Size = panelsToReplace[0].Size;
+                    gameControl.Location = panelsToReplace[0].Location;
+                    gameControl.Anchor = panelsToReplace[0].Anchor;
+                    _form.Controls.Add(gameControl);
+                    _form.Controls.Remove(panelsToReplace[0]);
+                    _form.Show();
+                }
+            }
         }
 
         private void Cr_OnCompleted(ContentRequest cr)

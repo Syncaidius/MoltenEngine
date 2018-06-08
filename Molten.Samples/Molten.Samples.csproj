@@ -64,6 +64,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -86,6 +87,12 @@
     <Compile Include="Common\SampleVertexData.cs" />
     <Compile Include="Common\SpriteCacheTestObject.cs" />
     <Compile Include="Common\UnfairSpriteCacheTestObject.cs" />
+    <Compile Include="Common\ControlSampleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Common\ControlSampleForm.Designer.cs">
+      <DependentUpon>ControlSampleForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="DeferredRendering.cs" />
     <Compile Include="SpriteContainerSample.cs" />
     <Compile Include="SpriteFontStress.cs" />
@@ -133,6 +140,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Common\ControlSampleForm.resx">
+      <DependentUpon>ControlSampleForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

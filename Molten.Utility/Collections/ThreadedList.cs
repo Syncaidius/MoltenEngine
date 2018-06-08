@@ -16,7 +16,7 @@ namespace Molten.Collections
     {
         static readonly T[] _emptyArray = new T[0];
 
-        public T[] _items;
+        T[] _items;
         int _count;
         int _capacity;
         int _version;

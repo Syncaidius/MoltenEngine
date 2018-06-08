@@ -150,7 +150,7 @@ namespace Molten.Input
             _mouse.Poll();
             _buffer = _mouse.GetBufferedData();
             IntPtr forewindow = Win32.GetForegroundWindow();
-            IntPtr outputHandle = _surface.WindowHandle;
+            IntPtr outputHandle = _surface.Handle;
             Rectangle winBounds = _surface.Bounds;
 
             // Make sure the game window is focused before updating movement/position.

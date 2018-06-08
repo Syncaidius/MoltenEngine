@@ -16,10 +16,7 @@ namespace Molten.Samples
         SceneObject _child;
         IMesh<VertexTexture> _mesh;
 
-        public SpriteBatchCacheFair(EngineSettings settings = null) : base("Sprite Batch Cache", settings)
-        {
-
-        }
+        public SpriteBatchCacheFair(EngineSettings settings = null) : base("Sprite Batch Cache", settings) { }
 
         protected override void OnInitialize(Engine engine)
         {

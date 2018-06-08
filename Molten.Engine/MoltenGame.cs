@@ -9,23 +9,27 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public delegate void StoneGameHandler(MoltenGame game);
+    public delegate void MoltenGameHandler(MoltenGame game);
 
     public abstract class MoltenGame
     {
         Engine _engine;
         EngineThread _gameThread;
-        IWindowSurface _gameForm;
+        IWindowSurface _gameWindow;
         IKeyboardDevice _keyboard;
         IMouseDevice _mouse;
 
-        public event StoneGameHandler OnGameExiting;
+        /// <summary>
+        /// Occurs when the game is in the process of exiting.
+        /// </summary>
+        public event MoltenGameHandler OnGameExiting;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="title"></param>
         /// <param name="settings">The settings for the game. If this is null, the default settings will be used.</param>
+        /// <param name="useGuiControl">If true, <see cref="MoltenGame.Window"/> will be a GUI control surface instead.</param>
         public MoltenGame(string title, EngineSettings settings = null)
         {
             Title = title;
@@ -56,16 +60,19 @@ namespace Molten
                 return;
             }
 
-            _gameForm = _engine.Renderer.Resources.CreateFormSurface(Title);
+            if (Settings.UseGuiControl)
+                _gameWindow = _engine.Renderer.Resources.CreateControlSurface(Title);
+            else
+                _gameWindow = _engine.Renderer.Resources.CreateFormSurface(Title);
 
-            _engine.Renderer.OutputSurfaces.Add(_gameForm);
-            _gameForm.Show();
+            _engine.Renderer.OutputSurfaces.Add(_gameWindow);
+            _gameWindow.Visible = true;
 
-            _keyboard = _engine.Input.GetKeyboard(_gameForm);
-            _mouse = _engine.Input.GetMouse(_gameForm);
-            _engine.Input.SetActiveWindow(_gameForm);
+            _keyboard = _engine.Input.GetKeyboard(_gameWindow);
+            _mouse = _engine.Input.GetMouse(_gameWindow);
+            _engine.Input.SetActiveWindow(_gameWindow);
 
-            _engine.Renderer.DefaultSurface = _gameForm;
+            _engine.Renderer.DefaultSurface = _gameWindow;
             _engine.StartRenderer();
 
             _gameThread = _engine.Threading.SpawnThread("game", false, true, (timing) =>
@@ -190,6 +197,6 @@ namespace Molten
         public IMouseDevice Mouse => _mouse;
 
         /// <summary>Gets the <see cref="IWindowSurface"/> that the game renders in to.</summary>
-        public IWindowSurface Window => _gameForm;
+        public IWindowSurface Window => _gameWindow;
     }
 }

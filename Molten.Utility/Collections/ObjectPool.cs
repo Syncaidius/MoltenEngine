@@ -66,6 +66,9 @@ namespace Molten.Collections
     /// <summary>An interface which defines a poolable item for use with ObjectPool.</summary>
     public interface IPoolable
     {
+        /// <summary>
+        /// Clears the object's state. This is automatically called by an <see cref="ObjectPool{T}"/>
+        /// </summary>
         void Clear();
     }
 }

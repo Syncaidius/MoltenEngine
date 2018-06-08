@@ -40,6 +40,11 @@ namespace Molten.Graphics
             return new RenderFormSurface(formTitle, _device, mipCount);
         }
 
+        public IWindowSurface CreateControlSurface(string formTitle, int mipCount = 1, int sampleCount = 1)
+        {
+            return new RenderControlSurface(formTitle, _device, mipCount);
+        }
+
         public IRenderSurface CreateSurface(
             int width,
             int height,

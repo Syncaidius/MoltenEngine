@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
+    /// <summary>
+    /// Represents an implementation of a renderer's resource manager.
+    /// </summary>
     public interface IResourceManager : IDisposable
     {
         IRenderSurface CreateSurface(int width, int height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
@@ -18,15 +21,23 @@ namespace Molten.Graphics
         /// <summary>Creates a form with a surface which can be rendered on to.</summary>
         /// <param name="formTitle">The title of the form.</param>
         /// <param name="mipCount">The number of mip map levels of the form surface.</param>
+        /// <param name="sampleCount">The number of samples. Anything greater than 1 will return a multi-sampled surface.</param>
         /// <returns></returns>
         IWindowSurface CreateFormSurface(string formTitle, int mipCount = 1, int sampleCount = 1);
+
+        /// <summary>Creates a GUI control with a surface which can be rendered on to.</summary>
+        /// <param name="formTitle">The title of the form.</param>
+        /// <param name="mipCount">The number of mip map levels of the form surface.</param>
+        /// <param name="sampleCount">The number of samples. Anything greater than 1 will return a multi-sampled surface.</param>
+        /// <returns></returns>
+        IWindowSurface CreateControlSurface(string formTitle, int mipCount = 1, int sampleCount = 1);
 
         /// <summary>Creates a new 1D texture and returns it.</summary>
         /// <param name="properties">A set of 1D texture properties.</param>
         ITexture CreateTexture1D(Texture1DProperties properties);
 
         /// <summary>Creates a new 1D texture and returns it.</summary>
-        /// <param name="properties">The data from which to create the texture.</param>
+        /// <param name="data">The data from which to create the texture.</param>
         ITexture CreateTexture1D(TextureData data);
 
         /// <summary>Creates a new 2D texture and returns it.</summary>
@@ -34,7 +45,7 @@ namespace Molten.Graphics
         ITexture2D CreateTexture2D(Texture2DProperties properties);
 
         /// <summary>Creates a new 2D texture and returns it.</summary>
-        /// <param name="properties">The data from which to create the texture.</param>
+        /// <param name="data">The data from which to create the texture.</param>
         ITexture2D CreateTexture2D(TextureData data);
 
         /// <summary>Creates a new cube texture (cube-map) and returns it.</summary>
@@ -42,7 +53,7 @@ namespace Molten.Graphics
         ITextureCube CreateTextureCube(Texture2DProperties properties);
 
         /// <summary>Creates a new cube texture (cube-map) and returns it.</summary>
-        /// <param name="properties">The data from which to create the texture.</param>
+        /// <param name="data">The data from which to create the texture.</param>
         ITextureCube CreateTextureCube(TextureData data);
 
         /// <summary>

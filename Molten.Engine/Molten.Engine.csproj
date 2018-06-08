@@ -90,9 +90,9 @@
     <Compile Include="Engine.cs" />
     <Compile Include="EngineSettings.cs" />
     <Compile Include="GameRunState.cs" />
+    <Compile Include="MoltenGame.cs" />
     <Compile Include="ObjectHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MoltenGame.cs" />
     <Compile Include="Scene\Changes\SceneAddObject.cs" />
     <Compile Include="Scene\Changes\SceneAddSprite.cs" />
     <Compile Include="Scene\Changes\SceneChange.cs" />
