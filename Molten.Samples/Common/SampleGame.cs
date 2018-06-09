@@ -32,8 +32,6 @@ namespace Molten.Samples
             DebugOverlay = UIScene.DebugOverlay;
             UIScene.AddSprite(DebugOverlay);
 
-            Window.PresentClearColor = new Color(20, 20, 20, 255);
-
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<SpriteFont>("BroshK.ttf;size=24");
             OnContentRequested(cr);
@@ -56,11 +54,41 @@ namespace Molten.Samples
                     gameControl.Size = panelsToReplace[0].Size;
                     gameControl.Location = panelsToReplace[0].Location;
                     gameControl.Anchor = panelsToReplace[0].Anchor;
+
+                    //_form.SliderRed.Value = surface.ClearColor.R;
+                    //_form.SliderGreen.Value = surface.ClearColor.G;
+                    //_form.SliderBlue.Value = surface.ClearColor.B;
+                    _form.SliderRed.ValueChanged += SliderRed_ValueChanged;
+                    _form.SliderGreen.ValueChanged += SliderGreen_ValueChanged;
+                    _form.SliderBlue.ValueChanged += SliderBlue_ValueChanged;
+
                     _form.Controls.Add(gameControl);
                     _form.Controls.Remove(panelsToReplace[0]);
                     _form.Show();
                 }
             }
+        }
+
+        private void SliderRed_ValueChanged(object sender, EventArgs e)
+        {
+            ChangePresentColor(0, (byte)((sender as TrackBar).Value));
+        }
+
+        private void SliderGreen_ValueChanged(object sender, EventArgs e)
+        {
+            ChangePresentColor(1, (byte)((sender as TrackBar).Value));
+        }
+
+        private void SliderBlue_ValueChanged(object sender, EventArgs e)
+        {
+            ChangePresentColor(2, (byte)((sender as TrackBar).Value));
+        }
+
+        private void ChangePresentColor(int channelIndex, byte val)
+        {
+            //Color color = Window.ClearColor;
+            //color[channelIndex] = val;
+            //Window.ClearColor = color;
         }
 
         private void Cr_OnCompleted(ContentRequest cr)

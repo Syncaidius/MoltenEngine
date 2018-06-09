@@ -48,8 +48,6 @@ namespace Molten.Samples
 
             _parent.Transform.LocalPosition = new Vector3F(0, 0, 4);
             _parent.Children.Add(_child);
-
-            Window.PresentClearColor = new Color(20, 20, 20, 255);
         }
 
         protected override void OnContentRequested(ContentRequest cr) { }

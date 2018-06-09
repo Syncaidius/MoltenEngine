@@ -18,8 +18,5 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="callback"></param>
         void Dispatch(Action callback);
-
-        /// <summary>Gets or sets the color that the swap chain surface is cleared before being rendered to for presentation.</summary>
-        Color PresentClearColor { get; set; }
     }
 }

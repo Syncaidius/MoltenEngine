@@ -44,8 +44,6 @@ namespace Molten.Samples
             mesh.SetIndices(SampleVertexData.TexturedCubeIndices);
             for (int i = 0; i < 10000; i++)
                 SpawnRandomTestCube(material, mesh, 70);
-
-            Window.PresentClearColor = new Color(20, 20, 20, 255);
         }
 
         private void SpawnRandomTestCube(IMaterial material, IMesh mesh, int spawnRadius)

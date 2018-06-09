@@ -69,7 +69,5 @@ namespace Molten.Graphics
         }
 
         protected virtual bool OnPresent() { return true; }
-
-        public Color PresentClearColor { get; set; } = new Color(0, 0, 0, 255);
     }
 }

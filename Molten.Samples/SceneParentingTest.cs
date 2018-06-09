@@ -29,8 +29,8 @@ namespace Molten.Samples
             cr.Commit();
 
             _mesh = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
-
             _mesh.SetVertices(SampleVertexData.ColoredCube);
+
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
         }
 

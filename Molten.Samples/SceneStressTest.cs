@@ -30,7 +30,7 @@ namespace Molten.Samples
 
             _mesh = Engine.Renderer.Resources.CreateMesh<VertexColor>(36);
             _mesh.SetVertices(SampleVertexData.ColoredCube);
-            Window.PresentClearColor = new Color(20, 20, 20, 255);
+
             for (int i = 0; i < 10000; i++)
                 SpawnRandomTestCube(_mesh, 70);
         }

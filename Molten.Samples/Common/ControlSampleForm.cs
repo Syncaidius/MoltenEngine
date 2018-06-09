@@ -21,5 +21,11 @@ namespace Molten.Samples
         {
 
         }
+
+        public TrackBar SliderRed => trackRed;
+
+        public TrackBar SliderGreen => trackGreen;
+
+        public TrackBar SliderBlue => trackBlue;
     }
 }
