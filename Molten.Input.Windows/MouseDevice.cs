@@ -48,12 +48,14 @@ namespace Molten.Input
         bool _requestedVisibility = true;
         bool _cursorVisibleState = true;
         IWindowSurface _surface;
+        IntPtr _windowHandle;
 
         internal override void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
         {
             InputManager diManager = manager as InputManager;
 
             _surface = surface;
+            _surface.OnPostResize += _surface_OnPostResize;
             _mouse = new Mouse(diManager.DirectInput);
             _mouse.Properties.AxisMode = DeviceAxisMode.Relative;
             _mouse.Properties.BufferSize = 256;
@@ -61,6 +63,12 @@ namespace Molten.Input
 
             _state = new MouseState();
             _prevState = new MouseState();
+        }
+
+        private void _surface_OnPostResize(ITexture texture)
+        {
+            IntPtr? handle = GetWindowHandle(_surface);
+            _windowHandle = handle.Value;
         }
 
         public override void OpenControlPanel()
@@ -150,11 +158,10 @@ namespace Molten.Input
             _mouse.Poll();
             _buffer = _mouse.GetBufferedData();
             IntPtr forewindow = Win32.GetForegroundWindow();
-            IntPtr outputHandle = _surface.Handle;
             Rectangle winBounds = _surface.Bounds;
 
             // Make sure the game window is focused before updating movement/position.
-            if (forewindow == outputHandle)
+            if (forewindow == _windowHandle)
             {
                 // The windows cursor position
                 System.Drawing.Point winPos = Cursor.Position;

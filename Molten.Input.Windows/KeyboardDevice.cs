@@ -83,45 +83,13 @@ namespace Molten.Input
             surface.OnPostResize += Surface_OnPostResize;
         }
 
-        private bool GetHandle()
-        {
-            // Check if the surface handle is a form. 
-            // If not, find it's parent form.
-            Control ctrl = Control.FromHandle(_surface.Handle);
-            if (ctrl == null)
-                return false;
-
-            if (ctrl is Form frm)
-            {
-                _windowHandle = ctrl.Handle;
-            }
-            else
-            {
-                frm = null;
-                while (frm == null)
-                {
-                    frm = ctrl.Parent as Form;
-                    if (frm == null)
-                        ctrl = ctrl.Parent;
-                    else
-                        _windowHandle = frm.Handle;
-                }
-            }
-
-            if (_windowHandle != IntPtr.Zero)
-            {
-                CreateHook();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         private void Surface_OnPostResize(ITexture texture)
         {
-            GetHandle();
+            IntPtr? handle = GetWindowHandle(_surface);
+            _windowHandle = handle.Value;
+
+            if (handle != null)
+                CreateHook();
         }
 
         private void CreateHook()

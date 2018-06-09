@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace Molten.Input
 {
@@ -37,7 +38,39 @@ namespace Molten.Input
         {
             OnConnectionStatusChanged?.Invoke(this, isConnected);
         }
-        
+
+        /// <summary>
+        /// Gets the handle of the parent window.
+        /// </summary>
+        /// <returns></returns>
+        private protected IntPtr? GetWindowHandle(IWindowSurface surface)
+        {
+            // Check if the surface handle is a form. 
+            // If not, find it's parent form.
+            Control ctrl = Control.FromHandle(surface.Handle);
+            if (ctrl == null)
+                return null;
+
+            if (ctrl is Form frm)
+            {
+                return ctrl.Handle;
+            }
+            else
+            {
+                frm = null;
+                while (frm == null)
+                {
+                    frm = ctrl.Parent as Form;
+                    if (frm == null)
+                        ctrl = ctrl.Parent;
+                    else
+                        return frm.Handle;
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>Returns true if the specified button is pressed.</summary>
         /// <param name="value">The button or key to check.</param>
         /// <returns>Returns true if the button is pressed.</returns>
