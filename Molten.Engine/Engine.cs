@@ -41,6 +41,9 @@ namespace Molten
             if (Current != null)
                 throw new Exception("Cannot create more than one active instance of Engine. Dispose of the previous one first.");
 
+            if (IntPtr.Size != 8)
+                throw new NotSupportedException("Molten engine only supports 64-bit. Please build accordingly.");
+
             Current = this;
             _settings = settings;
 

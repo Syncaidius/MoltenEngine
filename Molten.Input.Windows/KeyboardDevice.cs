@@ -130,11 +130,7 @@ namespace Molten.Input
                 return;
 
             _prevWndProc = IntPtr.Zero;
-
-            //if (_hookProcDelegate == null)
             _hookProcDelegate = new ReferencedObject<WndProc>(new WndProc(HookProc));
-            //else
-            //    _hookProcDelegate.Reference();
 
             SetWindowLongDelegate(_hookProcDelegate);
             _hIMC = ImmGetContext(_windowHandle);
@@ -152,23 +148,11 @@ namespace Molten.Input
                 IntPtr ptrVal = Marshal.GetFunctionPointerForDelegate(hook);
 
                 if (_prevWndProc == IntPtr.Zero)
-                {
-                    if (IntPtr.Size == 8) // 64-bit
-                        _prevWndProc = (IntPtr)SetWindowLongPtr(_windowHandle, GWL_WNDPROC, ptrVal);
-                    else 
-                        _prevWndProc = (IntPtr)SetWindowLong(_windowHandle, GWL_WNDPROC, ptrVal.ToInt32());
-                }
+                    _prevWndProc = (IntPtr)SetWindowLongPtr(_windowHandle, GWL_WNDPROC, ptrVal);
             }
-        }
-
-        private void ResetWindowLong()
-        {
-            if (_prevWndProc != null)
+            else
             {
-                if (IntPtr.Size == 8) // 64-bit
-                    SetWindowLongPtr(_windowHandle, GWL_WNDPROC, _prevWndProc);
-                else 
-                    SetWindowLong(_windowHandle, GWL_WNDPROC, _prevWndProc.ToInt32());
+                _prevWndProc = (IntPtr)SetWindowLongPtr(_windowHandle, GWL_WNDPROC, IntPtr.Zero);
             }
         }
 
@@ -244,7 +228,7 @@ namespace Molten.Input
 
         protected override void OnDispose()
         {
-            ResetWindowLong();
+            SetWindowLongDelegate(null);
             DisposeObject(ref _keyboard);
             _buffer = null;
         }
