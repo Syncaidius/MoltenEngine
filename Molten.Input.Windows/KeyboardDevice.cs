@@ -59,6 +59,7 @@ namespace Molten.Input
 
         List<Key> _pressedKeys;
         IWindowSurface _surface;
+        IntPtr _windowHandle;
 
         /// <summary>Triggered when a character key is pressed.</summary>
         public event KeyPressHandler OnCharacterKey;
@@ -72,22 +73,60 @@ namespace Molten.Input
             _state = new KeyboardState();
             _prevState = new KeyboardState();
             _pressedKeys = new List<Key>();
+            //GetHandle();
 
             _keyboard = new Keyboard(diManager.DirectInput);
             _keyboard.Properties.BufferSize = 256;
-            _keyboard.Acquire();            
+            _keyboard.Acquire();
             CreateHook();
+
             surface.OnPostResize += Surface_OnPostResize;
+        }
+
+        private bool GetHandle()
+        {
+            // Check if the surface handle is a form. 
+            // If not, find it's parent form.
+            Control ctrl = Control.FromHandle(_surface.Handle);
+            if (ctrl == null)
+                return false;
+
+            if (ctrl is Form frm)
+            {
+                _windowHandle = ctrl.Handle;
+            }
+            else
+            {
+                frm = null;
+                while (frm == null)
+                {
+                    frm = ctrl.Parent as Form;
+                    if (frm == null)
+                        ctrl = ctrl.Parent;
+                    else
+                        _windowHandle = frm.Handle;
+                }
+            }
+
+            if (_windowHandle != IntPtr.Zero)
+            {
+                CreateHook();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private void Surface_OnPostResize(ITexture texture)
         {
-            CreateHook();
+            GetHandle();
         }
 
         private void CreateHook()
         {
-            if (_hookProcDelegate != null || _surface.Handle == IntPtr.Zero)
+            if (_hookProcDelegate != null || _windowHandle == IntPtr.Zero)
                 return;
 
             _prevWndProc = IntPtr.Zero;
@@ -98,7 +137,7 @@ namespace Molten.Input
             //    _hookProcDelegate.Reference();
 
             SetWindowLongDelegate(_hookProcDelegate);
-            _hIMC = ImmGetContext(_surface.Handle);
+            _hIMC = ImmGetContext(_windowHandle);
         }
 
         public override void ClearState()
@@ -115,9 +154,9 @@ namespace Molten.Input
                 if (_prevWndProc == IntPtr.Zero)
                 {
                     if (IntPtr.Size == 8) // 64-bit
-                        _prevWndProc = (IntPtr)SetWindowLongPtr(_surface.Handle, GWL_WNDPROC, ptrVal);
+                        _prevWndProc = (IntPtr)SetWindowLongPtr(_windowHandle, GWL_WNDPROC, ptrVal);
                     else 
-                        _prevWndProc = (IntPtr)SetWindowLong(_surface.Handle, GWL_WNDPROC, ptrVal.ToInt32());
+                        _prevWndProc = (IntPtr)SetWindowLong(_windowHandle, GWL_WNDPROC, ptrVal.ToInt32());
                 }
             }
         }
@@ -127,9 +166,9 @@ namespace Molten.Input
             if (_prevWndProc != null)
             {
                 if (IntPtr.Size == 8) // 64-bit
-                    SetWindowLongPtr(_surface.Handle, GWL_WNDPROC, _prevWndProc);
+                    SetWindowLongPtr(_windowHandle, GWL_WNDPROC, _prevWndProc);
                 else 
-                    SetWindowLong(_surface.Handle, GWL_WNDPROC, _prevWndProc.ToInt32());
+                    SetWindowLong(_windowHandle, GWL_WNDPROC, _prevWndProc.ToInt32());
             }
         }
 
@@ -222,13 +261,13 @@ namespace Molten.Input
             _keyboard.Poll();
             _buffer = _keyboard.GetBufferedData();
 
+            if (_windowHandle == IntPtr.Zero)
+                return;
+
             IntPtr forewindow = Win32.GetForegroundWindow();
 
-            // Get the current game window + foreground window.
-            IntPtr winHandle = _surface.Handle;
-
             // Compare the foreground window to the current engine window.
-            if (winHandle == forewindow)
+            if (_windowHandle == forewindow)
             {
                 // Update current state with new buffer data
                 if (_buffer != null)

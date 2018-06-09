@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ namespace Molten.Threading
     {
         ThreadManager _manager;
         Action<EngineThread, Timing> _callback;
+        ThreadedQueue<Action> _dispatchedActions;
         Timing _timing;
         Thread _thread;
         bool _shouldExit;
@@ -30,11 +32,17 @@ namespace Molten.Threading
             _manager = manager;
             _timing = new Timing(callback);
             _timing.IsFixedTimestep = fixedTimeStep;
+            _dispatchedActions = new ThreadedQueue<Action>();
 
             _thread = new Thread(() =>
             {
                 while (!_shouldExit)
+                {
+                    while (_dispatchedActions.TryDequeue(out Action action))
+                        action();
+
                     _timing.Update();
+                }
             })
             {
                 Name = name,
@@ -45,6 +53,14 @@ namespace Molten.Threading
                 _timing.Start();
 
             Name = name;
+        }
+
+        /// <summary>
+        /// Dispatches a callback to be executed by the current <see cref="EngineThread"/> on its next update tick.
+        /// </summary>
+        public void Dispatch(Action callback)
+        {
+            _dispatchedActions.Enqueue(callback);
         }
 
         /// <summary>Starts or resumes the thread's update loop.</summary>

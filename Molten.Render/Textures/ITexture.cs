@@ -12,8 +12,14 @@ namespace Molten.Graphics
     /// <seealso cref="System.IDisposable" />
     public interface ITexture : IShaderResource
     {
+        /// <summary>
+        /// Occurs before the <see cref="ITexture"/> has started resizing. Executed by the renderer thread it is bound to.
+        /// </summary>
         event TextureHandler OnPreResize;
 
+        /// <summary>
+        /// Occurs after the <see cref="ITexture"/> is done resizing. Executed by the renderer thread it is bound to.
+        /// </summary>
         event TextureHandler OnPostResize;
 
         void Resize(int newWidth, int newMipMapCount, GraphicsFormat format);

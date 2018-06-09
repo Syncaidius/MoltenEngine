@@ -207,6 +207,11 @@ namespace Molten
             Current = null;
         }
 
+        /// <summary>
+        /// [Internal] Gets the <see cref="Renderer"/> thread. Null if the renderer was not started.
+        /// </summary>
+        internal EngineThread RenderThread => _threadRenderer;
+
         /// <summary>Gets the renderer attached to the current <see cref="Engine"/> instance.</summary>>
         public IRenderer Renderer => _renderer;
 

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Molten.Collections;
 
 namespace Molten.Graphics
 {
@@ -15,12 +16,15 @@ namespace Molten.Graphics
         protected SwapChain _swapChain;
         protected SwapChainDescription _swapDesc;
 
+        ThreadedQueue<Action> _dispatchQueue;
         int _vsync;
 
         internal SwapChainSurface(GraphicsDeviceDX11 device, int mipCount, int sampleCount)
             : base(device, 1,
                   1, SharpDX.DXGI.Format.B8G8R8A8_UNorm, mipCount, 1, sampleCount, TextureFlags.NoShaderResource)
-        { }
+        {
+            _dispatchQueue = new ThreadedQueue<Action>();
+        }
 
         protected void CreateSwapChain(DisplayMode mode, bool windowed, IntPtr controlHandle)
         {
@@ -47,10 +51,21 @@ namespace Molten.Graphics
 
         public void Present()
         {
+            if (!IsDisposed)
+            {
+                while (_dispatchQueue.TryDequeue(out Action action))
+                        action();
+            }
+
             ApplyChanges(Device);
 
             if(OnPresent())
                 _swapChain?.Present(_vsync, PresentFlags.None);
+        }
+
+        public void Dispatch(Action action)
+        {
+            _dispatchQueue.Enqueue(action);
         }
 
         protected virtual bool OnPresent() { return true; }

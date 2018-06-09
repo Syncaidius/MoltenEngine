@@ -1,4 +1,5 @@
-﻿using SharpDX;
+﻿using Molten.Collections;
+using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SharpDX.Windows;
