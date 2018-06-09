@@ -51,16 +51,16 @@ namespace Molten.Graphics
 
         public void Present()
         {
-            if (!IsDisposed)
-            {
-                while (_dispatchQueue.TryDequeue(out Action action))
-                        action();
-            }
-
             ApplyChanges(Device);
 
             if(OnPresent())
                 _swapChain?.Present(_vsync, PresentFlags.None);
+
+            if (!IsDisposed)
+            {
+                while (_dispatchQueue.TryDequeue(out Action action))
+                    action();
+            }
         }
 
         public void Dispatch(Action action)

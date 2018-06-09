@@ -14,7 +14,7 @@ namespace Molten.Graphics
         void Present();
 
         /// <summary>
-        /// Dispatches a callback to be invoked next time the <see cref="ISwapChainSurface"/> is updated by its parent render thread.
+        /// Dispatches a callback to be invoked next time the <see cref="ISwapChainSurface"/> is presented on its parent render thread.
         /// </summary>
         /// <param name="callback"></param>
         void Dispatch(Action callback);
