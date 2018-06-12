@@ -21,11 +21,17 @@ namespace Molten.Input
         int _padIndex;
         float _vibrationLeft;
         float _vibrationRight;
+        GamepadStick _leftThumbstick;
+        GamepadStick _rightThumbstick;
+        GamepadTrigger _leftTrigger;
+        GamepadTrigger _rightTrigger;
+        GamepadButtonFlags _buttons;
+        GamepadButtonFlags _prevButtons;
+
         string _deviceName;
         bool _isConnected;
 
         Dictionary<int, int> _heldTimers; // keeps track of how long buttons are held for.
-        Dictionary<int, int> _cpHeldTimers; // keeps track of how long chat pad buttons are held for.
 
         public GamepadDevice(GamepadIndex index)
         {
@@ -40,9 +46,13 @@ namespace Molten.Input
 
             //initialize hold timer dictionaries.
             _heldTimers = new Dictionary<int, int>();
-            _cpHeldTimers = new Dictionary<int, int>();
             _deviceName = "Gamepad " + _padIndex;
             _isConnected = _pad.IsConnected;
+
+            _leftThumbstick = new GamepadStick();
+            _rightThumbstick = new GamepadStick();
+            _leftTrigger = new GamepadTrigger();
+            _rightTrigger = new GamepadTrigger();
 
             //only get state and capabilities if connected.
             if (_isConnected)
@@ -58,9 +68,13 @@ namespace Molten.Input
             foreach (int button in _heldTimers.Keys)
                 _heldTimers[button] = 0;
 
-            //reset chat pad hold timers
-            foreach (int key in _cpHeldTimers.Keys)
-                _cpHeldTimers[key] = 0;
+            _leftThumbstick.Clear();
+            _rightThumbstick.Clear();
+            _leftTrigger.Clear();
+            _rightTrigger.Clear();
+
+            _buttons = GamepadButtonFlags.None;
+            _prevButtons = GamepadButtonFlags.None;
         }
 
         protected override void OnDispose()
@@ -105,14 +119,14 @@ namespace Molten.Input
         {
             int buttonVal = (int)buttons;
 
-            //check if the button combo is contained in the hold timer array
+            // Check if the button combo is contained in the hold timer array
             if (_heldTimers.ContainsKey(buttonVal) == false)
-                _heldTimers.Add(buttonVal, 0);
+                return false;
 
             //check if the button has been held for the given time (milliseconds).
             if (_heldTimers[buttonVal] >= interval)
             {
-                //reset held time if needed
+                // Reset held time if needed
                 if (reset == true)
                     _heldTimers[buttonVal] = 0;
 
@@ -132,46 +146,6 @@ namespace Molten.Input
         }
 
         public override void OpenControlPanel() { }
-
-        /// <summary>returns the current state of the left thumb stick.</summary>
-        /// <param name="playerIndex">The player index of the controller to read from.</param>
-        /// <returns>A vector2 containing the current values of the thumbstick.</returns>
-        public Vector2F LeftThumbstick()
-        {
-            //calculate percentage of left thumbstick
-            float xPercent = _state.LeftThumbX / 32767f;
-            float yPercent = _state.LeftThumbY / 32767f;
-            return new Vector2F(xPercent, yPercent);
-        }
-
-        /// <summary>returns the current state of the right thumb stick.</summary>
-        /// <param name="playerIndex">The player index of the controller to read from.</param>
-        /// <returns>A vector2 containing the current values of the thumbstick.</returns>
-        public Vector2F RightThumbstick()
-        {
-            //calculate percentage of left thumbstick
-            float xPercent = _state.RightThumbX / 32767f;
-            float yPercent = _state.RightThumbY / 32767f;
-            return new Vector2F(xPercent, yPercent);
-        }
-
-        /// <summary>Returns the current value of the left trigger.</summary>
-        /// <param name="playerIndex">The player index of the controller to read from.</param>
-        /// <returns>The value of the trigger as a float.</returns>
-        public float LeftTrigger()
-        {
-            float percent = _state.LeftTrigger / 255f;
-            return percent;
-        }
-
-        /// <summary>Returns the current value of the right trigger.</summary>
-        /// <param name="playerIndex">The player index of the controller to read from.</param>
-        /// <returns>The value of the trigger as a float.</returns>
-        public float RightTrigger()
-        {
-            float percent = (float)_state.RightTrigger / 255f;
-            return percent;
-        }
 
         /// <summary>Update input handler.</summary>
         /// <param name="time">The snapshot of time.</param>
@@ -195,21 +169,23 @@ namespace Molten.Input
             bool releaseInput = winHandle != focusedHandle;
 
             //only update properly if release-input is not active.
-            if (releaseInput == false)
+            if (releaseInput == false && _isConnected)
             {
-                //update states
-                if (_isConnected == false)
-                    ClearState();
-                else
-                    _state = _pad.GetState().Gamepad;
+                // Update states
+                _state = _pad.GetState().Gamepad;
 
-                //update hold timers
+                _buttons = _state.Buttons.FromApi();
+                _prevButtons = _statePrev.Buttons.FromApi();
+
+                // Update thumbsticks and triggers
+                _leftThumbstick.SetPercentages(_state.LeftThumbX / 32767f, _state.LeftThumbY / 32767f);
+                _rightThumbstick.SetPercentages(_state.RightThumbX / 32767f, _state.RightThumbY / 32767f);
+                _leftTrigger.SetPercentage(_state.LeftTrigger / 255f);
+                _rightTrigger.SetPercentage(_state.RightTrigger / 255f);
+
+                // Update hold timers
                 foreach (int button in _heldTimers.Keys)
                     _heldTimers[button] += time.ElapsedTime.Milliseconds;
-
-                //update chat pad hold timers
-                foreach (int key in _cpHeldTimers.Keys)
-                    _cpHeldTimers[key] += time.ElapsedTime.Milliseconds;
             }
             else
             {
@@ -219,7 +195,7 @@ namespace Molten.Input
 
         private void SetVibration(float leftMotor, float rightMotor)
         {
-            if (_pad.IsConnected == false)
+            if (_isConnected == false)
                 return;
 
             Vibration vib = new Vibration()
@@ -265,15 +241,38 @@ namespace Molten.Input
             }
         }
 
+        /// <summary>
+        /// Gets the X and Y axis values of the left thumbstick, or null if it doesn't have one.
+        /// </summary>
+        public IGamepadStick LeftThumbstick => _leftThumbstick;
+
+        /// <summary>
+        /// Gets the X and Y axis values of the right thumbstick, or null if it doesn't have one.
+        /// </summary>
+        public IGamepadStick RightThumbstick => _rightThumbstick;
+
+        /// <summary>
+        /// Gets the gamepad's left trigger, or null if it doesn't have one.
+        /// </summary>
+        public IGamepadTrigger LeftTrigger => _leftTrigger;
+
+        /// <summary>
+        /// Gets the gamepad's right trigger, or null if it doesn't have one.
+        /// </summary>
+        public IGamepadTrigger RightTrigger => _rightTrigger;
+
         /// <summary>Gets whether or not the gamepad is connected.</summary>
         public override bool IsConnected
         {
             get { return _isConnected; }
         }
 
-        public DeviceSubType SubType
+        /// <summary>
+        /// Gets the gamepad/controller sub-type. For example, a joystick or steering wheel.
+        /// </summary>
+        public GamepadSubType SubType
         {
-            get { return _capabilities.SubType; }
+            get { return _capabilities.SubType.FromApi(); }
         }
 
         /// <summary>Gets the name of the gamepad.</summary>

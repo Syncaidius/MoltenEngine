@@ -8,7 +8,7 @@ namespace Molten.Input
 {
     internal static class SharpDXInterop
     {
-        public static SharpDX.DirectInput.Key ToApi(this Key key)
+        internal  static SharpDX.DirectInput.Key ToApi(this Key key)
         {
             return (SharpDX.DirectInput.Key)key;
         }
@@ -16,6 +16,21 @@ namespace Molten.Input
         internal static Key FromApi(this SharpDX.DirectInput.Key key)
         {
             return (Key)key;
+        }
+
+        internal static GamepadSubType FromApi(this SharpDX.XInput.DeviceSubType subType)
+        {
+            return (GamepadSubType)subType;
+        }
+
+        internal static GamepadButtonFlags FromApi(this SharpDX.XInput.GamepadButtonFlags flags)
+        {
+            return (GamepadButtonFlags)flags;
+        }
+
+        internal static bool HasFlags(this GamepadButtonFlags value, GamepadButtonFlags flags)
+        {
+            return (value & flags) == flags;
         }
     }
 }

@@ -50,7 +50,6 @@ namespace Molten.Samples
         protected override void OnUpdate(Timing time)
         {
             RotateParentChild(_parent, _child, time);
-
             base.OnUpdate(time);
         }
     }

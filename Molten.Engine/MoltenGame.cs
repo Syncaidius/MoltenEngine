@@ -11,12 +11,16 @@ namespace Molten
 {
     public delegate void MoltenGameHandler(MoltenGame game);
 
+    /// <summary>
+    /// A helper class which provides a solid foundation on which to start building a game.
+    /// </summary>
     public abstract class MoltenGame
     {
         Engine _engine;
         EngineThread _gameThread;
         IWindowSurface _gameWindow;
         IKeyboardDevice _keyboard;
+        IGamepadDevice _gamepad;
         IMouseDevice _mouse;
 
         /// <summary>
@@ -24,12 +28,9 @@ namespace Molten
         /// </summary>
         public event MoltenGameHandler OnGameExiting;
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary>Creates a new instance of <see cref="MoltenGame"/>.</summary>
         /// <param name="title"></param>
         /// <param name="settings">The settings for the game. If this is null, the default settings will be used.</param>
-        /// <param name="useGuiControl">If true, <see cref="MoltenGame.Window"/> will be a GUI control surface instead.</param>
         public MoltenGame(string title, EngineSettings settings = null)
         {
             Title = title;
@@ -70,6 +71,7 @@ namespace Molten
 
             _keyboard = _engine.Input.GetKeyboard(_gameWindow);
             _mouse = _engine.Input.GetMouse(_gameWindow);
+            _gamepad = _engine.Input.GetGamepad(_gameWindow, GamepadIndex.One);
             _engine.Input.SetActiveWindow(_gameWindow);
 
             _engine.Renderer.DefaultSurface = _gameWindow;
@@ -145,6 +147,9 @@ namespace Molten
             return obj;
         }
 
+        /// <summary>
+        /// Puases the game.
+        /// </summary>
         public void Pause()
         {
             if (RunState == GameRunState.Paused || RunState == GameRunState.Exited || RunState == GameRunState.Exiting)
@@ -153,6 +158,9 @@ namespace Molten
             OnPause();
         }
 
+        /// <summary>
+        /// Resumes the game. Has no effect if the gamge is already running, exiting or exited.
+        /// </summary>
         public void Resume()
         {
             if (RunState == GameRunState.Running || RunState == GameRunState.Exited || RunState == GameRunState.Exiting)
@@ -189,6 +197,10 @@ namespace Molten
         /// <summary>Occurs when the game is resumed (and not already running).</summary>
         protected virtual void OnResume() { }
 
+        /// <summary>
+        /// Occurs when the game is being updated, making it a good place to put your game logic.
+        /// </summary>
+        /// <param name="time"></param>
         protected abstract void OnUpdate(Timing time);
 
         /// <summary>Gets or sets title of the game.</summary>
@@ -206,6 +218,9 @@ namespace Molten
         /// <summary>Gets the game and engine <see cref="Logger"/>. It is used to write information into the game's log file.</summary>
         public Logger Log => _engine.Log;
 
+        /// <summary>
+        /// Gets the <see cref="Timing"/> instance of the game's main thread.
+        /// </summary>
         public Timing Time => _gameThread.Timing;
 
         /// <summary>Gets the <see cref="IKeyboardDevice"/> attached to the game's main window.</summary>
@@ -213,6 +228,11 @@ namespace Molten
 
         /// <summary>Gets the <see cref="IMouseDevice"/> attached to the game's main window.</summary>
         public IMouseDevice Mouse => _mouse;
+
+        /// <summary>
+        /// Gets the <see cref="IGamepadDevice"/> attached to the game's main window.
+        /// </summary>
+        public IGamepadDevice Gamepad => _gamepad;
 
         /// <summary>Gets the <see cref="IWindowSurface"/> that the game renders in to.</summary>
         public IWindowSurface Window => _gameWindow;

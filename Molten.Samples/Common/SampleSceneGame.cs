@@ -116,24 +116,55 @@ namespace Molten.Samples
                 Exit();
 
             // Keyboard input - Again messy code for now
-            Vector3F moveDelta = Vector3F.Zero;
             float rotSpeed = 0.25f;
-            float speed = 0.5f;
+            float moveSpeed = 0.5f;
+
+            Vector2F axisDelta = Vector2F.Zero;
 
             if (AcceptPlayerInput && Mouse.IsPressed(MouseButton.Left))
             {
+                axisDelta = new Vector2F()
+                {
+                    X = Mouse.Moved.Y * rotSpeed,
+                    Y = Mouse.Moved.X * rotSpeed,
+                };
                 // Mouse input - Messy for now - We're just testing input
-                _player.Transform.LocalRotationX += Mouse.Moved.Y * rotSpeed;
-                _player.Transform.LocalRotationY += Mouse.Moved.X * rotSpeed;
-                //Mouse.CenterInWindow();
+                _player.Transform.LocalRotationX += axisDelta.X;
+                _player.Transform.LocalRotationY += axisDelta.Y;
             }
 
+            // Gamepad movement
+
+
+            // Handle forward, backward, left and right movement. 
+            // For now, we'll just add the keyboard and gamepad values together. In a real game, this isn't a good idea!
+            Vector3F moveDelta = UpdateKeyboardMovement(time, moveSpeed);
+            moveDelta += UpdateGamepadMovement(time, moveSpeed);
+
+            _player.Transform.LocalPosition += moveDelta * time.Delta * moveSpeed;
+        }
+
+        private Vector3F UpdateKeyboardMovement(Timing time, float speed)
+        {
+            Vector3F moveDelta = Vector3F.Zero;
             if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * speed;
             if (Keyboard.IsPressed(Key.S)) moveDelta += _player.Transform.Global.Forward * speed;
             if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * speed;
             if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * speed;
 
-            _player.Transform.LocalPosition += moveDelta * time.Delta * speed;
+            return moveDelta;
+        }
+
+        private Vector3F UpdateGamepadMovement(Timing time, float speed)
+        {
+            Vector3F moveDelta = Vector3F.Zero;
+            if (Gamepad.IsPressed(GamepadButtonFlags.DPadUp)) moveDelta += _player.Transform.Global.Backward * speed;
+            if (Gamepad.IsPressed(GamepadButtonFlags.DPadDown)) moveDelta += _player.Transform.Global.Forward * speed;
+            if (Gamepad.IsPressed(GamepadButtonFlags.DPadLeft)) moveDelta += _player.Transform.Global.Left * speed;
+            if (Gamepad.IsPressed(GamepadButtonFlags.DPadRight)) moveDelta += _player.Transform.Global.Right * speed;
+
+
+            return moveDelta;
         }
 
         public Scene SampleScene => _scene;

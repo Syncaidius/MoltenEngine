@@ -99,9 +99,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Gamepad\GamepadTrigger.cs" />
+    <Compile Include="Gamepad\GamepadStick.cs" />
     <Compile Include="InputDeviceBase.cs" />
     <Compile Include="WindowsClipboard.cs" />
-    <Compile Include="GamepadDevice.cs" />
+    <Compile Include="Gamepad\GamepadDevice.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="KeyboardDevice.cs" />
     <Compile Include="MouseDevice.cs" />

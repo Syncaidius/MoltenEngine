@@ -85,17 +85,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GamepadIndex.cs" />
+    <Compile Include="Gamepad\GamepadButtonFlags.cs" />
+    <Compile Include="Gamepad\GamepadIndex.cs" />
+    <Compile Include="Gamepad\IGamepadTrigger.cs" />
+    <Compile Include="Gamepad\IGamepadStick.cs" />
+    <Compile Include="Gamepad\GamepadSubType.cs" />
     <Compile Include="IClipboard.cs" />
     <Compile Include="IInputManager.cs" />
     <Compile Include="IInputDevice.cs" />
-    <Compile Include="IGamepadDevice.cs" />
-    <Compile Include="IKeyboardDevice.cs" />
-    <Compile Include="IMouseDevice.cs" />
+    <Compile Include="Gamepad\IGamepadDevice.cs" />
+    <Compile Include="Keyboard\IKeyboardDevice.cs" />
+    <Compile Include="Mouse\IMouseDevice.cs" />
     <Compile Include="InputSettings.cs" />
-    <Compile Include="Key.cs" />
-    <Compile Include="KeyboardEvents.cs" />
-    <Compile Include="MouseButton.cs" />
+    <Compile Include="Keyboard\Key.cs" />
+    <Compile Include="Keyboard\KeyboardEvents.cs" />
+    <Compile Include="Mouse\MouseButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +119,9 @@
       <Project>{1e4854b0-d1a8-40ae-9038-1dea304574a5}</Project>
       <Name>Molten.Utility</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Touch\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
