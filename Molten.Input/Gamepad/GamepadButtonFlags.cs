@@ -40,4 +40,12 @@ namespace Molten.Input
 
         X = 16384
     }
+
+    public static class GamepadButtonFlagsExtensions
+    {
+        public static bool HasButtons(this GamepadButtonFlags value, GamepadButtonFlags flags)
+        {
+            return (value & flags) == flags;
+        }
+    }
 }

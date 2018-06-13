@@ -41,5 +41,10 @@ namespace Molten.Input
 
         /// <summary>Gets the index of the gamepad.</summary>
         GamepadIndex PlayerIndex { get; }
+
+        /// <summary>
+        /// Gets a flags value containing all of the currently-pressed gamepad buttons.
+        /// </summary>
+        GamepadButtonFlags PressedButtons { get; }
     }
 }

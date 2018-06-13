@@ -256,5 +256,10 @@ namespace Molten.Input
 
         /// <summary>Gets the name of the gamepad.</summary>
         public override string DeviceName => _deviceName;
+
+        /// <summary>
+        /// Gets a flags value containing all of the currently-pressed buttons.
+        /// </summary>
+        public GamepadButtonFlags PressedButtons => _buttons;
     }
 }

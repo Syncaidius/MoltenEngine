@@ -27,10 +27,5 @@ namespace Molten.Input
         {
             return (GamepadButtonFlags)flags;
         }
-
-        internal static bool HasFlags(this GamepadButtonFlags value, GamepadButtonFlags flags)
-        {
-            return (value & flags) == flags;
-        }
     }
 }
