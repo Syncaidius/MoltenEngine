@@ -45,11 +45,9 @@ namespace Molten.Input
         /// <returns></returns>
         bool IsTapped(T value);
 
-        /// <summary>Returns true if the specified button is being held down. </summary>
+        /// <summary>Returns true if the specified button was pressed in both the previous and current frame. </summary>
         /// <param name="value">The button or key to check.</param>
-        /// <param name="interval">The interval of time the button(s) must be held for to be considered as held.</param>
-        /// <param name="reset">Set to true if the current amount of time the button has been held should be reset.</param>
         /// <returns></returns>
-        bool IsHeld(T value, int interval, bool reset);
+        bool IsHeld(T value);
     }
 }

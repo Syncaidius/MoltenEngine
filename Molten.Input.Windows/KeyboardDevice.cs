@@ -183,12 +183,10 @@ namespace Molten.Input
             return isPressed == true && wasPressed == false;
         }
 
-        /// <summary>Returns true if the specified keys have been held for at least the given interval of time.</summary>
+        /// <summary>Returns true if the specified key was pressed in both the previous and current frame.</summary>
         /// <param name="key">The key to test.</param>
-        /// <param name="interval">The interval of time the key(s) must be held for to be considered as held.</param>
-        /// <param name="reset">Set to true if the current amount of time the button has been held should be reset.</param>
         /// <returns>True if key(s) considered held.</returns>
-        public override bool IsHeld(Key key, int interval, bool reset)
+        public override bool IsHeld(Key key)
         {
             SharpDX.DirectInput.Key sKey = key.ToApi();
             return _state.IsPressed(sKey) && _prevState.IsPressed(sKey);

@@ -108,32 +108,14 @@ namespace Molten.Input
             return (_buttons.HasFlag(value) == true && _prevButtons.HasFlag(value) == false);
         }
 
-        /// <summary>Returns true if the specified buttons have been held for at least the given interval of time.</summary>
+        /// <summary>Returns true if the specified button combination was pressed in both the previous and current frame. </summary>
         /// <param name="playerIndex">The controller index to read from.</param>
         /// <param name="buttons">The button(s) to do a held test for.</param>
         /// <param name="interval">The interval of time the button(s) must be held for to be considered as held.</param>
         /// <returns>True if button(s) considered held.</returns>
-        public override bool IsHeld(GamepadButtonFlags buttons, int interval, bool reset)
+        public override bool IsHeld(GamepadButtonFlags buttons)
         {
-            int buttonVal = (int)buttons;
-
-            // Check if the button combo is contained in the hold timer array
-            if (_heldTimers.ContainsKey(buttonVal) == false)
-                return false;
-
-            //check if the button has been held for the given time (milliseconds).
-            if (_heldTimers[buttonVal] >= interval)
-            {
-                // Reset held time if needed
-                if (reset == true)
-                    _heldTimers[buttonVal] = 0;
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return _buttons.HasFlag(buttons) && _prevButtons.HasFlag(buttons);
         }
 
         /// <summary>Returns details about the status of a battery.</summary>

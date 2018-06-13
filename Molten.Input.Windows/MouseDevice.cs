@@ -104,12 +104,10 @@ namespace Molten.Input
             return _state.Buttons[butval] && _prevState.Buttons[butval] == false;
         }
 
-        /// <summary>Returns true if the specified button have been held for at least the given interval of time.</summary>
+        /// <summary>Returns true if the specified button was pressed in both the previous and current frame.</summary>
         /// <param name="button">The button(s) to do a held test for.</param>
-        /// <param name="interval">The interval of time the button(s) must be held for to be considered as held.</param>
-        /// <param name="reset">Set to true if the current amount of time the button has been held should be reset.</param>
         /// <returns>True if button(s) considered held.</returns>
-        public override bool IsHeld(MouseButton button, int interval, bool reset)
+        public override bool IsHeld(MouseButton button)
         {
             int butval = (int)button;
             return _state.Buttons[butval] && _prevState.Buttons[butval];
