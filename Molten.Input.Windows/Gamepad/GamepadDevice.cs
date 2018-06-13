@@ -100,14 +100,12 @@ namespace Molten.Input
         /// <returns>Returns true if the button is considered pressed.</returns>
         public override bool IsPressed(GamepadButtonFlags value)
         {
-            return _state.Buttons.HasFlag(value);
+            return _buttons.HasFlag(value);
         }
 
         public override bool IsTapped(GamepadButtonFlags value)
         {
-            bool now = _state.Buttons.HasFlag(value);
-            bool before = _statePrev.Buttons.HasFlag(value);
-            return (now == true && before == false);
+            return (_buttons.HasFlag(value) == true && _prevButtons.HasFlag(value) == false);
         }
 
         /// <summary>Returns true if the specified buttons have been held for at least the given interval of time.</summary>
@@ -178,8 +176,8 @@ namespace Molten.Input
                 _prevButtons = _statePrev.Buttons.FromApi();
 
                 // Update thumbsticks and triggers
-                _leftThumbstick.SetPercentages(_state.LeftThumbX / 32767f, _state.LeftThumbY / 32767f);
-                _rightThumbstick.SetPercentages(_state.RightThumbX / 32767f, _state.RightThumbY / 32767f);
+                _leftThumbstick.SetPercentages(_state.LeftThumbX / 32768f, _state.LeftThumbY / 32768f);
+                _rightThumbstick.SetPercentages(_state.RightThumbX / 32768f, _state.RightThumbY / 32768f);
                 _leftTrigger.SetPercentage(_state.LeftTrigger / 255f);
                 _rightTrigger.SetPercentage(_state.RightTrigger / 255f);
 

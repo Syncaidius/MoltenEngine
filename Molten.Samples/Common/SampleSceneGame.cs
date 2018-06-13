@@ -128,13 +128,14 @@ namespace Molten.Samples
                     X = Mouse.Moved.Y * rotSpeed,
                     Y = Mouse.Moved.X * rotSpeed,
                 };
-                // Mouse input - Messy for now - We're just testing input
-                _player.Transform.LocalRotationX += axisDelta.X;
-                _player.Transform.LocalRotationY += axisDelta.Y;
+
             }
 
             // Gamepad movement
+            axisDelta += new Vector2F(Gamepad.LeftThumbstick.Y, Gamepad.LeftThumbstick.X) * rotSpeed * 1.5f;
 
+            _player.Transform.LocalRotationX += axisDelta.X;
+            _player.Transform.LocalRotationY += axisDelta.Y;
 
             // Handle forward, backward, left and right movement. 
             // For now, we'll just add the keyboard and gamepad values together. In a real game, this isn't a good idea!
@@ -152,6 +153,7 @@ namespace Molten.Samples
             if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * speed;
             if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * speed;
 
+
             return moveDelta;
         }
 
@@ -163,7 +165,7 @@ namespace Molten.Samples
             if (Gamepad.IsPressed(GamepadButtonFlags.DPadLeft)) moveDelta += _player.Transform.Global.Left * speed;
             if (Gamepad.IsPressed(GamepadButtonFlags.DPadRight)) moveDelta += _player.Transform.Global.Right * speed;
 
-
+            //moveDelta += new Vector3F(Gamepad.RightThumbstick.Value, 0) * speed * 2;
             return moveDelta;
         }
 
