@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Input
 {
-    public delegate void InputConnectionHandler<T>(IInputDevice<T> device, bool isConnected) where T : struct;
+    public delegate void InputConnectionStatusHandler<T>(IInputDevice<T> device, bool isConnected) where T : struct;
+
+    public delegate void InputConnectionHandler<T>(IInputDevice<T> device) where T : struct;
 
     public interface IInputDevice
     {
@@ -28,7 +30,20 @@ namespace Molten.Input
     public interface IInputDevice<T>  : IInputDevice 
         where T: struct
     {
-        event InputConnectionHandler<T> OnConnectionStatusChanged;
+        /// <summary>
+        /// Invoked when the connection status of the device has changed.
+        /// </summary>
+        event InputConnectionStatusHandler<T> OnConnectionStatusChanged;
+
+        /// <summary>
+        /// Invoked when the device is connected.
+        /// </summary>
+        event InputConnectionHandler<T> OnConnected;
+
+        /// <summary>
+        /// Invoked when the device is disconnected.
+        /// </summary>
+        event InputConnectionHandler<T> OnDisconnected;
 
         /// <summary>Returns true if the specified button is pressed.</summary>
         /// <param name="value">The button or key to check.</param>

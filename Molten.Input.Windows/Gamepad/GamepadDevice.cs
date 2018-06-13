@@ -132,10 +132,16 @@ namespace Molten.Input
         /// <param name="releaseInput">If set to true, will reset all held timers and stop retrieving the latest state.</param>
         internal override void Update(Timing time)
         {
+            // Handle event invocation.
             if (_isConnected != _pad.IsConnected)
             {
                 _isConnected = _pad.IsConnected;
                 InvokeConnectionStatus(_pad.IsConnected);
+
+                if (_isConnected)
+                    InvokeOnConnected();
+                else
+                    InvokeOnDisconnected();
             }        
 
             //store previous states
@@ -187,16 +193,16 @@ namespace Molten.Input
         }
 
         /// <summary>Gets the index of the game pad.</summary>
-        public GamepadIndex PlayerIndex { get { return (GamepadIndex)_padIndex; } }
+        public GamepadIndex PlayerIndex => (GamepadIndex)_padIndex;
 
         /// <summary>Gets the underlying state of the gamepad.</summary>
-        public Gamepad State { get { return _state; } }
+        public Gamepad State => _state;
 
         /// <summary>Gets the underlying state of the gamepad during the previous update.</summary>
-        public Gamepad PreviousState { get { return _statePrev; } }
+        public Gamepad PreviousState => _statePrev;
 
         /// <summary>Gets extra capability information about the gamepad.</summary>
-        public Capabilities CapabilityInfo { get { return _capabilities; } }
+        public Capabilities CapabilityInfo => _capabilities;
 
         /// <summary>Gets or sets the vibration level of the left force-feedback motor.</summary>
         public float VibrationLeft
@@ -241,23 +247,14 @@ namespace Molten.Input
         public IGamepadTrigger RightTrigger => _rightTrigger;
 
         /// <summary>Gets whether or not the gamepad is connected.</summary>
-        public override bool IsConnected
-        {
-            get { return _isConnected; }
-        }
+        public override bool IsConnected => _isConnected;
 
         /// <summary>
         /// Gets the gamepad/controller sub-type. For example, a joystick or steering wheel.
         /// </summary>
-        public GamepadSubType SubType
-        {
-            get { return _capabilities.SubType.FromApi(); }
-        }
+        public GamepadSubType SubType => _capabilities.SubType.FromApi();
 
         /// <summary>Gets the name of the gamepad.</summary>
-        public override string DeviceName
-        {
-            get { return _deviceName; }
-        }
+        public override string DeviceName => _deviceName;
     }
 }

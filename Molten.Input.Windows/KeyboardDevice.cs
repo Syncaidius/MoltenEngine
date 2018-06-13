@@ -253,19 +253,10 @@ namespace Molten.Input
         }
 
         /// <summary>Gets a list of all currently pressed keys.</summary>
-        public Key[] PressedKeys
-        {
-            get { return _pressedKeys.ToArray(); }
-        }
+        public Key[] PressedKeys => _pressedKeys.ToArray();
 
-        public override bool IsConnected
-        {
-            get { return true; }
-        }
+        public override bool IsConnected => true;
 
-        public override string DeviceName
-        {
-            get { return _keyboard.Information.ProductName; }
-        }
+        public override string DeviceName => _keyboard.Information.ProductName;
     }
 }

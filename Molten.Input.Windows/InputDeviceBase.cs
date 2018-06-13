@@ -32,11 +32,25 @@ namespace Molten.Input
 
     public abstract class InputHandlerBase<T> : InputDeviceBase, IInputDevice<T> where T : struct
     {
-        public event InputConnectionHandler<T> OnConnectionStatusChanged;
+        public event InputConnectionStatusHandler<T> OnConnectionStatusChanged;
+
+        public event InputConnectionHandler<T> OnConnected;
+
+        public event InputConnectionHandler<T> OnDisconnected;
 
         protected void InvokeConnectionStatus(bool isConnected)
         {
             OnConnectionStatusChanged?.Invoke(this, isConnected);
+        }
+
+        protected void InvokeOnConnected()
+        {
+            OnConnected?.Invoke(this);
+        }
+
+        protected void InvokeOnDisconnected()
+        {
+            OnDisconnected?.Invoke(this);
         }
 
         /// <summary>

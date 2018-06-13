@@ -179,7 +179,7 @@ namespace Molten.Input
 
                 // If the mouse is in a valid window, process movement, position, etc
                 if (insideControl || IsConstrained)
-                {                    
+                {
                     // Send all buffered updates to mouse state
                     for (int i = 0; i < _buffer.Length; i++)
                     {
@@ -206,16 +206,6 @@ namespace Molten.Input
                         if (_position.Y > winBounds.Height)
                             _position.Y = winBounds.Height;
                     }
-
-                    // Apply cursor position.
-                    //Cursor.Position = new System.Drawing.Point(_position.X, _position.Y);
-
-                    //// Perform correction if we exceeded Windows cursor limits.
-                    //if (_position.X != Cursor.Position.X)
-                    //    _position.X = Cursor.Position.X;
-
-                    //if (_position.Y != Cursor.Position.Y)
-                    //    _position.Y = Cursor.Position.Y;
 
                     // Update cursor visibility
                     SetCursorVisiblity(_requestedVisibility);
@@ -279,10 +269,7 @@ namespace Molten.Input
         /// <summary>Gets or sets the position of the mouse cursor.</summary>
         public Vector2I Position
         {
-            get
-            {
-                return ToLocalPosition(_position);
-            }
+            get => ToLocalPosition(_position);
             set
             {
                 _position = ToDesktopPosition(value);
@@ -293,8 +280,8 @@ namespace Molten.Input
         /// <summary>Gets or sets whether or not the mouse cursor is visible.</summary>
         public bool CursorVisible
         {
-            get { return _requestedVisibility; }
-            set { _requestedVisibility = value; }
+            get => _requestedVisibility;
+            set => _requestedVisibility = value;
         }
 
         /// <summary>Gets or sets whether or not the mouse is contrained to the bounds of the main output.</summary>
