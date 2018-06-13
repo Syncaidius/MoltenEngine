@@ -25,7 +25,8 @@ namespace Molten.Input
         string DeviceName { get; }
     }
 
-    public interface IInputDevice<T> where T: struct
+    public interface IInputDevice<T>  : IInputDevice 
+        where T: struct
     {
         event InputConnectionHandler<T> OnConnectionStatusChanged;
 

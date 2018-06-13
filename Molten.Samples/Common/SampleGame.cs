@@ -11,10 +11,11 @@ namespace Molten.Samples
 {
     public abstract class SampleGame : MoltenGame
     {
-        SpriteFont _testFont;
+        SpriteFont _sampleFont;
         bool _baseContentLoaded;
         ISceneDebugOverlay _mainOverlay;
         ControlSampleForm _form;
+        SpriteBatchContainer _sbContainer;
 
         public SampleGame(string title, EngineSettings settings = null) : base(title, settings) { }
 
@@ -29,6 +30,7 @@ namespace Molten.Samples
 
             // Use the same camera for both the sprite and UI scenes.
             UIScene.OutputCamera = SpriteScene.OutputCamera = new Camera2D();
+
             DebugOverlay = UIScene.DebugOverlay;
             UIScene.AddSprite(DebugOverlay);
 
@@ -93,8 +95,12 @@ namespace Molten.Samples
 
         private void Cr_OnCompleted(ContentRequest cr)
         {
-            _testFont = cr.Get<SpriteFont>(0);
-            DebugOverlay.Font = _testFont;
+            _sampleFont = cr.Get<SpriteFont>(0);
+            DebugOverlay.Font = _sampleFont;
+
+
+            _sbContainer = new SpriteBatchContainer(OnHudDraw);
+            UIScene.AddSprite(_sbContainer);
 
             OnContentLoaded(cr);
             _baseContentLoaded = true;
@@ -105,9 +111,9 @@ namespace Molten.Samples
             Exit();
         }
 
-        protected abstract void OnContentRequested(ContentRequest cr);
+        protected virtual void OnContentRequested(ContentRequest cr) { }
 
-        protected abstract void OnContentLoaded(ContentRequest cr);
+        protected virtual void OnContentLoaded(ContentRequest cr) { }
 
         protected override void OnUpdate(Timing time)
         {
@@ -116,7 +122,7 @@ namespace Molten.Samples
                 return;
 
             // Cycle through debug overlay pages.
-            if(Keyboard.IsTapped(Key.F1) && _testFont != null)
+            if(Keyboard.IsTapped(Key.F1) && _sampleFont != null)
                 DebugOverlay.NextPage();
 
             // Cycle through window modes.
@@ -130,9 +136,11 @@ namespace Molten.Samples
             }
         }
 
+        protected virtual void OnHudDraw(SpriteBatch sb) { }
+
         public abstract string Description { get; }
 
-        public SpriteFont SampleFont => _testFont;
+        public SpriteFont SampleFont => _sampleFont;
 
         /// <summary>Gets a random number generator. Used for various samples.</summary>
         public Random Rng { get; private set; } = new Random();

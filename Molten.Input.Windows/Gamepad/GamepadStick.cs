@@ -8,21 +8,50 @@ namespace Molten.Input
 {
     public class GamepadStick : IGamepadStick
     {
+        int _maxValue;
+
+        Vector2I _rawValue;
         Vector2F _value;
-        Vector2F _delta;
-        internal void SetPercentages(float x, float y)
+        Vector2F _deadzone = new Vector2F(0.5f);
+
+        internal GamepadStick(int maxValue)
         {
-            _delta.X = x - _value.X;
-            _delta.Y = y - _value.Y;
-            _value.X = x;
-            _value.Y = y;
+            _maxValue = maxValue;
+        }
+
+        internal void SetValues(int xValue, int yValue)
+        {
+            _rawValue.X = xValue;
+            _rawValue.Y = yValue;
+
+            double dX = _maxValue * _deadzone.X;
+            double dY = _maxValue * _deadzone.Y;
+
+            double finalRangeX = _maxValue - dX;
+            double finalRangeY = _maxValue - dY;
+
+            if (xValue <= -dX)
+                _value.X = (float)(Math.Min(0, xValue + dX) / finalRangeX);
+            else
+                _value.X = (float)(Math.Max(0, xValue - dX) / finalRangeX);
+
+            if (yValue <= -dY)
+                _value.Y = (float)(Math.Min(0, yValue + dY) / finalRangeY);
+            else
+                _value.Y = (float)(Math.Max(0, yValue - dY) / finalRangeY);
         }
 
         internal void Clear()
         {
-            _delta = Vector2F.Zero;
+            _rawValue = Vector2I.Zero;
             _value = Vector2F.Zero;
         }
+
+        public Vector2I RawValue => _rawValue;
+
+        public float RawX => _rawValue.X;
+
+        public float RawY => _rawValue.Y;
 
         public Vector2F Value => _value;
 
@@ -30,10 +59,17 @@ namespace Molten.Input
 
         public float Y => _value.Y;
 
-        public Vector2F Delta => _delta;
-
-        public float DeltaX => _delta.X;
-
-        public float DeltaY => _delta.Y;
+        public Vector2F Deadzone
+        {
+            get => _deadzone;
+            set
+            {
+                _deadzone = new Vector2F()
+                {
+                    X = MathHelper.Clamp(value.X, 0, 1.0f),
+                    Y = MathHelper.Clamp(value.Y, 0, 1.0f),
+                };
+            }
+        }
     }
 }

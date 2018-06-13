@@ -12,8 +12,6 @@ namespace Molten.Samples
     {
         Scene _scene;
         SceneObject _player;
-        SpriteText _txtInstructions;
-        Vector2F _txtInstructionSize;
 
         public SampleSceneGame(string title, EngineSettings settings) : base(title, settings) { }
 
@@ -21,45 +19,13 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
 
-            Window.OnPostResize += Window_OnPostResize;
             _scene = CreateScene("Test");
             DebugOverlay = _scene.DebugOverlay;
             _scene.SendToBack();
             SpawnPlayer();
         }
 
-        protected override void OnContentLoaded(ContentRequest cr)
-        {
-            string text = "[W][A][S][D] to move -- [ESC] Close -- [LMB] and [MOUSE] to rotate";
-            _txtInstructionSize = SampleFont.MeasureString(text);
-            _txtInstructions = new SpriteText()
-            {
-                Text = text,
-                Font = SampleFont,
-                Color = Color.White,
-            };
-            UpdateInstructions();
-            UIScene.AddSprite(_txtInstructions);
-        }
-
         protected override void OnContentRequested(ContentRequest cr) { }
-
-        private void UpdateInstructions()
-        {
-            if (_txtInstructions == null)
-                return;
-
-            _txtInstructions.Position = new Vector2F()
-            {
-                X = Window.Width / 2 + (-_txtInstructionSize.X / 2),
-                Y = Window.Height - _txtInstructionSize.Y - 20,
-            };
-        }
-
-        private void Window_OnPostResize(ITexture texture)
-        {
-            UpdateInstructions();
-        }
 
         private void SpawnPlayer()
         {
@@ -122,17 +88,10 @@ namespace Molten.Samples
             Vector2F axisDelta = Vector2F.Zero;
 
             if (AcceptPlayerInput && Mouse.IsPressed(MouseButton.Left))
-            {
-                axisDelta = new Vector2F()
-                {
-                    X = Mouse.Moved.Y * rotSpeed,
-                    Y = Mouse.Moved.X * rotSpeed,
-                };
-
-            }
+                axisDelta = new Vector2F(Mouse.Moved.Y, Mouse.Moved.X) * rotSpeed;
 
             // Gamepad movement
-            axisDelta += new Vector2F(Gamepad.LeftThumbstick.Y, Gamepad.LeftThumbstick.X) * rotSpeed * 1.5f;
+            axisDelta += new Vector2F(Gamepad.RightThumbstick.Y, Gamepad.RightThumbstick.X) * rotSpeed * 2f;
 
             _player.Transform.LocalRotationX += axisDelta.X;
             _player.Transform.LocalRotationY += axisDelta.Y;
@@ -165,8 +124,46 @@ namespace Molten.Samples
             if (Gamepad.IsPressed(GamepadButtonFlags.DPadLeft)) moveDelta += _player.Transform.Global.Left * speed;
             if (Gamepad.IsPressed(GamepadButtonFlags.DPadRight)) moveDelta += _player.Transform.Global.Right * speed;
 
-            //moveDelta += new Vector3F(Gamepad.RightThumbstick.Value, 0) * speed * 2;
+            moveDelta += new Vector3F(Gamepad.LeftThumbstick.X, 0, Gamepad.LeftThumbstick.Y) * speed * 2;
             return moveDelta;
+        }
+
+        protected override void OnHudDraw(SpriteBatch sb)
+        {
+            base.OnHudDraw(sb);
+
+            string text = "[W][A][S][D] to move -- [ESC] Close -- [LMB] and [MOUSE] to rotate";
+            Vector2F tSize = SampleFont.MeasureString(text);
+            Vector2F pos = new Vector2F()
+            {
+                X = Window.Width / 2 + (-tSize.X / 2),
+                Y = Window.Height - tSize.Y - 20,
+            };
+
+            sb.DrawString(SampleFont, text, pos, Color.White);
+
+            if (Gamepad.IsConnected)
+            {
+                text = "OR";
+                tSize = SampleFont.MeasureString(text);
+                pos.X = Window.Width / 2 + (-tSize.X / 2);
+                pos.Y -= tSize.Y + 5;
+                sb.DrawString(SampleFont, text, pos, Color.White);
+
+                // Gamepad instructions
+                text = "Gamepad [LEFT STICK] or [D-PAD] to move -- [RIGHT STICK] to aim";
+                tSize = SampleFont.MeasureString(text);
+                pos.X = Window.Width / 2 + (-tSize.X / 2);
+                pos.Y -= tSize.Y + 5;
+                sb.DrawString(SampleFont, text, pos, Color.White);
+
+                // Stats
+                pos.X = 5;
+                pos.Y = 300; sb.DrawString(SampleFont, $"Left stick: {Gamepad.LeftThumbstick.X},{Gamepad.LeftThumbstick.Y}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Right stick: {Gamepad.RightThumbstick.X},{Gamepad.RightThumbstick.Y}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Left Trigger: {Gamepad.LeftTrigger}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Right Trigger: {Gamepad.RightTrigger}", pos, Color.White);
+            }
         }
 
         public Scene SampleScene => _scene;

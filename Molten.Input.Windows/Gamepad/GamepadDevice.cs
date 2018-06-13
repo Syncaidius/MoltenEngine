@@ -49,8 +49,8 @@ namespace Molten.Input
             _deviceName = "Gamepad " + _padIndex;
             _isConnected = _pad.IsConnected;
 
-            _leftThumbstick = new GamepadStick();
-            _rightThumbstick = new GamepadStick();
+            _leftThumbstick = new GamepadStick(32767);
+            _rightThumbstick = new GamepadStick(32767);
             _leftTrigger = new GamepadTrigger();
             _rightTrigger = new GamepadTrigger();
 
@@ -58,7 +58,7 @@ namespace Molten.Input
             if (_isConnected)
                 RetrieveDeviceInformation();
 
-            //initialize previous state
+            // Initialize previous state
             _statePrev = new Gamepad();
         }
 
@@ -171,13 +171,12 @@ namespace Molten.Input
             {
                 // Update states
                 _state = _pad.GetState().Gamepad;
-
                 _buttons = _state.Buttons.FromApi();
                 _prevButtons = _statePrev.Buttons.FromApi();
 
                 // Update thumbsticks and triggers
-                _leftThumbstick.SetPercentages(_state.LeftThumbX / 32768f, _state.LeftThumbY / 32768f);
-                _rightThumbstick.SetPercentages(_state.RightThumbX / 32768f, _state.RightThumbY / 32768f);
+                _leftThumbstick.SetValues(_state.LeftThumbX, _state.LeftThumbY);
+                _rightThumbstick.SetValues(_state.RightThumbX, _state.RightThumbY);
                 _leftTrigger.SetPercentage(_state.LeftTrigger / 255f);
                 _rightTrigger.SetPercentage(_state.RightTrigger / 255f);
 

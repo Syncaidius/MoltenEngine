@@ -38,12 +38,18 @@ namespace Molten.Graphics
             /// <summary> The advance width (horizontal advance) of the character glyph, in pixels. </summary>
             public readonly int AdvanceWidth;
 
+            /// <summary>
+            /// The advance height (vertical advance) of the character glyph, in pixels.
+            /// </summary>
+            public readonly int AdvanceHeight;
+
             /// <summary>The number of pixels along the Y-axis that the glyph was offset, before fitting on to the font atlas. </summary>
             public readonly float YOffset;
 
-            internal GlyphCache(int advWidth, Rectangle location, float yOffset)
+            internal GlyphCache(int advWidth, int advHeight, Rectangle location, float yOffset)
             {
                 AdvanceWidth = advWidth;
+                AdvanceHeight = advHeight;
                 Location = location;
                 YOffset = yOffset;
             }
@@ -103,7 +109,7 @@ namespace Molten.Graphics
             else
             {
                 _glyphCache = new GlyphCache[1];
-                _glyphCache[0] = new GlyphCache(1, new Rectangle(0, 0, 1, 1), 0);
+                _glyphCache[0] = new GlyphCache(1, 1, new Rectangle(0, 0, 1, 1), 0);
             }
 
             _charData = new CharData[char.MaxValue];
@@ -156,7 +162,7 @@ namespace Molten.Graphics
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="c">The character.</param>
         /// <returns></returns>
         public int GetAdvanceWidth(char c)
         {
@@ -164,6 +170,19 @@ namespace Molten.Graphics
                 AddCharacter(c, true);
 
             return _glyphCache[_charData[c].GlyphIndex].AdvanceWidth;
+        }
+
+        /// <summary>
+        /// Gets the height of a character glyph.
+        /// </summary>
+        /// <param name="c">The character.</param>
+        /// <returns></returns>
+        public int GetHeight(char c)
+        {
+            if (!_charData[c].Initialized)
+                AddCharacter(c, true);
+
+            return _glyphCache[_charData[c].GlyphIndex].AdvanceHeight;
         }
 
         /// <summary>
@@ -204,6 +223,7 @@ namespace Molten.Graphics
             {
                 GlyphCache cache = GetCharGlyph(text[i]);
                 result.X += cache.AdvanceWidth;
+                result.Y = Math.Max(result.Y, cache.AdvanceHeight);
             }
 
             return result;
@@ -260,6 +280,7 @@ namespace Molten.Graphics
             int padding2 = _charPadding * 2;
             int pWidth, pHeight;
             int advWidth = ToPixels(gm.AdvanceWidth);
+            int advHeight = ToPixels(g.Bounds.Height);
 
             if (customBounds.HasValue)
             {
@@ -300,7 +321,7 @@ namespace Molten.Graphics
             };
 
             _charData[c] = new CharData(gIndex);
-            _glyphCache[gIndex] = new GlyphCache(advWidth, loc, yOffset);
+            _glyphCache[gIndex] = new GlyphCache(advWidth, advHeight, loc, yOffset);
             List<Shape> shapes = g.CreateShapes(_pointsPerCurve);
 
             for (int i = 0; i < shapes.Count; i++)

@@ -12,7 +12,7 @@ namespace Molten
     public delegate void MoltenGameHandler(MoltenGame game);
 
     /// <summary>
-    /// A helper class which provides a solid foundation on which to start building a game.
+    /// A helper class which provides the foundations for a game.
     /// </summary>
     public abstract class MoltenGame
     {
