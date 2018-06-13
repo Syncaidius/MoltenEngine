@@ -161,8 +161,8 @@ namespace Molten.Samples
                 pos.X = 5;
                 pos.Y = 300; sb.DrawString(SampleFont, $"Left stick: {Gamepad.LeftThumbstick.X},{Gamepad.LeftThumbstick.Y}", pos, Color.White);
                 pos.Y += 20; sb.DrawString(SampleFont, $"Right stick: {Gamepad.RightThumbstick.X},{Gamepad.RightThumbstick.Y}", pos, Color.White);
-                pos.Y += 20; sb.DrawString(SampleFont, $"Left Trigger: {Gamepad.LeftTrigger}", pos, Color.White);
-                pos.Y += 20; sb.DrawString(SampleFont, $"Right Trigger: {Gamepad.RightTrigger}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Left Trigger: {Gamepad.LeftTrigger.Value}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Right Trigger: {Gamepad.RightTrigger.Value}", pos, Color.White);
             }
         }
 

@@ -51,8 +51,8 @@ namespace Molten.Input
 
             _leftThumbstick = new GamepadStick(32767);
             _rightThumbstick = new GamepadStick(32767);
-            _leftTrigger = new GamepadTrigger();
-            _rightTrigger = new GamepadTrigger();
+            _leftTrigger = new GamepadTrigger(255);
+            _rightTrigger = new GamepadTrigger(255);
 
             //only get state and capabilities if connected.
             if (_isConnected)
@@ -177,8 +177,8 @@ namespace Molten.Input
                 // Update thumbsticks and triggers
                 _leftThumbstick.SetValues(_state.LeftThumbX, _state.LeftThumbY);
                 _rightThumbstick.SetValues(_state.RightThumbX, _state.RightThumbY);
-                _leftTrigger.SetPercentage(_state.LeftTrigger / 255f);
-                _rightTrigger.SetPercentage(_state.RightTrigger / 255f);
+                _leftTrigger.SetValue(_state.LeftTrigger);
+                _rightTrigger.SetValue(_state.RightTrigger);
 
                 // Update hold timers
                 foreach (int button in _heldTimers.Keys)

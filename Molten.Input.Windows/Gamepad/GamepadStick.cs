@@ -21,24 +21,24 @@ namespace Molten.Input
 
         internal void SetValues(int xValue, int yValue)
         {
-            _rawValue.X = xValue;
-            _rawValue.Y = yValue;
+            _rawValue.X = MathHelper.Clamp(xValue, -_maxValue, _maxValue);
+            _rawValue.Y = MathHelper.Clamp(yValue, -_maxValue, _maxValue); 
 
-            double dX = _maxValue * _deadzone.X;
-            double dY = _maxValue * _deadzone.Y;
+            double deadX = _maxValue * _deadzone.X;
+            double deadY = _maxValue * _deadzone.Y;
 
-            double finalRangeX = _maxValue - dX;
-            double finalRangeY = _maxValue - dY;
+            double finalRangeX = _maxValue - deadX;
+            double finalRangeY = _maxValue - deadY;
 
-            if (xValue <= -dX)
-                _value.X = (float)(Math.Min(0, xValue + dX) / finalRangeX);
+            if (_rawValue.X <= -deadX)
+                _value.X = (float)(Math.Min(0, _rawValue.X + deadX) / finalRangeX);
             else
-                _value.X = (float)(Math.Max(0, xValue - dX) / finalRangeX);
+                _value.X = (float)(Math.Max(0, _rawValue.X - deadX) / finalRangeX);
 
-            if (yValue <= -dY)
-                _value.Y = (float)(Math.Min(0, yValue + dY) / finalRangeY);
+            if (yValue <= -deadY)
+                _value.Y = (float)(Math.Min(0, _rawValue.Y + deadY) / finalRangeY);
             else
-                _value.Y = (float)(Math.Max(0, yValue - dY) / finalRangeY);
+                _value.Y = (float)(Math.Max(0, _rawValue.Y - deadY) / finalRangeY);
         }
 
         internal void Clear()
