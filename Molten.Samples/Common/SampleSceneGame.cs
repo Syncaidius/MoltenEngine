@@ -142,15 +142,15 @@ namespace Molten.Samples
 
             sb.DrawString(SampleFont, text, pos, Color.White);
 
+            // Gamepad instructions
+            text = "OR";
+            tSize = SampleFont.MeasureString(text);
+            pos.X = Window.Width / 2 + (-tSize.X / 2);
+            pos.Y -= tSize.Y + 5;
+            sb.DrawString(SampleFont, text, pos, Color.White);
+
             if (Gamepad.IsConnected)
             {
-                text = "OR";
-                tSize = SampleFont.MeasureString(text);
-                pos.X = Window.Width / 2 + (-tSize.X / 2);
-                pos.Y -= tSize.Y + 5;
-                sb.DrawString(SampleFont, text, pos, Color.White);
-
-                // Gamepad instructions
                 text = "Gamepad [LEFT STICK] or [D-PAD] to move -- [RIGHT STICK] to aim";
                 tSize = SampleFont.MeasureString(text);
                 pos.X = Window.Width / 2 + (-tSize.X / 2);
@@ -163,6 +163,15 @@ namespace Molten.Samples
                 pos.Y += 20; sb.DrawString(SampleFont, $"Right stick: {Gamepad.RightThumbstick.X},{Gamepad.RightThumbstick.Y}", pos, Color.White);
                 pos.Y += 20; sb.DrawString(SampleFont, $"Left Trigger: {Gamepad.LeftTrigger.Value}", pos, Color.White);
                 pos.Y += 20; sb.DrawString(SampleFont, $"Right Trigger: {Gamepad.RightTrigger.Value}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Pressed Buttons: {Gamepad.PressedButtons}", pos, Color.White);
+            }
+            else
+            {
+                text = "Connect a gamepad / controller";
+                tSize = SampleFont.MeasureString(text);
+                pos.X = Window.Width / 2 + (-tSize.X / 2);
+                pos.Y -= tSize.Y + 5;
+                sb.DrawString(SampleFont, text, pos, Color.White);
             }
         }
 
