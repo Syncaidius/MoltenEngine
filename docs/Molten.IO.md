@@ -1,22 +1,22 @@
 ﻿# Molten.IO  
 * Molten  
-    *  [BinaryEndianAgnosticReader](docs/Molten.IO/Molten/BinaryEndianAgnosticReader.md)  
-    *  [EmbeddedResource](docs/Molten.IO/Molten/EmbeddedResource.md)  
-    *  [EnhancedBinaryReader](docs/Molten.IO/Molten/EnhancedBinaryReader.md)  
-    *  [FlippedBinaryReader](docs/Molten.IO/Molten/FlippedBinaryReader.md)  
-    *  [ILogOutput](docs/Molten.IO/Molten/ILogOutput.md)  
-    *  [LogFileWriter](docs/Molten.IO/Molten/LogFileWriter.md)  
-    *  [Logger](docs/Molten.IO/Molten/Logger.md)  
-    *  [SettingBank](docs/Molten.IO/Molten/SettingBank.md)  
-    *  [SettingValue&lt;T&gt;](docs/Molten.IO/Molten/SettingValue_T_.md)  
-    *  [SettingValue](docs/Molten.IO/Molten/SettingValue.md)  
-    *  [SettingValueList&lt;T&gt;](docs/Molten.IO/Molten/SettingValueList_T_.md)  
-    *  [SettingValueList](docs/Molten.IO/Molten/SettingValueList.md)  
-    *  [SubscribedValueHandler&lt;T&gt;](docs/Molten.IO/Molten/SubscribedValueHandler_T_.md)  
+    *  [BinaryEndianAgnosticReader](/Molten.IO/Molten/BinaryEndianAgnosticReader.md)  
+    *  [EmbeddedResource](/Molten.IO/Molten/EmbeddedResource.md)  
+    *  [EnhancedBinaryReader](/Molten.IO/Molten/EnhancedBinaryReader.md)  
+    *  [FlippedBinaryReader](/Molten.IO/Molten/FlippedBinaryReader.md)  
+    *  [ILogOutput](/Molten.IO/Molten/ILogOutput.md)  
+    *  [LogFileWriter](/Molten.IO/Molten/LogFileWriter.md)  
+    *  [Logger](/Molten.IO/Molten/Logger.md)  
+    *  [SettingBank](/Molten.IO/Molten/SettingBank.md)  
+    *  [SettingValue&lt;T&gt;](/Molten.IO/Molten/SettingValue_T_.md)  
+    *  [SettingValue](/Molten.IO/Molten/SettingValue.md)  
+    *  [SettingValueList&lt;T&gt;](/Molten.IO/Molten/SettingValueList_T_.md)  
+    *  [SettingValueList](/Molten.IO/Molten/SettingValueList.md)  
+    *  [SubscribedValueHandler&lt;T&gt;](/Molten.IO/Molten/SubscribedValueHandler_T_.md)  
 * System  
-    *  [Object](docs/Molten.IO/System/Object.md)  
+    *  [Object](/Molten.IO/System/Object.md)  
 * System.IO  
-    *  [Stream](docs/Molten.IO/System/IO/Stream.md)  
-    *  [TextWriter](docs/Molten.IO/System/IO/TextWriter.md)  
+    *  [Stream](/Molten.IO/System/IO/Stream.md)  
+    *  [TextWriter](/Molten.IO/System/IO/TextWriter.md)  
 * Error  
 * T
