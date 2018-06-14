@@ -1,1 +1,9 @@
-﻿
+﻿  
+# Molten.Font.LTSH
+LTSH - Linear Threshold Table. <para />
+            The LTSH table relates to OpenType™ fonts containing TrueType outlines. <para />
+            There are noticeable improvements to fonts on the screen when instructions are carefully applied to the sidebearings. The gain in readability is offset by the necessity for the OS to grid fit the glyphs in order to find the actual advance width for the glyphs (since instructions may be moving the sidebearing points). <para />
+            The TrueType outline format already has two mechanisms to side step the speed issues: the 'hdmx' table, where precomputed advance widths may be saved for selected ppem sizes, and the 'vdmx' table, where precomputed vertical advance widths may be saved for selected ppem sizes. The 'LTSH' table (Linear ThreSHold) is a second, complementary method.
+            See: https://docs.microsoft.com/en-us/typography/opentype/spec/ltsh 
+  
+*  [YPels](docs/Molten.Font/Molten/Font/LTSH/YPels.md)

@@ -1,0 +1,3 @@
+﻿  
+# .System.IntPtr
+{{MISSING SUMMARY}}

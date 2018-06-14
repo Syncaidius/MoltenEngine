@@ -1,0 +1,3 @@
+﻿  
+# .SharpDX.Half
+{{MISSING SUMMARY}}
