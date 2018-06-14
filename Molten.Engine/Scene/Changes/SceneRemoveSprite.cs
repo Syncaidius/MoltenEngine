@@ -1,5 +1,4 @@
 ﻿using Molten.Graphics;
-using Molten.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,9 +22,7 @@ namespace Molten
             scene.RenderData.RemoveSprite(Sprite);
 
             // UI components are always IUpdatable.
-            if (Sprite is UIComponent com)
-                scene.UI.RemoveUI(com);
-            else if (Sprite is IUpdatable up)
+            if (Sprite is IUpdatable up)
                 scene.Updatables.Remove(up);
 
             Recycle(this);
