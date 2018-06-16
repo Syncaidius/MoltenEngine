@@ -102,7 +102,6 @@
     <Compile Include="Collections\ThreadedList.Enumerator.cs" />
     <Compile Include="Collections\ThreadedQueue.cs" />
     <Compile Include="Collections\ThreadedQueue.Enumerator.cs" />
-    <Compile Include="Collections\WatchableList.cs" />
     <Compile Include="Comparers\IntPtrComparer.cs" />
     <Compile Include="ConversionHelper.cs" />
     <Compile Include="EngineInterop.cs" />

@@ -9,7 +9,7 @@ namespace Molten.Graphics
     /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="SceneObject"/> to the root of a scene.</summary>
     internal class SpriteAdd : RenderSceneChange<SpriteAdd> 
     {
-        public ISprite Sprite;
+        public IRenderable2D Sprite;
 
         public override void Clear()
         {

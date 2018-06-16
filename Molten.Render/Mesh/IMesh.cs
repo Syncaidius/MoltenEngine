@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>A base interface for mesh implementations.</summary>
-    public interface IMesh : IRenderable, IDisposable
+    public interface IMesh : IRenderable3D, IDisposable
     {
         /// <summary>Gets whether or not the mesh was created as a dynamic mesh. 
         /// Dynamic meshes are preferable when the mesh's data will be changing at least once or more per frame.</summary>

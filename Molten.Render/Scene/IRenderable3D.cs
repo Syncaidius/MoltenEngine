@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public interface IRenderable
+    public interface IRenderable3D
     {
         bool IsVisible { get; set; }
     }

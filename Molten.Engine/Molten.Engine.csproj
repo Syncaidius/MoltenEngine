@@ -140,6 +140,8 @@
     <Compile Include="Threading\ThreadManager.cs" />
     <Compile Include="Threading\WorkerGroup.cs" />
     <Compile Include="Threading\WorkerThread.cs" />
+    <Compile Include="UI\UIComponent.cs" />
+    <Compile Include="UI\UIException.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Molten.Font\Molten.Font.csproj">

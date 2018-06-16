@@ -50,13 +50,13 @@ namespace Molten.Graphics
         /// </summary>
         public Color AmbientLightColor = Color.Black;
 
-        public abstract void AddObject(IRenderable obj, ObjectRenderData renderData);
+        public abstract void AddObject(IRenderable3D obj, ObjectRenderData renderData);
 
-        public abstract void RemoveObject(IRenderable obj, ObjectRenderData renderData);
+        public abstract void RemoveObject(IRenderable3D obj, ObjectRenderData renderData);
 
-        public abstract void AddSprite(ISprite sprite);
+        public abstract void AddSprite(IRenderable2D sprite);
 
-        public abstract void RemoveSprite(ISprite sprite);
+        public abstract void RemoveSprite(IRenderable2D sprite);
 
         /// <summary>
         /// Returns true if the current <see cref="SceneRenderData"/> has the specified flag(s).

@@ -340,7 +340,7 @@ namespace Molten.Graphics
         /// <summary>
         /// A container sprite for drawing glyphs to the font texture.
         /// </summary>
-        class FontContainer : ISprite
+        class FontContainer : IRenderable2D
         {
             SpriteFont _font;
 

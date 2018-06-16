@@ -9,7 +9,7 @@ namespace Molten
 {
     internal class SceneAddSprite : SceneChange<SceneAddSprite>
     {
-        public ISprite Sprite;
+        public IRenderable2D Sprite;
 
         public override void Clear()
         {

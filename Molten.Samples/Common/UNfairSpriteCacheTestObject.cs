@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class UnfairSpriteCacheTestObject : ISprite
+    public class UnfairSpriteCacheTestObject : IRenderable2D
     {
         SpriteBatchCache _cache;
 
@@ -32,7 +32,7 @@ namespace Molten.Samples
 
             for (int i = 0; i < 50000; i++)
             {
-                ISprite s;
+                IRenderable2D s;
                 bool useTextured = rng.Next(0, 5001) < 2500;
                 Color col = new Color()
                 {

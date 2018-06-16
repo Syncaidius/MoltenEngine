@@ -26,7 +26,7 @@ namespace Molten
 
         Dictionary<Type, List<SceneComponent>> _componentsByType;
         List<SceneComponent> _components;
-        WatchableList<SceneObject> _children;
+        ListObserver<SceneObject> _children;
         List<SceneObject> _childrenToUpdate;
         bool _childrenDirty;
 
@@ -42,9 +42,9 @@ namespace Molten
         internal SceneObject(Engine engine, ObjectUpdateFlags updateFlags = ObjectUpdateFlags.Children | ObjectUpdateFlags.Self, bool visible = true)
         {
             _engine = engine;
-            _components = new WatchableList<SceneComponent>();
+            _components = new ListObserver<SceneComponent>();
             _componentsByType = new Dictionary<Type, List<SceneComponent>>();
-            _children = new WatchableList<SceneObject>();
+            _children = new ListObserver<SceneObject>();
             _childrenToUpdate = new List<SceneObject>();
             _transform = new SceneObjectTransform(this);
 
@@ -57,26 +57,26 @@ namespace Molten
             IsVisible = visible;
         }
 
-        private void _children_OnItemRemoved(WatchableList<SceneObject> list, SceneObject item)
+        private void _children_OnItemRemoved(ListObserver<SceneObject> list, SceneObject item)
         {
             item.Parent = null;
             _childrenDirty = true;
         }
 
-        private void _children_OnItemAdded(WatchableList<SceneObject> list, SceneObject item)
+        private void _children_OnItemAdded(ListObserver<SceneObject> list, SceneObject item)
         {
             item.Parent = this;
             _childrenDirty = true;
         }
 
-        private void _children_OnRangeRemoved(WatchableList<SceneObject> list, IEnumerable<SceneObject> items, int itemsStartIndex)
+        private void _children_OnRangeRemoved(ListObserver<SceneObject> list, IEnumerable<SceneObject> items, int itemsStartIndex)
         {
             _childrenDirty = true;
             foreach (SceneObject obj in items)
                 obj.Parent = null;
         }
 
-        private void _children_OnRangeAdded(WatchableList<SceneObject> list, IEnumerable<SceneObject> items, int itemsStartIndex)
+        private void _children_OnRangeAdded(ListObserver<SceneObject> list, IEnumerable<SceneObject> items, int itemsStartIndex)
         {
             foreach (SceneObject obj in items)
                 obj.Parent = this;
@@ -210,10 +210,16 @@ namespace Molten
             }
         }
 
+        Scene IUpdatable.Scene
+        {
+            get => _scene;
+            set => this.Scene = value;
+        }
+
         public SceneObjectTransform Transform => _transform;
 
         /// <summary>Gets an observable list of all child <see cref="SceneObject"/> instances.</summary>
-        public WatchableList<SceneObject> Children => _children;
+        public ListObserver<SceneObject> Children => _children;
 
         /// <summary>Gets the </summary>
         public SceneObject Parent { get; internal set; }

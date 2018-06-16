@@ -17,7 +17,7 @@ namespace Molten.Samples
         SceneObject _parent;
         SceneObject _child;
         Random _rng;
-        List<ISprite> _sprites;
+        List<IRenderable2D> _sprites;
         IMesh<VertexTexture> _mesh;
 
         public SpriteFontStress(EngineSettings settings = null) : base("SpriteFont Stress Test", settings)
@@ -29,7 +29,7 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
 
-            _sprites = new List<ISprite>();
+            _sprites = new List<IRenderable2D>();
             _rng = new Random();
             throw new NotImplementedException(); // TODO: re-write below
             //_font = engine.Renderer.Resources.CreateFont("arial", 36);

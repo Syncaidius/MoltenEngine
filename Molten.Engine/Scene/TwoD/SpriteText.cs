@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public class SpriteText : ISprite
+    public class SpriteText : IRenderable2D
     {
         public SpriteFont Font;
         public Vector2F Position;

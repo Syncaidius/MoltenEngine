@@ -10,7 +10,7 @@ namespace Molten.Graphics
     /// <summary>
     /// A helper object for testing or drawing with sprite batch.
     /// </summary>
-    public class SpriteBatchContainer : ISprite
+    public class SpriteBatchContainer : IRenderable2D
     {
         /// <summary>
         /// Called when the renderer draws the object.

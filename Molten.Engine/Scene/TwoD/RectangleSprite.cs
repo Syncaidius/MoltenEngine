@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public class RectangleSprite : ISprite
+    public class RectangleSprite : IRenderable2D
     {
         public Rectangle Destination;
         public float Rotation;

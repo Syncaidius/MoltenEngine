@@ -114,8 +114,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderFrameSnapshot.cs" />
     <Compile Include="Scene\ICamera.cs" />
-    <Compile Include="Scene\IRenderable.cs" />
-    <Compile Include="Scene\ISprite.cs" />
+    <Compile Include="Scene\IRenderable3D.cs" />
+    <Compile Include="Scene\IRenderable2D.cs" />
     <Compile Include="Scene\Lights\LightData.cs" />
     <Compile Include="Scene\Lights\LightList.cs" />
     <Compile Include="Scene\ObjectRenderData.cs" />

@@ -15,7 +15,7 @@ namespace Molten.Graphics
         SceneRenderFlags _previousFlags;
 
         internal Dictionary<Renderable, List<ObjectRenderData>> Renderables;
-        internal List<ISprite> Sprites;
+        internal List<IRenderable2D> Sprites;
         internal Matrix4F View = Matrix4F.Identity;
         internal Matrix4F Projection;
         internal Matrix4F ViewProjection;
@@ -32,7 +32,7 @@ namespace Molten.Graphics
             Renderables = new Dictionary<Renderable, List<ObjectRenderData>>();
 
             // Set up one sprite layer.
-            Sprites = new List<ISprite>();
+            Sprites = new List<IRenderable2D>();
             _previousFlags = Flags;
             _chain = new RenderChain(renderer, this);
             _chain.Rebuild();
@@ -40,7 +40,7 @@ namespace Molten.Graphics
             _overlay = new SceneDebugOverlay(renderer, this);
         }
 
-        public override void AddObject(IRenderable obj, ObjectRenderData renderData)
+        public override void AddObject(IRenderable3D obj, ObjectRenderData renderData)
         {
             RenderableAdd change = RenderableAdd.Get();
             change.Renderable = obj as Renderable;
@@ -48,7 +48,7 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        public override void RemoveObject(IRenderable obj, ObjectRenderData renderData)
+        public override void RemoveObject(IRenderable3D obj, ObjectRenderData renderData)
         {
             RenderableRemove change = RenderableRemove.Get();
             change.Renderable = obj as Renderable;
@@ -56,14 +56,14 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        public override void AddSprite(ISprite sprite)
+        public override void AddSprite(IRenderable2D sprite)
         {
             SpriteAdd change = SpriteAdd.Get();
             change.Sprite = sprite;
             _pendingChanges.Enqueue(change);
         }
 
-        public override void RemoveSprite(ISprite sprite)
+        public override void RemoveSprite(IRenderable2D sprite)
         {
             SpriteRemove change = SpriteRemove.Get();
             change.Sprite = sprite;

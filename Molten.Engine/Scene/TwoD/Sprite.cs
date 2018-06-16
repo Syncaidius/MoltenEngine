@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public class Sprite : ISprite
+    public class Sprite : IRenderable2D
     {
         public ITexture2D Texture;
         public Rectangle Source;

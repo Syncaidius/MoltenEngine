@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public interface ISprite
+    public interface IRenderable2D
     {
         void Render(SpriteBatch sb);
     }

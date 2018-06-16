@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public interface ISceneDebugOverlay : ISprite
+    public interface ISceneDebugOverlay : IRenderable2D
     {
         /// <summary>
         /// Sets the current debug overlay page.

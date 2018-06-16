@@ -13,7 +13,7 @@ namespace Molten
     {
         internal SceneRenderData RenderData;
         internal List<SceneObject> Objects;
-        internal List<ISprite> Sprites;
+        internal List<IRenderable2D> Sprites;
         internal HashSet<IUpdatable> Updatables;
 
         ThreadedQueue<SceneChange> _pendingChanges;
@@ -30,7 +30,7 @@ namespace Molten
 
             engine.AddScene(this);
             Objects = new List<SceneObject>();
-            Sprites = new List<ISprite>();
+            Sprites = new List<IRenderable2D>();
             Updatables = new HashSet<IUpdatable>();
             _pendingChanges = new ThreadedQueue<SceneChange>();
 
@@ -68,7 +68,7 @@ namespace Molten
         /// <summary>Adds a sprite to the scene. This is a deferred action which will be performed on the scene's next update.</summary>
         /// <param name="sprite">The sprite to be added.</param>
         /// <param name="layer">The layer to which the sprite should be added.</param>
-        public void AddSprite(ISprite sprite)
+        public void AddSprite(IRenderable2D sprite)
         {
             SceneAddSprite change = SceneAddSprite.Get();
             change.Sprite = sprite;
@@ -78,7 +78,7 @@ namespace Molten
         /// <summary>Removes a sprite from the scene. This is a deferred action which will be performed on the scene's next update.</summary>
         /// <param name="sprite">The sprite to be removed.</param>
         /// <param name="layer">The layer from which the sprite should be removed.</param>
-        public void RemoveSprite(ISprite sprite)
+        public void RemoveSprite(IRenderable2D sprite)
         {
             SceneRemoveSprite change = SceneRemoveSprite.Get();
             change.Sprite = sprite;
@@ -153,7 +153,7 @@ namespace Molten
 
         /// <summary>
         /// Gets the scene's debug overlay. 
-        /// The overlay can be added to another scene as an <see cref="ISprite"/> object if you want to render the overlay into a different scene.
+        /// The overlay can be added to another scene as an <see cref="IRenderable2D"/> object if you want to render the overlay into a different scene.
         /// </summary>
         public ISceneDebugOverlay DebugOverlay => RenderData.DebugOverlay;
     }

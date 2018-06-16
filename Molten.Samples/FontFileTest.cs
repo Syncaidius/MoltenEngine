@@ -17,7 +17,7 @@ namespace Molten.Samples
         SceneObject _parent;
         SceneObject _child;
         Random _rng;
-        List<ISprite> _sprites;
+        List<IRenderable2D> _sprites;
         IMesh<VertexTexture> _mesh;
         SpriteBatchContainer _container;
         FontFile _fontFile;
@@ -41,7 +41,7 @@ namespace Molten.Samples
         {
             base.OnInitialize(engine);
 
-            _sprites = new List<ISprite>();
+            _sprites = new List<IRenderable2D>();
             _rng = new Random();
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SpriteCacheTestObject : ISprite
+    public class SpriteCacheTestObject : IRenderable2D
     {
         SpriteBatchCache _cache;
 

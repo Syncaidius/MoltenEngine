@@ -39,7 +39,7 @@ namespace Molten.Samples
         {
             for (int i = 0; i < 50000; i++)
             {
-                ISprite s;
+                IRenderable2D s;
                 bool useTextured = Rng.Next(0, 5001) < 2500;
                 if (useTextured)
                 {
