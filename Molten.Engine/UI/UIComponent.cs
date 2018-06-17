@@ -18,13 +18,41 @@ namespace Molten.UI
 
         public event UIComponentParentHandler OnChildRemoved;
 
+        List<UIComponent> _children;
+        Dictionary<string, UIComponent> _childrenByName;
 
         int _lockerValue = 0;
-        List<UIComponent> _children = new List<UIComponent>();
-        Dictionary<string, UIComponent> _childrenByName = new Dictionary<string, UIComponent>();
         UIComponent _parent;
         Scene _scene;
         string _name;
+
+        Rectangle _localBounds;
+        Rectangle _globalBounds;
+        Rectangle _clippingBounds;
+
+        UIMargin _margin;
+        UIPadding _clipPadding;
+
+        public UIComponent()
+        {
+            _children = new List<UIComponent>();
+            _childrenByName = new Dictionary<string, UIComponent>();
+            _margin = new UIMargin();
+            _margin.OnChanged += _margin_OnChanged;
+
+            _clipPadding = new UIPadding(0);
+            _clipPadding.OnChanged += _clipPadding_OnChanged;
+        }
+
+        private void _margin_OnChanged(UIMargin o)
+        {
+            UpdateBounds();
+        }
+
+        private void _clipPadding_OnChanged(UIPadding o)
+        {
+            UpdateBounds();
+        }
 
         public void Update(Timing time)
         {
@@ -42,7 +70,11 @@ namespace Molten.UI
         public UIComponent Parent
         {
             get => _parent;
-            internal set => _parent = value;
+            internal set
+            {
+                _parent = value;
+                UpdateBounds();
+            }
         }
 
         public Scene Scene
@@ -52,19 +84,6 @@ namespace Molten.UI
         }
 
         private void Lock(Action callback)
-        {
-            SpinWait spin = new SpinWait();
-            while (0 != Interlocked.Exchange(ref _lockerValue, 1))
-            {
-                spin.SpinOnce();
-            }
-
-            callback();
-
-            Interlocked.Exchange(ref _lockerValue, 0);
-        }
-
-        private void Lock(Func<UIComponent> callback)
         {
             SpinWait spin = new SpinWait();
             while (0 != Interlocked.Exchange(ref _lockerValue, 1))
@@ -141,6 +160,102 @@ namespace Molten.UI
             OnChildRemoved?.Invoke(this, child);
         }
 
+        /// <summary>Updates the bounds (position, width, height, etc) of all child components.</summary>
+        protected void UpdateBounds()
+        {
+            Rectangle parentBounds = _parent != null ? _parent.ClippingBounds : Rectangle.Empty;
+
+            //handle margins
+            if (_parent != null)
+            {
+                if (_margin.DockLeft)
+                    _localBounds.X = _margin.Left;
+
+                if (_margin.DockRight)
+                {
+                    if (_margin.DockLeft)
+                        _localBounds.Width = parentBounds.Width - (_localBounds.X + _margin.Right);
+                    else
+                        _localBounds.X = parentBounds.Width - (_localBounds.Width + _margin.Right);
+                }
+
+                if (_margin.DockTop)
+                    _localBounds.Y = _margin.Top;
+
+                if (_margin.DockBottom)
+                {
+                    if (_margin.DockTop)
+                        _localBounds.Height = parentBounds.Height - (_localBounds.Y + _margin.Bottom);
+                    else
+                        _localBounds.Y = parentBounds.Height - (_localBounds.Height + _margin.Bottom);
+                }
+            }
+
+            _globalBounds = new Rectangle()
+            {
+                X = (int)parentBounds.X + _localBounds.X,
+                Y = (int)parentBounds.Y + _localBounds.Y,
+                Width = _localBounds.Width,
+                Height = _localBounds.Height,
+            };
+
+            _clipPadding.SuppressEvents = true;
+            OnApplyClipPadding();
+            _clippingBounds = _clipPadding.ApplyPadding(_globalBounds);
+
+            //force the clip bounds to fit inside its parent and never go outside of it.
+            if (_parent != null)
+            {
+                Rectangle _parentClip = _parent.ClippingBounds;
+
+                //clip left and top sides
+                if (_clippingBounds.X < _parentClip.X)
+                {
+                    int xDif = _parentClip.X - _clippingBounds.X;
+
+                    _clippingBounds.Width = Math.Max(_clippingBounds.Width - xDif, 0);
+                    _clippingBounds.X = _parentClip.X;
+                }
+
+                if (_clippingBounds.Y < _parentClip.Y)
+                {
+                    int yDif = _parentClip.Y - _clippingBounds.Y;
+
+                    _clippingBounds.Height = Math.Max(_clippingBounds.Height - yDif, 0);
+                    _clippingBounds.Y = _parentClip.Y;
+                }
+
+                //cap bottom and right sides (offset by 1)
+                if (_clippingBounds.X > _parentClip.Right - 1)
+                    _clippingBounds.X = _parentClip.Right - 1;
+
+                if (_clippingBounds.Y > _parentClip.Bottom - 1)
+                    _clippingBounds.Y = _parentClip.Bottom - 1;
+
+
+                if (_clippingBounds.Right >= _parentClip.Right)
+                    _clippingBounds.Width = _parentClip.Right - _clippingBounds.X;
+
+                if (_clippingBounds.Bottom >= _parentClip.Bottom)
+                    _clippingBounds.Height = _parentClip.Bottom - _clippingBounds.Y;
+            }
+
+            OnUpdateBounds();
+            _clipPadding.SuppressEvents = false;
+
+            //update bounds of children
+            foreach (UIComponent child in _children)
+                child.UpdateBounds();
+        }
+
+        /// <summary>Called right before padding is applied to the global bounds to form the clipping bounds.</summary>
+        protected virtual void OnApplyClipPadding() { }
+
+        /// <summary>
+        /// Called after the current <see cref="UIComponent"/> bounds are recalculated after a change.
+        /// </summary>
+        protected virtual void OnUpdateBounds() { }
+
         /// <summary>
         /// Gets a child of the current <see cref="UIComponent"/>, with the specified name, or null if it doesn't exist.
         /// </summary>
@@ -175,6 +290,22 @@ namespace Molten.UI
         }
 
         /// <summary>
+        /// Gets the global bounds of the current <see cref="UIComponent"/>.
+        /// </summary>
+        public Rectangle GlobalBounds
+        {
+            get { return _globalBounds; }
+        }
+
+        /// <summary>
+        /// Gets the clipping bounds of the current <see cref="UIComponent"/>.
+        /// </summary>
+        public Rectangle ClippingBounds
+        {
+            get { return _clippingBounds; }
+        }
+
+        /// <summary>
         /// Gets or sets the name of the current <see cref="UIComponent"/>.
         /// </summary>
         public string Name
@@ -184,6 +315,79 @@ namespace Molten.UI
             {
                 // TODO if the name has changed, update name on parent (via a lock)
                 throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="UIPadding"/> instance containing padding values for determining the clipping region of the current <see cref="UIComponent"/>.
+        /// </summary>
+        public UIPadding ClipPadding
+        {
+            get { return _clipPadding; }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="UIMargin"/> instance containing margin values for the current <see cref="UIComponent"/>.
+        /// </summary>
+        public UIMargin Margin
+        {
+            get { return _margin; }
+        }
+
+        /// <summary>
+        /// Gets or sets the local bounds of the current <see cref="UIComponent"/>.
+        /// </summary>
+        public Rectangle LocalBounds
+        {
+            get => _localBounds;
+            set
+            {
+                _localBounds = value;
+                Lock(UpdateBounds);
+            }
+        }
+
+        /// <summary>Gets or sets the X position of the current <see cref="UIComponent"/>.</summary>
+        public int X
+        {
+            get { return _localBounds.X; }
+            set
+            {
+                _localBounds.X = value;
+                Lock(UpdateBounds);
+            }
+        }
+
+        /// <summary>Gets or sets the Y position of the current <see cref="UIComponent"/>.</summary>
+        public int Y
+        {
+            get { return _localBounds.Y; }
+            set
+            {
+                _localBounds.Y = value;
+                Lock(UpdateBounds);
+            }
+        }
+
+        /// <summary>Gets or sets the width of the current <see cref="UIComponent"/>.</summary>
+        public int Width
+        {
+            get { return _localBounds.Width; }
+            set
+            {
+                _localBounds.Width = value;
+                Lock(UpdateBounds);
+            }
+        }
+
+        /// <summary>Gets or sets the height of the current <see cref="UIComponent"/>.</summary>
+        public int Height
+        {
+            get { return _localBounds.Height; }
+            set
+            {
+                _localBounds.Height = value;
+                Lock(UpdateBounds);
             }
         }
     }

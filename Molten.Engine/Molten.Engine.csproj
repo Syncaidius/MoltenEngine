@@ -142,6 +142,8 @@
     <Compile Include="Threading\WorkerThread.cs" />
     <Compile Include="UI\UIComponent.cs" />
     <Compile Include="UI\UIException.cs" />
+    <Compile Include="UI\UIMargin.cs" />
+    <Compile Include="UI\UIPadding.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Molten.Font\Molten.Font.csproj">
