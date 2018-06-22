@@ -111,7 +111,7 @@ namespace Molten.UI
             }
         }
 
-        /// <summary>Gets or sets whether or not events on the <see cref="UIPadding"/> instance are suppressed when changing values.</summary>
-        public bool SuppressEvents { get; set; }
+        /// <summary>[Internal] Gets or sets whether or not events on the <see cref="UIPadding"/> instance are suppressed when changing values.</summary>
+        internal bool SuppressEvents { get; set; }
     }
 }

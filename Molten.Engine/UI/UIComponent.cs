@@ -22,6 +22,8 @@ namespace Molten.UI
         Dictionary<string, UIComponent> _childrenByName;
 
         int _lockerValue = 0;
+        Thread _lockOwner = null;
+
         UIComponent _parent;
         Scene _scene;
         string _name;
@@ -46,12 +48,12 @@ namespace Molten.UI
 
         private void _margin_OnChanged(UIMargin o)
         {
-            UpdateBounds();
+            Lock(UpdateBounds);
         }
 
         private void _clipPadding_OnChanged(UIPadding o)
         {
-            UpdateBounds();
+            Lock(UpdateBounds);
         }
 
         public void Update(Timing time)
@@ -85,19 +87,30 @@ namespace Molten.UI
 
         private void Lock(Action callback)
         {
-            SpinWait spin = new SpinWait();
-            while (0 != Interlocked.Exchange(ref _lockerValue, 1))
+            // If the same thread which holds the lock is calling again, skip the lock logic.
+            // This is so nested calls on the same thread cannot cause it to deadlock itself.
+            if (_lockOwner != Thread.CurrentThread)
             {
-                spin.SpinOnce();
+                SpinWait spin = new SpinWait();
+                while (0 != Interlocked.Exchange(ref _lockerValue, 1))
+                {
+                    spin.SpinOnce();
+                }
+
+                _lockOwner = Thread.CurrentThread;
+                callback();
+                _lockOwner = null;
+                Interlocked.Exchange(ref _lockerValue, 0);
             }
-
-            callback();
-
-            Interlocked.Exchange(ref _lockerValue, 0);
+            else
+            {
+                callback();
+            }
         }
 
         private void ThrowReleaseLock(string message)
         {
+            _lockOwner = null;
             Interlocked.Exchange(ref _lockerValue, 0);
             throw new UIException(this, message);
 
