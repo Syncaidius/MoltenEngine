@@ -114,6 +114,7 @@ namespace Molten.Graphics
             CreateSwapChain(_displayMode, true, _form.Handle);
 
             // Subscribe to all the needed form events
+            _form.AllowUserResizing = true;
             _form.UserResized += _form_Resized;
             _form.Move += _form_Moved;
             _form.FormClosing += _form_FormClosing;
@@ -175,8 +176,7 @@ namespace Molten.Graphics
             switch (_mode)
             {
                 case WindowMode.Windowed:
-                    _form.WindowState = FormWindowState.Maximized;
-                    _form.FormBorderStyle = FormBorderStyle.FixedSingle;
+                    _form.FormBorderStyle = FormBorderStyle.Sizable;
 
                     // Calculate offset due to borders and title bars, based on the current mode of the window.
                     System.Drawing.Rectangle clientArea = _form.ClientRectangle;
