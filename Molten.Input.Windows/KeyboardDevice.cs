@@ -86,10 +86,12 @@ namespace Molten.Input
         private void Surface_OnPostResize(ITexture texture)
         {
             IntPtr? handle = GetWindowHandle(_surface);
-            _windowHandle = handle.Value;
 
             if (handle != null)
+            {
+                _windowHandle = handle.Value;
                 CreateHook();
+            }
         }
 
         private void CreateHook()

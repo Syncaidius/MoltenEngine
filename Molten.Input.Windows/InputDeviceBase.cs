@@ -62,6 +62,7 @@ namespace Molten.Input
             // Check if the surface handle is a form. 
             // If not, find it's parent form.
             Control ctrl = Control.FromHandle(surface.Handle);
+            Control ctrlTest = Control.FromHandle(surface.Handle);
             if (ctrl == null)
                 return null;
 
@@ -72,9 +73,9 @@ namespace Molten.Input
             else
             {
                 frm = null;
-                while (frm == null)
+                while (ctrl != null)
                 {
-                    frm = ctrl.Parent as Form;
+                    frm = ctrl as Form;
                     if (frm == null)
                         ctrl = ctrl.Parent;
                     else

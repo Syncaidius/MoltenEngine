@@ -68,7 +68,9 @@ namespace Molten.Input
         private void _surface_OnPostResize(ITexture texture)
         {
             IntPtr? handle = GetWindowHandle(_surface);
-            _windowHandle = handle.Value;
+
+            if (handle != null)
+                _windowHandle = handle.Value;
         }
 
         public override void OpenControlPanel()
