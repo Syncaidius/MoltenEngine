@@ -22,6 +22,10 @@ namespace Molten.Graphics
         string _title;
         bool _disposing;
 
+        System.Drawing.Size? _preBorderlessSize;
+        System.Drawing.Point? _preBorderlessLocation;
+        System.Drawing.Rectangle? _preBorderlessScreenArea;
+
         WindowMode _mode = WindowMode.Windowed;
         WindowMode _requestedMode = WindowMode.Windowed;
 
@@ -171,6 +175,7 @@ namespace Molten.Graphics
 
             // Update current mode
             _mode = newMode;
+            System.Drawing.Rectangle clientArea = _form.ClientRectangle;
 
             // Handle new mode
             switch (_mode)
@@ -179,25 +184,56 @@ namespace Molten.Graphics
                     _form.FormBorderStyle = FormBorderStyle.Sizable;
 
                     // Calculate offset due to borders and title bars, based on the current mode of the window.
-                    System.Drawing.Rectangle clientArea = _form.ClientRectangle;
-                    System.Drawing.Rectangle screenArea = _form.RectangleToScreen(clientArea);
-
-                    _bounds = new Rectangle()
+                    if (_preBorderlessLocation != null && _preBorderlessSize != null)
                     {
-                        X = screenArea.X,
-                        Y = screenArea.Y,
-                        Width = screenArea.Width,
-                        Height = screenArea.Height,
-                    };
+                        _form.Move -= _form_Moved;
+                        _form.Location = _preBorderlessLocation.Value;
+                        _form.Size = _preBorderlessSize.Value;
+                        System.Drawing.Rectangle screenArea = _preBorderlessScreenArea.Value;
+                        _form.Move += _form_Moved;
+
+                        _bounds = new Rectangle()
+                        {
+                            X = screenArea.X,
+                            Y = screenArea.Y,
+                            Width = screenArea.Width,
+                            Height = screenArea.Height,
+                        };
+
+                        // Clear pre-borderless dimensions.
+                        _preBorderlessLocation = null;
+                        _preBorderlessSize = null;
+                        _preBorderlessScreenArea = null;
+                    }
+                    else
+                    { 
+
+                        System.Drawing.Rectangle screenArea = _form.RectangleToScreen(clientArea);
+                        _bounds = new Rectangle()
+                        {
+                            X = screenArea.X,
+                            Y = screenArea.Y,
+                            Width = screenArea.Width,
+                            Height = screenArea.Height,
+                        };
+                    }
 
                     break;
 
                 case WindowMode.Borderless:
+                    // Store pre-borderless form dimensions.
+                    if (_preBorderlessLocation == null && _preBorderlessSize == null)
+                    {
+                        _preBorderlessLocation = _form.Location;
+                        _preBorderlessSize = _form.Size;
+                        _preBorderlessScreenArea = _form.RectangleToScreen(clientArea);
+                    }
+
                     System.Drawing.Rectangle dBounds = Screen.GetBounds(_form);
 
                     _form.WindowState = FormWindowState.Normal;
                     _form.FormBorderStyle = FormBorderStyle.None;
-                    _form.TopMost = true;
+                    _form.TopMost = false;
 
                     _form.Bounds = dBounds;
                     _bounds = new Rectangle()
