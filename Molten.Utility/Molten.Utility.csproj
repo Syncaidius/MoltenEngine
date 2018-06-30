@@ -92,6 +92,7 @@
     <Compile Include="ArrayHelper.cs" />
     <Compile Include="BindableValue.cs" />
     <Compile Include="Collections\ExpansionMode.cs" />
+    <Compile Include="Collections\WatchableList.cs" />
     <Compile Include="Collections\ObjectPool.cs" />
     <Compile Include="Collections\RawList.cs" />
     <Compile Include="Collections\SpeedTable.cs" />

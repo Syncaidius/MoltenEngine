@@ -88,7 +88,7 @@ namespace Molten.UI
         private void Lock(Action callback)
         {
             // If the same thread which holds the lock is calling again, skip the lock logic.
-            // This is so nested calls on the same thread cannot cause it to deadlock itself.
+            // This is so nested lock calls on the same thread cannot cause it to deadlock itself.
             if (_lockOwner != Thread.CurrentThread)
             {
                 SpinWait spin = new SpinWait();
