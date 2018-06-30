@@ -87,7 +87,10 @@ namespace Molten.Graphics
 
         internal void MarkForDisposal(PipelineObject pObject)
         {
-            _objectsToDispose.Enqueue(pObject);
+            if (IsDisposed)
+                pObject.PipelineDispose();
+            else
+                _objectsToDispose.Enqueue(pObject);
         }
 
         internal void DisposeMarkedObjects()

@@ -330,13 +330,13 @@ namespace Molten.Graphics
             });
 
             _resourceManager.Dispose();
-            _device?.Dispose();
             _displayManager?.Dispose();
-            _log.Dispose();
             SpriteBatcher.Dispose();
 
             StaticVertexBuffer.Dispose();
             DynamicVertexBuffer.Dispose();
+            _device?.Dispose();
+            _log.Dispose();
         }
 
         /// <summary>
