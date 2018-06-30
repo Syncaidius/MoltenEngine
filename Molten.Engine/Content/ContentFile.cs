@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Molten
 {
-    internal class ContentFile
+    internal class ContentFile : IDisposable
     {
         FileInfo _file;
 
@@ -16,6 +16,19 @@ namespace Molten
         internal Type[] GetTypeArray()
         {
             return _segments.Keys.ToArray();
+        }
+
+        public void Dispose()
+        {
+            ICollection<ThreadedList<object>> lists = _segments.Values;
+            foreach(ThreadedList<object> list in lists)
+            {
+                foreach(object obj in list)
+                {
+                    if (obj is IDisposable disposable)
+                        disposable.Dispose();
+                }
+            }
         }
 
         internal void AddObject(Type t, object obj)

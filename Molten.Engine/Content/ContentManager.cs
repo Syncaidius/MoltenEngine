@@ -428,6 +428,11 @@ namespace Molten
         protected override void OnDispose()
         {
             _workers.Dispose();
+
+            ICollection<ContentFile> files = _content.Values;
+            foreach (ContentFile file in files)
+                file.Dispose();
+
             base.OnDispose();
         }
 

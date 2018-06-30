@@ -38,7 +38,7 @@ namespace Molten
         public void Dispose()
         {
             if (_isDisposed)
-                throw new ObjectDisposedException("Object has already been disposed.");
+                return;
 
             _isDisposed = true;
             OnDisposing?.Invoke(this);
