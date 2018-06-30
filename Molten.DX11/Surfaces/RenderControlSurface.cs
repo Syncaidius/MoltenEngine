@@ -15,6 +15,7 @@ namespace Molten.Graphics
     {
         RenderLoop _loop;
         RenderControl _control;
+        Control _parent;
         Rectangle _bounds;
         IntPtr _handle;
         DisplayMode _displayMode;
@@ -82,7 +83,7 @@ namespace Molten.Graphics
             Device.Settings.VSync.OnChanged += VSync_OnChanged;
 
             //set default bounds
-            UpdateFormMode();
+            UpdateControlMode();
 
             ModeDescription modeDesc = new ModeDescription()
             {
@@ -98,8 +99,10 @@ namespace Molten.Graphics
             CreateSwapChain(_displayMode, true, _control.Handle);
 
             // Subscribe to all the needed form events
+            DetectRootParent();
             _control.Resize += _control_Resized;
             _control.Move += _control_Moved;
+            _control.ParentChanged += _control_ParentChanged;
             _control.HandleDestroyed += _control_HandleDestroyed;
             _control.VisibleChanged += _control_VisibleChanged;
 
@@ -111,6 +114,31 @@ namespace Molten.Graphics
 
             // Ignore all windows events
             Device.DisplayManager.DxgiFactory.MakeWindowAssociation(_control.Handle, WindowAssociationFlags.IgnoreAltEnter);
+        }
+
+        private void _control_ParentChanged(object sender, EventArgs e)
+        {
+            // Unsubscribe from old parent
+            if(_parent != null)
+            {
+                _parent.Move -= _control_Moved;
+            }
+
+            DetectRootParent();
+            UpdateControlMode();
+        }
+
+        private void DetectRootParent()
+        {
+            Control candidate = _control;
+            while(candidate.Parent != null)
+                candidate = _control.Parent;
+
+            _parent = candidate;
+
+            // Subscribe to new parent
+            if (_parent != null)
+                _parent.Move += _control_Moved;
         }
 
         private void _control_VisibleChanged(object sender, EventArgs e)
@@ -125,7 +153,7 @@ namespace Molten.Graphics
 
         void _control_Moved(object sender, EventArgs e)
         {
-            UpdateFormMode();
+            UpdateControlMode();
         }
 
         void _control_Resized(object sender, EventArgs e)
@@ -142,7 +170,7 @@ namespace Molten.Graphics
             SetVsync(newValue);
         }
 
-        private void UpdateFormMode()
+        private void UpdateControlMode()
         {
             // Calculate offset due to borders and title bars, based on the current mode of the window.
             System.Drawing.Rectangle clientArea = _control.ClientRectangle;
@@ -156,16 +184,6 @@ namespace Molten.Graphics
                 Height = screenArea.Height,
             };
         }
-    
-        protected override void BeforeResize()
-        {
-            base.BeforeResize();
-        }
-
-        protected override void AfterResize()
-        {
-            base.AfterResize();
-        }
 
         protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
@@ -177,13 +195,13 @@ namespace Molten.Graphics
 
                 // TODO validate display mode here. If invalid or unsupported by display, choose nearest supported.
 
-                UpdateFormMode();
+                UpdateControlMode();
                 _swapChain.ResizeTarget(ref _displayMode.Description);
                 Device.Log.WriteLine($"Form surface '{_title}' resized to {newWidth}x{newHeight}");
             }
             else
             {
-                UpdateFormMode();
+                UpdateControlMode();
             }
 
             base.OnSetSize(newWidth, newHeight, newDepth, newMipMapCount, newArraySize, newFormat);

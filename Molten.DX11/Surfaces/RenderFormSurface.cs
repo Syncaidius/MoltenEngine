@@ -247,16 +247,6 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void BeforeResize()
-        {
-            base.BeforeResize();
-        }
-
-        protected override void AfterResize()
-        {
-            base.AfterResize();
-        }
-
         protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
             if (_displayMode.Width != newWidth || _displayMode.Height != newHeight)
