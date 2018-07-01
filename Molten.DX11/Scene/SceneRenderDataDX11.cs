@@ -56,14 +56,14 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        public override void AddSprite(IRenderable2D sprite)
+        public override void AddObject(IRenderable2D sprite)
         {
             SpriteAdd change = SpriteAdd.Get();
             change.Sprite = sprite;
             _pendingChanges.Enqueue(change);
         }
 
-        public override void RemoveSprite(IRenderable2D sprite)
+        public override void RemoveObject(IRenderable2D sprite)
         {
             SpriteRemove change = SpriteRemove.Get();
             change.Sprite = sprite;

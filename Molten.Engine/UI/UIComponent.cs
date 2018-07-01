@@ -10,12 +10,22 @@ using System.Threading.Tasks;
 namespace Molten.UI
 {
     public delegate void UIComponentHandler(UIComponent component);
+
     public delegate void UIComponentParentHandler(UIComponent parent, UIComponent child);
 
+    /// <summary>
+    /// The base class for all types of user interface (UI) components.
+    /// </summary>
     public abstract class UIComponent : IRenderable2D, IUpdatable
     {
+        /// <summary>
+        /// Invoked when a child <see cref="UIComponent"/> is added to the current component.
+        /// </summary>
         public event UIComponentParentHandler OnChildAdded;
 
+        /// <summary>
+        /// Invoked when a child <see cref="UIComponent"/> is removed from the current component.
+        /// </summary>
         public event UIComponentParentHandler OnChildRemoved;
 
         List<UIComponent> _children;
@@ -35,6 +45,9 @@ namespace Molten.UI
         UIMargin _margin;
         UIPadding _clipPadding;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="UIComponent"/>
+        /// </summary>
         public UIComponent()
         {
             _children = new List<UIComponent>();
@@ -79,6 +92,9 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets the scene that the current <see cref="UIComponent"/> is bound to, or null if not bound to any scene.
+        /// </summary>
         public Scene Scene
         {
             get => _scene;
@@ -115,6 +131,7 @@ namespace Molten.UI
             throw new UIException(this, message);
 
         }
+
         Scene IUpdatable.Scene
         {
             get => _scene;

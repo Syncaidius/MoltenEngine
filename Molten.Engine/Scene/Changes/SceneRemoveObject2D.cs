@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    internal class SceneRemoveSprite : SceneChange<SceneRemoveSprite>
+    internal class SceneRemoveObject2D : SceneChange<SceneRemoveObject2D>
     {
-        public IRenderable2D Sprite;
+        internal IRenderable2D Sprite;
 
         public override void Clear()
         {
             Sprite = null;
         }
 
-        public override void Process(Scene scene)
+        internal override void Process(Scene scene)
         {
-            scene.Sprites.Remove(Sprite);
-            scene.RenderData.RemoveSprite(Sprite);
+            scene.Renderables2d.Remove(Sprite);
+            scene.RenderData.RemoveObject(Sprite);
 
             // UI components are always IUpdatable.
             if (Sprite is IUpdatable up)

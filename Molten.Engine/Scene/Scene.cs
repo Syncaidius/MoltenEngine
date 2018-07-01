@@ -13,7 +13,7 @@ namespace Molten
     {
         internal SceneRenderData RenderData;
         internal List<SceneObject> Objects;
-        internal List<IRenderable2D> Sprites;
+        internal List<IRenderable2D> Renderables2d;
         internal HashSet<IUpdatable> Updatables;
 
         ThreadedQueue<SceneChange> _pendingChanges;
@@ -30,21 +30,43 @@ namespace Molten
 
             engine.AddScene(this);
             Objects = new List<SceneObject>();
-            Sprites = new List<IRenderable2D>();
+            Renderables2d = new List<IRenderable2D>();
             Updatables = new HashSet<IUpdatable>();
             _pendingChanges = new ThreadedQueue<SceneChange>();
 
             engine.Log.WriteLine($"Created scene '{name}'");
         }
 
+        /// <summary>
+        /// Brings the scene to the front of the render stack. The scene will be rendered on top of all other scenes on the same <see cref="IRenderSurface"/>.
+        /// </summary>
         public void BringToFront()
         {
             Engine.Renderer?.BringToFront(RenderData);
         }
 
+        /// <summary>
+        /// Sends the scene to the back of the render stack. The scene will be rendered behind all other scenes on the same <see cref="IRenderSurface"/>.
+        /// </summary>
         public void SendToBack()
         {
             Engine.Renderer?.SendToBack(RenderData);
+        }
+
+        /// <summary>
+        /// Pushes the scene forward by one ID in the render stack. The scene will be rendered on top of any other scenes that come before it in the render stack.
+        /// </summary>
+        public void PushForward()
+        {
+            Engine.Renderer?.PushForward(RenderData);
+        }
+
+        /// <summary>
+        /// Pushes the scene back by one ID in the render stack. The scene will be rendered on top of any other scenes that come before it in the render stack.
+        /// </summary>
+        public void PushBackward()
+        {
+            Engine.Renderer?.PushBackward(RenderData);
         }
 
         /// <summary>Adds a <see cref="SceneObject"/> to the scene.</summary>
@@ -66,26 +88,28 @@ namespace Molten
         }
 
         /// <summary>Adds a sprite to the scene. This is a deferred action which will be performed on the scene's next update.</summary>
-        /// <param name="sprite">The sprite to be added.</param>
-        /// <param name="layer">The layer to which the sprite should be added.</param>
-        public void AddSprite(IRenderable2D sprite)
+        /// <param name="obj">The object to be added.</param>
+        public void AddObject(IRenderable2D obj)
         {
-            SceneAddSprite change = SceneAddSprite.Get();
-            change.Sprite = sprite;
+            SceneAddObject2D change = SceneAddObject2D.Get();
+            change.Sprite = obj;
             _pendingChanges.Enqueue(change);
         }
 
         /// <summary>Removes a sprite from the scene. This is a deferred action which will be performed on the scene's next update.</summary>
-        /// <param name="sprite">The sprite to be removed.</param>
-        /// <param name="layer">The layer from which the sprite should be removed.</param>
-        public void RemoveSprite(IRenderable2D sprite)
+        /// <param name="obj">The object to be removed.</param>
+        public void RemoveObject(IRenderable2D obj)
         {
-            SceneRemoveSprite change = SceneRemoveSprite.Get();
-            change.Sprite = sprite;
+            SceneRemoveObject2D change = SceneRemoveObject2D.Get();
+            change.Sprite = obj;
             _pendingChanges.Enqueue(change);
         }
 
-        public void Update(Timing time)
+        /// <summary>
+        /// Updates the scene.
+        /// </summary>
+        /// <param name="time">A <see cref="Timing"/> instance.</param>
+        internal void Update(Timing time)
         {
             while (_pendingChanges.TryDequeue(out SceneChange change))
                 change.Process(this);
@@ -103,10 +127,10 @@ namespace Molten
         }
 
         /// <summary>Gets or sets whether or not the scene is updated.</summary>
-        public virtual bool IsEnabled { get; set; } = true;
+        public bool IsEnabled { get; set; } = true;
 
         /// <summary>Gets or sets whether the scene is rendered.</summary>
-        public virtual bool IsVisible
+        public bool IsVisible
         {
             get => RenderData.IsVisible;
             set => RenderData.IsVisible = value;

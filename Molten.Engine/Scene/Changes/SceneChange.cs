@@ -11,7 +11,7 @@ namespace Molten
     {
         public abstract void Clear();
 
-        public abstract void Process(Scene scene);
+        internal abstract void Process(Scene scene);
     }
 
     internal abstract class SceneChange<CHANGE> : SceneChange
@@ -19,12 +19,12 @@ namespace Molten
     {
         static ObjectPool<CHANGE> _pool = new ObjectPool<CHANGE>(() => new CHANGE());
 
-        public static CHANGE Get()
+        internal static CHANGE Get()
         {
             return _pool.GetInstance();
         }
 
-        protected static void Recycle(CHANGE obj)
+        internal static void Recycle(CHANGE obj)
         {
             _pool.Recycle(obj);
         }

@@ -188,7 +188,7 @@ namespace Molten.Samples
                     }
                 }
             };
-            SpriteScene.AddSprite(_container);
+            SpriteScene.AddObject(_container);
         }
 
         /// <summary>

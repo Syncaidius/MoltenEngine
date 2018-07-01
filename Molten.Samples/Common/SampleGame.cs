@@ -32,7 +32,7 @@ namespace Molten.Samples
             UIScene.OutputCamera = SpriteScene.OutputCamera = new Camera2D();
 
             DebugOverlay = UIScene.DebugOverlay;
-            UIScene.AddSprite(DebugOverlay);
+            UIScene.AddObject(DebugOverlay);
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<SpriteFont>("BroshK.ttf;size=24");
@@ -100,7 +100,7 @@ namespace Molten.Samples
 
 
             _sbContainer = new SpriteBatchContainer(OnHudDraw);
-            UIScene.AddSprite(_sbContainer);
+            UIScene.AddObject(_sbContainer);
 
             OnContentLoaded(cr);
             _baseContentLoaded = true;
@@ -166,10 +166,10 @@ namespace Molten.Samples
                 if(_mainOverlay != value)
                 {
                     if (_mainOverlay != null)
-                        UIScene.RemoveSprite(_mainOverlay);
+                        UIScene.RemoveObject(_mainOverlay);
 
                     if (value != null)
-                        UIScene.AddSprite(value);
+                        UIScene.AddObject(value);
 
                     _mainOverlay = value;
                 }

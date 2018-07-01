@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    internal class SceneAddSprite : SceneChange<SceneAddSprite>
+    internal class SceneAddObject2D : SceneChange<SceneAddObject2D>
     {
         public IRenderable2D Sprite;
 
@@ -16,13 +16,16 @@ namespace Molten
             Sprite = null;
         }
 
-        public override void Process(Scene scene)
+        internal override void Process(Scene scene)
         {
-            scene.Sprites.Add(Sprite);
-            scene.RenderData.AddSprite(Sprite);
+            scene.Renderables2d.Add(Sprite);
+            scene.RenderData.AddObject(Sprite);
 
             if (Sprite is IUpdatable up)
-                scene.Updatables.Add(up);
+            {
+                if(up.Scene != scene)
+                    scene.Updatables.Add(up);
+            }
 
             Recycle(this);
         }

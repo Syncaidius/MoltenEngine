@@ -57,7 +57,7 @@ namespace Molten.Samples
                 }
             };
 
-            SpriteScene.AddSprite(container);
+            SpriteScene.AddObject(container);
         }
 
         protected override void OnUpdate(Timing time)

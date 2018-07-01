@@ -9,14 +9,14 @@ namespace Molten
 {
     internal class SceneRemoveObject : SceneChange<SceneRemoveObject>
     {
-        public SceneObject Object;
+        internal SceneObject Object;
 
         public override void Clear()
         {
             Object = null;
         }
 
-        public override void Process(Scene scene)
+        internal override void Process(Scene scene)
         {
             if (Object.Scene == scene)
             {

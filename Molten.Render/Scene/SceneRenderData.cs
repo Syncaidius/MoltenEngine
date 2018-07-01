@@ -54,9 +54,9 @@ namespace Molten.Graphics
 
         public abstract void RemoveObject(IRenderable3D obj, ObjectRenderData renderData);
 
-        public abstract void AddSprite(IRenderable2D sprite);
+        public abstract void AddObject(IRenderable2D sprite);
 
-        public abstract void RemoveSprite(IRenderable2D sprite);
+        public abstract void RemoveObject(IRenderable2D sprite);
 
         /// <summary>
         /// Returns true if the current <see cref="SceneRenderData"/> has the specified flag(s).

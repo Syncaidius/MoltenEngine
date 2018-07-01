@@ -16,7 +16,7 @@ namespace Molten
             Object = null;
         }
 
-        public override void Process(Scene scene)
+        internal override void Process(Scene scene)
         {
             if (Object.Scene != scene)
             {

@@ -112,10 +112,10 @@
     <Compile Include="ObjectHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scene\Changes\SceneAddObject.cs" />
-    <Compile Include="Scene\Changes\SceneAddSprite.cs" />
+    <Compile Include="Scene\Changes\SceneAddObject2D.cs" />
     <Compile Include="Scene\Changes\SceneChange.cs" />
     <Compile Include="Scene\Changes\SceneRemoveObject.cs" />
-    <Compile Include="Scene\Changes\SceneRemoveSprite.cs" />
+    <Compile Include="Scene\Changes\SceneRemoveObject2D.cs" />
     <Compile Include="Scene\Components\Lights\CapsuleLightComponent.cs" />
     <Compile Include="Scene\Components\MeshComponent.cs" />
     <Compile Include="Scene\Components\Lights\PointLightComponent.cs" />
