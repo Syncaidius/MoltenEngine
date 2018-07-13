@@ -10,19 +10,47 @@ namespace Molten
     {
         List<Rectangle> freeList;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="BinPacker"/> with the specified width and height.
+        /// </summary>
+        /// <param name="width">The width of the area available for packing, in pixels.</param>
+        /// <param name="height">The height of the area available for packing, in pixels.</param>
         public BinPacker(int width, int height)
         {
+            Width = width;
+            Height = height;
             freeList = new List<Rectangle>();
             freeList.Add(new Rectangle(0, 0, width, height));
         }
 
+        /// <summary>
+        /// Clears the current <see cref="BinPacker"/> instance.
+        /// </summary>
+        public void Clear()
+        {
+            Clear(Width, Height);
+        }
+
+        /// <summary>
+        /// Clears the current <see cref="BinPacker"/> instance and resizes it to the specified size.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         public void Clear(int width, int height)
         {
             freeList.Clear();
+            Width = width;
+            Height = height;
             freeList.Add(new Rectangle(0, 0, width, height));
         }
 
-        public Rectangle Insert(int width, int height)
+        /// <summary>
+        /// Inserts an area of the specified width and height into the packer area, then return's its bounds.
+        /// </summary>
+        /// <param name="width">The width of the area to be inserted.</param>
+        /// <param name="height">The height of the area to be inserted.</param>
+        /// <returns></returns>
+        public Rectangle? Insert(int width, int height)
         {
             Rectangle bestNode = new Rectangle();
             int bestShortFit = int.MaxValue;
@@ -50,7 +78,7 @@ namespace Molten
             }
 
             if (bestNode.Height == 0)
-                return bestNode;
+                return null;
 
             // split out free areas into smaller ones
             for (int i = 0; i < count; i++)
@@ -83,7 +111,7 @@ namespace Molten
             return bestNode;
         }
 
-        bool SplitFreeNode(Rectangle freeNode, Rectangle usedNode)
+        private bool SplitFreeNode(Rectangle freeNode, Rectangle usedNode)
         {
             // test if the rects even intersect
             var insideX = usedNode.X < freeNode.Right && usedNode.Right > freeNode.X;
@@ -133,5 +161,15 @@ namespace Molten
 
             return true;
         }
+
+        /// <summary>
+        /// Gets the width of the bin-packed area.
+        /// </summary>
+        public int Width { get; private set; }
+
+        /// <summary>
+        /// Gets the height of the bin-packed area.
+        /// </summary>
+        public int Height { get; private set; }
     }
 }

@@ -199,27 +199,33 @@ namespace Molten.Graphics
             return _glyphCache[_charData[c].GlyphIndex];
         }
         
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary>Measures the provided string and returns it's width and height, in pixels.</summary>
         /// <param name="text"></param>
         /// <returns></returns>
         public Vector2F MeasureString(string text)
         {
-            return MeasureString(text, text.Length);
+            return MeasureString(text, 0, text.Length);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="maxLength"></param>
+        /// <summary>Measures part (or all) of the provided string based on the provided maximum length. Returns its width and height in pixels.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="maxLength">The maximum length of the string to measure.</param>
         /// <returns></returns>
         public Vector2F MeasureString(string text, int maxLength)
         {
-            Vector2F result = new Vector2F();
+            return MeasureString(text, 0, maxLength);
+        }
 
-            for(int i = 0; i < maxLength; i++)
+        /// <summary>Measures part (or all) of the provided string and returns its width and height, in pixels.</summary>
+        /// <param name="text">The text.</param>
+        /// <param name="startIndex">The starting character index within the string from which to begin measuring.</param>
+        /// <param name="length">The number of characters to measure from the start index.</param>
+        /// <returns></returns>
+        public Vector2F MeasureString(string text, int startIndex, int length)
+        {
+            Vector2F result = new Vector2F();
+            int end = startIndex + Math.Min(text.Length, length);
+            for (int i = startIndex; i < end; i++)
             {
                 GlyphCache cache = GetCharGlyph(text[i]);
                 result.X += cache.AdvanceWidth;
@@ -227,18 +233,6 @@ namespace Molten.Graphics
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="startIndex"></param>
-        /// <param name="length"></param>
-        /// <returns></returns>
-        public Rectangle MeasureString(string text, int startIndex, int length)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -302,13 +296,20 @@ namespace Molten.Graphics
             SpinWait spin = new SpinWait();
             while (Interlocked.Exchange(ref _binLocker, 1) != 0)
                 spin.SpinOnce();
-            Rectangle paddedLoc = _packer.Insert(pWidth + padding2, pHeight + padding2);
+            Rectangle? paddedLoc = _packer.Insert(pWidth + padding2, pHeight + padding2);
             Interlocked.Exchange(ref _binLocker, 0);
+
+            if(paddedLoc == null)
+            {
+                // TODO trigger a sheet resize.
+                //      -- If texture arrays are not supported/allowed, try to make the texture bigger along one dimension instead (power of 2).
+                //      -- If texture arrays are allowed, add a new array slice to the texture
+            }
 
             Rectangle loc = new Rectangle()
             {
-                X = paddedLoc.X + _charPadding,
-                Y = paddedLoc.Y + _charPadding,
+                X = paddedLoc.Value.X + _charPadding,
+                Y = paddedLoc.Value.Y + _charPadding,
                 Width = pWidth,
                 Height = pHeight,
             };

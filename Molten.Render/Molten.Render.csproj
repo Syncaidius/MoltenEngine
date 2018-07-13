@@ -91,6 +91,7 @@
     <Compile Include="Buffers\BufferMode.cs" />
     <Compile Include="Buffers\IndexBufferFormat.cs" />
     <Compile Include="Buffers\StagingBufferFlags.cs" />
+    <Compile Include="Exceptions\GraphicsFormatException.cs" />
     <Compile Include="Hardware\DisplayDelagates.cs" />
     <Compile Include="Hardware\DisplayOrientation.cs" />
     <Compile Include="Hardware\GraphicsAdapterVendor.cs" />
@@ -138,11 +139,11 @@
     <Compile Include="Shaders\ShaderCompileResult.cs" />
     <Compile Include="Shaders\ShaderType.cs" />
     <Compile Include="Font\SpriteFont.cs" />
-    <Compile Include="SpriteBatch\SpriteBatch.cs" />
-    <Compile Include="SpriteBatch\SpriteBatchCache.cs" />
-    <Compile Include="SpriteBatch\SpriteBatchContainer.cs" />
-    <Compile Include="SpriteBatch\SpriteBatchException.cs" />
-    <Compile Include="SpriteBatch\SpriteVertex.cs" />
+    <Compile Include="Spritebatch\SpriteBatch.cs" />
+    <Compile Include="Spritebatch\SpriteBatchCache.cs" />
+    <Compile Include="Spritebatch\SpriteBatchContainer.cs" />
+    <Compile Include="Spritebatch\SpriteBatchException.cs" />
+    <Compile Include="Spritebatch\SpriteVertex.cs" />
     <Compile Include="Surfaces\DepthClearFlags.cs" />
     <Compile Include="Surfaces\DepthFormat.cs" />
     <Compile Include="Surfaces\IDepthSurface.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="Textures\Texture3DProperties.cs" />
     <Compile Include="Textures\TextureData.cs" />
     <Compile Include="Textures\TextureFlags.cs" />
+    <Compile Include="Textures\TexturePacker.cs" />
     <Compile Include="Textures\TextureReader.cs" />
     <Compile Include="Textures\TextureWriter.cs" />
     <Compile Include="VertexTopology.cs" />
