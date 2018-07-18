@@ -7,49 +7,103 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>
-    /// A helper class for packing multiple textures into a single texture. 
+    /// A helper class for packing multiple textures into a single texture atlas. 
     /// </summary>
     public class TexturePacker
     {
-        BinPacker _packer;
-        Dictionary<ITexture2D, Rectangle> _entries;
+        /// <summary>
+        /// A class which represents the location of a texture within the texture sheet.
+        /// </summary>
+        public class AtlasLocation
+        {
+            /// <summary>
+            /// The bounds representing the position and size of a texture located on one of the atlas' array slices.
+            /// </summary>
+            public Rectangle Location;
+
+            /// <summary>
+            /// The atlas array slice that a texture is allocated.
+            /// </summary>
+            public int ArraySliceIndex;
+        }
+
+        public class Result
+        {
+            public Dictionary<ITexture2D, AtlasLocation> Locations;
+
+            public ITexture2D AtlasTexture;
+        }
+
+        Dictionary<ITexture2D, AtlasLocation> _entries;
+        Dictionary<BinPacker, HashSet<ITexture2D>> _texturesByPacker;
         GraphicsFormat _expectedFormat;
+        List<BinPacker> _packers;
+        int _width;
+        int _height;
+        int _maxSlices;
 
         /// <summary>
         /// Creates a new <see cref="TexturePacker"/> instance of the specified width and height, expecting the specified <see cref="GraphicsFormat"/>.
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
+        /// <param name="maxArraySlices">The maximum number of array slices allowed in the final texture atlas.</param>
         /// <param name="expectedFormat"></param>
-        public TexturePacker(int width, int height, GraphicsFormat expectedFormat)
+        public TexturePacker(int width, int height, GraphicsFormat expectedFormat, int maxArraySlices = 1)
         {
+            _width = width;
+            _height = height;
+            _maxSlices = maxArraySlices;
             _expectedFormat = expectedFormat;
-            _packer = new BinPacker(width, height);
-            _entries = new Dictionary<ITexture2D, Rectangle>();
+            _packers = new List<BinPacker>();
+            _texturesByPacker = new Dictionary<BinPacker, HashSet<ITexture2D>>();
+            _entries = new Dictionary<ITexture2D, AtlasLocation>();
+            AddPacker();
+        }
+
+        private BinPacker AddPacker()
+        {
+            BinPacker packer = new BinPacker(_width, _height);
+            _packers.Add(packer);
+            _texturesByPacker.Add(packer, new HashSet<ITexture2D>());
+
+            return packer;
         }
 
         /// <summary>
-        /// Adds a <see cref="ITexture2D"/> to the current <see cref="TexturePacker"/> instance.
+        /// Adds a <see cref="ITexture2D"/> to the current <see cref="TexturePacker"/> instance. 
+        /// Returns null if the texture cannot fit on the atlas or it has reached the maximum number of array slices for the current device.
         /// </summary>
-        /// <param name="texture"></param>
+        /// <param name="texture">The texture to add.</param>
         /// <returns></returns>
-        public Rectangle? Add(ITexture2D texture)
+        public AtlasLocation Add(ITexture2D texture)
         {
             if (texture.Format != _expectedFormat)
                 throw new GraphicsFormatException(_expectedFormat);
 
-            Rectangle? result = _packer.Insert(texture.Width, texture.Height);
+            if (texture.Width > _width || texture.Height > _height)
+                throw new Exception($"The provided texture {texture.Width}x{texture.Height} is too large. Maximum size is {_width}x{_height}");
 
-            // TODO Implement and return a TexturePackerLocation value. Contains a rectangle and an array slice index.
-            // TODO If result is null, check if we can add a new page to the packer. Try again if true.
+            Rectangle? rect = null;
+            AtlasLocation result = new AtlasLocation();
 
+
+            for(int i = 0; i < _packers.Count; i++)
+            {
+                rect = _packers[i].Insert(texture.Width, texture.Height);
+                if (rect != null)
+                    break;
+            }
+            
+            // Did we find a spot for the texture on an existing atlas slice?
+            // If not, create a new array slice and add the texture to it.
+            if(rect == null)
+            {
+                BinPacker packer = AddPacker();
+                rect = packer.Insert(texture.Width, texture.Height);
+            }
+            
             return result;
-        }
-
-        public void Remove(ITexture2D texture)
-        {
-            throw new NotImplementedException();
-              // TODO Remove from packer.
         }
 
         /// <summary>
@@ -63,70 +117,52 @@ namespace Molten.Graphics
 
         public void Clear()
         {
-            // TODO clear all packers held in current TexturePacker instance.
-            _packer.Clear();
+            _packers.Clear();
+            _texturesByPacker.Clear();
+
+            // Restore the first packer. There is always at least one.
+            AddPacker();
         }
 
         /// <summary>
-        /// Generates a 
+        /// Packs the provided list of textures into a single texture.
         /// </summary>
         /// <param name="renderer"></param>
         /// <param name="textures"></param>
         /// <param name="atlasFlags"></param>
         /// <returns></returns>
-        public ITexture2D Generate(IRenderer renderer, IList<ITexture2D> textures, TextureFlags atlasFlags = TextureFlags.None)
+        public Result Pack(IRenderer renderer, IList<ITexture2D> textures, TextureFlags atlasFlags = TextureFlags.None)
         {
-            throw new NotImplementedException();
-            // TODO Re-implement code below into the instantiated version of this class.
+            if (textures == null)
+                throw new NullReferenceException("The provided texture list was null.");
 
+            if (textures.Count == 0)
+                throw new Exception("The provided texture list was empty.");
 
-            //HashSet<GraphicsFormat> _formats = new HashSet<GraphicsFormat>();
-            //foreach (ITexture2D tex in textures)
-            //    _formats.Add(tex.Format);
+            int width = 0;
+            int height = 0;
+            HashSet<GraphicsFormat> formats = new HashSet<GraphicsFormat>();
 
-            //if (_formats.Count > 1)
-            //    throw new GraphicsFormatException(_formats.ToArray());
+            // Find out what dimensions we need to correctly fit all textures
+            foreach (ITexture2D tex in textures)
+            {
+                width = Math.Max(width, tex.Width);
+                height = Math.Max(height, tex.Height);
+                formats.Add(tex.Format);
+            }
 
-            //int sizeW = 128;
-            //int sizeH = 128;
-            //BinPacker packer = new BinPacker(sizeW, sizeH);
-            //bool tooSmall = false;
+            if (formats.Count > 1)
+                throw new GraphicsFormatException(formats.ToList());
 
-            //while (true)
-            //{
-            //    foreach (ITexture2D tex in textures)
-            //    {
-            //        if (packer.Insert(tex.Width, tex.Height) == null)
-            //        {
-            //            break;
-            //        }
-            //    }
+            TexturePacker packer = new TexturePacker(width, height, textures[0].Format);
+            foreach (ITexture2D tex in textures)
+                packer.Add(tex);
 
-            //    // Do we need to resize the packer and start over?
-            //    if (tooSmall)
-            //    {
-            //        // Resize 1 dimension at a time.
-            //        if (sizeH < sizeW)
-            //            sizeH *= 2;
-            //        else
-            //            sizeW *= 2;
-
-            //        packer = new BinPacker(sizeW, sizeH);
-            //    }
-            //    else
-            //    {
-            //        break;
-            //    }
-            //}
-
-            //TexturePacker atlas = new TexturePacker(renderer, sizeW, sizeH, packer, textures);
-
-            //// TODO ensure all textures are of the same/compatible formats. List all detected formats in an error if not.
-            //// TODO create new texture atlas and add all the provided textures.
-            //// TODO bin pack all provided textures before adding to sheet.
-            //// Log warnings for any textures that are not named. Perhaps don't add them.
-
-            //return atlas;
+            return new Result()
+            {
+                Locations = new Dictionary<ITexture2D, AtlasLocation>(packer._entries),
+                AtlasTexture = packer.Build(),
+            };
         }
     }
 }
