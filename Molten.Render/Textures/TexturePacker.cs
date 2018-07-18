@@ -131,7 +131,7 @@ namespace Molten.Graphics
         /// <param name="textures"></param>
         /// <param name="atlasFlags"></param>
         /// <returns></returns>
-        public Result Pack(IRenderer renderer, IList<ITexture2D> textures, TextureFlags atlasFlags = TextureFlags.None)
+        public static Result Pack(IRenderer renderer, IList<ITexture2D> textures, TextureFlags atlasFlags = TextureFlags.None)
         {
             if (textures == null)
                 throw new NullReferenceException("The provided texture list was null.");
