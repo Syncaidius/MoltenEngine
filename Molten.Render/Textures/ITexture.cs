@@ -69,6 +69,13 @@ namespace Molten.Graphics
         /// <param name="callback">The callback for when the data retrieval is completed.</param>
         void GetData(ITexture stagingTexture, int level, int arrayIndex, Action<TextureData.Slice> callback);
 
+        /// <summary>
+        /// Returns true if the texture was created with the specified flags.
+        /// </summary>
+        /// <param name="flags">The flags to check.</param>
+        /// <returns>True if the specified flags exist.</returns>
+        bool HasFlags(TextureFlags flags);
+
         /// <summary>Gets the flags that were passed in when the texture was created.</summary>
         TextureFlags Flags { get; }
 

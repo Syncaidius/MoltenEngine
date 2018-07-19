@@ -41,19 +41,22 @@ namespace Molten.Graphics
         int _width;
         int _height;
         int _maxSlices;
+        int _maxMipLevels;
 
         /// <summary>
         /// Creates a new <see cref="TexturePacker"/> instance of the specified width and height, expecting the specified <see cref="GraphicsFormat"/>.
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
+        /// <param name="maxMipLevels">The maximum number of mipmap levels. If any textures added to the packer exceed this number of levels, the extra ones will be ignored.</param>
         /// <param name="maxArraySlices">The maximum number of array slices allowed in the final texture atlas.</param>
         /// <param name="expectedFormat"></param>
-        public TexturePacker(int width, int height, GraphicsFormat expectedFormat, int maxArraySlices = 1)
+        public TexturePacker(int width, int height, GraphicsFormat expectedFormat, int maxMipLevels = 1, int maxArraySlices = 1)
         {
             _width = width;
             _height = height;
             _maxSlices = maxArraySlices;
+            _maxMipLevels = maxMipLevels;
             _expectedFormat = expectedFormat;
             _packers = new List<BinPacker>();
             _texturesByPacker = new Dictionary<BinPacker, HashSet<ITexture2D>>();
@@ -110,11 +113,56 @@ namespace Molten.Graphics
         /// Builds an atlas texture containing all of the textures that were added to the current <see cref="TexturePacker"/> instance.
         /// </summary>
         /// <returns></returns>
-        public ITexture2D Build()
+        public ITexture2D Build(IRenderer renderer, TextureFlags atlasFlags = TextureFlags.None)
         {
-            throw new NotImplementedException();
+            Texture2DProperties properties = new Texture2DProperties()
+            {
+                Width = _width,
+                Height = _height,
+                ArraySize = _packers.Count,
+                Flags = atlasFlags,
+                Format = _expectedFormat,
+                MipMapLevels = _maxMipLevels,
+                SampleCount = 1,
+            };
+
+            ITexture2D result = renderer.Resources.CreateTexture2D(properties);
+            ITexture2D staging;
+
+            if (result.HasFlags(TextureFlags.Staging))
+            {
+                staging = result;
+            }
+            else
+            {
+                properties.Flags = TextureFlags.Staging;
+                staging = renderer.Resources.CreateTexture2D(properties);
+            }
+
+            // Start copying each texture's data to the result.
+            ICollection<BinPacker> packers = _texturesByPacker.Keys;
+            foreach (BinPacker packer in packers)
+            {
+                HashSet<ITexture2D> textures = _texturesByPacker[packer];
+                foreach (ITexture2D tex in textures)
+                {
+                    // TODO get/set data between textures and atlas.
+
+                }
+            }
+
+            if (staging != result)
+            {
+                // TODO copy staging to result.
+            }
+
+
+            return result;
         }
 
+        /// <summary>
+        /// Resets the texture packer.
+        /// </summary>
         public void Clear()
         {
             _packers.Clear();
@@ -161,7 +209,7 @@ namespace Molten.Graphics
             return new Result()
             {
                 Locations = new Dictionary<ITexture2D, AtlasLocation>(packer._entries),
-                AtlasTexture = packer.Build(),
+                AtlasTexture = packer.Build(renderer, atlasFlags),
             };
         }
     }
