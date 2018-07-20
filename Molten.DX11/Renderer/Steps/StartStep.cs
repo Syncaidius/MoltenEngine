@@ -26,10 +26,10 @@ namespace Molten.Graphics
             // Dispose of current surfaces
             DisposeSurfaces();
 
-            Scene = new RenderSurface(renderer.Device, width, height, Format.R8G8B8A8_UNorm);
-            Normals = new RenderSurface(renderer.Device, width, height, Format.R11G11B10_Float);
-            Emissive = new RenderSurface(renderer.Device, width, height, Format.R8G8B8A8_UNorm);
-            Depth = new DepthSurface(renderer.Device, width, height, DepthFormat.R24G8_Typeless);
+            Scene = new RenderSurface(renderer, width, height, Format.R8G8B8A8_UNorm);
+            Normals = new RenderSurface(renderer, width, height, Format.R11G11B10_Float);
+            Emissive = new RenderSurface(renderer, width, height, Format.R8G8B8A8_UNorm);
+            Depth = new DepthSurface(renderer, width, height, DepthFormat.R24G8_Typeless);
         }
 
         private void DisposeSurfaces()

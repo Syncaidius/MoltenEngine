@@ -25,18 +25,18 @@ namespace Molten.Graphics
         /// <param name="descTexture"></param>
         /// <param name="flags">A set of flags to override those of the provided texture.</param>
         internal TextureAsset2D(TextureAsset2D descTexture, TextureFlags flags)
-            : this(descTexture.Device, descTexture.Width, descTexture.Height, descTexture.DxFormat, descTexture.MipMapCount, descTexture.ArraySize, flags)
+            : this(descTexture.Renderer as RendererDX11, descTexture.Width, descTexture.Height, descTexture.DxFormat, descTexture.MipMapCount, descTexture.ArraySize, flags)
         { }
 
         /// <summary>Creates a new instance of <see cref="TextureAsset2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
         /// <param name="descTexture"></param>
         internal TextureAsset2D(TextureAsset2D descTexture)
-            : this(descTexture.Device, descTexture.Width, descTexture.Height, descTexture.DxFormat, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags)
+            : this(descTexture.Renderer as RendererDX11, descTexture.Width, descTexture.Height, descTexture.DxFormat, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags)
         { }
 
         internal TextureAsset2D(
-            GraphicsDeviceDX11 device,
+            RendererDX11 renderer,
             int width,
             int height,
             Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
@@ -44,7 +44,7 @@ namespace Molten.Graphics
             int arraySize = 1,
             TextureFlags flags = TextureFlags.None,
             int sampleCount = 1)
-            : base(device, width, height, 1, mipCount, arraySize, sampleCount, format, flags)
+            : base(renderer, width, height, 1, mipCount, arraySize, sampleCount, format, flags)
         {
             _description = new Texture2DDescription()
             {

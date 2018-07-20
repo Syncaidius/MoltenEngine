@@ -23,7 +23,7 @@ namespace Molten.Graphics
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
             _startStep = renderer.GetRenderStep<StartStep>();
-            Lighting = new RenderSurface(renderer.Device, width, height, Format.R16G16B16A16_Float);
+            Lighting = new RenderSurface(renderer, width, height, Format.R16G16B16A16_Float);
 
             int stride = Marshal.SizeOf<LightData>();
             int maxLights = 2000; // TODO move to graphics settings

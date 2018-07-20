@@ -23,7 +23,7 @@ namespace Molten.Graphics
                 StagingTexture.Depth != texture.Depth)
                 throw new TextureCopyException(texture, StagingTexture, "Staging texture dimensions do not match current texture.");
 
-            StagingTexture.ApplyChanges(pipe);
+            StagingTexture.Apply(pipe);
 
             // Copy the texture into the staging texture.
             pipe.Context.CopyResource(texture.UnderlyingResource, StagingTexture.UnderlyingResource);

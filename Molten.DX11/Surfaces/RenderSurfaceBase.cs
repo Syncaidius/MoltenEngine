@@ -18,7 +18,7 @@ namespace Molten.Graphics
         internal RenderTargetView RTV;
 
         internal RenderSurfaceBase(
-            GraphicsDeviceDX11 device, 
+            RendererDX11 renderer, 
             int width, 
             int height, 
             Format format, 
@@ -26,14 +26,14 @@ namespace Molten.Graphics
             int arraySize,
             int sampleCount, 
             TextureFlags flags)
-            : base(device, width, height, format, mipCount, arraySize, flags, sampleCount)
+            : base(renderer, width, height, format, mipCount, arraySize, flags, sampleCount)
         {
             VP = new Viewport(0, 0, width, height);
         }
 
         internal virtual void Clear(GraphicsPipe pipe, Color color)
         {
-            ApplyChanges(pipe);
+            Apply(pipe);
 
             if(RTV != null)
                 pipe.Context.ClearRenderTargetView(RTV, color.ToApi());

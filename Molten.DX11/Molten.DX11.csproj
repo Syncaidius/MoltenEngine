@@ -123,6 +123,7 @@
     <Compile Include="Exceptions\GraphicsContextException.cs" />
     <Compile Include="Exceptions\MappedBufferException.cs" />
     <Compile Include="Exceptions\UnsupportedFeatureException.cs" />
+    <Compile Include="Renderer\Tasks\TextureApply.cs" />
     <Compile Include="Surfaces\RenderControlSurface.cs" />
     <Compile Include="Tests\GraphicsDeviceDX11Tests.cs" />
     <Compile Include="Tests\DisplayManagerDX11Tests.cs" />
@@ -273,7 +274,9 @@
     <Compile Include="Textures\BmpTextureWriter.cs" />
     <Compile Include="Textures\Changes\ITextureChange.cs" />
     <Compile Include="Textures\Changes\SurfaceClearChange.cs" />
+    <Compile Include="Textures\Changes\TextureCopyLevel.cs" />
     <Compile Include="Textures\Changes\TextureGenMipMaps.cs" />
+    <Compile Include="Textures\Changes\TextureCopyTo.cs" />
     <Compile Include="Textures\Changes\TextureGetSlice.cs" />
     <Compile Include="Textures\Changes\TextureGet.cs" />
     <Compile Include="Textures\Changes\TextureResize.cs" />

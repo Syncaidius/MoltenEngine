@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
+    /// <summary>
+    /// A delegate for texture event handlers.
+    /// </summary>
+    /// <param name="texture">The texture instance that triggered the event.</param>
     public delegate void TextureHandler(ITexture texture);
 
     /// <summary>Represents a 1D texture, while also acting as the base for all other texture implementations.</summary>
@@ -22,12 +26,38 @@ namespace Molten.Graphics
         /// </summary>
         event TextureHandler OnPostResize;
 
+        /// <summary>
+        /// Resizes a texture to match the specified width, mip-map count and graphics format.
+        /// </summary>
+        /// <param name="newWidth">The new width.</param>
+        /// <param name="newMipMapCount">The new mip-map count.</param>
+        /// <param name="format">The new format.</param>
         void Resize(int newWidth, int newMipMapCount, GraphicsFormat format);
 
+        /// <summary>
+        /// Resizes a texture to match the specified width.
+        /// </summary>
+        /// <param name="newWidth">The new width.</param>
         void Resize(int newWidth);
 
         /// <summary>Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="TextureFlags.AllowMipMapGeneration"/>.</summary>
         void GenerateMipMaps();
+
+        /// <summary>
+        /// Copies the current texture to the destination texture. Both textures must be of the same format and dimensions.
+        /// </summary>
+        /// <param name="destination">The destination texture.</param>
+        void CopyTo(ITexture destination);
+
+        /// <summary>
+        /// Copies the current texture to the destination texture. Both texture levels must be of the same format and dimensions.
+        /// </summary>
+        /// <param name="destination">The destination texture.</param>
+        /// <param name="destLevel">The destination mip-map level.</param>
+        /// <param name="destSlice">The destination array slice.</param>
+        /// <param name="sourceLevel">The source mip-map level.</param>
+        /// <param name="sourceSlice">The source array slice.</param>
+        void CopyTo(int sourceLevel, int sourceSlice, ITexture destination, int destLevel, int destSlice);
 
         /// <summary>Copies data fom the provided <see cref="TextureData"/> instance into the current texture.</summary>
         /// <param name="data"></param>
@@ -111,5 +141,10 @@ namespace Molten.Graphics
         /// Gets or sets the tag object.
         /// </summary>
         object Tag { get; set; }
+
+        /// <summary>
+        /// Gets the renderer that the texture is bound to.
+        /// </summary>
+        IRenderer Renderer { get; }
     }
 }

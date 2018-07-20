@@ -21,13 +21,13 @@ namespace Molten.Graphics
         public event TextureHandler OnPostResize;
 
         internal TextureAsset1D(
-            GraphicsDeviceDX11 device, 
+            RendererDX11 renderer, 
             int width, 
             Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, 
             int mipCount = 1, 
             int arraySize = 1,
             TextureFlags flags = TextureFlags.None)
-            : base(device, width, 1, 1, mipCount, arraySize, 1, format, flags)
+            : base(renderer, width, 1, 1, mipCount, arraySize, 1, format, flags)
         {
             if (_isBlockCompressed)
                 throw new NotSupportedException("1D textures do not supports block-compressed formats.");

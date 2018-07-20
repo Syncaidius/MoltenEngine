@@ -19,8 +19,8 @@ namespace Molten.Graphics
         ThreadedQueue<Action> _dispatchQueue;
         int _vsync;
 
-        internal SwapChainSurface(GraphicsDeviceDX11 device, int mipCount, int sampleCount)
-            : base(device, 1,
+        internal SwapChainSurface(RendererDX11 renderer, int mipCount, int sampleCount)
+            : base(renderer, 1,
                   1, SharpDX.DXGI.Format.B8G8R8A8_UNorm, mipCount, 1, sampleCount, TextureFlags.NoShaderResource)
         {
             _dispatchQueue = new ThreadedQueue<Action>();
@@ -51,7 +51,7 @@ namespace Molten.Graphics
 
         public void Present()
         {
-            ApplyChanges(Device);
+            Apply(Device);
 
             if(OnPresent())
                 _swapChain?.Present(_vsync, PresentFlags.None);

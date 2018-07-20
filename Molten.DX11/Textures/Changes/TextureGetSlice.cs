@@ -33,7 +33,7 @@ namespace Molten.Graphics
             if (ArrayIndex >= texture.ArraySize)
                 throw new TextureCopyException(texture, StagingTexture, "array slice must be less than the array size of the texture.");
 
-            StagingTexture.ApplyChanges(pipe);
+            StagingTexture.Apply(pipe);
 
             TextureData.Slice slice = texture.GetSliceData(pipe, StagingTexture, MipMapLevel, ArrayIndex, true);
 

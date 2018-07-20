@@ -39,9 +39,11 @@ namespace Molten.Graphics
         protected int _arraySize;
         protected int _sampleCount;
         protected Resource _resource;
+        RendererDX11 _renderer;
 
-        internal TextureBase(GraphicsDeviceDX11 device, int width, int height, int depth, int mipCount, int arraySize, int sampleCount, Format format, TextureFlags flags) : base(device)
+        internal TextureBase(RendererDX11 renderer, int width, int height, int depth, int mipCount, int arraySize, int sampleCount, Format format, TextureFlags flags) : base(renderer.Device)
         {
+            _renderer = renderer;
             _flags = flags;
             ValidateFlagCombination();
 
@@ -527,63 +529,6 @@ namespace Molten.Graphics
             return result;
         }
 
-        internal void CopyTo(GraphicsPipe pipe, TextureBase destination)
-        {
-            if (destination.HasFlags(TextureFlags.Dynamic))
-                throw new TextureCopyException(this, destination, "Cannot copy to a dynamic texture via GPU. GPU cannot write to dynamic textures.");
-
-            // Validate dimensions.
-            if (destination._width != this._width ||
-                destination._height != this._height ||
-                destination._depth != this._depth)
-                throw new TextureCopyException(this, destination, "The source and destination textures must have the same dimensions.");
-
-            ApplyChanges(pipe);
-            destination.ApplyChanges(pipe);
-
-            pipe.Context.CopyResource(this._resource, destination._resource);
-        }
-
-        /// <summary>Copies a single slice or mip-map level from one texture to another.</summary>
-        /// <param name="pipe">The graphics pipe that will perform the copy.</param>
-        /// <param name="sourceLevel">The source mip-map level.</param>
-        /// <param name="sourceSlice">The source array slice.</param>
-        /// <param name="destination">The destination texture.</param>
-        /// <param name="destLevel">The destination mip-map level.</param>
-        /// <param name="destSlice">The destination array slice.</param>
-        internal void CopyTo(GraphicsPipe pipe, int sourceLevel, int sourceSlice, TextureBase destination, int destLevel, int destSlice)
-        {
-            if (destination.HasFlags(TextureFlags.Dynamic))
-                throw new TextureCopyException(this, destination, "Cannot copy to a dynamic texture via GPU. GPU cannot write to dynamic textures.");
-            
-            // Validate dimensions.
-            if (destination._width != this._width ||
-                destination._height != this._height ||
-                destination._depth != this._depth)
-                throw new TextureCopyException(this, destination, "The source and destination textures must have the same dimensions.");
-
-            if (sourceLevel >= this.MipMapCount)
-                throw new TextureCopyException(this, destination, "The source mip-map level exceeds the total number of levels in the source texture.");
-
-            if(sourceSlice >= this.ArraySize)
-                throw new TextureCopyException(this, destination, "The source array slice exceeds the total number of slices in the source texture.");
-
-            if (destLevel >= destination.MipMapCount)
-                throw new TextureCopyException(this, destination, "The destination mip-map level exceeds the total number of levels in the destination texture.");
-
-            if (destSlice >= destination.ArraySize)
-                throw new TextureCopyException(this, destination, "The destination array slice exceeds the total number of slices in the destination texture.");
-
-            int srcSub = (sourceSlice * this.MipMapCount) + sourceLevel;
-            int destSub = (destSlice * destination.MipMapCount) + destLevel;
-
-            ApplyChanges(pipe);
-            destination.ApplyChanges(pipe);
-
-            pipe.Context.CopySubresourceRegion(_resource, srcSub, null, destination._resource, destSub);
-            pipe.Profiler.CurrentFrame.CopySubresourceCount++;
-        }
-
         internal void SetSizeInternal(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
             // Avoid resizing/recreation if nothing has actually changed.
@@ -638,10 +583,38 @@ namespace Molten.Graphics
             });
         }
 
+        public void CopyTo(ITexture destination)
+        {
+            QueueChange(new TextureCopyTo()
+            {
+                Destination = destination as TextureBase,
+            });
+
+            TextureApply applyTask = TextureApply.Get();
+            applyTask.Texture = this;
+            _renderer.PushTask(applyTask);
+        }
+
+        public void CopyTo(int sourceLevel, int sourceSlice, ITexture destination, int destLevel, int destSlice)
+        {
+            QueueChange(new TextureCopyLevel()
+            {
+                Destination = destination as TextureBase,
+                SourceLevel = sourceLevel,
+                SourceSlice = sourceSlice,
+                DestinationLevel = destLevel,
+                DestinationSlice = destSlice,
+            });
+
+            TextureApply applyTask = TextureApply.Get();
+            applyTask.Texture = this;
+            _renderer.PushTask(applyTask);
+        }
+
         /// <summary>Applies all pending changes to the texture. Take care when calling this method in multi-threaded code. Calling while the
         /// GPU may be using the texture will cause unexpected behaviour.</summary>
         /// <param name="pipe"></param>
-        internal virtual void ApplyChanges(GraphicsPipe pipe)
+        internal void Apply(GraphicsPipe pipe)
         {
             if (IsDisposed)
                 return;
@@ -660,7 +633,7 @@ namespace Molten.Graphics
 
         internal override void Refresh(GraphicsPipe pipe, PipelineBindSlot slot)
         {
-            ApplyChanges(pipe);
+            Apply(pipe);
         }
 
         protected virtual void OnCreateUAV() { }
@@ -710,5 +683,10 @@ namespace Molten.Graphics
         /// Gets the underlying texture resource.
         /// </summary>
         internal Resource UnderlyingResource => _resource;
+
+        /// <summary>
+        /// Gets the renderer that the texture is bound to.
+        /// </summary>
+        public IRenderer Renderer => _renderer;
     }
 }

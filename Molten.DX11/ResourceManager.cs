@@ -12,13 +12,11 @@ namespace Molten.Graphics
     /// <summary>DirectX 11 implementation of <see cref="IResourceManager"/>.</summary>
     public class ResourceManager : IResourceManager
     {
-        GraphicsDeviceDX11 _device;
         RendererDX11 _renderer;
         List<SpriteFont> _fontTable;
 
         internal ResourceManager(RendererDX11 renderer)
         {
-            _device = renderer.Device;
             _renderer = renderer;
             _fontTable = new List<SpriteFont>();
         }
@@ -32,17 +30,17 @@ namespace Molten.Graphics
             int sampleCount = 1,
             TextureFlags flags = TextureFlags.None)
         {
-            return new DepthSurface(_device, width, height, format, mipCount, arraySize, sampleCount, flags);
+            return new DepthSurface(_renderer, width, height, format, mipCount, arraySize, sampleCount, flags);
         }
 
         public IWindowSurface CreateFormSurface(string formTitle, int mipCount = 1, int sampleCount = 1)
         {
-            return new RenderFormSurface(formTitle, _device, mipCount);
+            return new RenderFormSurface(formTitle, _renderer, mipCount);
         }
 
         public IWindowSurface CreateControlSurface(string formTitle, int mipCount = 1, int sampleCount = 1)
         {
-            return new RenderControlSurface(formTitle, _device, mipCount);
+            return new RenderControlSurface(formTitle, _renderer, mipCount);
         }
 
         public IRenderSurface CreateSurface(
@@ -54,24 +52,24 @@ namespace Molten.Graphics
             int sampleCount = 1,
             TextureFlags flags = TextureFlags.None)
         {
-            return new RenderSurface(_device, width, height, (Format)format, mipCount, arraySize, sampleCount, flags);
+            return new RenderSurface(_renderer, width, height, (Format)format, mipCount, arraySize, sampleCount, flags);
         }
 
         public ITexture CreateTexture1D(Texture1DProperties properties)
         {
-            return new TextureAsset1D(_device, properties.Width, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
+            return new TextureAsset1D(_renderer, properties.Width, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
         }
 
         public ITexture CreateTexture1D(TextureData data)
         {
-            TextureAsset1D tex = new TextureAsset1D(_device, data.Width, data.Format.ToApi(), data.MipMapCount, data.ArraySize, data.Flags);
+            TextureAsset1D tex = new TextureAsset1D(_renderer, data.Width, data.Format.ToApi(), data.MipMapCount, data.ArraySize, data.Flags);
             tex.SetData(data, 0, 0, data.MipMapCount, data.ArraySize);
             return tex;
         }
 
         public ITexture2D CreateTexture2D(Texture2DProperties properties)
         {
-            return new TextureAsset2D(_device,
+            return new TextureAsset2D(_renderer,
                 properties.Width,
                 properties.Height,
                 properties.Format.ToApi(),
@@ -83,7 +81,7 @@ namespace Molten.Graphics
 
         public ITexture2D CreateTexture2D(TextureData data)
         {
-            TextureAsset2D tex = new TextureAsset2D(_device,
+            TextureAsset2D tex = new TextureAsset2D(_renderer,
                 data.Width,
                 data.Height,
                 data.Format.ToApi(),
@@ -99,13 +97,13 @@ namespace Molten.Graphics
         public ITextureCube CreateTextureCube(Texture2DProperties properties)
         {
             int cubeCount = Math.Max(properties.ArraySize / 6, 1);
-            return new TextureAssetCube(_device, properties.Width, properties.Height, properties.Format.ToApi(), properties.MipMapLevels, cubeCount, properties.Flags);
+            return new TextureAssetCube(_renderer, properties.Width, properties.Height, properties.Format.ToApi(), properties.MipMapLevels, cubeCount, properties.Flags);
         }
 
         public ITextureCube CreateTextureCube(TextureData data)
         {
             int cubeCount = Math.Max(data.ArraySize / 6, 1);
-            TextureAssetCube tex = new TextureAssetCube(_device, data.Width, data.Height, data.Format.ToApi(), data.MipMapCount, cubeCount, data.Flags);
+            TextureAssetCube tex = new TextureAssetCube(_renderer, data.Width, data.Height, data.Format.ToApi(), data.MipMapCount, cubeCount, data.Flags);
             tex.SetData(data, 0, 0, data.MipMapCount, data.ArraySize);
             return tex;
         }

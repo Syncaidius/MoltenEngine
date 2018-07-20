@@ -30,8 +30,8 @@ namespace Molten.Graphics
 
         public event WindowSurfaceHandler OnHandleChanged;
 
-        internal RenderControlSurface(string formTitle, GraphicsDeviceDX11 device, int mipCount = 1, int sampleCount = 1)
-            : base(device, mipCount, sampleCount)
+        internal RenderControlSurface(string formTitle, RendererDX11 renderer, int mipCount = 1, int sampleCount = 1)
+            : base(renderer, mipCount, sampleCount)
         {
             _title = formTitle;
         }

@@ -29,7 +29,7 @@ namespace Molten.Graphics
         /// <param name="format"></param>
         /// <param name="depthBuffer">If true, a depth buffer will be created.</param>
         /// <param name="flags">Texture flags</param>
-        internal DepthSurface(GraphicsDeviceDX11 device,
+        internal DepthSurface(RendererDX11 renderer,
             int width, 
             int height,
             DepthFormat format = DepthFormat.R24G8_Typeless,
@@ -37,7 +37,7 @@ namespace Molten.Graphics
             int arraySize = 1, 
             int sampleCount = 1,
             TextureFlags flags = TextureFlags.None)
-            : base(device, width, height, SharpDX.DXGI.Format.R24G8_Typeless, mipCount, arraySize, flags)
+            : base(renderer, width, height, SharpDX.DXGI.Format.R24G8_Typeless, mipCount, arraySize, flags)
         {
             _depthFormat = format;
             _description.ArraySize = arraySize;
