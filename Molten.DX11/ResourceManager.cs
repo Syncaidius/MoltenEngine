@@ -62,8 +62,8 @@ namespace Molten.Graphics
 
         public ITexture CreateTexture1D(TextureData data)
         {
-            TextureAsset1D tex = new TextureAsset1D(_renderer, data.Width, data.Format.ToApi(), data.MipMapCount, data.ArraySize, data.Flags);
-            tex.SetData(data, 0, 0, data.MipMapCount, data.ArraySize);
+            TextureAsset1D tex = new TextureAsset1D(_renderer, data.Width, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, data.Flags);
+            tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
 
@@ -85,12 +85,12 @@ namespace Molten.Graphics
                 data.Width,
                 data.Height,
                 data.Format.ToApi(),
-                data.MipMapCount,
+                data.MipMapLevels,
                 data.ArraySize,
                 data.Flags,
                 data.SampleCount);
 
-            tex.SetData(data, 0, 0, data.MipMapCount, data.ArraySize);
+            tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
 
@@ -103,8 +103,8 @@ namespace Molten.Graphics
         public ITextureCube CreateTextureCube(TextureData data)
         {
             int cubeCount = Math.Max(data.ArraySize / 6, 1);
-            TextureAssetCube tex = new TextureAssetCube(_renderer, data.Width, data.Height, data.Format.ToApi(), data.MipMapCount, cubeCount, data.Flags);
-            tex.SetData(data, 0, 0, data.MipMapCount, data.ArraySize);
+            TextureAssetCube tex = new TextureAssetCube(_renderer, data.Width, data.Height, data.Format.ToApi(), data.MipMapLevels, cubeCount, data.Flags);
+            tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
 

@@ -34,7 +34,7 @@ namespace Molten.Graphics.Textures
                     Width = (uint)data.Width,
                     PitchOrLinearSize = (uint)data.Levels[0].TotalBytes,
                     Depth = 0,
-                    MipMapCount = (uint)data.MipMapCount,
+                    MipMapCount = (uint)data.MipMapLevels,
                     Reserved = new uint[11],
                     PixelFormat = GetPixelFormat(data),
                     Caps = DDSCapabilities.Texture | DDSCapabilities.Complex | DDSCapabilities.MipMap,
@@ -48,7 +48,7 @@ namespace Molten.Graphics.Textures
                 WriteHeader(writer, ref header);
 
                 // Write each mip map level
-                for (int i = 0; i < data.MipMapCount; i++)
+                for (int i = 0; i < data.MipMapLevels; i++)
                     writer.Write(data.Levels[i].Data);
             }
         }

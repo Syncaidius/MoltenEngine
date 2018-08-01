@@ -37,7 +37,7 @@ namespace Molten.Graphics
                 HighestMipMap = 0,
                 IsCompressed = texture.IsBlockCompressed,
                 Levels = new TextureData.Slice[texture.ArraySize * texture.MipMapCount],
-                MipMapCount = texture.MipMapCount,
+                MipMapLevels = texture.MipMapCount,
                 Width = texture.Width,
             };
 

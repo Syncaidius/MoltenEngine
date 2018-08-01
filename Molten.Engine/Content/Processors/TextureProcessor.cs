@@ -81,7 +81,7 @@ namespace Molten.Content
                         }
                         else
                         {
-                            if (data.MipMapCount == 1)
+                            if (data.MipMapLevels == 1)
                             {
                                 string genMipsVal = "";
                                 if (context.Metadata.TryGetValue("mipmaps", out genMipsVal))
@@ -101,7 +101,7 @@ namespace Molten.Content
                 {
                     Width = data.Width,
                     Height = data.Height,
-                    MipMapCount = data.MipMapCount,
+                    MipMapLevels = data.MipMapLevels,
                     Format = data.Format,
                     ArraySize = arrayCount,
                 };
@@ -170,10 +170,10 @@ namespace Molten.Content
                     // TODO include mip-map count in resize
                     if (texCube.Width != data.Width || 
                         texCube.Height != data.Height || 
-                        tex.MipMapCount != data.MipMapCount)
-                        texCube.Resize(data.Width, data.Height, data.MipMapCount);
+                        tex.MipMapCount != data.MipMapLevels)
+                        texCube.Resize(data.Width, data.Height, data.MipMapLevels);
 
-                    texCube.SetData(data, 0, 0, data.MipMapCount, Math.Min(data.ArraySize, 6), 0, 0);
+                    texCube.SetData(data, 0, 0, data.MipMapLevels, Math.Min(data.ArraySize, 6), 0, 0);
                     break;
 
                 case ITexture2D tex2d:
@@ -181,20 +181,20 @@ namespace Molten.Content
                     if (tex2d.Width != data.Width ||
                         tex2d.Height != data.Height ||
                         tex2d.ArraySize != data.ArraySize ||
-                        tex.MipMapCount != data.MipMapCount)
+                        tex.MipMapCount != data.MipMapLevels)
                     {
-                        tex2d.Resize(data.Width, data.Height, data.MipMapCount, data.ArraySize, data.Format);
+                        tex2d.Resize(data.Width, data.Height, data.MipMapLevels, data.ArraySize, data.Format);
                     }
 
-                    tex2d.SetData(data, 0, 0, data.MipMapCount, data.ArraySize, 0, 0);
+                    tex2d.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize, 0, 0);
                     break;
 
                 default:
                     // TODO include mip-map count in resize
-                    if (tex.Width != data.Width || tex.MipMapCount != data.MipMapCount)
-                        tex.Resize(data.Width, data.MipMapCount, data.Format);
+                    if (tex.Width != data.Width || tex.MipMapCount != data.MipMapLevels)
+                        tex.Resize(data.Width, data.MipMapLevels, data.Format);
 
-                    tex.SetData(data, 0, 0, data.MipMapCount, data.ArraySize, 0, 0);
+                    tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize, 0, 0);
                     break;
             }
         }

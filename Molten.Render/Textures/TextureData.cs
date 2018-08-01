@@ -41,7 +41,7 @@ namespace Molten.Graphics
 
         public int Width;
         public int Height;
-        public int MipMapCount;
+        public int MipMapLevels;
         public int ArraySize;
         public int SampleCount;
 
@@ -77,7 +77,6 @@ namespace Molten.Graphics
 
         /// <summary>Sets the configuration and data of the current <see cref="TextureData"/> instance to that of the provided <see cref="TextureData"/> instance.</summary>
         /// <param name="data"></param>
-        /// <param name="arraySlice"></param>
         public void Set(TextureData data)
         {
             ArraySize = data.ArraySize;
@@ -85,7 +84,7 @@ namespace Molten.Graphics
             Flags = data.Flags;
             IsCompressed = data.IsCompressed;
             Height = data.Height;
-            MipMapCount = data.MipMapCount;
+            MipMapLevels = data.MipMapLevels;
             Width = data.Width;
             SampleCount = data.SampleCount;
 
@@ -101,17 +100,17 @@ namespace Molten.Graphics
         /// <param name="arraySlice"></param>
         public void Set(TextureData data, int arraySlice)
         {
-            if (data.Width != Width || data.Height != Height || data.MipMapCount != MipMapCount)
+            if (data.Width != Width || data.Height != Height || data.MipMapLevels != MipMapLevels)
                 throw new Exception("Texture data must match the dimensions (i.e. width, height, depth, mip-map levels) of the destination data.");
 
-            int requiredLevels = (MipMapCount * (arraySlice + 1));
+            int requiredLevels = (MipMapLevels * (arraySlice + 1));
 
             if (Levels == null || ArraySize <= arraySlice || Levels.Length < requiredLevels)
                 Array.Resize(ref Levels, requiredLevels);
 
             for(int i = 0; i < data.Levels.Length; i++)
             {
-                int lID = (arraySlice * MipMapCount) + i;
+                int lID = (arraySlice * MipMapLevels) + i;
                 Levels[lID] = data.Levels[i].Clone();
             }
         }
@@ -128,7 +127,7 @@ namespace Molten.Graphics
                 IsCompressed = this.IsCompressed,
                 Height = this.Height,
                 Levels = new Slice[this.Levels.Length],
-                MipMapCount = this.MipMapCount,
+                MipMapLevels = this.MipMapLevels,
                 Width = this.Width,
                 SampleCount = this.SampleCount,
             };

@@ -52,18 +52,18 @@ namespace Molten.Samples
             ITexture texture = Engine.Renderer.Resources.CreateTexture1D(new Texture1DProperties()
             {
                 Width = texData.Width,
-                MipMapLevels = texData.MipMapCount,
+                MipMapLevels = texData.MipMapLevels,
                 ArraySize = 3,
                 Flags = texData.Flags,
                 Format = texData.Format,
             });
-            texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 0);
+            texture.SetData(texData, 0, 0, texData.MipMapLevels, 1, 0, 0);
 
             texData = cr.Get<TextureData>(2);
-            texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 1);
+            texture.SetData(texData, 0, 0, texData.MipMapLevels, 1, 0, 1);
 
             texData = cr.Get<TextureData>(3);
-            texture.SetData(texData, 0, 0, texData.MipMapCount, 1, 0, 2);
+            texture.SetData(texData, 0, 0, texData.MipMapLevels, 1, 0, 2);
 
             mat.SetDefaultResource(texture, 0);
             _mesh.Material = mat;

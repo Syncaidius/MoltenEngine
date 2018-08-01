@@ -290,7 +290,7 @@ namespace Molten.Graphics.Textures.DDS
                 Width = (int)_header.Width,
                 Height = (int)_header.Height,
                 Format = _headerDXT10.ImageFormat,
-                MipMapCount = (int)_header.MipMapCount,
+                MipMapLevels = (int)_header.MipMapCount,
                 ArraySize = (int)_headerDXT10.ArraySize,
                 Flags = TextureFlags.None,
                 IsCompressed = true,

@@ -45,7 +45,7 @@ namespace Molten.Samples
                     Format = GraphicsFormat.R8G8B8A8_UNorm,
                     Flags = TextureFlags.None,
                     Levels = new TextureData.Slice[0],
-                    MipMapCount = 1,
+                    MipMapLevels = 1,
                 };
             }
             else

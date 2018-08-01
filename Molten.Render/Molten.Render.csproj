@@ -174,7 +174,6 @@
     <Compile Include="Textures\Texture3DProperties.cs" />
     <Compile Include="Textures\TextureData.cs" />
     <Compile Include="Textures\TextureFlags.cs" />
-    <Compile Include="Textures\TexturePacker.cs" />
     <Compile Include="Textures\TextureReader.cs" />
     <Compile Include="Textures\TextureWriter.cs" />
     <Compile Include="VertexTopology.cs" />

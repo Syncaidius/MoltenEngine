@@ -36,9 +36,9 @@ namespace Molten.Graphics.Textures.DDS
             {
                 for (int a = 0; a < data.ArraySize; a++)
                 {
-                    for (int i = 0; i < data.MipMapCount; i++)
+                    for (int i = 0; i < data.MipMapLevels; i++)
                     {
-                        int levelID = (a * (int)data.MipMapCount) + i;
+                        int levelID = (a * (int)data.MipMapLevels) + i;
                         byte[] levelData = parser.Decompress(levels[levelID]);
 
                         data.Levels[levelID] = new TextureData.Slice()
@@ -81,9 +81,9 @@ namespace Molten.Graphics.Textures.DDS
             {
                 for (int a = 0; a < data.ArraySize; a++)
                 {
-                    for (int i = 0; i < data.MipMapCount; i++)
+                    for (int i = 0; i < data.MipMapLevels; i++)
                     {
-                        int levelID = (a * (int)data.MipMapCount) + i;
+                        int levelID = (a * (int)data.MipMapLevels) + i;
                         byte[] levelData = parser.Compress(levels[levelID]);
                         int pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * DDSHelper.GetBlockSize(newFormat));
 
@@ -131,6 +131,30 @@ namespace Molten.Graphics.Textures.DDS
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Returns true if the specified format is a block-compressed format.
+        /// </summary>
+        /// <param name="format">The graphics format.</param>
+        /// <returns>A boolean value.</returns>
+        public static bool GetBlockCompressed(GraphicsFormat format)
+        {
+            //figure out if the texture is block compressed.
+            switch (format)
+            {
+                case GraphicsFormat.BC1_UNorm:
+                case GraphicsFormat.BC2_UNorm:
+                case GraphicsFormat.BC3_UNorm:
+                case GraphicsFormat.BC4_SNorm:
+                case GraphicsFormat.BC4_UNorm:
+                case GraphicsFormat.BC5_SNorm:
+                case GraphicsFormat.BC5_UNorm:
+                    return true;
+
+                default:
+                    return false;
+            }
         }
 
         /// <summary>Gets the expected number of bytes for a slice matching the provided size and format.</summary>

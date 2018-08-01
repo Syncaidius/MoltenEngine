@@ -60,7 +60,7 @@ namespace Molten.Graphics
             IsValid = false;
 
             _resourceViewDescription = new ShaderResourceViewDescription();
-            _isBlockCompressed = GetBlockCompressed();
+            _isBlockCompressed = DDSHelper.GetBlockCompressed(_format.FromApi());
         }
 
         private void ValidateFlagCombination()
@@ -132,27 +132,6 @@ namespace Molten.Graphics
             else
                 return CpuAccessFlags.None;
 
-        }
-
-        private bool GetBlockCompressed()
-        {
-            GraphicsFormat format = _format.FromApi();
-
-            //figure out if the texture is block compressed.
-            switch (format)
-            {
-                case GraphicsFormat.BC1_UNorm:
-                case GraphicsFormat.BC2_UNorm:
-                case GraphicsFormat.BC3_UNorm:
-                case GraphicsFormat.BC4_SNorm:
-                case GraphicsFormat.BC4_UNorm:
-                case GraphicsFormat.BC5_SNorm:
-                case GraphicsFormat.BC5_UNorm:
-                    return true;
-
-                default:
-                    return false;
-            }
         }
 
         /// <summary>Gets the total byte size of a slice based on the format of the texture.</summary>
@@ -411,7 +390,7 @@ namespace Molten.Graphics
                 {
                     int slice = srcArraySlice + a;
                     int mip = srcMipIndex + m;
-                    int dataID = TextureData.GetLevelID(data.MipMapCount, mip, slice);
+                    int dataID = TextureData.GetLevelID(data.MipMapLevels, mip, slice);
                     level = data.Levels[dataID];
 
                     if (level.TotalBytes == 0)
@@ -585,6 +564,17 @@ namespace Molten.Graphics
 
         public void CopyTo(ITexture destination)
         {
+            TextureBase destTexture = destination as TextureBase;
+
+            if (this.Format != destination.Format)
+                throw new TextureCopyException(this, destTexture, "The source and destination texture formats do not match.");
+
+            // Validate dimensions.
+            if (destTexture.Width != this.Width ||
+                destTexture.Height != this.Height ||
+                destTexture.Depth != this.Depth)
+                throw new TextureCopyException(this, destTexture, "The source and destination textures must have the same dimensions.");
+
             QueueChange(new TextureCopyTo()
             {
                 Destination = destination as TextureBase,
@@ -597,6 +587,33 @@ namespace Molten.Graphics
 
         public void CopyTo(int sourceLevel, int sourceSlice, ITexture destination, int destLevel, int destSlice)
         {
+            TextureBase destTexture = destination as TextureBase;
+
+            if (destination.HasFlags(TextureFlags.Dynamic))
+                throw new TextureCopyException(this, destTexture, "Cannot copy to a dynamic texture via GPU. GPU cannot write to dynamic textures.");
+
+            if (this.Format != destination.Format)
+                throw new TextureCopyException(this, destTexture, "The source and destination texture formats do not match.");
+
+            // Validate dimensions.
+            // TODO this should only test the source and destination level dimensions, not the textures themselves.
+            if (destTexture.Width != this.Width ||
+                destTexture.Height != this.Height ||
+                destTexture.Depth != this.Depth)
+                throw new TextureCopyException(this, destTexture, "The source and destination textures must have the same dimensions.");
+
+            if (sourceLevel >= this.MipMapCount)
+                throw new TextureCopyException(this, destTexture, "The source mip-map level exceeds the total number of levels in the source texture.");
+
+            if (sourceSlice >= this.ArraySize)
+                throw new TextureCopyException(this, destTexture, "The source array slice exceeds the total number of slices in the source texture.");
+
+            if (destLevel >= destTexture.MipMapCount)
+                throw new TextureCopyException(this, destTexture, "The destination mip-map level exceeds the total number of levels in the destination texture.");
+
+            if (destSlice >= destTexture.ArraySize)
+                throw new TextureCopyException(this, destTexture, "The destination array slice exceeds the total number of slices in the destination texture.");
+
             QueueChange(new TextureCopyLevel()
             {
                 Destination = destination as TextureBase,
