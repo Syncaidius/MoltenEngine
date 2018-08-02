@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics
+namespace Molten
 {
     /// <summary>Represents an implementation of an updatable scene object. 
     /// <see cref="Update(Timing)"/> is automatically called when the implemented object is added to a <see cref="Molten.Scene"/>.</summary>

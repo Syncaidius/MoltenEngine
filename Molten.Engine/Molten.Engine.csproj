@@ -128,8 +128,10 @@
     <Compile Include="Scene\SceneException.cs" />
     <Compile Include="Scene\SceneObject.cs" />
     <Compile Include="Scene\SceneObjectTransform.cs" />
+    <Compile Include="Scene\TwoD\AnimatedSprite.cs" />
     <Compile Include="Scene\TwoD\RectangleSprite.cs" />
     <Compile Include="Scene\TwoD\Sprite.cs" />
+    <Compile Include="Scene\TwoD\SpriteData.cs" />
     <Compile Include="Scene\TwoD\SpriteText.cs" />
     <Compile Include="Tasks\EngineAddScene.cs" />
     <Compile Include="Tasks\EngineRemoveScene.cs" />

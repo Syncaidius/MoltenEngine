@@ -9,17 +9,48 @@ namespace Molten
 {
     public class Sprite : IRenderable2D
     {
+        /// <summary>
+        /// The sprite's source texture.
+        /// </summary>
         public ITexture2D Texture;
+
+        /// <summary>
+        /// The source rectangle. This tells the renderer which part of a texture makes up the current sprite.
+        /// </summary>
         public Rectangle Source;
+
+        /// <summary>
+        /// The screen position of the current <see cref="Sprite"/>.
+        /// </summary>
         public Vector2F Position;
+
+        /// <summary>
+        /// The rotation of the current <see cref="Sprite"/>.
+        /// </summary>
         public float Rotation;
-        public Vector2F Origin;
+
+        /// <summary>
+        /// The origin of the current <see cref="Sprite"/>, as a unit vector (e.g. from 0.0f to 1.0f). The default value is <see cref="Vector2F.Zero"/>.
+        /// </summary>
+        public Vector2F Origin = Vector2F.Zero;
+
+        /// <summary>
+        /// The color of the current <see cref="Sprite"/>. The default value is <see cref="Color.White"/>.
+        /// </summary>
         public Color Color = Color.White;
+
+        /// <summary>
+        /// The scale of the current <see cref="Sprite"/>. The default value is <see cref="Vector2F.One"/>.
+        /// </summary>
         public Vector2F Scale = Vector2F.One;
 
-        public void Render(SpriteBatch batch)
+        /// <summary>
+        /// Called by the renderer when the sprite is to be drawn into a scene. Do not call this yourself unless you know what you are doing.
+        /// </summary>
+        /// <param name="sb">The <see cref="SpriteBatch"/> that is performing the render operation.</param>
+        void IRenderable2D.Render(SpriteBatch sb)
         {
-            batch.Draw(Texture, Position, Source, Color, Rotation, Scale, Origin);
+            sb.Draw(Texture, Position, Source, Color, Rotation, Scale, Origin);
         }
     }
 }
