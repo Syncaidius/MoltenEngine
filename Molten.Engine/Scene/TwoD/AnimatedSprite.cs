@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
+    /// <summary>
+    /// An advanced sprite class capable of animation and parenting. It is updated every scene tick.
+    /// </summary>
     public class AnimatedSprite : Sprite, IUpdatable
     {
         Scene IUpdatable.Scene { get; set; }
@@ -13,6 +17,7 @@ namespace Molten
         SpriteData _data;
         int _frameID;
         double _elapsed;
+        ThreadedList<AnimatedSprite> _children;
 
         /// <summary>
         /// Creates a new instance of animated sprite.
@@ -21,12 +26,13 @@ namespace Molten
         public AnimatedSprite(SpriteData data)
         {
             _data = data ?? throw new ArgumentNullException("Data cannot be null.");
+            _children = new ThreadedList<AnimatedSprite>();
         }
 
-        void IUpdatable.Update(Timing time)
+        private void UpdateInternal(Timing time)
         {
             _elapsed += time.ElapsedTime.TotalMilliseconds;
-            if(_elapsed >= _data.Frames[_frameID].Duration)
+            if (_elapsed >= _data.Frames[_frameID].Duration)
             {
                 _elapsed -= _data.Frames[_frameID].Duration;
                 _frameID++;
@@ -39,7 +45,20 @@ namespace Molten
                 }
 
                 Source = _data.Frames[_frameID].Source;
+
+                _children.ForInterlock(0, 1, (index, child) =>
+                {
+                    // TODO implement local position, rotation and scale for AnimatedSprite.
+                    // TODO update global child position based on parent global position + child local position.
+                    child.UpdateInternal(time);
+                    return false;
+                });
             }
+        }
+
+        void IUpdatable.Update(Timing time)
+        {
+            UpdateInternal(time);
         }
 
         /// <summary>
@@ -85,6 +104,9 @@ namespace Molten
             }
         }
 
-
+        /// <summary>
+        /// Gets a thread-safe list containing the child sprites of the current <see cref="AnimatedSprite"/>.
+        /// </summary>
+        public ThreadedList<AnimatedSprite> Children => _children;
     }
 }

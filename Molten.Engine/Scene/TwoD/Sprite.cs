@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
+    /// <summary>
+    /// An basic sprite class, incapable of animation or parenting. Useful for drawing static objects with very little overhead. It is also the base class for <see cref="AnimatedSprite"/>.
+    /// </summary>
     public class Sprite : IRenderable2D
     {
         /// <summary>
