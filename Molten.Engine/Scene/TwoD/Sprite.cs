@@ -12,6 +12,11 @@ namespace Molten
     /// </summary>
     public class Sprite : IRenderable2D
     {
+        private protected Vector2F _position;
+        private protected Vector2F _scale = new Vector2F(1.0f);
+        private protected Vector2F _origin = new Vector2F(0.5f);
+        private protected float _rotation;
+
         /// <summary>
         /// The sprite's source texture.
         /// </summary>
@@ -25,27 +30,43 @@ namespace Molten
         /// <summary>
         /// The screen position of the current <see cref="Sprite"/>.
         /// </summary>
-        public Vector2F Position;
+        public virtual Vector2F Position
+        {
+            get => _position;
+            set => _position = value;
+        }
 
         /// <summary>
-        /// The rotation of the current <see cref="Sprite"/>.
+        /// The origin of the current <see cref="Sprite"/>, as a unit vector (e.g. from 0.0f to 1.0f). The default value 0.5f (centered) on both the X and Y axis.
         /// </summary>
-        public float Rotation;
+        public virtual Vector2F Origin
+        {
+            get => _origin;
+            set => _origin = value;
+        }
 
         /// <summary>
-        /// The origin of the current <see cref="Sprite"/>, as a unit vector (e.g. from 0.0f to 1.0f). The default value is <see cref="Vector2F.Zero"/>.
+        /// The scale of the current <see cref="Sprite"/>. The default value is <see cref="Vector2F.One"/>.
         /// </summary>
-        public Vector2F Origin = Vector2F.Zero;
+        public virtual Vector2F Scale
+        {
+            get => _scale;
+            set => _scale = value;
+        }
+
+        /// <summary>
+        /// The rotation of the current <see cref="Sprite"/>, in radians.
+        /// </summary>
+        public virtual float Rotation
+        {
+            get => _rotation;
+            set => _rotation = value;
+        }
 
         /// <summary>
         /// The color of the current <see cref="Sprite"/>. The default value is <see cref="Color.White"/>.
         /// </summary>
         public Color Color = Color.White;
-
-        /// <summary>
-        /// The scale of the current <see cref="Sprite"/>. The default value is <see cref="Vector2F.One"/>.
-        /// </summary>
-        public Vector2F Scale = Vector2F.One;
 
         /// <summary>
         /// Called by the renderer when the sprite is to be drawn into a scene. Do not call this yourself unless you know what you are doing.

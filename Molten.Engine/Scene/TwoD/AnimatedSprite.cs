@@ -12,12 +12,15 @@ namespace Molten
     /// </summary>
     public class AnimatedSprite : Sprite, IUpdatable
     {
-        Scene IUpdatable.Scene { get; set; }
-
+        AnimatedSprite _parent = null;
+        ThreadedList<AnimatedSprite> _children;
         SpriteData _data;
         int _frameID;
         double _elapsed;
-        ThreadedList<AnimatedSprite> _children;
+
+        Matrix3x2F _globalTransform = Matrix3x2F.Identity;
+        Matrix3x2F _localTransform = Matrix3x2F.Identity;
+
 
         /// <summary>
         /// Creates a new instance of animated sprite.
@@ -36,6 +39,7 @@ namespace Molten
             {
                 _elapsed -= _data.Frames[_frameID].Duration;
                 _frameID++;
+
                 if (_frameID == _data.Frames.Count)
                 {
                     if (IsLooping)
@@ -45,15 +49,21 @@ namespace Molten
                 }
 
                 Source = _data.Frames[_frameID].Source;
-
-                _children.ForInterlock(0, 1, (index, child) =>
-                {
-                    // TODO implement local position, rotation and scale for AnimatedSprite.
-                    // TODO update global child position based on parent global position + child local position.
-                    child.UpdateInternal(time);
-                    return false;
-                });
             }
+
+            // Update transforms
+            _localTransform = Matrix3x2F.Scaling(_scale) * Matrix3x2F.Rotation(_rotation) * Matrix3x2F.Translation(_position);
+            _globalTransform = _parent != null ? _parent._globalTransform * _localTransform : _localTransform;
+
+            // TODO factor origin into local transform. i.e. adjust translation with something like: _position - (Source.width|height * origin)
+            // OR factor in the parent's origin into the child's global transform so that it's parental pivot is the origin of it's parent.
+            // Experiment with this.
+
+            _children.ForInterlock(0, 1, (index, child) =>
+            {
+                child.UpdateInternal(time);
+                return false;
+            });
         }
 
         void IUpdatable.Update(Timing time)
@@ -108,5 +118,41 @@ namespace Molten
         /// Gets a thread-safe list containing the child sprites of the current <see cref="AnimatedSprite"/>.
         /// </summary>
         public ThreadedList<AnimatedSprite> Children => _children;
+
+        /// <summary>
+        /// Gets the global 2D transform of the current <see cref="AnimatedSprite"/> instance. This is the result of the sprite's local transform combined with it's parent's global transform (if any).
+        /// </summary>
+        public Matrix3x2F GlobalTransform => _globalTransform;
+
+        /// <summary>
+        /// Gets the local (pre-parented) 2D transform of the current <see cref="AnimatedSprite"/> instance.
+        /// </summary>
+        public Matrix3x2F LocalTransform => _localTransform;
+
+        /// <summary>
+        /// Gets or sets the parent <see cref="AnimatedSprite"/>. Setting this to null will remove the sprite's parent.
+        /// </summary>
+        public AnimatedSprite Parent
+        {
+            get => _parent;
+            set
+            {
+                if(_parent != value)
+                {
+                    if (_parent == this)
+                        throw new InvalidOperationException("Cannot set a sprite's parent to itself.");
+
+                    if (value == null)
+                        _localTransform = _globalTransform;
+                    else
+                    {
+                        _localTransform = Matrix3x2F.Scaling(_scale) * Matrix3x2F.Rotation(_rotation) * Matrix3x2F.Translation(_position);
+                        _globalTransform = value._globalTransform * _localTransform;
+                    }                        
+                }
+            }
+        }
+
+        Scene IUpdatable.Scene { get; set; }
     }
 }
