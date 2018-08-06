@@ -29,7 +29,9 @@ namespace Molten.UI
         public event UIComponentParentHandler OnChildRemoved;
 
         List<UIComponent> _children;
+        List<UIComponent> _childRenderList;
         Dictionary<string, UIComponent> _childrenByName;
+        bool _renderListDirty;
 
         int _lockerValue = 0;
         Thread _lockOwner = null;
@@ -51,6 +53,7 @@ namespace Molten.UI
         public UIComponent()
         {
             _children = new List<UIComponent>();
+            _childRenderList = new List<UIComponent>();
             _childrenByName = new Dictionary<string, UIComponent>();
             _margin = new UIMargin();
             _margin.OnChanged += _margin_OnChanged;
@@ -69,14 +72,39 @@ namespace Molten.UI
             Lock(UpdateBounds);
         }
 
+        /// <summary>
+        /// Updates the current <see cref="UIComponent"/>. When the component is added to a scene, this will be called automatically.
+        /// </summary>
+        /// <param name="time">A <see cref="Timing"/> instance.</param>
         public void Update(Timing time)
         {
-            throw new NotImplementedException();
+            Lock(() =>
+            {
+                for (int i = 0; i < _children.Count; i++)
+                    _children[i].Update(time);
+            });
         }
 
+        /// <summary>
+        /// Renders the current <see cref="UIComponent"/> with the provided <see cref="SpriteBatch"/>. When the component is added to a scene, this will be called automatically.
+        /// </summary>
+        /// <param name="sb">The <see cref="SpriteBatch"/> that will perform the render operation.</param>
         public void Render(SpriteBatch sb)
         {
-            throw new NotImplementedException();
+            if (_renderListDirty)
+            {
+                Lock(() =>
+                {
+                    _childRenderList.Clear();
+                    _childRenderList.AddRange(_children);
+                    _renderListDirty = false;
+                });
+            }
+
+            sb.PushClip(_clippingBounds);
+            for (int i = 0; i < _childRenderList.Count; i++)
+                _childRenderList[i].Render(sb);
+            sb.PopClip();
         }
 
         /// <summary>
@@ -109,9 +137,7 @@ namespace Molten.UI
             {
                 SpinWait spin = new SpinWait();
                 while (0 != Interlocked.Exchange(ref _lockerValue, 1))
-                {
                     spin.SpinOnce();
-                }
 
                 _lockOwner = Thread.CurrentThread;
                 callback();
@@ -162,6 +188,7 @@ namespace Molten.UI
                 _childrenByName.Add(child.Name, child);
                 child.Parent = this;
                 child.Scene = _scene;
+                _renderListDirty = true;
             });
 
             OnChildAdded?.Invoke(this, child);
@@ -185,6 +212,7 @@ namespace Molten.UI
                 _childrenByName.Remove(child.Name);
                 child.Parent = null;
                 child.Scene = null;
+                _renderListDirty = false;
             });
 
             OnChildRemoved?.Invoke(this, child);
@@ -274,8 +302,11 @@ namespace Molten.UI
             _clipPadding.SuppressEvents = false;
 
             //update bounds of children
-            foreach (UIComponent child in _children)
-                child.UpdateBounds();
+            Lock(() =>
+            {
+                foreach (UIComponent child in _children)
+                    child.UpdateBounds();
+            });
         }
 
         /// <summary>Called right before padding is applied to the global bounds to form the clipping bounds.</summary>
@@ -320,7 +351,7 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets the global bounds of the current <see cref="UIComponent"/>.
+        /// Gets the global bounds of the current <see cref="UIComponent"/>. This the final screen bounds of the component after all other properties have been taken into account (i.e. margins, padding, parent bounds, etc).
         /// </summary>
         public Rectangle GlobalBounds
         {
@@ -328,7 +359,7 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets the clipping bounds of the current <see cref="UIComponent"/>.
+        /// Gets the clipping bounds of the current <see cref="UIComponent"/>. This is the area in which the component's children are rendered into.
         /// </summary>
         public Rectangle ClippingBounds
         {
@@ -373,7 +404,7 @@ namespace Molten.UI
             set
             {
                 _localBounds = value;
-                Lock(UpdateBounds);
+                UpdateBounds();
             }
         }
 
@@ -384,7 +415,7 @@ namespace Molten.UI
             set
             {
                 _localBounds.X = value;
-                Lock(UpdateBounds);
+                UpdateBounds();
             }
         }
 
@@ -395,7 +426,7 @@ namespace Molten.UI
             set
             {
                 _localBounds.Y = value;
-                Lock(UpdateBounds);
+                UpdateBounds();
             }
         }
 
@@ -406,7 +437,7 @@ namespace Molten.UI
             set
             {
                 _localBounds.Width = value;
-                Lock(UpdateBounds);
+                UpdateBounds();
             }
         }
 
@@ -417,7 +448,7 @@ namespace Molten.UI
             set
             {
                 _localBounds.Height = value;
-                Lock(UpdateBounds);
+                UpdateBounds();
             }
         }
     }

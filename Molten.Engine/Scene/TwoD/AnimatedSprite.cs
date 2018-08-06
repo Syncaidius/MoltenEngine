@@ -142,13 +142,16 @@ namespace Molten
                     if (_parent == this)
                         throw new InvalidOperationException("Cannot set a sprite's parent to itself.");
 
+                    // We're detaching, maintain current global position as local.
                     if (value == null)
+                    {
                         _localTransform = _globalTransform;
-                    else
+                    }
+                    else // We're not detaching, up date local and global transform immediately.
                     {
                         _localTransform = Matrix3x2F.Scaling(_scale) * Matrix3x2F.Rotation(_rotation) * Matrix3x2F.Translation(_position);
                         _globalTransform = value._globalTransform * _localTransform;
-                    }                        
+                    }                    
                 }
             }
         }

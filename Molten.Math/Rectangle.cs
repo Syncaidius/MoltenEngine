@@ -312,7 +312,20 @@ namespace Molten
                 Bottom = p.Bottom;
         }
 
-        /// <summary>Pushes the edges of the rectangle out by the horizontal and vertical values specified.</summary>
+        /// <summary>Pushes the edges of the rectangle out by the values specified. Negative values can be used to shrink the rectangle.</summary>
+        /// <param name="leftAmount">Value to push the left side out by.</param>
+        /// <param name="topAmount">Value to push the top side out by.</param>
+        /// <param name="rightAmount">Value to push the right side out by.</param>
+        /// <param name="bottomAmount">Value to push the bottom side out by.</param>
+        public void Inflate(int leftAmount, int topAmount, int rightAmount, int bottomAmount)
+        {
+            X -= leftAmount;
+            Y -= topAmount;
+            Width += leftAmount + rightAmount;
+            Height += topAmount + bottomAmount;
+        }
+
+        /// <summary>Pushes the edges of the rectangle out by the horizontal and vertical values specified. Negative values can be used to shrink the rectangle.</summary>
         /// <param name="horizontalAmount">Value to push the sides out by.</param>
         /// <param name="verticalAmount">Value to push the top and bottom out by.</param>
         public void Inflate(int horizontalAmount, int verticalAmount)
@@ -323,7 +336,7 @@ namespace Molten
             Height += verticalAmount * 2;
         }
 
-        /// <summary>Pushes the edges of the rectangle out by the horizontal and vertical values specified.</summary>
+        /// <summary>Pushes the edges of the rectangle out by the horizontal and vertical values specified. Negative values can be used to shrink the rectangle.</summary>
         /// <param name="amount">Value to push all sides out by.</param>
         public void Inflate(int amount)
         {
