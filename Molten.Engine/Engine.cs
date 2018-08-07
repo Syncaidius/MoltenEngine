@@ -23,7 +23,6 @@ namespace Molten
         IInputManager _input;
 
         internal List<Scene> Scenes;
-
         ThreadedQueue<EngineTask> _taskQueue;
 
         /// <summary>Gets the current instance of the engine. There can only be one active per application.</summary>
@@ -35,7 +34,7 @@ namespace Molten
         /// </summary>
         event DisplayManagerEvent OnAdapterInitialized;
         
-        public Engine(EngineSettings settings = null)
+        internal Engine(EngineSettings settings = null)
         {
             if (Current != null)
                 throw new Exception("Cannot create more than one active instance of Engine. Dispose of the previous one first.");

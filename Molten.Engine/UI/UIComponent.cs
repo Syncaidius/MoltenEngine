@@ -91,6 +91,8 @@ namespace Molten.UI
         /// <param name="sb">The <see cref="SpriteBatch"/> that will perform the render operation.</param>
         public void Render(SpriteBatch sb)
         {
+            // TODO find a better solution for this lock, if possible.
+            // It's a potential bottleneck in the renderer if another thread holds the lock when the render thread hits it.
             if (_renderListDirty)
             {
                 Lock(() =>

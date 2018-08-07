@@ -108,7 +108,7 @@
     <Compile Include="Engine.cs" />
     <Compile Include="EngineSettings.cs" />
     <Compile Include="GameRunState.cs" />
-    <Compile Include="MoltenGame.cs" />
+    <Compile Include="Foundation.cs" />
     <Compile Include="ObjectHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scene\Changes\SceneAddObject.cs" />

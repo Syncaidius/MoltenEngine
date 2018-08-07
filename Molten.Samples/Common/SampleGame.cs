@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace Molten.Samples
 {
-    public abstract class SampleGame : MoltenGame
+    public abstract class SampleGame : Foundation
     {
         SpriteFont _sampleFont;
         bool _baseContentLoaded;
@@ -22,7 +22,6 @@ namespace Molten.Samples
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-            Window.OnClose += Window_OnClose;
             Window.OnHandleChanged += Window_OnHandleChanged;
 
             SpriteScene = CreateScene("Sprite", SceneRenderFlags.Render2D);
@@ -104,11 +103,6 @@ namespace Molten.Samples
 
             OnContentLoaded(cr);
             _baseContentLoaded = true;
-        }
-
-        private void Window_OnClose(IWindowSurface surface)
-        {
-            Exit();
         }
 
         protected virtual void OnContentRequested(ContentRequest cr) { }

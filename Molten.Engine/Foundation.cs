@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public delegate void MoltenGameHandler(MoltenGame game);
+    public delegate void FoundationHandler(Foundation foundation);
 
     /// <summary>
-    /// A helper class which provides the foundations for a game.
+    /// Provides a foundation on which to build a game or other type of application with Molten engine.
     /// </summary>
-    public abstract class MoltenGame
+    public abstract class Foundation
     {
         Engine _engine;
         EngineThread _gameThread;
@@ -26,12 +26,12 @@ namespace Molten
         /// <summary>
         /// Occurs when the game is in the process of exiting.
         /// </summary>
-        public event MoltenGameHandler OnGameExiting;
+        public event FoundationHandler OnGameExiting;
 
-        /// <summary>Creates a new instance of <see cref="MoltenGame"/>.</summary>
+        /// <summary>Creates a new instance of <see cref="Foundation"/>.</summary>
         /// <param name="title"></param>
         /// <param name="settings">The settings for the game. If this is null, the default settings will be used.</param>
-        public MoltenGame(string title, EngineSettings settings = null)
+        public Foundation(string title, EngineSettings settings = null)
         {
             Title = title;
             Settings = settings ?? new EngineSettings();
@@ -95,7 +95,14 @@ namespace Molten
 
             OnInitialize(Engine);
             OnFirstLoad(Engine);
+
+            _gameWindow.OnClose += _gameWindow_OnClose;
             _gameThread.Start();
+        }
+
+        private void _gameWindow_OnClose(IWindowSurface surface)
+        {
+            Exit();
         }
 
         /// <summary>
