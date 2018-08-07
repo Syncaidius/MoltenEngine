@@ -44,7 +44,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Molten.Render.Shared", "Mol
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Toolset", "Toolset", "{A6E7A581-04EF-4B7D-949F-D3E224D86535}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainEditor", "MainEditor\MainEditor.csproj", "{79C2C186-B724-4BF4-AAE7-311ED7A872F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.ContentEditor", "Molten.ContentEditor\Molten.ContentEditor.csproj", "{79C2C186-B724-4BF4-AAE7-311ED7A872F2}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

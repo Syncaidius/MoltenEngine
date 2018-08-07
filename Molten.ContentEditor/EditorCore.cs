@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MainEditor
+namespace Molten.ContentEditor
 {
     public class EditorCore : Foundation
     {
