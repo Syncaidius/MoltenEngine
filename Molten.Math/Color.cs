@@ -63,6 +63,33 @@ namespace Molten
         }
 
         /// <summary>
+        /// Initializes a new instance of <see cref="Color"/> using a hexidecimal color code. Both 8-digit and 6-digit hex colors are accepted for RGBA and RGB. <para/>
+        /// Strings must contain only valid hexidecimal color characters, such as #, A-F, a-f and 0-9. 
+        /// For example, "#2d2d30", "2d2d30FF" and "2d2d30" are all valid inputs. Casing is ignored.
+        /// </summary>
+        /// <param name="hexColor">The hexidecimal color value (e.g. #FF0000FF for red). 3-channel (RGB) and 4-channel (RGBA) values are accepted.</param>
+        public Color(string hexColor)
+        {
+            hexColor = hexColor.Replace("#", "");
+
+            if (hexColor.Length < 6)
+                hexColor = hexColor + new string('0', 6 - hexColor.Length) + "FF";
+            else if (hexColor.Length == 6)
+                hexColor += "FF"; // Just add the alpha channel.
+            else if(hexColor.Length < 8)
+                hexColor += new string('0', 8 - hexColor.Length);
+
+            int rgba = 0;
+            if (int.TryParse(hexColor, NumberStyles.HexNumber, null, out rgba) == false)
+                throw new Exception("The provided hexidecimal string was invalid. It must contain a maximum of 9 hexidecimal color characters (#, 0-9, a-f or A-F).");
+
+            A = (byte)(rgba << 24 >> 24);
+            B = (byte)(rgba << 16 >> 24);
+            G = (byte)(rgba << 8 >> 24);
+            R = (byte)(rgba >> 24);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Color"/> struct.
         /// </summary>
         /// <param name="value">The value that will be assigned to all components.</param>

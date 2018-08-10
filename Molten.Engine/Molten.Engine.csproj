@@ -145,6 +145,7 @@
     <Compile Include="UI\UIComponent.cs" />
     <Compile Include="UI\UIException.cs" />
     <Compile Include="UI\UIMargin.cs" />
+    <Compile Include="UI\UIMenuBar.cs" />
     <Compile Include="UI\UIPadding.cs" />
   </ItemGroup>
   <ItemGroup>

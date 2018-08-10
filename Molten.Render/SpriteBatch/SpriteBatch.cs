@@ -565,17 +565,22 @@ namespace Molten.Graphics
             cluster.SpriteCount++;
         }
 
+        /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
+        /// <param name="destination">The rectangle defining the draw destination.</param>
+        /// <param name="color">The color overlay/tiny of the sprite.</param>
+        /// <param name="material">The material to apply to the rectangle. A value of null will use the default sprite-batch material.</param>
         public void DrawRect(Rectangle destination, Color color, IMaterial material = null)
         {
             DrawRect(destination, color, 0, Vector2F.Zero, material);
         }
 
-        /// <summary>Adds a sprite to the batch.</summary>
+        /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
         /// <param name="destination">The rectangle defining the draw destination.</param>
         /// <param name="color">The color overlay/tiny of the sprite.</param>
         /// <param name="rotation">The rotation of the sprite, in radians.</param>
         /// <param name="origin">The origin, as a scale value. 1.0f will set the origin to the bottom-right corner of the sprite.
         /// 0.0f will set the origin to the top-left. </param>
+        /// <param name="material">The material to apply to the rectangle. A value of null will use the default sprite-batch material.</param>
         public void DrawRect(Rectangle destination, Color color, float rotation, Vector2F origin, IMaterial material = null)
         {
             int spriteID = 0;

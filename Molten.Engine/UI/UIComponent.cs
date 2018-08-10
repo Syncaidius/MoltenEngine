@@ -13,11 +13,14 @@ namespace Molten.UI
 
     public delegate void UIComponentParentHandler(UIComponent parent, UIComponent child);
 
+    
     /// <summary>
     /// The base class for all types of user interface (UI) components.
     /// </summary>
-    public abstract class UIComponent : IRenderable2D, IUpdatable
+    public class UIComponent : IRenderable2D, IUpdatable
     {
+        static int _componentCounter = 0;
+
         /// <summary>
         /// Invoked when a child <see cref="UIComponent"/> is added to the current component.
         /// </summary>
@@ -57,6 +60,8 @@ namespace Molten.UI
             _childrenByName = new Dictionary<string, UIComponent>();
             _margin = new UIMargin();
             _margin.OnChanged += _margin_OnChanged;
+            _name = $"{this.GetType().Name}{Interlocked.Increment(ref _componentCounter)}";
+
 
             _clipPadding = new UIPadding(0);
             _clipPadding.OnChanged += _clipPadding_OnChanged;
@@ -76,7 +81,7 @@ namespace Molten.UI
         /// Updates the current <see cref="UIComponent"/>. When the component is added to a scene, this will be called automatically.
         /// </summary>
         /// <param name="time">A <see cref="Timing"/> instance.</param>
-        public void Update(Timing time)
+        public virtual void Update(Timing time)
         {
             Lock(() =>
             {
@@ -89,7 +94,7 @@ namespace Molten.UI
         /// Renders the current <see cref="UIComponent"/> with the provided <see cref="SpriteBatch"/>. When the component is added to a scene, this will be called automatically.
         /// </summary>
         /// <param name="sb">The <see cref="SpriteBatch"/> that will perform the render operation.</param>
-        public void Render(SpriteBatch sb)
+        public virtual void Render(SpriteBatch sb)
         {
             // TODO find a better solution for this lock, if possible.
             // It's a potential bottleneck in the renderer if another thread holds the lock when the render thread hits it.
