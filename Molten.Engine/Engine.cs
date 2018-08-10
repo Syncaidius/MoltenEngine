@@ -1,4 +1,5 @@
 ﻿using Molten.Collections;
+using Molten.Font;
 using Molten.Graphics;
 using Molten.Input;
 using Molten.Threading;
@@ -21,6 +22,7 @@ namespace Molten
         EngineThread _threadRenderer;
         ContentManager _content;
         IInputManager _input;
+        SpriteFont _defaultFont;
 
         internal List<Scene> Scenes;
         ThreadedQueue<EngineTask> _taskQueue;
@@ -68,7 +70,7 @@ namespace Molten
             Logger.DisposeAll();
         }
 
-        public void LoadInput()
+        internal void LoadInput()
         {
             Assembly inputAssembly;
             _input = LibraryDetection.LoadInstance<IInputManager>(_log, "input", "input manager", 
@@ -91,7 +93,7 @@ namespace Molten
             }
         }
 
-        public bool LoadRenderer()
+        internal bool LoadRenderer()
         {
             if (_renderer != null)
             {
@@ -122,7 +124,29 @@ namespace Molten
 
             OnAdapterInitialized?.Invoke(_renderer.DisplayManager);
             _renderer.Initialize(_settings.Graphics);
+            LoadDefaultFont(_settings);
+
             return true;
+        }
+
+        private void LoadDefaultFont(EngineSettings settings)
+        {
+            try
+            {
+                using (FontReader reader = new FontReader(settings.DefaultFontName, _log))
+                {
+                    FontFile fontFile = reader.ReadFont(true);
+
+                    _defaultFont = new SpriteFont(_renderer, fontFile, 20);
+                }
+            }
+            catch (Exception e)
+            {
+                // TODO Use the fallback font provided with the engine.
+                _log.WriteError("Failed to load default font.");
+                _log.WriteError(e);
+                throw e;
+            }
         }
 
         /// <summary>Starts the renderer thread.</summary>
@@ -232,6 +256,11 @@ namespace Molten
         /// Disposing of a <see cref="ContentManager"/> instance will unload all of the content that was loaded by it.<para />
         /// </summary>
         public ContentManager Content => _content;
+
+        /// <summary>
+        /// Gets the default font as defined in <see cref="EngineSettings"/>.
+        /// </summary>
+        public SpriteFont DefaultFont => _defaultFont;
 
         /// <summary>Gets the input manager attached to the current <see cref="Engine"/> instance.</summary>
         public IInputManager Input => _input;

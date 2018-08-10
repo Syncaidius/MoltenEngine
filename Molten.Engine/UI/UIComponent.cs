@@ -31,9 +31,9 @@ namespace Molten.UI
         /// </summary>
         public event UIComponentParentHandler OnChildRemoved;
 
-        List<UIComponent> _children;
-        List<UIComponent> _childRenderList;
-        Dictionary<string, UIComponent> _childrenByName;
+        protected List<UIComponent> _children;
+        protected List<UIComponent> _childRenderList;
+        protected Dictionary<string, UIComponent> _childrenByName;
         bool _renderListDirty;
 
         int _lockerValue = 0;
@@ -43,7 +43,7 @@ namespace Molten.UI
         Scene _scene;
         string _name;
 
-        Rectangle _localBounds;
+        protected Rectangle _localBounds;
         Rectangle _globalBounds;
         Rectangle _clippingBounds;
 
@@ -69,12 +69,12 @@ namespace Molten.UI
 
         private void _margin_OnChanged(UIMargin o)
         {
-            Lock(UpdateBounds);
+            UpdateBounds();
         }
 
         private void _clipPadding_OnChanged(UIPadding o)
         {
-            Lock(UpdateBounds);
+            UpdateBounds();
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Molten.UI
         /// <param name="time">A <see cref="Timing"/> instance.</param>
         public virtual void Update(Timing time)
         {
-            Lock(() =>
+            LockChildren(() =>
             {
                 for (int i = 0; i < _children.Count; i++)
                     _children[i].Update(time);
@@ -100,7 +100,7 @@ namespace Molten.UI
             // It's a potential bottleneck in the renderer if another thread holds the lock when the render thread hits it.
             if (_renderListDirty)
             {
-                Lock(() =>
+                LockChildren(() =>
                 {
                     _childRenderList.Clear();
                     _childRenderList.AddRange(_children);
@@ -136,7 +136,7 @@ namespace Molten.UI
             internal set => _scene = value;
         }
 
-        private void Lock(Action callback)
+        protected void LockChildren(Action callback)
         {
             // If the same thread which holds the lock is calling again, skip the lock logic.
             // This is so nested lock calls on the same thread cannot cause it to deadlock itself.
@@ -176,12 +176,12 @@ namespace Molten.UI
         /// The child will be removed from its previous parent if one is set.
         /// </summary>
         /// <param name="child">The <see cref="UIComponent"/> to add as a child.</param>
-        public void AddChild(UIComponent child)
+        public virtual void AddChild(UIComponent child)
         {
             if (child == this)
                 throw new UIException(this, "Cannot add a UI component to itself.");
 
-            Lock(() =>
+            LockChildren(() =>
             {
                 if (child.Parent == this)
                     return;
@@ -205,12 +205,12 @@ namespace Molten.UI
         /// Removes a child <see cref="UIComponent"/> from the current <see cref="UIComponent"/>.
         /// </summary>
         /// <param name="child"></param>
-        public void RemoveChild(UIComponent child)
+        public virtual void RemoveChild(UIComponent child)
         {
             if (child == this)
                 throw new UIException(this, "Cannot remove a UI component from itself.");
 
-            Lock(() =>
+            LockChildren(() =>
             {
                 if (child.Parent != this)
                     ThrowReleaseLock("Unable to remove child because it does not belong to the current UI component.");
@@ -226,7 +226,7 @@ namespace Molten.UI
         }
 
         /// <summary>Updates the bounds (position, width, height, etc) of all child components.</summary>
-        protected void UpdateBounds()
+        protected virtual void UpdateBounds()
         {
             Rectangle parentBounds = _parent != null ? _parent.ClippingBounds : Rectangle.Empty;
 
@@ -305,11 +305,10 @@ namespace Molten.UI
                     _clippingBounds.Height = _parentClip.Bottom - _clippingBounds.Y;
             }
 
-            OnUpdateBounds();
             _clipPadding.SuppressEvents = false;
 
             //update bounds of children
-            Lock(() =>
+            LockChildren(() =>
             {
                 foreach (UIComponent child in _children)
                     child.UpdateBounds();
@@ -318,11 +317,6 @@ namespace Molten.UI
 
         /// <summary>Called right before padding is applied to the global bounds to form the clipping bounds.</summary>
         protected virtual void OnApplyClipPadding() { }
-
-        /// <summary>
-        /// Called after the current <see cref="UIComponent"/> bounds are recalculated after a change.
-        /// </summary>
-        protected virtual void OnUpdateBounds() { }
 
         /// <summary>
         /// Gets a child of the current <see cref="UIComponent"/>, with the specified name, or null if it doesn't exist.
@@ -334,7 +328,7 @@ namespace Molten.UI
             get
             {
                 UIComponent result = null;
-                Lock(() => _childrenByName.TryGetValue(name, out result));
+                LockChildren(() => _childrenByName.TryGetValue(name, out result));
                 return result;
             }
         }
@@ -349,7 +343,7 @@ namespace Molten.UI
             get
             {
                 UIComponent result = null;
-                Lock(() =>
+                LockChildren(() =>
                 {
                     result = _children[index];
                 });

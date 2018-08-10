@@ -12,7 +12,7 @@ namespace Molten.ContentEditor
     public class EditorCore : Foundation
     {
         Scene _uiScene;
-        UIMenuBar _menu;
+        UIMenuItem _menu;
 
 
         internal EditorCore(EngineSettings settings) : base("Molten Editor", settings)
@@ -33,14 +33,30 @@ namespace Molten.ContentEditor
             _uiScene.AddObject(UI);
 
             // TODO set bounds of UI container to screen size.
-            _menu = new UIMenuBar()
+            _menu = new UIMenuItem()
             {
                 Height = 25,
+                LabelColor = new Color(0),
             };
 
             _menu.Margin.DockLeft = true;
             _menu.Margin.DockRight = true;
             UI.AddChild(_menu);
+
+            // Test some sub-items
+            UIMenuItem mnuFile = new UIMenuItem()
+            {
+                Label = "FILE",
+                BackgroundColor = new Color("#333337"),
+            };
+            _menu.AddChild(mnuFile);
+
+            UIMenuItem mnuEdit = new UIMenuItem()
+            {
+                Label = "EDIT",
+                BackgroundColor = new Color("#333337"),
+            };
+            _menu.AddChild(mnuEdit);
         }
 
         private void UpdateWindownBounds(ITexture texture)
