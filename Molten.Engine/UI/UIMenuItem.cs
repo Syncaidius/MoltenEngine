@@ -36,11 +36,8 @@ namespace Molten.UI
         }
 
         Color _bgColor = new Color("#2d2d30");
-        Color _labelColor = Color.White;
-        string _label;
+        UIText _label;
         int _spacing = 1;
-        SpriteFont _font;
-        Vector2F _labelPos;
 
         ItemFlowDirection _flowDirection = ItemFlowDirection.LeftToRight;
 
@@ -49,8 +46,14 @@ namespace Molten.UI
         /// </summary>
         public UIMenuItem()
         {
-            _label = this.Name;
-            Font = Engine.Current.DefaultFont;
+            _label = new UIText(Engine.Current.DefaultFont, this.Name);
+            _label.OnTextChanged += _label_OnTextChanged;
+        }
+
+        private void _label_OnTextChanged(UIText obj)
+        {
+            if(Parent is UIMenuItem parentItem)
+                parentItem.AlignChildItems();
         }
 
         /// <summary>
@@ -62,9 +65,7 @@ namespace Molten.UI
             if(_bgColor.A > 0)
                 sb.DrawRect(GlobalBounds, _bgColor);
 
-            if (_labelColor.A > 0)
-                sb.DrawString(_font, _label, _labelPos, _labelColor);
-
+            _label.Render(sb);
             base.Render(sb);
         }
 
@@ -98,19 +99,21 @@ namespace Molten.UI
         private void AlignChildItems()
         {
             Rectangle dest;
+            UIMenuItem item;
 
             LockChildren(() =>
             {
+                Vector2F labelSize;
+
                 switch (_flowDirection)
                 {
                     case ItemFlowDirection.LeftToRight:
-                        dest = new Rectangle(0,0,0, this.Height);
-                        UIMenuItem item;
+                        dest = new Rectangle(0,0,0, this.Height);                        
                         foreach (UIComponent com in _children)
                         {
                             item = com as UIMenuItem;
                             Rectangle lBounds = item.LocalBounds;
-                            dest.Width = lBounds.Width;
+                            dest.Width = (int)item.Label.Size.X;
 
                             item.LocalBounds = dest;
                             dest.X += item.LocalBounds.Width + _spacing;
@@ -122,6 +125,13 @@ namespace Molten.UI
                         break;
 
                     case ItemFlowDirection.TopToBottom:
+                        int widest = 0;   
+                        foreach (UIComponent com in _children)
+                        {
+                            item = com as UIMenuItem;
+                            if ((int)item.Label.Size.Y > widest)
+                                widest = (int)(int)item.Label.Size.Y;
+                        }
 
                         break;
 
@@ -134,26 +144,8 @@ namespace Molten.UI
 
         protected override void UpdateBounds()
         {
-            Vector2F labelSize = _font.MeasureString($" {_label} ");
-            Rectangle lBounds = LocalBounds;
-
-            if(!Margin.DockLeft || !Margin.DockRight)
-                lBounds.Width = (int)labelSize.X;
-
-            if(!Margin.DockTop || !Margin.DockBottom)
-                lBounds.Height = (int)(labelSize.Y * 1.1f);
-
-            _localBounds = lBounds;
             base.UpdateBounds();
-
-            //if (Parent != null)
-            //{
-            //    if (Parent is UIMenuItem parentMenuItem)
-            //        parentMenuItem.AlignChildItems();
-            //}
-
-            _labelPos = LocalBounds.Center - (labelSize / 2);
-
+            _label.Bounds = ClippingBounds;
             AlignChildItems();
         }
 
@@ -167,29 +159,9 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets or sets the background color of the menu bar.
+        /// Gets the label object of the current <see cref="UIMenuItem"/>.
         /// </summary>
-        public Color LabelColor
-        {
-            get => _labelColor;
-            set => _labelColor = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the label of the current <see cref="UIMenuItem"/>.
-        /// </summary>
-        public string Label
-        {
-            get => _label;
-            set
-            {
-                if (_label != value)
-                {
-                    _label = value;
-                    UpdateBounds();
-                }
-            }
-        }
+        public UIText Label => _label;
 
         /// <summary>
         /// Gets or sets the menu item's flow direction when displaying child items.
@@ -219,22 +191,6 @@ namespace Molten.UI
                 {
                     _spacing = value;
                     AlignChildItems();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="SpriteFont"/> to use when drawing the label of the current <see cref="UIMenuItem"/>.
-        /// </summary>
-        public SpriteFont Font
-        {
-            get => _font;
-            set
-            {
-                if(_font != value)
-                {
-                    _font = value;
-                    UpdateBounds();
                 }
             }
         }

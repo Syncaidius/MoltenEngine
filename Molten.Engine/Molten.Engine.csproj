@@ -142,6 +142,9 @@
     <Compile Include="Threading\ThreadManager.cs" />
     <Compile Include="Threading\WorkerGroup.cs" />
     <Compile Include="Threading\WorkerThread.cs" />
+    <Compile Include="UI\UIVerticalAlignment.cs" />
+    <Compile Include="UI\UIHorizontalAlignment.cs" />
+    <Compile Include="UI\UIText.cs" />
     <Compile Include="UI\UIComponent.cs" />
     <Compile Include="UI\UIException.cs" />
     <Compile Include="UI\UIMargin.cs" />
