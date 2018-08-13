@@ -52,6 +52,21 @@ namespace Molten.UI
             return source;
         }
 
+        /// <summary>
+        /// Sets the padding to the specified value, for all sides.
+        /// </summary>
+        /// <param name="padding"></param>
+        public void Set(int padding)
+        {
+            _left = padding;
+            _right = padding;
+            _top = padding;
+            _bottom = padding;
+
+            if (!SuppressEvents)
+                OnChanged?.Invoke(this);
+        }
+
         public void Set(int left, int top, int right, int bottom)
         {
             _left = left;

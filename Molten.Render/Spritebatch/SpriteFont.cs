@@ -274,7 +274,7 @@ namespace Molten.Graphics
             int padding2 = _charPadding * 2;
             int pWidth, pHeight;
             int advWidth = ToPixels(gm.AdvanceWidth);
-            int advHeight = ToPixels(g.Bounds.Height);
+            int advHeight = ToPixels(_font.Header.MaxY);
 
             if (customBounds.HasValue)
             {

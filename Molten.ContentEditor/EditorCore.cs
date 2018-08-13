@@ -12,8 +12,7 @@ namespace Molten.ContentEditor
     public class EditorCore : Foundation
     {
         Scene _uiScene;
-        UIMenuItem _menu;
-
+        UIContextMenu _menu;
 
         internal EditorCore(EngineSettings settings) : base("Molten Editor", settings)
         {
@@ -27,29 +26,46 @@ namespace Molten.ContentEditor
             _uiScene = CreateScene("UI", SceneRenderFlags.Render2D);
             _uiScene.OutputCamera = new Camera2D();
             Window.OnPostResize += UpdateWindownBounds;
-            UI = new UIComponent();
+            UI = new UIComponent()
+            {
+                BackgroundColor = new Color(0),
+            };
             UpdateWindownBounds(Window);
 
             _uiScene.AddObject(UI);
 
             // TODO set bounds of UI container to screen size.
-            _menu = new UIMenuItem();
+            _menu = new UIContextMenu();
             _menu.Height = 25;
-            _menu.Label.Color = new Color(0);
-            _menu.Margin.DockLeft = true;
-            _menu.Margin.DockRight = true;
             UI.AddChild(_menu);
 
             // Test some sub-items
             UIMenuItem mnuFile = new UIMenuItem();
-            mnuFile.Label.Text = "FILE";
+            mnuFile.Label.Text = "File";
             mnuFile.BackgroundColor = new Color("#333337");
             _menu.AddChild(mnuFile);
 
+            //UIMenuItem mnuNew = new UIMenuItem();
+            //mnuNew.Label.Text = "New...";
+            //mnuNew.BackgroundColor = new Color("#333337");
+            //mnuFile.AddChild(mnuNew);
+
+            //UIMenuItem mnuOpen = new UIMenuItem();
+            //mnuOpen.Label.Text = "Open...";
+            //mnuOpen.BackgroundColor = new Color("#333337");
+            //mnuFile.AddChild(mnuOpen);
+
+            //UIMenuItem mnuExit = new UIMenuItem();
+            //mnuExit.Label.Text = "Exit";
+            //mnuExit.BackgroundColor = new Color("#333337");
+            //mnuFile.AddChild(mnuExit);
+
             UIMenuItem mnuEdit = new UIMenuItem();
-            mnuEdit.Label.Text = "EDIT";
+            mnuEdit.Label.Text = "Edit";
             mnuEdit.BackgroundColor = new Color("#333337");
             _menu.AddChild(mnuEdit);
+
+            _menu.Open();
         }
 
         private void UpdateWindownBounds(ITexture texture)

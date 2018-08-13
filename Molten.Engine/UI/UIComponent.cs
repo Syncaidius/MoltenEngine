@@ -50,11 +50,18 @@ namespace Molten.UI
         UIMargin _margin;
         UIPadding _clipPadding;
 
+        Rectangle _topBorder;
+        Rectangle _leftBorder;
+        Rectangle _rightBorder;
+        Rectangle _bottomBorder;
+
         /// <summary>
         /// Creates a new instance of <see cref="UIComponent"/>
         /// </summary>
         public UIComponent()
         {
+            BackgroundColor = new Color("#2d2d30");
+            BorderColor = new Color("#434346");
             _children = new List<UIComponent>();
             _childRenderList = new List<UIComponent>();
             _childrenByName = new Dictionary<string, UIComponent>();
@@ -94,7 +101,7 @@ namespace Molten.UI
         /// Renders the current <see cref="UIComponent"/> with the provided <see cref="SpriteBatch"/>. When the component is added to a scene, this will be called automatically.
         /// </summary>
         /// <param name="sb">The <see cref="SpriteBatch"/> that will perform the render operation.</param>
-        public virtual void Render(SpriteBatch sb)
+        public void Render(SpriteBatch sb)
         {
             // TODO find a better solution for this lock, if possible.
             // It's a potential bottleneck in the renderer if another thread holds the lock when the render thread hits it.
@@ -108,6 +115,25 @@ namespace Molten.UI
                 });
             }
 
+            // Render boarder
+            if (BorderEnabled)
+            {
+                sb.DrawRect(_leftBorder, BorderColor);
+                sb.DrawRect(_rightBorder, BorderColor);
+                sb.DrawRect(_topBorder, BorderColor);
+                sb.DrawRect(_bottomBorder, BorderColor);
+            }
+
+            // Render background.
+            if(BackgroundColor.A > 0)
+                sb.DrawRect(_clippingBounds, BackgroundColor);
+
+            OnRender(sb);
+        }
+
+        protected virtual void OnRender(SpriteBatch sb)
+        {
+            // Render children.
             sb.PushClip(_clippingBounds);
             for (int i = 0; i < _childRenderList.Count; i++)
                 _childRenderList[i].Render(sb);
@@ -307,12 +333,21 @@ namespace Molten.UI
 
             _clipPadding.SuppressEvents = false;
 
-            //update bounds of children
+            // Update bounds of children
             LockChildren(() =>
             {
                 foreach (UIComponent child in _children)
                     child.UpdateBounds();
             });
+
+            int test = this.Width;
+
+
+            // Update bordering
+            _leftBorder = new Rectangle(_globalBounds.X, _globalBounds.Y, _clipPadding.Left, _globalBounds.Height);
+            _rightBorder = new Rectangle(_globalBounds.Right - _clipPadding.Right, _globalBounds.Y, _clipPadding.Right, _globalBounds.Height);
+            _topBorder = new Rectangle(_leftBorder.Right, _globalBounds.Y, _rightBorder.Left - _leftBorder.Right, _clipPadding.Top);
+            _bottomBorder = new Rectangle(_leftBorder.Right, _globalBounds.Bottom - _clipPadding.Bottom, _rightBorder.Left - _leftBorder.Right, _clipPadding.Bottom);
         }
 
         /// <summary>Called right before padding is applied to the global bounds to form the clipping bounds.</summary>
@@ -452,5 +487,14 @@ namespace Molten.UI
                 UpdateBounds();
             }
         }
+
+        public Color BackgroundColor { get; set; }
+
+        public Color BorderColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether border rendering is enabled on the current <see cref="UIComponent"/>. The default value is false.
+        /// </summary>
+        public bool BorderEnabled { get; set; }
     }
 }
