@@ -63,7 +63,9 @@ namespace Molten.UI
         /// <param name="sb"></param>
         protected override void OnRender(SpriteBatch sb)
         {
-            _label.Render(sb);
+            if (_label.Color.A > 0)
+                _label.Render(sb);
+
             base.OnRender(sb);
         }
 

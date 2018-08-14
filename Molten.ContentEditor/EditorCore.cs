@@ -39,6 +39,7 @@ namespace Molten.ContentEditor
             _menu.Height = 25;
             _menu.Margin.DockLeft = true;
             _menu.Margin.DockRight = true;
+            _menu.Label.Text = "";
             _menu.FlowDirection = UIMenuItem.ItemFlowDirection.LeftToRight;
             UI.AddChild(_menu);
 

@@ -167,6 +167,9 @@ namespace Molten.Graphics
         /// <param name="scale">The text scale. 1.0f is equivilent to the default size. 0.5f will half the size. 2.0f will double the size.</param>
         public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Vector2F scale, IMaterial material = null)
         {
+            if (text.Length == 0)
+                return;
+
             SpriteClipZone clip = _clipZones[_curClip];
             int spriteID = 0;
             int strLength = text.Length;
