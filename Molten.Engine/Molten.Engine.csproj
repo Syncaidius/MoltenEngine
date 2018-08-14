@@ -142,7 +142,6 @@
     <Compile Include="Threading\ThreadManager.cs" />
     <Compile Include="Threading\WorkerGroup.cs" />
     <Compile Include="Threading\WorkerThread.cs" />
-    <Compile Include="UI\UIContextMenu.cs" />
     <Compile Include="UI\UIMenuItem.cs" />
     <Compile Include="UI\UIVerticalAlignment.cs" />
     <Compile Include="UI\UIHorizontalAlignment.cs" />

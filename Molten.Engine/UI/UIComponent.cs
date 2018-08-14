@@ -49,6 +49,7 @@ namespace Molten.UI
 
         UIMargin _margin;
         UIPadding _clipPadding;
+        bool _clippingEnabled;
 
         Rectangle _topBorder;
         Rectangle _leftBorder;
@@ -133,11 +134,18 @@ namespace Molten.UI
 
         protected virtual void OnRender(SpriteBatch sb)
         {
-            // Render children.
-            sb.PushClip(_clippingBounds);
-            for (int i = 0; i < _childRenderList.Count; i++)
-                _childRenderList[i].Render(sb);
-            sb.PopClip();
+            if(_clippingEnabled)
+            {
+                sb.PushClip(_clippingBounds);
+                for (int i = 0; i < _childRenderList.Count; i++)
+                    _childRenderList[i].Render(sb);
+                sb.PopClip();
+            }
+            else
+            {
+                for (int i = 0; i < _childRenderList.Count; i++)
+                    _childRenderList[i].Render(sb);
+            }
         }
 
         /// <summary>
@@ -294,8 +302,8 @@ namespace Molten.UI
             OnApplyClipPadding();
             _clippingBounds = _clipPadding.ApplyPadding(_globalBounds);
 
-            //force the clip bounds to fit inside its parent and never go outside of it.
-            if (_parent != null)
+            // Force the clip bounds to fit inside its parent and never go outside of it, if clipping is enabled.
+            if (_parent != null && _clippingEnabled)
             {
                 Rectangle _parentClip = _parent.ClippingBounds;
 
@@ -389,17 +397,28 @@ namespace Molten.UI
         /// <summary>
         /// Gets the global bounds of the current <see cref="UIComponent"/>. This the final screen bounds of the component after all other properties have been taken into account (i.e. margins, padding, parent bounds, etc).
         /// </summary>
-        public Rectangle GlobalBounds
-        {
-            get { return _globalBounds; }
-        }
+        public Rectangle GlobalBounds => _globalBounds;
 
         /// <summary>
         /// Gets the clipping bounds of the current <see cref="UIComponent"/>. This is the area in which the component's children are rendered into.
         /// </summary>
-        public Rectangle ClippingBounds
+        public Rectangle ClippingBounds => _clippingBounds;
+
+        /// <summary>
+        /// Gets or sets whether or not clipping is enabled for the current <see cref="UIComponent"/>. The default value is false. If enabled, any child components will be clipped to the bounds
+        /// of the current <see cref="UIComponent.ClippingBounds"/>.
+        /// </summary>
+        public bool ClippingEnabled
         {
-            get { return _clippingBounds; }
+            get => _clippingEnabled;
+            set
+            {
+                if(_clippingEnabled != value)
+                {
+                    _clippingEnabled = value;
+                    UpdateBounds();
+                }
+            }
         }
 
         /// <summary>
@@ -418,18 +437,12 @@ namespace Molten.UI
         /// <summary>
         /// Gets the <see cref="UIPadding"/> instance containing padding values for determining the clipping region of the current <see cref="UIComponent"/>.
         /// </summary>
-        public UIPadding ClipPadding
-        {
-            get { return _clipPadding; }
-        }
+        public UIPadding ClipPadding => _clipPadding;
 
         /// <summary>
         /// Gets the <see cref="UIMargin"/> instance containing margin values for the current <see cref="UIComponent"/>.
         /// </summary>
-        public UIMargin Margin
-        {
-            get { return _margin; }
-        }
+        public UIMargin Margin => _margin;
 
         /// <summary>
         /// Gets or sets the local bounds of the current <see cref="UIComponent"/>.

@@ -28,6 +28,7 @@ namespace Molten.UI
             _color = Color.White;
             _text = text;
             _font = font;
+            _textSize = _font.MeasureString(_text);
             _hAlign = UIHorizontalAlignment.Left;
             _vAlign = UIVerticalAlignment.Top;
             AlignText();
