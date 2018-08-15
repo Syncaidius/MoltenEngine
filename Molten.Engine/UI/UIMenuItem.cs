@@ -52,7 +52,13 @@ namespace Molten.UI
 
         private void _label_OnTextChanged(UIText obj)
         {
-            LocalBounds = new Rectangle(X, Y, (int)_label.Size.X, (int)_label.Size.Y);
+            LocalBounds = new Rectangle()
+            {
+                X = _localBounds.X,
+                Y = _localBounds.Y,
+                Width = (int)Math.Max(_localBounds.Width, _label.Size.X),
+                Height = (int)Math.Max(_localBounds.Height, _label.Size.Y),
+            };
             if (Parent is UIMenuItem parentItem)
                 parentItem.AlignChildItems();
         }
@@ -103,8 +109,6 @@ namespace Molten.UI
 
             LockChildren(() =>
             {
-                Vector2F labelSize;
-
                 switch (_flowDirection)
                 {
                     case ItemFlowDirection.LeftToRight:
@@ -130,8 +134,8 @@ namespace Molten.UI
                         foreach (UIComponent com in _children)
                         {
                             item = com as UIMenuItem;
-                            if ((int)item.Label.Size.Y > widest)
-                                widest = (int)(int)item.Label.Size.Y;
+                            if ((int)item.Label.Size.X > widest)
+                                widest = (int)(int)item.Label.Size.X;
                         }
 
                         foreach(UIComponent com in _children)

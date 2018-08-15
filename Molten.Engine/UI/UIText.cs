@@ -58,7 +58,7 @@ namespace Molten.UI
                     break;
 
                 case UIVerticalAlignment.Center:
-                    _pos.Y = _bounds.Center.Y - (_textSize.X / 2);
+                    _pos.Y = _bounds.Center.Y - (_textSize.Y / 2);
                     break;
 
                 case UIVerticalAlignment.Bottom:
