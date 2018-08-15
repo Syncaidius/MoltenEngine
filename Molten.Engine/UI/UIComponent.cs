@@ -61,7 +61,7 @@ namespace Molten.UI
         /// </summary>
         public UIComponent()
         {
-            BackgroundColor = new Color("#2d2d30");
+            BackgroundColor = new Color("#1b1b1c");
             BorderColor = new Color("#434346");
             _children = new List<UIComponent>();
             _childRenderList = new List<UIComponent>();
@@ -148,27 +148,6 @@ namespace Molten.UI
             }
         }
 
-        /// <summary>
-        /// Gets the parent of the UI 
-        /// </summary>
-        public UIComponent Parent
-        {
-            get => _parent;
-            internal set
-            {
-                _parent = value;
-                UpdateBounds();
-            }
-        }
-
-        /// <summary>
-        /// Gets the scene that the current <see cref="UIComponent"/> is bound to, or null if not bound to any scene.
-        /// </summary>
-        public Scene Scene
-        {
-            get => _scene;
-            internal set => _scene = value;
-        }
 
         protected void LockChildren(Action callback)
         {
@@ -197,12 +176,6 @@ namespace Molten.UI
             Interlocked.Exchange(ref _lockerValue, 0);
             throw new UIException(this, message);
 
-        }
-
-        Scene IUpdatable.Scene
-        {
-            get => _scene;
-            set => Scene = value;
         }
 
         /// <summary>
@@ -360,6 +333,43 @@ namespace Molten.UI
 
         /// <summary>Called right before padding is applied to the global bounds to form the clipping bounds.</summary>
         protected virtual void OnApplyClipPadding() { }
+
+        /// <summary>
+        /// Invoked when the component's parent has been changed.
+        /// </summary>
+        protected virtual void OnParentChanged() { }
+
+        /// <summary>
+        /// Gets the scene that the current <see cref="UIComponent"/> is bound to, or null if not bound to any scene.
+        /// </summary>
+        public Scene Scene
+        {
+            get => _scene;
+            internal set => _scene = value;
+        }
+
+        Scene IUpdatable.Scene
+        {
+            get => _scene;
+            set => Scene = value;
+        }
+
+        /// <summary>
+        /// Gets the parent of the UI 
+        /// </summary>
+        public UIComponent Parent
+        {
+            get => _parent;
+            internal set
+            {
+                if (_parent != value)
+                {
+                    _parent = value;
+                    OnParentChanged();
+                    UpdateBounds();
+                }
+            }
+        }
 
         /// <summary>
         /// Gets a child of the current <see cref="UIComponent"/>, with the specified name, or null if it doesn't exist.

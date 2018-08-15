@@ -137,7 +137,7 @@ namespace Molten
                 {
                     FontFile fontFile = reader.ReadFont(true);
 
-                    _defaultFont = new SpriteFont(_renderer, fontFile, 20);
+                    _defaultFont = new SpriteFont(_renderer, fontFile, settings.DefaultFontSize);
                 }
             }
             catch (Exception e)

@@ -36,7 +36,11 @@ namespace Molten.UI
         }
 
         UIText _label;
-        int _spacing = 1;
+        int _childSpacing = 1;
+        int _iconSpacing = 10;
+        int _iconSize = 16;
+        int _iconMargin;
+        Sprite _icon = null;
 
         ItemFlowDirection _flowDirection = ItemFlowDirection.TopToBottom;
 
@@ -46,21 +50,53 @@ namespace Molten.UI
         public UIMenuItem()
         {
             _label = new UIText(Engine.Current.DefaultFont, this.Name);
-            _label_OnTextChanged(_label);
-            _label.OnTextChanged += _label_OnTextChanged;
+            UpdateIconLabel(_label);
+            _label.OnTextChanged += UpdateIconLabel;
         }
 
-        private void _label_OnTextChanged(UIText obj)
+        private void UpdateIconLabel(UIText obj)
         {
-            LocalBounds = new Rectangle()
+            _iconSize = _label.Size.Y;
+
+            int width = 0;
+            if (Parent != null && Parent is UIMenuItem parentItem)
             {
-                X = _localBounds.X,
-                Y = _localBounds.Y,
-                Width = (int)Math.Max(_localBounds.Width, _label.Size.X),
-                Height = (int)Math.Max(_localBounds.Height, _label.Size.Y),
-            };
-            if (Parent is UIMenuItem parentItem)
+                switch (parentItem.FlowDirection)
+                {
+                    case ItemFlowDirection.LeftToRight:
+                    case ItemFlowDirection.RightToLeft:
+                        _iconMargin = _icon != null ? _iconSize + _iconSpacing : 0;
+                        width = _iconMargin + Math.Max(_localBounds.Width, _label.Size.X);
+                        break;
+
+                    case ItemFlowDirection.TopToBottom:
+                    case ItemFlowDirection.BottomToTop:
+                        _iconMargin = _iconSize + _iconSpacing;
+                        width = _iconMargin + Math.Max(_localBounds.Width, _label.Size.X);
+                        break;
+                }
+
+
+                LocalBounds = new Rectangle()
+                {
+                    X = _localBounds.X,
+                    Y = _localBounds.Y,
+                    Width = width,
+                    Height = (int)Math.Max(_localBounds.Height, _label.Size.Y),
+                };
+
                 parentItem.AlignChildItems();
+            }
+            else
+            {
+                LocalBounds = new Rectangle()
+                {
+                    X = _localBounds.X,
+                    Y = _localBounds.Y,
+                    Width = width,
+                    Height = (int)Math.Max(_localBounds.Height, _label.Size.Y),
+                };
+            } 
         }
 
         /// <summary>
@@ -112,15 +148,15 @@ namespace Molten.UI
                 switch (_flowDirection)
                 {
                     case ItemFlowDirection.LeftToRight:
-                        dest = new Rectangle(0, 0, 0, this.Height);
+                        dest = new Rectangle(0, 0, 0, Height);
                         foreach (UIComponent com in _children)
                         {
                             item = com as UIMenuItem;
                             Rectangle lBounds = item.LocalBounds;
-                            dest.Width = (int)item.Label.Size.X;
+                            dest.Width = item._iconMargin + item.Label.Size.X;
 
                             item.LocalBounds = dest;
-                            dest.X += item.LocalBounds.Width + _spacing;
+                            dest.X += item.LocalBounds.Width + _childSpacing;
                         }
                         break;
 
@@ -134,8 +170,8 @@ namespace Molten.UI
                         foreach (UIComponent com in _children)
                         {
                             item = com as UIMenuItem;
-                            if ((int)item.Label.Size.X > widest)
-                                widest = (int)(int)item.Label.Size.X;
+                            if (item.Label.Size.X > widest)
+                                widest = item._iconMargin + item.Label.Size.X;
                         }
 
                         foreach(UIComponent com in _children)
@@ -154,10 +190,20 @@ namespace Molten.UI
             });
         }
 
+        protected override void OnParentChanged()
+        {
+            base.OnParentChanged();
+            UpdateIconLabel(_label);
+        }
+
         protected override void UpdateBounds()
         {
             base.UpdateBounds();
-            _label.Bounds = ClippingBounds;
+            Rectangle cb = ClippingBounds;
+            cb.Width -= _iconMargin;
+            cb.X += _iconMargin;
+            _label.Bounds = cb;
+
             AlignChildItems();
         }
 
@@ -192,12 +238,12 @@ namespace Molten.UI
         /// </summary>
         public int ItemSpacing
         {
-            get => _spacing;
+            get => _childSpacing;
             set
             {
-                if (_spacing != value)
+                if (_childSpacing != value)
                 {
-                    _spacing = value;
+                    _childSpacing = value;
                     AlignChildItems();
                 }
             }

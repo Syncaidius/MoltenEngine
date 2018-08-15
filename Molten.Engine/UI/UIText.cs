@@ -20,7 +20,7 @@ namespace Molten.UI
         UIVerticalAlignment _vAlign;
         Rectangle _bounds;
         Vector2F _pos;
-        Vector2F _textSize;
+        Vector2I _textSize;
         Color _color;
 
         public UIText(SpriteFont font, string text = "")
@@ -28,7 +28,7 @@ namespace Molten.UI
             _color = Color.White;
             _text = text;
             _font = font;
-            _textSize = _font.MeasureString(_text);
+            _textSize = (Vector2I)_font.MeasureString(_text);
             _hAlign = UIHorizontalAlignment.Left;
             _vAlign = UIVerticalAlignment.Top;
             AlignText();
@@ -82,7 +82,7 @@ namespace Molten.UI
             set
             {
                 _text = value;
-                _textSize = _font.MeasureString(_text);
+                _textSize = (Vector2I)_font.MeasureString(_text);
                 AlignText();
                 OnTextChanged?.Invoke(this);
             }
@@ -99,7 +99,7 @@ namespace Molten.UI
                 if(_font != value)
                 {
                     _font = value;
-                    _textSize = _font.MeasureString(_text);
+                    _textSize = (Vector2I)_font.MeasureString(_text);
                     AlignText();
                     OnTextChanged?.Invoke(this);
                 }
@@ -157,7 +157,7 @@ namespace Molten.UI
         /// <summary>
         /// Gets the size of the text based on it's current font, in pixels.
         /// </summary>
-        public Vector2F Size
+        public Vector2I Size
         {
             get => _textSize;
         }
