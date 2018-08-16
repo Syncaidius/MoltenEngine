@@ -511,12 +511,19 @@ namespace Molten.UI
             }
         }
 
+        /// <summary>
+        /// Gets or sets the background color of the current <see cref="UIComponent"/>.
+        /// </summary>
         public Color BackgroundColor { get; set; }
 
+        /// <summary>
+        /// Gets or sets the border color of the current <see cref="UIComponent"/>.
+        /// </summary>
         public Color BorderColor { get; set; }
 
         /// <summary>
-        /// Gets or sets whether border rendering is enabled on the current <see cref="UIComponent"/>. The default value is false.
+        /// Gets or sets whether border rendering is enabled on the current <see cref="UIComponent"/>. The default value is false. 
+        /// If true, <see cref="ClipPadding"/> will be used to determine the border size.
         /// </summary>
         public bool BorderEnabled { get; set; }
     }

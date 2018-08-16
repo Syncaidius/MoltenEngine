@@ -72,7 +72,7 @@ namespace Molten
         /// Called by the renderer when the sprite is to be drawn into a scene. Do not call this yourself unless you know what you are doing.
         /// </summary>
         /// <param name="sb">The <see cref="SpriteBatch"/> that is performing the render operation.</param>
-        void IRenderable2D.Render(SpriteBatch sb)
+        public void Render(SpriteBatch sb)
         {
             sb.Draw(Texture, Position, Source, Color, Rotation, Scale, Origin);
         }

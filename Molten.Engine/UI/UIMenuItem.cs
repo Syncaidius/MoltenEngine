@@ -36,215 +36,161 @@ namespace Molten.UI
         }
 
         UIText _label;
-        int _childSpacing = 1;
+        ItemFlowDirection _flow;
+        Sprite _icon;
         int _iconSpacing = 10;
-        int _iconSize = 16;
-        int _iconMargin;
-        Sprite _icon = null;
 
-        ItemFlowDirection _flowDirection = ItemFlowDirection.TopToBottom;
-
-        /// <summary>
-        /// Creates a new instance of <see cref="UIMenuItem"/>.
-        /// </summary>
         public UIMenuItem()
         {
-            _label = new UIText(Engine.Current.DefaultFont, this.Name);
-            UpdateIconLabel(_label);
-            _label.OnTextChanged += UpdateIconLabel;
+            _flow = ItemFlowDirection.TopToBottom;
+            _label = new UIText(Engine.Current.DefaultFont, this.GetType().Name);
+            _label.VerticalAlignment = UIVerticalAlignment.Center;
+            _label.OnTextChanged += _label_OnTextChanged;
         }
 
-        private void UpdateIconLabel(UIText obj)
+        private void _label_OnTextChanged(UIText obj)
         {
-            _iconSize = _label.Size.Y;
-
-            int width = 0;
-            if (Parent != null && Parent is UIMenuItem parentItem)
+            if (Parent is UIMenuItem parentItem)
             {
-                switch (parentItem.FlowDirection)
-                {
-                    case ItemFlowDirection.LeftToRight:
-                    case ItemFlowDirection.RightToLeft:
-                        _iconMargin = _icon != null ? _iconSize + _iconSpacing : 0;
-                        width = _iconMargin + Math.Max(_localBounds.Width, _label.Size.X);
-                        break;
-
-                    case ItemFlowDirection.TopToBottom:
-                    case ItemFlowDirection.BottomToTop:
-                        _iconMargin = _iconSize + _iconSpacing;
-                        width = _iconMargin + Math.Max(_localBounds.Width, _label.Size.X);
-                        break;
-                }
-
-
-                LocalBounds = new Rectangle()
-                {
-                    X = _localBounds.X,
-                    Y = _localBounds.Y,
-                    Width = width,
-                    Height = (int)Math.Max(_localBounds.Height, _label.Size.Y),
-                };
-
-                parentItem.AlignChildItems();
+                parentItem.AlignItems();
             }
             else
             {
-                LocalBounds = new Rectangle()
-                {
-                    X = _localBounds.X,
-                    Y = _localBounds.Y,
-                    Width = width,
-                    Height = (int)Math.Max(_localBounds.Height, _label.Size.Y),
-                };
-            } 
-        }
-
-        /// <summary>
-        /// Renders the <see cref="UIMenuItem"/>.
-        /// </summary>
-        /// <param name="sb"></param>
-        protected override void OnRender(SpriteBatch sb)
-        {
-            if (_label.Color.A > 0)
-                _label.Render(sb);
-
-            base.OnRender(sb);
-        }
-
-        /// <summary>
-        /// Adds a new <see cref="UIComponent"/> to the current <see cref="UIMenuItem"/>. Only <see cref="UIMenuItem"/> instances are accepted.
-        /// </summary>
-        /// <param name="child">The child item to add.</param>
-        public override void AddChild(UIComponent child)
-        {
-            if (child is UIMenuItem)
-            {
-                base.AddChild(child);
-                AlignChildItems();
-            }
-            else
-            {
-                throw new UIException(this, "UIMenuBar only accepts UIMenuItem as children.");
+                _localBounds.Height = _localBounds.Size.Y;
+                _localBounds.Width = _label.Size.X;
+                UpdateBounds();
             }
         }
 
-        /// <summary>
-        /// Removes a child component from the current <see cref="UIMenuItem"/>.
-        /// </summary>
-        /// <param name="child">The child to be removed.</param>
-        public override void RemoveChild(UIComponent child)
+        private void AlignItems()
         {
-            base.RemoveChild(child);
-            AlignChildItems();
-        }
-
-        private void AlignChildItems()
-        {
-            Rectangle dest;
-            UIMenuItem item;
-
-            LockChildren(() =>
+            switch (_flow)
             {
-                switch (_flowDirection)
-                {
-                    case ItemFlowDirection.LeftToRight:
-                        dest = new Rectangle(0, 0, 0, Height);
-                        foreach (UIComponent com in _children)
+                case ItemFlowDirection.LeftToRight:
+                    int destX = 0;
+                    LockChildren(() =>
+                    {
+                        foreach(UIComponent item in _children)
                         {
-                            item = com as UIMenuItem;
-                            Rectangle lBounds = item.LocalBounds;
-                            dest.Width = item._iconMargin + item.Label.Size.X;
+                            if(item is UIMenuItem menuItem)
+                            {
+                                int iconSize = menuItem.Label.Size.Y;
+                                int iconMargin = _icon != null ? iconSize + menuItem._iconSpacing : 0;
 
-                            item.LocalBounds = dest;
-                            dest.X += item.LocalBounds.Width + _childSpacing;
+                                Rectangle iBounds = menuItem.LocalBounds;
+                                iBounds.Width = iconMargin + menuItem.Label.Size.X;
+                                iBounds.Height = Height;
+                                iBounds.X = destX;
+                                destX += iBounds.Width;
+                                item.LocalBounds = iBounds;
+                            }
                         }
-                        break;
+                    });
+                    break;
 
-                    case ItemFlowDirection.RightToLeft:
-
-                        break;
-
-                    case ItemFlowDirection.TopToBottom:
-                        int widest = 0;
-                        int destY = Height;
-                        foreach (UIComponent com in _children)
+                case ItemFlowDirection.TopToBottom:
+                    int widest = 0;
+                    LockChildren(() =>
+                    {
+                        foreach (UIComponent item in _children)
                         {
-                            item = com as UIMenuItem;
-                            if (item.Label.Size.X > widest)
-                                widest = item._iconMargin + item.Label.Size.X;
+                            if (item is UIMenuItem menuItem)
+                            {
+                                // Always include the icon margin for vertically-listed menu items.
+                                int iconSize = menuItem.Label.Size.Y;
+                                int iconMargin = iconSize + menuItem._iconSpacing;
+                                int expectedWidth = iconMargin + menuItem.Label.Size.X;
+                                widest = Math.Max(expectedWidth, widest);
+                            }
                         }
 
-                        foreach(UIComponent com in _children)
+                        int destY = _localBounds.Height;
+                        foreach (UIComponent item in _children)
                         {
-                            item = com as UIMenuItem;
-                            item.LocalBounds = new Rectangle(0, destY, widest, item.Height);
-                            destY += item.Height;
+                            if (item is UIMenuItem menuItem)
+                            {
+                                Rectangle iBounds = menuItem.LocalBounds;
+                                iBounds.Height = menuItem.Label.Size.Y;
+                                iBounds.Width = widest;
+                                iBounds.Y = destY;
+                                destY += iBounds.Height;
+                                menuItem.LocalBounds = iBounds;
+                            }
                         }
-
-                        break;
-
-                    case ItemFlowDirection.BottomToTop:
-
-                        break;
-                }
-            });
-        }
-
-        protected override void OnParentChanged()
-        {
-            base.OnParentChanged();
-            UpdateIconLabel(_label);
+                    });
+                    break;
+            }
         }
 
         protected override void UpdateBounds()
         {
             base.UpdateBounds();
-            Rectangle cb = ClippingBounds;
-            cb.Width -= _iconMargin;
-            cb.X += _iconMargin;
-            _label.Bounds = cb;
+            int iconSize = 0;
+            int iconMargin = 0;
+            Rectangle cBounds = ClippingBounds;
 
-            AlignChildItems();
+            if(Parent != null && Parent is UIMenuItem parentItem)
+            {
+                switch (parentItem.FlowDirection)
+                {
+                    case ItemFlowDirection.LeftToRight:
+                    case ItemFlowDirection.RightToLeft:
+                        iconSize = _label.Size.Y;
+                        iconMargin = _icon != null ? iconSize + _iconSpacing : 0;
+                        cBounds.X += iconMargin;
+                        break;
+
+                    case ItemFlowDirection.TopToBottom:
+                    case ItemFlowDirection.BottomToTop:
+                        iconSize = _label.Size.Y;
+                        iconMargin = iconSize + _iconSpacing;
+                        cBounds.X += iconMargin;
+                        break;
+                }
+            }
+            else
+            {
+                // TODO Consider fitting own icon before items if horizonal menu.
+            }
+
+            _label.Bounds = cBounds;
+            AlignItems();
         }
 
-        public override string ToString()
+        protected override void OnRender(SpriteBatch sb)
         {
-            return $"{_label.Text} - {Name}";
+            _label.Render(sb);
+            _icon?.Render(sb);
+            base.OnRender(sb);
         }
 
-        /// <summary>
-        /// Gets the label object of the current <see cref="UIMenuItem"/>.
-        /// </summary>
         public UIText Label => _label;
 
-        /// <summary>
-        /// Gets or sets the menu item's flow direction when displaying child items.
-        /// </summary>
         public ItemFlowDirection FlowDirection
         {
-            get => _flowDirection;
+            get => _flow;
             set
             {
-                if (_flowDirection != value)
+                if(_flow != value)
                 {
-                    _flowDirection = value;
-                    AlignChildItems();
+                    _flow = value;
+                    AlignItems();
                 }
             }
         }
 
         /// <summary>
-        /// Gets or sets the spacing between child menu items, when displayed.
+        /// Gets or sets the icon of the current <see cref="UIMenuItem"/>.
         /// </summary>
-        public int ItemSpacing
+        public Sprite Icon
         {
-            get => _childSpacing;
+            get => _icon;
             set
             {
-                if (_childSpacing != value)
+                if(_icon != value)
                 {
-                    _childSpacing = value;
-                    AlignChildItems();
+                    _icon = value;
+                    UpdateBounds();
                 }
             }
         }
