@@ -56,9 +56,19 @@ namespace Molten.ContentEditor
             mnuFile.AddChild(mnuNew);
 
             UIMenuItem mnuOpen = new UIMenuItem();
-            mnuOpen.Label.Text = "Open...";
+            mnuOpen.Label.Text = "Open";
             mnuOpen.BackgroundColor = new Color("#333337");
             mnuFile.AddChild(mnuOpen);
+
+            UIMenuItem mnuProject = new UIMenuItem();
+            mnuProject.Label.Text = "Project...";
+            mnuProject.BackgroundColor = new Color("#333337");
+            mnuOpen.AddChild(mnuProject);
+
+            UIMenuItem mnuOpenFile = new UIMenuItem();
+            mnuOpenFile.Label.Text = "File...";
+            mnuOpenFile.BackgroundColor = new Color("#333337");
+            mnuOpen.AddChild(mnuOpenFile);
 
             UIMenuItem mnuExit = new UIMenuItem();
             mnuExit.Label.Text = "Exit";
@@ -70,8 +80,6 @@ namespace Molten.ContentEditor
             mnuEdit.BackgroundColor = new Color("#333337");
             _menu.AddChild(mnuEdit);
 
-            //_menu.IsOpen = true;
-            //mnuFile.ContextMenu.IsOpen = true;
         }
 
         private void UpdateWindownBounds(ITexture texture)

@@ -9,6 +9,8 @@ namespace Molten.UI
 {
     public class UIMenuItem : UIComponent
     {
+        const string CONTEXT_CHARACTER = "►";
+
         /// <summary>
         /// The flow direction of child menu items.
         /// </summary>
@@ -36,16 +38,30 @@ namespace Molten.UI
         }
 
         UIText _label;
+        UIText _contextLabel;
+        bool _showContextLabel;
+
         ItemFlowDirection _flow;
         Sprite _icon;
         int _iconSpacing = 10;
+        int _shortcutMargin = 50;
 
         public UIMenuItem()
         {
             _flow = ItemFlowDirection.TopToBottom;
+
+            _contextLabel = new UIText(Engine.Current.DefaultFont, CONTEXT_CHARACTER);
+            _contextLabel.HorizontalAlignment = UIHorizontalAlignment.Right;
+            _contextLabel.OnTextChanged += _contextLabel_OnTextChanged;
+
             _label = new UIText(Engine.Current.DefaultFont, this.GetType().Name);
             _label.VerticalAlignment = UIVerticalAlignment.Center;
             _label.OnTextChanged += _label_OnTextChanged;
+        }
+
+        private void _contextLabel_OnTextChanged(UIText obj)
+        {
+            throw new NotImplementedException();
         }
 
         private void _label_OnTextChanged(UIText obj)
@@ -64,10 +80,12 @@ namespace Molten.UI
 
         private void AlignItems()
         {
+            int destX = 0;
+            int destY = 0;
+
             switch (_flow)
             {
                 case ItemFlowDirection.LeftToRight:
-                    int destX = 0;
                     LockChildren(() =>
                     {
                         foreach(UIComponent item in _children)
@@ -99,12 +117,28 @@ namespace Molten.UI
                                 // Always include the icon margin for vertically-listed menu items.
                                 int iconSize = menuItem.Label.Size.Y;
                                 int iconMargin = iconSize + menuItem._iconSpacing;
-                                int expectedWidth = iconMargin + menuItem.Label.Size.X;
+
+                                int expectedWidth = iconMargin + menuItem.Label.Size.X + _shortcutMargin + _contextLabel.Size.X;
                                 widest = Math.Max(expectedWidth, widest);
                             }
                         }
 
-                        int destY = _localBounds.Height;
+                        // Correctly set start position of children, based on the flow direction of our own parent.
+                        if (Parent is UIMenuItem parentItem)
+                        {
+                            if (parentItem._flow == ItemFlowDirection.LeftToRight || parentItem._flow == ItemFlowDirection.RightToLeft)
+                            {
+                                destX = 0;
+                                destY = _localBounds.Height;
+                            }
+                            else
+                            {
+                                destX = Width;
+                                destY = 0;
+                            }
+                        }
+
+                        // Correctly position all child items.
                         foreach (UIComponent item in _children)
                         {
                             if (item is UIMenuItem menuItem)
@@ -113,6 +147,7 @@ namespace Molten.UI
                                 iBounds.Height = menuItem.Label.Size.Y;
                                 iBounds.Width = widest;
                                 iBounds.Y = destY;
+                                iBounds.X = destX;
                                 destY += iBounds.Height;
                                 menuItem.LocalBounds = iBounds;
                             }
@@ -129,12 +164,14 @@ namespace Molten.UI
             int iconMargin = 0;
             Rectangle cBounds = ClippingBounds;
 
+            // Only handle positioning of the various menu item components here.
             if(Parent != null && Parent is UIMenuItem parentItem)
             {
                 switch (parentItem.FlowDirection)
                 {
                     case ItemFlowDirection.LeftToRight:
                     case ItemFlowDirection.RightToLeft:
+                        _showContextLabel = false;
                         iconSize = _label.Size.Y;
                         iconMargin = _icon != null ? iconSize + _iconSpacing : 0;
                         cBounds.X += iconMargin;
@@ -142,9 +179,11 @@ namespace Molten.UI
 
                     case ItemFlowDirection.TopToBottom:
                     case ItemFlowDirection.BottomToTop:
+                        _showContextLabel = _children.Count > 0;
                         iconSize = _label.Size.Y;
                         iconMargin = iconSize + _iconSpacing;
                         cBounds.X += iconMargin;
+                        _contextLabel.Bounds = new Rectangle(cBounds.Right, cBounds.Y, _contextLabel.Size.X, cBounds.Height);
                         break;
                 }
             }
@@ -161,11 +200,21 @@ namespace Molten.UI
         {
             _label.Render(sb);
             _icon?.Render(sb);
+
+            if (_showContextLabel)
+                _contextLabel.Render(sb);
+
             base.OnRender(sb);
         }
 
+        /// <summary>
+        /// Gets the <see cref="UIText"/> object representing the label of the current <see cref="UIMenuItem"/>.
+        /// </summary>
         public UIText Label => _label;
 
+        /// <summary>
+        /// Gets or sets the flow direction of any child items the current <see cref="UIMenuItem"/> has.
+        /// </summary>
         public ItemFlowDirection FlowDirection
         {
             get => _flow;
