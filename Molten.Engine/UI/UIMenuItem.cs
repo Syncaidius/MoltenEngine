@@ -51,6 +51,7 @@ namespace Molten.UI
             _flow = ItemFlowDirection.TopToBottom;
 
             _contextLabel = new UIText(Engine.Current.DefaultFont, CONTEXT_CHARACTER);
+            _contextLabel.VerticalAlignment = UIVerticalAlignment.Center;
             _contextLabel.HorizontalAlignment = UIHorizontalAlignment.Right;
             _contextLabel.OnTextChanged += _contextLabel_OnTextChanged;
 
@@ -175,6 +176,7 @@ namespace Molten.UI
                         iconSize = _label.Size.Y;
                         iconMargin = _icon != null ? iconSize + _iconSpacing : 0;
                         cBounds.X += iconMargin;
+                        cBounds.Width -= iconMargin;
                         break;
 
                     case ItemFlowDirection.TopToBottom:
@@ -183,7 +185,8 @@ namespace Molten.UI
                         iconSize = _label.Size.Y;
                         iconMargin = iconSize + _iconSpacing;
                         cBounds.X += iconMargin;
-                        _contextLabel.Bounds = new Rectangle(cBounds.Right, cBounds.Y, _contextLabel.Size.X, cBounds.Height);
+                        cBounds.Width -= iconMargin + _shortcutMargin + _contextLabel.Size.X;
+                        _contextLabel.Bounds = new Rectangle(ClippingBounds.Right - _contextLabel.Size.X, cBounds.Y, _contextLabel.Size.X, cBounds.Height);
                         break;
                 }
             }

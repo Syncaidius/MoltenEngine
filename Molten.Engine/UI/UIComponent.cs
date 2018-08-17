@@ -123,11 +123,19 @@ namespace Molten.UI
                 sb.DrawRect(_rightBorder, BorderColor);
                 sb.DrawRect(_topBorder, BorderColor);
                 sb.DrawRect(_bottomBorder, BorderColor);
+
+                // Render background.
+                if (BackgroundColor.A > 0)
+                    sb.DrawRect(_clippingBounds, BackgroundColor);
+            }
+            else
+            {
+                // Render background.
+                if (BackgroundColor.A > 0)
+                    sb.DrawRect(_globalBounds, BackgroundColor);
             }
 
-            // Render background.
-            if(BackgroundColor.A > 0)
-                sb.DrawRect(_clippingBounds, BackgroundColor);
+
 
             OnRender(sb);
         }
