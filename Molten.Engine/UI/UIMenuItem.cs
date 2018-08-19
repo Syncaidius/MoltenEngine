@@ -39,7 +39,10 @@ namespace Molten.UI
 
         UIText _label;
         UIText _contextLabel;
+        Rectangle _contextBounds;
         bool _showContextLabel;
+        bool _showContext;
+        UIRectangle _contextRect;
 
         ItemFlowDirection _flow;
         Sprite _icon;
@@ -49,20 +52,33 @@ namespace Molten.UI
         public UIMenuItem()
         {
             _flow = ItemFlowDirection.TopToBottom;
+            ContextPadding = new UIPadding(1);
+            ContextPadding.OnChanged += ContextPadding_OnChanged;
 
             _contextLabel = new UIText(Engine.Current.DefaultFont, CONTEXT_CHARACTER);
             _contextLabel.VerticalAlignment = UIVerticalAlignment.Center;
             _contextLabel.HorizontalAlignment = UIHorizontalAlignment.Right;
             _contextLabel.OnTextChanged += _contextLabel_OnTextChanged;
 
+            _contextRect = new UIRectangle()
+            {
+                BorderColor = UIComponent.DefaultBorderColor,
+                Color = UIComponent.DefaultBackgroundColor,
+            };
+
             _label = new UIText(Engine.Current.DefaultFont, this.GetType().Name);
             _label.VerticalAlignment = UIVerticalAlignment.Center;
             _label.OnTextChanged += _label_OnTextChanged;
         }
 
+        private void ContextPadding_OnChanged(UIPadding obj)
+        {
+            UpdateBounds();
+        }
+
         private void _contextLabel_OnTextChanged(UIText obj)
         {
-            throw new NotImplementedException();
+            
         }
 
         private void _label_OnTextChanged(UIText obj)
@@ -89,7 +105,8 @@ namespace Molten.UI
                 case ItemFlowDirection.LeftToRight:
                     LockChildren(() =>
                     {
-                        foreach(UIComponent item in _children)
+                        _showContext = _children.Count > 0;
+                        foreach (UIComponent item in _children)
                         {
                             if(item is UIMenuItem menuItem)
                             {
@@ -111,6 +128,9 @@ namespace Molten.UI
                     int widest = 0;
                     LockChildren(() =>
                     {
+                        _showContext = _children.Count > 0;
+                        _showContextLabel = _children.Count > 0;
+
                         foreach (UIComponent item in _children)
                         {
                             if (item is UIMenuItem menuItem)
@@ -134,25 +154,47 @@ namespace Molten.UI
                             }
                             else
                             {
-                                destX = Width;
+                                int ppBorder = 0;
+                                if (parentItem.Parent is UIMenuItem parentParentItem && 
+                                (parentParentItem.FlowDirection == ItemFlowDirection.TopToBottom || parentParentItem.FlowDirection == ItemFlowDirection.BottomToTop))
+                                    ppBorder = parentParentItem.ContextPadding.Left + parentParentItem.ContextPadding.Right;
+
+                                destX = Width + ppBorder;
                                 destY = 0;
                             }
                         }
 
+
+                        Rectangle iBounds = new Rectangle()
+                        {
+                            Width = widest,
+                            Height = 0,
+                            X = destX + ContextPadding.Left,
+                            Y = destY + ContextPadding.Top,
+                        };
+
                         // Correctly position all child items.
+                        int totalHeight = 0;
                         foreach (UIComponent item in _children)
                         {
                             if (item is UIMenuItem menuItem)
                             {
-                                Rectangle iBounds = menuItem.LocalBounds;
                                 iBounds.Height = menuItem.Label.Size.Y;
-                                iBounds.Width = widest;
-                                iBounds.Y = destY;
-                                iBounds.X = destX;
-                                destY += iBounds.Height;
                                 menuItem.LocalBounds = iBounds;
+                                iBounds.Y += iBounds.Height;
+                                totalHeight += iBounds.Height;
                             }
                         }
+
+                        _contextBounds = new Rectangle()
+                        {
+                            Width = widest + (ContextPadding.Left + ContextPadding.Right),
+                            Height = totalHeight + (ContextPadding.Top + ContextPadding.Bottom),
+                            X = GlobalBounds.X + destX,
+                            Y = GlobalBounds.Y + destY,
+                        };
+
+                        _contextRect.Set(_contextBounds, ContextPadding);
                     });
                     break;
             }
@@ -181,7 +223,6 @@ namespace Molten.UI
 
                     case ItemFlowDirection.TopToBottom:
                     case ItemFlowDirection.BottomToTop:
-                        _showContextLabel = _children.Count > 0;
                         iconSize = _label.Size.Y;
                         iconMargin = iconSize + _iconSpacing;
                         cBounds.X += iconMargin;
@@ -207,6 +248,8 @@ namespace Molten.UI
             if (_showContextLabel)
                 _contextLabel.Render(sb);
 
+            if(_showContext)
+                _contextRect.Render(sb);
             base.OnRender(sb);
         }
 
@@ -246,5 +289,19 @@ namespace Molten.UI
                 }
             }
         }
+
+        public Color ContextBorderColor
+        {
+            get => _contextRect.BorderColor;
+            set => _contextRect.BorderColor = value;
+        }
+
+        public Color ContextBackgroundColor
+        {
+            get => _contextRect.Color;
+            set => _contextRect.Color = value;
+        }
+        
+        public UIPadding ContextPadding { get; private set; }
     }
 }

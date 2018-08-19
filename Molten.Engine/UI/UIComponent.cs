@@ -19,6 +19,16 @@ namespace Molten.UI
     /// </summary>
     public class UIComponent : IRenderable2D, IUpdatable
     {
+        /// <summary>
+        /// The default background color for <see cref="UIComponent"/> and it's sub-classes.
+        /// </summary>
+        public static readonly Color DefaultBackgroundColor = new Color("#1b1b1c");
+
+        /// <summary>
+        /// The default border color for <see cref="UIComponent"/> and it's sub-classes.
+        /// </summary>
+        public static readonly Color DefaultBorderColor = new Color("#434346");
+
         static int _componentCounter = 0;
 
         /// <summary>
@@ -47,32 +57,32 @@ namespace Molten.UI
         Rectangle _globalBounds;
         Rectangle _clippingBounds;
 
+        UIRectangle _innerRect;
         UIMargin _margin;
-        UIPadding _clipPadding;
         bool _clippingEnabled;
 
-        Rectangle _topBorder;
-        Rectangle _leftBorder;
-        Rectangle _rightBorder;
-        Rectangle _bottomBorder;
+
 
         /// <summary>
         /// Creates a new instance of <see cref="UIComponent"/>
         /// </summary>
         public UIComponent()
         {
-            BackgroundColor = new Color("#1b1b1c");
-            BorderColor = new Color("#434346");
             _children = new List<UIComponent>();
             _childRenderList = new List<UIComponent>();
             _childrenByName = new Dictionary<string, UIComponent>();
             _margin = new UIMargin();
             _margin.OnChanged += _margin_OnChanged;
             _name = $"{this.GetType().Name}{Interlocked.Increment(ref _componentCounter)}";
+            _innerRect = new UIRectangle()
+            {
+                BorderColor = DefaultBorderColor,
+                Color = DefaultBackgroundColor,
+            };
 
 
-            _clipPadding = new UIPadding(0);
-            _clipPadding.OnChanged += _clipPadding_OnChanged;
+            ClipPadding = new UIPadding(0);
+            ClipPadding.OnChanged += _clipPadding_OnChanged;
         }
 
         private void _margin_OnChanged(UIMargin o)
@@ -116,27 +126,7 @@ namespace Molten.UI
                 });
             }
 
-            // Render boarder
-            if (BorderEnabled)
-            {
-                sb.DrawRect(_leftBorder, BorderColor);
-                sb.DrawRect(_rightBorder, BorderColor);
-                sb.DrawRect(_topBorder, BorderColor);
-                sb.DrawRect(_bottomBorder, BorderColor);
-
-                // Render background.
-                if (BackgroundColor.A > 0)
-                    sb.DrawRect(_clippingBounds, BackgroundColor);
-            }
-            else
-            {
-                // Render background.
-                if (BackgroundColor.A > 0)
-                    sb.DrawRect(_globalBounds, BackgroundColor);
-            }
-
-
-
+            _innerRect.Render(sb);
             OnRender(sb);
         }
 
@@ -279,9 +269,9 @@ namespace Molten.UI
                 Height = _localBounds.Height,
             };
 
-            _clipPadding.SuppressEvents = true;
+            ClipPadding.SuppressEvents = true;
             OnApplyClipPadding();
-            _clippingBounds = _clipPadding.ApplyPadding(_globalBounds);
+            _clippingBounds = ClipPadding.ApplyPadding(_globalBounds);
 
             // Force the clip bounds to fit inside its parent and never go outside of it, if clipping is enabled.
             if (_parent != null && _clippingEnabled)
@@ -320,7 +310,7 @@ namespace Molten.UI
                     _clippingBounds.Height = _parentClip.Bottom - _clippingBounds.Y;
             }
 
-            _clipPadding.SuppressEvents = false;
+            ClipPadding.SuppressEvents = false;
 
             // Update bounds of children
             LockChildren(() =>
@@ -329,14 +319,7 @@ namespace Molten.UI
                     child.UpdateBounds();
             });
 
-            int test = this.Width;
-
-
-            // Update bordering
-            _leftBorder = new Rectangle(_globalBounds.X, _globalBounds.Y, _clipPadding.Left, _globalBounds.Height);
-            _rightBorder = new Rectangle(_globalBounds.Right - _clipPadding.Right, _globalBounds.Y, _clipPadding.Right, _globalBounds.Height);
-            _topBorder = new Rectangle(_leftBorder.Right, _globalBounds.Y, _rightBorder.Left - _leftBorder.Right, _clipPadding.Top);
-            _bottomBorder = new Rectangle(_leftBorder.Right, _globalBounds.Bottom - _clipPadding.Bottom, _rightBorder.Left - _leftBorder.Right, _clipPadding.Bottom);
+            _innerRect.Set(_globalBounds, ClipPadding);
         }
 
         /// <summary>Called right before padding is applied to the global bounds to form the clipping bounds.</summary>
@@ -455,7 +438,7 @@ namespace Molten.UI
         /// <summary>
         /// Gets the <see cref="UIPadding"/> instance containing padding values for determining the clipping region of the current <see cref="UIComponent"/>.
         /// </summary>
-        public UIPadding ClipPadding => _clipPadding;
+        public UIPadding ClipPadding { get; }
 
         /// <summary>
         /// Gets the <see cref="UIMargin"/> instance containing margin values for the current <see cref="UIComponent"/>.
@@ -522,17 +505,19 @@ namespace Molten.UI
         /// <summary>
         /// Gets or sets the background color of the current <see cref="UIComponent"/>.
         /// </summary>
-        public Color BackgroundColor { get; set; }
+        public Color BackgroundColor
+        {
+            get => _innerRect.Color;
+            set => _innerRect.Color = value;
+        }
 
         /// <summary>
         /// Gets or sets the border color of the current <see cref="UIComponent"/>.
         /// </summary>
-        public Color BorderColor { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether border rendering is enabled on the current <see cref="UIComponent"/>. The default value is false. 
-        /// If true, <see cref="ClipPadding"/> will be used to determine the border size.
-        /// </summary>
-        public bool BorderEnabled { get; set; }
+        public Color BorderColor
+        {
+            get => _innerRect.BorderColor;
+            set => _innerRect.Color = value;
+        }
     }
 }
