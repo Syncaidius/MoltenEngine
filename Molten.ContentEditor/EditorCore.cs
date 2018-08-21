@@ -12,7 +12,8 @@ namespace Molten.ContentEditor
     public class EditorCore : Foundation
     {
         Scene _uiScene;
-        UIMenuItem _menu;
+        UIMenu _menu;
+        UIPanel _leftPanel;
 
         internal EditorCore(EngineSettings settings) : base("Molten Editor", settings)
         {
@@ -26,58 +27,58 @@ namespace Molten.ContentEditor
             _uiScene = CreateScene("UI", SceneRenderFlags.Render2D);
             _uiScene.OutputCamera = new Camera2D();
             Window.OnPostResize += UpdateWindownBounds;
-            UI = new UIComponent()
-            {
-                BackgroundColor = new Color(0),
-            };
+            UI = new UIComponent();
             UpdateWindownBounds(Window);
 
             _uiScene.AddObject(UI);
 
+            _leftPanel = new UIPanel();
+            _leftPanel.ClipPadding.Right = 1;
+            _leftPanel.Margin.SetDock(false, true, false, true);
+            _leftPanel.Width = 300;
+            _leftPanel.Y = 25;
+            UI.AddChild(_leftPanel);
+
             // TODO set bounds of UI container to screen size.
-            _menu = new UIMenuItem();
+            _menu = new UIMenu();
             _menu.Height = 25;
             _menu.Margin.DockLeft = true;
             _menu.Margin.DockRight = true;
-            _menu.Label.Text = "";
-            _menu.ClipPadding.Set(1);
-            _menu.FlowDirection = UIMenuItem.ItemFlowDirection.LeftToRight;
+            _menu.ClipPadding.Bottom = 1;
             UI.AddChild(_menu);
 
             // Test some sub-items
             UIMenuItem mnuFile = new UIMenuItem();
-            mnuFile.Label.Text = "File";
-            mnuFile.BackgroundColor = new Color("#333337");
+            mnuFile.Text = "File";
             _menu.AddChild(mnuFile);
 
-            UIMenuItem mnuNew = new UIMenuItem();
-            mnuNew.Label.Text = "New...";
-            mnuNew.BackgroundColor = new Color("#333337");
-            mnuFile.AddChild(mnuNew);
+            //UIMenuItem mnuNew = new UIMenuItem();
+            //mnuNew.Label.Text = "New...";
+            //mnuNew.BackgroundColor = new Color("#333337");
+            //mnuFile.AddChild(mnuNew);
 
-            UIMenuItem mnuOpen = new UIMenuItem();
-            mnuOpen.Label.Text = "Open";
-            mnuOpen.BackgroundColor = new Color("#333337");
-            mnuFile.AddChild(mnuOpen);
+            //UIMenuItem mnuOpen = new UIMenuItem();
+            //mnuOpen.Label.Text = "Open";
+            //mnuOpen.BackgroundColor = new Color("#333337");
+            //mnuFile.AddChild(mnuOpen);
 
-            UIMenuItem mnuProject = new UIMenuItem();
-            mnuProject.Label.Text = "Project...";
-            mnuProject.BackgroundColor = new Color("#333337");
-            mnuOpen.AddChild(mnuProject);
+            //UIMenuItem mnuProject = new UIMenuItem();
+            //mnuProject.Label.Text = "Project...";
+            //mnuProject.BackgroundColor = new Color("#333337");
+            //mnuOpen.AddChild(mnuProject);
 
-            UIMenuItem mnuOpenFile = new UIMenuItem();
-            mnuOpenFile.Label.Text = "File...";
-            mnuOpenFile.BackgroundColor = new Color("#333337");
-            mnuOpen.AddChild(mnuOpenFile);
+            //UIMenuItem mnuOpenFile = new UIMenuItem();
+            //mnuOpenFile.Label.Text = "File...";
+            //mnuOpenFile.BackgroundColor = new Color("#333337");
+            //mnuOpen.AddChild(mnuOpenFile);
 
-            UIMenuItem mnuExit = new UIMenuItem();
-            mnuExit.Label.Text = "Exit";
-            mnuExit.BackgroundColor = new Color("#333337");
-            mnuFile.AddChild(mnuExit);
+            //UIMenuItem mnuExit = new UIMenuItem();
+            //mnuExit.Label.Text = "Exit";
+            //mnuExit.BackgroundColor = new Color("#333337");
+            //mnuFile.AddChild(mnuExit);
 
             UIMenuItem mnuEdit = new UIMenuItem();
-            mnuEdit.Label.Text = "Edit";
-            mnuEdit.BackgroundColor = new Color("#333337");
+            mnuEdit.Text = "Edit";
             _menu.AddChild(mnuEdit);
 
         }

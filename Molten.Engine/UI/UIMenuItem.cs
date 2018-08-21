@@ -7,301 +7,83 @@ using Molten.Graphics;
 
 namespace Molten.UI
 {
-    public class UIMenuItem : UIComponent
+    public class UIMenuItem : UICompoundComponent
     {
-        const string CONTEXT_CHARACTER = "►";
-
-        /// <summary>
-        /// The flow direction of child menu items.
-        /// </summary>
-        public enum ItemFlowDirection
-        {
-            /// <summary>
-            /// Any child menu items will be listed horizontally from left to right.
-            /// </summary>
-            LeftToRight = 0,
-
-            /// <summary>
-            /// Any child menu items will be listed horizontally, from right to left.
-            /// </summary>
-            RightToLeft = 1,
-
-            /// <summary>
-            /// Any child menu items will listed vertically, from top to bottom.
-            /// </summary>
-            TopToBottom = 2,
-
-            /// <summary>
-            /// Any child menu items will be listed vertically, from bottom to top.
-            /// </summary>
-            BottomToTop = 3,
-        }
-
-        UIText _label;
-        UIText _contextLabel;
-        Rectangle _contextBounds;
-        bool _showContextLabel;
-        bool _showContext;
-        UIRectangle _contextRect;
-
-        ItemFlowDirection _flow;
+        UIPanel _bgPanel;
+        UILabel _label;
         Sprite _icon;
-        int _iconSpacing = 10;
-        int _shortcutMargin = 50;
+        int _iconSpacing = 16;
+        bool _reserveIconMargin = true;
+        int _iconSize;
+        int _iconMargin;
+        int _padSpacing;
 
         public UIMenuItem()
         {
-            _flow = ItemFlowDirection.TopToBottom;
-            ContextPadding = new UIPadding(1);
-            ContextPadding.OnChanged += ContextPadding_OnChanged;
+            _bgPanel = new UIPanel();
+            _bgPanel.BackgroundColor = Color.Transparent;
+            _bgPanel.BorderColor = Color.Transparent;
+            _bgPanel.Margin.SetDock(true, true, true, true);
 
-            _contextLabel = new UIText(Engine.Current.DefaultFont, CONTEXT_CHARACTER);
-            _contextLabel.VerticalAlignment = UIVerticalAlignment.Center;
-            _contextLabel.HorizontalAlignment = UIHorizontalAlignment.Right;
-            _contextLabel.OnTextChanged += _contextLabel_OnTextChanged;
-
-            _contextRect = new UIRectangle()
-            {
-                BorderColor = UIComponent.DefaultBorderColor,
-                Color = UIComponent.DefaultBackgroundColor,
-            };
-
-            _label = new UIText(Engine.Current.DefaultFont, this.GetType().Name);
+            _label = new UILabel(Engine.Current.DefaultFont, this.Name);
             _label.VerticalAlignment = UIVerticalAlignment.Center;
+            _label_OnTextChanged(_label);
             _label.OnTextChanged += _label_OnTextChanged;
+
+            AddPart(_bgPanel);
+            AddPart(_label);
         }
 
-        private void ContextPadding_OnChanged(UIPadding obj)
+        private void _label_OnTextChanged(UILabel obj)
         {
             UpdateBounds();
         }
 
-        private void _contextLabel_OnTextChanged(UIText obj)
+        protected override void OnPreUpdateBounds()
         {
-            
+            base.OnPreUpdateBounds();
+            _iconSize = _label.Size.Y;
+            _iconMargin = (_icon != null || (Parent is UIMenu pMenu && pMenu.FlowDirection == UIMenu.ItemFlowDirection.Vertical)) ? _iconSize + _iconSpacing : 0;
+            _padSpacing = _iconSize / 2;
+
+            _localBounds.Width = ClipPadding.Left + _padSpacing + _iconMargin + _label.Size.X + _padSpacing + ClipPadding.Right;
+            _localBounds.Height = Math.Max(_label.Size.Y + ClipPadding.Top + ClipPadding.Bottom, _localBounds.Height);
         }
 
-        private void _label_OnTextChanged(UIText obj)
+        protected override void OnPostUpdateBounds()
         {
-            if (Parent is UIMenuItem parentItem)
+            base.OnPostUpdateBounds();
+            _label.LocalBounds = new Rectangle()
             {
-                parentItem.AlignItems();
-            }
-            else
-            {
-                _localBounds.Height = _localBounds.Size.Y;
-                _localBounds.Width = _label.Size.X;
-                UpdateBounds();
-            }
+                X = _padSpacing + _iconMargin,
+                Y = 0,
+                Width = ClippingBounds.Width,
+                Height = ClippingBounds.Height,
+            };
         }
 
-        private void AlignItems()
+        public string Text
         {
-            int destX = 0;
-            int destY = 0;
-
-            switch (_flow)
-            {
-                case ItemFlowDirection.LeftToRight:
-                    LockChildren(() =>
-                    {
-                        _showContext = _children.Count > 0;
-                        foreach (UIComponent item in _children)
-                        {
-                            if(item is UIMenuItem menuItem)
-                            {
-                                int iconSize = menuItem.Label.Size.Y;
-                                int iconMargin = _icon != null ? iconSize + menuItem._iconSpacing : 0;
-
-                                Rectangle iBounds = menuItem.LocalBounds;
-                                iBounds.Width = iconMargin + menuItem.Label.Size.X;
-                                iBounds.Height = Height;
-                                iBounds.X = destX;
-                                destX += iBounds.Width;
-                                item.LocalBounds = iBounds;
-                            }
-                        }
-                    });
-                    break;
-
-                case ItemFlowDirection.TopToBottom:
-                    int widest = 0;
-                    LockChildren(() =>
-                    {
-                        _showContext = _children.Count > 0;
-                        _showContextLabel = _children.Count > 0;
-
-                        foreach (UIComponent item in _children)
-                        {
-                            if (item is UIMenuItem menuItem)
-                            {
-                                // Always include the icon margin for vertically-listed menu items.
-                                int iconSize = menuItem.Label.Size.Y;
-                                int iconMargin = iconSize + menuItem._iconSpacing;
-
-                                int expectedWidth = iconMargin + menuItem.Label.Size.X + _shortcutMargin + _contextLabel.Size.X;
-                                widest = Math.Max(expectedWidth, widest);
-                            }
-                        }
-
-                        // Correctly set start position of children, based on the flow direction of our own parent.
-                        if (Parent is UIMenuItem parentItem)
-                        {
-                            if (parentItem._flow == ItemFlowDirection.LeftToRight || parentItem._flow == ItemFlowDirection.RightToLeft)
-                            {
-                                destX = 0;
-                                destY = _localBounds.Height;
-                            }
-                            else
-                            {
-                                int ppBorder = 0;
-                                if (parentItem.Parent is UIMenuItem parentParentItem && 
-                                (parentParentItem.FlowDirection == ItemFlowDirection.TopToBottom || parentParentItem.FlowDirection == ItemFlowDirection.BottomToTop))
-                                    ppBorder = parentParentItem.ContextPadding.Left + parentParentItem.ContextPadding.Right;
-
-                                destX = Width + ppBorder;
-                                destY = 0;
-                            }
-                        }
-
-
-                        Rectangle iBounds = new Rectangle()
-                        {
-                            Width = widest,
-                            Height = 0,
-                            X = destX + ContextPadding.Left,
-                            Y = destY + ContextPadding.Top,
-                        };
-
-                        // Correctly position all child items.
-                        int totalHeight = 0;
-                        foreach (UIComponent item in _children)
-                        {
-                            if (item is UIMenuItem menuItem)
-                            {
-                                iBounds.Height = menuItem.Label.Size.Y;
-                                menuItem.LocalBounds = iBounds;
-                                iBounds.Y += iBounds.Height;
-                                totalHeight += iBounds.Height;
-                            }
-                        }
-
-                        _contextBounds = new Rectangle()
-                        {
-                            Width = widest + (ContextPadding.Left + ContextPadding.Right),
-                            Height = totalHeight + (ContextPadding.Top + ContextPadding.Bottom),
-                            X = GlobalBounds.X + destX,
-                            Y = GlobalBounds.Y + destY,
-                        };
-
-                        _contextRect.Set(_contextBounds, ContextPadding);
-                    });
-                    break;
-            }
+            get => _label.Text;
+            set => _label.Text = value;
         }
 
-        protected override void UpdateBounds()
+        public SpriteFont Font
         {
-            base.UpdateBounds();
-            int iconSize = 0;
-            int iconMargin = 0;
-            Rectangle cBounds = ClippingBounds;
-
-            // Only handle positioning of the various menu item components here.
-            if(Parent != null && Parent is UIMenuItem parentItem)
-            {
-                switch (parentItem.FlowDirection)
-                {
-                    case ItemFlowDirection.LeftToRight:
-                    case ItemFlowDirection.RightToLeft:
-                        _showContextLabel = false;
-                        iconSize = _label.Size.Y;
-                        iconMargin = _icon != null ? iconSize + _iconSpacing : 0;
-                        cBounds.X += iconMargin;
-                        cBounds.Width -= iconMargin;
-                        break;
-
-                    case ItemFlowDirection.TopToBottom:
-                    case ItemFlowDirection.BottomToTop:
-                        iconSize = _label.Size.Y;
-                        iconMargin = iconSize + _iconSpacing;
-                        cBounds.X += iconMargin;
-                        cBounds.Width -= iconMargin + _shortcutMargin + _contextLabel.Size.X;
-                        _contextLabel.Bounds = new Rectangle(ClippingBounds.Right - _contextLabel.Size.X, cBounds.Y, _contextLabel.Size.X, cBounds.Height);
-                        break;
-                }
-            }
-            else
-            {
-                // TODO Consider fitting own icon before items if horizonal menu.
-            }
-
-            _label.Bounds = cBounds;
-            AlignItems();
+            get => _label.Font;
+            set => _label.Font = value;
         }
 
-        protected override void OnRender(SpriteBatch sb)
+        public UIVerticalAlignment VerticalAlignment
         {
-            _label.Render(sb);
-            _icon?.Render(sb);
-
-            if (_showContextLabel)
-                _contextLabel.Render(sb);
-
-            if(_showContext)
-                _contextRect.Render(sb);
-            base.OnRender(sb);
+            get => _label.VerticalAlignment;
+            set => _label.VerticalAlignment = value;
         }
 
-        /// <summary>
-        /// Gets the <see cref="UIText"/> object representing the label of the current <see cref="UIMenuItem"/>.
-        /// </summary>
-        public UIText Label => _label;
-
-        /// <summary>
-        /// Gets or sets the flow direction of any child items the current <see cref="UIMenuItem"/> has.
-        /// </summary>
-        public ItemFlowDirection FlowDirection
+        public UIHorizontalAlignment HorizontalAlignment
         {
-            get => _flow;
-            set
-            {
-                if(_flow != value)
-                {
-                    _flow = value;
-                    AlignItems();
-                }
-            }
+            get => _label.HorizontalAlignment;
+            set => _label.HorizontalAlignment = value;
         }
-
-        /// <summary>
-        /// Gets or sets the icon of the current <see cref="UIMenuItem"/>.
-        /// </summary>
-        public Sprite Icon
-        {
-            get => _icon;
-            set
-            {
-                if(_icon != value)
-                {
-                    _icon = value;
-                    UpdateBounds();
-                }
-            }
-        }
-
-        public Color ContextBorderColor
-        {
-            get => _contextRect.BorderColor;
-            set => _contextRect.BorderColor = value;
-        }
-
-        public Color ContextBackgroundColor
-        {
-            get => _contextRect.Color;
-            set => _contextRect.Color = value;
-        }
-        
-        public UIPadding ContextPadding { get; private set; }
     }
 }

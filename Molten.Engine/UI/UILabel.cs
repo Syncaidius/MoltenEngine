@@ -10,20 +10,22 @@ namespace Molten.UI
     /// <summary>
     /// A helper class for rendering aligned text.
     /// </summary>
-    public class UIText : IRenderable2D
+    public class UILabel : UIComponent
     {
-        public event ObjectHandler<UIText> OnTextChanged;
+        /// <summary>
+        /// Occurs when <see cref="Text"/> or <see cref="Font"/> are changed.
+        /// </summary>
+        public event ObjectHandler<UILabel> OnTextChanged;
 
         string _text;
         SpriteFont _font;
         UIHorizontalAlignment _hAlign;
         UIVerticalAlignment _vAlign;
-        Rectangle _bounds;
         Vector2F _pos;
         Vector2I _textSize;
         Color _color;
 
-        public UIText(SpriteFont font, string text = "")
+        public UILabel(SpriteFont font, string text = "")
         {
             _color = Color.White;
             _text = text;
@@ -37,40 +39,50 @@ namespace Molten.UI
 
         private void AlignText()
         {
+            Rectangle cBounds = ClippingBounds;
+
             switch (_hAlign) {
                 case UIHorizontalAlignment.Left:
-                    _pos.X = _bounds.X;
+                    _pos.X = cBounds.X;
                     break;
 
                 case UIHorizontalAlignment.Center:
-                    _pos.X = _bounds.Center.X - (_textSize.X / 2);
+                    _pos.X = cBounds.Center.X - (_textSize.X / 2);
                     break;
 
                 case UIHorizontalAlignment.Right:
-                    _pos.X = _bounds.Right - _textSize.X;
+                    _pos.X = cBounds.Right - _textSize.X;
                     break;
             }
 
             switch (_vAlign)
             {
                 case UIVerticalAlignment.Top:
-                    _pos.Y = _bounds.Y;
+                    _pos.Y = cBounds.Y;
                     break;
 
                 case UIVerticalAlignment.Center:
-                    _pos.Y = _bounds.Center.Y - (_textSize.Y / 2);
+                    _pos.Y = cBounds.Center.Y - (_textSize.Y / 2);
                     break;
 
                 case UIVerticalAlignment.Bottom:
-                    _pos.Y = _bounds.Bottom - _textSize.Y;
+                    _pos.Y = cBounds.Bottom - _textSize.Y;
                     break;
             }
         }
 
-        public void Render(SpriteBatch sb)
+        protected override void OnPostUpdateBounds()
+        {
+            base.OnPostUpdateBounds();
+            AlignText();
+        }
+
+        protected override void OnRender(SpriteBatch sb)
         {
             if(_color.A > 0)
                 sb.DrawString(_font, _text, _pos, _color);
+
+            base.OnRender(sb);
         }
 
         /// <summary>
@@ -133,29 +145,16 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Gets or sets the bounds of the text.
-        /// </summary>
-        public Rectangle Bounds
-        {
-            get => _bounds;
-            set
-            {
-                _bounds = value;
-                AlignText();
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the text color.
         /// </summary>
-        public Color Color
+        public Color TextColor
         {
             get => _color;
             set => _color = value;
         }
 
         /// <summary>
-        /// Gets the size of the text based on it's current font, in pixels.
+        /// Gets the size of the label text based on it's current font, in pixels.
         /// </summary>
         public Vector2I Size
         {

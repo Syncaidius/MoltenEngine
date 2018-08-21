@@ -57,7 +57,6 @@ namespace Molten.UI
         Rectangle _globalBounds;
         Rectangle _clippingBounds;
 
-        UIRectangle _innerRect;
         UIMargin _margin;
         bool _clippingEnabled;
 
@@ -74,12 +73,6 @@ namespace Molten.UI
             _margin = new UIMargin();
             _margin.OnChanged += _margin_OnChanged;
             _name = $"{this.GetType().Name}{Interlocked.Increment(ref _componentCounter)}";
-            _innerRect = new UIRectangle()
-            {
-                BorderColor = DefaultBorderColor,
-                Color = DefaultBackgroundColor,
-            };
-
 
             ClipPadding = new UIPadding(0);
             ClipPadding.OnChanged += _clipPadding_OnChanged;
@@ -99,14 +92,21 @@ namespace Molten.UI
         /// Updates the current <see cref="UIComponent"/>. When the component is added to a scene, this will be called automatically.
         /// </summary>
         /// <param name="time">A <see cref="Timing"/> instance.</param>
-        public virtual void Update(Timing time)
+        public void Update(Timing time)
         {
+            if (!IsEnabled)
+                return;
+
             LockChildren(() =>
             {
                 for (int i = 0; i < _children.Count; i++)
                     _children[i].Update(time);
             });
+
+            OnUpdate(time);
         }
+
+        protected virtual void OnUpdate(Timing time) { }
 
         /// <summary>
         /// Renders the current <see cref="UIComponent"/> with the provided <see cref="SpriteBatch"/>. When the component is added to a scene, this will be called automatically.
@@ -114,6 +114,9 @@ namespace Molten.UI
         /// <param name="sb">The <see cref="SpriteBatch"/> that will perform the render operation.</param>
         public void Render(SpriteBatch sb)
         {
+            if (!IsVisible)
+                return;
+
             // TODO find a better solution for this lock, if possible.
             // It's a potential bottleneck in the renderer if another thread holds the lock when the render thread hits it.
             if (_renderListDirty)
@@ -126,7 +129,6 @@ namespace Molten.UI
                 });
             }
 
-            _innerRect.Render(sb);
             OnRender(sb);
         }
 
@@ -231,8 +233,9 @@ namespace Molten.UI
         }
 
         /// <summary>Updates the bounds (position, width, height, etc) of all child components.</summary>
-        protected virtual void UpdateBounds()
+        protected internal void UpdateBounds()
         {
+            OnPreUpdateBounds();
             Rectangle parentBounds = _parent != null ? _parent.ClippingBounds : Rectangle.Empty;
 
             //handle margins
@@ -319,8 +322,18 @@ namespace Molten.UI
                     child.UpdateBounds();
             });
 
-            _innerRect.Set(_globalBounds, ClipPadding);
+            OnPostUpdateBounds();
         }
+
+        /// <summary>
+        /// Occurs just before any changes to the bounds of the current <see cref="UIComponent"/> are made..
+        /// </summary>
+        protected virtual void OnPreUpdateBounds() { }
+
+        /// <summary>
+        /// Occurs just after changes to the bounds of the current <see cref="UIComponent"/> have been made.
+        /// </summary>
+        protected virtual void OnPostUpdateBounds() { }
 
         /// <summary>Called right before padding is applied to the global bounds to form the clipping bounds.</summary>
         protected virtual void OnApplyClipPadding() { }
@@ -502,22 +515,16 @@ namespace Molten.UI
             }
         }
 
-        /// <summary>
-        /// Gets or sets the background color of the current <see cref="UIComponent"/>.
-        /// </summary>
-        public Color BackgroundColor
-        {
-            get => _innerRect.Color;
-            set => _innerRect.Color = value;
-        }
+
 
         /// <summary>
-        /// Gets or sets the border color of the current <see cref="UIComponent"/>.
+        /// Gets or sets whether the current <see cref="UIComponent"/> is enabled. If disabled, the component and it's child components will not update or respond to input.
         /// </summary>
-        public Color BorderColor
-        {
-            get => _innerRect.BorderColor;
-            set => _innerRect.Color = value;
-        }
+        public bool IsEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets whether the current <see cref="UIComponent"/> is rendered. If disabled, the component and it's child components will not be rendered.
+        /// </summary>
+        public bool IsVisible { get; set; } = true;
     }
 }
