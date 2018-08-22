@@ -13,7 +13,7 @@ namespace Molten.Samples
     {
         SpriteFont _sampleFont;
         bool _baseContentLoaded;
-        ISceneDebugOverlay _mainOverlay;
+        RenderDebugOverlay _mainOverlay;
         ControlSampleForm _form;
         SpriteBatchContainer _sbContainer;
 
@@ -95,7 +95,7 @@ namespace Molten.Samples
         private void Cr_OnCompleted(ContentRequest cr)
         {
             _sampleFont = cr.Get<SpriteFont>(0);
-            DebugOverlay.Font = _sampleFont;
+            DebugOverlay.Overlay.Font = _sampleFont;
 
 
             _sbContainer = new SpriteBatchContainer(OnHudDraw);
@@ -117,7 +117,7 @@ namespace Molten.Samples
 
             // Cycle through debug overlay pages.
             if(Keyboard.IsTapped(Key.F1) && _sampleFont != null)
-                DebugOverlay.NextPage();
+                DebugOverlay.Overlay.NextPage();
 
             // Cycle through window modes.
             if (Keyboard.IsTapped(Key.F2))
@@ -152,7 +152,7 @@ namespace Molten.Samples
         /// <summary>
         /// Gets or sets the sample's main debug overlay.
         /// </summary>
-        public ISceneDebugOverlay DebugOverlay
+        public RenderDebugOverlay DebugOverlay
         {
             get => _mainOverlay;
             set

@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics
+namespace Molten
 {
     /// <summary>
     /// A helper object for testing or drawing with sprite batch.
     /// </summary>
-    public class SpriteBatchContainer : IRenderable2D
+    public class SpriteBatchContainer : ISceneObject, IRenderable2D
     {
         /// <summary>
         /// Called when the renderer draws the object.
@@ -30,6 +30,8 @@ namespace Molten.Graphics
         {
             OnDraw = initialCallback;
         }
+
+        public Scene Scene { get; set; }
 
         public void Render(SpriteBatch batch)
         {

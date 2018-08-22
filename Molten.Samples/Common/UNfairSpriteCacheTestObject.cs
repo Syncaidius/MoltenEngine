@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class UnfairSpriteCacheTestObject : IRenderable2D
+    public class UnfairSpriteCacheTestObject : IRenderable2D, ISceneObject
     {
         SpriteBatchCache _cache;
+
+        Scene ISceneObject.Scene { get; set; }
 
         public UnfairSpriteCacheTestObject(SampleGame game, ITexture2D tex)
         {

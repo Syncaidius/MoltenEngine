@@ -156,6 +156,6 @@ namespace Molten
             }
         }
 
-        Scene IUpdatable.Scene { get; set; }
+        Scene ISceneObject.Scene { get; set; }
     }
 }

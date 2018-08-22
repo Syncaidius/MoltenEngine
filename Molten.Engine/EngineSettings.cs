@@ -19,6 +19,7 @@ namespace Molten
         {
             Graphics = new GraphicsSettings();
             Input = new InputSettings();
+            UI = new UISettings();
         }
 
         public void Load()
@@ -58,8 +59,17 @@ namespace Molten
         [DataMember]
         public GraphicsSettings Graphics { get; private set; }
 
+        /// <summary>
+        /// Gets the input settings bank.
+        /// </summary>
         [DataMember]
         public InputSettings Input { get; private set; }
+
+        /// <summary>
+        /// Gets the user interface (UI) settings bank.
+        /// </summary>
+        [DataMember]
+        public UISettings UI { get; private set; }
 
         /// <summary>Gets or sets the settings file name.</summary>
         public string Filename { get; set; } = "settings.json";

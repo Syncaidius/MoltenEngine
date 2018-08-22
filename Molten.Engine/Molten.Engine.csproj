@@ -112,10 +112,8 @@
     <Compile Include="ObjectHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scene\Changes\SceneAddObject.cs" />
-    <Compile Include="Scene\Changes\SceneAddObject2D.cs" />
     <Compile Include="Scene\Changes\SceneChange.cs" />
     <Compile Include="Scene\Changes\SceneRemoveObject.cs" />
-    <Compile Include="Scene\Changes\SceneRemoveObject2D.cs" />
     <Compile Include="Scene\Components\Lights\CapsuleLightComponent.cs" />
     <Compile Include="Scene\Components\MeshComponent.cs" />
     <Compile Include="Scene\Components\Lights\PointLightComponent.cs" />
@@ -123,6 +121,8 @@
     <Compile Include="Scene\Components\SceneComponent.cs" />
     <Compile Include="Scene\Components\SceneSingleton.cs" />
     <Compile Include="Scene\Components\SingletonComponent.cs" />
+    <Compile Include="Scene\IInputAcceptor.cs" />
+    <Compile Include="Scene\ISceneObject.cs" />
     <Compile Include="Scene\IUpdatable.cs" />
     <Compile Include="Scene\Scene.cs" />
     <Compile Include="Scene\SceneException.cs" />
@@ -130,7 +130,9 @@
     <Compile Include="Scene\SceneObjectTransform.cs" />
     <Compile Include="Scene\TwoD\AnimatedSprite.cs" />
     <Compile Include="Scene\TwoD\RectangleSprite.cs" />
+    <Compile Include="Scene\TwoD\RenderDebugOverlay.cs" />
     <Compile Include="Scene\TwoD\Sprite.cs" />
+    <Compile Include="Scene\TwoD\SpriteBatchContainer.cs" />
     <Compile Include="Scene\TwoD\SpriteData.cs" />
     <Compile Include="Scene\TwoD\SpriteText.cs" />
     <Compile Include="Tasks\EngineAddScene.cs" />
@@ -142,7 +144,9 @@
     <Compile Include="Threading\ThreadManager.cs" />
     <Compile Include="Threading\WorkerGroup.cs" />
     <Compile Include="Threading\WorkerThread.cs" />
+    <Compile Include="UISettings.cs" />
     <Compile Include="UI\UICompoundComponent.cs" />
+    <Compile Include="UI\UIEventData.cs" />
     <Compile Include="UI\UIMenu.cs" />
     <Compile Include="UI\UIMenuItem.cs" />
     <Compile Include="UI\UIPanel.cs" />

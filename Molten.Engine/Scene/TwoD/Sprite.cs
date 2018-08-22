@@ -10,7 +10,7 @@ namespace Molten
     /// <summary>
     /// An basic sprite class, incapable of animation or parenting. Useful for drawing static objects with very little overhead. It is also the base class for <see cref="AnimatedSprite"/>.
     /// </summary>
-    public class Sprite : IRenderable2D
+    public class Sprite : IRenderable2D, ISceneObject
     {
         private protected Vector2F _position;
         private protected Vector2F _scale = new Vector2F(1.0f);
@@ -62,6 +62,8 @@ namespace Molten
             get => _rotation;
             set => _rotation = value;
         }
+
+        Scene ISceneObject.Scene { get; set; }
 
         /// <summary>
         /// The color of the current <see cref="Sprite"/>. The default value is <see cref="Color.White"/>.

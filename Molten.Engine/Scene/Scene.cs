@@ -8,15 +8,19 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    /// <summary>Manages and controls a scene composed of 3D and 2D objects, while also feeding the needed data to a renderer if available.</summary>
+    /// <summary>Manages and controls a scene composed of 3D and 2D objects, while also feeding the needed data to a renderer if available. <para/>
+    /// Multiple scenes can render to the same output camera if needed. This allows scenes to easily be onto the same surface. Ordering methods are provided for this purpose.</summary>
     public class Scene : EngineObject
     {
         internal SceneRenderData RenderData;
-        internal List<SceneObject> Objects;
+        internal List<ISceneObject> Objects;
         internal List<IRenderable2D> Renderables2d;
         internal HashSet<IUpdatable> Updatables;
+        internal List<IInputAcceptor> InputAcceptors;
 
         ThreadedQueue<SceneChange> _pendingChanges;
+        RenderDebugOverlay _renderOverlay;
+
 
         /// <summary>Creates a new instance of <see cref="Scene"/></summary>
         /// <param name="name">The name of the scene.</param>
@@ -29,10 +33,12 @@ namespace Molten
             RenderData.Flags = flags;
 
             engine.AddScene(this);
-            Objects = new List<SceneObject>();
+            Objects = new List<ISceneObject>();
             Renderables2d = new List<IRenderable2D>();
             Updatables = new HashSet<IUpdatable>();
+            InputAcceptors = new List<IInputAcceptor>();
             _pendingChanges = new ThreadedQueue<SceneChange>();
+            _renderOverlay = new RenderDebugOverlay(RenderData.DebugOverlay);
 
             engine.Log.WriteLine($"Created scene '{name}'");
         }
@@ -71,7 +77,7 @@ namespace Molten
 
         /// <summary>Adds a <see cref="SceneObject"/> to the scene.</summary>
         /// <param name="obj">The object to be added.</param>
-        public void AddObject(SceneObject obj)
+        public void AddObject(ISceneObject obj)
         {
             SceneAddObject change = SceneAddObject.Get();
             change.Object = obj;
@@ -80,28 +86,10 @@ namespace Molten
 
         /// <summary>Removes a <see cref="SceneObject"/> from the scene.</summary>
         /// <param name="obj">The object to be removed.</param>
-        public void RemoveObject(SceneObject obj)
+        public void RemoveObject(ISceneObject obj)
         {
             SceneRemoveObject change = SceneRemoveObject.Get();
             change.Object = obj;
-            _pendingChanges.Enqueue(change);
-        }
-
-        /// <summary>Adds a sprite to the scene. This is a deferred action which will be performed on the scene's next update.</summary>
-        /// <param name="obj">The object to be added.</param>
-        public void AddObject(IRenderable2D obj)
-        {
-            SceneAddObject2D change = SceneAddObject2D.Get();
-            change.Sprite = obj;
-            _pendingChanges.Enqueue(change);
-        }
-
-        /// <summary>Removes a sprite from the scene. This is a deferred action which will be performed on the scene's next update.</summary>
-        /// <param name="obj">The object to be removed.</param>
-        public void RemoveObject(IRenderable2D obj)
-        {
-            SceneRemoveObject2D change = SceneRemoveObject2D.Get();
-            change.Sprite = obj;
             _pendingChanges.Enqueue(change);
         }
 
@@ -179,6 +167,6 @@ namespace Molten
         /// Gets the scene's debug overlay. 
         /// The overlay can be added to another scene as an <see cref="IRenderable2D"/> object if you want to render the overlay into a different scene.
         /// </summary>
-        public ISceneDebugOverlay DebugOverlay => RenderData.DebugOverlay;
+        public RenderDebugOverlay DebugOverlay => _renderOverlay;
     }
 }

@@ -9,7 +9,7 @@ namespace Molten
 {
     internal class SceneAddObject : SceneChange<SceneAddObject>
     {
-        public SceneObject Object;
+        public ISceneObject Object;
 
         public override void Clear()
         {
@@ -26,7 +26,18 @@ namespace Molten
 
                 Object.Scene = scene;
                 scene.Objects.Add(Object);
-                scene.Updatables.Add(Object);
+
+                if (Object is IUpdatable up)
+                    scene.Updatables.Add(up);
+
+                if (Object is IInputAcceptor acceptor)
+                    scene.InputAcceptors.Add(acceptor);
+
+                if (Object is IRenderable2D r2d)
+                {
+                    scene.Renderables2d.Add(r2d);
+                    scene.RenderData.AddObject(r2d);
+                }
             }
 
             Recycle(this);

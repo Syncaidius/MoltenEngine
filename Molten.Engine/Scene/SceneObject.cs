@@ -210,7 +210,7 @@ namespace Molten
             }
         }
 
-        Scene IUpdatable.Scene
+        Scene ISceneObject.Scene
         {
             get => _scene;
             set => this.Scene = value;

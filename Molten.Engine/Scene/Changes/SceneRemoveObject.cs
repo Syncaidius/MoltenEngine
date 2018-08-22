@@ -9,7 +9,7 @@ namespace Molten
 {
     internal class SceneRemoveObject : SceneChange<SceneRemoveObject>
     {
-        internal SceneObject Object;
+        internal ISceneObject Object;
 
         public override void Clear()
         {
@@ -21,7 +21,19 @@ namespace Molten
             if (Object.Scene == scene)
             {
                 scene.Objects.Remove(Object);
-                scene.Updatables.Remove(Object);
+
+                if(Object is IUpdatable up)
+                    scene.Updatables.Remove(up);
+
+                if (Object is IInputAcceptor acceptor)
+                    scene.InputAcceptors.Remove(acceptor);
+
+                if (Object is IRenderable2D r2d)
+                {
+                    scene.Renderables2d.Remove(r2d);
+                    scene.RenderData.RemoveObject(r2d);
+                }
+
                 Object.Scene = null;
             }
 
