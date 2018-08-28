@@ -30,7 +30,7 @@ namespace Molten
                 if (Object is IUpdatable up)
                     scene.Updatables.Add(up);
 
-                if (Object is IInputAcceptor acceptor)
+                if (Object is ICursorAcceptor acceptor)
                     scene.InputAcceptors.Add(acceptor);
 
                 if (Object is IRenderable2D r2d)

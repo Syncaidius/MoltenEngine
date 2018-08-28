@@ -25,7 +25,7 @@ namespace Molten
                 if(Object is IUpdatable up)
                     scene.Updatables.Remove(up);
 
-                if (Object is IInputAcceptor acceptor)
+                if (Object is ICursorAcceptor acceptor)
                     scene.InputAcceptors.Remove(acceptor);
 
                 if (Object is IRenderable2D r2d)

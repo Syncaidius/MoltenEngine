@@ -18,7 +18,7 @@ namespace Molten.UI
     /// <summary>
     /// The base class for all types of user interface (UI) components.
     /// </summary>
-    public class UIComponent : IRenderable2D, IUpdatable
+    public class UIComponent : IRenderable2D, IUpdatable, ICursorAcceptor
     {
         /// <summary>
         /// The default background color for <see cref="UIComponent"/> and it's sub-classes.
@@ -43,34 +43,34 @@ namespace Molten.UI
         public event UIComponentParentHandler OnChildRemoved;
 
         /// <summary>Triggered when the user presses down with a pointing device.</summary>
-        public event UIComponentEventHandler<MouseButton> OnClickStarted;
+        public event SceneInputEventHandler<MouseButton> OnClickStarted;
 
         /// <summary>Triggered when the component is released.</summary>
-        public event UIComponentEventHandler<MouseButton> OnClickEnded;
+        public event SceneInputEventHandler<MouseButton> OnClickEnded;
 
         /// <summary>Triggered when the component is released while the pointer was outside of the component, but originally began inside it.</summary>
-        public event UIComponentEventHandler<MouseButton> OnClickEndedOutside;
+        public event SceneInputEventHandler<MouseButton> OnClickEndedOutside;
 
         /// <summary>Triggered when the pointer enters the bounds of the component.</summary>
-        public event UIComponentEventHandler<MouseButton> OnEnter;
+        public event SceneInputEventHandler<MouseButton> OnEnter;
 
         /// <summary>Triggered when the pointer leaves the bounds of the component.</summary>
-        public event UIComponentEventHandler<MouseButton> OnLeave;
+        public event SceneInputEventHandler<MouseButton> OnLeave;
 
-        public event UIComponentEventHandler<MouseButton> OnHover;
+        public event SceneInputEventHandler<MouseButton> OnHover;
 
         /// <summary>Triggered when the component is being dragged.</summary>
-        public event UIComponentEventHandler<MouseButton> OnDrag;
+        public event SceneInputEventHandler<MouseButton> OnDrag;
 
         /// <summary>Triggered when the component is being held (most likely via touch screen).</summary>
-        public event UIComponentEventHandler<MouseButton> OnHold;
+        public event SceneInputEventHandler<MouseButton> OnHold;
 
-        public event UIComponentEventHandler<MouseButton> OnFocus;
+        public event SceneInputEventHandler<MouseButton> OnFocus;
 
-        public event UIComponentEventHandler<MouseButton> OnUnfocus;
+        public event SceneInputEventHandler<MouseButton> OnUnfocus;
 
         /// <summary>Triggered when the scrollwheel is used while the mouse is over the component.</summary>
-        public event UIComponentEventHandler<MouseButton> OnScrollWheel;
+        public event SceneInputEventHandler<MouseButton> OnScrollWheel;
 
         protected List<UIComponent> _children;
         protected List<UIComponent> _childRenderList;
@@ -118,47 +118,15 @@ namespace Molten.UI
             UpdateBounds();
         }
 
-        /// <summary>[Virtual] Calculates whether or not the component or one of its children contain the provided 2D position.</summary>
-        /// <param name="inputPos">The position.</param>
-        /// <returns>The component that contains the provided position.</returns>
-        public virtual UIComponent GetComponent(Vector2F inputPos)
-        {
-            if (!IsVisible)
-                return null;
-
-            //check if child input should be ignored
-            if (!IgnoreChildInput)
-            {
-                //handle input for children in reverse order (last/top first)
-                for (int c = _children.Count - 1; c >= 0; c--)
-                {
-                    UIComponent childResult = _children[c].GetComponent(inputPos);
-                    //if a child was interacted with, return from this.
-                    if (childResult != null)
-                        return childResult;
-                }
-            }
-
-            //if not enabled, don't handle input for this component.
-            if (!IsEnabled)
-                return null;
-
-            // Check if the mouse was clicked over this component
-            if (Contains(inputPos))
-                return this;
-
-            return null;
-        }
-
-        protected void InvokeDrag(Vector2F inputPos, Vector2F inputDelta, MouseButton button)
+        public void InvokeCursorDrag(Vector2F inputPos, Vector2F inputDelta, MouseButton button)
         {
             if (OnDrag != null)
             {
                 if (inputDelta.Length() != 0)
                 {
-                    OnDrag.Invoke(new UIEventData<MouseButton>()
+                    OnDrag.Invoke(new SceneEventData<MouseButton>()
                     {
-                        Component = this,
+                        Object = this,
                         Position = inputPos,
                         Delta = inputDelta,
                         InputValue = button,
@@ -170,11 +138,11 @@ namespace Molten.UI
 
         /// <summary>Forcefully triggers a right tap action on the component.</summary>
         /// <param name="inputPos"></param>
-        protected void InvokePressStarted(Vector2F inputPos, MouseButton button)
+        public void InvokeCursorClickStarted(Vector2F inputPos, MouseButton button)
         {
-            OnClickStarted?.Invoke(new UIEventData<MouseButton>()
+            OnClickStarted?.Invoke(new SceneEventData<MouseButton>()
             {
-                Component = this,
+                Object = this,
                 Position = inputPos,
                 Delta = Vector2F.Zero,
                 InputValue = button,
@@ -184,11 +152,11 @@ namespace Molten.UI
 
         /// <summary>Forcefully triggers a release tap action on the component.</summary>
         /// <param name="inputPos"></param>
-        protected void InvokePressCompleted(Vector2F inputPos, bool wasDragged, MouseButton button)
+        public void InvokeCursorClickCompleted(Vector2F inputPos, bool wasDragged, MouseButton button)
         {
-            OnClickEnded?.Invoke(new UIEventData<MouseButton>()
+            OnClickEnded?.Invoke(new SceneEventData<MouseButton>()
             {
-                Component = this,
+                Object = this,
                 Position = inputPos,
                 Delta = Vector2F.Zero,
                 InputValue = button,
@@ -198,35 +166,22 @@ namespace Molten.UI
 
         /// <summary>Forcefully triggers a release tap action on the component.</summary>
         /// <param name="inputPos"></param>
-        protected void InvokeCompletedOutside(Vector2F inputPos, Vector2F inputDelta, MouseButton button)
+        public void InvokeCursorClickCompletedOutside(Vector2F inputPos, MouseButton button)
         {
-            OnClickEndedOutside?.Invoke(new UIEventData<MouseButton>()
+            OnClickEndedOutside?.Invoke(new SceneEventData<MouseButton>()
             {
-                Component = this,
-                Position = inputPos,
-                Delta = inputDelta,
-                InputValue = button,
-                WasDragged = inputDelta.Length() != 0,
-            });
-        }
-
-        protected void InvokeHold(Vector2F inputPos, bool wasDragged, MouseButton button)
-        {
-            OnHold?.Invoke(new UIEventData<MouseButton>()
-            {
-                Component = this,
+                Object = this,
                 Position = inputPos,
                 Delta = Vector2F.Zero,
                 InputValue = button,
-                WasDragged = wasDragged,
             });
         }
 
         protected void InvokeEnter(Vector2F inputPos)
         {
-            OnEnter?.Invoke(new UIEventData<MouseButton>()
+            OnEnter?.Invoke(new SceneEventData<MouseButton>()
             {
-                Component = this,
+                Object = this,
                 Position = inputPos,
                 Delta = Vector2F.Zero,
                 InputValue = MouseButton.None,
@@ -236,9 +191,9 @@ namespace Molten.UI
 
         protected void InvokeLeave(Vector2F inputPos)
         {
-            OnLeave?.Invoke(new UIEventData<MouseButton>()
+            OnLeave?.Invoke(new SceneEventData<MouseButton>()
             {
-                Component = this,
+                Object = this,
                 Position = inputPos,
                 Delta = Vector2F.Zero,
                 InputValue = MouseButton.None,
@@ -246,11 +201,11 @@ namespace Molten.UI
             });
         }
 
-        protected void InvokeFocus()
+        public void InvokeCursorFocus()
         {
-            OnFocus?.Invoke(new UIEventData<MouseButton>()
+            OnFocus?.Invoke(new SceneEventData<MouseButton>()
             {
-                Component = this,
+                Object = this,
                 Position = _globalBounds.TopLeft,
                 Delta = Vector2F.Zero,
                 InputValue = MouseButton.None,
@@ -258,11 +213,11 @@ namespace Molten.UI
             });
         }
 
-        protected void InvokeUnfocus()
+        public void InvokeCursorUnfocus()
         {
-            OnUnfocus?.Invoke(new UIEventData<MouseButton>()
+            OnUnfocus?.Invoke(new SceneEventData<MouseButton>()
             {
-                Component = this,
+                Object = this,
                 Position = _globalBounds.TopLeft,
                 Delta = Vector2F.Zero,
                 InputValue = MouseButton.None,
@@ -270,11 +225,11 @@ namespace Molten.UI
             });
         }
 
-        protected void InvokeHover(Vector2F inputPos)
+        public void InvokeCursorEnter(Vector2F inputPos)
         {
-            OnHover?.Invoke(new UIEventData<MouseButton>()
+            OnEnter?.Invoke(new SceneEventData<MouseButton>()
             {
-                Component = this,
+                Object = this,
                 Position = inputPos,
                 Delta = Vector2F.Zero,
                 InputValue = MouseButton.None,
@@ -282,13 +237,37 @@ namespace Molten.UI
             });
         }
 
-        protected void InvokeScrollWheel(float delta)
+        public void InvokeCursorLeave(Vector2F inputPos)
         {
-            OnScrollWheel?.Invoke(new UIEventData<MouseButton>()
+            OnLeave?.Invoke(new SceneEventData<MouseButton>()
             {
-                Component = this,
-                Position = _globalBounds.TopLeft,
-                Delta = new Vector2F(0, delta),
+                Object = this,
+                Position = inputPos,
+                Delta = Vector2F.Zero,
+                InputValue = MouseButton.None,
+                WasDragged = false,
+            });
+        }
+
+        public void InvokeCursorHover(Vector2F inputPos)
+        {
+            OnHover?.Invoke(new SceneEventData<MouseButton>()
+            {
+                Object = this,
+                Position = inputPos,
+                Delta = Vector2F.Zero,
+                InputValue = MouseButton.None,
+                WasDragged = false,
+            });
+        }
+
+        public void InvokeCursorWheelScroll(float wheelPos, float wheelDelta)
+        {
+            OnScrollWheel?.Invoke(new SceneEventData<MouseButton>()
+            {
+                Object = this,
+                Position = new Vector2F(wheelPos),
+                Delta = new Vector2F(0, wheelDelta),
                 InputValue = MouseButton.None,
                 WasDragged = false,
             });
@@ -548,6 +527,35 @@ namespace Molten.UI
             OnPostUpdateBounds();
         }
 
+        public virtual ICursorAcceptor HandleInput(Vector2F inputPos)
+        {
+            if (!IsVisible)
+                return null;
+
+            //check if child input should be ignored
+            if (!IgnoreChildInput)
+            {
+                //handle input for children in reverse order (last/top first)
+                for (int c = _children.Count - 1; c >= 0; c--)
+                {
+                    ICursorAcceptor childResult = _children[c].HandleInput(inputPos);
+                    //if a child was interacted with, return from this.
+                    if (childResult != null)
+                        return childResult;
+                }
+            }
+
+            //if not enabled, don't handle input for this component.
+            if (!IsEnabled)
+                return null;
+
+            // Check if the mouse was clicked over this component
+            if (Contains(inputPos))
+                return this;
+
+            return null;
+        }
+
         /// <summary>
         /// Occurs just before any changes to the bounds of the current <see cref="UIComponent"/> are made..
         /// </summary>
@@ -757,5 +765,10 @@ namespace Molten.UI
         /// Gets or sets whether drag input of child components is ignored for the current <see cref="UIComponent"/>. The default value is false.
         /// </summary>
         public bool IgnoreChildDrag { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the tooltip that is displayed when the cursor hovers over the current <see cref="UIComponent"/>.
+        /// </summary>
+        public string Tooltip { get; set; }
     }
 }

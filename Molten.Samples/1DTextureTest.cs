@@ -119,8 +119,8 @@ namespace Molten.Samples
             float speed = 1.0f;
 
             // Mouse input - Messy for now - We're just testing input
-            _player.Transform.LocalRotationX += Mouse.Moved.Y * rotSpeed;
-            _player.Transform.LocalRotationY += Mouse.Moved.X * rotSpeed;
+            _player.Transform.LocalRotationX += Mouse.Delta.Y * rotSpeed;
+            _player.Transform.LocalRotationY += Mouse.Delta.X * rotSpeed;
             Mouse.CenterInWindow();
 
             if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * speed;

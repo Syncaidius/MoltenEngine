@@ -15,16 +15,6 @@ namespace Molten
     /// <summary>Stone Bolt engine. You only need one instance.</summary>
     public class Engine : IDisposable
     {
-        EngineSettings _settings;
-        Logger _log;
-        IRenderer _renderer;
-        ThreadManager _threadManager;
-        EngineThread _threadRenderer;
-        ContentManager _content;
-        IInputManager _input;
-        SpriteFont _defaultFont;
-
-        internal List<Scene> Scenes;
         ThreadedQueue<EngineTask> _taskQueue;
 
         /// <summary>Gets the current instance of the engine. There can only be one active per application.</summary>
@@ -36,7 +26,7 @@ namespace Molten
         /// </summary>
         event DisplayManagerEvent OnAdapterInitialized;
         
-        internal Engine(EngineSettings settings = null)
+        internal Engine(EngineSettings initialSettings = null)
         {
             if (Current != null)
                 throw new Exception("Cannot create more than one active instance of Engine. Dispose of the previous one first.");
@@ -45,86 +35,86 @@ namespace Molten
                 throw new NotSupportedException("Molten engine only supports 64-bit. Please build accordingly.");
 
             Current = this;
-            _settings = settings;
+            Settings = initialSettings;
 
-            if (_settings == null)
+            if (Settings == null)
             {
-                _settings = new EngineSettings();
-                _settings.Load();
+                Settings = new EngineSettings();
+                Settings.Load();
             }
 
-            _log = Logger.Get();
-            _log.AddOutput(new LogFileWriter("engine_log{0}.txt"));
-            _log.WriteDebugLine("Engine Instantiated");
-            _threadManager = new ThreadManager(this, _log);
+            Log = Logger.Get();
+            Log.AddOutput(new LogFileWriter("engine_log{0}.txt"));
+            Log.WriteDebugLine("Engine Instantiated");
+            Threading = new ThreadManager(this, Log);
             _taskQueue = new ThreadedQueue<EngineTask>();
-            _content = new ContentManager(_log, this, null, null, _settings.ContentWorkerThreads);
-            Scenes = new List<Scene>();
+            Content = new ContentManager(Log, this, null, null, Settings.ContentWorkerThreads);
+            Scenes = new SceneManager(Settings.UI);
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            _log.WriteError(e.ExceptionObject as Exception);
+            Log.WriteError(e.ExceptionObject as Exception);
             Logger.DisposeAll();
         }
 
         internal void LoadInput()
         {
             Assembly inputAssembly;
-            _input = LibraryDetection.LoadInstance<IInputManager>(_log, "input", "input manager", 
-                _settings.Input.InputLibrary, 
-                _settings.Input, 
+            Input = LibraryDetection.LoadInstance<IInputManager>(Log, "input", "input manager", 
+                Settings.Input.InputLibrary, 
+                Settings.Input, 
                 InputSettings.DEFAULT_LIBRARY, 
                 out inputAssembly);
 
             // Initialize
             try
             {
-                _input.Initialize(_settings.Input, _log);
-                _log.WriteLine($"Initialized input manager");
+                Input.Initialize(Settings.Input, Log);
+                Log.WriteLine($"Initialized input manager");
             }
             catch (Exception e)
             {
-                _log.WriteLine("Failed to initialize input manager");
-                _log.WriteError(e);
-                _input = null;
+                Log.WriteLine("Failed to initialize input manager");
+                Log.WriteError(e);
+                Input = null;
             }
         }
 
         internal bool LoadRenderer()
         {
-            if (_renderer != null)
+            if (Renderer != null)
             {
-                _log.WriteLine("Attempted to load renderer when one is already loaded!");
+                Log.WriteLine("Attempted to load renderer when one is already loaded!");
                 return false;
             }
 
             // TODO default to OpenGL if on a non-windows platform.
             Assembly renderAssembly;
-            _renderer = LibraryDetection.LoadInstance<IRenderer>(_log, "render", "renderer", 
-                _settings.Graphics.RendererLibrary, 
-                _settings.Graphics, 
+            Renderer = LibraryDetection.LoadInstance<IRenderer>(Log, "render", "renderer", 
+                Settings.Graphics.RendererLibrary, 
+                Settings.Graphics, 
                 GraphicsSettings.RENDERER_DX11, 
                 out renderAssembly);
 
             try
             {
-                _renderer.InitializeAdapter(_settings.Graphics);
-                _log.WriteLine($"Initialized renderer");
+                Renderer.InitializeAdapter(Settings.Graphics);
+                Log.WriteLine($"Initialized renderer");
             }
             catch (Exception e)
             {
-                _log.WriteLine("Failed to initialize renderer");
-                _log.WriteError(e);
-                _renderer = null;
+                Log.WriteLine("Failed to initialize renderer");
+                Log.WriteError(e);
+                Renderer = null;
                 return false;
             }
 
-            OnAdapterInitialized?.Invoke(_renderer.DisplayManager);
-            _renderer.Initialize(_settings.Graphics);
-            LoadDefaultFont(_settings);
+            OnAdapterInitialized?.Invoke(Renderer.DisplayManager);
+            Renderer.Initialize(Settings.Graphics);
+            LoadDefaultFont(Settings);
 
             return true;
         }
@@ -133,18 +123,18 @@ namespace Molten
         {
             try
             {
-                using (FontReader reader = new FontReader(settings.DefaultFontName, _log))
+                using (FontReader reader = new FontReader(settings.DefaultFontName, Log))
                 {
                     FontFile fontFile = reader.ReadFont(true);
 
-                    _defaultFont = new SpriteFont(_renderer, fontFile, settings.DefaultFontSize);
+                    DefaultFont = new SpriteFont(Renderer, fontFile, settings.DefaultFontSize);
                 }
             }
             catch (Exception e)
             {
                 // TODO Use the fallback font provided with the engine.
-                _log.WriteError("Failed to load default font.");
-                _log.WriteError(e);
+                Log.WriteError("Failed to load default font.");
+                Log.WriteError(e);
                 throw e;
             }
         }
@@ -152,38 +142,38 @@ namespace Molten
         /// <summary>Starts the renderer thread.</summary>
         public void StartRenderer()
         {
-            if (_renderer == null)
+            if (Renderer == null)
             {
-                _log.WriteLine("A renderer has not be loaded. Unable to start renderer");
-                _log.WriteDebugLine("Please ensure Engine.LoadRenderer() was called and a valid renderer library was provided.");
+                Log.WriteLine("A renderer has not be loaded. Unable to start renderer");
+                Log.WriteDebugLine("Please ensure Engine.LoadRenderer() was called and a valid renderer library was provided.");
                 return;
             }
 
-            if (_threadRenderer != null)
+            if (RenderThread != null)
             {
-                _log.WriteLine("Ignored attempt to start renderer thread while already running");
+                Log.WriteLine("Ignored attempt to start renderer thread while already running");
                 return;
             }
 
-            _threadRenderer = _threadManager.SpawnThread("Renderer_main", true, false, (time) =>
+            RenderThread = Threading.SpawnThread("Renderer_main", true, false, (time) =>
             {
-                _renderer.Present(time);
+                Renderer.Present(time);
             });
 
-            _log.WriteLine("Renderer thread started");
+            Log.WriteLine("Renderer thread started");
         }
 
         /// <summary>Stops the renderer thread.</summary>
         public void StopRenderer()
         {
-            if (_renderer == null || _threadRenderer == null)
+            if (Renderer == null || RenderThread == null)
             {
-                _log.WriteLine("Ignored attempt to stop renderer while not running");
+                Log.WriteLine("Ignored attempt to stop renderer while not running");
                 return;
             }
 
-            _threadRenderer.Dispose();
-            _threadRenderer = null;
+            RenderThread.Dispose();
+            RenderThread = null;
         }
 
         internal void AddScene(Scene scene)
@@ -206,48 +196,38 @@ namespace Molten
             while (_taskQueue.TryDequeue(out task))
                 task.Process(this, time);
 
-            _input.Update(time);
-
-            // Run through all the scenes and update if enabled.
-            foreach(Scene scene in Scenes)
-            { 
-                if(scene.IsEnabled)
-                    scene.Update(time);
-            }
+            Input.Update(time);
+            Scenes.Update(time);
         }
 
         public void Dispose()
         {
-            _log.WriteDebugLine("Shutting down engine");
-            _threadManager.Dispose();
-            _renderer?.Dispose();
-
-            // Dispose of scenes
-            for (int i = 0; i < Scenes.Count; i++)
-                Scenes[i].Dispose();
-
-            _content.Dispose();
+            Log.WriteDebugLine("Shutting down engine");
+            Threading.Dispose();
+            Renderer?.Dispose();
+            Scenes.Dispose();
+            Content.Dispose();
             Logger.DisposeAll();
-            _settings.Save();
+            Settings.Save();
             Current = null;
         }
 
         /// <summary>
         /// [Internal] Gets the <see cref="Renderer"/> thread. Null if the renderer was not started.
         /// </summary>
-        internal EngineThread RenderThread => _threadRenderer;
+        internal EngineThread RenderThread { get; private set; }
 
         /// <summary>Gets the renderer attached to the current <see cref="Engine"/> instance.</summary>>
-        public IRenderer Renderer => _renderer;
+        public IRenderer Renderer { get; private set; }
 
         /// <summary>Gets the log attached to the current <see cref="Engine"/> instance.</summary>
-        internal Logger Log => _log;
+        internal Logger Log { get; }
 
         /// <summary>Gets the engine settings.</summary>
-        public EngineSettings Settings => _settings;
+        public EngineSettings Settings { get; }
 
         /// <summary>Gets the thread manager bound to the engine.</summary>
-        public ThreadManager Threading => _threadManager;
+        public ThreadManager Threading { get; }
 
         /// <summary>
         /// Gets the main content manager bound to the current engine instance. <para/>
@@ -255,14 +235,19 @@ namespace Molten
         /// You should use separate <see cref="ContentManager"/> instances for level-specific or short-lifespan content. 
         /// Disposing of a <see cref="ContentManager"/> instance will unload all of the content that was loaded by it.<para />
         /// </summary>
-        public ContentManager Content => _content;
+        public ContentManager Content { get; }
 
         /// <summary>
         /// Gets the default font as defined in <see cref="EngineSettings"/>.
         /// </summary>
-        public SpriteFont DefaultFont => _defaultFont;
+        public SpriteFont DefaultFont { get; private set; }
 
         /// <summary>Gets the input manager attached to the current <see cref="Engine"/> instance.</summary>
-        public IInputManager Input => _input;
+        public IInputManager Input { get; private set; }
+
+        /// <summary>
+        /// Gets the internal scene manager for the current <see cref="Engine"/> instance.
+        /// </summary>
+        internal SceneManager Scenes { get; }
     }
 }

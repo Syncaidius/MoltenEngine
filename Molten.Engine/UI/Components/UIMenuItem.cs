@@ -13,7 +13,6 @@ namespace Molten.UI
         UILabel _label;
         Sprite _icon;
         int _iconSpacing = 16;
-        bool _reserveIconMargin = true;
         int _iconSize;
         int _iconMargin;
         int _padSpacing;

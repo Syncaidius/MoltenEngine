@@ -10,17 +10,16 @@ namespace Molten
 {
     /// <summary>Manages and controls a scene composed of 3D and 2D objects, while also feeding the needed data to a renderer if available. <para/>
     /// Multiple scenes can render to the same output camera if needed. This allows scenes to easily be onto the same surface. Ordering methods are provided for this purpose.</summary>
-    public class Scene : EngineObject
+    public partial class Scene : EngineObject
     {
         internal SceneRenderData RenderData;
         internal List<ISceneObject> Objects;
         internal List<IRenderable2D> Renderables2d;
         internal HashSet<IUpdatable> Updatables;
-        internal List<IInputAcceptor> InputAcceptors;
+        internal List<ICursorAcceptor> InputAcceptors;
 
         ThreadedQueue<SceneChange> _pendingChanges;
         RenderDebugOverlay _renderOverlay;
-
 
         /// <summary>Creates a new instance of <see cref="Scene"/></summary>
         /// <param name="name">The name of the scene.</param>
@@ -36,7 +35,7 @@ namespace Molten
             Objects = new List<ISceneObject>();
             Renderables2d = new List<IRenderable2D>();
             Updatables = new HashSet<IUpdatable>();
-            InputAcceptors = new List<IInputAcceptor>();
+            InputAcceptors = new List<ICursorAcceptor>();
             _pendingChanges = new ThreadedQueue<SceneChange>();
             _renderOverlay = new RenderDebugOverlay(RenderData.DebugOverlay);
 
@@ -168,5 +167,11 @@ namespace Molten
         /// The overlay can be added to another scene as an <see cref="IRenderable2D"/> object if you want to render the overlay into a different scene.
         /// </summary>
         public RenderDebugOverlay DebugOverlay => _renderOverlay;
+
+        /// <summary>
+        /// Gets or sets the input bounds of the current <see cref="Scene"/> instance. A cursor must be within these bounds for the scene to receive cursor input. <para/>
+        /// Any input objects of the current <see cref="Scene"/> will receive cursor coordinates relative to these bounds.
+        /// </summary>
+        public Rectangle InputBounds { get; set; }
     }
 }

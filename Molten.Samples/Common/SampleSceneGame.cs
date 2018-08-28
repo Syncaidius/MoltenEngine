@@ -88,7 +88,7 @@ namespace Molten.Samples
             Vector2F axisDelta = Vector2F.Zero;
 
             if (AcceptPlayerInput && Mouse.IsPressed(MouseButton.Left))
-                axisDelta = new Vector2F(Mouse.Moved.Y, Mouse.Moved.X) * rotSpeed;
+                axisDelta = new Vector2F(Mouse.Delta.Y, Mouse.Delta.X) * rotSpeed;
 
             // Gamepad movement
             axisDelta += new Vector2F(Gamepad.RightThumbstick.Y, Gamepad.RightThumbstick.X) * rotSpeed * 2f;

@@ -16,7 +16,7 @@ namespace Molten.UI
             _compoundParts = new List<UIComponent>();
         }
 
-        public override UIComponent GetComponent(Vector2F inputPos)
+        public override ICursorAcceptor HandleInput(Vector2F inputPos)
         {
             if (!IsVisible)
                 return null;
@@ -26,11 +26,11 @@ namespace Molten.UI
             // Check if any parts were clicked before proceeding
             if (Contains(inputPos))
             {
-                UIComponent result = null;
+                ICursorAcceptor result = null;
 
                 foreach (UIComponent part in _compoundParts)
                 {
-                    result = part.GetComponent(inputPos);
+                    result = part.HandleInput(inputPos);
 
                     if (result != null)
                         return result;
@@ -46,7 +46,7 @@ namespace Molten.UI
                 //handle input for children in reverse order (last/top first)
                 for (int c = _children.Count - 1; c >= 0; c--)
                 {
-                    UIComponent childResult = _children[c].GetComponent(inputPos);
+                    ICursorAcceptor childResult = _children[c].HandleInput(inputPos);
                     //if a child was interacted with, return from this.
                     if (childResult != null)
                         return childResult;

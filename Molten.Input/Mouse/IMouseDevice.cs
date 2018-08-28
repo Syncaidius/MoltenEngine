@@ -15,7 +15,7 @@ namespace Molten.Input
         void CenterInWindow();
 
         /// <summary>Returns the amount the mouse cursor has moved a long X and Y since the last frame/update.</summary>
-        Vector2I Moved { get; }
+        Vector2I Delta { get; }
 
         /// <summary>Gets the amount the mouse wheel has been moved since the last frame.</summary>
         float WheelDelta { get; }

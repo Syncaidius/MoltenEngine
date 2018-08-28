@@ -111,6 +111,7 @@
     <Compile Include="Foundation.cs" />
     <Compile Include="ObjectHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SceneManager.cs" />
     <Compile Include="Scene\Changes\SceneAddObject.cs" />
     <Compile Include="Scene\Changes\SceneChange.cs" />
     <Compile Include="Scene\Changes\SceneRemoveObject.cs" />
@@ -121,10 +122,11 @@
     <Compile Include="Scene\Components\SceneComponent.cs" />
     <Compile Include="Scene\Components\SceneSingleton.cs" />
     <Compile Include="Scene\Components\SingletonComponent.cs" />
-    <Compile Include="Scene\IInputAcceptor.cs" />
+    <Compile Include="Scene\ICursorAcceptor.cs" />
     <Compile Include="Scene\ISceneObject.cs" />
     <Compile Include="Scene\IUpdatable.cs" />
     <Compile Include="Scene\Scene.cs" />
+    <Compile Include="Scene\SceneClickTracker.cs" />
     <Compile Include="Scene\SceneException.cs" />
     <Compile Include="Scene\SceneObject.cs" />
     <Compile Include="Scene\SceneObjectTransform.cs" />
@@ -146,15 +148,16 @@
     <Compile Include="Threading\WorkerThread.cs" />
     <Compile Include="UISettings.cs" />
     <Compile Include="UI\UICompoundComponent.cs" />
-    <Compile Include="UI\UIEventData.cs" />
-    <Compile Include="UI\UIMenu.cs" />
-    <Compile Include="UI\UIMenuItem.cs" />
-    <Compile Include="UI\UIPanel.cs" />
+    <Compile Include="Scene\SceneEventData.cs" />
+    <Compile Include="UI\Components\UIMenu.cs" />
+    <Compile Include="UI\Components\UIMenuItem.cs" />
+    <Compile Include="UI\Components\UIPanel.cs" />
+    <Compile Include="UI\UITooltip.cs" />
     <Compile Include="UI\UIVerticalAlignment.cs" />
     <Compile Include="UI\UIHorizontalAlignment.cs" />
-    <Compile Include="UI\UILabel.cs" />
-    <Compile Include="UI\UIComponent.cs" />
-    <Compile Include="UI\UIException.cs" />
+    <Compile Include="UI\Components\UILabel.cs" />
+    <Compile Include="UI\Components\UIComponent.cs" />
+    <Compile Include="UI\Components\UIException.cs" />
     <Compile Include="UI\UIMargin.cs" />
     <Compile Include="UI\UIPadding.cs" />
   </ItemGroup>

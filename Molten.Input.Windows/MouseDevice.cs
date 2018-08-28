@@ -260,7 +260,7 @@ namespace Molten.Input
         }
 
         /// <summary>Returns the amount the mouse cursor has moved a long X and Y since the last frame/update.</summary>
-        public Vector2I Moved => _moved;
+        public Vector2I Delta => _moved;
 
         /// <summary>Gets the amount the mouse wheel has been moved since the last frame.</summary>
         public float WheelDelta => _wheelDelta;
