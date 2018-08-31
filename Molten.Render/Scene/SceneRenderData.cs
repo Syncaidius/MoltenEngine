@@ -51,11 +51,11 @@ namespace Molten.Graphics
         /// </summary>
         public Color AmbientLightColor = Color.Black;
 
-        public List<IRenderable2D> Renderables2D = new List<IRenderable2D>();
+        public readonly List<IRenderable2D> Renderables2D = new List<IRenderable2D>();
 
-        protected ThreadedQueue<RenderSceneChange> _pendingChanges = new ThreadedQueue<RenderSceneChange>();
+        protected readonly ThreadedQueue<RenderSceneChange> _pendingChanges = new ThreadedQueue<RenderSceneChange>();
 
-        public RenderProfiler Profiler;
+        public readonly RenderProfiler Profiler = new RenderProfiler();
         public Matrix4F View = Matrix4F.Identity;
         public Matrix4F Projection;
         public Matrix4F ViewProjection;
@@ -82,6 +82,12 @@ namespace Molten.Graphics
 
         public abstract void RemoveObject(IRenderable3D obj, ObjectRenderData renderData);
 
+        public void ProcessChanges()
+        {
+            while (_pendingChanges.TryDequeue(out RenderSceneChange change))
+                change.Process();
+        }
+
         /// <summary>
         /// Returns true if the current <see cref="SceneRenderData"/> has the specified flag(s).
         /// </summary>
@@ -95,12 +101,12 @@ namespace Molten.Graphics
         /// <summary>
         /// Invokes <see cref="OnPreRender"/> event.
         /// </summary>
-        protected void PreRenderInvoke(IRenderer renderer) => OnPreRender?.Invoke(renderer, this);
+        public void PreRenderInvoke(IRenderer renderer) => OnPreRender?.Invoke(renderer, this);
 
         /// <summary>
         /// Invokes <see cref="OnPostRender"/> event.
         /// </summary>
-        protected void PostRenderInvoke(IRenderer renderer) => OnPostRender?.Invoke(renderer, this);
+        public void PostRenderInvoke(IRenderer renderer) => OnPostRender?.Invoke(renderer, this);
 
         /// <summary>
         /// Gets the debug overlay which displays information for the current scene.

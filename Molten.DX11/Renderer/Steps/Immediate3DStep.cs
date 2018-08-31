@@ -64,7 +64,7 @@ namespace Molten.Graphics
 
                         StateConditions conditions = StateConditions.None; // TODO expand
                         device.BeginDraw(conditions);
-                        scene.Render3D(device, renderer);
+                        renderer.Render3D(device, scene);
                         device.EndDraw();
                         break;
                 }

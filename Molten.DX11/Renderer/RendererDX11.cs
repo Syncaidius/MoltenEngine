@@ -30,6 +30,7 @@ namespace Molten.Graphics
         HashSet<TextureAsset2D> _clearedSurfaces;
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
+        RenderChain _chain;
 
         AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
         internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
@@ -51,6 +52,7 @@ namespace Molten.Graphics
             _log.AddOutput(new LogFileWriter("renderer_dx11{0}.txt"));
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
+            _chain = new RenderChain(this);
 
             DebugOverlayPages = new List<DebugOverlayPage>();
             DebugOverlayPages.Add(new DebugStatsPage());
@@ -280,7 +282,7 @@ namespace Molten.Graphics
 
                 _device.Profiler = scene.Profiler;
                 _device.Profiler.StartCapture();
-                scene.Render(_device, this, time);
+                RenderScene(scene, _device, time);
 
                 _profiler.AddData(scene.Profiler.CurrentFrame);
                 _device.Profiler.EndCapture(time);
@@ -307,6 +309,55 @@ namespace Molten.Graphics
 
             _profiler.AddData(_device.Profiler.CurrentFrame);
             _profiler.EndCapture(time);
+        }
+
+        internal void RenderScene(SceneRenderDataDX11 data, GraphicsPipe pipe, Timing time)
+        {
+            data.PreRenderInvoke(this);
+            data.ProcessChanges();
+            _chain.Build(data);
+            _chain.Render(data, time);
+            data.PostRenderInvoke(this);
+        }
+
+        internal void Render3D(GraphicsPipe pipe, SceneRenderDataDX11 sceneData)
+        {
+            // To start with we're just going to draw ALL objects in the render tree.
+            // Sorting and culling will come later
+            foreach (KeyValuePair<Renderable, List<ObjectRenderData>> p in sceneData.Renderables)
+            {
+                foreach (ObjectRenderData data in p.Value)
+                {
+                    // TODO replace below with render prediction to interpolate between the current and target transform.
+                    data.RenderTransform = data.TargetTransform;
+                    p.Key.Render(pipe, this, data, sceneData);
+                }
+            }
+
+            /* TODO: 
+             *  Procedure:
+             *      1) Calculate:
+             *          a) Capture the current transform matrix of each object in the render tree
+             *          b) Calculate the distance from the scene camera. Store on RenderData
+             *          
+             *      2) Sort objects by distance from camera:
+             *          a) Sort objects into buckets inside RenderTree, front-to-back (reduce overdraw by drawing closest first).
+             *          b) Only re-sort a bucket when objects are added or the camera moves
+             *          c) While sorting, build up separate bucket list of objects with a transparent material sorted back-to-front (for alpha to work)
+             *          
+             *  Extras:
+             *      3) Reduce z-sorting needed in (2) by adding scene-graph culling (quad-tree, octree or BSP) later down the line.
+             *      4) Reduce (3) further by frustum culling the graph-culling results
+             * 
+             *  NOTES:
+                    - when SceneObject.IsVisible is changed, queue an Add or Remove operation on the RenderTree depending on visibility. This will remove it from culling/sorting.
+             */
+        }
+
+        internal void Render2D(GraphicsPipe pipe, SceneRenderDataDX11 sceneData)
+        {
+            for (int i = 0; i < sceneData.Renderables2D.Count; i++)
+                sceneData.Renderables2D[i].Render(SpriteBatcher);
         }
 
         internal bool ClearIfFirstUse(TextureAsset2D surface, Action callback)

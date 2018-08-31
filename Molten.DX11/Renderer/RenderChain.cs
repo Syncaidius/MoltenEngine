@@ -20,12 +20,10 @@ namespace Molten.Graphics
         internal Link Last;
 
         RendererDX11 _renderer;
-        SceneRenderDataDX11 _scene;
 
-        internal RenderChain(RendererDX11 renderer, SceneRenderDataDX11 scene)
+        internal RenderChain(RendererDX11 renderer)
         {
             _renderer = renderer;
-            _scene = scene;
         }
 
         private void Next(RenderStepBase step)
@@ -51,19 +49,19 @@ namespace Molten.Graphics
             Next(step);
         }
 
-        internal void Rebuild()
+        internal void Build(SceneRenderDataDX11 scene)
         {
             First = null;
             Last = null;
 
             Next<StartStep>();
 
-            if (_scene.HasFlag(SceneRenderFlags.Deferred))
+            if (scene.HasFlag(SceneRenderFlags.Deferred))
             {
-                if (_scene.HasFlag(SceneRenderFlags.Render3D))
+                if (scene.HasFlag(SceneRenderFlags.Render3D))
                     Next<GBuffer3dStep>();
 
-                if (_scene.HasFlag(SceneRenderFlags.Render2D))
+                if (scene.HasFlag(SceneRenderFlags.Render2D))
                     Next<Render2dStep>();
 
                 Next<LightingStep>();
@@ -71,10 +69,10 @@ namespace Molten.Graphics
             }
             else
             {
-                if (_scene.HasFlag(SceneRenderFlags.Render3D))
+                if (scene.HasFlag(SceneRenderFlags.Render3D))
                     Next<Immediate3dStep>();
 
-                if (_scene.HasFlag(SceneRenderFlags.Render2D))
+                if (scene.HasFlag(SceneRenderFlags.Render2D))
                     Next<Render2dStep>();
             }
         }

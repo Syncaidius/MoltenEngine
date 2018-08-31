@@ -10,7 +10,6 @@ namespace Molten.Graphics
     /// <summary>An object for storing render data about a <see cref="Scene"/>.</summary>
     public sealed class SceneRenderDataDX11 : SceneRenderData
     {        
-        RenderChain _chain;
         SceneRenderFlags _previousFlags;
 
         internal Dictionary<Renderable, List<ObjectRenderData>> Renderables;
@@ -23,13 +22,7 @@ namespace Molten.Graphics
         internal SceneRenderDataDX11(RendererDX11 renderer)
         {
             Renderables = new Dictionary<Renderable, List<ObjectRenderData>>();
-
-            // Set up one sprite layer.
-            Renderables2D = new List<IRenderable2D>();
             _previousFlags = Flags;
-            _chain = new RenderChain(renderer, this);
-            _chain.Rebuild();
-            Profiler = new RenderProfiler();
             _overlay = new SceneDebugOverlay(renderer, this);
         }
 
@@ -49,62 +42,6 @@ namespace Molten.Graphics
             change.Data = renderData;
             change.SceneData = this;
             _pendingChanges.Enqueue(change);
-        }
-
-        internal void Render(GraphicsPipe pipe, RendererDX11 renderer, Timing time)
-        {
-            PreRenderInvoke(renderer);
-            if (Flags != _previousFlags)
-            {
-                _chain.Rebuild();
-                _previousFlags = Flags;
-            }
-
-            while (_pendingChanges.TryDequeue(out RenderSceneChange change))
-                change.Process();
-
-            _chain.Render(this, time);
-            PostRenderInvoke(renderer);
-        }
-
-        internal void Render3D(GraphicsPipe pipe, RendererDX11 renderer)
-        {
-            // To start with we're just going to draw ALL objects in the render tree.
-            // Sorting and culling will come later
-            foreach (KeyValuePair<Renderable, List<ObjectRenderData>> p in Renderables)
-            {
-                foreach(ObjectRenderData data in p.Value)
-                {
-                    // TODO replace below with render prediction to interpolate between the current and target transform.
-                    data.RenderTransform = data.TargetTransform;
-                    p.Key.Render(pipe, renderer, data, this);
-                }
-            }
-
-            /* TODO: 
-             *  Procedure:
-             *      1) Calculate:
-             *          a) Capture the current transform matrix of each object in the render tree
-             *          b) Calculate the distance from the scene camera. Store on RenderData
-             *          
-             *      2) Sort objects by distance from camera:
-             *          a) Sort objects into buckets inside RenderTree, front-to-back (reduce overdraw by drawing closest first).
-             *          b) Only re-sort a bucket when objects are added or the camera moves
-             *          c) While sorting, build up separate bucket list of objects with a transparent material sorted back-to-front (for alpha to work)
-             *          
-             *  Extras:
-             *      3) Reduce z-sorting needed in (2) by adding scene-graph culling (quad-tree, octree or BSP) later down the line.
-             *      4) Reduce (3) further by frustum culling the graph-culling results
-             * 
-             *  NOTES:
-                    - when SceneObject.IsVisible is changed, queue an Add or Remove operation on the RenderTree depending on visibility. This will remove it from culling/sorting.
-             */
-        }
-
-        internal void Render2D(GraphicsPipe pipe, RendererDX11 renderer)
-        {
-            for(int i = 0; i < Renderables2D.Count; i++)
-                Renderables2D[i].Render(renderer.SpriteBatcher);
         }
 
         /// <summary>
