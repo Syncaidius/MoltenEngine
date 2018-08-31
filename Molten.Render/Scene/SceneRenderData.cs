@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -50,13 +51,36 @@ namespace Molten.Graphics
         /// </summary>
         public Color AmbientLightColor = Color.Black;
 
+        public List<IRenderable2D> Renderables2D = new List<IRenderable2D>();
+
+        protected ThreadedQueue<RenderSceneChange> _pendingChanges = new ThreadedQueue<RenderSceneChange>();
+
+        public RenderProfiler Profiler;
+        public Matrix4F View = Matrix4F.Identity;
+        public Matrix4F Projection;
+        public Matrix4F ViewProjection;
+        public Matrix4F InvViewProjection;
+
+        public void AddObject(IRenderable2D obj)
+        {
+            Add2D change = Add2D.Get();
+            change.Object = obj;
+            change.Data = this;
+            _pendingChanges.Enqueue(change);
+        }
+
+        public void RemoveObject(IRenderable2D obj)
+        {
+            Remove2D change = Remove2D.Get();
+            change.Object = obj;
+            change.Data = this;
+            _pendingChanges.Enqueue(change);
+        }
+
+
         public abstract void AddObject(IRenderable3D obj, ObjectRenderData renderData);
 
         public abstract void RemoveObject(IRenderable3D obj, ObjectRenderData renderData);
-
-        public abstract void AddObject(IRenderable2D sprite);
-
-        public abstract void RemoveObject(IRenderable2D sprite);
 
         /// <summary>
         /// Returns true if the current <see cref="SceneRenderData"/> has the specified flag(s).

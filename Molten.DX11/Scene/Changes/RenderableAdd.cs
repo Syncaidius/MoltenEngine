@@ -13,20 +13,23 @@ namespace Molten.Graphics
 
         public ObjectRenderData Data;
 
+        public SceneRenderDataDX11 SceneData;
+
         public override void Clear()
         {
             Renderable = null;
             Data = null;
+            SceneData = null;
         }
 
-        public override void Process(SceneRenderDataDX11 scene)
+        public override void Process()
         {
             List<ObjectRenderData> dataList;
 
-            if (!scene.Renderables.TryGetValue(Renderable, out dataList))
+            if (!SceneData.Renderables.TryGetValue(Renderable, out dataList))
             {
                 dataList = new List<ObjectRenderData>();
-                scene.Renderables.Add(Renderable, dataList);
+                SceneData.Renderables.Add(Renderable, dataList);
             }
 
             dataList.Add(Data);

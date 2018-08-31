@@ -9,30 +9,23 @@ namespace Molten.Graphics
 {
     /// <summary>An object for storing render data about a <see cref="Scene"/>.</summary>
     public sealed class SceneRenderDataDX11 : SceneRenderData
-    {
-        ThreadedQueue<RenderSceneChange> _pendingChanges;
+    {        
         RenderChain _chain;
         SceneRenderFlags _previousFlags;
 
         internal Dictionary<Renderable, List<ObjectRenderData>> Renderables;
-        internal List<IRenderable2D> Sprites;
-        internal Matrix4F View = Matrix4F.Identity;
-        internal Matrix4F Projection;
-        internal Matrix4F ViewProjection;
-        internal Matrix4F InvViewProjection;
         internal RenderSurfaceBase FinalSurface;
-        internal RenderProfiler Profiler;
+
         internal bool Skip;
 
         SceneDebugOverlay _overlay;
 
         internal SceneRenderDataDX11(RendererDX11 renderer)
         {
-            _pendingChanges = new ThreadedQueue<RenderSceneChange>();
             Renderables = new Dictionary<Renderable, List<ObjectRenderData>>();
 
             // Set up one sprite layer.
-            Sprites = new List<IRenderable2D>();
+            Renderables2D = new List<IRenderable2D>();
             _previousFlags = Flags;
             _chain = new RenderChain(renderer, this);
             _chain.Rebuild();
@@ -45,6 +38,7 @@ namespace Molten.Graphics
             RenderableAdd change = RenderableAdd.Get();
             change.Renderable = obj as Renderable;
             change.Data = renderData;
+            change.SceneData = this;
             _pendingChanges.Enqueue(change);
         }
 
@@ -53,20 +47,7 @@ namespace Molten.Graphics
             RenderableRemove change = RenderableRemove.Get();
             change.Renderable = obj as Renderable;
             change.Data = renderData;
-            _pendingChanges.Enqueue(change);
-        }
-
-        public override void AddObject(IRenderable2D sprite)
-        {
-            SpriteAdd change = SpriteAdd.Get();
-            change.Sprite = sprite;
-            _pendingChanges.Enqueue(change);
-        }
-
-        public override void RemoveObject(IRenderable2D sprite)
-        {
-            SpriteRemove change = SpriteRemove.Get();
-            change.Sprite = sprite;
+            change.SceneData = this;
             _pendingChanges.Enqueue(change);
         }
 
@@ -80,7 +61,7 @@ namespace Molten.Graphics
             }
 
             while (_pendingChanges.TryDequeue(out RenderSceneChange change))
-                change.Process(this);
+                change.Process();
 
             _chain.Render(this, time);
             PostRenderInvoke(renderer);
@@ -122,8 +103,8 @@ namespace Molten.Graphics
 
         internal void Render2D(GraphicsPipe pipe, RendererDX11 renderer)
         {
-            for(int i = 0; i < Sprites.Count; i++)
-                Sprites[i].Render(renderer.SpriteBatcher);
+            for(int i = 0; i < Renderables2D.Count; i++)
+                Renderables2D[i].Render(renderer.SpriteBatcher);
         }
 
         /// <summary>

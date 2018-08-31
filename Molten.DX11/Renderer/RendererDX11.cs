@@ -243,6 +243,14 @@ namespace Molten.Graphics
                 _surfacesDirty = false;
             }
 
+            /* CAMERA REFACTOR
+             *  - The renderer will iterate over cameras instead of scenes
+             *  - Each camera will store a 32-bit layer mask (32 layers, one per bit)
+             *  - RenderData will be split into LayerData objects, containing the objects to be rendered on each layer
+             *  - The layer limit will be 32
+             *  - A camera will be given the RenderData object of the scene it is part of.
+             */
+
             /* DESIGN NOTES:
              *  - Store a hashset of materials used in each scene so that the renderer can set the "Common" buffer in one pass
              *  

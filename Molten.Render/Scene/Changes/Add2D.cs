@@ -7,18 +7,20 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="SceneObject"/> to the root of a scene.</summary>
-    internal class SpriteRemove : RenderSceneChange<SpriteRemove> 
+    internal class Add2D : RenderSceneChange<Add2D> 
     {
-        public IRenderable2D Sprite;
+        public IRenderable2D Object;
+        public SceneRenderData Data;
 
         public override void Clear()
         {
-            Sprite = null;
+            Object = null;
+            Data = null;
         }
 
-        public override void Process(SceneRenderDataDX11 scene)
+        public override void Process()
         {
-            scene.Sprites.Remove(Sprite);
+            Data.Renderables2D.Add(Object);
             Recycle(this);
         }
     }

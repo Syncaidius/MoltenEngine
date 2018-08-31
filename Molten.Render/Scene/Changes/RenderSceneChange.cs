@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal abstract class RenderSceneChange : IPoolable
+    public abstract class RenderSceneChange : IPoolable
     {
         public abstract void Clear();
 
-        public abstract void Process(SceneRenderDataDX11 data);
+        public abstract void Process();
     }
 
-    internal abstract class RenderSceneChange<CHANGE> : RenderSceneChange
+    public abstract class RenderSceneChange<CHANGE> : RenderSceneChange
         where CHANGE : RenderSceneChange, new()
     {
         static ObjectPool<CHANGE> _pool = new ObjectPool<CHANGE>(() => new CHANGE());
