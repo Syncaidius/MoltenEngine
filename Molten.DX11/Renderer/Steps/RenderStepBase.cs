@@ -15,7 +15,7 @@ namespace Molten.Graphics
 
         internal abstract void UpdateSurfaces(RendererDX11 renderer, int width, int height);
 
-        internal abstract void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time, RenderChain.Link link);
+        internal abstract void Render(RendererDX11 renderer, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link);
 
         public abstract void Dispose();
     }

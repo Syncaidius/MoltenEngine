@@ -9,7 +9,7 @@ namespace Molten.Graphics
     /// <summary>A <see cref="RendererReorderScene"/> for changing the draw order of a <see cref="SceneRenderDataDX11"/> instance.</summary>
     internal class RendererReorderScene : RendererTask<RendererReorderScene>
     {
-        public SceneRenderDataDX11 Data;
+        public SceneRenderData Data;
         public SceneReorderMode Mode;
 
         public override void Clear()

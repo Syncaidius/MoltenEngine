@@ -49,7 +49,7 @@ namespace Molten.Graphics
             Next(step);
         }
 
-        internal void Build(SceneRenderDataDX11 scene)
+        internal void Build(SceneRenderData scene)
         {
             First = null;
             Last = null;
@@ -77,7 +77,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal void Render(SceneRenderDataDX11 scene, Timing time)
+        internal void Render(SceneRenderData<Renderable> scene, Timing time)
         {
             Link link = First;
             while(link != null)

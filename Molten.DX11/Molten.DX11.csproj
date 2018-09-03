@@ -124,8 +124,6 @@
     <Compile Include="Exceptions\MappedBufferException.cs" />
     <Compile Include="Exceptions\UnsupportedFeatureException.cs" />
     <Compile Include="Renderer\Tasks\TextureApply.cs" />
-    <Compile Include="Scene\Changes\RenderableAdd.cs" />
-    <Compile Include="Scene\Changes\RenderableRemove.cs" />
     <Compile Include="Surfaces\RenderControlSurface.cs" />
     <Compile Include="Tests\GraphicsDeviceDX11Tests.cs" />
     <Compile Include="Tests\DisplayManagerDX11Tests.cs" />
@@ -192,7 +190,6 @@
     <Compile Include="Renderer\Tasks\RendererRemoveScene.cs" />
     <Compile Include="Renderer\Tasks\RendererTask.cs" />
     <Compile Include="ResourceManager.cs" />
-    <Compile Include="Scene\SceneRenderDataDX11.cs" />
     <Compile Include="Shaders\Compiler\Parsers\SamplerNodeParser.cs" />
     <Compile Include="Shaders\Compiler\Parsers\BlendNodeParser.cs" />
     <Compile Include="Shaders\Compiler\Parsers\DepthNodeParser.cs" />

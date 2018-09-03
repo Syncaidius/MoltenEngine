@@ -63,7 +63,7 @@ namespace Molten.Graphics
             _lightDataBuffer.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
@@ -74,7 +74,7 @@ namespace Molten.Graphics
             RenderPointLights(device, scene);
         }
 
-        private void RenderPointLights(GraphicsPipe pipe, SceneRenderDataDX11 scene)
+        private void RenderPointLights(GraphicsPipe pipe, SceneRenderData<Renderable> scene)
         {
             _lightSegment.SetData(pipe, scene.PointLights.Data);
 

@@ -14,7 +14,7 @@ namespace Molten.Graphics
 
         }
 
-        internal override void Render(GraphicsPipe pipe, RendererDX11 renderer, ObjectRenderData data, SceneRenderDataDX11 sceneData)
+        internal override void Render(GraphicsPipe pipe, RendererDX11 renderer, ObjectRenderData data, SceneRenderData sceneData)
         {
             ApplyBuffers(pipe);
             IShaderResource normal = GetResource(1);

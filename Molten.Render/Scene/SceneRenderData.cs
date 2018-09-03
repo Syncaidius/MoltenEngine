@@ -33,8 +33,12 @@ namespace Molten.Graphics
         /// </summary>
         public bool IsVisible = true;
 
+        public bool Skip;
+
         /// <summary>The camera that should be used as a view or eye when rendering 3D objects in a scene.</summary>
         public ICamera Camera;
+
+        public IRenderSurface FinalSurface;
 
         /// <summary>
         /// Flags which describe basic rules for rendering the scene.
@@ -51,15 +55,20 @@ namespace Molten.Graphics
         /// </summary>
         public Color AmbientLightColor = Color.Black;
 
-        public readonly List<IRenderable2D> Renderables2D = new List<IRenderable2D>();
-
-        protected readonly ThreadedQueue<RenderSceneChange> _pendingChanges = new ThreadedQueue<RenderSceneChange>();
-
-        public readonly RenderProfiler Profiler = new RenderProfiler();
         public Matrix4F View = Matrix4F.Identity;
         public Matrix4F Projection;
         public Matrix4F ViewProjection;
         public Matrix4F InvViewProjection;
+
+        public readonly List<IRenderable2D> Renderables2D = new List<IRenderable2D>();
+        public readonly RenderProfiler Profiler = new RenderProfiler();
+        protected readonly ThreadedQueue<RenderSceneChange> _pendingChanges = new ThreadedQueue<RenderSceneChange>();
+        ISceneDebugOverlay _overlay;
+
+        public SceneRenderData(ISceneDebugOverlay overlay)
+        {
+            _overlay = overlay;
+        }
 
         public void AddObject(IRenderable2D obj)
         {
@@ -108,14 +117,43 @@ namespace Molten.Graphics
         /// </summary>
         public void PostRenderInvoke(IRenderer renderer) => OnPostRender?.Invoke(renderer, this);
 
-        /// <summary>
-        /// Gets the debug overlay which displays information for the current scene.
-        /// </summary>
-        public abstract ISceneDebugOverlay DebugOverlay { get; }
-
         /* TODO:
         *  - Edit PointLights and CapsuleLights.Data directly in light scene components (e.g. PointLightComponent).
         *  - Renderer will upload the latest data to the GPU 
         */
+
+        /// <summary>
+        /// GGets the debug overlay which displays information for the current scene.
+        /// </summary>
+        public ISceneDebugOverlay DebugOverlay => _overlay;
+    }
+
+    public class SceneRenderData<R> : SceneRenderData
+        where R: class, IRenderable3D
+    {
+        public Dictionary<R, List<ObjectRenderData>> Renderables;
+
+        public SceneRenderData(ISceneDebugOverlay overlay) : base(overlay)
+        {
+            Renderables = new Dictionary<R, List<ObjectRenderData>>();
+        }
+
+        public override void AddObject(IRenderable3D obj, ObjectRenderData renderData)
+        {
+            RenderableAdd<R> change = RenderableAdd<R>.Get();
+            change.Renderable = obj as R;
+            change.Data = renderData;
+            change.SceneData = this;
+            _pendingChanges.Enqueue(change);
+        }
+
+        public override void RemoveObject(IRenderable3D obj, ObjectRenderData renderData)
+        {
+            RenderableRemove<R> change = RenderableRemove<R>.Get();
+            change.Renderable = obj as R;
+            change.Data = renderData;
+            change.SceneData = this;
+            _pendingChanges.Enqueue(change);
+        }
     }
 }

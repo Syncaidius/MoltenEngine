@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     internal class DepthOverlay : DebugOverlayPage
     {
-        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch batch, SceneRenderDataDX11 scene, IRenderSurface surface)
+        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch batch, SceneRenderData scene, IRenderSurface surface)
         {
             StartStep start = renderer.GetRenderStep<StartStep>();
             batch.Draw(start.Depth, surface.Viewport.Bounds, surface.Viewport.Bounds, Color.White);

@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     internal class NormalsOverlay : DebugOverlayPage
     {
-        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch batch, SceneRenderDataDX11 scene, IRenderSurface surface)
+        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch batch, SceneRenderData scene, IRenderSurface surface)
         {
             StartStep start = renderer.GetRenderStep<StartStep>();
             batch.Draw(start.Normals, surface.Viewport.Bounds, surface.Viewport.Bounds, Color.White);

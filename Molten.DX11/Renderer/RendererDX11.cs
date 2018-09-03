@@ -35,7 +35,7 @@ namespace Molten.Graphics
         AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
         internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
         internal SpriteBatchDX11 SpriteBatcher;
-        internal List<SceneRenderDataDX11> Scenes;
+        internal List<SceneRenderData> Scenes;
 
         internal GraphicsBuffer StaticVertexBuffer;
         internal GraphicsBuffer DynamicVertexBuffer;
@@ -86,7 +86,7 @@ namespace Molten.Graphics
             _shaderCompiler = new HlslCompiler(this, _log);
             _tasks = new ThreadedQueue<RendererTask>();
             _clearedSurfaces = new HashSet<TextureAsset2D>();
-            Scenes = new List<SceneRenderDataDX11>();
+            Scenes = new List<SceneRenderData>();
 
             int maxBufferSize = (int)ByteMath.FromMegabytes(3.5);
             StaticVertexBuffer = new GraphicsBuffer(_device, BufferMode.Default, BindFlags.VertexBuffer | BindFlags.IndexBuffer, maxBufferSize);
@@ -123,7 +123,7 @@ namespace Molten.Graphics
 
         public SceneRenderData CreateRenderData()
         {
-            SceneRenderDataDX11 rd = new SceneRenderDataDX11(this);
+            SceneRenderData<Renderable> rd = new SceneRenderData<Renderable>(this);
             RendererAddScene task = RendererAddScene.Get();
             task.Data = rd;
             PushTask(task);
@@ -133,14 +133,14 @@ namespace Molten.Graphics
         public void DestroyRenderData(SceneRenderData data)
         {
             RendererRemoveScene task = RendererRemoveScene.Get();
-            task.Data = data as SceneRenderDataDX11;
+            task.Data = data as SceneRenderData;
             PushTask(task);
         }
 
         private void PushSceneReorder(SceneRenderData data, SceneReorderMode mode)
         {
             RendererReorderScene task = RendererReorderScene.Get();
-            task.Data = data as SceneRenderDataDX11;
+            task.Data = data as SceneRenderData;
             task.Mode = mode;
             PushTask(task);
         }
@@ -205,7 +205,7 @@ namespace Molten.Graphics
 
             // Perform preliminary checks on active scene data.
             // Also ensure the backbuffer is always big enough for the largest scene render surface.
-            foreach (SceneRenderDataDX11 data in Scenes)
+            foreach (SceneRenderData data in Scenes)
             {
                 data.Skip = false;
 
@@ -273,10 +273,10 @@ namespace Molten.Graphics
              *  - Prepare rendering of these on worker threads.
              */
 
-            SceneRenderDataDX11 scene;
+            SceneRenderData<Renderable> scene;
             for (int i = 0; i < Scenes.Count; i++)
             {
-                scene = Scenes[i];
+                scene = Scenes[i] as SceneRenderData<Renderable>;
                 if (scene.Skip)
                     continue;
 
@@ -300,7 +300,7 @@ namespace Molten.Graphics
             // This is done separately so that any debug overlays rendered by scenes can still access final surface information during their render call.
             for(int i = 0; i < Scenes.Count; i++)
             {
-                scene = Scenes[i];
+                scene = Scenes[i] as SceneRenderData<Renderable>;
                 scene.FinalSurface = null;
             }
 
@@ -311,7 +311,7 @@ namespace Molten.Graphics
             _profiler.EndCapture(time);
         }
 
-        internal void RenderScene(SceneRenderDataDX11 data, GraphicsPipe pipe, Timing time)
+        internal void RenderScene(SceneRenderData<Renderable> data, GraphicsPipe pipe, Timing time)
         {
             data.PreRenderInvoke(this);
             data.ProcessChanges();
@@ -320,7 +320,7 @@ namespace Molten.Graphics
             data.PostRenderInvoke(this);
         }
 
-        internal void Render3D(GraphicsPipe pipe, SceneRenderDataDX11 sceneData)
+        internal void Render3D(GraphicsPipe pipe, SceneRenderData<Renderable> sceneData)
         {
             // To start with we're just going to draw ALL objects in the render tree.
             // Sorting and culling will come later
@@ -354,7 +354,7 @@ namespace Molten.Graphics
              */
         }
 
-        internal void Render2D(GraphicsPipe pipe, SceneRenderDataDX11 sceneData)
+        internal void Render2D(GraphicsPipe pipe, SceneRenderData sceneData)
         {
             for (int i = 0; i < sceneData.Renderables2D.Count; i++)
                 sceneData.Renderables2D[i].Render(SpriteBatcher);

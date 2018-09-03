@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     internal class DebugFeaturesPage : DebugOverlayPage
     {
-        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch batch, SceneRenderDataDX11 scene, IRenderSurface surface)
+        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch batch, SceneRenderData scene, IRenderSurface surface)
         {
             Vector2F pos = new Vector2F(3, 3);
             GraphicsDX11Features features = renderer.Device.Features;

@@ -104,6 +104,8 @@
     <Compile Include="GraphicsSettings.cs" />
     <Compile Include="RenderProfiler.cs" />
     <Compile Include="Scene\Camera2D.cs" />
+    <Compile Include="Scene\Changes\RenderableAdd.cs" />
+    <Compile Include="Scene\Changes\RenderableRemove.cs" />
     <Compile Include="Scene\Changes\RenderSceneChange.cs" />
     <Compile Include="Scene\Changes\Add2D.cs" />
     <Compile Include="Scene\Changes\Remove2D.cs" />

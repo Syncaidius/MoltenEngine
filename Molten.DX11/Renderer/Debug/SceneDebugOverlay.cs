@@ -8,11 +8,11 @@ namespace Molten.Graphics
 {
     public class SceneDebugOverlay : ISceneDebugOverlay
     {
-        SceneRenderDataDX11 _data;
+        SceneRenderData _data;
         int _page;
         RendererDX11 _renderer;
 
-        internal SceneDebugOverlay(RendererDX11 renderer, SceneRenderDataDX11 scene)
+        internal SceneDebugOverlay(RendererDX11 renderer, SceneRenderData scene)
         {
             _renderer = renderer;
             _data = scene;
@@ -39,7 +39,7 @@ namespace Molten.Graphics
 
         public void SetScene(SceneRenderData data)
         {
-            _data = data as SceneRenderDataDX11;
+            _data = data;
         }
 
         public void Render(SpriteBatch sb)

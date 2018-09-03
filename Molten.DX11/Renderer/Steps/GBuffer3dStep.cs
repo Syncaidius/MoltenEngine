@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
         public override void Dispose() { }
 
-        internal override void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
@@ -46,7 +46,7 @@ namespace Molten.Graphics
             device.EndDraw();
         }
 
-        private void SetMaterialCommon(Material material, SceneRenderDataDX11 scene, RenderSurface gBufferScene)
+        private void SetMaterialCommon(Material material, SceneRenderData scene, RenderSurface gBufferScene)
         {
             material.Scene.View.Value = scene.View;
             material.Scene.Projection.Value = scene.Projection;

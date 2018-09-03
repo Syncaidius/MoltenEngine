@@ -45,7 +45,7 @@ namespace Molten.Graphics
             DisposeSurfaces();
         }
 
-        internal override void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 

@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     internal class LightingOverlay : DebugOverlayPage
     {
-        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch batch, SceneRenderDataDX11 scene, IRenderSurface surface)
+        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch batch, SceneRenderData scene, IRenderSurface surface)
         {
             LightingStep lightStep = renderer.GetRenderStep<LightingStep>();
             batch.Draw(lightStep.Lighting, surface.Viewport.Bounds, surface.Viewport.Bounds, Color.White);

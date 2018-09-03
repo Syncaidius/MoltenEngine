@@ -7,17 +7,18 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="SceneObject"/> to the root of a scene.</summary>
-    internal class RenderableAdd : RenderSceneChange<RenderableAdd> 
+    internal class RenderableAdd<R> : RenderSceneChange<RenderableAdd<R>> 
+        where R : class, IRenderable3D
     {
-        public Renderable Renderable;
+        public R Renderable;
 
         public ObjectRenderData Data;
 
-        public SceneRenderDataDX11 SceneData;
+        public SceneRenderData<R> SceneData;
 
         public override void Clear()
         {
-            Renderable = null;
+            Renderable = default;
             Data = null;
             SceneData = null;
         }

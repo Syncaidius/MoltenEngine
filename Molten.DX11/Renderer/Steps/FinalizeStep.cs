@@ -24,7 +24,7 @@ namespace Molten.Graphics
 
         }
 
-        internal override void Render(RendererDX11 renderer, SceneRenderDataDX11 scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
         {
             switch (link.Chain.First.Step)
             {
@@ -35,10 +35,11 @@ namespace Molten.Graphics
 
                     Rectangle bounds = new Rectangle(0, 0, scene.FinalSurface.Width, scene.FinalSurface.Height);
                     GraphicsDeviceDX11 device = renderer.Device;
+                    RenderSurfaceBase finalSurface = scene.FinalSurface as RenderSurfaceBase;
                     if (!scene.HasFlag(SceneRenderFlags.DoNotClear))
-                        renderer.ClearIfFirstUse(scene.FinalSurface, () => scene.FinalSurface.Clear(scene.BackgroundColor));
+                        renderer.ClearIfFirstUse(finalSurface, () => scene.FinalSurface.Clear(scene.BackgroundColor));
 
-                    device.SetRenderSurface(scene.FinalSurface, 0);
+                    device.SetRenderSurface(finalSurface, 0);
                     device.SetDepthSurface(null, GraphicsDepthMode.Disabled);
                     device.Rasterizer.SetViewports(scene.FinalSurface.Viewport);
 
@@ -49,7 +50,7 @@ namespace Molten.Graphics
                     conditions |= scene.FinalSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
                     renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
-                    renderer.SpriteBatcher.End(device, ref spriteViewProj, scene.FinalSurface);
+                    renderer.SpriteBatcher.End(device, ref spriteViewProj, finalSurface);
                     renderer.Device.EndDraw();
                     break;
             }

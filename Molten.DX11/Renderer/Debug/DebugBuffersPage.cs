@@ -13,7 +13,7 @@ namespace Molten.Graphics
         StartStep _startStep;
         LightingStep _lighting;
 
-        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch sb, SceneRenderDataDX11 scene, IRenderSurface surface)
+        public override void Render(SpriteFont font, RendererDX11 renderer, SpriteBatch sb, SceneRenderData scene, IRenderSurface surface)
         {
             int width = surface.Width / 2;
             int height = 32;
