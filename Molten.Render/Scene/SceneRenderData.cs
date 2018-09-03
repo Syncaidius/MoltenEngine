@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public delegate void SceneRenderDataHandler(IRenderer renderer, SceneRenderData data);
+    public delegate void SceneRenderDataHandler(RenderEngine renderer, SceneRenderData data);
 
     /// <summary>
     /// A class for storing renderer-specific information about a scene.
@@ -65,11 +65,6 @@ namespace Molten.Graphics
         protected readonly ThreadedQueue<RenderSceneChange> _pendingChanges = new ThreadedQueue<RenderSceneChange>();
         ISceneDebugOverlay _overlay;
 
-        public SceneRenderData(ISceneDebugOverlay overlay)
-        {
-            _overlay = overlay;
-        }
-
         public void AddObject(IRenderable2D obj)
         {
             Add2D change = Add2D.Get();
@@ -110,12 +105,12 @@ namespace Molten.Graphics
         /// <summary>
         /// Invokes <see cref="OnPreRender"/> event.
         /// </summary>
-        public void PreRenderInvoke(IRenderer renderer) => OnPreRender?.Invoke(renderer, this);
+        public void PreRenderInvoke(RenderEngine renderer) => OnPreRender?.Invoke(renderer, this);
 
         /// <summary>
         /// Invokes <see cref="OnPostRender"/> event.
         /// </summary>
-        public void PostRenderInvoke(IRenderer renderer) => OnPostRender?.Invoke(renderer, this);
+        public void PostRenderInvoke(RenderEngine renderer) => OnPostRender?.Invoke(renderer, this);
 
         /* TODO:
         *  - Edit PointLights and CapsuleLights.Data directly in light scene components (e.g. PointLightComponent).
@@ -125,7 +120,7 @@ namespace Molten.Graphics
         /// <summary>
         /// GGets the debug overlay which displays information for the current scene.
         /// </summary>
-        public ISceneDebugOverlay DebugOverlay => _overlay;
+        public ISceneDebugOverlay DebugOverlay { get; set; }
     }
 
     public class SceneRenderData<R> : SceneRenderData
@@ -133,7 +128,7 @@ namespace Molten.Graphics
     {
         public Dictionary<R, List<ObjectRenderData>> Renderables;
 
-        public SceneRenderData(ISceneDebugOverlay overlay) : base(overlay)
+        public SceneRenderData()
         {
             Renderables = new Dictionary<R, List<ObjectRenderData>>();
         }

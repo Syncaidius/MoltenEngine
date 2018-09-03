@@ -145,6 +145,6 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the renderer that the texture is bound to.
         /// </summary>
-        IRenderer Renderer { get; }
+        RenderEngine Renderer { get; }
     }
 }

@@ -23,7 +23,7 @@ namespace Molten.Graphics
             return normal;
         }
 
-        public static IIndexedMesh<GBufferVertex> Cube(IRenderer renderer)
+        public static IIndexedMesh<GBufferVertex> Cube(RenderEngine renderer)
         {
             Vector3F nFront = new Vector3F(0, 0, -1);
             Vector3F nBack = new Vector3F(0, 0, 1);
@@ -81,7 +81,7 @@ namespace Molten.Graphics
             return mesh;
         }
 
-        public static IIndexedMesh<GBufferVertex> PlainCentered(IRenderer renderer, float uvTiling = 1.0f)
+        public static IIndexedMesh<GBufferVertex> PlainCentered(RenderEngine renderer, float uvTiling = 1.0f)
         {
             GBufferVertex[] vertices = new GBufferVertex[4];
             Vector3F normal = new Vector3F(0, 1, 0);
@@ -107,7 +107,7 @@ namespace Molten.Graphics
             return mesh;
         }
 
-        public static IIndexedMesh<GBufferVertex> Plain(IRenderer renderer, float uvTiling = 1.0f)
+        public static IIndexedMesh<GBufferVertex> Plain(RenderEngine renderer, float uvTiling = 1.0f)
         {
             GBufferVertex[] vertices = new GBufferVertex[4];
             Vector3F normal = new Vector3F(0, 1, 0);

@@ -36,7 +36,7 @@ namespace Molten.Graphics
             if(context.Errors.Count == 0)
             {
                 result.Add(compute);
-                renderer.Compute.AddTask(compute);
+                (renderer.Compute as ComputeManager).AddTask(compute);
             }
 
             return result;

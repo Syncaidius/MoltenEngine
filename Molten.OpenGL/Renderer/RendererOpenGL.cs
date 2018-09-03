@@ -8,7 +8,7 @@ using OpenTK;
 
 namespace Molten.Graphics
 {
-    public class RendererOpenGL : IRenderer
+    public class RendererOpenGL : RenderEngine
     {
         ThreadedList<ISwapChainSurface> _outputSurfaces;
         RenderProfiler _profiler;
@@ -21,13 +21,13 @@ namespace Molten.Graphics
             _log.AddOutput(new LogFileWriter("renderer_opengl{0}.txt"));
         }
 
-        public void Initialize(GraphicsSettings settings)
+        public override void Initialize(GraphicsSettings settings)
         {
             _profiler = new RenderProfiler();
             _outputSurfaces = new ThreadedList<ISwapChainSurface>();
         }
 
-        public void InitializeAdapter(GraphicsSettings settings)
+        public override void InitializeAdapter(GraphicsSettings settings)
         {
             NativeWindow dummyWindow = new NativeWindow();
             _displayManager = new DisplayManagerGL();
@@ -36,37 +36,7 @@ namespace Molten.Graphics
             dummyWindow.Dispose();
         }
 
-        public void BringToFront(SceneRenderData data)
-        {
-            
-        }
-
-        public void SendToBack(SceneRenderData data)
-        {
-            
-        }
-
-        public void PushBackward(SceneRenderData data)
-        {
-            
-        }
-
-        public void PushForward(SceneRenderData data)
-        {
-            
-        }
-
-        public SceneRenderData CreateRenderData()
-        {
-            return null;
-        }
-
-        public void DestroyRenderData(SceneRenderData data)
-        {
-            
-        }
-
-        public void Dispose()
+        public override void Dispose()
         {
             _outputSurfaces.ForInterlock(0, 1, (index, surface) =>
             {
@@ -84,22 +54,30 @@ namespace Molten.Graphics
             
         }
 
-        public IDisplayManager DisplayManager => null;
+        protected override SceneRenderData OnCreateRenderData()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnPresent(Timing time)
+        {
+            throw new NotImplementedException();
+        }
 
         public string Namer => null;
 
         public RenderProfiler Profiler => null;
 
-        public ThreadedList<ISwapChainSurface> OutputSurfacesr => null;
+        public override IComputeManager Compute => null;
 
-        public IRenderSurface DefaultSurface { get; set; }
+        public override string Name => "OpenGL Renderer";
 
-        public IResourceManager Resources => null;
+        public override IDisplayManager DisplayManager => throw new NotImplementedException();
 
-        public IComputeManager Compute => null;
+        public override IResourceManager Resources => throw new NotImplementedException();
 
-        public string Name => "OpenGL Renderer";
+        public override IRenderSurface DefaultSurface { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public ThreadedList<ISwapChainSurface> OutputSurfaces => _outputSurfaces;
+        public override ThreadedList<ISwapChainSurface> OutputSurfaces => throw new NotImplementedException();
     }
 }

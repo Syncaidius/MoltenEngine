@@ -102,6 +102,11 @@
     <Compile Include="Exceptions\AdapterOutputException.cs" />
     <Compile Include="GraphicsFormat.cs" />
     <Compile Include="GraphicsSettings.cs" />
+    <Compile Include="Renderer\RenderEngine.cs" />
+    <Compile Include="Renderer\Tasks\RendererAddScene.cs" />
+    <Compile Include="Renderer\Tasks\RendererRemoveScene.cs" />
+    <Compile Include="Renderer\Tasks\RendererReorderScene.cs" />
+    <Compile Include="Renderer\Tasks\RendererTask.cs" />
     <Compile Include="RenderProfiler.cs" />
     <Compile Include="Scene\Camera2D.cs" />
     <Compile Include="Scene\Changes\RenderableAdd.cs" />
@@ -110,7 +115,6 @@
     <Compile Include="Scene\Changes\Add2D.cs" />
     <Compile Include="Scene\Changes\Remove2D.cs" />
     <Compile Include="Scene\ISceneDebugOverlay.cs" />
-    <Compile Include="IRenderer.cs" />
     <Compile Include="IResourceManager.cs" />
     <Compile Include="MeshHelper.cs" />
     <Compile Include="Mesh\IBonedMesh.cs" />

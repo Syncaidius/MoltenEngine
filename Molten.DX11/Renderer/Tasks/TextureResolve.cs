@@ -27,12 +27,12 @@ namespace Molten.Graphics
             Destination = null;
         }
 
-        public override void Process(RendererDX11 renderer)
+        public override void Process(RenderEngine renderer)
         {
             int subSource = (Source.MipMapCount * SourceArraySlice) + SourceMipLevel;
             int subDest = (Destination.MipMapCount * DestArraySlice) + DestMipLevel;
 
-            renderer.Device.Context.ResolveSubresource(Source.UnderlyingResource, subSource, 
+            (renderer as RendererDX11).Device.Context.ResolveSubresource(Source.UnderlyingResource, subSource, 
                 Destination.UnderlyingResource, subDest, 
                 Source.DxFormat);
             Recycle(this);

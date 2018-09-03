@@ -17,7 +17,7 @@ namespace Molten.Graphics
             Data = null;
         }
 
-        public override void Process(RendererDX11 renderer)
+        public override void Process(RenderEngine renderer)
         {
             int indexOf = renderer.Scenes.IndexOf(Data);
             if (indexOf > -1)

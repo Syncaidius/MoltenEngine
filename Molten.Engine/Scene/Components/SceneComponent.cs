@@ -26,7 +26,7 @@ namespace Molten
 
         public virtual void OnUpdate(Timing time) { }
 
-        public virtual void OnRender(IRenderer renderer, Timing time)
+        public virtual void OnRender(RenderEngine renderer, Timing time)
         {
             // for components that need to render, they will update their SceneRenderProxy instance with information about their mesh, effect/material and transform.
         }

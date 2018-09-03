@@ -16,7 +16,7 @@ namespace Molten.Graphics
             Data = null;
         }
 
-        public override void Process(RendererDX11 renderer)
+        public override void Process(RenderEngine renderer)
         {
             renderer.Scenes.Add(Data);
             Recycle(this);

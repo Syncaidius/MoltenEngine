@@ -10,22 +10,19 @@ using System.IO;
 
 namespace Molten.Graphics
 {
-    public class RendererDX11 : IRenderer
+    public class RendererDX11 : RenderEngine
     {
-        internal static readonly Matrix4F DefaultView3D = Matrix4F.LookAtLH(new Vector3F(0, 0, -5), new Vector3F(0, 0, 0), Vector3F.UnitY);
-
         int _biggestWidth = 1;
         int _biggestHeight = 1;
-        bool _surfacesDirty;
+        bool _surfaceResizeRequired;
 
         DisplayManagerDX11 _displayManager;
         ResourceManager _resourceManager;
         ComputeManager _compute;
         GraphicsDeviceDX11 _device;
         Logger _log;
-        RenderProfiler _profiler;
+
         HlslCompiler _shaderCompiler;
-        ThreadedQueue<RendererTask> _tasks;
         ThreadedList<ISwapChainSurface> _outputSurfaces;
         HashSet<TextureAsset2D> _clearedSurfaces;
         Dictionary<Type, RenderStepBase> _steps;
@@ -35,7 +32,6 @@ namespace Molten.Graphics
         AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
         internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
         internal SpriteBatchDX11 SpriteBatcher;
-        internal List<SceneRenderData> Scenes;
 
         internal GraphicsBuffer StaticVertexBuffer;
         internal GraphicsBuffer DynamicVertexBuffer;
@@ -65,28 +61,24 @@ namespace Molten.Graphics
             DebugOverlayPages.Add(new LightingOverlay());
         }
 
-        public void InitializeAdapter(GraphicsSettings settings)
+        public override void InitializeAdapter(GraphicsSettings settings)
         {
             _displayManager = new DisplayManagerDX11();
             _displayManager.Initialize(_log, settings);
         }
 
-        public void Initialize(GraphicsSettings settings)
+        public override void Initialize(GraphicsSettings settings)
         {
             settings.Log(_log, "Graphics");
-            MsaaLevel = 
-            _requestedMultiSampleLevel = MsaaLevel;
+            MsaaLevel = _requestedMultiSampleLevel = MsaaLevel;
             settings.MSAA.OnChanged += MSAA_OnChanged;
 
-            _profiler = new RenderProfiler();
             _outputSurfaces = new ThreadedList<ISwapChainSurface>();
-            _device = new GraphicsDeviceDX11(_log, settings, _profiler, _displayManager, settings.EnableDebugLayer);
+            _device = new GraphicsDeviceDX11(_log, settings, Profiler, _displayManager, settings.EnableDebugLayer);
             _resourceManager = new ResourceManager(this);
             _compute = new ComputeManager(this.Device);
             _shaderCompiler = new HlslCompiler(this, _log);
-            _tasks = new ThreadedQueue<RendererTask>();
             _clearedSurfaces = new HashSet<TextureAsset2D>();
-            Scenes = new List<SceneRenderData>();
 
             int maxBufferSize = (int)ByteMath.FromMegabytes(3.5);
             StaticVertexBuffer = new GraphicsBuffer(_device, BufferMode.Default, BindFlags.VertexBuffer | BindFlags.IndexBuffer, maxBufferSize);
@@ -121,55 +113,6 @@ namespace Molten.Graphics
             _device.Dispatch(task as ComputeTask, x, y, z);
         }
 
-        public SceneRenderData CreateRenderData()
-        {
-            SceneRenderData<Renderable> rd = new SceneRenderData<Renderable>(this);
-            RendererAddScene task = RendererAddScene.Get();
-            task.Data = rd;
-            PushTask(task);
-            return rd;
-        }
-
-        public void DestroyRenderData(SceneRenderData data)
-        {
-            RendererRemoveScene task = RendererRemoveScene.Get();
-            task.Data = data as SceneRenderData;
-            PushTask(task);
-        }
-
-        private void PushSceneReorder(SceneRenderData data, SceneReorderMode mode)
-        {
-            RendererReorderScene task = RendererReorderScene.Get();
-            task.Data = data as SceneRenderData;
-            task.Mode = mode;
-            PushTask(task);
-        }
-
-        public void BringToFront(SceneRenderData data)
-        {
-            PushSceneReorder(data, SceneReorderMode.BringToFront);
-        }
-
-        public void SendToBack(SceneRenderData data)
-        {
-            PushSceneReorder(data, SceneReorderMode.SendToBack);
-        }
-
-        public void PushForward(SceneRenderData data)
-        {
-            PushSceneReorder(data, SceneReorderMode.PushForward);
-        }
-
-        public void PushBackward(SceneRenderData data)
-        {
-            PushSceneReorder(data, SceneReorderMode.PushBackward);
-        }
-
-        internal void PushTask(RendererTask task)
-        {
-            _tasks.Enqueue(task);
-        }
-
         internal T GetRenderStep<T>() where T : RenderStepBase, new()
         {
             Type t = typeof(T);
@@ -185,9 +128,15 @@ namespace Molten.Graphics
             return step as T;
         }
 
-        public void Present(Timing time)
+        protected override SceneRenderData OnCreateRenderData()
         {
-            _profiler.StartCapture();
+            SceneRenderData data =  new SceneRenderData<Renderable>();
+            data.DebugOverlay = new SceneDebugOverlay(this, data);
+            return data;
+        }
+
+        protected override void OnPresent(Timing time)
+        {            
             _device.DisposeMarkedObjects();
 
             if(_requestedMultiSampleLevel != MsaaLevel)
@@ -195,13 +144,10 @@ namespace Molten.Graphics
                 // TODO re-create all internal surfaces/textures to match the new sample level.
                 // TODO adjust rasterizer mode accordingly (multisample enabled/disabled).
                 MsaaLevel = _requestedMultiSampleLevel;
-                _surfacesDirty = true;
+                _surfaceResizeRequired = true;
             }
 
-            // Perform all queued tasks before proceeding
-            RendererTask task = null;
-            while (_tasks.TryDequeue(out task))
-                task.Process(this);
+            ProcessPendingTasks();
 
             // Perform preliminary checks on active scene data.
             // Also ensure the backbuffer is always big enough for the largest scene render surface.
@@ -216,7 +162,7 @@ namespace Molten.Graphics
                 }
 
                 // Check for valid final surface.
-                data.FinalSurface = data.Camera.OutputSurface as RenderSurfaceBase ?? _device.DefaultSurface;
+                data.FinalSurface = data.Camera.OutputSurface ?? _device.DefaultSurface;
                 if (data.FinalSurface == null)
                 {
                     data.Skip = true;
@@ -225,24 +171,24 @@ namespace Molten.Graphics
 
                 if (data.FinalSurface.Width > _biggestWidth)
                 {
-                    _surfacesDirty = true;
+                    _surfaceResizeRequired = true;
                     _biggestWidth = data.FinalSurface.Width;
                 }
 
                 if (data.FinalSurface.Height > _biggestHeight)
                 {
-                    _surfacesDirty = true;
+                    _surfaceResizeRequired = true;
                     _biggestHeight = data.FinalSurface.Height;
                 }
             }
 
             // Update surfaces if dirty. This may involve resizing or changing their format.
-            if (_surfacesDirty)
+            if (_surfaceResizeRequired)
             {
                 for (int i = 0; i < _stepList.Count; i++)
                     _stepList[i].UpdateSurfaces(this, _biggestWidth, _biggestHeight);
 
-                _surfacesDirty = false;
+                _surfaceResizeRequired = false;
             }
 
             /* CAMERA REFACTOR
@@ -284,7 +230,7 @@ namespace Molten.Graphics
                 _device.Profiler.StartCapture();
                 RenderScene(scene, _device, time);
 
-                _profiler.AddData(scene.Profiler.CurrentFrame);
+                Profiler.AddData(scene.Profiler.CurrentFrame);
                 _device.Profiler.EndCapture(time);
                 _device.Profiler = null;
             }
@@ -306,9 +252,7 @@ namespace Molten.Graphics
 
             // Clear the list of used surfaces, ready for the next frame.
             _clearedSurfaces.Clear();
-
-            _profiler.AddData(_device.Profiler.CurrentFrame);
-            _profiler.EndCapture(time);
+            Profiler.AddData(_device.Profiler.CurrentFrame);
         }
 
         internal void RenderScene(SceneRenderData<Renderable> data, GraphicsPipe pipe, Timing time)
@@ -377,7 +321,7 @@ namespace Molten.Graphics
             _requestedMultiSampleLevel = newValue;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             for (int i = 0; i < _stepList.Count; i++)
                 _stepList[i].Dispose();
@@ -401,23 +345,16 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the name of the renderer.
         /// </summary>
-        public string Name => "DirectX 11";
+        public override string Name => "DirectX 11";
 
         /// <summary>
         /// Gets the display manager bound to the renderer.
         /// </summary>
-        public IDisplayManager DisplayManager => _displayManager;
-
-        /// <summary>
-        /// Gets profiling data attached to the renderer.
-        /// </summary>
-        public RenderProfiler Profiler => _profiler;
+        public override IDisplayManager DisplayManager => _displayManager;
 
         internal GraphicsDeviceDX11 Device => _device;
 
-        internal ComputeManager Compute => _compute;
-
-        IComputeManager IRenderer.Compute => _compute;
+        public override IComputeManager Compute => _compute;
 
         internal HlslCompiler ShaderCompiler => _shaderCompiler;
 
@@ -425,11 +362,11 @@ namespace Molten.Graphics
         /// Gets the resource manager bound to the renderer.
         /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.
         /// </summary>
-        public IResourceManager Resources => _resourceManager;
+        public override IResourceManager Resources => _resourceManager;
 
-        public ThreadedList<ISwapChainSurface> OutputSurfaces => _outputSurfaces;
+        public override ThreadedList<ISwapChainSurface> OutputSurfaces => _outputSurfaces;
 
-        public IRenderSurface DefaultSurface
+        public override IRenderSurface DefaultSurface
         {
             get => _device.DefaultSurface;
             set => _device.DefaultSurface = value as RenderSurfaceBase;

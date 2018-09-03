@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal abstract class RendererTask : IPoolable
+    public abstract class RendererTask : IPoolable
     {
         public abstract void Clear();
 
-        public abstract void Process(RendererDX11 renderer);
+        public abstract void Process(RenderEngine renderer);
     }
 
-    internal abstract class RendererTask<T> : RendererTask
+    public abstract class RendererTask<T> : RendererTask
         where T : RendererTask, new()
     {
         static ObjectPool<T> _pool = new ObjectPool<T>(() => new T());
