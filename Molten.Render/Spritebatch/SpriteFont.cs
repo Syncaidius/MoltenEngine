@@ -25,6 +25,8 @@ namespace Molten.Graphics
 
         public const int MIN_POINTS_PER_CURVE = 2;
 
+        public const char PLACEHOLDER_CHAR = ' ';
+
         public class GlyphCache
         {
             // TODO store kerning/GPOS/GSUB offsets in pairs, on-demand.  
@@ -142,11 +144,11 @@ namespace Molten.Graphics
                 OutputSurface = _rt,
             };
 
-            AddCharacter(' ', false);
-
-            Rectangle spaceRect = _glyphCache[_charData[' '].GlyphIndex].Location;
-            spaceRect.Width *= tabSize;
-            AddCharacter('\t', false, spaceRect);
+            // Add placeholder character.
+            AddCharacter(PLACEHOLDER_CHAR, false);
+            Rectangle pcRect = _glyphCache[_charData[' '].GlyphIndex].Location;
+            pcRect.Width *= tabSize;
+            AddCharacter('\t', false, pcRect);
         }
 
         private void _renderData_OnPostRender(RenderEngine renderer, SceneRenderData data)
@@ -196,7 +198,7 @@ namespace Molten.Graphics
             if (!_charData[c].Initialized)
                 AddCharacter(c, true);
 
-            return _glyphCache[_charData[c].GlyphIndex];
+            return _glyphCache[_charData[c].GlyphIndex] ?? _glyphCache[_charData[PLACEHOLDER_CHAR].GlyphIndex];
         }
         
         /// <summary>Measures the provided string and returns it's width and height, in pixels.</summary>
@@ -304,6 +306,11 @@ namespace Molten.Graphics
                 // TODO trigger a sheet resize.
                 //      -- If texture arrays are not supported/allowed, try to make the texture bigger along one dimension instead (power of 2).
                 //      -- If texture arrays are allowed, add a new array slice to the texture
+
+                // TEMP - Use the default character as a placeholder
+                _renderer.Log.WriteError($"Unable to add character '{c}' to atlas for font '{_font.Info.FullName}'. Font atlas was full.");
+                _glyphCache[gIndex] = GetCharGlyph(PLACEHOLDER_CHAR);
+                return;
             }
 
             Rectangle loc = new Rectangle()

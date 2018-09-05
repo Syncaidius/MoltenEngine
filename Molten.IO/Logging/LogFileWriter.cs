@@ -61,7 +61,7 @@ namespace Molten
                         }
                         catch
                         {
-                            file = string.Format(fileNameFormat, appendVal);
+                            file = string.Format(fileNameFormat, "_" + appendVal);
                             appendVal++;
                         }
                     }
@@ -69,7 +69,7 @@ namespace Molten
 
                 case NamingMode.DateTime:
                     string formattedDate = DateTime.Now.ToString("yyyy-mm-dd_HH-mm-ss");
-                    file = string.Format(fileNameFormat, formattedDate);
+                    file = string.Format(fileNameFormat, "_" + formattedDate);
                     break;
             }
 
