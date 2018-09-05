@@ -21,7 +21,7 @@ namespace Molten.Graphics
             _log.AddOutput(new LogFileWriter("renderer_opengl{0}.txt"));
         }
 
-        public override void Initialize(GraphicsSettings settings)
+        protected override void OnInitialize(GraphicsSettings settings)
         {
             _profiler = new RenderProfiler();
             _outputSurfaces = new ThreadedList<ISwapChainSurface>();
@@ -49,17 +49,27 @@ namespace Molten.Graphics
 
         }
 
-        public void Present(Timing time)
-        {
-            
-        }
-
         protected override SceneRenderData OnCreateRenderData()
         {
             throw new NotImplementedException();
         }
 
         protected override void OnPresent(Timing time)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnRebuildSurfaces(int requiredWidth, int requiredHeight)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnPrePresent(Timing time)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnPostPresent(Timing time)
         {
             throw new NotImplementedException();
         }
@@ -77,7 +87,5 @@ namespace Molten.Graphics
         public override IResourceManager Resources => throw new NotImplementedException();
 
         public override IRenderSurface DefaultSurface { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public override ThreadedList<ISwapChainSurface> OutputSurfaces => throw new NotImplementedException();
     }
 }

@@ -12,9 +12,7 @@ namespace Molten.Graphics
 {
     public class RendererDX11 : RenderEngine
     {
-        int _biggestWidth = 1;
-        int _biggestHeight = 1;
-        bool _surfaceResizeRequired;
+
 
         DisplayManagerDX11 _displayManager;
         ResourceManager _resourceManager;
@@ -23,14 +21,13 @@ namespace Molten.Graphics
         Logger _log;
 
         HlslCompiler _shaderCompiler;
-        ThreadedList<ISwapChainSurface> _outputSurfaces;
+
         HashSet<TextureAsset2D> _clearedSurfaces;
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
         RenderChain _chain;
 
-        AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
-        internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
+
         internal SpriteBatchDX11 SpriteBatcher;
 
         internal GraphicsBuffer StaticVertexBuffer;
@@ -67,13 +64,9 @@ namespace Molten.Graphics
             _displayManager.Initialize(_log, settings);
         }
 
-        public override void Initialize(GraphicsSettings settings)
+        protected override void OnInitialize(GraphicsSettings settings)
         {
             settings.Log(_log, "Graphics");
-            MsaaLevel = _requestedMultiSampleLevel = MsaaLevel;
-            settings.MSAA.OnChanged += MSAA_OnChanged;
-
-            _outputSurfaces = new ThreadedList<ISwapChainSurface>();
             _device = new GraphicsDeviceDX11(_log, settings, Profiler, _displayManager, settings.EnableDebugLayer);
             _resourceManager = new ResourceManager(this);
             _compute = new ComputeManager(this.Device);
@@ -120,7 +113,7 @@ namespace Molten.Graphics
             if (!_steps.TryGetValue(t, out step))
             {
                 step = new T();
-                step.Initialize(this, _biggestWidth, _biggestHeight);
+                step.Initialize(this, BiggestWidth, BiggestHeight);
                 _steps.Add(t, step);
                 _stepList.Add(step);
             }
@@ -135,62 +128,13 @@ namespace Molten.Graphics
             return data;
         }
 
-        protected override void OnPresent(Timing time)
-        {            
+        protected override void OnPrePresent(Timing time)
+        {
             _device.DisposeMarkedObjects();
+        }
 
-            if(_requestedMultiSampleLevel != MsaaLevel)
-            {
-                // TODO re-create all internal surfaces/textures to match the new sample level.
-                // TODO adjust rasterizer mode accordingly (multisample enabled/disabled).
-                MsaaLevel = _requestedMultiSampleLevel;
-                _surfaceResizeRequired = true;
-            }
-
-            ProcessPendingTasks();
-
-            // Perform preliminary checks on active scene data.
-            // Also ensure the backbuffer is always big enough for the largest scene render surface.
-            foreach (SceneRenderData data in Scenes)
-            {
-                data.Skip = false;
-
-                if (!data.IsVisible || data.Camera == null)
-                {
-                    data.Skip = true;
-                    continue;
-                }
-
-                // Check for valid final surface.
-                data.FinalSurface = data.Camera.OutputSurface ?? _device.DefaultSurface;
-                if (data.FinalSurface == null)
-                {
-                    data.Skip = true;
-                    continue;
-                }
-
-                if (data.FinalSurface.Width > _biggestWidth)
-                {
-                    _surfaceResizeRequired = true;
-                    _biggestWidth = data.FinalSurface.Width;
-                }
-
-                if (data.FinalSurface.Height > _biggestHeight)
-                {
-                    _surfaceResizeRequired = true;
-                    _biggestHeight = data.FinalSurface.Height;
-                }
-            }
-
-            // Update surfaces if dirty. This may involve resizing or changing their format.
-            if (_surfaceResizeRequired)
-            {
-                for (int i = 0; i < _stepList.Count; i++)
-                    _stepList[i].UpdateSurfaces(this, _biggestWidth, _biggestHeight);
-
-                _surfaceResizeRequired = false;
-            }
-
+        protected override void OnPresent(Timing time)
+        {          
             /* CAMERA REFACTOR
              *  - The renderer will iterate over cameras instead of scenes
              *  - Each camera will store a 32-bit layer mask (32 layers, one per bit)
@@ -234,25 +178,19 @@ namespace Molten.Graphics
                 _device.Profiler.EndCapture(time);
                 _device.Profiler = null;
             }
+        }
 
-            // Present all output surfaces
-            _outputSurfaces.ForInterlock(0, 1, (index, surface) =>
-            {                
-                surface.Present();
-                return false;
-            });
-
-            // Clear references to final surfaces. 
-            // This is done separately so that any debug overlays rendered by scenes can still access final surface information during their render call.
-            for(int i = 0; i < Scenes.Count; i++)
-            {
-                scene = Scenes[i] as SceneRenderData<Renderable>;
-                scene.FinalSurface = null;
-            }
-
+        protected override void OnPostPresent(Timing time)
+        {
             // Clear the list of used surfaces, ready for the next frame.
             _clearedSurfaces.Clear();
             Profiler.AddData(_device.Profiler.CurrentFrame);
+        }
+
+        protected override void OnRebuildSurfaces(int requiredWidth, int requiredHeight)
+        {
+            for (int i = 0; i < _stepList.Count; i++)
+                _stepList[i].UpdateSurfaces(this, requiredWidth, requiredHeight);
         }
 
         internal void RenderScene(SceneRenderData<Renderable> data, GraphicsPipe pipe, Timing time)
@@ -316,17 +254,12 @@ namespace Molten.Graphics
             return false;
         }
 
-        private void MSAA_OnChanged(AntiAliasMode oldValue, AntiAliasMode newValue)
-        {
-            _requestedMultiSampleLevel = newValue;
-        }
-
         public override void Dispose()
         {
             for (int i = 0; i < _stepList.Count; i++)
                 _stepList[i].Dispose();
 
-            _outputSurfaces.ForInterlock(0, 1, (index, surface) =>
+            OutputSurfaces.ForInterlock(0, 1, (index, surface) =>
             {
                 surface.Dispose();
                 return false;
@@ -363,8 +296,6 @@ namespace Molten.Graphics
         /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.
         /// </summary>
         public override IResourceManager Resources => _resourceManager;
-
-        public override ThreadedList<ISwapChainSurface> OutputSurfaces => _outputSurfaces;
 
         public override IRenderSurface DefaultSurface
         {

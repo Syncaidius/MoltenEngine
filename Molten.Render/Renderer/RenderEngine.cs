@@ -14,11 +14,26 @@ namespace Molten.Graphics
     {
         public static readonly Matrix4F DefaultView3D = Matrix4F.LookAtLH(new Vector3F(0, 0, -5), new Vector3F(0, 0, 0), Vector3F.UnitY);
 
+        bool _surfaceResizeRequired;
+        AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
+        internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
+
         public abstract void InitializeAdapter(GraphicsSettings settings);
 
-        public abstract void Initialize(GraphicsSettings settings);
+        public void Initialize(GraphicsSettings settings)
+        {
+            MsaaLevel = _requestedMultiSampleLevel = MsaaLevel;
+            settings.MSAA.OnChanged += MSAA_OnChanged;
 
-        protected internal List<SceneRenderData> Scenes = new List<SceneRenderData>();
+            OnInitialize(settings);
+        }
+
+        protected abstract void OnInitialize(GraphicsSettings settings);
+
+        private void MSAA_OnChanged(AntiAliasMode oldValue, AntiAliasMode newValue)
+        {
+            _requestedMultiSampleLevel = newValue;
+        }
 
         public SceneRenderData CreateRenderData()
         {
@@ -71,22 +86,91 @@ namespace Molten.Graphics
             Tasks.Enqueue(task);
         }
 
-        protected void ProcessPendingTasks()
+        public void Present(Timing time)
         {
+            Profiler.StartCapture();
+            OnPrePresent(time);
+
+            if (_requestedMultiSampleLevel != MsaaLevel)
+            {
+                // TODO re-create all internal surfaces/textures to match the new sample level.
+                // TODO adjust rasterizer mode accordingly (multisample enabled/disabled).
+                MsaaLevel = _requestedMultiSampleLevel;
+                _surfaceResizeRequired = true;
+            }
+
             // Perform all queued tasks before proceeding
             RendererTask task = null;
             while (Tasks.TryDequeue(out task))
                 task.Process(this);
-        }
 
-        public void Present(Timing time)
-        {
-            Profiler.StartCapture();
+            // Perform preliminary checks on active scene data.
+            // Also ensure the backbuffer is always big enough for the largest scene render surface.
+            foreach (SceneRenderData data in Scenes)
+            {
+                data.Skip = false;
+
+                if (!data.IsVisible || data.Camera == null)
+                {
+                    data.Skip = true;
+                    continue;
+                }
+
+                // Check for valid final surface.
+                data.FinalSurface = data.Camera.OutputSurface ?? DefaultSurface;
+                if (data.FinalSurface == null)
+                {
+                    data.Skip = true;
+                    continue;
+                }
+
+                if (data.FinalSurface.Width > BiggestWidth)
+                {
+                    _surfaceResizeRequired = true;
+                    BiggestWidth = data.FinalSurface.Width;
+                }
+
+                if (data.FinalSurface.Height > BiggestHeight)
+                {
+                    _surfaceResizeRequired = true;
+                    BiggestHeight = data.FinalSurface.Height;
+                }
+            }
+
+            // Update surfaces if dirty. This may involve resizing or changing their format.
+            if (_surfaceResizeRequired)
+            {
+                OnRebuildSurfaces(BiggestWidth, BiggestHeight);
+                _surfaceResizeRequired = false;
+            }
+
             OnPresent(time);
+
+            // Present all output surfaces
+            OutputSurfaces.ForInterlock(0, 1, (index, surface) =>
+            {
+                surface.Present();
+                return false;
+            });
+
+            // Clear references to final surfaces. 
+            // This is done separately so that any debug overlays rendered by scenes can still access final surface information during their render call.
+            for (int i = 0; i < Scenes.Count; i++)
+                Scenes[i].FinalSurface = null;
+
             Profiler.EndCapture(time);
+            OnPostPresent(time);
         }
 
+        protected abstract void OnRebuildSurfaces(int requiredWidth, int requiredHeight);
+        protected abstract void OnPrePresent(Timing time);
         protected abstract void OnPresent(Timing time);
+
+        /// <summary>
+        /// Occurs after render presentation is completed and profiler timing has been finalized for the current frame. Useful if you need to do some per-frame cleanup/resetting.
+        /// </summary>
+        /// <param name="time"></param>
+        protected abstract void OnPostPresent(Timing time);
 
         public abstract void Dispose();
 
@@ -115,8 +199,13 @@ namespace Molten.Graphics
         /// </summary>
         public abstract string Name { get; }
 
-        public abstract ThreadedList<ISwapChainSurface> OutputSurfaces { get; }
+        public ThreadedList<ISwapChainSurface> OutputSurfaces { get; } = new ThreadedList<ISwapChainSurface>();
+        protected internal List<SceneRenderData> Scenes { get; }  = new List<SceneRenderData>();
 
         private ThreadedQueue<RendererTask> Tasks { get; } = new ThreadedQueue<RendererTask>();
+
+        protected int BiggestWidth { get; private set; } = 1;
+
+        protected int BiggestHeight { get; private set; } = 1;
     }
 }
