@@ -24,7 +24,7 @@ namespace Molten.Graphics
         public RenderEngine()
         {
             Log = Logger.Get();
-            Log.AddOutput(new LogFileWriter($"renderer_{Name.Replace(' ', '_')}{0}.txt"));
+            Log.AddOutput(new LogFileWriter($"renderer_{Name.Replace(' ', '_')}" + "_{0}.txt"));
         }
 
         public void InitializeAdapter(GraphicsSettings settings)
