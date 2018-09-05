@@ -15,19 +15,7 @@ namespace Molten.Graphics
         Logger _log;
         DisplayManagerGL _displayManager;
 
-        public RendererOpenGL()
-        {
-            _log = Logger.Get();
-            _log.AddOutput(new LogFileWriter("renderer_opengl{0}.txt"));
-        }
-
-        protected override void OnInitialize(GraphicsSettings settings)
-        {
-            _profiler = new RenderProfiler();
-            _outputSurfaces = new ThreadedList<ISwapChainSurface>();
-        }
-
-        public override void InitializeAdapter(GraphicsSettings settings)
+        protected override void OnInitializeAdapter(GraphicsSettings settings)
         {
             NativeWindow dummyWindow = new NativeWindow();
             _displayManager = new DisplayManagerGL();
@@ -36,17 +24,15 @@ namespace Molten.Graphics
             dummyWindow.Dispose();
         }
 
-        public override void Dispose()
+        protected override void OnInitialize(GraphicsSettings settings)
         {
-            _outputSurfaces.ForInterlock(0, 1, (index, surface) =>
-            {
-                surface.Dispose();
-                return false;
-            });
+            _profiler = new RenderProfiler();
+            _outputSurfaces = new ThreadedList<ISwapChainSurface>();
+        }
 
+        protected override void OnDispose()
+        {
             _displayManager.Dispose();
-            _log?.Dispose();
-
         }
 
         protected override SceneRenderData OnCreateRenderData()

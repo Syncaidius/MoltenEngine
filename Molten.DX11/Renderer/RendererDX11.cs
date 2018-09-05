@@ -18,7 +18,6 @@ namespace Molten.Graphics
         ResourceManager _resourceManager;
         ComputeManager _compute;
         GraphicsDeviceDX11 _device;
-        Logger _log;
 
         HlslCompiler _shaderCompiler;
 
@@ -41,8 +40,6 @@ namespace Molten.Graphics
 
         public RendererDX11()
         {
-            _log = Logger.Get();
-            _log.AddOutput(new LogFileWriter("renderer_dx11{0}.txt"));
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
             _chain = new RenderChain(this);
@@ -58,19 +55,18 @@ namespace Molten.Graphics
             DebugOverlayPages.Add(new LightingOverlay());
         }
 
-        public override void InitializeAdapter(GraphicsSettings settings)
+        protected override void OnInitializeAdapter(GraphicsSettings settings)
         {
             _displayManager = new DisplayManagerDX11();
-            _displayManager.Initialize(_log, settings);
+            _displayManager.Initialize(Log, settings);
         }
 
         protected override void OnInitialize(GraphicsSettings settings)
         {
-            settings.Log(_log, "Graphics");
-            _device = new GraphicsDeviceDX11(_log, settings, Profiler, _displayManager, settings.EnableDebugLayer);
+            _device = new GraphicsDeviceDX11(Log, settings, Profiler, _displayManager, settings.EnableDebugLayer);
             _resourceManager = new ResourceManager(this);
             _compute = new ComputeManager(this.Device);
-            _shaderCompiler = new HlslCompiler(this, _log);
+            _shaderCompiler = new HlslCompiler(this, Log);
             _clearedSurfaces = new HashSet<TextureAsset2D>();
 
             int maxBufferSize = (int)ByteMath.FromMegabytes(3.5);
@@ -254,16 +250,10 @@ namespace Molten.Graphics
             return false;
         }
 
-        public override void Dispose()
+        protected override void OnDispose()
         {
             for (int i = 0; i < _stepList.Count; i++)
                 _stepList[i].Dispose();
-
-            OutputSurfaces.ForInterlock(0, 1, (index, surface) =>
-            {
-                surface.Dispose();
-                return false;
-            });
 
             _resourceManager.Dispose();
             _displayManager?.Dispose();
@@ -271,8 +261,7 @@ namespace Molten.Graphics
 
             StaticVertexBuffer.Dispose();
             DynamicVertexBuffer.Dispose();
-            _device?.Dispose();
-            _log.Dispose();
+            _device?.Dispose();            
         }
 
         /// <summary>

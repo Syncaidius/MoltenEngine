@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>
-    /// A base class that custom renderer implementations must inherit. Provides basic functionality for interacting with the rest of the engine.
+    /// A base class that custom renderer implementations must inherit in order to be compatible with Molten engine, as it provides basic functionality for interacting with the rest of the engine.
     /// </summary>
     public abstract class RenderEngine : IDisposable
     {
@@ -18,16 +18,39 @@ namespace Molten.Graphics
         AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
         internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
 
-        public abstract void InitializeAdapter(GraphicsSettings settings);
+        /// <summary>
+        /// Creates a new instance of a <see cref="RenderEngine"/> sub-type.
+        /// </summary>
+        public RenderEngine()
+        {
+            Log = Logger.Get();
+            Log.AddOutput(new LogFileWriter($"renderer_{Name.Replace(' ', '_')}{0}.txt"));
+        }
+
+        public void InitializeAdapter(GraphicsSettings settings)
+        {
+            OnInitializeAdapter(settings);
+        }
 
         public void Initialize(GraphicsSettings settings)
         {
+            settings.Log(Log, "Graphics");
             MsaaLevel = _requestedMultiSampleLevel = MsaaLevel;
             settings.MSAA.OnChanged += MSAA_OnChanged;
 
             OnInitialize(settings);
         }
 
+        /// <summary>
+        /// Occurs when a graphics adapter needs to be acquired, before the renderer is initialized.
+        /// </summary>
+        /// <param name="settings"></param>
+        protected abstract void OnInitializeAdapter(GraphicsSettings settings);
+
+        /// <summary>
+        /// Occurs when the renderer is being initialized.
+        /// </summary>
+        /// <param name="settings"></param>
         protected abstract void OnInitialize(GraphicsSettings settings);
 
         private void MSAA_OnChanged(AntiAliasMode oldValue, AntiAliasMode newValue)
@@ -172,7 +195,22 @@ namespace Molten.Graphics
         /// <param name="time"></param>
         protected abstract void OnPostPresent(Timing time);
 
-        public abstract void Dispose();
+        public void Dispose()
+        {
+            OutputSurfaces.ForInterlock(0, 1, (index, surface) =>
+            {
+                surface.Dispose();
+                return false;
+            });
+
+            OnDispose();
+            Log.Dispose();
+        }
+
+        /// <summary>
+        /// Occurs when the current <see cref="RenderEngine"/> instance/implementation is being disposed.
+        /// </summary>
+        protected abstract void OnDispose();
 
         /// <summary>
         /// Gets profiling data attached to the renderer.
@@ -207,5 +245,7 @@ namespace Molten.Graphics
         protected int BiggestWidth { get; private set; } = 1;
 
         protected int BiggestHeight { get; private set; } = 1;
+
+        protected internal Logger Log { get; }
     }
 }
