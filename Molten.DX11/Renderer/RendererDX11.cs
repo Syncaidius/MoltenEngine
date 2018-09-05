@@ -12,20 +12,13 @@ namespace Molten.Graphics
 {
     public class RendererDX11 : RenderEngine
     {
-
-
         DisplayManagerDX11 _displayManager;
         ResourceManager _resourceManager;
         ComputeManager _compute;
-        GraphicsDeviceDX11 _device;
-
-        HlslCompiler _shaderCompiler;
-
         HashSet<TextureAsset2D> _clearedSurfaces;
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
         RenderChain _chain;
-
 
         internal SpriteBatchDX11 SpriteBatcher;
 
@@ -63,17 +56,17 @@ namespace Molten.Graphics
 
         protected override void OnInitialize(GraphicsSettings settings)
         {
-            _device = new GraphicsDeviceDX11(Log, settings, Profiler, _displayManager, settings.EnableDebugLayer);
+            Device = new GraphicsDeviceDX11(Log, settings, Profiler, _displayManager, settings.EnableDebugLayer);
             _resourceManager = new ResourceManager(this);
             _compute = new ComputeManager(this.Device);
-            _shaderCompiler = new HlslCompiler(this, Log);
+            ShaderCompiler = new HlslCompiler(this, Log);
             _clearedSurfaces = new HashSet<TextureAsset2D>();
 
             int maxBufferSize = (int)ByteMath.FromMegabytes(3.5);
-            StaticVertexBuffer = new GraphicsBuffer(_device, BufferMode.Default, BindFlags.VertexBuffer | BindFlags.IndexBuffer, maxBufferSize);
-            DynamicVertexBuffer = new GraphicsBuffer(_device, BufferMode.DynamicRing, BindFlags.VertexBuffer | BindFlags.IndexBuffer, maxBufferSize);
+            StaticVertexBuffer = new GraphicsBuffer(Device, BufferMode.Default, BindFlags.VertexBuffer | BindFlags.IndexBuffer, maxBufferSize);
+            DynamicVertexBuffer = new GraphicsBuffer(Device, BufferMode.DynamicRing, BindFlags.VertexBuffer | BindFlags.IndexBuffer, maxBufferSize);
 
-            StagingBuffer = new StagingBuffer(_device, StagingBufferFlags.Write, maxBufferSize);
+            StagingBuffer = new StagingBuffer(Device, StagingBufferFlags.Write, maxBufferSize);
             SpriteBatcher = new SpriteBatchDX11(this, 3000);
 
             LoadDefaultShaders();
@@ -91,7 +84,7 @@ namespace Molten.Graphics
 
             if (!string.IsNullOrWhiteSpace(source))
             {
-                ShaderCompileResult result = _shaderCompiler.Compile(source, namepace);
+                ShaderCompileResult result = ShaderCompiler.Compile(source, namepace);
                 StandardMeshMaterial = result["material", "gbuffer"] as Material;
                 StandardMeshMaterial_NoNormalMap = result["material", "gbuffer-sans-nmap"] as Material;
             }
@@ -99,7 +92,7 @@ namespace Molten.Graphics
 
         public void DispatchCompute(IComputeTask task, int x, int y, int z)
         {
-            _device.Dispatch(task as ComputeTask, x, y, z);
+            Device.Dispatch(task as ComputeTask, x, y, z);
         }
 
         internal T GetRenderStep<T>() where T : RenderStepBase, new()
@@ -126,7 +119,7 @@ namespace Molten.Graphics
 
         protected override void OnPrePresent(Timing time)
         {
-            _device.DisposeMarkedObjects();
+            Device.DisposeMarkedObjects();
         }
 
         protected override void OnPresent(Timing time)
@@ -166,13 +159,13 @@ namespace Molten.Graphics
                 if (scene.Skip)
                     continue;
 
-                _device.Profiler = scene.Profiler;
-                _device.Profiler.StartCapture();
-                RenderScene(scene, _device, time);
+                Device.Profiler = scene.Profiler;
+                Device.Profiler.StartCapture();
+                RenderScene(scene, Device, time);
 
                 Profiler.AddData(scene.Profiler.CurrentFrame);
-                _device.Profiler.EndCapture(time);
-                _device.Profiler = null;
+                Device.Profiler.EndCapture(time);
+                Device.Profiler = null;
             }
         }
 
@@ -180,7 +173,7 @@ namespace Molten.Graphics
         {
             // Clear the list of used surfaces, ready for the next frame.
             _clearedSurfaces.Clear();
-            Profiler.AddData(_device.Profiler.CurrentFrame);
+            Profiler.AddData(Device.Profiler.CurrentFrame);
         }
 
         protected override void OnRebuildSurfaces(int requiredWidth, int requiredHeight)
@@ -238,11 +231,23 @@ namespace Molten.Graphics
                 sceneData.Renderables2D[i].Render(SpriteBatcher);
         }
 
-        internal bool ClearIfFirstUse(TextureAsset2D surface, Action callback)
+        internal bool ClearIfFirstUse(GraphicsPipe pipe, RenderSurfaceBase surface, Color color)
         {
-            if(!_clearedSurfaces.Contains(surface))
+            if (!_clearedSurfaces.Contains(surface))
             {
-                callback();
+                surface.Clear(pipe, color);
+                _clearedSurfaces.Add(surface);
+                return true;
+            }
+
+            return false;
+        }
+
+        internal bool ClearIfFirstUse(GraphicsPipe pipe, DepthSurface surface, DepthStencilClearFlags flags = DepthStencilClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
+        {
+            if (!_clearedSurfaces.Contains(surface))
+            {
+                surface.Clear(pipe, flags, depth, stencil);
                 _clearedSurfaces.Add(surface);
                 return true;
             }
@@ -261,7 +266,7 @@ namespace Molten.Graphics
 
             StaticVertexBuffer.Dispose();
             DynamicVertexBuffer.Dispose();
-            _device?.Dispose();            
+            Device?.Dispose();            
         }
 
         /// <summary>
@@ -274,11 +279,11 @@ namespace Molten.Graphics
         /// </summary>
         public override IDisplayManager DisplayManager => _displayManager;
 
-        internal GraphicsDeviceDX11 Device => _device;
+        internal GraphicsDeviceDX11 Device { get; private set; }
 
         public override IComputeManager Compute => _compute;
 
-        internal HlslCompiler ShaderCompiler => _shaderCompiler;
+        internal HlslCompiler ShaderCompiler { get; private set; }
 
         /// <summary>
         /// Gets the resource manager bound to the renderer.
@@ -288,8 +293,8 @@ namespace Molten.Graphics
 
         public override IRenderSurface DefaultSurface
         {
-            get => _device.DefaultSurface;
-            set => _device.DefaultSurface = value as RenderSurfaceBase;
+            get => Device.DefaultSurface;
+            set => Device.DefaultSurface = value as RenderSurfaceBase;
         }
     }
 }

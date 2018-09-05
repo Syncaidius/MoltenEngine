@@ -49,7 +49,7 @@ namespace Molten.Graphics
             if (rs != null)
             {
                 if (!scene.HasFlag(SceneRenderFlags.DoNotClear))
-                    renderer.ClearIfFirstUse(rs, () => rs.Clear(scene.BackgroundColor));
+                    renderer.ClearIfFirstUse(device, rs, scene.BackgroundColor);
 
                 device.SetRenderSurfaces(null);
                 device.SetRenderSurface(rs, 0);

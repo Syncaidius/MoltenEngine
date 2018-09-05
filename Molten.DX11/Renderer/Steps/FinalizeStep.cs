@@ -37,7 +37,7 @@ namespace Molten.Graphics
                     GraphicsDeviceDX11 device = renderer.Device;
                     RenderSurfaceBase finalSurface = scene.FinalSurface as RenderSurfaceBase;
                     if (!scene.HasFlag(SceneRenderFlags.DoNotClear))
-                        renderer.ClearIfFirstUse(finalSurface, () => scene.FinalSurface.Clear(scene.BackgroundColor));
+                        renderer.ClearIfFirstUse(device, finalSurface, scene.BackgroundColor);
 
                     device.SetRenderSurface(finalSurface, 0);
                     device.SetDepthSurface(null, GraphicsDepthMode.Disabled);

@@ -56,7 +56,7 @@ namespace Molten.Graphics
                     case StartStep start:
 
                         if (!scene.HasFlag(SceneRenderFlags.DoNotClear))
-                            renderer.ClearIfFirstUse(rs, () => rs.Clear(scene.BackgroundColor));
+                            renderer.ClearIfFirstUse(device, rs, scene.BackgroundColor);
 
                         device.SetRenderSurface(rs, 0);
                         device.SetDepthSurface(start.Depth, GraphicsDepthMode.Enabled);

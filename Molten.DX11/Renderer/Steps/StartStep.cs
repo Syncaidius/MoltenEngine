@@ -73,9 +73,9 @@ namespace Molten.Graphics
             // Clear the depth surface if it hasn't already been cleared
             scene.InvViewProjection = Matrix4F.Invert(scene.ViewProjection);
 
-            bool newSurface = renderer.ClearIfFirstUse(Scene, () => Scene.Clear(device, scene.BackgroundColor));
-            renderer.ClearIfFirstUse(Normals, () => Normals.Clear(device, Color.White * 0.5f));
-            renderer.ClearIfFirstUse(Emissive, () => Emissive.Clear(device, Color.Black));
+            bool newSurface = renderer.ClearIfFirstUse(device, Scene, scene.BackgroundColor);
+            renderer.ClearIfFirstUse(device, Normals, Color.White * 0.5f);
+            renderer.ClearIfFirstUse(device, Emissive, Color.Black);
 
             // Always clear the depth surface at the start of each scene unless otherwise instructed.
             // Will also be cleared if we've just switched to a previously un-rendered surface during this frame.

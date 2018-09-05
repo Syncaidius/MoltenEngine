@@ -185,14 +185,29 @@ namespace Molten.Graphics
             OnPostPresent(time);
         }
 
+        /// <summary>
+        /// Occurs when the render engine detects changes which usually require render surfaces to be rebuilt, such as the game window being resized, or certain graphics settings being changed.
+        /// </summary>
+        /// <param name="requiredWidth">The new width required by the render engine.</param>
+        /// <param name="requiredHeight">The new height required by the render engine.</param>
         protected abstract void OnRebuildSurfaces(int requiredWidth, int requiredHeight);
+        
+        /// <summary>
+        /// Occurs before the render engine begins rendering all of the active scenes to be output to the user.
+        /// </summary>
+        /// <param name="time">A timing instance.</param>
         protected abstract void OnPrePresent(Timing time);
+
+        /// <summary>
+        /// Occurs when the render engine is supposed to produces a result to be displayed to the user. This usually involves rendering one or more scenes to various render surfaces.
+        /// </summary>
+        /// <param name="time">A timing instance.</param>
         protected abstract void OnPresent(Timing time);
 
         /// <summary>
         /// Occurs after render presentation is completed and profiler timing has been finalized for the current frame. Useful if you need to do some per-frame cleanup/resetting.
         /// </summary>
-        /// <param name="time"></param>
+        /// <param name="time">A timing instance.</param>
         protected abstract void OnPostPresent(Timing time);
 
         public void Dispose()
@@ -238,6 +253,7 @@ namespace Molten.Graphics
         public abstract string Name { get; }
 
         public ThreadedList<ISwapChainSurface> OutputSurfaces { get; } = new ThreadedList<ISwapChainSurface>();
+
         protected internal List<SceneRenderData> Scenes { get; }  = new List<SceneRenderData>();
 
         private ThreadedQueue<RendererTask> Tasks { get; } = new ThreadedQueue<RendererTask>();
