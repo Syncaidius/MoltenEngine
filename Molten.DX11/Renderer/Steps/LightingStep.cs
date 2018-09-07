@@ -63,7 +63,7 @@ namespace Molten.Graphics
             _lightDataBuffer.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
@@ -71,11 +71,28 @@ namespace Molten.Graphics
             device.ResetRenderSurfaces(RenderSurfaceResetMode.NullSurface);
             device.SetRenderSurface(Lighting, 0);
             device.SetDepthSurface(_startStep.Depth, GraphicsDepthMode.ReadOnly);
-            RenderPointLights(device, scene);
+            RenderPointLights(device, camera, scene);
         }
 
-        private void RenderPointLights(GraphicsPipe pipe, SceneRenderData<Renderable> scene)
+        private void RenderPointLights(GraphicsPipe pipe, RenderCamera camera, SceneRenderData<Renderable> scene)
         {
+            // Calculate camera-specific information for each point light
+            LightInstance instance;
+            LightData ld;
+            for(int i = 0; i < scene.PointLights.ElementCount; i++)
+            {
+                instance = scene.PointLights.Instances[i];
+                ld = scene.PointLights.Data[instance.ID];
+
+                float distFromCam = Vector3F.Distance(camera.Position, scene.PointLights.Data[i].Position);
+                float distPercent = Math.Min(1.0f, distFromCam / camera.MaxDrawDistance);
+                ld.Transform = Matrix4F.Scaling(instance.Range) * Matrix4F.CreateTranslation(ld.Position) * camera.ViewProjection;
+                ld.Transform.Transpose();
+
+                ld.TessFactor = GraphicsSettings.MAX_LIGHT_TESS_FACTOR - (GraphicsSettings.LIGHT_TESS_FACTOR_RANGE * distPercent);
+                scene.PointLights.Data[i] = ld;
+            }
+
             _lightSegment.SetData(pipe, scene.PointLights.Data);
 
             // Set data buffer on domain and pixel shaders
@@ -85,11 +102,11 @@ namespace Molten.Graphics
             _matPoint.Light.MapDepth.Value = _startStep.Depth;
 
             _matPoint.Light.InvViewProjection.Value = scene.InvViewProjection;
-            _matPoint.Light.CameraPosition.Value = scene.Camera.Position;
+            _matPoint.Light.CameraPosition.Value = camera.Position;
             _matPoint.Scene.MaxSurfaceUV.Value = new Vector2F()
             {
-                X = (float)scene.FinalSurface.Width / _startStep.Scene.Width,
-                Y = (float)scene.FinalSurface.Height / _startStep.Scene.Height,
+                X = (float)camera.FinalSurface.Width / _startStep.Scene.Width,
+                Y = (float)camera.FinalSurface.Height / _startStep.Scene.Height,
             };
 
             //set correct buffers and shaders

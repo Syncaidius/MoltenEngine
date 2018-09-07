@@ -24,30 +24,17 @@ namespace Molten.Graphics
         public override void Dispose()
         { }
 
-        internal override void Render(RendererDX11 renderer, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
         {
             RenderSurfaceBase rs = null;
             GraphicsDeviceDX11 device = renderer.Device;
 
-            if (scene.Camera != null)
-            {
-                rs = scene.Camera.OutputSurface as RenderSurfaceBase;
-                rs = rs ?? device.DefaultSurface;
+            rs = camera.OutputSurface as RenderSurfaceBase;
+            rs = rs ?? device.DefaultSurface;
 
-                scene.Projection = scene.Camera.Projection;
-                scene.View = scene.Camera.View;
-                scene.ViewProjection = scene.Camera.ViewProjection;
-            }
-            else
-            {
-                rs = device.DefaultSurface;
-                if (rs == null)
-                    return;
-
-                scene.View = RendererDX11.DefaultView3D;
-                scene.Projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, rs.Width / (float)rs.Height, 0.1f, 100.0f);
-                scene.ViewProjection = Matrix4F.Multiply(scene.View, scene.Projection);
-            }
+            scene.Projection = camera.Projection;
+            scene.View = camera.View;
+            scene.ViewProjection = camera.ViewProjection;
 
             if (rs != null)
             {

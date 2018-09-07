@@ -9,8 +9,8 @@ namespace Molten
 {
     public class CapsuleLightComponent : SceneComponent
     {
+        LightInstance _instance;
         LightData _data;
-        int _lightID = -1;
         bool _visible = false;
         float _range;
         Color _color;
@@ -38,23 +38,23 @@ namespace Molten
 
         private void AddToScene(SceneObject obj)
         {
-            if (_lightID > -1)
+            if (_instance != null)
                 return;
 
             // Add mesh to render data if possible.
             if (_visible && obj.Scene != null)
-                _lightID = obj.Scene.RenderData.CapsuleLights.Add(_data);
+                _instance = obj.Scene.RenderData.CapsuleLights.New(_data);
         }
 
         private void RemoveFromScene(SceneObject obj)
         {
-            if (_lightID == -1)
+            if (_instance == null)
                 return;
 
             if (obj.Scene != null || _visible)
             {
-                obj.Scene.RenderData.PointLights.Remove(_lightID);
-                _lightID = -1;
+                obj.Scene.RenderData.PointLights.Remove(_instance);
+                _instance = null;
             }
         }
 
@@ -65,7 +65,7 @@ namespace Molten
             RemoveFromScene(obj);
 
             // Reset State
-            _lightID = -1;
+            _instance = null;
             _visible = true;
 
             base.OnDestroy(obj);
@@ -83,16 +83,14 @@ namespace Molten
 
         public override void OnUpdate(Timing time)
         {
-            if (_lightID > -1)
+            if (_instance != null)
             {
-                ICamera cam = Object.Scene.OutputCamera;
-                _data.Position = Object.Transform.GlobalPosition;
-                float distFromCam = Vector3F.Distance(cam.View.Translation, _data.Position);
-                float distPercent = Math.Min(1.0f, distFromCam / cam.MaximumDrawDistance);
-                _data.TessFactor = Math.Max(GraphicsSettings.MIN_LIGHT_TESS_FACTOR, GraphicsSettings.MAX_LIGHT_TESS_FACTOR - (GraphicsSettings.MAX_LIGHT_TESS_FACTOR * distPercent));
-                _data.Transform = Matrix4F.Scaling(_range) * Matrix4F.CreateTranslation(_data.Position) * cam.ViewProjection;
-                _data.Transform.Transpose();
-                Object.Scene.RenderData.CapsuleLights.Data[_lightID] = _data;
+                Object.Scene.RenderData.CapsuleLights.Data[_instance.ID].Position = Object.Transform.GlobalPosition;
+                //float distFromCam = Vector3F.Distance(cam.View.Translation, _data.Position);
+                //float distPercent = Math.Min(1.0f, distFromCam / cam.MaximumDrawDistance);
+                //_data.TessFactor = Math.Max(GraphicsSettings.MIN_LIGHT_TESS_FACTOR, GraphicsSettings.MAX_LIGHT_TESS_FACTOR - (GraphicsSettings.MAX_LIGHT_TESS_FACTOR * distPercent));
+                //_data.Transform = Matrix4F.Scaling(_range) * Matrix4F.CreateTranslation(_data.Position) * cam.ViewProjection;
+                //_data.Transform.Transpose();
             }
         }
 

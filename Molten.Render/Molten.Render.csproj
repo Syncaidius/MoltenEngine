@@ -108,7 +108,8 @@
     <Compile Include="Renderer\Tasks\RendererReorderScene.cs" />
     <Compile Include="Renderer\Tasks\RendererTask.cs" />
     <Compile Include="RenderProfiler.cs" />
-    <Compile Include="Scene\Camera2D.cs" />
+    <Compile Include="Scene\Changes\RemoveCamera.cs" />
+    <Compile Include="Scene\Changes\AddCamera.cs" />
     <Compile Include="Scene\Changes\RenderableAdd.cs" />
     <Compile Include="Scene\Changes\RenderableRemove.cs" />
     <Compile Include="Scene\Changes\RenderSceneChange.cs" />
@@ -123,12 +124,12 @@
     <Compile Include="ObjectUpdateFlags.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderFrameSnapshot.cs" />
-    <Compile Include="Scene\ICamera.cs" />
     <Compile Include="Scene\IRenderable3D.cs" />
     <Compile Include="Scene\IRenderable2D.cs" />
     <Compile Include="Scene\Lights\LightData.cs" />
     <Compile Include="Scene\Lights\LightList.cs" />
     <Compile Include="Scene\ObjectRenderData.cs" />
+    <Compile Include="Scene\RenderCamera.cs" />
     <Compile Include="Scene\SceneRenderFlags.cs" />
     <Compile Include="Scene\SceneRenderData.cs" />
     <Compile Include="Shaders\ComparisonMode.cs" />

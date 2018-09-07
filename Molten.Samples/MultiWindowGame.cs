@@ -69,10 +69,9 @@ namespace Molten.Samples
             _player = CreateObject();
             _player.Transform.LocalPosition = new Vector3F(0, 0, -20);
             SceneCameraComponent cam = _player.AddComponent<SceneCameraComponent>();
-            cam.MaximumDrawDistance = 300;
+            cam.MaxDrawDistance = 300;
             cam.OutputSurface = surface;
             scene.AddObject(_player);
-            scene.OutputCamera = cam;
             _scenes.Add(scene);
 
             SpawnParentChild(scene, _mesh, Vector3F.Zero);

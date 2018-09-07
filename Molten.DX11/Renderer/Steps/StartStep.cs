@@ -45,29 +45,20 @@ namespace Molten.Graphics
             DisposeSurfaces();
         }
 
-        internal override void Render(RendererDX11 renderer, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
-            if (scene.Camera != null)
+            scene.View = camera.View;
+            if (camera.FinalSurface != camera.OutputSurface)
             {
-                scene.View = scene.Camera.View;
-                if (scene.FinalSurface != scene.Camera.OutputSurface)
-                {
-                    scene.Projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, scene.FinalSurface.Width / (float)scene.FinalSurface.Height, 0.1f, 1000.0f);
-                    scene.ViewProjection = scene.View * scene.Projection;
-                }
-                else
-                {
-                    scene.Projection = scene.Camera.Projection;
-                    scene.ViewProjection = scene.Camera.ViewProjection;
-                }
+                scene.Projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, camera.FinalSurface.Width / (float)camera.FinalSurface.Height, 0.1f, 1000.0f);
+                scene.ViewProjection = scene.View * scene.Projection;
             }
             else
             {
-                scene.View = RendererDX11.DefaultView3D;
-                scene.Projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, scene.FinalSurface.Width / (float)scene.FinalSurface.Height, 0.1f, 1000.0f);
-                scene.ViewProjection = scene.View * scene.Projection;
+                scene.Projection = camera.Projection;
+                scene.ViewProjection = camera.ViewProjection;
             }
 
             // Clear the depth surface if it hasn't already been cleared

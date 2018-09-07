@@ -153,19 +153,24 @@ namespace Molten.Graphics
              */
 
             SceneRenderData<Renderable> scene;
-            for (int i = 0; i < Scenes.Count; i++)
+            foreach(SceneRenderData data in Scenes)
             {
-                scene = Scenes[i] as SceneRenderData<Renderable>;
-                if (scene.Skip)
-                    continue;
+                scene = data as SceneRenderData<Renderable>;
 
                 Device.Profiler = scene.Profiler;
                 Device.Profiler.StartCapture();
-                RenderScene(scene, Device, time);
+                data.PreRenderInvoke(this);
+                foreach (RenderCamera camera in scene.Cameras)
+                {
+                    if (camera.Skip)
+                        continue;                    
 
+                    RenderScene(scene, camera, Device, time);                    
+                    Device.Profiler = null;
+                }
+                data.PostRenderInvoke(this);
                 Profiler.AddData(scene.Profiler.CurrentFrame);
                 Device.Profiler.EndCapture(time);
-                Device.Profiler = null;
             }
         }
 
@@ -182,13 +187,10 @@ namespace Molten.Graphics
                 _stepList[i].UpdateSurfaces(this, requiredWidth, requiredHeight);
         }
 
-        internal void RenderScene(SceneRenderData<Renderable> data, GraphicsPipe pipe, Timing time)
+        internal void RenderScene(SceneRenderData<Renderable> data, RenderCamera camera, GraphicsPipe pipe, Timing time)
         {
-            data.PreRenderInvoke(this);
-            data.ProcessChanges();
             _chain.Build(data);
-            _chain.Render(data, time);
-            data.PostRenderInvoke(this);
+            _chain.Render(data, camera, time);
         }
 
         internal void Render3D(GraphicsPipe pipe, SceneRenderData<Renderable> sceneData)
@@ -204,25 +206,6 @@ namespace Molten.Graphics
                     p.Key.Render(pipe, this, data, sceneData);
                 }
             }
-
-            /* TODO: 
-             *  Procedure:
-             *      1) Calculate:
-             *          a) Capture the current transform matrix of each object in the render tree
-             *          b) Calculate the distance from the scene camera. Store on RenderData
-             *          
-             *      2) Sort objects by distance from camera:
-             *          a) Sort objects into buckets inside RenderTree, front-to-back (reduce overdraw by drawing closest first).
-             *          b) Only re-sort a bucket when objects are added or the camera moves
-             *          c) While sorting, build up separate bucket list of objects with a transparent material sorted back-to-front (for alpha to work)
-             *          
-             *  Extras:
-             *      3) Reduce z-sorting needed in (2) by adding scene-graph culling (quad-tree, octree or BSP) later down the line.
-             *      4) Reduce (3) further by frustum culling the graph-culling results
-             * 
-             *  NOTES:
-                    - when SceneObject.IsVisible is changed, queue an Add or Remove operation on the RenderTree depending on visibility. This will remove it from culling/sorting.
-             */
         }
 
         internal void Render2D(GraphicsPipe pipe, SceneRenderData sceneData)

@@ -24,30 +24,30 @@ namespace Molten.Graphics
 
         }
 
-        internal override void Render(RendererDX11 renderer, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
         {
             switch (link.Chain.First.Step)
             {
                 case StartStep start:
                     Matrix4F spriteProj = Matrix4F.Identity;
-                    Matrix4F spriteView = Matrix4F.OrthoOffCenterLH(0, scene.FinalSurface.Width, -scene.FinalSurface.Height, 0, 0, 1);
+                    Matrix4F spriteView = Matrix4F.OrthoOffCenterLH(0, camera.FinalSurface.Width, -camera.FinalSurface.Height, 0, 0, 1);
                     Matrix4F spriteViewProj = Matrix4F.Multiply(spriteView, spriteProj);
 
-                    Rectangle bounds = new Rectangle(0, 0, scene.FinalSurface.Width, scene.FinalSurface.Height);
+                    Rectangle bounds = new Rectangle(0, 0, camera.FinalSurface.Width, camera.FinalSurface.Height);
                     GraphicsDeviceDX11 device = renderer.Device;
-                    RenderSurfaceBase finalSurface = scene.FinalSurface as RenderSurfaceBase;
+                    RenderSurfaceBase finalSurface = camera.FinalSurface as RenderSurfaceBase;
                     if (!scene.HasFlag(SceneRenderFlags.DoNotClear))
                         renderer.ClearIfFirstUse(device, finalSurface, scene.BackgroundColor);
 
                     device.SetRenderSurface(finalSurface, 0);
                     device.SetDepthSurface(null, GraphicsDepthMode.Disabled);
-                    device.Rasterizer.SetViewports(scene.FinalSurface.Viewport);
+                    device.Rasterizer.SetViewports(camera.FinalSurface.Viewport);
 
-                    renderer.SpriteBatcher.Begin(scene.FinalSurface.Viewport);
+                    renderer.SpriteBatcher.Begin(camera.FinalSurface.Viewport);
                     renderer.SpriteBatcher.Draw(start.Scene, bounds, bounds, Color.White, 0, Vector2F.Zero, null);
 
                     StateConditions conditions = StateConditions.ScissorTest;
-                    conditions |= scene.FinalSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
+                    conditions |= camera.FinalSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
                     renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
                     renderer.SpriteBatcher.End(device, ref spriteViewProj, finalSurface);

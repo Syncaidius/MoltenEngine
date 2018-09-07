@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
         public override void Dispose() { }
 
-        internal override void Render(RendererDX11 renderer, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
@@ -32,21 +32,21 @@ namespace Molten.Graphics
                     device.SetRenderSurface(start.Emissive, 2);
                     device.SetDepthSurface(start.Depth, GraphicsDepthMode.Enabled);
 
-                    SetMaterialCommon(renderer.StandardMeshMaterial, scene, start.Scene);
-                    SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, scene, start.Scene);
+                    SetMaterialCommon(renderer.StandardMeshMaterial, camera, scene, start.Scene);
+                    SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, scene, start.Scene);
                     break;
 
                     // TODO add alternate HDR start step here (which should be used in conjunction HDR textures, HDR RTs and so on).
             }
 
-            device.Rasterizer.SetViewports(scene.FinalSurface.Viewport);
+            device.Rasterizer.SetViewports(camera.FinalSurface.Viewport);
             StateConditions conditions = StateConditions.None; // TODO expand
             device.BeginDraw(conditions);
             renderer.Render3D(device, scene);
             device.EndDraw();
         }
 
-        private void SetMaterialCommon(Material material, SceneRenderData scene, RenderSurface gBufferScene)
+        private void SetMaterialCommon(Material material, RenderCamera camera, SceneRenderData scene, RenderSurface gBufferScene)
         {
             material.Scene.View.Value = scene.View;
             material.Scene.Projection.Value = scene.Projection;
@@ -54,8 +54,8 @@ namespace Molten.Graphics
             material.Scene.ViewProjection.Value = scene.ViewProjection;
             material.Scene.MaxSurfaceUV.Value = new Vector2F()
             {
-                X = (float)scene.FinalSurface.Width / gBufferScene.Width,
-                Y = (float)scene.FinalSurface.Height / gBufferScene.Height,
+                X = (float)camera.FinalSurface.Width / gBufferScene.Width,
+                Y = (float)camera.FinalSurface.Height / gBufferScene.Height,
             };
         }
     }

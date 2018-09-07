@@ -25,7 +25,7 @@ namespace Molten.ContentEditor
             base.OnInitialize(engine);
 
             _uiScene = CreateScene("UI", SceneRenderFlags.Render2D);
-            _uiScene.OutputCamera = new Camera2D();
+            _uiScene.AddCamera(new RenderCamera(RenderCameraPreset.Orthographic));
             Window.OnPostResize += UpdateWindownBounds;
             UI = new UIComponent();
             UpdateWindownBounds(Window);

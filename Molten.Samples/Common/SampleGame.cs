@@ -28,7 +28,9 @@ namespace Molten.Samples
             UIScene = CreateScene("UI", SceneRenderFlags.Render2D);
 
             // Use the same camera for both the sprite and UI scenes.
-            UIScene.OutputCamera = SpriteScene.OutputCamera = new Camera2D();
+            RenderCamera cam2D = new RenderCamera(RenderCameraPreset.Orthographic);
+            UIScene.AddCamera(cam2D);
+            SpriteScene.AddCamera(cam2D);
 
             DebugOverlay = UIScene.DebugOverlay;
             UIScene.AddObject(DebugOverlay);

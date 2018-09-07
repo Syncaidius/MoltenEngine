@@ -139,10 +139,10 @@ namespace Molten.Graphics
             _renderData.Flags = SceneRenderFlags.Render2D | SceneRenderFlags.DoNotClear;
             _renderData.AddObject(new FontContainer(this));
             _renderData.OnPostRender += _renderData_OnPostRender;
-            _renderData.Camera = new Camera2D()
+            _renderData.AddObject(new RenderCamera(RenderCameraPreset.Orthographic)
             {
                 OutputSurface = _rt,
-            };
+            });
 
             // Add placeholder character.
             AddCharacter(PLACEHOLDER_CHAR, false);

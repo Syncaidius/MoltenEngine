@@ -131,32 +131,31 @@ namespace Molten.Graphics
             // Also ensure the backbuffer is always big enough for the largest scene render surface.
             foreach (SceneRenderData data in Scenes)
             {
-                data.Skip = false;
+                data.ProcessChanges();
 
-                if (!data.IsVisible || data.Camera == null)
+                foreach (RenderCamera camera in data.Cameras)
                 {
-                    data.Skip = true;
-                    continue;
-                }
+                    camera.Skip = false;
 
-                // Check for valid final surface.
-                data.FinalSurface = data.Camera.OutputSurface ?? DefaultSurface;
-                if (data.FinalSurface == null)
-                {
-                    data.Skip = true;
-                    continue;
-                }
+                    // Check for valid final surface.
+                    camera.FinalSurface = camera.OutputSurface ?? DefaultSurface;
+                    if (camera.FinalSurface == null)
+                    {
+                        camera.Skip = true;
+                        continue;
+                    }
 
-                if (data.FinalSurface.Width > BiggestWidth)
-                {
-                    _surfaceResizeRequired = true;
-                    BiggestWidth = data.FinalSurface.Width;
-                }
+                    if (camera.FinalSurface.Width > BiggestWidth)
+                    {
+                        _surfaceResizeRequired = true;
+                        BiggestWidth = camera.FinalSurface.Width;
+                    }
 
-                if (data.FinalSurface.Height > BiggestHeight)
-                {
-                    _surfaceResizeRequired = true;
-                    BiggestHeight = data.FinalSurface.Height;
+                    if (camera.FinalSurface.Height > BiggestHeight)
+                    {
+                        _surfaceResizeRequired = true;
+                        BiggestHeight = camera.FinalSurface.Height;
+                    }
                 }
             }
 
@@ -178,11 +177,33 @@ namespace Molten.Graphics
 
             // Clear references to final surfaces. 
             // This is done separately so that any debug overlays rendered by scenes can still access final surface information during their render call.
-            for (int i = 0; i < Scenes.Count; i++)
-                Scenes[i].FinalSurface = null;
+            foreach (SceneRenderData data in Scenes)
+            {
+                foreach (RenderCamera camera in data.Cameras)
+                    camera.FinalSurface = null;
+            }
 
             Profiler.EndCapture(time);
             OnPostPresent(time);
+
+            /* TODO: 
+             *  Procedure:
+             *      1) Calculate:
+             *          a) Capture the current transform matrix of each object in the render tree
+             *          b) Calculate the distance from the scene camera. Store on RenderData
+             *          
+             *      2) Sort objects by distance from camera:
+             *          a) Sort objects into buckets inside RenderTree, front-to-back (reduce overdraw by drawing closest first).
+             *          b) Only re-sort a bucket when objects are added or the camera moves
+             *          c) While sorting, build up separate bucket list of objects with a transparent material sorted back-to-front (for alpha to work)
+             *          
+             *  Extras:
+             *      3) Reduce z-sorting needed in (2) by adding scene-graph culling (quad-tree, octree or BSP) later down the line.
+             *      4) Reduce (3) further by frustum culling the graph-culling results
+             * 
+             *  NOTES:
+                    - when SceneObject.IsVisible is changed, queue an Add or Remove operation on the RenderTree depending on visibility. This will remove it from culling/sorting.
+             */
         }
 
         /// <summary>

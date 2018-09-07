@@ -75,7 +75,6 @@ namespace Molten.Samples
             SceneCameraComponent cam = _player.AddComponent<SceneCameraComponent>();
             cam.OutputSurface = Window;
             _scene.AddObject(_player);
-            _scene.OutputCamera = cam;
         }
 
         private SceneObject SpawnTestCube(IMesh mesh)

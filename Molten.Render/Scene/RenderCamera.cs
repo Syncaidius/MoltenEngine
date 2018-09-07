@@ -1,0 +1,208 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Molten.Graphics
+{
+    public delegate void RenderCameraProjectionFunc(IRenderSurface surface, float nearClip, float farClip, float fov, ref Matrix4F projection);
+
+    public class RenderCamera
+    {
+        static Dictionary<RenderCameraPreset, RenderCameraProjectionFunc> _projectionFuncs;
+        static Dictionary<RenderCameraPreset, float> _nearClipPreset;
+
+        Matrix4F _view;
+        Matrix4F _projection;
+        Matrix4F _viewProjection;
+        Matrix4F _transform;
+        IRenderSurface _surface;
+        float _nearClip = 0.1f;
+        float _farClip = 1000f;
+        float _fov;
+        RenderCameraProjectionFunc _projFunc;
+
+        static RenderCamera()
+        {
+            _projectionFuncs = new Dictionary<RenderCameraPreset, RenderCameraProjectionFunc>();
+            _projectionFuncs[RenderCameraPreset.Perspective] = CalcPerspectiveProjection;
+            _projectionFuncs[RenderCameraPreset.Orthographic] = CalcOrthographicProjection;
+
+            _nearClipPreset = new Dictionary<RenderCameraPreset, float>();
+            _nearClipPreset[RenderCameraPreset.Perspective] = 0.1f;
+            _nearClipPreset[RenderCameraPreset.Orthographic] = 0f;
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="RenderCamera"/> with the specified projection calculation preset.
+        /// </summary>
+        /// <param name="preset">The projection calculation preset to be used upon instantiation.</param>
+        public RenderCamera(RenderCameraPreset preset) : this(_projectionFuncs[preset], _nearClipPreset[preset], 1000f) { }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="RenderCamera"/> with the specified projection calculation function, which determines how the camera's projection matrix is calculated.
+        /// </summary>
+        /// <param name="projectionFunc"></param>
+        public RenderCamera(RenderCameraProjectionFunc projectionFunc, float nearClip, float farClip)
+        {
+            View = Matrix4F.Identity;
+            _nearClip = nearClip;
+            _farClip = farClip;
+            _fov = (float)Math.PI / 4.0f;
+            _projFunc = projectionFunc;
+            _projection = Matrix4F.Identity;
+        }
+
+        private static void CalcOrthographicProjection(IRenderSurface surface, float nearClip, float farClip, float fov, ref Matrix4F projection)
+        {
+            int width = 10;
+            int height = 10;
+            if(surface != null)
+            {
+                width = surface.Width;
+                height = surface.Height;
+            }
+
+            projection = Matrix4F.OrthoOffCenterLH(0, width, -height, 0, nearClip, farClip);
+        }
+
+        private static void CalcPerspectiveProjection(IRenderSurface surface, float nearClip, float farClip, float fov, ref Matrix4F projection)
+        {
+            int width = 10;
+            int height = 10;
+            if (surface != null)
+            {
+                width = surface.Width;
+                height = surface.Height;
+            }
+
+            projection = Matrix4F.PerspectiveFovLH(fov, (float)width / height, nearClip, farClip);
+        }
+
+        protected void CalculateProjection()
+        {
+            _projFunc(_surface, _nearClip, _farClip, _fov, ref _projection);
+            _viewProjection = Matrix4F.Multiply(_view, _projection);
+        }
+
+        public void SetProjectionPreset(RenderCameraPreset preset)
+        {
+            _projFunc = _projectionFuncs[preset];
+            _projFunc(_surface, _nearClip, _farClip, _fov, ref _projection);
+        }
+
+        public void SetProjectionFunc(RenderCameraProjectionFunc func)
+        {
+            _projFunc = func;
+            _projFunc(_surface, _nearClip, _farClip, _fov, ref _projection);
+        }
+
+        private void _surface_OnPostResize(ITexture texture)
+        {
+            CalculateProjection();
+        }
+
+        /// <summary>Gets or sets the camera's view matrix.</summary>
+        public virtual Matrix4F View
+        {
+            get => _view;
+            set
+            {
+                _view = value;
+                _viewProjection = Matrix4F.Multiply(_view, _projection);
+                _transform = Matrix4F.Invert(_view);
+            }
+        }
+
+        public virtual Matrix4F Transform
+        {
+            get => _transform;
+            set
+            {
+                _transform = value;
+                _view = Matrix4F.Invert(_transform);
+                _viewProjection = Matrix4F.Multiply(_view, _projection);
+            }
+        }
+
+        /// <summary>Gets the camera's projection matrix. The projection is ignored during rendering if <see cref="OutputSurface"/> is not set.</summary>
+        public Matrix4F Projection => _projection;
+
+        /// <summary>Gets the camera's combined view-projection matrix. This is the result of the view matrix multiplied by the projection matrix.</summary>
+        public Matrix4F ViewProjection => _viewProjection;
+
+        /// <summary>Gets or sets the <see cref="IRenderSurface"/> that the camera's view should be rendered out to.</summary>
+        public IRenderSurface OutputSurface
+        {
+            get => _surface;
+            set
+            {
+                if (_surface != value)
+                {
+                    if (_surface != null)
+                        _surface.OnPostResize -= _surface_OnPostResize;
+
+                    if (value != null)
+                        value.OnPostResize += _surface_OnPostResize;
+
+                    _surface = value;
+                    CalculateProjection();
+                }
+            }
+        }
+
+        /// <summary>Gets or sets the minimum draw dinstance. Also known as the near-clip plane. 
+        /// Anything closer this value will not be drawn.</summary>
+        public float MinDrawDistance
+        {
+            get => _nearClip;
+            set
+            {
+                _nearClip = value;
+                CalculateProjection();
+            }
+        }
+
+        /// <summary>Gets or sets the maximum draw distance. Also known as the far-clip plane. 
+        /// Anything further away than this value will not be drawn.</summary>
+        public float MaxDrawDistance
+        {
+            get => _farClip;
+            set
+            {
+                _farClip = value;
+                CalculateProjection();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the field-of-view. Has no effect on a 2D camera.
+        /// </summary>
+        public float FieldOfView
+        {
+            get => _fov;
+            set
+            {
+                _fov = value;
+                CalculateProjection();
+            }
+        }
+
+        public Vector3F Position => Matrix4F.Invert(_view).Translation;
+
+        /// <summary>
+        /// Gets whether the camera will be skipped during rendering.
+        /// </summary>
+        public bool Skip { get; internal set; }
+
+        public IRenderSurface FinalSurface { get; internal set; }
+    }
+
+    public enum RenderCameraPreset
+    {
+        Perspective = 0,
+
+        Orthographic = 1,
+    }
+}

@@ -24,21 +24,10 @@ namespace Molten.Graphics
         /// </summary>
         public event SceneRenderDataHandler OnPostRender;
 
-        public LightList PointLights = new LightList(100, 100);
-
-        public LightList CapsuleLights = new LightList(50, 100);
-
         /// <summary>
         /// If true, the scene will be rendered.
         /// </summary>
         public bool IsVisible = true;
-
-        public bool Skip;
-
-        /// <summary>The camera that should be used as a view or eye when rendering 3D objects in a scene.</summary>
-        public ICamera Camera;
-
-        public IRenderSurface FinalSurface;
 
         /// <summary>
         /// Flags which describe basic rules for rendering the scene.
@@ -61,7 +50,8 @@ namespace Molten.Graphics
         public Matrix4F InvViewProjection;
 
         public readonly List<IRenderable2D> Renderables2D = new List<IRenderable2D>();
-        public readonly RenderProfiler Profiler = new RenderProfiler();
+
+
         protected readonly ThreadedQueue<RenderSceneChange> _pendingChanges = new ThreadedQueue<RenderSceneChange>();
         ISceneDebugOverlay _overlay;
 
@@ -81,6 +71,21 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
+        public void AddObject(RenderCamera obj)
+        {
+            AddCamera change = AddCamera.Get();
+            change.Camera = obj;
+            change.Data = this;
+            _pendingChanges.Enqueue(change);
+        }
+
+        public void RemoveObject(RenderCamera obj)
+        {
+            RemoveCamera change = RemoveCamera.Get();
+            change.Camera = obj;
+            change.Data = this;
+            _pendingChanges.Enqueue(change);
+        }
 
         public abstract void AddObject(IRenderable3D obj, ObjectRenderData renderData);
 
@@ -121,6 +126,17 @@ namespace Molten.Graphics
         /// GGets the debug overlay which displays information for the current scene.
         /// </summary>
         public ISceneDebugOverlay DebugOverlay { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="RenderProfiler"/> instance bound to the scene data. This tracks render performance and statistics for the current set of scene data.
+        /// </summary>
+        public RenderProfiler Profiler { get; } = new RenderProfiler();
+
+        public LightList PointLights { get; } = new LightList(100, 100);
+
+        public LightList CapsuleLights { get; } = new LightList(50, 100);
+
+        public List<RenderCamera> Cameras { get; } = new List<RenderCamera>();
     }
 
     public class SceneRenderData<R> : SceneRenderData

@@ -31,10 +31,9 @@ namespace Molten.Samples
         {
             _player = CreateObject();
             SceneCameraComponent cam = _player.AddComponent<SceneCameraComponent>();
-            cam.MaximumDrawDistance = 300;
+            cam.MaxDrawDistance = 300;
             cam.OutputSurface = Window;
             _scene.AddObject(_player);
-            _scene.OutputCamera = cam;
         }
 
         protected SceneObject SpawnTestCube(IMesh mesh)

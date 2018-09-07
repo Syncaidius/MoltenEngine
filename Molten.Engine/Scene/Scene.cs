@@ -92,6 +92,18 @@ namespace Molten
             _pendingChanges.Enqueue(change);
         }
 
+        [Obsolete("Temporary implementation.")]
+        public void AddCamera(RenderCamera camera)
+        {
+            RenderData.AddObject(camera);
+        }
+
+        [Obsolete("Temporary implementation.")]
+        public void RemoveCamera(RenderCamera camera)
+        {
+            RenderData.RemoveObject(camera);
+        }
+
         /// <summary>
         /// Updates the scene.
         /// </summary>
@@ -125,14 +137,6 @@ namespace Molten
 
         /// <summary>Gets the name of the scene.</summary>
         public string Name { get; private set; }
-
-        /// <summary>Gets or sets the scene's out camera. This acts as an eye when rendering the scene, allowing it to be viewed from the perspective of the camera.
-        /// Scenes without a camera will not be updated or rendered.</summary>
-        public ICamera OutputCamera
-        {
-            get => RenderData.Camera;
-            set => RenderData.Camera = value;
-        }
 
         /// <summary>Gets the <see cref="Engine"/> instance that the <see cref="Scene"/> is bound to.</summary>
         public Engine Engine { get; private set; }

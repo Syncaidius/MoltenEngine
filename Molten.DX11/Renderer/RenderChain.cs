@@ -77,12 +77,12 @@ namespace Molten.Graphics
             }
         }
 
-        internal void Render(SceneRenderData<Renderable> scene, Timing time)
+        internal void Render(SceneRenderData<Renderable> scene, RenderCamera camera, Timing time)
         {
             Link link = First;
             while(link != null)
             {
-                link.Step.Render(_renderer, scene, time, link);
+                link.Step.Render(_renderer, camera, scene, time, link);
                 link = link.Next;
             }
         }
