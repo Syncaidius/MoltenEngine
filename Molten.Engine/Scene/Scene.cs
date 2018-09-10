@@ -13,13 +13,11 @@ namespace Molten
     public partial class Scene : EngineObject
     {
         internal SceneRenderData RenderData;
-        internal List<ISceneObject> Objects;
-        internal List<IRenderable2D> Renderables2d;
-        internal HashSet<IUpdatable> Updatables;
-        internal List<ICursorAcceptor> InputAcceptors;
+        internal List<SceneLayer> Layers;
 
         ThreadedQueue<SceneChange> _pendingChanges;
         RenderDebugOverlay _renderOverlay;
+        SceneLayer _defaultLayer;
 
         /// <summary>Creates a new instance of <see cref="Scene"/></summary>
         /// <param name="name">The name of the scene.</param>
@@ -30,16 +28,49 @@ namespace Molten
             Engine = engine;
             RenderData = engine.Renderer.CreateRenderData();
             RenderData.Flags = flags;
-
             engine.AddScene(this);
-            Objects = new List<ISceneObject>();
-            Renderables2d = new List<IRenderable2D>();
-            Updatables = new HashSet<IUpdatable>();
-            InputAcceptors = new List<ICursorAcceptor>();
+
+            Layers = new List<SceneLayer>();
             _pendingChanges = new ThreadedQueue<SceneChange>();
             _renderOverlay = new RenderDebugOverlay(RenderData.DebugOverlay);
 
+            _defaultLayer = AddLayer("default");
             engine.Log.WriteLine($"Created scene '{name}'");
+        }
+
+        public SceneLayer AddLayer(string name, bool ignoreRaycastHit = false)
+        {
+            SceneLayerData layerData = RenderData.CreateLayerData();
+            RenderData.AddLayer(layerData);
+
+            SceneLayerAdd change = SceneLayerAdd.Get();
+            change.ParentScene = this;
+            SceneLayer layer = new SceneLayer()
+            {
+                Name = name,
+                IgnoreRaycastHit = ignoreRaycastHit,
+                ParentScene = this,
+                Data = layerData,
+            };
+
+            change.Layer = layer;
+            _pendingChanges.Enqueue(change);
+            return layer;
+        }
+
+        public void RemoveLayer(SceneLayer layer)
+        {
+            if (layer.ParentScene != this)
+                throw new SceneLayerException(this, layer, "The provided layer does not belong to the current scene.");
+
+            if (layer == _defaultLayer)
+                throw new SceneLayerException(this, layer, "The default layer cannot be removed from a scene.");
+
+            RenderData.RemoveLayer(layer.Data);
+            SceneLayerRemove change = SceneLayerRemove.Get();
+            change.ParentScene = this;
+            change.Layer = layer;
+            _pendingChanges.Enqueue(change);
         }
 
         /// <summary>
@@ -76,19 +107,30 @@ namespace Molten
 
         /// <summary>Adds a <see cref="SceneObject"/> to the scene.</summary>
         /// <param name="obj">The object to be added.</param>
-        public void AddObject(ISceneObject obj)
+        public void AddObject(ISceneObject obj, SceneLayer layer = null)
         {
+            layer = layer ?? _defaultLayer;
+            if(layer.ParentScene != this)
+                throw new SceneLayerException(this, layer, "The provided layer does not belong to the current scene.");
+
             SceneAddObject change = SceneAddObject.Get();
             change.Object = obj;
+            change.Layer = layer;
             _pendingChanges.Enqueue(change);
         }
 
         /// <summary>Removes a <see cref="SceneObject"/> from the scene.</summary>
         /// <param name="obj">The object to be removed.</param>
-        public void RemoveObject(ISceneObject obj)
+        /// <param name="layer">The layer from which to remove the object. Must belong to the current <see cref="Scene"/> instance.</param>
+        public void RemoveObject(ISceneObject obj, SceneLayer layer = null)
         {
+            layer = layer ?? _defaultLayer;
+            if (layer.ParentScene != this)
+                throw new SceneLayerException(this, layer, "The provided layer does not belong to the current scene.");
+
             SceneRemoveObject change = SceneRemoveObject.Get();
             change.Object = obj;
+            change.Layer = layer;
             _pendingChanges.Enqueue(change);
         }
 
@@ -104,6 +146,35 @@ namespace Molten
             RenderData.RemoveObject(camera);
         }
 
+        private ICursorAcceptor PickObject(Vector2F cursorPos, SceneLayer layer)
+        {
+            for (int i = layer.InputAcceptors.Count - 1; i >= 0; i--)
+            {
+                if (layer.InputAcceptors[i].Contains(cursorPos))
+                    return layer.InputAcceptors[i];
+            }
+
+            return null;
+        }
+
+        private ICursorAcceptor PickObject(Vector2F cursorPos, IList<SceneLayer> layers)
+        {
+            ICursorAcceptor result;
+            for (int i = layers.Count - 1; i >= 0; i--)
+            {
+                result = PickObject(cursorPos, layers[i]);
+                if (result != null)
+                    return result;
+            }
+
+            return null;
+        }
+
+        public ICursorAcceptor PickObject(Vector2F cursorPos)
+        {
+            return PickObject(cursorPos, Layers);
+        }
+
         /// <summary>
         /// Updates the scene.
         /// </summary>
@@ -113,8 +184,11 @@ namespace Molten
             while (_pendingChanges.TryDequeue(out SceneChange change))
                 change.Process(this);
 
-            foreach (IUpdatable up in Updatables)
-                up.Update(time);
+            foreach (SceneLayer layer in Layers)
+            {
+                foreach (IUpdatable up in layer.Updatables)
+                    up.Update(time);
+            }
         }
 
         protected override void OnDispose()
@@ -156,6 +230,11 @@ namespace Molten
             get => RenderData.AmbientLightColor;
             set => RenderData.AmbientLightColor = value;
         }
+
+        /// <summary>
+        /// Gets the sccene's default layer. This cannot be removed from the scene.
+        /// </summary>
+        public SceneLayer DefaultLayer => _defaultLayer;
 
         /// <summary>
         /// Gets or sets the scene's render flags.

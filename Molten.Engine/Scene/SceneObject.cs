@@ -11,12 +11,14 @@ namespace Molten
 {
     public delegate void SceneObjectHandler(SceneObject obj);
     public delegate void SceneObjectVisibilityHandler(SceneObject obj, bool visible);
-    public delegate void SceneObjectSceneHandler(SceneObject obj, Scene scene);
+    public delegate void SceneObjectSceneHandler(SceneObject obj, Scene scene, SceneLayer layer);
+    public delegate void SceneObjectLayerHandler(SceneObject obj, SceneLayer oldLayer, SceneLayer newLayer);
 
     public sealed class SceneObject : IUpdatable
     {
         Engine _engine;
         Scene _scene;
+        SceneLayer _layer;
 
         // Transform-related variables
         SceneObjectTransform _transform;
@@ -35,6 +37,8 @@ namespace Molten
 
         public event SceneObjectSceneHandler OnAddedToScene;
         public event SceneObjectSceneHandler OnRemovedFromScene;
+
+        public event SceneObjectLayerHandler OnLayerChanged;
 
         /// <summary>Creates a new instance of <see cref="SceneObject"/>.</summary>
         /// <param name="enabled">If true, the <see cref="SceneObject"/> will be enabled upon creation. Default value is true.</param>
@@ -196,12 +200,13 @@ namespace Molten
                 if(_scene != value)
                 {
                     if (_scene != null)
-                        OnRemovedFromScene?.Invoke(this, _scene);
+                        OnRemovedFromScene?.Invoke(this, _scene, _layer);
 
                     _scene = value;
+                    _layer = _scene.DefaultLayer;
 
                     if (value != null)
-                        OnAddedToScene?.Invoke(this, value);
+                        OnAddedToScene?.Invoke(this, value, _layer);
 
                     // TODO make this thread-safe.
                     for (int i = _children.Count - 1; i >= 0; i--)
@@ -210,10 +215,39 @@ namespace Molten
             }
         }
 
+        public SceneLayer Layer
+        {
+            get => _layer;
+            internal set
+            {
+                if (Scene != null)
+                {
+                    // If the value is null, use the scene's default layer.
+                    value = value ?? Scene.DefaultLayer;
+
+                    if (value.ParentScene != Scene)
+                        throw new SceneObjectException(Scene, this, "Cannot set object layer to the layer of a different scene. Must be a layer of the scene the object is current a member of.");
+
+                    if(value != _layer)
+                    {
+                        SceneLayer oldLayer = _layer;
+                        _layer = value;
+                        OnLayerChanged?.Invoke(this, oldLayer, _layer);
+                    }
+                }
+            }
+        }
+
         Scene ISceneObject.Scene
         {
             get => _scene;
             set => this.Scene = value;
+        }
+
+        SceneLayer ISceneObject.Layer
+        {
+            get => _layer;
+            set => this.Layer = value;
         }
 
         public SceneObjectTransform Transform => _transform;

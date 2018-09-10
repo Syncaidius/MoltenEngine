@@ -76,89 +76,72 @@ namespace Molten
             Focused = null;
         }
 
-        private ICursorAcceptor PickObject(Vector2F cursorPos)
-        {
-            Scene scene = null;
-
-            for (int i = _scenes.Count - 1; i >= 0; i--)
-            {
-                scene = _scenes[i];
-                if (!scene.IsEnabled)
-                    continue;
-
-                for (int j = scene.InputAcceptors.Count - 1; j >= 0; j--)
-                {
-                    if (scene.InputAcceptors[i].Contains(cursorPos))
-                        return scene.InputAcceptors[i];
-                }
-            }
-
-            return null;
-        }
-
         internal void HandleInput(IMouseDevice mouse, Timing time)
         {
             Vector2F cursorPos = mouse.Position;
             Vector2F cursorDelta = mouse.Delta;
-            ICursorAcceptor newHover = PickObject(cursorPos);
-
-            if (newHover == null)
+            for (int i = _scenes.Count - 1; i >= 0; i--)
             {
-                // Trigger leave on previous hover component.
-                if (Hovered != null)
-                {
-                    Hovered.InvokeCursorLeave(cursorPos);
+                ICursorAcceptor newHover = _scenes[i].PickObject(cursorPos);
 
-                    // Set tooltip.
-                    _tooltip.Text.Text = "";
-                }
-
-                // Set new-current as null.
-                Hovered = null;
-            }
-            else
-            {
-                if (Hovered != newHover)
+                if (newHover == null)
                 {
-                    //trigger leave on old hover component.
+                    // Trigger leave on previous hover component.
                     if (Hovered != null)
+                    {
                         Hovered.InvokeCursorLeave(cursorPos);
 
-                    //set new hover component and trigger it's enter event
-                    Hovered = newHover;
-                    Hovered.InvokeCursorEnter(cursorPos);
+                        // Set tooltip.
+                        _tooltip.Text.Text = "";
+                    }
 
-                    // Set tooltip.
-                    _tooltipTimer = 0;
-                    _tooltip.Text.Text = Hovered.Tooltip;
-                }
-            }
-
-            // Update all button trackers
-            for (int i = 0; i < _trackers.Count; i++)
-                _trackers[i].Update(this, mouse, time);
-
-            // Invoke hover event if possible
-            if (Hovered != null)
-            {
-                Hovered.InvokeCursorHover(cursorPos);
-
-                // Update tooltip status
-                if (_tooltipTimer < _settings.TooltipDelay)
-                {
-                    _tooltip.IsVisible = false;
-                    _tooltipTimer += time.ElapsedTime.TotalMilliseconds;
+                    // Set new-current as null.
+                    Hovered = null;
                 }
                 else
                 {
-                    _tooltip.IsVisible = true;
+                    if (Hovered != newHover)
+                    {
+                        //trigger leave on old hover component.
+                        if (Hovered != null)
+                            Hovered.InvokeCursorLeave(cursorPos);
+
+                        //set new hover component and trigger it's enter event
+                        Hovered = newHover;
+                        Hovered.InvokeCursorEnter(cursorPos);
+
+                        // Set tooltip.
+                        _tooltipTimer = 0;
+                        _tooltip.Text.Text = Hovered.Tooltip;
+                    }
                 }
 
-                _tooltip.Position = cursorPos + new Vector2F(16); // TODO Offset this position based on font/cursor size, not a hard-coded value.
+                // Update all button trackers
+                for (int j = 0; j < _trackers.Count; j++)
+                    _trackers[j].Update(this, mouse, time);
 
-                // Handle scroll wheel event
-                if (mouse.WheelDelta != 0)
-                    Hovered.InvokeCursorWheelScroll(mouse.WheelPosition, mouse.WheelDelta);
+                // Invoke hover event if possible
+                if (Hovered != null)
+                {
+                    Hovered.InvokeCursorHover(cursorPos);
+
+                    // Update tooltip status
+                    if (_tooltipTimer < _settings.TooltipDelay)
+                    {
+                        _tooltip.IsVisible = false;
+                        _tooltipTimer += time.ElapsedTime.TotalMilliseconds;
+                    }
+                    else
+                    {
+                        _tooltip.IsVisible = true;
+                    }
+
+                    _tooltip.Position = cursorPos + new Vector2F(16); // TODO Offset this position based on font/cursor size, not a hard-coded value.
+
+                    // Handle scroll wheel event
+                    if (mouse.WheelDelta != 0)
+                        Hovered.InvokeCursorWheelScroll(mouse.WheelPosition, mouse.WheelDelta);
+                }
             }
         }
 

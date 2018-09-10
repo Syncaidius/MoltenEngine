@@ -11,30 +11,34 @@ namespace Molten
     {
         internal ISceneObject Object;
 
+        internal SceneLayer Layer;
+
         public override void Clear()
         {
             Object = null;
+            Layer = null;
         }
 
         internal override void Process(Scene scene)
         {
-            if (Object.Scene == scene)
+            if (Object.Scene == scene && Object.Layer == Layer)
             {
-                scene.Objects.Remove(Object);
+                Layer.Objects.Remove(Object);
 
                 if(Object is IUpdatable up)
-                    scene.Updatables.Remove(up);
+                    Layer.Updatables.Remove(up);
 
                 if (Object is ICursorAcceptor acceptor)
-                    scene.InputAcceptors.Remove(acceptor);
+                    Layer.InputAcceptors.Remove(acceptor);
 
                 if (Object is IRenderable2D r2d)
                 {
-                    scene.Renderables2d.Remove(r2d);
-                    scene.RenderData.RemoveObject(r2d);
+                    Layer.Renderables2d.Remove(r2d);
+                    Object.Scene.RenderData.RemoveObject(r2d, Layer.Data);
                 }
 
                 Object.Scene = null;
+                Object.Layer = null;
             }
 
             Recycle(this);

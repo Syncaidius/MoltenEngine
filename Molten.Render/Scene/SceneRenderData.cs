@@ -49,25 +49,41 @@ namespace Molten.Graphics
         public Matrix4F ViewProjection;
         public Matrix4F InvViewProjection;
 
-        public readonly List<IRenderable2D> Renderables2D = new List<IRenderable2D>();
-
-
+        public List<SceneLayerData> Layers = new List<SceneLayerData>();
         protected readonly ThreadedQueue<RenderSceneChange> _pendingChanges = new ThreadedQueue<RenderSceneChange>();
         ISceneDebugOverlay _overlay;
 
-        public void AddObject(IRenderable2D obj)
+        public abstract SceneLayerData CreateLayerData();
+
+        public void AddLayer(SceneLayerData data)
         {
-            Add2D change = Add2D.Get();
-            change.Object = obj;
-            change.Data = this;
+            RenderLayerAdd change = RenderLayerAdd.Get();
+            change.LayerData = data;
+            change.SceneData = this;
             _pendingChanges.Enqueue(change);
         }
 
-        public void RemoveObject(IRenderable2D obj)
+        public void RemoveLayer(SceneLayerData data)
+        {
+            RenderLayerRemove change = RenderLayerRemove.Get();
+            change.LayerData = data;
+            change.SceneData = this;
+            _pendingChanges.Enqueue(change);
+        }
+
+        public void AddObject(IRenderable2D obj, SceneLayerData layerData)
+        {
+            Add2D change = Add2D.Get();
+            change.Object = obj;
+            change.LayerData = layerData;
+            _pendingChanges.Enqueue(change);
+        }
+
+        public void RemoveObject(IRenderable2D obj, SceneLayerData layerData)
         {
             Remove2D change = Remove2D.Get();
             change.Object = obj;
-            change.Data = this;
+            change.Layerdata = layerData;
             _pendingChanges.Enqueue(change);
         }
 
@@ -87,9 +103,9 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        public abstract void AddObject(IRenderable3D obj, ObjectRenderData renderData);
+        public abstract void AddObject(IRenderable3D obj, ObjectRenderData renderData, SceneLayerData layer);
 
-        public abstract void RemoveObject(IRenderable3D obj, ObjectRenderData renderData);
+        public abstract void RemoveObject(IRenderable3D obj, ObjectRenderData renderData, SceneLayerData layer);
 
         public void ProcessChanges()
         {
@@ -142,28 +158,26 @@ namespace Molten.Graphics
     public class SceneRenderData<R> : SceneRenderData
         where R: class, IRenderable3D
     {
-        public Dictionary<R, List<ObjectRenderData>> Renderables;
-
-        public SceneRenderData()
+        public override SceneLayerData CreateLayerData()
         {
-            Renderables = new Dictionary<R, List<ObjectRenderData>>();
+            return new SceneLayerData<R>();
         }
 
-        public override void AddObject(IRenderable3D obj, ObjectRenderData renderData)
+        public override void AddObject(IRenderable3D obj, ObjectRenderData renderData, SceneLayerData layer)
         {
             RenderableAdd<R> change = RenderableAdd<R>.Get();
             change.Renderable = obj as R;
             change.Data = renderData;
-            change.SceneData = this;
+            change.LayerData = layer as SceneLayerData<R>;
             _pendingChanges.Enqueue(change);
         }
 
-        public override void RemoveObject(IRenderable3D obj, ObjectRenderData renderData)
+        public override void RemoveObject(IRenderable3D obj, ObjectRenderData renderData, SceneLayerData layer)
         {
             RenderableRemove<R> change = RenderableRemove<R>.Get();
             change.Renderable = obj as R;
             change.Data = renderData;
-            change.SceneData = this;
+            change.LayerData = layer as SceneLayerData<R>;
             _pendingChanges.Enqueue(change);
         }
     }

@@ -14,19 +14,19 @@ namespace Molten.Graphics
 
         public ObjectRenderData Data;
 
-        public SceneRenderData<R> SceneData;
+        public SceneLayerData<R> LayerData;
 
         public override void Clear()
         {
             Renderable = default;
             Data = null;
-            SceneData = null;
+            LayerData = null;
         }
 
         public override void Process()
         {
             List<ObjectRenderData> dataList;
-            if (SceneData.Renderables.TryGetValue(Renderable, out dataList))
+            if (LayerData.Renderables.TryGetValue(Renderable, out dataList))
                 dataList.Remove(Data);
 
             Recycle(this);

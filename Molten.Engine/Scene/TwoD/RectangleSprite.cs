@@ -16,6 +16,8 @@ namespace Molten
 
         Scene ISceneObject.Scene { get; set; }
 
+        SceneLayer ISceneObject.Layer { get; set; }
+
         public void Render(SpriteBatch batch)
         {
             batch.DrawRect(Destination, Color, Rotation, Origin);

@@ -6,21 +6,22 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="SceneObject"/> to the root of a scene.</summary>
-    internal class Add2D : RenderSceneChange<Add2D> 
+    /// <summary>A <see cref="RenderLayerAdd"/> for adding <see cref="SceneLayerData"/> to the a<see cref="SceneRenderData"/> instance.</summary>
+    internal class RenderLayerRemove : RenderSceneChange<RenderLayerRemove> 
     {
-        public IRenderable2D Object;
+        public SceneRenderData SceneData;
+
         public SceneLayerData LayerData;
 
         public override void Clear()
         {
-            Object = null;
+            SceneData = null;
             LayerData = null;
         }
 
         public override void Process()
         {
-            LayerData.Renderables2D.Add(Object);
+            SceneData.Layers.Remove(LayerData);
             Recycle(this);
         }
     }

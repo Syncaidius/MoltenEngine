@@ -112,6 +112,8 @@
     <Compile Include="ObjectHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SceneManager.cs" />
+    <Compile Include="Scene\Changes\SceneLayerRemove.cs" />
+    <Compile Include="Scene\Changes\SceneLayerAdd.cs" />
     <Compile Include="Scene\Changes\SceneAddObject.cs" />
     <Compile Include="Scene\Changes\SceneChange.cs" />
     <Compile Include="Scene\Changes\SceneRemoveObject.cs" />
@@ -128,6 +130,7 @@
     <Compile Include="Scene\Scene.cs" />
     <Compile Include="Scene\SceneClickTracker.cs" />
     <Compile Include="Scene\SceneException.cs" />
+    <Compile Include="Scene\SceneLayer.cs" />
     <Compile Include="Scene\SceneObject.cs" />
     <Compile Include="Scene\SceneObjectTransform.cs" />
     <Compile Include="Scene\TwoD\AnimatedSprite.cs" />

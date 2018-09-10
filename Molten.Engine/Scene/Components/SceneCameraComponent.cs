@@ -61,12 +61,12 @@ namespace Molten
             base.OnDestroy(obj);
         }
 
-        private void Obj_OnAddedToScene(SceneObject obj, Scene scene)
+        private void Obj_OnAddedToScene(SceneObject obj, Scene scene, SceneLayer layer)
         {
             AddToScene(obj);
         }
 
-        private void Obj_OnRemovedFromScene(SceneObject obj, Scene scene)
+        private void Obj_OnRemovedFromScene(SceneObject obj, Scene scene, SceneLayer layer)
         {
             RemoveFromScene(obj);
         }

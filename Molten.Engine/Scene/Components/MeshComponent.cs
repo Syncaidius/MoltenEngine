@@ -33,7 +33,7 @@ namespace Molten
             // Add mesh to render data if possible.
             if (_visible && obj.Scene != null)
             {
-                obj.Scene.RenderData.AddObject(_mesh, _data);
+                obj.Scene.RenderData.AddObject(_mesh, _data, obj.Layer.Data);
                 _inScene = true;
             }
         }
@@ -45,7 +45,7 @@ namespace Molten
 
             if (obj.Scene != null || _visible)
             {
-                obj.Scene.RenderData.RemoveObject(_mesh, _data);
+                obj.Scene.RenderData.RemoveObject(_mesh, _data, obj.Layer.Data);
                 _inScene = false;
             }
         }
@@ -63,12 +63,12 @@ namespace Molten
             base.OnDestroy(obj);
         }
 
-        private void Obj_OnAddedToScene(SceneObject obj, Scene scene)
+        private void Obj_OnAddedToScene(SceneObject obj, Scene scene, SceneLayer layer)
         {
             AddToScene(obj);
         }
 
-        private void Obj_OnRemovedFromScene(SceneObject obj, Scene scene)
+        private void Obj_OnRemovedFromScene(SceneObject obj, Scene scene, SceneLayer layer)
         {
             RemoveFromScene(obj);
         }

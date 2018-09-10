@@ -197,21 +197,30 @@ namespace Molten.Graphics
         {
             // To start with we're just going to draw ALL objects in the render tree.
             // Sorting and culling will come later
-            foreach (KeyValuePair<Renderable, List<ObjectRenderData>> p in sceneData.Renderables)
+            SceneLayerData<Renderable> layerData;
+            foreach (SceneLayerData layer in sceneData.Layers)
             {
-                foreach (ObjectRenderData data in p.Value)
+                layerData = layer as SceneLayerData<Renderable>;
+                foreach (KeyValuePair<Renderable, List<ObjectRenderData>> p in layerData.Renderables)
                 {
-                    // TODO replace below with render prediction to interpolate between the current and target transform.
-                    data.RenderTransform = data.TargetTransform;
-                    p.Key.Render(pipe, this, data, sceneData);
+                    // TODO use instancing here.
+                    foreach (ObjectRenderData data in p.Value)
+                    {
+                        // TODO replace below with render prediction to interpolate between the current and target transform.
+                        data.RenderTransform = data.TargetTransform;
+                        p.Key.Render(pipe, this, data, sceneData);
+                    }
                 }
             }
         }
 
         internal void Render2D(GraphicsPipe pipe, SceneRenderData sceneData)
         {
-            for (int i = 0; i < sceneData.Renderables2D.Count; i++)
-                sceneData.Renderables2D[i].Render(SpriteBatcher);
+            foreach (SceneLayerData layer in sceneData.Layers)
+            {
+                for (int i = 0; i < layer.Renderables2D.Count; i++)
+                    layer.Renderables2D[i].Render(SpriteBatcher);
+            }
         }
 
         internal bool ClearIfFirstUse(GraphicsPipe pipe, RenderSurfaceBase surface, Color color)

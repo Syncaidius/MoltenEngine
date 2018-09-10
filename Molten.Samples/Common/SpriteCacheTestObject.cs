@@ -12,6 +12,7 @@ namespace Molten.Samples
         SpriteBatchCache _cache;
 
         Scene ISceneObject.Scene { get; set; }
+        SceneLayer ISceneObject.Layer { get; set; }
 
         public SpriteCacheTestObject(SampleGame game, ITexture2D tex)
         {

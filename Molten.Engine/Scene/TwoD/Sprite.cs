@@ -65,6 +65,8 @@ namespace Molten
 
         Scene ISceneObject.Scene { get; set; }
 
+        SceneLayer ISceneObject.Layer { get; set; }
+
         /// <summary>
         /// The color of the current <see cref="Sprite"/>. The default value is <see cref="Color.White"/>.
         /// </summary>

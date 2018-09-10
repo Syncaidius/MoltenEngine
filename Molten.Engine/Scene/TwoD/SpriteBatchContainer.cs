@@ -33,6 +33,8 @@ namespace Molten
 
         public Scene Scene { get; set; }
 
+        SceneLayer ISceneObject.Layer { get; set; }
+
         public void Render(SpriteBatch batch)
         {
             OnDraw?.Invoke(batch);

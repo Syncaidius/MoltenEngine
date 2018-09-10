@@ -11,6 +11,8 @@ namespace Molten
     {
         Scene ISceneObject.Scene { get; set; }
 
+        SceneLayer ISceneObject.Layer { get; set; }
+
         ISceneDebugOverlay _overlay;
 
         internal RenderDebugOverlay(ISceneDebugOverlay overlay)

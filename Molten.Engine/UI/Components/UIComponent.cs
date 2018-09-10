@@ -589,6 +589,8 @@ namespace Molten.UI
             set => Scene = value;
         }
 
+        SceneLayer ISceneObject.Layer { get; set; }
+
         /// <summary>
         /// Gets the parent of the UI 
         /// </summary>
