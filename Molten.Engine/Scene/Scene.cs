@@ -22,12 +22,11 @@ namespace Molten
         /// <summary>Creates a new instance of <see cref="Scene"/></summary>
         /// <param name="name">The name of the scene.</param>
         /// <param name="engine">The engine instance to which the scene will be bound.</param>
-        internal Scene(string name, Engine engine, SceneRenderFlags flags)
+        internal Scene(string name, Engine engine)
         {
             Name = name;
             Engine = engine;
             RenderData = engine.Renderer.CreateRenderData();
-            RenderData.Flags = flags;
             engine.AddScene(this);
 
             Layers = new List<SceneLayer>();
@@ -235,15 +234,6 @@ namespace Molten
         /// Gets the sccene's default layer. This cannot be removed from the scene.
         /// </summary>
         public SceneLayer DefaultLayer => _defaultLayer;
-
-        /// <summary>
-        /// Gets or sets the scene's render flags.
-        /// </summary>
-        public SceneRenderFlags RenderFlags
-        {
-            get => RenderData.Flags;
-            set => RenderData.Flags = value;
-        }
 
         /// <summary>
         /// Gets the scene's debug overlay. 

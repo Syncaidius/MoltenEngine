@@ -144,5 +144,11 @@ namespace Molten
         /// Gets the position of the camera based on it's parent object's transform.
         /// </summary>
         public Vector3F Position => Object.Transform.GlobalPosition;
+
+        public RenderCameraFlags Flags
+        {
+            get => _camera.Flags;
+            set => _camera.Flags = value;
+        }
     }
 }

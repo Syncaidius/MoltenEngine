@@ -24,8 +24,8 @@ namespace Molten.Samples
             base.OnInitialize(engine);
             Window.OnHandleChanged += Window_OnHandleChanged;
 
-            SpriteScene = CreateScene("Sprite", SceneRenderFlags.Render2D);
-            UIScene = CreateScene("UI", SceneRenderFlags.Render2D);
+            SpriteScene = CreateScene("Sprite");
+            UIScene = CreateScene("UI");
 
             // Use the same camera for both the sprite and UI scenes.
             RenderCamera cam2D = new RenderCamera(RenderCameraPreset.Orthographic);

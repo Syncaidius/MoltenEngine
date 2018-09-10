@@ -70,7 +70,7 @@ namespace Molten.Graphics
 
             // Always clear the depth surface at the start of each scene unless otherwise instructed.
             // Will also be cleared if we've just switched to a previously un-rendered surface during this frame.
-            if(!scene.HasFlag(SceneRenderFlags.DoNotClearDepth) || newSurface)
+            if(!camera.Flags.HasFlag(RenderCameraFlags.DoNotClearDepth) || newSurface)
                 Depth.Clear(device, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil);
         }
     }

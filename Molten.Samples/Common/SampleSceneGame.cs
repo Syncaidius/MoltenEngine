@@ -30,9 +30,9 @@ namespace Molten.Samples
         private void SpawnPlayer()
         {
             _player = CreateObject();
-            SceneCameraComponent cam = _player.AddComponent<SceneCameraComponent>();
-            cam.MaxDrawDistance = 300;
-            cam.OutputSurface = Window;
+            SceneCamera = _player.AddComponent<SceneCameraComponent>();
+            SceneCamera.MaxDrawDistance = 300;
+            SceneCamera.OutputSurface = Window;
             _scene.AddObject(_player);
         }
 
@@ -179,5 +179,7 @@ namespace Molten.Samples
         public SceneObject Player => _player;
 
         public bool AcceptPlayerInput { get; set; } = true;
+
+        public SceneCameraComponent SceneCamera { get; set; }
     }
 }

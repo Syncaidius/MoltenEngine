@@ -189,7 +189,7 @@ namespace Molten.Graphics
 
         internal void RenderScene(SceneRenderData<Renderable> data, RenderCamera camera, GraphicsPipe pipe, Timing time)
         {
-            _chain.Build(data);
+            _chain.Build(data, camera);
             _chain.Render(data, camera, time);
         }
 

@@ -30,11 +30,6 @@ namespace Molten.Graphics
         public bool IsVisible = true;
 
         /// <summary>
-        /// Flags which describe basic rules for rendering the scene.
-        /// </summary>
-        public SceneRenderFlags Flags = SceneRenderFlags.Render2D | SceneRenderFlags.Render3D;
-
-        /// <summary>
         /// The background color of the scene.
         /// </summary>
         public Color BackgroundColor = new Color(20,20,20,255);
@@ -111,16 +106,6 @@ namespace Molten.Graphics
         {
             while (_pendingChanges.TryDequeue(out RenderSceneChange change))
                 change.Process();
-        }
-
-        /// <summary>
-        /// Returns true if the current <see cref="SceneRenderData"/> has the specified flag(s).
-        /// </summary>
-        /// <param name="flags">The flags to check.</param>
-        /// <returns></returns>
-        public bool HasFlag(SceneRenderFlags flags)
-        {
-            return (Flags & flags) == flags;
         }
 
         /// <summary>

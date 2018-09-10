@@ -36,7 +36,7 @@ namespace Molten.Graphics
                     Rectangle bounds = new Rectangle(0, 0, camera.FinalSurface.Width, camera.FinalSurface.Height);
                     GraphicsDeviceDX11 device = renderer.Device;
                     RenderSurfaceBase finalSurface = camera.FinalSurface as RenderSurfaceBase;
-                    if (!scene.HasFlag(SceneRenderFlags.DoNotClear))
+                    if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
                         renderer.ClearIfFirstUse(device, finalSurface, scene.BackgroundColor);
 
                     device.SetRenderSurface(finalSurface, 0);

@@ -126,10 +126,9 @@ namespace Molten
         /// <summary>Creates a new instance of <see cref="Scene"/> and automatically binds it to the game engine.</summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public Scene CreateScene(string name, 
-            SceneRenderFlags flags = SceneRenderFlags.Render2D | SceneRenderFlags.Render3D)
+        public Scene CreateScene(string name)
         {
-            Scene scene = new Scene(name, Engine, flags);
+            Scene scene = new Scene(name, Engine);
             return scene;
         }
 

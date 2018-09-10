@@ -136,7 +136,6 @@ namespace Molten.Graphics
             _rt.Clear(Color.Transparent);
             _renderData = renderer.CreateRenderData();
             _renderData.IsVisible = false;
-            _renderData.Flags = SceneRenderFlags.Render2D | SceneRenderFlags.DoNotClear;
             SceneLayerData layer = _renderData.CreateLayerData();
             _renderData.AddLayer(layer);
             _renderData.AddObject(new FontContainer(this), layer);
@@ -144,6 +143,7 @@ namespace Molten.Graphics
             _renderData.AddObject(new RenderCamera(RenderCameraPreset.Orthographic)
             {
                 OutputSurface = _rt,
+                Flags = RenderCameraFlags.DoNotClear
             });
 
             // Add placeholder character.

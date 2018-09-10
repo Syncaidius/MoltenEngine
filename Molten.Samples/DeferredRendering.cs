@@ -40,7 +40,7 @@ namespace Molten.Samples
             SetupLightObjects(Vector3F.Zero);
             SetupFloor(Vector3F.Zero, 30);
 
-            SampleScene.RenderFlags = SceneRenderFlags.Deferred | SceneRenderFlags.Render3D;
+            SceneCamera.Flags = RenderCameraFlags.Deferred;
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<ITexture2D>("dds_test.dds");
             cr.Load<ITexture2D>("dds_test_n.dds");

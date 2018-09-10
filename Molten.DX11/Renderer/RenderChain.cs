@@ -49,31 +49,25 @@ namespace Molten.Graphics
             Next(step);
         }
 
-        internal void Build(SceneRenderData scene)
+        internal void Build(SceneRenderData scene, RenderCamera camera)
         {
             First = null;
             Last = null;
 
             Next<StartStep>();
 
-            if (scene.HasFlag(SceneRenderFlags.Deferred))
+            if (camera.Flags.HasFlag(RenderCameraFlags.Deferred))
             {
-                if (scene.HasFlag(SceneRenderFlags.Render3D))
-                    Next<GBuffer3dStep>();
-
-                if (scene.HasFlag(SceneRenderFlags.Render2D))
-                    Next<Render2dStep>();
+                Next<GBuffer3dStep>();
+                Next<Render2dStep>();
 
                 Next<LightingStep>();
                 Next<FinalizeStep>();
             }
             else
             {
-                if (scene.HasFlag(SceneRenderFlags.Render3D))
-                    Next<Immediate3dStep>();
-
-                if (scene.HasFlag(SceneRenderFlags.Render2D))
-                    Next<Render2dStep>();
+                Next<Immediate3dStep>();
+                Next<Render2dStep>();
             }
         }
 

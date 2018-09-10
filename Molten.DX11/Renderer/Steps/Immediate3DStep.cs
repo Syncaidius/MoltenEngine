@@ -42,7 +42,7 @@ namespace Molten.Graphics
                 {
                     case StartStep start:
 
-                        if (!scene.HasFlag(SceneRenderFlags.DoNotClear))
+                        if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
                             renderer.ClearIfFirstUse(device, rs, scene.BackgroundColor);
 
                         device.SetRenderSurface(rs, 0);

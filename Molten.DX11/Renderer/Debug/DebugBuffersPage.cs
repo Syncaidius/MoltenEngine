@@ -29,18 +29,15 @@ namespace Molten.Graphics
             dest.Y += 22; DrawBar("Static Vertex", font, sb, renderer.StaticVertexBuffer, dest);
             dest.Y += height + 2; DrawBar("Dynamic Vertex", font, sb, renderer.DynamicVertexBuffer, dest);
 
-            if (scene.HasFlag(SceneRenderFlags.Deferred))
-            {
-                _startStep = _startStep ?? renderer.GetRenderStep<StartStep>();
-                _lighting = _lighting ?? renderer.GetRenderStep<LightingStep>();
-                int size = 256;
-                dest = new Rectangle(0, surface.Height - size, size, size);
-                sb.Draw(_startStep.Scene, dest, Color.White);
-                dest.X += size; sb.Draw(_startStep.Normals, dest, Color.White);
-                dest.X += size; sb.Draw(_startStep.Depth, dest, Color.White);
-                dest.X += size; sb.Draw(_startStep.Emissive, dest, Color.White);
-                dest.X += size; sb.Draw(_lighting.Lighting, dest, Color.White);
-            }
+            _startStep = _startStep ?? renderer.GetRenderStep<StartStep>();
+            _lighting = _lighting ?? renderer.GetRenderStep<LightingStep>();
+            int size = 256;
+            dest = new Rectangle(0, surface.Height - size, size, size);
+            sb.Draw(_startStep.Scene, dest, Color.White);
+            dest.X += size; sb.Draw(_startStep.Normals, dest, Color.White);
+            dest.X += size; sb.Draw(_startStep.Depth, dest, Color.White);
+            dest.X += size; sb.Draw(_startStep.Emissive, dest, Color.White);
+            dest.X += size; sb.Draw(_lighting.Lighting, dest, Color.White);
         }
 
         private void DrawBar(string label, SpriteFont font, SpriteBatch sb, GraphicsBuffer buffer, Rectangle destination)
