@@ -71,7 +71,5 @@ namespace Molten.Graphics
         public override IDisplayManager DisplayManager => throw new NotImplementedException();
 
         public override IResourceManager Resources => throw new NotImplementedException();
-
-        public override IRenderSurface DefaultSurface { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }

@@ -68,7 +68,7 @@ namespace Molten.Graphics
             GraphicsDeviceDX11 device = renderer.Device;
 
             Lighting.Clear(renderer.Device, scene.AmbientLightColor);
-            device.ResetRenderSurfaces(RenderSurfaceResetMode.NullSurface);
+            device.UnsetRenderSurfaces();
             device.SetRenderSurface(Lighting, 0);
             device.SetDepthSurface(_startStep.Depth, GraphicsDepthMode.ReadOnly);
             RenderPointLights(device, camera, scene);
@@ -105,8 +105,8 @@ namespace Molten.Graphics
             _matPoint.Light.CameraPosition.Value = camera.Position;
             _matPoint.Scene.MaxSurfaceUV.Value = new Vector2F()
             {
-                X = (float)camera.FinalSurface.Width / _startStep.Scene.Width,
-                Y = (float)camera.FinalSurface.Height / _startStep.Scene.Height,
+                X = (float)camera.OutputSurface.Width / _startStep.Scene.Width,
+                Y = (float)camera.OutputSurface.Height / _startStep.Scene.Height,
             };
 
             //set correct buffers and shaders

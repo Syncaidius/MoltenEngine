@@ -30,24 +30,24 @@ namespace Molten.Graphics
             {
                 case StartStep start:
                     Matrix4F spriteProj = Matrix4F.Identity;
-                    Matrix4F spriteView = Matrix4F.OrthoOffCenterLH(0, camera.FinalSurface.Width, -camera.FinalSurface.Height, 0, 0, 1);
+                    Matrix4F spriteView = Matrix4F.OrthoOffCenterLH(0, camera.OutputSurface.Width, -camera.OutputSurface.Height, 0, 0, 1);
                     Matrix4F spriteViewProj = Matrix4F.Multiply(spriteView, spriteProj);
 
-                    Rectangle bounds = new Rectangle(0, 0, camera.FinalSurface.Width, camera.FinalSurface.Height);
+                    Rectangle bounds = new Rectangle(0, 0, camera.OutputSurface.Width, camera.OutputSurface.Height);
                     GraphicsDeviceDX11 device = renderer.Device;
-                    RenderSurfaceBase finalSurface = camera.FinalSurface as RenderSurfaceBase;
+                    RenderSurfaceBase finalSurface = camera.OutputSurface as RenderSurfaceBase;
                     if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
                         renderer.ClearIfFirstUse(device, finalSurface, scene.BackgroundColor);
 
                     device.SetRenderSurface(finalSurface, 0);
                     device.SetDepthSurface(null, GraphicsDepthMode.Disabled);
-                    device.Rasterizer.SetViewports(camera.FinalSurface.Viewport);
+                    device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
 
-                    renderer.SpriteBatcher.Begin(camera.FinalSurface.Viewport);
+                    renderer.SpriteBatcher.Begin(camera.OutputSurface.Viewport);
                     renderer.SpriteBatcher.Draw(start.Scene, bounds, bounds, Color.White, 0, Vector2F.Zero, null);
 
                     StateConditions conditions = StateConditions.ScissorTest;
-                    conditions |= camera.FinalSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
+                    conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
                     renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
                     renderer.SpriteBatcher.End(device, ref spriteViewProj, finalSurface);

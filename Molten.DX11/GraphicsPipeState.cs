@@ -73,7 +73,7 @@ namespace Molten.Graphics
             // Restore surfaces -- ensure surface 0 is correctly handled when null.
             _pipe.SetRenderSurfaces(_surfaces);
             if (_surfaces[0] == null)
-                _pipe.ResetRenderSurface(RenderSurfaceResetMode.NullSurface, 0);
+                _pipe.UnsetRenderSurface(0);
 
 
             _pipe.SetDepthSurface(_depthSurface, _depthMode);

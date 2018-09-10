@@ -137,24 +137,22 @@ namespace Molten.Graphics
                 {
                     camera.Skip = false;
 
-                    // Check for valid final surface.
-                    camera.FinalSurface = camera.OutputSurface ?? DefaultSurface;
-                    if (camera.FinalSurface == null)
+                    if (camera.OutputSurface == null)
                     {
                         camera.Skip = true;
                         continue;
                     }
 
-                    if (camera.FinalSurface.Width > BiggestWidth)
+                    if (camera.OutputSurface.Width > BiggestWidth)
                     {
                         _surfaceResizeRequired = true;
-                        BiggestWidth = camera.FinalSurface.Width;
+                        BiggestWidth = camera.OutputSurface.Width;
                     }
 
-                    if (camera.FinalSurface.Height > BiggestHeight)
+                    if (camera.OutputSurface.Height > BiggestHeight)
                     {
                         _surfaceResizeRequired = true;
-                        BiggestHeight = camera.FinalSurface.Height;
+                        BiggestHeight = camera.OutputSurface.Height;
                     }
                 }
             }
@@ -174,14 +172,6 @@ namespace Molten.Graphics
                 surface.Present();
                 return false;
             });
-
-            // Clear references to final surfaces. 
-            // This is done separately so that any debug overlays rendered by scenes can still access final surface information during their render call.
-            foreach (SceneRenderData data in Scenes)
-            {
-                foreach (RenderCamera camera in data.Cameras)
-                    camera.FinalSurface = null;
-            }
 
             Profiler.EndCapture(time);
             OnPostPresent(time);
@@ -263,8 +253,6 @@ namespace Molten.Graphics
         /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.
         /// </summary>
         public abstract IResourceManager Resources { get; }
-
-        public abstract IRenderSurface DefaultSurface { get; set; }
 
         public abstract IComputeManager Compute { get; }
 

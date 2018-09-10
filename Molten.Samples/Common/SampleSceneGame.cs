@@ -31,6 +31,7 @@ namespace Molten.Samples
         {
             _player = CreateObject();
             SceneCamera = _player.AddComponent<SceneCameraComponent>();
+            SceneCamera.OutputSurface = Window;
             SceneCamera.MaxDrawDistance = 300;
             SceneCamera.OutputSurface = Window;
             _scene.AddObject(_player);

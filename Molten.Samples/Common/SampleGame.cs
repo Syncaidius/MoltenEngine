@@ -28,7 +28,10 @@ namespace Molten.Samples
             UIScene = CreateScene("UI");
 
             // Use the same camera for both the sprite and UI scenes.
-            RenderCamera cam2D = new RenderCamera(RenderCameraPreset.Orthographic);
+            RenderCamera cam2D = new RenderCamera(RenderCameraPreset.Orthographic)
+            {
+                OutputSurface = Window,
+            };
             UIScene.AddCamera(cam2D);
             SpriteScene.AddCamera(cam2D);
 
@@ -58,9 +61,6 @@ namespace Molten.Samples
                     gameControl.Location = panelsToReplace[0].Location;
                     gameControl.Anchor = panelsToReplace[0].Anchor;
 
-                    //_form.SliderRed.Value = surface.ClearColor.R;
-                    //_form.SliderGreen.Value = surface.ClearColor.G;
-                    //_form.SliderBlue.Value = surface.ClearColor.B;
                     _form.SliderRed.ValueChanged += SliderRed_ValueChanged;
                     _form.SliderGreen.ValueChanged += SliderGreen_ValueChanged;
                     _form.SliderBlue.ValueChanged += SliderBlue_ValueChanged;

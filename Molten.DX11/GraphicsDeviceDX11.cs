@@ -192,10 +192,6 @@ namespace Molten.Graphics
 
         internal GraphicsSettings Settings => _settings;
 
-        /// <summary>Gets or sets the default render surface. This is the surface that <see cref="GraphicsPipe"/> instances revert to
-        /// when a render surface is set to null.</summary>
-        internal RenderSurfaceBase DefaultSurface { get; set; }
-
         internal VertexFormatBuilder VertexBuilder => _vertexBuilder;
 
         internal long AllocatedVRAM => _allocatedVRAM;

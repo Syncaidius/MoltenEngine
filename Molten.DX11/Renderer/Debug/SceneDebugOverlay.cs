@@ -45,7 +45,7 @@ namespace Molten.Graphics
         public void Render(SpriteBatch sb)
         {
             if (IsVisible && _data != null && Font != null)
-                _renderer.DebugOverlayPages[_page].Render(Font, _renderer, sb, _data, _data.Cameras[0].FinalSurface);
+                _renderer.DebugOverlayPages[_page].Render(Font, _renderer, sb, _data, _data.Cameras[0].OutputSurface);
         }
 
         public bool IsVisible { get; set; } = true;

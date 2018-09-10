@@ -28,40 +28,28 @@ namespace Molten.Graphics
         {
             GraphicsDeviceDX11 device = renderer.Device;
             Matrix4F spriteView, spriteProj, spriteViewProj;
-            RenderSurfaceBase rs = camera.FinalSurface as RenderSurfaceBase;
+            RenderSurfaceBase rs = camera.OutputSurface as RenderSurfaceBase;
 
-            if (camera.OutputSurface != null)
-            {
-                spriteProj = camera.Projection;
-                spriteView = camera.View;
-                spriteViewProj = camera.ViewProjection;
-            }
-            else
-            {
-                spriteProj = Matrix4F.Identity;
-                spriteView = Matrix4F.OrthoOffCenterLH(0, rs.Width, -rs.Height, 0, 0, 1);
-                spriteViewProj = Matrix4F.Multiply(spriteView, spriteProj);
-            }
+            spriteProj = camera.Projection;
+            spriteView = camera.View;
+            spriteViewProj = camera.ViewProjection;
 
-            if (rs != null)
-            {
-                if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
-                    renderer.ClearIfFirstUse(device, rs, scene.BackgroundColor);
+            if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
+                renderer.ClearIfFirstUse(device, rs, scene.BackgroundColor);
 
-                device.SetRenderSurfaces(null);
-                device.SetRenderSurface(rs, 0);
-                device.SetDepthSurface(null, GraphicsDepthMode.Disabled);
-                device.Rasterizer.SetViewports(rs.Viewport);
+            device.SetRenderSurfaces(null);
+            device.SetRenderSurface(rs, 0);
+            device.SetDepthSurface(null, GraphicsDepthMode.Disabled);
+            device.Rasterizer.SetViewports(rs.Viewport);
 
-                StateConditions conditions = StateConditions.ScissorTest;
-                conditions |= rs.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
+            StateConditions conditions = StateConditions.ScissorTest;
+            conditions |= rs.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
-                device.BeginDraw(conditions);
-                renderer.SpriteBatcher.Begin(rs.Viewport);
-                renderer.Render2D(device, scene);
-                renderer.SpriteBatcher.End(device, ref spriteViewProj, rs);
-                device.EndDraw();
-            }
+            device.BeginDraw(conditions);
+            renderer.SpriteBatcher.Begin(rs.Viewport);
+            renderer.Render2D(device, scene);
+            renderer.SpriteBatcher.End(device, ref spriteViewProj, rs);
+            device.EndDraw();
         }
     }
 }

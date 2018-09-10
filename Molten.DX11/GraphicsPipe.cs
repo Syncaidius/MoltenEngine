@@ -67,9 +67,9 @@ namespace Molten.Graphics
             _blendState = new GraphicsBlendStage(this);
             _rasterizer = new GraphicsRasterizerStage(this);
 
-            // Set default viewport
-            if (_device.DefaultSurface != null)
-                _rasterizer.SetViewports(_device.DefaultSurface.Viewport);
+            //// Set default viewport
+            //if (_device.DefaultSurface != null)
+            //    _rasterizer.SetViewports(_device.DefaultSurface.Viewport);
 
             // Apply the surface of the graphics device's output initialally.
             SetRenderSurfaces(null);
@@ -146,14 +146,14 @@ namespace Molten.Graphics
         /// <summary>Resets a render surface slot.</summary>
         /// <param name="resetMode">The type of reset to perform.</param>
         /// <param name="slot">The ID of the slot to reset.</param>
-        public void ResetRenderSurface(RenderSurfaceResetMode resetMode, int slot)
+        public void UnsetRenderSurface(int slot)
         {
-            _output.ResetRenderSurface(resetMode, slot);
+            _output.ResetRenderSurface(slot);
         }
 
-        public void ResetRenderSurfaces(RenderSurfaceResetMode resetMode)
+        public void UnsetRenderSurfaces()
         {
-            _output.ResetRenderSurfaces(resetMode);
+            _output.ResetRenderSurfaces();
         }
 
         public int PushState()

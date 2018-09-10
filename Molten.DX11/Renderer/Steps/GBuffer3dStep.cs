@@ -39,7 +39,7 @@ namespace Molten.Graphics
                     // TODO add alternate HDR start step here (which should be used in conjunction HDR textures, HDR RTs and so on).
             }
 
-            device.Rasterizer.SetViewports(camera.FinalSurface.Viewport);
+            device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
             StateConditions conditions = StateConditions.None; // TODO expand
             device.BeginDraw(conditions);
             renderer.Render3D(device, scene);
@@ -54,8 +54,8 @@ namespace Molten.Graphics
             material.Scene.ViewProjection.Value = scene.ViewProjection;
             material.Scene.MaxSurfaceUV.Value = new Vector2F()
             {
-                X = (float)camera.FinalSurface.Width / gBufferScene.Width,
-                Y = (float)camera.FinalSurface.Height / gBufferScene.Height,
+                X = (float)camera.OutputSurface.Width / gBufferScene.Width,
+                Y = (float)camera.OutputSurface.Height / gBufferScene.Height,
             };
         }
     }

@@ -50,16 +50,8 @@ namespace Molten.Graphics
             GraphicsDeviceDX11 device = renderer.Device;
 
             scene.View = camera.View;
-            if (camera.FinalSurface != camera.OutputSurface)
-            {
-                scene.Projection = Matrix4F.PerspectiveFovLH((float)Math.PI / 4.0f, camera.FinalSurface.Width / (float)camera.FinalSurface.Height, 0.1f, 1000.0f);
-                scene.ViewProjection = scene.View * scene.Projection;
-            }
-            else
-            {
-                scene.Projection = camera.Projection;
-                scene.ViewProjection = camera.ViewProjection;
-            }
+            scene.Projection = camera.Projection;
+            scene.ViewProjection = camera.ViewProjection;
 
             // Clear the depth surface if it hasn't already been cleared
             scene.InvViewProjection = Matrix4F.Invert(scene.ViewProjection);

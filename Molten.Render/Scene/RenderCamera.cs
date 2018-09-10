@@ -196,8 +196,6 @@ namespace Molten.Graphics
         /// </summary>
         public bool Skip { get; internal set; }
 
-        public IRenderSurface FinalSurface { get; internal set; }
-
         /// <summary>
         /// Gets or sets the render flags for the current <see cref="RenderCamera"/>.
         /// </summary>

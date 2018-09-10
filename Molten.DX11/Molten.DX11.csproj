@@ -259,7 +259,6 @@
     <Compile Include="Surfaces\RenderFormSurface.cs" />
     <Compile Include="Surfaces\RenderSurface.cs" />
     <Compile Include="Surfaces\RenderSurfaceBase.cs" />
-    <Compile Include="Surfaces\RenderSurfaceResetMode.cs" />
     <Compile Include="Surfaces\SwapChainSurface.cs" />
     <Compile Include="Textures\BmpTextureWriter.cs" />
     <Compile Include="Textures\Changes\ITextureChange.cs" />

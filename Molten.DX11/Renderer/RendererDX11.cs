@@ -282,11 +282,5 @@ namespace Molten.Graphics
         /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.
         /// </summary>
         public override IResourceManager Resources => _resourceManager;
-
-        public override IRenderSurface DefaultSurface
-        {
-            get => Device.DefaultSurface;
-            set => Device.DefaultSurface = value as RenderSurfaceBase;
-        }
     }
 }

@@ -30,31 +30,26 @@ namespace Molten.Graphics
             GraphicsDeviceDX11 device = renderer.Device;
 
             rs = camera.OutputSurface as RenderSurfaceBase;
-            rs = rs ?? device.DefaultSurface;
-
             scene.Projection = camera.Projection;
             scene.View = camera.View;
             scene.ViewProjection = camera.ViewProjection;
 
-            if (rs != null)
+            switch (link.Previous.Step)
             {
-                switch (link.Previous.Step)
-                {
-                    case StartStep start:
+                case StartStep start:
 
-                        if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
-                            renderer.ClearIfFirstUse(device, rs, scene.BackgroundColor);
+                    if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
+                        renderer.ClearIfFirstUse(device, rs, scene.BackgroundColor);
 
-                        device.SetRenderSurface(rs, 0);
-                        device.SetDepthSurface(start.Depth, GraphicsDepthMode.Enabled);
-                        device.Rasterizer.SetViewports(rs.Viewport);
+                    device.SetRenderSurface(rs, 0);
+                    device.SetDepthSurface(start.Depth, GraphicsDepthMode.Enabled);
+                    device.Rasterizer.SetViewports(rs.Viewport);
 
-                        StateConditions conditions = StateConditions.None; // TODO expand
-                        device.BeginDraw(conditions);
-                        renderer.Render3D(device, scene);
-                        device.EndDraw();
-                        break;
-                }
+                    StateConditions conditions = StateConditions.None; // TODO expand
+                    device.BeginDraw(conditions);
+                    renderer.Render3D(device, scene);
+                    device.EndDraw();
+                    break;
             }
         }
     }

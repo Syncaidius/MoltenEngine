@@ -158,10 +158,6 @@ namespace Molten.Graphics
             // Set the remaining surfaces to null.
             for (int i = count; i < _surfaces.Length; i++)
                 _surfaces[i] = null;
-
-            // Ensure target 0 is reset back to the device output if needed.
-            if (_surfaces[0] == null)
-                _surfaces[0] = Device.DefaultSurface;
         }
 
         /// <summary>
@@ -171,17 +167,7 @@ namespace Molten.Graphics
         /// <param name="slot">The slot.</param>
         public void SetRenderSurface(RenderSurfaceBase surface, int slot)
         {
-            if (surface == null)
-            {
-                if (slot == 0)
-                    _surfaces[slot] = Device.DefaultSurface;
-                else
-                    _surfaces[slot] = null;
-            }
-            else
-            {
-                _surfaces[slot] = surface;
-            }
+            _surfaces[slot] = surface;
         }
 
         /// <summary>
@@ -205,49 +191,20 @@ namespace Molten.Graphics
         /// <summary>Resets the render surface contained in an output slot.</summary>
         /// <param name="resetMode"></param>
         /// <param name="slot"></param>
-        public void ResetRenderSurface(RenderSurfaceResetMode resetMode, int slot)
+        public void ResetRenderSurface(int slot)
         {
-            switch (resetMode)
-            {
-                case RenderSurfaceResetMode.OutputSurface:
-                    _surfaces[slot] = Device.DefaultSurface;
-                    break;
-
-                case RenderSurfaceResetMode.NullSurface:
-                    _surfaces[slot] = null;
-                    break;
-            }
+            _surfaces[slot] = null;
         }
 
         /// <summary>
         /// Resets the render surfaces.
         /// </summary>
         /// <param name="resetMode">The reset mode.</param>
-        /// <param name="outputOnFirst">If true, and the reset mode is OutputSurface, it will only be applied to the first slot (0)..</param>
-        public void ResetRenderSurfaces(RenderSurfaceResetMode resetMode, bool outputOnFirst = true)
+        /// <param name="outputOnFirst">If true and the reset mode is OutputSurface, it will only be applied to the first slot (0)..</param>
+        public void ResetRenderSurfaces()
         {
-            switch (resetMode)
-            {
-                case RenderSurfaceResetMode.OutputSurface:
-                    if (outputOnFirst)
-                    {
-                        for (int i = 0; i < _surfaces.Length; i++)
-                            _surfaces[i] = null;
-
-                        _surfaces[0] = Device.DefaultSurface;
-                    }
-                    else
-                    {
-                        for (int i = 0; i < _surfaces.Length; i++)
-                            _surfaces[i] = Device.DefaultSurface;
-                    }
-                    break;
-
-                case RenderSurfaceResetMode.NullSurface:
-                    for (int i = 0; i < _surfaces.Length; i++)
-                        _surfaces[i] = null;
-                    break;
-            }
+            for (int i = 0; i < _surfaces.Length; i++)
+                _surfaces[i] = null;
         }
 
         /// <summary>Clears a render target that is set on the device.</summary>
