@@ -100,9 +100,9 @@ namespace Molten.Graphics
 
             // Log preferred adapter stats
             _log.WriteLine($"Chosen {preferredAdapter.Name.Replace("\0", "")}");
-            _log.WriteLine($"    Dedicated VRAM: {preferredAdapter.DedicatedVideoMemory.ToString("N2")} MB");
-            _log.WriteLine($"    System RAM dedicated to video: {preferredAdapter.DedicatedSystemMemory.ToString("N2")} MB");
-            _log.WriteLine($"    Shared system RAM: {preferredAdapter.SharedSystemMemory.ToString("N2")} MB");
+            _log.WriteLine($"    Dedicated VRAM: {preferredAdapter.DedicatedVideoMemory:N2} MB");
+            _log.WriteLine($"    System RAM dedicated to video: {preferredAdapter.DedicatedSystemMemory:N2} MB");
+            _log.WriteLine($"    Shared system RAM: {preferredAdapter.SharedSystemMemory:N2} MB");
         }
 
         protected abstract A[] GetDxgiAdapters(F factory);

@@ -26,6 +26,38 @@ namespace Molten
         }
 
         /// <summary>
+        /// Brings the scene layer to the front, on top of all the parent scene's other layers.
+        /// </summary>
+        public void BringToFront()
+        {
+
+        }
+
+        /// <summary>
+        /// Sends the current layer to the back, on behind of all the parent scene's other layers.
+        /// </summary>
+        public void SendToBack()
+        {
+
+        }
+
+        /// <summary>
+        /// Brings the current layer forward by one layer, essentially swapping it's position/order with the layer in front of it.
+        /// </summary>
+        public void PushForward()
+        {
+
+        }
+
+        /// <summary>
+        /// Sends the current layer backward by one layer, essentially swapping it's position/order with the layer behind it.
+        /// </summary>
+        public void PushBackward()
+        {
+
+        }
+
+        /// <summary>
         /// Gets or sets whether objects in the current <see cref="SceneLayer"/> ignore raycast hits checks. The default value is false.
         /// </summary>
         public bool IgnoreRaycastHit { get; set; }

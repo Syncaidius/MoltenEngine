@@ -67,10 +67,6 @@ namespace Molten.Graphics
             _blendState = new GraphicsBlendStage(this);
             _rasterizer = new GraphicsRasterizerStage(this);
 
-            //// Set default viewport
-            //if (_device.DefaultSurface != null)
-            //    _rasterizer.SetViewports(_device.DefaultSurface.Viewport);
-
             // Apply the surface of the graphics device's output initialally.
             SetRenderSurfaces(null);
             SetDepthSurface(null, GraphicsDepthMode.Enabled);

@@ -66,7 +66,7 @@ namespace Molten.Graphics
             Vector2F tPos = new Vector2F(destination.X, destination.Y);
             double percentUsed = (used / capacity) * 100.0;
 
-            sb.DrawString(font, $"{label}: {used}/{capacity} ({percentUsed.ToString("N2")}%) bytes used", tPos, Color.White);
+            sb.DrawString(font, $"{label}: {used}/{capacity} ({percentUsed:N2}%) bytes used", tPos, Color.White);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Molten.Graphics
             double frameTimePercentage = (frameTime / frame.TargetTime) * 100;
             double frameDelta = frameTime / frame.TargetTime;
 
-            batch.DrawString(font, $"FPS: {fps.ToString("N2")}", pos, Color.Yellow);
+            batch.DrawString(font, $"FPS: {fps:N2}", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"Frame Time: {frameTime}ms -- {frameTimePercentage}%", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"Delta: x{frameDelta}", pos, Color.Yellow);
             pos.Y += 20; batch.DrawString(font, $"Frame ID: {frame.FrameID}", pos, Color.Yellow);
