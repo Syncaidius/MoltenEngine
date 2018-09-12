@@ -150,5 +150,15 @@ namespace Molten
             get => _camera.Flags;
             set => _camera.Flags = value;
         }
+
+        /// <summary>
+        /// Gets or sets the camera's layer render mask. Each enabled bit ignores a layer with the same ID as the bit's position. 
+        /// For example, setting bit 0 will skip rendering of layer 0 (the default layer).
+        /// </summary>
+        public int LayerMask
+        {
+            get => _camera.LayerMask;
+            set => _camera.LayerMask = value;
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace Molten
 
         internal override void Process(Scene scene)
         {
+            Layer.LayerID = ParentScene.Layers.Count;
             ParentScene.Layers.Add(Layer);
             Recycle(this);
         }

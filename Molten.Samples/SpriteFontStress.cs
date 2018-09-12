@@ -115,7 +115,7 @@ namespace Molten.Samples
                 };
 
                 _sprites.Add(s);
-                SpriteScene.AddObject(s);
+                MainScene.AddObject(s);
             }
         }
 

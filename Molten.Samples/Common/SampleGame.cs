@@ -16,6 +16,8 @@ namespace Molten.Samples
         RenderDebugOverlay _mainOverlay;
         ControlSampleForm _form;
         SpriteBatchContainer _sbContainer;
+        SceneLayer _spriteLayer;
+        SceneLayer _uiLayer;
 
         public SampleGame(string title, EngineSettings settings = null) : base(title, settings) { }
 
@@ -24,19 +26,21 @@ namespace Molten.Samples
             base.OnInitialize(engine);
             Window.OnHandleChanged += Window_OnHandleChanged;
 
-            SpriteScene = CreateScene("Sprite");
-            UIScene = CreateScene("UI");
+            MainScene = CreateScene("Main");
+            _spriteLayer = MainScene.AddLayer("sprite", true);
+            _uiLayer = MainScene.AddLayer("ui", true);
+            _uiLayer.BringToFront();
 
             // Use the same camera for both the sprite and UI scenes.
-            RenderCamera cam2D = new RenderCamera(RenderCameraPreset.Orthographic)
-            {
-                OutputSurface = Window,
-            };
-            UIScene.AddCamera(cam2D);
-            SpriteScene.AddCamera(cam2D);
+            RenderCamera cam2D = new RenderCamera(RenderCameraPreset.Orthographic);
+            cam2D.OutputSurface = Window;
+            cam2D.LayerMask = BitwiseHelper.Set(cam2D.LayerMask, 0);
 
-            DebugOverlay = UIScene.DebugOverlay;
-            UIScene.AddObject(DebugOverlay);
+            _uiLayer.AddCamera(cam2D);
+            MainScene.AddCamera(cam2D);
+
+            DebugOverlay = MainScene.DebugOverlay;
+            _uiLayer.AddObject(DebugOverlay);
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<SpriteFont>("BroshK.ttf;size=24");
@@ -101,7 +105,7 @@ namespace Molten.Samples
 
 
             _sbContainer = new SpriteBatchContainer(OnHudDraw);
-            UIScene.AddObject(_sbContainer);
+            _uiLayer.AddObject(_sbContainer);
 
             OnContentLoaded(cr);
             _baseContentLoaded = true;
@@ -142,14 +146,14 @@ namespace Molten.Samples
         public Random Rng { get; private set; } = new Random();
 
         /// <summary>
-        /// Gets the sample's UI scene.
+        /// Gets the sample's UI scene layer.
         /// </summary>
-        public Scene UIScene { get; private set; }
+        public SceneLayer UI => _uiLayer;
 
         /// <summary>
         /// Gets the sample's sprite scene. This is rendered before <see cref="UIScene"/>.
         /// </summary>
-        public Scene SpriteScene { get; private set; }
+        public Scene MainScene { get; private set; }
 
         /// <summary>
         /// Gets or sets the sample's main debug overlay.
@@ -162,10 +166,10 @@ namespace Molten.Samples
                 if(_mainOverlay != value)
                 {
                     if (_mainOverlay != null)
-                        UIScene.RemoveObject(_mainOverlay);
+                        _uiLayer.RemoveObject(_mainOverlay);
 
                     if (value != null)
-                        UIScene.AddObject(value);
+                        _uiLayer.AddObject(value);
 
                     _mainOverlay = value;
                 }

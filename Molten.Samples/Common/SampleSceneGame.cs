@@ -10,7 +10,6 @@ namespace Molten.Samples
 {
     public abstract class SampleSceneGame : SampleGame
     {
-        Scene _scene;
         SceneObject _player;
 
         public SampleSceneGame(string title, EngineSettings settings) : base(title, settings) { }
@@ -18,10 +17,6 @@ namespace Molten.Samples
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-
-            _scene = CreateScene("Test");
-            DebugOverlay = _scene.DebugOverlay;
-            _scene.SendToBack();
             SpawnPlayer();
         }
 
@@ -31,10 +26,11 @@ namespace Molten.Samples
         {
             _player = CreateObject();
             SceneCamera = _player.AddComponent<SceneCameraComponent>();
+            SceneCamera.LayerMask = BitwiseHelper.Set(SceneCamera.LayerMask, 1, 2);
             SceneCamera.OutputSurface = Window;
             SceneCamera.MaxDrawDistance = 300;
             SceneCamera.OutputSurface = Window;
-            _scene.AddObject(_player);
+            MainScene.AddObject(_player);
         }
 
         protected SceneObject SpawnTestCube(IMesh mesh)
@@ -44,7 +40,7 @@ namespace Molten.Samples
 
         protected SceneObject SpawnTestCube(IMesh mesh, Vector3F pos)
         {
-            SceneObject obj = CreateObject(pos, _scene);
+            SceneObject obj = CreateObject(pos, MainScene);
             MeshComponent meshCom = obj.AddComponent<MeshComponent>();
             meshCom.Mesh = mesh;
             return obj;
@@ -174,8 +170,6 @@ namespace Molten.Samples
                 sb.DrawString(SampleFont, text, pos, Color.White);
             }
         }
-
-        public Scene SampleScene => _scene;
 
         public SceneObject Player => _player;
 

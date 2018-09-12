@@ -47,7 +47,7 @@ namespace Molten.Graphics
 
                     StateConditions conditions = StateConditions.None; // TODO expand
                     device.BeginDraw(conditions);
-                    renderer.Render3D(device, scene);
+                    renderer.Render3D(device, scene, camera);
                     device.EndDraw();
                     break;
             }

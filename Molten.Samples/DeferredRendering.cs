@@ -85,7 +85,7 @@ namespace Molten.Samples
         private void SetupFloor(Vector3F origin, float size)
         {
             _floorMesh = MeshHelper.PlainCentered(Engine.Renderer, size / 4);
-            SceneObject floorObj = CreateObject(origin, SampleScene);
+            SceneObject floorObj = CreateObject(origin, MainScene);
             floorObj.Transform.LocalPosition = origin;
             floorObj.Transform.LocalScale = new Vector3F(size);
 
@@ -110,7 +110,7 @@ namespace Molten.Samples
                     Z = (float)Math.Cos(angle) * radius,
                 };
 
-                SceneObject obj = CreateObject(pos, SampleScene);
+                SceneObject obj = CreateObject(pos, MainScene);
                 PointLightComponent lightCom = obj.AddComponent<PointLightComponent>();
                 lightCom.Range = radius + 1;
                 lightCom.Intensity = 2.0f;

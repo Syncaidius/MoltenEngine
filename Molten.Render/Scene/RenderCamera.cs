@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,7 @@ namespace Molten.Graphics
             _projectionFuncs = new Dictionary<RenderCameraPreset, RenderCameraProjectionFunc>();
             _projectionFuncs[RenderCameraPreset.Perspective] = CalcPerspectiveProjection;
             _projectionFuncs[RenderCameraPreset.Orthographic] = CalcOrthographicProjection;
+
 
             _nearClipPreset = new Dictionary<RenderCameraPreset, float>();
             _nearClipPreset[RenderCameraPreset.Perspective] = 0.1f;
@@ -200,12 +202,24 @@ namespace Molten.Graphics
         /// Gets or sets the render flags for the current <see cref="RenderCamera"/>.
         /// </summary>
         public RenderCameraFlags Flags { get; set; }
+
+        /// <summary>
+        /// Gets or sets the camera's layer render mask. Each enabled bit ignores a layer with the same ID as the bit's position. 
+        /// For example, setting bit 0 will skip rendering of layer 0 (the default layer).
+        /// </summary>
+        public int LayerMask { get; set; }
     }
 
     public enum RenderCameraPreset
     {
+        /// <summary>
+        /// Configures a camera for left-handed perspective mode.
+        /// </summary>
         Perspective = 0,
 
+        /// <summary>
+        /// Configures a camera for left-handed orthographic mode.
+        /// </summary>
         Orthographic = 1,
     }
 

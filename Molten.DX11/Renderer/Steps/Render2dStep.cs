@@ -47,7 +47,7 @@ namespace Molten.Graphics
 
             device.BeginDraw(conditions);
             renderer.SpriteBatcher.Begin(rs.Viewport);
-            renderer.Render2D(device, scene);
+            renderer.Render2D(device, scene, camera);
             renderer.SpriteBatcher.End(device, ref spriteViewProj, rs);
             device.EndDraw();
         }

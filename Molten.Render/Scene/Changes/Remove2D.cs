@@ -10,7 +10,7 @@ namespace Molten.Graphics
     internal class Remove2D : RenderSceneChange<Remove2D> 
     {
         public IRenderable2D Object;
-        public SceneLayerData Layerdata;
+        public LayerRenderData Layerdata;
 
         public override void Clear()
         {

@@ -9,7 +9,7 @@ namespace Molten
 {
     public class SceneLayer
     {
-        internal SceneLayerData Data;
+        internal LayerRenderData Data;
         internal List<ISceneObject> Objects;
         internal List<IRenderable2D> Renderables2d;
         internal HashSet<IUpdatable> Updatables;
@@ -25,12 +25,42 @@ namespace Molten
             InputAcceptors = new List<ICursorAcceptor>();
         }
 
+        [Obsolete("Temporary implementation.")]
+        public void AddCamera(RenderCamera camera)
+        {
+            ParentScene.RenderData.AddObject(camera);
+        }
+
+        [Obsolete("Temporary implementation.")]
+        public void RemoveCamera(RenderCamera camera)
+        {
+            ParentScene.RenderData.RemoveObject(camera);
+        }
+
+        /// <summary>
+        /// Adds an object to the current <see cref="SceneLayer"/> in it's parent <see cref="Scene"/>.
+        /// </summary>
+        /// <param name="obj">The object to be added.</param>
+        public void AddObject(ISceneObject obj)
+        {
+            ParentScene.AddObject(obj, this);
+        }
+
+        /// <summary>
+        /// Removes an object from the current <see cref="SceneLayer"/> in it's parent <see cref="Scene"/>.
+        /// </summary>
+        /// <param name="obj">The object to be removed.</param>
+        public void RemoveObject(ISceneObject obj)
+        {
+            ParentScene.RemoveObject(obj, this);
+        }
+
         /// <summary>
         /// Brings the scene layer to the front, on top of all the parent scene's other layers.
         /// </summary>
         public void BringToFront()
         {
-            ParentScene.QueueLayerReorder(this, SceneReorderMode.BringToFront);
+            ParentScene.QueueLayerReorder(this, ReorderMode.BringToFront);
         }
 
         /// <summary>
@@ -38,7 +68,7 @@ namespace Molten
         /// </summary>
         public void SendToBack()
         {
-            ParentScene.QueueLayerReorder(this, SceneReorderMode.SendToBack);
+            ParentScene.QueueLayerReorder(this, ReorderMode.SendToBack);
         }
 
         /// <summary>
@@ -46,7 +76,7 @@ namespace Molten
         /// </summary>
         public void PushForward()
         {
-            ParentScene.QueueLayerReorder(this, SceneReorderMode.PushForward);
+            ParentScene.QueueLayerReorder(this, ReorderMode.PushForward);
         }
 
         /// <summary>
@@ -54,7 +84,7 @@ namespace Molten
         /// </summary>
         public void PushBackward()
         {
-            ParentScene.QueueLayerReorder(this, SceneReorderMode.PushBackward);
+            ParentScene.QueueLayerReorder(this, ReorderMode.PushBackward);
         }
 
         /// <summary>
@@ -66,5 +96,10 @@ namespace Molten
         /// Gets or sets the layer name
         /// </summary>
         public string Name { get; set; } // TODO implement handling to update the parent scene's dictionary key for the layer.
+
+        /// <summary>
+        /// Gets the ID of the layer.
+        /// </summary>
+        public int LayerID { get; internal set; }
     }
 }

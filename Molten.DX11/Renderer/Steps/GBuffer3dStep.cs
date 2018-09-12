@@ -42,7 +42,7 @@ namespace Molten.Graphics
             device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
             StateConditions conditions = StateConditions.None; // TODO expand
             device.BeginDraw(conditions);
-            renderer.Render3D(device, scene);
+            renderer.Render3D(device, scene, camera);
             device.EndDraw();
         }
 

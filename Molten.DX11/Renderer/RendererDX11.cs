@@ -193,13 +193,19 @@ namespace Molten.Graphics
             _chain.Render(data, camera, time);
         }
 
-        internal void Render3D(GraphicsPipe pipe, SceneRenderData<Renderable> sceneData)
+        internal void Render3D(GraphicsPipe pipe, SceneRenderData<Renderable> sceneData, RenderCamera camera)
         {
             // To start with we're just going to draw ALL objects in the render tree.
             // Sorting and culling will come later
             SceneLayerData<Renderable> layerData;
-            foreach (SceneLayerData layer in sceneData.Layers)
+            LayerRenderData layer;
+            for (int i = 0; i < sceneData.Layers.Count; i++)
             {
+                layer = sceneData.Layers[i];
+                int layerBitVal = 1 << i;
+                if ((camera.LayerMask & layerBitVal) == layerBitVal)
+                    continue;
+
                 layerData = layer as SceneLayerData<Renderable>;
                 foreach (KeyValuePair<Renderable, List<ObjectRenderData>> p in layerData.Renderables)
                 {
@@ -214,12 +220,18 @@ namespace Molten.Graphics
             }
         }
 
-        internal void Render2D(GraphicsPipe pipe, SceneRenderData sceneData)
+        internal void Render2D(GraphicsPipe pipe, SceneRenderData sceneData, RenderCamera camera)
         {
-            foreach (SceneLayerData layer in sceneData.Layers)
+            LayerRenderData layer;
+            for(int i = 0; i < sceneData.Layers.Count; i++)
             {
-                for (int i = 0; i < layer.Renderables2D.Count; i++)
-                    layer.Renderables2D[i].Render(SpriteBatcher);
+                layer = sceneData.Layers[i];
+                int layerBitVal = 1 << i;
+                if ((camera.LayerMask & layerBitVal) == layerBitVal)
+                    continue;
+
+                for (int j = 0; j < layer.Renderables2D.Count; j++)
+                    layer.Renderables2D[j].Render(SpriteBatcher);
             }
         }
 

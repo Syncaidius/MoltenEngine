@@ -136,7 +136,7 @@ namespace Molten.Graphics
             _rt.Clear(Color.Transparent);
             _renderData = renderer.CreateRenderData();
             _renderData.IsVisible = false;
-            SceneLayerData layer = _renderData.CreateLayerData();
+            LayerRenderData layer = _renderData.CreateLayerData();
             _renderData.AddLayer(layer);
             _renderData.AddObject(new FontContainer(this), layer);
             _renderData.OnPostRender += _renderData_OnPostRender;

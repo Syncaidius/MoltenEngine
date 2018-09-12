@@ -10,7 +10,7 @@ namespace Molten.Graphics
     internal class Add2D : RenderSceneChange<Add2D> 
     {
         public IRenderable2D Object;
-        public SceneLayerData LayerData;
+        public LayerRenderData LayerData;
 
         public override void Clear()
         {

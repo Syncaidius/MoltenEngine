@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class SceneLayerData
+    public class LayerRenderData
     {
         public readonly List<IRenderable2D> Renderables2D = new List<IRenderable2D>();
     }
 
-    public class SceneLayerData<R> : SceneLayerData
+    public class SceneLayerData<R> : LayerRenderData
         where R : IRenderable3D
     {
         public Dictionary<R, List<ObjectRenderData>> Renderables = new Dictionary<R, List<ObjectRenderData>>();

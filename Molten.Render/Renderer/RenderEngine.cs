@@ -76,34 +76,6 @@ namespace Molten.Graphics
             PushTask(task);
         }
 
-        private void PushSceneReorder(SceneRenderData data, SceneReorderMode mode)
-        {
-            RendererReorderScene task = RendererReorderScene.Get();
-            task.Data = data as SceneRenderData;
-            task.Mode = mode;
-            PushTask(task);
-        }
-
-        public void BringToFront(SceneRenderData data)
-        {
-            PushSceneReorder(data, SceneReorderMode.BringToFront);
-        }
-
-        public void SendToBack(SceneRenderData data)
-        {
-            PushSceneReorder(data, SceneReorderMode.SendToBack);
-        }
-
-        public void PushForward(SceneRenderData data)
-        {
-            PushSceneReorder(data, SceneReorderMode.PushForward);
-        }
-
-        public void PushBackward(SceneRenderData data)
-        {
-            PushSceneReorder(data, SceneReorderMode.PushBackward);
-        }
-
         public void PushTask(RendererTask task)
         {
             Tasks.Enqueue(task);

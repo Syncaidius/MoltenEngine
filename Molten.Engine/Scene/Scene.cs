@@ -39,7 +39,7 @@ namespace Molten
 
         public SceneLayer AddLayer(string name, bool ignoreRaycastHit = false)
         {
-            SceneLayerData layerData = RenderData.CreateLayerData();
+            LayerRenderData layerData = RenderData.CreateLayerData();
             RenderData.AddLayer(layerData);
 
             SceneLayerAdd change = SceneLayerAdd.Get();
@@ -72,44 +72,12 @@ namespace Molten
             _pendingChanges.Enqueue(change);
         }
 
-        internal void QueueLayerReorder(SceneLayer layer, SceneReorderMode mode)
+        internal void QueueLayerReorder(SceneLayer layer, ReorderMode mode)
         {
             SceneLayerReorder change = SceneLayerReorder.Get();
             change.Layer = layer;
             change.Mode = mode;
             _pendingChanges.Enqueue(change);
-        }
-
-        /// <summary>
-        /// Brings the scene to the front of the render stack. The scene will be rendered on top of all other scenes on the same <see cref="IRenderSurface"/>.
-        /// </summary>
-        public void BringToFront()
-        {
-            Engine.Renderer?.BringToFront(RenderData);
-        }
-
-        /// <summary>
-        /// Sends the scene to the back of the render stack. The scene will be rendered behind all other scenes on the same <see cref="IRenderSurface"/>.
-        /// </summary>
-        public void SendToBack()
-        {
-            Engine.Renderer?.SendToBack(RenderData);
-        }
-
-        /// <summary>
-        /// Pushes the scene forward by one ID in the render stack. The scene will be rendered on top of any other scenes that come before it in the render stack.
-        /// </summary>
-        public void PushForward()
-        {
-            Engine.Renderer?.PushForward(RenderData);
-        }
-
-        /// <summary>
-        /// Pushes the scene back by one ID in the render stack. The scene will be rendered on top of any other scenes that come before it in the render stack.
-        /// </summary>
-        public void PushBackward()
-        {
-            Engine.Renderer?.PushBackward(RenderData);
         }
 
         /// <summary>Adds a <see cref="SceneObject"/> to the scene.</summary>
