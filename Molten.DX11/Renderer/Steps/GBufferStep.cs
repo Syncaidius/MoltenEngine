@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class GBuffer3dStep : RenderStepBase
+    internal class GBufferStep : RenderStepBase
     {
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
         public override void Dispose() { }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData scene, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 

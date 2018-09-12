@@ -45,18 +45,18 @@ namespace Molten.Graphics
             DisposeSurfaces();
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
-            scene.View = camera.View;
-            scene.Projection = camera.Projection;
-            scene.ViewProjection = camera.ViewProjection;
+            sceneData.View = camera.View;
+            sceneData.Projection = camera.Projection;
+            sceneData.ViewProjection = camera.ViewProjection;
 
             // Clear the depth surface if it hasn't already been cleared
-            scene.InvViewProjection = Matrix4F.Invert(scene.ViewProjection);
+            sceneData.InvViewProjection = Matrix4F.Invert(sceneData.ViewProjection);
 
-            bool newSurface = renderer.ClearIfFirstUse(device, Scene, scene.BackgroundColor);
+            bool newSurface = renderer.ClearIfFirstUse(device, Scene, sceneData.BackgroundColor);
             renderer.ClearIfFirstUse(device, Normals, Color.White * 0.5f);
             renderer.ClearIfFirstUse(device, Emissive, Color.Black);
 

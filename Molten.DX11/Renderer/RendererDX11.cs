@@ -112,7 +112,7 @@ namespace Molten.Graphics
 
         protected override SceneRenderData OnCreateRenderData()
         {
-            SceneRenderData data =  new SceneRenderData<Renderable>();
+            SceneRenderData data = new SceneRenderData<Renderable, RenderChain>();
             data.DebugOverlay = new SceneDebugOverlay(this, data);
             return data;
         }
@@ -125,11 +125,7 @@ namespace Molten.Graphics
         protected override void OnPresent(Timing time)
         {          
             /* CAMERA REFACTOR
-             *  - The renderer will iterate over cameras instead of scenes
-             *  - Each camera will store a 32-bit layer mask (32 layers, one per bit)
-             *  - RenderData will be split into LayerData objects, containing the objects to be rendered on each layer
              *  - The layer limit will be 32
-             *  - A camera will be given the RenderData object of the scene it is part of.
              */
 
             /* DESIGN NOTES:
@@ -152,23 +148,22 @@ namespace Molten.Graphics
              *  - Prepare rendering of these on worker threads.
              */
 
-            SceneRenderData<Renderable> scene;
-            foreach(SceneRenderData data in Scenes)
+            // TODO Move this into RenderEngine class.
+            // TODO Move profiler from SceneRenderData to RenderCamera. It's the cameras we should be timing now.
+            foreach(SceneRenderData scene in Scenes)
             {
-                scene = data as SceneRenderData<Renderable>;
-
                 Device.Profiler = scene.Profiler;
                 Device.Profiler.StartCapture();
-                data.PreRenderInvoke(this);
+                scene.PreRenderInvoke(this);
                 foreach (RenderCamera camera in scene.Cameras)
                 {
                     if (camera.Skip)
                         continue;                    
 
-                    RenderScene(scene, camera, Device, time);                    
+                    RenderScene(scene, camera, time);                    
                     Device.Profiler = null;
                 }
-                data.PostRenderInvoke(this);
+                scene.PostRenderInvoke(this);
                 Profiler.AddData(scene.Profiler.CurrentFrame);
                 Device.Profiler.EndCapture(time);
             }
@@ -187,17 +182,17 @@ namespace Molten.Graphics
                 _stepList[i].UpdateSurfaces(this, requiredWidth, requiredHeight);
         }
 
-        internal void RenderScene(SceneRenderData<Renderable> data, RenderCamera camera, GraphicsPipe pipe, Timing time)
+        internal void RenderScene(SceneRenderData data, RenderCamera camera, Timing time)
         {
             _chain.Build(data, camera);
             _chain.Render(data, camera, time);
         }
 
-        internal void Render3D(GraphicsPipe pipe, SceneRenderData<Renderable> sceneData, RenderCamera camera)
+        internal void Render3D(GraphicsPipe pipe, SceneRenderData sceneData, RenderCamera camera)
         {
             // To start with we're just going to draw ALL objects in the render tree.
             // Sorting and culling will come later
-            SceneLayerData<Renderable> layerData;
+            SceneLayerData<Renderable, RenderChain> layerData;
             LayerRenderData layer;
             for (int i = 0; i < sceneData.Layers.Count; i++)
             {
@@ -206,7 +201,7 @@ namespace Molten.Graphics
                 if ((camera.LayerMask & layerBitVal) == layerBitVal)
                     continue;
 
-                layerData = layer as SceneLayerData<Renderable>;
+                layerData = layer as SceneLayerData<Renderable, RenderChain>;
                 foreach (KeyValuePair<Renderable, List<ObjectRenderData>> p in layerData.Renderables)
                 {
                     // TODO use instancing here.

@@ -63,7 +63,7 @@ namespace Molten.Graphics
             _lightDataBuffer.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData scene, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
@@ -74,7 +74,7 @@ namespace Molten.Graphics
             RenderPointLights(device, camera, scene);
         }
 
-        private void RenderPointLights(GraphicsPipe pipe, RenderCamera camera, SceneRenderData<Renderable> scene)
+        private void RenderPointLights(GraphicsPipe pipe, RenderCamera camera, SceneRenderData scene)
         {
             // Calculate camera-specific information for each point light
             LightInstance instance;

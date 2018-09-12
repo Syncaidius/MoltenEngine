@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="SceneObject"/> to the root of a scene.</summary>
-    internal class RenderableRemove<R> : RenderSceneChange<RenderableRemove<R>>
+    /// <summary>A <see cref="RenderSceneChange"/> for removing a <see cref="IRenderable3D"/> from the root of a scene.</summary>
+    internal class RenderableRemove<R, C> : RenderSceneChange<RenderableRemove<R, C>>
         where R: class, IRenderable3D
+        where C : class, IRenderChain
     {
         public R Renderable;
 
         public ObjectRenderData Data;
 
-        public SceneLayerData<R> LayerData;
+        public SceneLayerData<R, C> LayerData;
 
         public override void Clear()
         {

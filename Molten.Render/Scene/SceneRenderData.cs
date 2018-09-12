@@ -148,29 +148,30 @@ namespace Molten.Graphics
         public List<RenderCamera> Cameras { get; } = new List<RenderCamera>();
     }
 
-    public class SceneRenderData<R> : SceneRenderData
+    public class SceneRenderData<R, C> : SceneRenderData
         where R: class, IRenderable3D
+        where C : class, IRenderChain
     {
         public override LayerRenderData CreateLayerData()
         {
-            return new SceneLayerData<R>();
+            return new SceneLayerData<R, C>();
         }
 
         public override void AddObject(IRenderable3D obj, ObjectRenderData renderData, LayerRenderData layer)
         {
-            RenderableAdd<R> change = RenderableAdd<R>.Get();
+            RenderableAdd<R, C> change = RenderableAdd<R, C>.Get();
             change.Renderable = obj as R;
             change.Data = renderData;
-            change.LayerData = layer as SceneLayerData<R>;
+            change.LayerData = layer as SceneLayerData<R, C>;
             _pendingChanges.Enqueue(change);
         }
 
         public override void RemoveObject(IRenderable3D obj, ObjectRenderData renderData, LayerRenderData layer)
         {
-            RenderableRemove<R> change = RenderableRemove<R>.Get();
+            RenderableRemove<R, C> change = RenderableRemove<R, C>.Get();
             change.Renderable = obj as R;
             change.Data = renderData;
-            change.LayerData = layer as SceneLayerData<R>;
+            change.LayerData = layer as SceneLayerData<R, C>;
             _pendingChanges.Enqueue(change);
         }
     }

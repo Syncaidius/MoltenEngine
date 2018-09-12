@@ -24,7 +24,7 @@ namespace Molten.Graphics
 
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData scene, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
             Matrix4F spriteView, spriteProj, spriteViewProj;

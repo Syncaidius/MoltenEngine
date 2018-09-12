@@ -24,7 +24,7 @@ namespace Molten.Graphics
 
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData<Renderable> scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData scene, Timing time, RenderChain.Link link)
         {
             switch (link.Chain.First.Step)
             {

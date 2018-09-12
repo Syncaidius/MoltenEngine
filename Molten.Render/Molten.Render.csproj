@@ -102,6 +102,7 @@
     <Compile Include="Exceptions\AdapterOutputException.cs" />
     <Compile Include="GraphicsFormat.cs" />
     <Compile Include="GraphicsSettings.cs" />
+    <Compile Include="Renderer\IRenderChain.cs" />
     <Compile Include="Renderer\RenderEngine.cs" />
     <Compile Include="Renderer\Tasks\RendererAddScene.cs" />
     <Compile Include="Renderer\Tasks\RendererRemoveScene.cs" />
