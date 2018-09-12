@@ -112,6 +112,7 @@
     <Compile Include="ObjectHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SceneManager.cs" />
+    <Compile Include="Scene\Changes\SceneLayerReorder.cs" />
     <Compile Include="Scene\Changes\SceneLayerRemove.cs" />
     <Compile Include="Scene\Changes\SceneLayerAdd.cs" />
     <Compile Include="Scene\Changes\SceneAddObject.cs" />

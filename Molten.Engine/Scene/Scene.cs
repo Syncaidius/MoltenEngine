@@ -72,6 +72,14 @@ namespace Molten
             _pendingChanges.Enqueue(change);
         }
 
+        internal void QueueLayerReorder(SceneLayer layer, SceneReorderMode mode)
+        {
+            SceneLayerReorder change = SceneLayerReorder.Get();
+            change.Layer = layer;
+            change.Mode = mode;
+            _pendingChanges.Enqueue(change);
+        }
+
         /// <summary>
         /// Brings the scene to the front of the render stack. The scene will be rendered on top of all other scenes on the same <see cref="IRenderSurface"/>.
         /// </summary>

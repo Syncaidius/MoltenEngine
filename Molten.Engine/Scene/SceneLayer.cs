@@ -30,7 +30,7 @@ namespace Molten
         /// </summary>
         public void BringToFront()
         {
-
+            ParentScene.QueueLayerReorder(this, SceneReorderMode.BringToFront);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Molten
         /// </summary>
         public void SendToBack()
         {
-
+            ParentScene.QueueLayerReorder(this, SceneReorderMode.SendToBack);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Molten
         /// </summary>
         public void PushForward()
         {
-
+            ParentScene.QueueLayerReorder(this, SceneReorderMode.PushForward);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Molten
         /// </summary>
         public void PushBackward()
         {
-
+            ParentScene.QueueLayerReorder(this, SceneReorderMode.PushBackward);
         }
 
         /// <summary>
