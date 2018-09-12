@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Molten.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics
+namespace Molten
 {
     /// <summary>A <see cref="RendererReorderScene"/> for changing the draw order of a <see cref="SceneRenderDataDX11"/> instance.</summary>
     internal class SceneLayerReorder : SceneChange<SceneLayerReorder>
@@ -49,16 +50,5 @@ namespace Molten.Graphics
 
             Recycle(this);
         }
-    }
-
-    internal enum SceneReorderMode
-    {
-        PushBackward,
-
-        PushForward,
-
-        SendToBack,
-
-        BringToFront,
     }
 }

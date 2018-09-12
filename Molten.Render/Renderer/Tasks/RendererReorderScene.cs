@@ -51,7 +51,7 @@ namespace Molten.Graphics
         }
     }
 
-    internal enum SceneReorderMode
+    public enum SceneReorderMode
     {
         PushBackward,
 
