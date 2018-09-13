@@ -220,6 +220,13 @@ namespace Molten.Graphics
         /// Gets the <see cref="RenderProfiler"/> instance bound to the current <see cref="RenderCamera"/>, which tracks render performance and statistics of the scene rendered by the camera.
         /// </summary>
         public RenderProfiler Profiler { get; } = new RenderProfiler();
+
+        /// <summary>
+        /// Gets or sets the ordering depth of the current <see cref="RenderCamera"/>. The default value is 0.
+        /// Cameras which share the same output surface and order-depth will be rendered in the other they were added to the scene.
+        /// If you intend to output multiple cameras to the same <see cref="IRenderSurface"/>, it is recommended you change the order depth accordingly.
+        /// </summary>
+        public int OrderDepth { get; set; }
     }
 
     public enum RenderCameraPreset

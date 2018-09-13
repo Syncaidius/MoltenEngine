@@ -184,6 +184,18 @@ namespace Molten.Graphics
             foreach (SceneRenderData sceneData in Scenes)
             {
                 sceneData.PreRenderInvoke(this);
+
+                // Sort cameras into ascending order-depth.
+                sceneData.Cameras.Sort((a, b) =>
+                {
+                    if (a.OrderDepth > b.OrderDepth)
+                        return 1;
+                    else if (a.OrderDepth < b.OrderDepth)
+                        return -1;
+                    else
+                        return 0;
+                });
+
                 foreach (RenderCamera camera in sceneData.Cameras)
                 {
                     if (camera.Skip)

@@ -33,6 +33,7 @@ namespace Molten.Samples
 
             // Use the same camera for both the sprite and UI scenes.
             RenderCamera cam2D = new RenderCamera(RenderCameraPreset.Orthographic);
+            cam2D.OrderDepth = 1;
             cam2D.OutputSurface = Window;
             cam2D.LayerMask = BitwiseHelper.Set(cam2D.LayerMask, 0);
 
