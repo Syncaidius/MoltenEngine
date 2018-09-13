@@ -24,7 +24,7 @@ namespace Molten.Graphics
 
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
             Matrix4F spriteView, spriteProj, spriteViewProj;
@@ -35,7 +35,7 @@ namespace Molten.Graphics
             spriteViewProj = camera.ViewProjection;
 
             if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
-                renderer.ClearIfFirstUse(device, rs, scene.BackgroundColor);
+                renderer.ClearIfFirstUse(device, rs, sceneData.BackgroundColor);
 
             device.SetRenderSurfaces(null);
             device.SetRenderSurface(rs, 0);
@@ -47,7 +47,11 @@ namespace Molten.Graphics
 
             device.BeginDraw(conditions);
             renderer.SpriteBatcher.Begin(rs.Viewport);
-            renderer.Render2D(device, scene, camera);
+
+            // Draw 2D objects.
+            for (int j = 0; j < layerData.Renderables2D.Count; j++)
+                layerData.Renderables2D[j].Render(renderer.SpriteBatcher);
+
             renderer.SpriteBatcher.End(device, ref spriteViewProj, rs);
             device.EndDraw();
         }

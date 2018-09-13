@@ -24,7 +24,7 @@ namespace Molten.Graphics
 
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, Timing time, RenderChain.Link link)
         {
             switch (link.Chain.First.Step)
             {
@@ -37,7 +37,7 @@ namespace Molten.Graphics
                     GraphicsDeviceDX11 device = renderer.Device;
                     RenderSurfaceBase finalSurface = camera.OutputSurface as RenderSurfaceBase;
                     if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
-                        renderer.ClearIfFirstUse(device, finalSurface, scene.BackgroundColor);
+                        renderer.ClearIfFirstUse(device, finalSurface, sceneData.BackgroundColor);
 
                     device.SetRenderSurface(finalSurface, 0);
                     device.SetDepthSurface(null, GraphicsDepthMode.Disabled);

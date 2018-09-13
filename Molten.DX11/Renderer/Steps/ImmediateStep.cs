@@ -24,22 +24,18 @@ namespace Molten.Graphics
         public override void Dispose()
         { }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, Timing time, RenderChain.Link link)
         {
             RenderSurfaceBase rs = null;
             GraphicsDeviceDX11 device = renderer.Device;
 
             rs = camera.OutputSurface as RenderSurfaceBase;
-            scene.Projection = camera.Projection;
-            scene.View = camera.View;
-            scene.ViewProjection = camera.ViewProjection;
-
             switch (link.Previous.Step)
             {
                 case StartStep start:
 
                     if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
-                        renderer.ClearIfFirstUse(device, rs, scene.BackgroundColor);
+                        renderer.ClearIfFirstUse(device, rs, sceneData.BackgroundColor);
 
                     device.SetRenderSurface(rs, 0);
                     device.SetDepthSurface(start.Depth, GraphicsDepthMode.Enabled);
@@ -47,7 +43,7 @@ namespace Molten.Graphics
 
                     StateConditions conditions = StateConditions.None; // TODO expand
                     device.BeginDraw(conditions);
-                    renderer.Render3D(device, scene, camera);
+                    renderer.Render3D(device, layerData, camera);
                     device.EndDraw();
                     break;
             }

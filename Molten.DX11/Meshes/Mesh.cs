@@ -52,14 +52,14 @@ namespace Molten.Graphics
             pipe.SetVertexSegment(_vb, 0);
         }
 
-        internal override void Render(GraphicsPipe pipe, RendererDX11 renderer, ObjectRenderData data, SceneRenderData sceneData)
+        internal override void Render(GraphicsPipe pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
             if (_material == null)
                 return;
 
             ApplyBuffers(pipe);
             ApplyResources(_material);
-            _material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, sceneData.ViewProjection);
+            _material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
             _material.Object.World.Value = data.RenderTransform;
 
             renderer.Device.Draw(_material, _vertexCount, _topology);

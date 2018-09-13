@@ -17,6 +17,7 @@ namespace Molten.Graphics
         Matrix4F _view;
         Matrix4F _projection;
         Matrix4F _viewProjection;
+        Matrix4F _invViewProjection;
         Matrix4F _transform;
         IRenderSurface _surface;
         float _nearClip = 0.1f;
@@ -86,6 +87,7 @@ namespace Molten.Graphics
         {
             _projFunc(_surface, _nearClip, _farClip, _fov, ref _projection);
             _viewProjection = Matrix4F.Multiply(_view, _projection);
+            _invViewProjection = Matrix4F.Invert(_viewProjection);
         }
 
         public void SetProjectionPreset(RenderCameraPreset preset)
@@ -133,6 +135,11 @@ namespace Molten.Graphics
 
         /// <summary>Gets the camera's combined view-projection matrix. This is the result of the view matrix multiplied by the projection matrix.</summary>
         public Matrix4F ViewProjection => _viewProjection;
+
+        /// <summary>
+        /// Gets the inverse view-projection matrix. This is equal to passing <see cref="ViewProjection"/> through <see cref="Matrix4F.Invert(Matrix4F)"/>.
+        /// </summary>
+        public Matrix4F InvViewProjection => _invViewProjection;
 
         /// <summary>Gets or sets the <see cref="IRenderSurface"/> that the camera's view should be rendered out to.</summary>
         public IRenderSurface OutputSurface
@@ -208,6 +215,11 @@ namespace Molten.Graphics
         /// For example, setting bit 0 will skip rendering of layer 0 (the default layer).
         /// </summary>
         public int LayerMask { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="RenderProfiler"/> instance bound to the current <see cref="RenderCamera"/>, which tracks render performance and statistics of the scene rendered by the camera.
+        /// </summary>
+        public RenderProfiler Profiler { get; } = new RenderProfiler();
     }
 
     public enum RenderCameraPreset

@@ -18,7 +18,6 @@ namespace Molten.Graphics
         HashSet<TextureAsset2D> _clearedSurfaces;
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
-        RenderChain _chain;
 
         internal SpriteBatchDX11 SpriteBatcher;
 
@@ -35,7 +34,6 @@ namespace Molten.Graphics
         {
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
-            _chain = new RenderChain(this);
 
             DebugOverlayPages = new List<DebugOverlayPage>();
             DebugOverlayPages.Add(new DebugStatsPage());
@@ -112,9 +110,14 @@ namespace Molten.Graphics
 
         protected override SceneRenderData OnCreateRenderData()
         {
-            SceneRenderData data = new SceneRenderData<Renderable, RenderChain>();
+            SceneRenderData data = new SceneRenderData<Renderable>();
             data.DebugOverlay = new SceneDebugOverlay(this, data);
             return data;
+        }
+
+        protected override IRenderChain GetRenderChain()
+        {
+            return new RenderChain(this);
         }
 
         protected override void OnPrePresent(Timing time)
@@ -122,51 +125,16 @@ namespace Molten.Graphics
             Device.DisposeMarkedObjects();
         }
 
-        protected override void OnPresent(Timing time)
-        {          
-            /* CAMERA REFACTOR
-             *  - The layer limit will be 32
-             */
+        protected override void OnPreRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time)
+        {
+            Device.Profiler = camera.Profiler;
+            Device.Profiler.StartCapture();
+        }
 
-            /* DESIGN NOTES:
-             *  - Store a hashset of materials used in each scene so that the renderer can set the "Common" buffer in one pass
-             *  
-             *  
-             * MULTI-THREADING
-             *  - Consider using 2+ worker threads to prepare a command list/deferred context from each scene, which can then
-             *    be dispatched to the immediate context when all scenes have been processed
-             *  - Avoid the above if any scenes interact with a render form surface at any point, since those can only be handled on the thread they're created on.
-             *  
-             *  - Consider using worker threads to:
-             *      -- Sort front-to-back for rendering opaque objects (front-to-back reduces overdraw)
-             *      -- Sort by buffer, material or textures (later in time)
-             *      -- Sort back-to-front for rendering transparent objects (back-to-front reduces issues in alpha-blending)
-             *  
-             * 
-             * 2D & UI Rendering:
-             *  - Provide a sprite-batch for rendering 2D and UI
-             *  - Prepare rendering of these on worker threads.
-             */
-
-            // TODO Move this into RenderEngine class.
-            // TODO Move profiler from SceneRenderData to RenderCamera. It's the cameras we should be timing now.
-            foreach(SceneRenderData scene in Scenes)
-            {
-                Device.Profiler = scene.Profiler;
-                Device.Profiler.StartCapture();
-                scene.PreRenderInvoke(this);
-                foreach (RenderCamera camera in scene.Cameras)
-                {
-                    if (camera.Skip)
-                        continue;                    
-
-                    RenderScene(scene, camera, time);                    
-                    Device.Profiler = null;
-                }
-                scene.PostRenderInvoke(this);
-                Profiler.AddData(scene.Profiler.CurrentFrame);
-                Device.Profiler.EndCapture(time);
-            }
+        protected override void OnPostRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time)
+        {
+            Device.Profiler.EndCapture(time);
+            Device.Profiler = null;
         }
 
         protected override void OnPostPresent(Timing time)
@@ -182,51 +150,22 @@ namespace Molten.Graphics
                 _stepList[i].UpdateSurfaces(this, requiredWidth, requiredHeight);
         }
 
-        internal void RenderScene(SceneRenderData data, RenderCamera camera, Timing time)
-        {
-            _chain.Build(data, camera);
-            _chain.Render(data, camera, time);
-        }
-
-        internal void Render3D(GraphicsPipe pipe, SceneRenderData sceneData, RenderCamera camera)
+        internal void Render3D(GraphicsPipe pipe, LayerRenderData layerData, RenderCamera camera)
         {
             // To start with we're just going to draw ALL objects in the render tree.
             // Sorting and culling will come later
-            SceneLayerData<Renderable, RenderChain> layerData;
-            LayerRenderData layer;
-            for (int i = 0; i < sceneData.Layers.Count; i++)
-            {
-                layer = sceneData.Layers[i];
-                int layerBitVal = 1 << i;
-                if ((camera.LayerMask & layerBitVal) == layerBitVal)
-                    continue;
+            LayerRenderData<Renderable> layer = layerData as LayerRenderData<Renderable>;
 
-                layerData = layer as SceneLayerData<Renderable, RenderChain>;
-                foreach (KeyValuePair<Renderable, List<ObjectRenderData>> p in layerData.Renderables)
+            layerData = layer as LayerRenderData<Renderable>;
+            foreach (KeyValuePair<Renderable, List<ObjectRenderData>> p in layer.Renderables)
+            {
+                // TODO use instancing here.
+                foreach (ObjectRenderData data in p.Value)
                 {
-                    // TODO use instancing here.
-                    foreach (ObjectRenderData data in p.Value)
-                    {
-                        // TODO replace below with render prediction to interpolate between the current and target transform.
-                        data.RenderTransform = data.TargetTransform;
-                        p.Key.Render(pipe, this, data, sceneData);
-                    }
+                    // TODO replace below with render prediction to interpolate between the current and target transform.
+                    data.RenderTransform = data.TargetTransform;
+                    p.Key.Render(pipe, this, camera, data);
                 }
-            }
-        }
-
-        internal void Render2D(GraphicsPipe pipe, SceneRenderData sceneData, RenderCamera camera)
-        {
-            LayerRenderData layer;
-            for(int i = 0; i < sceneData.Layers.Count; i++)
-            {
-                layer = sceneData.Layers[i];
-                int layerBitVal = 1 << i;
-                if ((camera.LayerMask & layerBitVal) == layerBitVal)
-                    continue;
-
-                for (int j = 0; j < layer.Renderables2D.Count; j++)
-                    layer.Renderables2D[j].Render(SpriteBatcher);
             }
         }
 

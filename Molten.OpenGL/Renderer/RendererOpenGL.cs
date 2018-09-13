@@ -40,7 +40,17 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        protected override void OnPresent(Timing time)
+        protected override IRenderChain GetRenderChain()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnPreRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void OnPostRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
             throw new NotImplementedException();
         }

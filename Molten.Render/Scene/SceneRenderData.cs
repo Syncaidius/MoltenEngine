@@ -39,11 +39,6 @@ namespace Molten.Graphics
         /// </summary>
         public Color AmbientLightColor = Color.Black;
 
-        public Matrix4F View = Matrix4F.Identity;
-        public Matrix4F Projection;
-        public Matrix4F ViewProjection;
-        public Matrix4F InvViewProjection;
-
         public List<LayerRenderData> Layers = new List<LayerRenderData>();
         protected readonly ThreadedQueue<RenderSceneChange> _pendingChanges = new ThreadedQueue<RenderSceneChange>();
 
@@ -136,11 +131,6 @@ namespace Molten.Graphics
         /// </summary>
         public ISceneDebugOverlay DebugOverlay { get; set; }
 
-        /// <summary>
-        /// Gets the <see cref="RenderProfiler"/> instance bound to the scene data. This tracks render performance and statistics for the current set of scene data.
-        /// </summary>
-        public RenderProfiler Profiler { get; } = new RenderProfiler();
-
         public LightList PointLights { get; } = new LightList(100, 100);
 
         public LightList CapsuleLights { get; } = new LightList(50, 100);
@@ -148,30 +138,29 @@ namespace Molten.Graphics
         public List<RenderCamera> Cameras { get; } = new List<RenderCamera>();
     }
 
-    public class SceneRenderData<R, C> : SceneRenderData
+    public class SceneRenderData<R> : SceneRenderData
         where R: class, IRenderable3D
-        where C : class, IRenderChain
     {
         public override LayerRenderData CreateLayerData()
         {
-            return new SceneLayerData<R, C>();
+            return new LayerRenderData<R>();
         }
 
         public override void AddObject(IRenderable3D obj, ObjectRenderData renderData, LayerRenderData layer)
         {
-            RenderableAdd<R, C> change = RenderableAdd<R, C>.Get();
+            RenderableAdd<R> change = RenderableAdd<R>.Get();
             change.Renderable = obj as R;
             change.Data = renderData;
-            change.LayerData = layer as SceneLayerData<R, C>;
+            change.LayerData = layer as LayerRenderData<R>;
             _pendingChanges.Enqueue(change);
         }
 
         public override void RemoveObject(IRenderable3D obj, ObjectRenderData renderData, LayerRenderData layer)
         {
-            RenderableRemove<R, C> change = RenderableRemove<R, C>.Get();
+            RenderableRemove<R> change = RenderableRemove<R>.Get();
             change.Renderable = obj as R;
             change.Data = renderData;
-            change.LayerData = layer as SceneLayerData<R, C>;
+            change.LayerData = layer as LayerRenderData<R>;
             _pendingChanges.Enqueue(change);
         }
     }

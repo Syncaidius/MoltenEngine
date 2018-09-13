@@ -49,7 +49,7 @@ namespace Molten.Graphics
             Next(step);
         }
 
-        public void Build(SceneRenderData scene, RenderCamera camera)
+        public void Build(SceneRenderData scene, LayerRenderData layerData, RenderCamera camera)
         {
             First = null;
             Last = null;
@@ -88,13 +88,14 @@ namespace Molten.Graphics
             }
         }
 
-        public void Render(SceneRenderData sceneData, RenderCamera camera, Timing time)
+        public void Render(SceneRenderData sceneData, LayerRenderData layerData, RenderCamera camera, Timing time)
         {
             Link link = First;
+            LayerRenderData<Renderable> layer = layerData as LayerRenderData<Renderable>;
 
             while(link != null)
             {
-                link.Step.Render(_renderer, camera, sceneData, time, link);
+                link.Step.Render(_renderer, camera, sceneData, layer, time, link);
                 link = link.Next;
             }
         }

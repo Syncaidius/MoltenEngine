@@ -8,15 +8,12 @@ namespace Molten.Graphics
 {
     public class LayerRenderData
     {
-        public readonly List<IRenderable2D> Renderables2D = new List<IRenderable2D>();
+        public readonly List<IRenderable2D> Renderables2D = new List<IRenderable2D>();        
     }
 
-    public class SceneLayerData<R, C> : LayerRenderData
+    public class LayerRenderData<R> : LayerRenderData
         where R : IRenderable3D
-        where C: IRenderChain
     {
         public readonly Dictionary<R, List<ObjectRenderData>> Renderables = new Dictionary<R, List<ObjectRenderData>>();
-
-        public C RenderChain { get; set; }
     }
 }

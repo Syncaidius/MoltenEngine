@@ -49,7 +49,7 @@ namespace Molten.Graphics
                 material.Resources[i].Value = material.DefaultResources[i];
         }
 
-        internal abstract void Render(GraphicsPipe pipe, RendererDX11 renderer, ObjectRenderData data, SceneRenderData sceneData);
+        internal abstract void Render(GraphicsPipe pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data);
 
         /// <summary>Gets or sets whether or not the renderable should be drawn.</summary>
         public bool IsVisible { get; set; }

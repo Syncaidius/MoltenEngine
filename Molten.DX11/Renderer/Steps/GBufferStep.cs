@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
         public override void Dispose() { }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
@@ -32,8 +32,8 @@ namespace Molten.Graphics
                     device.SetRenderSurface(start.Emissive, 2);
                     device.SetDepthSurface(start.Depth, GraphicsDepthMode.Enabled);
 
-                    SetMaterialCommon(renderer.StandardMeshMaterial, camera, scene, start.Scene);
-                    SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, scene, start.Scene);
+                    SetMaterialCommon(renderer.StandardMeshMaterial, camera, start.Scene);
+                    SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, start.Scene);
                     break;
 
                     // TODO add alternate HDR start step here (which should be used in conjunction HDR textures, HDR RTs and so on).
@@ -42,16 +42,16 @@ namespace Molten.Graphics
             device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
             StateConditions conditions = StateConditions.None; // TODO expand
             device.BeginDraw(conditions);
-            renderer.Render3D(device, scene, camera);
+            renderer.Render3D(device, layerData, camera);
             device.EndDraw();
         }
 
-        private void SetMaterialCommon(Material material, RenderCamera camera, SceneRenderData scene, RenderSurface gBufferScene)
+        private void SetMaterialCommon(Material material, RenderCamera camera, RenderSurface gBufferScene)
         {
-            material.Scene.View.Value = scene.View;
-            material.Scene.Projection.Value = scene.Projection;
-            material.Scene.InvViewProjection.Value = Matrix4F.Invert(scene.ViewProjection);
-            material.Scene.ViewProjection.Value = scene.ViewProjection;
+            material.Scene.View.Value = camera.View;
+            material.Scene.Projection.Value = camera.Projection;
+            material.Scene.InvViewProjection.Value = Matrix4F.Invert(camera.ViewProjection);
+            material.Scene.ViewProjection.Value = camera.ViewProjection;
             material.Scene.MaxSurfaceUV.Value = new Vector2F()
             {
                 X = (float)camera.OutputSurface.Width / gBufferScene.Width,

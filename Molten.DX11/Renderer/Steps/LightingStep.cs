@@ -63,15 +63,15 @@ namespace Molten.Graphics
             _lightDataBuffer.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData scene, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
-            Lighting.Clear(renderer.Device, scene.AmbientLightColor);
+            Lighting.Clear(renderer.Device, sceneData.AmbientLightColor);
             device.UnsetRenderSurfaces();
             device.SetRenderSurface(Lighting, 0);
             device.SetDepthSurface(_startStep.Depth, GraphicsDepthMode.ReadOnly);
-            RenderPointLights(device, camera, scene);
+            RenderPointLights(device, camera, sceneData);
         }
 
         private void RenderPointLights(GraphicsPipe pipe, RenderCamera camera, SceneRenderData scene)
@@ -101,7 +101,7 @@ namespace Molten.Graphics
             _matPoint.Light.MapNormal.Value =  _startStep.Normals;
             _matPoint.Light.MapDepth.Value = _startStep.Depth;
 
-            _matPoint.Light.InvViewProjection.Value = scene.InvViewProjection;
+            _matPoint.Light.InvViewProjection.Value = camera.InvViewProjection;
             _matPoint.Light.CameraPosition.Value = camera.Position;
             _matPoint.Scene.MaxSurfaceUV.Value = new Vector2F()
             {

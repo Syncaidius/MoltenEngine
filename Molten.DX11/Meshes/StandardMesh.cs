@@ -14,7 +14,7 @@ namespace Molten.Graphics
 
         }
 
-        internal override void Render(GraphicsPipe pipe, RendererDX11 renderer, ObjectRenderData data, SceneRenderData sceneData)
+        internal override void Render(GraphicsPipe pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
             ApplyBuffers(pipe);
             IShaderResource normal = GetResource(1);
@@ -32,7 +32,7 @@ namespace Molten.Graphics
             }
 
             mat.Object.World.Value = data.RenderTransform;
-            mat.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, sceneData.ViewProjection);
+            mat.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
 
             ApplyResources(mat);
             renderer.Device.Draw(mat, _vertexCount, _topology);

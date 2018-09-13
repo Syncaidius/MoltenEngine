@@ -14,6 +14,7 @@ namespace Molten.Graphics
     {
         public static readonly Matrix4F DefaultView3D = Matrix4F.LookAtLH(new Vector3F(0, 0, -5), new Vector3F(0, 0, 0), Vector3F.UnitY);
 
+        IRenderChain _chain;
         bool _surfaceResizeRequired;
         AntiAliasMode _requestedMultiSampleLevel = AntiAliasMode.None;
         internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
@@ -25,6 +26,7 @@ namespace Molten.Graphics
         {
             Log = Logger.Get();
             Log.AddOutput(new LogFileWriter($"renderer_{Name.Replace(' ', '_')}" + "{0}.txt"));
+            _chain = GetRenderChain();
         }
 
         public void InitializeAdapter(GraphicsSettings settings)
@@ -83,6 +85,49 @@ namespace Molten.Graphics
 
         public void Present(Timing time)
         {
+            /* CAMERA REFACTOR
+             *  - The layer limit will be 32
+             */
+
+            /* DESIGN NOTES:
+             *  - Store a hashset of materials used in each scene so that the renderer can set the "Common" buffer in one pass
+             *  
+             *  
+             * MULTI-THREADING
+             *  - Consider using 2+ worker threads to prepare a command list/deferred context from each scene, which can then
+             *    be dispatched to the immediate context when all scenes have been processed
+             *  - Avoid the above if any scenes interact with a render form surface at any point, since those can only be handled on the thread they're created on.
+             *  
+             *  - Consider using worker threads to:
+             *      -- Sort front-to-back for rendering opaque objects (front-to-back reduces overdraw)
+             *      -- Sort by buffer, material or textures (later in time)
+             *      -- Sort back-to-front for rendering transparent objects (back-to-front reduces issues in alpha-blending)
+             *  
+             * 
+             * 2D & UI Rendering:
+             *  - Provide a sprite-batch for rendering 2D and UI
+             *  - Prepare rendering of these on worker threads.
+             */
+
+            /* TODO: 
+            *  Procedure:
+            *      1) Calculate:
+            *          a) Capture the current transform matrix of each object in the render tree
+            *          b) Calculate the distance from the scene camera. Store on RenderData
+            *          
+            *      2) Sort objects by distance from camera:
+            *          a) Sort objects into buckets inside RenderTree, front-to-back (reduce overdraw by drawing closest first).
+            *          b) Only re-sort a bucket when objects are added or the camera moves
+            *          c) While sorting, build up separate bucket list of objects with a transparent material sorted back-to-front (for alpha to work)
+            *          
+            *  Extras:
+            *      3) Reduce z-sorting needed in (2) by adding scene-graph culling (quad-tree, octree or BSP) later down the line.
+            *      4) Reduce (3) further by frustum culling the graph-culling results
+            * 
+            *  NOTES:
+                - when SceneObject.IsVisible is changed, queue an Add or Remove operation on the RenderTree depending on visibility. This will remove it from culling/sorting.
+            */
+
             Profiler.StartCapture();
             OnPrePresent(time);
 
@@ -136,7 +181,32 @@ namespace Molten.Graphics
                 _surfaceResizeRequired = false;
             }
 
-            OnPresent(time);
+            foreach (SceneRenderData sceneData in Scenes)
+            {
+                sceneData.PreRenderInvoke(this);
+                foreach (RenderCamera camera in sceneData.Cameras)
+                {
+                    if (camera.Skip)
+                        continue;
+
+                    OnPreRenderScene(sceneData, camera, time);
+                    LayerRenderData layer;
+                    for (int i = 0; i < sceneData.Layers.Count; i++)
+                    {
+                        layer = sceneData.Layers[i];
+                        int layerBitVal = 1 << i;
+                        if ((camera.LayerMask & layerBitVal) == layerBitVal)
+                            continue;
+
+                        _chain.Build(sceneData, layer, camera);
+                        _chain.Render(sceneData, layer, camera, time);
+                    }
+
+                    OnPostRenderScene(sceneData, camera, time);
+                    Profiler.AddData(camera.Profiler.CurrentFrame);
+                }
+                sceneData.PostRenderInvoke(this);   
+            }
 
             // Present all output surfaces
             OutputSurfaces.ForInterlock(0, 1, (index, surface) =>
@@ -145,28 +215,11 @@ namespace Molten.Graphics
                 return false;
             });
 
-            Profiler.EndCapture(time);
             OnPostPresent(time);
-
-            /* TODO: 
-             *  Procedure:
-             *      1) Calculate:
-             *          a) Capture the current transform matrix of each object in the render tree
-             *          b) Calculate the distance from the scene camera. Store on RenderData
-             *          
-             *      2) Sort objects by distance from camera:
-             *          a) Sort objects into buckets inside RenderTree, front-to-back (reduce overdraw by drawing closest first).
-             *          b) Only re-sort a bucket when objects are added or the camera moves
-             *          c) While sorting, build up separate bucket list of objects with a transparent material sorted back-to-front (for alpha to work)
-             *          
-             *  Extras:
-             *      3) Reduce z-sorting needed in (2) by adding scene-graph culling (quad-tree, octree or BSP) later down the line.
-             *      4) Reduce (3) further by frustum culling the graph-culling results
-             * 
-             *  NOTES:
-                    - when SceneObject.IsVisible is changed, queue an Add or Remove operation on the RenderTree depending on visibility. This will remove it from culling/sorting.
-             */
+            Profiler.EndCapture(time);
         }
+
+        protected abstract IRenderChain GetRenderChain();
 
         /// <summary>
         /// Occurs when the render engine detects changes which usually require render surfaces to be rebuilt, such as the game window being resized, or certain graphics settings being changed.
@@ -181,11 +234,9 @@ namespace Molten.Graphics
         /// <param name="time">A timing instance.</param>
         protected abstract void OnPrePresent(Timing time);
 
-        /// <summary>
-        /// Occurs when the render engine is supposed to produces a result to be displayed to the user. This usually involves rendering one or more scenes to various render surfaces.
-        /// </summary>
-        /// <param name="time">A timing instance.</param>
-        protected abstract void OnPresent(Timing time);
+        protected abstract void OnPreRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time);
+
+        protected abstract void OnPostRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time);
 
         /// <summary>
         /// Occurs after render presentation is completed and profiler timing has been finalized for the current frame. Useful if you need to do some per-frame cleanup/resetting.
