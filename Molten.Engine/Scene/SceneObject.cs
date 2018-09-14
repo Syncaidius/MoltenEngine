@@ -41,8 +41,9 @@ namespace Molten
         public event SceneObjectLayerHandler OnLayerChanged;
 
         /// <summary>Creates a new instance of <see cref="SceneObject"/>.</summary>
-        /// <param name="enabled">If true, the <see cref="SceneObject"/> will be enabled upon creation. Default value is true.</param>
+        /// <param name="engine">The <see cref="Molten.Engine"/> instance that the object will be bound to.</param>
         /// <param name="updateFlags">The object's initial update flags.</param>
+        /// <param name="visible">Decides whether the object is initially visible when spawned. The default value is true.</param>
         internal SceneObject(Engine engine, ObjectUpdateFlags updateFlags = ObjectUpdateFlags.Children | ObjectUpdateFlags.Self, bool visible = true)
         {
             _engine = engine;

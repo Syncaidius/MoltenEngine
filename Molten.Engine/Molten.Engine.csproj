@@ -123,8 +123,6 @@
     <Compile Include="Scene\Components\Lights\PointLightComponent.cs" />
     <Compile Include="Scene\Components\SceneCameraComponent.cs" />
     <Compile Include="Scene\Components\SceneComponent.cs" />
-    <Compile Include="Scene\Components\SceneSingleton.cs" />
-    <Compile Include="Scene\Components\SingletonComponent.cs" />
     <Compile Include="Scene\ICursorAcceptor.cs" />
     <Compile Include="Scene\ISceneObject.cs" />
     <Compile Include="Scene\IUpdatable.cs" />

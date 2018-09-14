@@ -55,14 +55,13 @@ namespace Molten.Graphics
             Last = null;
 
             /* TODO:
-             *   - Rewrite the entire chaining system
              *   - Implement chain branching. One chain step can lead to 1 or more new steps. 
              *      -- If two steps lead back into the same single step, that step will wait until both proceeding ones are done before being executed.
              *      -- Each extra simultaneous step will be given to a deferred context to execute.
              *   - RenderChains should be stored on LayerRenderData objects and updated when their flags change, to avoid rebuilding them every frame, for every scene layer.
              *  
              * NOTES:
-             *   - Immediate rendering needs to go
+             *   - Immediate rendering needs to be dumped.
              *   - StandardMesh and Mesh need to be merged into Mesh, with the functionality of StandardMesh
              *   - Deferred rendering should be the main focus
              *   - 2D should be included in the GBuffer stage; Layer flags can be used to disable lighting if non-lit/post-processed 2D elements are required
