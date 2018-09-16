@@ -72,7 +72,7 @@ namespace Molten.Samples
         private void SpawnPlayer()
         {
             _player = CreateObject();
-            SceneCameraComponent cam = _player.AddComponent<SceneCameraComponent>();
+            CameraComponent cam = _player.AddComponent<CameraComponent>();
             cam.OutputSurface = Window;
             _scene.AddObject(_player);
         }

@@ -25,7 +25,7 @@ namespace Molten.Samples
         private void SpawnPlayer()
         {
             _player = CreateObject();
-            SceneCamera = _player.AddComponent<SceneCameraComponent>();
+            SceneCamera = _player.AddComponent<CameraComponent>();
             SceneCamera.LayerMask = BitwiseHelper.Set(SceneCamera.LayerMask, 1, 2);
             SceneCamera.OutputSurface = Window;
             SceneCamera.MaxDrawDistance = 300;
@@ -175,6 +175,6 @@ namespace Molten.Samples
 
         public bool AcceptPlayerInput { get; set; } = true;
 
-        public SceneCameraComponent SceneCamera { get; set; }
+        public CameraComponent SceneCamera { get; set; }
     }
 }

@@ -25,18 +25,6 @@ namespace Molten
             InputAcceptors = new List<ICursorAcceptor>();
         }
 
-        [Obsolete("Temporary implementation.")]
-        public void AddCamera(RenderCamera camera)
-        {
-            ParentScene.RenderData.AddObject(camera);
-        }
-
-        [Obsolete("Temporary implementation.")]
-        public void RemoveCamera(RenderCamera camera)
-        {
-            ParentScene.RenderData.RemoveObject(camera);
-        }
-
         /// <summary>
         /// Adds an object to the current <see cref="SceneLayer"/> in it's parent <see cref="Scene"/>.
         /// </summary>

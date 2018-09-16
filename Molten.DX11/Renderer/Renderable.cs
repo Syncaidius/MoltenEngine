@@ -8,7 +8,6 @@ namespace Molten.Graphics
 {
     public abstract class Renderable : IRenderable3D
     {
-        bool _isVisible;
         IShaderResource[] _resources;
 
         internal Renderable(GraphicsDeviceDX11 device)

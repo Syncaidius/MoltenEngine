@@ -75,6 +75,12 @@ namespace Molten.Graphics
         void ResolveTexture(ITexture source, ITexture destination, int sourceMipLevel, int sourceArraySlice, int destMiplevel, int destArraySlice);
 
         /// <summary>
+        /// Creates a sprite-renderable object, capable of rendering batches of sprites.
+        /// </summary>
+        /// <returns></returns>
+        ISpriteRenderable CreateSpriteRenderable();
+
+        /// <summary>
         /// Creates a standard mesh. Standard meshes enforce stricter rules aimed at deferred rendering.
         /// </summary>
         /// <param name="maxVertices"></param>

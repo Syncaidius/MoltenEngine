@@ -25,7 +25,11 @@ namespace Molten.ContentEditor
             base.OnInitialize(engine);
 
             _uiScene = CreateScene("UI");
-            _uiScene.AddCamera(new RenderCamera(RenderCameraPreset.Orthographic));
+            SceneObject camObj = CreateObject(_uiScene);
+            CameraComponent cam = camObj.AddComponent<CameraComponent>();
+            cam.SetProjectionPreset(RenderCameraPreset.Orthographic);
+            cam.MaxDrawDistance = 1.0f;
+            _uiScene.AddObject(camObj);
             Window.OnPostResize += UpdateWindownBounds;
             UI = new UIComponent();
             UpdateWindownBounds(Window);

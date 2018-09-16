@@ -93,13 +93,14 @@ namespace Molten.Graphics
         public void SetProjectionPreset(RenderCameraPreset preset)
         {
             _projFunc = _projectionFuncs[preset];
-            _projFunc(_surface, _nearClip, _farClip, _fov, ref _projection);
+            _nearClip = _nearClipPreset[preset];
+            CalculateProjection();
         }
 
         public void SetProjectionFunc(RenderCameraProjectionFunc func)
         {
             _projFunc = func;
-            _projFunc(_surface, _nearClip, _farClip, _fov, ref _projection);
+            CalculateProjection();
         }
 
         private void _surface_OnPostResize(ITexture texture)

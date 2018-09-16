@@ -23,7 +23,7 @@ namespace Molten.Graphics
         Material _defaultCircleMaterial;
         Material _defaultTriMaterial;
 
-        Matrix4F _viewProjection;
+        Matrix4F _worldViewProj;
         Action<GraphicsPipe, SpriteCluster>[] _clusterFlushes;
 
         internal SpriteBatchDX11(RendererDX11 renderer, int spriteBufferSize = 2000)
@@ -71,14 +71,16 @@ namespace Molten.Graphics
         }
 
         /// <summary>Flushes the sprite batch by rendering it's contents.</summary>
-        /// <param name="sortMode"></param>
-        internal void End(GraphicsPipe pipe, ref Matrix4F viewProjection, RenderSurfaceBase destination)
+        /// <param name="pipe">The <see cref="GraphicsPipe"/> which will render the object.</param>
+        /// <param name="worldViewProj">The world-view-projection matrix.</param>
+        /// <param name="destination">The destination surface.</param>
+        internal void End(GraphicsPipe pipe, ref Matrix4F worldViewProj, IRenderSurface destination)
         {
             //if nothing was added to the batch, don't bother with any draw operations.
             if (_clusterCount == 0)
                 return;
 
-            _viewProjection = viewProjection;
+            _worldViewProj = worldViewProj;
             pipe.SetVertexSegment(_segment, 0);
 
             // Run through all clip zones
@@ -181,7 +183,7 @@ namespace Molten.Graphics
                 mat = mat ?? _defaultNoTextureMaterial;
             }
 
-            mat.Object.Wvp.Value = _viewProjection;
+            mat.Object.Wvp.Value = _worldViewProj;
 
             int startVertex = cluster.startVertex;
             int vertexCount = cluster.drawnTo - cluster.drawnFrom;
@@ -190,7 +192,7 @@ namespace Molten.Graphics
 
         private void FlushLineCluster(GraphicsPipe pipe, SpriteCluster cluster)
         {
-            _defaultLineMaterial.Object.Wvp.Value = _viewProjection;
+            _defaultLineMaterial.Object.Wvp.Value = _worldViewProj;
             int startVertex = cluster.startVertex;
             int vertexCount = cluster.drawnTo - cluster.drawnFrom;
             pipe.Draw(_defaultLineMaterial, vertexCount, PrimitiveTopology.PointList, startVertex);
@@ -198,7 +200,7 @@ namespace Molten.Graphics
 
         private void FlushTriangleCluster(GraphicsPipe pipe, SpriteCluster cluster)
         {
-            _defaultTriMaterial.Object.Wvp.Value = _viewProjection;
+            _defaultTriMaterial.Object.Wvp.Value = _worldViewProj;
             int startVertex = cluster.startVertex;
             int vertexCount = cluster.drawnTo - cluster.drawnFrom;
             pipe.Draw(_defaultTriMaterial, vertexCount, PrimitiveTopology.PointList, startVertex);
@@ -206,7 +208,7 @@ namespace Molten.Graphics
 
         private void FlushCircleCluster(GraphicsPipe pipe, SpriteCluster cluster)
         {
-            _defaultCircleMaterial.Object.Wvp.Value = _viewProjection;
+            _defaultCircleMaterial.Object.Wvp.Value = _worldViewProj;
             int startVertex = cluster.startVertex;
             int vertexCount = cluster.drawnTo - cluster.drawnFrom;
             pipe.Draw(_defaultCircleMaterial, vertexCount, PrimitiveTopology.PointList, startVertex);

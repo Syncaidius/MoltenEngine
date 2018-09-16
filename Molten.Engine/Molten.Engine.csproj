@@ -121,8 +121,9 @@
     <Compile Include="Scene\Components\Lights\CapsuleLightComponent.cs" />
     <Compile Include="Scene\Components\MeshComponent.cs" />
     <Compile Include="Scene\Components\Lights\PointLightComponent.cs" />
-    <Compile Include="Scene\Components\SceneCameraComponent.cs" />
+    <Compile Include="Scene\Components\CameraComponent.cs" />
     <Compile Include="Scene\Components\SceneComponent.cs" />
+    <Compile Include="Scene\Components\SpriteBatchComponent.cs" />
     <Compile Include="Scene\ICursorAcceptor.cs" />
     <Compile Include="Scene\ISceneObject.cs" />
     <Compile Include="Scene\IUpdatable.cs" />

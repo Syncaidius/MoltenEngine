@@ -194,6 +194,11 @@ namespace Molten.Graphics
             _fontTable.Clear();
         }
 
+        public ISpriteRenderable CreateSpriteRenderable()
+        {
+            return new SpriteRenderableDX11(_renderer.Device);
+        }
+
         IMesh<GBufferVertex> IResourceManager.CreateMesh(int maxVertices, VertexTopology topology, bool dynamic)
         {
             return new StandardMesh(_renderer, maxVertices, topology, dynamic);

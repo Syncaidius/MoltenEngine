@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 namespace Molten
 {
     /// <summary>An implementation of <see cref="Camera"/> which provides a left-handed projection matrix based on it's <see cref="Camera.OutputSurface"/>.</summary>
-    public class SceneCameraComponent : SceneComponent
+    public class CameraComponent : SceneComponent
     {
         RenderCamera _camera;
         bool _inScene = false;
 
-        public SceneCameraComponent()
+        public CameraComponent()
         {
             _camera = new RenderCamera(RenderCameraPreset.Perspective);
         }
@@ -159,6 +159,17 @@ namespace Molten
         {
             get => _camera.LayerMask;
             set => _camera.LayerMask = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the ordering depth of the current <see cref="RenderCamera"/>. The default value is 0.
+        /// Cameras which share the same output surface and order-depth will be rendered in the other they were added to the scene.
+        /// If you intend to output multiple cameras to the same <see cref="IRenderSurface"/>, it is recommended you change the order depth accordingly.
+        /// </summary>
+        public int OrderDepth
+        {
+            get => _camera.OrderDepth;
+            set => _camera.OrderDepth = value;
         }
     }
 }

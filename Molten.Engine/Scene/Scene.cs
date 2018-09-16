@@ -109,18 +109,6 @@ namespace Molten
             _pendingChanges.Enqueue(change);
         }
 
-        [Obsolete("Temporary implementation.")]
-        public void AddCamera(RenderCamera camera)
-        {
-            RenderData.AddObject(camera);
-        }
-
-        [Obsolete("Temporary implementation.")]
-        public void RemoveCamera(RenderCamera camera)
-        {
-            RenderData.RemoveObject(camera);
-        }
-
         private ICursorAcceptor PickObject(Vector2F cursorPos, SceneLayer layer)
         {
             for (int i = layer.InputAcceptors.Count - 1; i >= 0; i--)

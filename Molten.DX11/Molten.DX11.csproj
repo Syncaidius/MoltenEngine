@@ -123,6 +123,7 @@
     <Compile Include="Exceptions\GraphicsContextException.cs" />
     <Compile Include="Exceptions\MappedBufferException.cs" />
     <Compile Include="Exceptions\UnsupportedFeatureException.cs" />
+    <Compile Include="Renderer\SpriteRenderableDX11.cs" />
     <Compile Include="Renderer\Tasks\TextureApply.cs" />
     <Compile Include="Surfaces\RenderControlSurface.cs" />
     <Compile Include="Tests\GraphicsDeviceDX11Tests.cs" />
@@ -146,10 +147,10 @@
     <Compile Include="Hardware\GraphicsComputeFeatures.cs" />
     <Compile Include="Hardware\GraphicsDX11Features.cs" />
     <Compile Include="Hardware\GraphicsShaderFeatures.cs" />
-    <Compile Include="Meshes\StandardIndexedMesh.cs" />
-    <Compile Include="Meshes\StandardMesh.cs" />
-    <Compile Include="Meshes\IndexedMesh.cs" />
-    <Compile Include="Meshes\Mesh.cs" />
+    <Compile Include="Mesh\StandardIndexedMesh.cs" />
+    <Compile Include="Mesh\StandardMesh.cs" />
+    <Compile Include="Mesh\IndexedMesh.cs" />
+    <Compile Include="Mesh\Mesh.cs" />
     <Compile Include="Pipeline\ComputeInputStage.cs" />
     <Compile Include="Pipeline\MaterialInputStage.cs" />
     <Compile Include="Pipeline\PipelineComponent.cs" />
