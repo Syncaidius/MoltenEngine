@@ -7,6 +7,7 @@ using SharpDX.DXGI;
 using Molten.Collections;
 using Molten.Graphics.Textures.DDS;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Molten.Graphics
 {
@@ -41,8 +42,11 @@ namespace Molten.Graphics
         protected Resource _resource;
         RendererDX11 _renderer;
 
+        static int _nextSortKey = 0;
+
         internal TextureBase(RendererDX11 renderer, int width, int height, int depth, int mipCount, int arraySize, int sampleCount, Format format, TextureFlags flags) : base(renderer.Device)
         {
+            SortKey = Interlocked.Increment(ref _nextSortKey);
             _renderer = renderer;
             _flags = flags;
             ValidateFlagCombination();
@@ -705,5 +709,10 @@ namespace Molten.Graphics
         /// Gets the renderer that the texture is bound to.
         /// </summary>
         public RenderEngine Renderer => _renderer;
+
+        /// <summary>
+        /// Gets the sort key associated with the current texture.
+        /// </summary>
+        public int SortKey { get; }
     }
 }

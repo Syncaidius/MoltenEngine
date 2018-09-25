@@ -30,5 +30,10 @@ namespace Molten.Graphics
         /// Gets or sets the tag object.
         /// </summary>
         object Tag { get; set; }
+
+        /// <summary>
+        /// Gets the sort key assigned to the current <see cref="IShader"/>.
+        /// </summary>
+        int SortKey { get; }
     }
 }

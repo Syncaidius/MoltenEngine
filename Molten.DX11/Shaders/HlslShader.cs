@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Molten.Graphics
@@ -28,8 +29,11 @@ namespace Molten.Graphics
 
         public Dictionary<string, string> Metadata => _metadata;
 
+        static int _nextSortKey;
+
         internal HlslShader(GraphicsDeviceDX11 device, string filename = null) : base(device)
         {
+            SortKey = Interlocked.Increment(ref _nextSortKey);
             _filename = filename ?? "";
             _device = device;
             _metadata = new Dictionary<string, string>();
@@ -91,5 +95,10 @@ namespace Molten.Graphics
                     return null;
             }
         }
+
+        /// <summary>
+        /// Gets the sort key assigned to the current shader.
+        /// </summary>
+        public int SortKey { get; }
     }
 }

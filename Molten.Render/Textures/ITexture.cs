@@ -142,6 +142,9 @@ namespace Molten.Graphics
         /// </summary>
         object Tag { get; set; }
 
+        /// <summary>Gets the sort key assigned to the current <see cref="ITexture"/>.</summary>
+        int SortKey { get; }
+
         /// <summary>
         /// Gets the renderer that the texture is bound to.
         /// </summary>
