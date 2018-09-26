@@ -66,10 +66,10 @@ namespace Molten.Graphics
 
             _flushFuncs = new Action<GraphicsPipe, RenderCamera, Range>[4]
             {
-                FlushSpriteCluster,
-                FlushLineCluster,
-                FlushTriangleCluster,
-                FlushCircleCluster,
+                FlushSpriteRange,
+                FlushLineRange,
+                FlushTriangleRange,
+                FlushCircleRange,
             };
         }
 
@@ -79,19 +79,7 @@ namespace Molten.Graphics
                 return;
 
             Sort(camera, depthSort);
-            _curRange = 0;
-
-            _ranges[_curRange] = new Range()
-            {
-                Start = 0,
-                Format = Sprites[0].Format,
-                Texture = Sprites[0].Texture,
-                Material = Sprites[0].Material,
-            };
-            Range range = _ranges[_curRange];
-
-            if (NextID >= _vertices.Length)
-                Array.Resize(ref _vertices, NextID);
+            Range range;
 
             // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.
             fixed (SpriteVertex2* vertexFixedPtr = _vertices)
@@ -106,11 +94,22 @@ namespace Molten.Graphics
                     int end = i + Math.Min(remaining, _spriteCapacity);
                     vertexPtr = vertexFixedPtr;
 
+                    // Start the first range
+                    _curRange = 0;
+                    range = _ranges[_curRange];
+                    range.Start = i;
+                    item = Sprites[i];
+                    range.Format = item.Format;
+                    range.Texture = item.Texture;
+                    range.Material = item.Material;
+                    i++;
+
                     for (; i < end; i++, vertexPtr += _segment.Stride)
                     {
                         item = Sprites[i];
                         *(vertexPtr) = item.Vertex;
 
+                        // If the current item does not match that of the current range, start a new range.
                         if (item.Texture != range.Texture ||
                             item.Material != range.Material ||
                             item.Format != range.Format)
@@ -143,9 +142,6 @@ namespace Molten.Graphics
 
                     if (end != i)
                         FlushBuffer(pipe, camera);
-
-                    _curRange = 0;
-                    range = _ranges[_curRange];
                 }
             }
         }
@@ -175,7 +171,7 @@ namespace Molten.Graphics
             }
         }
 
-        private void FlushSpriteCluster(GraphicsPipe pipe, RenderCamera camera, Range range)
+        private void FlushSpriteRange(GraphicsPipe pipe, RenderCamera camera, Range range)
         {
             Material mat = range.Material as Material;
 
@@ -195,19 +191,19 @@ namespace Molten.Graphics
             pipe.Draw(mat, range.VertexCount, PrimitiveTopology.PointList, range.Start);
         }
 
-        private void FlushLineCluster(GraphicsPipe pipe, RenderCamera camera, Range range)
+        private void FlushLineRange(GraphicsPipe pipe, RenderCamera camera, Range range)
         {
             _defaultLineMaterial.Object.Wvp.Value = camera.ViewProjection;
             pipe.Draw(_defaultLineMaterial, range.VertexCount, PrimitiveTopology.PointList, range.Start);
         }
 
-        private void FlushTriangleCluster(GraphicsPipe pipe, RenderCamera camera, Range range)
+        private void FlushTriangleRange(GraphicsPipe pipe, RenderCamera camera, Range range)
         {
             _defaultTriMaterial.Object.Wvp.Value = camera.ViewProjection;
             pipe.Draw(_defaultTriMaterial, range.VertexCount, PrimitiveTopology.PointList, range.Start);
         }
 
-        private void FlushCircleCluster(GraphicsPipe pipe, RenderCamera camera, Range range)
+        private void FlushCircleRange(GraphicsPipe pipe, RenderCamera camera, Range range)
         {
             _defaultCircleMaterial.Object.Wvp.Value = camera.ViewProjection;
             pipe.Draw(_defaultCircleMaterial, range.VertexCount, PrimitiveTopology.PointList, range.Start);
