@@ -12,14 +12,21 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class SpriteBatcher
     {
-        protected class SpriteCluster
+        protected enum SpriteFormat
         {
+            Sprite = 0, // Textured or untextured (rectangle) sprites
 
+            Line = 1, // Untextured lines
+
+            Triangle = 2, // Untextured triangles
+
+            Circle = 3, // Untextured circles - Uses a geometry shader to handle this
         }
 
         protected class SpriteItem : IComparable<SpriteItem>
         {
             public SpriteVertex2 Vertex;
+            public SpriteFormat Format;
             public ITexture2D Texture;
             public IMaterial Material;
             public float ZKey;
@@ -53,8 +60,8 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// 
-        /// </summary>
+        /// Adds a sprite to the batch using 2D coordinates.
+        /// </summary>>
         /// <param name="texture"></param>
         /// <param name="source"></param>
         /// <param name="position"></param>
@@ -65,44 +72,48 @@ namespace Molten.Graphics
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
         /// <param name="material"></param>
         /// <param name="depth">The z-depth of the sprite.</param>
-        public void Draw(ITexture2D texture, Rectangle source, Vector2F position, Vector2F scale, Color color, float rotation, Vector2F origin, IMaterial material, float depth = 0.0f)
+        /// <param name="arraySlice">The texture array slice containing the source texture.</param>
+        public void Draw(ITexture2D texture, Rectangle source, Vector2F position, Vector2F scale, Color color, float rotation, Vector2F origin, IMaterial material, int arraySlice = 0, float depth = 0.0f)
         {
             SpriteItem item = GetItem();
             item.Texture = texture;
             item.Material = material;
             item.ZKey = depth;
+            item.Format = SpriteFormat.Sprite;
 
             item.Vertex.Position = new Vector3F(position, depth);
             item.Vertex.Rotation = new Vector3F(rotation, 0, 0);
             item.Vertex.Size = new Vector2F(source.X * scale.X, source.Y * scale.Y);
             item.Vertex.Color = color;
-            item.Vertex.Origin = origin;
+            item.Vertex.Origin = new Vector3F(origin, arraySlice);
             item.Vertex.UV = new Vector4F(source.X, source.Y, source.Right, source.Bottom);
         }
 
         /// <summary>
-        /// Adds a sprite to the batch
+        /// Adds a sprite to the batch using 3D coordinates.
         /// </summary>
         /// <param name="texture"></param>
         /// <param name="source"></param>
         /// <param name="position"></param>
-        /// <param name="size"></param>
         /// <param name="color"></param>
-        /// <param name="rotation"></param>
+        /// <param name="rotation">Rotation in radians.</param>
         /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
         /// <param name="material"></param>
-        public void Draw(ITexture2D texture, Rectangle source, Vector3F position, Vector2F scale, Color color, Vector3F rotation, Vector2F origin, IMaterial material)
+        /// <param name="arraySlice">The texture array slice containing the source texture.</param>
+        /// <param name="scale">The scale of the sprite based on it's soruce width and height.</param>
+        public void Draw(ITexture2D texture, Rectangle source, Vector3F position, Vector2F scale, Color color, Vector3F rotation, Vector2F origin, IMaterial material, int arraySlice = 0)
         {
             SpriteItem item = GetItem();
             item.Texture = texture;
             item.Material = material;
+            item.Format = SpriteFormat.Sprite;
 
             item.Vertex.Position = position;
             item.Vertex.Rotation = rotation;
             item.Vertex.Size = new Vector2F(source.Width * scale.X, source.Height * scale.Y);
             item.Vertex.Color = color;
-            item.Vertex.Origin = origin;
+            item.Vertex.Origin = new Vector3F(origin, arraySlice);
             item.Vertex.UV = new Vector4F(source.X, source.Y, source.Right, source.Bottom);
         }
 

@@ -6,72 +6,211 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpDX;
+using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {
     public class SpriteBatcherDX11 : SpriteBatcher
     {
-        struct Range
+        class Range
         {
             public int Start;
             public int End;
-
+            public int VertexCount;
             public ITexture2D Texture;
             public IMaterial Material;
+            public SpriteFormat Format;
         }
 
+        BufferSegment _segment;
         Range[] _ranges;
         int _curRange;
+        int _spriteCapacity;
+        Action<GraphicsPipe, RenderCamera, Range>[] _flushFuncs;
+        SpriteVertex2[] _vertices;
 
-        internal SpriteBatcherDX11(int initialCapacity = 3000) : base(initialCapacity)
+        Material _defaultMaterial;
+        Material _defaultNoTextureMaterial;
+        Material _defaultLineMaterial;
+        Material _defaultCircleMaterial;
+        Material _defaultTriMaterial;
+
+        internal SpriteBatcherDX11(RendererDX11 renderer, int capacity = 3000) : base(capacity)
         {
             _ranges = new Range[100];
+            for (int i = 0; i < _ranges.Length; i++)
+                _ranges[i] = new Range();
+
+            _vertices = new SpriteVertex2[capacity];
+            _spriteCapacity = capacity;
+            _segment = renderer.DynamicVertexBuffer.Allocate<SpriteVertex2>(_spriteCapacity);
+            _segment.SetVertexFormat(typeof(SpriteVertex2));
+
+            string source = null;
+            string namepace = "Molten.Graphics.Assets.sprite.sbm";
+            using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                    source = reader.ReadToEnd();
+            }
+
+            if (!string.IsNullOrWhiteSpace(source))
+            {
+                ShaderCompileResult result = renderer.ShaderCompiler.Compile(source, namepace);
+                _defaultMaterial = result["material", "sprite-texture"] as Material;
+                _defaultNoTextureMaterial = result["material", "sprite-no-texture"] as Material;
+                _defaultLineMaterial = result["material", "line"] as Material;
+                _defaultCircleMaterial = result["material", "circle"] as Material;
+                _defaultTriMaterial = result["material", "triangle"] as Material;
+            }
+
+            _flushFuncs = new Action<GraphicsPipe, RenderCamera, Range>[4]
+            {
+                FlushSpriteCluster,
+                FlushLineCluster,
+                FlushTriangleCluster,
+                FlushCircleCluster,
+            };
         }
 
-        internal void Flush(GraphicsPipe pipe, RenderCamera camera, bool depthSort)
+        internal unsafe void Flush(GraphicsPipe pipe, RenderCamera camera, bool depthSort)
         {
             if (NextID == 0)
                 return;
 
             Sort(camera, depthSort);
-
             _curRange = 0;
+
             _ranges[_curRange] = new Range()
             {
                 Start = 0,
+                Format = Sprites[0].Format,
                 Texture = Sprites[0].Texture,
                 Material = Sprites[0].Material,
             };
+            Range range = _ranges[_curRange];
 
-            for (int i = 1; i < NextID; i++)
+            if (NextID >= _vertices.Length)
+                Array.Resize(ref _vertices, NextID);
+
+            // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.
+            fixed (SpriteVertex2* vertexFixedPtr = _vertices)
             {
-                if(Sprites[i].Texture != _ranges[_curRange].Texture || Sprites[i].Material != _ranges[_curRange].Material)
+                SpriteVertex2* vertexPtr = vertexFixedPtr;
+                SpriteItem item;
+
+                int i = 0;
+                while(i < NextID)
                 {
-                    _ranges[_curRange++].End = i - 1;
+                    int remaining = NextID - i;
+                    int end = i + Math.Min(remaining, _spriteCapacity);
+                    vertexPtr = vertexFixedPtr;
 
-                    if (_curRange == _ranges.Length)
-                        Array.Resize(ref _ranges, _ranges.Length + (_ranges.Length / 2));
-
-                    _ranges[_curRange] = new Range()
+                    for (; i < end; i++, vertexPtr += _segment.Stride)
                     {
-                        Start = i,
-                        Texture = Sprites[i].Texture,
-                        Material = Sprites[i].Material,
-                    };
+                        item = Sprites[i];
+                        *(vertexPtr) = item.Vertex;
+
+                        if (item.Texture != range.Texture ||
+                            item.Material != range.Material ||
+                            item.Format != range.Format)
+                        {
+                            range.VertexCount = i - range.Start;
+                            range.End = i;
+                            _curRange++;
+
+                            if (_curRange == _ranges.Length)
+                            {
+                                int old = _ranges.Length;
+                                Array.Resize(ref _ranges, old + (old / 2));
+                                for (int o = old; o < _ranges.Length; o++)
+                                    _ranges[o] = new Range();
+                            }
+
+                            range = _ranges[_curRange];
+                            range.Start = i;
+                            range.Format = Sprites[i].Format;
+                        }
+                    }
+
+                    // Include the last range, if it has any vertices.
+                    range.VertexCount = i - range.Start;
+                    if (range.VertexCount > 0)
+                    {
+                        range.End = i;
+                        _curRange++;
+                    }
+
+                    if (end != i)
+                        FlushBuffer(pipe, camera);
+
+                    _curRange = 0;
+                    range = _ranges[_curRange];
                 }
-
-
-                /* TODO:
-                 * 1) Accumulate ranges as above and track total vertices accumulated so far
-                 * 2) once we hit the max capacity, flush accumulated ranges
-                 * 3) use a single buffer map() call to upload accumulated ranges
-                 * 4) reset range array back to 0
-                 * 5) Accumulate the next batch of ranges
-                 * 6) Continue until we reach the end of the sprite array.
-                 * 
-                 * 
-                 */
             }
+        }
+
+        private void FlushBuffer(GraphicsPipe pipe, RenderCamera camera)
+        {
+            Range range;
+            int writeIndex = 0;
+
+            // Map buffer segment
+            _segment.Map(pipe, (buffer, stream) =>
+            {
+                for (int i = 0; i < _curRange; i++)
+                {
+                    range = _ranges[i];
+                    stream.WriteRange(_vertices, writeIndex, range.VertexCount);
+                    range.Start = writeIndex;
+                    writeIndex += range.VertexCount;
+                }
+            });
+
+            // Draw calls
+            for(int i = 0; i < _curRange; i++)
+            {
+                range = _ranges[i];
+                _flushFuncs[(int)range.Format](pipe, camera, range);
+            }
+        }
+
+        private void FlushSpriteCluster(GraphicsPipe pipe, RenderCamera camera, Range range)
+        {
+            Material mat = range.Material as Material;
+
+            if (range.Texture != null)
+            {
+                mat = mat ?? _defaultMaterial;
+                Vector2F texSize = new Vector2F(range.Texture.Width, range.Texture.Height);
+                mat.SpriteBatch.TextureSize.Value = texSize;
+                mat.Textures.DiffuseTexture.Value = range.Texture;
+            }
+            else
+            {
+                mat = mat ?? _defaultNoTextureMaterial;
+            }
+
+            mat.Object.Wvp.Value = camera.ViewProjection;
+            pipe.Draw(mat, range.VertexCount, PrimitiveTopology.PointList, range.Start);
+        }
+
+        private void FlushLineCluster(GraphicsPipe pipe, RenderCamera camera, Range range)
+        {
+            _defaultLineMaterial.Object.Wvp.Value = camera.ViewProjection;
+            pipe.Draw(_defaultLineMaterial, range.VertexCount, PrimitiveTopology.PointList, range.Start);
+        }
+
+        private void FlushTriangleCluster(GraphicsPipe pipe, RenderCamera camera, Range range)
+        {
+            _defaultTriMaterial.Object.Wvp.Value = camera.ViewProjection;
+            pipe.Draw(_defaultTriMaterial, range.VertexCount, PrimitiveTopology.PointList, range.Start);
+        }
+
+        private void FlushCircleCluster(GraphicsPipe pipe, RenderCamera camera, Range range)
+        {
+            _defaultCircleMaterial.Object.Wvp.Value = camera.ViewProjection;
+            pipe.Draw(_defaultCircleMaterial, range.VertexCount, PrimitiveTopology.PointList, range.Start);
         }
     }
 }
