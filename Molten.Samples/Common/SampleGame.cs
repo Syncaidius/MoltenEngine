@@ -153,6 +153,11 @@ namespace Molten.Samples
         public SceneLayer UI => _uiLayer;
 
         /// <summary>
+        /// Gets the sample's sprite scene layer.
+        /// </summary>
+        public SceneLayer SpriteLayer => _spriteLayer;
+
+        /// <summary>
         /// Gets the sample's sprite scene. This is rendered before <see cref="UIScene"/>.
         /// </summary>
         public Scene MainScene { get; private set; }

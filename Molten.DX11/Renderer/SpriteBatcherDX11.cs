@@ -140,7 +140,7 @@ namespace Molten.Graphics
                         _curRange++;
                     }
 
-                    if (end != i)
+                    if (_curRange > 0)
                         FlushBuffer(pipe, camera);
                 }
             }
