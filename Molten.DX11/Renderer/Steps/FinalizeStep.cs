@@ -43,7 +43,7 @@ namespace Molten.Graphics
                     device.SetDepthSurface(null, GraphicsDepthMode.Disabled);
                     device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
 
-                    renderer.SpriteBatcher.Draw(start.Scene, bounds, Vector2F.Zero, Vector2F.One, Color.White, 0, Vector2F.Zero, null);
+                    renderer.SpriteBatcher.Draw(start.Scene, bounds, Vector2F.Zero, Vector2F.One, Color.White, 0, Vector2F.Zero, null, 0, 0);
 
                     StateConditions conditions = StateConditions.ScissorTest;
                     conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;

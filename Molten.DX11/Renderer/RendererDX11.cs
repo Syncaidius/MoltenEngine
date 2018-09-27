@@ -114,12 +114,10 @@ namespace Molten.Graphics
         protected override void OnPreRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
             Device.Profiler = camera.Profiler;
-            Device.Profiler.Begin();
         }
 
         protected override void OnPostRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
-            Device.Profiler.End(time);
             Device.Profiler = null;
         }
 

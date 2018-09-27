@@ -184,6 +184,7 @@ namespace Molten.Graphics
             foreach (SceneRenderData sceneData in Scenes)
             {
                 sceneData.PreRenderInvoke(this);
+                sceneData.Profiler.Begin();
 
                 // Sort cameras into ascending order-depth.
                 sceneData.Cameras.Sort((a, b) =>
@@ -202,6 +203,8 @@ namespace Molten.Graphics
                         continue;
 
                     OnPreRenderScene(sceneData, camera, time);
+                    camera.Profiler.Begin();
+
                     LayerRenderData layer;
                     for (int i = 0; i < sceneData.Layers.Count; i++)
                     {
@@ -214,9 +217,13 @@ namespace Molten.Graphics
                         _chain.Render(sceneData, layer, camera, time);
                     }
 
+                    camera.Profiler.End(time);
+                    Profiler.Accumulate(camera.Profiler.Previous);
+                    sceneData.Profiler.Accumulate(camera.Profiler.Previous);
                     OnPostRenderScene(sceneData, camera, time);
-                    Profiler.Accumulate(camera.Profiler.Current);
                 }
+
+                sceneData.Profiler.End(time);
                 sceneData.PostRenderInvoke(this);   
             }
 
