@@ -45,14 +45,11 @@ namespace Molten.Graphics
             StateConditions conditions = StateConditions.ScissorTest;
             conditions |= rs.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
-            device.BeginDraw(conditions);
-            renderer.SpriteBatcher.Begin(rs.Viewport);
-
             // Draw 2D objects.
             for (int j = 0; j < layerData.Renderables2D.Count; j++)
-                layerData.Renderables2D[j].Render(renderer.SpriteBatcher);
+                layerData.Renderables2D[j].Render(renderer);
 
-            renderer.SpriteBatcher.End(device, ref spriteViewProj, rs);
+            renderer.SpriteBatcher.Flush(device, camera, true);
             device.EndDraw();
         }
     }

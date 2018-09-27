@@ -140,7 +140,7 @@ namespace Molten.Graphics
             _renderData.AddLayer(layer);
             _renderData.AddObject(new FontContainer(this), layer);
             _renderData.OnPostRender += _renderData_OnPostRender;
-            _renderData.AddObject(new RenderCamera(RenderCameraPreset.Orthographic)
+            _renderData.AddObject(new RenderCamera(RenderCameraMode.Orthographic)
             {
                 OutputSurface = _rt,
                 Flags = RenderCameraFlags.DoNotClear

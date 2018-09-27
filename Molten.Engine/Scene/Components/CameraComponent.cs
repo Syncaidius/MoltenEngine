@@ -15,7 +15,7 @@ namespace Molten
 
         public CameraComponent()
         {
-            _camera = new RenderCamera(RenderCameraPreset.Perspective);
+            _camera = new RenderCamera(RenderCameraMode.Perspective);
         }
 
         protected override void OnInitialize(SceneObject obj)
@@ -92,16 +92,6 @@ namespace Molten
             return new Vector2F(result.X, result.Y);
         }
 
-        public void SetProjectionPreset(RenderCameraPreset preset)
-        {
-            _camera.SetProjectionPreset(preset);
-        }
-
-        public void SetProjectionFunc(RenderCameraProjectionFunc func)
-        {
-            _camera.SetProjectionFunc(func);
-        }
-
         public Matrix4F View => _camera.View;
 
         public Matrix4F Projection => _camera.Projection;
@@ -170,6 +160,15 @@ namespace Molten
         {
             get => _camera.OrderDepth;
             set => _camera.OrderDepth = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the camera's mode.
+        /// </summary>
+        public RenderCameraMode Mode
+        {
+            get => _camera.Mode;
+            set => _camera.Mode = value;
         }
     }
 }

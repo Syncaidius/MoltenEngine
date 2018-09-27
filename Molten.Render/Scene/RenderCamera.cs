@@ -11,8 +11,8 @@ namespace Molten.Graphics
 
     public class RenderCamera
     {
-        static Dictionary<RenderCameraPreset, RenderCameraProjectionFunc> _projectionFuncs;
-        static Dictionary<RenderCameraPreset, float> _nearClipPreset;
+        static Dictionary<RenderCameraMode, RenderCameraProjectionFunc> _projectionFuncs;
+        static Dictionary<RenderCameraMode, float> _nearClipPreset;
 
         Matrix4F _view;
         Matrix4F _projection;
@@ -23,38 +23,31 @@ namespace Molten.Graphics
         float _nearClip = 0.1f;
         float _farClip = 1000f;
         float _fov;
+        RenderCameraMode _mode;
         RenderCameraProjectionFunc _projFunc;
 
         static RenderCamera()
         {
-            _projectionFuncs = new Dictionary<RenderCameraPreset, RenderCameraProjectionFunc>();
-            _projectionFuncs[RenderCameraPreset.Perspective] = CalcPerspectiveProjection;
-            _projectionFuncs[RenderCameraPreset.Orthographic] = CalcOrthographicProjection;
+            _projectionFuncs = new Dictionary<RenderCameraMode, RenderCameraProjectionFunc>();
+            _projectionFuncs[RenderCameraMode.Perspective] = CalcPerspectiveProjection;
+            _projectionFuncs[RenderCameraMode.Orthographic] = CalcOrthographicProjection;
 
-
-            _nearClipPreset = new Dictionary<RenderCameraPreset, float>();
-            _nearClipPreset[RenderCameraPreset.Perspective] = 0.1f;
-            _nearClipPreset[RenderCameraPreset.Orthographic] = 0f;
+            _nearClipPreset = new Dictionary<RenderCameraMode, float>();
+            _nearClipPreset[RenderCameraMode.Perspective] = 0.1f;
+            _nearClipPreset[RenderCameraMode.Orthographic] = 0f;
         }
 
         /// <summary>
         /// Creates a new instance of <see cref="RenderCamera"/> with the specified projection calculation preset.
         /// </summary>
-        /// <param name="preset">The projection calculation preset to be used upon instantiation.</param>
-        public RenderCamera(RenderCameraPreset preset) : this(_projectionFuncs[preset], _nearClipPreset[preset], 1000f) { }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="RenderCamera"/> with the specified projection calculation function, which determines how the camera's projection matrix is calculated.
-        /// </summary>
-        /// <param name="projectionFunc"></param>
-        public RenderCamera(RenderCameraProjectionFunc projectionFunc, float nearClip, float farClip)
+        /// <param name="mode">The projection calculation preset to be used upon instantiation.</param>
+        public RenderCamera(RenderCameraMode mode)
         {
             View = Matrix4F.Identity;
-            _nearClip = nearClip;
-            _farClip = farClip;
+            _nearClip = _nearClipPreset[mode];
+            _farClip = 1000;
             _fov = (float)Math.PI / 4.0f;
-            _projFunc = projectionFunc;
-            _projection = Matrix4F.Identity;
+            Mode = mode;
         }
 
         private static void CalcOrthographicProjection(IRenderSurface surface, float nearClip, float farClip, float fov, ref Matrix4F projection)
@@ -88,19 +81,6 @@ namespace Molten.Graphics
             _projFunc(_surface, _nearClip, _farClip, _fov, ref _projection);
             _viewProjection = Matrix4F.Multiply(_view, _projection);
             _invViewProjection = Matrix4F.Invert(_viewProjection);
-        }
-
-        public void SetProjectionPreset(RenderCameraPreset preset)
-        {
-            _projFunc = _projectionFuncs[preset];
-            _nearClip = _nearClipPreset[preset];
-            CalculateProjection();
-        }
-
-        public void SetProjectionFunc(RenderCameraProjectionFunc func)
-        {
-            _projFunc = func;
-            CalculateProjection();
         }
 
         private void _surface_OnPostResize(ITexture texture)
@@ -228,9 +208,27 @@ namespace Molten.Graphics
         /// If you intend to output multiple cameras to the same <see cref="IRenderSurface"/>, it is recommended you change the order depth accordingly.
         /// </summary>
         public int OrderDepth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the camera's mode.
+        /// </summary>
+        public RenderCameraMode Mode
+        {
+            get => _mode;
+            set
+            {
+                if (_mode != value)
+                {
+                    _mode = value;
+                    _projFunc = _projectionFuncs[_mode];
+                    _nearClip = _nearClipPreset[_mode];
+                    CalculateProjection();
+                }
+            }
+        }
     }
 
-    public enum RenderCameraPreset
+    public enum RenderCameraMode
     {
         /// <summary>
         /// Configures a camera for left-handed perspective mode.
