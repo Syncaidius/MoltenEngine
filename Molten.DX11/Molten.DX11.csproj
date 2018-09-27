@@ -199,7 +199,6 @@
     <Compile Include="Shaders\ShaderStateBank.cs" />
     <Compile Include="Shaders\StateConditions.cs" />
     <Compile Include="Shaders\Variables\DummyShaderValue.cs" />
-    <Compile Include="Renderer\SpriteBatchDX11.cs" />
     <Compile Include="ShaderModelExtensionsDX11.cs" />
     <Compile Include="Shaders\Compiler\ComputeCompiler.cs" />
     <Compile Include="Shaders\Compiler\HlslCompiler.cs" />

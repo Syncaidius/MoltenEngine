@@ -27,8 +27,6 @@ namespace Molten.Graphics
 
         public Vector3F Rotation { get; set; }
 
-        public bool IsVisible { get; set; }
-
         public Vector2F Scale { get; set; }
 
         public Vector2F Origin { get; set; }

@@ -28,22 +28,10 @@ namespace Molten.Graphics
         internal Material StandardMeshMaterial;
         internal Material StandardMeshMaterial_NoNormalMap;
 
-        internal List<DebugOverlayPage> DebugOverlayPages;
-
         public RendererDX11()
         {
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
-
-            DebugOverlayPages = new List<DebugOverlayPage>();
-            DebugOverlayPages.Add(new DebugStatsPage());
-            DebugOverlayPages.Add(new DebugBuffersPage());
-            DebugOverlayPages.Add(new DebugFeaturesPage());
-            DebugOverlayPages.Add(new RawSceneOverlay());
-            DebugOverlayPages.Add(new DepthOverlay());
-            DebugOverlayPages.Add(new NormalsOverlay());
-            DebugOverlayPages.Add(new EmissiveOverlay());
-            DebugOverlayPages.Add(new LightingOverlay());
         }
 
         protected override void OnInitializeAdapter(GraphicsSettings settings)

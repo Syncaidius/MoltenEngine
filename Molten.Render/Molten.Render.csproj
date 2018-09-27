@@ -149,8 +149,6 @@
     <Compile Include="Spritebatch\ISprite.cs" />
     <Compile Include="Spritebatch\SpriteBatcher.cs" />
     <Compile Include="Spritebatch\SpriteFont.cs" />
-    <Compile Include="Spritebatch\SpriteBatch.cs" />
-    <Compile Include="Spritebatch\SpriteBatchCache.cs" />
     <Compile Include="Spritebatch\SpriteBatchException.cs" />
     <Compile Include="Spritebatch\SpriteVertex.cs" />
     <Compile Include="Surfaces\DepthClearFlags.cs" />
