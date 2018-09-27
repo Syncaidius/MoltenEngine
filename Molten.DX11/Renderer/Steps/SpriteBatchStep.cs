@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class Render2dStep : RenderStepBase
+    internal class SpriteBatchStep : RenderStepBase
     {
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
@@ -45,11 +45,7 @@ namespace Molten.Graphics
             StateConditions conditions = StateConditions.ScissorTest;
             conditions |= rs.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
-            // Draw 2D objects.
-            for (int j = 0; j < layerData.Renderables2D.Count; j++)
-                layerData.Renderables2D[j].Render(renderer);
-
-            renderer.SpriteBatcher.Flush(device, camera, true);
+            renderer.SpriteBatcher.Flush(device, camera);
             device.EndDraw();
         }
     }

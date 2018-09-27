@@ -123,8 +123,8 @@
     <Compile Include="Exceptions\GraphicsContextException.cs" />
     <Compile Include="Exceptions\MappedBufferException.cs" />
     <Compile Include="Exceptions\UnsupportedFeatureException.cs" />
+    <Compile Include="Renderer\Sprite.cs" />
     <Compile Include="Renderer\SpriteBatcherDX11.cs" />
-    <Compile Include="Renderer\SpriteRenderableDX11.cs" />
     <Compile Include="Renderer\Tasks\TextureApply.cs" />
     <Compile Include="Surfaces\RenderControlSurface.cs" />
     <Compile Include="Tests\GraphicsDeviceDX11Tests.cs" />
@@ -183,7 +183,7 @@
     <Compile Include="Renderer\Steps\FinalizeStep.cs" />
     <Compile Include="Renderer\Steps\StartStep.cs" />
     <Compile Include="Renderer\Steps\ImmediateStep.cs" />
-    <Compile Include="Renderer\Steps\Render2dStep.cs" />
+    <Compile Include="Renderer\Steps\SpriteBatchStep.cs" />
     <Compile Include="Renderer\Steps\GBufferStep.cs" />
     <Compile Include="Renderer\Steps\RenderStepBase.cs" />
     <Compile Include="Renderer\Tasks\TextureResolve.cs" />

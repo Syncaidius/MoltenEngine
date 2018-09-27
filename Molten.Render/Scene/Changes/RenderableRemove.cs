@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    /// <summary>A <see cref="RenderSceneChange"/> for removing a <see cref="IRenderable3D"/> from the root of a scene.</summary>
+    /// <summary>A <see cref="RenderSceneChange"/> for removing a <see cref="IRenderable"/> from the root of a scene.</summary>
     internal class RenderableRemove<R> : RenderSceneChange<RenderableRemove<R>>
-        where R: class, IRenderable3D
+        where R: class, IRenderable
     {
         public R Renderable;
 

@@ -75,7 +75,7 @@ namespace Molten.Graphics
             if (camera.Flags.HasFlag(RenderCameraFlags.Deferred))
             {
                 Next<GBufferStep>();
-                Next<Render2dStep>();
+                Next<SpriteBatchStep>();
 
                 Next<LightingStep>();
                 Next<FinalizeStep>();
@@ -83,7 +83,7 @@ namespace Molten.Graphics
             else
             {
                 Next<Immediate3dStep>();
-                Next<Render2dStep>();
+                Next<SpriteBatchStep>();
             }
         }
 

@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class SpriteBatchException : Exception
+    public class SpriteBatcherException : Exception
     {
-        public SpriteBatchException(SpriteBatch sb, string message) : base(message)
+        public SpriteBatcherException(SpriteBatcher sb, string message) : base(message)
         {
-            SpriteBatch = sb;
+            Batcher = sb;
         } 
 
-        public SpriteBatch SpriteBatch { get; private set; }
+        public SpriteBatcher Batcher { get; private set; }
     }
 }

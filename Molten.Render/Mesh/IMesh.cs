@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>A base interface for mesh implementations.</summary>
-    public interface IMesh : IRenderable3D, IDisposable
+    public interface IMesh : IRenderable, IDisposable
     {
         /// <summary>Gets whether or not the mesh was created as a dynamic mesh. 
         /// Dynamic meshes are preferable when the mesh's data will be changing at least once or more per frame.</summary>
@@ -41,21 +41,20 @@ namespace Molten.Graphics
     public interface IMesh<T> : IMesh where T : struct, IVertexType
     {
         /// <summary>Copies the provided vertex data to the current mesh.</summary>
-        /// <typeparam name="I">The type of data to set.</typeparam>
+        /// <typeparam name="{T}">The type of data to set.</typeparam>
         /// <param name="data">The data to be copied.</param>
         void SetVertices(T[] data);
 
         /// <summary>Copies the provided vertex data to the current mesh.</summary>
-        /// <typeparam name="I">The type of data to set.</typeparam>
+        /// <typeparam name="{T}">The type of data to set.</typeparam>
         /// <param name="count">The number of elements in the dat array to copy.</param>
         /// <param name="data">The data to be copied.</param>
         void SetVertices(T[] data, int count);
 
         /// <summary>Copies the provided vertex data to the current mesh.</summary>
-        /// <typeparam name="I">The type of data to set.</typeparam>
+        /// <typeparam name="{T}">The type of data to set.</typeparam>
         /// <param name="count">The number of elements in the dat array to copy.</param>
         /// <param name="data">The data to be copied.</param>
-        /// <param name="startIndex">The element within the data array to start copying from.</param>
         void SetVertices(T[] data, int offset, int count);
 
         /// <summary>

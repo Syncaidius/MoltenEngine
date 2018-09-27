@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public abstract class Renderable : IRenderable3D
+    public abstract class Renderable : IRenderable
     {
         IShaderResource[] _resources;
 

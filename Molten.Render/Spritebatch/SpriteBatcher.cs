@@ -12,6 +12,10 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class SpriteBatcher : IDisposable
     {
+        // This is must match [maxvertexcount()] - 2 in the geometry shader.
+        const int CIRCLE_GEOMETRY_MAX_SIDES = 32;
+        const int CIRCLE_MIN_SIDES = 3;
+
         protected enum SpriteFormat
         {
             Sprite = 0, // Textured or untextured (rectangle) sprites
@@ -25,7 +29,7 @@ namespace Molten.Graphics
 
         protected class SpriteItem : IComparable<SpriteItem>
         {
-            public SpriteVertex2 Vertex;
+            public SpriteVertex Vertex;
             public SpriteFormat Format;
             public ITexture2D Texture;
             public IMaterial Material;
@@ -44,10 +48,12 @@ namespace Molten.Graphics
        
         protected SpriteItem[] Sprites;
         protected int NextID;
+        Color[] _singleColorList;
 
         public SpriteBatcher(int initialCapacity)
         {
             Sprites = new SpriteItem[initialCapacity];
+            _singleColorList = new Color[1];
         }
 
         protected SpriteItem GetItem()
@@ -59,21 +65,544 @@ namespace Molten.Graphics
             return Sprites[NextID++];
         }
 
+        /// <summary>Draws a string of text sprites by using a <see cref="SpriteFont"/> to source the needed data.</summary>
+        /// <param name="font">The spritefont from which to retrieve font data.</param>
+        /// <param name="text">The text to draw.</param>
+        /// <param name="position">The position of the text.</param>
+        /// <param name="color">The color of the text.</param>
+        /// <param name="depth">The z-depth of the text.</param>
+        /// <param name="material">The material to use when rendering the string of text.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, float depth = 0, IMaterial material = null)
+        {
+            DrawString(font, text, position, color, Vector2F.One, depth, material);
+        }
+
+        /// <summary>Draws a string of text sprites by using a <see cref="SpriteFont"/> to source the needed data..</summary>
+        /// <param name="font">The spritefont from which to retrieve font data.</param>
+        /// <param name="text">The text to draw.</param>
+        /// <param name="position">The position of the text.</param>
+        /// <param name="color">The color of the text.</param>
+        /// <param name="scale">The text scale. 1.0f is equivilent to the default size. 0.5f will half the size. 2.0f will double the size.</param>
+        /// <param name="depth">The z-depth of the text.</param>
+        /// <param name="material">The material to use when rendering the string of text.</param>
+        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Vector2F scale, float depth = 0, IMaterial material = null)
+        {
+            int strLength = text.Length;
+
+            if (text.Length == 0)
+                return;
+
+            // Cycle through all characters in the string and process them
+            Rectangle invalid = Rectangle.Empty;
+            Vector2F charPos = position;
+            for (int i = 0; i < strLength; i++)
+            {
+                SpriteFont.GlyphCache cache = font.GetCharGlyph(text[i]);
+
+                SpriteItem item = GetItem();
+                item.Texture = null;
+                item.Material = null;
+                item.Format = SpriteFormat.Circle;
+
+                item.Vertex.Position = new Vector3F(charPos.X, charPos.Y + cache.YOffset, depth);
+                item.Vertex.Rotation = new Vector3F(0); // TODO 2D text rotation
+                item.Vertex.Size = new Vector2F(cache.Location.Width, cache.Location.Height) * scale;
+                item.Vertex.UV = new Vector4F(cache.Location.X, cache.Location.Y, cache.Location.Right, cache.Location.Bottom);
+                item.Vertex.Color = color;
+                item.Vertex.Origin = Vector3F.Zero;
+
+                // Increase pos by size of char (along X)
+                charPos.X += cache.AdvanceWidth * scale.X;
+            }
+        }
+
+        /// <summary>
+        /// Draws a circle with the specified radius.
+        /// </summary>
+        /// <param name="center">The position of the circle center.</param>
+        /// <param name="radius">The radius, in radians.</param>
+        /// <param name="startAngle">The start angle of the circle, in radians. This is useful when drawing a partial-circle.</param>
+        /// <param name="endAngle">The end angle of the circle, in radians. This is useful when drawing a partial-circle</param>
+        /// <param name="col">The color of the circle.</param>
+        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
+        /// <param name="depth">The z-depth of the ellipse.</param>
+        public void DrawCircle(Vector2F center, float radius, float startAngle, float endAngle, Color col, int sides = 16, float depth = 0)
+        {
+            DrawEllipse(center, radius, radius, startAngle, endAngle, col, sides, depth);
+        }
+
+        /// <summary>
+        /// Draws a circle with the specified radius.
+        /// </summary>
+        /// <param name="center">The position of the circle center.</param>
+        /// <param name="radius">The radius, in radians.</param>
+        /// <param name="col">The color of the circle.</param>
+        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
+        /// <param name="depth">The z-depth of the ellipse.</param>
+        public void DrawCircle(Vector2F center, float radius, Color col, int sides = 16, float depth = 0)
+        {
+            DrawEllipse(center, radius, radius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, sides, depth);
+        }
+
+        /// <summary>
+        /// Draws an ellipse with the specified radius values.
+        /// </summary>
+        /// <param name="center">The position of the ellipse center.</param>
+        /// <param name="xRadius">The X radius, in radians.</param>
+        /// <param name="yRadius">The Y radius, in radians.</param>
+        /// <param name="col">The color of the ellipse.</param>
+        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
+        /// <param name="depth">The z-depth of the ellipse.</param>
+        public void DrawEllipse(Vector2F center, float xRadius, float yRadius, Color col, int sides = 16, float depth = 0)
+        {
+            DrawEllipse(center, xRadius, yRadius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, sides, depth);
+        }
+
+        /// <summary>
+        /// Draws an ellipse with the specified radius values.
+        /// </summary>
+        /// <param name="center">The position of the ellipse center.</param>
+        /// <param name="xRadius">The X radius, in radians.</param>
+        /// <param name="yRadius">The Y radius, in radians.</param>
+        /// <param name="startAngle">The start angle of the circle, in radians. This is useful when drawing a partial-ellipse.</param>
+        /// <param name="endAngle">The end angle of the circle, in radians. This is useful when drawing a partial-ellipse</param>
+        /// <param name="color">The color of the ellipse.</param>
+        /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
+        /// <param name="depth">The z-depth of the ellipse.</param>
+        public void DrawEllipse(Vector2F center, float xRadius, float yRadius, float startAngle, float endAngle, Color color, int sides = 16, float depth = 0)
+        {
+            if (sides < CIRCLE_MIN_SIDES)
+                throw new SpriteBatcherException(this, $"The minimum number of sides is {CIRCLE_MIN_SIDES}.");
+
+            // Split the circle up into smaller pieces if we're going to hit the geometry shader output limit.
+            if (sides > CIRCLE_GEOMETRY_MAX_SIDES)
+            {
+                int pieces = sides / CIRCLE_GEOMETRY_MAX_SIDES;
+                pieces += sides % CIRCLE_GEOMETRY_MAX_SIDES > 0 ? 1 : 0;
+                float angleRange = endAngle - startAngle;
+                float rangePerPiece = angleRange / pieces;
+                float pieceStartAngle = startAngle;
+                float pieceEndAngle = pieceStartAngle + rangePerPiece;
+
+                for (int i = 0; i < pieces; i++)
+                {
+                    SpriteItem item = GetItem();
+                    item.Texture = null;
+                    item.Material = null;
+                    item.Format = SpriteFormat.Circle;
+
+                    item.Vertex.Position = new Vector3F(center, depth);
+                    item.Vertex.Rotation = new Vector3F(0); // 2D ellipse do not need rotation.
+                    item.Vertex.Size = new Vector2F(xRadius, yRadius);
+                    item.Vertex.UV = Vector4F.Zero; // Unused
+                    item.Vertex.Color = color;
+                    item.Vertex.Origin = new Vector3F(pieceStartAngle, pieceEndAngle, sides);
+
+                    pieceStartAngle += rangePerPiece;
+                    pieceEndAngle += rangePerPiece;
+                }
+            }
+            else
+            {
+                SpriteItem item = GetItem();
+                item.Texture = null;
+                item.Material = null;
+                item.Format = SpriteFormat.Circle;
+
+                item.Vertex.Position = new Vector3F(center, depth);
+                item.Vertex.Rotation = new Vector3F(0); // 2D ellipse do not need rotation.
+                item.Vertex.Size = new Vector2F(xRadius, yRadius);
+                item.Vertex.UV = Vector4F.Zero; // Unused
+                item.Vertex.Color = color;
+                item.Vertex.Origin = new Vector3F(startAngle, endAngle, sides);
+            }
+        }
+
+        /// <summary>Draws a triangle using 3 provided points.</summary>
+        /// <param name="p1">The first point.</param>
+        /// <param name="p2">The second point.</param>
+        /// <param name="p3">The third point.</param>
+        /// <param name="color">The color of the triangle.</param>
+        /// <param name="depth">The z-depth of the triangle.</param>
+        public void DrawTriangle(Vector2F p1, Vector2F p2, Vector2F p3, Color color, float depth = 0)
+        {
+            SpriteItem item = GetItem();
+            item.Texture = null;
+            item.Material = null;
+            item.Format = SpriteFormat.Triangle;
+
+            item.Vertex.Position = new Vector3F(p1, depth);
+            item.Vertex.Rotation = new Vector3F(p2, depth);
+            item.Vertex.Size = new Vector2F(); // Unused
+            item.Vertex.UV = Vector4F.Zero; // Unused
+            item.Vertex.Color = color;
+            item.Vertex.Origin = new Vector3F(p3, 0);
+        }
+
+        /// <summary>
+        /// Draws a polygon from a list of points. The point list is expected to be in triangle-list format. 
+        /// This means every 3 points should form a triangle. The polygon should be made up of several triangles.
+        /// </summary>
+        /// <param name="points">A list of points that form the polygon. A minimum of 3 points is expected.</param>
+        /// <param name="triColors">A list of colors. One color per triangle. A minimum of 1 color is expected. 
+        /// Insufficient colors for the provided triangles will cause the colors to be repeated.</param>
+        /// <param name="depth">The z-depth of all triangles in the provided list.</param>
+        public void DrawTriangleList(IList<Vector2F> points, IList<Color> triColors, float depth = 0)
+        {
+            if (points.Count % 3 > 0)
+                throw new SpriteBatcherException(this, "Incorrect number of points for triangle list. There should be 3 points per triangle");
+
+            if (triColors.Count == 0)
+                throw new SpriteBatcherException(this, "There must be at least one color available in the triColors list.");
+
+            for (int i = 0; i < points.Count; i += 3)
+            {
+                int colID = i / 3;
+
+                SpriteItem item = GetItem();
+                item.Texture = null;
+                item.Material = null;
+                item.Format = SpriteFormat.Triangle;
+
+                item.Vertex.Position = new Vector3F(points[i], depth);
+                item.Vertex.Rotation = new Vector3F(points[i + 1], depth);
+                item.Vertex.Size = new Vector2F(); // Unused
+                item.Vertex.UV = Vector4F.Zero; // Unused
+                item.Vertex.Color = triColors[colID % triColors.Count];
+                item.Vertex.Origin = new Vector3F(points[i + 2], 0);
+            }
+        }
+
+        /// <summary>
+        /// Draws a polygon from a list of points. The point list is expected to be in triangle-list format. 
+        /// This means every 3 points should form a triangle. The polygon should be made up of several triangles.
+        /// </summary>
+        /// <param name="points">A list of points that form the polygon.</param>
+        /// <param name="color">The color of the polygon.</param>
+        /// <param name="depth">The z-depth of all triangles in the provided list.</param>
+        public void DrawTriangleList(IList<Vector2F> points, Color color, float depth = 0)
+        {
+            _singleColorList[0] = color;
+            DrawTriangleList(points, _singleColorList);
+        }
+
+        /// <summary>
+        /// Draws a rectangular outline composed of 4 lines.
+        /// </summary>
+        /// <param name="rect">The rectangle.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="thickness">The thickness.</param>
+        /// <param name="depth">The z-depth of rectangle outline.</param>
+        public void DrawRectOutline(RectangleF rect, Color color, float thickness, float depth = 0)
+        {
+            DrawLine(rect.TopLeft, rect.TopRight, color, thickness);
+            DrawLine(rect.TopRight, rect.BottomRight, color, thickness);
+            DrawLine(rect.BottomRight, rect.BottomLeft, color, thickness);
+            DrawLine(rect.BottomLeft, rect.TopLeft, color, thickness);
+        }
+
+        /// <summary>Draws connecting lines between each of the provided points.</summary>
+        /// <param name="points">The points between which to draw lines.</param>
+        /// <param name="color">The color of all lines in the provided list.</param>
+        /// <param name="thickness">The thickness of the line in pixels.</param>
+        /// <param name="depth">The z-depth of all lines in the provided list.</param>
+        public void DrawLineList(IList<Vector2F> points, Color color, float thickness, float depth = 0)
+        {
+            _singleColorList[0] = color;
+            DrawLineList(points, _singleColorList, thickness);
+        }
+
+        /// <summary>Draws connecting lines between each of the provided points.</summary>
+        /// <param name="points">The points between which to draw lines.</param>
+        /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
+        /// <param name="thickness">The thickness of the line in pixels.</param>
+        /// <param name="depth">The z-depth of all lines in the provided list.</param>
+        public void DrawLineList(IList<Vector2F> points, IList<Color> pointColors, float thickness, float depth = 0)
+        {
+            if (pointColors.Count == 0)
+                throw new SpriteBatcherException(this, "There must be at least one color available in the pointColors list.");
+
+            if (points.Count < 2 && points.Count % 2 > 0)
+                throw new SpriteBatcherException(this, "There must be at least 2 points per line.");
+
+            if (points.Count == 2)
+            {
+                int secondCol = pointColors.Count > 1 ? 1 : 0;
+                DrawLine(points[0], points[1], pointColors[0], pointColors[secondCol], thickness);
+            }
+            else
+            {
+                Vector2F p1, p2;
+                Color lastCol = pointColors[pointColors.Count - 1];
+                Color4 lastCol4 = lastCol.ToColor4();
+                int i2 = 0;
+
+                for (int i = 0; i < points.Count; i += 2)
+                {
+                    i2 = i + 1;
+                    p1 = points[i];
+                    p2 = points[i2];
+
+                    SpriteItem item = GetItem();
+                    item.Texture = null;
+                    item.Material = null;
+                    item.Format = SpriteFormat.Line;
+
+                    item.Vertex.Position = new Vector3F(p1, depth);
+                    item.Vertex.Rotation = new Vector3F(p2, depth);
+                    item.Vertex.Size = new Vector2F(thickness, 0); // Y is unused
+                    item.Vertex.UV = pointColors[i2 % pointColors.Count].ToVector4();
+                    item.Vertex.Color = pointColors[i % pointColors.Count];
+
+                    // Normal of next line. This is used for creating sharp edges when drawing multiple lines. 
+                    // In this case, we set it to the direction of the current line, because we're just drawing one.
+                    item.Vertex.Origin = item.Vertex.Rotation - item.Vertex.Position;
+                }
+            }
+        }
+
+        /// <summary>Draws connecting lines between each of the provided points.</summary>
+        /// <param name="points">The points between which to draw lines.</param>
+        /// <param name="color">The color of the lines</param>
+        /// <param name="thickness">The thickness of the line in pixels.</param>
+        /// <param name="depth">The z-depth of all lines in the provided list.</param>
+        public void DrawLinePath(IList<Vector2F> points, Color color, float thickness, float depth = 0)
+        {
+            _singleColorList[0] = color;
+            DrawLinePath(points, _singleColorList, thickness);
+        }
+
+        /// <summary>Draws connecting lines between each of the provided points.</summary>
+        /// <param name="points">The points between which to draw lines.</param>
+        /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
+        /// <param name="thickness">The thickness of the line in pixels.</param>
+        /// <param name="depth">The z-depth of all lines in the provided list.</param>
+        public void DrawLinePath(IList<Vector2F> points, IList<Color> pointColors, float thickness, float depth = 0)
+        {
+            if (pointColors.Count == 0)
+                throw new SpriteBatcherException(this, "There must be at least one color available in the pointColors list.");
+
+            if (points.Count < 2)
+                throw new SpriteBatcherException(this, "There must be at least 2 points in the point list.");
+
+            if (points.Count == 2)
+            {
+                int secondCol = pointColors.Count > 1 ? 1 : 0;
+                DrawLine(points[0], points[1], pointColors[0], pointColors[secondCol], thickness);
+            }
+            else
+            {
+                int lineCount = points.Count - 1;
+
+                Vector2F p1, p2;
+                int last = points.Count - 1;
+                int prev = 0;
+                int next = 1;
+                Color lastCol = pointColors[pointColors.Count - 1];
+                Color4 lastCol4 = lastCol.ToColor4();
+                int spriteID = NextID;
+
+                for (int i = 0; i < last; i++)
+                {
+                    p1 = points[i];
+                    p2 = points[next];
+
+                    SpriteItem item = GetItem();
+                    item.Texture = null;
+                    item.Material = null;
+                    item.Format = SpriteFormat.Line;
+
+                    item.Vertex.Position = new Vector3F(p1, depth);
+                    item.Vertex.Rotation = new Vector3F(p2, depth);
+                    item.Vertex.Size = new Vector2F(thickness, 0); // Y is unused
+                    item.Vertex.UV = pointColors[next % pointColors.Count].ToVector4();
+                    item.Vertex.Color = pointColors[i % pointColors.Count];
+
+                    // Provide the previous line with the direction of the current line.
+                    if (prev < i)
+                        Sprites[spriteID - 1].Vertex.Origin = item.Vertex.Rotation - item.Vertex.Position;
+
+                    // If there is no line after the current, use the current line's direction to fill the tangent calculation.
+                    if (next + 1 == last)
+                        item.Vertex.Origin = item.Vertex.Rotation - item.Vertex.Position;
+
+                    spriteID++;
+                    next++;
+                    prev = i;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draws a line between two points.
+        /// </summary>
+        /// <param name="p1">The first point.</param>
+        /// <param name="p2">The second point.</param>
+        /// <param name="color">The color of the line.</param>
+        /// <param name="thickness">The thickness of the line in pixels.</param>
+        /// <param name="depth">The z-depth of the sprite.</param>
+        public void DrawLine(Vector2F p1, Vector2F p2, Color color, float thickness, float depth = 0)
+        {
+            DrawLine(p1, p2, color, color, thickness, depth);
+        }
+
+        /// <summary>
+        /// Draws a line between two points with a color gradient produced with the two provided colors.
+        /// </summary>
+        /// <param name="p1">The first point.</param>
+        /// <param name="p2">The second point.</param>
+        /// <param name="color1">The color for pos1.</param>
+        /// <param name="color2">The color for pos2.</param>
+        /// <param name="thickness">The thickness of the line in pixels.</param>
+        /// <param name="depth">The z-depth of the sprite.</param>
+        public void DrawLine(Vector2F p1, Vector2F p2, Color color1, Color color2, float thickness, float depth = 0)
+        {
+            SpriteItem item = GetItem();
+            item.Texture = null;
+            item.Material = null;
+            item.Format = SpriteFormat.Line;
+
+            item.Vertex.Position = new Vector3F(p1, depth);
+            item.Vertex.Rotation = new Vector3F(p2, depth);
+            item.Vertex.Size = new Vector2F(thickness, 0); // Y is unused
+            item.Vertex.UV = color1.ToColor4();
+            item.Vertex.Color = color2;
+
+            // Normal of next line. This is used for creating sharp edges when drawing multiple lines. 
+            // In this case, we set it to the direction of the current line, because we're just drawing one.
+            item.Vertex.Origin = item.Vertex.Rotation - item.Vertex.Position;
+        }
+
+        /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
+        /// <param name="destination">The rectangle defining the draw destination.</param>
+        /// <param name="color">The color overlay/tiny of the sprite.</param>
+        /// <param name="material">The material to apply to the rectangle. A value of null will use the default sprite-batch material.</param>
+        public void DrawRect(Rectangle destination, Color color, IMaterial material = null)
+        {
+            DrawRect(destination, color, 0, Vector2F.Zero, 0, 0, material);
+        }
+
+        /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
+        /// <param name="destination">The rectangle defining the draw destination.</param>
+        /// <param name="color">The color overlay/tiny of the sprite.</param>
+        /// <param name="rotation">Rotation in radians.</param>
+        /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
+        /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
+        /// <param name="material">The material to use when rendering the sprite.</param>
+        /// <param name="depth">The z-depth of the sprite.</param>
+        /// <param name="arraySlice">The texture array slice containing the source texture.</param>
+        public void DrawRect(Rectangle destination, Color color, float rotation, Vector2F origin, float depth = 0, float arraySlice = 0, IMaterial material = null)
+        {
+            SpriteItem item = GetItem();
+            item.Texture = null;
+            item.Material = material;
+            item.Format = SpriteFormat.Sprite;
+
+            item.Vertex.Position = new Vector3F(destination.Left, destination.Top, depth);
+            item.Vertex.Rotation = new Vector3F(0, 0, rotation);
+            item.Vertex.Size = new Vector2F(destination.Width, destination.Height);
+            item.Vertex.Color = color;
+            item.Vertex.Origin = new Vector3F(origin, arraySlice);
+            //item.Vertex.UV = new Vector4F(); // Unused
+        }
+
+        /// <summary>Adds a sprite to the batch.</summary>
+        /// <param name="texture"></param>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        /// <param name="color"></param>
+        /// <param name="material"></param>
+        /// <param name="arraySlice"></param>
+        /// <param name="depth"></param>
+        public void Draw(ITexture2D texture, Rectangle source, Rectangle destination, Color color, float depth = 0f, float arraySlice = 0, IMaterial material = null)
+        {
+            Draw(texture, source, 
+                new Vector2F(destination.Left, destination.Top), 
+                new Vector2F(destination.Width, destination.Height), 
+                color, 
+                0, 
+                Vector2F.Zero, 
+                material,
+                depth, 
+                arraySlice);
+        }
+
+        /// <summary>Adds a sprite to the batch.</summary>
+        /// <param name="texture"></param>
+        /// <param name="destination"></param>
+        /// <param name="color"></param>
+        /// <param name="material"></param>
+        public void Draw(ITexture2D texture, Rectangle destination, Color color, IMaterial material = null)
+        {
+            Rectangle src = new Rectangle(0, 0, texture.Width, texture.Height);
+            Draw(texture, src, new Vector2F(destination.X, destination.Y), new Vector2F(destination.Width, destination.Height), color, 0, Vector2F.Zero, material, 0,0);
+        }
+
+        /// <summary>Adds a sprite to the batch.</summary>
+        /// <param name="texture"></param>
+        /// <param name="destination"></param>
+        /// <param name="color"></param>
+        /// <param name="rotation"></param>
+        /// <param name="origin"></param>
+        public void Draw(ITexture2D texture, Rectangle destination, Color color, float rotation, Vector2F origin, IMaterial material = null)
+        {
+            Rectangle src = new Rectangle(0, 0, texture.Width, texture.Height);
+            Draw(texture, src, new Vector2F(destination.X, destination.Y), new Vector2F(destination.Width, destination.Height), color, rotation, origin, material, 0, 0);
+        }
+
+        /// <summary>Adds a sprite to the batch.</summary>
+        /// <param name="texture"></param>
+        /// <param name="position"></param>
+        /// <param name="color"></param>
+        public void Draw(ITexture2D texture, Vector2F position, Color color, IMaterial material = null)
+        {
+            Rectangle src = new Rectangle(0, 0, texture.Width, texture.Height);
+            Rectangle dest = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
+            Draw(texture, src, position, new Vector2F(src.Width, src.Height), color, 0, Vector2F.Zero, material, 0, 0); 
+        }
+
+        /// <summary>Adds a sprite to the batch.</summary>
+        /// <param name="texture"></param>
+        /// <param name="position"></param>
+        /// <param name="color"></param>
+        /// <param name="rotation">Rotation in radians.</param>
+        /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
+        /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
+        /// <param name="material">The material to use when rendering the sprite.</param>
+        /// <param name="depth">The z-depth of the sprite.</param>
+        /// <param name="arraySlice">The texture array slice containing the source texture.</param>
+        public void Draw(ITexture2D texture, Vector2F position, Color color, float rotation, Vector2F origin, float depth = 0f, float arraySlice = 0, IMaterial material = null)
+        {
+            Rectangle src = new Rectangle(0, 0, texture.Width, texture.Height);
+            Rectangle dest = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
+            Draw(texture, src, position, new Vector2F(src.Width, src.Height), color, rotation, origin, material, depth, arraySlice);
+        }
+
         /// <summary>
         /// Adds a sprite to the batch using 2D coordinates.
         /// </summary>>
         /// <param name="texture"></param>
         /// <param name="source"></param>
         /// <param name="position"></param>
-        /// <param name="scale"></param>
+        /// <param name="size">The width and height of the sprite..</param>
         /// <param name="color"></param>
         /// <param name="rotation">Rotation in radians.</param>
         /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
-        /// <param name="material"></param>
+        /// <param name="material">The material to use when rendering the sprite.</param>
         /// <param name="depth">The z-depth of the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        public void Draw(ITexture2D texture, Rectangle source, Vector2F position, Vector2F scale, Color color, float rotation, Vector2F origin, IMaterial material, int arraySlice = 0, float depth = 0.0f)
+        public void Draw(ITexture2D texture, 
+            Rectangle source, 
+            Vector2F position, 
+            Vector2F size, 
+            Color color, 
+            float rotation, 
+            Vector2F origin, 
+            IMaterial material, 
+            float depth, 
+            float arraySlice)
         {
             SpriteItem item = GetItem();
             item.Texture = texture;
@@ -82,11 +611,11 @@ namespace Molten.Graphics
             item.Format = SpriteFormat.Sprite;
 
             item.Vertex.Position = new Vector3F(position, depth);
-            item.Vertex.Rotation = new Vector3F(rotation, 0, 0);
-            item.Vertex.Size = new Vector2F(source.X * scale.X, source.Y * scale.Y);
+            item.Vertex.Rotation = new Vector3F(0, 0, rotation);
+            item.Vertex.Size = size;
             item.Vertex.Color = color;
             item.Vertex.Origin = new Vector3F(origin, arraySlice);
-            item.Vertex.UV = new Vector4F(source.X, source.Y, source.Right, source.Bottom);
+            item.Vertex.UV = new Vector4F(source.Left, source.Top, source.Right, source.Bottom);
         }
 
         /// <summary>
@@ -101,8 +630,17 @@ namespace Molten.Graphics
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
         /// <param name="material"></param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        /// <param name="scale">The scale of the sprite based on it's soruce width and height.</param>
-        public void Draw(ITexture2D texture, Rectangle source, Vector3F position, Vector2F scale, Color color, Vector3F rotation, Vector2F origin, IMaterial material, int arraySlice = 0)
+        /// <param name="size">The width and height of the sprite..</param>
+        public void Draw(
+            ITexture2D texture,
+            Rectangle source, 
+            Vector3F position, 
+            Vector2F size, 
+            Color color, 
+            Vector3F rotation, 
+            Vector2F origin, 
+            IMaterial material, 
+            float arraySlice)
         {
             SpriteItem item = GetItem();
             item.Texture = texture;
@@ -111,10 +649,10 @@ namespace Molten.Graphics
 
             item.Vertex.Position = position;
             item.Vertex.Rotation = rotation;
-            item.Vertex.Size = new Vector2F(source.Width * scale.X, source.Height * scale.Y);
+            item.Vertex.Size = size;
             item.Vertex.Color = color;
             item.Vertex.Origin = new Vector3F(origin, arraySlice);
-            item.Vertex.UV = new Vector4F(source.X, source.Y, source.Right, source.Bottom);
+            item.Vertex.UV = new Vector4F(source.Left, source.Top, source.Right, source.Bottom);
         }
 
         /// <summary>

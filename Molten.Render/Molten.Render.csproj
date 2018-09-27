@@ -115,8 +115,6 @@
     <Compile Include="Scene\Changes\RenderableAdd.cs" />
     <Compile Include="Scene\Changes\RenderableRemove.cs" />
     <Compile Include="Scene\Changes\RenderSceneChange.cs" />
-    <Compile Include="Scene\Changes\Add2D.cs" />
-    <Compile Include="Scene\Changes\Remove2D.cs" />
     <Compile Include="Scene\Changes\RenderLayerReorder.cs" />
     <Compile Include="Scene\ISceneDebugOverlay.cs" />
     <Compile Include="IResourceManager.cs" />
@@ -127,8 +125,7 @@
     <Compile Include="ObjectUpdateFlags.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderFrameSnapshot.cs" />
-    <Compile Include="Scene\IRenderable3D.cs" />
-    <Compile Include="Scene\IRenderable2D.cs" />
+    <Compile Include="Scene\IRenderable.cs" />
     <Compile Include="Scene\Lights\LightData.cs" />
     <Compile Include="Scene\Lights\LightList.cs" />
     <Compile Include="Scene\ObjectRenderData.cs" />
@@ -151,13 +148,12 @@
     <Compile Include="Shaders\ShaderModel.cs" />
     <Compile Include="Shaders\ShaderCompileResult.cs" />
     <Compile Include="Shaders\ShaderType.cs" />
-    <Compile Include="Spritebatch\ISpriteRenderable.cs" />
+    <Compile Include="Spritebatch\ISprite.cs" />
     <Compile Include="Spritebatch\SpriteBatcher.cs" />
     <Compile Include="Spritebatch\SpriteFont.cs" />
     <Compile Include="Spritebatch\SpriteBatch.cs" />
     <Compile Include="Spritebatch\SpriteBatchCache.cs" />
     <Compile Include="Spritebatch\SpriteBatchException.cs" />
-    <Compile Include="Spritebatch\SpriteVertex2.cs" />
     <Compile Include="Spritebatch\SpriteVertex.cs" />
     <Compile Include="Surfaces\DepthClearFlags.cs" />
     <Compile Include="Surfaces\DepthFormat.cs" />

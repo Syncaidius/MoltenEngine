@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class LayerRenderData
+    public abstract class LayerRenderData
     {
-        public readonly List<IRenderable2D> Renderables2D = new List<IRenderable2D>();        
+
     }
 
     public class LayerRenderData<R> : LayerRenderData
-        where R : IRenderable3D
+        where R : IRenderable
     {
         public readonly Dictionary<R, List<ObjectRenderData>> Renderables = new Dictionary<R, List<ObjectRenderData>>();
     }

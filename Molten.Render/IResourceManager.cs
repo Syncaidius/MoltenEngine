@@ -78,7 +78,7 @@ namespace Molten.Graphics
         /// Creates a sprite-renderable object, capable of rendering batches of sprites.
         /// </summary>
         /// <returns></returns>
-        ISpriteRenderable CreateSpriteRenderable();
+        ISprite CreateSprite();
 
         /// <summary>
         /// Creates a standard mesh. Standard meshes enforce stricter rules aimed at deferred rendering.

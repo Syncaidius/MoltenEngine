@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="IRenderable3D"/> to the root of a scene.</summary>
+    /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="IRenderable"/> to the root of a scene.</summary>
     internal class RenderableAdd<R> : RenderSceneChange<RenderableAdd<R>> 
-        where R : class, IRenderable3D
+        where R : class, IRenderable
     {
         public R Renderable;
 

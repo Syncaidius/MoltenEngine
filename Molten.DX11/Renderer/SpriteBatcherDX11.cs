@@ -27,7 +27,7 @@ namespace Molten.Graphics
         int _curRange;
         int _spriteCapacity;
         Action<GraphicsPipe, RenderCamera, Range>[] _flushFuncs;
-        SpriteVertex2[] _vertices;
+        SpriteVertex[] _vertices;
 
         Material _defaultMaterial;
         Material _defaultNoTextureMaterial;
@@ -41,10 +41,10 @@ namespace Molten.Graphics
             for (int i = 0; i < _ranges.Length; i++)
                 _ranges[i] = new Range();
 
-            _vertices = new SpriteVertex2[capacity];
+            _vertices = new SpriteVertex[capacity];
             _spriteCapacity = capacity;
-            _segment = renderer.DynamicVertexBuffer.Allocate<SpriteVertex2>(_spriteCapacity);
-            _segment.SetVertexFormat(typeof(SpriteVertex2));
+            _segment = renderer.DynamicVertexBuffer.Allocate<SpriteVertex>(_spriteCapacity);
+            _segment.SetVertexFormat(typeof(SpriteVertex));
 
             string source = null;
             string namepace = "Molten.Graphics.Assets.sprite.sbm";
@@ -78,13 +78,16 @@ namespace Molten.Graphics
             if (NextID == 0)
                 return;
 
+
             Sort(camera);
             Range range;
 
+            pipe.SetVertexSegment(_segment, 0);
+
             // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.
-            fixed (SpriteVertex2* vertexFixedPtr = _vertices)
+            fixed (SpriteVertex* vertexFixedPtr = _vertices)
             {
-                SpriteVertex2* vertexPtr = vertexFixedPtr;
+                SpriteVertex* vertexPtr = vertexFixedPtr;
                 SpriteItem item;
 
                 int i = 0;
