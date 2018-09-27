@@ -9,8 +9,10 @@ namespace Molten.Graphics
 {
     internal class FinalizeStep : RenderStepBase
     {
+        RenderCamera _camFinalize;
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
+            _camFinalize = new RenderCamera(RenderCameraMode.Orthographic);
             UpdateSurfaces(renderer, width, height);
         }
 
@@ -29,9 +31,7 @@ namespace Molten.Graphics
             switch (link.Chain.First.Step)
             {
                 case StartStep start:
-                    Matrix4F spriteProj = Matrix4F.Identity;
-                    Matrix4F spriteView = Matrix4F.OrthoOffCenterLH(0, camera.OutputSurface.Width, -camera.OutputSurface.Height, 0, 0, 1);
-                    Matrix4F spriteViewProj = Matrix4F.Multiply(spriteView, spriteProj);
+                    _camFinalize.OutputSurface = camera.OutputSurface;
 
                     Rectangle bounds = new Rectangle(0, 0, camera.OutputSurface.Width, camera.OutputSurface.Height);
                     GraphicsDeviceDX11 device = renderer.Device;
@@ -43,14 +43,14 @@ namespace Molten.Graphics
                     device.SetDepthSurface(null, GraphicsDepthMode.Disabled);
                     device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
 
-                    renderer.SpriteBatcher.Begin(camera.OutputSurface.Viewport);
-                    renderer.SpriteBatcher.Draw(start.Scene, bounds, bounds, Color.White, 0, Vector2F.Zero, null);
+                    renderer.SpriteBatcher.Draw(start.Scene, bounds, Vector2F.Zero, Vector2F.One, Color.White, 0, Vector2F.Zero, null);
 
                     StateConditions conditions = StateConditions.ScissorTest;
                     conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
+
                     renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
-                    renderer.SpriteBatcher.Flush(device, camera);
+                    renderer.SpriteBatcher.Flush(device, _camFinalize);
                     renderer.Device.EndDraw();
                     break;
             }
