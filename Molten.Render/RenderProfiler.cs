@@ -10,135 +10,170 @@ namespace Molten.Graphics
 {
     public class RenderProfiler
     {
-        RenderFrameSnapshot[] _frameSnaps;
-        RenderFrameSnapshot[] _secondSnaps;
-        int _nextSlot;
-        int _prevSlot;
-
-        int _curSecondShot;
-        int _prevSecondShot;
-        double _timing;
-        Stopwatch _frameTimer;
-        public RenderFrameSnapshot CurrentFrame;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="snapshots">The number of previous frames of which to keep snapshots.</param>
-        public RenderProfiler(int snapshots = 20)
+        public class Snapshot
         {
+            public int DrawCalls { get; set; }
+
+            public int Bindings { get; set; }
+
+            public int BufferSwaps { get; set; }
+
+            public int ShaderSwaps { get; set; }
+
+            public int RTSwaps { get; set; }
+
+            /// <summary>The total number of triangles that were rendered in the previous frame.</summary>
+            public int PrimitiveCount { get; set; }
+
+            /// <summary>The time it took to render the previous frame.</summary>
+            public double Time { get; set; }
+
+            /// <summary>
+            /// The target frame time during the frame that the snapshot was recorded.
+            /// </summary>
+            public double TargetTime { get; set; }
+
+            /// <summary>
+            /// Gets the frame's ID at the time the snapshot was saved.
+            /// </summary>
+            public ulong FrameID { get; set; }
+
+            /// <summary>
+            /// The amount of VRAM allocated during the frame.
+            /// </summary>
+            public ulong AllocatedVRAM { get; set; }
+
+            public int MapDiscardCount { get; set; }
+
+            public int MapNoOverwriteCount { get; set; }
+
+            public int MapWriteCount { get; set; }
+
+            public int MapReadCount { get; set; }
+
+            public int UpdateSubresourceCount { get; set; }
+
+            public int CopySubresourceCount { get; set; }
+
+            public void Clear()
+            {
+                DrawCalls = 0;
+                Bindings = 0;
+                BufferSwaps = 0;
+                ShaderSwaps = 0;
+                RTSwaps = 0;
+                PrimitiveCount = 0;
+                Time = 0;
+                TargetTime = 0;
+                FrameID = 0;
+                AllocatedVRAM = 0;
+                MapDiscardCount = 0;
+                MapNoOverwriteCount = 0;
+                MapWriteCount = 0;
+                MapReadCount = 0;
+                UpdateSubresourceCount = 0;
+                CopySubresourceCount = 0;
+            }
+
+            public void Accumulate(Snapshot other)
+            {
+                DrawCalls += other.DrawCalls;
+                Bindings += other.Bindings;
+                RTSwaps += other.RTSwaps;
+                PrimitiveCount += other.PrimitiveCount;
+                BufferSwaps += other.BufferSwaps;
+                ShaderSwaps += other.ShaderSwaps;
+                Time += other.Time;
+                MapDiscardCount += other.MapDiscardCount;
+                MapNoOverwriteCount += other.MapNoOverwriteCount;
+                MapWriteCount += other.MapWriteCount;
+                MapReadCount += other.MapReadCount;
+                UpdateSubresourceCount += other.UpdateSubresourceCount;
+                CopySubresourceCount += other.CopySubresourceCount;
+            }
+        }
+
+        Snapshot[] _snapshots;
+        Stopwatch _frameTimer;
+        int _curID;
+
+        public RenderProfiler(int maxSnapshots = 20)
+        {
+            if (maxSnapshots < 2)
+                throw new Exception("The minimum number of snapshots is 2.");
+
+            MaxSnapshots = maxSnapshots;
             _frameTimer = new Stopwatch();
-            _frameSnaps = new RenderFrameSnapshot[snapshots];
-            _secondSnaps = new RenderFrameSnapshot[snapshots];
+            _snapshots = new Snapshot[maxSnapshots];
+            for (int i = 0; i < maxSnapshots; i++)
+                _snapshots[i] = new Snapshot();
+
+            Current = _snapshots[_curID];
+            Previous = _snapshots[_snapshots.Length - 1];
         }
 
         public void Clear()
         {
-            Array.Clear(_frameSnaps, 0, _frameSnaps.Length);
-            Array.Clear(_secondSnaps, 0, _secondSnaps.Length);
-            _nextSlot = 0;
-            _prevSlot = 0;
-            _curSecondShot = 0;
-            _prevSecondShot = 0;
-            _timing = 0;
+            _curID = 0;
+            _frameTimer.Stop();
+            _frameTimer.Reset();
+            FrameCount = 0;
+
+            for (int i = 0; i < MaxSnapshots; i++)
+                _snapshots[i].Clear();
         }
 
-        /// <summary>Adds a frame snapshot to the data for the current frame. Useful for collating snapshots from multiple device contexts into one snapshot.</summary>
-        public void AddData(RenderFrameSnapshot snap)
+        public void Accumulate(Snapshot data)
         {
-            CurrentFrame.Add(snap);
+            Current.Accumulate(data);
         }
 
-        public void StartCapture()
+        public void Begin()
         {
-            _frameTimer.Restart();
+            _frameTimer.Reset();
+            _frameTimer.Start();
         }
 
-        public void EndCapture(Timing time)
+        public void End(Timing time)
         {
             _frameTimer.Stop();
+            Current.Time = _frameTimer.Elapsed.TotalMilliseconds;
+            Current.TargetTime = time.TargetFrameTime;
+            Current.FrameID = FrameCount;
+            Previous = Current;
+            _curID++;
 
-            // Accumulate into per-second. Reset for next frame.
-            CurrentFrame.Time = _frameTimer.Elapsed.TotalMilliseconds;
-            CurrentFrame.TargetTime = time.TargetFrameTime;
-            CurrentFrame.FrameID = FrameCount;
-            _frameSnaps[_nextSlot] = CurrentFrame;
-            _secondSnaps[_curSecondShot].Add(CurrentFrame);
-
-            // Handle per-second timing updates.
-            _timing += time.ElapsedTime.TotalMilliseconds;
-            if (_timing >= 1000)
+            // Take the oldest snapshot and move it to the front for re-use.
+            Current = _snapshots[0];
+            if(_curID == MaxSnapshots)
             {
-                _timing -= 1000;
-                _prevSecondShot = _curSecondShot;
-                _curSecondShot++;
-
-                if (_curSecondShot == _secondSnaps.Length)
-                    _curSecondShot = 0;
-
-                _secondSnaps[_curSecondShot] = new RenderFrameSnapshot();
+                _curID--;
+                Array.Copy(_snapshots, 1, _snapshots, 0, _snapshots.Length - 1);
+                _snapshots[_curID] = Current;
             }
 
-            _prevSlot = _nextSlot++;
-            if (_nextSlot == _frameSnaps.Length)
-                _nextSlot = 0;
-
-            CurrentFrame = new RenderFrameSnapshot();
-            FrameCount++;
-        }
-
-        public RenderFrameSnapshot PreviousFrame
-        {
-            get { return _frameSnaps[_prevSlot]; }
-        }
-
-        public RenderFrameSnapshot PreviousSecond
-        {
-            get { return _secondSnaps[_prevSecondShot]; }
-        }
-
-        public RenderFrameSnapshot CurrentSecond
-        {
-            get { return _secondSnaps[_curSecondShot]; }
-        }
-
-        /// <summary>Gets the number of draw calls for the current second.</summary>
-        public int DrawCallsPerSecond
-        {
-            get { return _secondSnaps[_curSecondShot].DrawCalls; }
-        }
-
-        /// <summary>Gets the number of texture swaps for the current second.</summary>
-        public int BindingsPerSecond
-        {
-            get { return _secondSnaps[_curSecondShot].Bindings; }
-        }
-
-        /// <summary>Gets the number of render target swaps for the current second.</summary>
-        public int RTSwapsPerSecond
-        {
-            get { return _secondSnaps[_curSecondShot].RTSwaps; }
-        }
-
-        /// <summary>Gets the triangle count for the current second.</summary>
-        public int TriangleCountPerSecon
-        {
-            get { return _secondSnaps[_curSecondShot].TriCount; }
-        }
-
-        public int BufferSwapsPerSecond
-        {
-            get { return _secondSnaps[_curSecondShot].BufferSwaps; }
-        }
-
-        public int ShaderSwapsPerSecond
-        {
-            get { return _secondSnaps[_curSecondShot].ShaderSwaps; }
+            Current = _snapshots[_curID];
+            Current.Clear();
         }
 
         /// <summary>
-        /// Gets the number of frames recorded with this profiler.
+        /// The total number of frames tracked during this 
         /// </summary>
-        public ulong FrameCount { get; private set; }
+        public uint FrameCount { get; private set; }
+
+        /// <summary>
+        /// Gets the profiling data for the current frame.
+        /// </summary>
+        public Snapshot Current { get; private set; }
+
+        /// <summary>
+        /// Gets the profiling data for the previous frame.
+        /// </summary>
+        public Snapshot Previous { get; private set; }
+
+        /// <summary>
+        /// Gets the maximum number of snapshots held by the <see cref="RenderProfiler"/>.
+        /// </summary>
+        public int MaxSnapshots { get; }
     }
 }

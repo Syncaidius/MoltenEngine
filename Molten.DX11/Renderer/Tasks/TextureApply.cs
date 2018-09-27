@@ -16,7 +16,7 @@ namespace Molten.Graphics
             Texture = null;
         }
 
-        public override void Process(RenderEngine renderer)
+        public override void Process(MoltenRenderer renderer)
         {
             Texture.Apply((renderer as RendererDX11).Device);
             Recycle(this);

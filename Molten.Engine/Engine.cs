@@ -93,7 +93,7 @@ namespace Molten
 
             // TODO default to OpenGL if on a non-windows platform.
             Assembly renderAssembly;
-            Renderer = LibraryDetection.LoadInstance<RenderEngine>(Log, "render", "renderer", 
+            Renderer = LibraryDetection.LoadInstance<MoltenRenderer>(Log, "render", "renderer", 
                 Settings.Graphics.RendererLibrary, 
                 Settings.Graphics, 
                 GraphicsSettings.RENDERER_DX11, 
@@ -218,7 +218,7 @@ namespace Molten
         internal EngineThread RenderThread { get; private set; }
 
         /// <summary>Gets the renderer attached to the current <see cref="Engine"/> instance.</summary>>
-        public RenderEngine Renderer { get; private set; }
+        public MoltenRenderer Renderer { get; private set; }
 
         /// <summary>Gets the log attached to the current <see cref="Engine"/> instance.</summary>
         internal Logger Log { get; }

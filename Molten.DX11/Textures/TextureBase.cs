@@ -708,7 +708,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the renderer that the texture is bound to.
         /// </summary>
-        public RenderEngine Renderer => _renderer;
+        public MoltenRenderer Renderer => _renderer;
 
         /// <summary>
         /// Gets the sort key associated with the current texture.

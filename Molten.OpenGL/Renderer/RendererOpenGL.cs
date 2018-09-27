@@ -8,7 +8,7 @@ using OpenTK;
 
 namespace Molten.Graphics
 {
-    public class RendererOpenGL : RenderEngine
+    public class RendererOpenGL : MoltenRenderer
     {
         ThreadedList<ISwapChainSurface> _outputSurfaces;
         RenderProfiler _profiler;

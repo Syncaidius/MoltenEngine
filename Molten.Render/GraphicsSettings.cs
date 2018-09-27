@@ -53,7 +53,7 @@ namespace Molten.Graphics
         [DataMember]
         public SettingValueList<int> DisplayOutputIds { get; private set; }
 
-        /// <summary>Gets the renderer library to use with the engine. This can be changed to any library containing one or more implementations of <see cref="RenderEngine"/>.</summary>
+        /// <summary>Gets the renderer library to use with the engine. This can be changed to any library containing one or more implementations of <see cref="MoltenRenderer"/>.</summary>
         [DataMember]
         public SettingValue<string> RendererLibrary { get; private set; }
 

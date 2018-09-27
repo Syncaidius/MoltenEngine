@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public delegate void SceneRenderDataHandler(RenderEngine renderer, SceneRenderData data);
+    public delegate void SceneRenderDataHandler(MoltenRenderer renderer, SceneRenderData data);
 
     /// <summary>
     /// A class for storing renderer-specific information about a scene.
@@ -98,28 +98,25 @@ namespace Molten.Graphics
         /// <summary>
         /// Invokes <see cref="OnPreRender"/> event.
         /// </summary>
-        public void PreRenderInvoke(RenderEngine renderer) => OnPreRender?.Invoke(renderer, this);
+        public void PreRenderInvoke(MoltenRenderer renderer) => OnPreRender?.Invoke(renderer, this);
 
         /// <summary>
         /// Invokes <see cref="OnPostRender"/> event.
         /// </summary>
-        public void PostRenderInvoke(RenderEngine renderer) => OnPostRender?.Invoke(renderer, this);
+        public void PostRenderInvoke(MoltenRenderer renderer) => OnPostRender?.Invoke(renderer, this);
 
         /* TODO:
         *  - Edit PointLights and CapsuleLights.Data directly in light scene components (e.g. PointLightComponent).
         *  - Renderer will upload the latest data to the GPU 
         */
 
-        /// <summary>
-        /// GGets the debug overlay which displays information for the current scene.
-        /// </summary>
-        public ISceneDebugOverlay DebugOverlay { get; set; }
-
         public LightList PointLights { get; } = new LightList(100, 100);
 
         public LightList CapsuleLights { get; } = new LightList(50, 100);
 
         public List<RenderCamera> Cameras { get; } = new List<RenderCamera>();
+
+        public RenderProfiler Profiler { get; } = new RenderProfiler();
     }
 
     public class SceneRenderData<R> : SceneRenderData

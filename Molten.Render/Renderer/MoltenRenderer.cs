@@ -10,7 +10,7 @@ namespace Molten.Graphics
     /// <summary>
     /// A base class that custom renderer implementations must inherit in order to be compatible with Molten engine, as it provides basic functionality for interacting with the rest of the engine.
     /// </summary>
-    public abstract class RenderEngine : IDisposable
+    public abstract class MoltenRenderer : IDisposable
     {
         public static readonly Matrix4F DefaultView3D = Matrix4F.LookAtLH(new Vector3F(0, 0, -5), new Vector3F(0, 0, 0), Vector3F.UnitY);
 
@@ -20,9 +20,9 @@ namespace Molten.Graphics
         internal AntiAliasMode MsaaLevel = AntiAliasMode.None;
 
         /// <summary>
-        /// Creates a new instance of a <see cref="RenderEngine"/> sub-type.
+        /// Creates a new instance of a <see cref="MoltenRenderer"/> sub-type.
         /// </summary>
-        public RenderEngine()
+        public MoltenRenderer()
         {
             Log = Logger.Get();
             Log.AddOutput(new LogFileWriter($"renderer_{Name.Replace(' ', '_')}" + "{0}.txt"));
@@ -128,7 +128,7 @@ namespace Molten.Graphics
                 - when SceneObject.IsVisible is changed, queue an Add or Remove operation on the RenderTree depending on visibility. This will remove it from culling/sorting.
             */
 
-            Profiler.StartCapture();
+            Profiler.Begin();
             OnPrePresent(time);
 
             if (_requestedMultiSampleLevel != MsaaLevel)
@@ -215,7 +215,7 @@ namespace Molten.Graphics
                     }
 
                     OnPostRenderScene(sceneData, camera, time);
-                    Profiler.AddData(camera.Profiler.CurrentFrame);
+                    Profiler.Accumulate(camera.Profiler.Current);
                 }
                 sceneData.PostRenderInvoke(this);   
             }
@@ -228,7 +228,7 @@ namespace Molten.Graphics
             });
 
             OnPostPresent(time);
-            Profiler.EndCapture(time);
+            Profiler.End(time);
         }
 
         protected abstract IRenderChain GetRenderChain();
@@ -269,7 +269,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Occurs when the current <see cref="RenderEngine"/> instance/implementation is being disposed.
+        /// Occurs when the current <see cref="MoltenRenderer"/> instance/implementation is being disposed.
         /// </summary>
         protected abstract void OnDispose();
 

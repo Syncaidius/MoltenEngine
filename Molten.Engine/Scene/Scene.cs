@@ -16,7 +16,6 @@ namespace Molten
         internal List<SceneLayer> Layers;
 
         ThreadedQueue<SceneChange> _pendingChanges;
-        RenderDebugOverlay _renderOverlay;
         SceneLayer _defaultLayer;
 
         /// <summary>Creates a new instance of <see cref="Scene"/></summary>
@@ -31,7 +30,6 @@ namespace Molten
 
             Layers = new List<SceneLayer>();
             _pendingChanges = new ThreadedQueue<SceneChange>();
-            _renderOverlay = new RenderDebugOverlay(RenderData.DebugOverlay);
 
             _defaultLayer = AddLayer("default");
             engine.Log.WriteLine($"Created scene '{name}'");
@@ -203,7 +201,7 @@ namespace Molten
         /// Gets the scene's debug overlay. 
         /// The overlay can be added to another scene as an <see cref="IRenderable2D"/> object if you want to render the overlay into a different scene.
         /// </summary>
-        public RenderDebugOverlay DebugOverlay => _renderOverlay;
+        public RenderProfiler Profiler => RenderData.Profiler;
 
         /// <summary>
         /// Gets or sets the input bounds of the current <see cref="Scene"/> instance. A cursor must be within these bounds for the scene to receive cursor input. <para/>

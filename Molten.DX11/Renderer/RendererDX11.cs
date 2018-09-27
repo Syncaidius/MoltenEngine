@@ -10,7 +10,7 @@ using System.IO;
 
 namespace Molten.Graphics
 {
-    public class RendererDX11 : RenderEngine
+    public class RendererDX11 : MoltenRenderer
     {
         DisplayManagerDX11 _displayManager;
         ResourceManager _resourceManager;
@@ -110,9 +110,7 @@ namespace Molten.Graphics
 
         protected override SceneRenderData OnCreateRenderData()
         {
-            SceneRenderData data = new SceneRenderData<Renderable>();
-            data.DebugOverlay = new SceneDebugOverlay(this, data);
-            return data;
+            return new SceneRenderData<Renderable>();
         }
 
         protected override IRenderChain GetRenderChain()
@@ -128,12 +126,12 @@ namespace Molten.Graphics
         protected override void OnPreRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
             Device.Profiler = camera.Profiler;
-            Device.Profiler.StartCapture();
+            Device.Profiler.Begin();
         }
 
         protected override void OnPostRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
-            Device.Profiler.EndCapture(time);
+            Device.Profiler.End(time);
             Device.Profiler = null;
         }
 
@@ -141,7 +139,6 @@ namespace Molten.Graphics
         {
             // Clear the list of used surfaces, ready for the next frame.
             _clearedSurfaces.Clear();
-            Profiler.AddData(Device.Profiler.CurrentFrame);
         }
 
         protected override void OnRebuildSurfaces(int requiredWidth, int requiredHeight)

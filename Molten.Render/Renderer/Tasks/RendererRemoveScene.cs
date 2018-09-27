@@ -16,7 +16,7 @@ namespace Molten.Graphics
             Data = null;
         }
 
-        public override void Process(RenderEngine renderer)
+        public override void Process(MoltenRenderer renderer)
         {
             renderer.Scenes.Remove(Data);
             Recycle(this);

@@ -136,7 +136,6 @@
     <Compile Include="Scene\SceneObjectTransform.cs" />
     <Compile Include="Scene\TwoD\AnimatedSprite.cs" />
     <Compile Include="Scene\TwoD\RectangleSprite.cs" />
-    <Compile Include="Scene\TwoD\RenderDebugOverlay.cs" />
     <Compile Include="Scene\TwoD\Sprite.cs" />
     <Compile Include="Scene\TwoD\SpriteBatchContainer.cs" />
     <Compile Include="Scene\TwoD\SpriteData.cs" />
