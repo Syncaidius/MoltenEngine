@@ -19,7 +19,7 @@ namespace Molten.Graphics
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
 
-        internal SpriteBatchDX11 SpriteBatcher;
+        internal SpriteBatcherDX11 SpriteBatcher;
 
         internal GraphicsBuffer StaticVertexBuffer;
         internal GraphicsBuffer DynamicVertexBuffer;
@@ -65,7 +65,7 @@ namespace Molten.Graphics
             DynamicVertexBuffer = new GraphicsBuffer(Device, BufferMode.DynamicRing, BindFlags.VertexBuffer | BindFlags.IndexBuffer, maxBufferSize);
 
             StagingBuffer = new StagingBuffer(Device, StagingBufferFlags.Write, maxBufferSize);
-            SpriteBatcher = new SpriteBatchDX11(this, 3000);
+            SpriteBatcher = new SpriteBatcherDX11(this, 3000);
 
             LoadDefaultShaders();
         }

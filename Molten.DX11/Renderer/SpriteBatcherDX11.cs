@@ -208,5 +208,15 @@ namespace Molten.Graphics
             _defaultCircleMaterial.Object.Wvp.Value = camera.ViewProjection;
             pipe.Draw(_defaultCircleMaterial, range.VertexCount, PrimitiveTopology.PointList, range.Start);
         }
+
+        public override void Dispose()
+        {
+            _defaultMaterial.Dispose();
+            _defaultNoTextureMaterial.Dispose();
+            _defaultLineMaterial.Dispose();
+            _defaultCircleMaterial.Dispose();
+            _defaultTriMaterial.Dispose();
+            _segment.Dispose();
+        }
     }
 }

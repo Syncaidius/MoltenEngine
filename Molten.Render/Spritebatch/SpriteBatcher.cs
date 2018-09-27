@@ -10,7 +10,7 @@ namespace Molten.Graphics
     /// <summary>
     /// A base class for sprite batcher implementations.
     /// </summary>
-    public abstract class SpriteBatcher
+    public abstract class SpriteBatcher : IDisposable
     {
         protected enum SpriteFormat
         {
@@ -133,5 +133,7 @@ namespace Molten.Graphics
 
             Array.Sort(Sprites, 0, NextID);
         }
+
+        public abstract void Dispose();
     }
 }
