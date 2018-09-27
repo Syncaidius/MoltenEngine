@@ -50,7 +50,7 @@ namespace Molten.Graphics
                     conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
                     renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
-                    renderer.SpriteBatcher.End(device, ref spriteViewProj, finalSurface);
+                    renderer.SpriteBatcher.Flush(device, camera);
                     renderer.Device.EndDraw();
                     break;
             }

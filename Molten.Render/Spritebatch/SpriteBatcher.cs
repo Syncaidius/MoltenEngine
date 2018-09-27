@@ -122,9 +122,10 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="camera"></param>
         /// <param name="depthSort">If true, the Z-axis of sprites is used for sorting instead of their distance from the provided camera.</param>
-        protected void Sort(RenderCamera camera, bool depthSort = true)
+        protected void Sort(RenderCamera camera)
         {
-            if (!depthSort)
+            // Do we need to sort by distance from camera?
+            if (camera.Mode == RenderCameraMode.Perspective)
             {
                 Vector3F camPos = camera.Position;
                 for (int i = 0; i < NextID; i++)

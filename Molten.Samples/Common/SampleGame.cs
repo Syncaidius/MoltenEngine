@@ -34,7 +34,7 @@ namespace Molten.Samples
             // Use the same camera for both the sprite and UI scenes.
             SceneObject obj = CreateObject(MainScene);            
             CameraComponent cam2D = obj.AddComponent<CameraComponent>();
-            cam2D.SetProjectionPreset(RenderCameraMode.Orthographic);
+            cam2D.Mode = RenderCameraMode.Orthographic;
             cam2D.OrderDepth = 1;
             cam2D.MaxDrawDistance = 1.0f;
             cam2D.OutputSurface = Window;

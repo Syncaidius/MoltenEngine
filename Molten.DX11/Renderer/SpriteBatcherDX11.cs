@@ -73,12 +73,12 @@ namespace Molten.Graphics
             };
         }
 
-        internal unsafe void Flush(GraphicsPipe pipe, RenderCamera camera, bool depthSort)
+        internal unsafe void Flush(GraphicsPipe pipe, RenderCamera camera)
         {
             if (NextID == 0)
                 return;
 
-            Sort(camera, depthSort);
+            Sort(camera);
             Range range;
 
             // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.
