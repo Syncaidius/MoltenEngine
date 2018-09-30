@@ -81,6 +81,13 @@ namespace Molten.Graphics
         ISprite CreateSprite();
 
         /// <summary>
+        /// Creates a renderer for drawing sprites and primitives with a <see cref="SpriteBatcher"/> via the provided callback.
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        ISpriteRenderer CreateSpriteRenderer(Action<SpriteBatcher> callback = null);
+
+        /// <summary>
         /// Creates a standard mesh. Standard meshes enforce stricter rules aimed at deferred rendering.
         /// </summary>
         /// <param name="maxVertices"></param>

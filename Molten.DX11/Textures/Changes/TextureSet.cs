@@ -69,7 +69,7 @@ namespace Molten.Graphics
                         MapFlags.None, 
                         out stream);
 
-                    pipe.Profiler.CurrentFrame.MapDiscardCount++;
+                    pipe.Profiler.Current.MapDiscardCount++;
 
                     // Are we constrained to an area of the texture?
                     if (Area != null)
@@ -111,7 +111,7 @@ namespace Molten.Graphics
                             throw new NotImplementedException("Area-based SetData on block-compressed texture is currently unsupported. Sorry!");
 
                         pipe.Context.UpdateSubresource(box, texture.UnderlyingResource, subLevel);
-                        pipe.Profiler.CurrentFrame.UpdateSubresourceCount++;
+                        pipe.Profiler.Current.UpdateSubresourceCount++;
                     }
                     else
                     {

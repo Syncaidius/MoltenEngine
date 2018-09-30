@@ -186,7 +186,7 @@ namespace Molten.Graphics
 
             ValidateCopyBufferUsage(destination);
             pipe.Context.CopySubresourceRegion(_buffer, 0, sourceRegion, destination._buffer, 0, destByteOffset);
-            pipe.Profiler.CurrentFrame.CopySubresourceCount++;
+            pipe.Profiler.Current.CopySubresourceCount++;
         }
 
         private void ValidateCopyBufferUsage(GraphicsBuffer destination)
@@ -215,7 +215,7 @@ namespace Molten.Graphics
                     case BufferMode.DynamicDiscard:
                         pipe.Context.MapSubresource(_buffer, MapMode.WriteDiscard, MapFlags.None, out mappedData);
                         mappedData.Position = byteOffset;
-                        pipe.Profiler.CurrentFrame.MapDiscardCount++;
+                        pipe.Profiler.Current.MapDiscardCount++;
                         break;
 
                     case BufferMode.DynamicRing:
@@ -226,14 +226,14 @@ namespace Molten.Graphics
                             if (_ringPos > 0 && _ringPos + dataSize < _byteCapacity)
                             {
                                 pipe.Context.MapSubresource(_buffer, MapMode.WriteNoOverwrite, MapFlags.None, out mappedData);
-                                pipe.Profiler.CurrentFrame.MapNoOverwriteCount++;
+                                pipe.Profiler.Current.MapNoOverwriteCount++;
                                 mappedData.Position = _ringPos;
                                 _ringPos += dataSize;
                             }
                             else
                             {                                
                                 pipe.Context.MapSubresource(_buffer, MapMode.WriteDiscard, MapFlags.None, out mappedData);
-                                pipe.Profiler.CurrentFrame.MapDiscardCount++;
+                                pipe.Profiler.Current.MapDiscardCount++;
                                 mappedData.Position = 0;
                                 _ringPos = dataSize;
                             }
@@ -241,14 +241,14 @@ namespace Molten.Graphics
                         else
                         {
                             pipe.Context.MapSubresource(_buffer, MapMode.WriteDiscard, MapFlags.None, out mappedData);
-                            pipe.Profiler.CurrentFrame.MapDiscardCount++;
+                            pipe.Profiler.Current.MapDiscardCount++;
                             mappedData.Position = byteOffset;
                         }
                         break;
 
                     default:
                         pipe.Context.MapSubresource(_buffer, MapMode.Write, MapFlags.None, out mappedData);
-                        pipe.Profiler.CurrentFrame.MapWriteCount++;
+                        pipe.Profiler.Current.MapWriteCount++;
                         break;
                 }     
                 
@@ -274,12 +274,12 @@ namespace Molten.Graphics
                 if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
                 {
                     pipe.Context.MapSubresource(staging._buffer, MapMode.WriteDiscard, MapFlags.None, out mappedData);
-                    pipe.Profiler.CurrentFrame.MapDiscardCount++;
+                    pipe.Profiler.Current.MapDiscardCount++;
                 }
                 else
                 {
                     pipe.Context.MapSubresource(staging._buffer, MapMode.Write, MapFlags.None, out mappedData);
-                    pipe.Profiler.CurrentFrame.MapWriteCount++;
+                    pipe.Profiler.Current.MapWriteCount++;
                 }
 
                 callback(staging, mappedData);
@@ -294,7 +294,7 @@ namespace Molten.Graphics
                 };
 
                 pipe.Context.CopySubresourceRegion(staging._buffer, 0, stagingRegion, _buffer, 0, byteOffset);
-                pipe.Profiler.CurrentFrame.CopySubresourceCount++;
+                pipe.Profiler.Current.CopySubresourceCount++;
             }
         }
 
@@ -336,7 +336,7 @@ namespace Molten.Graphics
             //now set the structured variable's data
             DataStream stream = null;
             DataBox dataBox = pipe.Context.MapSubresource(_buffer, 0, MapMode.Read, MapFlags.None, out stream);
-            pipe.Profiler.CurrentFrame.MapReadCount++;
+            pipe.Profiler.Current.MapReadCount++;
             stream.Position = byteOffset;
             stream.ReadRange<T>(destination, readOffset, count);
 

@@ -685,17 +685,17 @@ namespace Molten
             //Source: Unknown
             //References: http://www.gamedev.net/community/forums/topic.asp?topic_id=441695
 
-            //Get the translation.
+            // Get the translation.
             translation.X = this.M41;
             translation.Y = this.M42;
             translation.Z = this.M43;
 
-            //Scaling is the length of the rows.
+            // Scaling is the length of the rows.
             scale.X = (float)Math.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
             scale.Y = (float)Math.Sqrt((M21 * M21) + (M22 * M22) + (M23 * M23));
             scale.Z = (float)Math.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
 
-            //If any of the scaling factors are zero, than the rotation matrix can not exist.
+            // If any of the scaling factors are zero, then the rotation matrix can not exist.
             if (MathHelper.IsZero(scale.X) ||
                 MathHelper.IsZero(scale.Y) ||
                 MathHelper.IsZero(scale.Z))
@@ -704,7 +704,7 @@ namespace Molten
                 return false;
             }
 
-            //The rotation is the left over matrix after dividing out the scaling.
+            // The rotation is the left over matrix after dividing out the scaling.
             Matrix4F rotationmatrix = new Matrix4F();
             rotationmatrix.M11 = M11 / scale.X;
             rotationmatrix.M12 = M12 / scale.X;

@@ -119,6 +119,7 @@
     <Compile Include="Scene\Changes\SceneChange.cs" />
     <Compile Include="Scene\Changes\SceneRemoveObject.cs" />
     <Compile Include="Scene\Components\Lights\CapsuleLightComponent.cs" />
+    <Compile Include="Scene\Components\SpriteRenderComponent.cs" />
     <Compile Include="Scene\Components\RenderableComponent.cs" />
     <Compile Include="Scene\Components\SpriteComponent.cs" />
     <Compile Include="Scene\Components\MeshComponent.cs" />
@@ -134,12 +135,6 @@
     <Compile Include="Scene\SceneLayer.cs" />
     <Compile Include="Scene\SceneObject.cs" />
     <Compile Include="Scene\SceneObjectTransform.cs" />
-    <Compile Include="Scene\TwoD\AnimatedSprite.cs" />
-    <Compile Include="Scene\TwoD\RectangleSprite.cs" />
-    <Compile Include="Scene\TwoD\Sprite.cs" />
-    <Compile Include="Scene\TwoD\SpriteBatchContainer.cs" />
-    <Compile Include="Scene\TwoD\SpriteData.cs" />
-    <Compile Include="Scene\TwoD\SpriteText.cs" />
     <Compile Include="Tasks\EngineAddScene.cs" />
     <Compile Include="Tasks\EngineRemoveScene.cs" />
     <Compile Include="Tasks\EngineTask.cs" />

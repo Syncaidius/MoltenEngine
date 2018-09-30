@@ -52,7 +52,7 @@ namespace Molten.Samples
         {
             SceneObject obj = CreateObject();
             MeshComponent meshCom = obj.AddComponent<MeshComponent>();
-            meshCom.Mesh = mesh;
+            meshCom.RenderedObject = mesh;
 
             int maxRange = spawnRadius * 2;
             obj.Transform.LocalPosition = new Vector3F()

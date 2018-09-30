@@ -236,7 +236,7 @@ namespace Molten.Graphics
                         for (int k = 0; k < pass.Iterations; k++)
                         {
                             _context.Draw(vertexCount, vertexStartIndex);
-                            Profiler.CurrentFrame.DrawCalls++;
+                            Profiler.Current.DrawCalls++;
                         }
                     }
                     else
@@ -278,7 +278,7 @@ namespace Molten.Graphics
                         for (int k = 0; k < pass.Iterations; k++)
                         {
                             _context.DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
-                            Profiler.CurrentFrame.DrawCalls++;
+                            Profiler.Current.DrawCalls++;
                         }
                     }
                     else
@@ -319,7 +319,7 @@ namespace Molten.Graphics
                         for (int k = 0; k < pass.Iterations; k++)
                         {
                             _context.DrawIndexed(indexCount, startIndex, vertexIndexOffset);
-                            Profiler.CurrentFrame.DrawCalls++;
+                            Profiler.Current.DrawCalls++;
                         }
                     }
                     else
@@ -364,7 +364,7 @@ namespace Molten.Graphics
                         for (int k = 0; k < pass.Iterations; k++)
                         {
                             _context.DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex);
-                            Profiler.CurrentFrame.DrawCalls++;
+                            Profiler.Current.DrawCalls++;
                         }
                     }
                 }

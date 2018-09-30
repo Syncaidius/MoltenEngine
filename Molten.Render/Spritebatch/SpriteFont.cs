@@ -138,7 +138,10 @@ namespace Molten.Graphics
             _renderData.IsVisible = false;
             LayerRenderData layer = _renderData.CreateLayerData();
             _renderData.AddLayer(layer);
-            _renderData.AddObject(new FontContainer(this), layer);
+
+            ISpriteRenderer _spriteRenderer = _renderer.Resources.CreateSpriteRenderer(OnDraw);
+
+            _renderData.AddObject(_spriteRenderer, new ObjectRenderData(), layer);
             _renderData.OnPostRender += _renderData_OnPostRender;
             _renderData.AddObject(new RenderCamera(RenderCameraMode.Orthographic)
             {
@@ -151,6 +154,17 @@ namespace Molten.Graphics
             Rectangle pcRect = _glyphCache[_charData[' '].GlyphIndex].Location;
             pcRect.Width *= tabSize;
             AddCharacter('\t', false, pcRect);
+        }
+
+        private void OnDraw(MoltenRenderer renderer, SpriteBatcher sb)
+        {
+            while (_pendingGlyphs.TryDequeue(out ushort gIndex))
+            {
+                GlyphCache cache = _glyphCache[gIndex];
+                sb.DrawTriangleList(cache.GlyphMesh, Color.White);
+            }
+
+            _renderData.IsVisible = false;
         }
 
         private void _renderData_OnPostRender(MoltenRenderer renderer, SceneRenderData data)
@@ -344,27 +358,6 @@ namespace Molten.Graphics
             {
                 _pendingGlyphs.Enqueue(gIndex);
                 _renderData.IsVisible = true;
-            }
-        }
-
-        /// <summary>
-        /// A container sprite for drawing glyphs to the font texture.
-        /// </summary>
-        class FontContainer : IRenderable2D
-        {
-            SpriteFont _font;
-
-            public FontContainer(SpriteFont font) { _font = font; }
-
-            public void Render(SpriteBatch sb)
-            {
-                while(_font._pendingGlyphs.TryDequeue(out ushort gIndex))
-                {
-                    GlyphCache cache = _font._glyphCache[gIndex];
-                    sb.DrawTriangleList(cache.GlyphMesh, Color.White);
-                }
-
-                _font._renderData.IsVisible = false;
             }
         }
 

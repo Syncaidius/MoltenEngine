@@ -61,7 +61,7 @@ namespace Molten.Graphics
             }            
 
             // Return true to signal a difference between old and new object.
-            pipe.Profiler.CurrentFrame.Bindings++;
+            pipe.Profiler.Current.Bindings++;
             return true;
         }
 

@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public abstract class RenderableComponent<T> : SceneComponent
-        where T: class, IRenderable
+    public abstract class SpriteRenderComponent : SceneComponent
     {
-        protected T _renderable;
+        protected ISpriteRenderer _spriteRenderer;
         protected bool _visible = true;
         protected bool _inScene = false;
         protected ObjectRenderData _data;
@@ -22,31 +21,34 @@ namespace Molten
             AddToScene(obj);
             obj.OnRemovedFromScene += Obj_OnRemovedFromScene;
             obj.OnAddedToScene += Obj_OnAddedToScene;
+            
+            if(obj.Engine.Renderer != null)
+                _spriteRenderer = obj.Engine.Renderer.Resources.CreateSpriteRenderer(OnRender);
 
             base.OnInitialize(obj);
         }
 
         private void AddToScene(SceneObject obj)
         {
-            if (_inScene || _renderable == null)
+            if (_inScene || _spriteRenderer == null || _spriteRenderer.Callback == null)
                 return;
 
             // Add mesh to render data if possible.
             if (_visible && obj.Scene != null)
             {
-                obj.Scene.RenderData.AddObject(_renderable, _data, obj.Layer.Data);
+                obj.Scene.RenderData.AddObject(_spriteRenderer, _data, obj.Layer.Data);
                 _inScene = true;
             }
         }
 
         private void RemoveFromScene(SceneObject obj)
         {
-            if (!_inScene || _renderable == null)
+            if (!_inScene || _spriteRenderer == null)
                 return;
 
             if (obj.Scene != null || _visible)
             {
-                obj.Scene.RenderData.RemoveObject(_renderable, _data, obj.Layer.Data);
+                obj.Scene.RenderData.RemoveObject(_spriteRenderer, _data, obj.Layer.Data);
                 _inScene = false;
             }
         }
@@ -58,7 +60,7 @@ namespace Molten
             RemoveFromScene(obj);
 
             // Reset State
-            _renderable = null;
+            _spriteRenderer = null;
             _visible = true;
 
             base.OnDestroy(obj);
@@ -79,21 +81,11 @@ namespace Molten
             _data.TargetTransform = Object.Transform.Global;
         }
 
-        /// <summary>The renderable object (e.g. a mesh or sprite) that should be drawn at the location of the component's parent object.</summary>
-        public T RenderedObject
-        {
-            get => _renderable;
-            set
-            {
-                if (_renderable != value)
-                {
-                    RemoveFromScene(Object);
-                    _renderable = value;
-                    AddToScene(Object);
-                }
-            }
-        }
+        protected abstract void OnRender(SpriteBatcher sb);
 
+        /// <summary>
+        /// Gets or sets whether the current component is visible.
+        /// </summary>
         public override bool IsVisible
         {
             get => _visible;

@@ -147,6 +147,7 @@
     <Compile Include="Shaders\ShaderCompileResult.cs" />
     <Compile Include="Shaders\ShaderType.cs" />
     <Compile Include="Spritebatch\ISprite.cs" />
+    <Compile Include="Spritebatch\ISpriteRenderer.cs" />
     <Compile Include="Spritebatch\SpriteBatcher.cs" />
     <Compile Include="Spritebatch\SpriteFont.cs" />
     <Compile Include="Spritebatch\SpriteBatchException.cs" />

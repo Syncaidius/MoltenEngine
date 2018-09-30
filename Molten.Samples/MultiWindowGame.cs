@@ -81,7 +81,7 @@ namespace Molten.Samples
         {
             SceneObject obj = CreateObject(pos, scene);
             MeshComponent meshCom = obj.AddComponent<MeshComponent>();
-            meshCom.Mesh = mesh;
+            meshCom.RenderedObject = mesh;
             return obj;
         }
 

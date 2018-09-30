@@ -81,7 +81,7 @@ namespace Molten.Samples
         {
             SceneObject obj = CreateObject();
             MeshComponent meshCom = obj.AddComponent<MeshComponent>();
-            meshCom.Mesh = mesh;
+            meshCom.RenderedObject = mesh;
             _positions.Add(Matrix4F.CreateTranslation(new Vector3F()
             {
                 X = -4 + (float)(_rng.NextDouble() * 8),

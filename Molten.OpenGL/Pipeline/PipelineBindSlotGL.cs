@@ -56,7 +56,7 @@ namespace Molten.Graphics
             }            
 
             // Return true to signal a difference between old and new object.
-            device.Profiler.CurrentFrame.Bindings++;
+            device.Profiler.Current.Bindings++;
             return true;
         }
 

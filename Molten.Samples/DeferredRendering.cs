@@ -90,7 +90,7 @@ namespace Molten.Samples
             floorObj.Transform.LocalScale = new Vector3F(size);
 
             MeshComponent floorCom = floorObj.AddComponent<MeshComponent>();
-            floorCom.Mesh = _floorMesh;
+            floorCom.RenderedObject = _floorMesh;
         }
 
         private void SetupLightObjects(Vector3F origin)

@@ -149,7 +149,7 @@ namespace Molten.Graphics
             {
                 _boundShader = composition.RawShader;
                 _setCallback(_stage, composition);
-                _pipe.Profiler.CurrentFrame.ShaderSwaps++;
+                _pipe.Profiler.Current.ShaderSwaps++;
             }
         }
 

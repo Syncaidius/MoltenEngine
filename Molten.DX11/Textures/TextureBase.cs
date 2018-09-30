@@ -485,7 +485,7 @@ namespace Molten.Graphics
             if (copySubresource)
             {
                 pipe.Context.CopySubresourceRegion(_resource, subID, null, stagingTexture._resource, subID);
-                pipe.Profiler.CurrentFrame.CopySubresourceCount++;
+                pipe.Profiler.Current.CopySubresourceCount++;
             }
 
             // Now pull data from it

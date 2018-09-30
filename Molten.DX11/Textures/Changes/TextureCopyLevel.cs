@@ -25,7 +25,7 @@ namespace Molten.Graphics
 
             int destSubID = (DestinationSlice * texture.MipMapCount) + DestinationLevel;
             pipe.Context.CopySubresourceRegion(texture.UnderlyingResource, srcSub, null, Destination.UnderlyingResource, destSub);
-            pipe.Profiler.CurrentFrame.CopySubresourceCount++;
+            pipe.Profiler.Current.CopySubresourceCount++;
         }
     }
 }
