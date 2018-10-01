@@ -121,7 +121,6 @@
     <Compile Include="Scene\Components\Lights\CapsuleLightComponent.cs" />
     <Compile Include="Scene\Components\SpriteRenderComponent.cs" />
     <Compile Include="Scene\Components\RenderableComponent.cs" />
-    <Compile Include="Scene\Components\SpriteComponent.cs" />
     <Compile Include="Scene\Components\MeshComponent.cs" />
     <Compile Include="Scene\Components\Lights\PointLightComponent.cs" />
     <Compile Include="Scene\Components\CameraComponent.cs" />

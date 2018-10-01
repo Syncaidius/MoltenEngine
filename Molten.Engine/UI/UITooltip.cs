@@ -56,7 +56,7 @@ namespace Molten.UI
             _text.LocalBounds = _innerBounds;
         }
 
-        public void Render(SpriteBatch sb)
+        public void Render(SpriteBatcher sb)
         {
             if (_isValid && _visible)
             {

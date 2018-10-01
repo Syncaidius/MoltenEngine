@@ -156,7 +156,7 @@ namespace Molten.Graphics
             AddCharacter('\t', false, pcRect);
         }
 
-        private void OnDraw(MoltenRenderer renderer, SpriteBatcher sb)
+        private void OnDraw(SpriteBatcher sb)
         {
             while (_pendingGlyphs.TryDequeue(out ushort gIndex))
             {

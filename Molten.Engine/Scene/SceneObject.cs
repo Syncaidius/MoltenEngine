@@ -260,5 +260,10 @@ namespace Molten
         public SceneObject Parent { get; internal set; }
 
         public Engine Engine => _engine;
+
+        /// <summary>
+        /// Gets or sets whether or not the current object should be updated.
+        /// </summary>
+        public bool IsEnabled { get; set; }
     }
 }

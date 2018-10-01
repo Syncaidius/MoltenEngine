@@ -29,7 +29,7 @@ namespace Molten.UI
             _inner = ClipPadding.ApplyPadding(gBounds);
         }
 
-        protected override void OnRender(SpriteBatch sb)
+        protected override void OnRenderUi(SpriteBatcher sb)
         {
             // Render boarder
             if (BorderColor.A > 0)
@@ -51,7 +51,7 @@ namespace Molten.UI
             if (BackgroundColor.A > 0)
                 sb.DrawRect(_inner, BackgroundColor);
 
-            base.OnRender(sb);
+            base.OnRenderUi(sb);
         }
 
         /// <summary>

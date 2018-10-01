@@ -77,12 +77,12 @@ namespace Molten.UI
             AlignText();
         }
 
-        protected override void OnRender(SpriteBatch sb)
+        protected override void OnRenderUi(SpriteBatcher sb)
         {
             if(_color.A > 0)
                 sb.DrawString(_font, _text, _pos, _color);
 
-            base.OnRender(sb);
+            base.OnRenderUi(sb);
         }
 
         /// <summary>

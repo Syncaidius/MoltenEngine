@@ -83,18 +83,18 @@ namespace Molten.UI
             part.Parent = null;
         }
 
-        protected override void OnUpdate(Timing time)
+        protected override void OnUpdateUi(Timing time)
         {
             for (int i = 0; i < _compoundParts.Count; i++)
-                _compoundParts[i].Update(time);
+                _compoundParts[i].OnUpdateUi(time);
 
-            base.OnUpdate(time);
+            base.OnUpdateUi(time);
         }
 
-        protected override void OnRender(SpriteBatch sb)
+        protected override void OnRenderUi(SpriteBatcher sb)
         {
             for (int i = 0; i < _compoundParts.Count; i++)
-                _compoundParts[i].Render(sb);
+                _compoundParts[i].OnRenderUi(sb);
 
             base.OnRender(sb);
         }

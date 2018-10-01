@@ -194,11 +194,6 @@ namespace Molten.Graphics
             _fontTable.Clear();
         }
 
-        public ISprite CreateSprite()
-        {
-            return new Sprite(_renderer.Device);
-        }
-
         public ISpriteRenderer CreateSpriteRenderer(Action<SpriteBatcher> callback = null)
         {
             return new SpriteRendererDX11(_renderer.Device, callback);

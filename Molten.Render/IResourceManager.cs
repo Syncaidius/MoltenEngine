@@ -75,12 +75,6 @@ namespace Molten.Graphics
         void ResolveTexture(ITexture source, ITexture destination, int sourceMipLevel, int sourceArraySlice, int destMiplevel, int destArraySlice);
 
         /// <summary>
-        /// Creates a sprite-renderable object, capable of rendering batches of sprites.
-        /// </summary>
-        /// <returns></returns>
-        ISprite CreateSprite();
-
-        /// <summary>
         /// Creates a renderer for drawing sprites and primitives with a <see cref="SpriteBatcher"/> via the provided callback.
         /// </summary>
         /// <param name="callback"></param>

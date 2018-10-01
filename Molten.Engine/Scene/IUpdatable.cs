@@ -13,5 +13,10 @@ namespace Molten
         /// <summary>Called when a the <see cref="IUpdatable"/> is enabled and it's parent scene is updated.</summary>
         /// <param name="time">A <see cref="Timing"/> instance.</param>
         void Update(Timing time);
+
+        /// <summary>
+        /// Gets or sets whether the object is enabled. If false, the object will not be updated.
+        /// </summary>
+        bool IsEnabled { get; set; }
     }
 }

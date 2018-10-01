@@ -89,10 +89,10 @@ namespace Molten.Graphics
              *          -- Line/line list
              *          -- Triangle/triangle list
              *          -- Sprite
+             *          -- Sprite from TextureArray -- check if the current ITexture2D is a texture array. If so, switch to using the appropriate shader.
              */
 
-
-            Sort(camera);
+            Array.Sort(Sprites);
             Range range;
 
             pipe.SetVertexSegment(_segment, 0);

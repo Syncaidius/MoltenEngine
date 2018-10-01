@@ -570,6 +570,20 @@ namespace Molten.Graphics
             Draw(texture, src, position, new Vector2F(src.Width, src.Height), color, 0, Vector2F.Zero, material, 0, 0); 
         }
 
+        public void Draw(Sprite sprite)
+        {
+            Draw(sprite.Texture,
+                sprite.Source,
+                sprite.Position,
+                sprite.Source.TopLeft * sprite.Scale,
+                sprite.Color,
+                sprite.Rotation,
+                sprite.Origin,
+                sprite.Material,
+                sprite.Depth,
+                sprite.ArraySlice);
+        }
+
         /// <summary>Adds a sprite to the batch.</summary>
         /// <param name="texture"></param>
         /// <param name="position"></param>
@@ -583,7 +597,6 @@ namespace Molten.Graphics
         public void Draw(ITexture2D texture, Vector2F position, Color color, float rotation, Vector2F origin, float depth = 0f, float arraySlice = 0, IMaterial material = null)
         {
             Rectangle src = new Rectangle(0, 0, texture.Width, texture.Height);
-            Rectangle dest = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
             Draw(texture, src, position, new Vector2F(src.Width, src.Height), color, rotation, origin, material, depth, arraySlice);
         }
 

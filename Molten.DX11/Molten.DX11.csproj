@@ -124,7 +124,6 @@
     <Compile Include="Exceptions\MappedBufferException.cs" />
     <Compile Include="Exceptions\UnsupportedFeatureException.cs" />
     <Compile Include="Renderer\SpriteRendererDX11.cs" />
-    <Compile Include="Renderer\Sprite.cs" />
     <Compile Include="Renderer\SpriteBatcherDX11.cs" />
     <Compile Include="Renderer\Tasks\TextureApply.cs" />
     <Compile Include="Surfaces\RenderControlSurface.cs" />

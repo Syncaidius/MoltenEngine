@@ -18,7 +18,7 @@ namespace Molten.Graphics
         internal override void Render(GraphicsPipe pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
             Callback?.Invoke(renderer.SpriteBatcher);
-            renderer.SpriteBatcher.Flush(pipe, camera, ref data.RenderTransform);
+            renderer.SpriteBatcher.Flush(pipe, camera, data);
         }
     }
 }

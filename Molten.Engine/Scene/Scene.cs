@@ -148,7 +148,10 @@ namespace Molten
             foreach (SceneLayer layer in Layers)
             {
                 foreach (IUpdatable up in layer.Updatables)
-                    up.Update(time);
+                {
+                    if(up.IsEnabled)
+                        up.Update(time);
+                }
             }
         }
 

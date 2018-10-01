@@ -18,7 +18,7 @@ namespace Molten.UI
     /// <summary>
     /// The base class for all types of user interface (UI) components.
     /// </summary>
-    public class UIComponent : IRenderable2D, IUpdatable, ICursorAcceptor
+    public class UIComponent : SpriteRenderComponent, ICursorAcceptor
     {
         /// <summary>
         /// The default background color for <see cref="UIComponent"/> and it's sub-classes.
@@ -291,34 +291,35 @@ namespace Molten.UI
         }
 
         /// <summary>
-        /// Updates the current <see cref="UIComponent"/>. When the component is added to a scene, this will be called automatically.
+        /// Called by the scene system when updating the UIComponent as part of a <see cref="SceneObject"/>. 
+        /// Avoid calling this method directly unless you know what you're doing.
         /// </summary>
-        /// <param name="time">A <see cref="Timing"/> instance.</param>
-        public void Update(Timing time)
+        /// <param name="time">A timing instance.</param>
+        public override sealed void OnUpdate(Timing time)
         {
-            if (!IsEnabled)
-                return;
+            base.OnUpdate(time);
+            OnUpdateUi(time);
+        }
 
+        /// <summary>Invoked when the current UI component is to be updated.</summary>
+        /// <param name="time">A timing instance.</param>
+        protected virtual void OnUpdateUi(Timing time)
+        {
             LockChildren(() =>
             {
                 for (int i = 0; i < _children.Count; i++)
-                    _children[i].Update(time);
+                    _children[i].OnUpdateUi(time);
             });
 
-            OnUpdate(time);
+            OnUpdateUi(time);
         }
 
-        protected virtual void OnUpdate(Timing time) { }
-
         /// <summary>
-        /// Renders the current <see cref="UIComponent"/> with the provided <see cref="SpriteBatch"/>. When the component is added to a scene, this will be called automatically.
+        /// Renders the current <see cref="UIComponent"/> with the provided <see cref="SpriteBatcher"/>. When the component is added to a scene, this will be called automatically.
         /// </summary>
-        /// <param name="sb">The <see cref="SpriteBatch"/> that will perform the render operation.</param>
-        public void Render(SpriteBatch sb)
+        /// <param name="sb">The <see cref="SpriteBatcher"/> that will perform the render operation.</param>
+        protected override sealed void OnRender(SpriteBatcher sb)
         {
-            if (!IsVisible)
-                return;
-
             // TODO find a better solution for this lock, if possible.
             // It's a potential bottleneck in the renderer if another thread holds the lock when the render thread hits it.
             if (_renderListDirty)
@@ -331,22 +332,23 @@ namespace Molten.UI
                 });
             }
 
-            OnRender(sb);
+            OnRenderUi(sb);
         }
 
-        protected virtual void OnRender(SpriteBatch sb)
+        protected virtual void OnRenderUi(SpriteBatcher sb)
         {
             if(_clippingEnabled)
             {
-                sb.PushClip(_clippingBounds);
+                // TODO replace clip when masking is implemented, since we cannot use scissor-testing on 3D-transformed sprites.
+                //sb.PushClip(_clippingBounds);
                 for (int i = 0; i < _childRenderList.Count; i++)
-                    _childRenderList[i].Render(sb);
-                sb.PopClip();
+                    _childRenderList[i].OnRender(sb);
+                //sb.PopClip();
             }
             else
             {
                 for (int i = 0; i < _childRenderList.Count; i++)
-                    _childRenderList[i].Render(sb);
+                    _childRenderList[i].OnRender(sb);
             }
         }
 
@@ -747,16 +749,6 @@ namespace Molten.UI
                 UpdateBounds();
             }
         }
-
-        /// <summary>
-        /// Gets or sets whether the current <see cref="UIComponent"/> is enabled. If disabled, the component and it's child components will not update or respond to input.
-        /// </summary>
-        public bool IsEnabled { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets whether the current <see cref="UIComponent"/> is rendered. If disabled, the component and it's child components will not be rendered.
-        /// </summary>
-        public bool IsVisible { get; set; } = true;
 
         /// <summary>
         /// Gets or sets whether all of the child components of the current <see cref="UIComponent"/> will ignore input. The default value is false.
