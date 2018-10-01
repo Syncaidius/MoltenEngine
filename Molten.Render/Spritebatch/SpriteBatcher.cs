@@ -33,13 +33,13 @@ namespace Molten.Graphics
             public SpriteFormat Format;
             public ITexture2D Texture;
             public IMaterial Material;
-            public float ZKey;
+            public float Depth;
 
             public int CompareTo(SpriteItem other)
             {
-                if (ZKey > other.ZKey)
+                if (Depth > other.Depth)
                     return 1;
-                else if (ZKey < other.ZKey)
+                else if (Depth < other.Depth)
                     return -1;
                 else
                     return 0;
@@ -104,13 +104,14 @@ namespace Molten.Graphics
                 item.Texture = null;
                 item.Material = null;
                 item.Format = SpriteFormat.Circle;
+                item.Depth = depth;
 
-                item.Vertex.Position = new Vector3F(charPos.X, charPos.Y + cache.YOffset, depth);
-                item.Vertex.Rotation = new Vector3F(0); // TODO 2D text rotation
+                item.Vertex.Position = new Vector2F(charPos.X, charPos.Y + cache.YOffset);
+                item.Vertex.RotationAndSlice = Vector2F.Zero; // TODO 2D text rotation + SpriteFont array slice support (y axis).
                 item.Vertex.Size = new Vector2F(cache.Location.Width, cache.Location.Height) * scale;
-                item.Vertex.UV = new Vector4F(cache.Location.X, cache.Location.Y, cache.Location.Right, cache.Location.Bottom);
+                item.Vertex.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
                 item.Vertex.Color = color;
-                item.Vertex.Origin = Vector3F.Zero;
+                item.Vertex.Origin = Vector2F.Zero; 
 
                 // Increase pos by size of char (along X)
                 charPos.X += cache.AdvanceWidth * scale.X;
@@ -191,13 +192,14 @@ namespace Molten.Graphics
                     item.Texture = null;
                     item.Material = null;
                     item.Format = SpriteFormat.Circle;
+                    item.Depth = depth;
 
-                    item.Vertex.Position = new Vector3F(center, depth);
-                    item.Vertex.Rotation = new Vector3F(0); // 2D ellipse do not need rotation.
+                    item.Vertex.Position = center;
+                    item.Vertex.RotationAndSlice = new Vector2F(sides, 0);
                     item.Vertex.Size = new Vector2F(xRadius, yRadius);
                     item.Vertex.UV = Vector4F.Zero; // Unused
                     item.Vertex.Color = color;
-                    item.Vertex.Origin = new Vector3F(pieceStartAngle, pieceEndAngle, sides);
+                    item.Vertex.Origin = new Vector2F(pieceStartAngle, pieceEndAngle);
 
                     pieceStartAngle += rangePerPiece;
                     pieceEndAngle += rangePerPiece;
@@ -209,13 +211,14 @@ namespace Molten.Graphics
                 item.Texture = null;
                 item.Material = null;
                 item.Format = SpriteFormat.Circle;
+                item.Depth = depth;
 
-                item.Vertex.Position = new Vector3F(center, depth);
-                item.Vertex.Rotation = new Vector3F(0); // 2D ellipse do not need rotation.
+                item.Vertex.Position = center;
+                item.Vertex.RotationAndSlice = new Vector2F(sides, 0);
                 item.Vertex.Size = new Vector2F(xRadius, yRadius);
                 item.Vertex.UV = Vector4F.Zero; // Unused
                 item.Vertex.Color = color;
-                item.Vertex.Origin = new Vector3F(startAngle, endAngle, sides);
+                item.Vertex.Origin = new Vector2F(startAngle, endAngle);
             }
         }
 
@@ -231,13 +234,14 @@ namespace Molten.Graphics
             item.Texture = null;
             item.Material = null;
             item.Format = SpriteFormat.Triangle;
+            item.Depth = depth;
 
-            item.Vertex.Position = new Vector3F(p1, depth);
-            item.Vertex.Rotation = new Vector3F(p2, depth);
-            item.Vertex.Size = new Vector2F(); // Unused
+            item.Vertex.Position = p1;
+            item.Vertex.RotationAndSlice = new Vector2F(0,0); // TODO triangle rotation.
+            item.Vertex.Size = p2;
             item.Vertex.UV = Vector4F.Zero; // Unused
             item.Vertex.Color = color;
-            item.Vertex.Origin = new Vector3F(p3, 0);
+            item.Vertex.Origin = p3;
         }
 
         /// <summary>
@@ -264,13 +268,14 @@ namespace Molten.Graphics
                 item.Texture = null;
                 item.Material = null;
                 item.Format = SpriteFormat.Triangle;
+                item.Depth = depth;
 
-                item.Vertex.Position = new Vector3F(points[i], depth);
-                item.Vertex.Rotation = new Vector3F(points[i + 1], depth);
-                item.Vertex.Size = new Vector2F(); // Unused
+                item.Vertex.Position = points[i];
+                item.Vertex.RotationAndSlice = new Vector2F(0,0); // TODO triangle rotation.
+                item.Vertex.Size = points[i + 1];
                 item.Vertex.UV = Vector4F.Zero; // Unused
                 item.Vertex.Color = triColors[colID % triColors.Count];
-                item.Vertex.Origin = new Vector3F(points[i + 2], 0);
+                item.Vertex.Origin = points[i + 2];
             }
         }
 
@@ -314,7 +319,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Draws connecting lines between each of the provided points.</summary>
-        /// <param name="points">The points between which to draw lines.</param>
+        /// <param name="points">The points between which to draw individual lines.</param>
         /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
         /// <param name="depth">The z-depth of all lines in the provided list.</param>
@@ -348,16 +353,17 @@ namespace Molten.Graphics
                     item.Texture = null;
                     item.Material = null;
                     item.Format = SpriteFormat.Line;
+                    item.Depth = depth;
 
-                    item.Vertex.Position = new Vector3F(p1, depth);
-                    item.Vertex.Rotation = new Vector3F(p2, depth);
-                    item.Vertex.Size = new Vector2F(thickness, 0); // Y is unused
+                    item.Vertex.Position = p1;
+                    item.Vertex.RotationAndSlice = new Vector2F(thickness, 0);
+                    item.Vertex.Size = p2;
                     item.Vertex.UV = pointColors[i2 % pointColors.Count].ToVector4();
                     item.Vertex.Color = pointColors[i % pointColors.Count];
 
                     // Normal of next line. This is used for creating sharp edges when drawing multiple lines. 
-                    // In this case, we set it to the direction of the current line, because we're just drawing one.
-                    item.Vertex.Origin = item.Vertex.Rotation - item.Vertex.Position;
+                    // In this case, we set it to the direction of the current line, because drawing isolated lines in a list.
+                    item.Vertex.Origin = p2 - p1;
                 }
             }
         }
@@ -412,20 +418,20 @@ namespace Molten.Graphics
                     item.Texture = null;
                     item.Material = null;
                     item.Format = SpriteFormat.Line;
+                    item.Depth = depth;
 
-                    item.Vertex.Position = new Vector3F(p1, depth);
-                    item.Vertex.Rotation = new Vector3F(p2, depth);
-                    item.Vertex.Size = new Vector2F(thickness, 0); // Y is unused
+                    item.Vertex.Position = p1;
+                    item.Vertex.RotationAndSlice = new Vector2F(thickness, 0);
+                    item.Vertex.Size = p2;
                     item.Vertex.UV = pointColors[next % pointColors.Count].ToVector4();
                     item.Vertex.Color = pointColors[i % pointColors.Count];
 
                     // Provide the previous line with the direction of the current line.
                     if (prev < i)
-                        Sprites[spriteID - 1].Vertex.Origin = item.Vertex.Rotation - item.Vertex.Position;
-
-                    // If there is no line after the current, use the current line's direction to fill the tangent calculation.
-                    if (next + 1 == last)
-                        item.Vertex.Origin = item.Vertex.Rotation - item.Vertex.Position;
+                        Sprites[spriteID - 1].Vertex.Origin = item.Vertex.RotationAndSlice - item.Vertex.Position;
+                    
+                    if (next + 1 == last) // If there is no line after the current, use the current line's direction to fill the tangent calculation.
+                        item.Vertex.Origin = p2 - p1;
 
                     spriteID++;
                     next++;
@@ -462,16 +468,17 @@ namespace Molten.Graphics
             item.Texture = null;
             item.Material = null;
             item.Format = SpriteFormat.Line;
+            item.Depth = depth;
 
-            item.Vertex.Position = new Vector3F(p1, depth);
-            item.Vertex.Rotation = new Vector3F(p2, depth);
-            item.Vertex.Size = new Vector2F(thickness, 0); // Y is unused
+            item.Vertex.Position = p1;
+            item.Vertex.RotationAndSlice = new Vector2F(thickness, 0);
+            item.Vertex.Size = p2;
             item.Vertex.UV = color1.ToColor4();
             item.Vertex.Color = color2;
 
             // Normal of next line. This is used for creating sharp edges when drawing multiple lines. 
             // In this case, we set it to the direction of the current line, because we're just drawing one.
-            item.Vertex.Origin = item.Vertex.Rotation - item.Vertex.Position;
+            item.Vertex.Origin = p2 - p1;
         }
 
         /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
@@ -480,7 +487,7 @@ namespace Molten.Graphics
         /// <param name="material">The material to apply to the rectangle. A value of null will use the default sprite-batch material.</param>
         public void DrawRect(Rectangle destination, Color color, IMaterial material = null)
         {
-            DrawRect(destination, color, 0, Vector2F.Zero, 0, 0, material);
+            DrawRect(destination, color, 0, Vector2F.Zero, 0, material);
         }
 
         /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
@@ -492,18 +499,19 @@ namespace Molten.Graphics
         /// <param name="material">The material to use when rendering the sprite.</param>
         /// <param name="depth">The z-depth of the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        public void DrawRect(Rectangle destination, Color color, float rotation, Vector2F origin, float depth = 0, float arraySlice = 0, IMaterial material = null)
+        public void DrawRect(Rectangle destination, Color color, float rotation, Vector2F origin, float depth = 0, IMaterial material = null)
         {
             SpriteItem item = GetItem();
             item.Texture = null;
             item.Material = material;
             item.Format = SpriteFormat.Sprite;
+            item.Depth = depth;
 
-            item.Vertex.Position = new Vector3F(destination.Left, destination.Top, depth);
-            item.Vertex.Rotation = new Vector3F(0, 0, rotation);
+            item.Vertex.Position = new Vector2F(destination.Left, destination.Top);
+            item.Vertex.RotationAndSlice = new Vector2F(rotation, 0);
             item.Vertex.Size = new Vector2F(destination.Width, destination.Height);
             item.Vertex.Color = color;
-            item.Vertex.Origin = new Vector3F(origin, arraySlice);
+            item.Vertex.Origin = origin;
             //item.Vertex.UV = new Vector4F(); // Unused
         }
 
@@ -607,69 +615,15 @@ namespace Molten.Graphics
             SpriteItem item = GetItem();
             item.Texture = texture;
             item.Material = material;
-            item.ZKey = depth;
-            item.Format = SpriteFormat.Sprite;
-
-            item.Vertex.Position = new Vector3F(position, depth);
-            item.Vertex.Rotation = new Vector3F(0, 0, rotation);
-            item.Vertex.Size = size;
-            item.Vertex.Color = color;
-            item.Vertex.Origin = new Vector3F(origin, arraySlice);
-            item.Vertex.UV = new Vector4F(source.Left, source.Top, source.Right, source.Bottom);
-        }
-
-        /// <summary>
-        /// Adds a sprite to the batch using 3D coordinates.
-        /// </summary>
-        /// <param name="texture"></param>
-        /// <param name="source"></param>
-        /// <param name="position"></param>
-        /// <param name="color"></param>
-        /// <param name="rotation">Rotation in radians.</param>
-        /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
-        /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
-        /// <param name="material"></param>
-        /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        /// <param name="size">The width and height of the sprite..</param>
-        public void Draw(
-            ITexture2D texture,
-            Rectangle source, 
-            Vector3F position, 
-            Vector2F size, 
-            Color color, 
-            Vector3F rotation, 
-            Vector2F origin, 
-            IMaterial material, 
-            float arraySlice)
-        {
-            SpriteItem item = GetItem();
-            item.Texture = texture;
-            item.Material = material;
+            item.Depth = depth;
             item.Format = SpriteFormat.Sprite;
 
             item.Vertex.Position = position;
-            item.Vertex.Rotation = rotation;
+            item.Vertex.RotationAndSlice = new Vector2F(0, arraySlice);
             item.Vertex.Size = size;
             item.Vertex.Color = color;
-            item.Vertex.Origin = new Vector3F(origin, arraySlice);
+            item.Vertex.Origin = origin;
             item.Vertex.UV = new Vector4F(source.Left, source.Top, source.Right, source.Bottom);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="camera"></param>
-        protected void Sort(RenderCamera camera)
-        {
-            // Do we need to sort by distance from camera?
-            if (camera.Mode == RenderCameraMode.Perspective)
-            {
-                Vector3F camPos = camera.Position;
-                for (int i = 0; i < NextID; i++)
-                    Vector3F.Distance(ref camPos, ref Sprites[i].Vertex.Position, out Sprites[i].ZKey);
-            }
-
-            Array.Sort(Sprites, 0, NextID);
         }
 
         public abstract void Dispose();
