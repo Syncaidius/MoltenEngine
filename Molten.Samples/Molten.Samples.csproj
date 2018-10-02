@@ -106,9 +106,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\SampleSceneGame.cs" />
+    <Compile Include="Common\SampleSpriteRenderComponent.cs" />
     <Compile Include="Common\SampleVertexData.cs" />
-    <Compile Include="Common\SpriteCacheTestObject.cs" />
-    <Compile Include="Common\UnfairSpriteCacheTestObject.cs" />
     <Compile Include="Common\ControlSampleForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -126,8 +125,6 @@
     <Compile Include="SceneStressTest.cs" />
     <Compile Include="SceneTexture1DArrayTest.cs" />
     <Compile Include="SceneTexture2DArrayTest.cs" />
-    <Compile Include="SpriteBatchCacheFair.cs" />
-    <Compile Include="SpriteBatchCacheUnfair.cs" />
     <Compile Include="SpriteBatchPrimitives.cs" />
     <Compile Include="SpriteBatchUnfairTest.cs" />
     <Compile Include="SpriteBatchTest.cs" />

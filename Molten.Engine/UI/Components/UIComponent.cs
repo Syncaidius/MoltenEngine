@@ -303,7 +303,7 @@ namespace Molten.UI
 
         /// <summary>Invoked when the current UI component is to be updated.</summary>
         /// <param name="time">A timing instance.</param>
-        protected virtual void OnUpdateUi(Timing time)
+        public virtual void OnUpdateUi(Timing time)
         {
             LockChildren(() =>
             {
@@ -335,7 +335,7 @@ namespace Molten.UI
             OnRenderUi(sb);
         }
 
-        protected virtual void OnRenderUi(SpriteBatcher sb)
+        public virtual void OnRenderUi(SpriteBatcher sb)
         {
             if(_clippingEnabled)
             {

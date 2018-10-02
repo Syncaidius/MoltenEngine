@@ -40,8 +40,11 @@ namespace Molten.Graphics
                     device.SetRenderSurface(rs, 0);
                     device.SetDepthSurface(start.Depth, GraphicsDepthMode.Enabled);
                     device.Rasterizer.SetViewports(rs.Viewport);
+                    device.Rasterizer.SetScissorRectangle(rs.Viewport.Bounds);
 
-                    StateConditions conditions = StateConditions.None; // TODO expand
+                    StateConditions conditions = StateConditions.ScissorTest; // TODO expand
+                    conditions |= rs.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
+
                     device.BeginDraw(conditions);
                     renderer.Render3D(device, layerData, camera);
                     device.EndDraw();

@@ -10,8 +10,11 @@ namespace Molten.Graphics
     internal class FinalizeStep : RenderStepBase
     {
         RenderCamera _camFinalize;
+        ObjectRenderData _dummyData;
+
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
+            _dummyData = new ObjectRenderData();
             _camFinalize = new RenderCamera(RenderCameraMode.Orthographic);
             UpdateSurfaces(renderer, width, height);
         }
@@ -42,15 +45,15 @@ namespace Molten.Graphics
                     device.SetRenderSurface(finalSurface, 0);
                     device.SetDepthSurface(null, GraphicsDepthMode.Disabled);
                     device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
-
-                    renderer.SpriteBatcher.Draw(start.Scene, bounds, Vector2F.Zero, Vector2F.One, Color.White, 0, Vector2F.Zero, null, 0, 0);
+                    device.Rasterizer.SetScissorRectangle(camera.OutputSurface.Viewport.Bounds);
 
                     StateConditions conditions = StateConditions.ScissorTest;
                     conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
 
                     renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
-                    renderer.SpriteBatcher.Flush(device, _camFinalize);
+                    renderer.SpriteBatcher.Draw(start.Scene, bounds, Vector2F.Zero, Vector2F.One, Color.White, 0, Vector2F.Zero, null, 0, 0);
+                    renderer.SpriteBatcher.Flush(device, _camFinalize, _dummyData);
                     renderer.Device.EndDraw();
                     break;
             }

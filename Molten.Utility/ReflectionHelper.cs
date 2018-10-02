@@ -9,6 +9,11 @@ namespace Molten
 {
     public static class ReflectionHelper
     {
+        /// <summary>
+        /// An empty <see cref="object"/> array. Useful when calling parameterless constructors.
+        /// </summary>
+        public static readonly object[] EmptyObjectArray = new object[0];
+
         /// <summary>Finds all types that derive from the provided class type.</summary>
         /// <typeparam name="T">The base type of other classes to search for.</typeparam>
         /// <returns></returns>

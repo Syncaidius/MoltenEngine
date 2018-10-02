@@ -3,6 +3,7 @@ using Molten.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -103,6 +104,37 @@ namespace Molten
 
             comByType.Add(component);
             return component;
+        }
+
+        public SceneComponent AddComponent(Type componentType)
+        {
+            Type baseType = typeof(SceneComponent);
+
+            if (baseType.IsAssignableFrom(componentType) == false)
+            {
+                Engine.Log.WriteError($"Scene.AddObjectWithComponents: Attempt to add invalid component type {componentType.Name} to new object.");
+                return null;
+            }
+
+            ConstructorInfo cInfo = componentType.GetConstructor(Type.EmptyTypes);
+            if (cInfo == null)
+            {
+                Engine.Log.WriteError($"Scene.AddObjectWithComponents: Attempted to add valid component type {componentType.Name} to new object, but no parameterless-constructor was present.");
+                return null;
+            }
+            else
+            {
+                SceneComponent component = cInfo.Invoke(ReflectionHelper.EmptyObjectArray) as SceneComponent;
+                List<SceneComponent> comByType;
+                if (!_componentsByType.TryGetValue(componentType, out comByType))
+                {
+                    comByType = new List<SceneComponent>();
+                    _componentsByType.Add(componentType, comByType);
+                }
+
+                comByType.Add(component);
+                return component;
+            }
         }
 
         public void RemoveComponent<T>(T component) where T : SceneComponent, new()

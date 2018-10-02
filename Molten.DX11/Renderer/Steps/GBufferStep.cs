@@ -41,6 +41,8 @@ namespace Molten.Graphics
 
             device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
             StateConditions conditions = StateConditions.None; // TODO expand
+            conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
+
             device.BeginDraw(conditions);
             renderer.Render3D(device, layerData, camera);
             device.EndDraw();

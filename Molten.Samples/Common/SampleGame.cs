@@ -138,7 +138,7 @@ namespace Molten.Samples
             }
         }
 
-        protected virtual void OnHudDraw(SpriteBatch sb) { }
+        protected virtual void OnHudDraw(SpriteBatcher sb) { }
 
         public abstract string Description { get; }
 

@@ -3,6 +3,7 @@ using Molten.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -76,6 +77,44 @@ namespace Molten
             change.Layer = layer;
             change.Mode = mode;
             _pendingChanges.Enqueue(change);
+        }
+
+        /// <summary>
+        /// Adds a new object to the current <see cref="Scene"/> with the specified <see cref="SceneComponent"/> attached to it.
+        /// </summary>
+        /// <typeparam name="C">The type of <see cref="SceneComponent"/>.</typeparam>
+        /// <param name="layer">The layer on which to add the new object.</param>
+        /// <param name="flags">The object update flags.</param>
+        /// <param name="visible">Whether or not the object is spawned visible.</param>
+        /// <returns>The <see cref="SceneComponent"/> which was added to the new object. It's parent object can be retrieved via <see cref="SceneComponent.Object"/>.</returns>
+        public C AddObjectWithComponent<C>(SceneLayer layer, ObjectUpdateFlags flags = ObjectUpdateFlags.All, bool visible = true) where C: SceneComponent, new()
+        {
+            SceneObject obj = new SceneObject(Engine, ObjectUpdateFlags.All, visible);
+            C com = obj.AddComponent<C>();
+            AddObject(obj, layer);
+
+            return com;
+        }
+
+        /// <summary>
+        /// Adds a new object to the current <see cref="Scene"/> with the specified <see cref="SceneComponent"/> attached to it.
+        /// </summary>
+        /// <param name="componentTypes">A list the type of each <see cref="SceneComponent"/> to be added to the object.</param>
+        /// <param name="layer">The layer on which to add the new object.</param>
+        /// <param name="flags">The object update flags.</param>
+        /// <param name="visible">Whether or not the object is spawned visible.</param>
+        /// <returns>The newly-created <see cref="SceneObject"/> containing all of the valid components that were specified.</returns>
+        public SceneObject AddObjectWithComponents(IList<Type> componentTypes, SceneLayer layer, ObjectUpdateFlags flags = ObjectUpdateFlags.All, bool visible = true)
+        {
+            SceneObject obj = new SceneObject(Engine, ObjectUpdateFlags.All, visible);
+            Type comType = typeof(SceneComponent);
+
+            for (int i = 0; i < componentTypes.Count; i++)
+                obj.AddComponent(componentTypes[i]);
+
+            AddObject(obj, layer);
+
+            return obj;
         }
 
         /// <summary>Adds a <see cref="SceneObject"/> to the scene.</summary>

@@ -11,7 +11,6 @@ namespace Molten
     {
         internal LayerRenderData Data;
         internal List<ISceneObject> Objects;
-        internal List<IRenderable2D> Renderables2d;
         internal HashSet<IUpdatable> Updatables;
         internal List<ICursorAcceptor> InputAcceptors;
 
@@ -20,9 +19,32 @@ namespace Molten
         internal SceneLayer()
         {
             Objects = new List<ISceneObject>();
-            Renderables2d = new List<IRenderable2D>();
             Updatables = new HashSet<IUpdatable>();
             InputAcceptors = new List<ICursorAcceptor>();
+        }
+
+        /// <summary>
+        /// Adds a new object to the current <see cref="SceneLayer"/> with the specified <see cref="SceneComponent"/> attached to it.
+        /// </summary>
+        /// <typeparam name="C">The type of <see cref="SceneComponent"/>.</typeparam>
+        /// <param name="flags">The object update flags.</param>
+        /// <param name="visible">Whether or not the object is spawned visible.</param>
+        /// <returns>The <see cref="SceneComponent"/> which was added to the new object. It's parent object can be retrieved via <see cref="SceneComponent.Object"/>.</returns>
+        public C AddObjectWithComponent<C>(ObjectUpdateFlags flags = ObjectUpdateFlags.All, bool visible = true) where C : SceneComponent, new()
+        {
+            return AddObjectWithComponent<C>(flags, visible);
+        }
+
+        /// <summary>
+        /// Adds a new object to the current <see cref="SceneLayer"/> with the specified <see cref="SceneComponent"/> attached to it.
+        /// </summary>
+        /// <param name="componentTypes">A list the type of each <see cref="SceneComponent"/> to be added to the object.</param>
+        /// <param name="flags">The object update flags.</param>
+        /// <param name="visible">Whether or not the object is spawned visible.</param>
+        /// <returns>The newly-created <see cref="SceneObject"/> containing all of the valid components that were specified.</returns>
+        public SceneObject AddObjectWithComponents(IList<Type> componentTypes, ObjectUpdateFlags flags = ObjectUpdateFlags.All, bool visible = true)
+        {
+            return ParentScene.AddObjectWithComponents(componentTypes, this, flags, visible);
         }
 
         /// <summary>
