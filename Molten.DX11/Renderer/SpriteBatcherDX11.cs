@@ -74,6 +74,10 @@ namespace Molten.Graphics
 
         internal unsafe void Flush(GraphicsPipe pipe, RenderCamera camera, ObjectRenderData data)
         {
+            // Test Stuff
+            NextID = 0;
+            DrawRect(new Rectangle(100, 100, 256, 256), Color.White);
+
             if (NextID == 0)
                 return;
 
@@ -92,12 +96,13 @@ namespace Molten.Graphics
              *          -- Sprite from TextureArray -- check if the current ITexture2D is a texture array. If so, switch to using the appropriate shader.
              */
 
-            Array.Sort(Sprites);
+            Array.Sort(Sprites, 0, NextID);
             Range range;
 
             pipe.SetVertexSegment(_segment, 0);
 
             // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.
+            // Use pointers to reduce array indexing overhead. We're potentially iterating over thousands of sprites here.
             fixed (SpriteVertex* vertexFixedPtr = _vertices)
             {
                 SpriteVertex* vertexPtr = vertexFixedPtr;
@@ -106,8 +111,6 @@ namespace Molten.Graphics
                 int i = 0;
                 while(i < NextID)
                 {
-                    int remaining = NextID - i;
-                    int end = i + Math.Min(remaining, _spriteCapacity);
                     vertexPtr = vertexFixedPtr;
 
                     // Start the first range
@@ -120,7 +123,7 @@ namespace Molten.Graphics
                     range.Material = item.Material;
                     i++;
 
-                    for (; i < end; i++, vertexPtr += _segment.Stride)
+                    for (; i < NextID; i++, vertexPtr++)
                     {
                         item = Sprites[i];
                         *(vertexPtr) = item.Vertex;
@@ -144,7 +147,9 @@ namespace Molten.Graphics
 
                             range = _ranges[_curRange];
                             range.Start = i;
-                            range.Format = Sprites[i].Format;
+                            range.Format = item.Format;
+                            range.Texture = item.Texture;
+                            range.Material = item.Material;
                         }
                     }
 
@@ -160,6 +165,9 @@ namespace Molten.Graphics
                         FlushBuffer(pipe, camera, data);
                 }
             }
+
+            // Reset
+            NextID = 0;
         }
 
         private void FlushBuffer(GraphicsPipe pipe, RenderCamera camera, ObjectRenderData data)
