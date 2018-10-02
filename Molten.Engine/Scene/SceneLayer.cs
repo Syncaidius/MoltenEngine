@@ -32,7 +32,7 @@ namespace Molten
         /// <returns>The <see cref="SceneComponent"/> which was added to the new object. It's parent object can be retrieved via <see cref="SceneComponent.Object"/>.</returns>
         public C AddObjectWithComponent<C>(ObjectUpdateFlags flags = ObjectUpdateFlags.All, bool visible = true) where C : SceneComponent, new()
         {
-            return AddObjectWithComponent<C>(flags, visible);
+            return ParentScene.AddObjectWithComponent<C>(this, flags, visible);
         }
 
         /// <summary>

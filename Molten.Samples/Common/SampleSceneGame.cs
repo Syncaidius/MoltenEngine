@@ -124,7 +124,7 @@ namespace Molten.Samples
             return moveDelta;
         }
 
-        protected override void OnHudDraw(SpriteBatch sb)
+        protected override void OnHudDraw(SpriteBatcher sb)
         {
             base.OnHudDraw(sb);
 

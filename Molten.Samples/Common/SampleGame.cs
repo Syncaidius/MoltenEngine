@@ -13,9 +13,7 @@ namespace Molten.Samples
     {
         SpriteFont _sampleFont;
         bool _baseContentLoaded;
-        RenderDebugOverlay _mainOverlay;
         ControlSampleForm _form;
-        SpriteBatchContainer _sbContainer;
         SceneLayer _spriteLayer;
         SceneLayer _uiLayer;
 
@@ -40,9 +38,6 @@ namespace Molten.Samples
             cam2D.OutputSurface = Window;
             cam2D.LayerMask = BitwiseHelper.Set(cam2D.LayerMask, 0);
             _uiLayer.AddObject(obj);
-
-            DebugOverlay = MainScene.DebugOverlay;
-            _uiLayer.AddObject(DebugOverlay);
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<SpriteFont>("BroshK.ttf;size=24");
@@ -103,13 +98,10 @@ namespace Molten.Samples
         private void Cr_OnCompleted(ContentRequest cr)
         {
             _sampleFont = cr.Get<SpriteFont>(0);
-            DebugOverlay.Overlay.Font = _sampleFont;
-
-
-            _sbContainer = new SpriteBatchContainer(OnHudDraw);
-            _uiLayer.AddObject(_sbContainer);
 
             OnContentLoaded(cr);
+            SampleSpriteRenderComponent com = _uiLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
+            com.RenderCallback = OnHudDraw;
             _baseContentLoaded = true;
         }
 
@@ -122,10 +114,6 @@ namespace Molten.Samples
             // Don't update until the base content is loaded.
             if (!_baseContentLoaded)
                 return;
-
-            // Cycle through debug overlay pages.
-            if(Keyboard.IsTapped(Key.F1) && _sampleFont != null)
-                DebugOverlay.Overlay.NextPage();
 
             // Cycle through window modes.
             if (Keyboard.IsTapped(Key.F2))
@@ -161,26 +149,5 @@ namespace Molten.Samples
         /// Gets the sample's sprite scene. This is rendered before <see cref="UIScene"/>.
         /// </summary>
         public Scene MainScene { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the sample's main debug overlay.
-        /// </summary>
-        public RenderDebugOverlay DebugOverlay
-        {
-            get => _mainOverlay;
-            set
-            {
-                if(_mainOverlay != value)
-                {
-                    if (_mainOverlay != null)
-                        _uiLayer.RemoveObject(_mainOverlay);
-
-                    if (value != null)
-                        _uiLayer.AddObject(value);
-
-                    _mainOverlay = value;
-                }
-            }
-        }
     }
 }

@@ -15,6 +15,8 @@ namespace Molten.Samples
         SceneObject _parent;
         SceneObject _child;
         IMesh<VertexTexture> _mesh;
+        Rectangle[] _rectangles;
+        Color[] _rectangleColors;
 
         public SpriteBatchPrimitives(EngineSettings settings = null) : base("Sprite Batch Primitives", settings) { }
 
@@ -78,35 +80,6 @@ namespace Molten.Samples
             SpawnParentChild(_mesh, Vector3F.Zero, out _parent, out _child);
         }
 
-        private void SetupRectangles()
-        {
-            for (int i = 0; i < 50; i++)
-            {
-                RectangleSprite s = new RectangleSprite()
-                {
-                    Destination = new Rectangle()
-                    {
-                        X = Rng.Next(0, 1920),
-                        Y = Rng.Next(0, 1080),
-                        Width = Rng.Next(16, 129),
-                        Height = Rng.Next(16, 129)
-                    },
-
-                    Color = new Color()
-                    {
-                        R = (byte)Rng.Next(0, 255),
-                        G = (byte)Rng.Next(0, 255),
-                        B = (byte)Rng.Next(0, 255),
-                        A = 40,
-                    },
-
-                    Origin = new Vector2F(0.5f),
-                };
-
-                MainScene.AddObject(s);
-            }
-        }
-
         private void Cr_OnCompleted(ContentRequest cr)
         {
             if (cr.RequestedFileCount == 0)
@@ -122,7 +95,6 @@ namespace Molten.Samples
             ITexture2D tex = cr.Get<ITexture2D>(1);
             mat.SetDefaultResource(tex, 0);
             _mesh.Material = mat;
-            SetupRectangles();
 
             // Create points for zig-zagging lines.
             List<Vector2F> linePoints = new List<Vector2F>();
@@ -239,32 +211,54 @@ namespace Molten.Samples
             List<Vector2F> shapeTriList = new List<Vector2F>();
             testShape.Triangulate(shapeTriList, Vector2F.Zero, 1);
 
-            // Use a container for doing some testing.
-            SpriteBatchContainer sbContainer = new SpriteBatchContainer()
-            {
-                OnDraw = (sb) =>
-                {
-                    sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.White, 1);
-                    sb.DrawLinePath(linePoints, colors, 2);
-                    sb.DrawLinePath(circleLinePoints, colors, 4);
-                    sb.DrawTriangle(new Vector2F(400, 220), new Vector2F(350, 320), new Vector2F(500, 260), Color.SkyBlue);
-                    sb.DrawTriangle(new Vector2F(500, 220), new Vector2F(590, 350), new Vector2F(650, 280), Color.Violet);
-                    sb.DrawTriangleList(triPoints, colors);
-                    sb.DrawTriangleList(shapeTriList, colors);
+            _rectangles = new Rectangle[50];
+            _rectangleColors = new Color[_rectangles.Length];
 
-                    // Draw a few circles with a decreasing number of sides.
-                    origin.X = 500;
-                    origin.Y = 500;
-                    int circleSides = 80;
-                    for (int i = 0; i < colors.Count; i++)
-                    {
-                        origin.X += 100;
-                        sb.DrawCircle(origin, 50, colors[i], circleSides);
-                        circleSides /= 2;
-                    }
+            for (int i = 0; i < 50; i++)
+            {
+                _rectangles[i] = new Rectangle()
+                {
+                    X = Rng.Next(0, 1920),
+                    Y = Rng.Next(0, 1080),
+                    Width = Rng.Next(16, 129),
+                    Height = Rng.Next(16, 129)
+                };
+
+                _rectangleColors[i] = new Color()
+                {
+                    R = (byte)Rng.Next(0, 255),
+                    G = (byte)Rng.Next(0, 255),
+                    B = (byte)Rng.Next(0, 255),
+                    A = 40,
+                };
+            }
+
+            SampleSpriteRenderComponent com = SpriteLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
+            com.RenderCallback = (sb) =>
+            {
+                Vector2F rectOrigin = new Vector2F(0.5f);
+                for (int i = 0; i < _rectangles.Length; i++)
+                    sb.DrawRect(_rectangles[i], _rectangleColors[i], 0, rectOrigin);
+
+                sb.DrawLine(new Vector2F(0), new Vector2F(400), Color.White, 1);
+                sb.DrawLinePath(linePoints, colors, 2);
+                sb.DrawLinePath(circleLinePoints, colors, 4);
+                sb.DrawTriangle(new Vector2F(400, 220), new Vector2F(350, 320), new Vector2F(500, 260), Color.SkyBlue);
+                sb.DrawTriangle(new Vector2F(500, 220), new Vector2F(590, 350), new Vector2F(650, 280), Color.Violet);
+                sb.DrawTriangleList(triPoints, colors);
+                sb.DrawTriangleList(shapeTriList, colors);
+
+                // Draw a few circles with a decreasing number of sides.
+                origin.X = 500;
+                origin.Y = 500;
+                int circleSides = 80;
+                for (int i = 0; i < colors.Count; i++)
+                {
+                    origin.X += 100;
+                    sb.DrawCircle(origin, 50, colors[i], circleSides);
+                    circleSides /= 2;
                 }
             };
-            SpriteLayer.AddObject(sbContainer);
         }
 
         protected override void OnUpdate(Timing time)

@@ -31,12 +31,6 @@ namespace Molten
                 if (Object is ICursorAcceptor acceptor)
                     Layer.InputAcceptors.Remove(acceptor);
 
-                if (Object is IRenderable2D r2d)
-                {
-                    Layer.Renderables2d.Remove(r2d);
-                    Object.Scene.RenderData.RemoveObject(r2d, Layer.Data);
-                }
-
                 Object.Scene = null;
                 Object.Layer = null;
             }

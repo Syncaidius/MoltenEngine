@@ -47,7 +47,7 @@ namespace Molten.Graphics
             _nearClip = _nearClipPreset[mode];
             _farClip = 1000;
             _fov = (float)Math.PI / 4.0f;
-            Mode = mode;
+            _projFunc = _projectionFuncs[mode];
         }
 
         private static void CalcOrthographicProjection(IRenderSurface surface, float nearClip, float farClip, float fov, ref Matrix4F projection)

@@ -17,9 +17,7 @@ namespace Molten.Samples
         SceneObject _parent;
         SceneObject _child;
         Random _rng;
-        List<IRenderable2D> _sprites;
         IMesh<VertexTexture> _mesh;
-        SpriteBatchContainer _container;
         FontFile _fontFile;
         SpriteFont _font2Test;
 
@@ -40,8 +38,6 @@ namespace Molten.Samples
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-
-            _sprites = new List<IRenderable2D>();
             _rng = new Random();
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
@@ -126,69 +122,65 @@ namespace Molten.Samples
             _colors.Add(Color.Wheat);
             _colors.Add(Color.Yellow);
 
-            // Use a container for doing some testing.
-            _container = new SpriteBatchContainer()
+            SampleSpriteRenderComponent sCom = SpriteLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
+            sCom.RenderCallback = (sb) =>
             {
-                OnDraw = (sb) =>
+                sb.DrawRectOutline(_glyphBounds, Color.Grey, 1);
+                sb.DrawRectOutline(_fontBounds, Color.Pink, 1);
+
+                // Top Difference marker
+                float dif = _glyphBounds.Top - _fontBounds.Top;
+                if (dif != 0)
                 {
-                    sb.DrawRectOutline(_glyphBounds, Color.Grey, 1);
-                    sb.DrawRectOutline(_fontBounds, Color.Pink, 1);
+                    sb.DrawLine(new Vector2F(_glyphBounds.Right, _fontBounds.Top), new Vector2F(_glyphBounds.Right, _fontBounds.Top + dif), Color.Red, 1);
+                    sb.DrawString(SampleFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Top + (dif / 2)), Color.White);
+                }
 
-                    // Top Difference marker
-                    float dif = _glyphBounds.Top - _fontBounds.Top;
-                    if (dif != 0)
-                    {
-                        sb.DrawLine(new Vector2F(_glyphBounds.Right, _fontBounds.Top), new Vector2F(_glyphBounds.Right, _fontBounds.Top + dif), Color.Red, 1);
-                        sb.DrawString(SampleFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Top + (dif / 2)), Color.White);
-                    }
+                // Bottom difference marker
+                dif = _fontBounds.Bottom - _glyphBounds.Bottom;
+                if (dif != 0)
+                {
+                    sb.DrawLine(new Vector2F(_glyphBounds.Right, _fontBounds.Bottom), new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - dif), Color.Red, 1);
+                    sb.DrawString(SampleFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - (dif / 2)), Color.White);
+                }
 
-                    // Bottom difference marker
-                    dif = _fontBounds.Bottom - _glyphBounds.Bottom;
-                    if (dif != 0)
-                    {
-                        sb.DrawLine(new Vector2F(_glyphBounds.Right, _fontBounds.Bottom), new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - dif), Color.Red, 1);
-                        sb.DrawString(SampleFont, $"Dif: {dif}", new Vector2F(_glyphBounds.Right, _fontBounds.Bottom - (dif / 2)), Color.White);
-                    }
+                sb.DrawTriangleList(_glyphTriPoints, _colors);
 
-                    sb.DrawTriangleList(_glyphTriPoints, _colors);
+                if (_linePoints != null)
+                {
+                    for (int i = 0; i < _linePoints.Count; i++)
+                        sb.DrawLinePath(_linePoints[i], Color.Red, 2);
+                }
 
-                    if (_linePoints != null)
-                    {
-                        for (int i = 0; i < _linePoints.Count; i++)
-                            sb.DrawLinePath(_linePoints[i], Color.Red, 2);
-                    }
+                if (_holePoints != null)
+                {
+                    for (int i = 0; i < _holePoints.Count; i++)
+                        sb.DrawLinePath(_holePoints[i], Color.SkyBlue, 2);
+                }
 
-                    if (_holePoints != null)
-                    {
-                        for (int i = 0; i < _holePoints.Count; i++)
-                            sb.DrawLinePath(_holePoints[i], Color.SkyBlue, 2);
-                    }
+                Rectangle clickRect;
+                if (_shapes != null)
+                {
+                    clickRect = new Rectangle((int)_clickPoint.X, (int)_clickPoint.Y, 0, 0);
+                    clickRect.Inflate(8);
+                    sb.DrawRect(clickRect, _clickColor);
+                }
 
-                    Rectangle clickRect;
-                    if (_shapes != null)
-                    {
-                        clickRect = new Rectangle((int)_clickPoint.X, (int)_clickPoint.Y, 0, 0);
-                        clickRect.Inflate(8);
-                        sb.DrawRect(clickRect, _clickColor);
-                    }
+                sb.DrawString(SampleFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
 
-                    sb.DrawString(SampleFont, $"Mouse: { Mouse.Position}", new Vector2F(5, 300), Color.Yellow);
-
-                    sb.DrawString(SampleFont, $"Font atlas: ", new Vector2F(700, 45), Color.White);
-                    if (_font2Test != null && _font2Test.UnderlyingTexture != null)
-                    {
-                        Vector2I pos = new Vector2I(800, 65);
-                        Rectangle texBounds = new Rectangle(pos.X, pos.Y, 512, 512);
-                        sb.Draw(_font2Test.UnderlyingTexture, texBounds, Color.White);
-                        sb.DrawRectOutline(texBounds, Color.Red, 1);
-                        pos.Y += 517;
-                        sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
-                        pos.Y += _font2Test.LineSpace;
-                        sb.DrawString(_font2Test, $"Font Name: {_font2Test.Font.Info.FullName}", pos, Color.White);
-                    }
+                sb.DrawString(SampleFont, $"Font atlas: ", new Vector2F(700, 45), Color.White);
+                if (_font2Test != null && _font2Test.UnderlyingTexture != null)
+                {
+                    Vector2I pos = new Vector2I(800, 65);
+                    Rectangle texBounds = new Rectangle(pos.X, pos.Y, 512, 512);
+                    sb.Draw(_font2Test.UnderlyingTexture, texBounds, Color.White);
+                    sb.DrawRectOutline(texBounds, Color.Red, 1);
+                    pos.Y += 517;
+                    sb.DrawString(_font2Test, $"Testing 1-2-3! This is a test string using the new SpriteFont class.", pos, Color.White);
+                    pos.Y += _font2Test.LineSpace;
+                    sb.DrawString(_font2Test, $"Font Name: {_font2Test.Font.Info.FullName}", pos, Color.White);
                 }
             };
-            SpriteLayer.AddObject(_container);
         }
 
         /// <summary>

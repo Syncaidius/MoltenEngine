@@ -63,7 +63,7 @@ namespace Molten.UI
                 sb.DrawRect(_bounds, _borderColor);
                 sb.DrawRect(_innerBounds, _mainColor);
 
-                _text.Render(sb);
+                //_text.Render(sb);
             }
         }
 

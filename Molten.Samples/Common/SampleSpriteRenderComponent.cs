@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Molten.Graphics;
 
-namespace Molten.Samples.Common
+namespace Molten.Samples
 {
     /// <summary>
     /// A helper component which provides a render callback for custom rendering in samples.

@@ -15,6 +15,7 @@ namespace Molten.Samples
         SceneObject _parent;
         SceneObject _child;
         IMesh<VertexTexture> _mesh;
+        List<Sprite> _sprites;
 
         public SpriteBatchTest(EngineSettings settings = null) : base("Sprite Batch", settings) { }
 
@@ -48,12 +49,14 @@ namespace Molten.Samples
             ITexture2D tex = cr.Get<ITexture2D>(1);
             mat.SetDefaultResource(tex, 0);
             _mesh.Material = mat;
-            SetupTexturedSprites(tex);
-            SetupRectangles();
+            SetupSprites(tex);
+            SetupSprites(null);
         }
 
-        private void SetupTexturedSprites(ITexture2D tex)
+        private void SetupSprites(ITexture2D tex)
         {
+            _sprites = new List<Sprite>();
+
             for(int i = 0; i < 100; i++)
             {
                 Sprite s = new Sprite()
@@ -76,38 +79,14 @@ namespace Molten.Samples
                     Source = new Rectangle(0,0,128,128),
                     Origin = new Vector2F(0.5f),
                 };
-
-                SpriteLayer.AddObject(s);
             }
-        }
 
-        private void SetupRectangles()
-        {
-            for (int i = 0; i < 100; i++)
+            SampleSpriteRenderComponent com = SpriteLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
+            com.RenderCallback = (sb) =>
             {
-                RectangleSprite s = new RectangleSprite()
-                {
-                    Destination = new Rectangle()
-                    {
-                        X = Rng.Next(0, 1920),
-                        Y = Rng.Next(0, 1080),
-                        Width = Rng.Next(16, 129),
-                        Height = Rng.Next(16, 129)
-                    },
-
-                    Color = new Color()
-                    {
-                        R = (byte)Rng.Next(0, 255),
-                        G = (byte)Rng.Next(0, 255),
-                        B = (byte)Rng.Next(0, 255),
-                        A = 40,
-                    },
-
-                    Origin = new Vector2F(0.5f),
-                };
-
-                SpriteLayer.AddObject(s);
-            }
+                for (int i = 0; i < _sprites.Count; i++)
+                    sb.Draw(_sprites[i]);
+            };
         }
 
         protected override void OnUpdate(Timing time)

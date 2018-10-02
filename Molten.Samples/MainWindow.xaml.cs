@@ -87,7 +87,7 @@ namespace Molten.Samples
             {
                 using (BinaryWriter writer = new BinaryWriter(stream))
                 {
-                    string typeName = TestHelper.GetQualifiedTypeName(lastTestType);
+                    string typeName = ReflectionHelper.GetQualifiedTypeName(lastTestType);
                     writer.Write(typeName);
                     writer.Write(chkDebugLayer.IsChecked.Value);
                     writer.Write(chkVsync.IsChecked.Value);
@@ -178,7 +178,7 @@ namespace Molten.Samples
 
         private void GetTests()
         {
-            List<Type> testTypes = TestHelper.FindType<SampleGame>().ToList();
+            List<Type> testTypes = ReflectionHelper.FindType<SampleGame>().ToList();
 
             for (int i = 0; i < testTypes.Count; i++)
             {

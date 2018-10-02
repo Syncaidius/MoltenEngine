@@ -33,12 +33,6 @@ namespace Molten
 
                     if (Object is ICursorAcceptor oldAcceptor)
                         oldLayer.InputAcceptors.Add(oldAcceptor);
-
-                    if (Object is IRenderable2D oldR2D)
-                    {
-                        oldLayer.Renderables2d.Add(oldR2D);
-                        Object.Scene.RenderData.AddObject(oldR2D, oldLayer.Data);
-                    }
                 }
 
                 Object.Scene = scene;
@@ -50,12 +44,6 @@ namespace Molten
 
                 if (Object is ICursorAcceptor acceptor)
                     Layer.InputAcceptors.Add(acceptor);
-
-                if (Object is IRenderable2D r2d)
-                {
-                    Layer.Renderables2d.Add(r2d);
-                    scene.RenderData.AddObject(r2d, Layer.Data);
-                }
             }
 
             Recycle(this);

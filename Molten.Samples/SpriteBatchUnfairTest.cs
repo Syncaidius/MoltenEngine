@@ -15,6 +15,7 @@ namespace Molten.Samples
         SceneObject _parent;
         SceneObject _child;
         IMesh<VertexTexture> _mesh;
+        List<Sprite> _sprites;
 
         public SpriteBatchUnfairTest(EngineSettings settings = null) : base("Sprite Batch (Unfair)", settings) { }
 
@@ -35,60 +36,40 @@ namespace Molten.Samples
 
         /// <summary>Deliberately generate mixed up sprites to stress sprite-batch.</summary>
         /// <param name="tex"></param>
-        private void SpamSprites(ITexture2D tex)
+        private void SetupSprites(ITexture2D tex)
         {
+            _sprites = new List<Sprite>();
+
             for (int i = 0; i < 50000; i++)
             {
-                ISceneObject s;
-                bool useTextured = Rng.Next(0, 5001) < 2500;
-                if (useTextured)
+                Sprite s = new Sprite()
                 {
-                    s = new Sprite()
+                    Position = new Vector2F()
                     {
-                        Position = new Vector2F()
-                        {
-                            X = Rng.Next(0, 1920),
-                            Y = Rng.Next(0, 1080),
-                        },
+                        X = Rng.Next(0, 1920),
+                        Y = Rng.Next(0, 1080),
+                    },
 
-                        Color = new Color()
-                        {
-                            R = (byte)Rng.Next(0, 255),
-                            G = (byte)Rng.Next(0, 255),
-                            B = (byte)Rng.Next(0, 255),
-                            A = (byte)Rng.Next(0, 255),
-                        },
-
-                        Texture = tex,
-                        Source = new Rectangle(0, 0, 128, 128),
-                        Origin = new Vector2F(0.5f),
-                    };
-                }
-                else
-                {
-                    s = new RectangleSprite()
+                    Color = new Color()
                     {
-                        Destination = new Rectangle()
-                        {
-                            X = Rng.Next(0, 1920),
-                            Y = Rng.Next(0, 1080),
-                            Width = Rng.Next(16, 129),
-                            Height = Rng.Next(16, 129)
-                        },
+                        R = (byte)Rng.Next(0, 255),
+                        G = (byte)Rng.Next(0, 255),
+                        B = (byte)Rng.Next(0, 255),
+                        A = (byte)Rng.Next(0, 255),
+                    },
 
-                        Color = new Color()
-                        {
-                            R = (byte)Rng.Next(0, 255),
-                            G = (byte)Rng.Next(0, 255),
-                            B = (byte)Rng.Next(0, 255),
-                            A = 40,
-                        },
-
-                        Origin = new Vector2F(0.5f),
-                    };
-                }
-                SpriteLayer.AddObject(s);
+                    Texture = Rng.Next(0, 5001) < 2500 ? tex : null,
+                    Source = new Rectangle(0, 0, 128, 128),
+                    Origin = new Vector2F(0.5f),
+                };
             }
+
+            SampleSpriteRenderComponent com = SpriteLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
+            com.RenderCallback = (sb) =>
+            {
+                for (int i = 0; i < _sprites.Count; i++)
+                    sb.Draw(_sprites[i]);
+            };
         }
 
         private void Cr_OnCompleted(ContentRequest cr)
@@ -104,9 +85,12 @@ namespace Molten.Samples
             }
 
             ITexture2D tex = cr.Get<ITexture2D>(1);
-            mat.SetDefaultResource(tex, 0);
-            _mesh.Material = mat;
-            SpamSprites(tex);
+            if (tex != null)
+            {
+                mat.SetDefaultResource(tex, 0);
+                _mesh.Material = mat;
+                SetupSprites(tex);
+            }            
         }
 
         protected override void OnUpdate(Timing time)

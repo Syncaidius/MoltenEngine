@@ -115,7 +115,6 @@
       <DependentUpon>ControlSampleForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DeferredRendering.cs" />
-    <Compile Include="SpriteContainerSample.cs" />
     <Compile Include="SpriteFontStress.cs" />
     <Compile Include="FontFileTest.cs" />
     <Compile Include="MultiWindowGame.cs" />
@@ -131,7 +130,6 @@
     <Compile Include="Common\CubeArrayVertex.cs" />
     <Compile Include="Common\TextureDataLoader.cs" />
     <Compile Include="Common\SampleGame.cs" />
-    <Compile Include="TestHelper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
