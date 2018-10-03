@@ -183,6 +183,9 @@ namespace Molten.Graphics
 
             foreach (SceneRenderData sceneData in Scenes)
             {
+                if (!sceneData.IsVisible)
+                    continue;
+
                 sceneData.PreRenderInvoke(this);
                 sceneData.Profiler.Begin();
 
