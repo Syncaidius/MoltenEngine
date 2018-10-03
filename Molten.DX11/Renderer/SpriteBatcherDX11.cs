@@ -74,10 +74,6 @@ namespace Molten.Graphics
 
         internal unsafe void Flush(GraphicsPipe pipe, RenderCamera camera, ObjectRenderData data)
         {
-            // Test Stuff
-            NextID = 0;
-            DrawRect(new Rectangle(100, 100, 256, 256), Color.White);
-
             if (NextID == 0)
                 return;
 

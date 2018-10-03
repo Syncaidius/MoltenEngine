@@ -101,9 +101,9 @@ namespace Molten.Graphics
                 SpriteFont.GlyphCache cache = font.GetCharGlyph(text[i]);
 
                 SpriteItem item = GetItem();
-                item.Texture = null;
+                item.Texture = font.UnderlyingTexture;
                 item.Material = null;
-                item.Format = SpriteFormat.Circle;
+                item.Format = SpriteFormat.Sprite;
                 item.Depth = depth;
 
                 item.Vertex.Position = new Vector2F(charPos.X, charPos.Y + cache.YOffset);

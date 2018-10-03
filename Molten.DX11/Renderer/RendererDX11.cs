@@ -133,7 +133,7 @@ namespace Molten.Graphics
                 _stepList[i].UpdateSurfaces(this, requiredWidth, requiredHeight);
         }
 
-        internal void Render3D(GraphicsPipe pipe, LayerRenderData layerData, RenderCamera camera)
+        internal void RenderSceneLayer(GraphicsPipe pipe, LayerRenderData layerData, RenderCamera camera)
         {
             // To start with we're just going to draw ALL objects in the render tree.
             // Sorting and culling will come later

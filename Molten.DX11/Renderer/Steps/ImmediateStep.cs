@@ -46,7 +46,7 @@ namespace Molten.Graphics
                     conditions |= rs.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
                     device.BeginDraw(conditions);
-                    renderer.Render3D(device, layerData, camera);
+                    renderer.RenderSceneLayer(device, layerData, camera);
                     device.EndDraw();
                     break;
             }
