@@ -207,25 +207,25 @@ namespace Molten.Graphics
                 mat = mat ?? _defaultNoTextureMaterial;
             }
 
-            mat.Object.Wvp.Value = camera.ViewProjection;
+            mat.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
             pipe.Draw(mat, range.VertexCount, PrimitiveTopology.PointList, range.Start);
         }
 
         private void FlushLineRange(GraphicsPipe pipe, RenderCamera camera, Range range, ObjectRenderData data)
         {
-            _defaultLineMaterial.Object.Wvp.Value = camera.ViewProjection;
+            _defaultLineMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
             pipe.Draw(_defaultLineMaterial, range.VertexCount, PrimitiveTopology.PointList, range.Start);
         }
 
         private void FlushTriangleRange(GraphicsPipe pipe, RenderCamera camera, Range range, ObjectRenderData data)
         {
-            _defaultTriMaterial.Object.Wvp.Value = camera.ViewProjection;
+            _defaultTriMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
             pipe.Draw(_defaultTriMaterial, range.VertexCount, PrimitiveTopology.PointList, range.Start);
         }
 
         private void FlushCircleRange(GraphicsPipe pipe, RenderCamera camera, Range range, ObjectRenderData data)
         {
-            _defaultCircleMaterial.Object.Wvp.Value = camera.ViewProjection;
+            _defaultCircleMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
             pipe.Draw(_defaultCircleMaterial, range.VertexCount, PrimitiveTopology.PointList, range.Start);
         }
 

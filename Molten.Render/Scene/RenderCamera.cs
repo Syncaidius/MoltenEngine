@@ -11,8 +11,20 @@ namespace Molten.Graphics
 
     public class RenderCamera
     {
+        class ClipRange
+        {
+            public float Near;
+            public float Far;
+
+            public ClipRange(float near, float far)
+            {
+                Near = near;
+                Far = far;
+            }
+        }
+
         static Dictionary<RenderCameraMode, RenderCameraProjectionFunc> _projectionFuncs;
-        static Dictionary<RenderCameraMode, float> _nearClipPreset;
+        static Dictionary<RenderCameraMode, ClipRange> _clipPreset;
 
         Matrix4F _view;
         Matrix4F _projection;
@@ -32,9 +44,9 @@ namespace Molten.Graphics
             _projectionFuncs[RenderCameraMode.Perspective] = CalcPerspectiveProjection;
             _projectionFuncs[RenderCameraMode.Orthographic] = CalcOrthographicProjection;
 
-            _nearClipPreset = new Dictionary<RenderCameraMode, float>();
-            _nearClipPreset[RenderCameraMode.Perspective] = 0.1f;
-            _nearClipPreset[RenderCameraMode.Orthographic] = 0f;
+            _clipPreset = new Dictionary<RenderCameraMode, ClipRange>();
+            _clipPreset[RenderCameraMode.Perspective] = new ClipRange(0.1f, 1000f);
+            _clipPreset[RenderCameraMode.Orthographic] = new ClipRange(0.0f, 1.0f);
         }
 
         /// <summary>
@@ -44,10 +56,12 @@ namespace Molten.Graphics
         public RenderCamera(RenderCameraMode mode)
         {
             View = Matrix4F.Identity;
-            _nearClip = _nearClipPreset[mode];
-            _farClip = 1000;
+            ClipRange clip = _clipPreset[mode];
+            _nearClip = clip.Near;
+            _farClip = clip.Far;
             _fov = (float)Math.PI / 4.0f;
             _projFunc = _projectionFuncs[mode];
+            _projection = Matrix4F.Identity;
         }
 
         private static void CalcOrthographicProjection(IRenderSurface surface, float nearClip, float farClip, float fov, ref Matrix4F projection)
@@ -221,7 +235,9 @@ namespace Molten.Graphics
                 {
                     _mode = value;
                     _projFunc = _projectionFuncs[_mode];
-                    _nearClip = _nearClipPreset[_mode];
+                    ClipRange clip = _clipPreset[_mode];
+                    _nearClip = clip.Near;
+                    _farClip = clip.Far;
                     CalculateProjection();
                 }
             }
