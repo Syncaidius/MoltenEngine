@@ -299,6 +299,9 @@ namespace Molten.Graphics
         /// </summary>
         public abstract IResourceManager Resources { get; }
 
+        /// <summary>
+        /// Gets the compute manager attached to the current renderer.
+        /// </summary>
         public abstract IComputeManager Compute { get; }
 
         /// <summary>
@@ -306,16 +309,31 @@ namespace Molten.Graphics
         /// </summary>
         public abstract string Name { get; }
 
+        /// <summary>
+        /// Gets a list of all the output <see cref="ISwapChainSurface"/> instances attached to the renderer. These are automatically presented to the graphics device by the renderer, if active.
+        /// </summary>
         public ThreadedList<ISwapChainSurface> OutputSurfaces { get; } = new ThreadedList<ISwapChainSurface>();
 
+        /// <summary>
+        /// Gets a list of all the scenes current attached to the renderer.
+        /// </summary>
         protected internal List<SceneRenderData> Scenes { get; }  = new List<SceneRenderData>();
 
         private ThreadedQueue<RendererTask> Tasks { get; } = new ThreadedQueue<RendererTask>();
 
+        /// <summary>
+        /// Gets the width of the biggest render surface used so far.
+        /// </summary>
         protected int BiggestWidth { get; private set; } = 1;
 
+        /// <summary>
+        /// Gets the height of the biggest render surface used so far.
+        /// </summary>
         protected int BiggestHeight { get; private set; } = 1;
 
+        /// <summary>
+        /// Gets the <see cref="Logger"/> bound and dedicated to the current renderer.
+        /// </summary>
         protected internal Logger Log { get; }
     }
 }

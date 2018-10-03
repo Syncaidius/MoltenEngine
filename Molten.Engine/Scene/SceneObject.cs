@@ -296,6 +296,6 @@ namespace Molten
         /// <summary>
         /// Gets or sets whether or not the current object should be updated.
         /// </summary>
-        public bool IsEnabled { get; set; }
+        public bool IsEnabled { get; set; } = true;
     }
 }
