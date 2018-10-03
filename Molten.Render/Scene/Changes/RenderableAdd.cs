@@ -26,7 +26,6 @@ namespace Molten.Graphics
         public override void Process()
         {
             List<ObjectRenderData> dataList;
-
             if (!LayerData.Renderables.TryGetValue(Renderable, out dataList))
             {
                 dataList = new List<ObjectRenderData>();

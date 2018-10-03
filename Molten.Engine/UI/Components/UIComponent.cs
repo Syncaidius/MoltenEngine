@@ -585,12 +585,6 @@ namespace Molten.UI
             internal set => _scene = value;
         }
 
-        Scene ISceneObject.Scene
-        {
-            get => _scene;
-            set => Scene = value;
-        }
-
         SceneLayer ISceneObject.Layer { get; set; }
 
         /// <summary>

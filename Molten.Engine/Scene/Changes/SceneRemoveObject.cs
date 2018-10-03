@@ -31,7 +31,6 @@ namespace Molten
                 if (Object is ICursorAcceptor acceptor)
                     Layer.InputAcceptors.Remove(acceptor);
 
-                Object.Scene = null;
                 Object.Layer = null;
             }
 

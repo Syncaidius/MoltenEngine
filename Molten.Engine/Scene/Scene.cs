@@ -38,7 +38,7 @@ namespace Molten
 
         public SceneLayer AddLayer(string name, bool ignoreRaycastHit = false)
         {
-            LayerRenderData layerData = RenderData.CreateLayerData();
+            LayerRenderData layerData = RenderData.CreateLayerData(name);
             RenderData.AddLayer(layerData);
 
             SceneLayerAdd change = SceneLayerAdd.Get();

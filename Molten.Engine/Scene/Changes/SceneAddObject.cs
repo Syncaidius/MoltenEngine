@@ -35,7 +35,6 @@ namespace Molten
                         oldLayer.InputAcceptors.Add(oldAcceptor);
                 }
 
-                Object.Scene = scene;
                 Object.Layer = Layer;
                 Layer.Objects.Add(Object);
 

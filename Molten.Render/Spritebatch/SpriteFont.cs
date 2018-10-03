@@ -136,7 +136,7 @@ namespace Molten.Graphics
             _rt.Clear(Color.Transparent);
             _renderData = renderer.CreateRenderData();
             _renderData.IsVisible = false;
-            LayerRenderData layer = _renderData.CreateLayerData();
+            LayerRenderData layer = _renderData.CreateLayerData("font chars");
             _renderData.AddLayer(layer);
 
             ISpriteRenderer _spriteRenderer = _renderer.Resources.CreateSpriteRenderer(OnDraw);

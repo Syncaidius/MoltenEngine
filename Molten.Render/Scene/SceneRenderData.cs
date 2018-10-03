@@ -42,7 +42,7 @@ namespace Molten.Graphics
         public List<LayerRenderData> Layers = new List<LayerRenderData>();
         protected readonly ThreadedQueue<RenderSceneChange> _pendingChanges = new ThreadedQueue<RenderSceneChange>();
 
-        public abstract LayerRenderData CreateLayerData();
+        public abstract LayerRenderData CreateLayerData(string name);
 
         public void AddLayer(LayerRenderData data)
         {
@@ -122,9 +122,12 @@ namespace Molten.Graphics
     public class SceneRenderData<R> : SceneRenderData
         where R: class, IRenderable
     {
-        public override LayerRenderData CreateLayerData()
+        public override LayerRenderData CreateLayerData(string name)
         {
-            return new LayerRenderData<R>();
+            return new LayerRenderData<R>()
+            {
+                Name = name,
+            };
         }
 
         public override void AddObject(IRenderable obj, ObjectRenderData renderData, LayerRenderData layer)

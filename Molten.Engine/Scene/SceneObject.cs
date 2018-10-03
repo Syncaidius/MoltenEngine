@@ -39,8 +39,6 @@ namespace Molten
         public event SceneObjectSceneHandler OnAddedToScene;
         public event SceneObjectSceneHandler OnRemovedFromScene;
 
-        public event SceneObjectLayerHandler OnLayerChanged;
-
         /// <summary>Creates a new instance of <see cref="SceneObject"/>.</summary>
         /// <param name="engine">The <see cref="Molten.Engine"/> instance that the object will be bound to.</param>
         /// <param name="updateFlags">The object's initial update flags.</param>
@@ -224,57 +222,40 @@ namespace Molten
             }
         }
 
-        /// <summary>Gets or [internally] sets the scene that the object is currently part of.</summary>
-        public Scene Scene
-        {
-            get => _scene;
-            internal set
-            {
-                if(_scene != value)
-                {
-                    if (_scene != null)
-                        OnRemovedFromScene?.Invoke(this, _scene, _layer);
+        /// <summary>
+        /// Gets the scene that the object is currently attached to, or null if not attached to any scenes.
+        /// </summary>
+        public Scene Scene => _scene;
 
-                    _scene = value;
-                    _layer = _scene.DefaultLayer;
-
-                    if (value != null)
-                        OnAddedToScene?.Invoke(this, value, _layer);
-
-                    // TODO make this thread-safe.
-                    for (int i = _children.Count - 1; i >= 0; i--)
-                        _children[i].Scene = value;
-                }
-            }
-        }
-
+        /// <summary>
+        /// Gets the scene layer that the object is part of.
+        /// </summary>
         public SceneLayer Layer
         {
             get => _layer;
             internal set
             {
-                if (Scene != null)
+                if (_layer != value)
                 {
-                    // If the value is null, use the scene's default layer.
-                    value = value ?? Scene.DefaultLayer;
+                    if (_scene != null)
+                        OnRemovedFromScene?.Invoke(this, _scene, _layer);
 
-                    if (value.ParentScene != Scene)
-                        throw new SceneObjectException(Scene, this, "Cannot set object layer to the layer of a different scene. Must be a layer of the scene the object is current a member of.");
-
-                    if(value != _layer)
+                    _layer = value;
+                    if (value != null)
                     {
-                        SceneLayer oldLayer = _layer;
-                        _layer = value;
-                        OnLayerChanged?.Invoke(this, oldLayer, _layer);
+                        _scene = value.ParentScene;
+                        OnAddedToScene?.Invoke(this, value.ParentScene, _layer);
                     }
+                    else
+                    {
+                        _scene = null;
+                    }
+
+                    // TODO make this thread-safe.
+                    for (int i = _children.Count - 1; i >= 0; i--)
+                        _children[i].Layer = value;
                 }
             }
-        }
-
-        Scene ISceneObject.Scene
-        {
-            get => _scene;
-            set => this.Scene = value;
         }
 
         SceneLayer ISceneObject.Layer
@@ -283,14 +264,20 @@ namespace Molten
             set => this.Layer = value;
         }
 
+        /// <summary>
+        /// Gets the object's <see cref="SceneObjectTransform"/>, which contains information about its position, rotation and scale and various helper properties.
+        /// </summary>
         public SceneObjectTransform Transform => _transform;
 
         /// <summary>Gets an observable list of all child <see cref="SceneObject"/> instances.</summary>
         public WatchableList<SceneObject> Children => _children;
 
-        /// <summary>Gets the </summary>
+        /// <summary>Gets the object's parent <see cref="SceneObject"/>, if any. Value is null if the current object has no parent.</summary>
         public SceneObject Parent { get; internal set; }
 
+        /// <summary>
+        /// Gets the <see cref="Engine"/> instance that the scene object is bound to.
+        /// </summary>
         public Engine Engine => _engine;
 
         /// <summary>
