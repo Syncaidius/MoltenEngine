@@ -44,6 +44,13 @@ namespace Molten.Graphics
                 string nodeName = child.Name.ToLower();
                 switch (nodeName)
                 {
+                    case "writepermission":
+                        if (Enum.TryParse(child.InnerText, out GraphicsDepthWritePermission writePermission))
+                            state.WritePermission = writePermission;
+                        else
+                            InvalidEnumMessage<DepthWriteMask>(context, child, "depth write permission");
+                        break;
+
                     case "enabled":
                         if (bool.TryParse(child.InnerText, out bool depthEnabled))
                             state.IsDepthEnabled = depthEnabled;

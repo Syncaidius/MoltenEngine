@@ -48,7 +48,13 @@ namespace Molten.Graphics
                 material.Resources[i].Value = material.DefaultResources[i];
         }
 
-        internal abstract void Render(GraphicsPipe pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data);
+        internal void Render(GraphicsPipe pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        {
+            pipe.DepthWriteOverride = data.DepthWriteOverride;
+            OnRender(pipe, renderer, camera, data);
+        }
+
+        private protected abstract void OnRender(GraphicsPipe pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data);
 
         /// <summary>Gets or sets whether or not the renderable should be drawn.</summary>
         public bool IsVisible { get; set; }

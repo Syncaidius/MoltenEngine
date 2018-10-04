@@ -38,7 +38,7 @@ namespace Molten.Graphics
                         renderer.ClearIfFirstUse(device, rs, sceneData.BackgroundColor);
 
                     device.SetRenderSurface(rs, 0);
-                    device.SetDepthSurface(start.Depth, GraphicsDepthMode.Enabled);
+                    device.DepthSurface = start.Depth;
                     device.Rasterizer.SetViewports(rs.Viewport);
                     device.Rasterizer.SetScissorRectangle(rs.Viewport.Bounds);
 

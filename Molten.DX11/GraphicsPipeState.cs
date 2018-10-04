@@ -20,7 +20,7 @@ namespace Molten.Graphics
         RenderSurfaceBase[] _surfaces;
 
         DepthSurface _depthSurface;
-        GraphicsDepthMode _depthMode;
+        GraphicsDepthWritePermission _depthWriteOverride;
 
         ViewportF[] _viewports;
 
@@ -52,8 +52,8 @@ namespace Molten.Graphics
             // Store surfaces
             _pipe.GetRenderSurfaces(_surfaces);
 
-            _depthSurface = _pipe.GetDepthSurface();
-            _depthMode = _pipe.GetDepthMode();
+            _depthSurface = _pipe.DepthSurface;
+            _depthWriteOverride = _pipe.DepthWriteOverride;
         }
 
         public void Restore()
@@ -76,7 +76,8 @@ namespace Molten.Graphics
                 _pipe.UnsetRenderSurface(0);
 
 
-            _pipe.SetDepthSurface(_depthSurface, _depthMode);
+            _pipe.DepthSurface = _depthSurface;
+            _pipe.DepthWriteOverride = _depthWriteOverride;
         }
 
         /// <summary>Resets the pipe state, but does not apply it.</summary>

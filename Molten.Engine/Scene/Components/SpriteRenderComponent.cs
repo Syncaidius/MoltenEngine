@@ -102,5 +102,16 @@ namespace Molten
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets the depth-write permission override for the current <see cref="SpriteRenderComponent"/>. <para/>
+        /// If set to <see cref="GraphicsDepthWritePermission.Enabled"/>, the value provided by the current material will be used instead.
+        /// To override the depth-write permission set by the current material, set this value to anything other than <see cref="GraphicsDepthWritePermission.Enabled"/>.
+        /// </summary>
+        public GraphicsDepthWritePermission DepthWriteOverride
+        {
+            get => _data.DepthWriteOverride;
+            set => _data.DepthWriteOverride = value;
+        }
     }
 }

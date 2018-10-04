@@ -92,6 +92,7 @@
     <Compile Include="Buffers\IndexBufferFormat.cs" />
     <Compile Include="Buffers\StagingBufferFlags.cs" />
     <Compile Include="Exceptions\GraphicsFormatException.cs" />
+    <Compile Include="GraphicsDepthWritePermission.cs" />
     <Compile Include="Hardware\DisplayDelagates.cs" />
     <Compile Include="Hardware\DisplayOrientation.cs" />
     <Compile Include="Hardware\GraphicsAdapterVendor.cs" />

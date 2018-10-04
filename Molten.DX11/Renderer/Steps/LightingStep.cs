@@ -70,7 +70,8 @@ namespace Molten.Graphics
             Lighting.Clear(renderer.Device, sceneData.AmbientLightColor);
             device.UnsetRenderSurfaces();
             device.SetRenderSurface(Lighting, 0);
-            device.SetDepthSurface(_startStep.Depth, GraphicsDepthMode.ReadOnly);
+            device.DepthSurface = _startStep.Depth;
+            device.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
             RenderPointLights(device, camera, sceneData);
         }
 

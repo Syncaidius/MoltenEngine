@@ -69,7 +69,7 @@ namespace Molten.Graphics
 
             // Apply the surface of the graphics device's output initialally.
             SetRenderSurfaces(null);
-            SetDepthSurface(null, GraphicsDepthMode.Enabled);
+            _output.DepthWritePermission = GraphicsDepthWritePermission.Enabled;
         }
 
         /// <summary>Dispatches a compute effect to the GPU.</summary>
@@ -81,21 +81,6 @@ namespace Molten.Graphics
 
             _output.Refresh(); // TODO Why is this here??? Compute shaders don't output to surfaces/RTs?
             _computeStage.Dispatch(x, y, z);
-        }
-
-        public void SetDepthSurface(DepthSurface surface, GraphicsDepthMode mode)
-        {
-            _output.SetDepthSurface(surface, mode);
-        }
-
-        public DepthSurface GetDepthSurface()
-        {
-            return _output.GetDepthSurface();
-        }
-
-        public GraphicsDepthMode GetDepthMode()
-        {
-            return _output.GetDepthMode();
         }
 
         /// <summary>Sets a list of render surfaces.</summary>
@@ -173,6 +158,8 @@ namespace Molten.Graphics
 
             _input.Material = material;
             _input.Refresh(pass, _drawInfo.Conditions, topology);
+            _output.DepthWritePermission = DepthWriteOverride != GraphicsDepthWritePermission.Enabled ? DepthWriteOverride : pass.DepthState[_drawInfo.Conditions].WritePermission;
+            _output.Refresh();
 
             _blendState.Current = pass.BlendState[_drawInfo.Conditions];
             _rasterizer.Current = pass.RasterizerState[_drawInfo.Conditions];
@@ -196,7 +183,6 @@ namespace Molten.Graphics
                 throw new GraphicsContextException("GraphicsPipe: EndDraw() must be called before the next BeginDraw() call.");
 #endif
 
-            _output.Refresh();
             _drawInfo.Began = true;
             _drawInfo.Conditions = conditions;
         }
@@ -498,5 +484,18 @@ namespace Molten.Graphics
 
         /// <summary>Gets the pipeline output.</summary>
         internal PipelineOutput Output { get { return _output; } }
+
+        /// <summary>
+        /// Gets or sets the output depth surface.
+        /// </summary>
+        internal DepthSurface DepthSurface
+        {
+            get => _output.DepthSurface;
+            set => _output.DepthSurface = value;
+        }
+
+        internal GraphicsDepthWritePermission DepthWriteOverride { get; set; } = GraphicsDepthWritePermission.Enabled;
+
+        internal GraphicsDepthWritePermission DepthWritePermission => _output.DepthWritePermission;
     }
 }

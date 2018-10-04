@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>Represents the mode to apply when setting a depth surface.</summary>
-    public enum GraphicsDepthMode
+    public enum GraphicsDepthWritePermission
     {
         /// <summary>The depth buffer can be read and written.</summary>
         Enabled = 0,

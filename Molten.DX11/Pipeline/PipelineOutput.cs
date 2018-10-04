@@ -24,8 +24,8 @@ namespace Molten.Graphics
         RenderTargetView[] _rtViews;
         DepthStencilView _depthView = null;
 
-        GraphicsDepthMode _boundMode = GraphicsDepthMode.Enabled;
-        GraphicsDepthMode _depthMode = GraphicsDepthMode.Enabled;
+        GraphicsDepthWritePermission _boundMode = GraphicsDepthWritePermission.Enabled;
+        GraphicsDepthWritePermission _depthMode = GraphicsDepthWritePermission.Enabled;
 
         public PipelineOutput(GraphicsPipe pipe) : base(pipe.Device)
         {
@@ -65,7 +65,7 @@ namespace Molten.Graphics
             bool rtChangeDetected = false;
 
             // Check depth surface for changes
-            bool depthChanged = _slotDepth.Bind(_pipe, _depthSurface, _depthMode == GraphicsDepthMode.ReadOnly ? PipelineBindType.OutputReadOnly : PipelineBindType.Output);
+            bool depthChanged = _slotDepth.Bind(_pipe, _depthSurface, _depthMode == GraphicsDepthWritePermission.ReadOnly ? PipelineBindType.OutputReadOnly : PipelineBindType.Output);
             if (_slotDepth.BoundObject == null)
             {
                 _depthView = null;
@@ -77,15 +77,15 @@ namespace Molten.Graphics
 
                 switch (_depthMode)
                 {
-                    case GraphicsDepthMode.Disabled:
+                    case GraphicsDepthWritePermission.Disabled:
                         _depthView = null;
                         break;
 
-                    case GraphicsDepthMode.Enabled:
+                    case GraphicsDepthWritePermission.Enabled:
                         _depthView = _slotDepth.BoundObject.DepthView;
                         break;
 
-                    case GraphicsDepthMode.ReadOnly:
+                    case GraphicsDepthWritePermission.ReadOnly:
                         _depthView = _slotDepth.BoundObject.ReadOnlyView;
                         break;
                 }
@@ -119,23 +119,7 @@ namespace Molten.Graphics
             }
         }
 
-        public void SetDepthSurface(DepthSurface surface, GraphicsDepthMode depthMode)
-        {
-            _depthSurface = surface;
-            _depthMode = depthMode;
-        }
-
-        public DepthSurface GetDepthSurface()
-        {
-            return _depthSurface;
-        }
-
-        public void SetDepthMode(GraphicsDepthMode value)
-        {
-            _depthMode = value;
-        }
-
-        public GraphicsDepthMode GetDepthMode()
+        public GraphicsDepthWritePermission GetDepthMode()
         {
             return _depthMode;
         }
@@ -241,6 +225,24 @@ namespace Molten.Graphics
         public RenderSurfaceBase this[int slotIndex]
         {
             get { return _surfaces[slotIndex]; }
+        }
+
+        /// <summary>
+        /// Gets or sets the output's depth mode.
+        /// </summary>
+        public GraphicsDepthWritePermission DepthWritePermission
+        {
+            get => _depthMode;
+            set => _depthMode = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the output depth surface.
+        /// </summary>
+        public DepthSurface DepthSurface
+        {
+            get => _depthSurface;
+            set => _depthSurface = value;
         }
     }
 }

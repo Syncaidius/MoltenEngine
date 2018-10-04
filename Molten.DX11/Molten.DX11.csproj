@@ -135,7 +135,6 @@
     <Compile Include="Pipeline\States\SamplerBank.cs" />
     <Compile Include="Pipeline\States\GraphicsBlendState.cs" />
     <Compile Include="GraphicsContextType.cs" />
-    <Compile Include="GraphicsDepthMode.cs" />
     <Compile Include="Pipeline\GraphicsDepthStage.cs" />
     <Compile Include="Pipeline\States\GraphicsDepthState.cs" />
     <Compile Include="GraphicsDeviceDX11.cs" />

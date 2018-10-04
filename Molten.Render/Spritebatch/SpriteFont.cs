@@ -141,7 +141,7 @@ namespace Molten.Graphics
 
             ISpriteRenderer _spriteRenderer = _renderer.Resources.CreateSpriteRenderer(OnDraw);
 
-            _renderData.AddObject(_spriteRenderer, new ObjectRenderData(), layer);
+            _renderData.AddObject(_spriteRenderer, new ObjectRenderData() { DepthWriteOverride = GraphicsDepthWritePermission.Disabled }, layer);
             _renderData.OnPostRender += _renderData_OnPostRender;
             _renderData.AddObject(new RenderCamera(RenderCameraMode.Orthographic)
             {

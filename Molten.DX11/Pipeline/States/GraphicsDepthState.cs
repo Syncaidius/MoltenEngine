@@ -221,5 +221,10 @@ namespace Molten.Graphics
 
         /// <summary>Gets or sets the stencil reference value. The default value is 0.</summary>
         public int StencilReference { get; set; }
+
+        /// <summary>
+        /// Gets or sets the depth write permission. the default value is <see cref="GraphicsDepthWritePermission.Enabled"/>.
+        /// </summary>
+        public GraphicsDepthWritePermission WritePermission { get; set; } = GraphicsDepthWritePermission.Enabled;
     }
 }

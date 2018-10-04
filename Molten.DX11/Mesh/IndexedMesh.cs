@@ -62,7 +62,7 @@ namespace Molten.Graphics
             pipe.SetIndexSegment(_ib);
         }
 
-        internal override void Render(GraphicsPipe pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        private protected override void OnRender(GraphicsPipe pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
             if (_material == null)
                 return;
