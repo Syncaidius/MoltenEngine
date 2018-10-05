@@ -30,14 +30,12 @@ namespace Molten.Samples
             _uiLayer.BringToFront();
 
             // Use the same camera for both the sprite and UI scenes.
-            SceneObject obj = CreateObject(MainScene);            
-            CameraComponent cam2D = obj.AddComponent<CameraComponent>();
+            CameraComponent cam2D = MainScene.AddObjectWithComponent<CameraComponent>(_uiLayer);
             cam2D.Mode = RenderCameraMode.Orthographic;
             cam2D.OrderDepth = 1;
             cam2D.MaxDrawDistance = 1.0f;
             cam2D.OutputSurface = Window;
             cam2D.LayerMask = BitwiseHelper.Set(cam2D.LayerMask, 0);
-            _uiLayer.AddObject(obj);
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<SpriteFont>("BroshK.ttf;size=24");
