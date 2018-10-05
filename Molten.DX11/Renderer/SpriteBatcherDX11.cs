@@ -36,7 +36,8 @@ namespace Molten.Graphics
 
         internal SpriteBatcherDX11(RendererDX11 renderer, int capacity = 3000) : base(capacity)
         {
-            _ranges = new Range[100];
+            // In the worst-case scenario, we can expect the number of ranges to equal the capacity. Create as many ranges.
+            _ranges = new Range[capacity];
             for (int i = 0; i < _ranges.Length; i++)
                 _ranges[i] = new Range();
 
@@ -77,21 +78,6 @@ namespace Molten.Graphics
             if (NextID == 0)
                 return;
 
-            /* TODO: 
-             *  - Implement PrimitiveAdapter class to replace the current _flushFuncs array
-             *      -- PrimitiveAdapter.Populate() - populates a SpriteVertex will the appropriate data
-             *      -- PrimitiveAdapter.Flush() - does exactly what _flushFuncs does right now
-             *      -- Types:
-             *          -- Rectangle
-             *          -- Rectangle Outline
-             *          -- Circle/ellipse
-             *          -- Circle/ellipse outline
-             *          -- Line/line list
-             *          -- Triangle/triangle list
-             *          -- Sprite
-             *          -- Sprite from TextureArray -- check if the current ITexture2D is a texture array. If so, switch to using the appropriate shader.
-             */
-
             Array.Sort(Sprites, 0, NextID);
             Range range;
 
@@ -107,9 +93,11 @@ namespace Molten.Graphics
                 int i = 0;
                 while(i < NextID)
                 {
-                    vertexPtr = vertexFixedPtr;
+                    // Reset vertex array pointer and ranges, so we can prepare the next batch of vertices.
+                    int remaining = NextID - i;
+                    int end = i + Math.Min(remaining, _spriteCapacity);
 
-                    // Start the first range
+                    vertexPtr = vertexFixedPtr;
                     _curRange = 0;
                     range = _ranges[_curRange];
                     range.Start = i;
@@ -117,9 +105,8 @@ namespace Molten.Graphics
                     range.Format = item.Format;
                     range.Texture = item.Texture;
                     range.Material = item.Material;
-                    i++;
 
-                    for (; i < NextID; i++, vertexPtr++)
+                    for (; i < end; i++, vertexPtr++)
                     {
                         item = Sprites[i];
                         *(vertexPtr) = item.Vertex;
@@ -132,14 +119,6 @@ namespace Molten.Graphics
                             range.VertexCount = i - range.Start;
                             range.End = i;
                             _curRange++;
-
-                            if (_curRange == _ranges.Length)
-                            {
-                                int old = _ranges.Length;
-                                Array.Resize(ref _ranges, old + (old / 2));
-                                for (int o = old; o < _ranges.Length; o++)
-                                    _ranges[o] = new Range();
-                            }
 
                             range = _ranges[_curRange];
                             range.Start = i;

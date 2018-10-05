@@ -14,11 +14,6 @@ namespace Molten.Samples
     {
         public SampleSpriteRenderComponent() { }
 
-        public SampleSpriteRenderComponent(Action<SpriteBatcher> callback)
-        {
-            RenderCallback = callback;
-        }
-
         protected override void OnRender(SpriteBatcher sb)
         {
             RenderCallback?.Invoke(sb);

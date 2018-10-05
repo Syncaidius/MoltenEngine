@@ -102,6 +102,7 @@ namespace Molten.Samples
             OnContentLoaded(cr);
             SampleSpriteRenderComponent com = _uiLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
             com.RenderCallback = OnHudDraw;
+            com.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
             _baseContentLoaded = true;
         }
 
