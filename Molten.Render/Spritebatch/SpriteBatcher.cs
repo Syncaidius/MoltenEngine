@@ -575,7 +575,7 @@ namespace Molten.Graphics
             Draw(sprite.Texture,
                 sprite.Source,
                 sprite.Position,
-                sprite.Source.TopLeft * sprite.Scale,
+                sprite.Source.Size * sprite.Scale,
                 sprite.Color,
                 sprite.Rotation,
                 sprite.Origin,

@@ -18,13 +18,13 @@ namespace Molten.Graphics
 
         public float Rotation { get; set; }
 
-        public Vector2F Scale { get; set; }
+        public Vector2F Scale { get; set; } = new Vector2F(1);
 
         public Vector2F Origin { get; set; }
 
         public IMaterial Material { get; set; }
 
-        public Color Color { get; set; }
+        public Color Color { get; set; } = Color.White;
 
         public float Depth { get; set; }
     }

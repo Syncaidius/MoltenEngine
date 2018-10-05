@@ -42,7 +42,7 @@ namespace Molten.Samples
 
             for (int i = 0; i < 50000; i++)
             {
-                Sprite s = new Sprite()
+                _sprites.Add(new Sprite()
                 {
                     Position = new Vector2F()
                     {
@@ -61,7 +61,7 @@ namespace Molten.Samples
                     Texture = Rng.Next(0, 5001) < 2500 ? tex : null,
                     Source = new Rectangle(0, 0, 128, 128),
                     Origin = new Vector2F(0.5f),
-                };
+                });
             }
 
             SampleSpriteRenderComponent com = SpriteLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
