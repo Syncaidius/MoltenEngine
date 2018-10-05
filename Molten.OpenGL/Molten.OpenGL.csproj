@@ -114,9 +114,9 @@
       <Project>{E59938AF-A9D4-4963-B4AC-61E53D05527E}</Project>
       <Name>Molten.Math</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Molten.Render\Molten.Render.csproj">
-      <Project>{11c91c8d-ed1f-40ac-a246-de4796ca2122}</Project>
-      <Name>Molten.Render</Name>
+    <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj">
+      <Project>{57d4a251-9082-4199-b894-6173c7f9215b}</Project>
+      <Name>Molten.Platform</Name>
     </ProjectReference>
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj">
       <Project>{1e4854b0-d1a8-40ae-9038-1dea304574a5}</Project>

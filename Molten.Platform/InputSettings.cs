@@ -9,7 +9,7 @@ namespace Molten.Input
 {
     public class InputSettings : SettingBank
     {
-        public const string DEFAULT_LIBRARY = "Molten.Input.Windows.dll; Molten.Input.InputManager";
+        public const string DEFAULT_LIBRARY = "Molten.Platform.Windows.dll; Molten.Input.InputManager";
 
         public InputSettings()
         {
