@@ -112,6 +112,32 @@ namespace Molten
         }
 
         /// <summary>
+        /// Calculates the length of the vector, as a float value.
+        /// </summary>
+        /// <returns>The length of the vector.</returns>
+        /// <remarks>
+        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public float Length()
+        {
+            return (float)Math.Sqrt((X * X) + (Y * Y));
+        }
+
+        /// <summary>
+        /// Calculates the squared length of the vector.
+        /// </summary>
+        /// <returns>The squared length of the vector.</returns>
+        /// <remarks>
+        /// This method may be preferred to <see cref="Vector2F.Length"/> when only a relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public float LengthSquared()
+        {
+            return (X * X) + (Y * Y);
+        }
+
+        /// <summary>
         /// Implements the operator ==.
         /// </summary>
         /// <param name="left">The left.</param>
@@ -326,7 +352,7 @@ namespace Molten
         /// <param name="value2">The second vector.</param>
         /// <param name="result">When the method completes, contains the distance between the two vectors.</param>
         /// <remarks>
-        /// <see cref="Vector2F.DistanceSquared(ref Vector2F, ref Vector2F, out float)"/> may be preferred when only the relative distance is needed
+        /// <see cref="Vector2I.DistanceSquared(ref Vector2I, ref Vector2I, out float)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
         public static void Distance(ref Vector2I value1, ref Vector2I value2, out float result)
@@ -338,13 +364,55 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the distance between two vectors.
+        /// Calculates the squared distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector</param>
+        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+        public static void DistanceSquared(ref Vector2I value1, ref Vector2I value2, out float result)
+        {
+            float x = value1.X - value2.X;
+            float y = value1.Y - value2.Y;
+
+            result = (x * x) + (y * y);
+        }
+
+        /// <summary>
+        /// Calculates the squared distance between two vectors, as a float value.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The squared distance between the two vectors.</returns>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+        public static float DistanceSquared(Vector2I value1, Vector2I value2)
+        {
+            float x = value1.X - value2.X;
+            float y = value1.Y - value2.Y;
+
+            return (x * x) + (y * y);
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors, as a float value.
         /// </summary>
         /// <param name="value1">The first vector.</param>
         /// <param name="value2">The second vector.</param>
         /// <returns>The distance between the two vectors.</returns>
         /// <remarks>
-        /// <see cref="Vector2F.DistanceSquared(Vector2F, Vector2F)"/> may be preferred when only the relative distance is needed
+        /// <see cref="Vector2I.DistanceSquared(Vector2I, Vector2I)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
         public static float Distance(Vector2I value1, Vector2I value2)
