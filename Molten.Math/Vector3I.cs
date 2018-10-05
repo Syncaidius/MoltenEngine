@@ -399,7 +399,7 @@ namespace Molten
         /// <param name="value2">The second vector.</param>
         /// <param name="result">When the method completes, contains the distance between the two vectors.</param>
         /// <remarks>
-        /// <see cref="Vector3F.DistanceSquared(ref Vector3F, ref Vector3F, out float)"/> may be preferred when only the relative distance is needed
+        /// <see cref="Vector3I.DistanceSquared(ref Vector3I, ref Vector3I, out float)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
         public static void Distance(ref Vector3I value1, ref Vector3I value2, out float result)
@@ -418,7 +418,7 @@ namespace Molten
         /// <param name="value2">The second vector.</param>
         /// <returns>The distance between the two vectors.</returns>
         /// <remarks>
-        /// <see cref="Vector3F.DistanceSquared(Vector3F, Vector3F)"/> may be preferred when only the relative distance is needed
+        /// <see cref="Vector3I.DistanceSquared(Vector3I, Vector3I)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
         public static float Distance(Vector3I value1, Vector3I value2)
