@@ -132,7 +132,7 @@ namespace Molten.Graphics
         {
             Control candidate = _control;
             while(candidate.Parent != null)
-                candidate = _control.Parent;
+                candidate = candidate.Parent;
 
             _parent = candidate;
 
