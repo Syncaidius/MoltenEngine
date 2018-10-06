@@ -138,6 +138,9 @@ namespace Molten.Input
         /// <param name="time">The snapshot of game time to use.</param>
         internal override void Update(Timing time)
         {
+            IntPtr forewindow = Win32.GetForegroundWindow();
+            Rectangle winBounds = _surface.Bounds;
+
             // Update previous state with previous buffer data
             if (_buffer != null)
                 for (int i = 0; i < _buffer.Length; i++)
@@ -157,8 +160,6 @@ namespace Molten.Input
             // Get latest info from mouse and buffer it
             _mouse.Poll();
             _buffer = _mouse.GetBufferedData();
-            IntPtr forewindow = Win32.GetForegroundWindow();
-            Rectangle winBounds = _surface.Bounds;
 
             // Make sure the game window is focused before updating movement/position.
             if (forewindow == _windowHandle)

@@ -78,7 +78,6 @@ namespace Molten.Graphics
             if (NextID == 0)
                 return;
 
-            Array.Sort(Sprites, 0, NextID);
             Range range;
 
             pipe.SetVertexSegment(_segment, 0);

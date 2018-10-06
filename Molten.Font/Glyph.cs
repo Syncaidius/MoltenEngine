@@ -124,7 +124,6 @@ namespace Molten.Font
                         {
                             PlotCurve(shape, prevCurvePoint, p.Point, cp, pointsPerCurve, curveIncrement);
                             prevCurvePoint = p.Point;
-
                         }
                         else
                         {

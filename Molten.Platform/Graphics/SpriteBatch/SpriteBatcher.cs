@@ -27,23 +27,12 @@ namespace Molten.Graphics
             Circle = 3, // Untextured circles - Uses a geometry shader to handle this
         }
 
-        protected class SpriteItem : IComparable<SpriteItem>
+        protected class SpriteItem
         {
             public SpriteVertex Vertex;
             public SpriteFormat Format;
             public ITexture2D Texture;
             public IMaterial Material;
-            public float Depth;
-
-            public int CompareTo(SpriteItem other)
-            {
-                if (Depth > other.Depth)
-                    return 1;
-                else if (Depth < other.Depth)
-                    return -1;
-                else
-                    return 0;
-            }
         }
        
         protected SpriteItem[] Sprites;
@@ -70,12 +59,11 @@ namespace Molten.Graphics
         /// <param name="text">The text to draw.</param>
         /// <param name="position">The position of the text.</param>
         /// <param name="color">The color of the text.</param>
-        /// <param name="depth">The z-depth of the text.</param>
         /// <param name="material">The material to use when rendering the string of text.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, float depth = 0, IMaterial material = null)
+        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, IMaterial material = null)
         {
-            DrawString(font, text, position, color, Vector2F.One, depth, material);
+            DrawString(font, text, position, color, Vector2F.One, material);
         }
 
         /// <summary>Draws a string of text sprites by using a <see cref="SpriteFont"/> to source the needed data..</summary>
@@ -84,9 +72,8 @@ namespace Molten.Graphics
         /// <param name="position">The position of the text.</param>
         /// <param name="color">The color of the text.</param>
         /// <param name="scale">The text scale. 1.0f is equivilent to the default size. 0.5f will half the size. 2.0f will double the size.</param>
-        /// <param name="depth">The z-depth of the text.</param>
         /// <param name="material">The material to use when rendering the string of text.</param>
-        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Vector2F scale, float depth = 0, IMaterial material = null)
+        public void DrawString(SpriteFont font, string text, Vector2F position, Color color, Vector2F scale, IMaterial material = null)
         {
             int strLength = text.Length;
 
@@ -104,7 +91,6 @@ namespace Molten.Graphics
                 item.Texture = font.UnderlyingTexture;
                 item.Material = null;
                 item.Format = SpriteFormat.Sprite;
-                item.Depth = depth;
 
                 item.Vertex.Position = new Vector2F(charPos.X, charPos.Y + cache.YOffset);
                 item.Vertex.RotationAndSlice = Vector2F.Zero; // TODO 2D text rotation + SpriteFont array slice support (y axis).
@@ -127,10 +113,9 @@ namespace Molten.Graphics
         /// <param name="endAngle">The end angle of the circle, in radians. This is useful when drawing a partial-circle</param>
         /// <param name="col">The color of the circle.</param>
         /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        /// <param name="depth">The z-depth of the ellipse.</param>
-        public void DrawCircle(Vector2F center, float radius, float startAngle, float endAngle, Color col, int sides = 16, float depth = 0)
+        public void DrawCircle(Vector2F center, float radius, float startAngle, float endAngle, Color col, int sides = 16)
         {
-            DrawEllipse(center, radius, radius, startAngle, endAngle, col, sides, depth);
+            DrawEllipse(center, radius, radius, startAngle, endAngle, col, sides);
         }
 
         /// <summary>
@@ -140,10 +125,9 @@ namespace Molten.Graphics
         /// <param name="radius">The radius, in radians.</param>
         /// <param name="col">The color of the circle.</param>
         /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        /// <param name="depth">The z-depth of the ellipse.</param>
-        public void DrawCircle(Vector2F center, float radius, Color col, int sides = 16, float depth = 0)
+        public void DrawCircle(Vector2F center, float radius, Color col, int sides = 16)
         {
-            DrawEllipse(center, radius, radius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, sides, depth);
+            DrawEllipse(center, radius, radius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, sides);
         }
 
         /// <summary>
@@ -154,10 +138,9 @@ namespace Molten.Graphics
         /// <param name="yRadius">The Y radius, in radians.</param>
         /// <param name="col">The color of the ellipse.</param>
         /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        /// <param name="depth">The z-depth of the ellipse.</param>
-        public void DrawEllipse(Vector2F center, float xRadius, float yRadius, Color col, int sides = 16, float depth = 0)
+        public void DrawEllipse(Vector2F center, float xRadius, float yRadius, Color col, int sides = 16)
         {
-            DrawEllipse(center, xRadius, yRadius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, sides, depth);
+            DrawEllipse(center, xRadius, yRadius, 0 * MathHelper.DegToRad, 360 * MathHelper.DegToRad, col, sides);
         }
 
         /// <summary>
@@ -170,8 +153,7 @@ namespace Molten.Graphics
         /// <param name="endAngle">The end angle of the circle, in radians. This is useful when drawing a partial-ellipse</param>
         /// <param name="color">The color of the ellipse.</param>
         /// <param name="sides">The number of sides for every 6.28319 radians (360 degrees). A higher value will produce a smoother edge. The minimum value is 3.</param>
-        /// <param name="depth">The z-depth of the ellipse.</param>
-        public void DrawEllipse(Vector2F center, float xRadius, float yRadius, float startAngle, float endAngle, Color color, int sides = 16, float depth = 0)
+        public void DrawEllipse(Vector2F center, float xRadius, float yRadius, float startAngle, float endAngle, Color color, int sides = 16)
         {
             if (sides < CIRCLE_MIN_SIDES)
                 throw new SpriteBatcherException(this, $"The minimum number of sides is {CIRCLE_MIN_SIDES}.");
@@ -192,7 +174,6 @@ namespace Molten.Graphics
                     item.Texture = null;
                     item.Material = null;
                     item.Format = SpriteFormat.Circle;
-                    item.Depth = depth;
 
                     item.Vertex.Position = center;
                     item.Vertex.RotationAndSlice = new Vector2F(sides, 0);
@@ -211,7 +192,6 @@ namespace Molten.Graphics
                 item.Texture = null;
                 item.Material = null;
                 item.Format = SpriteFormat.Circle;
-                item.Depth = depth;
 
                 item.Vertex.Position = center;
                 item.Vertex.RotationAndSlice = new Vector2F(sides, 0);
@@ -227,14 +207,12 @@ namespace Molten.Graphics
         /// <param name="p2">The second point.</param>
         /// <param name="p3">The third point.</param>
         /// <param name="color">The color of the triangle.</param>
-        /// <param name="depth">The z-depth of the triangle.</param>
-        public void DrawTriangle(Vector2F p1, Vector2F p2, Vector2F p3, Color color, float depth = 0)
+        public void DrawTriangle(Vector2F p1, Vector2F p2, Vector2F p3, Color color)
         {
             SpriteItem item = GetItem();
             item.Texture = null;
             item.Material = null;
             item.Format = SpriteFormat.Triangle;
-            item.Depth = depth;
 
             item.Vertex.Position = p1;
             item.Vertex.RotationAndSlice = new Vector2F(0,0); // TODO triangle rotation.
@@ -251,8 +229,7 @@ namespace Molten.Graphics
         /// <param name="points">A list of points that form the polygon. A minimum of 3 points is expected.</param>
         /// <param name="triColors">A list of colors. One color per triangle. A minimum of 1 color is expected. 
         /// Insufficient colors for the provided triangles will cause the colors to be repeated.</param>
-        /// <param name="depth">The z-depth of all triangles in the provided list.</param>
-        public void DrawTriangleList(IList<Vector2F> points, IList<Color> triColors, float depth = 0)
+        public void DrawTriangleList(IList<Vector2F> points, IList<Color> triColors)
         {
             if (points.Count % 3 > 0)
                 throw new SpriteBatcherException(this, "Incorrect number of points for triangle list. There should be 3 points per triangle");
@@ -268,7 +245,6 @@ namespace Molten.Graphics
                 item.Texture = null;
                 item.Material = null;
                 item.Format = SpriteFormat.Triangle;
-                item.Depth = depth;
 
                 item.Vertex.Position = points[i];
                 item.Vertex.RotationAndSlice = new Vector2F(0,0); // TODO triangle rotation.
@@ -285,8 +261,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="points">A list of points that form the polygon.</param>
         /// <param name="color">The color of the polygon.</param>
-        /// <param name="depth">The z-depth of all triangles in the provided list.</param>
-        public void DrawTriangleList(IList<Vector2F> points, Color color, float depth = 0)
+        public void DrawTriangleList(IList<Vector2F> points, Color color)
         {
             _singleColorList[0] = color;
             DrawTriangleList(points, _singleColorList);
@@ -298,8 +273,7 @@ namespace Molten.Graphics
         /// <param name="rect">The rectangle.</param>
         /// <param name="color">The color.</param>
         /// <param name="thickness">The thickness.</param>
-        /// <param name="depth">The z-depth of rectangle outline.</param>
-        public void DrawRectOutline(RectangleF rect, Color color, float thickness, float depth = 0)
+        public void DrawRectOutline(RectangleF rect, Color color, float thickness)
         {
             float halfThick = thickness / 2f;
 
@@ -313,8 +287,7 @@ namespace Molten.Graphics
         /// <param name="points">The points between which to draw lines.</param>
         /// <param name="color">The color of all lines in the provided list.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
-        /// <param name="depth">The z-depth of all lines in the provided list.</param>
-        public void DrawLineList(IList<Vector2F> points, Color color, float thickness, float depth = 0)
+        public void DrawLineList(IList<Vector2F> points, Color color, float thickness)
         {
             _singleColorList[0] = color;
             DrawLineList(points, _singleColorList, thickness);
@@ -324,8 +297,7 @@ namespace Molten.Graphics
         /// <param name="points">The points between which to draw individual lines.</param>
         /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
-        /// <param name="depth">The z-depth of all lines in the provided list.</param>
-        public void DrawLineList(IList<Vector2F> points, IList<Color> pointColors, float thickness, float depth = 0)
+        public void DrawLineList(IList<Vector2F> points, IList<Color> pointColors, float thickness)
         {
             if (pointColors.Count == 0)
                 throw new SpriteBatcherException(this, "There must be at least one color available in the pointColors list.");
@@ -355,7 +327,6 @@ namespace Molten.Graphics
                     item.Texture = null;
                     item.Material = null;
                     item.Format = SpriteFormat.Line;
-                    item.Depth = depth;
 
                     item.Vertex.Position = p1;
                     item.Vertex.RotationAndSlice = new Vector2F(thickness, 0);
@@ -374,8 +345,7 @@ namespace Molten.Graphics
         /// <param name="points">The points between which to draw lines.</param>
         /// <param name="color">The color of the lines</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
-        /// <param name="depth">The z-depth of all lines in the provided list.</param>
-        public void DrawLinePath(IList<Vector2F> points, Color color, float thickness, float depth = 0)
+        public void DrawLinePath(IList<Vector2F> points, Color color, float thickness)
         {
             _singleColorList[0] = color;
             DrawLinePath(points, _singleColorList, thickness);
@@ -385,8 +355,7 @@ namespace Molten.Graphics
         /// <param name="points">The points between which to draw lines.</param>
         /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
-        /// <param name="depth">The z-depth of all lines in the provided list.</param>
-        public void DrawLinePath(IList<Vector2F> points, IList<Color> pointColors, float thickness, float depth = 0)
+        public void DrawLinePath(IList<Vector2F> points, IList<Color> pointColors, float thickness)
         {
             if (pointColors.Count == 0)
                 throw new SpriteBatcherException(this, "There must be at least one color available in the pointColors list.");
@@ -420,7 +389,6 @@ namespace Molten.Graphics
                     item.Texture = null;
                     item.Material = null;
                     item.Format = SpriteFormat.Line;
-                    item.Depth = depth;
 
                     item.Vertex.Position = p1;
                     item.Vertex.RotationAndSlice = new Vector2F(thickness, 0);
@@ -449,10 +417,9 @@ namespace Molten.Graphics
         /// <param name="p2">The second point.</param>
         /// <param name="color">The color of the line.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
-        /// <param name="depth">The z-depth of the sprite.</param>
-        public void DrawLine(Vector2F p1, Vector2F p2, Color color, float thickness, float depth = 0)
+        public void DrawLine(Vector2F p1, Vector2F p2, Color color, float thickness)
         {
-            DrawLine(p1, p2, color, color, thickness, depth);
+            DrawLine(p1, p2, color, color, thickness);
         }
 
         /// <summary>
@@ -463,14 +430,12 @@ namespace Molten.Graphics
         /// <param name="color1">The color for pos1.</param>
         /// <param name="color2">The color for pos2.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
-        /// <param name="depth">The z-depth of the sprite.</param>
-        public void DrawLine(Vector2F p1, Vector2F p2, Color color1, Color color2, float thickness, float depth = 0)
+        public void DrawLine(Vector2F p1, Vector2F p2, Color color1, Color color2, float thickness)
         {
             SpriteItem item = GetItem();
             item.Texture = null;
             item.Material = null;
             item.Format = SpriteFormat.Line;
-            item.Depth = depth;
 
             item.Vertex.Position = p1;
             item.Vertex.RotationAndSlice = new Vector2F(thickness, 0);
@@ -489,7 +454,7 @@ namespace Molten.Graphics
         /// <param name="material">The material to apply to the rectangle. A value of null will use the default sprite-batch material.</param>
         public void DrawRect(Rectangle destination, Color color, IMaterial material = null)
         {
-            DrawRect(destination, color, 0, Vector2F.Zero, 0, material);
+            DrawRect(destination, color, 0, Vector2F.Zero, material);
         }
 
         /// <summary>Adds an untextured rectangle to the <see cref="SpriteBatch"/>.</summary>
@@ -499,15 +464,13 @@ namespace Molten.Graphics
         /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
         /// <param name="material">The material to use when rendering the sprite.</param>
-        /// <param name="depth">The z-depth of the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        public void DrawRect(Rectangle destination, Color color, float rotation, Vector2F origin, float depth = 0, IMaterial material = null)
+        public void DrawRect(Rectangle destination, Color color, float rotation, Vector2F origin, IMaterial material = null)
         {
             SpriteItem item = GetItem();
             item.Texture = null;
             item.Material = material;
             item.Format = SpriteFormat.Sprite;
-            item.Depth = depth;
 
             item.Vertex.Position = new Vector2F(destination.Left, destination.Top);
             item.Vertex.RotationAndSlice = new Vector2F(rotation, 0);
@@ -524,8 +487,7 @@ namespace Molten.Graphics
         /// <param name="color"></param>
         /// <param name="material"></param>
         /// <param name="arraySlice"></param>
-        /// <param name="depth"></param>
-        public void Draw(ITexture2D texture, Rectangle source, Rectangle destination, Color color, float depth = 0f, float arraySlice = 0, IMaterial material = null)
+        public void Draw(ITexture2D texture, Rectangle source, Rectangle destination, Color color, float arraySlice = 0, IMaterial material = null)
         {
             Draw(texture, source, 
                 new Vector2F(destination.Left, destination.Top), 
@@ -534,7 +496,6 @@ namespace Molten.Graphics
                 0, 
                 Vector2F.Zero, 
                 material,
-                depth, 
                 arraySlice);
         }
 
@@ -546,7 +507,7 @@ namespace Molten.Graphics
         public void Draw(ITexture2D texture, Rectangle destination, Color color, IMaterial material = null)
         {
             Rectangle src = new Rectangle(0, 0, texture.Width, texture.Height);
-            Draw(texture, src, new Vector2F(destination.X, destination.Y), new Vector2F(destination.Width, destination.Height), color, 0, Vector2F.Zero, material, 0,0);
+            Draw(texture, src, new Vector2F(destination.X, destination.Y), new Vector2F(destination.Width, destination.Height), color, 0, Vector2F.Zero, material, 0);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -558,7 +519,7 @@ namespace Molten.Graphics
         public void Draw(ITexture2D texture, Rectangle destination, Color color, float rotation, Vector2F origin, IMaterial material = null)
         {
             Rectangle src = new Rectangle(0, 0, texture.Width, texture.Height);
-            Draw(texture, src, new Vector2F(destination.X, destination.Y), new Vector2F(destination.Width, destination.Height), color, rotation, origin, material, 0, 0);
+            Draw(texture, src, new Vector2F(destination.X, destination.Y), new Vector2F(destination.Width, destination.Height), color, rotation, origin, material, 0);
         }
 
         /// <summary>Adds a sprite to the batch.</summary>
@@ -569,7 +530,7 @@ namespace Molten.Graphics
         {
             Rectangle src = new Rectangle(0, 0, texture.Width, texture.Height);
             Rectangle dest = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
-            Draw(texture, src, position, new Vector2F(src.Width, src.Height), color, 0, Vector2F.Zero, material, 0, 0); 
+            Draw(texture, src, position, new Vector2F(src.Width, src.Height), color, 0, Vector2F.Zero, material, 0); 
         }
 
         public void Draw(Sprite sprite)
@@ -582,7 +543,6 @@ namespace Molten.Graphics
                 sprite.Rotation,
                 sprite.Origin,
                 sprite.Material,
-                sprite.Depth,
                 sprite.ArraySlice);
         }
 
@@ -594,12 +554,11 @@ namespace Molten.Graphics
         /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
         /// <param name="material">The material to use when rendering the sprite.</param>
-        /// <param name="depth">The z-depth of the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        public void Draw(ITexture2D texture, Vector2F position, Color color, float rotation, Vector2F origin, float depth = 0f, float arraySlice = 0, IMaterial material = null)
+        public void Draw(ITexture2D texture, Vector2F position, Color color, float rotation, Vector2F origin, float arraySlice = 0, IMaterial material = null)
         {
             Rectangle src = new Rectangle(0, 0, texture.Width, texture.Height);
-            Draw(texture, src, position, new Vector2F(src.Width, src.Height), color, rotation, origin, material, depth, arraySlice);
+            Draw(texture, src, position, new Vector2F(src.Width, src.Height), color, rotation, origin, material, arraySlice);
         }
 
         /// <summary>
@@ -624,13 +583,11 @@ namespace Molten.Graphics
             float rotation, 
             Vector2F origin, 
             IMaterial material, 
-            float depth, 
             float arraySlice)
         {
             SpriteItem item = GetItem();
             item.Texture = texture;
             item.Material = material;
-            item.Depth = depth;
             item.Format = SpriteFormat.Sprite;
 
             item.Vertex.Position = position;

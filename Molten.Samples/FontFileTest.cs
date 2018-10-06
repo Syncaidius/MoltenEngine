@@ -55,7 +55,7 @@ namespace Molten.Samples
             //LoadFontFile();
             LoadSystemFontFile("Arial");
             InitializeFontDebug();
-            GenerateChar('{');
+            GenerateChar('Å');
 
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
