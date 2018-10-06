@@ -37,5 +37,12 @@ In no particular order:
   * Mobile support via Xamarin or whatever the best cross-platform framework is at that time this is put in to action.
   * An example game or two to demonstrate how things work
 
+# Libraries used by Molten
+A special thanks to each of these great libraries, without which Molten wouldn't exist in it's current form:
+  * [SharpDX](https://github.com/sharpdx/SharpDX) - DirectX API Wrapper
+  * [Magick.NET](https://github.com/dlemstra/Magick.NET) - Extensive image library for .NET
+  * [JSON.NET](https://www.newtonsoft.com/json) - JSON serialization
+  * [OpenTK](https://opentk.github.io/) - The OpenGL Toolkit
+
 # Licensing
-MIT - Basically, do what you want with it. Fork it, chop it up and consume it for dinner. You get the idea!
+MIT - Basically, it means you can do what you want with Molten. Fork it, chop it up and consume it for dinner. You get the idea!
