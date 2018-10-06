@@ -52,7 +52,7 @@ namespace Molten.Samples
             _mesh.Material = mat;
 
             cr = Engine.Content.BeginRequest("assets/");
-            cr.Save<ITexture2D>("saved_texture.jpg", texture);
+            cr.Save("saved_texture.jpg", texture);
             cr.Commit();
         }
 

@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     public class Sprite
     {
-        public Rectangle Source { get; set; }
+        public virtual Rectangle Source { get; set; }
 
         public float ArraySlice { get; set; }
 
@@ -25,7 +25,5 @@ namespace Molten.Graphics
         public IMaterial Material { get; set; }
 
         public Color Color { get; set; } = Color.White;
-
-        public float Depth { get; set; }
     }
 }
