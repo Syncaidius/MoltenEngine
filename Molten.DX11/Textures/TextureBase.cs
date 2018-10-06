@@ -60,7 +60,6 @@ namespace Molten.Graphics
             _mipCount = mipCount;
             _arraySize = arraySize;
             _sampleCount = sampleCount;
-
             _format = format;
             IsValid = false;
 
@@ -474,7 +473,7 @@ namespace Molten.Graphics
         /// <param name="arraySlice">The array slice.</param>
         /// <param name="copySubresource">Copies the data via the provided staging texture. If this is true, the staging texture cannot be null.</param>
         /// <returns></returns>
-        internal TextureData.Slice GetSliceData(GraphicsPipe pipe, TextureBase stagingTexture, int level, int arraySlice, bool copySubresource)
+        internal TextureData.Slice GetSliceData(GraphicsPipe pipe, TextureBase stagingTexture, int level, int arraySlice)
         {
             TextureData.Slice result = null;
 
@@ -483,22 +482,25 @@ namespace Molten.Graphics
             int subWidth = _width >> level;
             int subHeight = _height >> level;
 
-            if (copySubresource)
+            Resource mappedResource = _resource;
+
+            if (stagingTexture != null)
             {
                 pipe.Context.CopySubresourceRegion(_resource, subID, null, stagingTexture._resource, subID);
                 pipe.Profiler.Current.CopySubresourceCount++;
+                mappedResource = stagingTexture._resource;
             }
 
             // Now pull data from it
             DataStream mappedData;
             DataBox databox = pipe.Context.MapSubresource(
-                stagingTexture._resource,
+                mappedResource,
                 subID,
                 MapMode.Read,
                 SharpDX.Direct3D11.MapFlags.None,
                 out mappedData);
             {
-                result= new TextureData.Slice()
+                result = new TextureData.Slice()
                 {
                     Width = subWidth,
                     Height = subHeight,
@@ -508,7 +510,7 @@ namespace Molten.Graphics
                 };
             };
 
-            pipe.Context.UnmapSubresource(stagingTexture._resource, 0);
+            pipe.Context.UnmapSubresource(mappedResource, 0);
 
             return result;
         }

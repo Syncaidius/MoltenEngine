@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class TwoDTextureTexture : SampleSceneGame
+    public class TwoDTextureTest : SampleSceneGame
     {
         public override string Description => "A simple test for 2D texture loading and usage.";
 
@@ -17,7 +17,7 @@ namespace Molten.Samples
         SceneObject _child;
         IMesh<CubeArrayVertex> _mesh;
 
-        public TwoDTextureTexture(EngineSettings settings = null) : base("2D Texture Test", settings) { }
+        public TwoDTextureTest(EngineSettings settings = null) : base("2D Texture Test", settings) { }
 
         protected override void OnInitialize(Engine engine)
         {

@@ -65,6 +65,29 @@ namespace Molten.Graphics
             DXTHelper.Compress(this, format);
         }
 
+        /// <summary>
+        /// Attempts to convert the data held by the current <see cref="TextureData"/> instance into RGBA data.
+        /// </summary>
+        public void ToRGBA()
+        {
+            if (IsCompressed)
+                DXTHelper.Decompress(this);
+
+            if(Format == GraphicsFormat.B8G8R8A8_UNorm || Format == GraphicsFormat.B8G8R8A8_Typeless || Format == GraphicsFormat.B8G8R8A8_UNorm_SRgb)
+            {
+                foreach(Slice s in Levels)
+                {
+                    byte temp = 0;
+                    for (int i = 0; i < s.Data.Length; i += 4)
+                    {
+                        temp = s.Data[i];
+                        s.Data[i] = s.Data[i + 2];
+                        s.Data[i + 2] = temp;
+                    }
+                }
+            }
+        }
+
         public static int GetLevelID(int mipMapCount, int targetMip, int targetArraySlice)
         {
             return (targetArraySlice * mipMapCount) + targetMip;
@@ -130,6 +153,7 @@ namespace Molten.Graphics
                 MipMapLevels = this.MipMapLevels,
                 Width = this.Width,
                 SampleCount = this.SampleCount,
+                HighestMipMap = this.HighestMipMap,
             };
 
             // Copy mip-map level data.

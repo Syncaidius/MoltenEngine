@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class OneDTextureTest : SampleSceneGame
+    public class SaveTextureSample : SampleSceneGame
     {
-        public override string Description => "A simple test for 1D texture loading and usage.";
+        public override string Description => "A demonstration of saving a texture to file.";
 
         SceneObject _parent;
         SceneObject _child;
         IMesh<CubeArrayVertex> _mesh;
 
-        public OneDTextureTest(EngineSettings settings = null) : base("1D Texture Test", settings) { }
+        public SaveTextureSample(EngineSettings settings = null) : base("Save Texture", settings) { }
 
         protected override void OnInitialize(Engine engine)
         {
@@ -27,8 +27,8 @@ namespace Molten.Samples
             _mesh.SetVertices(SampleVertexData.TextureArrayCubeVertices);
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<IMaterial>("BasicTexture1D.sbm");
-            cr.Load<ITexture>("1d_1.png");
+            cr.Load<IMaterial>("BasicTexture.sbm");
+            cr.Load<ITexture2D>("png_test.png");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
@@ -46,15 +46,28 @@ namespace Molten.Samples
             }
 
             // Manually construct a 2D texture array from the 3 textures we requested earlier
-            ITexture texture = cr.Get<ITexture>(1);
+            ITexture2D texture = cr.Get<ITexture2D>(1);
 
             mat.SetDefaultResource(texture, 0);
             _mesh.Material = mat;
+
+            cr = Engine.Content.BeginRequest("assets/");
+            cr.Save<ITexture2D>("saved_texture.jpg", texture);
+            cr.Commit();
         }
 
         protected override void OnUpdate(Timing time)
         {
             RotateParentChild(_parent, _child, time);
+
+            // Save a screenhot of the window surface when space is pressed!
+            if (Keyboard.IsTapped(Key.Space))
+            {
+                ContentRequest cr = Engine.Content.BeginRequest("assets/");
+                cr.Save<ITexture2D>("screenshot.png", Window);
+                cr.Commit();
+            }
+
             base.OnUpdate(time);
         }
     }

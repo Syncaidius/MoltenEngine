@@ -87,7 +87,6 @@ namespace Molten.Graphics
 
         private void CreateFormAndSwapChain()
         {
-            Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm;
             _form = new RenderForm(_title);
             _form.WindowState = FormWindowState.Maximized;
             _formHandle = _form.Handle;
@@ -109,7 +108,7 @@ namespace Molten.Graphics
                 Width = _bounds.Width,
                 Height = _bounds.Height,
                 RefreshRate = new Rational(60, 1),
-                Format = format,
+                Format = DxFormat,
                 Scaling = DisplayModeScaling.Stretched,
                 ScanlineOrdering = DisplayModeScanlineOrder.Progressive,
             };

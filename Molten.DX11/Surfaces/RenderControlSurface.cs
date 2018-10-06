@@ -66,7 +66,6 @@ namespace Molten.Graphics
 
         private void CreateControlAndSwapChain()
         {
-            Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm;
             _control = new RenderControl()
             {
                 Size = new System.Drawing.Size(1,1),
@@ -90,7 +89,7 @@ namespace Molten.Graphics
                 Width = _bounds.Width,
                 Height = _bounds.Height,
                 RefreshRate = new Rational(60, 1),
-                Format = format,
+                Format = DxFormat,
                 Scaling = DisplayModeScaling.Stretched,
                 ScanlineOrdering = DisplayModeScanlineOrder.Progressive,
             };

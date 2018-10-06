@@ -43,6 +43,8 @@ namespace Molten.Graphics
 
             int levelID = 0;
 
+            pipe.Context.CopyResource(texture.UnderlyingResource, StagingTexture.UnderlyingResource);
+
             // Iterate over each array slice.
             for (int a = 0; a < texture.ArraySize; a++)
             {
@@ -50,7 +52,7 @@ namespace Molten.Graphics
                 for (int i = 0; i < texture.MipMapCount; i++)
                 {
                     levelID = (a * texture.MipMapCount) + i;
-                    data.Levels[levelID] = texture.GetSliceData(pipe, StagingTexture, i, a, false);
+                    data.Levels[levelID] = StagingTexture.GetSliceData(pipe, null, i, a);
                 }
             }
 

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Molten.Content
@@ -22,7 +23,7 @@ namespace Molten.Content
             bool isArray = false;
             int arrayCount = 1;
             string fn = context.Filename;
-            bool compress = true;
+            bool compress = false;
             DDSFormat compressFormat = DDSFormat.DXT5;
 
             if (context.Metadata.TryGetValue("array", out string strIsArray))
@@ -117,11 +118,6 @@ namespace Molten.Content
                     if (!finalData.IsCompressed)
                         finalData.Compress(compressFormat);
                 }
-            }
-            else
-            {
-                if (finalData.IsCompressed)
-                    finalData.Decompress();
             }
 
             // TODO improve for texture arrays - Only update the array slice(s) that have changed.
@@ -222,18 +218,24 @@ namespace Molten.Content
                 string extension = context.File.Extension.ToLower();
                 TextureWriter texWriter = null;
 
-                using (BinaryWriter writer = new BinaryWriter(stream))
+                switch (extension)
                 {
-                    switch (extension)
-                    {
-                        case ".dds":
-                            texWriter = new DDSWriter(DDSFormat.DXT5);
-                            break;
+                    case ".dds":
+                        texWriter = new DDSWriter(DDSFormat.DXT5);
+                        break;
 
-                        case ".png":
-                            texWriter = new PNGWriter();
-                            break;
-                    }
+                    case ".png":
+                        texWriter = new PNGWriter();
+                        break;
+
+                    case ".jpeg":
+                    case ".jpg":
+                        texWriter = new JPEGWriter();
+                        break;
+
+                    case ".bmp":
+                        texWriter = new BMPWriter();
+                        break;
                 }
 
                 if (texWriter == null)
@@ -257,18 +259,70 @@ namespace Molten.Content
                 }
                 else
                 {
-                    context.Log.WriteError("Directly writing is currently not supported. Try writing TextureData instead.");
                     // TODO finish support for writing textures directly
 
-                    //ITexture tex = null;
-                    //if (context.Input.TryGetValue(context.ContentType, out List<object> texturesToSave))
-                    //{
-                    //    if (texturesToSave.Count > 0)
-                    //        tex = texturesToSave[0] as ITexture;
+                    ITexture tex = null;
+                    if (context.Input.TryGetValue(context.ContentType, out List<object> texturesToSave))
+                    {
+                        if (texturesToSave.Count > 0)
+                            tex = texturesToSave[0] as ITexture;
 
-                    //    ITexture staging = 
-                    //    texWriter.WriteData(stream, tex.GetData()
-                    //}
+                        ITexture staging = null;
+                        switch (tex)
+                        {
+                            case ITextureCube texCube:
+                                staging = context.Engine.Renderer.Resources.CreateTextureCube(new Texture2DProperties()
+                                {
+                                    Flags = TextureFlags.Staging,
+                                    Format = texCube.Format,
+                                    ArraySize = texCube.ArraySize,
+                                    Height = texCube.Height,
+                                    MipMapLevels = texCube.MipMapCount,
+                                    SampleCount = texCube.SampleCount,
+                                    Width = texCube.Width,
+                                });
+                                break;
+
+                            case ITexture2D tex2D:
+                                staging = context.Engine.Renderer.Resources.CreateTexture2D(new Texture2DProperties()
+                                {
+                                    Flags = TextureFlags.Staging,
+                                    Format = tex2D.Format,
+                                    ArraySize = tex2D.ArraySize,
+                                    Height = tex2D.Height,
+                                    MipMapLevels = tex2D.MipMapCount,
+                                    SampleCount = tex2D.SampleCount,
+                                    Width = tex2D.Width,
+                                });
+                                break;
+
+                            case ITexture tex1D:
+                                staging = context.Engine.Renderer.Resources.CreateTexture1D(new Texture1DProperties()
+                                {
+                                    Flags = TextureFlags.Staging,
+                                    Format = tex1D.Format,
+                                    ArraySize = tex1D.ArraySize,
+                                    MipMapLevels = tex1D.MipMapCount,
+                                    SampleCount = tex1D.SampleCount,
+                                    Width = tex1D.Width,
+                                });
+                                break;
+                        }
+
+                        if (staging != null)
+                        {
+                            TextureData tData = null;
+                            tex.GetData(staging, (data) =>
+                            {
+                                tData = data;
+                            });
+
+                            while (tData == null)
+                                Thread.Sleep(5);
+
+                            texWriter.WriteData(stream, tData, context.Log);
+                        }
+                    }
                 }
             }
         }

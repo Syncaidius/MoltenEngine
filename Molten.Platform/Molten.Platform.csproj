@@ -76,6 +76,7 @@
     <Compile Include="Gamepad\IGamepadDevice.cs" />
     <Compile Include="Gamepad\IGamepadStick.cs" />
     <Compile Include="Gamepad\IGamepadTrigger.cs" />
+    <Compile Include="Graphics\Textures\MagickTextureWriter.cs" />
     <Compile Include="IClipboard.cs" />
     <Compile Include="IInputDevice.cs" />
     <Compile Include="IInputManager.cs" />
@@ -163,7 +164,6 @@
     <Compile Include="Graphics\Textures\DDS\DDSFormat.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSHeader.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSHeaderDXT10.cs" />
-    <Compile Include="Graphics\Textures\PNGWriter.cs" />
     <Compile Include="Graphics\Textures\DXT\DXTHelper.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSPixelFormat.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSPixelFormatFlags.cs" />
