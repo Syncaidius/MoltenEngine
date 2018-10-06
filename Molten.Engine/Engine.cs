@@ -160,7 +160,7 @@ namespace Molten
             RenderThread = Threading.SpawnThread("Renderer_main", true, false, (time) =>
             {
                 Renderer.Present(time);
-            });
+            }, apartmentState);
 
             Log.WriteLine("Renderer thread started");
         }

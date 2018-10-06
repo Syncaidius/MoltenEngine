@@ -222,7 +222,7 @@ namespace Molten.Samples
             settings.UseGuiControl = chkUseControl.IsChecked.Value;
 
             _curTest = Activator.CreateInstance(lastTestType, settings) as SampleGame;
-            _curTest.Start();
+            _curTest.Start(ApartmentState.MTA, ApartmentState.STA);
 
             
             GC.Collect();

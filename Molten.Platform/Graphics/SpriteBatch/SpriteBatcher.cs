@@ -301,10 +301,12 @@ namespace Molten.Graphics
         /// <param name="depth">The z-depth of rectangle outline.</param>
         public void DrawRectOutline(RectangleF rect, Color color, float thickness, float depth = 0)
         {
-            DrawLine(rect.TopLeft, rect.TopRight, color, thickness);
-            DrawLine(rect.TopRight, rect.BottomRight, color, thickness);
-            DrawLine(rect.BottomRight, rect.BottomLeft, color, thickness);
-            DrawLine(rect.BottomLeft, rect.TopLeft, color, thickness);
+            float halfThick = thickness / 2f;
+
+            DrawLine(new Vector2F(rect.Left - halfThick, rect.Top), new Vector2F(rect.Right + halfThick, rect.Top), color, thickness); // Top
+            DrawLine(new Vector2F(rect.Left - halfThick, rect.Bottom), new Vector2F(rect.Right + halfThick, rect.Bottom), color, thickness); // Bottom
+            DrawLine(new Vector2F(rect.Right, rect.Top + halfThick), new Vector2F(rect.Right, rect.Bottom - halfThick), color, thickness); // Right
+            DrawLine(new Vector2F(rect.Left, rect.Top + halfThick), new Vector2F(rect.Left, rect.Bottom - halfThick), color, thickness); // Left
         }
 
         /// <summary>Draws connecting lines between each of the provided points.</summary>
