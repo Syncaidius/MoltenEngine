@@ -18,6 +18,7 @@ namespace Molten.Threading
         ThreadedQueue<Action> _dispatchedActions;
         Timing _timing;
         Thread _thread;
+        ApartmentState _apartmentState;
         bool _shouldExit;
 
         /// <summary>
@@ -25,10 +26,13 @@ namespace Molten.Threading
         /// </summary>
         /// <param name="manager">The manager.</param>
         /// <param name="name">The name.</param>
-        /// <param name="fixedTimestep">If true, the engine thread will try to update at a rate matching the value of <see cref="Timing.TargetFrameTime"/>.</param>
-        /// <param name="callback">The callback.</param>
-        internal EngineThread(ThreadManager manager, string name, bool startImmediately, bool fixedTimeStep, Action<Timing> callback)
+        /// <param name="fixedTimeStep">If true, the engine thread will try to update at a rate matching the value of <see cref="Timing.TargetFrameTime"/>.</param>
+        /// <param name="callback">The callback that the thread should run.</param>
+        /// <param name="apartmentState">The apartment state of the thread. The default value is multithreaded apartment (MTA).</param>
+        /// <param name="startImmediately">If true, the thread will be started immediately after creation.</param>
+        internal EngineThread(ThreadManager manager, string name, bool startImmediately, bool fixedTimeStep, Action<Timing> callback, ApartmentState apartmentState = ApartmentState.MTA)
         {
+            _apartmentState = ApartmentState;
             _manager = manager;
             _timing = new Timing(callback);
             _timing.IsFixedTimestep = fixedTimeStep;
@@ -47,6 +51,7 @@ namespace Molten.Threading
             {
                 Name = name,
             };
+            _thread.SetApartmentState(apartmentState);
             _thread.Start();
 
             if (startImmediately)
@@ -112,5 +117,10 @@ namespace Molten.Threading
 
         /// <summary>Gets whether or not the <see cref="EngineThread"/> has been disposed.</summary>>
         public bool IsDisposed { get; internal set; }
+
+        /// <summary>
+        /// Gets the <see cref="System.Threading.ApartmentState"/> that was chosen when the thread was created.
+        /// </summary>
+        public ApartmentState ApartmentState => _apartmentState;
     }
 }

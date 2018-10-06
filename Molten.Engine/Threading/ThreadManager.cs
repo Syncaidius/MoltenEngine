@@ -29,9 +29,10 @@ namespace Molten.Threading
 
         /// <summary>Spawns a new <see cref="EngineThread"/> to run the provided callback."</summary>
         /// <param name="callback">The callback to be run by the thread.</param>
-        public EngineThread SpawnThread(string name, bool startImmediately, bool fixedTimeStep, Action<Timing> callback)
+        /// <param name="apartmentState">The apartment state of the thread. The default value is multithreaded apartment (MTA).</param>
+        public EngineThread SpawnThread(string name, bool startImmediately, bool fixedTimeStep, Action<Timing> callback, ApartmentState apartmentState = ApartmentState.MTA)
         {
-            EngineThread thread = new EngineThread(this, name, startImmediately, fixedTimeStep, callback);
+            EngineThread thread = new EngineThread(this, name, startImmediately, fixedTimeStep, callback, apartmentState);
             _threads.Add(thread);
             _threadsByName.Add(name, thread);
             _log.WriteLine($"Spawned engine thread '{name}'");

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Molten
@@ -140,7 +141,8 @@ namespace Molten
         }
 
         /// <summary>Starts the renderer thread.</summary>
-        public void StartRenderer()
+        /// <param name="apartmentState">The apartment state of the renderer thread. The default value is multithreaded aparment (MTA).</param>
+        public void StartRenderer(ApartmentState apartmentState = ApartmentState.MTA)
         {
             if (Renderer == null)
             {

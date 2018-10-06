@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -223,6 +224,7 @@ namespace Molten.Samples
             _curTest = Activator.CreateInstance(lastTestType, settings) as SampleGame;
             _curTest.Start();
 
+            
             GC.Collect();
             lstTests.IsEnabled = true;
         }

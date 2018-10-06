@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Molten
@@ -38,7 +39,7 @@ namespace Molten
         }
 
         /// <summary>Starts the game. This will trigger initialization, then start the renderer and game threads.</summary>
-        public void Start()
+        public void Start(ApartmentState gameThreadApartment = ApartmentState.MTA, ApartmentState renderThreadApartment = ApartmentState.MTA)
         {
             if (_gameThread != null)
                 return;
@@ -89,7 +90,7 @@ namespace Molten
                     OnExiting();
                     ForceExit();
                 }
-            });
+            }, gameThreadApartment);
 
             OnInitialize(Engine);
             OnFirstLoad(Engine);
