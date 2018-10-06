@@ -253,7 +253,7 @@ namespace Molten.Content
                         if (objectsToSave.Count > 0)
                         {
                             TextureData dataToSave = objectsToSave[0] as TextureData;
-                            texWriter.WriteData(stream, dataToSave, context.Log);
+                            texWriter.WriteData(stream, dataToSave, context.Log, context.Filename);
                         }
                     }
                 }
@@ -320,7 +320,7 @@ namespace Molten.Content
                             while (tData == null)
                                 Thread.Sleep(5);
 
-                            texWriter.WriteData(stream, tData, context.Log);
+                            texWriter.WriteData(stream, tData, context.Log, context.Filename);
                         }
                     }
                 }

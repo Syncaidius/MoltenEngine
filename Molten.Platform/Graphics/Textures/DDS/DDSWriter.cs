@@ -16,8 +16,14 @@ namespace Molten.Graphics.Textures
             _format = format;
         }
 
-        public override void WriteData(Stream stream, TextureData data, Logger log)
+        public override void WriteData(Stream stream, TextureData data, Logger log, string filename = null)
         {
+            if (!MathHelper.IsPowerOfTwo(data.Width) || !MathHelper.IsPowerOfTwo(data.Height))
+            {
+                log.WriteError("Cannot save DDS file: Width and height must be power-of-two.", filename);
+                return;
+            }
+
             using (BinaryWriter writer = new BinaryWriter(stream))
             {
                 // Use DXT5 since this covers most types of images (transparent and opaque).

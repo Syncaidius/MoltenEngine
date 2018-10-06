@@ -17,7 +17,7 @@ namespace Molten.Graphics.Textures
             _writeFormat = writeFormat;
         }
 
-        public override void WriteData(Stream stream, TextureData data, Logger log)
+        public override void WriteData(Stream stream, TextureData data, Logger log, string filename = null)
         {
             TextureData newData = data.Clone();
             newData.ToRGBA();
