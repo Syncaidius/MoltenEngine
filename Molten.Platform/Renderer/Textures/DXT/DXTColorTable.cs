@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.Textures.DDS.Parsers
+namespace Molten.Graphics.Textures
 {
-    public struct DDSColorTable
+    public struct DXTColorTable
     {
         public Color[] color;
         public ushort[] rawColor;

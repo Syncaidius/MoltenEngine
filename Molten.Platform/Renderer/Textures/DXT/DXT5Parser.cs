@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Molten.Graphics.Textures.DDS.Parsers
+namespace Molten.Graphics.Textures
 {
-    internal class DDSParserDXT5 : DDSBlockParser
+    internal class DXT5Parser : DXTBlockParser
     {
         protected override void DecompressBlock(BinaryReader imageReader, int x, int y, int width, int height, byte[] output)
         {
@@ -22,7 +22,7 @@ namespace Molten.Graphics.Textures.DDS.Parsers
             alphaMask += (ulong)imageReader.ReadByte() << 40;
 
             //============COLOR BLOCK=========================
-            DDSColorTable table;
+            DXTColorTable table;
             DecompressColorTableDXT1(imageReader, out table);
 
             // Decompress pixel data from block

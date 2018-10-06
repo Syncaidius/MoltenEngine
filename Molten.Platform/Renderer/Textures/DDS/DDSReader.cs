@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Molten.Graphics.Textures.DDS.Parsers;
 using System.IO;
 
 namespace Molten.Graphics.Textures.DDS
 {
     public class DDSReader : TextureReader
     {
+        TextureData.Slice[] _levelData;
         string _magicWord;
         DDSHeader _header;
         DDSHeaderDXT10 _headerDXT10;
 
-        bool _decompress;
         bool _isCubeMap;
         bool[] _cubeSides;
         /* Block Compression formats against DXT formats
@@ -29,37 +28,49 @@ namespace Molten.Graphics.Textures.DDS
         /// <param name="engine"></param>
         /// <param name="reader"></param>
         /// <param name="decompress">If set to true, reader will decompress textures that are compressed.</param>
-        public DDSReader(bool decompress = true)
+        public DDSReader()
         {
-            _decompress = decompress;
             _isCubeMap = false;
             _cubeSides = new bool[6];
         }
 
-        public override void Read(BinaryReader reader)
+        public override TextureData Read(BinaryReader reader, Logger log, string filename = null)
         {
-            ReadHeader(reader);
-            if (!string.IsNullOrWhiteSpace(Error))
-                return;
+            if (!ReadHeader(reader, log, filename) || !ReadData(reader, log, filename))
+                return null;
 
-            ReadData(reader);
+            TextureData data = new TextureData()
+            {
+                Levels = _levelData,
+                Width = (int)_header.Width,
+                Height = (int)_header.Height,
+                Format = _headerDXT10.ImageFormat,
+                MipMapLevels = (int)_header.MipMapCount,
+                ArraySize = (int)_headerDXT10.ArraySize,
+                Flags = TextureFlags.None,
+                IsCompressed = true,
+                SampleCount = 1,
+                HighestMipMap = 0,
+            };
+
+            return data;
         }
 
-        private void ReadHeader(BinaryReader reader)
+        private bool ReadHeader(BinaryReader reader, Logger log, string filename = null)
         {
             // Make sure the stream is at least big enough to contain a complete DDS header.
             if (reader.BaseStream.Length < 128)
             {
-                Error = "DDS header is invalid.";
-                return;
+                log.WriteError("DDS header is invalid.", filename);
+                return false;
             }
 
             _magicWord = GetMagicWord(reader.ReadUInt32());
             _magicWord = _magicWord.Trim();
             if (_magicWord != "DDS")
             {
-                Error = "Data does not contain valid DDS data. Magic word not found.";
-                return;
+                log.WriteError("Data does not contain valid DDS data. Magic word not found.", filename);
+                return false;
             }
 
             _header = new DDSHeader()
@@ -126,6 +137,8 @@ namespace Molten.Graphics.Textures.DDS
             //ensure there is at least one level mip texture (the main level).
             if (_header.MipMapCount == 0) //(_header.Caps & DDSCapabilities.MipMap) != DDSCapabilities.MipMap)
                 _header.MipMapCount = 1;
+
+            return true;
         }
 
         private void CheckIfCubeMap()
@@ -182,17 +195,17 @@ namespace Molten.Graphics.Textures.DDS
             }
         }
 
-        private void ReadData(BinaryReader reader)
+        private bool ReadData(BinaryReader reader, Logger log, string filename = null)
         {
             // Check for invalid mip map values.
             if (_header.MipMapCount > 512)
             {
-                Error = "Invalid mip-map count: " + _header.MipMapCount;
-                return;
+                log.WriteError($"Invalid mip-map count: {_header.MipMapCount}", filename);
+                return false;
             }
 
-            LevelData = new TextureData.Slice[_header.MipMapCount * _headerDXT10.ArraySize];
-            int blockSize = DDSHelper.GetBlockSize(_headerDXT10.ImageFormat);
+            _levelData = new TextureData.Slice[_header.MipMapCount * _headerDXT10.ArraySize];
+            int blockSize = DXTHelper.GetBlockSize(_headerDXT10.ImageFormat);
 
             for (int a = 0; a < _headerDXT10.ArraySize; a++)
             {
@@ -220,13 +233,15 @@ namespace Molten.Graphics.Textures.DDS
                     level.TotalBytes = level.Data.Length;
 
                     int dataID = (a * (int)_header.MipMapCount) + i;
-                    LevelData[dataID] = level;
+                    _levelData[dataID] = level;
 
                     //decrease level width/height ready for next read
                     levelWidth /= 2;
                     levelHeight /= 2;
                 }
             }
+
+            return true;
         }
 
 
@@ -280,35 +295,6 @@ namespace Molten.Graphics.Textures.DDS
             }
 
             return magic;
-        }
-
-        public override TextureData GetData()
-        {
-            TextureData data = new TextureData()
-            {
-                Levels = LevelData,
-                Width = (int)_header.Width,
-                Height = (int)_header.Height,
-                Format = _headerDXT10.ImageFormat,
-                MipMapLevels = (int)_header.MipMapCount,
-                ArraySize = (int)_headerDXT10.ArraySize,
-                Flags = TextureFlags.None,
-                IsCompressed = true,
-            };
-
-            //// Attempt to return the raw compressed data.
-            //if (_useCompression)
-            //{
-            //    // Ensure the device supports the loaded compression format.
-            //    if (_device.Features.IsFormatSupported(_headerDXT10.ImageFormat))
-            //        return data;
-            //}
-
-            // Decompress if 
-            if (_decompress)
-                DDSHelper.Decompress(data);
-
-            return data;
         }
     }
 }

@@ -1,23 +1,22 @@
-﻿using Molten.Graphics.Textures.DDS.Parsers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.Textures.DDS
+namespace Molten.Graphics.Textures
 {
-    public static class DDSHelper
+    public static class DXTHelper
     {
-        static Dictionary<GraphicsFormat, DDSBlockParser> _parsers;
+        static Dictionary<GraphicsFormat, DXTBlockParser> _parsers;
 
-        static DDSHelper()
+        static DXTHelper()
         {
-            _parsers = new Dictionary<GraphicsFormat, DDSBlockParser>()
+            _parsers = new Dictionary<GraphicsFormat, DXTBlockParser>()
             {
-                [GraphicsFormat.BC1_UNorm] = new DDSParserDXT1(),
-                [GraphicsFormat.BC2_UNorm] = new DDSParserDXT3(),
-                [GraphicsFormat.BC3_UNorm] = new DDSParserDXT5(),
+                [GraphicsFormat.BC1_UNorm] = new DXT1Parser(),
+                [GraphicsFormat.BC2_UNorm] = new DXT3Parser(),
+                [GraphicsFormat.BC3_UNorm] = new DXT5Parser(),
             };
         }
 
@@ -30,7 +29,7 @@ namespace Molten.Graphics.Textures.DDS
             TextureData.Slice[] levels = data.Levels;
             data.Levels = new TextureData.Slice[levels.Length];
 
-            DDSBlockParser parser = null;
+            DXTBlockParser parser = null;
 
             if (_parsers.TryGetValue(data.Format, out parser))
             {
@@ -76,7 +75,7 @@ namespace Molten.Graphics.Textures.DDS
                 case DDSFormat.DXT5: newFormat = GraphicsFormat.BC3_UNorm; break;
             }
 
-            DDSBlockParser parser = null;
+            DXTBlockParser parser = null;
             if (_parsers.TryGetValue(newFormat, out parser))
             {
                 for (int a = 0; a < data.ArraySize; a++)
@@ -85,7 +84,7 @@ namespace Molten.Graphics.Textures.DDS
                     {
                         int levelID = (a * (int)data.MipMapLevels) + i;
                         byte[] levelData = parser.Compress(levels[levelID]);
-                        int pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * DDSHelper.GetBlockSize(newFormat));
+                        int pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * DXTHelper.GetBlockSize(newFormat));
 
                         int blockCountY = (levels[i].Height + 3) / 4;
 

@@ -161,11 +161,6 @@ namespace Molten.Graphics
             _renderer.PushTask(task);
         }
 
-        public TextureReader GetDefaultTextureReader(FileInfo file)
-        {
-            return null; // new DefaultTextureReader(_device);
-        }
-
         public void SaveAsBitmap(Stream stream, TextureData data)
         {
             throw new NotImplementedException();

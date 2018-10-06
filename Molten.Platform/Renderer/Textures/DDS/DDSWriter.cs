@@ -1,5 +1,4 @@
 ﻿using Molten.Graphics.Textures.DDS;
-using Molten.Graphics.Textures.DDS.Parsers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +16,7 @@ namespace Molten.Graphics.Textures
             _format = format;
         }
 
-        public override void WriteData(Stream stream, TextureData data)
+        public override void WriteData(Stream stream, TextureData data, Logger log)
         {
             using (BinaryWriter writer = new BinaryWriter(stream))
             {

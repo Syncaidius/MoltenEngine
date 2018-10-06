@@ -105,6 +105,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="2DTextureTest.cs" />
     <Compile Include="Common\SampleSceneGame.cs" />
     <Compile Include="Common\SampleSpriteRenderComponent.cs" />
     <Compile Include="Common\SampleVertexData.cs" />
@@ -115,10 +116,10 @@
       <DependentUpon>ControlSampleForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DeferredRendering.cs" />
+    <Compile Include="1DTextureTest.cs" />
     <Compile Include="SpriteFontStress.cs" />
     <Compile Include="FontFileTest.cs" />
     <Compile Include="MultiWindowGame.cs" />
-    <Compile Include="1DTextureTest.cs" />
     <Compile Include="SceneParentingTest.cs" />
     <Compile Include="SceneIndexedStressTest.cs" />
     <Compile Include="SceneStressTest.cs" />
@@ -128,7 +129,6 @@
     <Compile Include="SpriteBatchUnfairTest.cs" />
     <Compile Include="SpriteBatchTest.cs" />
     <Compile Include="Common\CubeArrayVertex.cs" />
-    <Compile Include="Common\TextureDataLoader.cs" />
     <Compile Include="Common\SampleGame.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

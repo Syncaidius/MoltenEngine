@@ -172,7 +172,10 @@ namespace Molten
 
         public void WriteError(string value, string filename)
         {
-            WriteLine($"{ErrorPrefix} {filename}: {value}", ErrorColor);
+            if(string.IsNullOrWhiteSpace(filename))
+                WriteLine($"{ErrorPrefix}: {value}", ErrorColor);
+            else
+                WriteLine($"{ErrorPrefix} {filename}: {value}", ErrorColor);
         }
 
         public void WriteWarning(string value)

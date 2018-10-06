@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Molten.Graphics.Textures.DDS.Parsers
+namespace Molten.Graphics.Textures
 {
-    internal class DDSFakeParser : DDSBlockParser
+    internal class DDSFakeParser : DXTBlockParser
     {
         Color _fakeColor = new Color(255, 0, 220, 255);
 

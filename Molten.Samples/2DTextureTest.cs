@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class OneDTextureTexture : SampleSceneGame
+    public class TwoDTextureTexture : SampleSceneGame
     {
-        public override string Description => "A simple test for 1D texture loading and usage.";
+        public override string Description => "A simple test for 2D texture loading and usage.";
 
         SceneObject _parent;
         SceneObject _child;
         IMesh<CubeArrayVertex> _mesh;
 
-        public OneDTextureTexture(EngineSettings settings = null) : base("1D Texture Test", settings) { }
+        public TwoDTextureTexture(EngineSettings settings = null) : base("2D Texture Test", settings) { }
 
         protected override void OnInitialize(Engine engine)
         {
@@ -27,8 +27,8 @@ namespace Molten.Samples
             _mesh.SetVertices(SampleVertexData.TextureArrayCubeVertices);
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<IMaterial>("BasicTexture1D.sbm");
-            cr.Load<ITexture>("1d_1.png");
+            cr.Load<IMaterial>("BasicTexture.sbm");
+            cr.Load<ITexture2D>("png_test.png");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
@@ -46,7 +46,7 @@ namespace Molten.Samples
             }
 
             // Manually construct a 2D texture array from the 3 textures we requested earlier
-            ITexture texture = cr.Get<ITexture>(1);
+            ITexture texture = cr.Get<ITexture2D>(1);
 
             mat.SetDefaultResource(texture, 0);
             _mesh.Material = mat;

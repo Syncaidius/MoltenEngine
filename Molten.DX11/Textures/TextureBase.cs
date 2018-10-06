@@ -8,6 +8,7 @@ using Molten.Collections;
 using Molten.Graphics.Textures.DDS;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Molten.Graphics.Textures;
 
 namespace Molten.Graphics
 {
@@ -64,7 +65,7 @@ namespace Molten.Graphics
             IsValid = false;
 
             _resourceViewDescription = new ShaderResourceViewDescription();
-            _isBlockCompressed = DDSHelper.GetBlockCompressed(_format.FromApi());
+            _isBlockCompressed = DXTHelper.GetBlockCompressed(_format.FromApi());
         }
 
         private void ValidateFlagCombination()

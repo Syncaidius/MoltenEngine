@@ -1,4 +1,4 @@
-﻿using Molten.Graphics.Textures.DDS;
+﻿using Molten.Graphics.Textures;
 using SharpDX;
 using SharpDX.Direct3D11;
 using System;
@@ -32,12 +32,12 @@ namespace Molten.Graphics
 
             if (texture.IsBlockCompressed)
             {
-                blockSize = DDSHelper.GetBlockSize(texture.Format);
+                blockSize = DXTHelper.GetBlockSize(texture.Format);
 
                 // Collect total level size.
                 for (int i = 0; i < texture.MipMapCount; i++)
                 {
-                    sliceBytes += DDSHelper.GetBCLevelSize(levelWidth, levelHeight, blockSize);
+                    sliceBytes += DXTHelper.GetBCLevelSize(levelWidth, levelHeight, blockSize);
                     levelWidth /= 2;
                     levelHeight /= 2;
                 }
@@ -104,7 +104,7 @@ namespace Molten.Graphics
                         levelWidth = texture.Width >> MipLevel;
                         levelHeight = texture.Height >> MipLevel;
 
-                        int bcPitch = DDSHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
+                        int bcPitch = DXTHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
                         DataBox box = new DataBox(dataPtr, bcPitch, sliceBytes);
 
                         if (Area != null)

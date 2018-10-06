@@ -132,8 +132,6 @@ namespace Molten.Graphics
 
         void SaveAsBitmap(Stream stream, TextureData data);
 
-        TextureReader GetDefaultTextureReader(FileInfo file);
-
         /// <summary>Compiles a set of shaders from the provided source string.</summary>
         /// <param name="source">The source code to be parsed and compiled.</param>
         /// <param name="filename">The name of the source file. Used as a point of reference in debug/error messages only.</param>

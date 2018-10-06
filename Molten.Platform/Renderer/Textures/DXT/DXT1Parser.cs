@@ -4,13 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Molten.Graphics.Textures.DDS.Parsers
+namespace Molten.Graphics.Textures
 {
-    internal class DDSParserDXT1 : DDSBlockParser
+    internal class DXT1Parser : DXTBlockParser
     {
         protected override void DecompressBlock(BinaryReader imageReader, int x, int y, int width, int height, byte[] output)
         {
-            DDSColorTable table;
+            DXTColorTable table;
             DecompressColorTableDXT1(imageReader, out table);
 
             for (int blockY = 0; blockY < 4; blockY++)

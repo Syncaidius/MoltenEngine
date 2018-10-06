@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics;
+using Molten.Graphics.Textures;
 using Molten.Graphics.Textures.DDS;
 using System;
 using System.Collections.Generic;
@@ -21,12 +22,20 @@ namespace Molten.Content
             bool isArray = false;
             int arrayCount = 1;
             string fn = context.Filename;
+            bool compress = true;
+            DDSFormat compressFormat = DDSFormat.DXT5;
 
             if (context.Metadata.TryGetValue("array", out string strIsArray))
                 bool.TryParse(strIsArray, out isArray);
 
             if (context.Metadata.TryGetValue("count", out string strCount))
                 int.TryParse(strCount, out arrayCount);
+
+            if (context.Metadata.TryGetValue("compress", out string strCompress))
+                bool.TryParse(strCompress, out compress);
+
+            if (context.Metadata.TryGetValue("cformat", out string strCompressFormat))
+                Enum.TryParse(strCompressFormat, out compressFormat);
 
             if (isArray)
             {
@@ -49,50 +58,40 @@ namespace Molten.Content
                         switch (extension)
                         {
                             case ".dds":
-                                texReader = new DDSReader(false);
+                                texReader = new DDSReader();
+                                break;
+
+                            // Although the default texture reader can load all of the formats that Magick supports, we'll stick to ones we fully support for now.
+                            // Formats such as .gif can be handled as texture arrays later down the line.
+                            case ".png":
+                            case ".jpeg":
+                            case ".bmp":
+                                texReader = new DefaultTextureReader();
                                 break;
 
                             default:
-                                texReader = context.Engine.Renderer.Resources.GetDefaultTextureReader(context.File);
+                                texReader = null;
                                 break;
                         }
 
-                        texReader.Read(reader);
-
-                        // Output error, if one occurred.
-                        string error = texReader.Error;
-                        if (error != null)
-                        {
-                            context.Log.WriteError(error, context.Filename);
-                            return;
-                        }
-                        else
-                        {
-                            data = texReader.GetData();
-                        }
-
-                        //output error, if one occurred.
-                        error = texReader.Error;
+                        data = texReader.Read(reader, context.Log, context.Filename);
                         texReader.Dispose();
+                    }
+                }
 
-                        if (error != null)
+                // Load failed?
+                if (data == null)
+                    return;
+
+                if (data.MipMapLevels == 1)
+                {
+                    string genMipsVal = "";
+                    if (context.Metadata.TryGetValue("mipmaps", out genMipsVal))
+                    {
+                        if (genMipsVal == "true")
                         {
-                            context.Log.WriteError(error, context.Filename);
-                        }
-                        else
-                        {
-                            if (data.MipMapLevels == 1)
-                            {
-                                string genMipsVal = "";
-                                if (context.Metadata.TryGetValue("mipmaps", out genMipsVal))
-                                {
-                                    if (genMipsVal == "true")
-                                    {
-                                        //if (!data.GenerateMipMaps())
-                                        //   log.WriteError("[CONTENT] Unable to generate mip-maps for non-power-of-two texture.", file.ToString());
-                                    }
-                                }
-                            }
+                            //if (!data.GenerateMipMaps())
+                            //   log.WriteError("[CONTENT] Unable to generate mip-maps for non-power-of-two texture.", file.ToString());
                         }
                     }
                 }
@@ -104,8 +103,25 @@ namespace Molten.Content
                     MipMapLevels = data.MipMapLevels,
                     Format = data.Format,
                     ArraySize = arrayCount,
+                    IsCompressed = data.IsCompressed,
                 };
                 finalData.Set(data, i);
+            }
+
+            // Compress or decompress
+            if (compress)
+            {
+                // Don't block-compress 1D textures.
+                if (finalData.Height > 1)
+                {
+                    if (!finalData.IsCompressed)
+                        finalData.Compress(compressFormat);
+                }
+            }
+            else
+            {
+                if (finalData.IsCompressed)
+                    finalData.Decompress();
             }
 
             // TODO improve for texture arrays - Only update the array slice(s) that have changed.
@@ -201,7 +217,60 @@ namespace Molten.Content
 
         public override void OnWrite(ContentContext context)
         {
-            throw new NotImplementedException();
+            using (FileStream stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
+            {
+                string extension = context.File.Extension.ToLower();
+                TextureWriter texWriter = null;
+
+                using (BinaryWriter writer = new BinaryWriter(stream))
+                {
+                    switch (extension)
+                    {
+                        case ".dds":
+                            texWriter = new DDSWriter(DDSFormat.DXT5);
+                            break;
+
+                        case ".png":
+                            texWriter = new PNGWriter();
+                            break;
+                    }
+                }
+
+                if (texWriter == null)
+                {
+                    context.Log.WriteError($"Unable to write texture to file. Unsupported format: {extension}", context.Filename);
+                    return;
+                }
+
+                // TODO improve for texture arrays - Only update the array slice(s) that have changed.
+                // Check if an existing texture was passed in.
+                if (context.ContentType == typeof(TextureData))
+                {
+                    if (context.Input.TryGetValue(context.ContentType, out List<object> objectsToSave))
+                    {
+                        if (objectsToSave.Count > 0)
+                        {
+                            TextureData dataToSave = objectsToSave[0] as TextureData;
+                            texWriter.WriteData(stream, dataToSave, context.Log);
+                        }
+                    }
+                }
+                else
+                {
+                    context.Log.WriteError("Directly writing is currently not supported. Try writing TextureData instead.");
+                    // TODO finish support for writing textures directly
+
+                    //ITexture tex = null;
+                    //if (context.Input.TryGetValue(context.ContentType, out List<object> texturesToSave))
+                    //{
+                    //    if (texturesToSave.Count > 0)
+                    //        tex = texturesToSave[0] as ITexture;
+
+                    //    ITexture staging = 
+                    //    texWriter.WriteData(stream, tex.GetData()
+                    //}
+                }
+            }
         }
     }
 }
