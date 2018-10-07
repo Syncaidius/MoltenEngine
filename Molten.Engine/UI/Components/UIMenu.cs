@@ -29,7 +29,7 @@ namespace Molten.UI
         protected override void OnPostUpdateBounds()
         {
             base.OnPostUpdateBounds();
-            LockChildren(() =>
+            Locker.Lock(() =>
             {
                 switch (FlowDirection)
                 {

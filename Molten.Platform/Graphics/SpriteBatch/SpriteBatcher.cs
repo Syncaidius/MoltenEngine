@@ -569,11 +569,31 @@ namespace Molten.Graphics
         /// <param name="position"></param>
         /// <param name="size">The width and height of the sprite..</param>
         /// <param name="color"></param>
+        /// <param name="material">The material to use when rendering the sprite.</param>
+        /// <param name="arraySlice">The texture array slice containing the source texture.</param>
+        public void Draw(ITexture2D texture,
+            Rectangle source,
+            Vector2F position,
+            Vector2F size,
+            Color color,
+            IMaterial material = null,
+            float arraySlice = 0)
+        {
+            Draw(texture, source, position, size, color, 0f, Vector2F.Zero, material, arraySlice);
+        }
+
+        /// <summary>
+        /// Adds a sprite to the batch using 2D coordinates.
+        /// </summary>>
+        /// <param name="texture"></param>
+        /// <param name="source"></param>
+        /// <param name="position"></param>
+        /// <param name="size">The width and height of the sprite..</param>
+        /// <param name="color"></param>
         /// <param name="rotation">Rotation in radians.</param>
         /// <param name="origin">The origin, as a unit value. 1.0f will set the origin to the bottom-right corner of the sprite.
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
         /// <param name="material">The material to use when rendering the sprite.</param>
-        /// <param name="depth">The z-depth of the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
         public void Draw(ITexture2D texture, 
             Rectangle source, 
