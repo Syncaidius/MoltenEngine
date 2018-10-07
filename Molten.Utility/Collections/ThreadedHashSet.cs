@@ -14,7 +14,7 @@ namespace Molten.Utility.Collections
     public partial class ThreadedHashSet<T> : ISet<T>, ICollection<T>, IEnumerable<T>, IEnumerable, IProducerConsumerCollection<T>
     {
         HashSet<T> _set;
-        int _blockingVal;
+        Interlocker _interlocker;
 
         public ThreadedHashSet()
             : this(EqualityComparer<T>.Default) { }
@@ -30,287 +30,151 @@ namespace Molten.Utility.Collections
         /// <param name="collection"></param>
         /// <param name="comparer"></param>
         public ThreadedHashSet(IEnumerable<T> collection, IEqualityComparer<T> comparer)
-            : this(comparer) {
+            : this(comparer)
+        {
             _set = new HashSet<T>(collection, comparer);
+            _interlocker = new Interlocker();
         }
 
         public ThreadedHashSet(IEqualityComparer<T> comparer)
         {
             _set = new HashSet<T>(comparer);
+            _interlocker = new Interlocker();
         }
 
+        /// <summary>
+        /// Adds a new item to the hashset.
+        /// </summary>
+        /// <param name="item">The item to add.</param>
+        /// <returns></returns>
         public bool Add(T item)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _set.Add(item);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _set.Add(item));
+            return result;
         }
 
+        /// <summary>
+        /// Clears the hashset.
+        /// </summary>
         public void Clear()
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    _set.Clear();
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+            _interlocker.Lock(() => _set.Clear());
         }
 
+        /// <summary>
+        /// Returns true if the hashset contains the specified item, or false if it does not.
+        /// </summary>
+        /// <param name="item">The item to be checked.</param>
+        /// <returns></returns>
         public bool Contains(T item)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _set.Contains(item);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _set.Contains(item));
+            return result;
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    _set.CopyTo(array, arrayIndex);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+            _interlocker.Lock(() => _set.CopyTo(array, arrayIndex));
         }
 
-        public void CopyTo(Array array, int index)
+        void ICollection.CopyTo(Array array, int index)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    T[] src = array as T[];
-                    if (src == null)
-                        throw new Exception("Incompatible array was provided.");
+                T[] src = array as T[];
+                if (src == null)
+                    throw new Exception("Incompatible array was provided.");
 
-                    _set.CopyTo(src, index);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+                _set.CopyTo(src, index);
+            });
         }
 
         public void ExceptWith(IEnumerable<T> other)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    _set.ExceptWith(other);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+            if (other == null)
+                throw new ArgumentNullException("The other enumerable cannot be null.");
+
+            _interlocker.Lock(() => _set.ExceptWith(other));
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    IEnumerator<T> e = _set.GetEnumerator();
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return e;
-                }
-                spin.SpinOnce();
-            }
+            IEnumerator<T> enumerator = null;
+            _interlocker.Lock(() => enumerator = _set.GetEnumerator());
+            return enumerator;
         }
 
         public void IntersectWith(IEnumerable<T> other)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    _set.IntersectWith(other);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+            _interlocker.Lock(() => _set.IntersectWith(other));
         }
 
         public bool IsProperSubsetOf(IEnumerable<T> other)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _set.IsProperSubsetOf(other);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _set.IsProperSubsetOf(other));
+            return result;
         }
 
         public bool IsProperSupersetOf(IEnumerable<T> other)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _set.IsProperSupersetOf(other);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _set.IsProperSupersetOf(other));
+            return result;
         }
 
         public bool IsSubsetOf(IEnumerable<T> other)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _set.IsSubsetOf(other);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _set.IsSubsetOf(other));
+            return result;
         }
 
         public bool IsSupersetOf(IEnumerable<T> other)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _set.IsSupersetOf(other);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _set.IsSupersetOf(other));
+            return result;
         }
 
         public bool Overlaps(IEnumerable<T> other)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _set.Overlaps(other);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _set.Overlaps(other));
+            return result;
         }
 
         public bool Remove(T item)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _set.Remove(item);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _set.Remove(item));
+            return result;
         }
 
         public int RemoveWhere(Predicate<T> match)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    int result = _set.RemoveWhere(match);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            int result = 0;
+            _interlocker.Lock(() => result = _set.RemoveWhere(match));
+            return result;
         }
 
         public bool SetEquals(IEnumerable<T> other)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _set.SetEquals(other);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _set.SetEquals(other));
+            return result;
         }
 
         public void SymmetricExceptWith(IEnumerable<T> other)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    _set.SymmetricExceptWith(other);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+            _interlocker.Lock(() => _set.SymmetricExceptWith(other));
         }
 
         public void UnionWith(IEnumerable<T> other)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    _set.UnionWith(other);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+            _interlocker.Lock(() => _set.UnionWith(other));
         }
 
         void ICollection<T>.Add(T item)
@@ -325,103 +189,55 @@ namespace Molten.Utility.Collections
 
         public void TrimExcess()
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    _set.TrimExcess();
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+            _interlocker.Lock(() => _set.TrimExcess());
         }
 
         public bool TryAdd(T item)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _set.Add(item);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _set.Add(item));
+            return result;
         }
 
         public bool TryTake(out T item)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
+            bool result = false;
+            T temp = default(T);
+
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
+                if (_set.Count > 0)
                 {
-                    bool success = false;
-
-                    if (_set.Count > 0)
-                    {
-                        item = _set.Last();
-                        success = _set.Remove(item);
-                    }
-                    else
-                    {
-                        item = default(T);
-                    }
-
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return success;
+                    temp = _set.Last();
+                    result = _set.Remove(temp);
                 }
-                spin.SpinOnce();
-            }
+                else
+                {
+                    temp = default(T);
+                }
+
+            });
+            item = temp;
+            return result;
         }
 
         public T[] ToArray()
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    T[] array = _set.ToArray();
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return array;
-                }
-                spin.SpinOnce();
-            }
+            T[] array = null;
+            _interlocker.Lock(() => array = _set.ToArray());
+            return array;
         }
 
-        public int Count
-        {
-            get { return _set.Count; }
-        }
+        public int Count => _set.Count;
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
-        public object SyncRoot
-        {
-            get
-            {
-                throw new NotSupportedException("ThreadedHashSet does not require a sync root object.");
-            }
-        }
+        object ICollection.SyncRoot => throw new NotSupportedException("ThreadedHashSet does not require a sync root object.");
 
-        public bool IsSynchronized
-        {
-            get { return true; }
-        }
+        public bool IsSynchronized => true;
 
         /// <summary>Gets the <see cref="EqualityComparer{T}"/> object that is used to
         /// determine equality for the values in the set.</summary>
-        public IEqualityComparer<T> Comparer
-        {
-            get { return _set.Comparer; }
-        }
+        public IEqualityComparer<T> Comparer => _set.Comparer;
     }
 }

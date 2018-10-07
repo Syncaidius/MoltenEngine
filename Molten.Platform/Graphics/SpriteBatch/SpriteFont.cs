@@ -73,7 +73,7 @@ namespace Molten.Graphics
         SceneRenderData _renderData;
         MoltenRenderer _renderer;
         ThreadedQueue<ushort> _pendingGlyphs;
-        int _binLocker;
+        Interlocker _interlocker;
 
         /// <summary>
         /// Creates a new instance of <see cref="SpriteFont"/>.
@@ -103,6 +103,7 @@ namespace Molten.Graphics
 
             _renderer = renderer;
             _font = font;
+            _interlocker = new Interlocker();
 
             if (_font.GlyphCount > 0)
             {
@@ -311,11 +312,8 @@ namespace Molten.Graphics
                 Y = (float)pHeight / gBounds.Height,
             };
 
-            SpinWait spin = new SpinWait();
-            while (Interlocked.Exchange(ref _binLocker, 1) != 0)
-                spin.SpinOnce();
-            Rectangle? paddedLoc = _packer.Insert(pWidth + padding2, pHeight + padding2);
-            Interlocked.Exchange(ref _binLocker, 0);
+            Rectangle? paddedLoc = null;
+            _interlocker.Lock(() => paddedLoc = _packer.Insert(pWidth + padding2, pHeight + padding2));
 
             if(paddedLoc == null)
             {

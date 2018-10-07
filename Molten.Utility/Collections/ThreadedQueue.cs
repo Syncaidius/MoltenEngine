@@ -12,60 +12,58 @@ namespace Molten.Collections
     public partial class ThreadedQueue<T> : IEnumerable<T>, ICollection, IEnumerable, IProducerConsumerCollection<T>
     {
         T[] _items;
-
         bool _isEmpty;
         int _count;
         int _next;
         int _queueStart; // The start of the queue, where items are dequeued.
 
         object _locker;
-        int _blockingVal;
+        Interlocker _interlocker;
 
         public ThreadedQueue(int initialCapacity = 20)
         {
             _items = new T[initialCapacity];
             _locker = new object();
             _isEmpty = true;
+            _interlocker = new Interlocker();
         }
 
         public IEnumerator GetEnumerator()
         {
-            return new Enumerator(this);
+            IEnumerator enumerator = null;
+            _interlocker.Lock(() => enumerator = new Enumerator(this));
+            return enumerator;
         }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            return new Enumerator(this);
+            IEnumerator<T> enumerator = null;
+            _interlocker.Lock(() => enumerator = new Enumerator(this));
+            return enumerator;
         }
 
         /// <summary>Clears all items from the queue. This will not release the memory consumed by the internal array. To do so, the queue must be disposed.</summary>
         public void Clear()
         {
-            SpinWait spin = new SpinWait();
-            while (true)
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
+                if (_next > _queueStart)
                 {
-                    if (_next > _queueStart)
-                    {
-                        for (int i = _queueStart; i < _next; i++)
-                            _items[i] = default(T);
-                    }
-                    else {
-                        for (int i = _queueStart; i < _items.Length; i++)
-                            _items[i] = default(T);
-
-                        for (int i = 0; i < _next; i++)
-                            _items[i] = default(T);
-                    }
-                    _next = 0;
-                    _count = 0;
-                    _queueStart = 0;
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
+                    for (int i = _queueStart; i < _next; i++)
+                        _items[i] = default(T);
                 }
-                spin.SpinOnce();
-            }
+                else
+                {
+                    for (int i = _queueStart; i < _items.Length; i++)
+                        _items[i] = default(T);
+
+                    for (int i = 0; i < _next; i++)
+                        _items[i] = default(T);
+                }
+                _next = 0;
+                _count = 0;
+                _queueStart = 0;
+            });
         }
 
         public void CopyTo(Array array, int index)
@@ -75,51 +73,22 @@ namespace Molten.Collections
             if (destination == null)
                 throw new InvalidOperationException("The target array is not of the correct type");
 
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    CopyToArray(destination, index);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    break;
-                }
-                spin.SpinOnce();
-            }
+            _interlocker.Lock(() => CopyToArray(destination, index));
         }
 
         public void CopyTo(T[] array, int index)
         {
-            SpinWait spin = new SpinWait();
-
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    CopyToArray(array, index);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    break;
-                }
-                spin.SpinOnce();
-            }
+            _interlocker.Lock(() => CopyToArray(array, index));
         }
 
         public T[] ToArray()
         {
-            SpinWait spin = new SpinWait();
             T[] result = null;
-
-            while (true)
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    result = new T[_count];
-                    CopyToArray(result, 0);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    break;
-                }
-                spin.SpinOnce();
-            }
+                result = new T[_count];
+                CopyToArray(result, 0);
+            });
 
             return result;
         }
@@ -130,162 +99,137 @@ namespace Molten.Collections
         private void CopyToArray(T[] target, int destIndex)
         {
             if (target.Length - destIndex < _count)
-                ThrowReleaseLock<IndexOutOfRangeException>("The target array is not large enough to accept the copy operation");
+                throw new IndexOutOfRangeException("The target array is not large enough to accept the copy operation");
 
-            if (_next >= _queueStart)
+            _interlocker.Lock(() =>
             {
-                Array.Copy(_items, _queueStart, target, 0, _count);
-            }
-            else
-            {
-                int endCount = _items.Length - _queueStart;
-                Array.Copy(_items, _queueStart, target, destIndex, endCount);
+                if (_next >= _queueStart)
+                {
+                    Array.Copy(_items, _queueStart, target, 0, _count);
+                }
+                else
+                {
+                    int endCount = _items.Length - _queueStart;
+                    Array.Copy(_items, _queueStart, target, destIndex, endCount);
 
-                destIndex += endCount;
-                Array.Copy(_items, 0, target, destIndex, _next);
-            }
+                    destIndex += endCount;
+                    Array.Copy(_items, 0, target, destIndex, _next);
+                }
+            });
         }
 
         public void Enqueue(T item)
         {
-            SpinWait spin = new SpinWait();
-
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    Insert(item);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+            _interlocker.Lock(() => Insert(item));
         }
 
         public void EnqueueRange(IEnumerable<T> range)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    InsertRange(range);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+            _interlocker.Lock(() => InsertRange(range));
         }
 
         public bool TryDequeue(out T item)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
+            bool result = false;
+            T temp = default(T);
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
+                if (!_isEmpty)
                 {
-                    bool hasItems = !_isEmpty;
-
-                    if (hasItems)
-                        item = GetItem();
-                    else
-                        item = default(T);
-
-                    // Release lock and return
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return hasItems;
+                    temp = GetItem();
+                    result = true;
                 }
-                spin.SpinOnce();
-            }
+                else
+                {
+                    temp = default(T);
+                }
+            });
+            item = temp;
+            return result;
         }
 
         public bool Contains(T item)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
+            bool result = false;
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
+                if (item == null)
                 {
-                    bool found = false;
-                    if ((Object)item == null)
+                    // Check if iteration needs to wrap around.
+                    if (_queueStart < _next)
                     {
-                        // Check if iteration needs to wrap around.
-                        if (_queueStart < _next)
+                        for (int i = _queueStart; i < _next; i++)
                         {
-                            for (int i = _queueStart; i < _next; i++)
+                            if (_items[i] == null)
                             {
-                                if ((Object)_items[i] == null)
-                                {
-                                    found = true;
-                                    goto exitSearch;
-                                }
-                            }
-                        }
-                        else {
-                            // from start of queue to end of array.
-                            for (int i = _queueStart; i < _items.Length; i++)
-                            {
-                                if ((Object)_items[i] == null)
-                                {
-                                    found = true;
-                                    goto exitSearch;
-                                }
-                            }
-
-                            // From 0 to _next
-                            for (int i = 0; i < _next; i++)
-                            {
-                                if ((Object)_items[i] == null)
-                                {
-                                    found = true;
-                                    goto exitSearch;
-                                }
+                                result = true;
+                                return;
                             }
                         }
                     }
-                    else {
-                        EqualityComparer<T> c = EqualityComparer<T>.Default;
-                        if (_queueStart < _next)
+                    else
+                    {
+                        // from start of queue to end of array.
+                        for (int i = _queueStart; i < _items.Length; i++)
                         {
-                            for (int i = 0; i < _count; i++)
+                            if (_items[i] == null)
                             {
-                                if (c.Equals(_items[i], item))
-                                {
-                                    found = true;
-                                    goto exitSearch;
-                                }
+                                result = true;
+                                return;
                             }
                         }
-                        else {
-                            // from start of queue to end of array.
-                            for (int i = _queueStart; i < _items.Length; i++)
-                            {
-                                if (c.Equals(_items[i], item))
-                                {
-                                    found = true;
-                                    goto exitSearch;
-                                }
-                            }
 
-                            // From 0 to _next
-                            for (int i = 0; i < _next; i++)
+                        // From 0 to _next
+                        for (int i = 0; i < _next; i++)
+                        {
+                            if (_items[i] == null)
                             {
-                                if (c.Equals(_items[i], item))
-                                {
-                                    found = true;
-                                    goto exitSearch;
-                                }
+                                result = true;
+                                return;
                             }
                         }
                     }
-
-                    exitSearch:
-                    // Release lock and return
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return found;
                 }
-                spin.SpinOnce();
-            }
+                else
+                {
+                    EqualityComparer<T> c = EqualityComparer<T>.Default;
+                    if (_queueStart < _next)
+                    {
+                        for (int i = 0; i < _count; i++)
+                        {
+                            if (c.Equals(_items[i], item))
+                            {
+                                result = true;
+                                    return;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // from start of queue to end of array.
+                        for (int i = _queueStart; i < _items.Length; i++)
+                        {
+                            if (c.Equals(_items[i], item))
+                            {
+                                result = true;
+                                    return;
+                            }
+                        }
+
+                        // From 0 to _next
+                        for (int i = 0; i < _next; i++)
+                        {
+                            if (c.Equals(_items[i], item))
+                            {
+                                result = true;
+                                    return;
+                            }
+                        }
+                    }
+                }
+            });
+
+            return result;
         }
 
         private void EnsureCapacity(int required)
@@ -440,31 +384,12 @@ namespace Molten.Collections
             return TryDequeue(out item);
         }
 
-        /// <summary>Throws an exception of the specified type and resets the interlocking value.</summary>
-        /// <typeparam name="E">The type of exception to throw.</typeparam>
-        /// <param name="message">The exception message.</param>
-        private void ThrowReleaseLock<E>(string message) where E : Exception
-        {
-            E ex = Activator.CreateInstance(typeof(E), message) as E;
-            Interlocked.Exchange(ref _blockingVal, 0);
-            throw ex;
-        }
+        public override string ToString() => $"Count: {_count}";
 
-        public override string ToString()
-        {
-            return $"Count: {_count}";
-        }
+        public int Count => _count;
 
-        public int Count
-        {
-            get { return _count; }
-        }
+        object ICollection.SyncRoot => _locker;
 
-        public object SyncRoot
-        {
-            get { return _locker; }
-        }
-
-        public bool IsSynchronized { get { return true; } }
+        public bool IsSynchronized => true;
     }
 }

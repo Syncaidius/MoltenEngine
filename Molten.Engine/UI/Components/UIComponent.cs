@@ -77,9 +77,6 @@ namespace Molten.UI
         protected Dictionary<string, UIComponent> _childrenByName;
         bool _renderListDirty;
 
-        int _lockerValue = 0;
-        Thread _lockOwner = null;
-
         UIComponent _parent;
         Scene _scene;
         string _name;
@@ -305,7 +302,7 @@ namespace Molten.UI
         /// <param name="time">A timing instance.</param>
         public virtual void OnUpdateUi(Timing time)
         {
-            LockChildren(() =>
+            Locker.Lock(() =>
             {
                 for (int i = 0; i < _children.Count; i++)
                     _children[i].OnUpdateUi(time);
@@ -324,7 +321,7 @@ namespace Molten.UI
             // It's a potential bottleneck in the renderer if another thread holds the lock when the render thread hits it.
             if (_renderListDirty)
             {
-                LockChildren(() =>
+                Locker.Lock(() =>
                 {
                     _childRenderList.Clear();
                     _childRenderList.AddRange(_children);
@@ -352,36 +349,6 @@ namespace Molten.UI
             }
         }
 
-
-        protected void LockChildren(Action callback)
-        {
-            // If the same thread which holds the lock is calling again, skip the lock logic.
-            // This is so nested lock calls on the same thread cannot cause it to deadlock itself.
-            if (_lockOwner != Thread.CurrentThread)
-            {
-                SpinWait spin = new SpinWait();
-                while (0 != Interlocked.Exchange(ref _lockerValue, 1))
-                    spin.SpinOnce();
-
-                _lockOwner = Thread.CurrentThread;
-                callback();
-                _lockOwner = null;
-                Interlocked.Exchange(ref _lockerValue, 0);
-            }
-            else
-            {
-                callback();
-            }
-        }
-
-        private void ThrowReleaseLock(string message)
-        {
-            _lockOwner = null;
-            Interlocked.Exchange(ref _lockerValue, 0);
-            throw new UIException(this, message);
-
-        }
-
         /// <summary>
         /// Adds a <see cref="UIComponent"/> as a child to the current <see cref="UIComponent"/>. 
         /// The child will be removed from its previous parent if one is set.
@@ -392,7 +359,7 @@ namespace Molten.UI
             if (child == this)
                 throw new UIException(this, "Cannot add a UI component to itself.");
 
-            LockChildren(() =>
+            Locker.Lock(() =>
             {
                 if (child.Parent == this)
                     return;
@@ -400,7 +367,7 @@ namespace Molten.UI
                     child.Parent?.RemoveChild(child);
 
                 if (_childrenByName.ContainsKey(child.Name))
-                    ThrowReleaseLock($"Another child with the same name ({child.Name}) already exists on the current UI component.");
+                    Locker.Throw(new UIException(this, $"Another child with the same name ({child.Name}) already exists on the current UI component."));
 
                 _children.Add(child);
                 _childrenByName.Add(child.Name, child);
@@ -421,10 +388,10 @@ namespace Molten.UI
             if (child == this)
                 throw new UIException(this, "Cannot remove a UI component from itself.");
 
-            LockChildren(() =>
+            Locker.Lock(() =>
             {
                 if (child.Parent != this)
-                    ThrowReleaseLock("Unable to remove child because it does not belong to the current UI component.");
+                    Locker.Throw(new UIException(this, "Unable to remove child because it does not belong to the current UI component."));
 
                 _children.Remove(child);
                 _childrenByName.Remove(child.Name);
@@ -520,7 +487,7 @@ namespace Molten.UI
             ClipPadding.SuppressEvents = false;
 
             // Update bounds of children
-            LockChildren(() =>
+            Locker.Lock(() =>
             {
                 foreach (UIComponent child in _children)
                     child.UpdateBounds();
@@ -614,7 +581,7 @@ namespace Molten.UI
             get
             {
                 UIComponent result = null;
-                LockChildren(() => _childrenByName.TryGetValue(name, out result));
+                Locker.Lock(() => _childrenByName.TryGetValue(name, out result));
                 return result;
             }
         }
@@ -629,7 +596,7 @@ namespace Molten.UI
             get
             {
                 UIComponent result = null;
-                LockChildren(() =>
+                Locker.Lock(() =>
                 {
                     result = _children[index];
                 });
@@ -758,5 +725,10 @@ namespace Molten.UI
         /// Gets or sets the tooltip that is displayed when the cursor hovers over the current <see cref="UIComponent"/>.
         /// </summary>
         public string Tooltip { get; set; }
+
+        /// <summary>
+        /// gets the interlocker associated with the current <see cref="UIComponent"/>.
+        /// </summary>
+        public Interlocker Locker { get; } = new Interlocker();
     }
 }
