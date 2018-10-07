@@ -110,6 +110,7 @@
     <Compile Include="EngineObject.cs" />
     <Compile Include="EnumHelper.cs" />
     <Compile Include="HashHelper.cs" />
+    <Compile Include="Interlocker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferencedObject.cs" />
     <Compile Include="ReflectionHelper.cs" />
