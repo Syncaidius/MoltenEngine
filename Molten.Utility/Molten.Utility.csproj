@@ -116,7 +116,6 @@
     <Compile Include="ReflectionHelper.cs" />
     <Compile Include="ReorderMode.cs" />
     <Compile Include="StringHelper.cs" />
-    <Compile Include="ThreadingHelper.cs" />
     <Compile Include="Timing.cs" />
   </ItemGroup>
   <ItemGroup>

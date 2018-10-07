@@ -15,174 +15,110 @@ namespace Molten.Collections
         ICollection, IReadOnlyDictionary<K, V>, IReadOnlyCollection<KeyValuePair<K, V>>, IEnumerable<KeyValuePair<K, V>>, IEnumerable
     {
         Dictionary<K, V> _dictionary;
-        int _blockingVal;
+        Interlocker _interlocker;
         Type _keyType;
         Type _valueType;
 
-        public ThreadedDictionary()
-        {
-            _dictionary = new Dictionary<K, V>();
-            _keyType = typeof(K);
-            _valueType = typeof(V);
-        }
+        /// <summary>
+        /// Creates a new instance of <see cref="ThreadedDictionary{K, V}"/>.
+        /// </summary>
+        public ThreadedDictionary() : this(new Dictionary<K, V>()) { }
 
         public ThreadedDictionary(IDictionary<K, V> dictionary, IEqualityComparer<K> comparer)
         {
             _dictionary = new Dictionary<K, V>(dictionary, comparer);
+            _keyType = typeof(K);
+            _valueType = typeof(V);
+            _interlocker = new Interlocker();
         }
 
         public ThreadedDictionary(int capacity, IEqualityComparer<K> comparer)
         {
             _dictionary = new Dictionary<K, V>(capacity, comparer);
+            _keyType = typeof(K);
+            _valueType = typeof(V);
+            _interlocker = new Interlocker();
         }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="ThreadedDictionary{K, V}"/>, then populates it with the contents of the provided <see cref="IDictionary{TKey, TValue}"/>.
+        /// </summary>
+        /// <param name="dictionary"></param>
         public ThreadedDictionary(IDictionary<K, V> dictionary)
         {
             _dictionary = new Dictionary<K, V>(dictionary);
-        }
-
-        private void ThrowReleaseLock<T>(string msg) where T : Exception
-        {
-            T e = Activator.CreateInstance(typeof(T), msg) as T;
-            ThrowReleaseLock(e);
-        }
-
-        private void ThrowReleaseLock(Exception e)
-        {
-            Interlocked.Exchange(ref _blockingVal, 0);
-            throw e;
+            _keyType = typeof(K);
+            _valueType = typeof(V);
+            _interlocker = new Interlocker();
         }
 
         object IDictionary.this[object key]
         {
             get
             {
-                SpinWait spin = new SpinWait();
-                while (true)
-                {
-                    if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                    {
-                        V result = default(V);
-                        if (key.GetType() != _keyType)
-                            ThrowReleaseLock<ArgumentException>("The key is not a compatible type.");
+                if (!_keyType.IsAssignableFrom(key.GetType()))
+                    throw new ArgumentException("The key is not a compatible type.");
 
-                        K castedKey = (K)key;
-                        _dictionary.TryGetValue(castedKey, out result);
-
-                        Interlocked.Exchange(ref _blockingVal, 0);
-                        return result;
-                    }
-                    spin.SpinOnce();
-                }
+                V result = default(V);
+                _interlocker.Lock(() => _dictionary.TryGetValue((K)key, out result));
+                return result;
             }
 
             set
             {
-                SpinWait spin = new SpinWait();
-                while (true)
-                {
-                    if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                    {
-                        V result = default(V);
-                        if (key.GetType() != _keyType)
-                            ThrowReleaseLock<ArgumentException>("The key is not a compatible type.");
+                if (!_keyType.IsAssignableFrom(key.GetType()))
+                    throw new ArgumentException("The key is not a compatible type.");
 
-                        K castedKey = (K)key;
-                        _dictionary.TryGetValue(castedKey, out result);
+                if (!_valueType.IsAssignableFrom(value.GetType()))
+                    throw new ArgumentException("The value is not a compatible type.");
 
-                        Interlocked.Exchange(ref _blockingVal, 0);
-                        return;
-                    }
-                    spin.SpinOnce();
-                }
+                _interlocker.Lock(() => _dictionary[(K)key] = (V)value);
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value with the specified key in the dictionary.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
         public V this[K key]
         {
             get
             {
-                SpinWait spin = new SpinWait();
-                while (true)
-                {
-                    if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                    {
-                        V result = default(V);
-                        _dictionary.TryGetValue(key, out result);
-                        Interlocked.Exchange(ref _blockingVal, 0);
-                        return result;
-                    }
-                    spin.SpinOnce();
-                }
+                V result = default(V);
+                _interlocker.Lock(() => _dictionary.TryGetValue(key, out result));
+                return result;
             }
 
-            set
-            {
-                SpinWait spin = new SpinWait();
-                while (true)
-                {
-                    if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                    {
-                        try
-                        {
-                            _dictionary[key] = value;
-                        }
-                        catch { }
-
-                        Interlocked.Exchange(ref _blockingVal, 0);
-                        return;
-                    }
-                    spin.SpinOnce();
-                }
-            }
+            set => _interlocker.Lock(() => _dictionary[key] = value);
         }
 
         /// <summary>Gets the number of entries stored in the dictionary.</summary>
-        public int Count
-        {
-            get { return _dictionary.Count; }
-        }
+        public int Count => _dictionary.Count;
 
         /// <summary>Gets whether or not the dictionary is fixed size. Always false.</summary>
-        public bool IsFixedSize
-        {
-            get { return false; }
-        }
+        public bool IsFixedSize => false;
 
         /// <summary>Gets whether or not the dictionary is read-only.</summary>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Gets whether or not the dictionary is synchronized. Always true.
         /// </summary>
-        public bool IsSynchronized
-        {
-            get { return true; }
-        }
+        public bool IsSynchronized => true;
 
         /// <summary>Gets the dictionary's keys as a collection. Thread-safe.</summary>
         public ICollection<K> Keys
         {
             get
             {
-                SpinWait spin = new SpinWait();
-                while (true)
-                {
-                    if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                    {
-                        ICollection<K> col = _dictionary.Keys;
-                        Interlocked.Exchange(ref _blockingVal, 0);
-                        return col;
-                    }
-                    spin.SpinOnce();
-                }
+                ICollection<K> col = null;
+                _interlocker.Lock(() => col = _dictionary.Keys);
+                return col;
             }
         }
 
-        public object SyncRoot
+        object ICollection.SyncRoot
         {
             get { throw new NotSupportedException("ThreadedDictionary does not support a SyncRoot object. The collection is thread-safe by design."); }
         }
@@ -192,203 +128,141 @@ namespace Molten.Collections
         {
             get
             {
-                SpinWait spin = new SpinWait();
-                while (true)
-                {
-                    if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                    {
-                        ICollection<V> col = _dictionary.Values;
-                        Interlocked.Exchange(ref _blockingVal, 0);
-                        return col;
-                    }
-                    spin.SpinOnce();
-                }
+                ICollection<V> col = null;
+                _interlocker.Lock(() => col = _dictionary.Values);
+                return col;
             }
         }
         /// <summary>
         /// Gets a read-only collection containing all of the values stored within the dictionary.
         /// </summary>
-        IEnumerable<K> IReadOnlyDictionary<K, V>.Keys
-        {
-            get { return this.Keys; }
-        }
+        IEnumerable<K> IReadOnlyDictionary<K, V>.Keys => this.Keys;
 
         /// <summary>
         /// Gets a collection containing all of the keys stored within the dictionary.
         /// </summary>
-        ICollection IDictionary.Keys
-        {
-            get { return this.Keys as ICollection; }
-        }
+        ICollection IDictionary.Keys => this.Keys as ICollection;
 
         /// <summary>
         /// Gets a read-only collection containing all of the values stored within the dictionary.
         /// </summary>
-        IEnumerable<V> IReadOnlyDictionary<K, V>.Values
-        {
-            get { return this.Values; }
-        }
+        IEnumerable<V> IReadOnlyDictionary<K, V>.Values => this.Values;
 
         /// <summary>
         /// Gets a collection containing all of the values stored within the dictionary.
         /// </summary>
-        ICollection IDictionary.Values
-        {
-            get { return this.Values as ICollection; }
-        }
+        ICollection IDictionary.Values => this.Values as ICollection;
 
         /// <summary>Attempts to add the item to the dictionary. Does nothing if the item has already been added.</summary>
         /// <param name="pair">The key-value pair to be added.</param>
         public void Add(KeyValuePair<K, V> pair)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
+            if (pair.Key == null)
+                throw new ArgumentNullException("Key cannot be null");
+
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    if (pair.Key == null)
-                        ThrowReleaseLock<ArgumentNullException>("Key cannot be null");
-
-                    if (!_dictionary.ContainsKey(pair.Key))
-                        _dictionary.Add(pair.Key, pair.Value);
-
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+                if (!_dictionary.ContainsKey(pair.Key))
+                    _dictionary.Add(pair.Key, pair.Value);
+                else
+                    _interlocker.Throw<ArgumentException>("A matching key already exists in the dictionary.");
+            });
         }
 
         void IDictionary.Add(object key, object value)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
+            if (key == null)
+                throw new ArgumentNullException("Key cannot be null");
+
+            if (!_keyType.IsAssignableFrom(key.GetType()))
+                throw new ArgumentNullException("Key is not of a compatible type.");
+
+            if (!_valueType.IsAssignableFrom(value.GetType()))
+                throw new ArgumentNullException("Value is not a compatible type.");
+
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    if (key == null)
-                        ThrowReleaseLock<ArgumentNullException>("Key cannot be null");
-
-                    if (!_keyType.IsAssignableFrom(key.GetType()))
-                        ThrowReleaseLock<ArgumentException>("Key is not of a compatible type.");
-
-                    if (!_valueType.IsAssignableFrom(value.GetType()))
-                        ThrowReleaseLock<ArgumentException>("Value is not a compatible type.");
-
-                    if (!_dictionary.ContainsKey((K)key))
-                        _dictionary.Add((K)key, (V)value);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+                if (!_dictionary.ContainsKey((K)key))
+                    _dictionary.Add((K)key, (V)value);
+                else
+                    _interlocker.Throw<ArgumentException>("A matching key already exists in the dictionary.");
+            });
         }
 
         public void Add(K key, V value)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
+            if (key == null)
+                throw new ArgumentNullException("Key cannot be null");
+
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    if (key == null)
-                        ThrowReleaseLock<ArgumentNullException>("Key cannot be null");
-
-                    if (!_dictionary.ContainsKey(key))
-                        _dictionary.Add(key, value);
-
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+                if (!_dictionary.ContainsKey(key))
+                    _dictionary.Add(key, value);
+                else
+                    _interlocker.Throw<ArgumentException>("A matching key already exists in the dictionary.");
+            });
         }
 
         public bool TryAdd(K key, V value)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    if (key == null)
-                        ThrowReleaseLock<ArgumentNullException>("Key cannot be null");
+            if (key == null)
+                throw new ArgumentNullException("Key cannot be null");
 
-                    bool result = !_dictionary.ContainsKey(key);
-                    if (result)
-                        _dictionary.Add(key, value);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
+            bool result = false;
+            _interlocker.Lock(() =>
+            {
+                if (!_dictionary.ContainsKey(key))
+                {
+                    _dictionary.Add(key, value);
+                    result = true;
                 }
-                spin.SpinOnce();
-            }
+            });
+
+            return result;
         }
 
         public void Clear()
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    _dictionary.Clear();
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+            _interlocker.Lock(() => _dictionary.Clear());
         }
 
-        /// <summary>Checks if a key is contained in the dictionary.</summary>
-        /// <param name="key"></param>
+        /// <summary>
+        /// Returns true if the dictionary contains the specified key. Returns false if the pair is not found.
+        /// </summary>
+        /// <param name="key">The key.</param>
         /// <returns></returns>
-        public bool Contains(object key)
+        bool IDictionary.Contains(object key)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    if (key.GetType() != _keyType)
-                        ThrowReleaseLock<ArgumentException>("Key is not of a compatible type.");
+            if (!_keyType.IsAssignableFrom(key.GetType()))
+                throw new ArgumentNullException("Key is not of a compatible type.");
 
-                    K castKey = (K)key;
-                    bool result = _dictionary.ContainsKey(castKey);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _dictionary.ContainsKey((K)key));
+            return result;
         }
 
-        public bool Contains(KeyValuePair<K, V> item)
+        /// <summary>
+        /// Returns true if the dictionary contains the specified key-value pair. Returns false if the pair is not found.
+        /// </summary>
+        /// <param name="pair">The key-value pair.</param>
+        /// <returns></returns>
+        public bool Contains(KeyValuePair<K, V> pair)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _dictionary.Contains(item);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _dictionary.Contains(pair));
+            return result;
         }
 
+        /// <summary>
+        /// Returns true if the dictionary contains the specified key. Returns false if the key is not found.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
         public bool ContainsKey(K key)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _dictionary.ContainsKey(key);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _dictionary.ContainsKey(key));
+            return result;
         }
 
         /// <summary>Copies the contents of the dictionary to an array.</summary>
@@ -396,244 +270,133 @@ namespace Molten.Collections
         /// <param name="arrayIndex">The index to start placing the copied data at.</param>
         public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    KeyValuePair<K, V>[] data = _dictionary.ToArray();
-                    Array.Copy(data, 0, array, arrayIndex, data.Length);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+                KeyValuePair<K, V>[] data = _dictionary.ToArray();
+                Array.Copy(data, 0, array, arrayIndex, data.Length);
+            });
         }
 
-        public void CopyTo(Array array, int index)
+        /// <summary>Copies the contents of the dictionary to an array.</summary>
+        /// <param name="array">The array to copy to.</param>
+        /// <param name="arrayIndex">The index to start placing the copied data at.</param>
+        public void CopyTo(Array array, int arrayIndex)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    KeyValuePair<K, V>[] data = _dictionary.ToArray();
-                    Array.Copy(data, 0, array, index, data.Length);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+                KeyValuePair<K, V>[] data = _dictionary.ToArray();
+                Array.Copy(data, 0, array, arrayIndex, data.Length);
+            });
         }
 
+        /// <summary>
+        /// Gets an enumerator for the dictioanry.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    IEnumerator<KeyValuePair<K, V>> e = _dictionary.GetEnumerator();
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return e;
-                }
-                spin.SpinOnce();
-            }
+            IEnumerator<KeyValuePair<K, V>> enumerator = null;
+            _interlocker.Lock(() => enumerator = _dictionary.GetEnumerator());
+            return enumerator;
         }
 
-        public void Remove(object key)
+        /// <summary>
+        /// Removes an object with the specified key from the dictionary.
+        /// </summary>
+        /// <param name="key">The key of the object to be removed.</param>
+         void IDictionary.Remove(object key)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    if (key.GetType() != _keyType)
-                        ThrowReleaseLock<ArgumentException>("Key is not of a compatible type.");
+            if (!_keyType.IsAssignableFrom(key.GetType()))
+                throw new ArgumentNullException("Key is not of a compatible type.");
 
-                    K castKey = (K)key;
-                    _dictionary.Remove(castKey);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+            _interlocker.Lock(() => _dictionary.Remove((K)key));
         }
 
         public bool Remove(KeyValuePair<K, V> item)
         {
-            throw new NotSupportedException("ThreadedDictionary does not support adding key-value pairs.");
+            bool result = false;
+            _interlocker.Lock(() => result = _dictionary.Remove(item.Key));
+            return result;
         }
 
         public bool Remove(K key)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _dictionary.Remove(key);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            _interlocker.Lock(() => result = _dictionary.Remove(key));
+            return result;
         }
 
         /// <summary>Attempts to retrieve an item from the dictionary, then remove it.</summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The output destination of the retrieved value. If no value is retrieved, <see cref="default(V)"/> will be returned.</param>
         /// <returns></returns>
         public bool TryRemoveValue(K key, out V value)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _dictionary.TryGetValue(key, out value);
-                    if (result)
-                        _dictionary.Remove(key);
+            bool result = false;
+            V temp = default(V);
 
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            _interlocker.Lock(() =>
+            {
+                if (_dictionary.TryGetValue(key, out temp))
+                    result = _dictionary.Remove(key);
+            });
+            value = temp;
+            return result;
         }
 
         public bool TryGetValue(K key, out V value)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    bool result = _dictionary.TryGetValue(key, out value);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return result;
-                }
-                spin.SpinOnce();
-            }
+            bool result = false;
+            V temp = default(V);
+            _interlocker.Lock(() =>  result = _dictionary.TryGetValue(key, out temp));
+            value = temp;
+            return result;
         }
 
         IDictionaryEnumerator IDictionary.GetEnumerator()
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    IDictionaryEnumerator e = _dictionary.GetEnumerator();
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return e;
-                }
-                spin.SpinOnce();
-            }
-        }
-
-        IEnumerator<KeyValuePair<K, V>> IEnumerable<KeyValuePair<K, V>>.GetEnumerator()
-        {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    IEnumerator<KeyValuePair<K, V>> e = _dictionary.GetEnumerator();
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return e;
-                }
-                spin.SpinOnce();
-            }
+            IDictionaryEnumerator enumerator = null;
+            _interlocker.Lock(() => _dictionary.GetEnumerator());
+            return enumerator;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    IEnumerator e = _dictionary.GetEnumerator();
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return e;
-                }
-                spin.SpinOnce();
-            }
+            IEnumerator enumerator = null;
+            _interlocker.Lock(() => _dictionary.GetEnumerator());
+            return enumerator;
         }
 
+        /// <summary>
+        /// Copies the <see cref="KeyValuePair{TKey, TValue}"/> objects contained in the dictionary, to the specified array.
+        /// </summary>
+        /// <param name="array">The destination array.</param>
+        /// <param name="index">The index in the destination array at which to begin copying.</param>
         public void CopyTo(V[] array, int index)
         {
-            SpinWait spin = new SpinWait();
-            while (true)
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    ICollection<V> data = _dictionary.Values;
-                    data.CopyTo(array, index);
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-                spin.SpinOnce();
-            }
+                ICollection<V> data = _dictionary.Values;
+                data.CopyTo(array, index);
+            });
         }
 
         /// <summary>Copies all dictionary keys to an array and returns it.</summary>
         /// <returns></returns>
         public K[] ToKeyArray()
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    K[] data = _dictionary.Keys.ToArray();
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return data;
-                }
-                spin.SpinOnce();
-            }
+            K[] result = null;
+            _interlocker.Lock(() => result = _dictionary.Keys.ToArray());
+            return result;
         }
 
         /// <summary>Copies all dictionary values to an array and returns it.</summary>
         /// <returns></returns>
         public V[] ToValueArray()
         {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    V[] data = _dictionary.Values.ToArray();
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return data;
-                }
-                spin.SpinOnce();
-            }
-        }
-
-        /// <summary>Waits until the dictionary interlock can be taken. Returns 1 when successful.</summary>
-        /// <returns></returns>
-        public int WaitInterlock()
-        {
-            SpinWait spin = new SpinWait();
-            while (true)
-            {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                    return 1;
-                else
-                    spin.SpinOnce();
-            }
-        }
-
-        /// <summary>Releases the interlock value if the provided value is 1.</summary>
-        /// <param name="val">The interlocking value.</param>
-        public void ReleaseInterlock(int val)
-        {
-            if (val != 1)
-                return;
-
-            Interlocked.Exchange(ref _blockingVal, val);
+            V[] result = null;
+            _interlocker.Lock(() => result = _dictionary.Values.ToArray());
+            return result;
         }
     }
 }

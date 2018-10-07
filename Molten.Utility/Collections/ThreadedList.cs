@@ -24,6 +24,9 @@ namespace Molten.Collections
         object _locker;
         Interlocker _interlocker;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="ThreadedList{T}"/>.
+        /// </summary>
         public ThreadedList()
         {
             _interlocker = new Interlocker();
@@ -32,6 +35,10 @@ namespace Molten.Collections
             _locker = new object();
         }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="ThreadedList{T}"/>.
+        /// </summary>
+        /// <param name="initialCapacity">The initial capacity of the list.</param>
         public ThreadedList(int initialCapacity)
         {
             if (initialCapacity < 0)

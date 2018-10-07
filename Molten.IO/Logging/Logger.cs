@@ -17,7 +17,7 @@ namespace Molten
         static string[] _traceSeparators = { Environment.NewLine };
         static ThreadedList<Logger> _loggers;
 
-        int _blockingVal;
+        Interlocker _interlocker;
 
         static Logger()
         {
@@ -28,7 +28,7 @@ namespace Molten
         {
             _errorBuilder = new StringBuilder();
             _outputs = new List<ILogOutput>();
-            _blockingVal = 0;
+            _interlocker = new Interlocker();
         }
 
         /// <summary>Gets a new instance of <see cref="Logger"/>. All logs will be closed if <see cref="DisposeAll"/> is called.</summary>
@@ -97,41 +97,40 @@ namespace Molten
             WriteLine($"[DEBUG] {value}", color);
         }
 
-        public void WriteLine(string value, Color color)
+        /// <summary>
+        /// Writes a line of text to all of the attached <see cref="ILogOutput"/> instances.
+        /// </summary>
+        /// <param name="msg">The message to be written to the logger.</param>
+        /// <param name="color">The preferred color that the text should be written in.</param>
+        public void WriteLine(string msg, Color color)
         {
-            SpinWait spin = new SpinWait();
-
-            while (0 != Interlocked.Exchange(ref _blockingVal, 1))
-                spin.SpinOnce();
-
-            for (int i = 0; i < _outputs.Count; i++)
-                _outputs[i].WriteLine(value, color);
+            _interlocker.Lock(() =>
+            {
+                for (int i = 0; i < _outputs.Count; i++)
+                    _outputs[i].WriteLine(msg, color);
 #if DEBUG
-            Debug.WriteLine(value);
+                Debug.WriteLine(msg);
 #endif
-            Interlocked.Exchange(ref _blockingVal, 0);
-            return;
+            });
         }
 
+        /// <summary>
+        /// Clears the logger and all of it's attached <see cref="ILogOutput"/> instances.
+        /// </summary>
         public void Clear()
         {
-            SpinWait spin = new SpinWait();
-
-            while (true)
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    for (int i = 0; i < _outputs.Count; i++)
-                        _outputs[i].Clear();
-
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-
-                spin.SpinOnce();
-            }
+                for (int i = 0; i < _outputs.Count; i++)
+                    _outputs[i].Clear();
+            });
         }
 
+        /// <summary>
+        /// Writes an exception (and it's stack-trace) to the logger and all of it's attached <see cref="ILogOutput"/> instances.
+        /// </summary>
+        /// <param name="e">The exception.</param>
+        /// <param name="handled">If true, the exception will be marked as handled in it's log message.</param>
         public void WriteError(Exception e, bool handled = false)
         {
             string[] st = e.StackTrace.Split(_traceSeparators, StringSplitOptions.RemoveEmptyEntries);
@@ -198,41 +197,52 @@ namespace Molten
 
         public void Write(string value, Color color)
         {
-            SpinWait spin = new SpinWait();
-
-            while (true)
+            _interlocker.Lock(() =>
             {
-                if (0 == Interlocked.Exchange(ref _blockingVal, 1))
-                {
-                    for (int i = 0; i < _outputs.Count; i++)
-                        _outputs[i].Write(value, color);
+                for (int i = 0; i < _outputs.Count; i++)
+                    _outputs[i].Write(value, color);
 
 #if DEBUG
-                    Debug.Write(value);
+                Debug.Write(value);
 #endif
-                    Interlocked.Exchange(ref _blockingVal, 0);
-                    return;
-                }
-
-                spin.SpinOnce();
-            }
+            });
         }
 
+        /// <summary>
+        /// Disposes the logger and all of it's attached <see cref="ILogOutput"/>.
+        /// </summary>
         public void Dispose()
         {
-            for (int i = 0; i < _outputs.Count; i++)
-                _outputs[i].Dispose();
+            _interlocker.Lock(() =>
+            {
+                for (int i = 0; i < _outputs.Count; i++)
+                    _outputs[i].Dispose();
+            });
         }
 
-        /// <summary>The default color of errors when calling <see cref="WriteError(Exception, bool)"/> or <see cref="Error(string)"/>.</summary>
+        /// <summary>
+        /// Gets or sets he default color of errors when calling <see cref="WriteError(Exception, bool)"/> or <see cref="WriteError(string)"/>.
+        /// </summary>
         public Color ErrorColor { get; set; } = Color.Red;
 
+        /// <summary>
+        /// Gets or sets the color for warning messages.
+        /// </summary>
         public Color WarningColor { get; set; } = new Color(200, 200, 100, 255);
 
+        /// <summary>
+        /// Gets or sets the color for debug messages.
+        /// </summary>
         public Color DebugColor { get; set; } = new Color(100, 100, 100, 255);
 
+        /// <summary>
+        /// Gets or sets the prefix for errors messages.
+        /// </summary>
         public string ErrorPrefix { get; set; } = "[ERROR]";
 
+        /// <summary>
+        /// Gets or sets the prix for warning messages.
+        /// </summary>
         public string WarningPrefix { get; set; } = "[WARNING]";
     }
 }
