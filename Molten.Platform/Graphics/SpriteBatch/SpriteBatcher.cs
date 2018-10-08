@@ -382,10 +382,13 @@ namespace Molten.Graphics
             if (pointColors.Count == 0)
                 throw new SpriteBatcherException(this, "There must be at least one color available in the pointColors list.");
 
-            if (points.Count < 2)
+            if (startIndex + count >= points.Count)
+                throw new SpriteBatcherException(this, "The sum of the start index and the count must be less than the point count.");
+
+            if (count < 2)
                 throw new SpriteBatcherException(this, "There must be at least 2 points in the point list.");
 
-            if (points.Count == 2)
+            if (count == 2)
             {
                 int secondCol = pointColors.Count > 1 ? 1 : 0;
                 DrawLine(points[0], points[1], pointColors[0], pointColors[secondCol], thickness);
@@ -395,7 +398,7 @@ namespace Molten.Graphics
                 int lineCount = points.Count - 1;
 
                 Vector2F p1, p2;
-                int last = points.Count - 1;
+                int last = startIndex + count - 1;
                 int prev = 0;
                 int next = 1;
                 Color lastCol = pointColors[pointColors.Count - 1];

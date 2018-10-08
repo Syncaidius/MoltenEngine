@@ -10,18 +10,29 @@ namespace Molten.Graphics.Overlays
     public class RenderProfilerOverlay : IRenderOverlay
     {
         Color _col = Color.Yellow;
+        GraphRenderer _fpsGraph;
+        ulong _lastFrameID = ulong.MaxValue;
 
-        internal RenderProfilerOverlay() { }
+        internal RenderProfilerOverlay()
+        {
+            _fpsGraph = new GraphRenderer(1000);
+        }
 
-        public void OnRender(Timing time, SpriteBatcher sb, SpriteFont font, RenderProfiler rendererProfiler, RenderProfiler sceneProfiler, RenderProfiler cameraProfiler)
+        public void OnRender(Timing time, SpriteBatcher sb, SpriteFont font, RenderProfiler rendererProfiler, RenderProfiler sceneProfiler, RenderCamera camera)
         {
             Vector2F textPos = new Vector2F(5, 5);
             float lineHeight = font.GetHeight('|');
+            float graphWidth = 400;
+            _fpsGraph.MaxPoints = time.TargetUPS * 10; // Aim for 10 seconds worth of frames
+            _fpsGraph.Bounds = new RectangleF(camera.OutputSurface.Width - graphWidth - 5, 5, graphWidth, 200);
 
             // Renderer frame profiler stats.
             RenderProfiler.Snapshot frame = rendererProfiler.Previous;
             if (frame != null)
             {
+                if (_lastFrameID != frame.FrameID)
+                    _fpsGraph.Add(time.FPS);
+
                 sb.DrawString(font, "[FRAME]", textPos, _col);
                 textPos.X += 5;
                 DrawStats(time, sb, font, frame, ref textPos, lineHeight);
@@ -37,6 +48,8 @@ namespace Molten.Graphics.Overlays
                 DrawStats(time, sb, font, frame, ref textPos, lineHeight);
                 textPos.X -= 5;
             }
+
+            _fpsGraph.Render(sb, font);
         }
 
         private void DrawStats(Timing time, SpriteBatcher sb, SpriteFont font, RenderProfiler.Snapshot frame, ref Vector2F textPos, float lineHeight)

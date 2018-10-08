@@ -17,14 +17,14 @@ namespace Molten.Graphics.Overlays
             _overlays.Add(new RenderProfilerOverlay());
         }
 
-        public void Render(Timing time, SpriteBatcher sb, RenderProfiler rendererProfiler, RenderProfiler sceneProfiler, RenderProfiler cameraProfiler)
+        public void Render(Timing time, SpriteBatcher sb, RenderProfiler rendererProfiler, RenderProfiler sceneProfiler, RenderCamera camera)
         {
             if (Font == null)
                 return;
 
             _overlays.ForInterlock(0, 1, (index, overlay) =>
             {
-                overlay.OnRender(time, sb, Font, rendererProfiler, sceneProfiler, cameraProfiler);
+                overlay.OnRender(time, sb, Font, rendererProfiler, sceneProfiler, camera);
                 return false;
             });
         }

@@ -55,7 +55,7 @@ namespace Molten.Graphics
                     renderer.RenderSceneLayer(device, layerData, camera);
 
                     if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
-                        renderer.Overlay.Render(time, renderer.SpriteBatcher, renderer.Profiler, sceneData.Profiler, camera.Profiler);
+                        renderer.Overlay.Render(time, renderer.SpriteBatcher, renderer.Profiler, sceneData.Profiler, camera);
                     renderer.SpriteBatcher.Flush(device, _orthoCamera, _dummyData);
                     device.EndDraw();
                     break;

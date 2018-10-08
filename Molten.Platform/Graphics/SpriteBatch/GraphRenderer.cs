@@ -13,11 +13,10 @@ namespace Molten.Graphics
         int _populated;
         double[] _values;
         Interlocker _interlocker;
-        Vector2F _pixelScale;
         Vector2F[] _points;
         RectangleF _bounds;
 
-        public void MaxPoints(int maxPoints)
+        public GraphRenderer(int maxPoints)
         {
             _interlocker = new Interlocker();
             _maxPoints = maxPoints;
@@ -30,7 +29,7 @@ namespace Molten.Graphics
         {
             _interlocker.Lock(() =>
             {
-                if (_populated == _values.Length) {
+                if (_populated == _maxPoints) {
                     Array.Copy(_values, 1, _values, 0, _maxPoints - 1);
                     _populated--;
                 }
@@ -63,13 +62,14 @@ namespace Molten.Graphics
                     highest = val > highest ? val : highest;
                     average += val;
                 }
+
+                average /= _populated;
             });
 
-            average /= _populated;
             range = (float)(highest - lowest);
             pixelScale = new Vector2F()
             {
-                X = _bounds.Width / range,
+                X = _bounds.Width / (float)_maxPoints,
                 Y = _bounds.Height / range,
             };
 
@@ -81,12 +81,18 @@ namespace Molten.Graphics
                     val = _values[i] - lowest;
                     _points[i] = new Vector2F()
                     {
-                        X = plotArea.Left + (float)(pixelScale.X * val),
-                        Y = plotArea.Top + (float)(pixelScale.Y * val),
+                        X = plotArea.Left + (float)(pixelScale.X * i),
+                        Y = plotArea.Bottom - (float)(pixelScale.Y * val),
                     };
                 }
 
-                sb.DrawLinePath(_points, 0, _populated, LineColor, 1);
+                sb.DrawRect(_bounds, BackgroundColor);
+
+                float averageLineY = plotArea.Bottom - (float)(pixelScale.Y * average);
+                sb.DrawLine(new Vector2F(plotArea.Left, averageLineY), new Vector2F(plotArea.Right, averageLineY), AverageLineColor, 1);
+                if (_populated > 1)
+                    sb.DrawLinePath(_points, 0, _populated, LineColor, 1);
+
             });
         }
 
@@ -107,5 +113,21 @@ namespace Molten.Graphics
         public Color LineColor { get; set; } = Color.White;
 
         public Color AverageLineColor { get; set; } = Color.Yellow;
+
+        public Color BackgroundColor { get; set; } = new Color(20, 20, 20, 200);
+
+        public int MaxPoints
+        {
+            get => _maxPoints;
+            set
+            {
+                _maxPoints = value;
+                if (_maxPoints > _values.Length)
+                {
+                    Array.Resize(ref _values, _maxPoints);
+                    Array.Resize(ref _points, _maxPoints);
+                }
+            }
+        }
     }
 }
