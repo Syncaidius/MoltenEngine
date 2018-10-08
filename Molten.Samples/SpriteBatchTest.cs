@@ -57,7 +57,7 @@ namespace Molten.Samples
         {
             _sprites = new List<Sprite>();
 
-            for(int i = 0; i < 100; i++)
+            for(int i = 0; i < 300; i++)
             {
                 _sprites.Add(new Sprite()
                 {
@@ -77,6 +77,7 @@ namespace Molten.Samples
 
                     Texture = tex,
                     Source = new Rectangle(0, 0, 128, 128),
+                    Scale = new Vector2F(Rng.Next(25, 101), Rng.Next(25,101)) / 100,
                     Origin = new Vector2F(0.5f),
                 });
             }

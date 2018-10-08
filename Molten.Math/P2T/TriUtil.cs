@@ -20,9 +20,9 @@ namespace Molten
             if (val > -EPSILON && val < EPSILON)
                 return Winding.Collinear;
             else if (val > 0)
-                return Winding.CCW;
+                return Winding.CounterClockwise;
 
-            return Winding.CW;
+            return Winding.Clockwise;
         }
 
         public static bool InScanArea(TriPoint pa, TriPoint pb, TriPoint pc, TriPoint pd)

@@ -23,9 +23,9 @@ namespace Molten.DoublePrecision {     public static class DoubleHelper   
             if (val > -TriUtil.EPSILON && val < TriUtil.EPSILON)
                 return Winding.Collinear;
             else if (val > 0)
-                return Winding.CCW;
+                return Winding.CounterClockwise;
 
-            return Winding.CW;
+            return Winding.Clockwise;
         }
 
         public static int GetWindingSign(Vector2D pa, Vector2D pb, Vector2D pc)

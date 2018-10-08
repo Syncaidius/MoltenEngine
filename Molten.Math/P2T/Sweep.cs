@@ -137,7 +137,7 @@ namespace Molten
             {
                 // Need to decide if we are rotating CW or CCW to get to a triangle
                 // that will cross edge
-                if (o1 == Winding.CW)
+                if (o1 == Winding.Clockwise)
                 {
                     triangle = triangle.NeighborCCW(point);
                 }
@@ -512,7 +512,7 @@ namespace Molten
 
         private void FillBasin(SweepContext tcx, Node node)
         {
-            if (TriUtil.Orient2d(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CCW)
+            if (TriUtil.Orient2d(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CounterClockwise)
                 tcx.Basin.LeftNode = node.Next.Next;
             else
                 tcx.Basin.LeftNode = node.Next;
@@ -565,7 +565,7 @@ namespace Molten
             else if (node.Prev == tcx.Basin.LeftNode)
             {
                 Winding o = TriUtil.Orient2d(node.Point, node.Next.Point, node.Next.Next.Point);
-                if (o == Winding.CW)
+                if (o == Winding.Clockwise)
                     return;
 
                 node = node.Next;
@@ -573,7 +573,7 @@ namespace Molten
             else if (node.Next == tcx.Basin.RightNode)
             {
                 Winding o = TriUtil.Orient2d(node.Point, node.Prev.Point, node.Prev.Prev.Point);
-                if (o == Winding.CCW)
+                if (o == Winding.CounterClockwise)
                     return;
 
                 node = node.Prev;
@@ -619,7 +619,7 @@ namespace Molten
             while (node.Next.Point.X < edge.P.X)
             {
                 // Check if next node is below the edge
-                if (TriUtil.Orient2d(edge.Q, node.Next.Point, edge.P) == Winding.CCW)
+                if (TriUtil.Orient2d(edge.Q, node.Next.Point, edge.P) == Winding.CounterClockwise)
                     FillRightBelowEdgeEvent(tcx, edge, node);
                 else
                     node = node.Next;
@@ -630,7 +630,7 @@ namespace Molten
         {
             if (node.Point.X < edge.P.X)
             {
-                if (TriUtil.Orient2d(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CCW)
+                if (TriUtil.Orient2d(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CounterClockwise)
                 {
                     // Concave
                     FillRightConcaveEdgeEvent(tcx, edge, node);
@@ -651,10 +651,10 @@ namespace Molten
             if (node.Next.Point != edge.P)
             {
                 // Next above or below edge?
-                if (TriUtil.Orient2d(edge.Q, node.Next.Point, edge.P) == Winding.CCW)
+                if (TriUtil.Orient2d(edge.Q, node.Next.Point, edge.P) == Winding.CounterClockwise)
                 {
                     // Below
-                    if (TriUtil.Orient2d(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CCW)
+                    if (TriUtil.Orient2d(node.Point, node.Next.Point, node.Next.Next.Point) == Winding.CounterClockwise)
                     {
                         // Next is concave
                         FillRightConcaveEdgeEvent(tcx, edge, node);
@@ -670,7 +670,7 @@ namespace Molten
         private void FillRightConvexEdgeEvent(SweepContext tcx, Edge edge, Node node)
         {
             // Next concave or convex?
-            if (TriUtil.Orient2d(node.Next.Point, node.Next.Next.Point, node.Next.Next.Next.Point) == Winding.CCW)
+            if (TriUtil.Orient2d(node.Next.Point, node.Next.Next.Point, node.Next.Next.Next.Point) == Winding.CounterClockwise)
             {
                 // Concave
                 FillRightConcaveEdgeEvent(tcx, edge, node.Next);
@@ -679,7 +679,7 @@ namespace Molten
             {
                 // Convex
                 // Next above or below edge?
-                if (TriUtil.Orient2d(edge.Q, node.Next.Next.Point, edge.P) == Winding.CCW)
+                if (TriUtil.Orient2d(edge.Q, node.Next.Next.Point, edge.P) == Winding.CounterClockwise)
                 {
                     // Below
                     FillRightConvexEdgeEvent(tcx, edge, node.Next);
@@ -696,7 +696,7 @@ namespace Molten
             while (node.Prev.Point.X > edge.P.X)
             {
                 // Check if next node is below the edge
-                if (TriUtil.Orient2d(edge.Q, node.Prev.Point, edge.P) == Winding.CW)
+                if (TriUtil.Orient2d(edge.Q, node.Prev.Point, edge.P) == Winding.Clockwise)
                     FillLeftBelowEdgeEvent(tcx, edge, node);
                 else
                     node = node.Prev;
@@ -707,7 +707,7 @@ namespace Molten
         {
             if (node.Point.X > edge.P.X)
             {
-                if (TriUtil.Orient2d(node.Point, node.Prev.Point, node.Prev.Prev.Point) == Winding.CW)
+                if (TriUtil.Orient2d(node.Point, node.Prev.Point, node.Prev.Prev.Point) == Winding.Clockwise)
                 {
                     // Concave
                     FillLeftConcaveEdgeEvent(tcx, edge, node);
@@ -725,7 +725,7 @@ namespace Molten
         private void FillLeftConvexEdgeEvent(SweepContext tcx, Edge edge, Node node)
         {
             // Next concave or convex?
-            if (TriUtil.Orient2d(node.Prev.Point, node.Prev.Prev.Point, node.Prev.Prev.Prev.Point) == Winding.CW)
+            if (TriUtil.Orient2d(node.Prev.Point, node.Prev.Prev.Point, node.Prev.Prev.Prev.Point) == Winding.Clockwise)
             {
                 // Concave
                 FillLeftConcaveEdgeEvent(tcx, edge, node.Prev);
@@ -734,7 +734,7 @@ namespace Molten
             {
                 // Convex
                 // Next above or below edge?
-                if (TriUtil.Orient2d(edge.Q, node.Prev.Prev.Point, edge.P) == Winding.CW)
+                if (TriUtil.Orient2d(edge.Q, node.Prev.Prev.Point, edge.P) == Winding.Clockwise)
                 {
                     // Below
                     FillLeftConvexEdgeEvent(tcx, edge, node.Prev);
@@ -752,10 +752,10 @@ namespace Molten
             if (node.Prev.Point != edge.P)
             {
                 // Next above or below edge?
-                if (TriUtil.Orient2d(edge.Q, node.Prev.Point, edge.P) == Winding.CW)
+                if (TriUtil.Orient2d(edge.Q, node.Prev.Point, edge.P) == Winding.Clockwise)
                 {
                     // Below
-                    if (TriUtil.Orient2d(node.Point, node.Prev.Point, node.Prev.Prev.Point) == Winding.CW)
+                    if (TriUtil.Orient2d(node.Point, node.Prev.Point, node.Prev.Prev.Point) == Winding.Clockwise)
                     {
                         // Next is concave
                         FillLeftConcaveEdgeEvent(tcx, edge, node);
@@ -813,7 +813,7 @@ namespace Molten
         {
             int edge_index;
 
-            if (o == Winding.CCW)
+            if (o == Winding.CounterClockwise)
             {
                 // ot is not crossing edge after flip
                 edge_index = ot.EdgeIndex(p, op);
@@ -835,12 +835,12 @@ namespace Molten
         private TriPoint NextFlipPoint(TriPoint ep, TriPoint eq, Triangle ot, TriPoint op)
         {
             Winding o2d = TriUtil.Orient2d(eq, op, ep);
-            if (o2d == Winding.CW)
+            if (o2d == Winding.Clockwise)
             {
                 // Right
                 return ot.PointCCW(op);
             }
-            else if (o2d == Winding.CCW)
+            else if (o2d == Winding.CounterClockwise)
             {
                 // Left
                 return ot.PointCW(op);

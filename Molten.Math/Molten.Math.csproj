@@ -7,7 +7,7 @@
     <ProjectGuid>{E59938AF-A9D4-4963-B4AC-61E53D05527E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Molten.Math</RootNamespace>
+    <RootNamespace>Molten</RootNamespace>
     <AssemblyName>Molten.Math</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -99,7 +99,7 @@
     <Compile Include="BoundingFrustum.cs" />
     <Compile Include="BoundingSphere.cs" />
     <Compile Include="ByteMath.cs" />
-    <Compile Include="Collision.cs" />
+    <Compile Include="CollisionHelper.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Color.Palette.cs" />
     <Compile Include="Color3.cs" />
