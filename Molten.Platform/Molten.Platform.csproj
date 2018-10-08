@@ -70,12 +70,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Graphics\Overlays\RenderProfilerOverlay.cs" />
+    <Compile Include="Graphics\SpriteBatch\GraphRenderer.cs" />
+    <Compile Include="Graphics\Overlays\IRenderOverlay.cs" />
     <Compile Include="Gamepad\GamepadButtonFlags.cs" />
     <Compile Include="Gamepad\GamepadIndex.cs" />
     <Compile Include="Gamepad\GamepadSubType.cs" />
     <Compile Include="Gamepad\IGamepadDevice.cs" />
     <Compile Include="Gamepad\IGamepadStick.cs" />
     <Compile Include="Gamepad\IGamepadTrigger.cs" />
+    <Compile Include="Graphics\Overlays\OverlayProvider.cs" />
     <Compile Include="Graphics\Textures\MagickTextureWriter.cs" />
     <Compile Include="IClipboard.cs" />
     <Compile Include="IInputDevice.cs" />

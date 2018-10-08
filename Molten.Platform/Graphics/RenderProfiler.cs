@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
             public int ShaderSwaps { get; set; }
 
-            public int RTSwaps { get; set; }
+            public int SurfaceSwaps { get; set; }
 
             /// <summary>The total number of triangles that were rendered in the previous frame.</summary>
             public int PrimitiveCount { get; set; }
@@ -61,7 +61,7 @@ namespace Molten.Graphics
                 Bindings = 0;
                 BufferSwaps = 0;
                 ShaderSwaps = 0;
-                RTSwaps = 0;
+                SurfaceSwaps = 0;
                 PrimitiveCount = 0;
                 Time = 0;
                 TargetTime = 0;
@@ -79,7 +79,7 @@ namespace Molten.Graphics
             {
                 DrawCalls += other.DrawCalls;
                 Bindings += other.Bindings;
-                RTSwaps += other.RTSwaps;
+                SurfaceSwaps += other.SurfaceSwaps;
                 PrimitiveCount += other.PrimitiveCount;
                 BufferSwaps += other.BufferSwaps;
                 ShaderSwaps += other.ShaderSwaps;

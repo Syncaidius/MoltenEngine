@@ -9,13 +9,13 @@ namespace Molten.Graphics
 {
     internal class FinalizeStep : RenderStepBase
     {
-        RenderCamera _camFinalize;
+        RenderCamera _orthoCamera;
         ObjectRenderData _dummyData;
 
         internal override void Initialize(RendererDX11 renderer, int width, int height)
         {
             _dummyData = new ObjectRenderData();
-            _camFinalize = new RenderCamera(RenderCameraMode.Orthographic);
+            _orthoCamera = new RenderCamera(RenderCameraMode.Orthographic);
             UpdateSurfaces(renderer, width, height);
         }
 
@@ -34,12 +34,12 @@ namespace Molten.Graphics
             switch (link.Chain.First.Step)
             {
                 case StartStep start:
-                    _camFinalize.OutputSurface = camera.OutputSurface;
+                    _orthoCamera.OutputSurface = camera.OutputSurface;
 
                     Rectangle bounds = new Rectangle(0, 0, camera.OutputSurface.Width, camera.OutputSurface.Height);
                     GraphicsDeviceDX11 device = renderer.Device;
                     RenderSurfaceBase finalSurface = camera.OutputSurface as RenderSurfaceBase;
-                    if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
+                    if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
                         renderer.ClearIfFirstUse(device, finalSurface, sceneData.BackgroundColor);
 
                     device.SetRenderSurface(finalSurface, 0);
@@ -51,10 +51,12 @@ namespace Molten.Graphics
                     StateConditions conditions = StateConditions.ScissorTest;
                     conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
-
                     renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
                     renderer.SpriteBatcher.Draw(start.Scene, bounds, Vector2F.Zero, camera.OutputSurface.Viewport.Bounds.Size, Color.White, 0, Vector2F.Zero, null, 0);
-                    renderer.SpriteBatcher.Flush(device, _camFinalize, _dummyData);
+
+                    if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
+                        renderer.Overlay.Render(time, renderer.SpriteBatcher, renderer.Profiler, sceneData.Profiler, camera.Profiler);
+                    renderer.SpriteBatcher.Flush(device, _orthoCamera, _dummyData);
                     renderer.Device.EndDraw();
                     break;
             }

@@ -50,14 +50,14 @@ namespace Molten.Graphics
         {
             _rtViews[slot.SlotID] = null;
             _pipe.Context.OutputMerger.SetTargets(_depthView, _rtViews);
-            Pipe.Profiler.Current.RTSwaps++;
+            Pipe.Profiler.Current.SurfaceSwaps++;
         }
 
         private void _slotDepth_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
         {
             _depthView = null;
             _pipe.Context.OutputMerger.SetTargets(_depthView, _rtViews);
-            Pipe.Profiler.Current.RTSwaps++;
+            Pipe.Profiler.Current.SurfaceSwaps++;
         }
 
         internal void Refresh()
@@ -115,7 +115,7 @@ namespace Molten.Graphics
             if (rtChangeDetected || depthChanged)
             {
                 _pipe.Context.OutputMerger.SetTargets(_depthView, _rtViews);
-                Pipe.Profiler.Current.RTSwaps++;
+                Pipe.Profiler.Current.SurfaceSwaps++;
             }
         }
 

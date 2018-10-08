@@ -1,4 +1,5 @@
 ﻿using Molten.Collections;
+using Molten.Graphics.Overlays;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,7 @@ namespace Molten.Graphics
         public MoltenRenderer()
         {
             Log = Logger.Get();
+            Overlay = new OverlayProvider();
             Log.AddOutput(new LogFileWriter($"renderer_{Name.Replace(' ', '_')}" + "{0}.txt"));
             _chain = GetRenderChain();
         }
@@ -200,12 +202,13 @@ namespace Molten.Graphics
                         return 0;
                 });
 
+                OnPreRenderScene(sceneData, time);
                 foreach (RenderCamera camera in sceneData.Cameras)
                 {
                     if (camera.Skip)
                         continue;
 
-                    OnPreRenderScene(sceneData, camera, time);
+                    OnPreRenderCamera(sceneData, camera, time);
                     camera.Profiler.Begin();
 
                     LayerRenderData layer;
@@ -223,8 +226,9 @@ namespace Molten.Graphics
                     camera.Profiler.End(time);
                     Profiler.Accumulate(camera.Profiler.Previous);
                     sceneData.Profiler.Accumulate(camera.Profiler.Previous);
-                    OnPostRenderScene(sceneData, camera, time);
+                    OnPostRenderCamera(sceneData, camera, time);
                 }
+                OnPostRenderScene(sceneData, time);
 
                 sceneData.Profiler.End(time);
                 sceneData.PostRenderInvoke(this);   
@@ -256,9 +260,13 @@ namespace Molten.Graphics
         /// <param name="time">A timing instance.</param>
         protected abstract void OnPrePresent(Timing time);
 
-        protected abstract void OnPreRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time);
+        protected abstract void OnPreRenderScene(SceneRenderData sceneData, Timing time);
 
-        protected abstract void OnPostRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time);
+        protected abstract void OnPostRenderScene(SceneRenderData sceneData, Timing time);
+
+        protected abstract void OnPreRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time);
+
+        protected abstract void OnPostRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time);
 
         /// <summary>
         /// Occurs after render presentation is completed and profiler timing has been finalized for the current frame. Useful if you need to do some per-frame cleanup/resetting.
@@ -335,5 +343,10 @@ namespace Molten.Graphics
         /// Gets the <see cref="Logger"/> bound and dedicated to the current renderer.
         /// </summary>
         protected internal Logger Log { get; }
+
+        /// <summary>
+        /// Gets the renderer's <see cref="OverlayProvider"/> implementation.
+        /// </summary>
+        public OverlayProvider Overlay { get; }
     }
 }

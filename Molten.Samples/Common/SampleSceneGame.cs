@@ -20,8 +20,6 @@ namespace Molten.Samples
             SpawnPlayer();
         }
 
-        protected override void OnContentRequested(ContentRequest cr) { }
-
         private void SpawnPlayer()
         {
             _player = CreateObject();
@@ -128,7 +126,7 @@ namespace Molten.Samples
         {
             base.OnHudDraw(sb);
 
-            string text = "[W][A][S][D] to move -- [ESC] Close -- [LMB] and [MOUSE] to rotate";
+            string text = "[W][A][S][D] to move -- [ESC] close -- [LMB] and [MOUSE] to rotate";
             Vector2F tSize = SampleFont.MeasureString(text);
             Vector2F pos = new Vector2F()
             {

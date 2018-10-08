@@ -347,7 +347,7 @@ namespace Molten.Graphics
         public void DrawLinePath(IList<Vector2F> points, Color color, float thickness)
         {
             _singleColorList[0] = color;
-            DrawLinePath(points, _singleColorList, thickness);
+            DrawLinePath(points, 0, points.Count, _singleColorList, thickness);
         }
 
         /// <summary>Draws connecting lines between each of the provided points.</summary>
@@ -355,6 +355,29 @@ namespace Molten.Graphics
         /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
         /// <param name="thickness">The thickness of the line in pixels.</param>
         public void DrawLinePath(IList<Vector2F> points, IList<Color> pointColors, float thickness)
+        {
+            DrawLinePath(points, 0, points.Count, pointColors, thickness);
+        }
+
+        /// <summary>Draws connecting lines between each of the provided points.</summary>
+        /// <param name="points">The points between which to draw lines.</param>
+        /// <param name="Color">The color of all the lines in the path.</param>
+        /// <param name="thickness">The thickness of the line in pixels.</param>
+        /// <param name="startIndex">The start index within the points list from which to start drawing.</param>
+        /// <param name="count">The number of points from the point list to draw.</param>
+        public void DrawLinePath(IList<Vector2F> points, int startIndex, int count, Color color, float thickness)
+        {
+            _singleColorList[0] = color;
+            DrawLinePath(points, startIndex, count, _singleColorList, thickness);
+        }
+
+        /// <summary>Draws connecting lines between each of the provided points.</summary>
+        /// <param name="points">The points between which to draw lines.</param>
+        /// <param name="pointColors">A list of colors (one per point) that lines should transition to/from at each point.</param>
+        /// <param name="thickness">The thickness of the line in pixels.</param>
+        /// <param name="startIndex">The start index within the points list from which to start drawing.</param>
+        /// <param name="count">The number of points from the point list to draw.</param>
+        public void DrawLinePath(IList<Vector2F> points, int startIndex, int count, IList<Color> pointColors, float thickness)
         {
             if (pointColors.Count == 0)
                 throw new SpriteBatcherException(this, "There must be at least one color available in the pointColors list.");
@@ -379,7 +402,7 @@ namespace Molten.Graphics
                 Color4 lastCol4 = lastCol.ToColor4();
                 int spriteID = NextID;
 
-                for (int i = 0; i < last; i++)
+                for (int i = startIndex; i < last; i++)
                 {
                     p1 = points[i];
                     p2 = points[next];

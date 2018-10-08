@@ -90,6 +90,16 @@ namespace Molten.Graphics
             projection = Matrix4F.PerspectiveFovLH(fov, (float)width / height, nearClip, farClip);
         }
 
+        /// <summary>
+        /// Returns whether or not the current <see cref="Rendercamera"/> has the specified <see cref="RenderCameraFlags"/>.
+        /// </summary>
+        /// <param name="flags">The flags.</param>
+        /// <returns></returns>
+        public bool HasFlags(RenderCameraFlags flags)
+        {
+            return (Flags & flags) == flags;
+        }
+
         protected void CalculateProjection()
         {
             _projFunc(_surface, _nearClip, _farClip, _fov, ref _projection);
@@ -306,22 +316,10 @@ namespace Molten.Graphics
         /// [TEMPORARY] Instructs the renderer to use deferred rendering when when rendering with the current camera.
         /// </summary>
         Deferred = 1 << 7,
-    }
 
-    /// <summary>
-    /// Provides extension methods for <see cref="RenderCameraFlags"/>.
-    /// </summary>
-    public static class RenderCameraFlagsExtensions
-    {
         /// <summary>
-        /// Returns true if the current <see cref="RenderCameraFlags"/> has the specified flag(s).
+        /// Tells the renderer to draw the overlay on top of the rendered scene.
         /// </summary>
-        /// <param name="value">The value to test against.</param>
-        /// <param name="flags">The flags to check.</param>
-        /// <returns></returns>
-        public static bool HasFlag(this RenderCameraFlags value, RenderCameraFlags flags)
-        {
-            return (value & flags) == flags;
-        }
+        ShowOverlay = 1 << 8,
     }
 }

@@ -92,6 +92,16 @@ namespace Molten
             return new Vector2F(result.X, result.Y);
         }
 
+        /// <summary>
+        /// Returns whether or not the current <see cref="CameraComponent"/> has the specified <see cref="RenderCameraFlags"/>.
+        /// </summary>
+        /// <param name="flags">The flags.</param>
+        /// <returns></returns>
+        public bool HasFlags(RenderCameraFlags flags)
+        {
+            return _camera.HasFlags(flags);
+        }
+
         public Matrix4F View => _camera.View;
 
         public Matrix4F Projection => _camera.Projection;

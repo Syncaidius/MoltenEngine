@@ -16,6 +16,8 @@ namespace Molten.Samples
         ControlSampleForm _form;
         SceneLayer _spriteLayer;
         SceneLayer _uiLayer;
+        CameraComponent _cam2D;
+
 
         public SampleGame(string title, EngineSettings settings = null) : base(title, settings) { }
 
@@ -30,12 +32,12 @@ namespace Molten.Samples
             _uiLayer.BringToFront();
 
             // Use the same camera for both the sprite and UI scenes.
-            CameraComponent cam2D = MainScene.AddObjectWithComponent<CameraComponent>(_uiLayer);
-            cam2D.Mode = RenderCameraMode.Orthographic;
-            cam2D.OrderDepth = 1;
-            cam2D.MaxDrawDistance = 1.0f;
-            cam2D.OutputSurface = Window;
-            cam2D.LayerMask = BitwiseHelper.Set(cam2D.LayerMask, 0);
+            _cam2D = MainScene.AddObjectWithComponent<CameraComponent>(_uiLayer);
+            _cam2D.Mode = RenderCameraMode.Orthographic;
+            _cam2D.OrderDepth = 1;
+            _cam2D.MaxDrawDistance = 1.0f;
+            _cam2D.OutputSurface = Window;
+            _cam2D.LayerMask = BitwiseHelper.Set(_cam2D.LayerMask, 0);
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<SpriteFont>("BroshK.ttf;size=24");
@@ -96,6 +98,7 @@ namespace Molten.Samples
         private void Cr_OnCompleted(ContentRequest cr)
         {
             _sampleFont = cr.Get<SpriteFont>(0);
+            Engine.Renderer.Overlay.Font = _sampleFont;
 
             OnContentLoaded(cr);
             SampleSpriteRenderComponent com = _uiLayer.AddObjectWithComponent<SampleSpriteRenderComponent>();
@@ -123,9 +126,41 @@ namespace Molten.Samples
                     case WindowMode.Windowed: Window.Mode = WindowMode.Borderless; break;
                 }
             }
+
+            // Toggle overlay.
+            if (Keyboard.IsTapped(Key.F1))
+            {
+                if (_cam2D.HasFlags(RenderCameraFlags.ShowOverlay))
+                {
+                    int cur = Engine.Renderer.Overlay.Current;
+
+                    // Remove overlay flag if we've hit the last overlay.
+                    if (!Engine.Renderer.Overlay.Next())
+                    {
+                        _cam2D.Flags &= ~RenderCameraFlags.ShowOverlay;
+                        Engine.Renderer.Overlay.Current = 0;
+                    }
+                }
+                else
+                {
+                    Engine.Renderer.Overlay.Current = 0;
+                    _cam2D.Flags |= RenderCameraFlags.ShowOverlay;
+                }
+            }
         }
 
-        protected virtual void OnHudDraw(SpriteBatcher sb) { }
+        protected virtual void OnHudDraw(SpriteBatcher sb)
+        {
+            string text = "[F1] debug overlay";
+            Vector2F tSize = SampleFont.MeasureString(text);
+            Vector2F pos = new Vector2F()
+            {
+                X = Window.Width / 2 + (-tSize.X / 2),
+                Y = 5,
+            };
+
+            sb.DrawString(SampleFont, text, pos, Color.White);
+        }
 
         public abstract string Description { get; }
 

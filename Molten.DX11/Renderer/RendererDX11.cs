@@ -18,6 +18,7 @@ namespace Molten.Graphics
         HashSet<TextureAsset2D> _clearedSurfaces;
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
+        ThreadedDictionary<string, RenderSurfaceBase> _surfaces;
 
         internal SpriteBatcherDX11 SpriteBatcher;
 
@@ -111,20 +112,30 @@ namespace Molten.Graphics
             Device.DisposeMarkedObjects();
         }
 
-        protected override void OnPreRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time)
+        protected override void OnPreRenderScene(SceneRenderData sceneData, Timing time)
+        {
+            
+        }
+
+        protected override void OnPostRenderScene(SceneRenderData sceneData, Timing time)
+        {
+            // Clear the list of used surfaces, ready for the next frame.
+            _clearedSurfaces.Clear();
+        }
+
+        protected override void OnPreRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
             Device.Profiler = camera.Profiler;
         }
 
-        protected override void OnPostRenderScene(SceneRenderData sceneData, RenderCamera camera, Timing time)
+        protected override void OnPostRenderCamera(SceneRenderData sceneData, RenderCamera camera, Timing time)
         {
             Device.Profiler = null;
         }
 
         protected override void OnPostPresent(Timing time)
         {
-            // Clear the list of used surfaces, ready for the next frame.
-            _clearedSurfaces.Clear();
+
         }
 
         protected override void OnRebuildSurfaces(int requiredWidth, int requiredHeight)
