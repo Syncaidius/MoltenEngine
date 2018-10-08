@@ -53,7 +53,7 @@ namespace Molten.Graphics
 
 
                     renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
-                    renderer.SpriteBatcher.Draw(start.Scene, bounds, Vector2F.Zero, Vector2F.One, Color.White, 0, Vector2F.Zero, null, 0);
+                    renderer.SpriteBatcher.Draw(start.Scene, bounds, Vector2F.Zero, camera.OutputSurface.Viewport.Bounds.Size, Color.White, 0, Vector2F.Zero, null, 0);
                     renderer.SpriteBatcher.Flush(device, _camFinalize, _dummyData);
                     renderer.Device.EndDraw();
                     break;
