@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     public class Sprite
     {
-        public virtual Rectangle Source { get; set; }
+        public virtual RectangleF Source { get; set; }
 
         public float ArraySlice { get; set; }
 
