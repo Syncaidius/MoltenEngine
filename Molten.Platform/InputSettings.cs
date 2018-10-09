@@ -13,11 +13,11 @@ namespace Molten.Input
 
         public InputSettings()
         {
-            InputLibrary = AddSetting<string>("input", DEFAULT_LIBRARY);
+            Library = AddSetting<string>("input", DEFAULT_LIBRARY);
         }
 
         /// <summary>Gets the input library to use with the engine. This can be changed to any library containing one or more implementations of <see cref="IInputManager"/>.</summary>
         [DataMember]
-        public SettingValue<string> InputLibrary { get; private set; }
+        public SettingValue<string> Library { get; private set; }
     }
 }

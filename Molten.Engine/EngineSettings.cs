@@ -29,6 +29,9 @@ namespace Molten
 
             string json = "";
 
+            JsonSerializerSettings jsonSettings = new JsonSerializerSettings() { Formatting = Formatting.Indented };
+            jsonSettings.Converters = JsonConverters;
+
             using (FileStream stream = new FileStream(Filename, FileMode.Open, FileAccess.Read))
             {
                 using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
@@ -37,12 +40,14 @@ namespace Molten
                 }
             }
 
-            FromJson(json);
+            JsonConvert.PopulateObject(json, this, jsonSettings);
         }
 
         public void Save()
         {
-            string json = ToJson();
+            JsonSerializerSettings jsonSettings = new JsonSerializerSettings() { Formatting = Formatting.Indented };
+            jsonSettings.Converters = JsonConverters;
+            string json = JsonConvert.SerializeObject(this, jsonSettings);
 
             using (FileStream stream = new FileStream(Filename, FileMode.Create, FileAccess.Write, FileShare.None))
             {

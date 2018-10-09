@@ -15,7 +15,7 @@ namespace Molten
     public delegate void SceneObjectSceneHandler(SceneObject obj, Scene scene, SceneLayer layer);
     public delegate void SceneObjectLayerHandler(SceneObject obj, SceneLayer oldLayer, SceneLayer newLayer);
 
-    public sealed class SceneObject
+    public sealed class SceneObject : IdentifiedObject
     {
         Engine _engine;
         Scene _scene;

@@ -38,12 +38,16 @@ namespace Molten.Graphics
         {
             GraphicsAdapterID = AddSetting<int>("adapter_id", -1);
             DisplayOutputIds = AddSettingList<int>("display_id");
-            RendererLibrary = AddSetting<string>("renderer", RENDERER_DX11);
+            Library = AddSetting<string>("renderer", RENDERER_DX11);
             VSync = AddSetting<bool>("vsync", true);
             MSAA = AddSetting<AntiAliasMode>("msaa", 0);
             BackBufferSize = AddSetting<int>("back_buffer_size", 1);
             EnableDebugLayer = AddSetting<bool>("renderer_debug");
         }
+
+        /// <summary>Gets the renderer library to use with the engine. This can be changed to any library containing one or more implementations of <see cref="MoltenRenderer"/>.</summary>
+        [DataMember]
+        public SettingValue<string> Library { get; private set; }
 
         /// <summary>Gets or sets the UID of the <see cref="IDisplayAdapter"/> that was last used.</summary>
         [DataMember]
@@ -52,10 +56,6 @@ namespace Molten.Graphics
         /// <summary>Gets or sets the UID of the <see cref="IDisplayOutput"/> that was last used on the last used <see cref="GraphicsAdapterID"/>.</summary>
         [DataMember]
         public SettingValueList<int> DisplayOutputIds { get; private set; }
-
-        /// <summary>Gets the renderer library to use with the engine. This can be changed to any library containing one or more implementations of <see cref="MoltenRenderer"/>.</summary>
-        [DataMember]
-        public SettingValue<string> RendererLibrary { get; private set; }
 
         /// <summary>Gets or sets wether Vsync is enabled.</summary>
         [DataMember]

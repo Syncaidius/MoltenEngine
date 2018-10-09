@@ -55,12 +55,12 @@ namespace Molten
         }
 
         /// <summary>Creates a new instance of <see cref="ContentManager"/>.</summary>
-        /// <param name="rootDirectory">The root directory of the new <see cref="ContentManager"/> instance.</param>
         /// <param name="customProcessors">A list of custom processors to add to the current <see cref="ContentManager"/>.</param>
         /// <param name="log">A logger to output content information.</param>
         /// <param name="engine">The engine instance to which the content manager will be bound.</param>
         /// <param name="workerThreads">The number of worker threads that will be used to fulfil content requests.</param>
-        public ContentManager(Logger log, Engine engine, IList<ContentProcessor> customProcessors = null, IList<JsonConverter> customJsonConverters = null, int workerThreads = 1)
+        /// <param name="customJsonConverters"></param>
+        internal ContentManager(Logger log, Engine engine, IList<ContentProcessor> customProcessors = null, int workerThreads = 1)
         {
             _engine = engine;
 
@@ -84,7 +84,6 @@ namespace Molten
             };
 
             AddCustomJsonConverters(_jsonSettings, engine.Settings.JsonConverters);
-            AddCustomJsonConverters(_jsonSettings, customJsonConverters);
 
             AddCustomProcessors(engine.Settings.CustomContentProcessors);
             AddCustomProcessors(customProcessors);

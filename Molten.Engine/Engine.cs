@@ -36,20 +36,15 @@ namespace Molten
                 throw new NotSupportedException("Molten engine only supports 64-bit. Please build accordingly.");
 
             Current = this;
-            Settings = initialSettings;
-
-            if (Settings == null)
-            {
-                Settings = new EngineSettings();
-                Settings.Load();
-            }
+            Settings = initialSettings ??  new EngineSettings();
+            Settings.Load();
 
             Log = Logger.Get();
             Log.AddOutput(new LogFileWriter("engine_log{0}.txt"));
             Log.WriteDebugLine("Engine Instantiated");
             Threading = new ThreadManager(this, Log);
             _taskQueue = new ThreadedQueue<EngineTask>();
-            Content = new ContentManager(Log, this, null, null, Settings.ContentWorkerThreads);
+            Content = new ContentManager(Log, this, null, Settings.ContentWorkerThreads);
             Scenes = new SceneManager(Settings.UI);
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -65,7 +60,7 @@ namespace Molten
         {
             Assembly inputAssembly;
             Input = LibraryDetection.LoadInstance<IInputManager>(Log, "input", "input manager", 
-                Settings.Input.InputLibrary, 
+                Settings.Input.Library, 
                 Settings.Input, 
                 InputSettings.DEFAULT_LIBRARY, 
                 out inputAssembly);
@@ -95,7 +90,7 @@ namespace Molten
             // TODO default to OpenGL if on a non-windows platform.
             Assembly renderAssembly;
             Renderer = LibraryDetection.LoadInstance<MoltenRenderer>(Log, "render", "renderer", 
-                Settings.Graphics.RendererLibrary, 
+                Settings.Graphics.Library, 
                 Settings.Graphics, 
                 GraphicsSettings.RENDERER_DX11, 
                 out renderAssembly);
@@ -116,7 +111,6 @@ namespace Molten
             OnAdapterInitialized?.Invoke(Renderer.DisplayManager);
             Renderer.Initialize(Settings.Graphics);
             LoadDefaultFont(Settings);
-
             return true;
         }
 

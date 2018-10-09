@@ -103,6 +103,7 @@
     <Compile Include="Comparers\IntPtrComparer.cs" />
     <Compile Include="ConversionHelper.cs" />
     <Compile Include="EngineInterop.cs" />
+    <Compile Include="IndentifiedObject.cs" />
     <Compile Include="EngineObject.cs" />
     <Compile Include="EnumHelper.cs" />
     <Compile Include="HashHelper.cs" />
