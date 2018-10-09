@@ -585,6 +585,20 @@ namespace Molten.Collections
         /// <param name="start">The start index.</param>
         /// <param name="increment">The increment.</param>
         /// <param name="callback">The callback to run on each iteration. The callback should return true to break out of the loop.</param>
+        public void ForInterlock(int start, int increment, Action<int, T> callback)
+        {
+            _interlocker.Lock(() =>
+            {
+                for (int i = start; i < _count; i += increment)
+                    callback(i, _items[i]);
+            });
+        }
+
+        /// <summary>Runs a for loop inside an interlock on the list. This allows iteration with only interlocking once. This can hurt performance if
+        /// the loop takes too long to execute while other threads are waiting to access the list. Return true from the callback to break out of the for loop.</summary>
+        /// <param name="start">The start index.</param>
+        /// <param name="increment">The increment.</param>
+        /// <param name="callback">The callback to run on each iteration. The callback should return true to break out of the loop.</param>
         public void ForInterlock(int start, int increment, Func<int, T, bool> callback)
         {
             _interlocker.Lock(() =>

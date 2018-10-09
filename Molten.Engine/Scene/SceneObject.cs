@@ -27,10 +27,8 @@ namespace Molten
         bool _visible;
 
         Dictionary<Type, List<SceneComponent>> _componentsByType;
-        List<SceneComponent> _components;
-        WatchableList<SceneObject> _children;
-        List<SceneObject> _childrenToUpdate;
-        bool _childrenDirty;
+        ThreadedList<SceneComponent> _components;
+        SceneChildCollection _children;
 
         public event SceneObjectVisibilityHandler OnVisibilityChanged;
         public event SceneObjectHandler OnUpdateFlagsChanged;
@@ -52,44 +50,26 @@ namespace Molten
         internal SceneObject(Engine engine, ObjectUpdateFlags updateFlags = ObjectUpdateFlags.Children | ObjectUpdateFlags.Self, bool visible = true)
         {
             _engine = engine;
-            _components = new WatchableList<SceneComponent>();
+            _components = new ThreadedList<SceneComponent>();
             _componentsByType = new Dictionary<Type, List<SceneComponent>>();
-            _children = new WatchableList<SceneObject>();
-            _childrenToUpdate = new List<SceneObject>();
+            _children = new SceneChildCollection(this);
             _transform = new SceneObjectTransform(this);
 
-            _children.OnItemAdded += _children_OnItemAdded;
-            _children.OnItemRemoved += _children_OnItemRemoved;
-            _children.OnRangeAdded += _children_OnRangeAdded;
-            _children.OnRangeRemoved += _children_OnRangeRemoved;
+            _children.OnAdded += _children_OnItemAdded;
+            _children.OnRemoved += _children_OnItemRemoved;
 
             _updateFlags = updateFlags;
             IsVisible = visible;
         }
 
-        private void _children_OnItemRemoved(WatchableList<SceneObject> list, SceneObject item)
+        private void _children_OnItemRemoved(SceneChildCollection collection, SceneObject item)
         {
             item.Parent = null;
-            _childrenDirty = true;
         }
 
-        private void _children_OnItemAdded(WatchableList<SceneObject> list, SceneObject item)
+        private void _children_OnItemAdded(SceneChildCollection collection, SceneObject item)
         {
             item.Parent = this;
-            _childrenDirty = true;
-        }
-
-        private void _children_OnRangeRemoved(WatchableList<SceneObject> list, IEnumerable<SceneObject> items, int itemsStartIndex)
-        {
-            _childrenDirty = true;
-            foreach (SceneObject obj in items)
-                obj.Parent = null;
-        }
-
-        private void _children_OnRangeAdded(WatchableList<SceneObject> list, IEnumerable<SceneObject> items, int itemsStartIndex)
-        {
-            foreach (SceneObject obj in items)
-                obj.Parent = this;
         }
 
         public T AddComponent<T>() where T : SceneComponent, new()
@@ -168,29 +148,16 @@ namespace Molten
 
             if((_updateFlags & ObjectUpdateFlags.Self) == ObjectUpdateFlags.Self)
             {
-                SceneComponent com = null;
-                for(int i = 0; i < _components.Count; i++)
+                _components.ForInterlock(0, 1, (index, component) =>
                 {
-                    com = _components[i];
-                    if (com.IsEnabled)
-                        com.OnUpdate(time);
-                }
+                    if (component.IsEnabled)
+                        component.OnUpdate(time);
+                });
             }
 
             // Re-populate the local child list used when updating them.
             if ((_updateFlags & ObjectUpdateFlags.Children) == ObjectUpdateFlags.Children)
-            {
-                if (_childrenDirty)
-                {
-                    _childrenToUpdate.Clear();
-                    _childrenToUpdate.AddRange(_children);
-                    _childrenDirty = false;
-                }
-
-                // Update children.
-                for (int i = 0; i < _childrenToUpdate.Count; i++)
-                    _childrenToUpdate[i].Update(time);
-            }
+                _children.Objects.ForInterlock(0, 1, (index, child) => child.Update(time));
 
             _transform.ResetFlags();
         }
@@ -264,8 +231,8 @@ namespace Molten
         /// </summary>
         public SceneObjectTransform Transform => _transform;
 
-        /// <summary>Gets an observable list of all child <see cref="SceneObject"/> instances.</summary>
-        public WatchableList<SceneObject> Children => _children;
+        /// <summary>Gets an collection containing all of the child <see cref="SceneObject"/> instances attached to the current <see cref="SceneObject"/>.</summary>
+        public SceneChildCollection Children => _children;
 
         /// <summary>Gets the object's parent <see cref="SceneObject"/>, if any. Value is null if the current object has no parent.</summary>
         public SceneObject Parent { get; internal set; }

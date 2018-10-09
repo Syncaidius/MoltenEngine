@@ -27,7 +27,6 @@ namespace Molten.Collections
         }
 
         /// <summary>Returns a recycled instance or generates a new one if none are available.</summary>
-        /// <param name="args"></param>
         /// <returns></returns>
         public T GetInstance()
         {

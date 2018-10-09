@@ -92,8 +92,6 @@
     <Compile Include="ArrayHelper.cs" />
     <Compile Include="BindableValue.cs" />
     <Compile Include="BitwiseHelper.cs" />
-    <Compile Include="Collections\ExpansionMode.cs" />
-    <Compile Include="Collections\WatchableList.cs" />
     <Compile Include="Collections\ObjectPool.cs" />
     <Compile Include="Collections\ThreadedDictionary.cs" />
     <Compile Include="Collections\ThreadedHashSet.cs" />
