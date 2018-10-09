@@ -35,7 +35,14 @@ namespace Molten
         public event SceneObjectVisibilityHandler OnVisibilityChanged;
         public event SceneObjectHandler OnUpdateFlagsChanged;
 
+        /// <summary>
+        /// Invoked when the object is added to a scene.
+        /// </summary>
         public event SceneObjectSceneHandler OnAddedToScene;
+
+        /// <summary>
+        /// Occus when the object is removed from a scene.
+        /// </summary>
         public event SceneObjectSceneHandler OnRemovedFromScene;
 
         /// <summary>Creates a new instance of <see cref="SceneObject"/>.</summary>

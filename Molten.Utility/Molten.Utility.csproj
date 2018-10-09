@@ -95,7 +95,6 @@
     <Compile Include="Collections\ExpansionMode.cs" />
     <Compile Include="Collections\WatchableList.cs" />
     <Compile Include="Collections\ObjectPool.cs" />
-    <Compile Include="Collections\RawList.cs" />
     <Compile Include="Collections\SpeedTable.cs" />
     <Compile Include="Collections\ThreadedDictionary.cs" />
     <Compile Include="Collections\ThreadedHashSet.cs" />
