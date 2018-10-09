@@ -10,16 +10,17 @@ namespace Molten
     public class SceneLayer
     {
         internal LayerRenderData Data;
-        internal List<ISceneObject> Objects;
-        internal HashSet<IUpdatable> Updatables;
+        internal List<SceneObject> Objects;
         internal List<ICursorAcceptor> InputAcceptors;
 
+        /// <summary>
+        /// Gets the layer's parent scene. This will only change (to null) in the event the layer is removed from it's parent scene.
+        /// </summary>
         public Scene ParentScene { get; internal set; }
 
         internal SceneLayer()
         {
-            Objects = new List<ISceneObject>();
-            Updatables = new HashSet<IUpdatable>();
+            Objects = new List<SceneObject>();
             InputAcceptors = new List<ICursorAcceptor>();
         }
 
@@ -51,7 +52,7 @@ namespace Molten
         /// Adds an object to the current <see cref="SceneLayer"/> in it's parent <see cref="Scene"/>.
         /// </summary>
         /// <param name="obj">The object to be added.</param>
-        public void AddObject(ISceneObject obj)
+        public void AddObject(SceneObject obj)
         {
             ParentScene.AddObject(obj, this);
         }
@@ -60,7 +61,7 @@ namespace Molten
         /// Removes an object from the current <see cref="SceneLayer"/> in it's parent <see cref="Scene"/>.
         /// </summary>
         /// <param name="obj">The object to be removed.</param>
-        public void RemoveObject(ISceneObject obj)
+        public void RemoveObject(SceneObject obj)
         {
             ParentScene.RemoveObject(obj, this);
         }

@@ -10,7 +10,7 @@ namespace Molten
     /// <summary>
     /// Represents an object which can respond to mouse/touch cursor input.
     /// </summary>
-    public interface ICursorAcceptor : ISceneObject
+    public interface ICursorAcceptor
     {
         /// <summary>Called when a scene requires the object to handle cursor input.</summary>
         /// <param name="inputPos">The input position.</param>

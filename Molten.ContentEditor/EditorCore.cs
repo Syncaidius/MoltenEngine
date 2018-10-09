@@ -24,37 +24,40 @@ namespace Molten.ContentEditor
         {
             base.OnInitialize(engine);
 
-            _uiScene = CreateScene("UI");
-            SceneObject camObj = CreateObject(_uiScene);
-            CameraComponent cam = camObj.AddComponent<CameraComponent>();
-            cam.Mode = RenderCameraMode.Orthographic;
-            cam.MaxDrawDistance = 1.0f;
-            _uiScene.AddObject(camObj);
-            Window.OnPostResize += UpdateWindownBounds;
-            UI = new UIComponent();
-            UpdateWindownBounds(Window);
+            //_uiScene = CreateScene("UI");
+            //SceneObject camObj = CreateObject(_uiScene);
+            //CameraComponent cam = camObj.AddComponent<CameraComponent>();
+            //cam.Mode = RenderCameraMode.Orthographic;
+            //cam.MaxDrawDistance = 1.0f;
+            //_uiScene.AddObject(camObj);
+            //Window.OnPostResize += UpdateWindownBounds;
+            //UI = new UIComponent();
+            //UpdateWindownBounds(Window);
 
-            _uiScene.AddObject(UI);
+            //_uiScene.AddObject(UI);
 
-            _leftPanel = new UIPanel();
-            _leftPanel.ClipPadding.Right = 1;
-            _leftPanel.Margin.SetDock(false, true, false, true);
-            _leftPanel.Width = 300;
-            _leftPanel.Y = 25;
-            UI.AddChild(_leftPanel);
+            //_leftPanel = new UIPanel();
+            //_leftPanel.ClipPadding.Right = 1;
+            //_leftPanel.Margin.SetDock(false, true, false, true);
+            //_leftPanel.Width = 300;
+            //_leftPanel.Y = 25;
+            //UI.AddChild(_leftPanel);
 
-            // TODO set bounds of UI container to screen size.
-            _menu = new UIMenu();
-            _menu.Height = 25;
-            _menu.Margin.DockLeft = true;
-            _menu.Margin.DockRight = true;
-            _menu.ClipPadding.Bottom = 1;
-            UI.AddChild(_menu);
+            //// TODO set bounds of UI container to screen size.
+            //_menu = new UIMenu();
+            //_menu.Height = 25;
+            //_menu.Margin.DockLeft = true;
+            //_menu.Margin.DockRight = true;
+            //_menu.ClipPadding.Bottom = 1;
+            //UI.AddChild(_menu);
 
-            // Test some sub-items
-            UIMenuItem mnuFile = new UIMenuItem();
-            mnuFile.Text = "File";
-            _menu.AddChild(mnuFile);
+            //// Test some sub-items
+            //UIMenuItem mnuFile = new UIMenuItem();
+            //mnuFile.Text = "File";
+            //_menu.AddChild(mnuFile);
+
+
+            // OLD
 
             //UIMenuItem mnuNew = new UIMenuItem();
             //mnuNew.Label.Text = "New...";

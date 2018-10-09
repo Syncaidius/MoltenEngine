@@ -15,7 +15,7 @@ namespace Molten
     public delegate void SceneObjectSceneHandler(SceneObject obj, Scene scene, SceneLayer layer);
     public delegate void SceneObjectLayerHandler(SceneObject obj, SceneLayer oldLayer, SceneLayer newLayer);
 
-    public sealed class SceneObject : IUpdatable
+    public sealed class SceneObject
     {
         Engine _engine;
         Scene _scene;
@@ -23,7 +23,6 @@ namespace Molten
 
         // Transform-related variables
         SceneObjectTransform _transform;
-
         ObjectUpdateFlags _updateFlags;
         bool _visible;
 
@@ -155,7 +154,7 @@ namespace Molten
             }
         }
 
-        private void Update(Timing time)
+        internal void Update(Timing time)
         {
             // Update own transform.
             _transform.Update(time);
@@ -187,11 +186,6 @@ namespace Molten
             }
 
             _transform.ResetFlags();
-        }
-
-        void IUpdatable.Update(Timing time)
-        {
-            Update(time);
         }
 
         /// <summary>Gets or sets whether the object is rendered. The object will still be updated if <see cref="UpdateFlags"/> is true.</summary>
@@ -256,12 +250,6 @@ namespace Molten
                         _children[i].Layer = value;
                 }
             }
-        }
-
-        SceneLayer ISceneObject.Layer
-        {
-            get => _layer;
-            set => this.Layer = value;
         }
 
         /// <summary>

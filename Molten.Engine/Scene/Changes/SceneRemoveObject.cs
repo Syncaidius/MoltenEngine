@@ -9,7 +9,7 @@ namespace Molten
 {
     internal class SceneRemoveObject : SceneChange<SceneRemoveObject>
     {
-        internal ISceneObject Object;
+        internal SceneObject Object;
 
         internal SceneLayer Layer;
 
@@ -21,16 +21,9 @@ namespace Molten
 
         internal override void Process(Scene scene)
         {
-            if (Object.Scene == scene && Object.Layer == Layer)
+            if (Object.Layer == Layer)
             {
                 Layer.Objects.Remove(Object);
-
-                if(Object is IUpdatable up)
-                    Layer.Updatables.Remove(up);
-
-                if (Object is ICursorAcceptor acceptor)
-                    Layer.InputAcceptors.Remove(acceptor);
-
                 Object.Layer = null;
             }
 

@@ -119,7 +119,7 @@ namespace Molten
 
         /// <summary>Adds a <see cref="SceneObject"/> to the scene.</summary>
         /// <param name="obj">The object to be added.</param>
-        public void AddObject(ISceneObject obj, SceneLayer layer = null)
+        public void AddObject(SceneObject obj, SceneLayer layer = null)
         {
             layer = layer ?? _defaultLayer;
             if(layer.ParentScene != this)
@@ -134,9 +134,10 @@ namespace Molten
         /// <summary>Removes a <see cref="SceneObject"/> from the scene.</summary>
         /// <param name="obj">The object to be removed.</param>
         /// <param name="layer">The layer from which to remove the object. Must belong to the current <see cref="Scene"/> instance.</param>
-        public void RemoveObject(ISceneObject obj, SceneLayer layer = null)
+        public void RemoveObject(SceneObject obj, SceneLayer layer = null)
         {
             layer = layer ?? _defaultLayer;
+
             if (layer.ParentScene != this)
                 throw new SceneLayerException(this, layer, "The provided layer does not belong to the current scene.");
 
@@ -186,7 +187,7 @@ namespace Molten
 
             foreach (SceneLayer layer in Layers)
             {
-                foreach (IUpdatable up in layer.Updatables)
+                foreach (SceneObject up in layer.Objects)
                 {
                     if(up.IsEnabled)
                         up.Update(time);
