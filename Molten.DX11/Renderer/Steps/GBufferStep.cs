@@ -19,8 +19,8 @@ namespace Molten.Graphics
         internal override void Initialize(RendererDX11 renderer)
         {
             _surfaceScene = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
-            _surfaceNormals = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
-            _surfaceEmissive = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
+            _surfaceNormals = renderer.GetSurface<RenderSurface>(MainSurfaceType.Normals);
+            _surfaceEmissive = renderer.GetSurface<RenderSurface>(MainSurfaceType.Emissive);
             _surfaceDepth = renderer.GetDepthSurface();
         }
 

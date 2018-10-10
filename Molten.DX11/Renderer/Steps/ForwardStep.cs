@@ -13,9 +13,6 @@ namespace Molten.Graphics
     /// </summary>
     internal class ForwardStep : RenderStepBase
     {
-        ObjectRenderData _dummyData;
-        RenderCamera _orthoCamera;
-
         RenderSurface _surfaceScene;
         DepthSurface _surfaceDepth;
 
@@ -23,9 +20,6 @@ namespace Molten.Graphics
         {
             _surfaceScene = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
             _surfaceDepth = renderer.GetDepthSurface();
-
-            _dummyData = new ObjectRenderData();
-            _orthoCamera = new RenderCamera(RenderCameraMode.Orthographic);
         }
 
         public override void Dispose()
@@ -34,9 +28,6 @@ namespace Molten.Graphics
         internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
-
-            _orthoCamera.OutputSurface = camera.OutputSurface;
-
 
             if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
                 renderer.ClearIfFirstUse(device, _surfaceScene, sceneData.BackgroundColor);
@@ -51,10 +42,6 @@ namespace Molten.Graphics
 
             device.BeginDraw(conditions);
             renderer.RenderSceneLayer(device, layerData, camera);
-
-            if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
-                renderer.Overlay.Render(time, renderer.SpriteBatcher, renderer.Profiler, sceneData.Profiler, camera);
-            renderer.SpriteBatcher.Flush(device, _orthoCamera, _dummyData);
             device.EndDraw();
         }
     }

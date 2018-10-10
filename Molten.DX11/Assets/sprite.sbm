@@ -9,6 +9,7 @@
 		<pixel>PS</pixel>
     <blend preset="PreMultipliedAlpha" />
     <rasterizer preset="ScissorTest" />
+    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
     <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
 	</pass>
 </material>
@@ -24,6 +25,7 @@
 		<pixel>PS_NoTexture</pixel>
     <blend preset="PreMultipliedAlpha" />
     <rasterizer preset="ScissorTest" />
+    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
     <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
 	</pass>
 </material>
@@ -39,6 +41,7 @@
     <pixel>PS_NoTexture</pixel>
     <blend preset="PreMultipliedAlpha" />
     <rasterizer preset="ScissorTest" />
+    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
     <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
   </pass>
 </material>
@@ -54,6 +57,7 @@
     <pixel>PS_NoTexture</pixel>
     <blend preset="PreMultipliedAlpha" />
     <rasterizer preset="ScissorTest" />
+    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
     <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
   </pass>
 </material>
@@ -69,6 +73,7 @@
     <pixel>PS_NoTexture</pixel>
     <blend preset="PreMultipliedAlpha" />
     <rasterizer preset="ScissorTest" />
+    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
     <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
   </pass>
 </material>
