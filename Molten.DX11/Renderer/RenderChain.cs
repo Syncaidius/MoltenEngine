@@ -80,9 +80,27 @@ namespace Molten.Graphics
                 link._chain.LinkPool.Recycle(link);
             }
 
-            internal void Run(RendererDX11 renderer, SceneRenderData sceneData, LayerRenderData layerData, RenderCamera camera, Timing time)
+            internal void Run(RendererDX11 renderer, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, RenderCamera camera, Timing time)
             {
-                
+                bool canStart = true;
+
+                // Are the previous steps completed?
+                do
+                {
+                    canStart = true;
+                    for (int i = 0; i < _previous.Count; i++)
+                        canStart = canStart && _previous[i]._completed;
+
+                    // TODO do other things while the thread is waiting for the previous steps to complete?
+                } while (canStart == false);
+
+                // TODO update this once the renderer supports running render steps in deferred context threads.
+                _step.Render(renderer, camera, sceneData, layerData, time, this);
+                _completed = true;
+
+                // Start the next steps
+                for (int i = 0; i < _next.Count; i++)
+                    _next[i].Run(renderer, sceneData, layerData, camera, time);
             }
         }
 
@@ -109,7 +127,8 @@ namespace Molten.Graphics
 
         public void Render(SceneRenderData sceneData, LayerRenderData layerData, RenderCamera camera, Timing time)
         {
-            _first.Run(Renderer, sceneData, layerData, camera, time);
+            LayerRenderData<Renderable> layer = layerData as LayerRenderData<Renderable>;
+            _first.Run(Renderer, sceneData, layer, camera, time);
             Link.Recycle(_first);
         }
     }

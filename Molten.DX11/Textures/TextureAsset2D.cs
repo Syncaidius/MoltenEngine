@@ -70,7 +70,6 @@ namespace Molten.Graphics
         private void UpdateViewDescriptions()
         {
             _resourceViewDescription = new ShaderResourceViewDescription();
-            _resourceViewDescription.Format = _format;
 
             if (_description.ArraySize > 1)
             {

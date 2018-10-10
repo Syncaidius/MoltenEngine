@@ -42,8 +42,6 @@ namespace Molten.Graphics
             _depthFormat = format;
             _description.ArraySize = arraySize;
             _description.Format = GetFormat().ToApi();
-
-            _resourceViewDescription.Format = GetSRVFormat().ToApi();
             _depthDesc = new DepthStencilViewDescription();
             _depthDesc.Format = GetDSVFormat().ToApi();
 
@@ -117,15 +115,15 @@ namespace Molten.Graphics
             }
         }
 
-        private GraphicsFormat GetSRVFormat()
+        protected override Format GetSRVFormat()
         {
             switch (_depthFormat)
             {
                 default:
                 case DepthFormat.R24G8_Typeless:
-                    return GraphicsFormat.R24_UNorm_X8_Typeless;
+                    return SharpDX.DXGI.Format.R24_UNorm_X8_Typeless;
                 case DepthFormat.R32_Typeless:
-                    return GraphicsFormat.R32_Float;
+                    return SharpDX.DXGI.Format.R32_Float;
             }
         }
 

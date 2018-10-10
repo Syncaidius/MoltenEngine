@@ -30,6 +30,7 @@ namespace Molten.Graphics
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
+            device.SetRenderSurfaces(null);
             bool newSurface = renderer.ClearIfFirstUse(device, _surfaceScene, sceneData.BackgroundColor);
             renderer.ClearIfFirstUse(device, _surfaceNormals, Color.White * 0.5f);
             renderer.ClearIfFirstUse(device, _surfaceEmissive, Color.Black);

@@ -33,23 +33,21 @@ namespace Molten.Graphics
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, Timing time, RenderChain.Link link)
         {
-            RenderSurfaceBase rs = null;
             GraphicsDeviceDX11 device = renderer.Device;
 
             _orthoCamera.OutputSurface = camera.OutputSurface;
 
 
             if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
-                renderer.ClearIfFirstUse(device, rs, sceneData.BackgroundColor);
+                renderer.ClearIfFirstUse(device, _surfaceScene, sceneData.BackgroundColor);
 
             device.SetRenderSurface(_surfaceScene, 0);
-            device.SetRenderSurface(rs, 0);
             device.DepthSurface = _surfaceDepth;
-            device.Rasterizer.SetViewports(rs.Viewport);
-            device.Rasterizer.SetScissorRectangle(rs.Viewport.Bounds);
+            device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
+            device.Rasterizer.SetScissorRectangle(camera.OutputSurface.Viewport.Bounds);
 
             StateConditions conditions = StateConditions.ScissorTest; // TODO expand
-            conditions |= rs.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
+            conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
             device.BeginDraw(conditions);
             renderer.RenderSceneLayer(device, layerData, camera);

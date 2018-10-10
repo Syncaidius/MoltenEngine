@@ -292,7 +292,14 @@ namespace Molten.Graphics
         {
             // Dispose of old SRV.
             SRV?.Dispose();
+
+            _resourceViewDescription.Format = GetSRVFormat();
             SRV = new ShaderResourceView(Device.D3d, _resource, _resourceViewDescription);
+        }
+
+        protected virtual Format GetSRVFormat()
+        {
+            return _format;
         }
 
         protected virtual void OnDisposeForRecreation()
