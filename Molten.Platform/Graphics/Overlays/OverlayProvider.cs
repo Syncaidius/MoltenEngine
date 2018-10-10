@@ -22,11 +22,7 @@ namespace Molten.Graphics.Overlays
             if (Font == null)
                 return;
 
-            _overlays.ForInterlock(0, 1, (index, overlay) =>
-            {
-                overlay.OnRender(time, sb, Font, rendererProfiler, sceneProfiler, camera);
-                return false;
-            });
+            _overlays.ForInterlock(0, 1, (index, overlay) => overlay.OnRender(time, sb, Font, rendererProfiler, sceneProfiler, camera));
         }
 
         public void Add(IRenderOverlay overlay)

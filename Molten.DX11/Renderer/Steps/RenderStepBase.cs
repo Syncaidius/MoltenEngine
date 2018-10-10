@@ -11,9 +11,7 @@ namespace Molten.Graphics
     /// </summary>
     internal abstract class RenderStepBase : IDisposable
     {
-        internal abstract void Initialize(RendererDX11 renderer, int width, int height);
-
-        internal abstract void UpdateSurfaces(RendererDX11 renderer, int width, int height);
+        internal abstract void Initialize(RendererDX11 renderer);
 
         internal abstract void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, Timing time, RenderChain.Link link);
 

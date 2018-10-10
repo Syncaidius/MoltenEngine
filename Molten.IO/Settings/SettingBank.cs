@@ -77,21 +77,13 @@ namespace Molten
         /// <summary>Apply all pending setting changes.</summary>
         public void Apply()
         {
-            _settings.ForInterlock(0, 1, (index, item) =>
-            {
-                item.Apply();
-                return false;
-            });
+            _settings.ForInterlock(0, 1, (index, item) => item.Apply());
         }
 
         /// <summary>Cancel all pending setting changes.</summary>
         public void Cancel()
         {
-            _settings.ForInterlock(0, 1, (index, item) =>
-            {
-                item.Cancel();
-                return false;
-            });
+            _settings.ForInterlock(0, 1, (index, item) => item.Cancel());
         }
     }
 }

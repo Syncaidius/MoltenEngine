@@ -11,12 +11,18 @@ namespace Molten.Graphics
 {
     internal class GBufferStep : RenderStepBase
     {
-        internal override void Initialize(RendererDX11 renderer, int width, int height)
+        RenderSurface _surfaceScene;
+        RenderSurface _surfaceNormals;
+        RenderSurface _surfaceEmissive;
+        DepthSurface _surfaceDepth;
+
+        internal override void Initialize(RendererDX11 renderer)
         {
-
+            _surfaceScene = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
+            _surfaceNormals = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
+            _surfaceEmissive = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
+            _surfaceDepth = renderer.GetDepthSurface();
         }
-
-        internal override void UpdateSurfaces(RendererDX11 renderer, int width, int height) { }
 
         public override void Dispose() { }
 
@@ -24,20 +30,13 @@ namespace Molten.Graphics
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
-            switch (link.Previous.Step)
-            {
-                case StartStep start:
-                    device.SetRenderSurface(start.Scene, 0);
-                    device.SetRenderSurface(start.Normals, 1);
-                    device.SetRenderSurface(start.Emissive, 2);
-                    device.DepthSurface = start.Depth;
+            device.SetRenderSurface(_surfaceScene, 0);
+            device.SetRenderSurface(_surfaceNormals, 1);
+            device.SetRenderSurface(_surfaceEmissive, 2);
+            device.DepthSurface = _surfaceDepth;
 
-                    SetMaterialCommon(renderer.StandardMeshMaterial, camera, start.Scene);
-                    SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, start.Scene);
-                    break;
-
-                    // TODO add alternate HDR start step here (which should be used in conjunction HDR textures, HDR RTs and so on).
-            }
+            SetMaterialCommon(renderer.StandardMeshMaterial, camera, _surfaceScene);
+            SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, _surfaceScene);
 
             device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
             StateConditions conditions = StateConditions.None; // TODO expand

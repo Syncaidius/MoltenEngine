@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
-    public abstract class SceneComponent
+    public abstract class SceneComponent : IdentifiedObject
     {
         internal void Initialize(SceneObject obj)
         {

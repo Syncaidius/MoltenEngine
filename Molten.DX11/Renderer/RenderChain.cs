@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,92 +9,108 @@ namespace Molten.Graphics
 {
     internal class RenderChain : IRenderChain
     {
-        internal class Link
+        internal class Link : IPoolable
         {
-            public Link Previous;
-            public Link Next;
-            public RenderStepBase Step;
-            public RenderChain Chain;
+            List<Link> _previous = new List<Link>();
+            List<Link> _next = new List<Link>();
+            RenderStepBase _step;
+            RenderChain _chain;
+            bool _completed;
+
+            internal Link(RenderChain chain)
+            {
+                _chain = chain;
+            }
+
+            public void Clear()
+            {
+                _previous.Clear();
+                _next.Clear();
+                _step = null;
+                _completed = false;
+            }
+
+            internal void Set<T>() where T : RenderStepBase, new()
+            {
+                _step = _chain.Renderer.GetRenderStep<T>();
+            }
+
+            internal Link Next<T>() where T : RenderStepBase, new()
+            {
+                Link next = _chain.LinkPool.GetInstance();
+                next.Set<T>();
+                _next.Add(next);
+                next._previous.Add(this);
+
+                return next;
+            }
+
+            /// <summary>
+            /// Causes all of the current link's next links toconverge on the specified step type.
+            /// </summary>
+            /// <typeparam name="T">The type of step to converge at.</typeparam>
+            /// <returns>The latest <see cref="Link"/> that was added as a result of the requested step being added.</returns>
+            internal Link ConvergeAt<T>() where T: RenderStepBase, new()
+            {
+                Link next = _chain.LinkPool.GetInstance();
+                next.Set<T>();
+                ConvergeAt(this, next);
+                return next;
+            }
+
+            private static void ConvergeAt(Link current, Link target)
+            {
+                if (current._next.Count > 0)
+                {
+                    for (int i = 0; i < current._next.Count; i++)
+                        ConvergeAt(current._next[i], target);
+                }
+                else
+                {
+                    current._next.Add(target);
+                    target._previous.Add(current);
+                }
+            }
+
+            internal static void Recycle(Link link)
+            {
+                for (int i = 0; i < link._next.Count; i++)
+                    Recycle(link._next[i]);
+
+                link._chain.LinkPool.Recycle(link);
+            }
+
+            internal void Run(RendererDX11 renderer, SceneRenderData sceneData, LayerRenderData layerData, RenderCamera camera, Timing time)
+            {
+                
+            }
         }
 
-        internal Link First;
-        internal Link Last;
-
-        RendererDX11 _renderer;
+        Link _first;
+        RendererDX11 Renderer;
+        internal readonly ObjectPool<Link> LinkPool;
 
         internal RenderChain(RendererDX11 renderer)
         {
-            _renderer = renderer;
-        }
-
-        private void Next(RenderStepBase step)
-        {
-            Link link = new Link() { Chain = this, Step = step };
-            if (First == null)
-            {
-                First = link;
-                Last = First;
-            }
-            else
-            {
-                link.Previous = Last;
-                Last.Next = link;
-                Last = link;
-                Last.Next = null;
-            }
-        }
-
-        private void Next<T>() where T : RenderStepBase, new()
-        {
-            RenderStepBase step = _renderer.GetRenderStep<T>();
-            Next(step);
+            Renderer = renderer;
+            LinkPool = new ObjectPool<Link>(() => new Link(this));
         }
 
         public void Build(SceneRenderData scene, LayerRenderData layerData, RenderCamera camera)
         {
-            First = null;
-            Last = null;
-
-            /* TODO:
-             *   - Implement chain branching. One chain step can lead to 1 or more new steps. 
-             *      -- If two steps lead back into the same single step, that step will wait until both proceeding ones are done before being executed.
-             *      -- Each extra simultaneous step will be given to a deferred context to execute.
-             *   - RenderChains should be stored on LayerRenderData objects and updated when their flags change, to avoid rebuilding them every frame, for every scene layer.
-             *  
-             * NOTES:
-             *   - Immediate rendering needs to be dumped.
-             *   - StandardMesh and Mesh need to be merged into Mesh, with the functionality of StandardMesh
-             *   - Deferred rendering should be the main focus
-             *   - 2D should be included in the GBuffer stage; Layer flags can be used to disable lighting if non-lit/post-processed 2D elements are required
-             *   
-             * 
-             * 
-             */
-
-            Next<StartStep>();
+            _first = LinkPool.GetInstance();
+            _first.Set<StartStep>();
 
             if (camera.Flags.HasFlag(RenderCameraFlags.Deferred))
-            {
-                Next<GBufferStep>();
-                Next<LightingStep>();
-                Next<FinalizeStep>();
-            }
+                _first.Next<GBufferStep>().Next<LightingStep>().Next<FinalizeStep>();
             else
-            {
-                Next<Immediate3dStep>();
-            }
+                _first.Next<ForwardStep>().Next<FinalizeStep>();
         }
 
         public void Render(SceneRenderData sceneData, LayerRenderData layerData, RenderCamera camera, Timing time)
         {
-            Link link = First;
-            LayerRenderData<Renderable> layer = layerData as LayerRenderData<Renderable>;
-
-            while(link != null)
-            {
-                link.Step.Render(_renderer, camera, sceneData, layer, time, link);
-                link = link.Next;
-            }
+            _first.Run(Renderer, sceneData, layerData, camera, time);
+            Link.Recycle(_first);
         }
     }
 }

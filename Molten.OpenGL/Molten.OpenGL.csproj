@@ -7,7 +7,7 @@
     <ProjectGuid>{051563BB-29AC-4903-AE21-72184CD18955}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Molten.Graphics</RootNamespace>
+    <RootNamespace>Molten.Graphics.OpenGL</RootNamespace>
     <AssemblyName>Molten.OpenGL</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

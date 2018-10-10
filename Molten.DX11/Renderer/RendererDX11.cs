@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using SharpDX.DXGI;
 
 namespace Molten.Graphics
 {
@@ -18,7 +19,11 @@ namespace Molten.Graphics
         HashSet<TextureAsset2D> _clearedSurfaces;
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
-        ThreadedDictionary<string, RenderSurfaceBase> _surfaces;
+
+        ThreadedDictionary<string, SurfaceConfig> _surfacesByKey;
+        ThreadedList<SurfaceConfig> _surfaces;
+        ThreadedDictionary<MainSurfaceType, SurfaceConfig> _mainSurfaces;
+        DepthSurface _depthSurface;
 
         internal SpriteBatcherDX11 SpriteBatcher;
 
@@ -33,6 +38,9 @@ namespace Molten.Graphics
         {
             _steps = new Dictionary<Type, RenderStepBase>();
             _stepList = new List<RenderStepBase>();
+            _surfacesByKey = new ThreadedDictionary<string, SurfaceConfig>();
+            _mainSurfaces = new ThreadedDictionary<MainSurfaceType, SurfaceConfig>();
+            _surfaces = new ThreadedList<SurfaceConfig>();
         }
 
         protected override void OnInitializeAdapter(GraphicsSettings settings)
@@ -56,6 +64,7 @@ namespace Molten.Graphics
             StagingBuffer = new StagingBuffer(Device, StagingBufferFlags.Write, maxBufferSize);
             SpriteBatcher = new SpriteBatcherDX11(this, 3000);
 
+            InitializeMainSurfaces(BiggestWidth, BiggestHeight);
             LoadDefaultShaders();
         }
 
@@ -82,6 +91,50 @@ namespace Molten.Graphics
             Device.Dispatch(task as ComputeTask, x, y, z);
         }
 
+        internal void InitializeMainSurfaces(int width, int height)
+        {
+            RegisterMainSurface("scene", MainSurfaceType.Scene, new RenderSurface(this, width, height, Format.R8G8B8A8_UNorm));
+            RegisterMainSurface("normals", MainSurfaceType.Normals, new RenderSurface(this, width, height, Format.R11G11B10_Float));
+            RegisterMainSurface("emissive", MainSurfaceType.Emissive, new RenderSurface(this, width, height, Format.R8G8B8A8_UNorm));
+            RegisterMainSurface("composition", MainSurfaceType.Composition, new RenderSurface(this, width, height, Format.R8G8B8A8_UNorm));
+            RegisterMainSurface("lighting", MainSurfaceType.Lighting, new RenderSurface(this, width, height, Format.R16G16B16A16_Float));
+            _depthSurface = new DepthSurface(this, width, height, DepthFormat.R24G8_Typeless);
+        }
+
+        internal SurfaceConfig RegisterSurface(string key, RenderSurfaceBase surface, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
+        {
+            key = key.ToLower();
+            if (!_surfacesByKey.TryGetValue(key, out SurfaceConfig config))
+            {
+                config = new SurfaceConfig(surface, sizeMode);
+                _surfacesByKey.Add(key, config);
+                _surfaces.Add(config);
+            }
+
+            return config;
+        }
+
+        internal void RegisterMainSurface(string key, MainSurfaceType mainType, RenderSurfaceBase surface, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
+        {
+            SurfaceConfig config = RegisterSurface(key, surface, sizeMode);
+            _mainSurfaces[mainType] = config;
+        }
+
+        internal T GetSurface<T>(MainSurfaceType type) where T: RenderSurfaceBase
+        {
+            return _mainSurfaces[type].Surface as T;
+        }
+
+        internal T GetSurface<T>(string key) where T : RenderSurfaceBase
+        {
+            return _surfacesByKey[key].Surface as T;
+        }
+
+        internal DepthSurface GetDepthSurface()
+        {
+            return _depthSurface;
+        }
+
         internal T GetRenderStep<T>() where T : RenderStepBase, new()
         {
             Type t = typeof(T);
@@ -89,7 +142,7 @@ namespace Molten.Graphics
             if (!_steps.TryGetValue(t, out step))
             {
                 step = new T();
-                step.Initialize(this, BiggestWidth, BiggestHeight);
+                step.Initialize(this);
                 _steps.Add(t, step);
                 _stepList.Add(step);
             }
@@ -140,8 +193,8 @@ namespace Molten.Graphics
 
         protected override void OnRebuildSurfaces(int requiredWidth, int requiredHeight)
         {
-            for (int i = 0; i < _stepList.Count; i++)
-                _stepList[i].UpdateSurfaces(this, requiredWidth, requiredHeight);
+            _surfaces.ForInterlock(0, 1, (index, config) => config.RefreshSize(requiredWidth, requiredHeight));
+            _depthSurface.Resize(requiredWidth, requiredHeight);
         }
 
         internal void RenderSceneLayer(GraphicsPipe pipe, LayerRenderData layerData, RenderCamera camera)
@@ -153,7 +206,7 @@ namespace Molten.Graphics
             layerData = layer as LayerRenderData<Renderable>;
             foreach (KeyValuePair<Renderable, List<ObjectRenderData>> p in layer.Renderables)
             {
-                // TODO use instancing here.
+                // TODO sort by material and textures
                 foreach (ObjectRenderData data in p.Value)
                 {
                     // TODO replace below with render prediction to interpolate between the current and target transform.
@@ -191,6 +244,12 @@ namespace Molten.Graphics
         {
             for (int i = 0; i < _stepList.Count; i++)
                 _stepList[i].Dispose();
+
+            _surfaces.ForInterlock(0, 1, (index, config) => config.Surface.Dispose());
+            _surfaces.Clear();
+            _depthSurface.Dispose();
+            _mainSurfaces.Clear();
+            _surfacesByKey.Clear();
 
             _resourceManager.Dispose();
             _displayManager?.Dispose();

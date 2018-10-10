@@ -11,52 +11,33 @@ namespace Molten.Graphics
 {
     internal class StartStep : RenderStepBase
     {
-        internal RenderSurface Scene;
-        internal RenderSurface Normals;
-        internal RenderSurface Emissive;
-        internal DepthSurface Depth;
+        RenderSurface _surfaceScene;
+        RenderSurface _surfaceNormals;
+        RenderSurface _surfaceEmissive;
+        DepthSurface _surfaceDepth;
 
-        internal override void Initialize(RendererDX11 renderer, int width, int height)
+        internal override void Initialize(RendererDX11 renderer)
         {
-            UpdateSurfaces(renderer, width, height);
+            _surfaceScene = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
+            _surfaceNormals = renderer.GetSurface<RenderSurface>(MainSurfaceType.Normals);
+            _surfaceEmissive = renderer.GetSurface<RenderSurface>(MainSurfaceType.Emissive);
+            _surfaceDepth = renderer.GetDepthSurface();
         }
 
-        internal override void UpdateSurfaces(RendererDX11 renderer,int width, int height)
-        {
-            // Dispose of current surfaces
-            DisposeSurfaces();
-
-            Scene = new RenderSurface(renderer, width, height, Format.R8G8B8A8_UNorm);
-            Normals = new RenderSurface(renderer, width, height, Format.R11G11B10_Float);
-            Emissive = new RenderSurface(renderer, width, height, Format.R8G8B8A8_UNorm);
-            Depth = new DepthSurface(renderer, width, height, DepthFormat.R24G8_Typeless);
-        }
-
-        private void DisposeSurfaces()
-        {
-            Scene?.Dispose();
-            Normals?.Dispose();
-            Emissive?.Dispose();
-            Depth?.Dispose();
-        }
-
-        public override void Dispose()
-        {
-            DisposeSurfaces();
-        }
+        public override void Dispose() { }
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, Timing time, RenderChain.Link link)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
-            bool newSurface = renderer.ClearIfFirstUse(device, Scene, sceneData.BackgroundColor);
-            renderer.ClearIfFirstUse(device, Normals, Color.White * 0.5f);
-            renderer.ClearIfFirstUse(device, Emissive, Color.Black);
+            bool newSurface = renderer.ClearIfFirstUse(device, _surfaceScene, sceneData.BackgroundColor);
+            renderer.ClearIfFirstUse(device, _surfaceNormals, Color.White * 0.5f);
+            renderer.ClearIfFirstUse(device, _surfaceEmissive, Color.Black);
 
             // Always clear the depth surface at the start of each scene unless otherwise instructed.
             // Will also be cleared if we've just switched to a previously un-rendered surface during this frame.
             if(!camera.Flags.HasFlag(RenderCameraFlags.DoNotClearDepth) || newSurface)
-                Depth.Clear(device, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil);
+                _surfaceDepth.Clear(device, DepthStencilClearFlags.Depth | DepthStencilClearFlags.Stencil);
         }
     }
 }

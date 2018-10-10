@@ -12,16 +12,14 @@ namespace Molten.Graphics
         RenderCamera _orthoCamera;
         ObjectRenderData _dummyData;
 
-        internal override void Initialize(RendererDX11 renderer, int width, int height)
+        RenderSurface _surfaceScene;
+
+        internal override void Initialize(RendererDX11 renderer)
         {
+            _surfaceScene = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
+
             _dummyData = new ObjectRenderData();
             _orthoCamera = new RenderCamera(RenderCameraMode.Orthographic);
-            UpdateSurfaces(renderer, width, height);
-        }
-
-        internal override void UpdateSurfaces(RendererDX11 renderer, int width, int height)
-        {
-
         }
 
         public override void Dispose()
@@ -31,35 +29,30 @@ namespace Molten.Graphics
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, Timing time, RenderChain.Link link)
         {
-            switch (link.Chain.First.Step)
-            {
-                case StartStep start:
-                    _orthoCamera.OutputSurface = camera.OutputSurface;
+            _orthoCamera.OutputSurface = camera.OutputSurface;
 
-                    Rectangle bounds = new Rectangle(0, 0, camera.OutputSurface.Width, camera.OutputSurface.Height);
-                    GraphicsDeviceDX11 device = renderer.Device;
-                    RenderSurfaceBase finalSurface = camera.OutputSurface as RenderSurfaceBase;
-                    if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
-                        renderer.ClearIfFirstUse(device, finalSurface, sceneData.BackgroundColor);
+            Rectangle bounds = new Rectangle(0, 0, camera.OutputSurface.Width, camera.OutputSurface.Height);
+            GraphicsDeviceDX11 device = renderer.Device;
+            RenderSurfaceBase finalSurface = camera.OutputSurface as RenderSurfaceBase;
+            if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
+                renderer.ClearIfFirstUse(device, finalSurface, sceneData.BackgroundColor);
 
-                    device.SetRenderSurface(finalSurface, 0);
-                    device.DepthSurface = null;
-                    device.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
-                    device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
-                    device.Rasterizer.SetScissorRectangle(camera.OutputSurface.Viewport.Bounds);
+            device.SetRenderSurface(finalSurface, 0);
+            device.DepthSurface = null;
+            device.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
+            device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
+            device.Rasterizer.SetScissorRectangle(camera.OutputSurface.Viewport.Bounds);
 
-                    StateConditions conditions = StateConditions.ScissorTest;
-                    conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
+            StateConditions conditions = StateConditions.ScissorTest;
+            conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
-                    renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
-                    renderer.SpriteBatcher.Draw(start.Scene, bounds, Vector2F.Zero, camera.OutputSurface.Viewport.Bounds.Size, Color.White, 0, Vector2F.Zero, null, 0);
+            renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
+            renderer.SpriteBatcher.Draw(_surfaceScene, bounds, Vector2F.Zero, camera.OutputSurface.Viewport.Bounds.Size, Color.White, 0, Vector2F.Zero, null, 0);
 
-                    if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
-                        renderer.Overlay.Render(time, renderer.SpriteBatcher, renderer.Profiler, sceneData.Profiler, camera);
-                    renderer.SpriteBatcher.Flush(device, _orthoCamera, _dummyData);
-                    renderer.Device.EndDraw();
-                    break;
-            }
+            if (camera.HasFlags(RenderCameraFlags.ShowOverlay))
+                renderer.Overlay.Render(time, renderer.SpriteBatcher, renderer.Profiler, sceneData.Profiler, camera);
+            renderer.SpriteBatcher.Flush(device, _orthoCamera, _dummyData);
+            renderer.Device.EndDraw();
         }
     }
 }

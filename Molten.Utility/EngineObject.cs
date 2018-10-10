@@ -18,7 +18,7 @@ namespace Molten
 
         public event EngineObjectHandler OnDisposing;
 
-        /// <summary>Safely disposes of an object.</summary>
+        /// <summary>Safely disposes of an object which may also be null.</summary>
         /// <param name="disposable">The object to dispose.</param>
         protected void DisposeObject<T>(ref T disposable) where T : IDisposable
         {
@@ -36,7 +36,7 @@ namespace Molten
                 return;
 
             _isDisposed = true;
-            OnDisposing?.Invoke(this);
+            Interlocked.CompareExchange(ref OnDisposing, null, null)?.Invoke(this);
             OnDispose();
 
             // TODO free object ID

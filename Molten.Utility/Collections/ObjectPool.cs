@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +9,7 @@ namespace Molten.Collections
     /// <typeparam name="T"></typeparam>
     public class ObjectPool<T> : IDisposable where T : IPoolable
     {
-        ConcurrentQueue<T> _pool;
+        ThreadedQueue<T> _pool;
         Func<T> _generator;
 
         /// <summary>Creates a new instance of ObjectPool.</summary>
@@ -18,7 +17,7 @@ namespace Molten.Collections
         /// stores, if one is needed.</param>
         public ObjectPool(Func<T> generator)
         {
-            _pool = new ConcurrentQueue<T>();
+            _pool = new ThreadedQueue<T>();
 
             if (generator == null)
                 throw new ArgumentNullException("Generator cannot be null.");

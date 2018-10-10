@@ -13,17 +13,24 @@ namespace Molten.Graphics
 {
     internal class LightingStep : RenderStepBase
     {
-        internal RenderSurface Lighting;
+        internal 
         Material _matPoint;
         Material _matDebugPoint;
         StartStep _startStep;
         GraphicsBuffer _lightDataBuffer;
         BufferSegment _lightSegment;
 
-        internal override void Initialize(RendererDX11 renderer, int width, int height)
+        RenderSurface _surfaceScene;
+        RenderSurface _surfaceNormals;
+        RenderSurface _surfaceLighting;
+        DepthSurface _surfaceDepth;
+
+        internal override void Initialize(RendererDX11 renderer)
         {
-            _startStep = renderer.GetRenderStep<StartStep>();
-            Lighting = new RenderSurface(renderer, width, height, Format.R16G16B16A16_Float);
+            _surfaceDepth = renderer.GetDepthSurface();
+            _surfaceScene = renderer.GetSurface<RenderSurface>(MainSurfaceType.Scene);
+            _surfaceNormals = renderer.GetSurface<RenderSurface>(MainSurfaceType.Normals);
+            _surfaceLighting = renderer.GetSurface<RenderSurface>(MainSurfaceType.Lighting);
 
             int stride = Marshal.SizeOf<LightData>();
             int maxLights = 2000; // TODO move to graphics settings
@@ -51,14 +58,8 @@ namespace Molten.Graphics
             }
         }
 
-        internal override void UpdateSurfaces(RendererDX11 renderer, int width, int height)
-        {
-            Lighting.Resize(width, height);
-        }
-
         public override void Dispose()
         {
-            Lighting.Dispose();
             _lightSegment.Dispose();
             _lightDataBuffer.Dispose();
         }
@@ -67,10 +68,10 @@ namespace Molten.Graphics
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
-            Lighting.Clear(renderer.Device, sceneData.AmbientLightColor);
+            _surfaceLighting.Clear(renderer.Device, sceneData.AmbientLightColor);
             device.UnsetRenderSurfaces();
-            device.SetRenderSurface(Lighting, 0);
-            device.DepthSurface = _startStep.Depth;
+            device.SetRenderSurface(_surfaceLighting, 0);
+            device.DepthSurface = _surfaceDepth;
             device.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
             RenderPointLights(device, camera, sceneData);
         }
@@ -98,16 +99,16 @@ namespace Molten.Graphics
 
             // Set data buffer on domain and pixel shaders
             _matPoint.Light.Data.Value = _lightSegment; // TODO Need to implement a dynamic structured buffer we can reuse here.
-            _matPoint.Light.MapDiffuse.Value = _startStep.Scene;
-            _matPoint.Light.MapNormal.Value =  _startStep.Normals;
-            _matPoint.Light.MapDepth.Value = _startStep.Depth;
+            _matPoint.Light.MapDiffuse.Value = _surfaceScene;
+            _matPoint.Light.MapNormal.Value =  _surfaceNormals;
+            _matPoint.Light.MapDepth.Value = _surfaceDepth;
 
             _matPoint.Light.InvViewProjection.Value = camera.InvViewProjection;
             _matPoint.Light.CameraPosition.Value = camera.Position;
             _matPoint.Scene.MaxSurfaceUV.Value = new Vector2F()
             {
-                X = (float)camera.OutputSurface.Width / _startStep.Scene.Width,
-                Y = (float)camera.OutputSurface.Height / _startStep.Scene.Height,
+                X = (float)camera.OutputSurface.Width / _surfaceScene.Width,
+                Y = (float)camera.OutputSurface.Height / _surfaceScene.Height,
             };
 
             //set correct buffers and shaders
