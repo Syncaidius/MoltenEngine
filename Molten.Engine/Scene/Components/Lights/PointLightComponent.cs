@@ -43,7 +43,10 @@ namespace Molten
 
             // Add mesh to render data if possible.
             if (_visible && obj.Scene != null)
+            {
                 _instance = obj.Scene.RenderData.PointLights.New(_data);
+                _instance.Range = _range;
+            }
         }
 
         private void RemoveFromScene(SceneObject obj)
@@ -133,6 +136,9 @@ namespace Molten
             {
                 _range = value;
                 _data.RangeRcp = 1.0f / (_range * _range);
+
+                if(_instance != null)
+                    _instance.Range = _range;
             }
         }
 

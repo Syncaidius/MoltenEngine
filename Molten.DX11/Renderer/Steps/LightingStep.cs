@@ -121,9 +121,9 @@ namespace Molten.Graphics
             pipe.EndDraw();
 
             // Draw debug light volumes
-            pipe.BeginDraw(StateConditions.Debug);
-            pipe.Draw(_matDebugPoint, pointCount, PrimitiveTopology.PatchListWith1ControlPoints, 0);
-            pipe.EndDraw();
+            //pipe.BeginDraw(StateConditions.Debug);
+            //pipe.Draw(_matDebugPoint, pointCount, PrimitiveTopology.PatchListWith1ControlPoints, 0);
+            //pipe.EndDraw();
         }
     }
 }
