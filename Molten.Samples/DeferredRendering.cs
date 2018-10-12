@@ -110,8 +110,8 @@ namespace Molten.Samples
                     Z = (float)Math.Cos(angle) * radius,
                 };
 
-                SceneObject obj = CreateObject(pos, MainScene);
-                PointLightComponent lightCom = obj.AddComponent<PointLightComponent>();
+                PointLightComponent lightCom = MainScene.AddObjectWithComponent<PointLightComponent>();
+                lightCom.Object.Transform.LocalPosition = pos;
                 lightCom.Range = radius + 1;
                 lightCom.Intensity = 2.0f;
                 lightCom.Color = new Color()

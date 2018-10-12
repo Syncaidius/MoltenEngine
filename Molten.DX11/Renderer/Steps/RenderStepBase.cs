@@ -13,7 +13,7 @@ namespace Molten.Graphics
     {
         internal abstract void Initialize(RendererDX11 renderer);
 
-        internal abstract void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, Timing time, RenderChain.Link link);
+        internal abstract void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time);
 
         public abstract void Dispose();
     }

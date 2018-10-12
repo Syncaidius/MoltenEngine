@@ -382,7 +382,7 @@ namespace Molten.Graphics
             if (pointColors.Count == 0)
                 throw new SpriteBatcherException(this, "There must be at least one color available in the pointColors list.");
 
-            if (startIndex + count >= points.Count)
+            if (startIndex + count > points.Count)
                 throw new SpriteBatcherException(this, "The sum of the start index and the count must be less than the point count.");
 
             if (count < 2)

@@ -127,8 +127,11 @@
     <Compile Include="Exceptions\MappedBufferException.cs" />
     <Compile Include="Exceptions\UnsupportedFeatureException.cs" />
     <Compile Include="Renderer\MainSurfaceType.cs" />
+    <Compile Include="Renderer\RenderChain.Context.cs" />
+    <Compile Include="Renderer\RenderChain.Link.cs" />
     <Compile Include="Renderer\SpriteRendererDX11.cs" />
     <Compile Include="Renderer\SpriteBatcherDX11.cs" />
+    <Compile Include="Renderer\Steps\CompositionStep.cs" />
     <Compile Include="Renderer\SurfaceConfig.cs" />
     <Compile Include="Renderer\Tasks\TextureApply.cs" />
     <Compile Include="Surfaces\RenderControlSurface.cs" />
@@ -311,6 +314,8 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Assets\sprite_common.sbm" />
+    <EmbeddedResource Include="Assets\gbuffer_compose.sbm" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="..\Molten.DX.Shared\Molten.DX.Shared.projitems" Label="Shared" />

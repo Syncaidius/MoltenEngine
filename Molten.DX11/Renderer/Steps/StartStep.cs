@@ -26,12 +26,12 @@ namespace Molten.Graphics
 
         public override void Dispose() { }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
             device.SetRenderSurfaces(null);
-            bool newSurface = renderer.ClearIfFirstUse(device, _surfaceScene, sceneData.BackgroundColor);
+            bool newSurface = renderer.ClearIfFirstUse(device, _surfaceScene, context.Scene.BackgroundColor);
             renderer.ClearIfFirstUse(device, _surfaceNormals, Color.White * 0.5f);
             renderer.ClearIfFirstUse(device, _surfaceEmissive, Color.Black);
 

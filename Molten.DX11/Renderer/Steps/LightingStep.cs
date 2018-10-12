@@ -64,16 +64,16 @@ namespace Molten.Graphics
             _lightDataBuffer.Dispose();
         }
 
-        internal override void Render(RendererDX11 renderer, RenderCamera camera, SceneRenderData sceneData, LayerRenderData<Renderable> layerData, Timing time, RenderChain.Link link)
+        internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
             GraphicsDeviceDX11 device = renderer.Device;
 
-            _surfaceLighting.Clear(renderer.Device, sceneData.AmbientLightColor);
+            _surfaceLighting.Clear(renderer.Device, context.Scene.AmbientLightColor);
             device.UnsetRenderSurfaces();
             device.SetRenderSurface(_surfaceLighting, 0);
             device.DepthSurface = _surfaceDepth;
             device.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
-            RenderPointLights(device, camera, sceneData);
+            RenderPointLights(device, camera, context.Scene);
         }
 
         private void RenderPointLights(GraphicsPipe pipe, RenderCamera camera, SceneRenderData scene)

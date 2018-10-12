@@ -16,6 +16,8 @@ namespace Molten.Graphics
 
         Lighting = 3,
 
-        Composition = 4,
+        Composition1 = 4,
+
+        Composition2 = 5,
     }
 }

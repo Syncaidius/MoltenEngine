@@ -96,7 +96,8 @@ namespace Molten.Graphics
             RegisterMainSurface("scene", MainSurfaceType.Scene, new RenderSurface(this, width, height, Format.R8G8B8A8_UNorm));
             RegisterMainSurface("normals", MainSurfaceType.Normals, new RenderSurface(this, width, height, Format.R11G11B10_Float));
             RegisterMainSurface("emissive", MainSurfaceType.Emissive, new RenderSurface(this, width, height, Format.R8G8B8A8_UNorm));
-            RegisterMainSurface("composition", MainSurfaceType.Composition, new RenderSurface(this, width, height, Format.R8G8B8A8_UNorm));
+            RegisterMainSurface("composition1", MainSurfaceType.Composition1, new RenderSurface(this, width, height, Format.R16G16B16A16_Float));
+            RegisterMainSurface("composition2", MainSurfaceType.Composition2, new RenderSurface(this, width, height, Format.R16G16B16A16_Float));
             RegisterMainSurface("lighting", MainSurfaceType.Lighting, new RenderSurface(this, width, height, Format.R16G16B16A16_Float));
             _depthSurface = new DepthSurface(this, width, height, DepthFormat.R24G8_Typeless);
         }
