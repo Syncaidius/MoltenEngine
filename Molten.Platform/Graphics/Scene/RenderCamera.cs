@@ -121,6 +121,7 @@ namespace Molten.Graphics
                 _view = value;
                 _viewProjection = Matrix4F.Multiply(_view, _projection);
                 _transform = Matrix4F.Invert(_view);
+                _invViewProjection = Matrix4F.Invert(_viewProjection);
             }
         }
 
@@ -132,6 +133,7 @@ namespace Molten.Graphics
                 _transform = value;
                 _view = Matrix4F.Invert(_transform);
                 _viewProjection = Matrix4F.Multiply(_view, _projection);
+                _invViewProjection = Matrix4F.Invert(_viewProjection);
             }
         }
 

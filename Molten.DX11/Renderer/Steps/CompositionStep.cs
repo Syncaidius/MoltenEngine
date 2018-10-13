@@ -55,23 +55,23 @@ namespace Molten.Graphics
         {
             _orthoCamera.OutputSurface = camera.OutputSurface;
 
-            Rectangle bounds = new Rectangle(0, 0, camera.OutputSurface.Width, camera.OutputSurface.Height);
+            Rectangle bounds = camera.OutputSurface.Viewport.Bounds;
             GraphicsDeviceDX11 device = renderer.Device;
-            RenderSurfaceBase finalSurface = camera.OutputSurface as RenderSurfaceBase;
-            if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
-                renderer.ClearIfFirstUse(device, finalSurface, context.Scene.BackgroundColor);
 
+            context.CompositionSurface.Clear(context.Scene.BackgroundColor);
+
+            device.UnsetRenderSurfaces();
             device.SetRenderSurface(context.CompositionSurface, 0);
             device.DepthSurface = null;
             device.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
             device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
-            device.Rasterizer.SetScissorRectangle(camera.OutputSurface.Viewport.Bounds);
+            device.Rasterizer.SetScissorRectangle(bounds);
 
             StateConditions conditions = StateConditions.ScissorTest;
             conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
-            _valLighting.Value = _surfaceLighting;
-            _valEmissive.Value = _surfaceEmissive;
+            //_valLighting.Value = _surfaceLighting;
+            //_valEmissive.Value = _surfaceEmissive;
 
             renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
             renderer.SpriteBatcher.Draw(_surfaceScene, bounds, Vector2F.Zero, camera.OutputSurface.Viewport.Bounds.Size, Color.White, 0, Vector2F.Zero, _matCompose, 0);

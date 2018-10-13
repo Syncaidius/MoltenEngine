@@ -22,6 +22,7 @@
       <reference>0</reference>
       <comparison>GreaterEqual</comparison>
       <writemask>Zero</writemask>
+      <writepermission>ReadOnly</writepermission>
       <enabled>true</enabled>
       <stencilenabled>true</stencilenabled>
       <front>
@@ -40,6 +41,7 @@
     <sampler slot="1" preset="default">
       <comparison>Always</comparison>
       <filter>MinMagMipPoint</filter>
+      <maxanisotropy>1</maxanisotropy>
     </sampler>
   </pass>
 </material>

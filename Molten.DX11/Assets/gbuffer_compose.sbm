@@ -25,5 +25,5 @@ float4 PS_Compose( PS_IN input ) : SV_Target
   float4 light = mapLighting.Sample(diffuseSampler, input.uv);
   float4 emissive = mapEmissive.Sample(diffuseSampler, input.uv);
   
-  return (col * light) + emissive;
+  return float4(1,0,0,1); //(col * light) + emissive;
 }
