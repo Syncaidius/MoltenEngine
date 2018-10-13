@@ -28,9 +28,7 @@ namespace Molten.Graphics
         internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
             GraphicsDeviceDX11 device = renderer.Device;
-
-            if (!camera.Flags.HasFlag(RenderCameraFlags.DoNotClear))
-                renderer.ClearIfFirstUse(device, _surfaceScene, context.Scene.BackgroundColor);
+            _surfaceScene.Clear(Color.Transparent);
 
             device.SetRenderSurface(_surfaceScene, 0);
             device.DepthSurface = _surfaceDepth;

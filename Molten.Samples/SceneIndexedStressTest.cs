@@ -21,7 +21,7 @@ namespace Molten.Samples
             base.OnInitialize(engine);
             _objects = new List<SceneObject>();
 
-            string fn = "assets/BasicColor.sbm";
+            string fn = "assets/BasicColor.mfx";
             string source = "";
             using (FileStream stream = new FileStream(fn, FileMode.Open, FileAccess.Read))
             {

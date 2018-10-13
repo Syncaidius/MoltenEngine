@@ -24,7 +24,7 @@
   </pass>
 </material>
 
-#include "gbuffer_common.sbm"
+#include "gbuffer_common.mfx"
 
 struct VS_IN
 {

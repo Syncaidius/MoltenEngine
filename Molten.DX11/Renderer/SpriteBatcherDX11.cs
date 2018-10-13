@@ -47,7 +47,7 @@ namespace Molten.Graphics
             _segment.SetVertexFormat(typeof(SpriteVertex));
 
             string source = null;
-            string namepace = "Molten.Graphics.Assets.sprite.sbm";
+            string namepace = "Molten.Graphics.Assets.sprite.mfx";
             using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
             {
                 using (StreamReader reader = new StreamReader(stream))

@@ -282,11 +282,11 @@
     <Compile Include="Vertices\VertexWithID.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\sprite.sbm" />
+    <EmbeddedResource Include="Assets\sprite.mfx" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\gbuffer.sbm" />
-    <EmbeddedResource Include="Assets\gbuffer_common.sbm" />
+    <EmbeddedResource Include="Assets\gbuffer.mfx" />
+    <EmbeddedResource Include="Assets\gbuffer_common.mfx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
@@ -307,15 +307,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\light_common.sbm" />
-    <EmbeddedResource Include="Assets\light_point.sbm" />
+    <EmbeddedResource Include="Assets\light_common.mfx" />
+    <EmbeddedResource Include="Assets\light_point.mfx" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\sprite_common.sbm" />
-    <EmbeddedResource Include="Assets\gbuffer_compose.sbm" />
+    <EmbeddedResource Include="Assets\sprite_common.mfx" />
+    <EmbeddedResource Include="Assets\gbuffer_compose.mfx" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="..\Molten.DX.Shared\Molten.DX.Shared.projitems" Label="Shared" />

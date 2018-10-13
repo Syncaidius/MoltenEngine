@@ -78,4 +78,4 @@
   </pass>
 </material>
 
-#include "sprite_common.sbm";
+#include "sprite_common.mfx";

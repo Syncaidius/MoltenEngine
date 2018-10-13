@@ -27,7 +27,7 @@ namespace Molten.Samples
             _mesh.SetVertices(SampleVertexData.TextureArrayCubeVertices);
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
-            cr.Load<IMaterial>("BasicTextureArray1D.sbm");
+            cr.Load<IMaterial>("BasicTextureArray1D.mfx");
             cr.Load<TextureData>("1d_1.png");
             cr.Load<TextureData>("1d_2.png");
             cr.Load<TextureData>("1d_3.png");

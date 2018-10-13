@@ -174,21 +174,21 @@
     <Content Include="Assets\1d_3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\BasicColor.sbm">
+    <None Include="Assets\BasicColor.mfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\BasicTexture.sbm">
+    </None>
+    <None Include="Assets\BasicTexture.mfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\BasicTextureArray2D.sbm">
+    </None>
+    <None Include="Assets\BasicTextureArray2D.mfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\BasicTexture1D.sbm">
+    </None>
+    <None Include="Assets\BasicTexture1D.mfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\BasicTextureArray1D.sbm">
+    </None>
+    <None Include="Assets\BasicTextureArray1D.mfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="Assets\BroshK.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

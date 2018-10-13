@@ -26,7 +26,7 @@ namespace Molten.Graphics
             _surfaceEmissive = renderer.GetSurface<RenderSurface>(MainSurfaceType.Emissive);
 
             string source = null;
-            string namepace = "Molten.Graphics.Assets.gbuffer_compose.sbm";
+            string namepace = "Molten.Graphics.Assets.gbuffer_compose.mfx";
             using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
             {
                 using (StreamReader reader = new StreamReader(stream))
@@ -70,11 +70,11 @@ namespace Molten.Graphics
             StateConditions conditions = StateConditions.ScissorTest;
             conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
-            //_valLighting.Value = _surfaceLighting;
+            _valLighting.Value = _surfaceLighting;
             //_valEmissive.Value = _surfaceEmissive;
 
             renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
-            renderer.SpriteBatcher.Draw(_surfaceScene, bounds, Vector2F.Zero, camera.OutputSurface.Viewport.Bounds.Size, Color.White, 0, Vector2F.Zero, _matCompose, 0);
+            renderer.SpriteBatcher.Draw(_surfaceScene, bounds, Vector2F.Zero, bounds.Size, Color.White, 0, Vector2F.Zero, _matCompose, 0);
             renderer.SpriteBatcher.Flush(device, _orthoCamera, _dummyData);
             renderer.Device.EndDraw();
 

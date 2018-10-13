@@ -71,7 +71,7 @@ namespace Molten.Graphics
         private void LoadDefaultShaders()
         {
             string source = null;
-            string namepace = "Molten.Graphics.Assets.gbuffer.sbm";
+            string namepace = "Molten.Graphics.Assets.gbuffer.mfx";
             using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
             {
                 using (StreamReader reader = new StreamReader(stream))

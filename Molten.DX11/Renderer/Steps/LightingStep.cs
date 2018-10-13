@@ -43,7 +43,7 @@ namespace Molten.Graphics
         private void LoadShaders(RendererDX11 renderer)
         {
             string source = null;
-            string namepace = "Molten.Graphics.Assets.light_point.sbm";
+            string namepace = "Molten.Graphics.Assets.light_point.mfx";
             using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
             {
                 using (StreamReader reader = new StreamReader(stream))
