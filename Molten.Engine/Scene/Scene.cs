@@ -251,5 +251,14 @@ namespace Molten
         /// Any input objects of the current <see cref="Scene"/> will receive cursor coordinates relative to these bounds.
         /// </summary>
         public Rectangle InputBounds { get; set; }
+
+        /// <summary>
+        /// Gets or sets the scene's skybox texture.
+        /// </summary>
+        public ITextureCube SkyboxTeture
+        {
+            get => RenderData.SkyboxTexture;
+            set => RenderData.SkyboxTexture = value;
+        }
     }
 }

@@ -42,7 +42,7 @@ namespace Molten.Graphics
         public int Width;
         public int Height;
         public int MipMapLevels;
-        public int ArraySize;
+        public int ArraySize = 1;
         public int SampleCount;
 
         /// <summary>The most detailed mip map level. by default, this is 0.</summary>
@@ -98,45 +98,57 @@ namespace Molten.Graphics
             return this.Clone();
         }
 
-        /// <summary>Sets the configuration and data of the current <see cref="TextureData"/> instance to that of the provided <see cref="TextureData"/> instance.</summary>
-        /// <param name="data"></param>
-        public void Set(TextureData data)
+        /// <summary>Sets the configuration and data of the current <see cref="TextureData"/> instance to that of the provided <see cref="TextureData"/> instance. <para/>
+        /// This will overwrite as many texture slices as required to fit the other <see cref="TextureData"/> instance's data. 
+        /// Any extra slices left over from the operation will remain untouched.</summary>
+        /// <param name="otherData"></param>
+        public void Set(TextureData otherData)
         {
-            ArraySize = data.ArraySize;
-            Format = data.Format;
-            Flags = data.Flags;
-            IsCompressed = data.IsCompressed;
-            Height = data.Height;
-            MipMapLevels = data.MipMapLevels;
-            Width = data.Width;
-            SampleCount = data.SampleCount;
+            ArraySize = otherData.ArraySize;
+            Format = otherData.Format;
+            Flags = otherData.Flags;
+            IsCompressed = otherData.IsCompressed;
+            Height = otherData.Height;
+            MipMapLevels = otherData.MipMapLevels;
+            Width = otherData.Width;
+            SampleCount = otherData.SampleCount;
+            HighestMipMap = otherData.HighestMipMap;
 
-            if (Levels.Length != data.Levels.Length)
-                Array.Resize(ref Levels, data.Levels.Length);
+            if (Levels.Length != otherData.Levels.Length)
+                Array.Resize(ref Levels, otherData.Levels.Length);
 
-            for (int i = 0; i < data.Levels.Length; i++)
-                Levels[i] = data.Levels[i].Clone();
+            for (int i = 0; i < otherData.Levels.Length; i++)
+                Levels[i] = otherData.Levels[i].Clone();
         }
 
-        /// <summary>Uses another <see cref="TextureData"/> instance to set texture data for the specified array slice of the current <see cref="TextureData"/> instance.</summary>
-        /// <param name="data"></param>
-        /// <param name="arraySlice"></param>
-        public void Set(TextureData data, int arraySlice)
+        /// <summary>Sets the specified <see cref="TextureData"/> as an array slice in the current <see cref="TextureData"/> instance. <para/>
+        /// This will automatically increase the <see cref="ArraySize"/> on the current <see cref="TextureData"/> instance if needed.</summary>
+        /// <param name="otherData">The other data to be appended.</param>
+        /// <param name="arraySlice">The array slice at which to start copying the other data to.</param>
+        public void Set(TextureData otherData, int arraySlice)
         {
-            if (data.Width != Width || data.Height != Height || data.MipMapLevels != MipMapLevels)
+            if (otherData.Width != Width || otherData.Height != Height || otherData.MipMapLevels != MipMapLevels)
                 throw new Exception("Texture data must match the dimensions (i.e. width, height, depth, mip-map levels) of the destination data.");
 
-            int requiredLevels = (MipMapLevels * (arraySlice + 1));
-
-            if (Levels == null || ArraySize <= arraySlice || Levels.Length < requiredLevels)
-                Array.Resize(ref Levels, requiredLevels);
-
-            for(int i = 0; i < data.Levels.Length; i++)
+            int start = MipMapLevels * arraySlice;
+            int end = start + (MipMapLevels * otherData.ArraySize);
+            if (Levels == null || end >= Levels.Length)
             {
-                int lID = (arraySlice * MipMapLevels) + i;
-                Levels[lID] = data.Levels[i].Clone();
+                Array.Resize(ref Levels, end);
+                ArraySize = Math.Max(ArraySize, arraySlice + otherData.ArraySize);
+            }
+
+            for (int i = 0; i < otherData.ArraySize; i++)
+            {
+                for (int j = 0; j < MipMapLevels; j++)
+                {
+                    int sourceID = (MipMapLevels * i) + j;
+                    int destID = ((arraySlice + i) * MipMapLevels) + j;
+                    Levels[destID] = otherData.Levels[sourceID].Clone();
+                }
             }
         }
+
 
         /// <summary>Creates an exact copy of the texture data and returns the new instance.</summary>
         /// <returns></returns>

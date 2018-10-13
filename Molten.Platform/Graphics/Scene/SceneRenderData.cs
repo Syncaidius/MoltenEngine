@@ -117,6 +117,11 @@ namespace Molten.Graphics
         public List<RenderCamera> Cameras { get; } = new List<RenderCamera>();
 
         public RenderProfiler Profiler { get; } = new RenderProfiler();
+
+        /// <summary>
+        /// Gets or sets the skybox cube-map texture.
+        /// </summary>
+        public ITextureCube SkyboxTexture { get; set; }
     }
 
     public class SceneRenderData<R> : SceneRenderData

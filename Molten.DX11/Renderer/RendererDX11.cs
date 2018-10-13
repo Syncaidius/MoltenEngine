@@ -70,20 +70,9 @@ namespace Molten.Graphics
 
         private void LoadDefaultShaders()
         {
-            string source = null;
-            string namepace = "Molten.Graphics.Assets.gbuffer.mfx";
-            using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
-            {
-                using (StreamReader reader = new StreamReader(stream))
-                    source = reader.ReadToEnd();
-            }
-
-            if (!string.IsNullOrWhiteSpace(source))
-            {
-                ShaderCompileResult result = ShaderCompiler.Compile(source, namepace);
-                StandardMeshMaterial = result["material", "gbuffer"] as Material;
-                StandardMeshMaterial_NoNormalMap = result["material", "gbuffer-sans-nmap"] as Material;
-            }
+            ShaderCompileResult result = ShaderCompiler.CompileEmbedded("Molten.Graphics.Assets.gbuffer.mfx");
+            StandardMeshMaterial = result["material", "gbuffer"] as Material;
+            StandardMeshMaterial_NoNormalMap = result["material", "gbuffer-sans-nmap"] as Material;
         }
 
         public void DispatchCompute(IComputeTask task, int x, int y, int z)

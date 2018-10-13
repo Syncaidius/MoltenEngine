@@ -105,6 +105,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Skybox.cs" />
     <Compile Include="SaveTexture.cs" />
     <Compile Include="2DTextureTest.cs" />
     <Compile Include="Common\SampleSceneGame.cs" />
@@ -190,6 +191,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Assets\BroshK.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\cubemap.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\dds_test_e.dds">

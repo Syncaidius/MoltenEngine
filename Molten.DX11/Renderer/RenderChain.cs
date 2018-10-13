@@ -27,9 +27,9 @@ namespace Molten.Graphics
             _first.Set<StartStep>();
 
             if (camera.Flags.HasFlag(RenderCameraFlags.Deferred))
-                _first.Next<GBufferStep>().Next<LightingStep>().Next<CompositionStep>().Next<FinalizeStep>();
+                _first.Next<GBufferStep>().Next<LightingStep>().Next<CompositionStep>().Next<SkyboxStep>().Next<FinalizeStep>();
             else
-                _first.Next<ForwardStep>().Next<FinalizeStep>();
+                _first.Next<ForwardStep>().Next<SkyboxStep>().Next<FinalizeStep>();
         }
 
         public void Render(SceneRenderData sceneData, LayerRenderData layerData, RenderCamera camera, Timing time)

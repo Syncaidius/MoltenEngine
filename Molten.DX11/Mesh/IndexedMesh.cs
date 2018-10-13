@@ -32,8 +32,16 @@ namespace Molten.Graphics
                     _ib = iBuffer.Allocate<ushort>(maxIndices);
                     break;
 
+                case IndexBufferFormat.Signed16Bit:
+                    _ib = iBuffer.Allocate<short>(maxIndices);
+                    break;
+
                 case IndexBufferFormat.Unsigned32Bit:
                     _ib = iBuffer.Allocate<uint>(maxIndices);
+                    break;
+
+                case IndexBufferFormat.Signed32Bit:
+                    _ib = iBuffer.Allocate<int>(maxIndices);
                     break;
             }
 

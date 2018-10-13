@@ -25,22 +25,13 @@ namespace Molten.Graphics
             _surfaceLighting = renderer.GetSurface<RenderSurface>(MainSurfaceType.Lighting);
             _surfaceEmissive = renderer.GetSurface<RenderSurface>(MainSurfaceType.Emissive);
 
-            string source = null;
             string namepace = "Molten.Graphics.Assets.gbuffer_compose.mfx";
-            using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
-            {
-                using (StreamReader reader = new StreamReader(stream))
-                    source = reader.ReadToEnd();
-            }
 
-            if (!string.IsNullOrWhiteSpace(source))
-            {
-                ShaderCompileResult result = renderer.ShaderCompiler.Compile(source, namepace);
-                _matCompose = result["material", "gbuffer-compose"] as Material;
+            ShaderCompileResult result = renderer.ShaderCompiler.CompileEmbedded("Molten.Graphics.Assets.gbuffer_compose.mfx");
+            _matCompose = result["material", "gbuffer-compose"] as Material;
 
-                _valLighting = _matCompose["mapLighting"];
-                _valEmissive = _matCompose["mapEmissive"];
-            }
+            _valLighting = _matCompose["mapLighting"];
+            _valEmissive = _matCompose["mapEmissive"];
 
             _dummyData = new ObjectRenderData();
             _orthoCamera = new RenderCamera(RenderCameraMode.Orthographic);
@@ -59,7 +50,6 @@ namespace Molten.Graphics
             GraphicsDeviceDX11 device = renderer.Device;
 
             context.CompositionSurface.Clear(context.Scene.BackgroundColor);
-
             device.UnsetRenderSurfaces();
             device.SetRenderSurface(context.CompositionSurface, 0);
             device.DepthSurface = null;
@@ -71,10 +61,12 @@ namespace Molten.Graphics
             conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 
             _valLighting.Value = _surfaceLighting;
-            //_valEmissive.Value = _surfaceEmissive;
+            _valEmissive.Value = _surfaceEmissive;
+
+            ITexture2D sourceSurface = context.HasComposed ? context.PreviousComposition : _surfaceScene;
 
             renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
-            renderer.SpriteBatcher.Draw(_surfaceScene, bounds, Vector2F.Zero, bounds.Size, Color.White, 0, Vector2F.Zero, _matCompose, 0);
+            renderer.SpriteBatcher.Draw(sourceSurface, bounds, Vector2F.Zero, bounds.Size, Color.White, 0, Vector2F.Zero, _matCompose, 0);
             renderer.SpriteBatcher.Flush(device, _orthoCamera, _dummyData);
             renderer.Device.EndDraw();
 

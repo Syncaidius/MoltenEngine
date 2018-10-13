@@ -49,6 +49,7 @@ namespace Molten.Samples
             cr.Load<ITexture2D>("metal_n.dds");
             cr.Load<ITexture2D>("metal_e.dds");
             cr.Load<ITexture2D>("metal_s.dds");
+            cr.Load<ITextureCube>("cubemap.dds");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
         }
@@ -147,8 +148,7 @@ namespace Molten.Samples
             emssiveMap = cr.Get<ITexture2D>(5);
             _floorMesh.SetResource(emssiveMap, 2);
 
-            //ITexture2D specular = content.Get<ITexture2D>(cr[6]);
-            //_floorMesh.SetResource(specular, 3);
+            MainScene.SkyboxTeture = cr.Get<ITextureCube>("cubemap.dds");
         }
 
         protected override void OnUpdate(Timing time)

@@ -103,9 +103,10 @@ namespace Molten.Content
                     Height = data.Height,
                     MipMapLevels = data.MipMapLevels,
                     Format = data.Format,
-                    ArraySize = arrayCount,
+                    ArraySize = typeof(ITextureCube).IsAssignableFrom(context.ContentType) ? 6 : arrayCount, // Override specified array size if we're loading a cube map.
                     IsCompressed = data.IsCompressed,
                 };
+
                 finalData.Set(data, i);
             }
 
@@ -130,9 +131,6 @@ namespace Molten.Content
                     {
                         TextureData existingData = existingObjects[0] as TextureData;
                         existingData.Set(finalData);
-
-                        for (int i = 0; i < finalData.Levels.Length; i++)
-                            existingData.Set(finalData, 0);
                     }
                 }
                 else

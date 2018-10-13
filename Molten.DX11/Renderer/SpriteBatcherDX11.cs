@@ -46,23 +46,12 @@ namespace Molten.Graphics
             _segment = renderer.DynamicVertexBuffer.Allocate<SpriteVertex>(_spriteCapacity);
             _segment.SetVertexFormat(typeof(SpriteVertex));
 
-            string source = null;
-            string namepace = "Molten.Graphics.Assets.sprite.mfx";
-            using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
-            {
-                using (StreamReader reader = new StreamReader(stream))
-                    source = reader.ReadToEnd();
-            }
-
-            if (!string.IsNullOrWhiteSpace(source))
-            {
-                ShaderCompileResult result = renderer.ShaderCompiler.Compile(source, namepace);
-                _defaultMaterial = result["material", "sprite-texture"] as Material;
-                _defaultNoTextureMaterial = result["material", "sprite-no-texture"] as Material;
-                _defaultLineMaterial = result["material", "line"] as Material;
-                _defaultCircleMaterial = result["material", "circle"] as Material;
-                _defaultTriMaterial = result["material", "triangle"] as Material;
-            }
+            ShaderCompileResult result = renderer.ShaderCompiler.CompileEmbedded("Molten.Graphics.Assets.sprite.mfx");
+            _defaultMaterial = result["material", "sprite-texture"] as Material;
+            _defaultNoTextureMaterial = result["material", "sprite-no-texture"] as Material;
+            _defaultLineMaterial = result["material", "line"] as Material;
+            _defaultCircleMaterial = result["material", "circle"] as Material;
+            _defaultTriMaterial = result["material", "triangle"] as Material;
 
             _flushFuncs = new Action<GraphicsPipe, RenderCamera, Range, ObjectRenderData>[4]
             {

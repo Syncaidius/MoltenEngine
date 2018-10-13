@@ -10,18 +10,19 @@ namespace Molten.Graphics
     /// <summary>A vertex type containing just position and color data.</summary>
     public struct Vertex : IVertexType
     {
-        [VertexElement(VertexElementType.Vector4, VertexElementUsage.Position, 0)]
+        [VertexElement(VertexElementType.Vector3, VertexElementUsage.Position, 0)]
         /// <summary>Gets or sets the position as a Vector4</summary>
-        Vector4F Position4;
+        public Vector3F Position;
 
-        public Vertex(Vector4F position, Vector2F textureCoordinates)
+
+        public Vertex(float x, float y, float z)
         {
-            this.Position4 = position;
+            Position = new Vector3F(x,y,z);
         }
 
-        public Vertex(Vector3F position, Vector2F textureCoordinates)
+        public Vertex(Vector3F position)
         {
-            this.Position4 = new Vector4F(position, 1);
+            Position = position;
         }
 
         public override bool Equals(object obj)
@@ -39,7 +40,7 @@ namespace Molten.Graphics
 
         public static bool operator ==(Vertex left, Vertex right)
         {
-            return ((left.Position4 == right.Position4));
+            return ((left.Position == right.Position));
         }
 
         public static bool operator !=(Vertex left, Vertex right)
@@ -49,7 +50,7 @@ namespace Molten.Graphics
 
         public override string ToString()
         {
-            return string.Format("{0}", new object[] { this.Position4 });
+            return $"Vertex -- {Position.X}, {Position.Y}, {Position.Z}";
         }
     }
 }

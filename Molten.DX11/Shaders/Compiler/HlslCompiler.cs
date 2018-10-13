@@ -1,6 +1,7 @@
 ﻿using SharpDX.D3DCompiler;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -104,6 +105,18 @@ namespace Molten.Graphics
             Type t = typeof(T);
             HlslSubCompiler sub = Activator.CreateInstance(t, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,  null, null, null) as HlslSubCompiler;
             _subCompilers.Add(nodeName, sub);
+        }
+
+        internal ShaderCompileResult CompileEmbedded(string filename, Include includer = null)
+        {
+            string source = null;
+            using (Stream stream = EmbeddedResource.GetStream(filename, typeof(RendererDX11).Assembly))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                    source = reader.ReadToEnd();
+            }
+
+            return Compile(source, filename, includer);
         }
 
         internal ShaderCompileResult Compile(string source, string filename = null, Include includer = null)

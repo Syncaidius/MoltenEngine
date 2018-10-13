@@ -132,6 +132,7 @@
     <Compile Include="Renderer\SpriteRendererDX11.cs" />
     <Compile Include="Renderer\SpriteBatcherDX11.cs" />
     <Compile Include="Renderer\Steps\CompositionStep.cs" />
+    <Compile Include="Renderer\Steps\SkyboxStep.cs" />
     <Compile Include="Renderer\SurfaceConfig.cs" />
     <Compile Include="Renderer\Tasks\TextureApply.cs" />
     <Compile Include="Surfaces\RenderControlSurface.cs" />
@@ -316,6 +317,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Assets\sprite_common.mfx" />
     <EmbeddedResource Include="Assets\gbuffer_compose.mfx" />
+    <EmbeddedResource Include="Assets\skybox.mfx" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="..\Molten.DX.Shared\Molten.DX.Shared.projitems" Label="Shared" />

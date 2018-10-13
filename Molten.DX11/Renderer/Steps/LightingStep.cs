@@ -62,6 +62,8 @@ namespace Molten.Graphics
         {
             _lightSegment.Dispose();
             _lightDataBuffer.Dispose();
+            _matPoint.Dispose();
+            _matDebugPoint.Dispose();
         }
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
@@ -121,9 +123,9 @@ namespace Molten.Graphics
             pipe.EndDraw();
 
             // Draw debug light volumes
-            //pipe.BeginDraw(StateConditions.Debug);
-            //pipe.Draw(_matDebugPoint, pointCount, PrimitiveTopology.PatchListWith1ControlPoints, 0);
-            //pipe.EndDraw();
+            pipe.BeginDraw(StateConditions.Debug);
+            pipe.Draw(_matDebugPoint, pointCount, PrimitiveTopology.PatchListWith1ControlPoints, 0);
+            pipe.EndDraw();
         }
     }
 }
