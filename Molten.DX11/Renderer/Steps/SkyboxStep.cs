@@ -55,22 +55,20 @@ namespace Molten.Graphics
 
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
 
-            context.CompositionSurface.Clear(context.Scene.BackgroundColor);
+            // We want to add to the previous composition, rather than completely overwrite it.
+            RenderSurface destSurface = context.HasComposed ? context.PreviousComposition : _surfaceScene;
+
             device.UnsetRenderSurfaces();
-            device.SetRenderSurface(context.CompositionSurface, 0);
+            device.SetRenderSurface(destSurface, 0);
             device.DepthSurface = _surfaceDepth;
             device.DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
             device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
             device.Rasterizer.SetScissorRectangle(bounds);
 
-            ITexture2D sourceSurface = context.HasComposed ? context.PreviousComposition : _surfaceScene;
-
             renderer.Device.BeginDraw(StateConditions.None); // TODO correctly use pipe + conditions here.
             _skyboxData.RenderTransform = Matrix4F.Scaling(camera.MaxDrawDistance) * Matrix4F.CreateTranslation(camera.Position);
             _sphereMesh.Render(device, renderer, camera, _skyboxData);
             renderer.Device.EndDraw();
-
-            context.SwapComposition();
         }
 
         private void MakeSphere(int LatLines, int LongLines, out Vertex[] vertices, out int[] indices)

@@ -40,7 +40,7 @@ namespace Molten.Graphics
             device.SetRenderSurfaces(null);
             device.SetRenderSurface(finalSurface, 0);
             device.DepthSurface = null;
-            device.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
+            device.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
             device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
             device.Rasterizer.SetScissorRectangle(camera.OutputSurface.Viewport.Bounds);
 
