@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    public abstract class RenderSurfaceBase : TextureAsset2D, IRenderSurface
+    public abstract class RenderSurfaceBase : Texture2DDX11, IRenderSurface
     {
         /// <summary>The viewport which represents the current render surface.</summary>
         internal Viewport VP;

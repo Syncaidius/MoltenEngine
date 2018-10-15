@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class TextureAsset1D : TextureBase, ITexture
+    public class Texture1DDX11 : TextureBase, ITexture
     {
         protected Texture1D _texture;
         protected Texture1DDescription _description;
@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
         public event TextureHandler OnPostResize;
 
-        internal TextureAsset1D(
+        internal Texture1DDX11(
             RendererDX11 renderer, 
             int width, 
             Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, 
@@ -32,13 +32,11 @@ namespace Molten.Graphics
             if (_isBlockCompressed)
                 throw new NotSupportedException("1D textures do not supports block-compressed formats.");
 
-            arraySize = Math.Max(0, arraySize); // Minimum array size of 1.
-
             _description = new Texture1DDescription()
             {
                 Width = width,
                 MipLevels = mipCount,
-                ArraySize = arraySize,
+                ArraySize = Math.Max(1, arraySize),
                 Format = format,
                 BindFlags = GetBindFlags(),
                 CpuAccessFlags = GetAccessFlags(),
@@ -51,41 +49,23 @@ namespace Molten.Graphics
 
         private void UpdateViewDescriptions()
         {
-            // Setup SRV description
-            if (_description.ArraySize > 1)
+            _resourceViewDescription = new ShaderResourceViewDescription()
             {
-                _resourceViewDescription = new ShaderResourceViewDescription()
+                Format = _format,
+                Dimension = ShaderResourceViewDimension.Texture1DArray,
+                Texture1DArray = new ShaderResourceViewDescription.Texture1DArrayResource()
                 {
-                    Format = _format,
-                    Dimension = ShaderResourceViewDimension.Texture1DArray,
-                    Texture1DArray = new ShaderResourceViewDescription.Texture1DArrayResource()
-                    {
-                        ArraySize = _description.ArraySize,
-                        MipLevels = _description.MipLevels,
-                        MostDetailedMip = 0,
-                        FirstArraySlice = 0,
-                    },
-                };
-            }
-            else
-            {
-                _resourceViewDescription = new ShaderResourceViewDescription()
-                {
-                    Format = _format,
-                    Dimension = ShaderResourceViewDimension.Texture1D,
-                    Texture1D = new ShaderResourceViewDescription.Texture1DResource()
-                    {
-                        MipLevels = _description.MipLevels,
-                        MostDetailedMip = 0,
-                    },
-                };
-            }
+                    ArraySize = _description.ArraySize,
+                    MipLevels = _description.MipLevels,
+                    MostDetailedMip = 0,
+                    FirstArraySlice = 0,
+                },
+            };
         }
 
         protected override SharpDX.Direct3D11.Resource CreateTextureInternal(bool resize)
         {
             _texture = new Texture1D(Device.D3d, _description);
-
             return _texture;
         }
 
@@ -94,34 +74,16 @@ namespace Molten.Graphics
             UAV?.Dispose();
             UAV = null;
 
-            UnorderedAccessViewDescription uDesc;
-
-            if (_description.ArraySize > 1)
+            UnorderedAccessViewDescription uDesc = new UnorderedAccessViewDescription()
             {
-                uDesc = new UnorderedAccessViewDescription()
+                Format = SRV.Description.Format,
+                Dimension = UnorderedAccessViewDimension.Texture1DArray,
+                Buffer = new UnorderedAccessViewDescription.BufferResource()
                 {
-                    Format = SRV.Description.Format,
-                    Dimension = UnorderedAccessViewDimension.Texture1DArray,
-                    Buffer = new UnorderedAccessViewDescription.BufferResource()
-                    {
-                        FirstElement = 0,
-                        ElementCount = _description.Width * _description.ArraySize,
-                    }
-                };
-            }
-            else
-            {
-                uDesc = new UnorderedAccessViewDescription()
-                {
-                    Format = SRV.Description.Format,
-                    Dimension = UnorderedAccessViewDimension.Texture1D,
-                    Buffer = new UnorderedAccessViewDescription.BufferResource()
-                    {
-                        FirstElement = 0,
-                        ElementCount = _description.Width,
-                    }
-                };
-            }
+                    FirstElement = 0,
+                    ElementCount = _description.Width * _description.ArraySize,
+                }
+            };
 
             UAV = new UnorderedAccessView(Device.D3d, _texture, uDesc);
         }

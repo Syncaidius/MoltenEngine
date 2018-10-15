@@ -11,7 +11,7 @@ using System.Text;
 namespace Molten.Graphics
 {
     /// <summary>A render target that is created from, and outputs to, a device's swap chain.</summary>
-    public class DepthSurface : TextureAsset2D, IDepthSurface
+    public class DepthSurface : Texture2DDX11, IDepthSurface
     {
         DepthStencilView _depthView;
         DepthStencilView _readOnlyView;

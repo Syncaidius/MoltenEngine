@@ -12,7 +12,7 @@ namespace Molten.Graphics
     using System.Runtime.InteropServices;
     using Resource = SharpDX.Direct3D11.Resource;
 
-    public class TextureAsset2D : TextureBase, ITexture2D
+    public class Texture2DDX11 : TextureBase, ITexture2D
     {
         protected Texture2D _texture;
         protected Texture2DDescription _description;
@@ -20,22 +20,22 @@ namespace Molten.Graphics
         public event TextureHandler OnPreResize;
         public event TextureHandler OnPostResize;
 
-        /// <summary>Creates a new instance of <see cref="TextureAsset2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
+        /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
         /// <param name="descTexture"></param>
         /// <param name="flags">A set of flags to override those of the provided texture.</param>
-        internal TextureAsset2D(TextureAsset2D descTexture, TextureFlags flags)
+        internal Texture2DDX11(Texture2DDX11 descTexture, TextureFlags flags)
             : this(descTexture.Renderer as RendererDX11, descTexture.Width, descTexture.Height, descTexture.DxFormat, descTexture.MipMapCount, descTexture.ArraySize, flags)
         { }
 
-        /// <summary>Creates a new instance of <see cref="TextureAsset2D"/> and uses a provided texture for its description. Note: This does not copy the contents 
+        /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
         /// <param name="descTexture"></param>
-        internal TextureAsset2D(TextureAsset2D descTexture)
+        internal Texture2DDX11(Texture2DDX11 descTexture)
             : this(descTexture.Renderer as RendererDX11, descTexture.Width, descTexture.Height, descTexture.DxFormat, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags)
         { }
 
-        internal TextureAsset2D(
+        internal Texture2DDX11(
             RendererDX11 renderer,
             int width,
             int height,
@@ -70,46 +70,25 @@ namespace Molten.Graphics
         private void UpdateViewDescriptions()
         {
             _resourceViewDescription = new ShaderResourceViewDescription();
-
-            if (_description.ArraySize > 1)
+            if (_description.SampleDescription.Count > 1)
             {
-                if (_description.SampleDescription.Count > 1)
+                _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DMultisampledArray;
+                _resourceViewDescription.Texture2DMSArray = new ShaderResourceViewDescription.Texture2DMultisampledArrayResource()
                 {
-                    _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DMultisampledArray;
-                    _resourceViewDescription.Texture2DMSArray = new ShaderResourceViewDescription.Texture2DMultisampledArrayResource()
-                    {
-                        ArraySize = _description.ArraySize,
-                        FirstArraySlice = 0,
-                    };
-                }
-                else
-                {
-                    _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DArray;
-                    _resourceViewDescription.Texture2DArray = new ShaderResourceViewDescription.Texture2DArrayResource()
-                    {
-                        ArraySize = _description.ArraySize,
-                        MipLevels = _description.MipLevels,
-                        MostDetailedMip = 0,
-                        FirstArraySlice = 0,
-                    };
-                }
+                    ArraySize = _description.ArraySize,
+                    FirstArraySlice = 0,
+                };
             }
             else
             {
-                if (_description.SampleDescription.Count > 1)
+                _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DArray;
+                _resourceViewDescription.Texture2DArray = new ShaderResourceViewDescription.Texture2DArrayResource()
                 {
-                    _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DMultisampled;
-                    _resourceViewDescription.Texture2DMS = new ShaderResourceViewDescription.Texture2DMultisampledResource();
-                }
-                else
-                {
-                    _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2D;
-                    _resourceViewDescription.Texture2D = new ShaderResourceViewDescription.Texture2DResource()
-                    {
-                        MipLevels = _description.MipLevels,
-                        MostDetailedMip = 0,
-                    };
-                }
+                    ArraySize = _description.ArraySize,
+                    MipLevels = _description.MipLevels,
+                    MostDetailedMip = 0,
+                    FirstArraySlice = 0,
+                };
             }
         }
 
@@ -127,43 +106,23 @@ namespace Molten.Graphics
             UAV = null;
 
             UnorderedAccessViewDescription uDesc;
-
-            if (_description.ArraySize > 1)
+            uDesc = new UnorderedAccessViewDescription()
             {
-                uDesc = new UnorderedAccessViewDescription()
+                Format = SRV.Description.Format,
+                Dimension = UnorderedAccessViewDimension.Texture2DArray,
+                Texture2DArray = new UnorderedAccessViewDescription.Texture2DArrayResource()
                 {
-                    Format = SRV.Description.Format,
-                    Dimension = UnorderedAccessViewDimension.Texture2DArray,
-                    Texture2DArray = new UnorderedAccessViewDescription.Texture2DArrayResource()
-                    {
-                        ArraySize = _description.ArraySize,
-                        FirstArraySlice = _resourceViewDescription.Texture2DArray.FirstArraySlice,
-                        MipSlice = 0,
-                    },
+                    ArraySize = _description.ArraySize,
+                    FirstArraySlice = _resourceViewDescription.Texture2DArray.FirstArraySlice,
+                    MipSlice = 0,
+                },
 
-                    Buffer = new UnorderedAccessViewDescription.BufferResource()
-                    {
-                        FirstElement = 0,
-                        ElementCount = _description.Width * _description.Height * _description.ArraySize,
-                    }
-                };
-            }
-            else
-            {
-                uDesc = new UnorderedAccessViewDescription()
+                Buffer = new UnorderedAccessViewDescription.BufferResource()
                 {
-                    Format = SRV.Description.Format,
-                    /*Texture2D = new UnorderedAccessViewDescription.Texture2DResource(){
-                        MipSlice = 0,
-                    },*/
-                    Dimension = UnorderedAccessViewDimension.Texture2D,
-                    Buffer = new UnorderedAccessViewDescription.BufferResource()
-                    {
-                        FirstElement = 0,
-                        ElementCount = _description.Width * _description.Height,
-                    }
-                };
-            }
+                    FirstElement = 0,
+                    ElementCount = _description.Width * _description.Height * _description.ArraySize,
+                }
+            };
 
             UAV = new UnorderedAccessView(Device.D3d, _texture, uDesc);
         }

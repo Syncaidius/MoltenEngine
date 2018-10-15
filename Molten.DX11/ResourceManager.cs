@@ -57,19 +57,19 @@ namespace Molten.Graphics
 
         public ITexture CreateTexture1D(Texture1DProperties properties)
         {
-            return new TextureAsset1D(_renderer, properties.Width, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
+            return new Texture1DDX11(_renderer, properties.Width, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
         }
 
         public ITexture CreateTexture1D(TextureData data)
         {
-            TextureAsset1D tex = new TextureAsset1D(_renderer, data.Width, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, data.Flags);
+            Texture1DDX11 tex = new Texture1DDX11(_renderer, data.Width, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, data.Flags);
             tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
 
         public ITexture2D CreateTexture2D(Texture2DProperties properties)
         {
-            return new TextureAsset2D(_renderer,
+            return new Texture2DDX11(_renderer,
                 properties.Width,
                 properties.Height,
                 properties.Format.ToApi(),
@@ -81,7 +81,7 @@ namespace Molten.Graphics
 
         public ITexture2D CreateTexture2D(TextureData data)
         {
-            TextureAsset2D tex = new TextureAsset2D(_renderer,
+            Texture2DDX11 tex = new Texture2DDX11(_renderer,
                 data.Width,
                 data.Height,
                 data.Format.ToApi(),
@@ -97,13 +97,13 @@ namespace Molten.Graphics
         public ITextureCube CreateTextureCube(Texture2DProperties properties)
         {
             int cubeCount = Math.Max(properties.ArraySize / 6, 1);
-            return new TextureAssetCube(_renderer, properties.Width, properties.Height, properties.Format.ToApi(), properties.MipMapLevels, cubeCount, properties.Flags);
+            return new TextureCubeDX11(_renderer, properties.Width, properties.Height, properties.Format.ToApi(), properties.MipMapLevels, cubeCount, properties.Flags);
         }
 
         public ITextureCube CreateTextureCube(TextureData data)
         {
             int cubeCount = Math.Max(data.ArraySize / 6, 1);
-            TextureAssetCube tex = new TextureAssetCube(_renderer, data.Width, data.Height, data.Format.ToApi(), data.MipMapLevels, cubeCount, data.Flags);
+            TextureCubeDX11 tex = new TextureCubeDX11(_renderer, data.Width, data.Height, data.Format.ToApi(), data.MipMapLevels, cubeCount, data.Flags);
             tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }

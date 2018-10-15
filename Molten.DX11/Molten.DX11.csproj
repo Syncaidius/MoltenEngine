@@ -247,9 +247,7 @@
     <Compile Include="Shaders\Variables\ShaderConstantVariable.cs" />
     <Compile Include="Shaders\Variables\ShaderResourceVariable.cs" />
     <Compile Include="Shaders\Variables\ShaderSamplerVariable.cs" />
-    <Compile Include="Shaders\Variables\Texture1DArrayVariable.cs" />
     <Compile Include="Shaders\Variables\Texture1DVariable.cs" />
-    <Compile Include="Shaders\Variables\Texture2DArrayVariable.cs" />
     <Compile Include="Shaders\Variables\Texture2DVariable.cs" />
     <Compile Include="Shaders\Variables\TextureCubeVariable.cs" />
     <Compile Include="SharpDX11Interop.cs" />
@@ -271,9 +269,9 @@
     <Compile Include="Textures\DefaultTextureReader.cs" />
     <Compile Include="Textures\JpegTextureWriter.cs" />
     <Compile Include="Textures\PngTextureWriter.cs" />
-    <Compile Include="Textures\TextureAsset1D.cs" />
-    <Compile Include="Textures\TextureAsset2D.cs" />
-    <Compile Include="Textures\TextureAssetCube.cs" />
+    <Compile Include="Textures\Texture1DDX11.cs" />
+    <Compile Include="Textures\Texture2DDX11.cs" />
+    <Compile Include="Textures\TextureCubeDX11.cs" />
     <Compile Include="Textures\TextureBase.cs" />
     <Compile Include="Textures\TextureExceptions.cs" />
     <Compile Include="Textures\WICFormatConverter.cs" />

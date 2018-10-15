@@ -23,10 +23,16 @@ namespace Molten.Graphics
         public Vector4F UV;
 
         /// <summary>
+        /// The rotation.
+        /// </summary>
+        [VertexElement(VertexElementType.Float, VertexElementUsage.Position, 4)]
+        public float Rotation;
+
+        /// <summary>
         /// The rotation (X) and array slice index (Y).
         /// </summary>
-        [VertexElement(VertexElementType.Vector2, VertexElementUsage.Position, 4)]
-        public Vector2F RotationAndSlice;
+        [VertexElement(VertexElementType.Float, VertexElementUsage.Position, 5)]
+        public float ArraySlice;
 
         [VertexElement(VertexElementType.Color, VertexElementUsage.Color, 0)]
         public Color Color;

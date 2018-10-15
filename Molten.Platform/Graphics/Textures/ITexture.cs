@@ -124,9 +124,6 @@ namespace Molten.Graphics
         /// <summary>Gets the number of array slices in the texture.</summary>
         int ArraySize { get; }
 
-        /// <summary>Gets whether or not the texture is a texture array.</summary>
-        bool IsTextureArray { get; }
-
         /// <summary>
         /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 
         /// </summary>

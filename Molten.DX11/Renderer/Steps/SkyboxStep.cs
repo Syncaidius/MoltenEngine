@@ -18,7 +18,6 @@ namespace Molten.Graphics
         Material _matSky;
         IndexedMesh<Vertex> _sphereMesh;
         ObjectRenderData _skyboxData;
-        IShaderValue _skyTextureValue;
 
         internal override void Initialize(RendererDX11 renderer)
         {
@@ -32,7 +31,7 @@ namespace Molten.Graphics
             Vertex[] vertices;
             int[] indices;
             MakeSphere(4, 4, out vertices, out indices);
-            _sphereMesh = new IndexedMesh<Vertex>(renderer, vertices.Length, indices.Length, VertexTopology.TriangleList, IndexBufferFormat.Signed32Bit, false);
+            _sphereMesh = new IndexedMesh<Vertex>(renderer, vertices.Length, indices.Length, VertexTopology.TriangleList, IndexBufferFormat.Unsigned32Bit, false);
             _sphereMesh.SetVertices(vertices);
             _sphereMesh.SetIndices(indices);
             _sphereMesh.Material = _matSky;

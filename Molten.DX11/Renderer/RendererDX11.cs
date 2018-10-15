@@ -16,7 +16,7 @@ namespace Molten.Graphics
         DisplayManagerDX11 _displayManager;
         ResourceManager _resourceManager;
         ComputeManager _compute;
-        HashSet<TextureAsset2D> _clearedSurfaces;
+        HashSet<Texture2DDX11> _clearedSurfaces;
         Dictionary<Type, RenderStepBase> _steps;
         List<RenderStepBase> _stepList;
 
@@ -55,7 +55,7 @@ namespace Molten.Graphics
             _resourceManager = new ResourceManager(this);
             _compute = new ComputeManager(this.Device);
             ShaderCompiler = new HlslCompiler(this, Log);
-            _clearedSurfaces = new HashSet<TextureAsset2D>();
+            _clearedSurfaces = new HashSet<Texture2DDX11>();
 
             int maxBufferSize = (int)ByteMath.FromMegabytes(3.5);
             StaticVertexBuffer = new GraphicsBuffer(Device, BufferMode.Default, BindFlags.VertexBuffer | BindFlags.IndexBuffer, maxBufferSize);

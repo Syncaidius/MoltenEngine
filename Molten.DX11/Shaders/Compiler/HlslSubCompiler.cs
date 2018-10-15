@@ -164,24 +164,18 @@ namespace Molten.Graphics
 
             switch (binding.Dimension)
             {
+                case ShaderResourceViewDimension.Texture1DArray:
                 case ShaderResourceViewDimension.Texture1D:
                     obj = GetVariableResource<Texture1DVariable>(context, shader, binding);
                     break;
 
+                case ShaderResourceViewDimension.Texture2DArray:
                 case ShaderResourceViewDimension.Texture2D:
                     obj = GetVariableResource<Texture2DVariable>(context, shader, binding);
                     break;
 
                 case ShaderResourceViewDimension.TextureCube:
                     obj = GetVariableResource<TextureCubeVariable>(context, shader, binding);
-                    break;
-
-                case ShaderResourceViewDimension.Texture1DArray:
-                    obj = GetVariableResource<TextureArray1DVariable>(context, shader, binding);
-                    break;
-
-                case ShaderResourceViewDimension.Texture2DArray:
-                    obj = GetVariableResource<TextureArray2DVariable>(context, shader, binding);
                     break;
             }
 

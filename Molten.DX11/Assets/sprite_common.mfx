@@ -5,6 +5,7 @@ struct VS_GS
 	float2 origin : POSITION2;
 	float4 uv : POSITION3;
 	float rotation : POSITION4;
+	float arraySlice: POSITION5;
 	float4 col : COLOR;
 };
 
@@ -12,10 +13,10 @@ struct PS_IN
 {
 	float4 pos : SV_POSITION;
 	float4 col : COLOR;
-	float2 uv : TEXCOORD;
+	float3 uv : TEXCOORD;
 };
 
-Texture2D mapDiffuse;
+Texture2DArray mapDiffuse;
 SamplerState diffuseSampler;
 
 float4x4 wvp;
@@ -88,13 +89,16 @@ float2x2 GetRotation(float angle)
 void GS(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
 {
 	PS_IN v;
-	v.col = input[0].col;
+	VS_GS g = input[0];
+
+	v.col = g.col;
+
 
 	float2x2 rot = GetRotation(input[0].rotation);
-	float2 origin = input[0].origin.xy;
-	float2 pos = input[0].pos.xy;
-	float2 size = input[0].size.xy;
-	float4 uv = input[0].uv;
+	float2 origin = g.origin.xy;
+	float2 pos = g.pos.xy;
+	float2 size = g.size.xy;
+	float4 uv = g.uv;
 	float2 p;
 
 	[unroll]
@@ -106,6 +110,7 @@ void GS(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
 		v.pos = mul(v.pos, wvp);
 		v.uv.x = uv[uvTable[i].x];
 		v.uv.y = uv[uvTable[i].y];
+		v.uv.z = g.arraySlice;
 		spriteStream.Append(v);
 	}
 }
@@ -115,7 +120,7 @@ void GS_Line(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
 {
 	PS_IN v;
   v.col = input[0].col;
-  v.uv = float2(0,0);
+  v.uv = float3(0,0, 0);
   float2 p1 = input[0].pos;
   float2 p2 = input[0].size;
   float2 dir = p2 - p1;
@@ -150,7 +155,7 @@ void GS_Circle(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
   PS_IN v;
   // center vertex
   v.col = input[0].col;
-  v.uv = float2(0,0);
+  v.uv = float3(0,0, 0);
   float4 center = float4(input[0].pos, 0, 1);
   
   float segs = input[0].rotation;
@@ -182,7 +187,7 @@ void GS_Tri(point VS_GS input[1], inout TriangleStream<PS_IN> spriteStream)
 {
 	PS_IN v;
   v.col = input[0].col;
-  v.uv = float2(0,0);
+  v.uv = float3(0,0, 0);
   
   // p1
   v.pos = mul(float4(input[0].pos, 0, 1), wvp);

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class TextureAssetCube : TextureBase, ITextureCube
+    public class TextureCubeDX11 : TextureBase, ITextureCube
     {
         Texture2D _texture;
         Texture2DDescription _description;
@@ -19,7 +19,7 @@ namespace Molten.Graphics
         public event TextureHandler OnPreResize;
         public event TextureHandler OnPostResize;
 
-        internal TextureAssetCube(RendererDX11 renderer, int width,
+        internal TextureCubeDX11(RendererDX11 renderer, int width,
             int height, Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, int mipCount = 1, int cubeCount = 1, TextureFlags flags = TextureFlags.None)
             : base(renderer, width, height, 1, mipCount, 6, 1, format, flags)
         {
@@ -48,26 +48,14 @@ namespace Molten.Graphics
         private void UpdateViewDescriptions()
         {
             _resourceViewDescription.Format = _format;
-            if (_cubeCount > 1)
+            _resourceViewDescription.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCubeArray;
+            _resourceViewDescription.TextureCubeArray = new ShaderResourceViewDescription.TextureCubeArrayResource()
             {
-                _resourceViewDescription.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCubeArray;
-                _resourceViewDescription.TextureCubeArray = new ShaderResourceViewDescription.TextureCubeArrayResource()
-                {
-                    MostDetailedMip = 0,
-                    MipLevels = _description.MipLevels,
-                    CubeCount = _cubeCount,
-                    First2DArrayFace = 0,
-                };
-            }
-            else
-            {
-                _resourceViewDescription.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCube;
-                _resourceViewDescription.TextureCube = new ShaderResourceViewDescription.TextureCubeResource()
-                {
-                    MostDetailedMip = 0,
-                    MipLevels = _description.MipLevels,
-                };
-            }
+                MostDetailedMip = 0,
+                MipLevels = _description.MipLevels,
+                CubeCount = _cubeCount,
+                First2DArrayFace = 0,
+            };
         }
 
         protected override SharpDX.Direct3D11.Resource CreateTextureInternal(bool resize)

@@ -695,9 +695,6 @@ namespace Molten.Graphics
         /// <summary>Gets the number of array slices in the texture. For a cube-map, this value will a multiple of 6. For example, a cube map with 2 array elements will have 12 array slices.</summary>
         public int ArraySize => _arraySize;
 
-        /// <summary>Gets whether or not the texture is a texture array.</summary>
-        public bool IsTextureArray => _arraySize > 1;
-
         /// <summary>
         /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 
         /// </summary>
