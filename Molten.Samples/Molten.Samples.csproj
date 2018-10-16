@@ -130,7 +130,7 @@
     <Compile Include="SceneTexture2DArrayTest.cs" />
     <Compile Include="SpriteBatchPrimitives.cs" />
     <Compile Include="SpriteBatchUnfairTest.cs" />
-    <Compile Include="SpriteBatchTest.cs" />
+    <Compile Include="SpriteBatchSample.cs" />
     <Compile Include="Common\CubeArrayVertex.cs" />
     <Compile Include="Common\SampleGame.cs" />
     <Page Include="MainWindow.xaml">

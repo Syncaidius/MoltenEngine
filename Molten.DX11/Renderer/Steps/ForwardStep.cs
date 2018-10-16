@@ -14,7 +14,7 @@ namespace Molten.Graphics
     internal class ForwardStep : RenderStepBase
     {
         RenderSurface _surfaceScene;
-        DepthSurface _surfaceDepth;
+        DepthStencilSurface _surfaceDepth;
 
         internal override void Initialize(RendererDX11 renderer)
         {

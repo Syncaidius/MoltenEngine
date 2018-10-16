@@ -13,7 +13,7 @@ namespace Molten.Graphics
     /// </summary>
     internal class SkyboxStep : RenderStepBase
     {
-        DepthSurface _surfaceDepth;
+        DepthStencilSurface _surfaceDepth;
         RenderSurface _surfaceScene;
         Material _matSky;
         IndexedMesh<Vertex> _sphereMesh;

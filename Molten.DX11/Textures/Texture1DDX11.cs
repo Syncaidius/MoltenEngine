@@ -43,68 +43,44 @@ namespace Molten.Graphics
                 Usage = GetUsageFlags(),
                 OptionFlags = GetResourceFlags(),
             };
-
-            UpdateViewDescriptions();
         }
 
-        private void UpdateViewDescriptions()
+        protected override void SetSRVDescription(ref ShaderResourceViewDescription desc)
         {
-            _resourceViewDescription = new ShaderResourceViewDescription()
+            desc.Format = _format;
+            desc.Dimension = ShaderResourceViewDimension.Texture1DArray;
+            desc.Texture1DArray = new ShaderResourceViewDescription.Texture1DArrayResource()
             {
-                Format = _format,
-                Dimension = ShaderResourceViewDimension.Texture1DArray,
-                Texture1DArray = new ShaderResourceViewDescription.Texture1DArrayResource()
-                {
-                    ArraySize = _description.ArraySize,
-                    MipLevels = _description.MipLevels,
-                    MostDetailedMip = 0,
-                    FirstArraySlice = 0,
-                },
+                ArraySize = _description.ArraySize,
+                MipLevels = _description.MipLevels,
+                MostDetailedMip = 0,
+                FirstArraySlice = 0,
             };
         }
 
-        protected override SharpDX.Direct3D11.Resource CreateTextureInternal(bool resize)
+        protected override void SetUAVDescription(ShaderResourceViewDescription srvDesc, ref UnorderedAccessViewDescription desc)
+        {
+            desc.Format = SRV.Description.Format;
+            desc.Dimension = UnorderedAccessViewDimension.Texture1DArray;
+            desc.Buffer = new UnorderedAccessViewDescription.BufferResource()
+            {
+                FirstElement = 0,
+                ElementCount = _description.Width * _description.ArraySize,
+            };
+        }
+
+        protected override SharpDX.Direct3D11.Resource CreateResource(bool resize)
         {
             _texture = new Texture1D(Device.D3d, _description);
             return _texture;
         }
 
-        protected override void OnCreateUAV()
-        {
-            UAV?.Dispose();
-            UAV = null;
-
-            UnorderedAccessViewDescription uDesc = new UnorderedAccessViewDescription()
-            {
-                Format = SRV.Description.Format,
-                Dimension = UnorderedAccessViewDimension.Texture1DArray,
-                Buffer = new UnorderedAccessViewDescription.BufferResource()
-                {
-                    FirstElement = 0,
-                    ElementCount = _description.Width * _description.ArraySize,
-                }
-            };
-
-            UAV = new UnorderedAccessView(Device.D3d, _texture, uDesc);
-        }
-        
-        protected override void BeforeResize()
-        {
-            OnPreResize?.Invoke(this);
-        }
-
-        protected override void AfterResize()
-        {
-            OnPostResize?.Invoke(this);
-        }
-
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
+        protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
             _description.Width = newWidth;
             _description.ArraySize = newArraySize;
             _description.MipLevels = newMipMapCount;
             _description.Format = newFormat;
-            UpdateViewDescriptions();
         }
     }
 }

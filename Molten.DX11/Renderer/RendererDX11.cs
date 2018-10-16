@@ -23,7 +23,7 @@ namespace Molten.Graphics
         ThreadedDictionary<string, SurfaceConfig> _surfacesByKey;
         ThreadedList<SurfaceConfig> _surfaces;
         ThreadedDictionary<MainSurfaceType, SurfaceConfig> _mainSurfaces;
-        DepthSurface _depthSurface;
+        DepthStencilSurface _depthSurface;
 
         internal SpriteBatcherDX11 SpriteBatcher;
 
@@ -88,10 +88,10 @@ namespace Molten.Graphics
             RegisterMainSurface("composition1", MainSurfaceType.Composition1, new RenderSurface(this, width, height, Format.R16G16B16A16_Float));
             RegisterMainSurface("composition2", MainSurfaceType.Composition2, new RenderSurface(this, width, height, Format.R16G16B16A16_Float));
             RegisterMainSurface("lighting", MainSurfaceType.Lighting, new RenderSurface(this, width, height, Format.R16G16B16A16_Float));
-            _depthSurface = new DepthSurface(this, width, height, DepthFormat.R24G8_Typeless);
+            _depthSurface = new DepthStencilSurface(this, width, height, DepthFormat.R24G8_Typeless);
         }
 
-        internal SurfaceConfig RegisterSurface(string key, RenderSurfaceBase surface, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
+        internal SurfaceConfig RegisterSurface(string key, RenderSurface surface, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
         {
             key = key.ToLower();
             if (!_surfacesByKey.TryGetValue(key, out SurfaceConfig config))
@@ -104,23 +104,23 @@ namespace Molten.Graphics
             return config;
         }
 
-        internal void RegisterMainSurface(string key, MainSurfaceType mainType, RenderSurfaceBase surface, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
+        internal void RegisterMainSurface(string key, MainSurfaceType mainType, RenderSurface surface, SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
         {
             SurfaceConfig config = RegisterSurface(key, surface, sizeMode);
             _mainSurfaces[mainType] = config;
         }
 
-        internal T GetSurface<T>(MainSurfaceType type) where T: RenderSurfaceBase
+        internal T GetSurface<T>(MainSurfaceType type) where T: RenderSurface
         {
             return _mainSurfaces[type].Surface as T;
         }
 
-        internal T GetSurface<T>(string key) where T : RenderSurfaceBase
+        internal T GetSurface<T>(string key) where T : RenderSurface
         {
             return _surfacesByKey[key].Surface as T;
         }
 
-        internal DepthSurface GetDepthSurface()
+        internal DepthStencilSurface GetDepthSurface()
         {
             return _depthSurface;
         }
@@ -206,7 +206,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal bool ClearIfFirstUse(GraphicsPipe pipe, RenderSurfaceBase surface, Color color)
+        internal bool ClearIfFirstUse(GraphicsPipe pipe, RenderSurface surface, Color color)
         {
             if (!_clearedSurfaces.Contains(surface))
             {
@@ -218,7 +218,7 @@ namespace Molten.Graphics
             return false;
         }
 
-        internal bool ClearIfFirstUse(GraphicsPipe pipe, DepthSurface surface, DepthStencilClearFlags flags = DepthStencilClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
+        internal bool ClearIfFirstUse(GraphicsPipe pipe, DepthStencilSurface surface, DepthStencilClearFlags flags = DepthStencilClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
         {
             if (!_clearedSurfaces.Contains(surface))
             {

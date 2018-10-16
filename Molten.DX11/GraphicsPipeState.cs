@@ -17,9 +17,9 @@ namespace Molten.Graphics
         BufferSegment[] _vSegments;
         BufferSegment _iSegment;
 
-        RenderSurfaceBase[] _surfaces;
+        RenderSurface[] _surfaces;
 
-        DepthSurface _depthSurface;
+        DepthStencilSurface _depthSurface;
         GraphicsDepthWritePermission _depthWriteOverride;
 
         ViewportF[] _viewports;
@@ -29,7 +29,7 @@ namespace Molten.Graphics
             _pipe = pipe;
             int maxSurfaces = _pipe.Device.Features.SimultaneousRenderSurfaces;
 
-            _surfaces = new RenderSurfaceBase[maxSurfaces];
+            _surfaces = new RenderSurface[maxSurfaces];
             _viewports = new ViewportF[maxSurfaces];
             _vSegments = new BufferSegment[_pipe.Device.Features.MaxVertexBufferSlots];
         }

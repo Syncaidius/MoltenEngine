@@ -11,7 +11,7 @@ using Molten.Collections;
 namespace Molten.Graphics
 {
     /// <summary>A render target that is created from, and outputs to, a device's swap chain.</summary>
-    public abstract class SwapChainSurface : RenderSurfaceBase, ISwapChainSurface
+    public abstract class SwapChainSurface : RenderSurface, ISwapChainSurface
     {
         protected SwapChain _swapChain;
         protected SwapChainDescription _swapDesc;
@@ -44,9 +44,37 @@ namespace Molten.Graphics
             _swapDesc = desc;
         }
 
-        protected void SetVsync(bool enabled)
+        protected override SharpDX.Direct3D11.Resource CreateResource(bool resize)
         {
-            _vsync = enabled ? 1 : 0;
+            // Resize the swap chain if needed.
+            if (resize && _swapChain != null)
+            {
+                _swapChain.ResizeBuffers(_swapDesc.BufferCount, _width, _height, GraphicsFormat.Unknown.ToApi(), SwapChainFlags.None);
+                _swapDesc = _swapChain.Description;
+            }
+            else
+            {
+                _swapChain?.Dispose();
+                OnSwapChainMissing();
+
+                _vsync = Device.Settings.VSync ? 1 : 0;
+                Device.Settings.VSync.OnChanged += VSync_OnChanged;
+            }
+
+            // Create new backbuffer from swap chain.
+            _texture = Texture2D.FromSwapChain<Texture2D>(_swapChain, 0);
+            _rtv = new RenderTargetView(Device.D3d, _texture);
+            VP = new Viewport(0, 0, _width, _height);
+
+            return _texture;
+        }
+
+
+        protected abstract void OnSwapChainMissing();
+
+        private void VSync_OnChanged(bool oldValue, bool newValue)
+        {
+            _vsync = newValue ? 1 : 0;
         }
 
         public void Present()
@@ -61,6 +89,13 @@ namespace Molten.Graphics
                 while (_dispatchQueue.TryDequeue(out Action action))
                     action();
             }
+        }
+
+        protected override void OnDisposeForRecreation()
+        {
+            // Avoid calling RenderFormSurface's OnPipelineDispose implementation by skipping it. Jump straight to base.
+            // This prevents any swapchain render loops from being aborted due to disposal flags being set.
+            base.OnPipelineDispose();
         }
 
         public void Dispatch(Action action)

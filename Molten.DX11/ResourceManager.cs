@@ -21,7 +21,7 @@ namespace Molten.Graphics
             _fontTable = new List<SpriteFont>();
         }
 
-        public IDepthSurface CreateDepthSurface(
+        public IDepthStencilSurface CreateDepthSurface(
             int width,
             int height,
             DepthFormat format = DepthFormat.R24G8_Typeless,
@@ -30,7 +30,7 @@ namespace Molten.Graphics
             int sampleCount = 1,
             TextureFlags flags = TextureFlags.None)
         {
-            return new DepthSurface(_renderer, width, height, format, mipCount, arraySize, sampleCount, flags);
+            return new DepthStencilSurface(_renderer, width, height, format, mipCount, arraySize, sampleCount, flags);
         }
 
         public IWindowSurface CreateFormSurface(string formTitle, int mipCount = 1, int sampleCount = 1)

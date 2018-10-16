@@ -10,7 +10,7 @@ namespace Molten.Samples
 {
     public class SpriteBatchArraySample : SampleSceneGame
     {
-        public override string Description => "An example of using a texture array with sprite batching.";
+        public override string Description => "An example of using a SpriteRenderComponent to draw sprites with a texture array.";
 
         SceneObject _parent;
         SceneObject _child;

@@ -160,7 +160,7 @@
     <Compile Include="Graphics\SpriteBatch\SpriteVertex.cs" />
     <Compile Include="Graphics\Surfaces\DepthClearFlags.cs" />
     <Compile Include="Graphics\Surfaces\DepthFormat.cs" />
-    <Compile Include="Graphics\Surfaces\IDepthSurface.cs" />
+    <Compile Include="Graphics\Surfaces\IDepthStencilSurface.cs" />
     <Compile Include="Graphics\Surfaces\IRenderSurface.cs" />
     <Compile Include="Graphics\Surfaces\ISwapChainSurface.cs" />
     <Compile Include="Graphics\Surfaces\IWindowSurface.cs" />

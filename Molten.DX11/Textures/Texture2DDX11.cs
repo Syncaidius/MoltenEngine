@@ -17,9 +17,6 @@ namespace Molten.Graphics
         protected Texture2D _texture;
         protected Texture2DDescription _description;
 
-        public event TextureHandler OnPreResize;
-        public event TextureHandler OnPostResize;
-
         /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
         /// <param name="descTexture"></param>
@@ -63,17 +60,20 @@ namespace Molten.Graphics
                 Usage = GetUsageFlags(),
                 OptionFlags = GetResourceFlags(),
             };
-
-            UpdateViewDescriptions();
         }
 
-        private void UpdateViewDescriptions()
+        protected override Resource CreateResource(bool resize)
         {
-            _resourceViewDescription = new ShaderResourceViewDescription();
+            _texture = new Texture2D(Device.D3d, _description);
+            return _texture;
+        }
+
+        protected override void SetSRVDescription(ref ShaderResourceViewDescription desc)
+        {
             if (_description.SampleDescription.Count > 1)
             {
-                _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DMultisampledArray;
-                _resourceViewDescription.Texture2DMSArray = new ShaderResourceViewDescription.Texture2DMultisampledArrayResource()
+                desc.Dimension = ShaderResourceViewDimension.Texture2DMultisampledArray;
+                desc.Texture2DMSArray = new ShaderResourceViewDescription.Texture2DMultisampledArrayResource()
                 {
                     ArraySize = _description.ArraySize,
                     FirstArraySlice = 0,
@@ -81,8 +81,8 @@ namespace Molten.Graphics
             }
             else
             {
-                _resourceViewDescription.Dimension = ShaderResourceViewDimension.Texture2DArray;
-                _resourceViewDescription.Texture2DArray = new ShaderResourceViewDescription.Texture2DArrayResource()
+                desc.Dimension = ShaderResourceViewDimension.Texture2DArray;
+                desc.Texture2DArray = new ShaderResourceViewDescription.Texture2DArrayResource()
                 {
                     ArraySize = _description.ArraySize,
                     MipLevels = _description.MipLevels,
@@ -92,60 +92,32 @@ namespace Molten.Graphics
             }
         }
 
-        protected override Resource CreateTextureInternal(bool resize)
+        protected override void SetUAVDescription(ShaderResourceViewDescription srvDesc, ref UnorderedAccessViewDescription desc)
         {
-            _description.Width = _width;
-            _description.Height = _height;
-            _texture = new Texture2D(Device.D3d, _description);
-            return _texture;
-        }
+            desc.Format = SRV.Description.Format;
+            desc.Dimension = UnorderedAccessViewDimension.Texture2DArray;
 
-        protected override void OnCreateUAV()
-        {
-            UAV?.Dispose();
-            UAV = null;
-
-            UnorderedAccessViewDescription uDesc;
-            uDesc = new UnorderedAccessViewDescription()
+            desc.Texture2DArray = new UnorderedAccessViewDescription.Texture2DArrayResource()
             {
-                Format = SRV.Description.Format,
-                Dimension = UnorderedAccessViewDimension.Texture2DArray,
-                Texture2DArray = new UnorderedAccessViewDescription.Texture2DArrayResource()
-                {
-                    ArraySize = _description.ArraySize,
-                    FirstArraySlice = _resourceViewDescription.Texture2DArray.FirstArraySlice,
-                    MipSlice = 0,
-                },
-
-                Buffer = new UnorderedAccessViewDescription.BufferResource()
-                {
-                    FirstElement = 0,
-                    ElementCount = _description.Width * _description.Height * _description.ArraySize,
-                }
+                ArraySize = _description.ArraySize,
+                FirstArraySlice = srvDesc.Texture2DArray.FirstArraySlice,
+                MipSlice = 0,
             };
 
-            UAV = new UnorderedAccessView(Device.D3d, _texture, uDesc);
+            desc.Buffer = new UnorderedAccessViewDescription.BufferResource()
+            {
+                FirstElement = 0,
+                ElementCount = _description.Width * _description.Height * _description.ArraySize,
+            };
         }
 
-        protected override void BeforeResize()
-        {
-            OnPreResize?.Invoke(this);
-        }
-
-        protected override void AfterResize()
-        {
-            OnPostResize?.Invoke(this);
-        }
-
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
+        protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
             _description.ArraySize = newArraySize;
             _description.Width = newWidth;
             _description.Height = newHeight;
             _description.MipLevels = newMipMapCount;
             _description.Format = newFormat;
-
-            UpdateViewDescriptions();
         }
 
         public void Resize(int newWidth, int newHeight)
@@ -185,12 +157,6 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets the underlying DirectX Texture2D object.</summary>
-        internal Texture2D TextureResource
-        {
-            get { return _texture; }
-        }
-
-        /// <summary>Gets information about the texture.</summary>
-        internal Texture2DDescription Description { get { return _description; } }
+        internal Texture2D TextureResource => _texture;
     }
 }

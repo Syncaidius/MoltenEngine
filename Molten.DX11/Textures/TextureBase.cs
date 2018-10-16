@@ -16,9 +16,8 @@ namespace Molten.Graphics
 
     public delegate void TextureEvent(TextureBase texture);
 
-    public abstract partial class TextureBase : PipelineShaderObject
+    public abstract partial class TextureBase : PipelineShaderObject, ITexture
     {
-        protected ShaderResourceViewDescription _resourceViewDescription;
         ThreadedQueue<ITextureChange> _pendingChanges;
 
         /// <summary>Triggered right before the internal texture resource is created.</summary>
@@ -29,6 +28,16 @@ namespace Molten.Graphics
 
         /// <summary>Triggered if the creation of the internal texture resource has failed (resulted in a null resource).</summary>
         public event TextureEvent OnCreateFailed;
+
+        /// <summary>
+        /// Invokved right before resizing of the texture begins.
+        /// </summary>
+        public event TextureHandler OnPreResize;
+
+        /// <summary>
+        /// Invoked after resizing of the texture has completed.
+        /// </summary>
+        public event TextureHandler OnPostResize;
 
         protected TextureFlags _flags;
         protected bool _isBlockCompressed;
@@ -42,6 +51,9 @@ namespace Molten.Graphics
         protected int _sampleCount;
         protected Resource _resource;
         RendererDX11 _renderer;
+
+        ShaderResourceViewDescription _srvDescription;
+        UnorderedAccessViewDescription _uavDescription;
 
         static int _nextSortKey = 0;
 
@@ -63,8 +75,13 @@ namespace Molten.Graphics
             _format = format;
             IsValid = false;
 
-            _resourceViewDescription = new ShaderResourceViewDescription();
+            _srvDescription = new ShaderResourceViewDescription();
             _isBlockCompressed = DXTHelper.GetBlockCompressed(_format.FromApi());
+        }
+
+        protected void RaisePostResizeEvent()
+        {
+            OnPostResize?.Invoke(this);
         }
 
         private void ValidateFlagCombination()
@@ -72,7 +89,7 @@ namespace Molten.Graphics
             // Validate RT mip-maps
             if (HasFlags(TextureFlags.AllowMipMapGeneration))
             {
-                if(HasFlags(TextureFlags.NoShaderResource) || !(this is RenderSurfaceBase))
+                if(HasFlags(TextureFlags.NoShaderResource) || !(this is RenderSurface))
                     throw new TextureFlagException(_flags, "Mip-map generation is only available on render-surface shader resources.");
             }
 
@@ -95,10 +112,10 @@ namespace Molten.Graphics
             if (!HasFlags(TextureFlags.NoShaderResource))
                 result |= BindFlags.ShaderResource;
 
-            if (this is RenderSurfaceBase)
+            if (this is RenderSurface)
                 result |= BindFlags.RenderTarget;
 
-            if (this is DepthSurface)
+            if (this is DepthStencilSurface)
                 result |= BindFlags.DepthStencil;
 
             return result;
@@ -138,144 +155,32 @@ namespace Molten.Graphics
 
         }
 
-        /// <summary>Gets the total byte size of a slice based on the format of the texture.</summary>
-        /// <param name="sliceWidth">The slice width.</param>
-        /// <param name="sliceHeight">The slice height.</param>
-        /// <returns></returns>
-        private int GetUncompressedByteSize(int sliceWidth, int sliceHeight, int sliceDepth)
-        {
-            int pixels = (sliceWidth * sliceHeight * sliceDepth);
-
-            GraphicsFormat format = _format.FromApi();
-            switch (format) {
-                default:
-                case GraphicsFormat.Unknown:
-                    return pixels * 4;
-
-                case GraphicsFormat.R1_UNorm:
-                    return Math.Min(1, pixels / 8);
-
-                case GraphicsFormat.A8_UNorm:
-                case GraphicsFormat.R8_SInt:
-                case GraphicsFormat.R8_SNorm:
-                case GraphicsFormat.R8_Typeless:
-                case GraphicsFormat.R8_UInt:
-                case GraphicsFormat.R8_UNorm:
-                    return pixels; // 1 byte
-
-                case GraphicsFormat.B5G6R5_UNorm:
-                case GraphicsFormat.B5G5R5A1_UNorm:
-                case GraphicsFormat.D16_UNorm:
-                case GraphicsFormat.R16_Float:
-                case GraphicsFormat.R16_SInt:
-                case GraphicsFormat.R16_SNorm:
-                case GraphicsFormat.R16_Typeless:
-                case GraphicsFormat.R16_UInt:
-                case GraphicsFormat.R16_UNorm:
-                case GraphicsFormat.R8G8_SInt:
-                case GraphicsFormat.R8G8_SNorm:
-                case GraphicsFormat.R8G8_Typeless:
-                case GraphicsFormat.R8G8_UInt:
-                case GraphicsFormat.R8G8_UNorm:
-                    return pixels * 2; // 2 bytes             
-
-                case GraphicsFormat.B8G8R8A8_Typeless:
-                case GraphicsFormat.B8G8R8A8_UNorm:
-                case GraphicsFormat.B8G8R8A8_UNorm_SRgb:
-                case GraphicsFormat.B8G8R8X8_Typeless:
-                case GraphicsFormat.B8G8R8X8_UNorm:
-                case GraphicsFormat.B8G8R8X8_UNorm_SRgb:
-                case GraphicsFormat.D32_Float:
-                case GraphicsFormat.D24_UNorm_S8_UInt:
-                case GraphicsFormat.G8R8_G8B8_UNorm:
-                case GraphicsFormat.R10G10B10A2_Typeless:
-                case GraphicsFormat.R10G10B10A2_UInt:
-                case GraphicsFormat.R10G10B10A2_UNorm:
-                case GraphicsFormat.R10G10B10_Xr_Bias_A2_UNorm:
-                case GraphicsFormat.R11G11B10_Float:
-                case GraphicsFormat.R16G16_Float:
-                case GraphicsFormat.R16G16_SInt:
-                case GraphicsFormat.R16G16_SNorm:
-                case GraphicsFormat.R16G16_Typeless:
-                case GraphicsFormat.R16G16_UInt:
-                case GraphicsFormat.R16G16_UNorm:
-                case GraphicsFormat.R24G8_Typeless:
-                case GraphicsFormat.R24_UNorm_X8_Typeless:
-                case GraphicsFormat.R32_Float:
-                case GraphicsFormat.R32_SInt:
-                case GraphicsFormat.R32_Typeless:
-                case GraphicsFormat.R32_UInt:
-                case GraphicsFormat.R8G8B8A8_SInt:
-                case GraphicsFormat.R8G8B8A8_SNorm:
-                case GraphicsFormat.R8G8B8A8_Typeless:
-                case GraphicsFormat.R8G8B8A8_UInt:
-                case GraphicsFormat.R8G8B8A8_UNorm:
-                case GraphicsFormat.R8G8B8A8_UNorm_SRgb:
-                case GraphicsFormat.R8G8_B8G8_UNorm:
-                case GraphicsFormat.R9G9B9E5_Sharedexp:
-                case GraphicsFormat.X24_Typeless_G8_UInt:
-                    return pixels * 4; // 4 bytes
-
-                case GraphicsFormat.D32_Float_S8X24_UInt:
-                case GraphicsFormat.R16G16B16A16_Float:
-                case GraphicsFormat.R16G16B16A16_SInt:
-                case GraphicsFormat.R16G16B16A16_SNorm:
-                case GraphicsFormat.R16G16B16A16_Typeless:
-                case GraphicsFormat.R16G16B16A16_UInt:
-                case GraphicsFormat.R16G16B16A16_UNorm:
-                case GraphicsFormat.R32G32_Float:
-                case GraphicsFormat.R32G32_SInt:
-                case GraphicsFormat.R32G32_Typeless:
-                case GraphicsFormat.R32G32_UInt:
-                case GraphicsFormat.R32G8X24_Typeless:
-                case GraphicsFormat.R32_Float_X8X24_Typeless:
-                case GraphicsFormat.X32_Typeless_G8X24_UInt:
-                    return pixels * 8;
-
-                case GraphicsFormat.R32G32B32_Float:
-                case GraphicsFormat.R32G32B32_SInt:
-                case GraphicsFormat.R32G32B32_Typeless:
-                case GraphicsFormat.R32G32B32_UInt:
-                    return pixels * 12;
-
-                case GraphicsFormat.R32G32B32A32_Float:
-                case GraphicsFormat.R32G32B32A32_SInt:
-                case GraphicsFormat.R32G32B32A32_Typeless:
-                case GraphicsFormat.R32G32B32A32_UInt:
-                    return pixels * 16;
-            }
-        }
-
-        private void CreateUAV()
-        {
-            //check if UAVs are allowed.
-            if (HasFlags(TextureFlags.AllowUAV) == false)
-                return;
-
-            //dispose of the old UAV, if it exists.
-            if (UAV != null)
-                UAV.Dispose();
-
-            OnCreateUAV();
-        }
-
         protected void CreateTexture(bool resize)
         {
             OnPreCreate?.Invoke(this);
 
             // Dispose of old resources
             OnDisposeForRecreation();
-            _resource = CreateTextureInternal(resize);
+            _resource = CreateResource(resize);
 
             if (_resource != null)
             {
+                UAV?.Dispose();
+                SRV?.Dispose();
+
                 //TrackAllocation();
 
                 if (!HasFlags(TextureFlags.NoShaderResource))
-                    CreateSRV();
+                {
+                    SetSRVDescription(ref _srvDescription);
+                    SRV = new ShaderResourceView(Device.D3d, _resource, _srvDescription);
+                }
 
                 if (HasFlags(TextureFlags.AllowUAV))
-                    CreateUAV();
+                {
+                    SetUAVDescription(_srvDescription, ref _uavDescription);
+                    UAV = new UnorderedAccessView(Device.D3d, _resource, _uavDescription);
+                }
 
                 OnCreate?.Invoke(this);
             }
@@ -287,20 +192,9 @@ namespace Molten.Graphics
             IsValid = _resource != null;
         }
 
-        /// <summary>Attempts to create a shader resource view (SRV) for the texture.</summary>
-        protected virtual void CreateSRV()
-        {
-            // Dispose of old SRV.
-            SRV?.Dispose();
+        protected abstract void SetUAVDescription(ShaderResourceViewDescription srvDesc, ref UnorderedAccessViewDescription desc);
 
-            _resourceViewDescription.Format = GetSRVFormat();
-            SRV = new ShaderResourceView(Device.D3d, _resource, _resourceViewDescription);
-        }
-
-        protected virtual Format GetSRVFormat()
-        {
-            return _format;
-        }
+        protected abstract void SetSRVDescription(ref ShaderResourceViewDescription desc);
 
         protected virtual void OnDisposeForRecreation()
         {
@@ -533,31 +427,27 @@ namespace Molten.Graphics
                 _format == newFormat)
                 return;
 
-            BeforeResize();
+            OnPreResize?.Invoke(this);
             _width = Math.Max(1, newWidth);
             _height = Math.Max(1, newHeight);
             _depth = Math.Max(1, newDepth);
             _mipCount = Math.Max(1, newMipMapCount);
             _format = newFormat;
 
-            OnSetSize(_width, _height, _depth, Math.Max(1, newMipMapCount), Math.Max(1, newArraySize), newFormat);
+            UpdateDescription(_width, _height, _depth, Math.Max(1, newMipMapCount), Math.Max(1, newArraySize), newFormat);
             CreateTexture(true);
-            AfterResize();
+            OnPostResize?.Invoke(this);
         }
 
-        protected virtual void BeforeResize() { }
 
-        protected virtual void AfterResize() { }
+        protected virtual void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat) { }
 
-        protected virtual void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat) { }
-
-        protected abstract Resource CreateTextureInternal(bool isResizing);
+        protected abstract Resource CreateResource(bool resize);
 
         private protected void QueueChange(ITextureChange change)
         {
             _pendingChanges.Enqueue(change);
         }
-
 
         public void Resize(int newWidth)
         {
@@ -650,7 +540,7 @@ namespace Molten.Graphics
             if (IsDisposed)
                 return;
 
-            if (_resource == null)
+            if(_resource == null)
                 CreateTexture(false);
 
             // process all changes for the current pipe.
@@ -666,8 +556,6 @@ namespace Molten.Graphics
         {
             Apply(pipe);
         }
-
-        protected virtual void OnCreateUAV() { }
 
         /// <summary>Gets the flags that were passed in when the texture was created.</summary>
         public TextureFlags Flags => _flags;

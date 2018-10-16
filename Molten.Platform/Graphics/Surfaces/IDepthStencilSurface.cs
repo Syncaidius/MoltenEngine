@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public interface IDepthSurface : ITexture2D
+    public interface IDepthStencilSurface : ITexture2D
     {
         /// <summary>Clears the provided <see cref="IRenderSurface"/> with the specified color.</summary>
         /// <param name="surface">The surface.</param>
@@ -15,7 +15,7 @@ namespace Molten.Graphics
         /// <param name="stencilValue">The value to clear the stencil to. Only applies if <see cref="DepthClearFlags.Stencil"/> flag was provided.</param>
         void Clear(DepthClearFlags flags, float depthValue = 1.0f, byte stencilValue = 0);
 
-        /// <summary>Resizes the provided <see cref="IDepthSurface"/> to the specified width and height.</summary>
+        /// <summary>Resizes the provided <see cref="IDepthStencilSurface"/> to the specified width and height.</summary>
         /// <param name="surface">The surface.</param>
         /// <param name="newWidth">The new width.</param>
         /// <param name="newHeight">The new height.</param>
