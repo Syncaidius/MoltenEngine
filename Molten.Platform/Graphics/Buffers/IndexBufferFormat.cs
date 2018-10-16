@@ -14,9 +14,5 @@ namespace Molten.Graphics
 
         /// <summary>A unsigned 16-bit integer (short).</summary>
         Unsigned16Bit = 1,
-
-        Signed32Bit = 2,
-
-        Signed16Bit = 3,
     }
 }

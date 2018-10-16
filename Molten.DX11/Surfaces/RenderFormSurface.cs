@@ -57,35 +57,7 @@ namespace Molten.Graphics
             // TODO set ownership of window to whatever output it is moved to.
         }
 
-        protected override SharpDX.Direct3D11.Resource CreateTextureInternal(bool resize)
-        {
-            // Resize the swap chain if needed.
-            if (resize)
-            {
-                _swapChain.ResizeBuffers(_swapDesc.BufferCount, _width, _height, GraphicsFormat.Unknown.ToApi(), SwapChainFlags.None);
-                _swapDesc = _swapChain.Description;
-            }
-            else
-            {
-                CreateFormAndSwapChain();
-            }
-
-            // Create new backbuffer from swap chain.
-            _texture = Texture2D.FromSwapChain<Texture2D>(_swapChain, 0);
-            _resource = _texture;
-            _description = _texture.Description;
-            _width = _description.Width;
-            _height = _description.Height;
-            RTV = new RenderTargetView(Device.D3d, _texture);
-            VP = new Viewport(0, 0, _width, _height);
-
-            if (!resize)
-                AfterResize();
-
-            return _texture;
-        }
-
-        private void CreateFormAndSwapChain()
+        protected override void OnSwapChainMissing()
         {
             _form = new RenderForm(_title);
             _form.WindowState = FormWindowState.Maximized;
@@ -96,9 +68,6 @@ namespace Molten.Graphics
             {
                 UseApplicationDoEvents = false,
             };
-
-            SetVsync(Device.Settings.VSync);
-            Device.Settings.VSync.OnChanged += VSync_OnChanged;
 
             //set default bounds
             UpdateFormMode(_requestedMode);
@@ -160,11 +129,6 @@ namespace Molten.Graphics
 
             if (w != _width || h != _height)
                 Resize(w, h);
-        }
-
-        private void VSync_OnChanged(bool oldValue, bool newValue)
-        {
-            SetVsync(newValue);
         }
 
         private void UpdateFormMode(WindowMode newMode)
@@ -246,7 +210,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
+        protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
             if (_displayMode.Width != newWidth || _displayMode.Height != newHeight)
             {
@@ -265,7 +229,7 @@ namespace Molten.Graphics
                 UpdateFormMode(_mode);
             }
 
-            base.OnSetSize(newWidth, newHeight, newDepth, newMipMapCount, newArraySize, newFormat);
+            base.UpdateDescription(newWidth, newHeight, newDepth, newMipMapCount, newArraySize, newFormat);
         }
 
         protected override bool OnPresent()
@@ -298,12 +262,6 @@ namespace Molten.Graphics
             }
 
             return true;
-        }
-
-        protected override void OnDisposeForRecreation()
-        {
-            // Avoid calling RenderFormSurface's OnDispose implementation by skipping it. Jump straight to base.
-            base.OnPipelineDispose();
         }
 
         private protected override void OnPipelineDispose()

@@ -95,8 +95,8 @@ namespace Molten.Graphics
         {
             if (viewports == null)
             {
-                RenderSurfaceBase surface = null;
-                RenderSurfaceBase surfaceZero = Pipe.Output.GetRenderSurface(0);
+                RenderSurface surface = null;
+                RenderSurface surfaceZero = Pipe.Output.GetRenderSurface(0);
 
                 for (int i = 0; i < _viewports.Length; i++)
                 {

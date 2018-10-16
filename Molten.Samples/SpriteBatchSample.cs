@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace Molten.Samples
 {
-    public class SpriteBatchTest : SampleSceneGame
+    public class SpriteBatchSample : SampleSceneGame
     {
-        public override string Description => "A stress test of sprite batching under normal circumstances (i.e. sprites from the same texture drawn together).";
+        public override string Description => "An example of using a SpriteRenderComponent to draw sprites.";
 
         SceneObject _parent;
         SceneObject _child;
         IMesh<VertexTexture> _mesh;
         List<Sprite> _sprites;
 
-        public SpriteBatchTest(EngineSettings settings = null) : base("Sprite Batch", settings) { }
+        public SpriteBatchSample(EngineSettings settings = null) : base("Sprite Batch", settings) { }
 
         protected override void OnInitialize(Engine engine)
         {

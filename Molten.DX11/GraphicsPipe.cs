@@ -86,14 +86,14 @@ namespace Molten.Graphics
         /// <summary>Sets a list of render surfaces.</summary>
         /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
         /// <param name="count">The number of render surfaces to set.</param>
-        public void SetRenderSurfaces(RenderSurfaceBase[] surfaces, int count)
+        public void SetRenderSurfaces(RenderSurface[] surfaces, int count)
         {
             _output.SetRenderSurfaces(surfaces, count);
         }
 
         /// <summary>Sets a list of render surfaces.</summary>
         /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
-        public void SetRenderSurfaces(params RenderSurfaceBase[] surfaces)
+        public void SetRenderSurfaces(params RenderSurface[] surfaces)
         {
             if (surfaces == null)
                 _output.SetRenderSurfaces(null, 0);
@@ -104,14 +104,14 @@ namespace Molten.Graphics
         /// <summary>Sets a render surface.</summary>
         /// <param name="surface">The surface to be set.</param>
         /// <param name="slot">The ID of the slot that the surface is to be bound to.</param>
-        public void SetRenderSurface(RenderSurfaceBase surface, int slot)
+        public void SetRenderSurface(RenderSurface surface, int slot)
         {
             _output.SetRenderSurface(surface, slot);
         }
 
         /// <summary>Fills an array with the current configuration of render surfaces.</summary>
         /// <param name="destinationArray"></param>
-        public void GetRenderSurfaces(RenderSurfaceBase[] destinationArray)
+        public void GetRenderSurfaces(RenderSurface[] destinationArray)
         {
             _output.GetRenderSurfaces(destinationArray);
         }
@@ -119,7 +119,7 @@ namespace Molten.Graphics
         /// <summary>Returns the render surface that is bound to the requested slot ID. Returns null if the slot is empty.</summary>
         /// <param name="slot">The ID of the slot to retrieve a surface from.</param>
         /// <returns></returns>
-        public RenderSurfaceBase GetRenderSurface(int slot)
+        public RenderSurface GetRenderSurface(int slot)
         {
             return _output.GetRenderSurface(slot);
         }
@@ -488,7 +488,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets or sets the output depth surface.
         /// </summary>
-        internal DepthSurface DepthSurface
+        internal DepthStencilSurface DepthSurface
         {
             get => _output.DepthSurface;
             set => _output.DepthSurface = value;

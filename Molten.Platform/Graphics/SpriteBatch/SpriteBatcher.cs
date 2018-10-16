@@ -92,7 +92,8 @@ namespace Molten.Graphics
                 item.Format = SpriteFormat.Sprite;
 
                 item.Vertex.Position = new Vector2F(charPos.X, charPos.Y + cache.YOffset);
-                item.Vertex.RotationAndSlice = Vector2F.Zero; // TODO 2D text rotation + SpriteFont array slice support (y axis).
+                item.Vertex.Rotation = 0; // TODO 2D text rotation.
+                item.Vertex.ArraySlice = 0; // TODO SpriteFont array slice support.
                 item.Vertex.Size = new Vector2F(cache.Location.Width, cache.Location.Height) * scale;
                 item.Vertex.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
                 item.Vertex.Color = color;
@@ -175,7 +176,8 @@ namespace Molten.Graphics
                     item.Format = SpriteFormat.Circle;
 
                     item.Vertex.Position = center;
-                    item.Vertex.RotationAndSlice = new Vector2F(sides, 0);
+                    item.Vertex.Rotation = sides;
+                    item.Vertex.ArraySlice = 0;
                     item.Vertex.Size = new Vector2F(xRadius, yRadius);
                     item.Vertex.UV = Vector4F.Zero; // Unused
                     item.Vertex.Color = color;
@@ -193,7 +195,8 @@ namespace Molten.Graphics
                 item.Format = SpriteFormat.Circle;
 
                 item.Vertex.Position = center;
-                item.Vertex.RotationAndSlice = new Vector2F(sides, 0);
+                item.Vertex.Rotation = sides;
+                item.Vertex.ArraySlice = 0;
                 item.Vertex.Size = new Vector2F(xRadius, yRadius);
                 item.Vertex.UV = Vector4F.Zero; // Unused
                 item.Vertex.Color = color;
@@ -214,7 +217,8 @@ namespace Molten.Graphics
             item.Format = SpriteFormat.Triangle;
 
             item.Vertex.Position = p1;
-            item.Vertex.RotationAndSlice = new Vector2F(0,0); // TODO triangle rotation.
+            item.Vertex.Rotation = 0; // TODO triangle rotation.
+            item.Vertex.ArraySlice = 0;
             item.Vertex.Size = p2;
             item.Vertex.UV = Vector4F.Zero; // Unused
             item.Vertex.Color = color;
@@ -246,7 +250,8 @@ namespace Molten.Graphics
                 item.Format = SpriteFormat.Triangle;
 
                 item.Vertex.Position = points[i];
-                item.Vertex.RotationAndSlice = new Vector2F(0,0); // TODO triangle rotation.
+                item.Vertex.Rotation = 0;
+                item.Vertex.ArraySlice = 0;
                 item.Vertex.Size = points[i + 1];
                 item.Vertex.UV = Vector4F.Zero; // Unused
                 item.Vertex.Color = triColors[colID % triColors.Count];
@@ -328,7 +333,8 @@ namespace Molten.Graphics
                     item.Format = SpriteFormat.Line;
 
                     item.Vertex.Position = p1;
-                    item.Vertex.RotationAndSlice = new Vector2F(thickness, 0);
+                    item.Vertex.Rotation = thickness;
+                    item.Vertex.ArraySlice = 0;
                     item.Vertex.Size = p2;
                     item.Vertex.UV = pointColors[i2 % pointColors.Count].ToVector4();
                     item.Vertex.Color = pointColors[i % pointColors.Count];
@@ -416,14 +422,15 @@ namespace Molten.Graphics
                     item.Format = SpriteFormat.Line;
 
                     item.Vertex.Position = p1;
-                    item.Vertex.RotationAndSlice = new Vector2F(thickness, 0);
+                    item.Vertex.Rotation = thickness;
+                    item.Vertex.ArraySlice = 0;
                     item.Vertex.Size = p2;
                     item.Vertex.UV = pointColors[next % pointColors.Count].ToVector4();
                     item.Vertex.Color = pointColors[i % pointColors.Count];
 
                     // Provide the previous line with the direction of the current line.
                     if (prev < i)
-                        Sprites[spriteID - 1].Vertex.Origin = item.Vertex.RotationAndSlice - item.Vertex.Position;
+                        Sprites[spriteID - 1].Vertex.Origin = p2 - p1;
                     
                     if (next + 1 == last) // If there is no line after the current, use the current line's direction to fill the tangent calculation.
                         item.Vertex.Origin = p2 - p1;
@@ -463,7 +470,8 @@ namespace Molten.Graphics
             item.Format = SpriteFormat.Line;
 
             item.Vertex.Position = p1;
-            item.Vertex.RotationAndSlice = new Vector2F(thickness, 0);
+            item.Vertex.Rotation = thickness;
+            item.Vertex.ArraySlice = 0;
             item.Vertex.Size = p2;
             item.Vertex.UV = color1.ToColor4();
             item.Vertex.Color = color2;
@@ -498,7 +506,8 @@ namespace Molten.Graphics
             item.Format = SpriteFormat.Sprite;
 
             item.Vertex.Position = destination.TopLeft;
-            item.Vertex.RotationAndSlice = new Vector2F(rotation, 0);
+            item.Vertex.Rotation = rotation;
+            item.Vertex.ArraySlice = 0;
             item.Vertex.Size = destination.Size;
             item.Vertex.Color = color;
             item.Vertex.Origin = origin;
@@ -616,7 +625,8 @@ namespace Molten.Graphics
             item.Format = SpriteFormat.Sprite;
 
             item.Vertex.Position = position;
-            item.Vertex.RotationAndSlice = new Vector2F(0, arraySlice);
+            item.Vertex.Rotation = rotation;
+            item.Vertex.ArraySlice = arraySlice;
             item.Vertex.Size = size;
             item.Vertex.Color = color;
             item.Vertex.Origin = origin;

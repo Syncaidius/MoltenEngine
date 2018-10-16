@@ -26,22 +26,16 @@ namespace Molten.Graphics
 
             GraphicsBuffer iBuffer = dynamic ? renderer.DynamicVertexBuffer : renderer.StaticVertexBuffer;
 
+            /* MSDN: The only formats allowed for index buffer data are 16-bit (DXGI_FORMAT_R16_UINT) and 32-bit (DXGI_FORMAT_R32_UINT) integers.
+             */
             switch (_iFormat)
             {
                 case IndexBufferFormat.Unsigned16Bit:
                     _ib = iBuffer.Allocate<ushort>(maxIndices);
                     break;
 
-                case IndexBufferFormat.Signed16Bit:
-                    _ib = iBuffer.Allocate<short>(maxIndices);
-                    break;
-
                 case IndexBufferFormat.Unsigned32Bit:
                     _ib = iBuffer.Allocate<uint>(maxIndices);
-                    break;
-
-                case IndexBufferFormat.Signed32Bit:
-                    _ib = iBuffer.Allocate<int>(maxIndices);
                     break;
             }
 

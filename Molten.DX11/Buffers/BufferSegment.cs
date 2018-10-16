@@ -70,14 +70,6 @@ namespace Molten.Graphics
                 case IndexBufferFormat.Unsigned16Bit:
                     DataFormat = Format.R16_UInt;
                     break;
-
-                case IndexBufferFormat.Signed32Bit:
-                    DataFormat = Format.R32_SInt;
-                    break;
-
-                case IndexBufferFormat.Signed16Bit:
-                    DataFormat = Format.R16_SInt;
-                    break;
             }
         }
 

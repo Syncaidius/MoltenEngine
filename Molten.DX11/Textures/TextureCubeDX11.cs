@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class TextureAssetCube : TextureBase, ITextureCube
+    public class TextureCubeDX11 : TextureBase, ITextureCube
     {
         Texture2D _texture;
         Texture2DDescription _description;
@@ -19,7 +19,7 @@ namespace Molten.Graphics
         public event TextureHandler OnPreResize;
         public event TextureHandler OnPostResize;
 
-        internal TextureAssetCube(RendererDX11 renderer, int width,
+        internal TextureCubeDX11(RendererDX11 renderer, int width,
             int height, Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, int mipCount = 1, int cubeCount = 1, TextureFlags flags = TextureFlags.None)
             : base(renderer, width, height, 1, mipCount, 6, 1, format, flags)
         {
@@ -41,59 +41,52 @@ namespace Molten.Graphics
                 Usage = GetUsageFlags(),
                 OptionFlags = GetResourceFlags() | ResourceOptionFlags.TextureCube,
             };
-            
-            UpdateViewDescriptions();
         }
 
-        private void UpdateViewDescriptions()
+        protected override void SetSRVDescription(ref ShaderResourceViewDescription desc)
         {
-            _resourceViewDescription.Format = _format;
-            if (_cubeCount > 1)
+            desc.Format = _format;
+            desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCubeArray;
+            desc.TextureCubeArray = new ShaderResourceViewDescription.TextureCubeArrayResource()
             {
-                _resourceViewDescription.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCubeArray;
-                _resourceViewDescription.TextureCubeArray = new ShaderResourceViewDescription.TextureCubeArrayResource()
-                {
-                    MostDetailedMip = 0,
-                    MipLevels = _description.MipLevels,
-                    CubeCount = _cubeCount,
-                    First2DArrayFace = 0,
-                };
-            }
-            else
-            {
-                _resourceViewDescription.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCube;
-                _resourceViewDescription.TextureCube = new ShaderResourceViewDescription.TextureCubeResource()
-                {
-                    MostDetailedMip = 0,
-                    MipLevels = _description.MipLevels,
-                };
-            }
+                MostDetailedMip = 0,
+                MipLevels = _description.MipLevels,
+                CubeCount = _cubeCount,
+                First2DArrayFace = 0,
+            };
         }
 
-        protected override SharpDX.Direct3D11.Resource CreateTextureInternal(bool resize)
+        protected override void SetUAVDescription(ShaderResourceViewDescription srvDesc, ref UnorderedAccessViewDescription desc)
+        {
+            desc.Format = SRV.Description.Format;
+            desc.Dimension = UnorderedAccessViewDimension.Texture2DArray;
+
+            desc.Texture2DArray = new UnorderedAccessViewDescription.Texture2DArrayResource()
+            {
+                ArraySize = _description.ArraySize,
+                FirstArraySlice = srvDesc.Texture2DArray.FirstArraySlice,
+                MipSlice = 0,
+            };
+
+            desc.Buffer = new UnorderedAccessViewDescription.BufferResource()
+            {
+                FirstElement = 0,
+                ElementCount = _description.Width * _description.Height * _description.ArraySize,
+            };
+        }
+
+        protected override SharpDX.Direct3D11.Resource CreateResource(bool resize)
         {
             _texture = new Texture2D(Device.D3d, _description);
             return _texture;
         }
 
-        protected override void BeforeResize()
-        {
-            OnPreResize?.Invoke(this);
-        }
-
-        protected override void AfterResize()
-        {
-            OnPostResize?.Invoke(this);
-        }
-
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
+        protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
             _description.Width = newWidth;
             _description.Height = newHeight;
             _description.MipLevels = newMipMapCount;
             _description.Format = newFormat;
-
-            UpdateViewDescriptions();
         }
 
         public void Resize(int newWidth, int newHeight, int newMipMapCount)

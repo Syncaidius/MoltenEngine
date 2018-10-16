@@ -15,7 +15,7 @@ namespace Molten.Graphics
         IRenderSurface CreateSurface(int width, int height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
             int mipCount = 1, int arraySize = 1, int sampleCount = 1, TextureFlags flags = TextureFlags.None);
 
-        IDepthSurface CreateDepthSurface(int width, int height, DepthFormat format = DepthFormat.R24G8_Typeless, int mipCount = 1, int arraySize = 1, int sampleCount = 1,
+        IDepthStencilSurface CreateDepthSurface(int width, int height, DepthFormat format = DepthFormat.R24G8_Typeless, int mipCount = 1, int arraySize = 1, int sampleCount = 1,
             TextureFlags flags = TextureFlags.None);
 
         /// <summary>Creates a form with a surface which can be rendered on to.</summary>

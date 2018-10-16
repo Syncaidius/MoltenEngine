@@ -14,7 +14,7 @@ namespace Molten.Graphics
         RenderSurface _surfaceScene;
         RenderSurface _surfaceNormals;
         RenderSurface _surfaceEmissive;
-        DepthSurface _surfaceDepth;
+        DepthStencilSurface _surfaceDepth;
 
         internal override void Initialize(RendererDX11 renderer)
         {

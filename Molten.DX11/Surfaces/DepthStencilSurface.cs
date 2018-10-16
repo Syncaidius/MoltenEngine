@@ -10,8 +10,8 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    /// <summary>A render target that is created from, and outputs to, a device's swap chain.</summary>
-    public class DepthSurface : TextureAsset2D, IDepthSurface
+    /// <summary>A special kind of render surface for use as a depth-stencil buffer.</summary>
+    public class DepthStencilSurface : Texture2DDX11, IDepthStencilSurface
     {
         DepthStencilView _depthView;
         DepthStencilView _readOnlyView;
@@ -29,7 +29,7 @@ namespace Molten.Graphics
         /// <param name="format"></param>
         /// <param name="depthBuffer">If true, a depth buffer will be created.</param>
         /// <param name="flags">Texture flags</param>
-        internal DepthSurface(RendererDX11 renderer,
+        internal DepthStencilSurface(RendererDX11 renderer,
             int width, 
             int height,
             DepthFormat format = DepthFormat.R24G8_Typeless,
@@ -45,45 +45,46 @@ namespace Molten.Graphics
             _depthDesc = new DepthStencilViewDescription();
             _depthDesc.Format = GetDSVFormat().ToApi();
 
-            if (arraySize == 1)
+            if (_sampleCount > 1)
             {
-                if (sampleCount > 1)
+                _depthDesc.Dimension = DepthStencilViewDimension.Texture2DMultisampledArray;
+                _depthDesc.Flags = DepthStencilViewFlags.None;
+                _depthDesc.Texture2DMSArray = new DepthStencilViewDescription.Texture2DMultisampledArrayResource()
                 {
-                    _depthDesc.Dimension = DepthStencilViewDimension.Texture2DMultisampled;
-                    _depthDesc.Flags = DepthStencilViewFlags.None;
-                }
-                else
-                {
-                    _depthDesc.Dimension = DepthStencilViewDimension.Texture2D;
-                    _depthDesc.Flags = DepthStencilViewFlags.None;
-                }
+                    ArraySize = _description.ArraySize,
+                    FirstArraySlice = 0,
+                };
             }
             else
             {
-                if(sampleCount > 1)
+                _depthDesc.Dimension = DepthStencilViewDimension.Texture2DArray;
+                _depthDesc.Flags = DepthStencilViewFlags.None;
+                _depthDesc.Texture2DArray = new DepthStencilViewDescription.Texture2DArrayResource()
                 {
-                    _depthDesc.Dimension = DepthStencilViewDimension.Texture2DMultisampledArray;
-                    _depthDesc.Flags = DepthStencilViewFlags.None;
-                    _depthDesc.Texture2DMSArray = new DepthStencilViewDescription.Texture2DMultisampledArrayResource()
-                    {
-                        ArraySize = _description.ArraySize,
-                        FirstArraySlice = 0,
-                    };
-                }
-                else
-                {
-                    _depthDesc.Dimension = DepthStencilViewDimension.Texture2DArray;
-                    _depthDesc.Flags = DepthStencilViewFlags.None;
-                    _depthDesc.Texture2DArray = new DepthStencilViewDescription.Texture2DArrayResource()
-                    {
-                        ArraySize = _description.ArraySize,
-                        FirstArraySlice = 0,
-                        MipSlice = 0,
-                    };
-                }
+                    ArraySize = _description.ArraySize,
+                    FirstArraySlice = 0,
+                    MipSlice = 0,
+                };
             }
 
             UpdateViewport();
+        }
+
+        protected override void SetSRVDescription(ref ShaderResourceViewDescription desc)
+        {
+            base.SetSRVDescription(ref desc);
+
+            switch (_depthFormat)
+            {
+                default:
+                case DepthFormat.R24G8_Typeless:
+                    desc.Format = SharpDX.DXGI.Format.R24_UNorm_X8_Typeless;
+                    break;
+
+                case DepthFormat.R32_Typeless:
+                    desc.Format = SharpDX.DXGI.Format.R32_Float;
+                    break;
+            }
         }
 
         private void UpdateViewport()
@@ -115,18 +116,6 @@ namespace Molten.Graphics
             }
         }
 
-        protected override Format GetSRVFormat()
-        {
-            switch (_depthFormat)
-            {
-                default:
-                case DepthFormat.R24G8_Typeless:
-                    return SharpDX.DXGI.Format.R24_UNorm_X8_Typeless;
-                case DepthFormat.R32_Typeless:
-                    return SharpDX.DXGI.Format.R32_Float;
-            }
-        }
-
         private DepthStencilViewFlags GetReadOnlyFlags()
         {
             switch (_depthFormat)
@@ -139,13 +128,14 @@ namespace Molten.Graphics
             }
         }
 
-        protected override SharpDX.Direct3D11.Resource CreateTextureInternal(bool resize)
+        protected override SharpDX.Direct3D11.Resource CreateResource(bool resize)
         {
+            _depthView?.Dispose();
             _description.Width = Math.Max(1, _description.Width);
             _description.Height = Math.Max(1, _description.Height);
 
             // Create render target texture
-            _texture = new Texture2D(Device.D3d, _description);
+            _texture = base.CreateResource(resize) as Texture2D;
 
             _depthDesc.Flags = DepthStencilViewFlags.None;
             _depthView = new DepthStencilView(Device.D3d, _texture, _depthDesc);
@@ -158,9 +148,9 @@ namespace Molten.Graphics
             return _texture;
         }
 
-        protected override void OnSetSize(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
+        protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
-            base.OnSetSize(newWidth, newHeight, newDepth, newMipMapCount, newArraySize, newFormat);
+            base.UpdateDescription(newWidth, newHeight, newDepth, newMipMapCount, newArraySize, newFormat);
             UpdateViewport();
         }
 
@@ -194,7 +184,7 @@ namespace Molten.Graphics
         /// <summary>Gets the depth-specific format of the surface.</summary>
         public DepthFormat DepthFormat => _depthFormat;
 
-        /// <summary>Gets the viewport of the <see cref="DepthSurface"/>.</summary>
+        /// <summary>Gets the viewport of the <see cref="DepthStencilSurface"/>.</summary>
         public Viewport Viewport => _vp;
     }
 }

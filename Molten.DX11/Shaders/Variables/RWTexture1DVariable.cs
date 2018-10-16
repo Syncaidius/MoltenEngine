@@ -9,13 +9,13 @@ namespace Molten.Graphics
 {
     internal class RWTexture1DVariable : RWVariable
     {
-        TextureAsset1D _texture;
+        Texture1DDX11 _texture;
 
         internal RWTexture1DVariable(HlslShader shader) : base(shader) { }
 
         protected override PipelineShaderObject OnSetUnorderedResource(object value)
         {
-            _texture = value as TextureAsset1D;
+            _texture = value as Texture1DDX11;
 
             if (_texture != null)
             {

@@ -16,11 +16,11 @@ namespace Molten.Graphics
         }
 
         GraphicsPipe _pipe;
-        PipelineBindSlot<RenderSurfaceBase>[] _slotSurfaces;
-        PipelineBindSlot<DepthSurface> _slotDepth;
+        PipelineBindSlot<RenderSurface>[] _slotSurfaces;
+        PipelineBindSlot<DepthStencilSurface> _slotDepth;
 
-        RenderSurfaceBase[] _surfaces;
-        DepthSurface _depthSurface = null;
+        RenderSurface[] _surfaces;
+        DepthStencilSurface _depthSurface = null;
         RenderTargetView[] _rtViews;
         DepthStencilView _depthView = null;
 
@@ -32,17 +32,17 @@ namespace Molten.Graphics
             _pipe = pipe;
 
             int maxRTs = Device.Features.SimultaneousRenderSurfaces;
-            _slotSurfaces = new PipelineBindSlot<RenderSurfaceBase>[maxRTs];
-            _surfaces = new RenderSurfaceBase[maxRTs];
+            _slotSurfaces = new PipelineBindSlot<RenderSurface>[maxRTs];
+            _surfaces = new RenderSurface[maxRTs];
             _rtViews = new RenderTargetView[maxRTs];
 
             for (int i = 0; i < maxRTs; i++)
             {
-                _slotSurfaces[i] = AddSlot<RenderSurfaceBase>(i);
+                _slotSurfaces[i] = AddSlot<RenderSurface>(i);
                 _slotSurfaces[i].OnObjectForcedUnbind += SurfaceSlot_OnBoundObjectDisposed;
             }
 
-            _slotDepth = AddSlot<DepthSurface>(0);
+            _slotDepth = AddSlot<DepthStencilSurface>(0);
             _slotDepth.OnObjectForcedUnbind += _slotDepth_OnBoundObjectDisposed;
         }
 
@@ -127,7 +127,7 @@ namespace Molten.Graphics
         /// <summary>Sets a list of render surfaces.</summary>
         /// <param name="surfaces">The surfaces.</param>
         /// <param name="count">The number of surfaces to set.</param>
-        public void SetRenderSurfaces(RenderSurfaceBase[] surfaces, int count)
+        public void SetRenderSurfaces(RenderSurface[] surfaces, int count)
         {
             if (surfaces != null)
             {
@@ -149,7 +149,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="surface">The surface.</param>
         /// <param name="slot">The slot.</param>
-        public void SetRenderSurface(RenderSurfaceBase surface, int slot)
+        public void SetRenderSurface(RenderSurface surface, int slot)
         {
             _surfaces[slot] = surface;
         }
@@ -158,7 +158,7 @@ namespace Molten.Graphics
         /// Fills the provided array with a list of applied render surfaces.
         /// </summary>
         /// <param name="destinationArray">The array to fill with applied render surfaces.</param>
-        public void GetRenderSurfaces(RenderSurfaceBase[] destinationArray)
+        public void GetRenderSurfaces(RenderSurface[] destinationArray)
         {
             for (int i = 0; i < _surfaces.Length; i++)
                 destinationArray[i] = _surfaces[i];
@@ -167,7 +167,7 @@ namespace Molten.Graphics
         /// <summary>Gets the render surface located in the specified output slot.</summary>
         /// <param name="slot">The ID of the slot to retrieve from.</param>
         /// <returns></returns>
-        public RenderSurfaceBase GetRenderSurface(int slot)
+        public RenderSurface GetRenderSurface(int slot)
         {
             return _surfaces[slot];
         }
@@ -220,9 +220,9 @@ namespace Molten.Graphics
         internal bool TargetZeroSet { get { return _rtViews[0] != null; } }
 
         /// <summary>
-        /// Gets the <see cref="RenderSurfaceBase"/> at the specified slot.
+        /// Gets the <see cref="RenderSurface"/> at the specified slot.
         /// </summary>
-        public RenderSurfaceBase this[int slotIndex]
+        public RenderSurface this[int slotIndex]
         {
             get { return _surfaces[slotIndex]; }
         }
@@ -239,7 +239,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets or sets the output depth surface.
         /// </summary>
-        public DepthSurface DepthSurface
+        public DepthStencilSurface DepthSurface
         {
             get => _depthSurface;
             set => _depthSurface = value;

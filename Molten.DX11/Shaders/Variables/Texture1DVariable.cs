@@ -9,13 +9,13 @@ namespace Molten.Graphics
 {
     internal class Texture1DVariable : ShaderResourceVariable
     {
-        TextureAsset1D _texture;
+        Texture1DDX11 _texture;
 
         internal Texture1DVariable(Material material) : base(material) { }
 
         protected override PipelineShaderObject OnSetResource(object value)
         {
-            _texture = value as TextureAsset1D;
+            _texture = value as Texture1DDX11;
             return _texture;
         }
     }

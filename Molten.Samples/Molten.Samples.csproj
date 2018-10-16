@@ -25,6 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,6 +35,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -119,6 +121,7 @@
     </Compile>
     <Compile Include="DeferredRendering.cs" />
     <Compile Include="1DTextureTest.cs" />
+    <Compile Include="SpriteBatchArrrays.cs" />
     <Compile Include="SpriteFontStress.cs" />
     <Compile Include="FontFileTest.cs" />
     <Compile Include="MultiWindowGame.cs" />
@@ -129,7 +132,7 @@
     <Compile Include="SceneTexture2DArrayTest.cs" />
     <Compile Include="SpriteBatchPrimitives.cs" />
     <Compile Include="SpriteBatchUnfairTest.cs" />
-    <Compile Include="SpriteBatchTest.cs" />
+    <Compile Include="SpriteBatchSample.cs" />
     <Compile Include="Common\CubeArrayVertex.cs" />
     <Compile Include="Common\SampleGame.cs" />
     <Page Include="MainWindow.xaml">
