@@ -20,16 +20,11 @@ namespace Molten.Content
             string extension = context.File.Extension.ToLower();
             TextureData finalData = null;
             TextureReader texReader = null;
-            bool isArray = false;
             int arrayCount = 1;
             string fn = context.Filename;
             bool compress = false;
             DDSFormat compressFormat = DDSFormat.DXT5;
-
-            if (context.Metadata.TryGetValue("array", out string strIsArray))
-                bool.TryParse(strIsArray, out isArray);
-
-            if (context.Metadata.TryGetValue("count", out string strCount))
+            if (context.Metadata.TryGetValue("array", out string strCount))
                 int.TryParse(strCount, out arrayCount);
 
             if (context.Metadata.TryGetValue("compress", out string strCompress))
@@ -38,7 +33,7 @@ namespace Molten.Content
             if (context.Metadata.TryGetValue("cformat", out string strCompressFormat))
                 Enum.TryParse(strCompressFormat, out compressFormat);
 
-            if (isArray)
+            if (arrayCount > 1)
             {
                 fn = context.File.Name.Replace(context.File.Extension, "");
                 fn = context.Filename.Replace(context.File.Name, $"{fn}_{{0}}{context.File.Extension}");

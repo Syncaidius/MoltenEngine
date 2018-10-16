@@ -107,6 +107,8 @@ namespace Molten.Graphics
             // Subscribe to new parent
             if (_parent != null)
                 _parent.Move += _control_Moved;
+
+            _control_Resized(_parent, new EventArgs());
         }
 
         private void _control_VisibleChanged(object sender, EventArgs e)
@@ -197,14 +199,6 @@ namespace Molten.Graphics
             }
 
             return true;
-        }
-
-        private protected override void OnPipelineDispose()
-        {
-            if (_swapChain != null)
-                _disposing = true;
-
-            base.OnPipelineDispose();
         }
 
         /// <summary>Gets or sets the form title.</summary>

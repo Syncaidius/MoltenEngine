@@ -264,14 +264,6 @@ namespace Molten.Graphics
             return true;
         }
 
-        private protected override void OnPipelineDispose()
-        {
-            if (_swapChain != null)
-                _disposing = true;
-
-            base.OnPipelineDispose();
-        }
-
         /// <summary>Gets or sets the form title.</summary>
         public string Title
         {
