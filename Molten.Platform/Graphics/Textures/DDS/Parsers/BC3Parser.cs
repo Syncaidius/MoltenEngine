@@ -10,22 +10,22 @@ namespace Molten.Graphics.Textures
     {
         public override GraphicsFormat[] SupportedFormats => new GraphicsFormat[] { GraphicsFormat.BC3_Typeless, GraphicsFormat.BC3_UNorm, GraphicsFormat.BC3_UNorm_SRgb };
 
-        protected override void DecompressBlock(BinaryReader imageReader, int x, int y, int width, int height, byte[] output)
+        protected override void DecompressBlock(BinaryReader reader, int x, int y, int width, int height, byte[] output)
         {
             //===========ALPHA BLOCK==========================
-            byte alpha0 = imageReader.ReadByte();
-            byte alpha1 = imageReader.ReadByte();
-            ulong alphaMask = (ulong)imageReader.ReadByte();
+            byte alpha0 = reader.ReadByte();
+            byte alpha1 = reader.ReadByte();
+            ulong alphaMask = reader.ReadByte();
 
-            alphaMask += (ulong)imageReader.ReadByte() << 8;
-            alphaMask += (ulong)imageReader.ReadByte() << 16;
-            alphaMask += (ulong)imageReader.ReadByte() << 24;
-            alphaMask += (ulong)imageReader.ReadByte() << 32;
-            alphaMask += (ulong)imageReader.ReadByte() << 40;
+            alphaMask += (ulong)reader.ReadByte() << 8;
+            alphaMask += (ulong)reader.ReadByte() << 16;
+            alphaMask += (ulong)reader.ReadByte() << 24;
+            alphaMask += (ulong)reader.ReadByte() << 32;
+            alphaMask += (ulong)reader.ReadByte() << 40;
 
             //============COLOR BLOCK=========================
             DDSColorTable table;
-            DecompressColorTableDXT1(imageReader, out table);
+            DecompressColorTableDXT1(reader, out table);
 
             // Decompress pixel data from block
             for (int pY = 0; pY < 4; pY++)

@@ -11,7 +11,7 @@ namespace Molten.Graphics.Textures
     {
         const int ONE_BIT_ALPHA_THRESHOLD = 10;
 
-        protected abstract void DecompressBlock(BinaryReader imageReader, int x, int y, int width, int height, byte[] output);
+        protected abstract void DecompressBlock(BinaryReader reader, int x, int y, int width, int height, byte[] output);
 
         protected abstract void CompressBlock(BinaryWriter writer, int x, int y, TextureData.Slice level);
 
@@ -21,7 +21,7 @@ namespace Molten.Graphics.Textures
         {
             MemoryStream stream = new MemoryStream(level.Data);
 
-            //pass to stream-based overload
+            // Pass to stream-based overload
             byte[] result = new byte[level.Width * level.Height * 4];
 
             using (BinaryReader imageReader = new BinaryReader(stream))

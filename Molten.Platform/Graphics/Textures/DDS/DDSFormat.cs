@@ -15,10 +15,26 @@ namespace Molten.Graphics
         BC1_SRGB = 0,
 
         /// <summary>A format best suited to images with minimal coherent alpha channel data. Alpha channel is compressed to 4-bits per pixel.</summary>
-        DXT3 = 2,
+        DXT3 = 1,
+        BC2 = 1,
+        BC2_SRGB = 1,
 
         /// <summary>A format best suited to images with highly coherent alpha channel data.</summary>
-        DXT5 = 4,
+        DXT5 = 2,
+        BC3 = 2,
+        BC3_SRGB = 2,
+
+        /// <summary>
+        /// A format best suited to single-channel (i.e. only the red channel) images.
+        /// </summary>
+        BC4_UNorm = 3,
+        BC4_SNorm = 4,
+
+        /// <summary>
+        /// A format best suited to two-channel images, such as encoded normal maps.
+        /// </summary>
+        BC5_UNorm = 5,
+        BC5_SNorm = 6,
     }
 
     public static class DDSFormatExtensions
@@ -27,9 +43,14 @@ namespace Molten.Graphics
         {
             switch (format)
             {
-                case DDSFormat.DXT1: return GraphicsFormat.BC1_UNorm;;
-                case DDSFormat.DXT3: return GraphicsFormat.BC2_UNorm;;
-                case DDSFormat.DXT5: return GraphicsFormat.BC3_UNorm;
+                case DDSFormat.DXT1:
+                    return GraphicsFormat.BC1_UNorm;;
+
+                case DDSFormat.DXT3:
+                    return GraphicsFormat.BC2_UNorm;;
+
+                case DDSFormat.DXT5:
+                    return GraphicsFormat.BC3_UNorm;
                 default: return GraphicsFormat.Unknown;
             }
         }

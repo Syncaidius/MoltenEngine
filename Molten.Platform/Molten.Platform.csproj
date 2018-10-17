@@ -81,6 +81,7 @@
     <Compile Include="Gamepad\IGamepadStick.cs" />
     <Compile Include="Gamepad\IGamepadTrigger.cs" />
     <Compile Include="Graphics\Overlays\OverlayProvider.cs" />
+    <Compile Include="Graphics\Textures\DDS\Parsers\BC4UParser.cs" />
     <Compile Include="Graphics\Textures\MagickTextureWriter.cs" />
     <Compile Include="IClipboard.cs" />
     <Compile Include="IInputDevice.cs" />
