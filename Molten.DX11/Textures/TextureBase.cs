@@ -76,7 +76,7 @@ namespace Molten.Graphics
             IsValid = false;
 
             _srvDescription = new ShaderResourceViewDescription();
-            _isBlockCompressed = DXTHelper.GetBlockCompressed(_format.FromApi());
+            _isBlockCompressed = DDSHelper.GetBlockCompressed(_format.FromApi());
         }
 
         protected void RaisePostResizeEvent()

@@ -28,7 +28,7 @@ namespace Molten.Samples
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<IMaterial>("BasicTexture.mfx");
-            cr.Load<ITexture2D>("png_test.png");
+            cr.Load<ITexture2D>("dds_bc4.dds");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
@@ -37,7 +37,7 @@ namespace Molten.Samples
 
         private void Cr_OnCompleted(ContentRequest cr)
         {
-            IMaterial mat = cr.Get<IMaterial>(0);
+            IMaterial mat = cr.Get<IMaterial>("BasicTexture.mfx");
 
             if (mat == null)
             {
@@ -46,7 +46,7 @@ namespace Molten.Samples
             }
 
             // Manually construct a 2D texture array from the 3 textures we requested earlier
-            ITexture texture = cr.Get<ITexture2D>(1);
+            ITexture texture = cr.Get<ITexture2D>("dds_bc4.dds");
 
             mat.SetDefaultResource(texture, 0);
             _mesh.Material = mat;

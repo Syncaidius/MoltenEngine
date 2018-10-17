@@ -81,17 +81,6 @@ namespace Molten.Graphics.Textures
                     result.FourCC = "DXT5";
                     result.RGBBitCount = 32;
                     break;
-
-                /*case GraphicsFormat.BC4_UNorm:
-                    result.FourCC = "DXT4";
-                    result.RGBBitCount = 32;
-                    break;
-
-                default:
-                case GraphicsFormat.BC5_SNorm:
-                    result.FourCC = "DXT5";
-                    result.RGBBitCount = 32;
-                    break;*/
             }
 
             return result;

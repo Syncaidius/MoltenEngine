@@ -6,11 +6,13 @@ using System.Text;
 
 namespace Molten.Graphics.Textures
 {
-    internal class DXT1Parser : DXTBlockParser
+    internal class BC1Parser : BCBlockParser
     {
+        public override GraphicsFormat[] SupportedFormats => new GraphicsFormat[] { GraphicsFormat.BC1_Typeless, GraphicsFormat.BC1_UNorm, GraphicsFormat.BC1_UNorm_SRgb };
+
         protected override void DecompressBlock(BinaryReader imageReader, int x, int y, int width, int height, byte[] output)
         {
-            DXTColorTable table;
+            DDSColorTable table;
             DecompressColorTableDXT1(imageReader, out table);
 
             for (int blockY = 0; blockY < 4; blockY++)

@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
-    public static class DXTHelper
+    public static class DDSHelper
     {
-        static Dictionary<GraphicsFormat, DXTBlockParser> _parsers;
+        static Dictionary<GraphicsFormat, BCBlockParser> _parsers;
 
-        static DXTHelper()
+        static DDSHelper()
         {
-            _parsers = new Dictionary<GraphicsFormat, DXTBlockParser>()
+            _parsers = new Dictionary<GraphicsFormat, BCBlockParser>();
+            IEnumerable<Type> parserTypes = ReflectionHelper.FindType<BCBlockParser>();
+            foreach(Type t in parserTypes)
             {
-                [GraphicsFormat.BC1_UNorm] = new DXT1Parser(),
-                [GraphicsFormat.BC2_UNorm] = new DXT3Parser(),
-                [GraphicsFormat.BC3_UNorm] = new DXT5Parser(),
-            };
+                BCBlockParser parser = Activator.CreateInstance(t, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, null, null) as BCBlockParser;
+                foreach (GraphicsFormat supportedFormat in parser.SupportedFormats)
+                    _parsers.Add(supportedFormat, parser);
+            }
         }
 
         public static void Decompress(TextureData data)
@@ -29,7 +33,7 @@ namespace Molten.Graphics.Textures
             TextureData.Slice[] levels = data.Levels;
             data.Levels = new TextureData.Slice[levels.Length];
 
-            DXTBlockParser parser = null;
+            BCBlockParser parser = null;
 
             if (_parsers.TryGetValue(data.Format, out parser))
             {
@@ -58,7 +62,7 @@ namespace Molten.Graphics.Textures
 
         /// <summary>Compresses the texture data into DXT5 block-compressed format, if not already compressed.</summary>
         /// <param name="data"></param>
-        public static void Compress(TextureData data, DDSFormat format)
+        public static void Compress(TextureData data, DDSFormat compressionFormat)
         {
             // Cannot compress data which is already compressed.
             if (data.IsCompressed)
@@ -66,17 +70,10 @@ namespace Molten.Graphics.Textures
 
             TextureData.Slice[] levels = data.Levels;
             data.Levels = new TextureData.Slice[levels.Length];
+            GraphicsFormat gFormat = compressionFormat.ToGraphicsFormat();
 
-            GraphicsFormat newFormat = GraphicsFormat.BC1_UNorm;
-
-            switch (format) {
-                case DDSFormat.DXT1: newFormat = GraphicsFormat.BC1_UNorm; break;
-                case DDSFormat.DXT3: newFormat = GraphicsFormat.BC2_UNorm; break;
-                case DDSFormat.DXT5: newFormat = GraphicsFormat.BC3_UNorm; break;
-            }
-
-            DXTBlockParser parser = null;
-            if (_parsers.TryGetValue(newFormat, out parser))
+            BCBlockParser parser = null;
+            if (_parsers.TryGetValue(gFormat, out parser))
             {
                 for (int a = 0; a < data.ArraySize; a++)
                 {
@@ -84,7 +81,7 @@ namespace Molten.Graphics.Textures
                     {
                         int levelID = (a * (int)data.MipMapLevels) + i;
                         byte[] levelData = parser.Compress(levels[levelID]);
-                        int pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * DXTHelper.GetBlockSize(newFormat));
+                        int pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * DDSHelper.GetBlockSize(gFormat));
 
                         int blockCountY = (levels[i].Height + 3) / 4;
 
@@ -99,7 +96,7 @@ namespace Molten.Graphics.Textures
                     }
                 }
 
-                data.Format = newFormat;
+                data.Format = gFormat;
                 data.IsCompressed = true;
             }
         }
@@ -112,7 +109,8 @@ namespace Molten.Graphics.Textures
             return null;
         }
 
-        /// <summary>Returns the expected block size of the provided format. Only block-compressed formats will return a valid value.</summary>
+        /// <summary>Returns the expected block size of the provided format. Only block-compressed formats will return a valid value. <para/>
+        /// A block is 4x4 pixels.</summary>
         /// <param name="format">The format.</param>
         /// <returns></returns>
         public static int GetBlockSize(GraphicsFormat format)
@@ -120,12 +118,25 @@ namespace Molten.Graphics.Textures
             switch (format)
             {
                 case GraphicsFormat.BC1_UNorm:
+                case GraphicsFormat.BC1_UNorm_SRgb:
+                case GraphicsFormat.BC4_SNorm:
+                case GraphicsFormat.BC4_UNorm:
+                case GraphicsFormat.BC4_Typeless:
                     return 8;
 
                 case GraphicsFormat.BC2_UNorm:
-                    return 16;
-
+                case GraphicsFormat.BC2_UNorm_SRgb:
                 case GraphicsFormat.BC3_UNorm:
+                case GraphicsFormat.BC3_UNorm_SRgb:
+                case GraphicsFormat.BC5_SNorm:
+                case GraphicsFormat.BC5_UNorm:
+                case GraphicsFormat.BC5_Typeless:
+                case GraphicsFormat.BC6H_Uf16:
+                case GraphicsFormat.BC6H_Sf16:
+                case GraphicsFormat.BC6H_Typeless:
+                case GraphicsFormat.BC7_UNorm_SRgb:
+                case GraphicsFormat.BC7_UNorm:
+                case GraphicsFormat.BC7_Typeless:
                     return 16;
             }
 
@@ -139,21 +150,7 @@ namespace Molten.Graphics.Textures
         /// <returns>A boolean value.</returns>
         public static bool GetBlockCompressed(GraphicsFormat format)
         {
-            //figure out if the texture is block compressed.
-            switch (format)
-            {
-                case GraphicsFormat.BC1_UNorm:
-                case GraphicsFormat.BC2_UNorm:
-                case GraphicsFormat.BC3_UNorm:
-                case GraphicsFormat.BC4_SNorm:
-                case GraphicsFormat.BC4_UNorm:
-                case GraphicsFormat.BC5_SNorm:
-                case GraphicsFormat.BC5_UNorm:
-                    return true;
-
-                default:
-                    return false;
-            }
+            return GetBlockSize(format) > 0;
         }
 
         /// <summary>Gets the expected number of bytes for a slice matching the provided size and format.</summary>

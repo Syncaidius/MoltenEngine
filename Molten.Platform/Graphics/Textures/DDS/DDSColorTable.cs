@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
-    public struct DXTColorTable
+    public struct DDSColorTable
     {
         public Color[] color;
         public ushort[] rawColor;

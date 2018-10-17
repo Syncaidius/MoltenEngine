@@ -108,35 +108,61 @@ namespace Molten.Graphics.Textures.DDS
             //figure out which block parser to use
             if (_header.PixelFormat.HasFlags(DDSPixelFormatFlags.FourCC))
             {
-                if (_header.PixelFormat.FourCC == "DXT1")
-                    _headerDXT10.ImageFormat = GraphicsFormat.BC1_UNorm;
-                else if (_header.PixelFormat.FourCC == "DXT2" || _header.PixelFormat.FourCC == "DXT3")
-                    _headerDXT10.ImageFormat = GraphicsFormat.BC2_UNorm;
-                else if (_header.PixelFormat.FourCC == "DXT4" || _header.PixelFormat.FourCC == "DXT5")
-                    _headerDXT10.ImageFormat = GraphicsFormat.BC3_UNorm;
-                else if (_header.PixelFormat.FourCC == "DX10")
+                switch (_header.PixelFormat.FourCC)
                 {
-                    //read DX10 header.
-                    _headerDXT10 = new DDSHeaderDXT10()
-                    {
-                        ImageFormat = (GraphicsFormat)reader.ReadUInt32(),
-                        Dimension = (DDSResourceDimension)reader.ReadUInt32(),
-                        MiscFlags = (DDSMiscFlags)reader.ReadUInt32(),
-                        ArraySize = reader.ReadUInt32(),
-                        MiscFlags2 = (DDSMiscFlags2)reader.ReadUInt32(),
-                    };
-                }
-                else
-                {
-                    _headerDXT10.ImageFormat = GraphicsFormat.R8G8B8A8_UNorm;
+                    case "DXT1":
+                        _headerDXT10.ImageFormat = GraphicsFormat.BC1_UNorm;
+                        break;
+
+                    case "DXT2":
+                    case "DXT3":
+                        _headerDXT10.ImageFormat = GraphicsFormat.BC2_UNorm;
+                        break;
+
+                    case "DXT4":
+                    case "DXT5":
+                        _headerDXT10.ImageFormat = GraphicsFormat.BC3_UNorm;
+                        break;
+
+                    case "BC4U":
+                        _headerDXT10.ImageFormat = GraphicsFormat.BC4_UNorm;
+                        break;
+
+                    case "BC4S":
+                        _headerDXT10.ImageFormat = GraphicsFormat.BC4_SNorm;
+                        break;
+
+                    case "BC5U":
+                        _headerDXT10.ImageFormat = GraphicsFormat.BC5_UNorm;
+                        break;
+
+                    case "BC5S":
+                        _headerDXT10.ImageFormat = GraphicsFormat.BC5_SNorm;
+                        break;
+
+                    case "DX10":
+                        //read DX10 header.
+                        _headerDXT10 = new DDSHeaderDXT10()
+                        {
+                            ImageFormat = (GraphicsFormat)reader.ReadUInt32(),
+                            Dimension = (DDSResourceDimension)reader.ReadUInt32(),
+                            MiscFlags = (DDSMiscFlags)reader.ReadUInt32(),
+                            ArraySize = reader.ReadUInt32(),
+                            MiscFlags2 = (DDSMiscFlags2)reader.ReadUInt32(),
+                        };
+                        break;
+
+                    default:
+                        log.WriteError($"Unrecognised DDS block-compression format '{_header.PixelFormat.FourCC}'", filename);
+                        _headerDXT10.ImageFormat = GraphicsFormat.R8G8B8A8_UNorm;
+                        break;
                 }
             }
 
             CheckIfCubeMap();
 
-            //ensure there is at least one level mip texture (the main level).
-            if (_header.MipMapCount == 0) //(_header.Caps & DDSCapabilities.MipMap) != DDSCapabilities.MipMap)
-                _header.MipMapCount = 1;
+            // Ensure there is at least one level mip texture (the main level).
+            _header.MipMapCount = Math.Max(1, _header.MipMapCount);
 
             return true;
         }
@@ -205,7 +231,7 @@ namespace Molten.Graphics.Textures.DDS
             }
 
             _levelData = new TextureData.Slice[_header.MipMapCount * _headerDXT10.ArraySize];
-            int blockSize = DXTHelper.GetBlockSize(_headerDXT10.ImageFormat);
+            int blockSize = DDSHelper.GetBlockSize(_headerDXT10.ImageFormat);
 
             for (int a = 0; a < _headerDXT10.ArraySize; a++)
             {

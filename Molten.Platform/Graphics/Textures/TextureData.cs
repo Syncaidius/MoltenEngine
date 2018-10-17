@@ -57,12 +57,12 @@ namespace Molten.Graphics
         /// <summary>Decompresses the texture data to R8-G8-B8-A8 color format, if it is stored in a compressed format. This has no effect if already uncompressed.</summary>
         public void Decompress()
         {
-            DXTHelper.Decompress(this);
+            DDSHelper.Decompress(this);
         }
 
         public void Compress(DDSFormat format)
         {
-            DXTHelper.Compress(this, format);
+            DDSHelper.Compress(this, format);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Molten.Graphics
         public void ToRGBA()
         {
             if (IsCompressed)
-                DXTHelper.Decompress(this);
+                DDSHelper.Decompress(this);
 
             if(Format == GraphicsFormat.B8G8R8A8_UNorm || Format == GraphicsFormat.B8G8R8A8_Typeless || Format == GraphicsFormat.B8G8R8A8_UNorm_SRgb)
             {

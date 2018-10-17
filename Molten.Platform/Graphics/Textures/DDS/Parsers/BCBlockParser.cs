@@ -7,9 +7,15 @@ using System.Text;
 namespace Molten.Graphics.Textures
 {
     /// <summary>A base class for DDS block readers.</summary>
-    internal abstract class DXTBlockParser
+    internal abstract class BCBlockParser
     {
         const int ONE_BIT_ALPHA_THRESHOLD = 10;
+
+        protected abstract void DecompressBlock(BinaryReader imageReader, int x, int y, int width, int height, byte[] output);
+
+        protected abstract void CompressBlock(BinaryWriter writer, int x, int y, TextureData.Slice level);
+
+        public abstract GraphicsFormat[] SupportedFormats { get; }
 
         public byte[] Decompress(TextureData.Slice level)
         {
@@ -56,18 +62,13 @@ namespace Molten.Graphics.Textures
             return result;
         }
 
-
-        protected abstract void DecompressBlock(BinaryReader imageReader, int x, int y, int width, int height, byte[] output);
-
-        protected abstract void CompressBlock(BinaryWriter writer, int x, int y, TextureData.Slice level);
-
         /// <summary>Reads and decompresses the color table from the provided reader.</summary>
         /// <param name="reader">The reader to use for retrieving the compressed data.</param>
         /// <param name="table">The destination for the decompressed color table.</param>
         /// <returns></returns>
-        protected DXTColorTable DecompressColorTableDXT1(BinaryReader reader, out DXTColorTable table)
+        protected DDSColorTable DecompressColorTableDXT1(BinaryReader reader, out DDSColorTable table)
         {
-            table = new DXTColorTable();
+            table = new DDSColorTable();
             table.color = new Color[4];
             table.rawColor = new ushort[2];
 

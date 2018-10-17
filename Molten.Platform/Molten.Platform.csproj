@@ -169,17 +169,16 @@
     <Compile Include="Graphics\Textures\DDS\DDSFormat.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSHeader.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSHeaderDXT10.cs" />
-    <Compile Include="Graphics\Textures\DXT\DXTHelper.cs" />
+    <Compile Include="Graphics\Textures\DDS\DDSHelper.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSPixelFormat.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSPixelFormatFlags.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSReader.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSWriter.cs" />
-    <Compile Include="Graphics\Textures\DXT\DXTBlockParser.cs" />
-    <Compile Include="Graphics\Textures\DXT\DXTColorTable.cs" />
-    <Compile Include="Graphics\Textures\DXT\DXTFakeParser.cs" />
-    <Compile Include="Graphics\Textures\DXT\DXT1Parser.cs" />
-    <Compile Include="Graphics\Textures\DXT\DXT3Parser.cs" />
-    <Compile Include="Graphics\Textures\DXT\DXT5Parser.cs" />
+    <Compile Include="Graphics\Textures\DDS\Parsers\BCBlockParser.cs" />
+    <Compile Include="Graphics\Textures\DDS\DDSColorTable.cs" />
+    <Compile Include="Graphics\Textures\DDS\Parsers\BC1Parser.cs" />
+    <Compile Include="Graphics\Textures\DDS\Parsers\BC2Parser.cs" />
+    <Compile Include="Graphics\Textures\DDS\Parsers\BC3Parser.cs" />
     <Compile Include="Graphics\Textures\ITexture.cs" />
     <Compile Include="Graphics\Textures\ITexture2D.cs" />
     <Compile Include="Graphics\Textures\ITextureCube.cs" />
@@ -226,7 +225,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Graphics\Textures\DDS\Parsers\" />
     <Folder Include="Touch\" />
   </ItemGroup>
   <ItemGroup>

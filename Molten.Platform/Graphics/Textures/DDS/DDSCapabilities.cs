@@ -6,7 +6,7 @@ using System.Text;
 namespace Molten.Graphics.Textures.DDS
 {
     [FlagsAttribute]
-    /// <summary>DDS_HEADER : dwCaps. http://msdn.microsoft.com/en-us/library/windows/desktop/bb943982%28v=vs.85%29.aspx. </summary>
+    /// <summary>DDS_HEADER : dwCaps. https://docs.microsoft.com/en-us/windows/desktop/direct3ddds/dds-header. </summary>
     internal enum DDSCapabilities : uint
     {
         /// <summary>Optional; must be used on any file that contains more than one surface (a mipmap, a cubic environment map, or mipmapped volume texture).</summary>
@@ -20,7 +20,7 @@ namespace Molten.Graphics.Textures.DDS
     }
 
     [FlagsAttribute]
-    /// <summary>DDS_HEADER : dwCaps2. http://msdn.microsoft.com/en-us/library/windows/desktop/bb943982%28v=vs.85%29.aspx. </summary>
+    /// <summary>DDS_HEADER : dwCaps2. https://docs.microsoft.com/en-us/windows/desktop/direct3ddds/dds-header. </summary>
     internal enum DDSAdditionalCapabilities : uint
     {
         /// <summary>No additional capabilities.</summary>

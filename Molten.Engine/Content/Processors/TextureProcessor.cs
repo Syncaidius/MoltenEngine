@@ -24,6 +24,7 @@ namespace Molten.Content
             string fn = context.Filename;
             bool compress = false;
             DDSFormat compressFormat = DDSFormat.DXT5;
+
             if (context.Metadata.TryGetValue("array", out string strCount))
                 int.TryParse(strCount, out arrayCount);
 
