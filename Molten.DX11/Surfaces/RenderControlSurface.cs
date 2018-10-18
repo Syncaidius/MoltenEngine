@@ -178,7 +178,7 @@ namespace Molten.Graphics
             {
                 DisposeObject(ref _loop);
                 DisposeObject(ref _swapChain);
-                DisposeObject(ref _control);
+                DisposeControl();
                 return false;
             }
 
@@ -199,6 +199,21 @@ namespace Molten.Graphics
             }
 
             return true;
+        }
+
+        private void DisposeControl()
+        {
+            if (_parent != null)
+                _parent.Move -= _control_Moved;
+
+            _control.Resize -= _control_Resized;
+            _control.Move -= _control_Moved;
+            _control.ParentChanged -= _control_ParentChanged;
+            _control.HandleDestroyed -= _control_HandleDestroyed;
+            _control.VisibleChanged -= _control_VisibleChanged;
+
+
+            DisposeObject(ref _control);
         }
 
         /// <summary>Gets or sets the form title.</summary>
