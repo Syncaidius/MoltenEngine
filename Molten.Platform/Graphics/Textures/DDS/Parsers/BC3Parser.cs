@@ -107,7 +107,8 @@ namespace Molten.Graphics.Textures
             ulong alphaMask = 0;
             int alphaID = 0;
 
-            // Write alpha indices
+            // Build 6-byte alpha mask by generating 16x 3-bit pixel indices.
+            // Note: 16x 3-bit pixel indices = 48 bits (6 bytes).
             for (int y = 0; y < 4; y++)
             {
                 for (int x = 0; x < 4; x++)
@@ -118,7 +119,7 @@ namespace Molten.Graphics.Textures
                     int pX = bPixelX + x;
                     int pY = bPixelY + y;
 
-                    int b = GetPixelByte(pX, pY, level.Width, colorByteSize) + 3; // Add 3 bytes to reach the alpha
+                    int b = GetByteRGBA(pX, pY, level.Width, colorByteSize) + 3; // Add 3 bytes to reach the alpha
 
                     // Test distance of each color table entry
                     for (int i = 0; i < alpha.Length; i++)
@@ -137,8 +138,8 @@ namespace Molten.Graphics.Textures
                 }
             }
 
-            // Write 6 bytes of alpha mask
-            // TODO use unsafe code here to better write it.
+            // Write 6 bytes of alpha mask. 
+            // Note: 16x 3-bit pixel indices = 48 bits (6 bytes).
             byte[] alphaBytes = BitConverter.GetBytes(alphaMask);
             for (int i = 0; i < 6; i++)
                 writer.Write(alphaBytes[i]);
@@ -162,7 +163,7 @@ namespace Molten.Graphics.Textures
                         int pX = blockPixelX + x;
                         int pY = blockPixelY + y;
 
-                        int b = GetPixelByte(pX, pY, level.Width, colorByteSize) + 3; // Add 3 bytes to reach the alpha
+                        int b = GetByteRGBA(pX, pY, level.Width, colorByteSize) + 3; // Add 3 bytes to reach the alpha
                         if (level.Data[b] > result)
                             result = level.Data[b];
                     }
@@ -181,7 +182,7 @@ namespace Molten.Graphics.Textures
                         int pX = blockPixelX + x;
                         int pY = blockPixelY + y;
 
-                        int b = GetPixelByte(pX, pY, level.Width, colorByteSize) + 3; // Add 3 bytes to reach the alpha
+                        int b = GetByteRGBA(pX, pY, level.Width, colorByteSize) + 3; // Add 3 bytes to reach the alpha
                         if (level.Data[b] < result)
                             result = level.Data[b];
                     }

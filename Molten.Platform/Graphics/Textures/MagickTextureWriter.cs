@@ -32,7 +32,9 @@ namespace Molten.Graphics.Textures
                     p.SetPixels(slice.Data);
 
                     image.Format = MagickFormat.Rgba;
-                    image.Write(stream, MagickFormat.Png);
+                    image.Quality = 100;
+                    image.Interlace = Interlace.NoInterlace;
+                    image.Write(stream, _writeFormat);
                 }
             }
         }

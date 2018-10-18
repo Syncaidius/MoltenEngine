@@ -29,9 +29,9 @@ namespace Molten.Graphics.Textures
                 int blockCountX = Math.Max(1, (level.Width + 3) / 4);
                 int blockCountY = Math.Max(1, (level.Height + 3) / 4);
 
-                for (int y = 0; y < blockCountY; y++)
-                    for (int x = 0; x < blockCountX; x++)
-                        DecompressBlock(imageReader, x, y, level.Width, level.Height, result);
+                for (int blockY = 0; blockY < blockCountY; blockY++)
+                    for (int blockX = 0; blockX < blockCountX; blockX++)
+                        DecompressBlock(imageReader, blockX, blockY, level.Width, level.Height, result);
             }
 
             stream.Dispose();
@@ -128,7 +128,7 @@ namespace Molten.Graphics.Textures
 
                     int pX = bPixelX + x;
                     int pY = bPixelY + y;
-                    int b = GetPixelByte(pX, pY, level.Width, pixelByteSize);
+                    int b = GetByteRGBA(pX, pY, level.Width, pixelByteSize);
 
                     Color col = new Color()
                     {
@@ -211,7 +211,7 @@ namespace Molten.Graphics.Textures
                     int pX = blockPixelX + x;
                     int pY = blockPixelY + y;
 
-                    int b = GetPixelByte(pX, pY, level.Width, colorByteSize);
+                    int b = GetByteRGBA(pX, pY, level.Width, colorByteSize);
                     Color color = new Color()
                     {
                         R = level.Data[b],
@@ -242,8 +242,15 @@ namespace Molten.Graphics.Textures
             return (float)Math.Sqrt((x * x) + (y * y) + (z * z));
         }
 
-
-        protected int GetPixelByte(int x, int y, int imageWidth, int colorByteSize)
+        /// <summary>
+        /// Gets the position of a byte within an image, with the assumption that it is uncompressed RGBA data.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="imageWidth"></param>
+        /// <param name="colorByteSize"></param>
+        /// <returns></returns>
+        protected int GetByteRGBA(int x, int y, int imageWidth, int colorByteSize)
         {
             int pitch = (imageWidth * colorByteSize);
             return (pitch * y) + (x * colorByteSize);

@@ -183,9 +183,6 @@ namespace Molten.Samples
 
             for (int i = 0; i < testTypes.Count; i++)
             {
-                if (testTypes[i].IsAbstract)
-                    continue;
-
                 EngineSettings settings = new EngineSettings();
                 settings.Graphics.EnableDebugLayer.Value = chkDebugLayer.IsChecked.Value;
                 SampleGame test = Activator.CreateInstance(testTypes[i], settings) as SampleGame;

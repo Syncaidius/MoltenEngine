@@ -25,9 +25,6 @@ namespace Molten.Font
             IEnumerable<Type> tableTypes = ReflectionHelper.FindTypesWithAttribute<FontTableTagAttribute>(typeof(FontTableTagAttribute).Assembly);
             foreach(Type t in tableTypes)
             {
-                if (t.IsAbstract)
-                    continue;
-
                 FontTableTagAttribute att = t.GetCustomAttribute<FontTableTagAttribute>();
                 _tableTypes.Add(att.Tag, new TableEntry()
                 {

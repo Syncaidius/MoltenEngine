@@ -117,7 +117,7 @@ namespace Molten.Graphics.Textures
                 {
                     int pX = bPixelX + x;
                     int pY = bPixelY + y;
-                    int b = GetPixelByte(pX, pY, level.Width, colorByteSize) + 3; // add 3 bytes to access alpha
+                    int b = GetByteRGBA(pX, pY, level.Width, colorByteSize) + 3; // add 3 bytes to access alpha
 
                     byte a1 = level.Data[b];
                     byte a2 = level.Data[b + 4];

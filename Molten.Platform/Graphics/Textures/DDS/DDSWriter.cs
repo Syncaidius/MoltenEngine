@@ -81,6 +81,11 @@ namespace Molten.Graphics.Textures
                     result.FourCC = "DXT5";
                     result.RGBBitCount = 32;
                     break;
+
+                case GraphicsFormat.BC4_UNorm:
+                    result.FourCC = "BC4U";
+                    result.RGBBitCount = 8;
+                    break;
             }
 
             return result;
@@ -142,11 +147,6 @@ namespace Molten.Graphics.Textures
             writer.Write(header.Caps3);
             writer.Write(header.Caps4);
             writer.Write(header.Reserved2);
-        }
-
-        protected override void OnDispose()
-        {
-            
         }
     }
 }
