@@ -10,6 +10,11 @@ namespace Molten.Graphics.Textures
 {
     public static class DDSHelper
     {
+        /// <summary>
+        /// The expected width and height of a DDS data block, in pixels.
+        /// </summary>
+        public const int BLOCK_DIMENSIONS = 4;
+
         static Dictionary<GraphicsFormat, BCBlockParser> _parsers;
 
         static DDSHelper()
@@ -67,6 +72,9 @@ namespace Molten.Graphics.Textures
             // Cannot compress data which is already compressed.
             if (data.IsCompressed)
                 return;
+
+            if (data.Width % 4 > 0 || data.Height % 4 > 0)
+                throw new DDSSizeException(compressionFormat, data.Width, data.Height);
 
             TextureData.Slice[] levels = data.Levels;
             data.Levels = new TextureData.Slice[levels.Length];
@@ -158,7 +166,7 @@ namespace Molten.Graphics.Textures
         /// <param name="height">The expected height.</param>
         /// <param name="width">The expected width.</param>
         /// <returns></returns>
-        public static int GetSliceSize(GraphicsFormat format, int width, int height)
+        public static int GetBCSliceSize(GraphicsFormat format, int width, int height)
         {
             int blockSize = GetBlockSize(format);
             int blockCountX = Math.Max(1,(width + 3) / 4);
@@ -174,11 +182,8 @@ namespace Molten.Graphics.Textures
         /// <returns></returns>
         public static int GetBCPitch(int width, int height, int blockSize)
         {
-            int blockCountX = (width + 3) / 4;
-            int numBlocksWide = Math.Max(1, blockCountX);
-            int blockPitch = numBlocksWide * blockSize;
-
-            return blockPitch;
+            int numBlocksWide = Math.Max(1, (width + 3) / 4);
+            return numBlocksWide * blockSize;
         }
 
         /// <summary>Gets the block-compressed size of a mip-map level, in bytes.</summary>
@@ -188,17 +193,18 @@ namespace Molten.Graphics.Textures
         /// <returns></returns>
         public static int GetBCLevelSize(int width, int height, int blockSize)
         {
-            int blockCountX = (width + 3) / 4;
-            int blockCountY = (height + 3) / 4;
-
-            int numBlocksWide = Math.Max(1, blockCountX);
-            int numBlocksHigh = Math.Max(1, blockCountY);
-            int numRows = numBlocksHigh;
-
+            int numBlocksWide = Math.Max(1, (width + 3) / 4);
+            int numBlocksHigh = Math.Max(1, (height + 3) / 4);
             int blockPitch = numBlocksWide * blockSize;
+            return blockPitch * numBlocksHigh;
+        }
 
-            int pitch = width * 4;
-            return blockPitch * numRows;
+        public static void GetBCLevelSizeAndPitch(int width, int height, int blockSize, out int levelSize, out int blockPitch)
+        {
+            int numBlocksWide = Math.Max(1, (width + 3) / 4);
+            int numBlocksHigh = Math.Max(1, (height + 3) / 4);
+            blockPitch = numBlocksWide * blockSize;
+            levelSize = blockPitch * numBlocksHigh;
         }
     }
 }

@@ -55,6 +55,8 @@ namespace Molten.Graphics
 
             public int CopySubresourceCount { get; set; }
 
+            public int CopyResourceCount { get; set; }
+
             public void Clear()
             {
                 DrawCalls = 0;
@@ -73,6 +75,7 @@ namespace Molten.Graphics
                 MapReadCount = 0;
                 UpdateSubresourceCount = 0;
                 CopySubresourceCount = 0;
+                CopyResourceCount = 0;
             }
 
             public void Accumulate(Snapshot other)
@@ -90,6 +93,7 @@ namespace Molten.Graphics
                 MapReadCount += other.MapReadCount;
                 UpdateSubresourceCount += other.UpdateSubresourceCount;
                 CopySubresourceCount += other.CopySubresourceCount;
+                CopyResourceCount += other.CopyResourceCount;
             }
         }
 

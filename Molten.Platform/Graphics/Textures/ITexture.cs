@@ -27,6 +27,12 @@ namespace Molten.Graphics
         event TextureHandler OnPostResize;
 
         /// <summary>
+        /// Gets a new instance of the texture's <see cref="Texture1DProperties"/> properties.
+        /// </summary>
+        /// <returns></returns>
+        Texture1DProperties Get1DProperties();
+
+        /// <summary>
         /// Resizes a texture to match the specified width, mip-map count and graphics format.
         /// </summary>
         /// <param name="newWidth">The new width.</param>

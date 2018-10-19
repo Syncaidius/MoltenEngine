@@ -10,7 +10,7 @@ namespace Molten.Graphics.Textures
     {
         public override GraphicsFormat[] SupportedFormats => new GraphicsFormat[] { GraphicsFormat.BC3_Typeless, GraphicsFormat.BC3_UNorm, GraphicsFormat.BC3_UNorm_SRgb };
 
-        protected override void DecompressBlock(BinaryReader reader, int x, int y, int width, int height, byte[] output)
+        protected override void DecompressBlock(BinaryReader reader, BCDimensions dimensions, int width, int height, byte[] output)
         {
             //===========ALPHA BLOCK==========================
             byte alpha0 = reader.ReadByte();
@@ -25,18 +25,17 @@ namespace Molten.Graphics.Textures
 
             //============COLOR BLOCK=========================
             DDSColorTable table;
-            DecompressColorTableDXT1(reader, out table);
+            DecompressColorTableBC1(reader, out table);
 
             // Decompress pixel data from block
             for (int pY = 0; pY < 4; pY++)
             {
+                int py = (dimensions.Y << 2) + pY;
                 for (int pX = 0; pX < 4; pX++)
                 {
-                    Color c = new Color(0, 0, 0, 255);
                     uint index = (table.data >> 2 * (4 * pY + pX)) & 0x03;
                     uint alphaIndex = (uint)((alphaMask >> 3 * (4 * pY + pX)) & 0x07);
-
-                    c = table.color[index];
+                    Color c = table.color[index];
 
                     // Decode alpha
                     if (alphaIndex == 0)
@@ -52,8 +51,7 @@ namespace Molten.Graphics.Textures
                     else
                         c.A = (byte)(((6 - alphaIndex) * alpha0 + (alphaIndex - 1) * alpha1) / 5);
 
-                    int px = (x << 2) + pX;
-                    int py = (y << 2) + pY;
+                    int px = (dimensions.X << 2) + pX;
                     if ((px < width) && (py < height))
                     {
                         int offset = ((py * width) + px) << 2;
@@ -66,17 +64,17 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        protected override void CompressBlock(BinaryWriter writer, int bX, int bY, TextureData.Slice level)
+        protected override void CompressBlock(BinaryWriter writer, BCDimensions dimensions, TextureData.Slice level)
         {
+            int bPixelX = dimensions.X * 4;
+            int bPixelY = dimensions.Y * 4;
+            int bytesPerPixel = 4;
+
             // ====================== ALPHA ===============================
             // Get the pixel position of the block. Each block is 4x4 pixels.
-            int bPixelX = bX * 4;
-            int bPixelY = bY * 4;
-            int colorByteSize = 4;
-
             byte[] alpha = new byte[8];
-            alpha[0] = GetAlpha(false, level, bPixelX, bPixelY, colorByteSize);
-            alpha[1] = GetAlpha(true, level, bPixelX, bPixelY, colorByteSize);
+            alpha[0] = GetHighestAlpha(level, bPixelX, bPixelY, bytesPerPixel);
+            alpha[1] = GetLowestAlpha(level, bPixelX, bPixelY, bytesPerPixel);
 
             // Interpolate alpha 2 - 7 values
             if (alpha[0] > alpha[1])
@@ -119,7 +117,7 @@ namespace Molten.Graphics.Textures
                     int pX = bPixelX + x;
                     int pY = bPixelY + y;
 
-                    int b = GetByteRGBA(pX, pY, level.Width, colorByteSize) + 3; // Add 3 bytes to reach the alpha
+                    int b = GetPixelFirstByte(pX, pY, level.Width, bytesPerPixel) + 3; // Add 3 bytes to reach the alpha
 
                     // Test distance of each color table entry
                     for (int i = 0; i < alpha.Length; i++)
@@ -145,51 +143,50 @@ namespace Molten.Graphics.Textures
                 writer.Write(alphaBytes[i]);
 
             //==================== COLOR ===================================
-            CompressDXT1Block(writer, level, bPixelX, bPixelY, colorByteSize, false, 0);
+            CompressBC1ColorBlock(writer, level, bPixelX, bPixelY, bytesPerPixel, false, 0, dimensions);
         }
 
-        private byte GetAlpha(bool getHighest, TextureData.Slice level, int blockPixelX, int blockPixelY, int colorByteSize)
+        private byte GetHighestAlpha(TextureData.Slice level, int blockPixelX, int blockPixelY, int bytesPerPixel)
         {
             int pitch = level.Width * 4;
+            byte result = 0;
 
-            if (getHighest)
+            for (int x = 0; x < 4; x++)
             {
-                byte result = 0;
-
-                for (int x = 0; x < 4; x++)
+                for (int y = 0; y < 4; y++)
                 {
-                    for (int y = 0; y < 4; y++)
-                    {
-                        int pX = blockPixelX + x;
-                        int pY = blockPixelY + y;
+                    int pX = blockPixelX + x;
+                    int pY = blockPixelY + y;
 
-                        int b = GetByteRGBA(pX, pY, level.Width, colorByteSize) + 3; // Add 3 bytes to reach the alpha
-                        if (level.Data[b] > result)
-                            result = level.Data[b];
-                    }
+                    int b = GetPixelFirstByte(pX, pY, level.Width, bytesPerPixel) + 3; // Add 3 bytes to reach the alpha
+                    if (level.Data[b] > result)
+                        result = level.Data[b];
                 }
-
-                return result;
             }
-            else
+
+            return result;
+        }
+
+        private byte GetLowestAlpha(TextureData.Slice level, int blockPixelX, int blockPixelY, int bytesPerPixel)
+        {
+            int pitch = level.Width * 4;
+            byte result = 255;
+
+            for (int x = 0; x < 4; x++)
             {
-                byte result = 255;
-
-                for (int x = 0; x < 4; x++)
+                for (int y = 0; y < 4; y++)
                 {
-                    for (int y = 0; y < 4; y++)
-                    {
-                        int pX = blockPixelX + x;
-                        int pY = blockPixelY + y;
+                    int pX = blockPixelX + x;
+                    int pY = blockPixelY + y;
 
-                        int b = GetByteRGBA(pX, pY, level.Width, colorByteSize) + 3; // Add 3 bytes to reach the alpha
-                        if (level.Data[b] < result)
-                            result = level.Data[b];
-                    }
+                    int b = GetPixelFirstByte(pX, pY, level.Width, bytesPerPixel) + 3; // Add 3 bytes to reach the alpha
+
+                    if (level.Data[b] < result)
+                        result = level.Data[b];
                 }
-
-                return result;
             }
+
+            return result;
         }
     }
 }

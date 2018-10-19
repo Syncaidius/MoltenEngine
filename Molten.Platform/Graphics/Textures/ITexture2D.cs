@@ -11,6 +11,12 @@ namespace Molten.Graphics
         void Resize(int newWidth, int newHeight, int newMipMapCount);
 
         /// <summary>
+        /// Gets a new instance of the texture's 2D properties.
+        /// </summary>
+        /// <returns></returns>
+        Texture2DProperties Get2DProperties();
+
+        /// <summary>
         /// Changes the current texture's dimensions and format.
         /// </summary>
         /// <param name="newWidth">The new width.</param>

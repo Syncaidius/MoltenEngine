@@ -11,53 +11,74 @@ namespace Molten.Graphics.Textures
     {
         const int ONE_BIT_ALPHA_THRESHOLD = 10;
 
-        protected abstract void DecompressBlock(BinaryReader reader, int x, int y, int width, int height, byte[] output);
+        protected abstract void DecompressBlock(BinaryReader reader, BCDimensions dimensions, int levelWidth, int levelHeight, byte[] output);
 
-        protected abstract void CompressBlock(BinaryWriter writer, int x, int y, TextureData.Slice level);
+        protected abstract void CompressBlock(BinaryWriter writer, BCDimensions dimensions, TextureData.Slice level);
 
         public abstract GraphicsFormat[] SupportedFormats { get; }
 
         public byte[] Decompress(TextureData.Slice level)
-        {
-            MemoryStream stream = new MemoryStream(level.Data);
-
+        {            
             // Pass to stream-based overload
             byte[] result = new byte[level.Width * level.Height * 4];
 
-            using (BinaryReader imageReader = new BinaryReader(stream))
+            using (MemoryStream stream = new MemoryStream(level.Data))
             {
-                int blockCountX = Math.Max(1, (level.Width + 3) / 4);
-                int blockCountY = Math.Max(1, (level.Height + 3) / 4);
+                using (BinaryReader imageReader = new BinaryReader(stream))
+                {
+                    int blockCountX = Math.Max(1, (level.Width + 3) / DDSHelper.BLOCK_DIMENSIONS);
+                    int blockCountY = Math.Max(1, (level.Height + 3) / DDSHelper.BLOCK_DIMENSIONS);
 
-                for (int blockY = 0; blockY < blockCountY; blockY++)
-                    for (int blockX = 0; blockX < blockCountX; blockX++)
-                        DecompressBlock(imageReader, blockX, blockY, level.Width, level.Height, result);
+                    BCDimensions dimensions = new BCDimensions()
+                    {
+                        Width = Math.Min(level.Width, DDSHelper.BLOCK_DIMENSIONS),
+                        Height = Math.Min(level.Height, DDSHelper.BLOCK_DIMENSIONS),
+                    };
+
+                    for (int blockY = 0; blockY < blockCountY; blockY++)
+                    {
+                        dimensions.Y = blockY;
+                        for (int blockX = 0; blockX < blockCountX; blockX++)
+                        {
+                            dimensions.X = blockX;
+                            DecompressBlock(imageReader, dimensions, level.Width, level.Height, result);
+                        }
+                    }
+                }
             }
-
-            stream.Dispose();
 
             return result;
         }
 
         public byte[] Compress(TextureData.Slice level)
         {
-            MemoryStream stream = new MemoryStream();
-
-            int blockCountX = Math.Max(1, (level.Width + 3) / 4);
-            int blockCountY = Math.Max(1, (level.Height + 3) / 4);
+            int blockCountX = Math.Max(1, (level.Width + 3) / DDSHelper.BLOCK_DIMENSIONS);
+            int blockCountY = Math.Max(1, (level.Height + 3) / DDSHelper.BLOCK_DIMENSIONS);
             byte[] result = null;
 
-            using (BinaryWriter writer = new BinaryWriter(stream))
+            BCDimensions dimensions = new BCDimensions()
             {
-                for (int y = 0; y < blockCountY; y++)
-                    for (int x = 0; x < blockCountX; x++)
-                        CompressBlock(writer, x, y, level);
+                Width = Math.Min(level.Width, DDSHelper.BLOCK_DIMENSIONS),
+                Height = Math.Min(level.Height, DDSHelper.BLOCK_DIMENSIONS),
+            };
 
-                // Retrieve written data.
-                result = stream.ToArray();
+            using (MemoryStream stream = new MemoryStream())
+            {
+                using (BinaryWriter writer = new BinaryWriter(stream))
+                {
+                    for (int blockY = 0; blockY < blockCountY; blockY++)
+                    {
+                        dimensions.Y = blockY;
+                        for (int blockX = 0; blockX < blockCountX; blockX++)
+                        {
+                            dimensions.X = blockX;
+                            CompressBlock(writer, dimensions, level);
+                        }
+                    }
+
+                    result = stream.ToArray();
+                }
             }
-
-            stream.Dispose();
 
             return result;
         }
@@ -66,7 +87,7 @@ namespace Molten.Graphics.Textures
         /// <param name="reader">The reader to use for retrieving the compressed data.</param>
         /// <param name="table">The destination for the decompressed color table.</param>
         /// <returns></returns>
-        protected DDSColorTable DecompressColorTableDXT1(BinaryReader reader, out DDSColorTable table)
+        protected void DecompressColorTableBC1(BinaryReader reader, out DDSColorTable table)
         {
             table = new DDSColorTable();
             table.color = new Color[4];
@@ -80,10 +101,7 @@ namespace Molten.Graphics.Textures
 
             table.color[2] = LerpColorThird(table.color[0], table.color[1], 2, 1);
             table.color[3] = LerpColorThird(table.color[0], table.color[1], 1, 2);
-
             table.data = reader.ReadUInt32();
-
-            return table;
         }
 
         /// <summary>Writes the data of a block of pixels using DXT1 block-compression.</summary>
@@ -92,12 +110,12 @@ namespace Molten.Graphics.Textures
         /// <param name="bPixelX">The X pixel coordinate of the current block's top left corner.</param>
         /// <param name="bPixelY">The Y pixel coordinate of the current block's top left corner.</param>
         /// <param name="pixelByteSize">The size of a single pixel, in bytes.</param>
-        protected void CompressDXT1Block(BinaryWriter writer, TextureData.Slice level, int bPixelX, int bPixelY, int pixelByteSize, bool oneBitAlpha, byte alphaThreshold)
+        protected void CompressBC1ColorBlock(BinaryWriter writer, TextureData.Slice level, int bPixelX, int bPixelY, int pixelByteSize, bool oneBitAlpha, byte alphaThreshold, BCDimensions dimensions)
         {
             // Get the min and max color
             Color[] c = new Color[4];
-            c[0] = GetClosestColor(new Color(0, 0, 0, 0), level, bPixelX, bPixelY, pixelByteSize);
-            c[1] = GetClosestColor(new Color(255, 255, 255, 0), level, bPixelX, bPixelY, pixelByteSize);
+            c[0] = GetClosestColor(new Color(0, 0, 0, 0), level, bPixelX, bPixelY, pixelByteSize, dimensions.Width, dimensions.Height);
+            c[1] = GetClosestColor(new Color(255, 255, 255, 0), level, bPixelX, bPixelY, pixelByteSize, dimensions.Width, dimensions.Height);
 
             ushort packed0 = Convert888to565(c[0]);
             ushort packed1 = Convert888to565(c[1]);
@@ -106,7 +124,7 @@ namespace Molten.Graphics.Textures
             if (oneBitAlpha && (packed0 < packed1))
             {
                 c[2] = (1f / 2f * c[0]) + (1f / 2f * c[1]);
-                c[3] = new Color(0, 0, 0, 0);
+                c[3] = Color.Transparent;
             }
             else
             {
@@ -119,23 +137,23 @@ namespace Molten.Graphics.Textures
 
             uint dataTable = 0;
             int colorID = 0;
-            for (int y = 0; y < 4; y++)
+            for (int y = 0; y < dimensions.Height; y++)
             {
-                for (int x = 0; x < 4; x++)
+                for (int x = 0; x < dimensions.Width; x++)
                 {
                     float closest = float.MaxValue;
                     uint closestID = 3;
 
                     int pX = bPixelX + x;
                     int pY = bPixelY + y;
-                    int b = GetByteRGBA(pX, pY, level.Width, pixelByteSize);
+                    int b = GetPixelFirstByte(pX, pY, level.Width, pixelByteSize);
 
                     Color col = new Color()
                     {
                         R = level.Data[b],
-                        G = level.Data[b+1],
-                        B = level.Data[b+2],
-                        A = level.Data[b+3],
+                        G = level.Data[b + 1],
+                        B = level.Data[b + 2],
+                        A = level.Data[b + 3],
                     };
 
                     if (col.A < alphaThreshold)
@@ -170,7 +188,7 @@ namespace Molten.Graphics.Textures
         protected void Convert565to888(ushort color, out byte r, out byte g, out byte b)
         {
             int iR = (color >> 11) & 0x1f;
-            int iG = (color >>  5) & 0x3f;
+            int iG = (color >> 5) & 0x3f;
             int iB = (color) & 0x1f;
 
             // Align values to the 8th bit, then move back to average
@@ -182,7 +200,7 @@ namespace Molten.Graphics.Textures
         protected ushort Convert888to565(Color color)
         {
             ushort r = (ushort)(Mul8Bit(color.R, 31) << 11);
-            ushort g = (ushort)(Mul8Bit(color.G, 63) <<  5);
+            ushort g = (ushort)(Mul8Bit(color.G, 63) << 5);
             ushort b = (ushort)Mul8Bit(color.B, 31);
             return (ushort)(r | g | b);
         }
@@ -191,32 +209,31 @@ namespace Molten.Graphics.Textures
         {
             return new Color()
             {
-                R = (byte)((third0 / 3f * c0.R) + (third1 / 3f * c1.R)),
-                G = (byte)((third0 / 3f * c0.G) + (third1 / 3f * c1.G)),
-                B = (byte)((third0 / 3f * c0.B) + (third1 / 3f * c1.B)),
+                R = (byte)(third0 / 3f * c0.R + third1 / 3f * c1.R),
+                G = (byte)(third0 / 3f * c0.G + third1 / 3f * c1.G),
+                B = (byte)(third0 / 3f * c0.B + third1 / 3f * c1.B),
             };
         }
 
-        private Color GetClosestColor(Color target, TextureData.Slice level, int blockPixelX, int blockPixelY, int colorByteSize)
+        private Color GetClosestColor(Color target, TextureData.Slice level, int blockPixelX, int blockPixelY, int colorByteSize, int blockWidth, int blockHeight)
         {
             int pitch = level.Width * 4;
 
             Color result = new Color(255, 255, 255, 0);
             float closest = uint.MaxValue;
 
-            for (int x = 0; x < 4; x++)
+            for (int y = 0; y < blockHeight; y++)
             {
-                for (int y = 0; y < 4; y++)
+                int pY = blockPixelY + y;
+                for (int x = 0; x < blockWidth; x++)
                 {
                     int pX = blockPixelX + x;
-                    int pY = blockPixelY + y;
-
-                    int b = GetByteRGBA(pX, pY, level.Width, colorByteSize);
+                    int offset = GetPixelFirstByte(pX, pY, level.Width, colorByteSize);
                     Color color = new Color()
                     {
-                        R = level.Data[b],
-                        G = level.Data[b+1],
-                        B = level.Data[b+2],
+                        R = level.Data[offset],
+                        G = level.Data[offset + 1],
+                        B = level.Data[offset + 2],
                         A = 0,
                     };
 
@@ -235,6 +252,8 @@ namespace Molten.Graphics.Textures
 
         private float ColorDistance(Color value1, Color value2)
         {
+            // TODO pack into single int and compare distance with that instead.
+            //      This will allow the costly square root to be removed.
             float x = value1.R - value2.R;
             float y = value1.G - value2.G;
             float z = value1.B - value2.B;
@@ -243,23 +262,23 @@ namespace Molten.Graphics.Textures
         }
 
         /// <summary>
-        /// Gets the position of a byte within an image, with the assumption that it is uncompressed RGBA data.
+        /// Gets the first byte of a pixel within an image.
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="imageWidth"></param>
-        /// <param name="colorByteSize"></param>
+        /// <param name="bytesPerPixel">The number of bytes per pixel. For example, RGBA is 4 bytes, a single-channel is 1 byte.</param>
         /// <returns></returns>
-        protected int GetByteRGBA(int x, int y, int imageWidth, int colorByteSize)
+        protected int GetPixelFirstByte(int x, int y, int imageWidth, int bytesPerPixel)
         {
-            int pitch = (imageWidth * colorByteSize);
-            return (pitch * y) + (x * colorByteSize);
+            int pitch = (imageWidth * bytesPerPixel);
+            return (pitch * y) + (x * bytesPerPixel);
         }
 
-        int Mul8Bit(int a, int b)
-    {
-        int t = a * b + 128;
-        return (t + (t >> 8)) >> 8;
+        private int Mul8Bit(int a, int b)
+        {
+            int t = a * b + 128;
+            return (t + (t >> 8)) >> 8;
+        }
     }
-}
 }

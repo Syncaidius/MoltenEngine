@@ -45,6 +45,7 @@
     <LangVersion>latest</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -81,6 +82,8 @@
     <Compile Include="Gamepad\IGamepadStick.cs" />
     <Compile Include="Gamepad\IGamepadTrigger.cs" />
     <Compile Include="Graphics\Overlays\OverlayProvider.cs" />
+    <Compile Include="Graphics\Textures\DDS\BCDimensions.cs" />
+    <Compile Include="Graphics\Textures\DDS\DDSSizeException.cs" />
     <Compile Include="Graphics\Textures\DDS\Parsers\BC4UParser.cs" />
     <Compile Include="Graphics\Textures\MagickTextureWriter.cs" />
     <Compile Include="IClipboard.cs" />

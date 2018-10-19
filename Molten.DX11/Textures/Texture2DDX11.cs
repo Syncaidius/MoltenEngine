@@ -62,6 +62,20 @@ namespace Molten.Graphics
             };
         }
 
+        public Texture2DProperties Get2DProperties()
+        {
+            return new Texture2DProperties()
+            {
+                Width = _width,
+                Height = _height,
+                ArraySize = _arraySize,
+                Flags = _flags,
+                Format = this.Format,
+                MipMapLevels = _mipCount,
+                SampleCount = _sampleCount,
+            };
+        }
+
         protected override Resource CreateResource(bool resize)
         {
             _texture = new Texture2D(Device.D3d, _description);

@@ -79,6 +79,19 @@ namespace Molten.Graphics
             _isBlockCompressed = DDSHelper.GetBlockCompressed(_format.FromApi());
         }
 
+        public Texture1DProperties Get1DProperties()
+        {
+            return new Texture1DProperties()
+            {
+                Width = _width,
+                ArraySize = _arraySize,
+                Flags = _flags,
+                Format = this.Format,
+                MipMapLevels = _mipCount,
+                SampleCount = _sampleCount,
+            };
+        }
+
         protected void RaisePostResizeEvent()
         {
             OnPostResize?.Invoke(this);
@@ -367,53 +380,124 @@ namespace Molten.Graphics
             });
         }
 
+        internal TextureData GetAllData(GraphicsPipe pipe, TextureBase staging)
+        {
+            if (staging == null && !HasFlags(TextureFlags.Staging))
+                throw new TextureCopyException(this, null, "A null staging texture was provided, but this is only valid if the current texture is a staging texture. A staging texture is required to retrieve data from non-staged textures.");
+
+            if (!staging.HasFlags(TextureFlags.Staging))
+                throw new TextureFlagException(staging.Flags, "Provided staging texture does not have the staging flag set.");
+
+            // Validate dimensions.
+            if (staging.Width != Width ||
+                staging.Height != Height ||
+                staging.Depth != Depth)
+                throw new TextureCopyException(this, staging, "Staging texture dimensions do not match current texture.");
+
+            staging.Apply(pipe);
+
+            Resource resToMap = _resource;
+
+            if (staging != null)
+            {
+                pipe.Context.CopyResource(_resource, staging.UnderlyingResource);
+                pipe.Profiler.Current.CopyResourceCount++;
+                resToMap = staging._resource;
+            }
+
+            TextureData data = new TextureData()
+            {
+                ArraySize = _arraySize,
+                Flags = _flags,
+                Format = Format,
+                Height = _height,
+                HighestMipMap = 0,
+                IsCompressed = _isBlockCompressed,
+                Levels = new TextureData.Slice[_arraySize * MipMapCount],
+                MipMapLevels = _mipCount,
+                Width = _width,
+            };
+
+            int blockSize = DDSHelper.GetBlockSize(Format);
+            int expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
+            int expectedSlicePitch = expectedRowPitch * Height;
+
+            // Iterate over each array slice.
+            for (int a = 0; a < _arraySize; a++)
+            {
+                // Iterate over all mip-map levels of the array slice.
+                for (int i = 0; i < _mipCount; i++)
+                {
+                    int subID = (a * _mipCount) + i;
+                    data.Levels[subID] = GetSliceData(pipe, staging, i, a);
+                }
+            }
+
+            return data;
+        }
+
         /// <summary>A private helper method for retrieving the data of a subresource.</summary>
         /// <param name="pipe">The pipe to perform the retrieval.</param>
-        /// <param name="stagingTexture">The staging texture to copy the data to.</param>
+        /// <param name="staging">The staging texture to copy the data to.</param>
         /// <param name="level">The mip-map level.</param>
         /// <param name="arraySlice">The array slice.</param>
         /// <param name="copySubresource">Copies the data via the provided staging texture. If this is true, the staging texture cannot be null.</param>
         /// <returns></returns>
-        internal TextureData.Slice GetSliceData(GraphicsPipe pipe, TextureBase stagingTexture, int level, int arraySlice)
+        internal unsafe TextureData.Slice GetSliceData(GraphicsPipe pipe, TextureBase staging, int level, int arraySlice)
         {
-            TextureData.Slice result = null;
-
             int subID = (arraySlice * MipMapCount) + level;
-
             int subWidth = _width >> level;
             int subHeight = _height >> level;
 
-            Resource mappedResource = _resource;
+            Resource resToMap = _resource;
 
-            if (stagingTexture != null)
+            if (staging != null)
             {
-                pipe.Context.CopySubresourceRegion(_resource, subID, null, stagingTexture._resource, subID);
+                pipe.Context.CopySubresourceRegion(_resource, subID, null, staging._resource, subID);
                 pipe.Profiler.Current.CopySubresourceCount++;
-                mappedResource = stagingTexture._resource;
+                resToMap = staging._resource;
             }
 
             // Now pull data from it
-            DataStream mappedData;
-            DataBox databox = pipe.Context.MapSubresource(
-                mappedResource,
-                subID,
-                MapMode.Read,
-                SharpDX.Direct3D11.MapFlags.None,
-                out mappedData);
+            DataBox databox = pipe.Context.MapSubresource(resToMap, subID, MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
+            // NOTE: Databox: "The row pitch in the mapping indicate the offsets you need to use to jump between rows."
+            // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347
+
+
+            int blockSize = DDSHelper.GetBlockSize(Format);
+            int expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
+            int expectedSlicePitch = expectedRowPitch * Height;
+
+            if (blockSize > 0)
+                DDSHelper.GetBCLevelSizeAndPitch(subWidth, subHeight, blockSize, out expectedSlicePitch, out expectedRowPitch);
+
+            byte[] sliceData = new byte[expectedSlicePitch];
+            fixed (byte* ptrFixedSlice = sliceData)
             {
-                result = new TextureData.Slice()
+                byte* ptrSlice = ptrFixedSlice;
+                byte* ptrDatabox = (byte*)databox.DataPointer.ToPointer();
+
+                int p = 0;
+                while (p < databox.SlicePitch)
                 {
-                    Width = subWidth,
-                    Height = subHeight,
-                    Data = mappedData.ReadRange<byte>(databox.SlicePitch),
-                    Pitch = databox.RowPitch,
-                    TotalBytes = databox.SlicePitch,
-                };
+                    System.Buffer.MemoryCopy(ptrDatabox, ptrSlice, expectedSlicePitch, expectedRowPitch);
+                    ptrDatabox += databox.RowPitch;
+                    ptrSlice += expectedRowPitch;
+                    p += databox.RowPitch;
+                }
+            }
+            pipe.Context.UnmapSubresource(_resource, subID);
+
+            TextureData.Slice slice = new TextureData.Slice()
+            {
+                Width = subWidth,
+                Height = subHeight,
+                Data = sliceData,
+                Pitch = expectedRowPitch,
+                TotalBytes = expectedSlicePitch,
             };
 
-            pipe.Context.UnmapSubresource(mappedResource, 0);
-
-            return result;
+            return slice;
         }
 
         internal void SetSizeInternal(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)

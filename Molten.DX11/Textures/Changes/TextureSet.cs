@@ -23,30 +23,33 @@ namespace Molten.Graphics
 
         public void Process(GraphicsPipe pipe, TextureBase texture)
         {
-            //texture.SetDataInternal<T>(pipe, Data, StartIndex, Count, Stride, MipLevel, ArrayIndex, Pitch, Area);
-            //calculate size of a single level
-            int sliceBytes = 0;
+            //C alculate size of a single array slice
+            int arraySliceBytes = 0;
             int blockSize = 8; // default block size
             int levelWidth = texture.Width;
             int levelHeight = texture.Height;
 
             if (texture.IsBlockCompressed)
             {
+                if (Area != null)
+                    throw new NotImplementedException("Area-based SetData on block-compressed texture is currently unsupported. Sorry!");
+
                 blockSize = DDSHelper.GetBlockSize(texture.Format);
 
                 // Collect total level size.
                 for (int i = 0; i < texture.MipMapCount; i++)
                 {
-                    sliceBytes += DDSHelper.GetBCLevelSize(levelWidth, levelHeight, blockSize);
+                    arraySliceBytes += DDSHelper.GetBCLevelSize(levelWidth, levelHeight, blockSize);
                     levelWidth /= 2;
                     levelHeight /= 2;
                 }
             }
             else
             {
+                // TODO: This is invalid if the format isn't 32bpp/4-bytes-per-pixel/RGBA.
                 for (int i = 0; i < texture.MipMapCount; i++)
                 {
-                    sliceBytes += levelWidth * levelHeight * 4; //4 color channels. 1 byte each. Width * height * colorByteSize.
+                    arraySliceBytes += levelWidth * levelHeight * 4; //4 color channels. 1 byte each. Width * height * colorByteSize.
                     levelWidth /= 2;
                     levelHeight /= 2;
                 }
@@ -69,8 +72,6 @@ namespace Molten.Graphics
                         MapFlags.None, 
                         out stream);
 
-                    pipe.Profiler.Current.MapDiscardCount++;
-
                     // Are we constrained to an area of the texture?
                     if (Area != null)
                     {
@@ -79,12 +80,10 @@ namespace Molten.Graphics
                         int aX = rect.X;
                         int aY = rect.Y;
 
-
                         for (int y = aY, end = rect.Bottom; y < end; y++)
                         {
                             stream.Position = (Pitch * aY) + (aX * Stride);
                             stream.WriteRange(dataPtr, areaPitch);
-
                             dataPtr += areaPitch;
                             aY++;
                         }
@@ -95,6 +94,7 @@ namespace Molten.Graphics
                     }
 
                     pipe.Context.UnmapSubresource(texture.UnderlyingResource, subLevel);
+                    pipe.Profiler.Current.MapDiscardCount++;
                 }
                 else
                 {
@@ -103,15 +103,9 @@ namespace Molten.Graphics
                         // Calculate mip-map level size.
                         levelWidth = texture.Width >> MipLevel;
                         levelHeight = texture.Height >> MipLevel;
-
                         int bcPitch = DDSHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
-                        DataBox box = new DataBox(dataPtr, bcPitch, sliceBytes);
-
-                        if (Area != null)
-                            throw new NotImplementedException("Area-based SetData on block-compressed texture is currently unsupported. Sorry!");
-
+                        DataBox box = new DataBox(dataPtr, bcPitch, arraySliceBytes);
                         pipe.Context.UpdateSubresource(box, texture.UnderlyingResource, subLevel);
-                        pipe.Profiler.Current.UpdateSubresourceCount++;
                     }
                     else
                     {
@@ -120,7 +114,6 @@ namespace Molten.Graphics
                             Rectangle rect = Area.Value;
                             int areaPitch = Stride * rect.Width;
                             DataBox box = new DataBox(dataPtr, areaPitch, Data.Length);
-
                             ResourceRegion region = new ResourceRegion();
                             region.Top = rect.Y;
                             region.Front = 0;
@@ -136,9 +129,7 @@ namespace Molten.Graphics
                             int y = 0;
                             int w = Math.Max(texture.Width >> MipLevel, 1);
                             int h = Math.Max(texture.Height >> MipLevel, 1);
-
-                            DataBox box = new DataBox(dataPtr, Pitch, sliceBytes);
-
+                            DataBox box = new DataBox(dataPtr, Pitch, arraySliceBytes);
                             ResourceRegion region = new ResourceRegion();
                             region.Top = y;
                             region.Front = 0;
@@ -146,9 +137,11 @@ namespace Molten.Graphics
                             region.Bottom = y + h;
                             region.Left = x;
                             region.Right = x + w;
-
                             pipe.Context.UpdateSubresource(box, texture.UnderlyingResource, subLevel, region);
                         }
+
+
+                        pipe.Profiler.Current.UpdateSubresourceCount++;
                     }
                 }
             });

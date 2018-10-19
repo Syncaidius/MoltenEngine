@@ -38,8 +38,6 @@ namespace Molten
             _isDisposed = true;
             Interlocked.CompareExchange(ref OnDisposing, null, null)?.Invoke(this);
             OnDispose();
-
-            // TODO free object ID
         }
 
         /// <summary>Invoked when <see cref="Dispose"/> is called.</summary>

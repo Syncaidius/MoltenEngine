@@ -212,7 +212,7 @@ namespace Molten.Graphics
             _control.HandleDestroyed -= _control_HandleDestroyed;
             _control.VisibleChanged -= _control_VisibleChanged;
 
-
+            _parent = null;
             DisposeObject(ref _control);
         }
 

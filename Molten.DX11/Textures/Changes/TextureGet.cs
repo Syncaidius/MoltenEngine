@@ -23,40 +23,7 @@ namespace Molten.Graphics
                 StagingTexture.Depth != texture.Depth)
                 throw new TextureCopyException(texture, StagingTexture, "Staging texture dimensions do not match current texture.");
 
-            StagingTexture.Apply(pipe);
-
-            // Copy the texture into the staging texture.
-            pipe.Context.CopyResource(texture.UnderlyingResource, StagingTexture.UnderlyingResource);
-
-            TextureData data = new TextureData()
-            {
-                ArraySize = texture.ArraySize,
-                Flags = texture.Flags,
-                Format = texture.Format,
-                Height = texture.Height,
-                HighestMipMap = 0,
-                IsCompressed = texture.IsBlockCompressed,
-                Levels = new TextureData.Slice[texture.ArraySize * texture.MipMapCount],
-                MipMapLevels = texture.MipMapCount,
-                Width = texture.Width,
-            };
-
-            int levelID = 0;
-
-            pipe.Context.CopyResource(texture.UnderlyingResource, StagingTexture.UnderlyingResource);
-
-            // Iterate over each array slice.
-            for (int a = 0; a < texture.ArraySize; a++)
-            {
-                // Iterate over all mip-map levels of the array slice.
-                for (int i = 0; i < texture.MipMapCount; i++)
-                {
-                    levelID = (a * texture.MipMapCount) + i;
-                    data.Levels[levelID] = StagingTexture.GetSliceData(pipe, null, i, a);
-                }
-            }
-
-            // Return resulting data
+            TextureData data = texture.GetAllData(pipe, StagingTexture);
             Callback(data);
         }
     }

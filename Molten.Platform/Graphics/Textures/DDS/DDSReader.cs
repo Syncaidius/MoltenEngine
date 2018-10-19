@@ -15,12 +15,6 @@ namespace Molten.Graphics.Textures.DDS
 
         bool _isCubeMap;
         bool[] _cubeSides;
-        /* Block Compression formats against DXT formats
-         *  - BC1 = DXT1 or DXGI_FORMAT_BC1_UNORM / DXGI_FORMAT_BC1_UNORM_SRGB
-         *  - BC2 = DXT2 / DXT3 or DXGI_FORMAT_BC2_TYPELESS / DXGI_FORMAT_BC2_UNORM / DXGI_FORMAT_BC2_UNORM_SRGB
-         *  - BC3 = DXT4 / DXT5 or DXGI_FORMAT_BC3_TYPELESS / DXGI_FORMAT_BC3_UNORM / DXGI_FORMAT_BC3_UNORM_SRGB
-         * 
-         */
 
         /// <summary>
         /// 
@@ -240,12 +234,8 @@ namespace Molten.Graphics.Textures.DDS
 
                 for (int i = 0; i < _header.MipMapCount; i++)
                 {
-                    int numBlocksWide = Math.Max(1, (levelWidth + 3) / 4);
-                    int numBlocksHigh = Math.Max(1, (levelHeight + 3) / 4);
-                    int numRows = numBlocksHigh;
-
-                    int blockPitch = numBlocksWide * blockSize;
-                    int levelByteSize = blockPitch * numRows;
+                    int blockPitch, levelByteSize;
+                    DDSHelper.GetBCLevelSizeAndPitch(levelWidth, levelHeight, blockSize, out levelByteSize, out blockPitch);
 
                     TextureData.Slice level = new TextureData.Slice()
                     {
@@ -261,7 +251,7 @@ namespace Molten.Graphics.Textures.DDS
                     int dataID = (a * (int)_header.MipMapCount) + i;
                     _levelData[dataID] = level;
 
-                    //decrease level width/height ready for next read
+                    // Decrease level width/height ready for next read
                     levelWidth /= 2;
                     levelHeight /= 2;
                 }
@@ -301,10 +291,10 @@ namespace Molten.Graphics.Textures.DDS
         {
             string magic = "";
 
-            magic += (char)((value & 0xff)); // first character
-            magic += (char)((value & 0xff00) >>8); // second character
-            magic += (char)((value & 0xff0000) >> 16); // third character
-            magic += (char)((value & 0xff000000) >> 24); // fourth character, usually a space.
+            magic += (char)((value & 0xff)); // First character
+            magic += (char)((value & 0xff00) >>8); // Second character
+            magic += (char)((value & 0xff0000) >> 16); // Third character
+            magic += (char)((value & 0xff000000) >> 24); // Fourth character
             return magic;
         }
 
@@ -312,7 +302,8 @@ namespace Molten.Graphics.Textures.DDS
         {
             string magic = "";
 
-            for (int i = 3; i >= 0; i--) //3 to 0 = 4 length. e.g. "DXT3".
+            // Read 4 characters, in reverse. This results in them being ordered correctly.
+            for (int i = 3; i >= 0; i--)
             {
                 uint shifted = value << (8 * i); //shift forward to remove unneeded chars
                 shifted = shifted >> 24; //shift back 3 bytes (24 bit = 8 bit * 3)

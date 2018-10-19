@@ -10,43 +10,37 @@ namespace Molten.Graphics.Textures
     {
         public override GraphicsFormat[] SupportedFormats => new GraphicsFormat[] { GraphicsFormat.BC1_Typeless, GraphicsFormat.BC1_UNorm, GraphicsFormat.BC1_UNorm_SRgb };
 
-        protected override void DecompressBlock(BinaryReader imageReader, int x, int y, int width, int height, byte[] output)
+        protected override void DecompressBlock(BinaryReader imageReader, BCDimensions dimensions, int levelWidth, int levelHeight, byte[] output)
         {
             DDSColorTable table;
-            DecompressColorTableDXT1(imageReader, out table);
+            DecompressColorTableBC1(imageReader, out table);
 
-            for (int blockY = 0; blockY < 4; blockY++)
+            // TODO use fixed pointer block here on output array.
+            for (int bpy = 0; bpy < dimensions.Height; bpy++)
             {
-                for (int blockX = 0; blockX < 4; blockX++)
+                int py = (dimensions.Y << 2) + bpy;
+                for (int bpx = 0; bpx < dimensions.Width; bpx++)
                 {
-                    Color c = new Color(0, 0, 0, 255);
-
+                    uint index = (table.data >> 2 * (4 * bpy + bpx)) & 0x03;
+                    Color c = table.color[index];
                     c.A = (byte)((table.rawColor[0] <= table.rawColor[1]) && ((table.data & 0x03) == 0x03) ? 0 : 255);
 
-                    uint index = (table.data >> 2 * (4 * blockY + blockX)) & 0x03;
-
-                    c = table.color[index];
-
-                    int px = (x << 2) + blockX;
-                    int py = (y << 2) + blockY;
-                    if ((px < width) && (py < height))
-                    {
-                        int offset = ((py * width) + px) << 2;
-                        output[offset] = c.R;
-                        output[offset + 1] = c.G;
-                        output[offset + 2] = c.B;
-                        output[offset + 3] = c.A;
-                    }
+                    int px = (dimensions.X << 2) + bpx;
+                    int offset = ((py * levelWidth) + px) << 2;
+                    output[offset] = c.R;
+                    output[offset + 1] = c.G;
+                    output[offset + 2] = c.B;
+                    output[offset + 3] = c.A;
                 }
             }
         }
 
-        protected override void CompressBlock(BinaryWriter writer, int bX, int bY, TextureData.Slice level)
+        protected override void CompressBlock(BinaryWriter writer, BCDimensions dimensions, TextureData.Slice level)
         {
-            int bPixelX = bX * 4;
-            int bPixelY = bY * 4;
-            int pixelByteSize = 4;
-            CompressDXT1Block(writer, level, bPixelX, bPixelY, pixelByteSize, true, 255);
+            int bPixelX = dimensions.X * DDSHelper.BLOCK_DIMENSIONS;
+            int bPixelY = dimensions.Y * DDSHelper.BLOCK_DIMENSIONS;
+            int bytesPerPixel = 4; // Uncompressed bytes-per-pixel
+            CompressBC1ColorBlock(writer, level, bPixelX, bPixelY, bytesPerPixel, true, 255, dimensions);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Molten.Graphics.Textures
     {
         public override GraphicsFormat[] SupportedFormats => new GraphicsFormat[] { GraphicsFormat.BC4_UNorm };
 
-        protected unsafe override void DecompressBlock(BinaryReader reader, int blockX, int blockY, int width, int height, byte[] output)
+        protected unsafe override void DecompressBlock(BinaryReader reader, BCDimensions dimensions, int width, int height, byte[] output)
         {
             byte red0 = reader.ReadByte();
             byte red1 = reader.ReadByte();
@@ -45,8 +45,8 @@ namespace Molten.Graphics.Textures
                     else
                         c = (redIndex * red0 + redIndex * red1) / 5.0f;
 
-                    int px = (blockX << 2) + pX;
-                    int py = (blockY << 2) + pY;
+                    int px = (dimensions.X << 2) + pX;
+                    int py = (dimensions.Y << 2) + pY;
                     if ((px < width) && (py < height))
                     {
                         int offset = ((py * width) + px) << 2;
@@ -61,10 +61,10 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        protected override void CompressBlock(BinaryWriter writer, int bX, int bY, TextureData.Slice level)
+        protected override void CompressBlock(BinaryWriter writer, BCDimensions dimensions, TextureData.Slice level)
         {
-            int bPixelX = bX * 4;
-            int bPixelY = bY * 4;
+            int bPixelX = dimensions.X * DDSHelper.BLOCK_DIMENSIONS;
+            int bPixelY = dimensions.Y * DDSHelper.BLOCK_DIMENSIONS;
             int colorByteSize = 1;
 
             float[] red = new float[8];
@@ -111,7 +111,7 @@ namespace Molten.Graphics.Textures
                     int pX = bPixelX + x;
                     int pY = bPixelY + y;
 
-                    int destByte = GetByteRGBA(pX, pY, level.Width, colorByteSize);
+                    int destByte = GetPixelFirstByte(pX, pY, level.Width, colorByteSize);
 
                     // Test distance of each color table entry
                     for (int i = 0; i < red.Length; i++)
@@ -146,7 +146,7 @@ namespace Molten.Graphics.Textures
                         int pX = blockPixelX + x;
                         int pY = blockPixelY + y;
 
-                        int destByte = GetByteRGBA(pX, pY, level.Width, colorByteSize);
+                        int destByte = GetPixelFirstByte(pX, pY, level.Width, colorByteSize);
                         if (level.Data[destByte] > result)
                             result = level.Data[destByte];
                     }
@@ -165,7 +165,7 @@ namespace Molten.Graphics.Textures
                         int pX = blockPixelX + x;
                         int pY = blockPixelY + y;
 
-                        int b = GetByteRGBA(pX, pY, level.Width, colorByteSize);
+                        int b = GetPixelFirstByte(pX, pY, level.Width, colorByteSize);
                         if (level.Data[b] < result)
                             result = level.Data[b];
                     }

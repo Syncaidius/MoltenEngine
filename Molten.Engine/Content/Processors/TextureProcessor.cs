@@ -207,6 +207,10 @@ namespace Molten.Content
 
         public override void OnWrite(ContentContext context)
         {
+            DDSFormat compressFormat = DDSFormat.DXT5;
+            if (context.Metadata.TryGetValue("compress", out string strCompressFormat))
+                Enum.TryParse(strCompressFormat, true, out compressFormat);
+
             using (FileStream stream = new FileStream(context.Filename, FileMode.Create, FileAccess.Write))
             {
                 string extension = context.File.Extension.ToLower();
@@ -215,7 +219,7 @@ namespace Molten.Content
                 switch (extension)
                 {
                     case ".dds":
-                        texWriter = new DDSWriter(DDSFormat.DXT5);
+                        texWriter = new DDSWriter(compressFormat);
                         break;
 
                     case ".png":
