@@ -11,13 +11,13 @@ namespace Molten.Graphics.Textures
     {
         const int ONE_BIT_ALPHA_THRESHOLD = 10;
 
-        protected abstract void DecompressBlock(BinaryReader reader, BCDimensions dimensions, int levelWidth, int levelHeight, byte[] output);
+        protected abstract void DecodeBlock(BinaryReader reader, BCDimensions dimensions, int levelWidth, int levelHeight, byte[] output);
 
-        protected abstract void CompressBlock(BinaryWriter writer, BCDimensions dimensions, TextureData.Slice level);
+        protected abstract void EncodeBlock(BinaryWriter writer, BCDimensions dimensions, TextureData.Slice level);
 
         public abstract GraphicsFormat[] SupportedFormats { get; }
 
-        public byte[] Decompress(TextureData.Slice level)
+        public byte[] Decode(TextureData.Slice level)
         {            
             // Pass to stream-based overload
             byte[] result = new byte[level.Width * level.Height * 4];
@@ -38,10 +38,12 @@ namespace Molten.Graphics.Textures
                     for (int blockY = 0; blockY < blockCountY; blockY++)
                     {
                         dimensions.Y = blockY;
+                        dimensions.PixelY = blockY * DDSHelper.BLOCK_DIMENSIONS;
                         for (int blockX = 0; blockX < blockCountX; blockX++)
                         {
                             dimensions.X = blockX;
-                            DecompressBlock(imageReader, dimensions, level.Width, level.Height, result);
+                            dimensions.PixelX = blockX * DDSHelper.BLOCK_DIMENSIONS;
+                            DecodeBlock(imageReader, dimensions, level.Width, level.Height, result);
                         }
                     }
                 }
@@ -50,7 +52,7 @@ namespace Molten.Graphics.Textures
             return result;
         }
 
-        public byte[] Compress(TextureData.Slice level)
+        public byte[] Encode(TextureData.Slice level)
         {
             int blockCountX = Math.Max(1, (level.Width + 3) / DDSHelper.BLOCK_DIMENSIONS);
             int blockCountY = Math.Max(1, (level.Height + 3) / DDSHelper.BLOCK_DIMENSIONS);
@@ -69,10 +71,12 @@ namespace Molten.Graphics.Textures
                     for (int blockY = 0; blockY < blockCountY; blockY++)
                     {
                         dimensions.Y = blockY;
+                        dimensions.PixelY = blockY * DDSHelper.BLOCK_DIMENSIONS;
                         for (int blockX = 0; blockX < blockCountX; blockX++)
                         {
                             dimensions.X = blockX;
-                            CompressBlock(writer, dimensions, level);
+                            dimensions.PixelX = blockX * DDSHelper.BLOCK_DIMENSIONS;
+                            EncodeBlock(writer, dimensions, level);
                         }
                     }
 
@@ -87,7 +91,7 @@ namespace Molten.Graphics.Textures
         /// <param name="reader">The reader to use for retrieving the compressed data.</param>
         /// <param name="table">The destination for the decompressed color table.</param>
         /// <returns></returns>
-        protected void DecompressColorTableBC1(BinaryReader reader, out DDSColorTable table)
+        protected void DecodeColorTableBC1(BinaryReader reader, out DDSColorTable table)
         {
             table = new DDSColorTable();
             table.color = new Color[4];
@@ -110,7 +114,7 @@ namespace Molten.Graphics.Textures
         /// <param name="bPixelX">The X pixel coordinate of the current block's top left corner.</param>
         /// <param name="bPixelY">The Y pixel coordinate of the current block's top left corner.</param>
         /// <param name="pixelByteSize">The size of a single pixel, in bytes.</param>
-        protected void CompressBC1ColorBlock(BinaryWriter writer, TextureData.Slice level, int bPixelX, int bPixelY, int pixelByteSize, bool oneBitAlpha, byte alphaThreshold, BCDimensions dimensions)
+        protected void EncodeBC1ColorBlock(BinaryWriter writer, TextureData.Slice level, int bPixelX, int bPixelY, int pixelByteSize, bool oneBitAlpha, byte alphaThreshold, BCDimensions dimensions)
         {
             // Get the min and max color
             Color[] c = new Color[4];
@@ -218,7 +222,6 @@ namespace Molten.Graphics.Textures
         private Color GetClosestColor(Color target, TextureData.Slice level, int blockPixelX, int blockPixelY, int colorByteSize, int blockWidth, int blockHeight)
         {
             int pitch = level.Width * 4;
-
             Color result = new Color(255, 255, 255, 0);
             float closest = uint.MaxValue;
 

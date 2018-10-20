@@ -47,7 +47,7 @@ namespace Molten.Graphics.Textures
                     for (int i = 0; i < data.MipMapLevels; i++)
                     {
                         int levelID = (a * (int)data.MipMapLevels) + i;
-                        byte[] levelData = parser.Decompress(levels[levelID]);
+                        byte[] levelData = parser.Decode(levels[levelID]);
 
                         data.Levels[levelID] = new TextureData.Slice()
                         {
@@ -88,7 +88,7 @@ namespace Molten.Graphics.Textures
                     for (int i = 0; i < data.MipMapLevels; i++)
                     {
                         int levelID = (a * (int)data.MipMapLevels) + i;
-                        byte[] levelData = parser.Compress(levels[levelID]);
+                        byte[] levelData = parser.Encode(levels[levelID]);
                         int pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * DDSHelper.GetBlockSize(gFormat));
 
                         int blockCountY = (levels[i].Height + 3) / 4;

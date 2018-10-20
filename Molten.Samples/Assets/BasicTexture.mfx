@@ -7,6 +7,7 @@
 		<vertex>VS</vertex>
 		<pixel>PS</pixel>
 	</pass>
+  <blend preset="PreMultipliedAlpha" />
 </material>
 
 struct VS_IN

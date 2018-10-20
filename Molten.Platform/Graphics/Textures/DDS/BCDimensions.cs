@@ -30,5 +30,15 @@ namespace Molten.Graphics.Textures
         /// The height of the block, in pixels.
         /// </summary>
         public int Height;
+
+        /// <summary>
+        /// The pixel along X at which the block begins.
+        /// </summary>
+        public int PixelX;
+
+        /// <summary>
+        /// The pixel along Y at which the block begins.
+        /// </summary>
+        public int PixelY;
     }
 }

@@ -84,7 +84,7 @@
     <Compile Include="Graphics\Overlays\OverlayProvider.cs" />
     <Compile Include="Graphics\Textures\DDS\BCDimensions.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSSizeException.cs" />
-    <Compile Include="Graphics\Textures\DDS\Parsers\BC4UParser.cs" />
+    <Compile Include="Graphics\Textures\DDS\Parsers\BC4Parser.cs" />
     <Compile Include="Graphics\Textures\MagickTextureWriter.cs" />
     <Compile Include="IClipboard.cs" />
     <Compile Include="IInputDevice.cs" />

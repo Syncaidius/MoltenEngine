@@ -10,10 +10,10 @@ namespace Molten.Graphics.Textures
     {
         public override GraphicsFormat[] SupportedFormats => new GraphicsFormat[] { GraphicsFormat.BC1_Typeless, GraphicsFormat.BC1_UNorm, GraphicsFormat.BC1_UNorm_SRgb };
 
-        protected override void DecompressBlock(BinaryReader imageReader, BCDimensions dimensions, int levelWidth, int levelHeight, byte[] output)
+        protected override void DecodeBlock(BinaryReader imageReader, BCDimensions dimensions, int levelWidth, int levelHeight, byte[] output)
         {
             DDSColorTable table;
-            DecompressColorTableBC1(imageReader, out table);
+            DecodeColorTableBC1(imageReader, out table);
 
             // TODO use fixed pointer block here on output array.
             for (int bpy = 0; bpy < DDSHelper.BLOCK_DIMENSIONS; bpy++)
@@ -38,12 +38,12 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        protected override void CompressBlock(BinaryWriter writer, BCDimensions dimensions, TextureData.Slice level)
+        protected override void EncodeBlock(BinaryWriter writer, BCDimensions dimensions, TextureData.Slice level)
         {
             int bPixelX = dimensions.X * DDSHelper.BLOCK_DIMENSIONS;
             int bPixelY = dimensions.Y * DDSHelper.BLOCK_DIMENSIONS;
             int bytesPerPixel = 4; // Uncompressed bytes-per-pixel
-            CompressBC1ColorBlock(writer, level, bPixelX, bPixelY, bytesPerPixel, true, 255, dimensions);
+            EncodeBC1ColorBlock(writer, level, bPixelX, bPixelY, bytesPerPixel, true, 255, dimensions);
         }
     }
 }

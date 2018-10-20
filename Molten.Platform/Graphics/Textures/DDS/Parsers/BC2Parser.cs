@@ -10,7 +10,7 @@ namespace Molten.Graphics.Textures
     {
         public override GraphicsFormat[] SupportedFormats => new GraphicsFormat[] { GraphicsFormat.BC2_Typeless, GraphicsFormat.BC2_UNorm, GraphicsFormat.BC2_UNorm_SRgb };
 
-        protected override void DecompressBlock(BinaryReader imageReader, BCDimensions dimensions, int levelWidth, int levelHeight, byte[] output)
+        protected override void DecodeBlock(BinaryReader imageReader, BCDimensions dimensions, int levelWidth, int levelHeight, byte[] output)
         {
             byte a0 = imageReader.ReadByte();
             byte a1 = imageReader.ReadByte();
@@ -22,7 +22,7 @@ namespace Molten.Graphics.Textures
             byte a7 = imageReader.ReadByte();
 
             DDSColorTable table;
-            DecompressColorTableBC1(imageReader, out table);
+            DecodeColorTableBC1(imageReader, out table);
 
             int alphaIndex = 0;
             for (int bpy = 0; bpy < DDSHelper.BLOCK_DIMENSIONS; bpy++)
@@ -69,7 +69,7 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        protected override void CompressBlock(BinaryWriter writer, BCDimensions dimensions, TextureData.Slice level)
+        protected override void EncodeBlock(BinaryWriter writer, BCDimensions dimensions, TextureData.Slice level)
         {
             // Get the pixel position of the block. Each block is 4x4 pixels.
             int bPixelX = dimensions.X * DDSHelper.BLOCK_DIMENSIONS;
@@ -124,7 +124,7 @@ namespace Molten.Graphics.Textures
 
 
             // Write color data
-            CompressBC1ColorBlock(writer, level, bPixelX, bPixelY, bytesPerPixel, false, 0, dimensions);
+            EncodeBC1ColorBlock(writer, level, bPixelX, bPixelY, bytesPerPixel, false, 0, dimensions);
         }
     }
 }
