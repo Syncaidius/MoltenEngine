@@ -28,8 +28,8 @@ namespace Molten.Samples
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<IMaterial>("BasicTexture.mfx");
-            cr.Load<ITexture2D>("dds_dxt1.dds;compress=false");
-            cr.Load<TextureData>("dds_dxt1.dds");
+            cr.Load<ITexture2D>("dds_dxt3.dds;compress=false");
+            cr.Load<TextureData>("dds_dxt3.dds");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 
@@ -47,8 +47,7 @@ namespace Molten.Samples
             }
 
             // Manually construct a 2D texture array from the 3 textures we requested earlier
-            ITexture2D texture = cr.Get<ITexture2D>("dds_dxt1.dds");
-
+            ITexture2D texture = cr.Get<ITexture2D>("dds_dxt3.dds");
             mat.SetDefaultResource(texture, 0);
             _mesh.Material = mat;
 
@@ -56,17 +55,16 @@ namespace Molten.Samples
             p.Flags = TextureFlags.Staging;
             ITexture2D staging = Engine.Renderer.Resources.CreateTexture2D(p);
 
-            TextureData loadedData = cr.Get<TextureData>("dds_dxt1.dds");
+            TextureData loadedData = cr.Get<TextureData>("dds_dxt3.dds");
             loadedData.Decompress();
             cr = Engine.Content.BeginRequest("assets/");
-            cr.Save("saved_recompressed_texture_raw.dds;compress=Dxt1", loadedData);
+            cr.Save("saved_recompressed_texture_raw.dds;compress=Dxt3", loadedData);
             cr.Commit();
 
             texture.GetData(staging, (data) =>
             {
-                //data.Decompress();
                 cr = Engine.Content.BeginRequest("assets/");
-                cr.Save("saved_recompressed_texture.dds;compress=Dxt1", data);
+                cr.Save("saved_texture.dds;compress=Dxt3", data);
                 cr.Commit();
             });
         }

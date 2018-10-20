@@ -10,7 +10,7 @@ namespace Molten.Graphics.Textures
     {
         public override GraphicsFormat[] SupportedFormats => new GraphicsFormat[] { GraphicsFormat.BC2_Typeless, GraphicsFormat.BC2_UNorm, GraphicsFormat.BC2_UNorm_SRgb };
 
-        protected override void DecompressBlock(BinaryReader imageReader, BCDimensions dimensions, int width, int height, byte[] output)
+        protected override void DecompressBlock(BinaryReader imageReader, BCDimensions dimensions, int levelWidth, int levelHeight, byte[] output)
         {
             byte a0 = imageReader.ReadByte();
             byte a1 = imageReader.ReadByte();
@@ -25,7 +25,6 @@ namespace Molten.Graphics.Textures
             DecompressColorTableBC1(imageReader, out table);
 
             int alphaIndex = 0;
-
             for (int bpy = 0; bpy < DDSHelper.BLOCK_DIMENSIONS; bpy++)
             {
                 int py = (dimensions.Y << 2) + bpy;
@@ -58,9 +57,9 @@ namespace Molten.Graphics.Textures
 
                     // Store decompressed color data.
                     int px = (dimensions.X << 2) + bpx;
-                    if ((px < width) && (py < height))
+                    if ((px < levelWidth) && (py < levelHeight))
                     {
-                        int offset = ((py * width) + px) << 2;
+                        int offset = ((py * levelWidth) + px) << 2;
                         output[offset] = c.R;
                         output[offset + 1] = c.G;
                         output[offset + 2] = c.B;
@@ -75,26 +74,57 @@ namespace Molten.Graphics.Textures
             // Get the pixel position of the block. Each block is 4x4 pixels.
             int bPixelX = dimensions.X * DDSHelper.BLOCK_DIMENSIONS;
             int bPixelY = dimensions.Y * DDSHelper.BLOCK_DIMENSIONS;
+            int bytesPerPixel = 4; // Number of uncompressed bytes per pixel.
 
-            int colorByteSize = 4;
+            int bpy = 0;
+            int bpx = 0;
+            byte zero = 0;
 
-            for (int y = 0; y < 4; y++)
+            // Since alpha is written in 4-bit pairs (2 pixel alphas per byte), We need a minimum width of 2 for this to work correctly.
+            if(dimensions.Width < 2)
             {
-                for (int x = 0; x < 4; x += 2) //Increment by 2 pixels each iteration.
+                for (; bpy < dimensions.Height; bpy++)
                 {
-                    int pX = bPixelX + x;
-                    int pY = bPixelY + y;
-                    int b = GetPixelFirstByte(pX, pY, level.Width, colorByteSize) + 3; // add 3 bytes to access alpha
-
-                    byte a1 = level.Data[b];
-                    byte a2 = level.Data[b + 4];
-                    byte result = (byte)(((a2 >> 4) << 4) | (a1 >> 4));
+                    int pY = bPixelY + bpy;
+                    int offset = GetPixelFirstByte(bPixelX, pY, level.Width, bytesPerPixel) + 3; // Add 3 bytes to access alpha
+                    byte a1 = level.Data[offset];
+                    byte result = (byte)(((a1 >> 4) << 4) | (a1 >> 4)); // We only have 1 pixel to work with, so use the same alpha for 4 halves of the byte.
                     writer.Write(result);
+                    writer.Write(zero); // Fill the other half of the row with zero.
+                }
+            }
+            else
+            {
+                for (; bpy < dimensions.Height; bpy++)
+                {
+                    int pY = bPixelY + bpy;
+                    for (bpx = 0; bpx < dimensions.Width; bpx += 2) // Increment by 2 pixels each iteration.
+                    {
+                        int pX = bPixelX + bpx;
+                        int offset = GetPixelFirstByte(pX, pY, level.Width, bytesPerPixel) + 3; // Add 3 bytes to access alpha
+
+                        byte a1 = level.Data[offset];
+                        byte a2 = level.Data[offset + 4];
+                        byte result = (byte)(((a2 >> 4) << 4) | (a1 >> 4));
+                        writer.Write(result);
+                    }
+
+                    // Fill the rest of the row with zero, if needed.
+                    if (bpx < DDSHelper.BLOCK_DIMENSIONS)
+                        writer.Write(zero);
                 }
             }
 
+            // Add the remaining rows, if any
+            for (; bpy < DDSHelper.BLOCK_DIMENSIONS; bpy++)
+            {
+                writer.Write(zero);
+                writer.Write(zero);
+            }
+
+
             // Write color data
-            CompressBC1ColorBlock(writer, level, bPixelX, bPixelY, colorByteSize, false, 0, dimensions);
+            CompressBC1ColorBlock(writer, level, bPixelX, bPixelY, bytesPerPixel, false, 0, dimensions);
         }
     }
 }
