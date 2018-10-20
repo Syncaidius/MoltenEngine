@@ -28,10 +28,11 @@ namespace Molten.Graphics.Textures
             DecompressColorTableBC1(reader, out table);
 
             // Decompress pixel data from block
-            for (int pY = 0; pY < 4; pY++)
+            for (int pY = 0; pY < DDSHelper.BLOCK_DIMENSIONS; pY++)
             {
                 int py = (dimensions.Y << 2) + pY;
-                for (int pX = 0; pX < 4; pX++)
+
+                for (int pX = 0; pX < DDSHelper.BLOCK_DIMENSIONS; pX++)
                 {
                     uint index = (table.data >> 2 * (4 * pY + pX)) & 0x03;
                     uint alphaIndex = (uint)((alphaMask >> 3 * (4 * pY + pX)) & 0x07);
@@ -43,13 +44,13 @@ namespace Molten.Graphics.Textures
                     else if (alphaIndex == 1)
                         c.A = alpha1;
                     else if (alpha0 > alpha1)
-                        c.A = (byte)(((8 - alphaIndex) * alpha0 + (alphaIndex - 1) * alpha1) / 7);
+                        c.A = (byte)(((8 - alphaIndex) * alpha0 + (alphaIndex - 1) * alpha1) / 7f);
                     else if (alphaIndex == 6)
                         c.A = 0;
                     else if (alphaIndex == 7)
                         c.A = 255;
                     else
-                        c.A = (byte)(((6 - alphaIndex) * alpha0 + (alphaIndex - 1) * alpha1) / 5);
+                        c.A = (byte)(((6 - alphaIndex) * alpha0 + (alphaIndex - 1) * alpha1) / 5f);
 
                     int px = (dimensions.X << 2) + pX;
                     if ((px < width) && (py < height))
@@ -73,27 +74,27 @@ namespace Molten.Graphics.Textures
             // ====================== ALPHA ===============================
             // Get the pixel position of the block. Each block is 4x4 pixels.
             byte[] alpha = new byte[8];
-            alpha[0] = GetHighestAlpha(level, bPixelX, bPixelY, bytesPerPixel);
-            alpha[1] = GetLowestAlpha(level, bPixelX, bPixelY, bytesPerPixel);
+            alpha[0] = GetHighestAlpha(level, dimensions, bytesPerPixel);
+            alpha[1] = GetLowestAlpha(level, dimensions, bytesPerPixel);
 
             // Interpolate alpha 2 - 7 values
             if (alpha[0] > alpha[1])
             {
-                // 6 interpolated alpha[ values.
-                alpha[2] = (byte)(6 / 7 * alpha[0] + 1 / 7 * alpha[1]); // bit code 010
-                alpha[3] = (byte)(5 / 7 * alpha[0] + 2 / 7 * alpha[1]); // bit code 011
-                alpha[4] = (byte)(4 / 7 * alpha[0] + 3 / 7 * alpha[1]); // bit code 100
-                alpha[5] = (byte)(3 / 7 * alpha[0] + 4 / 7 * alpha[1]); // bit code 101
-                alpha[6] = (byte)(2 / 7 * alpha[0] + 5 / 7 * alpha[1]); // bit code 110
-                alpha[7] = (byte)(1 / 7 * alpha[0] + 6 / 7 * alpha[1]); // bit code 111
+                // 6 interpolated alpha values.
+                alpha[2] = (byte)(6 / 7f * alpha[0] + 1 / 7f * alpha[1]); // bit code 010
+                alpha[3] = (byte)(5 / 7f * alpha[0] + 2 / 7f * alpha[1]); // bit code 011
+                alpha[4] = (byte)(4 / 7f * alpha[0] + 3 / 7f * alpha[1]); // bit code 100
+                alpha[5] = (byte)(3 / 7f * alpha[0] + 4 / 7f * alpha[1]); // bit code 101
+                alpha[6] = (byte)(2 / 7f * alpha[0] + 5 / 7f * alpha[1]); // bit code 110
+                alpha[7] = (byte)(1 / 7f * alpha[0] + 6 / 7f * alpha[1]); // bit code 111
             }
             else
             {
-                // 4 interpolated alpha[ values.
-                alpha[2] = (byte)(4 / 5 * alpha[0] + 1 / 5 * alpha[1]); // bit code 010
-                alpha[3] = (byte)(3 / 5 * alpha[0] + 2 / 5 * alpha[1]); // bit code 011
-                alpha[4] = (byte)(2 / 5 * alpha[0] + 3 / 5 * alpha[1]); // bit code 100
-                alpha[5] = (byte)(1 / 5 * alpha[0] + 4 / 5 * alpha[1]); // bit code 101
+                // 4 interpolated alpha values.
+                alpha[2] = (byte)(4 / 5f * alpha[0] + 1 / 5f * alpha[1]); // bit code 010
+                alpha[3] = (byte)(3 / 5f * alpha[0] + 2 / 5f * alpha[1]); // bit code 011
+                alpha[4] = (byte)(2 / 5f * alpha[0] + 3 / 5f * alpha[1]); // bit code 100
+                alpha[5] = (byte)(1 / 5f * alpha[0] + 4 / 5f * alpha[1]); // bit code 101
                 alpha[6] = 0;                         // bit code 110
                 alpha[7] = 255;                       // bit code 111
             }
@@ -107,16 +108,16 @@ namespace Molten.Graphics.Textures
 
             // Build 6-byte alpha mask by generating 16x 3-bit pixel indices.
             // Note: 16x 3-bit pixel indices = 48 bits (6 bytes).
-            for (int y = 0; y < 4; y++)
+            int bpy = 0;
+            for (; bpy < dimensions.Height; bpy++)
             {
-                for (int x = 0; x < 4; x++)
-            {
+                int bpx = 0;
+                for (; bpx < dimensions.Width; bpx++)
+                {
                     float closest = float.MaxValue;
                     int closestID = 7;
-
-                    int pX = bPixelX + x;
-                    int pY = bPixelY + y;
-
+                    int pX = bPixelX + bpx;
+                    int pY = bPixelY + bpy;
                     int b = GetPixelFirstByte(pX, pY, level.Width, bytesPerPixel) + 3; // Add 3 bytes to reach the alpha
 
                     // Test distance of each color table entry
@@ -134,6 +135,9 @@ namespace Molten.Graphics.Textures
                     alphaMask |= (ulong)closestID << (3 * alphaID);
                     alphaID++;
                 }
+
+                // Skip the remaining IDs within the current row.
+                alphaID += DDSHelper.BLOCK_DIMENSIONS - bpx;
             }
 
             // Write 6 bytes of alpha mask. 
@@ -146,18 +150,17 @@ namespace Molten.Graphics.Textures
             CompressBC1ColorBlock(writer, level, bPixelX, bPixelY, bytesPerPixel, false, 0, dimensions);
         }
 
-        private byte GetHighestAlpha(TextureData.Slice level, int blockPixelX, int blockPixelY, int bytesPerPixel)
+        private byte GetHighestAlpha(TextureData.Slice level, BCDimensions dimensions, int bytesPerPixel)
         {
             int pitch = level.Width * 4;
             byte result = 0;
 
-            for (int x = 0; x < 4; x++)
+            for (int y = 0; y < dimensions.Height; y++)
             {
-                for (int y = 0; y < 4; y++)
+                int pY = dimensions.Y + y;
+                for (int x = 0; x < dimensions.Width; x++)
                 {
-                    int pX = blockPixelX + x;
-                    int pY = blockPixelY + y;
-
+                    int pX = dimensions.X + x;
                     int b = GetPixelFirstByte(pX, pY, level.Width, bytesPerPixel) + 3; // Add 3 bytes to reach the alpha
                     if (level.Data[b] > result)
                         result = level.Data[b];
@@ -167,18 +170,17 @@ namespace Molten.Graphics.Textures
             return result;
         }
 
-        private byte GetLowestAlpha(TextureData.Slice level, int blockPixelX, int blockPixelY, int bytesPerPixel)
+        private byte GetLowestAlpha(TextureData.Slice level, BCDimensions dimensions, int bytesPerPixel)
         {
             int pitch = level.Width * 4;
             byte result = 255;
 
-            for (int x = 0; x < 4; x++)
+            for (int bpy = 0; bpy < dimensions.Height; bpy++)
             {
-                for (int y = 0; y < 4; y++)
+                int pY = dimensions.Y + bpy;
+                for (int bpx = 0; bpx < dimensions.Width; bpx++)
                 {
-                    int pX = blockPixelX + x;
-                    int pY = blockPixelY + y;
-
+                    int pX = dimensions.X + bpx;
                     int b = GetPixelFirstByte(pX, pY, level.Width, bytesPerPixel) + 3; // Add 3 bytes to reach the alpha
 
                     if (level.Data[b] < result)
