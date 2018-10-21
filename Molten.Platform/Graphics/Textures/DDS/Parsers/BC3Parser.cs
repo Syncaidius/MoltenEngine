@@ -115,7 +115,7 @@ namespace Molten.Graphics.Textures
                     float closest = float.MaxValue;
                     ulong closestID = 7;
                     int pX = dimensions.PixelX + bpx;
-                    int b = GetPixelFirstByte(pX, pY, level.Width, bytesPerPixel);
+                    int b = GetPixelFirstByte(pX, pY, level.Width, bytesPerPixel) + 3;
 
                     // Test distance of each color table entry
                     for (uint i = 0; i < alpha.Length; i++)
