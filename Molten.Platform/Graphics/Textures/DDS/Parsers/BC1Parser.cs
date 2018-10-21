@@ -12,7 +12,7 @@ namespace Molten.Graphics.Textures
 
         protected override void DecodeBlock(BinaryReader imageReader, BCDimensions dimensions, int levelWidth, int levelHeight, byte[] output)
         {
-            DDSColorTable table;
+            BCColorTable table;
             DecodeColorTableBC1(imageReader, out table);
 
             // TODO use fixed pointer block here on output array.

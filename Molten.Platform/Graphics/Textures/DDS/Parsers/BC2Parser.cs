@@ -21,7 +21,7 @@ namespace Molten.Graphics.Textures
             byte a6 = imageReader.ReadByte();
             byte a7 = imageReader.ReadByte();
 
-            DDSColorTable table;
+            BCColorTable table;
             DecodeColorTableBC1(imageReader, out table);
 
             int alphaIndex = 0;

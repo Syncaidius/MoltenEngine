@@ -91,9 +91,9 @@ namespace Molten.Graphics.Textures
         /// <param name="reader">The reader to use for retrieving the compressed data.</param>
         /// <param name="table">The destination for the decompressed color table.</param>
         /// <returns></returns>
-        protected void DecodeColorTableBC1(BinaryReader reader, out DDSColorTable table)
+        protected void DecodeColorTableBC1(BinaryReader reader, out BCColorTable table)
         {
-            table = new DDSColorTable();
+            table = new BCColorTable();
             table.color = new Color[4];
             table.rawColor = new ushort[2];
 
@@ -282,6 +282,127 @@ namespace Molten.Graphics.Textures
         {
             int t = a * b + 128;
             return (t + (t >> 8)) >> 8;
+        }
+
+        private void GetHighLowSingleChannel(TextureData.Slice level, ref BCDimensions dimensions, int bytesPerPixel, int valueByteOffset, out byte lowest, out byte highest)
+        {
+            lowest = 255;
+            highest = 0;
+
+            for (int bpy = 0; bpy < dimensions.Height; bpy++)
+            {
+                int pY = dimensions.PixelY + bpy;
+                for (int bpx = 0; bpx < dimensions.Width; bpx++)
+                {
+                    int pX = dimensions.PixelX + bpx;
+                    int b = GetPixelFirstByte(pX, pY, level.Width, bytesPerPixel) + valueByteOffset;
+
+                    if (level.Data[b] < lowest)
+                        lowest = level.Data[b];
+                    else
+                        if (level.Data[b] > highest)
+                        highest = level.Data[b];
+                }
+            }
+        }
+
+        /// <summary>
+        /// Finds the highest and lowest colors to store at index 0 and 1. Populates the rest of the table by interpolating between the first two colors.
+        /// </summary>
+        /// <param name="level">The current texture slice.</param>
+        /// <param name="dimensions">The dimensions of the current BC block.</param>
+        /// <param name="bytesPerPixel">The number of bytes-per-pixel when uncompressed.</param>
+        /// <param name="valueByteOffset">The number of bytes to offset from the start of a pixel in order to reach the value we want.</param>
+        /// <returns></returns>
+        protected byte[] GetColorTableSingleChannel(TextureData.Slice level, ref BCDimensions dimensions, int bytesPerPixel, int valueByteOffset)
+        {
+            byte[] val = new byte[8];
+            GetHighLowSingleChannel(level, ref dimensions, bytesPerPixel, valueByteOffset, out val[0], out val[1]);
+
+            // Interpolate value 2 - 7 values
+            if (val[0] > val[1])
+            {
+                // 6 interpolated color values
+                val[2] = (byte)((6 * val[0] + 1 * val[1]) / 7f);  // bit code 010
+                val[3] = (byte)((5 * val[0] + 2 * val[1]) / 7f);  // bit code 011
+                val[4] = (byte)((4 * val[0] + 3 * val[1]) / 7f);  // bit code 100
+                val[5] = (byte)((3 * val[0] + 4 * val[1]) / 7f);  // bit code 101
+                val[6] = (byte)((2 * val[0] + 5 * val[1]) / 7f);  // bit code 110
+                val[7] = (byte)((1 * val[0] + 6 * val[1]) / 7f);  // bit code 111
+            }
+            else
+            {
+                // 4 interpolated color values
+                val[2] = (byte)((4 * val[0] + 1 * val[1]) / 5f);  // bit code 010
+                val[3] = (byte)((3 * val[0] + 2 * val[1]) / 5f);  // bit code 011
+                val[4] = (byte)((2 * val[0] + 3 * val[1]) / 5f);  // bit code 100
+                val[5] = (byte)((1 * val[0] + 4 * val[1]) / 5f);  // bit code 101
+                val[6] = 0;                              // bit code 110
+                val[7] = 255;                            // bit code 111
+            }
+
+            return val;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="level"></param>
+        /// <param name="dimensions"></param>
+        /// <param name="bytesPerPixel"></param>
+        /// <param name="valueByteOffset">The number of bytes to offset from the start of a pixel in order to reach the value we want.</param>
+        protected void Encode8BitSingleChannelBlock(BinaryWriter writer, TextureData.Slice level, ref BCDimensions dimensions, int bytesPerPixel, int valueByteOffset)
+        {
+            byte[] table = GetColorTableSingleChannel(level, ref dimensions, bytesPerPixel, valueByteOffset);
+
+            // Write values
+            writer.Write(table[0]);
+            writer.Write(table[1]);
+
+            ulong mask = 0;
+            int maskID = 0;
+
+            // Build 6-byte red mask by generating 16x 3-bit pixel indices.
+            // Note: 16x 3-bit pixel indices = 48 bits (6 bytes).
+            int bpy = 0;
+            for (; bpy < dimensions.Height; bpy++)
+            {
+                int pY = dimensions.PixelY + bpy;
+                int bpx = 0;
+                for (; bpx < dimensions.Width; bpx++)
+                {
+                    float closest = float.MaxValue;
+                    ulong closestID = 7;
+                    int pX = dimensions.PixelX + bpx;
+                    int b = GetPixelFirstByte(pX, pY, level.Width, bytesPerPixel) + valueByteOffset;
+
+                    // Test distance of each color table entry
+                    for (uint i = 0; i < table.Length; i++)
+                    {
+                        float dist = Math.Abs(table[i] - level.Data[b]);
+                        if (dist < closest)
+                        {
+                            closest = dist;
+                            closestID = i;
+                            if (dist == 0)
+                                break;
+                        }
+                    }
+
+                    // Write the ID of the closest alpha value
+                    mask |= closestID << (3 * maskID);
+                    maskID++;
+                }
+
+                // Skip the remaining IDs within the current row.
+                maskID += DDSHelper.BLOCK_DIMENSIONS - bpx;
+            }
+
+            // Write 6 bytes of alpha mask. 
+            // Note: 16x 3-bit pixel indices = 48 bits (6 bytes).
+            byte[] redBytes = BitConverter.GetBytes(mask);
+            writer.Write(redBytes, 0, 6);
         }
     }
 }

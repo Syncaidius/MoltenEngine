@@ -58,13 +58,13 @@ namespace Molten.Samples
             TextureData loadedData = cr.Get<TextureData>("dds_dxt5.dds");
             loadedData.Decompress();
             cr = Engine.Content.BeginRequest("assets/");
-            cr.Save("saved_recompressed_texture_raw.dds;compress=DXT5", loadedData);
+            cr.Save("saved_recompressed_texture_raw.dds;compress=BC4U", loadedData);
             cr.Commit();
 
             texture.GetData(staging, (data) =>
             {
                 cr = Engine.Content.BeginRequest("assets/");
-                cr.Save("saved_texture.dds;compress=DXT5", data);
+                cr.Save("saved_texture.dds;compress=BC4U", data);
                 cr.Commit();
             });
         }

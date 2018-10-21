@@ -179,7 +179,7 @@
     <Compile Include="Graphics\Textures\DDS\DDSReader.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSWriter.cs" />
     <Compile Include="Graphics\Textures\DDS\Parsers\BCBlockParser.cs" />
-    <Compile Include="Graphics\Textures\DDS\DDSColorTable.cs" />
+    <Compile Include="Graphics\Textures\DDS\BCColorTable.cs" />
     <Compile Include="Graphics\Textures\DDS\Parsers\BC1Parser.cs" />
     <Compile Include="Graphics\Textures\DDS\Parsers\BC2Parser.cs" />
     <Compile Include="Graphics\Textures\DDS\Parsers\BC3Parser.cs" />
