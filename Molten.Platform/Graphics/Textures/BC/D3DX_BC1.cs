@@ -1,4 +1,18 @@
-﻿using System;
+﻿// Converted to C# by James Yarwood.
+// MIT License.
+
+//-------------------------------------------------------------------------------------
+// BC.h
+//  
+// Block-compression (BC) functionality
+//
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+//
+// http://go.microsoft.com/fwlink/?LinkId=248926
+//-------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
