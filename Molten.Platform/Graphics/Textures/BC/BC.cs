@@ -850,8 +850,9 @@ namespace Molten.Graphics.Textures
             return pColor;
         }
 
-        internal static void D3DXEncodeBC2(D3DX_BC2 pBC2, Color4[] pColor, BCFlags flags)
+        internal static D3DX_BC2 D3DXEncodeBC2( Color4[] pColor, BCFlags flags)
         {
+            D3DX_BC2 pBC2 = new D3DX_BC2();
             Color4[] Color = new Color4[NUM_PIXELS_PER_BLOCK];
             for (uint i = 0; i < NUM_PIXELS_PER_BLOCK; ++i)
                 Color[i] = pColor[i];
@@ -908,6 +909,7 @@ namespace Molten.Graphics.Textures
 #endif // COLOR_WEIGHTS
 
             pBC2.bc1 = EncodeBC1(Color, false, 0f, flags);
+            return pBC2;
         }
 
 

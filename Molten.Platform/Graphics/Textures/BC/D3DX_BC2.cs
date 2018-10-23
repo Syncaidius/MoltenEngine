@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,20 @@ namespace Molten.Graphics.Textures
     {
         public uint[] bitmap = new uint[2];         // 4bpp alpha bitmap
         public D3DX_BC1 bc1 = new D3DX_BC1();        // BC1 rgb data
+
+        internal void Read(BinaryReader reader)
+        {
+            bitmap[0] = reader.ReadUInt32();
+            bitmap[1] = reader.ReadUInt32();
+            bc1.Read(reader);
+        }
+
+        internal void Write(BinaryWriter writer)
+        {
+            writer.Write(bitmap[0]);
+            writer.Write(bitmap[1]);
+            bc1.Write(writer);
+        }
     };
 
 }
