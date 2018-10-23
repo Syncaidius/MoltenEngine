@@ -82,8 +82,14 @@
     <Compile Include="Gamepad\IGamepadStick.cs" />
     <Compile Include="Gamepad\IGamepadTrigger.cs" />
     <Compile Include="Graphics\Overlays\OverlayProvider.cs" />
+    <Compile Include="Graphics\Textures\BC\BC.cs" />
+    <Compile Include="Graphics\Textures\BC\BCFlags.cs" />
+    <Compile Include="Graphics\Textures\BC\D3DX_BC1.cs" />
+    <Compile Include="Graphics\Textures\BC\D3DX_BC3.cs" />
+    <Compile Include="Graphics\Textures\BC\D3DX_BC2.cs" />
     <Compile Include="Graphics\Textures\DDS\BCDimensions.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSSizeException.cs" />
+    <Compile Include="Graphics\Textures\DDS\Parsers\BC5Parser.cs" />
     <Compile Include="Graphics\Textures\DDS\Parsers\BC4Parser.cs" />
     <Compile Include="Graphics\Textures\MagickTextureWriter.cs" />
     <Compile Include="IClipboard.cs" />

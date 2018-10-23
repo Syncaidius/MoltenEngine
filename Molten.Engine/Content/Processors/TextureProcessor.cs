@@ -29,10 +29,7 @@ namespace Molten.Content
                 int.TryParse(strCount, out arrayCount);
 
             if (context.Metadata.TryGetValue("compress", out string strCompressFormat))
-            {
-                Enum.TryParse(strCompressFormat, out compressFormat);
-                compress = true;
-            }
+                compress = Enum.TryParse(strCompressFormat, out compressFormat);
 
             if (arrayCount > 1)
             {

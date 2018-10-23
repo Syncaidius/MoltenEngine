@@ -2053,5 +2053,24 @@ namespace Molten.DoublePrecision
             Y = Math.Ceiling(Y);
             Z = Math.Ceiling(Z);
         }
+
+        /// <summary>
+        /// Takes the value of an indexed component and assigns it to the axis of a new <see cref="Vector3D"/>. <para />
+        /// For example, a swizzle input of (1,1, 2) on a <see cref="Vector3D"/> with the values, 20, 5 and 10, will return a vector with values 5,5,10.
+        /// </summary>
+        /// <param name="val">The current vector.</param>
+        /// <param name="xIndex">The axis index to use for the new X value.</param>
+        /// <param name="yIndex">The axis index to use for the new Y value.</param>
+        /// <param name="zIndex">The axis index to use for the new Z value.</param>
+        /// <returns></returns>
+        public static unsafe Vector3D Swizzle(Vector3D val, int xIndex, int yIndex, int zIndex)
+        {
+            return new Vector3D()
+            {
+                X = *(&val.X + (xIndex * sizeof(double))),
+                Y = *(&val.X + (yIndex * sizeof(double))),
+                Z = *(&val.X + (zIndex * sizeof(double))),
+            };
+        }
     }
 }

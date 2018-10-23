@@ -69,6 +69,10 @@ namespace Molten
         /// </summary>
         public static readonly Color4 White = new Color4(1.0f, 1.0f, 1.0f, 1.0f);
 
+        public static readonly Color4 Zero = new Color4(0, 0, 0, 0);
+
+        public static readonly Color4 Transparent = new Color4(0, 0, 0, 0);
+
         /// <summary>
         /// The red component of the color.
         /// </summary>
@@ -993,6 +997,34 @@ namespace Molten
 
             var strongValue = (Color4)value;
             return Equals(ref strongValue);
+        }
+
+        /// <summary>
+        /// Returns a new <see cref="Color4"/> with the values of the provided color's components assigned based on their index.<para/>
+        /// For example, a swizzle input of (1,1,3,1) on a <see cref="Color4"/> with RGBA values of 0.7f, 0.2f, 0f, 1.0f, will return a <see cref="Color4"/> with values 0.2f, 0.2f, 1f, 0.2f.
+        /// </summary>
+        /// <param name="col"></param>
+        /// <param name="rIndex">The axis index of the source color to use for the new red value.</param>
+        /// <param name="gIndex">The axis index of the source color to use for the new green value.</param>
+        /// <param name="bIndex">The axis index of the source color to use for the new blue value.</param>
+        /// <param name="aIndex">The axis index of the source color to use for the new alpha value.</param>
+        /// <returns></returns>
+        public static unsafe Color4 Swizzle(Color4 col, int rIndex, int gIndex, int bIndex, int aIndex)
+        {
+            //return new Color4()
+            //{
+            //    R = *(&col.R + (rIndex * sizeof(float))),
+            //    G = *(&col.G + (gIndex * sizeof(float))),
+            //    B = *(&col.B + (bIndex * sizeof(float))),
+            //    A = *(&col.A + (aIndex * sizeof(float))),
+            //};
+            return new Color4()
+            {
+                R = col[rIndex],
+                G = col[gIndex],
+                B = col[bIndex],
+                A = col[aIndex],
+            };
         }
     }
 }

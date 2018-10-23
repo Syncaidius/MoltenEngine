@@ -1654,5 +1654,22 @@ namespace Molten
             X = (float)Math.Ceiling(X);
             Y = (float)Math.Ceiling(Y);
         }
+
+        /// <summary>
+        /// Takes the value of an indexed component and assigns it to the axis of a new <see cref="Vector2F"/>. <para />
+        /// For example, a swizzle input of (1,1) on a <see cref="Vector2F"/> with the values, 20 and 10, will return a vector with values 10,10, because it took the value of component index 1, for both axis."
+        /// </summary>
+        /// <param name="val">The current vector.</param>
+        /// <param name="xIndex">The axis index to use for the new X value.</param>
+        /// <param name="yIndex">The axis index to use for the new Y value.</param>
+        /// <returns></returns>
+        public static unsafe Vector2F Swizzle(Vector2F val, int xIndex, int yIndex)
+        {
+            return new Vector2F()
+            {
+                X = *(&val.X + (xIndex * sizeof(float))),
+                Y = *(&val.X + (yIndex * sizeof(float))),
+            };
+        }
     }
 }

@@ -1575,5 +1575,26 @@ namespace Molten
             Z = (float)Math.Ceiling(Z);
             W = (float)Math.Ceiling(W);
         }
+
+        /// <summary>
+        /// Takes the value of an indexed component and assigns it to the axis of a new <see cref="Vector4F"/>. <para />
+        /// For example, a swizzle input of (1,1, 2, 1) on a <see cref="Vector4F"/> with the values, 20, 5, 9, 10, will return a vector with values 5, 5, 9, 5.
+        /// </summary>
+        /// <param name="val">The current vector.</param>
+        /// <param name="xIndex">The axis index to use for the new X value.</param>
+        /// <param name="yIndex">The axis index to use for the new Y value.</param>
+        /// <param name="zIndex">The axis index to use for the new Z value.</param>
+        /// <param name="wIndex">The axis index to use for the new W value.</param>
+        /// <returns></returns>
+        public static unsafe Vector4F Swizzle(Vector4F val, int xIndex, int yIndex, int zIndex, int wIndex)
+        {
+            return new Vector4F()
+            {
+                X = *(&val.X + (xIndex * sizeof(float))),
+                Y = *(&val.X + (yIndex * sizeof(float))),
+                Z = *(&val.X + (zIndex * sizeof(float))),
+                W = *(&val.X + (wIndex * sizeof(float))),
+            };
+        }
     }
 }

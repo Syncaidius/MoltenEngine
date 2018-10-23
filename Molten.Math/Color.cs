@@ -1345,5 +1345,26 @@ namespace Molten
 
             return r;
         }
+
+        /// <summary>
+        /// Returns a new <see cref="Color"/> with the values of the provided color's components assigned based on their index.<para/>
+        /// For example, a swizzle input of (1,1,3,1) on a <see cref="Color4"/> with RGBA values of 100,20,0,255, will return a <see cref="Color4"/> with values 20,20,255,20.
+        /// </summary>
+        /// <param name="col"></param>
+        /// <param name="rIndex">The axis index of the source color to use for the new red value.</param>
+        /// <param name="gIndex">The axis index of the source color to use for the new green value.</param>
+        /// <param name="bIndex">The axis index of the source color to use for the new blue value.</param>
+        /// <param name="aIndex">The axis index of the source color to use for the new alpha value.</param>
+        /// <returns></returns>
+        public static unsafe Color Swizzle(Color col, int rIndex, int gIndex, int bIndex, int aIndex)
+        {
+            return new Color()
+            {
+                R = *(&col.R + (rIndex * sizeof(int))),
+                G = *(&col.G + (gIndex * sizeof(int))),
+                B = *(&col.B + (bIndex * sizeof(int))),
+                A = *(&col.A + (aIndex * sizeof(int))),
+            };
+        }
     }
 }

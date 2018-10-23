@@ -295,13 +295,12 @@ namespace Molten.Graphics.Textures
                 for (int bpx = 0; bpx < dimensions.Width; bpx++)
                 {
                     int pX = dimensions.PixelX + bpx;
-                    int b = GetPixelFirstByte(pX, pY, level.Width, bytesPerPixel) + valueByteOffset;
+                    int offset = GetPixelFirstByte(pX, pY, level.Width, bytesPerPixel) + valueByteOffset;
 
-                    if (level.Data[b] < lowest)
-                        lowest = level.Data[b];
-                    else
-                        if (level.Data[b] > highest)
-                        highest = level.Data[b];
+                    if (level.Data[offset] < lowest)
+                        lowest = level.Data[offset];
+                    else if (level.Data[offset] > highest)
+                        highest = level.Data[offset];
                 }
             }
         }
@@ -385,8 +384,6 @@ namespace Molten.Graphics.Textures
                         {
                             closest = dist;
                             closestID = i;
-                            if (dist == 0)
-                                break;
                         }
                     }
 
@@ -401,8 +398,41 @@ namespace Molten.Graphics.Textures
 
             // Write 6 bytes of alpha mask. 
             // Note: 16x 3-bit pixel indices = 48 bits (6 bytes).
-            byte[] redBytes = BitConverter.GetBytes(mask);
-            writer.Write(redBytes, 0, 6);
+            byte[] bytes = BitConverter.GetBytes(mask);
+            writer.Write(bytes, 0, 6);
+        }
+
+        protected ulong Decode8BitSingleChannelMask(BinaryReader reader, out byte lowest, out byte highest)
+        {
+            lowest = reader.ReadByte();
+            highest = reader.ReadByte();
+
+            // Read each of the sixteen 3-bit pixel indices, totaling 48 bits (6 bytes)
+            ulong mask = reader.ReadByte();
+            mask += (ulong)reader.ReadByte() << 8;
+            mask += (ulong)reader.ReadByte() << 16;
+            mask += (ulong)reader.ReadByte() << 24;
+            mask += (ulong)reader.ReadByte() << 32;
+            mask += (ulong)reader.ReadByte() << 40;
+            return mask;
+        }
+
+        protected byte DecodeSingleChannelColor(ulong mask, int bpX, int bpY, byte col0, byte col1)
+        {
+            ulong index = ((mask >> 3 * (DDSHelper.BLOCK_DIMENSIONS * bpY + bpX)) & 0x07);
+
+            if (index == 0)
+                return col0;
+            else if (index == 1)
+                return col1;
+            else if (col0 > col1)
+                return (byte)((index * col0 + index * col1) / 7.0f);
+            else if (index == 6)
+                return 0;
+            else if (index == 7)
+                return 255;
+            else
+                return (byte)((index * col0 + index * col1) / 5.0f);
         }
     }
 }

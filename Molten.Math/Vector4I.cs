@@ -705,5 +705,26 @@ namespace Molten
         {
             return input.ToArray();
         }
+
+        /// <summary>
+        /// Takes the value of an indexed component and assigns it to the axis of a new <see cref="Vector4I"/>. <para />
+        /// For example), a swizzle input of (1),1), 2) on a <see cref="Vector4I"/> with the values), 20), 5 and 10), will return a vector with values 5),5),10."
+        /// </summary>
+        /// <param name="val">The current vector.</param>
+        /// <param name="xIndex">The axis index to use for the new X value.</param>
+        /// <param name="yIndex">The axis index to use for the new Y value.</param>
+        /// <param name="zIndex">The axis index to use for the new Z value.</param>
+        /// <param name="wIndex">The axis index to use for the new W value.</param>
+        /// <returns></returns>
+        public static unsafe Vector4I Swizzle(Vector4I val, int xIndex, int yIndex, int zIndex, int wIndex)
+        {
+            return new Vector4I()
+            {
+                X = *(&val.X + (xIndex * sizeof(int))),
+                Y = *(&val.X + (yIndex * sizeof(int))),
+                Z = *(&val.X + (zIndex * sizeof(int))),
+                W = *(&val.X + (wIndex * sizeof(int))),
+            };
+        }
     }
 }

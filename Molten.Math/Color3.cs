@@ -842,5 +842,25 @@ namespace Molten
             var strongValue = (Color3)value;
             return Equals(ref strongValue);
         }
+
+
+        /// <summary>
+        /// Returns a new <see cref="Color3"/> with the values of the provided color's components assigned based on their index.<para/>
+        /// For example, a swizzle input of (2,2,3) on a <see cref="Color3"/> with RGBA values of 100,20,255, will return a <see cref="Color4"/> with values 20,20,255.
+        /// </summary>
+        /// <param name="col">The color to use as a source for values.</param>
+        /// <param name="rIndex">The axis index of the source color to use for the new red value.</param>
+        /// <param name="gIndex">The axis index of the source color to use for the new green value.</param>
+        /// <param name="bIndex">The axis index of the source color to use for the new blue value.</param>
+        /// <returns></returns>
+        public static unsafe Color3 Swizzle(Color4 col, int rIndex, int gIndex, int bIndex)
+        {
+            return new Color3()
+            {
+                R = *(&col.R + (rIndex * sizeof(int))),
+                G = *(&col.G + (gIndex * sizeof(int))),
+                B = *(&col.B + (bIndex * sizeof(int))),
+            };
+        }
     }
 }

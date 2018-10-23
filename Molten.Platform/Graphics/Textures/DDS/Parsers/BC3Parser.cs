@@ -28,14 +28,14 @@ namespace Molten.Graphics.Textures
             DecodeColorTableBC1(reader, out table);
 
             // Decompress pixel data from block
-            for (int pY = 0; pY < DDSHelper.BLOCK_DIMENSIONS; pY++)
+            for (int pby = 0; pby < DDSHelper.BLOCK_DIMENSIONS; pby++)
             {
-                int py = (dimensions.Y << 2) + pY;
+                int py = (dimensions.Y << 2) + pby;
 
-                for (int pX = 0; pX < DDSHelper.BLOCK_DIMENSIONS; pX++)
+                for (int pbx = 0; pbx < DDSHelper.BLOCK_DIMENSIONS; pbx++)
                 {
-                    uint index = (table.data >> 2 * (4 * pY + pX)) & 0x03;
-                    uint alphaIndex = (uint)((alphaMask >> 3 * (4 * pY + pX)) & 0x07);
+                    uint index = (table.data >> 2 * (4 * pby + pbx)) & 0x03;
+                    uint alphaIndex = (uint)((alphaMask >> 3 * (4 * pby + pbx)) & 0x07);
                     Color c = table.color[index];
 
                     // Decode alpha
@@ -52,14 +52,14 @@ namespace Molten.Graphics.Textures
                     else
                         c.A = (byte)(((6 - alphaIndex) * alpha0 + (alphaIndex - 1) * alpha1) / 5f);
 
-                    int px = (dimensions.X << 2) + pX;
+                    int px = (dimensions.X << 2) + pbx;
                     if ((px < width) && (py < height))
                     {
                         int offset = ((py * width) + px) << 2;
                         output[offset] = c.R;
                         output[offset + 1] = c.G;
                         output[offset + 2] = c.B;
-                        output[offset + 3] = c.A;
+                        output[offset + 3] = DecodeSingleChannelColor(alphaMask, pbx, pby, alpha0, alpha1);
                     }
                 }
             }

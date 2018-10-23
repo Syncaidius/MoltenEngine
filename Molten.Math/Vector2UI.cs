@@ -148,5 +148,22 @@ namespace Molten
         {
             return new Vector2UI(left.X / right.X, left.Y / right.Y);
         }
+
+        /// <summary>
+        /// Takes the value of an indexed component and assigns it to the axis of a new <see cref="Vector2UI"/>. <para />
+        /// For example, a swizzle input of (1,1) on a <see cref="Vector2UI"/> with the values, 20 and 10, will return a vector with values 10,10, because it took the value of component index 1, for both axis."
+        /// </summary>
+        /// <param name="val">The current vector.</param>
+        /// <param name="xIndex">The axis index to use for the new X value.</param>
+        /// <param name="yIndex">The axis index to use for the new Y value.</param>
+        /// <returns></returns>
+        public static unsafe Vector2UI Swizzle(Vector2UI val, uint xIndex, uint yIndex)
+        {
+            return new Vector2UI()
+            {
+                X = *(&val.X + (xIndex * sizeof(uint))),
+                Y = *(&val.X + (yIndex * sizeof(uint))),
+            };
+        }
     }
 }
