@@ -76,7 +76,6 @@ namespace Molten.Graphics.Textures
                     result.RGBBitCount = 32;
                     break;
 
-                default:
                 case GraphicsFormat.BC3_UNorm:
                     result.FourCC = "DXT5";
                     result.RGBBitCount = 32;
@@ -86,6 +85,14 @@ namespace Molten.Graphics.Textures
                     result.FourCC = "BC4U";
                     result.RGBBitCount = 8;
                     break;
+
+                case GraphicsFormat.BC5_UNorm:
+                    result.FourCC = "BC5U";
+                    result.RGBBitCount = 16;
+                    break;
+
+                default:
+                    throw new FormatException("Unsupported DDS block-compression format:" + data.Format);
             }
 
             return result;

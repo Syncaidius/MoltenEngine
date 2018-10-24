@@ -1145,7 +1145,7 @@ namespace Molten.Graphics.Textures
             return pBC3;
         }
 
-        private static void OptimizeAlpha(bool bRange, out float pX, out float pY, float[] pPoints, uint cSteps)
+        internal static void OptimizeAlpha(bool bRange, out float pX, out float pY, float[] pPoints, uint cSteps)
         {
             float[] pC = (6 == cSteps) ? pC6 : pC8;
             float[] pD = (6 == cSteps) ? pD6 : pD8;

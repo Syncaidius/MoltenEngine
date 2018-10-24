@@ -84,7 +84,9 @@
     <Compile Include="Graphics\Overlays\OverlayProvider.cs" />
     <Compile Include="Graphics\Textures\BC\BC.cs" />
     <Compile Include="Graphics\Textures\BC\BC4BC5.cs" />
+    <Compile Include="Graphics\Textures\BC\BC5.cs" />
     <Compile Include="Graphics\Textures\BC\BCFlags.cs" />
+    <Compile Include="Graphics\Textures\BC\BC4.cs" />
     <Compile Include="Graphics\Textures\BC\D3DX_BC1.cs" />
     <Compile Include="Graphics\Textures\BC\D3DX_BC3.cs" />
     <Compile Include="Graphics\Textures\BC\D3DX_BC2.cs" />

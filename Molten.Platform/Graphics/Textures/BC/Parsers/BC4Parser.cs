@@ -12,15 +12,15 @@ namespace Molten.Graphics.Textures
 
         internal override Color4[] Decode(BinaryReader imageReader, BCDimensions dimensions, int levelWidth, int levelHeight)
         {
-            D3DX_BC1 bc1 = new D3DX_BC1();
-            bc1.Read(imageReader);
-            return BC.D3DXDecodeBC1(bc1);
+            BC4_UNORM bc = new BC4_UNORM();
+            bc.Read(imageReader);
+            return BC4BC5.D3DXDecodeBC4U(bc);
         }
 
         internal override void Encode(BinaryWriter writer, Color4[] uncompressed, BCDimensions dimensions, TextureData.Slice level)
         {
-            D3DX_BC1 bc1 = BC.D3DXEncodeBC1(uncompressed, 1.0f, BCFlags.DITHER_RGB);
-            bc1.Write(writer);
+            BC4_UNORM bc = BC4BC5.D3DXEncodeBC4U(uncompressed, BCFlags.DITHER_RGB);
+            bc.Write(writer);
         }
     }
 }
