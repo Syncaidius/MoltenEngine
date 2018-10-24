@@ -243,7 +243,7 @@ namespace Molten.Graphics.Textures
             return pColor;
         }
 
-        internal static BC4_UNORM D3DXEncodeBC4U(Color4[] pColor, BCFlags flags)
+        internal static BC4_UNORM D3DXEncodeBC4U(Color4[] pColor)
         {
             BC4_UNORM pBC4 = new BC4_UNORM();
             float[] theTexelsU = new float[BC.NUM_PIXELS_PER_BLOCK];
@@ -256,7 +256,7 @@ namespace Molten.Graphics.Textures
             return pBC4;
         }
 
-        internal static BC4_SNORM D3DXEncodeBC4S(Color4[] pColor, BCFlags flags)
+        internal static BC4_SNORM D3DXEncodeBC4S(Color4[] pColor)
         {
             BC4_SNORM pBC4 = new BC4_SNORM();
             float[] theTexelsU = new float[BC.NUM_PIXELS_PER_BLOCK];
@@ -290,7 +290,7 @@ namespace Molten.Graphics.Textures
             return pColor;
         }
 
-        internal static BC5_UNORM D3DXEncodeBC5U(Color4[] pColor, BCFlags flags)
+        internal static BC5_UNORM D3DXEncodeBC5U(Color4[] pColor)
         {
             BC5_UNORM pBC5 = new BC5_UNORM();
             float[] theTexelsU = new float[BC.NUM_PIXELS_PER_BLOCK];
@@ -316,7 +316,7 @@ namespace Molten.Graphics.Textures
             return pBC5;
         }
 
-        internal static BC5_SNORM D3DXEncodeBC5S(Color4[] pColor, BCFlags flags)
+        internal static BC5_SNORM D3DXEncodeBC5S(Color4[] pColor)
         {
             BC5_SNORM pBC5 = new BC5_SNORM();
             float[] theTexelsU = new float[BC.NUM_PIXELS_PER_BLOCK];

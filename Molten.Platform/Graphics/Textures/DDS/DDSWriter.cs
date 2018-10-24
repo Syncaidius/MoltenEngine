@@ -86,8 +86,18 @@ namespace Molten.Graphics.Textures
                     result.RGBBitCount = 8;
                     break;
 
+                case GraphicsFormat.BC4_SNorm:
+                    result.FourCC = "BC4S";
+                    result.RGBBitCount = 8;
+                    break;
+
                 case GraphicsFormat.BC5_UNorm:
                     result.FourCC = "BC5U";
+                    result.RGBBitCount = 16;
+                    break;
+
+                case GraphicsFormat.BC5_SNorm:
+                    result.FourCC = "BC5S";
                     result.RGBBitCount = 16;
                     break;
 

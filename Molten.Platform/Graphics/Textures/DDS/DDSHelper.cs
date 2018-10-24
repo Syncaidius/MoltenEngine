@@ -22,11 +22,10 @@ namespace Molten.Graphics.Textures
         {
             _parsers = new Dictionary<GraphicsFormat, BCBlockParser>();
             IEnumerable<Type> parserTypes = ReflectionHelper.FindType<BCBlockParser>();
-            foreach(Type t in parserTypes)
+            foreach (Type t in parserTypes)
             {
                 BCBlockParser parser = Activator.CreateInstance(t, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, null, null) as BCBlockParser;
-                foreach (GraphicsFormat supportedFormat in parser.SupportedFormats)
-                    _parsers.Add(supportedFormat, parser);
+                _parsers.Add(parser.ExpectedFormat, parser);
             }
         }
 
@@ -77,33 +76,25 @@ namespace Molten.Graphics.Textures
                 {
                     int blockCountX = Math.Max(1, (compressed.Width + 3) / BLOCK_DIMENSIONS);
                     int blockCountY = Math.Max(1, (compressed.Height + 3) / BLOCK_DIMENSIONS);
-
-                    BCDimensions dimensions = new BCDimensions()
-                    {
-                        Width = Math.Min(compressed.Width, BLOCK_DIMENSIONS),
-                        Height = Math.Min(compressed.Height, BLOCK_DIMENSIONS),
-                    };
+                    int blockWidth = Math.Min(compressed.Width, BLOCK_DIMENSIONS);
+                    int blockHeight = Math.Min(compressed.Height, BLOCK_DIMENSIONS);
 
                     for (int blockY = 0; blockY < blockCountY; blockY++)
                     {
-                        dimensions.Y = blockY;
-                        dimensions.PixelY = blockY * BLOCK_DIMENSIONS;
                         for (int blockX = 0; blockX < blockCountX; blockX++)
                         {
-                            dimensions.X = blockX;
-                            dimensions.PixelX = blockX * BLOCK_DIMENSIONS;
-                            Color4[] pixels = parser.Decode(imageReader, dimensions, compressed.Width, compressed.Height);
+                            Color4[] pixels = parser.Decode(imageReader);
 
                             // Transfer the decompressed pixel data into the image.
                             int index = 0;
                             for (int bpy = 0; bpy < BLOCK_DIMENSIONS; bpy++)
                             {
-                                int py = (dimensions.Y << 2) + bpy;
+                                int py = (blockY << 2) + bpy;
                                 for (int bpx = 0; bpx < BLOCK_DIMENSIONS; bpx++)
                                 {
                                     Color c = (Color)pixels[index++];
 
-                                    int px = (dimensions.X << 2) + bpx;
+                                    int px = (blockX << 2) + bpx;
                                     if ((px < compressed.Width) && (py < compressed.Height))
                                     {
                                         int offset = ((py * compressed.Width) + px) << 2;
@@ -170,13 +161,9 @@ namespace Molten.Graphics.Textures
         {
             int blockCountX = Math.Max(1, (uncompressed.Width + 3) / BLOCK_DIMENSIONS);
             int blockCountY = Math.Max(1, (uncompressed.Height + 3) / BLOCK_DIMENSIONS);
+            int blockWidth = Math.Min(uncompressed.Width, BLOCK_DIMENSIONS);
+            int blockHeight = Math.Min(uncompressed.Height, BLOCK_DIMENSIONS);
             byte[] result = null;
-
-            BCDimensions dimensions = new BCDimensions()
-            {
-                Width = Math.Min(uncompressed.Width, BLOCK_DIMENSIONS),
-                Height = Math.Min(uncompressed.Height, BLOCK_DIMENSIONS),
-            };
 
             using (MemoryStream stream = new MemoryStream())
             {
@@ -184,24 +171,18 @@ namespace Molten.Graphics.Textures
                 {
                     for (int blockY = 0; blockY < blockCountY; blockY++)
                     {
-                        dimensions.Y = blockY;
-                        dimensions.PixelY = blockY * BLOCK_DIMENSIONS;
-
                         for (int blockX = 0; blockX < blockCountX; blockX++)
                         {
-                            dimensions.X = blockX;
-                            dimensions.PixelX = blockX * BLOCK_DIMENSIONS;
-
                             // Assemble color table for current block.
                             int index = 0;
                             Color4[] colTable = new Color4[BC.NUM_PIXELS_PER_BLOCK];
 
                             for (int bpy = 0; bpy < BLOCK_DIMENSIONS; bpy++)
                             {
-                                int py = (dimensions.Y << 2) + bpy;
+                                int py = (blockY << 2) + bpy;
                                 for (int bpx = 0; bpx < BLOCK_DIMENSIONS; bpx++)
                                 {
-                                    int px = (dimensions.X << 2) + bpx;
+                                    int px = (blockX << 2) + bpx;
                                     if ((px < uncompressed.Width) && (py < uncompressed.Height))
                                     {
                                         int offset = ((py * uncompressed.Width) + px) << 2;
@@ -216,7 +197,7 @@ namespace Molten.Graphics.Textures
                                 }
                             }
 
-                            parser.Encode(writer, colTable, dimensions, uncompressed);
+                            parser.Encode(writer, colTable);
                         }
                     }
 

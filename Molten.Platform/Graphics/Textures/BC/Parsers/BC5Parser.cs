@@ -6,20 +6,38 @@ using System.Text;
 
 namespace Molten.Graphics.Textures
 {
-    internal class BC5Parser : BCBlockParser
+    internal class BC5UParser : BCBlockParser
     {
-        public override GraphicsFormat[] SupportedFormats => new GraphicsFormat[] { GraphicsFormat.BC5_UNorm };
+        public override GraphicsFormat ExpectedFormat => GraphicsFormat.BC5_UNorm;
 
-        internal override Color4[] Decode(BinaryReader imageReader, BCDimensions dimensions, int levelWidth, int levelHeight)
+        internal override Color4[] Decode(BinaryReader imageReader)
         {
             BC5_UNORM bc = new BC5_UNORM();
             bc.Read(imageReader);
             return BC4BC5.D3DXDecodeBC5U(bc);
         }
 
-        internal override void Encode(BinaryWriter writer, Color4[] uncompressed, BCDimensions dimensions, TextureData.Slice level)
+        internal override void Encode(BinaryWriter writer, Color4[] uncompressed)
         {
-            BC5_UNORM bc = BC4BC5.D3DXEncodeBC5U(uncompressed, BCFlags.NONE);
+            BC5_UNORM bc = BC4BC5.D3DXEncodeBC5U(uncompressed);
+            bc.Write(writer);
+        }
+    }
+
+    internal class BC5SParser : BCBlockParser
+    {
+        public override GraphicsFormat ExpectedFormat => GraphicsFormat.BC5_SNorm;
+
+        internal override Color4[] Decode(BinaryReader imageReader)
+        {
+            BC5_SNORM bc = new BC5_SNORM();
+            bc.Read(imageReader);
+            return BC4BC5.D3DXDecodeBC5S(bc);
+        }
+
+        internal override void Encode(BinaryWriter writer, Color4[] uncompressed)
+        {
+            BC5_SNORM bc = BC4BC5.D3DXEncodeBC5S(uncompressed);
             bc.Write(writer);
         }
     }
