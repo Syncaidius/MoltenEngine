@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
-    public struct BCColorTable
+    internal static class BC4BC5
     {
-        public Color[] color;
-        public ushort[] rawColor;
-        public uint data;
     }
 }

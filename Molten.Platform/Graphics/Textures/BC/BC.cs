@@ -337,12 +337,12 @@ namespace Molten.Graphics.Textures
 
         private static unsafe uint FloatToUInt(float f)
         {
-            return BitConverter.ToUInt32(BitConverter.GetBytes(f), 0);
+            return *(uint*)&f;
         }
 
-        private static float UIntToFloat(uint i)
+        private static unsafe float UIntToFloat(uint i)
         {
-            return BitConverter.ToSingle(BitConverter.GetBytes(i), 0);
+            return *(float*)&i;
         }
 
         /// <summary>
@@ -354,7 +354,6 @@ namespace Molten.Graphics.Textures
         /// <returns></returns>
         private static Color4 SelectColor(Color4 V1, Color4 V2, Vector4UI Control)
         {
-            // TODO use unsafe pointers to speed this up.
             return new Color4()
             {
                 R = UIntToFloat((FloatToUInt(V1.R) & ~Control.X) | (FloatToUInt(V2.R) & Control.X)),

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -47,15 +48,15 @@ namespace Molten.Graphics.Textures
                     for (int i = 0; i < data.MipMapLevels; i++)
                     {
                         int levelID = (a * (int)data.MipMapLevels) + i;
-                        byte[] levelData = parser.Decode(levels[levelID]);
+                        byte[] decompressed = DecompressLevel(parser, levels[levelID]);
 
                         data.Levels[levelID] = new TextureData.Slice()
                         {
-                            Data = levelData,
+                            Data = decompressed,
                             Height = levels[i].Height,
                             Width = levels[i].Width,
                             Pitch = levels[i].Width * 4,
-                            TotalBytes = levelData.Length,
+                            TotalBytes = decompressed.Length,
                         };
                     }
                 }
@@ -63,6 +64,62 @@ namespace Molten.Graphics.Textures
                 data.Format = GraphicsFormat.R8G8B8A8_UNorm;
                 data.IsCompressed = false;
             }
+        }
+
+        private static byte[] DecompressLevel(BCBlockParser parser, TextureData.Slice compressed)
+        {
+            // Pass to stream-based overload
+            byte[] result = new byte[compressed.Width * compressed.Height * 4];
+
+            using (MemoryStream stream = new MemoryStream(compressed.Data))
+            {
+                using (BinaryReader imageReader = new BinaryReader(stream))
+                {
+                    int blockCountX = Math.Max(1, (compressed.Width + 3) / BLOCK_DIMENSIONS);
+                    int blockCountY = Math.Max(1, (compressed.Height + 3) / BLOCK_DIMENSIONS);
+
+                    BCDimensions dimensions = new BCDimensions()
+                    {
+                        Width = Math.Min(compressed.Width, BLOCK_DIMENSIONS),
+                        Height = Math.Min(compressed.Height, BLOCK_DIMENSIONS),
+                    };
+
+                    for (int blockY = 0; blockY < blockCountY; blockY++)
+                    {
+                        dimensions.Y = blockY;
+                        dimensions.PixelY = blockY * BLOCK_DIMENSIONS;
+                        for (int blockX = 0; blockX < blockCountX; blockX++)
+                        {
+                            dimensions.X = blockX;
+                            dimensions.PixelX = blockX * BLOCK_DIMENSIONS;
+                            Color4[] pixels = parser.Decode(imageReader, dimensions, compressed.Width, compressed.Height);
+
+                            // Transfer the decompressed pixel data into the image.
+                            int index = 0;
+                            for (int bpy = 0; bpy < BLOCK_DIMENSIONS; bpy++)
+                            {
+                                int py = (dimensions.Y << 2) + bpy;
+                                for (int bpx = 0; bpx < BLOCK_DIMENSIONS; bpx++)
+                                {
+                                    Color c = (Color)pixels[index++];
+
+                                    int px = (dimensions.X << 2) + bpx;
+                                    if ((px < compressed.Width) && (py < compressed.Height))
+                                    {
+                                        int offset = ((py * compressed.Width) + px) << 2;
+                                        result[offset] = c.R;
+                                        result[offset + 1] = c.G;
+                                        result[offset + 2] = c.B;
+                                        result[offset + 3] = c.A;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         /// <summary>Compresses the texture data into DXT5 block-compressed format, if not already compressed.</summary>
@@ -88,7 +145,7 @@ namespace Molten.Graphics.Textures
                     for (int i = 0; i < data.MipMapLevels; i++)
                     {
                         int levelID = (a * (int)data.MipMapLevels) + i;
-                        byte[] levelData = parser.Encode(levels[levelID]);
+                        byte[] levelData = CompressLevel(parser, levels[levelID]);
                         int pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * DDSHelper.GetBlockSize(gFormat));
 
                         int blockCountY = (levels[i].Height + 3) / 4;
@@ -109,12 +166,65 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        /// <summary>Generates garbage data and fills the texture with it.</summary>
-        /// <returns></returns>
-        public static TextureData GenerateFakeData(TextureData source)
+        private static byte[] CompressLevel(BCBlockParser parser, TextureData.Slice uncompressed)
         {
-            // TODO use DDSFakeParser.
-            return null;
+            int blockCountX = Math.Max(1, (uncompressed.Width + 3) / BLOCK_DIMENSIONS);
+            int blockCountY = Math.Max(1, (uncompressed.Height + 3) / BLOCK_DIMENSIONS);
+            byte[] result = null;
+
+            BCDimensions dimensions = new BCDimensions()
+            {
+                Width = Math.Min(uncompressed.Width, BLOCK_DIMENSIONS),
+                Height = Math.Min(uncompressed.Height, BLOCK_DIMENSIONS),
+            };
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                using (BinaryWriter writer = new BinaryWriter(stream))
+                {
+                    for (int blockY = 0; blockY < blockCountY; blockY++)
+                    {
+                        dimensions.Y = blockY;
+                        dimensions.PixelY = blockY * BLOCK_DIMENSIONS;
+
+                        for (int blockX = 0; blockX < blockCountX; blockX++)
+                        {
+                            dimensions.X = blockX;
+                            dimensions.PixelX = blockX * BLOCK_DIMENSIONS;
+
+                            // Assemble color table for current block.
+                            int index = 0;
+                            Color4[] colTable = new Color4[BC.NUM_PIXELS_PER_BLOCK];
+
+                            for (int bpy = 0; bpy < BLOCK_DIMENSIONS; bpy++)
+                            {
+                                int py = (dimensions.Y << 2) + bpy;
+                                for (int bpx = 0; bpx < BLOCK_DIMENSIONS; bpx++)
+                                {
+                                    int px = (dimensions.X << 2) + bpx;
+                                    if ((px < uncompressed.Width) && (py < uncompressed.Height))
+                                    {
+                                        int offset = ((py * uncompressed.Width) + px) << 2;
+                                        colTable[index++] = new Color()
+                                        {
+                                            R = uncompressed.Data[offset],
+                                            G = uncompressed.Data[offset + 1],
+                                            B = uncompressed.Data[offset + 2],
+                                            A = uncompressed.Data[offset + 3]
+                                        };
+                                    }
+                                }
+                            }
+
+                            parser.Encode(writer, colTable, dimensions, uncompressed);
+                        }
+                    }
+
+                    result = stream.ToArray();
+                }
+            }
+
+            return result;
         }
 
         /// <summary>Returns the expected block size of the provided format. Only block-compressed formats will return a valid value. <para/>
