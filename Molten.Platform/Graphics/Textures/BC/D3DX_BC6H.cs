@@ -12,6 +12,7 @@
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //-------------------------------------------------------------------------------------
 
+using Molten.Collections;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,9 +26,34 @@ namespace Molten.Graphics.Textures
     // BC6H compression (16 bits per texel)
     internal class D3DX_BC6H : BC6HBC7.CBits
     {
-        internal class BC6HContext
+        internal class Context : IPoolable
         {
             internal BC6HBC7.INTColor[] aPalette = new BC6HBC7.INTColor[BC6HBC7.BC6H_MAX_INDICES];
+            internal BC6HBC7.INTColor[] aPixels = new BC6HBC7.INTColor[BC.NUM_PIXELS_PER_BLOCK];
+            internal float[] afRoughMSE = new float[BC6HBC7.BC6H_MAX_SHAPES];
+            internal byte[] auShape = new byte[BC6HBC7.BC6H_MAX_SHAPES];
+            internal BC6HBC7.INTColor[][] aPalette_indices;
+
+
+            internal float[] aOrgErr = new float[BC6HBC7.BC6H_MAX_REGIONS];
+            internal float[] aOptErr = new float[BC6HBC7.BC6H_MAX_REGIONS];
+            internal BC6HBC7.INTEndPntPair[] aOrgEndPts = new BC6HBC7.INTEndPntPair[BC6HBC7.BC6H_MAX_REGIONS];
+            internal BC6HBC7.INTEndPntPair[] aOptEndPts = new BC6HBC7.INTEndPntPair[BC6HBC7.BC6H_MAX_REGIONS];
+            internal uint[] aOrgIdx = new uint[BC.NUM_PIXELS_PER_BLOCK];
+            internal uint[] aOptIdx = new uint[BC.NUM_PIXELS_PER_BLOCK];
+
+            internal Context()
+            {
+                // build list of possibles
+                aPalette_indices = new BC6HBC7.INTColor[BC6HBC7.BC6H_MAX_REGIONS][];
+                for (int i = 0; i < aPalette_indices.Length; i++)
+                    aPalette_indices[i] = new BC6HBC7.INTColor[BC6HBC7.BC6H_MAX_INDICES];
+            }
+
+            public void Clear()
+            {
+
+            }
         }
 
         internal class EncodeParams
@@ -480,7 +506,7 @@ namespace Molten.Graphics.Textures
         internal void Encode(bool bSigned, BC6HBC7.HDRColorA[] pIn)
         {
             EncodeParams EP = new EncodeParams(pIn, bSigned);
-            BC6HContext context = new BC6HContext();
+            Context context = new Context();
 
             //int arraySize = Marshal.SizeOf<ModeInfo>() * ms_aInfo.Length;
             for (EP.uMode = 0; EP.uMode < ms_aInfo.Length && EP.fBestErr > 0; ++EP.uMode)
@@ -489,15 +515,14 @@ namespace Molten.Graphics.Textures
                 // Number of rough cases to look at. reasonable values of this are 1, uShapes/4, and uShapes
                 // uShapes/4 gets nearly all the cases; you can increase that a bit (say by 3 or 4) if you really want to squeeze the last bit out
                 int uItems = Math.Max(1, uShapes >> 2);
-                float[] afRoughMSE = new float[BC6HBC7.BC6H_MAX_SHAPES];
-                byte[] auShape = new byte[BC6HBC7.BC6H_MAX_SHAPES];
+
 
                 // pick the best uItems shapes and refine these.
                 for (EP.uShape = 0; EP.uShape < uShapes; ++EP.uShape)
                 {
                     uint uShape = EP.uShape;
-                    afRoughMSE[uShape] = RoughMSE(EP);
-                    auShape[uShape] = (byte)uShape;
+                    context.afRoughMSE[uShape] = RoughMSE(EP);
+                    context.auShape[uShape] = (byte)uShape;
                 }
 
                 // Bubble up the first uItems items
@@ -505,17 +530,17 @@ namespace Molten.Graphics.Textures
                 {
                     for (uint j = i + 1; j < uShapes; j++)
                     {
-                        if (afRoughMSE[i] > afRoughMSE[j])
+                        if (context.afRoughMSE[i] > context.afRoughMSE[j])
                         {
-                            BC6HBC7.Swap(ref afRoughMSE[i], ref afRoughMSE[j]);
-                            BC6HBC7.Swap(ref auShape[i], ref auShape[j]);
+                            BC6HBC7.Swap(ref context.afRoughMSE[i], ref context.afRoughMSE[j]);
+                            BC6HBC7.Swap(ref context.auShape[i], ref context.auShape[j]);
                         }
                     }
                 }
 
                 for (uint i = 0; i < uItems && EP.fBestErr > 0; i++)
                 {
-                    EP.uShape = auShape[i];
+                    EP.uShape = context.auShape[i];
                     Refine(EP, context);
                 }
             }
@@ -678,7 +703,7 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private float MapColorsQuantized(EncodeParams pEP, BC6HBC7.INTColor[] aColors, uint np, BC6HBC7.INTEndPntPair endPts, BC6HContext context)
+        private float MapColorsQuantized(EncodeParams pEP, BC6HBC7.INTColor[] aColors, uint np, BC6HBC7.INTEndPntPair endPts, Context context)
         {
             byte uIndexPrec = ms_aInfo[pEP.uMode].uIndexPrec;
             byte uNumIndices = (byte)(1U << uIndexPrec);
@@ -712,7 +737,7 @@ namespace Molten.Graphics.Textures
         }
 
         float PerturbOne(EncodeParams pEP, BC6HBC7.INTColor[] aColors, uint np, byte ch,
-            BC6HBC7.INTEndPntPair oldEndPts, ref BC6HBC7.INTEndPntPair newEndPts, float fOldErr, int do_b, BC6HContext context)
+            BC6HBC7.INTEndPntPair oldEndPts, ref BC6HBC7.INTEndPntPair newEndPts, float fOldErr, int do_b, Context context)
         {
             byte uPrec = 0;
             switch (ch)
@@ -774,7 +799,7 @@ namespace Molten.Graphics.Textures
         }
 
         private void OptimizeOne(EncodeParams pEP, BC6HBC7.INTColor[] aColors, uint np, float aOrgErr,
-            BC6HBC7.INTEndPntPair aOrgEndPts, ref BC6HBC7.INTEndPntPair aOptEndPts, BC6HContext context)
+            BC6HBC7.INTEndPntPair aOrgEndPts, ref BC6HBC7.INTEndPntPair aOptEndPts, Context context)
         {
             float aOptErr = aOrgErr;
             aOptEndPts.A = aOrgEndPts.A;
@@ -824,11 +849,10 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private void OptimizeEndPoints(EncodeParams pEP, float[] aOrgErr, BC6HBC7.INTEndPntPair[] aOrgEndPts, BC6HBC7.INTEndPntPair[] aOptEndPts, BC6HContext context)
+        private void OptimizeEndPoints(EncodeParams pEP, float[] aOrgErr, BC6HBC7.INTEndPntPair[] aOrgEndPts, BC6HBC7.INTEndPntPair[] aOptEndPts, Context context)
         {
             byte uPartitions = ms_aInfo[pEP.uMode].uPartitions;
             Debug.Assert(uPartitions < BC6HBC7.BC6H_MAX_REGIONS);
-            BC6HBC7.INTColor[] aPixels = new BC6HBC7.INTColor[BC.NUM_PIXELS_PER_BLOCK];
 
             for (uint p = 0; p <= uPartitions; ++p)
             {
@@ -837,10 +861,10 @@ namespace Molten.Graphics.Textures
                 for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; ++i)
                 {
                     if (BC6HBC7.g_aPartitionTable[p][pEP.uShape][i] == p)
-                        aPixels[np++] = pEP.aIPixels[i];
+                        context.aPixels[np++] = pEP.aIPixels[i];
                 }
 
-                OptimizeOne(pEP, aPixels, np, aOrgErr[p], aOrgEndPts[p], ref aOptEndPts[p], context);
+                OptimizeOne(pEP, context.aPixels, np, aOrgErr[p], aOrgEndPts[p], ref aOptEndPts[p], context);
             }
         }
 
@@ -870,21 +894,16 @@ namespace Molten.Graphics.Textures
         }
 
         // assign indices given a tile, shape, and quantized endpoints, return toterr for each region
-        private void AssignIndices(EncodeParams pEP, BC6HBC7.INTEndPntPair[] aEndPts, uint[] aIndices, float[] aTotErr)
+        private void AssignIndices(EncodeParams pEP, BC6HBC7.INTEndPntPair[] aEndPts, uint[] aIndices, float[] aTotErr, Context context)
         {
             byte uPartitions = ms_aInfo[pEP.uMode].uPartitions;
             byte uNumIndices = (byte)(1u << ms_aInfo[pEP.uMode].uIndexPrec);
 
             Debug.Assert(uPartitions < BC6HBC7.BC6H_MAX_REGIONS && pEP.uShape < BC6HBC7.BC6H_MAX_SHAPES);
 
-            // build list of possibles
-            BC6HBC7.INTColor[][] aPalette = new BC6HBC7.INTColor[BC6HBC7.BC6H_MAX_REGIONS][];
-            for (int i = 0; i < aPalette.Length; i++)
-                aPalette[i] = new BC6HBC7.INTColor[BC6HBC7.BC6H_MAX_INDICES];
-
             for (uint p = 0; p <= uPartitions; ++p)
             {
-                GeneratePaletteQuantized(pEP, aEndPts[p], aPalette[p]);
+                GeneratePaletteQuantized(pEP, aEndPts[p], context.aPalette_indices[p]);
                 aTotErr[p] = 0;
             }
 
@@ -892,12 +911,12 @@ namespace Molten.Graphics.Textures
             {
                 byte uRegion = BC6HBC7.g_aPartitionTable[uPartitions][pEP.uShape][i];
                 Debug.Assert(uRegion < BC6HBC7.BC6H_MAX_REGIONS);
-                float fBestErr = BC6HBC7.Norm(pEP.aIPixels[i], aPalette[uRegion][0]);
+                float fBestErr = BC6HBC7.Norm(pEP.aIPixels[i], context.aPalette_indices[uRegion][0]);
                 aIndices[i] = 0;
 
                 for (byte j = 1; j < uNumIndices && fBestErr > 0; ++j)
                 {
-                    float fErr = BC6HBC7.Norm(pEP.aIPixels[i], aPalette[uRegion][j]);
+                    float fErr = BC6HBC7.Norm(pEP.aIPixels[i], context.aPalette_indices[uRegion][j]);
                     if (fErr > fBestErr) break; // error increased, so we're done searching
                     if (fErr < fBestErr)
                     {
@@ -970,59 +989,53 @@ namespace Molten.Graphics.Textures
             Debug.Assert(uStartBit == 128);
         }
 
-        private void Refine(EncodeParams pEP, BC6HContext context)
+        private void Refine(EncodeParams pEP, Context cxt)
         {
             byte uPartitions = ms_aInfo[pEP.uMode].uPartitions;
             Debug.Assert(uPartitions < BC6HBC7.BC6H_MAX_REGIONS);
 
             bool bTransformed = ms_aInfo[pEP.uMode].bTransformed;
-            float[] aOrgErr = new float[BC6HBC7.BC6H_MAX_REGIONS];
-            float[] aOptErr = new float[BC6HBC7.BC6H_MAX_REGIONS];
-            BC6HBC7.INTEndPntPair[] aOrgEndPts = new BC6HBC7.INTEndPntPair[BC6HBC7.BC6H_MAX_REGIONS];
-                BC6HBC7.INTEndPntPair[] aOptEndPts = new BC6HBC7.INTEndPntPair[BC6HBC7.BC6H_MAX_REGIONS];
-            uint[] aOrgIdx = new uint[BC.NUM_PIXELS_PER_BLOCK];
-            uint[] aOptIdx = new uint[BC.NUM_PIXELS_PER_BLOCK];
 
-            QuantizeEndPts(pEP, aOrgEndPts);
-            AssignIndices(pEP, aOrgEndPts, aOrgIdx, aOrgErr);
-            SwapIndices(pEP, aOrgEndPts, aOrgIdx);
+            QuantizeEndPts(pEP, cxt.aOrgEndPts);
+            AssignIndices(pEP, cxt.aOrgEndPts, cxt.aOrgIdx, cxt.aOrgErr, cxt);
+            SwapIndices(pEP, cxt.aOrgEndPts, cxt.aOrgIdx);
 
             if (bTransformed)
-                BC6HBC7.TransformForward(aOrgEndPts);
+                BC6HBC7.TransformForward(cxt.aOrgEndPts);
 
-            if (EndPointsFit(pEP, aOrgEndPts))
+            if (EndPointsFit(pEP, cxt.aOrgEndPts))
             {
                 if (bTransformed)
-                    BC6HBC7.TransformInverse(aOrgEndPts, ms_aInfo[pEP.uMode].RGBAPrec[0][0], pEP.bSigned);
+                    BC6HBC7.TransformInverse(cxt.aOrgEndPts, ms_aInfo[pEP.uMode].RGBAPrec[0][0], pEP.bSigned);
 
-                OptimizeEndPoints(pEP, aOrgErr, aOrgEndPts, aOptEndPts, context);
-                AssignIndices(pEP, aOptEndPts, aOptIdx, aOptErr);
-                SwapIndices(pEP, aOptEndPts, aOptIdx);
+                OptimizeEndPoints(pEP, cxt.aOrgErr, cxt.aOrgEndPts, cxt.aOptEndPts, cxt);
+                AssignIndices(pEP, cxt.aOptEndPts, cxt.aOptIdx, cxt.aOptErr, cxt);
+                SwapIndices(pEP, cxt.aOptEndPts, cxt.aOptIdx);
 
                 float fOrgTotErr = 0.0f, fOptTotErr = 0.0f;
                 for (uint p = 0; p <= uPartitions; ++p)
                 {
-                    fOrgTotErr += aOrgErr[p];
-                    fOptTotErr += aOptErr[p];
+                    fOrgTotErr += cxt.aOrgErr[p];
+                    fOptTotErr += cxt.aOptErr[p];
                 }
 
                 if (bTransformed)
-                    BC6HBC7.TransformForward(aOptEndPts);
+                    BC6HBC7.TransformForward(cxt.aOptEndPts);
 
-                if (EndPointsFit(pEP, aOptEndPts) && fOptTotErr < fOrgTotErr && fOptTotErr < pEP.fBestErr)
+                if (EndPointsFit(pEP, cxt.aOptEndPts) && fOptTotErr < fOrgTotErr && fOptTotErr < pEP.fBestErr)
                 {
                     pEP.fBestErr = fOptTotErr;
-                    EmitBlock(pEP, aOptEndPts, aOptIdx);
+                    EmitBlock(pEP, cxt.aOptEndPts, cxt.aOptIdx);
                 }
                 else if (fOrgTotErr < pEP.fBestErr)
                 {
                     // either it stopped fitting when we optimized it, or there was no improvement
                     // so go back to the unoptimized endpoints which we know will fit
                     if (bTransformed)
-                        BC6HBC7.TransformForward(aOrgEndPts);
+                        BC6HBC7.TransformForward(cxt.aOrgEndPts);
 
                     pEP.fBestErr = fOrgTotErr;
-                    EmitBlock(pEP, aOrgEndPts, aOrgIdx);
+                    EmitBlock(pEP, cxt.aOrgEndPts, cxt.aOrgIdx);
                 }
             }
         }
