@@ -40,6 +40,8 @@ namespace Molten.Graphics.Textures.DDS
     [FlagsAttribute]
     public enum DDSMiscFlags : uint
     {
+        None = 0x0,
+
         /// <summary>Indicates a 2D texture is a cube-map texture.</summary>
         TextureCube = 0x4,
     }

@@ -1358,9 +1358,9 @@ namespace Molten
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static explicit operator Vector3F(Vector4F value)
+        public static unsafe explicit operator Vector3F(Vector4F value)
         {
-            return new Vector3F(value.X, value.Y, value.Z);
+            return *(Vector3F*)&value; //  new Vector3F(value.X, value.Y, value.Z);
         }
 
         /// <summary>T</summary>

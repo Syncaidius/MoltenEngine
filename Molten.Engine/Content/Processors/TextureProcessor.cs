@@ -110,7 +110,7 @@ namespace Molten.Content
                 if (finalData.Height > 1)
                 {
                     if (!finalData.IsCompressed)
-                        finalData.Compress(compressFormat);
+                        finalData.Compress(compressFormat, context.Log);
                 }
             }
 

@@ -28,7 +28,7 @@ namespace Molten.Graphics.Textures
             {
                 // Use DXT5 since this covers most types of images (transparent and opaque).
                 if (data.IsCompressed == false)
-                    data.Compress(_format);
+                    data.Compress(_format, log);
 
                 // Create new DDS header
                 DDSHeader header = new DDSHeader()
@@ -52,10 +52,36 @@ namespace Molten.Graphics.Textures
                 WriteMagicWord(writer);
                 WriteHeader(writer, ref header);
 
+                if(header.PixelFormat.FourCC == "DX10")
+                {
+                    DDSHeaderDXT10 dx10 = new DDSHeaderDXT10()
+                    {
+                        ImageFormat = data.Format,
+                        Dimension = GetDx10Dimension(data),
+                        MiscFlags = DDSMiscFlags.None,
+                        ArraySize = (uint)data.ArraySize,
+                        MiscFlags2 = DDSMiscFlags2.AlphaUnknown,
+                    };
+
+                    writer.Write((uint)dx10.ImageFormat);
+                    writer.Write((uint)dx10.Dimension);
+                    writer.Write((uint)dx10.MiscFlags);
+                    writer.Write((uint)dx10.ArraySize);
+                    writer.Write((uint)dx10.MiscFlags2);
+                }
+
                 // Write each mip map level
                 for (int i = 0; i < data.MipMapLevels; i++)
                     writer.Write(data.Levels[i].Data);
             }
+        }
+
+        private DDSResourceDimension GetDx10Dimension(TextureData data)
+        {
+            if (data.Height > 1)
+                return DDSResourceDimension.Texture2D;
+            else
+                return DDSResourceDimension.Texture1D;
         }
 
         private DDSPixelFormat GetPixelFormat(TextureData data)
@@ -99,6 +125,14 @@ namespace Molten.Graphics.Textures
                 case GraphicsFormat.BC5_SNorm:
                     result.FourCC = "BC5S";
                     result.RGBBitCount = 16;
+                    break;
+
+                case GraphicsFormat.BC7_UNorm:
+                case GraphicsFormat.BC7_UNorm_SRgb:
+                case GraphicsFormat.BC6H_Sf16:
+                case GraphicsFormat.BC6H_Uf16:
+                    result.FourCC = "DX10";
+                    result.RGBBitCount = 8;
                     break;
 
                 default:

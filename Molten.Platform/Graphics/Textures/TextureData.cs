@@ -55,23 +55,23 @@ namespace Molten.Graphics
         public bool IsCompressed;
 
         /// <summary>Decompresses the texture data to R8-G8-B8-A8 color format, if it is stored in a compressed format. This has no effect if already uncompressed.</summary>
-        public void Decompress()
+        public void Decompress(Logger log)
         {
-            DDSHelper.Decompress(this);
+            DDSHelper.Decompress(this, log);
         }
 
-        public void Compress(DDSFormat format)
+        public void Compress(DDSFormat format, Logger log)
         {
-            DDSHelper.Compress(this, format);
+            DDSHelper.Compress(this, format, log);
         }
 
         /// <summary>
         /// Attempts to convert the data held by the current <see cref="TextureData"/> instance into RGBA data.
         /// </summary>
-        public void ToRGBA()
+        public void ToRGBA(Logger log)
         {
             if (IsCompressed)
-                DDSHelper.Decompress(this);
+                DDSHelper.Decompress(this, log);
 
             if(Format == GraphicsFormat.B8G8R8A8_UNorm || Format == GraphicsFormat.B8G8R8A8_Typeless || Format == GraphicsFormat.B8G8R8A8_UNorm_SRgb)
             {

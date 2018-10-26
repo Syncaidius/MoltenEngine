@@ -44,13 +44,13 @@ namespace Molten.Graphics.Textures
         UNIFORM = 0x40000,
 
         /// <summary>
-        /// By default, BC7 skips mode 0 & 2; this flag adds those modes back.
+        /// Enables exhaustive search for BC7 compress for mode 0 and 2; by default skips trying these modes
         /// </summary>
-        USE_3SUBSETS = 0x80000, 
+        USE_3SUBSETS = 0x80000,
 
         /// <summary>
-        /// BC7 should only use mode 6; skip other modes.
+        /// // Minimal modes (usually mode 6) for BC7 compression
         /// </summary>
-        FORCE_BC7_MODE6 = 0x100000,
+        BC7_QUICK = 0x100000,        
     };
 }

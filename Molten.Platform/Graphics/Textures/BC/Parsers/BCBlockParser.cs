@@ -11,8 +11,8 @@ namespace Molten.Graphics.Textures
     {
         public abstract GraphicsFormat ExpectedFormat { get; }
 
-        internal abstract Color4[] Decode(BinaryReader imageReader);
+        internal abstract Color4[] Decode(BinaryReader imageReader, Logger log);
 
-        internal abstract void Encode(BinaryWriter writer, Color4[] uncompressed);
+        internal abstract void Encode(BinaryWriter writer, Color4[] uncompressed, Logger log);
     }
 }

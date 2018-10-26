@@ -78,7 +78,7 @@ namespace Molten.Graphics.Textures
             return (ushort)(((int)(pColor.R * 31.0f + 0.5f) << 11) | ((int)(pColor.G * 63.0f + 0.5f) << 5) | ((int)(pColor.B * 31.0f + 0.5f) << 0));
         }
 
-        private static bool HasFlags(BCFlags value, BCFlags flags)
+        internal static bool HasFlags(BCFlags value, BCFlags flags)
         {
             return (value & flags) == flags;
         }

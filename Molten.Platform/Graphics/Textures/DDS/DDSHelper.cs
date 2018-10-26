@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        public static void Decompress(TextureData data)
+        public static void Decompress(TextureData data, Logger log)
         {
             // Cannot decompress uncompressed data.
             if (data.IsCompressed == false)
@@ -47,7 +48,7 @@ namespace Molten.Graphics.Textures
                     for (int i = 0; i < data.MipMapLevels; i++)
                     {
                         int levelID = (a * (int)data.MipMapLevels) + i;
-                        byte[] decompressed = DecompressLevel(parser, levels[levelID]);
+                        byte[] decompressed = DecompressLevel(parser, levels[levelID], log);
 
                         data.Levels[levelID] = new TextureData.Slice()
                         {
@@ -65,7 +66,7 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private static byte[] DecompressLevel(BCBlockParser parser, TextureData.Slice compressed)
+        private static byte[] DecompressLevel(BCBlockParser parser, TextureData.Slice compressed, Logger log)
         {
             // Pass to stream-based overload
             byte[] result = new byte[compressed.Width * compressed.Height * 4];
@@ -83,7 +84,7 @@ namespace Molten.Graphics.Textures
                     {
                         for (int blockX = 0; blockX < blockCountX; blockX++)
                         {
-                            Color4[] pixels = parser.Decode(imageReader);
+                            Color4[] pixels = parser.Decode(imageReader, log);
 
                             // Transfer the decompressed pixel data into the image.
                             int index = 0;
@@ -115,7 +116,7 @@ namespace Molten.Graphics.Textures
 
         /// <summary>Compresses the texture data into DXT5 block-compressed format, if not already compressed.</summary>
         /// <param name="data"></param>
-        public static void Compress(TextureData data, DDSFormat compressionFormat)
+        public static void Compress(TextureData data, DDSFormat compressionFormat, Logger log)
         {
             // Cannot compress data which is already compressed.
             if (data.IsCompressed)
@@ -136,7 +137,7 @@ namespace Molten.Graphics.Textures
                     for (int i = 0; i < data.MipMapLevels; i++)
                     {
                         int levelID = (a * (int)data.MipMapLevels) + i;
-                        byte[] levelData = CompressLevel(parser, levels[levelID]);
+                        byte[] levelData = CompressLevel(parser, levels[levelID], log);
                         int pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * DDSHelper.GetBlockSize(gFormat));
 
                         int blockCountY = (levels[i].Height + 3) / 4;
@@ -157,13 +158,14 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private static byte[] CompressLevel(BCBlockParser parser, TextureData.Slice uncompressed)
+        private static byte[] CompressLevel(BCBlockParser parser, TextureData.Slice uncompressed, Logger log)
         {
             int blockCountX = Math.Max(1, (uncompressed.Width + 3) / BLOCK_DIMENSIONS);
             int blockCountY = Math.Max(1, (uncompressed.Height + 3) / BLOCK_DIMENSIONS);
             int blockWidth = Math.Min(uncompressed.Width, BLOCK_DIMENSIONS);
             int blockHeight = Math.Min(uncompressed.Height, BLOCK_DIMENSIONS);
             byte[] result = null;
+            Stopwatch sw = new Stopwatch();
 
             using (MemoryStream stream = new MemoryStream())
             {
@@ -171,8 +173,11 @@ namespace Molten.Graphics.Textures
                 {
                     for (int blockY = 0; blockY < blockCountY; blockY++)
                     {
+                        sw.Reset();
+                        sw.Start();
                         for (int blockX = 0; blockX < blockCountX; blockX++)
                         {
+
                             // Assemble color table for current block.
                             int index = 0;
                             Color4[] colTable = new Color4[BC.NUM_PIXELS_PER_BLOCK];
@@ -182,6 +187,7 @@ namespace Molten.Graphics.Textures
                                 int py = (blockY << 2) + bpy;
                                 for (int bpx = 0; bpx < BLOCK_DIMENSIONS; bpx++)
                                 {
+
                                     int px = (blockX << 2) + bpx;
                                     if ((px < uncompressed.Width) && (py < uncompressed.Height))
                                     {
@@ -197,8 +203,10 @@ namespace Molten.Graphics.Textures
                                 }
                             }
 
-                            parser.Encode(writer, colTable);
+                            parser.Encode(writer, colTable, log);
                         }
+                        sw.Stop();
+                        log.WriteLine($"Encoded block row ${blockY} in {sw.Elapsed.TotalMilliseconds.ToString("N2")}ms");
                     }
 
                     result = stream.ToArray();

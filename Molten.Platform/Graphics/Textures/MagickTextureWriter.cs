@@ -20,7 +20,7 @@ namespace Molten.Graphics.Textures
         public override void WriteData(Stream stream, TextureData data, Logger log, string filename = null)
         {
             TextureData newData = data.Clone();
-            newData.ToRGBA();
+            newData.ToRGBA(log);
 
             TextureData.Slice slice;
             for (int i = 0; i < newData.Levels.Length; i++)
