@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
-    internal partial class BC6HBC7
+    internal partial class BC67
     {
         internal class CBits
         {

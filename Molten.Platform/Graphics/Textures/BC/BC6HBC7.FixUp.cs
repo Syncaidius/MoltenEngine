@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
-    internal static partial class BC6HBC7
+    internal static partial class BC67
     {
         internal static readonly byte[][][] g_aFixUp = new byte[][][]
         {

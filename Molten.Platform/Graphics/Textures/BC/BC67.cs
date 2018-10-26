@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
-    internal static partial class BC6HBC7
+    internal static partial class BC67
     {
         //-------------------------------------------------------------------------------------
         // Constants
@@ -30,8 +30,6 @@ namespace Molten.Graphics.Textures
         internal const ushort F16S_MASK = 0x8000;   // f16 sign mask
         internal const ushort F16EM_MASK = 0x7fff;   // f16 exp & mantissa mask
         internal const ushort F16MAX = 0x7bff;   // MAXFLT bit pattern for XMHALF
-        internal const float FLT_MAX = float.MaxValue;
-        internal const float FLT_MIN = float.MinValue;
 
         internal const uint BC6H_NUM_CHANNELS = 3;
         internal const uint BC6H_MAX_SHAPES = 32;
@@ -136,9 +134,9 @@ namespace Molten.Graphics.Textures
 
         internal static float Norm(INTColor a, INTColor b)
         {
-            float dr = (float)a.r - b.r;
-            float dg = (float)a.g - b.g;
-            float db = (float)a.b - b.b;
+            float dr = a.r - b.r;
+            float dg = a.g - b.g;
+            float db = a.b - b.b;
             return dr * dr + dg * dg + db * db;
         }
 
@@ -165,9 +163,11 @@ namespace Molten.Graphics.Textures
 
 
         //-------------------------------------------------------------------------------------
-        internal static float OptimizeRGB(HDRColorA[] pPoints, ref HDRColorA pX, ref HDRColorA pY, uint cSteps, uint cPixels, uint[] pIndex)
+        internal static float OptimizeRGB(HDRColorA[] pPoints, out HDRColorA pX, out HDRColorA pY, uint cSteps, uint cPixels, uint[] pIndex, BCContext cxt)
         {
-            float fError = FLT_MAX;
+            pX = new HDRColorA();
+            pY = new HDRColorA();
+            float fError = float.MaxValue;
             float[] pC = (3 == cSteps) ? pC3 : pC4;
             float[] pD = (3 == cSteps) ? pD3 : pD4;
 
@@ -196,7 +196,7 @@ namespace Molten.Graphics.Textures
             float fAB = AB.r * AB.r + AB.g * AB.g + AB.b * AB.b;
 
             // Single color block.. no need to root-find
-            if (fAB < FLT_MIN)
+            if (fAB < float.MinValue)
             {
                 pX.r = X.r; pX.g = X.g; pX.b = X.b;
                 pY.r = Y.r; pY.g = Y.g; pY.b = Y.b;
@@ -216,8 +216,8 @@ namespace Molten.Graphics.Textures
             Mid.g = (X.g + Y.g) * 0.5f;
             Mid.b = (X.b + Y.b) * 0.5f;
 
-            float[] fDir = new float[4];
-            fDir[0] = fDir[1] = fDir[2] = fDir[3] = 0.0f;
+
+            //fDir[0] = fDir[1] = fDir[2] = fDir[3] = 0.0f;
 
             for (uint iPoint = 0; iPoint < cPixels; iPoint++)
             {
@@ -227,20 +227,20 @@ namespace Molten.Graphics.Textures
                 Pt.b = (pPoints[pIndex[iPoint]].b - Mid.b) * Dir.b;
 
                 float f;
-                f = Pt.r + Pt.g + Pt.b; fDir[0] += f * f;
-                f = Pt.r + Pt.g - Pt.b; fDir[1] += f * f;
-                f = Pt.r - Pt.g + Pt.b; fDir[2] += f * f;
-                f = Pt.r - Pt.g - Pt.b; fDir[3] += f * f;
+                f = Pt.r + Pt.g + Pt.b; cxt.fDir[0] += f * f;
+                f = Pt.r + Pt.g - Pt.b; cxt.fDir[1] += f * f;
+                f = Pt.r - Pt.g + Pt.b; cxt.fDir[2] += f * f;
+                f = Pt.r - Pt.g - Pt.b; cxt.fDir[3] += f * f;
             }
 
-            float fDirMax = fDir[0];
+            float fDirMax = cxt.fDir[0];
             uint iDirMax = 0;
 
             for (uint iDir = 1; iDir < 4; iDir++)
             {
-                if (fDir[iDir] > fDirMax)
+                if (cxt.fDir[iDir] > fDirMax)
                 {
-                    fDirMax = fDir[iDir];
+                    fDirMax = cxt.fDir[iDir];
                     iDirMax = iDir;
                 }
             }
@@ -271,14 +271,11 @@ namespace Molten.Graphics.Textures
 
             for (uint iIteration = 0; iIteration < 8; iIteration++)
             {
-                // Calculate new steps
-                HDRColorA[] pSteps = new HDRColorA[4];
-
                 for (uint iStep = 0; iStep < cSteps; iStep++)
                 {
-                    pSteps[iStep].r = X.r * pC[iStep] + Y.r * pD[iStep];
-                    pSteps[iStep].g = X.g * pC[iStep] + Y.g * pD[iStep];
-                    pSteps[iStep].b = X.b * pC[iStep] + Y.b * pD[iStep];
+                    cxt.pSteps[iStep].r = X.r * pC[iStep] + Y.r * pD[iStep];
+                    cxt.pSteps[iStep].g = X.g * pC[iStep] + Y.g * pD[iStep];
+                    cxt.pSteps[iStep].b = X.b * pC[iStep] + Y.b * pD[iStep];
                 }
 
                 // Calculate color direction
@@ -317,9 +314,9 @@ namespace Molten.Graphics.Textures
                         iStep = (uint)(fDot + 0.5f);
 
                     HDRColorA Diff;
-                    Diff.r = pSteps[iStep].r - pPoints[pIndex[iPoint]].r;
-                    Diff.g = pSteps[iStep].g - pPoints[pIndex[iPoint]].g;
-                    Diff.b = pSteps[iStep].b - pPoints[pIndex[iPoint]].b;
+                    Diff.r = cxt.pSteps[iStep].r - pPoints[pIndex[iPoint]].r;
+                    Diff.g = cxt.pSteps[iStep].g - pPoints[pIndex[iPoint]].g;
+                    Diff.b = cxt.pSteps[iStep].b - pPoints[pIndex[iPoint]].b;
 
                     float fC = pC[iStep] * (1.0f / 8.0f);
                     float fD = pD[iStep] * (1.0f / 8.0f);
@@ -371,7 +368,7 @@ namespace Molten.Graphics.Textures
         //-------------------------------------------------------------------------------------
         internal static float OptimizeRGBA(HDRColorA[] pPoints, out HDRColorA pX, out HDRColorA pY, uint cSteps, uint cPixels, uint[] pIndex)
         {
-            float fError = FLT_MAX;
+            float fError = float.MaxValue;
             float[] pC = (3 == cSteps) ? pC3 : pC4;
             float[] pD = (3 == cSteps) ? pD3 : pD4;
 
@@ -396,7 +393,7 @@ namespace Molten.Graphics.Textures
             float fAB = AB * AB;
 
             // Single color block.. no need to root-find
-            if (fAB < FLT_MIN)
+            if (fAB < float.MinValue)
             {
                 pX = X;
                 pY = Y;
@@ -556,7 +553,7 @@ namespace Molten.Graphics.Textures
             uint uNumIndices = 1U << uIndexPrec;
             uint uNumIndices2 = 1U << uIndexPrec2;
             float fTotalErr = 0;
-            float fBestErr = FLT_MAX;
+            float fBestErr = float.MaxValue;
 
             pBestIndex = 0;
             pBestIndex2 = 0;
@@ -603,7 +600,7 @@ namespace Molten.Graphics.Textures
                     }
                 }
                 fTotalErr += fBestErr;
-                fBestErr = FLT_MAX;
+                fBestErr = float.MaxValue;
                 for (uint i = 0; i < uNumIndices2 && fBestErr > 0; i++)
                 {
                     // Compute ErrorMetricAlpha
@@ -637,75 +634,5 @@ namespace Molten.Graphics.Textures
 #endif
             }
         }
-
-
-        //-------------------------------------------------------------------------------------
-        // BC7 Compression
-        //-------------------------------------------------------------------------------------
-
-
-        //-------------------------------------------------------------------------------------
-
-
-        //=====================================================================================
-        // Entry points
-        //=====================================================================================
-
-        //-------------------------------------------------------------------------------------
-        // BC6H Compression
-        //-------------------------------------------------------------------------------------
-        //        _Use_decl_annotations_
-        //void DirectX::D3DXDecodeBC6HU(XMVECTOR* pColor, const byte* pBC)
-        //{
-        //    assert(pColor && pBC);
-        //        static_assert(sizeof(D3DX_BC6H) == 16, "D3DX_BC6H should be 16 bytes");
-        //        reinterpret_cast<const D3DX_BC6H*> (pBC).Decode(false, reinterpret_cast<HDRColorA*>(pColor));
-        //    }
-
-        //    _Use_decl_annotations_
-        //void DirectX::D3DXDecodeBC6HS(XMVECTOR* pColor, const byte* pBC)
-        //    {
-        //        assert(pColor && pBC);
-        //        static_assert(sizeof(D3DX_BC6H) == 16, "D3DX_BC6H should be 16 bytes");
-        //        reinterpret_cast <const D3DX_BC6H*> (pBC).Decode(true, reinterpret_cast<HDRColorA*>(pColor));
-        //    }
-
-        //    _Use_decl_annotations_
-        //void DirectX::D3DXEncodeBC6HU(byte* pBC, const XMVECTOR* pColor, DWORD flags)
-        //    {
-        //        UNREFERENCED_PARAMETER(flags);
-        //        assert(pBC && pColor);
-        //        static_assert(sizeof(D3DX_BC6H) == 16, "D3DX_BC6H should be 16 bytes");
-        //        reinterpret_cast<D3DX_BC6H*>(pBC).Encode(false, reinterpret_cast <const HDRColorA*> (pColor));
-        //    }
-
-        //    _Use_decl_annotations_
-        //void DirectX::D3DXEncodeBC6HS(byte* pBC, const XMVECTOR* pColor, DWORD flags)
-        //    {
-        //        UNREFERENCED_PARAMETER(flags);
-        //        assert(pBC && pColor);
-        //        static_assert(sizeof(D3DX_BC6H) == 16, "D3DX_BC6H should be 16 bytes");
-        //        reinterpret_cast<D3DX_BC6H*>(pBC).Encode(true, reinterpret_cast <const HDRColorA*> (pColor));
-        //    }
-
-
-        //    //-------------------------------------------------------------------------------------
-        //    // BC7 Compression
-        //    //-------------------------------------------------------------------------------------
-        //    _Use_decl_annotations_
-        //void DirectX::D3DXDecodeBC7(XMVECTOR* pColor, const byte* pBC)
-        //    {
-        //        assert(pColor && pBC);
-        //        static_assert(sizeof(D3DX_BC7) == 16, "D3DX_BC7 should be 16 bytes");
-        //        reinterpret_cast <const D3DX_BC7*> (pBC).Decode(reinterpret_cast<HDRColorA*>(pColor));
-        //    }
-
-        //    _Use_decl_annotations_
-        //void DirectX::D3DXEncodeBC7(byte* pBC, const XMVECTOR* pColor, DWORD flags)
-        //    {
-        //        assert(pBC && pColor);
-        //        static_assert(sizeof(D3DX_BC7) == 16, "D3DX_BC7 should be 16 bytes");
-        //        reinterpret_cast<D3DX_BC7*>(pBC).Encode(flags, reinterpret_cast <const HDRColorA*> (pColor));
-        //    }
     }
 }

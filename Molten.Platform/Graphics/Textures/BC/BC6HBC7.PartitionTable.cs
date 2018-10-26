@@ -20,12 +20,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
-    internal static partial class BC6HBC7
+    internal static partial class BC67
     {
         // [3][64] [16]
         internal static byte[][][] g_aPartitionTable = new byte[3][][];
 
-        static BC6HBC7()
+        static BC67()
         {
             g_aPartitionTable[0] = new byte[][]{   // 1 Region case has no subsets (all 0)
                 new byte[]{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },

@@ -11,6 +11,7 @@
 //
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //-------------------------------------------------------------------------------------
+using Molten.Collections;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,22 +22,31 @@ using System.Threading.Tasks;
 namespace Molten.Graphics.Textures
 {
     // BC67 compression (16b bits per texel)
-    internal class D3DX_BC7 : BC6HBC7.CBits
+    internal class D3DX_BC7 : BC67.CBits
     {
+        class Context : BCContext, IPoolable
+        {
+
+            public void Clear()
+            {
+
+            }
+        }
+
         class EncodeParams
         {
             internal byte uMode;
-            internal BC6HBC7.LDREndPntPair[][] aEndPts; // [BC7_MAX_SHAPES][BC7_MAX_REGIONS];
-            internal BC6HBC7.LDRColorA[] aLDRPixels;
-            internal BC6HBC7.HDRColorA[] aHDRPixels;
+            internal BC67.LDREndPntPair[][] aEndPts; // [BC7_MAX_SHAPES][BC7_MAX_REGIONS];
+            internal LDRColorA[] aLDRPixels;
+            internal HDRColorA[] aHDRPixels;
 
-            internal EncodeParams(BC6HBC7.HDRColorA[] aOriginal) {
+            internal EncodeParams(HDRColorA[] aOriginal) {
                 uMode = 0;
-                aEndPts = new BC6HBC7.LDREndPntPair[BC6HBC7.BC7_MAX_SHAPES][];
+                aEndPts = new BC67.LDREndPntPair[BC67.BC7_MAX_SHAPES][];
                 for (int i = 0; i < aEndPts.Length; i++)
-                    aEndPts[i] = new BC6HBC7.LDREndPntPair[BC6HBC7.BC7_MAX_REGIONS];
-                aLDRPixels = new BC6HBC7.LDRColorA[BC.NUM_PIXELS_PER_BLOCK];
-                aHDRPixels = new BC6HBC7.HDRColorA[BC.NUM_PIXELS_PER_BLOCK];
+                    aEndPts[i] = new BC67.LDREndPntPair[BC67.BC7_MAX_REGIONS];
+                aLDRPixels = new LDRColorA[BC.NUM_PIXELS_PER_BLOCK];
+                aHDRPixels = new HDRColorA[BC.NUM_PIXELS_PER_BLOCK];
                 Array.Copy(aOriginal, aHDRPixels, aHDRPixels.Length);
             }
         }
@@ -50,8 +60,8 @@ namespace Molten.Graphics.Textures
             public byte uIndexModeBits;
             public byte uIndexPrec;
             public byte uIndexPrec2;
-            public BC6HBC7.LDRColorA RGBAPrec;
-            public BC6HBC7.LDRColorA RGBAPrecWithP;
+            public LDRColorA RGBAPrec;
+            public LDRColorA RGBAPrecWithP;
 
             public ModeInfo(byte _uPartitions,
             byte _uPartitionBits,
@@ -60,8 +70,8 @@ namespace Molten.Graphics.Textures
             byte _uIndexModeBits,
             byte _uIndexPrec,
             byte _uIndexPrec2,
-            BC6HBC7.LDRColorA _RGBAPrec,
-            BC6HBC7.LDRColorA _RGBAPrecWithP)
+            LDRColorA _RGBAPrec,
+            LDRColorA _RGBAPrecWithP)
             {
                 uPartitions = _uPartitions;
                 uPartitionBits = _uPartitionBits;
@@ -80,29 +90,29 @@ namespace Molten.Graphics.Textures
         /// </summary>
         static readonly ModeInfo[] ms_aInfo =
                 {
-            new ModeInfo(2, 4, 6, 0, 0, 3, 0, new BC6HBC7.LDRColorA(4,4,4,0), new BC6HBC7.LDRColorA(5,5,5,0)),
+            new ModeInfo(2, 4, 6, 0, 0, 3, 0, new LDRColorA(4,4,4,0), new LDRColorA(5,5,5,0)),
                 // Mode 0: Color only, 3 Subsets, RGBP 4441 (unique P-bit), 3-bit indecies, 16 partitions
-            new ModeInfo(1, 6, 2, 0, 0, 3, 0, new BC6HBC7.LDRColorA(6,6,6,0), new BC6HBC7.LDRColorA(7,7,7,0)),
+            new ModeInfo(1, 6, 2, 0, 0, 3, 0, new LDRColorA(6,6,6,0), new LDRColorA(7,7,7,0)),
                 // Mode 1: Color only, 2 Subsets, RGBP 6661 (shared P-bit), 3-bit indecies, 64 partitions
-            new ModeInfo(2, 6, 0, 0, 0, 2, 0, new BC6HBC7.LDRColorA(5,5,5,0), new BC6HBC7.LDRColorA(5,5,5,0)),
+            new ModeInfo(2, 6, 0, 0, 0, 2, 0, new LDRColorA(5,5,5,0), new LDRColorA(5,5,5,0)),
                 // Mode 2: Color only, 3 Subsets, RGB 555, 2-bit indecies, 64 partitions
-            new ModeInfo(1, 6, 4, 0, 0, 2, 0, new BC6HBC7.LDRColorA(7,7,7,0), new BC6HBC7.LDRColorA(8,8,8,0)),
+            new ModeInfo(1, 6, 4, 0, 0, 2, 0, new LDRColorA(7,7,7,0), new LDRColorA(8,8,8,0)),
                 // Mode 3: Color only, 2 Subsets, RGBP 7771 (unique P-bit), 2-bits indecies, 64 partitions
-            new ModeInfo(0, 0, 0, 2, 1, 2, 3, new BC6HBC7.LDRColorA(5,5,5,6), new BC6HBC7.LDRColorA(5,5,5,6)),
+            new ModeInfo(0, 0, 0, 2, 1, 2, 3, new LDRColorA(5,5,5,6), new LDRColorA(5,5,5,6)),
                 // Mode 4: Color w/ Separate Alpha, 1 Subset, RGB 555, A6, 16x2/16x3-bit indices, 2-bit rotation, 1-bit index selector
-            new ModeInfo(0, 0, 0, 2, 0, 2, 2, new BC6HBC7.LDRColorA(7,7,7,8), new BC6HBC7.LDRColorA(7,7,7,8)),
+            new ModeInfo(0, 0, 0, 2, 0, 2, 2, new LDRColorA(7,7,7,8), new LDRColorA(7,7,7,8)),
                 // Mode 5: Color w/ Separate Alpha, 1 Subset, RGB 777, A8, 16x2/16x2-bit indices, 2-bit rotation
-            new ModeInfo(0, 0, 2, 0, 0, 4, 0, new BC6HBC7.LDRColorA(7,7,7,7), new BC6HBC7.LDRColorA(8,8,8,8)),
+            new ModeInfo(0, 0, 2, 0, 0, 4, 0, new LDRColorA(7,7,7,7), new LDRColorA(8,8,8,8)),
                 // Mode 6: Color+Alpha, 1 Subset, RGBAP 77771 (unique P-bit), 16x4-bit indecies
-            new ModeInfo(1, 6, 4, 0, 0, 2, 0, new BC6HBC7.LDRColorA(5,5,5,5), new BC6HBC7.LDRColorA(6,6,6,6))
+            new ModeInfo(1, 6, 4, 0, 0, 2, 0, new LDRColorA(5,5,5,5), new LDRColorA(6,6,6,6))
             // Mode 7: Color+Alpha, 2 Subsets, RGBAP 55551 (unique P-bit), 2-bit indices, 64 partitions
         };
 
         public D3DX_BC7() : base(16) { }
 
-        public BC6HBC7.HDRColorA[] Decode(Logger log)
+        public HDRColorA[] Decode(Logger log)
         {
-            BC6HBC7.HDRColorA[] pOut = new BC6HBC7.HDRColorA[BC.NUM_PIXELS_PER_BLOCK];
+            HDRColorA[] pOut = new HDRColorA[BC.NUM_PIXELS_PER_BLOCK];
             uint uFirst = 0;
             while (uFirst < 128 && GetBit(ref uFirst) <= 0) { }
             byte uMode = (byte)(uFirst - 1);
@@ -110,7 +120,7 @@ namespace Molten.Graphics.Textures
             if (uMode < 8)
             {
                 byte uPartitions = ms_aInfo[uMode].uPartitions;
-                Debug.Assert(uPartitions < BC6HBC7.BC7_MAX_REGIONS);
+                Debug.Assert(uPartitions < BC67.BC7_MAX_REGIONS);
 
                 byte uNumEndPts = (byte)((uPartitions + 1u) << 1);
                 byte uIndexPrec = ms_aInfo[uMode].uIndexPrec;
@@ -119,7 +129,7 @@ namespace Molten.Graphics.Textures
                 uint uStartBit = uMode + 1U;
                 byte[] P = new byte[6];
                 byte uShape = GetBits(ref uStartBit, ms_aInfo[uMode].uPartitionBits);
-                Debug.Assert(uShape < BC6HBC7.BC7_MAX_SHAPES);
+                Debug.Assert(uShape < BC67.BC7_MAX_SHAPES);
 
                 byte uRotation = GetBits(ref uStartBit, ms_aInfo[uMode].uRotationBits);
                 Debug.Assert(uRotation < 4);
@@ -127,11 +137,11 @@ namespace Molten.Graphics.Textures
                 byte uIndexMode = GetBits(ref uStartBit, ms_aInfo[uMode].uIndexModeBits);
                 Debug.Assert(uIndexMode < 2);
 
-                BC6HBC7.LDRColorA[] c = new BC6HBC7.LDRColorA[BC6HBC7.BC7_MAX_REGIONS << 1];
-                BC6HBC7.LDRColorA RGBAPrec = ms_aInfo[uMode].RGBAPrec;
-                BC6HBC7.LDRColorA RGBAPrecWithP = ms_aInfo[uMode].RGBAPrecWithP;
+                LDRColorA[] c = new LDRColorA[BC67.BC7_MAX_REGIONS << 1];
+                LDRColorA RGBAPrec = ms_aInfo[uMode].RGBAPrec;
+                LDRColorA RGBAPrecWithP = ms_aInfo[uMode].RGBAPrecWithP;
 
-                Debug.Assert(uNumEndPts <= (BC6HBC7.BC7_MAX_REGIONS << 1));
+                Debug.Assert(uNumEndPts <= (BC67.BC7_MAX_REGIONS << 1));
 
                 // Red channel
                 for (i = 0; i < uNumEndPts; i++)
@@ -141,7 +151,7 @@ namespace Molten.Graphics.Textures
 # if DEBUG
                         log.WriteError("BC7: Invalid block encountered during decoding\n");
 #endif
-                        BC6HBC7.FillWithErrorColors(pOut);
+                        BC67.FillWithErrorColors(pOut);
                         return pOut;
                     }
 
@@ -156,7 +166,7 @@ namespace Molten.Graphics.Textures
 # if DEBUG
                         log.WriteError("BC7: Invalid block encountered during decoding\n");
 #endif
-                        BC6HBC7.FillWithErrorColors(pOut);
+                        BC67.FillWithErrorColors(pOut);
                         return pOut;
                     }
 
@@ -171,7 +181,7 @@ namespace Molten.Graphics.Textures
 # if DEBUG
                         log.WriteError("BC7: Invalid block encountered during decoding\n");
 #endif
-                        BC6HBC7.FillWithErrorColors(pOut);
+                        BC67.FillWithErrorColors(pOut);
                         return pOut;
                     }
 
@@ -186,7 +196,7 @@ namespace Molten.Graphics.Textures
 # if DEBUG
                         log.WriteError("BC7: Invalid block encountered during decoding\n");
 #endif
-                        BC6HBC7.FillWithErrorColors(pOut);
+                        BC67.FillWithErrorColors(pOut);
                         return pOut;
                     }
 
@@ -202,7 +212,7 @@ namespace Molten.Graphics.Textures
 # if DEBUG
                         log.WriteError("BC7: Invalid block encountered during decoding\n");
 #endif
-                        BC6HBC7.FillWithErrorColors(pOut);
+                        BC67.FillWithErrorColors(pOut);
                         return pOut;
                     }
 
@@ -214,7 +224,7 @@ namespace Molten.Graphics.Textures
                     for (i = 0; i < uNumEndPts; i++)
                     {
                         uint pi = i * ms_aInfo[uMode].uPBits / uNumEndPts;
-                        for (byte ch = 0; ch < BC6HBC7.BC7_NUM_CHANNELS; ch++)
+                        for (byte ch = 0; ch < BC67.BC7_NUM_CHANNELS; ch++)
                         {
                             if (RGBAPrec[ch] != RGBAPrecWithP[ch])
                             {
@@ -235,13 +245,13 @@ namespace Molten.Graphics.Textures
                 // read color indices
                 for (i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++)
                 {
-                    uint uNumBits = BC6HBC7.IsFixUpOffset(ms_aInfo[uMode].uPartitions, uShape, i) ? uIndexPrec - 1U : uIndexPrec;
+                    uint uNumBits = BC67.IsFixUpOffset(ms_aInfo[uMode].uPartitions, uShape, i) ? uIndexPrec - 1U : uIndexPrec;
                     if (uStartBit + uNumBits > 128)
                     {
 # if DEBUG
                         log.WriteError("BC7: Invalid block encountered during decoding\n");
 #endif
-                        BC6HBC7.FillWithErrorColors(pOut);
+                        BC67.FillWithErrorColors(pOut);
                         return pOut;
                     }
                     w1[i] = GetBits(ref uStartBit, uNumBits);
@@ -258,7 +268,7 @@ namespace Molten.Graphics.Textures
 # if DEBUG
                             log.WriteError("BC7: Invalid block encountered during decoding\n");
 #endif
-                            BC6HBC7.FillWithErrorColors(pOut);
+                            BC67.FillWithErrorColors(pOut);
                             return pOut;
                         }
                         w2[i] = GetBits(ref uStartBit, uNumBits);
@@ -267,32 +277,32 @@ namespace Molten.Graphics.Textures
 
                 for (i = 0; i < BC.NUM_PIXELS_PER_BLOCK; ++i)
                 {
-                    byte uRegion = BC6HBC7.g_aPartitionTable[uPartitions][uShape][i];
-                    BC6HBC7.LDRColorA outPixel = new BC6HBC7.LDRColorA();
+                    byte uRegion = BC67.g_aPartitionTable[uPartitions][uShape][i];
+                    LDRColorA outPixel = new LDRColorA();
                     if (uIndexPrec2 == 0)
                     {
-                        BC6HBC7.LDRColorA.Interpolate(c[uRegion << 1], c[(uRegion << 1) + 1], w1[i], w1[i], uIndexPrec, uIndexPrec, ref outPixel);
+                        LDRColorA.Interpolate(c[uRegion << 1], c[(uRegion << 1) + 1], w1[i], w1[i], uIndexPrec, uIndexPrec, ref outPixel);
                     }
                     else
                     {
                         if (uIndexMode == 0)
                         {
-                            BC6HBC7.LDRColorA.Interpolate(c[uRegion << 1], c[(uRegion << 1) + 1], w1[i], w2[i], uIndexPrec, uIndexPrec2, ref outPixel);
+                            LDRColorA.Interpolate(c[uRegion << 1], c[(uRegion << 1) + 1], w1[i], w2[i], uIndexPrec, uIndexPrec2, ref outPixel);
                         }
                         else
                         {
-                            BC6HBC7.LDRColorA.Interpolate(c[uRegion << 1], c[(uRegion << 1) + 1], w2[i], w1[i], uIndexPrec2, uIndexPrec, ref outPixel);
+                            LDRColorA.Interpolate(c[uRegion << 1], c[(uRegion << 1) + 1], w2[i], w1[i], uIndexPrec2, uIndexPrec, ref outPixel);
                         }
                     }
 
                     switch (uRotation)
                     {
-                        case 1: BC6HBC7.Swap(ref outPixel.r, ref outPixel.a); break;
-                        case 2: BC6HBC7.Swap(ref outPixel.g, ref outPixel.a); break;
-                        case 3: BC6HBC7.Swap(ref outPixel.b, ref outPixel.a); break;
+                        case 1: BC67.Swap(ref outPixel.r, ref outPixel.a); break;
+                        case 2: BC67.Swap(ref outPixel.g, ref outPixel.a); break;
+                        case 3: BC67.Swap(ref outPixel.b, ref outPixel.a); break;
                     }
 
-                    pOut[i] = (BC6HBC7.HDRColorA)outPixel;
+                    pOut[i] = (HDRColorA)outPixel;
                 }
             }
             else
@@ -302,19 +312,20 @@ namespace Molten.Graphics.Textures
 #endif
                 // Per the BC7 format spec, we must return transparent black
                 for (int i = 0; i < pOut.Length; i++)
-                    pOut[i] = new BC6HBC7.HDRColorA();
+                    pOut[i] = new HDRColorA();
             }
 
             return pOut;
         }
 
-        public void Encode(BCFlags flags, BC6HBC7.HDRColorA[] pIn)
+        public void Encode(BCFlags flags, HDRColorA[] pIn)
         {
+            Context context = new Context();
             byte[] final = new byte[m_uBits.Length];
             Buffer.BlockCopy(m_uBits, 0, final, 0, final.Length);
 
             EncodeParams EP = new EncodeParams(pIn);
-            float fMSEBest = BC6HBC7.FLT_MAX;
+            float fMSEBest = float.MaxValue;
             uint alphaMask = 0xFF;
 
             for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; ++i)
@@ -343,23 +354,23 @@ namespace Molten.Graphics.Textures
                     continue;
 
                 uint uShapes = 1U << ms_aInfo[EP.uMode].uPartitionBits;
-                Debug.Assert(uShapes <= BC6HBC7.BC7_MAX_SHAPES);
+                Debug.Assert(uShapes <= BC67.BC7_MAX_SHAPES);
 
                 uint uNumRots = 1U << ms_aInfo[EP.uMode].uRotationBits;
                 uint uNumIdxMode = 1U << ms_aInfo[EP.uMode].uIndexModeBits;
                 // Number of rough cases to look at. reasonable values of this are 1, uShapes/4, and uShapes
                 // uShapes/4 gets nearly all the cases; you can increase that a bit (say by 3 or 4) if you really want to squeeze the last bit out
                 uint uItems = Math.Max(1, uShapes >> 2);
-                float[] afRoughMSE = new float[BC6HBC7.BC7_MAX_SHAPES];
-                uint[] auShape = new uint[BC6HBC7.BC7_MAX_SHAPES];
+                float[] afRoughMSE = new float[BC67.BC7_MAX_SHAPES];
+                uint[] auShape = new uint[BC67.BC7_MAX_SHAPES];
 
                 for (uint r = 0; r < uNumRots && fMSEBest > 0; ++r)
                 {
                     switch (r)
                     {
-                        case 1: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC6HBC7.Swap(ref EP.aLDRPixels[i].r, ref EP.aLDRPixels[i].a); break;
-                        case 2: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC6HBC7.Swap(ref EP.aLDRPixels[i].g, ref EP.aLDRPixels[i].a); break;
-                        case 3: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC6HBC7.Swap(ref EP.aLDRPixels[i].b, ref EP.aLDRPixels[i].a); break;
+                        case 1: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].r, ref EP.aLDRPixels[i].a); break;
+                        case 2: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].g, ref EP.aLDRPixels[i].a); break;
+                        case 3: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].b, ref EP.aLDRPixels[i].a); break;
                     }
 
                     for (uint im = 0; im < uNumIdxMode && fMSEBest > 0; ++im)
@@ -367,7 +378,7 @@ namespace Molten.Graphics.Textures
                         // pick the best uItems shapes and refine these.
                         for (uint s = 0; s < uShapes; s++)
                         {
-                            afRoughMSE[s] = RoughMSE(EP, s, im);
+                            afRoughMSE[s] = RoughMSE(EP, s, im, context);
                             auShape[s] = s;
                         }
 
@@ -378,8 +389,8 @@ namespace Molten.Graphics.Textures
                             {
                                 if (afRoughMSE[i] > afRoughMSE[j])
                                 {
-                                    BC6HBC7.Swap(ref afRoughMSE[i], ref afRoughMSE[j]);
-                                    BC6HBC7.Swap(ref auShape[i], ref auShape[j]);
+                                    BC67.Swap(ref afRoughMSE[i], ref afRoughMSE[j]);
+                                    BC67.Swap(ref auShape[i], ref auShape[j]);
                                 }
                             }
                         }
@@ -397,9 +408,9 @@ namespace Molten.Graphics.Textures
 
                     switch (r)
                     {
-                        case 1: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC6HBC7.Swap(ref EP.aLDRPixels[i].r, ref EP.aLDRPixels[i].a); break;
-                        case 2: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC6HBC7.Swap(ref EP.aLDRPixels[i].g, ref EP.aLDRPixels[i].a); break;
-                        case 3: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC6HBC7.Swap(ref EP.aLDRPixels[i].b, ref EP.aLDRPixels[i].a); break;
+                        case 1: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].r, ref EP.aLDRPixels[i].a); break;
+                        case 2: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].g, ref EP.aLDRPixels[i].a); break;
+                        case 3: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].b, ref EP.aLDRPixels[i].a); break;
                     }
                 }
             }
@@ -416,9 +427,9 @@ namespace Molten.Graphics.Textures
             return (byte)(rnd >> (8 - uPrec));
         }
 
-        private static BC6HBC7.LDRColorA Quantize(BC6HBC7.LDRColorA c, BC6HBC7.LDRColorA RGBAPrec)
+        private static LDRColorA Quantize(LDRColorA c, LDRColorA RGBAPrec)
         {
-            BC6HBC7.LDRColorA q;
+            LDRColorA q;
             q.r = Quantize(c.r, RGBAPrec.r);
             q.g = Quantize(c.g, RGBAPrec.g);
             q.b = Quantize(c.b, RGBAPrec.b);
@@ -436,9 +447,9 @@ namespace Molten.Graphics.Textures
             return (byte)(comp | (comp >> (int)uPrec));
         }
 
-        private static BC6HBC7.LDRColorA Unquantize(BC6HBC7.LDRColorA c, BC6HBC7.LDRColorA RGBAPrec)
+        private static LDRColorA Unquantize(LDRColorA c, LDRColorA RGBAPrec)
         {
-            return new BC6HBC7.LDRColorA()
+            return new LDRColorA()
             {
                 r = Unquantize(c.r, RGBAPrec.r),
                 g = Unquantize(c.g, RGBAPrec.g),
@@ -447,36 +458,36 @@ namespace Molten.Graphics.Textures
             };
         }
 
-        private static void GeneratePaletteQuantized(EncodeParams pEP, uint uIndexMode, BC6HBC7.LDREndPntPair endPts, BC6HBC7.LDRColorA[] aPalette)
+        private static void GeneratePaletteQuantized(EncodeParams pEP, uint uIndexMode, BC67.LDREndPntPair endPts, LDRColorA[] aPalette)
         {
             uint uIndexPrec = uIndexMode > 0 ? ms_aInfo[pEP.uMode].uIndexPrec2 : ms_aInfo[pEP.uMode].uIndexPrec;
             uint uIndexPrec2 = uIndexMode > 0 ? ms_aInfo[pEP.uMode].uIndexPrec : ms_aInfo[pEP.uMode].uIndexPrec2;
             uint uNumIndices = 1U << (int)uIndexPrec;
             uint uNumIndices2 = 1U << (int)uIndexPrec2;
             Debug.Assert(uNumIndices > 0 && uNumIndices2 > 0);
-            Debug.Assert((uNumIndices <= BC6HBC7.BC7_MAX_INDICES) && (uNumIndices2 <= BC6HBC7.BC7_MAX_INDICES));
+            Debug.Assert((uNumIndices <= BC67.BC7_MAX_INDICES) && (uNumIndices2 <= BC67.BC7_MAX_INDICES));
 
-            BC6HBC7.LDRColorA a = Unquantize(endPts.A, ms_aInfo[pEP.uMode].RGBAPrecWithP);
-            BC6HBC7.LDRColorA b = Unquantize(endPts.B, ms_aInfo[pEP.uMode].RGBAPrecWithP);
+            LDRColorA a = Unquantize(endPts.A, ms_aInfo[pEP.uMode].RGBAPrecWithP);
+            LDRColorA b = Unquantize(endPts.B, ms_aInfo[pEP.uMode].RGBAPrecWithP);
             if (uIndexPrec2 == 0)
             {
                 for (uint i = 0; i < uNumIndices; i++)
-                    BC6HBC7.LDRColorA.Interpolate(a, b, i, i, uIndexPrec, uIndexPrec, ref aPalette[i]);
+                    LDRColorA.Interpolate(a, b, i, i, uIndexPrec, uIndexPrec, ref aPalette[i]);
             }
             else
             {
                 for (uint i = 0; i < uNumIndices; i++)
-                    BC6HBC7.LDRColorA.InterpolateRGB(a, b, i, uIndexPrec, ref aPalette[i]);
+                    LDRColorA.InterpolateRGB(a, b, i, uIndexPrec, ref aPalette[i]);
                 for (uint i = 0; i < uNumIndices2; i++)
-                    BC6HBC7.LDRColorA.InterpolateA(a, b, i, uIndexPrec2, ref aPalette[i]);
+                    LDRColorA.InterpolateA(a, b, i, uIndexPrec2, ref aPalette[i]);
             }
         }
 
-        private float PerturbOne(EncodeParams pEP, BC6HBC7.LDRColorA[] aColors, uint np, uint uIndexMode, uint ch,
-            BC6HBC7.LDREndPntPair oldEndPts, out BC6HBC7.LDREndPntPair newEndPts, float fOldErr, byte do_b)
+        private float PerturbOne(EncodeParams pEP, LDRColorA[] aColors, uint np, uint uIndexMode, uint ch,
+            BC67.LDREndPntPair oldEndPts, out BC67.LDREndPntPair newEndPts, float fOldErr, byte do_b)
         {
             int prec = ms_aInfo[pEP.uMode].RGBAPrecWithP[ch];
-            BC6HBC7.LDREndPntPair tmp_endPts = newEndPts = oldEndPts;
+            BC67.LDREndPntPair tmp_endPts = newEndPts = oldEndPts;
             float fMinErr = fOldErr;
             byte pnew_c = (do_b > 0 ? newEndPts.B[ch] : newEndPts.A[ch]);
             byte ptmp_c = (do_b > 0 ? tmp_endPts.B[ch] : tmp_endPts.A[ch]);
@@ -512,11 +523,11 @@ namespace Molten.Graphics.Textures
 
         // perturb the endpoints at least -3 to 3.
         // always ensure endpoint ordering is preserved (no need to overlap the scan)
-        private void Exhaustive(EncodeParams pEP, BC6HBC7.LDRColorA[] aColors, uint np, uint uIndexMode, uint ch,
-            float fOrgErr, ref BC6HBC7.LDREndPntPair optEndPt)
+        private void Exhaustive(EncodeParams pEP, LDRColorA[] aColors, uint np, uint uIndexMode, uint ch,
+            float fOrgErr, ref BC67.LDREndPntPair optEndPt)
         {
             byte uPrec = ms_aInfo[pEP.uMode].RGBAPrecWithP[ch];
-            BC6HBC7.LDREndPntPair tmpEndPt;
+            BC67.LDREndPntPair tmpEndPt;
             if (fOrgErr == 0)
                 return;
 
@@ -581,18 +592,18 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private void OptimizeOne(EncodeParams pEP, BC6HBC7.LDRColorA[] aColors, uint np, uint uIndexMode,
-            float fOrgErr, BC6HBC7.LDREndPntPair org, out BC6HBC7.LDREndPntPair opt)
+        private void OptimizeOne(EncodeParams pEP, LDRColorA[] aColors, uint np, uint uIndexMode,
+            float fOrgErr, BC67.LDREndPntPair org, out BC67.LDREndPntPair opt)
         {
             float fOptErr = fOrgErr;
             opt = org;
 
-            BC6HBC7.LDREndPntPair new_a, new_b;
-            BC6HBC7.LDREndPntPair newEndPts;
+            BC67.LDREndPntPair new_a, new_b;
+            BC67.LDREndPntPair newEndPts;
             byte do_b;
 
             // now optimize each channel separately
-            for (uint ch = 0; ch < BC6HBC7.BC7_NUM_CHANNELS; ++ch)
+            for (uint ch = 0; ch < BC67.BC7_NUM_CHANNELS; ++ch)
             {
                 if (ms_aInfo[pEP.uMode].RGBAPrecWithP[ch] == 0)
                     continue;
@@ -640,50 +651,50 @@ namespace Molten.Graphics.Textures
             }
 
             // finally, do a small exhaustive search around what we think is the global minima to be sure
-            for (uint ch = 0; ch < BC6HBC7.BC7_NUM_CHANNELS; ch++)
+            for (uint ch = 0; ch < BC67.BC7_NUM_CHANNELS; ch++)
                 Exhaustive(pEP, aColors, np, uIndexMode, ch, fOptErr, ref opt);
         }
 
         private void OptimizeEndPoints(EncodeParams pEP, uint uShape, uint uIndexMode, float[] afOrgErr,
-            BC6HBC7.LDREndPntPair[] aOrgEndPts, BC6HBC7.LDREndPntPair[] aOptEndPts)
+            BC67.LDREndPntPair[] aOrgEndPts, BC67.LDREndPntPair[] aOptEndPts)
         {
             byte uPartitions = ms_aInfo[pEP.uMode].uPartitions;
-            Debug.Assert(uPartitions < BC6HBC7.BC7_MAX_REGIONS && uShape < BC6HBC7.BC7_MAX_SHAPES);
+            Debug.Assert(uPartitions < BC67.BC7_MAX_REGIONS && uShape < BC67.BC7_MAX_SHAPES);
 
-            BC6HBC7.LDRColorA[] aPixels = new BC6HBC7.LDRColorA[BC.NUM_PIXELS_PER_BLOCK];
+            LDRColorA[] aPixels = new LDRColorA[BC.NUM_PIXELS_PER_BLOCK];
 
             for (uint p = 0; p <= uPartitions; ++p)
             {
                 // collect the pixels in the region
                 uint np = 0;
                 for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; ++i)
-                    if (BC6HBC7.g_aPartitionTable[uPartitions][uShape][i] == p)
+                    if (BC67.g_aPartitionTable[uPartitions][uShape][i] == p)
                         aPixels[np++] = pEP.aLDRPixels[i];
 
                 OptimizeOne(pEP, aPixels, np, uIndexMode, afOrgErr[p], aOrgEndPts[p], out aOptEndPts[p]);
             }
         }
 
-        private void AssignIndices(EncodeParams pEP, uint uShape, uint uIndexMode, BC6HBC7.LDREndPntPair[] endPts, uint[] aIndices, uint[] aIndices2,
+        private void AssignIndices(EncodeParams pEP, uint uShape, uint uIndexMode, BC67.LDREndPntPair[] endPts, uint[] aIndices, uint[] aIndices2,
             float[] afTotErr)
         {
-            Debug.Assert(uShape < BC6HBC7.BC7_MAX_SHAPES);
+            Debug.Assert(uShape < BC67.BC7_MAX_SHAPES);
 
             byte uPartitions = ms_aInfo[pEP.uMode].uPartitions;
-            Debug.Assert(uPartitions < BC6HBC7.BC7_MAX_REGIONS);
+            Debug.Assert(uPartitions < BC67.BC7_MAX_REGIONS);
 
             byte uIndexPrec = uIndexMode > 0 ? ms_aInfo[pEP.uMode].uIndexPrec2 : ms_aInfo[pEP.uMode].uIndexPrec;
             byte uIndexPrec2 = uIndexMode > 0 ? ms_aInfo[pEP.uMode].uIndexPrec : ms_aInfo[pEP.uMode].uIndexPrec2;
             byte uNumIndices = (byte)(1u << uIndexPrec);
             byte uNumIndices2 = (byte)(1u << uIndexPrec2);
 
-            Debug.Assert((uNumIndices <= BC6HBC7.BC7_MAX_INDICES) && (uNumIndices2 <= BC6HBC7.BC7_MAX_INDICES));
+            Debug.Assert((uNumIndices <= BC67.BC7_MAX_INDICES) && (uNumIndices2 <= BC67.BC7_MAX_INDICES));
 
             byte uHighestIndexBit = (byte)(uNumIndices >> 1);
             byte uHighestIndexBit2 = (byte)(uNumIndices2 >> 1);
-            BC6HBC7.LDRColorA[][] aPalette = new BC6HBC7.LDRColorA[BC6HBC7.BC7_MAX_REGIONS][];
+            LDRColorA[][] aPalette = new LDRColorA[BC67.BC7_MAX_REGIONS][];
             for (int i = 0; i < aPalette.Length; i++)
-                aPalette[i] = new BC6HBC7.LDRColorA[BC6HBC7.BC7_MAX_INDICES];
+                aPalette[i] = new LDRColorA[BC67.BC7_MAX_INDICES];
 
             // build list of possibles
             for (uint p = 0; p <= uPartitions; p++)
@@ -694,9 +705,9 @@ namespace Molten.Graphics.Textures
 
             for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++)
             {
-                byte uRegion = BC6HBC7.g_aPartitionTable[uPartitions][uShape][i];
-                Debug.Assert(uRegion < BC6HBC7.BC7_MAX_REGIONS);
-                afTotErr[uRegion] += BC6HBC7.ComputeError(pEP.aLDRPixels[i], aPalette[uRegion], uIndexPrec, uIndexPrec2, out aIndices[i], out aIndices2[i]);
+                byte uRegion = BC67.g_aPartitionTable[uPartitions][uShape][i];
+                Debug.Assert(uRegion < BC67.BC7_MAX_REGIONS);
+                afTotErr[uRegion] += BC67.ComputeError(pEP.aLDRPixels[i], aPalette[uRegion], uIndexPrec, uIndexPrec2, out aIndices[i], out aIndices2[i]);
             }
 
             // swap endpoints as needed to ensure that the indices at index_positions have a 0 high-order bit
@@ -704,34 +715,34 @@ namespace Molten.Graphics.Textures
             {
                 for (uint p = 0; p <= uPartitions; p++)
                 {
-                    if ((aIndices[BC6HBC7.g_aFixUp[uPartitions][uShape][p]] & uHighestIndexBit) == uHighestIndexBit)
+                    if ((aIndices[BC67.g_aFixUp[uPartitions][uShape][p]] & uHighestIndexBit) == uHighestIndexBit)
                     {
-                        BC6HBC7.Swap(ref endPts[p].A, ref endPts[p].B);
+                        BC67.Swap(ref endPts[p].A, ref endPts[p].B);
                         for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++)
-                            if (BC6HBC7.g_aPartitionTable[uPartitions][uShape][i] == p)
+                            if (BC67.g_aPartitionTable[uPartitions][uShape][i] == p)
                                 aIndices[i] = uNumIndices - 1U - aIndices[i];
                     }
-                    Debug.Assert((aIndices[BC6HBC7.g_aFixUp[uPartitions][uShape][p]] & uHighestIndexBit) == 0);
+                    Debug.Assert((aIndices[BC67.g_aFixUp[uPartitions][uShape][p]] & uHighestIndexBit) == 0);
                 }
             }
             else
             {
                 for (uint p = 0; p <= uPartitions; p++)
                 {
-                    if ((aIndices[BC6HBC7.g_aFixUp[uPartitions][uShape][p]] & uHighestIndexBit) == uHighestIndexBit)
+                    if ((aIndices[BC67.g_aFixUp[uPartitions][uShape][p]] & uHighestIndexBit) == uHighestIndexBit)
                     {
-                        BC6HBC7.Swap(ref endPts[p].A.r, ref endPts[p].B.r);
-                        BC6HBC7.Swap(ref endPts[p].A.g, ref endPts[p].B.g);
-                        BC6HBC7.Swap(ref endPts[p].A.b, ref endPts[p].B.b);
+                        BC67.Swap(ref endPts[p].A.r, ref endPts[p].B.r);
+                        BC67.Swap(ref endPts[p].A.g, ref endPts[p].B.g);
+                        BC67.Swap(ref endPts[p].A.b, ref endPts[p].B.b);
                         for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++)
-                            if (BC6HBC7.g_aPartitionTable[uPartitions][uShape][i] == p)
+                            if (BC67.g_aPartitionTable[uPartitions][uShape][i] == p)
                                 aIndices[i] = uNumIndices - 1U - aIndices[i];
                     }
-                    Debug.Assert((aIndices[BC6HBC7.g_aFixUp[uPartitions][uShape][p]] & uHighestIndexBit) == 0);
+                    Debug.Assert((aIndices[BC67.g_aFixUp[uPartitions][uShape][p]] & uHighestIndexBit) == 0);
 
                     if ((aIndices2[0] & uHighestIndexBit2) == uHighestIndexBit2)
                     {
-                        BC6HBC7.Swap(ref endPts[p].A.a, ref endPts[p].B.a);
+                        BC67.Swap(ref endPts[p].A.a, ref endPts[p].B.a);
                         for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++)
                             aIndices2[i] = uNumIndices2 - 1U - aIndices2[i];
                     }
@@ -740,16 +751,16 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private void EmitBlock(EncodeParams pEP, uint uShape, uint uRotation, uint uIndexMode, BC6HBC7.LDREndPntPair[] aEndPts, uint[] aIndex, uint[] aIndex2)
+        private void EmitBlock(EncodeParams pEP, uint uShape, uint uRotation, uint uIndexMode, BC67.LDREndPntPair[] aEndPts, uint[] aIndex, uint[] aIndex2)
         {
             byte uPartitions = ms_aInfo[pEP.uMode].uPartitions;
-            Debug.Assert(uPartitions < BC6HBC7.BC7_MAX_REGIONS);
+            Debug.Assert(uPartitions < BC67.BC7_MAX_REGIONS);
 
             uint uPBits = ms_aInfo[pEP.uMode].uPBits;
             uint uIndexPrec = ms_aInfo[pEP.uMode].uIndexPrec;
             uint uIndexPrec2 = ms_aInfo[pEP.uMode].uIndexPrec2;
-            BC6HBC7.LDRColorA RGBAPrec = ms_aInfo[pEP.uMode].RGBAPrec;
-            BC6HBC7.LDRColorA RGBAPrecWithP = ms_aInfo[pEP.uMode].RGBAPrecWithP;
+            LDRColorA RGBAPrec = ms_aInfo[pEP.uMode].RGBAPrec;
+            LDRColorA RGBAPrecWithP = ms_aInfo[pEP.uMode].RGBAPrecWithP;
             uint i;
             uint uStartBit = 0;
             SetBits(ref uStartBit, pEP.uMode, 0);
@@ -763,7 +774,7 @@ namespace Molten.Graphics.Textures
                 uint uNumEP = (uPartitions + 1U) << 1;
                 byte[] aPVote = { 0, 0, 0, 0, 0, 0 };
                 byte[] aCount = { 0, 0, 0, 0, 0, 0 };
-                for (byte ch = 0; ch < BC6HBC7.BC7_NUM_CHANNELS; ch++)
+                for (byte ch = 0; ch < BC67.BC7_NUM_CHANNELS; ch++)
                 {
                     byte ep = 0;
                     for (i = 0; i <= uPartitions; i++)
@@ -778,11 +789,11 @@ namespace Molten.Graphics.Textures
                             SetBits(ref uStartBit, RGBAPrec[ch], (byte)(aEndPts[i].A[ch] >> 1));
                             SetBits(ref uStartBit, RGBAPrec[ch], (byte)(aEndPts[i].B[ch] >> 1));
                             uint idx = ep++ * uPBits / uNumEP;
-                            Debug.Assert(idx < (BC6HBC7.BC7_MAX_REGIONS << 1));
+                            Debug.Assert(idx < (BC67.BC7_MAX_REGIONS << 1));
                             aPVote[idx] += (byte)(aEndPts[i].A[ch] & 0x01);
                             aCount[idx]++;
                             idx = ep++ * uPBits / uNumEP;
-                            Debug.Assert(idx < (BC6HBC7.BC7_MAX_REGIONS << 1));
+                            Debug.Assert(idx < (BC67.BC7_MAX_REGIONS << 1));
                             aPVote[idx] += (byte)(aEndPts[i].B[ch] & 0x01);
                             aCount[idx]++;
                         }
@@ -796,7 +807,7 @@ namespace Molten.Graphics.Textures
             }
             else
             {
-                for (uint ch = 0; ch < BC6HBC7.BC7_NUM_CHANNELS; ch++)
+                for (uint ch = 0; ch < BC67.BC7_NUM_CHANNELS; ch++)
                 {
                     for (i = 0; i <= uPartitions; i++)
                     {
@@ -810,7 +821,7 @@ namespace Molten.Graphics.Textures
             uint[] aI2 = uIndexMode > 0 ? aIndex : aIndex2;
             for (i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++)
             {
-                if (BC6HBC7.IsFixUpOffset(ms_aInfo[pEP.uMode].uPartitions, uShape, i))
+                if (BC67.IsFixUpOffset(ms_aInfo[pEP.uMode].uPartitions, uShape, i))
                     SetBits(ref uStartBit, uIndexPrec - 1, (byte)aI1[i]);
                 else
                     SetBits(ref uStartBit, uIndexPrec, (byte)aI1[i]);
@@ -822,7 +833,7 @@ namespace Molten.Graphics.Textures
             Debug.Assert(uStartBit == 128);
         }
 
-        private void FixEndpointPBits(EncodeParams pEP, BC6HBC7.LDREndPntPair[] pOrigEndpoints, BC6HBC7.LDREndPntPair[] pFixedEndpoints)
+        private void FixEndpointPBits(EncodeParams pEP, BC67.LDREndPntPair[] pOrigEndpoints, BC67.LDREndPntPair[] pFixedEndpoints)
         {
             uint uPartitions = ms_aInfo[pEP.uMode].uPartitions;
 
@@ -838,10 +849,10 @@ namespace Molten.Graphics.Textures
                 byte[] aPVote = { 0, 0, 0, 0, 0, 0 };
                 byte[] aCount = { 0, 0, 0, 0, 0, 0 };
 
-                BC6HBC7.LDRColorA RGBAPrec = ms_aInfo[pEP.uMode].RGBAPrec;
-                BC6HBC7.LDRColorA RGBAPrecWithP = ms_aInfo[pEP.uMode].RGBAPrecWithP;
+                LDRColorA RGBAPrec = ms_aInfo[pEP.uMode].RGBAPrec;
+                LDRColorA RGBAPrecWithP = ms_aInfo[pEP.uMode].RGBAPrecWithP;
 
-                for (byte ch = 0; ch < BC6HBC7.BC7_NUM_CHANNELS; ch++)
+                for (byte ch = 0; ch < BC67.BC7_NUM_CHANNELS; ch++)
                 {
                     byte ep = 0;
                     for (uint i = 0; i <= uPartitions; i++)
@@ -857,11 +868,11 @@ namespace Molten.Graphics.Textures
                             pFixedEndpoints[i].B[ch] = (byte)(pOrigEndpoints[i].B[ch] >> 1);
 
                             uint idx = ep++ * uPBits / uNumEP;
-                            Debug.Assert(idx < (BC6HBC7.BC7_MAX_REGIONS << 1));
+                            Debug.Assert(idx < (BC67.BC7_MAX_REGIONS << 1));
                             aPVote[idx] += (byte)(pOrigEndpoints[i].A[ch] & 0x01);
                             aCount[idx]++;
                             idx = ep++ * uPBits / uNumEP;
-                            Debug.Assert(idx < (BC6HBC7.BC7_MAX_REGIONS << 1));
+                            Debug.Assert(idx < (BC67.BC7_MAX_REGIONS << 1));
                             aPVote[idx] += (byte)(pOrigEndpoints[i].B[ch] & 0x01);
                             aCount[idx]++;
                         }
@@ -870,7 +881,7 @@ namespace Molten.Graphics.Textures
 
                 // Compute the actual pbits we'll use when we encode block. Note this is not 
                 // rounding the component indices correctly in cases the pbits != a component's LSB.
-                int[] pbits = new int[BC6HBC7.BC7_MAX_REGIONS << 1];
+                int[] pbits = new int[BC67.BC7_MAX_REGIONS << 1];
                 for (uint i = 0; i < uPBits; i++)
                     pbits[i] = aPVote[i] > (aCount[i] >> 1) ? 1 : 0;
 
@@ -878,7 +889,7 @@ namespace Molten.Graphics.Textures
                 if (pEP.uMode == 1)
                 {
                     // shared pbits
-                    for (byte ch = 0; ch < BC6HBC7.BC7_NUM_CHANNELS; ch++)
+                    for (byte ch = 0; ch < BC67.BC7_NUM_CHANNELS; ch++)
                     {
                         for (uint i = 0; i <= uPartitions; i++)
                         {
@@ -889,7 +900,7 @@ namespace Molten.Graphics.Textures
                 }
                 else
                 {
-                    for (byte ch = 0; ch < BC6HBC7.BC7_NUM_CHANNELS; ch++)
+                    for (byte ch = 0; ch < BC67.BC7_NUM_CHANNELS; ch++)
                     {
                         for (uint i = 0; i <= uPartitions; i++)
                         {
@@ -903,21 +914,21 @@ namespace Molten.Graphics.Textures
 
         private float Refine(EncodeParams pEP, uint uShape, uint uRotation, uint uIndexMode)
         {
-            Debug.Assert(uShape < BC6HBC7.BC7_MAX_SHAPES);
+            Debug.Assert(uShape < BC67.BC7_MAX_SHAPES);
 
             uint uPartitions = ms_aInfo[pEP.uMode].uPartitions;
-            Debug.Assert(uPartitions < BC6HBC7.BC7_MAX_REGIONS);
+            Debug.Assert(uPartitions < BC67.BC7_MAX_REGIONS);
 
-            BC6HBC7.LDREndPntPair[] aOrgEndPts = new BC6HBC7.LDREndPntPair[BC6HBC7.BC7_MAX_REGIONS];
-            BC6HBC7.LDREndPntPair[] aOptEndPts = new BC6HBC7.LDREndPntPair[BC6HBC7.BC7_MAX_REGIONS];
+            BC67.LDREndPntPair[] aOrgEndPts = new BC67.LDREndPntPair[BC67.BC7_MAX_REGIONS];
+            BC67.LDREndPntPair[] aOptEndPts = new BC67.LDREndPntPair[BC67.BC7_MAX_REGIONS];
             uint[] aOrgIdx = new uint[BC.NUM_PIXELS_PER_BLOCK];
             uint[] aOrgIdx2 = new uint[BC.NUM_PIXELS_PER_BLOCK];
             uint[] aOptIdx = new uint[BC.NUM_PIXELS_PER_BLOCK];
             uint[] aOptIdx2 = new uint[BC.NUM_PIXELS_PER_BLOCK];
-            float[] aOrgErr = new float[BC6HBC7.BC7_MAX_REGIONS];
-            float[] aOptErr = new float[BC6HBC7.BC7_MAX_REGIONS];
+            float[] aOrgErr = new float[BC67.BC7_MAX_REGIONS];
+            float[] aOptErr = new float[BC67.BC7_MAX_REGIONS];
 
-            BC6HBC7.LDREndPntPair[] aEndPts = pEP.aEndPts[uShape];
+            BC67.LDREndPntPair[] aEndPts = pEP.aEndPts[uShape];
 
             for (uint p = 0; p <= uPartitions; p++)
             {
@@ -925,14 +936,14 @@ namespace Molten.Graphics.Textures
                 aOrgEndPts[p].B = Quantize(aEndPts[p].B, ms_aInfo[pEP.uMode].RGBAPrecWithP);
             }
 
-            BC6HBC7.LDREndPntPair[] newEndPts1 = new BC6HBC7.LDREndPntPair[BC6HBC7.BC7_MAX_REGIONS];
+            BC67.LDREndPntPair[] newEndPts1 = new BC67.LDREndPntPair[BC67.BC7_MAX_REGIONS];
             FixEndpointPBits(pEP, aOrgEndPts, newEndPts1);
 
             AssignIndices(pEP, uShape, uIndexMode, newEndPts1, aOrgIdx, aOrgIdx2, aOrgErr);
 
             OptimizeEndPoints(pEP, uShape, uIndexMode, aOrgErr, newEndPts1, aOptEndPts);
 
-            BC6HBC7.LDREndPntPair[] newEndPts2 = new BC6HBC7.LDREndPntPair[BC6HBC7.BC7_MAX_REGIONS];
+            BC67.LDREndPntPair[] newEndPts2 = new BC67.LDREndPntPair[BC67.BC7_MAX_REGIONS];
             FixEndpointPBits(pEP, aOptEndPts, newEndPts2);
 
             AssignIndices(pEP, uShape, uIndexMode, newEndPts2, aOptIdx, aOptIdx2, aOptErr);
@@ -955,21 +966,21 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private float MapColors(EncodeParams pEP, BC6HBC7.LDRColorA[] aColors, uint np, uint uIndexMode, BC6HBC7.LDREndPntPair endPts, float fMinErr)
+        private float MapColors(EncodeParams pEP, LDRColorA[] aColors, uint np, uint uIndexMode, BC67.LDREndPntPair endPts, float fMinErr)
         {
             byte uIndexPrec = uIndexMode > 0 ? ms_aInfo[pEP.uMode].uIndexPrec2 : ms_aInfo[pEP.uMode].uIndexPrec;
             byte uIndexPrec2 = uIndexMode > 0 ? ms_aInfo[pEP.uMode].uIndexPrec : ms_aInfo[pEP.uMode].uIndexPrec2;
-            BC6HBC7.LDRColorA[] aPalette = new BC6HBC7.LDRColorA[BC6HBC7.BC7_MAX_INDICES];
+            LDRColorA[] aPalette = new LDRColorA[BC67.BC7_MAX_INDICES];
             float fTotalErr = 0;
 
             GeneratePaletteQuantized(pEP, uIndexMode, endPts, aPalette);
             for (uint i = 0; i < np; ++i)
             {
                 uint dummy;
-                fTotalErr += BC6HBC7.ComputeError(aColors[i], aPalette, uIndexPrec, uIndexPrec2, out dummy, out dummy);
+                fTotalErr += BC67.ComputeError(aColors[i], aPalette, uIndexPrec, uIndexPrec2, out dummy, out dummy);
                 if (fTotalErr > fMinErr)   // check for early exit
                 {
-                    fTotalErr = BC6HBC7.FLT_MAX;
+                    fTotalErr = float.MaxValue;
                     break;
                 }
             }
@@ -977,29 +988,29 @@ namespace Molten.Graphics.Textures
             return fTotalErr;
         }
 
-        private float RoughMSE(EncodeParams pEP, uint uShape, uint uIndexMode)
+        private float RoughMSE(EncodeParams pEP, uint uShape, uint uIndexMode, Context cxt)
         {
-            Debug.Assert(uShape < BC6HBC7.BC7_MAX_SHAPES);
-            BC6HBC7.LDREndPntPair[] aEndPts = pEP.aEndPts[uShape];
+            Debug.Assert(uShape < BC67.BC7_MAX_SHAPES);
+            BC67.LDREndPntPair[] aEndPts = pEP.aEndPts[uShape];
 
             byte uPartitions = ms_aInfo[pEP.uMode].uPartitions;
-            Debug.Assert(uPartitions < BC6HBC7.BC7_MAX_REGIONS);
+            Debug.Assert(uPartitions < BC67.BC7_MAX_REGIONS);
 
             byte uIndexPrec = uIndexMode > 0 ? ms_aInfo[pEP.uMode].uIndexPrec2 : ms_aInfo[pEP.uMode].uIndexPrec;
             byte uIndexPrec2 = uIndexMode > 0 ? ms_aInfo[pEP.uMode].uIndexPrec : ms_aInfo[pEP.uMode].uIndexPrec2;
             byte uNumIndices = (byte)(1u << uIndexPrec);
             byte uNumIndices2 = (byte)(1u << uIndexPrec2);
             uint[] auPixIdx = new uint[BC.NUM_PIXELS_PER_BLOCK];
-            BC6HBC7.LDRColorA[][] aPalette = new BC6HBC7.LDRColorA[BC6HBC7.BC7_MAX_REGIONS][];
+            LDRColorA[][] aPalette = new LDRColorA[BC67.BC7_MAX_REGIONS][];
             for (int i = 0; i < aPalette.Length; i++)
-                aPalette[i] = new BC6HBC7.LDRColorA[BC6HBC7.BC7_MAX_INDICES];
+                aPalette[i] = new LDRColorA[BC67.BC7_MAX_INDICES];
 
             for (uint p = 0; p <= uPartitions; p++)
             {
                 uint np = 0;
                 for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++)
                 {
-                    if (BC6HBC7.g_aPartitionTable[uPartitions][uShape][i] == p)
+                    if (BC67.g_aPartitionTable[uPartitions][uShape][i] == p)
                         auPixIdx[np++] = i;
                 }
 
@@ -1020,8 +1031,8 @@ namespace Molten.Graphics.Textures
 
                 if (uIndexPrec2 == 0)
                 {
-                    BC6HBC7.HDRColorA epA, epB;
-                    BC6HBC7.OptimizeRGBA(pEP.aHDRPixels, out epA, out epB, 4, np, auPixIdx);
+                    HDRColorA epA, epB;
+                    BC67.OptimizeRGBA(pEP.aHDRPixels, out epA, out epB, 4, np, auPixIdx);
                     epA.Clamp(0.0f, 1.0f);
                     epB.Clamp(0.0f, 1.0f);
                     epA *= 255.0f;
@@ -1038,9 +1049,8 @@ namespace Molten.Graphics.Textures
                         uMaxAlpha = Math.Max(uMaxAlpha, pEP.aLDRPixels[auPixIdx[i]].a);
                     }
 
-                    BC6HBC7.HDRColorA epA = new BC6HBC7.HDRColorA();
-                    BC6HBC7.HDRColorA epB = new BC6HBC7.HDRColorA();
-                    BC6HBC7.OptimizeRGB(pEP.aHDRPixels, ref epA, ref epB, 4, np, auPixIdx);
+                    HDRColorA epA, epB;
+                    BC67.OptimizeRGB(pEP.aHDRPixels, out epA, out epB, 4, np, auPixIdx, cxt);
                     epA.Clamp(0.0f, 1.0f);
                     epB.Clamp(0.0f, 1.0f);
                     epA *= 255.0f;
@@ -1056,25 +1066,25 @@ namespace Molten.Graphics.Textures
             {
                 for (uint p = 0; p <= uPartitions; p++)
                     for (uint i = 0; i < uNumIndices; i++)
-                        BC6HBC7.LDRColorA.Interpolate(aEndPts[p].A, aEndPts[p].B, i, i, uIndexPrec, uIndexPrec, ref aPalette[p][i]);
+                        LDRColorA.Interpolate(aEndPts[p].A, aEndPts[p].B, i, i, uIndexPrec, uIndexPrec, ref aPalette[p][i]);
             }
             else
             {
                 for (uint p = 0; p <= uPartitions; p++)
                 {
                     for (uint i = 0; i < uNumIndices; i++)
-                        BC6HBC7.LDRColorA.InterpolateRGB(aEndPts[p].A, aEndPts[p].B, i, uIndexPrec, ref aPalette[p][i]);
+                        LDRColorA.InterpolateRGB(aEndPts[p].A, aEndPts[p].B, i, uIndexPrec, ref aPalette[p][i]);
                     for (uint i = 0; i < uNumIndices2; i++)
-                        BC6HBC7.LDRColorA.InterpolateA(aEndPts[p].A, aEndPts[p].B, i, uIndexPrec2, ref aPalette[p][i]);
+                        LDRColorA.InterpolateA(aEndPts[p].A, aEndPts[p].B, i, uIndexPrec2, ref aPalette[p][i]);
                 }
             }
 
             float fTotalErr = 0;
             for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++)
             {
-                byte uRegion = BC6HBC7.g_aPartitionTable[uPartitions][uShape][i];
+                byte uRegion = BC67.g_aPartitionTable[uPartitions][uShape][i];
                 uint dummy;
-                fTotalErr += BC6HBC7.ComputeError(pEP.aLDRPixels[i], aPalette[uRegion], uIndexPrec, uIndexPrec2, out dummy, out dummy);
+                fTotalErr += BC67.ComputeError(pEP.aLDRPixels[i], aPalette[uRegion], uIndexPrec, uIndexPrec2, out dummy, out dummy);
             }
 
             return fTotalErr;
