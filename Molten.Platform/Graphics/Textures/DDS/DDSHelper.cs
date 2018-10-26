@@ -165,16 +165,18 @@ namespace Molten.Graphics.Textures
             int blockWidth = Math.Min(uncompressed.Width, BLOCK_DIMENSIONS);
             int blockHeight = Math.Min(uncompressed.Height, BLOCK_DIMENSIONS);
             byte[] result = null;
-            Stopwatch sw = new Stopwatch();
+            Stopwatch blockTimer = new Stopwatch();
+            Stopwatch mainTimer = new Stopwatch();
 
+            mainTimer.Start();
             using (MemoryStream stream = new MemoryStream())
             {
                 using (BinaryWriter writer = new BinaryWriter(stream))
                 {
                     for (int blockY = 0; blockY < blockCountY; blockY++)
                     {
-                        sw.Reset();
-                        sw.Start();
+                        blockTimer.Reset();
+                        blockTimer.Start();
                         for (int blockX = 0; blockX < blockCountX; blockX++)
                         {
 
@@ -205,13 +207,15 @@ namespace Molten.Graphics.Textures
 
                             parser.Encode(writer, colTable, log);
                         }
-                        sw.Stop();
-                        log.WriteLine($"Encoded block row ${blockY} in {sw.Elapsed.TotalMilliseconds.ToString("N2")}ms");
+                        blockTimer.Stop();
+                        log.WriteLine($"Encoded block row ${blockY} in {blockTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms");
                     }
 
                     result = stream.ToArray();
                 }
             }
+            mainTimer.Stop();
+            log.WriteLine($"Encoded BC6H {uncompressed.Width}x{uncompressed.Height} mip-map level in ${mainTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms");
 
             return result;
         }

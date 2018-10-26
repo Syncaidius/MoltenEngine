@@ -69,8 +69,8 @@ namespace Molten.Samples
                 cr.Commit();
             });
 
-            //ITexture2D decompressedTexture = Engine.Renderer.Resources.CreateTexture2D(loadedData);
-            //mat.SetDefaultResource(decompressedTexture, 0);
+            ITexture2D decompressedTexture = Engine.Renderer.Resources.CreateTexture2D(loadedData);
+            mat.SetDefaultResource(decompressedTexture, 0);
         }
 
         protected override void OnUpdate(Timing time)

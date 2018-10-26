@@ -501,15 +501,8 @@ namespace Molten.Graphics.Textures
                     {
                         if (afRoughMSE[i] > afRoughMSE[j])
                         {
-                            // std::swap(afRoughMSE[i], afRoughMSE[j]);
-                            float fTemp = afRoughMSE[i];
-                            afRoughMSE[i] = afRoughMSE[j];
-                            afRoughMSE[j] = fTemp;
-
-                            // std::swap(auShape[i], auShape[j]);
-                            byte bTemp = auShape[i];
-                            auShape[i] = auShape[j];
-                            auShape[j] = bTemp;
+                            BC6HBC7.Swap(ref afRoughMSE[i], ref afRoughMSE[j]);
+                            BC6HBC7.Swap(ref auShape[i], ref auShape[j]);
                         }
                     }
                 }
@@ -690,21 +683,21 @@ namespace Molten.Graphics.Textures
             for (uint i = 0; i < np; ++i)
             {
                 BC6HBC7.INTColor aColor = aColors[i];
-                Vector4F vcolors = new Vector4F(aColor.r, aColor.g, aColor.b, aColor.pad);
+                Vector3F vcolors = new Vector3F(aColor.r, aColor.g, aColor.b);
 
                 // Compute ErrorMetricRGB
                 BC6HBC7.INTColor aPal = aPalette[0];
-                Vector4F tpal = new Vector4F(aPal.r, aPal.g, aPal.b, aPal.pad); // XMLoadSInt4(reinterpret_cast <const XMINT4*> (&));
+                Vector3F tpal = new Vector3F(aPal.r, aPal.g, aPal.b); // XMLoadSInt4(reinterpret_cast <const XMINT4*> (&));
                 tpal = vcolors - tpal;                                          // XMVectorSubtract(vcolors, tpal);
-                float fBestErr = Vector3F.Dot((Vector3F)tpal, (Vector3F)tpal);  // XMVectorGetX(XMVector3Dot(tpal, tpal));
+                float fBestErr = Vector3F.Dot(tpal, tpal);  // XMVectorGetX(XMVector3Dot(tpal, tpal));
 
                 for (int j = 1; j < uNumIndices && fBestErr > 0; ++j)
                 {
                     // Compute ErrorMetricRGB
                     aPal = aPalette[j];
-                    tpal = new Vector4F(aPal.r, aPal.g, aPal.b, aPal.pad);      // XMLoadSInt4(reinterpret_cast <const XMINT4*> (&));
+                    tpal = new Vector3F(aPal.r, aPal.g, aPal.b);      // XMLoadSInt4(reinterpret_cast <const XMINT4*> (&));
                     tpal = vcolors - tpal;                                      // XMVectorSubtract(vcolors, tpal);
-                    float fErr = Vector3F.Dot((Vector3F)tpal, (Vector3F)tpal);  // XMVectorGetX(XMVector3Dot(tpal, tpal));
+                    float fErr = Vector3F.Dot(tpal, tpal);  // XMVectorGetX(XMVector3Dot(tpal, tpal));
                     if (fErr > fBestErr) break;                                 // error increased, so we're done searching
                     if (fErr < fBestErr) fBestErr = fErr;
                 }
