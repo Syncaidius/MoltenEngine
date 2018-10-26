@@ -47,7 +47,7 @@ namespace Molten.Graphics.Textures
                 {
                     for (int i = 0; i < data.MipMapLevels; i++)
                     {
-                        int levelID = (a * (int)data.MipMapLevels) + i;
+                        int levelID = (a * data.MipMapLevels) + i;
                         byte[] decompressed = DecompressLevel(parser, levels[levelID], log);
 
                         data.Levels[levelID] = new TextureData.Slice()
@@ -208,14 +208,14 @@ namespace Molten.Graphics.Textures
                             parser.Encode(writer, colTable, log);
                         }
                         blockTimer.Stop();
-                        log.WriteLine($"Encoded block row ${blockY} in {blockTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms");
+                        log.WriteLine($"Encoded block row {blockY} in {blockTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms");
                     }
 
                     result = stream.ToArray();
                 }
             }
             mainTimer.Stop();
-            log.WriteLine($"Encoded BC6H {uncompressed.Width}x{uncompressed.Height} mip-map level in ${mainTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms");
+            log.WriteLine($"Encoded BC6H {uncompressed.Width}x{uncompressed.Height} mip-map level in {mainTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms");
 
             return result;
         }
