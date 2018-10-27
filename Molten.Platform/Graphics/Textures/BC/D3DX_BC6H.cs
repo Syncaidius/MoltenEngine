@@ -720,50 +720,21 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private float MapColorsQuantized(EncodeParams pEP, INTColor[] aColors, uint np, BC67.INTEndPntPair endPts, Context context)
+        private unsafe float MapColorsQuantized(EncodeParams pEP, INTColor[] aColors, uint np, BC67.INTEndPntPair endPts, Context context)
         {
             byte uIndexPrec = ms_aInfo[pEP.uMode].uIndexPrec;
             byte uNumIndices = (byte)(1U << uIndexPrec);
             GeneratePaletteQuantized(pEP, endPts, context.aPalette);
 
-            //float fTotErr = 0;
-            //fixed (INTColor* ptrColors = aColors)
-            //{
-            //    INTColor* ptrCol = ptrColors;
-
-            //    for (uint i = 0; i < np; i++, ptrCol++)
-            //    {
-            //        Vector3F vcolors = *(Vector3F*)&ptrCol; // new Vector3F(aColor.r, aColor.g, aColor.b);
-
-            //        // Compute ErrorMetricRGB
-            //        INTColor aPal = context.aPalette[0];
-            //        Vector3F tpal = new Vector3F(aPal.r, aPal.g, aPal.b); // XMLoadSInt4(reinterpret_cast <const XMINT4*> (&));
-            //        tpal = vcolors - tpal;                                          // XMVectorSubtract(vcolors, tpal);
-            //        float fBestErr = Vector3F.Dot(tpal, tpal);  // XMVectorGetX(XMVector3Dot(tpal, tpal));
-
-            //        for (int j = 1; j < uNumIndices && fBestErr > 0; ++j)
-            //        {
-            //            // Compute ErrorMetricRGB
-            //            aPal = context.aPalette[j];
-            //            tpal = new Vector3F(aPal.r, aPal.g, aPal.b);      // XMLoadSInt4(reinterpret_cast <const XMINT4*> (&));
-            //            tpal = vcolors - tpal;                                      // XMVectorSubtract(vcolors, tpal);
-            //            float fErr = Vector3F.Dot(tpal, tpal);  // XMVectorGetX(XMVector3Dot(tpal, tpal));
-            //            if (fErr > fBestErr) break;                                 // error increased, so we're done searching
-            //            if (fErr < fBestErr) fBestErr = fErr;
-            //        }
-            //        fTotErr += fBestErr;
-            //    }
-            //}
-
             float fTotErr = 0;
             for (uint i = 0; i < np; ++i)
             {
                 INTColor aColor = aColors[i];
-                Vector3F vcolors = new Vector3F(aColor.r, aColor.g, aColor.b);
+                Vector3F vcolors = *(Vector3F*)&aColor; // new Vector3F(aColor.r, aColor.g, aColor.b);
 
                 // Compute ErrorMetricRGB
                 INTColor aPal = context.aPalette[0];
-                Vector3F tpal = new Vector3F(aPal.r, aPal.g, aPal.b); // XMLoadSInt4(reinterpret_cast <const XMINT4*> (&));
+                Vector3F tpal = *(Vector3F*)&aPal; // new Vector3F(aPal.r, aPal.g, aPal.b); // XMLoadSInt4(reinterpret_cast <const XMINT4*> (&));
                 tpal = vcolors - tpal;                                          // XMVectorSubtract(vcolors, tpal);
                 float fBestErr = Vector3F.Dot(tpal, tpal);  // XMVectorGetX(XMVector3Dot(tpal, tpal));
 
@@ -771,7 +742,7 @@ namespace Molten.Graphics.Textures
                 {
                     // Compute ErrorMetricRGB
                     aPal = context.aPalette[j];
-                    tpal = new Vector3F(aPal.r, aPal.g, aPal.b);      // XMLoadSInt4(reinterpret_cast <const XMINT4*> (&));
+                    tpal = *(Vector3F*)&aPal; // new Vector3F(aPal.r, aPal.g, aPal.b);      // XMLoadSInt4(reinterpret_cast <const XMINT4*> (&));
                     tpal = vcolors - tpal;                                      // XMVectorSubtract(vcolors, tpal);
                     float fErr = Vector3F.Dot(tpal, tpal);  // XMVectorGetX(XMVector3Dot(tpal, tpal));
                     if (fErr > fBestErr) break;                                 // error increased, so we're done searching
