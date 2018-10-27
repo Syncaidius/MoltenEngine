@@ -323,6 +323,29 @@ namespace Molten
         }
 
         /// <summary>
+        /// Calculates the dot product of two <see cref="Color4"/>.
+        /// </summary>
+        /// <param name="c0">The first color.</param>
+        /// <param name="c1">The second color.</param>
+        /// <returns></returns>
+        public static float Dot(Color4 c0, Color4 c1)
+        {
+            return c0.R * c1.R + c0.G * c1.G + c0.B * c1.B + c0.A * c1.A;
+        }
+
+        /// <summary>
+        /// Calculates the dot product of two <see cref="Color4"/>.
+        /// </summary>
+        /// <param name="c0">The first color.</param>
+        /// <param name="c1">The second color.</param>
+        /// <param name="result">The destination for the result.</param>
+        /// <returns></returns>
+        public static void Dot(ref Color4 c0,ref Color4 c1, out float result)
+        {
+            result = c0.R * c1.R + c0.G * c1.G + c0.B * c1.B + c0.A * c1.A;
+        }
+
+        /// <summary>
         /// Adds two colors.
         /// </summary>
         /// <param name="left">The first color to add.</param>
@@ -443,6 +466,47 @@ namespace Molten
         public static Color4 Negate(Color4 value)
         {
             return new Color4(1.0f - value.R, 1.0f - value.G, 1.0f - value.B, 1.0f - value.A);
+        }
+
+        /// <summary>
+        /// Restricts a value to be within a specified range.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
+        /// <param name="result">When the method completes, contains the clamped value.</param>
+        public static void Clamp(ref Color4 value, float min, float max, out Color4 result)
+        {
+            float alpha = value.A;
+            alpha = (alpha > max) ? max : alpha;
+            alpha = (alpha < min) ? min : alpha;
+
+            float red = value.R;
+            red = (red > max) ? max : red;
+            red = (red < min) ? min : red;
+
+            float green = value.G;
+            green = (green > max) ? max : green;
+            green = (green < min) ? min : green;
+
+            float blue = value.B;
+            blue = (blue > max) ? max : blue;
+            blue = (blue < min) ? min : blue;
+
+            result = new Color4(red, green, blue, alpha);
+        }
+
+        /// <summary>
+        /// Restricts a value to be within a specified range.
+        /// </summary>
+        /// <param name="value">The value to clamp.</param>
+        /// <param name="min">The minimum value.</param>
+        /// <param name="max">The maximum value.</param>
+        public static Color4 Clamp(Color4 value, float min, float max)
+        {
+            Color4 result;
+            Clamp(ref value, min, max, out result);
+            return result;
         }
 
         /// <summary>
@@ -764,6 +828,7 @@ namespace Molten
         {
             return new Color4(left.R * right.R, left.G * right.G, left.B * right.B, left.A * right.A);
         }
+
 
         /// <summary>
         /// Tests for equality between two objects.

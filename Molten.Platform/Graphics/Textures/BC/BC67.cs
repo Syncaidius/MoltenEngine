@@ -62,8 +62,8 @@ namespace Molten.Graphics.Textures
 
         internal struct LDREndPntPair
         {
-            internal LDRColorA A;
-            internal LDRColorA B;
+            internal Color A;
+            internal Color B;
         };
 
         internal struct INTEndPntPair
@@ -118,9 +118,9 @@ namespace Molten.Graphics.Textures
             aEndPts[1].B -= aEndPts[0].A;
         }
 
-        internal static void TransformInverse(INTEndPntPair[] aEndPts, LDRColorA Prec, bool bSigned)
+        internal static void TransformInverse(INTEndPntPair[] aEndPts, Color Prec, bool bSigned)
         {
-            INTColor WrapMask = new INTColor((1 << Prec.r) - 1, (1 << Prec.g) - 1, (1 << Prec.b) - 1);
+            INTColor WrapMask = new INTColor((1 << Prec.R) - 1, (1 << Prec.G) - 1, (1 << Prec.B) - 1);
             aEndPts[0].B += aEndPts[0].A; aEndPts[0].B &= WrapMask;
             aEndPts[1].A += aEndPts[0].A; aEndPts[1].A &= WrapMask;
             aEndPts[1].B += aEndPts[0].A; aEndPts[1].B &= WrapMask;
@@ -163,74 +163,74 @@ namespace Molten.Graphics.Textures
 
 
         //-------------------------------------------------------------------------------------
-        internal static float OptimizeRGB(HDRColorA[] pPoints, out HDRColorA pX, out HDRColorA pY, uint cSteps, uint cPixels, uint[] pIndex, BCContext cxt)
+        internal static float OptimizeRGB(Color4[] pPoints, out Color4 pX, out Color4 pY, uint cSteps, uint cPixels, uint[] pIndex, BCContext cxt)
         {
-            pX = new HDRColorA();
-            pY = new HDRColorA();
+            pX = new Color4();
+            pY = new Color4();
             float fError = float.MaxValue;
             float[] pC = (3 == cSteps) ? pC3 : pC4;
             float[] pD = (3 == cSteps) ? pD3 : pD4;
 
             // Find Min and Max points, as starting point
-            HDRColorA X = new HDRColorA(1.0f, 1.0f, 1.0f, 0.0f);
-            HDRColorA Y = new HDRColorA(0.0f, 0.0f, 0.0f, 0.0f);
+            Color4 X = new Color4(1.0f, 1.0f, 1.0f, 0.0f);
+            Color4 Y = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
 
             for (uint iPoint = 0; iPoint < cPixels; iPoint++)
             {
-                if (pPoints[pIndex[iPoint]].r < X.r) X.r = pPoints[pIndex[iPoint]].r;
-                if (pPoints[pIndex[iPoint]].g < X.g) X.g = pPoints[pIndex[iPoint]].g;
-                if (pPoints[pIndex[iPoint]].b < X.b) X.b = pPoints[pIndex[iPoint]].b;
-                if (pPoints[pIndex[iPoint]].r > Y.r) Y.r = pPoints[pIndex[iPoint]].r;
-                if (pPoints[pIndex[iPoint]].g > Y.g) Y.g = pPoints[pIndex[iPoint]].g;
-                if (pPoints[pIndex[iPoint]].b > Y.b) Y.b = pPoints[pIndex[iPoint]].b;
+                if (pPoints[pIndex[iPoint]].R < X.R) X.R = pPoints[pIndex[iPoint]].R;
+                if (pPoints[pIndex[iPoint]].G < X.G) X.G = pPoints[pIndex[iPoint]].G;
+                if (pPoints[pIndex[iPoint]].B < X.B) X.B = pPoints[pIndex[iPoint]].B;
+                if (pPoints[pIndex[iPoint]].R > Y.R) Y.R = pPoints[pIndex[iPoint]].R;
+                if (pPoints[pIndex[iPoint]].G > Y.G) Y.G = pPoints[pIndex[iPoint]].G;
+                if (pPoints[pIndex[iPoint]].B > Y.B) Y.B = pPoints[pIndex[iPoint]].B;
             }
 
             // Diagonal axis
-            HDRColorA AB = new HDRColorA()
+            Color4 AB = new Color4()
             {
-                r = Y.r - X.r,
-                g = Y.g - X.g,
-                b = Y.b - X.b,
+                R = Y.R - X.R,
+                G = Y.G - X.G,
+                B = Y.B - X.B,
             };
 
-            float fAB = AB.r * AB.r + AB.g * AB.g + AB.b * AB.b;
+            float fAB = AB.R * AB.R + AB.G * AB.G + AB.B * AB.B;
 
             // Single color block.. no need to root-find
             if (fAB < float.MinValue)
             {
-                pX.r = X.r; pX.g = X.g; pX.b = X.b;
-                pY.r = Y.r; pY.g = Y.g; pY.b = Y.b;
+                pX.R = X.R; pX.G = X.G; pX.B = X.B;
+                pY.R = Y.R; pY.G = Y.G; pY.B = Y.B;
                 return 0.0f;
             }
 
             // Try all four axis directions, to determine which diagonal best fits data
             float fABInv = 1.0f / fAB;
 
-            HDRColorA Dir;
-            Dir.r = AB.r * fABInv;
-            Dir.g = AB.g * fABInv;
-            Dir.b = AB.b * fABInv;
+            Color4 Dir;
+            Dir.R = AB.R * fABInv;
+            Dir.G = AB.G * fABInv;
+            Dir.B = AB.B * fABInv;
 
-            HDRColorA Mid;
-            Mid.r = (X.r + Y.r) * 0.5f;
-            Mid.g = (X.g + Y.g) * 0.5f;
-            Mid.b = (X.b + Y.b) * 0.5f;
+            Color4 Mid;
+            Mid.R = (X.R + Y.R) * 0.5f;
+            Mid.G = (X.G + Y.G) * 0.5f;
+            Mid.B = (X.B + Y.B) * 0.5f;
 
 
             //fDir[0] = fDir[1] = fDir[2] = fDir[3] = 0.0f;
 
             for (uint iPoint = 0; iPoint < cPixels; iPoint++)
             {
-                HDRColorA Pt;
-                Pt.r = (pPoints[pIndex[iPoint]].r - Mid.r) * Dir.r;
-                Pt.g = (pPoints[pIndex[iPoint]].g - Mid.g) * Dir.g;
-                Pt.b = (pPoints[pIndex[iPoint]].b - Mid.b) * Dir.b;
+                Color4 Pt;
+                Pt.R = (pPoints[pIndex[iPoint]].R - Mid.R) * Dir.R;
+                Pt.G = (pPoints[pIndex[iPoint]].G - Mid.G) * Dir.G;
+                Pt.B = (pPoints[pIndex[iPoint]].B - Mid.B) * Dir.B;
 
                 float f;
-                f = Pt.r + Pt.g + Pt.b; cxt.fDir[0] += f * f;
-                f = Pt.r + Pt.g - Pt.b; cxt.fDir[1] += f * f;
-                f = Pt.r - Pt.g + Pt.b; cxt.fDir[2] += f * f;
-                f = Pt.r - Pt.g - Pt.b; cxt.fDir[3] += f * f;
+                f = Pt.R + Pt.G + Pt.B; cxt.fDir[0] += f * f;
+                f = Pt.R + Pt.G - Pt.B; cxt.fDir[1] += f * f;
+                f = Pt.R - Pt.G + Pt.B; cxt.fDir[2] += f * f;
+                f = Pt.R - Pt.G - Pt.B; cxt.fDir[3] += f * f;
             }
 
             float fDirMax = cxt.fDir[0];
@@ -245,24 +245,24 @@ namespace Molten.Graphics.Textures
                 }
             }
 
-            if ((iDirMax & 2) == 2) // std::swap(X.g, Y.g);
+            if ((iDirMax & 2) == 2) // std::swap(X.G, Y.G);
             {
-                float temp = X.g;
-                X.g = Y.g;
-                Y.g = temp;
+                float temp = X.G;
+                X.G = Y.G;
+                Y.G = temp;
             }
-            if ((iDirMax & 1) == 1) // std::swap(X.b, Y.b);
+            if ((iDirMax & 1) == 1) // std::swap(X.B, Y.B);
             {
-                float temp = X.b;
-                X.b = Y.b;
-                Y.b = temp;
+                float temp = X.B;
+                X.B = Y.B;
+                Y.B = temp;
             }
 
             // Two color block.. no need to root-find
             if (fAB < 1.0f / 4096.0f)
             {
-                pX.r = X.r; pX.g = X.g; pX.b = X.b;
-                pY.r = Y.r; pY.g = Y.g; pY.b = Y.b;
+                pX.R = X.R; pX.G = X.G; pX.B = X.B;
+                pY.R = Y.R; pY.G = Y.G; pY.B = Y.B;
                 return 0.0f;
             }
 
@@ -273,37 +273,37 @@ namespace Molten.Graphics.Textures
             {
                 for (uint iStep = 0; iStep < cSteps; iStep++)
                 {
-                    cxt.pSteps[iStep].r = X.r * pC[iStep] + Y.r * pD[iStep];
-                    cxt.pSteps[iStep].g = X.g * pC[iStep] + Y.g * pD[iStep];
-                    cxt.pSteps[iStep].b = X.b * pC[iStep] + Y.b * pD[iStep];
+                    cxt.pSteps[iStep].R = X.R * pC[iStep] + Y.R * pD[iStep];
+                    cxt.pSteps[iStep].G = X.G * pC[iStep] + Y.G * pD[iStep];
+                    cxt.pSteps[iStep].B = X.B * pC[iStep] + Y.B * pD[iStep];
                 }
 
                 // Calculate color direction
-                Dir.r = Y.r - X.r;
-                Dir.g = Y.g - X.g;
-                Dir.b = Y.b - X.b;
+                Dir.R = Y.R - X.R;
+                Dir.G = Y.G - X.G;
+                Dir.B = Y.B - X.B;
 
-                float fLen = (Dir.r * Dir.r + Dir.g * Dir.g + Dir.b * Dir.b);
+                float fLen = (Dir.R * Dir.R + Dir.G * Dir.G + Dir.B * Dir.B);
 
                 if (fLen < (1.0f / 4096.0f))
                     break;
 
                 float fScale = fSteps / fLen;
 
-                Dir.r *= fScale;
-                Dir.g *= fScale;
-                Dir.b *= fScale;
+                Dir.R *= fScale;
+                Dir.G *= fScale;
+                Dir.B *= fScale;
 
                 // Evaluate function, and derivatives
                 float d2X = 0.0f, d2Y = 0.0f;
-                HDRColorA dX = new HDRColorA(0.0f, 0.0f, 0.0f, 0.0f);
-                HDRColorA dY = new HDRColorA(0.0f, 0.0f, 0.0f, 0.0f);
+                Color4 dX = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
+                Color4 dY = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
 
                 for (uint iPoint = 0; iPoint < cPixels; iPoint++)
                 {
-                    float fDot = (pPoints[pIndex[iPoint]].r - X.r) * Dir.r +
-                        (pPoints[pIndex[iPoint]].g - X.g) * Dir.g +
-                        (pPoints[pIndex[iPoint]].b - X.b) * Dir.b;
+                    float fDot = (pPoints[pIndex[iPoint]].R - X.R) * Dir.R +
+                        (pPoints[pIndex[iPoint]].G - X.G) * Dir.G +
+                        (pPoints[pIndex[iPoint]].B - X.B) * Dir.B;
 
                     uint iStep;
                     if (fDot <= 0.0f)
@@ -313,23 +313,23 @@ namespace Molten.Graphics.Textures
                     else
                         iStep = (uint)(fDot + 0.5f);
 
-                    HDRColorA Diff;
-                    Diff.r = cxt.pSteps[iStep].r - pPoints[pIndex[iPoint]].r;
-                    Diff.g = cxt.pSteps[iStep].g - pPoints[pIndex[iPoint]].g;
-                    Diff.b = cxt.pSteps[iStep].b - pPoints[pIndex[iPoint]].b;
+                    Color4 Diff;
+                    Diff.R = cxt.pSteps[iStep].R - pPoints[pIndex[iPoint]].R;
+                    Diff.G = cxt.pSteps[iStep].G - pPoints[pIndex[iPoint]].G;
+                    Diff.B = cxt.pSteps[iStep].B - pPoints[pIndex[iPoint]].B;
 
                     float fC = pC[iStep] * (1.0f / 8.0f);
                     float fD = pD[iStep] * (1.0f / 8.0f);
 
                     d2X += fC * pC[iStep];
-                    dX.r += fC * Diff.r;
-                    dX.g += fC * Diff.g;
-                    dX.b += fC * Diff.b;
+                    dX.R += fC * Diff.R;
+                    dX.G += fC * Diff.G;
+                    dX.B += fC * Diff.B;
 
                     d2Y += fD * pD[iStep];
-                    dY.r += fD * Diff.r;
-                    dY.g += fD * Diff.g;
-                    dY.b += fD * Diff.b;
+                    dY.R += fD * Diff.R;
+                    dY.G += fD * Diff.G;
+                    dY.B += fD * Diff.B;
                 }
 
                 // Move endpoints
@@ -337,60 +337,60 @@ namespace Molten.Graphics.Textures
                 {
                     float f = -1.0f / d2X;
 
-                    X.r += dX.r * f;
-                    X.g += dX.g * f;
-                    X.b += dX.b * f;
+                    X.R += dX.R * f;
+                    X.G += dX.G * f;
+                    X.B += dX.B * f;
                 }
 
                 if (d2Y > 0.0f)
                 {
                     float f = -1.0f / d2Y;
 
-                    Y.r += dY.r * f;
-                    Y.g += dY.g * f;
-                    Y.b += dY.b * f;
+                    Y.R += dY.R * f;
+                    Y.G += dY.G * f;
+                    Y.B += dY.B * f;
                 }
 
-                if ((dX.r * dX.r < fEpsilon) && (dX.g * dX.g < fEpsilon) && (dX.b * dX.b < fEpsilon) &&
-                    (dY.r * dY.r < fEpsilon) && (dY.g * dY.g < fEpsilon) && (dY.b * dY.b < fEpsilon))
+                if ((dX.R * dX.R < fEpsilon) && (dX.G * dX.G < fEpsilon) && (dX.B * dX.B < fEpsilon) &&
+                    (dY.R * dY.R < fEpsilon) && (dY.G * dY.G < fEpsilon) && (dY.B * dY.B < fEpsilon))
                 {
                     break;
                 }
             }
 
 
-            pX.r = X.r; pX.g = X.g; pX.b = X.b;
-            pY.r = Y.r; pY.g = Y.g; pY.b = Y.b;
+            pX.R = X.R; pX.G = X.G; pX.B = X.B;
+            pY.R = Y.R; pY.G = Y.G; pY.B = Y.B;
             return fError;
         }
 
 
         //-------------------------------------------------------------------------------------
-        internal static float OptimizeRGBA(HDRColorA[] pPoints, out HDRColorA pX, out HDRColorA pY, uint cSteps, uint cPixels, uint[] pIndex)
+        internal static float OptimizeRGBA(Color4[] pPoints, out Color4 pX, out Color4 pY, uint cSteps, uint cPixels, uint[] pIndex)
         {
             float fError = float.MaxValue;
             float[] pC = (3 == cSteps) ? pC3 : pC4;
             float[] pD = (3 == cSteps) ? pD3 : pD4;
 
             // Find Min and Max points, as starting point
-            HDRColorA X = new HDRColorA(1.0f, 1.0f, 1.0f, 1.0f);
-            HDRColorA Y = new HDRColorA(0.0f, 0.0f, 0.0f, 0.0f);
+            Color4 X = new Color4(1.0f, 1.0f, 1.0f, 1.0f);
+            Color4 Y = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
 
             for (uint iPoint = 0; iPoint < cPixels; iPoint++)
             {
-                if (pPoints[pIndex[iPoint]].r < X.r) X.r = pPoints[pIndex[iPoint]].r;
-                if (pPoints[pIndex[iPoint]].g < X.g) X.g = pPoints[pIndex[iPoint]].g;
-                if (pPoints[pIndex[iPoint]].b < X.b) X.b = pPoints[pIndex[iPoint]].b;
-                if (pPoints[pIndex[iPoint]].a < X.a) X.a = pPoints[pIndex[iPoint]].a;
-                if (pPoints[pIndex[iPoint]].r > Y.r) Y.r = pPoints[pIndex[iPoint]].r;
-                if (pPoints[pIndex[iPoint]].g > Y.g) Y.g = pPoints[pIndex[iPoint]].g;
-                if (pPoints[pIndex[iPoint]].b > Y.b) Y.b = pPoints[pIndex[iPoint]].b;
-                if (pPoints[pIndex[iPoint]].a > Y.a) Y.a = pPoints[pIndex[iPoint]].a;
+                if (pPoints[pIndex[iPoint]].R < X.R) X.R = pPoints[pIndex[iPoint]].R;
+                if (pPoints[pIndex[iPoint]].G < X.G) X.G = pPoints[pIndex[iPoint]].G;
+                if (pPoints[pIndex[iPoint]].B < X.B) X.B = pPoints[pIndex[iPoint]].B;
+                if (pPoints[pIndex[iPoint]].A < X.A) X.A = pPoints[pIndex[iPoint]].A;
+                if (pPoints[pIndex[iPoint]].R > Y.R) Y.R = pPoints[pIndex[iPoint]].R;
+                if (pPoints[pIndex[iPoint]].G > Y.G) Y.G = pPoints[pIndex[iPoint]].G;
+                if (pPoints[pIndex[iPoint]].B > Y.B) Y.B = pPoints[pIndex[iPoint]].B;
+                if (pPoints[pIndex[iPoint]].A > Y.A) Y.A = pPoints[pIndex[iPoint]].A;
             }
 
             // Diagonal axis
-            HDRColorA AB = Y - X;
-            float fAB = AB * AB;
+            Color4 AB = Y - X;
+            float fAB = Color4.Dot(AB, AB);
 
             // Single color block.. no need to root-find
             if (fAB < float.MinValue)
@@ -402,28 +402,28 @@ namespace Molten.Graphics.Textures
 
             // Try all four axis directions, to determine which diagonal best fits data
             float fABInv = 1.0f / fAB;
-            HDRColorA Dir = AB * fABInv;
-            HDRColorA Mid = (X + Y) * 0.5f;
+            Color4 Dir = AB * fABInv;
+            Color4 Mid = (X + Y) * 0.5f;
 
             float[] fDir = new float[8]; // fDir[0] = fDir[1] = fDir[2] = fDir[3] = fDir[4] = fDir[5] = fDir[6] = fDir[7] = 0.0f;
 
             for (uint iPoint = 0; iPoint < cPixels; iPoint++)
             {
-                HDRColorA Pt;
-                Pt.r = (pPoints[pIndex[iPoint]].r - Mid.r) * Dir.r;
-                Pt.g = (pPoints[pIndex[iPoint]].g - Mid.g) * Dir.g;
-                Pt.b = (pPoints[pIndex[iPoint]].b - Mid.b) * Dir.b;
-                Pt.a = (pPoints[pIndex[iPoint]].a - Mid.a) * Dir.a;
+                Color4 Pt;
+                Pt.R = (pPoints[pIndex[iPoint]].R - Mid.R) * Dir.R;
+                Pt.G = (pPoints[pIndex[iPoint]].G - Mid.G) * Dir.G;
+                Pt.B = (pPoints[pIndex[iPoint]].B - Mid.B) * Dir.B;
+                Pt.A = (pPoints[pIndex[iPoint]].A - Mid.A) * Dir.A;
 
                 float f;
-                f = Pt.r + Pt.g + Pt.b + Pt.a; fDir[0] += f * f;
-                f = Pt.r + Pt.g + Pt.b - Pt.a; fDir[1] += f * f;
-                f = Pt.r + Pt.g - Pt.b + Pt.a; fDir[2] += f * f;
-                f = Pt.r + Pt.g - Pt.b - Pt.a; fDir[3] += f * f;
-                f = Pt.r - Pt.g + Pt.b + Pt.a; fDir[4] += f * f;
-                f = Pt.r - Pt.g + Pt.b - Pt.a; fDir[5] += f * f;
-                f = Pt.r - Pt.g - Pt.b + Pt.a; fDir[6] += f * f;
-                f = Pt.r - Pt.g - Pt.b - Pt.a; fDir[7] += f * f;
+                f = Pt.R + Pt.G + Pt.B + Pt.A; fDir[0] += f * f;
+                f = Pt.R + Pt.G + Pt.B - Pt.A; fDir[1] += f * f;
+                f = Pt.R + Pt.G - Pt.B + Pt.A; fDir[2] += f * f;
+                f = Pt.R + Pt.G - Pt.B - Pt.A; fDir[3] += f * f;
+                f = Pt.R - Pt.G + Pt.B + Pt.A; fDir[4] += f * f;
+                f = Pt.R - Pt.G + Pt.B - Pt.A; fDir[5] += f * f;
+                f = Pt.R - Pt.G - Pt.B + Pt.A; fDir[6] += f * f;
+                f = Pt.R - Pt.G - Pt.B - Pt.A; fDir[7] += f * f;
             }
 
             float fDirMax = fDir[0];
@@ -440,21 +440,21 @@ namespace Molten.Graphics.Textures
 
             if ((iDirMax & 4) == 4) // std::swap(X.g, Y.g);
             {
-                float temp = X.g;
-                X.g = Y.g;
-                Y.g = temp;
+                float temp = X.G;
+                X.G = Y.G;
+                Y.G = temp;
             }
             if ((iDirMax & 2) == 2) // std::swap(X.b, Y.b);
             {
-                float temp = X.b;
-                X.b = Y.b;
-                Y.b = temp;
+                float temp = X.B;
+                X.B = Y.B;
+                Y.B = temp;
             }
             if ((iDirMax & 1) == 1) // std::swap(X.a, Y.a);
             {
-                float temp = X.a;
-                X.b = Y.a;
-                Y.a = temp;
+                float temp = X.A;
+                X.B = Y.A;
+                Y.A = temp;
             }
 
             // Two color block.. no need to root-find
@@ -471,21 +471,21 @@ namespace Molten.Graphics.Textures
             for (uint iIteration = 0; iIteration < 8 && fError > 0.0f; iIteration++)
             {
                 // Calculate new steps
-                HDRColorA[] pSteps = new HDRColorA[BC7_MAX_INDICES];
+                Color4[] pSteps = new Color4[BC7_MAX_INDICES];
 
-                LDRColorA lX, lY;
-                lX = (X * 255.0f).ToLDRColorA();
-                lY = (Y * 255.0f).ToLDRColorA();
+                Color lX, lY;
+                lX = HDRToLDRExplicit((X * 255.0f)); // .ToLDRColorA().
+                lY = HDRToLDRExplicit((Y * 255.0f)); // .ToLDRColorA();
 
                 for (uint iStep = 0; iStep < cSteps; iStep++)
                 {
                     pSteps[iStep] = X * pC[iStep] + Y * pD[iStep];
-                    //LDRColorA::Interpolate(lX, lY, i, i, wcprec, waprec, aSteps[i]);
+                    //Color::Interpolate(lX, lY, i, i, wcprec, waprec, aSteps[i]);
                 }
 
                 // Calculate color direction
                 Dir = Y - X;
-                float fLen = Dir * Dir;
+                float fLen = Color4.Dot(Dir, Dir);
                 if (fLen < (1.0f / 4096.0f))
                     break;
 
@@ -494,12 +494,12 @@ namespace Molten.Graphics.Textures
 
                 // Evaluate function, and derivatives
                 float d2X = 0.0f, d2Y = 0.0f;
-                HDRColorA dX = new HDRColorA(0.0f, 0.0f, 0.0f, 0.0f);
-                HDRColorA dY = new HDRColorA(0.0f, 0.0f, 0.0f, 0.0f);
+                Color4 dX = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
+                Color4 dY = new Color4(0.0f, 0.0f, 0.0f, 0.0f);
 
                 for (uint iPoint = 0; iPoint < cPixels; ++iPoint)
                 {
-                    float fDot = (pPoints[pIndex[iPoint]] - X) * Dir;
+                    float fDot = Color4.Dot((pPoints[pIndex[iPoint]] - X), Dir);
 
                     uint iStep;
                     if (fDot <= 0.0f)
@@ -509,7 +509,7 @@ namespace Molten.Graphics.Textures
                     else
                         iStep = (uint)(fDot + 0.5f);
 
-                    HDRColorA Diff = pSteps[iStep] - pPoints[pIndex[iPoint]];
+                    Color4 Diff = pSteps[iStep] - pPoints[pIndex[iPoint]];
                     float fC = pC[iStep] * (1.0f / 8.0f);
                     float fD = pD[iStep] * (1.0f / 8.0f);
 
@@ -533,7 +533,7 @@ namespace Molten.Graphics.Textures
                     Y += dY * f;
                 }
 
-                if ((dX * dX < fEpsilon) && (dY * dY < fEpsilon))
+                if ((Color4.Dot(dX, dX) < fEpsilon) && (Color4.Dot(dY, dY) < fEpsilon))
                     break;
             }
 
@@ -542,9 +542,71 @@ namespace Molten.Graphics.Textures
             return fError;
         }
 
+        internal static void InterpolateRGB(Color c0, Color c1, uint wc, uint wcprec, ref Color output)
+        {
+            int[] aWeights = null;
+            switch (wcprec)
+            {
+                case 2: aWeights = g_aWeights2; Debug.Assert(wc < 4); break;
+                case 3: aWeights = g_aWeights3; Debug.Assert(wc < 8); break;
+                case 4: aWeights = g_aWeights4; Debug.Assert(wc < 16); break;
+                default: Debug.Assert(false); output.R = output.G = output.B = 0; return;
+            }
+            output.R = (byte)(c0.R * (uint)(BC67_WEIGHT_MAX - aWeights[wc]) + c1.R * (uint)(aWeights[wc] + BC67_WEIGHT_ROUND) >> BC67_WEIGHT_SHIFT);
+            output.G = (byte)(c0.G * (uint)(BC67_WEIGHT_MAX - aWeights[wc]) + c1.G * (uint)(aWeights[wc] + BC67_WEIGHT_ROUND) >> BC67_WEIGHT_SHIFT);
+            output.B = (byte)(c0.B * (uint)(BC67_WEIGHT_MAX - aWeights[wc]) + c1.B * (uint)(aWeights[wc] + BC67_WEIGHT_ROUND) >> BC67_WEIGHT_SHIFT);
+        }
+
+        internal static void InterpolateA(Color c0, Color c1, uint wa, uint waprec, ref Color output)
+        {
+            int[] aWeights = null;
+            switch (waprec)
+            {
+                case 2: aWeights = g_aWeights2; Debug.Assert(wa < 4); break;
+                case 3: aWeights = g_aWeights3; Debug.Assert(wa < 8); break;
+                case 4: aWeights = g_aWeights4; Debug.Assert(wa < 16); break;
+                default: Debug.Assert(false); output.A = 0; return;
+            }
+            output.A = (byte)((c0.A * (uint)(BC67_WEIGHT_MAX - aWeights[wa]) + c1.A * (uint)(aWeights[wa]) + BC67_WEIGHT_ROUND) >> BC67_WEIGHT_SHIFT);
+        }
+
+        internal static void Interpolate(Color c0, Color c1, uint wc, uint wa, uint wcprec, uint waprec, ref Color output)
+        {
+            InterpolateRGB(c0, c1, wc, wcprec, ref output);
+            InterpolateA(c0, c1, wa, waprec, ref output);
+        }
+
+        internal static Color4 LDRToHDRExplicit(Color c)
+        {
+            return new Color4()
+            {
+                R = c.R,
+                G = c.G,
+                B = c.B,
+                A = c.A,
+            };
+        }
+
+        internal static Color HDRToLDRExplicit(Color4 c)
+        {
+            return new Color((byte)(c.R + 0.01f), (byte)(c.G + 0.01f), (byte)(c.B + 0.01f), (byte)(c.A + 0.01f));
+        }
+
+        internal static Color HDRUnitToLDR(Color4 c)
+        {
+            Color4 tmp = Color4.Clamp(c, 0.0f, 1.0f) * 255.0f;
+            return new Color()
+            {
+                R = (byte)(tmp.R + 0.001f),
+                G = (byte)(tmp.G + 0.001f),
+                B = (byte)(tmp.B + 0.001f),
+                A = (byte)(tmp.A + 0.001f),
+            };
+        }
+
 
         //-------------------------------------------------------------------------------------
-        internal static float ComputeError(LDRColorA pixel, LDRColorA[] aPalette,
+        internal static float ComputeError(Color pixel, Color[] aPalette,
             byte uIndexPrec,
             byte uIndexPrec2,
             out uint pBestIndex,
@@ -558,14 +620,14 @@ namespace Molten.Graphics.Textures
             pBestIndex = 0;
             pBestIndex2 = 0;
 
-            Vector4F vpixel = new Vector4F(pixel.r, pixel.g, pixel.b, pixel.a);
+            Vector4F vpixel = new Vector4F(pixel.R, pixel.G, pixel.B, pixel.A);
 
             if (uIndexPrec2 == 0)
             {
                 for (uint i = 0; i < uNumIndices && fBestErr > 0; i++)
                 {
-                    LDRColorA col = aPalette[i];
-                    Vector4F tpixel = new Vector4F(col.r, col.g, col.b, col.a);
+                    Color col = aPalette[i];
+                    Vector4F tpixel = new Vector4F(col.R, col.G, col.B, col.A);
 
                     // Compute ErrorMetric
                     tpixel = vpixel - tpixel;
@@ -585,8 +647,8 @@ namespace Molten.Graphics.Textures
             {
                 for (uint i = 0; i < uNumIndices && fBestErr > 0; i++)
                 {
-                    LDRColorA col = aPalette[i];
-                    Vector4F tpixel = new Vector4F(col.r, col.g, col.b, col.a);
+                    Color col = aPalette[i];
+                    Vector4F tpixel = new Vector4F(col.R, col.G, col.B, col.A);
 
                     // Compute ErrorMetricRGB
                     tpixel = vpixel - tpixel;  //XMVectorSubtract(vpixel, tpixel);
@@ -604,7 +666,7 @@ namespace Molten.Graphics.Textures
                 for (uint i = 0; i < uNumIndices2 && fBestErr > 0; i++)
                 {
                     // Compute ErrorMetricAlpha
-                    float ea = (float)pixel.a - aPalette[i].a;
+                    float ea = (float)pixel.A - aPalette[i].A;
                     float fErr = ea * ea;
                     if (fErr > fBestErr)    // error increased, so we're done searching
                         break;
@@ -621,16 +683,16 @@ namespace Molten.Graphics.Textures
         }
 
 
-        internal static void FillWithErrorColors(HDRColorA[] pOut)
+        internal static void FillWithErrorColors(Color4[] pOut)
         {
             for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; ++i)
             {
 # if DEBUG
                 // Use Magenta in debug as a highly-visible error color
-                pOut[i] = new HDRColorA(1.0f, 0.0f, 1.0f, 1.0f);
+                pOut[i] = new Color4(1.0f, 0.0f, 1.0f, 1.0f);
 #else
                 // In production use, default to black
-                pOut[i] = new HDRColorA(0.0f, 0.0f, 0.0f, 1.0f);
+                pOut[i] = new Color4(0.0f, 0.0f, 0.0f, 1.0f);
 #endif
             }
         }

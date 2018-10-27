@@ -68,9 +68,9 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        public void Set(HDRColorA c, bool bSigned)
+        public void Set(Color4 c, bool bSigned)
         {
-            Half4 aF16 = new Half4(c.r, c.g, c.b, c.a);
+            Half4 aF16 = new Half4(c.R, c.G, c.B, c.A);
 
             r = F16ToINT(aF16.X, bSigned);
             g = F16ToINT(aF16.Y, bSigned);
@@ -84,11 +84,11 @@ namespace Molten.Graphics.Textures
             b = Math.Min(iMax, Math.Max(iMin, b));
         }
 
-        public void SignExtend(LDRColorA Prec)
+        public void SignExtend(Color Prec)
         {
-            r = BC67.SIGN_EXTEND(r, Prec.r);
-            g = BC67.SIGN_EXTEND(g, Prec.g);
-            b = BC67.SIGN_EXTEND(b, Prec.b);
+            r = BC67.SIGN_EXTEND(r, Prec.R);
+            g = BC67.SIGN_EXTEND(g, Prec.G);
+            b = BC67.SIGN_EXTEND(b, Prec.B);
         }
 
         public Half[] ToF16(bool bSigned)

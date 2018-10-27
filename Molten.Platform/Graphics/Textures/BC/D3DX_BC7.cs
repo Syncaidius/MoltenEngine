@@ -37,16 +37,16 @@ namespace Molten.Graphics.Textures
         {
             internal byte uMode;
             internal BC67.LDREndPntPair[][] aEndPts; // [BC7_MAX_SHAPES][BC7_MAX_REGIONS];
-            internal LDRColorA[] aLDRPixels;
-            internal HDRColorA[] aHDRPixels;
+            internal Color[] aLDRPixels;
+            internal Color4[] aHDRPixels;
 
-            internal EncodeParams(HDRColorA[] aOriginal) {
+            internal EncodeParams(Color4[] aOriginal) {
                 uMode = 0;
                 aEndPts = new BC67.LDREndPntPair[BC67.BC7_MAX_SHAPES][];
                 for (int i = 0; i < aEndPts.Length; i++)
                     aEndPts[i] = new BC67.LDREndPntPair[BC67.BC7_MAX_REGIONS];
-                aLDRPixels = new LDRColorA[BC.NUM_PIXELS_PER_BLOCK];
-                aHDRPixels = new HDRColorA[BC.NUM_PIXELS_PER_BLOCK];
+                aLDRPixels = new Color[BC.NUM_PIXELS_PER_BLOCK];
+                aHDRPixels = new Color4[BC.NUM_PIXELS_PER_BLOCK];
                 Array.Copy(aOriginal, aHDRPixels, aHDRPixels.Length);
             }
         }
@@ -60,8 +60,8 @@ namespace Molten.Graphics.Textures
             public byte uIndexModeBits;
             public byte uIndexPrec;
             public byte uIndexPrec2;
-            public LDRColorA RGBAPrec;
-            public LDRColorA RGBAPrecWithP;
+            public Color RGBAPrec;
+            public Color RGBAPrecWithP;
 
             public ModeInfo(byte _uPartitions,
             byte _uPartitionBits,
@@ -70,8 +70,8 @@ namespace Molten.Graphics.Textures
             byte _uIndexModeBits,
             byte _uIndexPrec,
             byte _uIndexPrec2,
-            LDRColorA _RGBAPrec,
-            LDRColorA _RGBAPrecWithP)
+            Color _RGBAPrec,
+            Color _RGBAPrecWithP)
             {
                 uPartitions = _uPartitions;
                 uPartitionBits = _uPartitionBits;
@@ -90,29 +90,29 @@ namespace Molten.Graphics.Textures
         /// </summary>
         static readonly ModeInfo[] ms_aInfo =
                 {
-            new ModeInfo(2, 4, 6, 0, 0, 3, 0, new LDRColorA(4,4,4,0), new LDRColorA(5,5,5,0)),
+            new ModeInfo(2, 4, 6, 0, 0, 3, 0, new Color(4,4,4,0), new Color(5,5,5,0)),
                 // Mode 0: Color only, 3 Subsets, RGBP 4441 (unique P-bit), 3-bit indecies, 16 partitions
-            new ModeInfo(1, 6, 2, 0, 0, 3, 0, new LDRColorA(6,6,6,0), new LDRColorA(7,7,7,0)),
+            new ModeInfo(1, 6, 2, 0, 0, 3, 0, new Color(6,6,6,0), new Color(7,7,7,0)),
                 // Mode 1: Color only, 2 Subsets, RGBP 6661 (shared P-bit), 3-bit indecies, 64 partitions
-            new ModeInfo(2, 6, 0, 0, 0, 2, 0, new LDRColorA(5,5,5,0), new LDRColorA(5,5,5,0)),
+            new ModeInfo(2, 6, 0, 0, 0, 2, 0, new Color(5,5,5,0), new Color(5,5,5,0)),
                 // Mode 2: Color only, 3 Subsets, RGB 555, 2-bit indecies, 64 partitions
-            new ModeInfo(1, 6, 4, 0, 0, 2, 0, new LDRColorA(7,7,7,0), new LDRColorA(8,8,8,0)),
+            new ModeInfo(1, 6, 4, 0, 0, 2, 0, new Color(7,7,7,0), new Color(8,8,8,0)),
                 // Mode 3: Color only, 2 Subsets, RGBP 7771 (unique P-bit), 2-bits indecies, 64 partitions
-            new ModeInfo(0, 0, 0, 2, 1, 2, 3, new LDRColorA(5,5,5,6), new LDRColorA(5,5,5,6)),
+            new ModeInfo(0, 0, 0, 2, 1, 2, 3, new Color(5,5,5,6), new Color(5,5,5,6)),
                 // Mode 4: Color w/ Separate Alpha, 1 Subset, RGB 555, A6, 16x2/16x3-bit indices, 2-bit rotation, 1-bit index selector
-            new ModeInfo(0, 0, 0, 2, 0, 2, 2, new LDRColorA(7,7,7,8), new LDRColorA(7,7,7,8)),
+            new ModeInfo(0, 0, 0, 2, 0, 2, 2, new Color(7,7,7,8), new Color(7,7,7,8)),
                 // Mode 5: Color w/ Separate Alpha, 1 Subset, RGB 777, A8, 16x2/16x2-bit indices, 2-bit rotation
-            new ModeInfo(0, 0, 2, 0, 0, 4, 0, new LDRColorA(7,7,7,7), new LDRColorA(8,8,8,8)),
+            new ModeInfo(0, 0, 2, 0, 0, 4, 0, new Color(7,7,7,7), new Color(8,8,8,8)),
                 // Mode 6: Color+Alpha, 1 Subset, RGBAP 77771 (unique P-bit), 16x4-bit indecies
-            new ModeInfo(1, 6, 4, 0, 0, 2, 0, new LDRColorA(5,5,5,5), new LDRColorA(6,6,6,6))
+            new ModeInfo(1, 6, 4, 0, 0, 2, 0, new Color(5,5,5,5), new Color(6,6,6,6))
             // Mode 7: Color+Alpha, 2 Subsets, RGBAP 55551 (unique P-bit), 2-bit indices, 64 partitions
         };
 
         public D3DX_BC7() : base(16) { }
 
-        public HDRColorA[] Decode(Logger log)
+        public Color4[] Decode(Logger log)
         {
-            HDRColorA[] pOut = new HDRColorA[BC.NUM_PIXELS_PER_BLOCK];
+            Color4[] pOut = new Color4[BC.NUM_PIXELS_PER_BLOCK];
             uint uFirst = 0;
             while (uFirst < 128 && GetBit(ref uFirst) <= 0) { }
             byte uMode = (byte)(uFirst - 1);
@@ -137,16 +137,16 @@ namespace Molten.Graphics.Textures
                 byte uIndexMode = GetBits(ref uStartBit, ms_aInfo[uMode].uIndexModeBits);
                 Debug.Assert(uIndexMode < 2);
 
-                LDRColorA[] c = new LDRColorA[BC67.BC7_MAX_REGIONS << 1];
-                LDRColorA RGBAPrec = ms_aInfo[uMode].RGBAPrec;
-                LDRColorA RGBAPrecWithP = ms_aInfo[uMode].RGBAPrecWithP;
+                Color[] c = new Color[BC67.BC7_MAX_REGIONS << 1];
+                Color RGBAPrec = ms_aInfo[uMode].RGBAPrec;
+                Color RGBAPrecWithP = ms_aInfo[uMode].RGBAPrecWithP;
 
                 Debug.Assert(uNumEndPts <= (BC67.BC7_MAX_REGIONS << 1));
 
                 // Red channel
                 for (i = 0; i < uNumEndPts; i++)
                 {
-                    if (uStartBit + RGBAPrec.r > 128)
+                    if (uStartBit + RGBAPrec.R > 128)
                     {
 # if DEBUG
                         log.WriteError("BC7: Invalid block encountered during decoding\n");
@@ -155,13 +155,13 @@ namespace Molten.Graphics.Textures
                         return pOut;
                     }
 
-                    c[i].r = GetBits(ref uStartBit, RGBAPrec.r);
+                    c[i].R = GetBits(ref uStartBit, RGBAPrec.R);
                 }
 
                 // Green channel
                 for (i = 0; i < uNumEndPts; i++)
                 {
-                    if (uStartBit + RGBAPrec.g > 128)
+                    if (uStartBit + RGBAPrec.G > 128)
                     {
 # if DEBUG
                         log.WriteError("BC7: Invalid block encountered during decoding\n");
@@ -170,13 +170,13 @@ namespace Molten.Graphics.Textures
                         return pOut;
                     }
 
-                    c[i].g = GetBits(ref uStartBit, RGBAPrec.g);
+                    c[i].G = GetBits(ref uStartBit, RGBAPrec.G);
                 }
 
                 // Blue channel
                 for (i = 0; i < uNumEndPts; i++)
                 {
-                    if (uStartBit + RGBAPrec.b > 128)
+                    if (uStartBit + RGBAPrec.B > 128)
                     {
 # if DEBUG
                         log.WriteError("BC7: Invalid block encountered during decoding\n");
@@ -185,13 +185,13 @@ namespace Molten.Graphics.Textures
                         return pOut;
                     }
 
-                    c[i].b = GetBits(ref uStartBit, RGBAPrec.b);
+                    c[i].B = GetBits(ref uStartBit, RGBAPrec.B);
                 }
 
                 // Alpha channel
                 for (i = 0; i < uNumEndPts; i++)
                 {
-                    if (uStartBit + RGBAPrec.a > 128)
+                    if (uStartBit + RGBAPrec.A > 128)
                     {
 # if DEBUG
                         log.WriteError("BC7: Invalid block encountered during decoding\n");
@@ -200,7 +200,7 @@ namespace Molten.Graphics.Textures
                         return pOut;
                     }
 
-                    c[i].a = (byte)(RGBAPrec.a > 0 ? GetBits(ref uStartBit, RGBAPrec.a) : 255);
+                    c[i].A = (byte)(RGBAPrec.A > 0 ? GetBits(ref uStartBit, RGBAPrec.A) : 255);
                 }
 
                 // P-bits
@@ -278,31 +278,31 @@ namespace Molten.Graphics.Textures
                 for (i = 0; i < BC.NUM_PIXELS_PER_BLOCK; ++i)
                 {
                     byte uRegion = BC67.g_aPartitionTable[uPartitions][uShape][i];
-                    LDRColorA outPixel = new LDRColorA();
+                    Color outPixel = new Color();
                     if (uIndexPrec2 == 0)
                     {
-                        LDRColorA.Interpolate(c[uRegion << 1], c[(uRegion << 1) + 1], w1[i], w1[i], uIndexPrec, uIndexPrec, ref outPixel);
+                        BC67.Interpolate(c[uRegion << 1], c[(uRegion << 1) + 1], w1[i], w1[i], uIndexPrec, uIndexPrec, ref outPixel);
                     }
                     else
                     {
                         if (uIndexMode == 0)
                         {
-                            LDRColorA.Interpolate(c[uRegion << 1], c[(uRegion << 1) + 1], w1[i], w2[i], uIndexPrec, uIndexPrec2, ref outPixel);
+                            BC67.Interpolate(c[uRegion << 1], c[(uRegion << 1) + 1], w1[i], w2[i], uIndexPrec, uIndexPrec2, ref outPixel);
                         }
                         else
                         {
-                            LDRColorA.Interpolate(c[uRegion << 1], c[(uRegion << 1) + 1], w2[i], w1[i], uIndexPrec2, uIndexPrec, ref outPixel);
+                            BC67.Interpolate(c[uRegion << 1], c[(uRegion << 1) + 1], w2[i], w1[i], uIndexPrec2, uIndexPrec, ref outPixel);
                         }
                     }
 
                     switch (uRotation)
                     {
-                        case 1: BC67.Swap(ref outPixel.r, ref outPixel.a); break;
-                        case 2: BC67.Swap(ref outPixel.g, ref outPixel.a); break;
-                        case 3: BC67.Swap(ref outPixel.b, ref outPixel.a); break;
+                        case 1: BC67.Swap(ref outPixel.R, ref outPixel.A); break;
+                        case 2: BC67.Swap(ref outPixel.G, ref outPixel.A); break;
+                        case 3: BC67.Swap(ref outPixel.B, ref outPixel.A); break;
                     }
 
-                    pOut[i] = (HDRColorA)outPixel;
+                    pOut[i] = (Color4)outPixel;
                 }
             }
             else
@@ -312,13 +312,13 @@ namespace Molten.Graphics.Textures
 #endif
                 // Per the BC7 format spec, we must return transparent black
                 for (int i = 0; i < pOut.Length; i++)
-                    pOut[i] = new HDRColorA();
+                    pOut[i] = new Color4();
             }
 
             return pOut;
         }
 
-        public void Encode(BCFlags flags, HDRColorA[] pIn)
+        public void Encode(BCFlags flags, Color4[] pIn)
         {
             Context context = new Context();
             byte[] final = new byte[m_uBits.Length];
@@ -330,11 +330,11 @@ namespace Molten.Graphics.Textures
 
             for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; ++i)
             {
-                EP.aLDRPixels[i].r = (byte)Math.Max(0.0f, Math.Min(255.0f, pIn[i].r * 255.0f + 0.01f));
-                EP.aLDRPixels[i].g = (byte)Math.Max(0.0f, Math.Min(255.0f, pIn[i].g * 255.0f + 0.01f));
-                EP.aLDRPixels[i].b = (byte)Math.Max(0.0f, Math.Min(255.0f, pIn[i].b * 255.0f + 0.01f));
-                EP.aLDRPixels[i].a = (byte)Math.Max(0.0f, Math.Min(255.0f, pIn[i].a * 255.0f + 0.01f));
-                alphaMask &= EP.aLDRPixels[i].a;
+                EP.aLDRPixels[i].R = (byte)Math.Max(0.0f, Math.Min(255.0f, pIn[i].R * 255.0f + 0.01f));
+                EP.aLDRPixels[i].G = (byte)Math.Max(0.0f, Math.Min(255.0f, pIn[i].G * 255.0f + 0.01f));
+                EP.aLDRPixels[i].B = (byte)Math.Max(0.0f, Math.Min(255.0f, pIn[i].B * 255.0f + 0.01f));
+                EP.aLDRPixels[i].A = (byte)Math.Max(0.0f, Math.Min(255.0f, pIn[i].A * 255.0f + 0.01f));
+                alphaMask &= EP.aLDRPixels[i].A;
             }
 
             bool bHasAlpha = (alphaMask != 0xFF);
@@ -368,9 +368,9 @@ namespace Molten.Graphics.Textures
                 {
                     switch (r)
                     {
-                        case 1: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].r, ref EP.aLDRPixels[i].a); break;
-                        case 2: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].g, ref EP.aLDRPixels[i].a); break;
-                        case 3: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].b, ref EP.aLDRPixels[i].a); break;
+                        case 1: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].R, ref EP.aLDRPixels[i].A); break;
+                        case 2: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].G, ref EP.aLDRPixels[i].A); break;
+                        case 3: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].B, ref EP.aLDRPixels[i].A); break;
                     }
 
                     for (uint im = 0; im < uNumIdxMode && fMSEBest > 0; ++im)
@@ -408,9 +408,9 @@ namespace Molten.Graphics.Textures
 
                     switch (r)
                     {
-                        case 1: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].r, ref EP.aLDRPixels[i].a); break;
-                        case 2: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].g, ref EP.aLDRPixels[i].a); break;
-                        case 3: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].b, ref EP.aLDRPixels[i].a); break;
+                        case 1: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].R, ref EP.aLDRPixels[i].A); break;
+                        case 2: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].G, ref EP.aLDRPixels[i].A); break;
+                        case 3: for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++) BC67.Swap(ref EP.aLDRPixels[i].B, ref EP.aLDRPixels[i].A); break;
                     }
                 }
             }
@@ -427,16 +427,16 @@ namespace Molten.Graphics.Textures
             return (byte)(rnd >> (8 - uPrec));
         }
 
-        private static LDRColorA Quantize(LDRColorA c, LDRColorA RGBAPrec)
+        private static Color Quantize(Color c, Color RGBAPrec)
         {
-            LDRColorA q;
-            q.r = Quantize(c.r, RGBAPrec.r);
-            q.g = Quantize(c.g, RGBAPrec.g);
-            q.b = Quantize(c.b, RGBAPrec.b);
-            if (RGBAPrec.a > 0)
-                q.a = Quantize(c.a, RGBAPrec.a);
+            Color q;
+            q.R = Quantize(c.R, RGBAPrec.R);
+            q.G = Quantize(c.G, RGBAPrec.G);
+            q.B = Quantize(c.B, RGBAPrec.B);
+            if (RGBAPrec.A > 0)
+                q.A = Quantize(c.A, RGBAPrec.A);
             else
-                q.a = 255;
+                q.A = 255;
             return q;
         }
 
@@ -447,18 +447,18 @@ namespace Molten.Graphics.Textures
             return (byte)(comp | (comp >> (int)uPrec));
         }
 
-        private static LDRColorA Unquantize(LDRColorA c, LDRColorA RGBAPrec)
+        private static Color Unquantize(Color c, Color RGBAPrec)
         {
-            return new LDRColorA()
+            return new Color()
             {
-                r = Unquantize(c.r, RGBAPrec.r),
-                g = Unquantize(c.g, RGBAPrec.g),
-                b = Unquantize(c.b, RGBAPrec.b),
-                a = (byte)(RGBAPrec.a > 0 ? Unquantize(c.a, RGBAPrec.a) : 255),
+                R = Unquantize(c.R, RGBAPrec.R),
+                G = Unquantize(c.G, RGBAPrec.G),
+                B = Unquantize(c.B, RGBAPrec.B),
+                A = (byte)(RGBAPrec.A > 0 ? Unquantize(c.A, RGBAPrec.A) : 255),
             };
         }
 
-        private static void GeneratePaletteQuantized(EncodeParams pEP, uint uIndexMode, BC67.LDREndPntPair endPts, LDRColorA[] aPalette)
+        private static void GeneratePaletteQuantized(EncodeParams pEP, uint uIndexMode, BC67.LDREndPntPair endPts, Color[] aPalette)
         {
             uint uIndexPrec = uIndexMode > 0 ? ms_aInfo[pEP.uMode].uIndexPrec2 : ms_aInfo[pEP.uMode].uIndexPrec;
             uint uIndexPrec2 = uIndexMode > 0 ? ms_aInfo[pEP.uMode].uIndexPrec : ms_aInfo[pEP.uMode].uIndexPrec2;
@@ -467,23 +467,23 @@ namespace Molten.Graphics.Textures
             Debug.Assert(uNumIndices > 0 && uNumIndices2 > 0);
             Debug.Assert((uNumIndices <= BC67.BC7_MAX_INDICES) && (uNumIndices2 <= BC67.BC7_MAX_INDICES));
 
-            LDRColorA a = Unquantize(endPts.A, ms_aInfo[pEP.uMode].RGBAPrecWithP);
-            LDRColorA b = Unquantize(endPts.B, ms_aInfo[pEP.uMode].RGBAPrecWithP);
+            Color a = Unquantize(endPts.A, ms_aInfo[pEP.uMode].RGBAPrecWithP);
+            Color b = Unquantize(endPts.B, ms_aInfo[pEP.uMode].RGBAPrecWithP);
             if (uIndexPrec2 == 0)
             {
                 for (uint i = 0; i < uNumIndices; i++)
-                    LDRColorA.Interpolate(a, b, i, i, uIndexPrec, uIndexPrec, ref aPalette[i]);
+                    BC67.Interpolate(a, b, i, i, uIndexPrec, uIndexPrec, ref aPalette[i]);
             }
             else
             {
                 for (uint i = 0; i < uNumIndices; i++)
-                    LDRColorA.InterpolateRGB(a, b, i, uIndexPrec, ref aPalette[i]);
+                    BC67.InterpolateRGB(a, b, i, uIndexPrec, ref aPalette[i]);
                 for (uint i = 0; i < uNumIndices2; i++)
-                    LDRColorA.InterpolateA(a, b, i, uIndexPrec2, ref aPalette[i]);
+                    BC67.InterpolateA(a, b, i, uIndexPrec2, ref aPalette[i]);
             }
         }
 
-        private float PerturbOne(EncodeParams pEP, LDRColorA[] aColors, uint np, uint uIndexMode, uint ch,
+        private float PerturbOne(EncodeParams pEP, Color[] aColors, uint np, uint uIndexMode, int ch,
             BC67.LDREndPntPair oldEndPts, out BC67.LDREndPntPair newEndPts, float fOldErr, byte do_b)
         {
             int prec = ms_aInfo[pEP.uMode].RGBAPrecWithP[ch];
@@ -523,7 +523,7 @@ namespace Molten.Graphics.Textures
 
         // perturb the endpoints at least -3 to 3.
         // always ensure endpoint ordering is preserved (no need to overlap the scan)
-        private void Exhaustive(EncodeParams pEP, LDRColorA[] aColors, uint np, uint uIndexMode, uint ch,
+        private void Exhaustive(EncodeParams pEP, Color[] aColors, uint np, uint uIndexMode, int ch,
             float fOrgErr, ref BC67.LDREndPntPair optEndPt)
         {
             byte uPrec = ms_aInfo[pEP.uMode].RGBAPrecWithP[ch];
@@ -592,7 +592,7 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private void OptimizeOne(EncodeParams pEP, LDRColorA[] aColors, uint np, uint uIndexMode,
+        private void OptimizeOne(EncodeParams pEP, Color[] aColors, uint np, uint uIndexMode,
             float fOrgErr, BC67.LDREndPntPair org, out BC67.LDREndPntPair opt)
         {
             float fOptErr = fOrgErr;
@@ -603,7 +603,7 @@ namespace Molten.Graphics.Textures
             byte do_b;
 
             // now optimize each channel separately
-            for (uint ch = 0; ch < BC67.BC7_NUM_CHANNELS; ++ch)
+            for (int ch = 0; ch < BC67.BC7_NUM_CHANNELS; ++ch)
             {
                 if (ms_aInfo[pEP.uMode].RGBAPrecWithP[ch] == 0)
                     continue;
@@ -651,7 +651,7 @@ namespace Molten.Graphics.Textures
             }
 
             // finally, do a small exhaustive search around what we think is the global minima to be sure
-            for (uint ch = 0; ch < BC67.BC7_NUM_CHANNELS; ch++)
+            for (int ch = 0; ch < BC67.BC7_NUM_CHANNELS; ch++)
                 Exhaustive(pEP, aColors, np, uIndexMode, ch, fOptErr, ref opt);
         }
 
@@ -661,7 +661,7 @@ namespace Molten.Graphics.Textures
             byte uPartitions = ms_aInfo[pEP.uMode].uPartitions;
             Debug.Assert(uPartitions < BC67.BC7_MAX_REGIONS && uShape < BC67.BC7_MAX_SHAPES);
 
-            LDRColorA[] aPixels = new LDRColorA[BC.NUM_PIXELS_PER_BLOCK];
+            Color[] aPixels = new Color[BC.NUM_PIXELS_PER_BLOCK];
 
             for (uint p = 0; p <= uPartitions; ++p)
             {
@@ -692,9 +692,9 @@ namespace Molten.Graphics.Textures
 
             byte uHighestIndexBit = (byte)(uNumIndices >> 1);
             byte uHighestIndexBit2 = (byte)(uNumIndices2 >> 1);
-            LDRColorA[][] aPalette = new LDRColorA[BC67.BC7_MAX_REGIONS][];
+            Color[][] aPalette = new Color[BC67.BC7_MAX_REGIONS][];
             for (int i = 0; i < aPalette.Length; i++)
-                aPalette[i] = new LDRColorA[BC67.BC7_MAX_INDICES];
+                aPalette[i] = new Color[BC67.BC7_MAX_INDICES];
 
             // build list of possibles
             for (uint p = 0; p <= uPartitions; p++)
@@ -731,9 +731,9 @@ namespace Molten.Graphics.Textures
                 {
                     if ((aIndices[BC67.g_aFixUp[uPartitions][uShape][p]] & uHighestIndexBit) == uHighestIndexBit)
                     {
-                        BC67.Swap(ref endPts[p].A.r, ref endPts[p].B.r);
-                        BC67.Swap(ref endPts[p].A.g, ref endPts[p].B.g);
-                        BC67.Swap(ref endPts[p].A.b, ref endPts[p].B.b);
+                        BC67.Swap(ref endPts[p].A.R, ref endPts[p].B.R);
+                        BC67.Swap(ref endPts[p].A.G, ref endPts[p].B.G);
+                        BC67.Swap(ref endPts[p].A.B, ref endPts[p].B.B);
                         for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++)
                             if (BC67.g_aPartitionTable[uPartitions][uShape][i] == p)
                                 aIndices[i] = uNumIndices - 1U - aIndices[i];
@@ -742,7 +742,7 @@ namespace Molten.Graphics.Textures
 
                     if ((aIndices2[0] & uHighestIndexBit2) == uHighestIndexBit2)
                     {
-                        BC67.Swap(ref endPts[p].A.a, ref endPts[p].B.a);
+                        BC67.Swap(ref endPts[p].A.A, ref endPts[p].B.A);
                         for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; i++)
                             aIndices2[i] = uNumIndices2 - 1U - aIndices2[i];
                     }
@@ -759,8 +759,8 @@ namespace Molten.Graphics.Textures
             uint uPBits = ms_aInfo[pEP.uMode].uPBits;
             uint uIndexPrec = ms_aInfo[pEP.uMode].uIndexPrec;
             uint uIndexPrec2 = ms_aInfo[pEP.uMode].uIndexPrec2;
-            LDRColorA RGBAPrec = ms_aInfo[pEP.uMode].RGBAPrec;
-            LDRColorA RGBAPrecWithP = ms_aInfo[pEP.uMode].RGBAPrecWithP;
+            Color RGBAPrec = ms_aInfo[pEP.uMode].RGBAPrec;
+            Color RGBAPrecWithP = ms_aInfo[pEP.uMode].RGBAPrecWithP;
             uint i;
             uint uStartBit = 0;
             SetBits(ref uStartBit, pEP.uMode, 0);
@@ -807,7 +807,7 @@ namespace Molten.Graphics.Textures
             }
             else
             {
-                for (uint ch = 0; ch < BC67.BC7_NUM_CHANNELS; ch++)
+                for (int ch = 0; ch < BC67.BC7_NUM_CHANNELS; ch++)
                 {
                     for (i = 0; i <= uPartitions; i++)
                     {
@@ -849,8 +849,8 @@ namespace Molten.Graphics.Textures
                 byte[] aPVote = { 0, 0, 0, 0, 0, 0 };
                 byte[] aCount = { 0, 0, 0, 0, 0, 0 };
 
-                LDRColorA RGBAPrec = ms_aInfo[pEP.uMode].RGBAPrec;
-                LDRColorA RGBAPrecWithP = ms_aInfo[pEP.uMode].RGBAPrecWithP;
+                Color RGBAPrec = ms_aInfo[pEP.uMode].RGBAPrec;
+                Color RGBAPrecWithP = ms_aInfo[pEP.uMode].RGBAPrecWithP;
 
                 for (byte ch = 0; ch < BC67.BC7_NUM_CHANNELS; ch++)
                 {
@@ -966,11 +966,11 @@ namespace Molten.Graphics.Textures
             }
         }
 
-        private float MapColors(EncodeParams pEP, LDRColorA[] aColors, uint np, uint uIndexMode, BC67.LDREndPntPair endPts, float fMinErr)
+        private float MapColors(EncodeParams pEP, Color[] aColors, uint np, uint uIndexMode, BC67.LDREndPntPair endPts, float fMinErr)
         {
             byte uIndexPrec = uIndexMode > 0 ? ms_aInfo[pEP.uMode].uIndexPrec2 : ms_aInfo[pEP.uMode].uIndexPrec;
             byte uIndexPrec2 = uIndexMode > 0 ? ms_aInfo[pEP.uMode].uIndexPrec : ms_aInfo[pEP.uMode].uIndexPrec2;
-            LDRColorA[] aPalette = new LDRColorA[BC67.BC7_MAX_INDICES];
+            Color[] aPalette = new Color[BC67.BC7_MAX_INDICES];
             float fTotalErr = 0;
 
             GeneratePaletteQuantized(pEP, uIndexMode, endPts, aPalette);
@@ -1001,9 +1001,9 @@ namespace Molten.Graphics.Textures
             byte uNumIndices = (byte)(1u << uIndexPrec);
             byte uNumIndices2 = (byte)(1u << uIndexPrec2);
             uint[] auPixIdx = new uint[BC.NUM_PIXELS_PER_BLOCK];
-            LDRColorA[][] aPalette = new LDRColorA[BC67.BC7_MAX_REGIONS][];
+            Color[][] aPalette = new Color[BC67.BC7_MAX_REGIONS][];
             for (int i = 0; i < aPalette.Length; i++)
-                aPalette[i] = new LDRColorA[BC67.BC7_MAX_INDICES];
+                aPalette[i] = new Color[BC67.BC7_MAX_INDICES];
 
             for (uint p = 0; p <= uPartitions; p++)
             {
@@ -1031,34 +1031,34 @@ namespace Molten.Graphics.Textures
 
                 if (uIndexPrec2 == 0)
                 {
-                    HDRColorA epA, epB;
+                    Color4 epA, epB;
                     BC67.OptimizeRGBA(pEP.aHDRPixels, out epA, out epB, 4, np, auPixIdx);
-                    epA.Clamp(0.0f, 1.0f);
-                    epB.Clamp(0.0f, 1.0f);
+                    epA = Color4.Clamp(epA, 0.0f, 1.0f);
+                    epB = Color4.Clamp(epB, 0.0f, 1.0f);
                     epA *= 255.0f;
                     epB *= 255.0f;
-                    aEndPts[p].A = epA.ToLDRColorA();
-                    aEndPts[p].B = epB.ToLDRColorA();
+                    aEndPts[p].A = BC67.HDRToLDRExplicit(epA);
+                    aEndPts[p].B = BC67.HDRToLDRExplicit(epB);
                 }
                 else
                 {
                     byte uMinAlpha = 255, uMaxAlpha = 0;
                     for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; ++i)
                     {
-                        uMinAlpha = Math.Max(uMinAlpha, pEP.aLDRPixels[auPixIdx[i]].a);
-                        uMaxAlpha = Math.Max(uMaxAlpha, pEP.aLDRPixels[auPixIdx[i]].a);
+                        uMinAlpha = Math.Max(uMinAlpha, pEP.aLDRPixels[auPixIdx[i]].A);
+                        uMaxAlpha = Math.Max(uMaxAlpha, pEP.aLDRPixels[auPixIdx[i]].A);
                     }
 
-                    HDRColorA epA, epB;
+                    Color4 epA, epB;
                     BC67.OptimizeRGB(pEP.aHDRPixels, out epA, out epB, 4, np, auPixIdx, cxt);
-                    epA.Clamp(0.0f, 1.0f);
-                    epB.Clamp(0.0f, 1.0f);
+                    epA = Color4.Clamp(epA, 0.0f, 1.0f);
+                    epB = Color4.Clamp(epB, 0.0f, 1.0f);
                     epA *= 255.0f;
                     epB *= 255.0f;
-                    aEndPts[p].A = epA.ToLDRColorA();
-                    aEndPts[p].B = epB.ToLDRColorA();
-                    aEndPts[p].A.a = uMinAlpha;
-                    aEndPts[p].B.a = uMaxAlpha;
+                    aEndPts[p].A = BC67.HDRToLDRExplicit(epA);
+                    aEndPts[p].B = BC67.HDRToLDRExplicit(epB);
+                    aEndPts[p].A.A = uMinAlpha;
+                    aEndPts[p].B.A = uMaxAlpha;
                 }
             }
 
@@ -1066,16 +1066,16 @@ namespace Molten.Graphics.Textures
             {
                 for (uint p = 0; p <= uPartitions; p++)
                     for (uint i = 0; i < uNumIndices; i++)
-                        LDRColorA.Interpolate(aEndPts[p].A, aEndPts[p].B, i, i, uIndexPrec, uIndexPrec, ref aPalette[p][i]);
+                        BC67.Interpolate(aEndPts[p].A, aEndPts[p].B, i, i, uIndexPrec, uIndexPrec, ref aPalette[p][i]);
             }
             else
             {
                 for (uint p = 0; p <= uPartitions; p++)
                 {
                     for (uint i = 0; i < uNumIndices; i++)
-                        LDRColorA.InterpolateRGB(aEndPts[p].A, aEndPts[p].B, i, uIndexPrec, ref aPalette[p][i]);
+                        BC67.InterpolateRGB(aEndPts[p].A, aEndPts[p].B, i, uIndexPrec, ref aPalette[p][i]);
                     for (uint i = 0; i < uNumIndices2; i++)
-                        LDRColorA.InterpolateA(aEndPts[p].A, aEndPts[p].B, i, uIndexPrec2, ref aPalette[p][i]);
+                        BC67.InterpolateA(aEndPts[p].A, aEndPts[p].B, i, uIndexPrec2, ref aPalette[p][i]);
                 }
             }
 

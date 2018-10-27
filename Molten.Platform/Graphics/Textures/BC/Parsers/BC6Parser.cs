@@ -17,13 +17,13 @@ namespace Molten.Graphics.Textures
         {
             D3DX_BC6H bc = new D3DX_BC6H();
             bc.Read(imageReader);
-            HDRColorA[] colors = bc.Decode(false, log);
+            Color4[] colors = bc.Decode(false, log);
             Color4[] result = new Color4[colors.Length];
 
             int colSize = Marshal.SizeOf<Color4>();
             fixed (Color4* ptrResult = result)
             {
-                fixed(HDRColorA* ptrColors = colors)
+                fixed(Color4* ptrColors = colors)
                     Buffer.MemoryCopy(ptrColors, ptrResult, colSize * result.Length, colSize * colors.Length);
             }
             return result;
@@ -31,17 +31,17 @@ namespace Molten.Graphics.Textures
 
         internal unsafe override void Encode(BinaryWriter writer, Color4[] uncompressed, Logger log)
         {
-            HDRColorA[] colors = new HDRColorA[uncompressed.Length];
-            int colSize = Marshal.SizeOf<Color4>();
-            fixed (Color4* ptrUncompressed = uncompressed)
-            {
-                fixed (HDRColorA* ptrColors = colors)
-                    Buffer.MemoryCopy(ptrUncompressed, ptrColors, colSize * colors.Length, colSize * colors.Length);
-            }
+            //Color4[] colors = new Color4[uncompressed.Length];
+            //int colSize = Marshal.SizeOf<Color4>();
+            //fixed (Color4* ptrUncompressed = uncompressed)
+            //{
+            //    fixed (Color4* ptrColors = colors)
+            //        Buffer.MemoryCopy(ptrUncompressed, ptrColors, colSize * colors.Length, colSize * colors.Length);
+            //}
 
             D3DX_BC6H bc = new D3DX_BC6H();
             D3DX_BC6H.Context context = _contextPool.GetInstance();
-            bc.Encode(false, colors, context);
+            bc.Encode(false, uncompressed, context);
             _contextPool.Recycle(context);
             bc.Write(writer);
         }
