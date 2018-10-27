@@ -58,19 +58,19 @@ namespace Molten.Samples
             TextureData loadedData = cr.Get<TextureData>("dds_bc6h_fast.dds");
             loadedData.Decompress(Log);
             cr = Engine.Content.BeginRequest("assets/");
-            cr.Save("saved_recompressed_texture_raw.dds;compress=BC6HU", loadedData);
+            cr.Save("saved_recompressed_texture_raw.dds;compress=bc6u", loadedData);
             cr.Commit();
 
 
             texture.GetData(staging, (data) =>
             {
                 cr = Engine.Content.BeginRequest("assets/");
-                cr.Save("saved_texture.dds;compress=BC6HU", data);
+                cr.Save("saved_texture.dds;compress=bc6u", data);
                 cr.Commit();
             });
 
-            ITexture2D decompressedTexture = Engine.Renderer.Resources.CreateTexture2D(loadedData);
-            mat.SetDefaultResource(decompressedTexture, 0);
+            //ITexture2D decompressedTexture = Engine.Renderer.Resources.CreateTexture2D(loadedData);
+            //mat.SetDefaultResource(decompressedTexture, 0);
         }
 
         protected override void OnUpdate(Timing time)

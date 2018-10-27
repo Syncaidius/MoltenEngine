@@ -24,7 +24,7 @@ namespace Molten.Graphics.Textures
     // BC67 compression (16b bits per texel)
     internal class D3DX_BC7 : BC67.CBits
     {
-        class Context : BCContext, IPoolable
+        internal class Context : BCContext, IPoolable
         {
 
             public void Clear()
@@ -318,9 +318,8 @@ namespace Molten.Graphics.Textures
             return pOut;
         }
 
-        public void Encode(BCFlags flags, Color4[] pIn)
+        public void Encode(BCFlags flags, Color4[] pIn, Context context)
         {
-            Context context = new Context();
             byte[] final = new byte[m_uBits.Length];
             Buffer.BlockCopy(m_uBits, 0, final, 0, final.Length);
 

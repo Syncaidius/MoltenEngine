@@ -36,7 +36,9 @@ namespace Molten.Graphics
         BC5U = GraphicsFormat.BC5_UNorm,
         BC5S = GraphicsFormat.BC5_SNorm,
 
+        BC6U = GraphicsFormat.BC6H_Uf16,
         BC6HU = GraphicsFormat.BC6H_Uf16,
+        BC6S = GraphicsFormat.BC6H_Sf16,
         BC6HS = GraphicsFormat.BC6H_Sf16,
 
         BC7 = GraphicsFormat.BC7_UNorm,

@@ -679,8 +679,8 @@ namespace Molten.Graphics.Textures
 
         void GeneratePaletteQuantized(EncodeParams pEP, BC67.INTEndPntPair endPts, INTColor[] aPalette)
         {
-            uint uIndexPrec = ms_aInfo[pEP.uMode].uIndexPrec;
-            uint uNumIndices = 1U << (int)uIndexPrec;
+            int uIndexPrec = ms_aInfo[pEP.uMode].uIndexPrec;
+            int uNumIndices = 1 << uIndexPrec;
             Debug.Assert(uNumIndices > 0);
             Color Prec = ms_aInfo[pEP.uMode].RGBAPrec[0][0];
 
@@ -706,17 +706,22 @@ namespace Molten.Graphics.Textures
                     return;
             }
 
+            int weight;
             for (uint i = 0; i < uNumIndices; ++i)
             {
-                aPalette[i].r = FinishUnquantize(
-                    (unqEndPts.A.r * (BC67.BC67_WEIGHT_MAX - aWeights[i]) + unqEndPts.B.r * aWeights[i] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT,
-                    pEP.bSigned);
-                aPalette[i].g = FinishUnquantize(
-                    (unqEndPts.A.g * (BC67.BC67_WEIGHT_MAX - aWeights[i]) + unqEndPts.B.g * aWeights[i] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT,
-                    pEP.bSigned);
-                aPalette[i].b = FinishUnquantize(
-                    (unqEndPts.A.b * (BC67.BC67_WEIGHT_MAX - aWeights[i]) + unqEndPts.B.b * aWeights[i] + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT,
-                    pEP.bSigned);
+                weight = aWeights[i];
+                aPalette[i] = new INTColor()
+                {
+                    r = FinishUnquantize(
+                    (unqEndPts.A.r * (BC67.BC67_WEIGHT_MAX - weight) + unqEndPts.B.r * weight + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT,
+                    pEP.bSigned),
+                    g = FinishUnquantize(
+                    (unqEndPts.A.g * (BC67.BC67_WEIGHT_MAX - weight) + unqEndPts.B.g * weight + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT,
+                    pEP.bSigned),
+                    b = FinishUnquantize(
+                    (unqEndPts.A.b * (BC67.BC67_WEIGHT_MAX - weight) + unqEndPts.B.b * weight + BC67.BC67_WEIGHT_ROUND) >> BC67.BC67_WEIGHT_SHIFT,
+                    pEP.bSigned)
+                };
             }
         }
 

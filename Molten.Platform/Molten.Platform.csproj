@@ -99,6 +99,7 @@
     <Compile Include="Graphics\Textures\BC\D3DX_BC2.cs" />
     <Compile Include="Graphics\Textures\BC\D3DX_BC6H.cs" />
     <Compile Include="Graphics\Textures\BC\D3DX_BC7.cs" />
+    <Compile Include="Graphics\Textures\BC\Parsers\BC7Parser.cs" />
     <Compile Include="Graphics\Textures\BC\Parsers\BC6Parser.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSSizeException.cs" />
     <Compile Include="Graphics\Textures\BC\Parsers\BC5Parser.cs" />
