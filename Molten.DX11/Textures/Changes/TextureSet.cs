@@ -34,12 +34,12 @@ namespace Molten.Graphics
                 if (Area != null)
                     throw new NotImplementedException("Area-based SetData on block-compressed texture is currently unsupported. Sorry!");
 
-                blockSize = DDSHelper.GetBlockSize(texture.Format);
+                blockSize = BCHelper.GetBlockSize(texture.Format);
 
                 // Collect total level size.
                 for (int i = 0; i < texture.MipMapCount; i++)
                 {
-                    arraySliceBytes += DDSHelper.GetBCLevelSize(levelWidth, levelHeight, blockSize);
+                    arraySliceBytes += BCHelper.GetBCLevelSize(levelWidth, levelHeight, blockSize);
                     levelWidth /= 2;
                     levelHeight /= 2;
                 }
@@ -103,7 +103,7 @@ namespace Molten.Graphics
                         // Calculate mip-map level size.
                         levelWidth = texture.Width >> MipLevel;
                         levelHeight = texture.Height >> MipLevel;
-                        int bcPitch = DDSHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
+                        int bcPitch = BCHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
                         DataBox box = new DataBox(dataPtr, bcPitch, arraySliceBytes);
                         pipe.Context.UpdateSubresource(box, texture.UnderlyingResource, subLevel);
                     }

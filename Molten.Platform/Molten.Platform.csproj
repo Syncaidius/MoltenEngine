@@ -192,7 +192,7 @@
     <Compile Include="Graphics\Textures\DDS\DDSFormat.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSHeader.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSHeaderDXT10.cs" />
-    <Compile Include="Graphics\Textures\DDS\DDSHelper.cs" />
+    <Compile Include="Graphics\Textures\BC\BCHelper.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSPixelFormat.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSPixelFormatFlags.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSReader.cs" />

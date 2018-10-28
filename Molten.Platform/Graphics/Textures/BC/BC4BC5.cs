@@ -23,7 +23,7 @@ namespace Molten.Graphics.Textures
     internal static class BC4BC5
     {
         const uint dwMostNeg = (1 << (8 * sizeof(sbyte) - 1));
-        const uint BLOCK_SIZE = DDSHelper.BLOCK_DIMENSIONS * DDSHelper.BLOCK_DIMENSIONS;
+        const uint BLOCK_SIZE = BCHelper.BLOCK_DIMENSIONS * BCHelper.BLOCK_DIMENSIONS;
 
         //-------------------------------------------------------------------------------------
         // Convert a floating point value to an 8-bit SNORM

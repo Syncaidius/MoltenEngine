@@ -19,7 +19,7 @@ namespace Molten.Graphics.Textures
 
         internal override void Encode(BinaryWriter writer, Color4[] uncompressed, Logger log)
         {
-            D3DX_BC3 bc = BC.D3DXEncodeBC3(uncompressed, BCFlags.DITHER_RGB);
+            D3DX_BC3 bc = BC.D3DXEncodeBC3(uncompressed, BCFlags.DITHER_RGB | BCFlags.DITHER_A);
             bc.Write(writer);
         }
     }

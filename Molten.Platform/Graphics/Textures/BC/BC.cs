@@ -426,6 +426,44 @@ namespace Molten.Graphics.Textures
             float threshold,
             BCFlags flags)
         {
+            if (HasFlags(flags, BCFlags.DITHER_A))
+            {
+                float[] fError = new float[NUM_PIXELS_PER_BLOCK];
+
+                for (uint i = 0; i < NUM_PIXELS_PER_BLOCK; ++i)
+                {
+                    Color4 clr = pColor[i];
+                    float fAlph = clr.A + fError[i];
+
+                    pColor[i].R = clr.R;
+                    pColor[i].G = clr.G;
+                    pColor[i].B = clr.B;
+                    pColor[i].A = (uint)(clr.A + fError[i] + 0.5f);
+
+                    float fDiff = fAlph - pColor[i].A;
+
+                    if (3 != (i & 3))
+                    {
+                        Debug.Assert(i < 15);
+                        fError[i + 1] += fDiff * (7.0f / 16.0f);
+                    }
+
+                    if (i < 12)
+                    {
+                        if ((i & 3) == 3)
+                            fError[i + 3] += fDiff * (3.0f / 16.0f);
+
+                        fError[i + 4] += fDiff * (5.0f / 16.0f);
+
+                        if (3 != (i & 3))
+                        {
+                            Debug.Assert(i < 11);
+                            fError[i + 5] += fDiff * (1.0f / 16.0f);
+                        }
+                    }
+                }
+            }
+
             D3DX_BC1 pBC = new D3DX_BC1();
 
             // Determine if we need to colorkey this block

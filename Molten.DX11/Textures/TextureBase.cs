@@ -76,7 +76,7 @@ namespace Molten.Graphics
             IsValid = false;
 
             _srvDescription = new ShaderResourceViewDescription();
-            _isBlockCompressed = DDSHelper.GetBlockCompressed(_format.FromApi());
+            _isBlockCompressed = BCHelper.GetBlockCompressed(_format.FromApi());
         }
 
         public Texture1DProperties Get1DProperties()
@@ -418,7 +418,7 @@ namespace Molten.Graphics
                 Width = _width,
             };
 
-            int blockSize = DDSHelper.GetBlockSize(Format);
+            int blockSize = BCHelper.GetBlockSize(Format);
             int expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
             int expectedSlicePitch = expectedRowPitch * Height;
 
@@ -464,12 +464,12 @@ namespace Molten.Graphics
             // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347
 
 
-            int blockSize = DDSHelper.GetBlockSize(Format);
+            int blockSize = BCHelper.GetBlockSize(Format);
             int expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
             int expectedSlicePitch = expectedRowPitch * Height;
 
             if (blockSize > 0)
-                DDSHelper.GetBCLevelSizeAndPitch(subWidth, subHeight, blockSize, out expectedSlicePitch, out expectedRowPitch);
+                BCHelper.GetBCLevelSizeAndPitch(subWidth, subHeight, blockSize, out expectedSlicePitch, out expectedRowPitch);
 
             byte[] sliceData = new byte[expectedSlicePitch];
             fixed (byte* ptrFixedSlice = sliceData)

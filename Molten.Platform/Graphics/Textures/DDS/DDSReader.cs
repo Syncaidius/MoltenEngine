@@ -225,7 +225,7 @@ namespace Molten.Graphics.Textures.DDS
             }
 
             _levelData = new TextureData.Slice[_header.MipMapCount * _headerDXT10.ArraySize];
-            int blockSize = DDSHelper.GetBlockSize(_headerDXT10.ImageFormat);
+            int blockSize = BCHelper.GetBlockSize(_headerDXT10.ImageFormat);
 
             for (int a = 0; a < _headerDXT10.ArraySize; a++)
             {
@@ -235,7 +235,7 @@ namespace Molten.Graphics.Textures.DDS
                 for (int i = 0; i < _header.MipMapCount; i++)
                 {
                     int blockPitch, levelByteSize;
-                    DDSHelper.GetBCLevelSizeAndPitch(levelWidth, levelHeight, blockSize, out levelByteSize, out blockPitch);
+                    BCHelper.GetBCLevelSizeAndPitch(levelWidth, levelHeight, blockSize, out levelByteSize, out blockPitch);
 
                     TextureData.Slice level = new TextureData.Slice()
                     {

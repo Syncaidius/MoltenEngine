@@ -10,7 +10,10 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
-    public static class DDSHelper
+    /// <summary>
+    /// Texture block-compression helper class.
+    /// </summary>
+    public static class BCHelper
     {
         /// <summary>
         /// The expected width and height of a DDS data block, in pixels.
@@ -19,7 +22,7 @@ namespace Molten.Graphics.Textures
 
         static Dictionary<GraphicsFormat, BCBlockParser> _parsers;
 
-        static DDSHelper()
+        static BCHelper()
         {
             _parsers = new Dictionary<GraphicsFormat, BCBlockParser>();
             IEnumerable<Type> parserTypes = ReflectionHelper.FindType<BCBlockParser>();
@@ -138,7 +141,7 @@ namespace Molten.Graphics.Textures
                     {
                         int levelID = (a * (int)data.MipMapLevels) + i;
                         byte[] levelData = CompressLevel(parser, levels[levelID], log);
-                        int pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * DDSHelper.GetBlockSize(gFormat));
+                        int pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * BCHelper.GetBlockSize(gFormat));
 
                         int blockCountY = (levels[i].Height + 3) / 4;
 

@@ -41,7 +41,6 @@ namespace Molten.Graphics.Textures
         {
             get
             {
-                Debug.Assert(i < Marshal.SizeOf<INTColor>() / sizeof(int));
                 switch (i)
                 {
                     case 0: return r;
@@ -55,7 +54,6 @@ namespace Molten.Graphics.Textures
 
             set
             {
-                Debug.Assert(i < Marshal.SizeOf<INTColor>() / sizeof(int));
                 switch (i)
                 {
                     case 0: r = value; break;

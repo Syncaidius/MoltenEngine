@@ -780,6 +780,9 @@ namespace Molten.Graphics.Textures
             // copy real endpoints so we can perturb them
             tmpEndPts = newEndPts = oldEndPts;
 
+            int tmpEndA = tmpEndPts.A[ch];
+            int tmpEndB = tmpEndPts.B[ch];
+
             // do a logarithmic search for the best error for this endpoint (which)
             for (int step = 1 << (uPrec - 1); step > 0; step >>= 1)
             {
@@ -788,14 +791,14 @@ namespace Molten.Graphics.Textures
                 {
                     if (do_b == 0)
                     {
-                        tmpEndPts.A[ch] = newEndPts.A[ch] + sign * step;
-                        if (tmpEndPts.A[ch] < 0 || tmpEndPts.A[ch] >= (1 << uPrec))
+                        tmpEndA = newEndPts.A[ch] + sign * step;
+                        if (tmpEndA < 0 || tmpEndA >= (1 << uPrec))
                             continue;
                     }
                     else
                     {
-                        tmpEndPts.B[ch] = newEndPts.B[ch] + sign * step;
-                        if (tmpEndPts.B[ch] < 0 || tmpEndPts.B[ch] >= (1 << uPrec))
+                        tmpEndB = newEndPts.B[ch] + sign * step;
+                        if (tmpEndB < 0 || tmpEndB >= (1 << uPrec))
                             continue;
                     }
 
@@ -957,14 +960,16 @@ namespace Molten.Graphics.Textures
             byte uPartitions = ms_aInfo[pEP.uMode].uPartitions;
             Debug.Assert(uPartitions < BC67.BC6H_MAX_REGIONS);
 
+            BC67.INTEndPntPair unqEndPts;
             for (uint p = 0; p <= uPartitions; ++p)
             {
-                aQntEndPts[p].A.r = Quantize(aUnqEndPts[p].A.r, Prec.R, pEP.bSigned);
-                aQntEndPts[p].A.g = Quantize(aUnqEndPts[p].A.g, Prec.G, pEP.bSigned);
-                aQntEndPts[p].A.b = Quantize(aUnqEndPts[p].A.b, Prec.B, pEP.bSigned);
-                aQntEndPts[p].B.r = Quantize(aUnqEndPts[p].B.r, Prec.R, pEP.bSigned);
-                aQntEndPts[p].B.g = Quantize(aUnqEndPts[p].B.g, Prec.G, pEP.bSigned);
-                aQntEndPts[p].B.b = Quantize(aUnqEndPts[p].B.b, Prec.B, pEP.bSigned);
+                unqEndPts = aUnqEndPts[p];
+                aQntEndPts[p].A.r = Quantize(unqEndPts.A.r, Prec.R, pEP.bSigned);
+                aQntEndPts[p].A.g = Quantize(unqEndPts.A.g, Prec.G, pEP.bSigned);
+                aQntEndPts[p].A.b = Quantize(unqEndPts.A.b, Prec.B, pEP.bSigned);
+                aQntEndPts[p].B.r = Quantize(unqEndPts.B.r, Prec.R, pEP.bSigned);
+                aQntEndPts[p].B.g = Quantize(unqEndPts.B.g, Prec.G, pEP.bSigned);
+                aQntEndPts[p].B.b = Quantize(unqEndPts.B.b, Prec.B, pEP.bSigned);
             }
         }
 
