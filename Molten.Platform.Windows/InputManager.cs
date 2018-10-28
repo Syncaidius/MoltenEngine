@@ -14,10 +14,13 @@ namespace Molten.Input
         Logger _log;
 
         List<GamepadDevice> _gamepads;
-        Dictionary<IWindowSurface, SurfaceGroup> _groups;
-        SurfaceGroup _activeGroup;
         IWindowSurface _activeSurface;
+        IInputCamera _activeCamera;
         WindowsClipboard _clipboard;
+
+        Dictionary<GamepadIndex, GamepadDevice> _gamepadsByIndex;
+        Dictionary<Type, InputDeviceBase> _byType = new Dictionary<Type, InputDeviceBase>();
+        List<InputDeviceBase> _devices = new List<InputDeviceBase>();
 
         /// <summary>Initializes the current input manager instance. Avoid calling this directly unless you know what you are doing.</summary>
         /// <param name="settings">The <see cref="InputSettings"/> that was provided when the engine was instanciated.</param>
@@ -26,82 +29,88 @@ namespace Molten.Input
         {
             _log = log;
             _input = new DirectInput();
-            _groups = new Dictionary<IWindowSurface, SurfaceGroup>();
             _gamepads = new List<GamepadDevice>();
+            _gamepadsByIndex = new Dictionary<GamepadIndex, GamepadDevice>();
             _clipboard = new WindowsClipboard();
+        }
 
-            for (int i = 0; i < 4; i++)
+
+        public T GetCustomDevice<T>() where T : class, IInputDevice, new()
+        {
+            Type t = typeof(T);
+            if (_byType.TryGetValue(t, out InputDeviceBase device))
             {
-                GamepadDevice handler = new GamepadDevice((GamepadIndex)i);
-                _gamepads.Add(handler);
-                handler.Initialize(this, _log, null);
+                return device as T;
+            }
+            else
+            {
+                device = new T() as InputDeviceBase;
+                AddDevice(device);
+                return device as T;
             }
         }
 
-        /// <summary>Gets a new or existing instance of an input handler for the specified <see cref="IWindowSurface"/>.</summary>
-        /// <typeparam name="T">The type of handler to retrieve.</typeparam>
-        /// <param name="surface">The surface for which to bind and return an input handler.</param>
-        /// <returns>An input handler of the specified type.</returns>
-        public T GetCustomDevice<T>(IWindowSurface surface) where T : class, IInputDevice, new()
+        internal void AddDevice(InputDeviceBase device)
         {
-            SurfaceGroup grp = null;
-            if(!_groups.TryGetValue(surface, out grp))
+            Type t = device.GetType();
+            device.Initialize(this, _log);
+
+            if(_activeSurface != null)
+                device.Bind(_activeSurface);
+
+            device.OnDisposing += Device_OnDisposing;
+            _byType.Add(t, device);
+            _devices.Add(device);
+        }
+
+        private void Device_OnDisposing(EngineObject obj)
+        {
+            InputDeviceBase handler = obj as InputDeviceBase;
+            _devices.Remove(handler);
+            _byType.Remove(obj.GetType());
+        }
+
+        public IMouseDevice GetMouse()
+        {
+            return GetCustomDevice<MouseDevice>();
+        }
+
+        public IKeyboardDevice GetKeyboard()
+        {
+            return GetCustomDevice<KeyboardDevice>();
+        }
+
+        public IGamepadDevice GetGamepad(GamepadIndex index)
+        {
+            GamepadDevice gamepad = null;
+            if (!_gamepadsByIndex.TryGetValue(index, out gamepad))
             {
-                grp = new SurfaceGroup(this, _log, surface);
-                _groups.Add(surface, grp);
+                gamepad = new GamepadDevice(index);
+                _gamepadsByIndex.Add(index, gamepad);
+                _gamepads.Add(gamepad);
+                AddDevice(gamepad);
             }
 
-            return grp.GetDevice<T>();
-        }
-
-        public IMouseDevice GetMouse(IWindowSurface surface)
-        {
-            return GetCustomDevice<MouseDevice>(surface);
-        }
-
-        public IKeyboardDevice GetKeyboard(IWindowSurface surface)
-        {
-            return GetCustomDevice<KeyboardDevice>(surface);
-        }
-
-        public IGamepadDevice GetGamepad(IWindowSurface surface, GamepadIndex index)
-        {
-            GamepadDevice gamepad = new GamepadDevice(index);
-            SurfaceGroup grp = null;
-            if (!_groups.TryGetValue(surface, out grp))
-            {
-                grp = new SurfaceGroup(this, _log, surface);
-                _groups.Add(surface, grp);
-            }
-
-            grp.AddDevice(gamepad);
             return gamepad;
-        }
-
-        /// <summary>Sets the active/focused <see cref="IWindowSurface"/> which will receive input. Only one can receive input at any one time.</summary>
-        /// <param name="surface">The surface to be set as active.</param>
-        public void SetActiveWindow(IWindowSurface surface)
-        {
-            if(surface != _activeSurface)
-            {
-                if (!_groups.TryGetValue(surface, out _activeGroup))
-                {
-                    _activeGroup = new SurfaceGroup(this, _log, surface);
-                    _groups.Add(surface, _activeGroup);
-                }
-
-                _activeSurface = surface;
-            }
         }
 
         /// <summary>Update's the current input manager. Avoid calling directly unless you know what you're doing.</summary>
         /// <param name="time">An instance of timing for the current thread.</param>
         public void Update(Timing time)
         {
-            _activeGroup?.Update(time);
+            if (_activeSurface != null)
+            {
+                for(int i = 0; i < _devices.Count; i++)
+                    _devices[i].Update(time);
 
-            for (int i = 0; i < _gamepads.Count; i++)
-                _gamepads[i].Update(time);
+                for (int i = 0; i < _gamepads.Count; i++)
+                    _gamepads[i].Update(time);
+            }
+            else
+            {
+                for (int i = 0; i < _devices.Count; i++)
+                    _devices[i].ClearState();
+            }
         }
 
         /// <summary>Retrieves a gamepad handler.</summary>
@@ -112,8 +121,58 @@ namespace Molten.Input
             return _gamepads[(int)index];
         }
 
+        private void BindSurface(IRenderSurface surface)
+        {
+            if (surface is IWindowSurface window)
+            {
+                // Are we already bound to this surface (e.g. via a different camera).
+                if (_activeSurface != window)
+                {
+                    if (_activeSurface != null)
+                    {
+                        foreach (InputDeviceBase device in _devices)
+                        {
+                            device.ClearState();
+                            device.Unbind(_activeSurface);
+                        }
+                    }
+
+                    _activeSurface = window;
+
+                    if (_activeSurface != null)
+                    {
+                        foreach (InputDeviceBase device in _devices)
+                            device.Bind(_activeSurface);
+                    }
+                }
+            }
+            else
+            {
+                // if active surface isn't null, we were previously bound to something which was an IWindowSurface.
+                // We know the new surface is not IWindowSurface, so unbind.
+                if (_activeSurface != null)
+                {
+                    foreach (InputDeviceBase device in _devices)
+                        device.Unbind(_activeSurface);
+                }
+
+                _activeSurface = null;
+            }
+        }
+
+        internal void ClearState()
+        {
+            foreach (InputDeviceBase device in _devices)
+                device.ClearState();
+        }
+
         protected override void OnDispose()
         {
+            foreach (InputDeviceBase device in _byType.Values)
+                device.Dispose();
+
+            _byType.Clear();
+
             DisposeObject(ref _input);
 
             for (int i = 0; i < _gamepads.Count; i++)
@@ -122,6 +181,7 @@ namespace Molten.Input
                 DisposeObject(ref gph);
             }
             _gamepads.Clear();
+            _gamepadsByIndex.Clear();
         }
 
         public DirectInput DirectInput { get { return _input; } }
@@ -130,5 +190,21 @@ namespace Molten.Input
         public GamepadDevice GamePad { get { return _gamepads[0]; } }
 
         public IClipboard Clipboard => _clipboard;
+
+        /// <summary>
+        /// Gets or sets the current input camera, through which all input is received.
+        /// </summary>
+        public IInputCamera Camera
+        {
+            get => _activeCamera;
+            set
+            {
+                if(_activeCamera != value)
+                {
+                    _activeCamera = value;
+                    BindSurface(value?.OutputSurface);
+                }
+            }
+        }
     }
 }

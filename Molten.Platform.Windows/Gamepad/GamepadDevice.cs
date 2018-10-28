@@ -38,9 +38,9 @@ namespace Molten.Input
             _padIndex = (int)index;
         }
 
-        internal override void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
+        internal override void Initialize(IInputManager manager, Logger log)
         {
-            base.Initialize(manager, log, surface);
+            base.Initialize(manager, log);
             _pad = new Controller((UserIndex)_padIndex);
             _state = new Gamepad();
 
@@ -60,6 +60,16 @@ namespace Molten.Input
 
             // Initialize previous state
             _statePrev = new Gamepad();
+        }
+
+        internal override void Bind(IWindowSurface surface)
+        {
+            // TODO simply store the window we're bound to and only accept input if it is focused.
+        }
+
+        internal override void Unbind(IWindowSurface surface)
+        {
+            // TODO simply store the window we're bound to and only accept input if it is focused.
         }
 
         public override void ClearState()

@@ -10,7 +10,7 @@ using System.Collections;
 
 namespace Molten
 {
-    public abstract class SettingBank : EngineObject
+    public abstract class SettingBank
     {
         ThreadedList<SettingValue> _settings;
         ThreadedDictionary<string, SettingValue> _byKey;

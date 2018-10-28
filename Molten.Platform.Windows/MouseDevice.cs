@@ -15,20 +15,18 @@ using System.Windows.Forms;
 
 namespace Molten.Input
 {
-    public delegate void MouseEventHandler(MouseDevice mouse);
-
     /// <summary>Handles mouse input.</summary>
     public class MouseDevice : InputHandlerBase<MouseButton>, IMouseDevice
     {
         /// <summary>
         /// Occurs when the mouse cursor was inside the parent window/control, but just left it.
         /// </summary>
-        public event MouseEventHandler OnLeaveControl;
+        public event MouseEventHandler OnLeaveSurface;
 
         /// <summary>
         /// Occurs when the mouse cursor was outside of the parent window/control, but just entered it.
         /// </summary>
-        public event MouseEventHandler OnEnterControl;
+        public event MouseEventHandler OnEnterSurface;
 
         Mouse _mouse;
         MouseState _state;
@@ -49,13 +47,12 @@ namespace Molten.Input
         bool _cursorVisibleState = true;
         IWindowSurface _surface;
         IntPtr _windowHandle;
+        bool _bufferUpdated;
 
-        internal override void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
+        internal override void Initialize(IInputManager manager, Logger log)
         {
             InputManager diManager = manager as InputManager;
 
-            _surface = surface;
-            _surface.OnPostResize += _surface_OnPostResize;
             _mouse = new Mouse(diManager.DirectInput);
             _mouse.Properties.AxisMode = DeviceAxisMode.Relative;
             _mouse.Properties.BufferSize = 256;
@@ -65,9 +62,21 @@ namespace Molten.Input
             _prevState = new MouseState();
         }
 
-        private void _surface_OnPostResize(ITexture texture)
+        internal override void Bind(IWindowSurface surface)
         {
-            IntPtr? handle = GetWindowHandle(_surface);
+            _surface = surface;
+            SurfaceHandleChanged(surface);
+            _surface.OnHandleChanged += SurfaceHandleChanged;
+        }
+
+        internal override void Unbind(IWindowSurface surface)
+        {
+            _surface = null;
+        }
+
+        private void SurfaceHandleChanged(IWindowSurface surface)
+        {
+            IntPtr? handle = GetWindowHandle(surface);
 
             if (handle != null)
                 _windowHandle = handle.Value;
@@ -79,7 +88,7 @@ namespace Molten.Input
         }
 
         /// <summary>Positions the mouse cursor at the center of the window.</summary>
-        public void CenterInWindow()
+        public void CenterInView()
         {
             Rectangle winBounds = _surface.Bounds;
             Vector2I p = winBounds.Center;
@@ -131,7 +140,10 @@ namespace Molten.Input
 
         public override void ClearState()
         {
-            throw new NotImplementedException();
+            _wheelDelta = 0;
+            _moved = Vector2I.Zero;
+            _state = new MouseState();
+            _prevState = new MouseState();
         }
 
         /// <summary>Update input handler.</summary>
@@ -142,24 +154,20 @@ namespace Molten.Input
             Rectangle winBounds = _surface.Bounds;
 
             // Update previous state with previous buffer data
-            if (_buffer != null)
+            if (_buffer != null && _bufferUpdated)
+            {
                 for (int i = 0; i < _buffer.Length; i++)
                     _prevState.Update(_buffer[i]);
+            }
 
+            _bufferUpdated = false;
             _moved = new Vector2I();
             _wheelDelta = 0f;
-
-            _state.X = 0;
-            _state.Y = 0;
             _state.Z = 0;
 
             // Store previous position
             _prevPosition = _position;
             _prevWheelPos = _wheelPos;
-
-            // Get latest info from mouse and buffer it
-            _mouse.Poll();
-            _buffer = _mouse.GetBufferedData();
 
             // Make sure the game window is focused before updating movement/position.
             if (forewindow == _windowHandle)
@@ -180,6 +188,11 @@ namespace Molten.Input
 
                 CheckInside(insideControl);
 
+                // Get latest info from mouse and buffer.
+                _mouse.Poll();
+                _buffer = _mouse.GetBufferedData();
+                _bufferUpdated = true;
+
                 // If the mouse is in a valid window, process movement, position, etc
                 if (insideControl || IsConstrained)
                 {
@@ -187,8 +200,6 @@ namespace Molten.Input
                     for (int i = 0; i < _buffer.Length; i++)
                     {
                         _state.Update(_buffer[i]);
-                        //_moved.X += _state.X;
-                        //_moved.Y += _state.Y;
                         _wheelDelta += _state.Z;
                     }
 
@@ -223,7 +234,7 @@ namespace Molten.Input
             else
             {
                 CheckInside(false);
-                _moved = new Vector2I();
+                _moved = Vector2I.Zero;
                 SetCursorVisiblity(true);
             }
         }
@@ -231,9 +242,9 @@ namespace Molten.Input
         private void CheckInside(bool insideControl)
         {
             if (insideControl && !_wasInsideControl)
-                OnEnterControl?.Invoke(this);
+                OnEnterSurface?.Invoke(this);
             else if (!insideControl && _wasInsideControl)
-                OnLeaveControl?.Invoke(this);
+                OnLeaveSurface?.Invoke(this);
 
             _wasInsideControl = insideControl;
         }

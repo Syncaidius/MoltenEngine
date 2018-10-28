@@ -58,8 +58,6 @@ namespace Molten
             }
         }
 
-        protected override void OnDispose() { }
-
         /// <summary>Gets the graphics settings bank.</summary>
         [DataMember]
         public GraphicsSettings Graphics { get; private set; }
@@ -76,11 +74,11 @@ namespace Molten
         [DataMember]
         public UISettings UI { get; private set; }
 
-        /// <summary>Gets or sets the settings file name.</summary>
+        /// <summary>Gets or sets the name of the settings file.</summary>
         public string Filename { get; set; } = "settings.json";
 
-        /// <summary>Gets or sets the number of content worker threads.</summary>
-        public int ContentWorkerThreads { get; set; } = 1;
+        /// <summary>Gets or sets the number of content worker threads. Changing this value will only have an affect before <see cref="Engine"/> is instantiated.</summary>
+        public int ContentWorkerThreads { get; set; } = 2;
 
         /// <summary>
         /// Gets a list of <see cref="ContentProcessor"/> instances that will be added to every new instantiation of <see cref="ContentManager"/>.

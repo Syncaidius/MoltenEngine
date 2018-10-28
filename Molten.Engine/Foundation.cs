@@ -70,10 +70,9 @@ namespace Molten
             _engine.Renderer.OutputSurfaces.Add(_gameWindow);
             _gameWindow.Visible = true;
 
-            _keyboard = _engine.Input.GetKeyboard(_gameWindow);
-            _mouse = _engine.Input.GetMouse(_gameWindow);
-            _gamepad = _engine.Input.GetGamepad(_gameWindow, GamepadIndex.One);
-            _engine.Input.SetActiveWindow(_gameWindow);
+            _keyboard = _engine.Input.GetKeyboard();
+            _mouse = _engine.Input.GetMouse();
+            _gamepad = _engine.Input.GetGamepad(GamepadIndex.One);
             _engine.StartRenderer(renderThreadApartment);
 
             _gameThread = _engine.Threading.SpawnThread("game", false, true, (timing) =>

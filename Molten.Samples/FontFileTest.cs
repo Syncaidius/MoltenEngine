@@ -60,10 +60,10 @@ namespace Molten.Samples
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
 
-        private void Keyboard_OnCharacterKey(Input.CharacterEventArgs e)
+        private void Keyboard_OnCharacterKey(char character, long paramVal)
         {
-            GenerateChar(e.Character);
-            _font2Test.GetCharGlyph(e.Character);
+            GenerateChar(character);
+            _font2Test.GetCharGlyph(character);
         }
 
         private void LoadFontFile()

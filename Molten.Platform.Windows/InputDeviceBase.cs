@@ -11,12 +11,20 @@ namespace Molten.Input
     {
         protected IInputManager _manager;
 
-        internal virtual void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
+        internal virtual void Initialize(IInputManager manager, Logger log)
         {
             _manager = manager;
         }
 
         public abstract void ClearState();
+
+        /// <summary>Occurs when the device is to bind to the provided surface.</summary>
+        /// <param name="surface">The surface that the device should bind to.</param>
+        internal abstract void Bind(IWindowSurface surface);
+
+        /// <summary>Occurs when the device is to unbind from the provided surface.</summary>
+        /// <param name="surface">The surface from which the device should unbind.</param>
+        internal abstract void Unbind(IWindowSurface surface);
 
         internal abstract void Update(Timing time);
 
@@ -62,7 +70,6 @@ namespace Molten.Input
             // Check if the surface handle is a form. 
             // If not, find it's parent form.
             Control ctrl = Control.FromHandle(surface.Handle);
-            Control ctrlTest = Control.FromHandle(surface.Handle);
             if (ctrl == null)
                 return null;
 

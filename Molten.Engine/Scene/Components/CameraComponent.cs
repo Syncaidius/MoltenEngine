@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics;
+using Molten.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,14 +9,25 @@ using System.Threading.Tasks;
 namespace Molten
 {
     /// <summary>An implementation of <see cref="Camera"/> which provides a left-handed projection matrix based on it's <see cref="Camera.OutputSurface"/>.</summary>
-    public class CameraComponent : SceneComponent
+    public class CameraComponent : SceneComponent, IInputCamera
     {
         RenderCamera _camera;
         bool _inScene = false;
 
+        /// <summary>
+        /// Occurs when the output surface has been changed.
+        /// </summary>
+        public event InputCameraSurfaceHandler OnSurfaceChanged;
+
         public CameraComponent()
         {
             _camera = new RenderCamera(RenderCameraMode.Perspective);
+            _camera.OnOutputSurfaceChanged += _camera_OnOutputSurfaceChanged;
+        }
+
+        private void _camera_OnOutputSurfaceChanged(RenderCamera camera, IRenderSurface oldSurface, IRenderSurface newSurface)
+        {
+            OnSurfaceChanged?.Invoke(this, newSurface);
         }
 
         protected override void OnInitialize(SceneObject obj)
@@ -102,10 +114,19 @@ namespace Molten
             return _camera.HasFlags(flags);
         }
 
+        /// <summary>
+        /// Gets the view matrix of the current <see cref="CameraComponent"/>.
+        /// </summary>
         public Matrix4F View => _camera.View;
 
+        /// <summary>
+        /// Gets the projection matrix of the current <see cref="CameraComponent"/>.
+        /// </summary>
         public Matrix4F Projection => _camera.Projection;
 
+        /// <summary>
+        /// Gets the combined view and projection matrix of the current <see cref="CameraComponent"/>. This is the result of multiplying <see cref="View"/> and <see cref="Projection"/> together.
+        /// </summary>
         public Matrix4F ViewProjection => _camera.ViewProjection;
 
         /// <summary>Gets or sets the <see cref="IRenderSurface"/> that the camera's view should be rendered out to.</summary>

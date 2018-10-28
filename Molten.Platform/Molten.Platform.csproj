@@ -105,10 +105,11 @@
     <Compile Include="Graphics\Textures\BC\Parsers\BC5Parser.cs" />
     <Compile Include="Graphics\Textures\BC\Parsers\BC4Parser.cs" />
     <Compile Include="Graphics\Textures\MagickTextureWriter.cs" />
-    <Compile Include="IClipboard.cs" />
-    <Compile Include="IInputDevice.cs" />
-    <Compile Include="IInputManager.cs" />
-    <Compile Include="InputSettings.cs" />
+    <Compile Include="Input\IClipboard.cs" />
+    <Compile Include="Input\IInputCamera.cs" />
+    <Compile Include="Input\IInputDevice.cs" />
+    <Compile Include="Input\IInputManager.cs" />
+    <Compile Include="Input\InputSettings.cs" />
     <Compile Include="Keyboard\IKeyboardDevice.cs" />
     <Compile Include="Keyboard\Key.cs" />
     <Compile Include="Keyboard\KeyboardEvents.cs" />

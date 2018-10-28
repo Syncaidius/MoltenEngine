@@ -44,9 +44,8 @@ namespace Molten.Input
 
         //variables for Win32 stuff
         delegate IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
-        public delegate void OnKeyHandler(Key key);
 
-        ReferencedObject<WndProc> _hookProcDelegate;
+        WndProc _hookProcDelegate;
         IntPtr _prevWndProc;
         IntPtr _hIMC;
 
@@ -60,32 +59,43 @@ namespace Molten.Input
         List<Key> _pressedKeys;
         IWindowSurface _surface;
         IntPtr _windowHandle;
+        bool _bufferUpdated;
 
         /// <summary>Triggered when a character key is pressed.</summary>
         public event KeyPressHandler OnCharacterKey;
-        public event OnKeyHandler OnKeyReleased;
+        public event KeyHandler OnKeyPressed;
+        public event KeyHandler OnKeyReleased;
 
-        internal override void Initialize(IInputManager manager, Logger log, IWindowSurface surface)
+        internal override void Initialize(IInputManager manager, Logger log)
         {
             InputManager diManager = manager as InputManager;
-
-            _surface = surface;
+            
             _state = new KeyboardState();
             _prevState = new KeyboardState();
             _pressedKeys = new List<Key>();
-            //GetHandle();
 
             _keyboard = new Keyboard(diManager.DirectInput);
             _keyboard.Properties.BufferSize = 256;
-            _keyboard.Acquire();
-            CreateHook();
-
-            surface.OnPostResize += Surface_OnPostResize;
+            _keyboard.Acquire();            
         }
 
-        private void Surface_OnPostResize(ITexture texture)
+        internal override void Bind(IWindowSurface surface)
         {
-            IntPtr? handle = GetWindowHandle(_surface);
+            _surface = surface;
+            SurfaceHandleChanged(surface);
+            _surface.OnHandleChanged += SurfaceHandleChanged;
+            CreateHook();
+        }
+
+        internal override void Unbind(IWindowSurface surface)
+        {
+            SetWindowLongDelegate(null);
+            _surface = null;
+        }
+
+        private void SurfaceHandleChanged(IWindowSurface surface)
+        {
+            IntPtr? handle = GetWindowHandle(surface);
 
             if (handle != null)
             {
@@ -100,7 +110,7 @@ namespace Molten.Input
                 return;
 
             _prevWndProc = IntPtr.Zero;
-            _hookProcDelegate = new ReferencedObject<WndProc>(new WndProc(HookProc));
+            _hookProcDelegate = new WndProc(HookProc);
 
             SetWindowLongDelegate(_hookProcDelegate);
             _hIMC = ImmGetContext(_windowHandle);
@@ -109,6 +119,8 @@ namespace Molten.Input
         public override void ClearState()
         {
             _pressedKeys.Clear();
+            _state = new KeyboardState();
+            _prevState = new KeyboardState();
         }
 
         private void SetWindowLongDelegate(WndProc hook)
@@ -138,9 +150,7 @@ namespace Molten.Input
 
                 case WM_CHAR:
                     long paramVal = lParam.ToInt64();
-
-                    CharacterEventArgs e = new CharacterEventArgs((char)wParam, paramVal);
-                    OnCharacterKey?.Invoke(e);
+                    OnCharacterKey?.Invoke((char)wParam, paramVal);
                     break;
                 case WM_IME_SETCONTEXT:
                     if (wParam.ToInt32() == 1)
@@ -152,11 +162,6 @@ namespace Molten.Input
                     returnCode = (IntPtr)1;
                     break;
             }
-
-            // Dispose of hook delegate if the handler was previously disposed.
-            // TODO this needs to happen in the handler.Dispose method too, but in a way that doesn't invalidate the hook to the native-side of things.
-            if (IsDisposed)
-                _hookProcDelegate.Dereference();
 
             return returnCode;
         }
@@ -206,13 +211,13 @@ namespace Molten.Input
         internal override void Update(Timing time)
         {
             // Update previous state with buffer
-            if (_buffer != null)
+            if (_buffer != null && _bufferUpdated)
+            {
                 for (int i = 0; i < _buffer.Length; i++)
                     _prevState.Update(_buffer[i]);
+            }
 
-            _keyboard.Poll();
-            _buffer = _keyboard.GetBufferedData();
-
+            _bufferUpdated = false;
             if (_windowHandle == IntPtr.Zero)
                 return;
 
@@ -221,6 +226,10 @@ namespace Molten.Input
             // Compare the foreground window to the current engine window.
             if (_windowHandle == forewindow)
             {
+                _keyboard.Poll();
+                _buffer = _keyboard.GetBufferedData();
+                _bufferUpdated = true;
+
                 // Update current state with new buffer data
                 if (_buffer != null)
                     for (int i = 0; i < _buffer.Length; i++)
@@ -233,7 +242,7 @@ namespace Molten.Input
                     {
                         Key key = _pressedKeys[i];
                         if (_state.PressedKeys.Contains(key.ToApi()) == false)
-                            OnKeyReleased(key);
+                            OnKeyReleased?.Invoke(this, key);
                     }
                 }
 
@@ -245,6 +254,7 @@ namespace Molten.Input
                 {
                     Key key = _state.PressedKeys[i].FromApi();
                     _pressedKeys.Add(key);
+                    OnKeyPressed?.Invoke(this, key);
                 }
             }
             else
@@ -253,9 +263,6 @@ namespace Molten.Input
                 _pressedKeys.Clear();
             }
         }
-
-        /// <summary>Gets a list of all currently pressed keys.</summary>
-        public Key[] PressedKeys => _pressedKeys.ToArray();
 
         public override bool IsConnected => true;
 

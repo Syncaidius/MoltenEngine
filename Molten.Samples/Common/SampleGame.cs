@@ -38,6 +38,7 @@ namespace Molten.Samples
             _cam2D.MaxDrawDistance = 1.0f;
             _cam2D.OutputSurface = Window;
             _cam2D.LayerMask = BitwiseHelper.Set(_cam2D.LayerMask, 0);
+            Engine.Input.Camera = _cam2D;
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<SpriteFont>("BroshK.ttf;size=24");

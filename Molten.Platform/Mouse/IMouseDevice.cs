@@ -6,13 +6,25 @@ using System.Threading.Tasks;
 
 namespace Molten.Input
 {
+    public delegate void MouseEventHandler(IMouseDevice mouse);
+
     /// <summary>
     /// Represents an implementation of a mouse or pointer device.
     /// </summary>
     public interface IMouseDevice : IInputDevice<MouseButton>
     {
-        /// <summary>Positions the mouse cursor at the center of the window.</summary>
-        void CenterInWindow();
+        /// <summary>
+        /// Occurs when the mouse cursor was inside it's bound surface, but just left it.
+        /// </summary>
+        event MouseEventHandler OnLeaveSurface;
+
+        /// <summary>
+        /// Occurs when the mouse cursor was outside of it's bound surface, but just entered it.
+        /// </summary>
+        event MouseEventHandler OnEnterSurface;
+
+        /// <summary>Positions the mouse cursor at the center of the currently-bound <see cref="IInputCamera"/>.</summary>
+        void CenterInView();
 
         /// <summary>Returns the amount the mouse cursor has moved a long X and Y since the last frame/update.</summary>
         Vector2I Delta { get; }

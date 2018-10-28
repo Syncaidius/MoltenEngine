@@ -18,21 +18,21 @@ namespace Molten.Input
         /// <typeparam name="T">The type of handler to retrieve.</typeparam>
         /// <param name="surface">The surface for which to bind and return an input handler.</param>
         /// <returns>An input handler of the specified type.</returns>
-        T GetCustomDevice<T>(IWindowSurface surface) where T : class, IInputDevice, new();
+        T GetCustomDevice<T>() where T : class, IInputDevice, new();
 
         /// <summary>
         /// Gets the default mouse handler for the current input library.
         /// </summary>
         /// <param name="surface">The window surface the handler will be bound to.</param>
         /// <returns></returns>
-        IMouseDevice GetMouse(IWindowSurface surface);
+        IMouseDevice GetMouse();
 
         /// <summary>
         /// Gets the default keyboard handler for the current input library.
         /// </summary>
         /// <param name="surface">The window surface the handler will be bound to.</param>
         /// <returns></returns>
-        IKeyboardDevice GetKeyboard(IWindowSurface surface);
+        IKeyboardDevice GetKeyboard();
 
         /// <summary>
         /// Gets the default gamepad handler for the current input library.
@@ -40,11 +40,7 @@ namespace Molten.Input
         /// <param name="surface">The window surface the handler will be bound to.</param>
         /// <param name="index">The gamepad index.</param>
         /// <returns></returns>
-        IGamepadDevice GetGamepad(IWindowSurface surface, GamepadIndex index);
-
-        /// <summary>Sets the active/focused <see cref="IWindowSurface"/> which will receive input. Only one can receive input at any one time.</summary>
-        /// <param name="surface">The surface to be set as active.</param>
-        void SetActiveWindow(IWindowSurface surface);
+        IGamepadDevice GetGamepad(GamepadIndex index);
 
         /// <summary>Update's the current input manager. Avoid calling directly unless you know what you're doing.</summary>
         /// <param name="time">An instance of timing for the current thread.</param>
@@ -52,5 +48,10 @@ namespace Molten.Input
 
         /// <summary>Gets the implementation of <see cref="IClipboard"/> bound to the current input manager.</summary>
         IClipboard Clipboard { get; }
+
+        /// <summary>
+        /// Gets or sets the camera through which input is handled. If the camera does not have a valid <see cref="IWindowSurface"/>, input handling will be skipped.
+        /// </summary>
+        IInputCamera Camera { get; set; }
     }
 }

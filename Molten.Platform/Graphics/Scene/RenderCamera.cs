@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     public delegate void RenderCameraProjectionFunc(IRenderSurface surface, float nearClip, float farClip, float fov, ref Matrix4F projection);
+    public delegate void RendercameraSurfaceHandler(RenderCamera camera, IRenderSurface oldSurface, IRenderSurface newSurface);
 
     public class RenderCamera
     {
@@ -25,6 +26,8 @@ namespace Molten.Graphics
 
         static Dictionary<RenderCameraMode, RenderCameraProjectionFunc> _projectionFuncs;
         static Dictionary<RenderCameraMode, ClipRange> _clipPreset;
+
+        public event RendercameraSurfaceHandler OnOutputSurfaceChanged;
 
         Matrix4F _view;
         Matrix4F _projection;
@@ -162,8 +165,10 @@ namespace Molten.Graphics
                     if (value != null)
                         value.OnPostResize += _surface_OnPostResize;
 
+                    IRenderSurface oldSurface = _surface;
                     _surface = value;
                     CalculateProjection();
+                    OnOutputSurfaceChanged?.Invoke(this, oldSurface, _surface);
                 }
             }
         }

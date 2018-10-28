@@ -5,8 +5,6 @@ using System.Text;
 
 namespace Molten.Input
 {
-    public delegate void KeyPressHandler(CharacterEventArgs e);
-
     public class CharacterEventArgs : EventArgs
     {
         private readonly char character;
