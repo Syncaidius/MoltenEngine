@@ -126,15 +126,22 @@ namespace Molten.Input
 
         private Vector2I ToLocalPosition(Vector2I pos)
         {
-            Rectangle oBounds = _surface.Bounds;
-            pos -= new Vector2I(oBounds.X, oBounds.Y);
+            if (_surface != null)
+            {
+                Rectangle oBounds = _surface.Bounds;
+                pos -= new Vector2I(oBounds.X, oBounds.Y);
+            }
             return pos;
+
         }
 
         private Vector2I ToDesktopPosition(Vector2I pos)
         {
-            Rectangle oBounds = _surface.Bounds;
-            pos += new Vector2I(oBounds.X, oBounds.Y);
+            if (_surface != null)
+            {
+                Rectangle oBounds = _surface.Bounds;
+                pos += new Vector2I(oBounds.X, oBounds.Y);
+            }
             return pos;
         }
 
