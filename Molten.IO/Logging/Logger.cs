@@ -41,7 +41,7 @@ namespace Molten
 
         public static void DisposeAll()
         {
-            _loggers.ForInterlock(0, 1, (index, item) => item.Dispose());
+            _loggers.For(0, 1, (index, item) => item.Dispose());
             _loggers.Clear();
         }
 

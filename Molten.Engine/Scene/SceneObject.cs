@@ -148,7 +148,7 @@ namespace Molten
 
             if((_updateFlags & ObjectUpdateFlags.Self) == ObjectUpdateFlags.Self)
             {
-                _components.ForInterlock(0, 1, (index, component) =>
+                _components.For(0, 1, (index, component) =>
                 {
                     if (component.IsEnabled)
                         component.OnUpdate(time);
@@ -157,7 +157,7 @@ namespace Molten
 
             // Re-populate the local child list used when updating them.
             if ((_updateFlags & ObjectUpdateFlags.Children) == ObjectUpdateFlags.Children)
-                _children.Objects.ForInterlock(0, 1, (index, child) => child.Update(time));
+                _children.Objects.For(0, 1, (index, child) => child.Update(time));
 
             _transform.ResetFlags();
         }

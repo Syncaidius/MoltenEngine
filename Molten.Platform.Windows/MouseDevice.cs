@@ -78,7 +78,6 @@ namespace Molten.Input
         private void SurfaceHandleChanged(IWindowSurface surface)
         {
             IntPtr? handle = GetWindowHandle(surface);
-            Console.WriteLine("Mouse surface handle changed: " + handle);
             if (handle != null)
                 _windowHandle = handle.Value;
         }
@@ -158,6 +157,9 @@ namespace Molten.Input
         /// <param name="time">The snapshot of game time to use.</param>
         internal override void Update(Timing time)
         {
+            if (_surface == null)
+                return;
+
             IntPtr forewindow = Win32.GetForegroundWindow();
             Rectangle winBounds = _surface.Bounds;
 

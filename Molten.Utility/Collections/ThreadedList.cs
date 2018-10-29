@@ -584,8 +584,8 @@ namespace Molten.Collections
         /// the loop takes too long to execute while other threads are waiting to access the list. Return true from the callback to break out of the for loop.</summary>
         /// <param name="start">The start index.</param>
         /// <param name="increment">The increment.</param>
-        /// <param name="callback">The callback to run on each iteration. The callback should return true to break out of the loop.</param>
-        public void ForInterlock(int start, int increment, Action<int, T> callback)
+        /// <param name="callback">The callback to run on each iteration. The callback can optionally return true to break out of the loop.</param>
+        public void For(int start, int increment, Action<int, T> callback)
         {
             _interlocker.Lock(() =>
             {
@@ -598,14 +598,41 @@ namespace Molten.Collections
         /// the loop takes too long to execute while other threads are waiting to access the list. Return true from the callback to break out of the for loop.</summary>
         /// <param name="start">The start index.</param>
         /// <param name="increment">The increment.</param>
-        /// <param name="callback">The callback to run on each iteration. The callback should return true to break out of the loop.</param>
-        public void ForInterlock(int start, int increment, Func<int, T, bool> callback)
+        /// <param name="callback">The callback to run on each iteration. The callback can optionally return true to break out of the loop.</param>
+        public void For(int start, int increment, Func<int, T, bool> callback)
         {
             _interlocker.Lock(() =>
             {
                 for (int i = start; i < _count; i += increment)
                 {
                     if (callback(i, _items[i]))
+                        break;
+                }
+            });
+        }
+
+        /// <summary>Runs a foreach loop inside an interlock on the current <see cref="ThreadedList{T}"/> instance. This allows the collection to be iterated over in a thread-safe manner. 
+        /// However, it can hurt performance if the loop takes too long to execute while other threads are waiting to access the list. Return true from the callback to break out of the for loop.</summary>
+        /// <param name="callback">The callback to run on each iteration. The callback can optionally return true to break out of the loop.</param>
+        public void ForEach(Action<T> callback)
+        {
+            _interlocker.Lock(() =>
+            {
+                foreach (T item in this)
+                    callback(item);
+            });
+        }
+
+        /// <summary>Runs a foreach loop inside an interlock on the current <see cref="ThreadedList{T}"/> instance. This allows the collection to be iterated over in a thread-safe manner. 
+        /// However, it can hurt performance if the loop takes too long to execute while other threads are waiting to access the list. Return true from the callback to break out of the for loop.</summary>
+        /// <param name="callback">The callback to run on each iteration. The callback can optionally return true to break out of the loop.</param>
+        public void ForEach(Func<T, bool> callback)
+        {
+            _interlocker.Lock(() =>
+            {
+                foreach (T item in this)
+                {
+                    if (callback(item))
                         break;
                 }
             });

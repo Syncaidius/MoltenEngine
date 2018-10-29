@@ -235,7 +235,7 @@ namespace Molten.Graphics
             }
 
             // Present all output surfaces
-            OutputSurfaces.ForInterlock(0, 1, (index, surface) =>
+            OutputSurfaces.For(0, 1, (index, surface) =>
             {
                 surface.Present();
                 return false;
@@ -276,7 +276,7 @@ namespace Molten.Graphics
 
         public void Dispose()
         {
-            OutputSurfaces.ForInterlock(0, 1, (index, surface) =>
+            OutputSurfaces.For(0, 1, (index, surface) =>
             {
                 surface.Dispose();
                 return false;

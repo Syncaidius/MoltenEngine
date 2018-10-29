@@ -183,7 +183,7 @@ namespace Molten.Graphics
 
         protected override void OnRebuildSurfaces(int requiredWidth, int requiredHeight)
         {
-            _surfaces.ForInterlock(0, 1, (index, config) => config.RefreshSize(requiredWidth, requiredHeight));
+            _surfaces.For(0, 1, (index, config) => config.RefreshSize(requiredWidth, requiredHeight));
             _depthSurface.Resize(requiredWidth, requiredHeight);
         }
 
@@ -235,7 +235,7 @@ namespace Molten.Graphics
             for (int i = 0; i < _stepList.Count; i++)
                 _stepList[i].Dispose();
 
-            _surfaces.ForInterlock(0, 1, (index, config) => config.Surface.Dispose());
+            _surfaces.For(0, 1, (index, config) => config.Surface.Dispose());
             _surfaces.Clear();
             _depthSurface.Dispose();
             _mainSurfaces.Clear();
