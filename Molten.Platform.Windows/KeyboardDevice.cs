@@ -89,6 +89,7 @@ namespace Molten.Input
 
         internal override void Unbind(IWindowSurface surface)
         {
+            _surface.OnHandleChanged -= SurfaceHandleChanged;
             SetWindowLongDelegate(null);
             _surface = null;
         }
@@ -131,10 +132,6 @@ namespace Molten.Input
 
                 if (_prevWndProc == IntPtr.Zero)
                     _prevWndProc = (IntPtr)SetWindowLongPtr(_windowHandle, GWL_WNDPROC, ptrVal);
-            }
-            else
-            {
-                _prevWndProc = (IntPtr)SetWindowLongPtr(_windowHandle, GWL_WNDPROC, IntPtr.Zero);
             }
         }
 

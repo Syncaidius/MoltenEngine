@@ -71,13 +71,14 @@ namespace Molten.Input
 
         internal override void Unbind(IWindowSurface surface)
         {
+            _surface.OnHandleChanged -= SurfaceHandleChanged;
             _surface = null;
         }
 
         private void SurfaceHandleChanged(IWindowSurface surface)
         {
             IntPtr? handle = GetWindowHandle(surface);
-
+            Console.WriteLine("Mouse surface handle changed: " + handle);
             if (handle != null)
                 _windowHandle = handle.Value;
         }
