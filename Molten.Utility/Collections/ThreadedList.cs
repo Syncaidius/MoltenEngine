@@ -668,7 +668,11 @@ namespace Molten.Collections
         /// <param name="callback">The callback to run on each iteration. The callback can optionally return true to break out of the loop.</param>
         public void ForReverse(int decrement, Action<int, T> callback)
         {
-            ForReverse(0, decrement, callback);
+            _interlocker.Lock(() =>
+            {
+                for (int i = _count - 1; i >= 0; i -= decrement)
+                    callback(i, _items[i]);
+            });
         }
 
         /// <summary>Runs a reversed for loop inside an interlock on the current <see cref="ThreadedList{T}"/> instance. This allows the collection to be iterated over in a thread-safe manner. 
@@ -693,7 +697,14 @@ namespace Molten.Collections
         /// <param name="callback">The callback to run on each iteration. The callback can optionally return true to break out of the loop.</param>
         public void ForReverse(int decrement, Func<int, T, bool> callback)
         {
-            ForReverse(0, decrement, callback);
+            _interlocker.Lock(() =>
+            {
+                for (int i = _count - 1; i >= 0; i -= decrement)
+                {
+                    if (callback(i, _items[i]))
+                        break;
+                }
+            });
         }
 
         /// <summary>Runs a reversed for loop inside an interlock on the current <see cref="ThreadedList{T}"/> instance. This allows the collection to be iterated over in a thread-safe manner. 
