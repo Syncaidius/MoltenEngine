@@ -12,7 +12,7 @@ namespace Molten.Samples
     {
         SceneObject _player;
 
-        public SampleSceneGame(string title, EngineSettings settings) : base(title, settings) { }
+        public SampleSceneGame(string title) : base(title) { }
 
         protected override void OnInitialize(Engine engine)
         {

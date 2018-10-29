@@ -17,7 +17,7 @@ namespace Molten.Samples
         IMesh<VertexTexture> _mesh;
         List<Sprite> _sprites;
 
-        public SpriteBatchArraySample(EngineSettings settings = null) : base("Sprite Batch Texture Array", settings) { }
+        public SpriteBatchArraySample() : base("Sprite Batch Texture Array") { }
 
         protected override void OnInitialize(Engine engine)
         {

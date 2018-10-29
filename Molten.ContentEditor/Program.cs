@@ -18,7 +18,7 @@ namespace Molten.ContentEditor
             settings.Graphics.VSync.Value = true;
             settings.UseGuiControl = false;
 
-            _core = new EditorCore(settings);
+            _core = new EditorCore();
             _core.Start();
         }
     }

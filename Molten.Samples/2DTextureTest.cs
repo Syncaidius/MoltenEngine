@@ -17,7 +17,7 @@ namespace Molten.Samples
         SceneObject _child;
         IMesh<CubeArrayVertex> _mesh;
 
-        public TwoDTextureTest(EngineSettings settings = null) : base("2D Texture Test", settings) { }
+        public TwoDTextureTest() : base("2D Texture Test") { }
 
         protected override void OnInitialize(Engine engine)
         {

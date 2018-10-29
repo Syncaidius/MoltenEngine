@@ -27,7 +27,12 @@ namespace Molten
         /// </summary>
         event DisplayManagerEvent OnAdapterInitialized;
         
-        internal Engine(EngineSettings initialSettings = null)
+        /// <summary>
+        /// Creates a new instance of <see cref="Engine"/>.
+        /// </summary>
+        /// <param name="initialSettings">The initial engine settings. If null, the default settings will be used instead.</param>
+        /// <param name="ignoreSavedSettings">If true, the previously-saved settings will be ignored and replaced with the provided (or default) settings.</param>
+        internal Engine(EngineSettings initialSettings = null, bool ignoreSavedSettings = false)
         {
             if (Current != null)
                 throw new Exception("Cannot create more than one active instance of Engine. Dispose of the previous one first.");
@@ -37,7 +42,9 @@ namespace Molten
 
             Current = this;
             Settings = initialSettings ??  new EngineSettings();
-            Settings.Load();
+
+            if(!ignoreSavedSettings)
+                Settings.Load();
 
             Log = Logger.Get();
             Log.AddOutput(new LogFileWriter("engine_log{0}.txt"));
@@ -196,6 +203,9 @@ namespace Molten
             Scenes.Update(time);
         }
 
+        /// <summary>
+        /// Attempts to safely shutdown the engine before disposing of the current instance.
+        /// </summary>
         public void Dispose()
         {
             Log.WriteDebugLine("Shutting down engine");

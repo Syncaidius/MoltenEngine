@@ -36,7 +36,7 @@ namespace Molten.Collections
         }
 
         /// <summary>
-        /// Creates a new instance of <see cref="ThreadedList{T}"/>.
+        /// Creates a new instance of <see cref="ThreadedList{T}"/>, initialized to a specific capacity.
         /// </summary>
         /// <param name="initialCapacity">The initial capacity of the list.</param>
         public ThreadedList(int initialCapacity)

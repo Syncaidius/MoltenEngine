@@ -19,7 +19,7 @@ namespace Molten.Samples
         CameraComponent _cam2D;
 
 
-        public SampleGame(string title, EngineSettings settings = null) : base(title, settings) { }
+        public SampleGame(string title) : base(title) { }
 
         protected override void OnInitialize(Engine engine)
         {

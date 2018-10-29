@@ -15,7 +15,7 @@ namespace Molten.ContentEditor
         UIMenu _menu;
         UIPanel _leftPanel;
 
-        internal EditorCore(EngineSettings settings) : base("Molten Editor", settings)
+        internal EditorCore() : base("Molten Editor")
         {
 
         }

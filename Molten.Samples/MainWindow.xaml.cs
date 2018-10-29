@@ -183,9 +183,7 @@ namespace Molten.Samples
 
             for (int i = 0; i < testTypes.Count; i++)
             {
-                EngineSettings settings = new EngineSettings();
-                settings.Graphics.EnableDebugLayer.Value = chkDebugLayer.IsChecked.Value;
-                SampleGame test = Activator.CreateInstance(testTypes[i], settings) as SampleGame;
+                SampleGame test = Activator.CreateInstance(testTypes[i]) as SampleGame;
                 TestEntry entry = new TestEntry()
                 {
                     TestName = test.Title,
@@ -205,25 +203,30 @@ namespace Molten.Samples
 
         private void btnLastTest_Click(object sender, RoutedEventArgs e)
         {
-            //save type of test as the last run type.
+            // Save type of test as the last run type.
             SaveLastRun();
 
+            // Disable list view and enable again after the test ends.
+            lstTests.IsEnabled = false;
+            StartSample(lastTestType);
+
+            
+            GC.Collect();
+            lstTests.IsEnabled = true;
+        }
+
+        private void StartSample(Type t)
+        {
             RendererComboItem renderItem = cboRenderer.SelectedItem as RendererComboItem;
 
-            //disable list view and enable again after the test ends.
-            lstTests.IsEnabled = false;
             EngineSettings settings = new EngineSettings();
             settings.Graphics.EnableDebugLayer.Value = chkDebugLayer.IsChecked.Value;
             settings.Graphics.VSync.Value = chkVsync.IsChecked.Value;
             settings.Graphics.Library.Value = renderItem.LibraryName;
             settings.UseGuiControl = chkUseControl.IsChecked.Value;
 
-            _curTest = Activator.CreateInstance(lastTestType, settings) as SampleGame;
-            _curTest.Start();
-
-            
-            GC.Collect();
-            lstTests.IsEnabled = true;
+            _curTest = Activator.CreateInstance(lastTestType) as SampleGame;
+            _curTest.Start(settings, true);
         }
 
         class RendererComboItem : ComboBoxItem

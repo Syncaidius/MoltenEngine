@@ -33,7 +33,7 @@ namespace Molten.Samples
         List<Color> _colors;
         Vector2F _charOffset = new Vector2F(300, 300);
 
-        public FontFileTest(EngineSettings settings = null) : base("FontFile Test", settings) { }
+        public FontFileTest() : base("FontFile Test") { }
 
         protected override void OnInitialize(Engine engine)
         {

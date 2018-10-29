@@ -17,7 +17,7 @@ namespace Molten.Samples
         SceneObject _child;
         IMesh<CubeArrayVertex> _mesh;
 
-        public SaveTextureSample(EngineSettings settings = null) : base("Save Texture", settings) { }
+        public SaveTextureSample() : base("Save Texture") { }
 
         protected override void OnInitialize(Engine engine)
         {

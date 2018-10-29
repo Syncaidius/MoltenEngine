@@ -14,7 +14,7 @@ namespace Molten.Samples
         public override string Description => "A simple scene test using colored cubes with indexed meshes.";
         List<SceneObject> _objects;
 
-        public SceneIndexedStressTest(EngineSettings settings = null) : base("Scene Stress (Indexed)", settings) { }
+        public SceneIndexedStressTest() : base("Scene Stress (Indexed)") { }
 
         protected override void OnInitialize(Engine engine)
         {

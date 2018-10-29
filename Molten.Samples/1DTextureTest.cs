@@ -17,7 +17,7 @@ namespace Molten.Samples
         SceneObject _child;
         IMesh<CubeArrayVertex> _mesh;
 
-        public OneDTextureTest(EngineSettings settings = null) : base("1D Texture Test", settings) { }
+        public OneDTextureTest() : base("1D Texture Test") { }
 
         protected override void OnInitialize(Engine engine)
         {

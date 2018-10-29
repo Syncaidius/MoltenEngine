@@ -23,7 +23,7 @@ namespace Molten.Samples
         IMesh<GBufferVertex> _mesh;
         IMesh<GBufferVertex> _floorMesh;
 
-        public DeferredRenderingSample(EngineSettings settings = null) : base("Deferred Rendering", settings) { }
+        public DeferredRenderingSample() : base("Deferred Rendering") { }
 
         protected override void OnInitialize(Engine engine)
         {

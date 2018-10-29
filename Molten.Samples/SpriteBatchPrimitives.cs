@@ -18,7 +18,7 @@ namespace Molten.Samples
         Rectangle[] _rectangles;
         Color[] _rectangleColors;
 
-        public SpriteBatchPrimitives(EngineSettings settings = null) : base("Sprite Batch Primitives", settings) { }
+        public SpriteBatchPrimitives() : base("Sprite Batch Primitives") { }
 
         protected override void OnInitialize(Engine engine)
         {

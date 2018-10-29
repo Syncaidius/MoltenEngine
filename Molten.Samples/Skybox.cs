@@ -17,7 +17,7 @@ namespace Molten.Samples
         SceneObject _child;
         IMesh<CubeArrayVertex> _mesh;
 
-        public SkyboxSample(EngineSettings settings = null) : base("Skybox", settings) { }
+        public SkyboxSample() : base("Skybox") { }
 
         protected override void OnInitialize(Engine engine)
         {

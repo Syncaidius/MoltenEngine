@@ -17,7 +17,7 @@ namespace Molten.Samples
         IMesh<VertexTexture> _mesh;
         List<Sprite> _sprites;
 
-        public SpriteBatchUnfairTest(EngineSettings settings = null) : base("Sprite Batch (Unfair)", settings) { }
+        public SpriteBatchUnfairTest() : base("Sprite Batch (Unfair)") { }
 
         protected override void OnInitialize(Engine engine)
         {

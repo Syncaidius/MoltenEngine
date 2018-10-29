@@ -18,7 +18,7 @@ namespace Molten.Samples
         List<SceneObject> _children;
         IMesh<VertexColor> _mesh;
 
-        public MultiWindowGame(EngineSettings settings = null) : base("Multi-Window", settings)
+        public MultiWindowGame() : base("Multi-Window")
         {
         }
 

@@ -31,20 +31,25 @@ namespace Molten
 
         /// <summary>Creates a new instance of <see cref="Foundation"/>.</summary>
         /// <param name="title"></param>
-        /// <param name="settings">The settings for the game. If this is null, the default settings will be used.</param>
-        public Foundation(string title, EngineSettings settings = null)
+
+        public Foundation(string title)
         {
             Title = title;
-            Settings = settings ?? new EngineSettings();
         }
 
         /// <summary>Starts the game. This will trigger initialization, then start the renderer and game threads.</summary>
-        public void Start(ApartmentState gameThreadApartment = ApartmentState.MTA, ApartmentState renderThreadApartment = ApartmentState.MTA)
+        /// <param name="settings">The settings for the game. If this is null, the default settings will be used.</param>
+        /// <param name="ignoreSavedSettings">If true, the previously-saved settings will be ignored and replaced with the provided (or default) settings.</param>
+        /// <param name="gameThreadApartment">The thread apartment state for the main game thread.</param>
+        /// <param name="renderThreadApartment">The thread apartment state for the renderer thread</param>
+        public void Start(EngineSettings settings = null, 
+            bool ignoreSavedSettings = false, 
+            ApartmentState gameThreadApartment = ApartmentState.MTA, ApartmentState renderThreadApartment = ApartmentState.MTA)
         {
             if (_gameThread != null)
                 return;
 
-            _engine = new Engine(Settings);
+            _engine = new Engine(settings);
             _engine.LoadRenderer();
             _engine.LoadInput();
 
@@ -211,7 +216,7 @@ namespace Molten
         public string Title { get; set; }
 
         /// <summary>Gets the game's engine settings.</summary>
-        public EngineSettings Settings { get; private set; }
+        public EngineSettings Settings => _engine.Settings;
 
         /// <summary>Gets the game's current run state.</summary>
         public GameRunState RunState { get; private set; }
