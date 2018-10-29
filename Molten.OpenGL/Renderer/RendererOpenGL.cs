@@ -12,14 +12,13 @@ namespace Molten.Graphics
     {
         ThreadedList<ISwapChainSurface> _outputSurfaces;
         RenderProfiler _profiler;
-        Logger _log;
         DisplayManagerGL _displayManager;
 
         protected override void OnInitializeAdapter(GraphicsSettings settings)
         {
             NativeWindow dummyWindow = new NativeWindow();
             _displayManager = new DisplayManagerGL();
-            _displayManager.Initialize(_log, settings);
+            _displayManager.Initialize(Log, settings);
 
             dummyWindow.Dispose();
         }
@@ -82,11 +81,9 @@ namespace Molten.Graphics
 
         public string Namer => null;
 
-        public RenderProfiler Profiler => null;
-
         public override IComputeManager Compute => null;
 
-        public override string Name => "OpenGL Renderer";
+        public override string Name => "OpenGL";
 
         public override IDisplayManager DisplayManager => throw new NotImplementedException();
 

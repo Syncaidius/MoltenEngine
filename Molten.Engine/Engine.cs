@@ -32,7 +32,7 @@ namespace Molten
         /// </summary>
         /// <param name="initialSettings">The initial engine settings. If null, the default settings will be used instead.</param>
         /// <param name="ignoreSavedSettings">If true, the previously-saved settings will be ignored and replaced with the provided (or default) settings.</param>
-        internal Engine(EngineSettings initialSettings = null, bool ignoreSavedSettings = false)
+        internal Engine(EngineSettings initialSettings, bool ignoreSavedSettings)
         {
             if (Current != null)
                 throw new Exception("Cannot create more than one active instance of Engine. Dispose of the previous one first.");
@@ -99,7 +99,7 @@ namespace Molten
             Renderer = LibraryDetection.LoadInstance<MoltenRenderer>(Log, "render", "renderer", 
                 Settings.Graphics.Library, 
                 Settings.Graphics, 
-                GraphicsSettings.RENDERER_DX11, 
+                GraphicsSettings.DEFAULT_RENDER, 
                 out renderAssembly);
 
             try
@@ -110,7 +110,7 @@ namespace Molten
             catch (Exception e)
             {
                 Log.WriteLine("Failed to initialize renderer");
-                Log.WriteError(e);
+                Log.WriteError(e, true);
                 Renderer = null;
                 return false;
             }

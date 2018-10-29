@@ -11,6 +11,13 @@ namespace Molten.Graphics
     [DataContract]
     public class GraphicsSettings : SettingBank
     {
+#if WIN64
+        public const string DEFAULT_RENDER = RENDERER_DX11;
+
+#else 
+        // TODO replace this with each platform's default renderer.
+        public const string DEFAULT_RENDER = RENDERER_DX11;
+#endif
         /// <summary>The name of the default DX11 renderer library.</summary>
         public const string RENDERER_DX11 = "Molten.DX11.dll; Molten.Graphics.RendererDX11";
 

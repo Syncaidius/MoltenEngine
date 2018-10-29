@@ -49,7 +49,7 @@ namespace Molten
             if (_gameThread != null)
                 return;
 
-            _engine = new Engine(settings);
+            _engine = new Engine(settings, ignoreSavedSettings);
             _engine.LoadRenderer();
             _engine.LoadInput();
 

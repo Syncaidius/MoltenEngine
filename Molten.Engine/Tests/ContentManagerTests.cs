@@ -30,7 +30,7 @@ namespace Molten.Tests
         [TestInitialize]
         public void TestInit()
         {
-            _engine = new Engine();
+            _engine = new Engine(null, false);
         }
 
         [TestCleanup]

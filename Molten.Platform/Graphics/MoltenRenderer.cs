@@ -28,7 +28,25 @@ namespace Molten.Graphics
             Log = Logger.Get();
             Overlay = new OverlayProvider();
             Log.AddOutput(new LogFileWriter($"renderer_{Name.Replace(' ', '_')}" + "{0}.txt"));
-            _chain = GetRenderChain();
+            Log.WriteLine("Acquiring render chain");
+
+            try
+            {
+                _chain = GetRenderChain();
+                if(_chain != null)
+                    Log.WriteLine("Render chain acquired");
+                else
+                {
+                    Log.WriteError("Render chain acquisition failed: Null chain");
+                    throw new NullReferenceException("The provided render chain was null.");
+                }
+            }
+            catch (Exception e)
+            {
+                Log.WriteError("Render chain acquisition failed. See exception details below");
+                Log.WriteError(e, true);
+                throw e;
+            }
         }
 
         public void InitializeAdapter(GraphicsSettings settings)
