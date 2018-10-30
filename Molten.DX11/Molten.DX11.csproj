@@ -132,6 +132,7 @@
     <Compile Include="Exceptions\UnsupportedFeatureException.cs" />
     <Compile Include="Renderer\MainSurfaceType.cs" />
     <Compile Include="Renderer\RenderChain.Context.cs" />
+    <Compile Include="Renderer\RenderChain.cs" />
     <Compile Include="Renderer\RenderChain.Link.cs" />
     <Compile Include="Renderer\SpriteRendererDX11.cs" />
     <Compile Include="Renderer\SpriteBatcherDX11.cs" />
@@ -179,7 +180,6 @@
     <Compile Include="PipeStateStack.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer\Renderable.cs" />
-    <Compile Include="Renderer\RenderChain.cs" />
     <Compile Include="Renderer\RendererDX11.cs" />
     <Compile Include="Renderer\Steps\LightingStep.cs" />
     <Compile Include="Renderer\Steps\FinalizeStep.cs" />

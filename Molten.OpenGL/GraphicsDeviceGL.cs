@@ -53,5 +53,10 @@ namespace Molten.Graphics
             get => _profiler;
             set => _profiler = value ?? _defaultProfiler;
         }
+
+        /// <summary>
+        /// Gets the device context.
+        /// </summary>
+        internal IGraphicsContext Context => _displayManager.Context;
     }
 }

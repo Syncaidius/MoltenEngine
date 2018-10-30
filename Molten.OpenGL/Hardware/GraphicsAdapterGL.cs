@@ -43,6 +43,7 @@ namespace Molten.Graphics
 
         private void PopulateInfo()
         {
+
             Name = GL.GetString(StringName.Renderer);
 
             string strVendor = GL.GetString(StringName.Vendor);

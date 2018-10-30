@@ -4,14 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Collections;
+using Molten.Graphics.OpenGL;
 using OpenTK;
 
 namespace Molten.Graphics
 {
-    public class RendererOpenGL : MoltenRenderer
+    public class RendererGL : MoltenRenderer
     {
-        ThreadedList<ISwapChainSurface> _outputSurfaces;
-        RenderProfiler _profiler;
         DisplayManagerGL _displayManager;
 
         protected override void OnInitializeAdapter(GraphicsSettings settings)
@@ -25,13 +24,13 @@ namespace Molten.Graphics
 
         protected override void OnInitialize(GraphicsSettings settings)
         {
-            _profiler = new RenderProfiler();
-            _outputSurfaces = new ThreadedList<ISwapChainSurface>();
+            Device = new GraphicsDeviceGL(Log, settings, Profiler, _displayManager, settings.EnableDebugLayer);
         }
 
         protected override void OnDispose()
         {
-            _displayManager.Dispose();
+            Device?.Dispose();
+            _displayManager?.Dispose();
         }
 
         protected override SceneRenderData OnCreateRenderData()
@@ -41,7 +40,7 @@ namespace Molten.Graphics
 
         protected override IRenderChain GetRenderChain()
         {
-            throw new NotImplementedException();
+            return new RenderChainGL(this);
         }
 
         protected override void OnPreRenderScene(SceneRenderData sceneData, Timing time)
@@ -88,5 +87,7 @@ namespace Molten.Graphics
         public override IDisplayManager DisplayManager => throw new NotImplementedException();
 
         public override IResourceManager Resources => throw new NotImplementedException();
+
+        internal GraphicsDeviceGL Device { get; private set; }
     }
 }
