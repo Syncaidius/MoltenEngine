@@ -104,7 +104,6 @@ namespace Molten.Graphics
                 Flags = _flags,
                 Format = _format,
                 MipMapLevels = _mipLevels,
-                SampleCount = _sampleCount,
                 Width = _width,
             };
         }

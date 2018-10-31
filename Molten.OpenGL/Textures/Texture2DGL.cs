@@ -7,7 +7,7 @@ using OpenGL;
 
 namespace Molten.Graphics
 {
-    public class Texture2DGL : TextureBaseGL
+    public class Texture2DGL : TextureBaseGL, ITexture2D
     {
         public Texture2DGL(Texture2DGL descTexture, TextureFlags flags) : 
             this(descTexture.Renderer as RendererGL, descTexture.Width, descTexture.Height, descTexture.Format, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags, descTexture.SampleCount)
@@ -33,6 +33,35 @@ namespace Molten.Graphics
             : base(renderer, width, height, 1, TextureTarget.Texture2d, mipCount, arraySize, sampleCount, format, flags)
         {
 
+        }
+
+        public Texture2DProperties Get2DProperties()
+        {
+            return new Texture2DProperties()
+            {
+                Width = Width,
+                Height = Height,
+                ArraySize = ArraySize,
+                Flags = Flags,
+                Format = Format,
+                MipMapLevels = MipMapCount,
+                SampleCount = SampleCount,
+            };
+        }
+
+        public void Resize(int newWidth, int newHeight, int newMipMapCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Resize(int newWidth, int newHeight, int newMipMapCount, int newArraySize, GraphicsFormat newFormat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Resize(int newWidth, int newHeight)
+        {
+            throw new NotImplementedException();
         }
 
         protected unsafe override void CreateResource(ref uint id, TextureTarget target, bool isResizing)

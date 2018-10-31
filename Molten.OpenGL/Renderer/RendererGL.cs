@@ -10,6 +10,7 @@ namespace Molten.Graphics
     public class RendererGL : MoltenRenderer
     {
         DisplayManagerGL _displayManager;
+        ResourceManagerGL _resourceManager;
 
         protected override void OnInitializeAdapter(GraphicsSettings settings)
         {
@@ -20,6 +21,7 @@ namespace Molten.Graphics
         protected override void OnInitialize(GraphicsSettings settings)
         {
             Device = new GraphicsDeviceGL(Log, settings, Profiler, _displayManager, settings.EnableDebugLayer);
+            _resourceManager = new ResourceManagerGL(this);
         }
 
         protected override void OnDispose()
@@ -81,7 +83,7 @@ namespace Molten.Graphics
 
         public override IDisplayManager DisplayManager => throw new NotImplementedException();
 
-        public override IResourceManager Resources => throw new NotImplementedException();
+        public override IResourceManager Resources => _resourceManager;
 
         internal GraphicsDeviceGL Device { get; private set; }
     }

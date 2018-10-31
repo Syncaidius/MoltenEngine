@@ -122,8 +122,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer\RenderChainGL.cs" />
     <Compile Include="Renderer\RendererGL.cs" />
+    <Compile Include="ResourceManagerGL.cs" />
     <Compile Include="Textures\Changes\ITextureChange.cs" />
     <Compile Include="Textures\Changes\TextureSet.cs" />
+    <Compile Include="Textures\Texture1DGL.cs" />
     <Compile Include="Textures\Texture2DGL.cs" />
     <Compile Include="Textures\TextureBaseGL.cs" />
   </ItemGroup>

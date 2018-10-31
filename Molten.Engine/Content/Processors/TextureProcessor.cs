@@ -298,7 +298,6 @@ namespace Molten.Content
                                     Format = tex1D.Format,
                                     ArraySize = tex1D.ArraySize,
                                     MipMapLevels = tex1D.MipMapCount,
-                                    SampleCount = tex1D.SampleCount,
                                     Width = tex1D.Width,
                                 });
                                 break;

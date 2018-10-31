@@ -161,26 +161,6 @@ namespace Molten.Graphics
             _renderer.PushTask(task);
         }
 
-        public void SaveAsBitmap(Stream stream, TextureData data)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SaveAsDDS(DDSFormat format, Stream stream, TextureData data)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SaveAsJpeg(Stream stream, TextureData data)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SaveAsPng(Stream stream, TextureData data)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Dispose()
         {
             for (int i = 0; i < _fontTable.Count; i++)

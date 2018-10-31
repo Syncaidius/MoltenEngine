@@ -11,6 +11,8 @@ namespace Molten.Graphics
     {
         public int Height = 1;
 
+        public int SampleCount = 1;
+
         /// <summary>
         /// Sets <see cref="ArraySize"/> by multiplying the provided value by 6 (the number of sides/slices per cubemap).
         /// </summary>

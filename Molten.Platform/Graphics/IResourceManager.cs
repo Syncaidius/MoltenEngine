@@ -124,14 +124,6 @@ namespace Molten.Graphics
             bool dynamic = false) 
             where T : struct, IVertexType;
 
-        void SaveAsPng(Stream stream, TextureData data);
-
-        void SaveAsJpeg(Stream stream, TextureData data);
-
-        void SaveAsDDS(DDSFormat format, Stream stream, TextureData data);
-
-        void SaveAsBitmap(Stream stream, TextureData data);
-
         /// <summary>Compiles a set of shaders from the provided source string.</summary>
         /// <param name="source">The source code to be parsed and compiled.</param>
         /// <param name="filename">The name of the source file. Used as a point of reference in debug/error messages only.</param>
