@@ -11,6 +11,9 @@ namespace Molten.Graphics
 {
     public class GraphicsAdapterGL : IDisplayAdapter
     {
+        const int GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX = 0x9047;
+        const int TEXTURE_FREE_MEMORY_ATI = 0x87FC;
+
         public event DisplayOutputChanged OnOutputActivated;
         public event DisplayOutputChanged OnOutputDeactivated;
 
@@ -36,19 +39,47 @@ namespace Molten.Graphics
         {
 
             Name = Gl.GetString(StringName.Renderer);
-
             string strVendor = Gl.GetString(StringName.Vendor);
-            if(strVendor != null)
+
+            if (strVendor != null)
             {
                 strVendor = strVendor.ToLower();
                 if (strVendor.Contains("amd") || strVendor.Contains("ati"))
+                {
                     Vendor = GraphicsAdapterVendor.AMD;
+                    // NOTE: https://www.khronos.org/registry/OpenGL/extensions/ATI/ATI_meminfo.txt
+                    //      "In any case, it is highly reccommended that the information be returned in kilobytes."
+
+                    /*  memInfo[0] - total memory free in the pool
+                        memInfo[1] - largest available free block in the pool
+                        memInfo[2] - total auxiliary memory free
+                        memInfo[3] - largest auxiliary free block */
+
+                    int[] memInfo = new int[48];
+                    Gl.Get((GetPName)TEXTURE_FREE_MEMORY_ATI, memInfo);
+                    DedicatedVideoMemory = ByteMath.ToMegabytes(ByteMath.FromKilobytes(memInfo[0]));
+                    SharedSystemMemory = ByteMath.ToMegabytes(ByteMath.FromKilobytes(memInfo[2]));
+                }
                 else if (strVendor.Contains("intel"))
+                {
                     Vendor = GraphicsAdapterVendor.Intel;
+                }
                 else if (strVendor.Contains("nvidia"))
+                {
                     Vendor = GraphicsAdapterVendor.Nvidia;
+
+                    // NOTE: https://www.khronos.org/registry/OpenGL/extensions/NVX/NVX_gpu_memory_info.txt
+                    /* GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX 
+                        - dedicated video memory, total size (in kb) of the GPU memory */
+
+                    int nvDedicated = 0;
+                    Gl.Get((GetPName)GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, out nvDedicated);
+                    DedicatedSystemMemory = ByteMath.ToMegabytes(ByteMath.FromKilobytes(nvDedicated));
+                }
                 else
+                {
                     Vendor = GraphicsAdapterVendor.Unknown;
+                }
             }
 
             string extensions = Gl.GetString(StringName.Extensions);
@@ -122,11 +153,11 @@ namespace Molten.Graphics
 
         public string Name { get; private set; }
 
-        public double DedicatedVideoMemory => 0;
+        public double DedicatedVideoMemory { get; private set; }
 
-        public double DedicatedSystemMemory => 0;
+        public double DedicatedSystemMemory { get; private set; }
 
-        public double SharedSystemMemory => 0;
+        public double SharedSystemMemory { get; private set; }
 
         public int ID { get; private set; }
 
@@ -137,3 +168,4 @@ namespace Molten.Graphics
         public IDisplayManager Manager => _manager;
     }
 }
+ 

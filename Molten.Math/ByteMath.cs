@@ -36,7 +36,7 @@ namespace Molten
         /// <returns></returns>
         public static double ToMegabytes(long bytes)
         {
-            double val = (float)bytes;
+            double val = bytes;
             val /= 1024;
             val /= 1024;
 

@@ -34,10 +34,10 @@ namespace Molten.Graphics
         /// <summary>Gets the amount of dedicated video memory, in megabytes.</summary>
         double DedicatedVideoMemory { get; }
 
-        /// <summary>Gets the amount of system memory dedicated to the adapter.</summary>
+        /// <summary>Gets the amount of system memory dedicated to the adapter, in megabytes.</summary>
         double DedicatedSystemMemory { get; }
 
-        /// <summary>Gets the amount of system memory that is being shared with the adapter.</summary>
+        /// <summary>Gets the amount of system memory that is being shared with the adapter, in megabytes.</summary>
         double SharedSystemMemory { get; }
 
         /// <summary>Gets the listing ID of the <see cref="IDisplayAdapter"/>.</summary>
