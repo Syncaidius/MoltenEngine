@@ -16,14 +16,14 @@ namespace Molten.Graphics
         {
             _log = log;
 
+            // Create a device GL context for the purpose of detecting hardware info.
             DeviceContext deviceContext = DeviceContext.Create();
             deviceContext.IncRef();
-            IntPtr glContext = deviceContext.CreateContext(IntPtr.Zero);
+            IntPtr detectionContext = deviceContext.CreateContext(IntPtr.Zero); 
 
+            deviceContext.MakeCurrent(detectionContext);
 
-            deviceContext.MakeCurrent(glContext);
-
-            _adapter = new GraphicsAdapterGL(this, 0);
+            _adapter = new GraphicsAdapterGL(this, 0, detectionContext);
 
             // Log preferred adapter stats
             _log.WriteLine($"Chosen {_adapter.Name.Replace("\0", "")}");
@@ -36,8 +36,9 @@ namespace Molten.Graphics
             for (int d = 0; d < displays.Count; d++)
                 _log.WriteLine($"       Display {d}: {displays[d].Name}");
 
+            // Dispose of the temporary context now we're done.
             deviceContext.MakeCurrent(IntPtr.Zero);
-            deviceContext.DeleteContext(glContext);
+            deviceContext.DeleteContext(detectionContext);
             deviceContext.Dispose();
         }
 
