@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,15 +8,14 @@ namespace Molten.Graphics
 {
     public class DisplayOutputGL : IDisplayOutput
     {
-        DisplayDevice _device;
         GraphicsAdapterGL _adapter;
         string _name;
 
-        internal DisplayOutputGL(GraphicsAdapterGL adapter, DisplayDevice device, DisplayIndex index)
+        internal DisplayOutputGL(GraphicsAdapterGL adapter, string name, Rectangle bounds)
         {
-            _device = device;
             _adapter = adapter;
-            _name = index.ToString();
+            _name = name;
+            DesktopBounds = bounds;
         }
 
         /// <summary>
@@ -34,6 +32,6 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the desktop bounds of the display output.
         /// </summary>
-        public Rectangle DesktopBounds => _device.Bounds.FromApi();
+        public Rectangle DesktopBounds { get; }
     }
 }

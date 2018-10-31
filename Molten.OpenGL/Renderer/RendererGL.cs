@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Molten.Collections;
-using Molten.Graphics.OpenGL;
-using OpenTK;
 
 namespace Molten.Graphics
 {
@@ -15,11 +13,8 @@ namespace Molten.Graphics
 
         protected override void OnInitializeAdapter(GraphicsSettings settings)
         {
-            NativeWindow dummyWindow = new NativeWindow();
             _displayManager = new DisplayManagerGL();
             _displayManager.Initialize(Log, settings);
-
-            dummyWindow.Dispose();
         }
 
         protected override void OnInitialize(GraphicsSettings settings)

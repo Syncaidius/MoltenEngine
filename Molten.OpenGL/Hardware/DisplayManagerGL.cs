@@ -1,25 +1,28 @@
-﻿using System;
+﻿using OpenGL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OpenTK;
-using OpenTK.Graphics;
 
 namespace Molten.Graphics
 {
     public class DisplayManagerGL : IDisplayManager
     {
         GraphicsAdapterGL _adapter;
-        GameWindow _window;
-        IGraphicsContext _context;
         Logger _log;
 
         public void Initialize(Logger log, GraphicsSettings settings)
         {
             _log = log;
-            _window = new GameWindow();
-            _context = _window.Context;
+
+            DeviceContext deviceContext = DeviceContext.Create();
+            deviceContext.IncRef();
+            IntPtr glContext = deviceContext.CreateContext(IntPtr.Zero);
+
+
+            deviceContext.MakeCurrent(glContext);
+
             _adapter = new GraphicsAdapterGL(this, 0);
 
             // Log preferred adapter stats
@@ -32,17 +35,21 @@ namespace Molten.Graphics
             _adapter.GetAttachedOutputs(displays);
             for (int d = 0; d < displays.Count; d++)
                 _log.WriteLine($"       Display {d}: {displays[d].Name}");
+
+            deviceContext.MakeCurrent(IntPtr.Zero);
+            deviceContext.DeleteContext(glContext);
+            deviceContext.Dispose();
         }
 
         public void Dispose()
         {
-            _context.Dispose();
+            
         }
 
         public IDisplayAdapter GetAdapter(int id)
         {
             if (id != 0)
-                throw new GraphicsException("OpenGL renderer only supports adapter 0.");
+                throw new AdapterException(null, "OpenGL renderer only supports adapter 0.");
 
             return _adapter;
         }
@@ -67,9 +74,5 @@ namespace Molten.Graphics
             get => _adapter;
             set => _adapter = (value as GraphicsAdapterGL) ?? _adapter;
         }
-
-        internal GameWindow Window => _window;
-
-        internal IGraphicsContext Context => _context;
     }
 }

@@ -1,10 +1,11 @@
-﻿using OpenTK;
+﻿using OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OpenTK.Graphics.OpenGL4;
+using Khronos;
+using KhronosApi = Khronos.KhronosApi;
 
 namespace Molten.Graphics
 {
@@ -19,7 +20,7 @@ namespace Molten.Graphics
         DisplayManagerGL _manager;
         List<string> _extensions;
 
-        internal GraphicsAdapterGL(DisplayManagerGL manager, int id)
+        internal unsafe GraphicsAdapterGL(DisplayManagerGL manager, int id)
         {
             ID = id;
             _manager = manager;
@@ -28,25 +29,15 @@ namespace Molten.Graphics
             _extensions = new List<string>();
             PopulateInfo();
 
-            HashSet<DisplayDevice> displays = new HashSet<DisplayDevice>();
-
-            int last = (int)DisplayIndex.Sixth + 1;
-            for (int i = -1; i < last; i++)
-            {
-                DisplayIndex index = (DisplayIndex)i;
-                DisplayDevice display = DisplayDevice.GetDisplay(index);
-
-                if (display != null)
-                    _connectedOutputs.Add(new DisplayOutputGL(this, display, index));
-            }
+            _connectedOutputs.Add(new DisplayOutputGL(this, "Default", new Rectangle(0, 0, 1920, 1080))); // TODO detect display size(s)
         }
 
         private void PopulateInfo()
         {
 
-            Name = GL.GetString(StringName.Renderer);
+            Name = Gl.GetString(StringName.Renderer);
 
-            string strVendor = GL.GetString(StringName.Vendor);
+            string strVendor = Gl.GetString(StringName.Vendor);
             if(strVendor != null)
             {
                 strVendor = strVendor.ToLower();
@@ -60,10 +51,13 @@ namespace Molten.Graphics
                     Vendor = GraphicsAdapterVendor.Unknown;
             }
 
-            string etensions = GL.GetString(StringName.Extensions);
-            _extensions.AddRange(etensions.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            for (int i = 0; i < _extensions.Count; i++)
-                _extensions[i] = _extensions[i].ToLower();
+            string extensions = Gl.GetString(StringName.Extensions);
+            if (extensions != null)
+            {
+                _extensions.AddRange(extensions.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                for (int i = 0; i < _extensions.Count; i++)
+                    _extensions[i] = _extensions[i].ToLower();
+            }
         }
 
         internal bool HasExtension(string extensionName)

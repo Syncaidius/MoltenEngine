@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OpenTK.Graphics.OpenGL4;
 
-namespace Molten.Graphics.OpenGL
+namespace Molten.Graphics
 {
     public class RenderChainGL : IRenderChain
     {

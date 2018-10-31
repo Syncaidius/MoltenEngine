@@ -27,7 +27,7 @@ namespace Molten.Graphics
         /// <summary>
         /// The name of the default OpenGL renderer library.
         /// </summary>
-        public const string RENDERER_OPENGL = "Molten.OpenGL.dll; Molten.Graphics.RendererOpenGL";
+        public const string RENDERER_OPENGL = "Molten.OpenGL.dll; Molten.Graphics.RendererGL";
 
         /// <summary>
         /// The minimum tessellation factor for batched lights.

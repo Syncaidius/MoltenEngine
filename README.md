@@ -39,10 +39,10 @@ In no particular order:
 
 # Third-Party Libraries
 A special thanks to each of these great libraries, without which Molten wouldn't exist in it's current form:
-  * [SharpDX](https://github.com/sharpdx/SharpDX) - DirectX API Wrapper
+  * [SharpDX](https://github.com/sharpdx/SharpDX) - DirectX bindings for C#
   * [Magick.NET](https://github.com/dlemstra/Magick.NET) - Extensive image library for .NET
   * [JSON.NET](https://www.newtonsoft.com/json) - JSON serialization
-  * [OpenTK](https://opentk.github.io/) - The OpenGL Toolkit
+  * [OpenGL.Net](https://github.com/luca-piccioni/OpenGL.Net) - OpenGL bindings for C#
 
 # Licensing
 MIT - Basically, it means you can do what you want with Molten. Fork it, chop it up and consume it for dinner. You get the idea!

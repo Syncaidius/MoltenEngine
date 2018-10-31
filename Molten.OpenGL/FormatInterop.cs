@@ -3,70 +3,58 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Molten.Graphics.OpenGL;
-using OpenTK.Graphics.OpenGL4;
+using OpenGL;
 
 namespace Molten.Graphics
 {
     internal static class FormatInterop
     {
 
-        internal static GraphicsFormat FromSizedInternal(this SizedInternalFormat sizedFormat)
+        internal static GraphicsFormat FromInternal(this InternalFormat internalFormat)
         {
-            switch (sizedFormat)
+            switch (internalFormat)
             {
-                case SizedInternalFormat.R16: return GraphicsFormat.R16_Typeless;
-                case SizedInternalFormat.R16f: return GraphicsFormat.R16_Float;
-                case SizedInternalFormat.R16i: return GraphicsFormat.R16_SInt;
-                case SizedInternalFormat.R16ui: return GraphicsFormat.R16_UInt;
+                case InternalFormat.R16: return GraphicsFormat.R16_Typeless;
+                case InternalFormat.R16f: return GraphicsFormat.R16_Float;
+                case InternalFormat.R16i: return GraphicsFormat.R16_SInt;
+                case InternalFormat.R16ui: return GraphicsFormat.R16_UInt;
 
-                case SizedInternalFormat.R32f: return GraphicsFormat.R32_Float;
-                case SizedInternalFormat.R32i: return GraphicsFormat.R32_SInt;
-                case SizedInternalFormat.R32ui: return GraphicsFormat.R32_UInt;
+                case InternalFormat.R32f: return GraphicsFormat.R32_Float;
+                case InternalFormat.R32i: return GraphicsFormat.R32_SInt;
+                case InternalFormat.R32ui: return GraphicsFormat.R32_UInt;
 
-                case SizedInternalFormat.R8: return GraphicsFormat.R8_Typeless;
-                case SizedInternalFormat.R8i: return GraphicsFormat.R8_SInt;
-                case SizedInternalFormat.R8ui: return GraphicsFormat.R8_UInt;
+                case InternalFormat.R8: return GraphicsFormat.R8_Typeless;
+                case InternalFormat.R8i: return GraphicsFormat.R8_SInt;
+                case InternalFormat.R8ui: return GraphicsFormat.R8_UInt;
 
-                case SizedInternalFormat.Rg16: return GraphicsFormat.R16G16_Typeless;
-                case SizedInternalFormat.Rg16f: return GraphicsFormat.R16G16_Float;
-                case SizedInternalFormat.Rg16i: return GraphicsFormat.R16G16_SInt;
-                case SizedInternalFormat.Rg16ui: return GraphicsFormat.R16G16_UInt;
+                case InternalFormat.Rg16: return GraphicsFormat.R16G16_Typeless;
+                case InternalFormat.Rg16f: return GraphicsFormat.R16G16_Float;
+                case InternalFormat.Rg16i: return GraphicsFormat.R16G16_SInt;
+                case InternalFormat.Rg16ui: return GraphicsFormat.R16G16_UInt;
 
-                case SizedInternalFormat.Rg32f: return GraphicsFormat.R32G32_Float;
-                case SizedInternalFormat.Rg32i: return GraphicsFormat.R32G32_SInt;
-                case SizedInternalFormat.Rg32ui: return GraphicsFormat.R32G32_UInt;
+                case InternalFormat.Rg32f: return GraphicsFormat.R32G32_Float;
+                case InternalFormat.Rg32i: return GraphicsFormat.R32G32_SInt;
+                case InternalFormat.Rg32ui: return GraphicsFormat.R32G32_UInt;
 
-                case SizedInternalFormat.Rg8: return GraphicsFormat.R8G8_Typeless;
-                case SizedInternalFormat.Rg8i: return GraphicsFormat.R8G8_SInt;
-                case SizedInternalFormat.Rg8ui: return GraphicsFormat.R8G8_UInt;
+                case InternalFormat.Rg8: return GraphicsFormat.R8G8_Typeless;
+                case InternalFormat.Rg8i: return GraphicsFormat.R8G8_SInt;
+                case InternalFormat.Rg8ui: return GraphicsFormat.R8G8_UInt;
 
-                case SizedInternalFormat.Rgba16: return GraphicsFormat.R16G16B16A16_Typeless;
-                case SizedInternalFormat.Rgba16f: return GraphicsFormat.R16G16B16A16_Float;
-                case SizedInternalFormat.Rgba16i: return GraphicsFormat.R16G16B16A16_SInt;
-                case SizedInternalFormat.Rgba16ui: return GraphicsFormat.R16G16B16A16_UInt;
+                case InternalFormat.Rgba16: return GraphicsFormat.R16G16B16A16_Typeless;
+                case InternalFormat.Rgba16f: return GraphicsFormat.R16G16B16A16_Float;
+                case InternalFormat.Rgba16i: return GraphicsFormat.R16G16B16A16_SInt;
+                case InternalFormat.Rgba16ui: return GraphicsFormat.R16G16B16A16_UInt;
 
-                case SizedInternalFormat.Rgba32f: return GraphicsFormat.R32G32B32A32_Float;
-                case SizedInternalFormat.Rgba32i: return GraphicsFormat.R32G32B32A32_SInt;
-                case SizedInternalFormat.Rgba32ui: return GraphicsFormat.R32G32B32A32_UInt;
+                case InternalFormat.Rgba32f: return GraphicsFormat.R32G32B32A32_Float;
+                case InternalFormat.Rgba32i: return GraphicsFormat.R32G32B32A32_SInt;
+                case InternalFormat.Rgba32ui: return GraphicsFormat.R32G32B32A32_UInt;
 
-                case SizedInternalFormat.Rgba8: return GraphicsFormat.R8G8B8A8_Typeless;
-                case SizedInternalFormat.Rgba8i: return GraphicsFormat.R8G8B8A8_SInt;
-                case SizedInternalFormat.Rgba8ui: return GraphicsFormat.R8G8B8A8_UInt;
+                case InternalFormat.Rgba8: return GraphicsFormat.R8G8B8A8_Typeless;
+                case InternalFormat.Rgba8i: return GraphicsFormat.R8G8B8A8_SInt;
+                case InternalFormat.Rgba8ui: return GraphicsFormat.R8G8B8A8_UInt;
 
-                default: throw new InternalFormatException(sizedFormat, "Unable to convert internal to common format.");
+                default: throw new InternalFormatException(internalFormat, "Unable to convert internal to common format.");
             }
-        }
-
-        internal static SizedInternalFormat ToSizedInternal(this GraphicsFormat format)
-        {
-            return (SizedInternalFormat)ToInternal(format);
-        }
-
-        internal static PixelInternalFormat ToPixelInternal(this GraphicsFormat format)
-        {
-            
-            return (PixelInternalFormat)ToInternal(format);
         }
 
         internal static InternalFormat ToInternal(this GraphicsFormat format)

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Molten.Graphics.Textures;
-using OpenTK.Graphics.OpenGL4;
+using OpenGL;
 
 namespace Molten.Graphics
 {
@@ -28,7 +28,7 @@ namespace Molten.Graphics
 
         static int _nextSortKey = 0;
 
-        int _textureID;
+        uint _textureID;
         int _width;
         int _height;
         int _depth;
@@ -88,13 +88,13 @@ namespace Molten.Graphics
         {
             if (_textureID > 0)
             {
-                GL.BindTexture(_target, _textureID);
-                GL.DeleteTexture(1);
+                Gl.BindTexture(_target, _textureID);
+                Gl.DeleteTextures(_textureID);
                 _textureID = 0;
             }
         }
 
-        protected abstract void CreateResource(ref int id, TextureTarget target, bool isResizing);
+        protected abstract void CreateResource(ref uint id, TextureTarget target, bool isResizing);
 
         public Texture1DProperties Get1DProperties()
         {
@@ -196,7 +196,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the underlying OpenGL texture ID for the current texture instance.
         /// </summary>
-        internal int GLID { get; private protected set; }
+        internal uint GLID { get; private protected set; }
 
         public int SortKey { get; }
     }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OpenTK.Graphics.OpenGL4;
+using OpenGL;
 
 namespace Molten.Graphics
 {
@@ -22,13 +22,13 @@ namespace Molten.Graphics
 
         public void Process(TextureBaseGL texture)
         {
-            GL.BindTexture(texture.Target, texture.GLID);
+            Gl.BindTexture(texture.Target, texture.GLID);
             EngineInterop.PinObject(Data, ptr =>
             {
                 // TODO revisit PixelFormat. This must correctly match the texture's internal format. Also block-compressed textures.
                 int levelWidth = texture.Width >> MipLevel;
                 int levelHeight = texture.Height >> MipLevel;
-                GL.TexSubImage2D(texture.Target, MipLevel, 0, 0, levelWidth, levelHeight, PixelFormat.Rgba, PixelType.UnsignedByte, ptr);
+                Gl.TexSubImage2D(texture.Target, MipLevel, 0, 0, levelWidth, levelHeight, PixelFormat.Rgba, PixelType.UnsignedByte, ptr);
             });
 
             texture.Device.Profiler.Current.UpdateSubresourceCount++;

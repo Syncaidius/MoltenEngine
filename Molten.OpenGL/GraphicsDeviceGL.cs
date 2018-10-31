@@ -1,10 +1,9 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenGL;
 
 namespace Molten.Graphics
 {
@@ -14,8 +13,6 @@ namespace Molten.Graphics
         GraphicsAdapterGL _adapter;
         DisplayManagerGL _displayManager;
         Logger _log;
-        GraphicsContext _context;
-        NativeWindow _dummyWindow;
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
 
@@ -27,20 +24,10 @@ namespace Molten.Graphics
             _settings = settings;
             _defaultProfiler = _profiler = new RenderProfiler();
             Features = new GraphicsOpenGLFeatures();
-
-            _dummyWindow = new NativeWindow();
-            _context = new GraphicsContext(GraphicsMode.Default, _dummyWindow.WindowInfo);
-        }
-
-        internal void MakeCurrent(NativeWindow window)
-        {
-            _context.MakeCurrent(window.WindowInfo);
         }
 
         protected override void OnDispose()
         {
-            DisposeObject(ref _context);
-            DisposeObject(ref _dummyWindow);
             base.OnDispose();
         }
 
@@ -53,10 +40,5 @@ namespace Molten.Graphics
             get => _profiler;
             set => _profiler = value ?? _defaultProfiler;
         }
-
-        /// <summary>
-        /// Gets the device context.
-        /// </summary>
-        internal IGraphicsContext Context => _displayManager.Context;
     }
 }

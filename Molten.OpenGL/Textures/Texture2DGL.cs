@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OpenTK.Graphics.OpenGL4;
+using OpenGL;
 
-namespace Molten.Graphics.OpenGL
+namespace Molten.Graphics
 {
     public class Texture2DGL : TextureBaseGL
     {
@@ -30,25 +30,25 @@ namespace Molten.Graphics.OpenGL
             int arraySize = 1,
             TextureFlags flags = TextureFlags.None,
             int sampleCount = 1)
-            : base(renderer, width, height, 1, TextureTarget.Texture2D, mipCount, arraySize, sampleCount, format, flags)
+            : base(renderer, width, height, 1, TextureTarget.Texture2d, mipCount, arraySize, sampleCount, format, flags)
         {
 
         }
 
-        protected override void CreateResource(ref int id, TextureTarget target, bool isResizing)
+        protected unsafe override void CreateResource(ref uint id, TextureTarget target, bool isResizing)
         {
             int mipLevels = MipMapCount - 1;
             int baseLevel = 0;
 
-            id = GL.GenTexture();
-            GL.BindTexture(target, id);
-            GL.TexParameterI(target, TextureParameterName.TextureBaseLevel, ref baseLevel);
-            GL.TexParameterI(target, TextureParameterName.TextureMaxLevel, ref mipLevels);
+            id = Gl.GenTexture();
+            Gl.BindTexture(target, id);
+            Gl.TexParameterI(target, TextureParameterName.TextureBaseLevel, &baseLevel);
+            Gl.TexParameterI(target, TextureParameterName.TextureMaxLevel, &mipLevels);
 
             // NOTE - Khronos.org: "Again, if you use more than one mipmaps, you should change the GL_TEXTURE_MAX_LEVEL to state how many you will use 
             //               (minus 1. The base/max level is a closed range), then perform a glTexImage2D (note the lack of "Sub") for each mipmap."
             for (int i = 0; i < MipMapCount; i++)
-                GL.TexImage2D(target, i, Format.ToPixelInternal(), Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+                Gl.TexImage2D(target, i, Format.ToInternal(), Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
         }
     }
 }
