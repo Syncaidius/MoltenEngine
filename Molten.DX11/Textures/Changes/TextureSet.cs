@@ -21,7 +21,7 @@ namespace Molten.Graphics
         public int Stride;
         public Rectangle? Area;
 
-        public void Process(GraphicsPipe pipe, TextureBase texture)
+        public void Process(PipeDX11 pipe, TextureBase texture)
         {
             //C alculate size of a single array slice
             int arraySliceBytes = 0;

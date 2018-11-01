@@ -10,7 +10,7 @@ namespace Molten.Graphics
     {
         IShaderResource[] _resources;
 
-        internal Renderable(GraphicsDeviceDX11 device)
+        internal Renderable(DeviceDX11 device)
         {
             Device = device;
             IsVisible = false;
@@ -48,17 +48,17 @@ namespace Molten.Graphics
                 material.Resources[i].Value = material.DefaultResources[i];
         }
 
-        internal void Render(GraphicsPipe pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        internal void Render(PipeDX11 pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
             pipe.DepthWriteOverride = data.DepthWriteOverride;
             OnRender(pipe, renderer, camera, data);
         }
 
-        private protected abstract void OnRender(GraphicsPipe pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data);
+        private protected abstract void OnRender(PipeDX11 pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data);
 
         /// <summary>Gets or sets whether or not the renderable should be drawn.</summary>
         public bool IsVisible { get; set; }
 
-        internal GraphicsDeviceDX11 Device { get; private set; }
+        internal DeviceDX11 Device { get; private set; }
     }
 }

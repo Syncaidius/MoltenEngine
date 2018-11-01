@@ -20,7 +20,7 @@ namespace Molten.Graphics
         internal string BufferName;
         internal int Hash;
 
-        internal ShaderConstantBuffer(GraphicsDeviceDX11 device, BufferMode flags, ConstantBuffer desc)
+        internal ShaderConstantBuffer(DeviceDX11 device, BufferMode flags, ConstantBuffer desc)
             : base(device, flags, BindFlags.ConstantBuffer, desc.Description.Size)
         {
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
@@ -62,7 +62,7 @@ namespace Molten.Graphics
             Description.SizeInBytes = desc.Description.Size;
         }
 
-        internal override void Refresh(GraphicsPipe pipe, PipelineBindSlot slot)
+        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
         {
             // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
             if (DirtyVariables)

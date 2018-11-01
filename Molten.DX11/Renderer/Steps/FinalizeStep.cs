@@ -32,7 +32,7 @@ namespace Molten.Graphics
             _orthoCamera.OutputSurface = camera.OutputSurface;
 
             Rectangle bounds = new Rectangle(0, 0, camera.OutputSurface.Width, camera.OutputSurface.Height);
-            GraphicsDeviceDX11 device = renderer.Device;
+            DeviceDX11 device = renderer.Device;
             RenderSurface finalSurface = camera.OutputSurface as RenderSurface;
             if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
                 renderer.ClearIfFirstUse(device, finalSurface, context.Scene.BackgroundColor);

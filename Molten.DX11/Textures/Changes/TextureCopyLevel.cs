@@ -17,7 +17,7 @@ namespace Molten.Graphics
         public int DestinationLevel;
         public int DestinationSlice;
 
-        public void Process(GraphicsPipe pipe, TextureBase texture)
+        public void Process(PipeDX11 pipe, TextureBase texture)
         {
 
             int srcSub = (SourceSlice * texture.MipMapCount) + SourceLevel;

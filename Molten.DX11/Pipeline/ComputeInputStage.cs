@@ -10,21 +10,21 @@ namespace Molten.Graphics
     internal class ComputeInputStage : ShaderInputStage<ComputeTask>
     {
         ShaderStep<ComputeShader, ComputeShaderStage, ComputeTask> _cStage;
-        PipelineBindSlot<PipelineShaderObject>[] _slotUAVs;
+        PipelineBindSlot<PipelineShaderObject, DeviceDX11, PipeDX11>[] _slotUAVs;
 
-        internal ComputeInputStage(GraphicsPipe pipe) : base(pipe)
+        internal ComputeInputStage(PipeDX11 pipe) : base(pipe)
         {
             _cStage = CreateStep<ComputeShader, ComputeShaderStage>(pipe.Context.ComputeShader, (stage, composition) => stage.Set(composition.RawShader));
-            _slotUAVs = new PipelineBindSlot<PipelineShaderObject>[Device.Features.MaxUnorderedAccessViews];
+            _slotUAVs = new PipelineBindSlot<PipelineShaderObject, DeviceDX11, PipeDX11>[Device.Features.MaxUnorderedAccessViews];
 
             for (int i = 0; i < Device.Features.MaxUnorderedAccessViews; i++)
             {
-                _slotUAVs[i] = new PipelineBindSlot<PipelineShaderObject>(this, i);
+                _slotUAVs[i] = new PipelineBindSlot<PipelineShaderObject, DeviceDX11, PipeDX11>(this, i);
                 _slotUAVs[i].OnObjectForcedUnbind += ComputeStage_OnBoundObjectDisposed;
             }
         }
 
-        private void ComputeStage_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
+        private void ComputeStage_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
             _cStage.RawStage.SetUnorderedAccessView(slot.SlotID, null);
         }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="DeviceContext"/>.</summary>
-    internal class GraphicsPipe : EngineObject
+    public class PipeDX11 : EngineObject, IGraphicsPipe<DeviceDX11>
     {
         class DrawInfo
         {
@@ -35,14 +35,14 @@ namespace Molten.Graphics
         VertexInputLayout _curInputLayout;
         GraphicsValidationResult _drawResult;
 
-        GraphicsDeviceDX11 _device;
+        DeviceDX11 _device;
         DeviceContext _context;
         PipeStateStack _stateStack;
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
         DrawInfo _drawInfo;
 
-        internal void Initialize(Logger log, GraphicsDeviceDX11 device, DeviceContext context, int id)
+        internal void Initialize(Logger log, DeviceDX11 device, DeviceContext context, int id)
         {
             ID = id;
             _context = context;
@@ -394,7 +394,7 @@ namespace Molten.Graphics
             _input.SetIndexSegment(segment);
         }
 
-        /// <summary>Copyies a list of vertex <see cref="BufferSegment"/> that are set on the current <see cref="GraphicsPipe"/>. Any empty slots will be null.</summary>
+        /// <summary>Copyies a list of vertex <see cref="BufferSegment"/> that are set on the current <see cref="PipeDX11"/>. Any empty slots will be null.</summary>
         /// <param name="destination"></param>
         internal void GetVertexSegments(BufferSegment[] destination)
         {
@@ -416,7 +416,7 @@ namespace Molten.Graphics
             _output.Clear(color, slot);
         }
 
-        /// <summary>Dispoes of the current <see cref="GraphicsPipe"/> instance.</summary>
+        /// <summary>Dispoes of the current <see cref="PipeDX11"/> instance.</summary>
         protected override void OnDispose()
         {
             DisposeObject(ref _output);
@@ -440,17 +440,19 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-        /// <summary>Gets the current <see cref="GraphicsPipe"/> type. This value will not change during the context's life.</summary>
+        DeviceDX11 IGraphicsPipe<DeviceDX11>.Device => _device;
+
+        /// <summary>Gets the current <see cref="PipeDX11"/> type. This value will not change during the context's life.</summary>
         public GraphicsContextType Type { get; private set; }
 
-        internal GraphicsDeviceDX11 Device => _device;
+        internal DeviceDX11 Device => _device;
 
         internal DeviceContext Context => _context;
 
         internal Logger Log { get; private set; }
 
-        /// <summary>Gets the profiler bound to the current <see cref="GraphicsPipe"/>. Contains statistics for this pipe alone.</summary>
-        internal RenderProfiler Profiler
+        /// <summary>Gets the profiler bound to the current <see cref="PipeDX11"/>. Contains statistics for this pipe alone.</summary>
+        public RenderProfiler Profiler
         {
             get => _profiler;
             set => _profiler = value ?? _defaultProfiler;

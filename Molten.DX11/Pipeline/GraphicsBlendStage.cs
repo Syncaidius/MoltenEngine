@@ -7,22 +7,22 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    internal class GraphicsBlendStage : PipelineComponent
+    internal class GraphicsBlendStage : PipelineComponent<DeviceDX11, PipeDX11>
     {
-        PipelineBindSlot<GraphicsBlendState> _slotState;
+        PipelineBindSlot<GraphicsBlendState, DeviceDX11, PipeDX11> _slotState;
         GraphicsBlendState _currentState;
 
         BlendState _state;
         uint _blendSampleMask;
         Color4 _blendFactor;
 
-        internal GraphicsBlendStage(GraphicsPipe context) : base(context)
+        internal GraphicsBlendStage(PipeDX11 context) : base(context)
         {
             _slotState = AddSlot<GraphicsBlendState>(0);
             _slotState.OnObjectForcedUnbind += _slotState_OnBoundObjectDisposed;
         }
 
-        private void _slotState_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
+        private void _slotState_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
             Pipe.Context.OutputMerger.BlendState = null;
         }

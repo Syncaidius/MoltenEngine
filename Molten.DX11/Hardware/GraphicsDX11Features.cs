@@ -118,7 +118,7 @@ namespace Molten.Graphics
         /// <summary>Gets the feature level of the current device.</summary>
         internal FeatureLevel Level { get; private set; }
 
-        /// <summary>Gets an instance of <see cref="GraphicsComputeFeatures"/> which contains the supported compute features of a <see cref="GraphicsDeviceDX11"/>.</summary>
+        /// <summary>Gets an instance of <see cref="GraphicsComputeFeatures"/> which contains the supported compute features of a <see cref="DeviceDX11"/>.</summary>
         internal GraphicsComputeFeatures Compute { get; private set; }
 
         internal GraphicsShaderFeatures Shaders { get; private set; }

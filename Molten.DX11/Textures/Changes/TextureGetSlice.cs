@@ -16,7 +16,7 @@ namespace Molten.Graphics
 
         public int ArrayIndex;
 
-        public void Process(GraphicsPipe pipe, TextureBase texture)
+        public void Process(PipeDX11 pipe, TextureBase texture)
         {
             if (!StagingTexture.HasFlags(TextureFlags.Staging) && !texture.HasFlags(TextureFlags.Staging))
                 throw new TextureFlagException(StagingTexture.Flags, "Provided staging texture does not have the staging flag set.");

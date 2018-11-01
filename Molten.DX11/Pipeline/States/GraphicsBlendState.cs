@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    /// <summary>Stores a blend state for use with a <see cref="GraphicsPipe"/>.</summary>
-    internal class GraphicsBlendState : PipelineObject, IEquatable<GraphicsBlendState>
+    /// <summary>Stores a blend state for use with a <see cref="PipeDX11"/>.</summary>
+    internal class GraphicsBlendState : PipelineObject<DeviceDX11, PipeDX11>, IEquatable<GraphicsBlendState>
     {
         internal BlendState State;
         BlendStateDescription _desc;
@@ -18,21 +18,21 @@ namespace Molten.Graphics
         Color4 _blendFactor;
         uint _blendSampleMask;
 
-        internal GraphicsBlendState(GraphicsDeviceDX11 device, GraphicsBlendState source) : base(device)
+        internal GraphicsBlendState(DeviceDX11 device, GraphicsBlendState source) : base(device)
         {
             _desc = source._desc.Clone();
             _blendFactor = source._blendFactor;
             _blendSampleMask = source._blendSampleMask;
         }
 
-        internal GraphicsBlendState(GraphicsDeviceDX11 device) : base(device)
+        internal GraphicsBlendState(DeviceDX11 device) : base(device)
         {
             _desc = BlendStateDescription.Default();
             _blendFactor = new Color4(1, 1, 1, 1);
             _blendSampleMask = 0xffffffff;
         }
 
-        internal GraphicsBlendState(GraphicsDeviceDX11 device, RenderTargetBlendDescription rtDesc) : base(device)
+        internal GraphicsBlendState(DeviceDX11 device, RenderTargetBlendDescription rtDesc) : base(device)
         {
             _desc = BlendStateDescription.Default();
             _desc.RenderTarget[0] = rtDesc;
@@ -82,7 +82,7 @@ namespace Molten.Graphics
             return true;
         }
 
-        internal override void Refresh(GraphicsPipe context, PipelineBindSlot slot)
+        internal override void Refresh(PipeDX11 context, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
         {
             if (State == null || _dirty)
             {

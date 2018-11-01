@@ -12,17 +12,17 @@ namespace Molten.Graphics
         where C: CommonShaderStage
         where H : HlslShader
     {
-        internal PipelineBindSlot<PipelineShaderObject>[] _slotResources;
-        internal PipelineBindSlot<ShaderConstantBuffer>[] _slotConstants;
-        internal PipelineBindSlot<ShaderSampler>[] _slotSamplers;
+        internal PipelineBindSlot<PipelineShaderObject, DeviceDX11, PipeDX11>[] _slotResources;
+        internal PipelineBindSlot<ShaderConstantBuffer, DeviceDX11, PipeDX11>[] _slotConstants;
+        internal PipelineBindSlot<ShaderSampler, DeviceDX11, PipeDX11>[] _slotSamplers;
         internal ShaderResourceView[] _resViews;
 
         C _stage;
-        GraphicsPipe _pipe;
+        PipeDX11 _pipe;
         S _boundShader;
         Action<C, ShaderComposition<S>> _setCallback;
 
-        internal ShaderStep(GraphicsPipe pipe, ShaderInputStage<H> input, C shaderStage, Action<C, ShaderComposition<S>> setCallback)
+        internal ShaderStep(PipeDX11 pipe, ShaderInputStage<H> input, C shaderStage, Action<C, ShaderComposition<S>> setCallback)
         {
             // Setup slots
             GraphicsDX11Features features = pipe.Device.Features;
@@ -30,11 +30,11 @@ namespace Molten.Graphics
             _pipe = pipe;
             _setCallback = setCallback;
 
-            _slotResources = new PipelineBindSlot<PipelineShaderObject>[features.MaxInputResourceSlots];
+            _slotResources = new PipelineBindSlot<PipelineShaderObject, DeviceDX11, PipeDX11>[features.MaxInputResourceSlots];
             _resViews = new ShaderResourceView[_slotResources.Length];
 
-            _slotConstants = new PipelineBindSlot<ShaderConstantBuffer>[features.MaxConstantBufferSlots];
-            _slotSamplers = new PipelineBindSlot<ShaderSampler>[features.MaxSamplerSlots];
+            _slotConstants = new PipelineBindSlot<ShaderConstantBuffer, DeviceDX11, PipeDX11>[features.MaxConstantBufferSlots];
+            _slotSamplers = new PipelineBindSlot<ShaderSampler, DeviceDX11, PipeDX11>[features.MaxSamplerSlots];
 
             for (int i = 0; i < features.MaxInputResourceSlots; i++)
             {
@@ -55,17 +55,17 @@ namespace Molten.Graphics
             }
         }
 
-        private void EffectStageBase_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
+        private void EffectStageBase_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
             _stage.SetSampler(slot.SlotID, null);
         }
 
-        private void SlotConstants_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
+        private void SlotConstants_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
             _stage.SetConstantBuffer(slot.SlotID, null);
         }
 
-        private void SlotResources_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
+        private void SlotResources_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
             _stage.SetShaderResource(slot.SlotID, null);
             _resViews[slot.SlotID] = null;
@@ -92,7 +92,7 @@ namespace Molten.Graphics
             for (int i = 0; i < composition.ResourceIds.Count; i++)
             {
                 int resID = composition.ResourceIds[i];
-                PipelineBindSlot<PipelineShaderObject> slot = _slotResources[resID];
+                PipelineBindSlot<PipelineShaderObject, DeviceDX11, PipeDX11> slot = _slotResources[resID];
                 int slotID = slot.SlotID;
 
                 variable = shader.Resources[resID];

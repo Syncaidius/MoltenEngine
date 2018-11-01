@@ -110,19 +110,18 @@
   <ItemGroup>
     <Compile Include="Exceptions\InternalFormatException.cs" />
     <Compile Include="FormatInterop.cs" />
-    <Compile Include="GraphicsDeviceGL.cs" />
+    <Compile Include="DeviceGL.cs" />
     <Compile Include="Hardware\DisplayManagerGL.cs" />
     <Compile Include="Hardware\DisplayOutputGL.cs" />
     <Compile Include="Hardware\GraphicsAdapterGL.cs" />
     <Compile Include="Hardware\GraphicsGLFeatures.cs" />
     <Compile Include="OpenTKInterop.cs" />
-    <Compile Include="Pipeline\PipelineBindSlotGL.cs" />
-    <Compile Include="Pipeline\PipelineComponentGL.cs" />
-    <Compile Include="Pipeline\PipelineObjectGL.cs" />
+    <Compile Include="PipelineOutputGL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer\RenderChainGL.cs" />
     <Compile Include="Renderer\RendererGL.cs" />
     <Compile Include="ResourceManagerGL.cs" />
+    <Compile Include="Surfaces\RenderSurfaceGL.cs" />
     <Compile Include="Textures\Changes\ITextureChange.cs" />
     <Compile Include="Textures\Changes\TextureSet.cs" />
     <Compile Include="Textures\Texture1DGL.cs" />

@@ -9,7 +9,7 @@ namespace Molten.Graphics
     /// <summary>
     /// An a base class implementation of key shader components (e.g. name, render states, samplers, etc).
     /// </summary>
-    public abstract class HlslFoundation : PipelineObject
+    public abstract class HlslFoundation : PipelineObject<DeviceDX11, PipeDX11>
     {
         /// <summary>
         /// The texture samplers to be used with the shader/component.
@@ -31,7 +31,7 @@ namespace Molten.Graphics
         /// </summary>
         internal ShaderStateBank<GraphicsDepthState> DepthState = new ShaderStateBank<GraphicsDepthState>();
 
-        internal HlslFoundation(GraphicsDeviceDX11 device) : base(device)
+        internal HlslFoundation(DeviceDX11 device) : base(device)
         {
             Samplers = new ShaderStateBank<ShaderSampler>[0];
         }

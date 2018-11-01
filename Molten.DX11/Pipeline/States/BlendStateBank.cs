@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal class BlendStateBank : GraphicsStateBank<GraphicsBlendState, BlendPreset>
     {
-        internal BlendStateBank(GraphicsDeviceDX11 device)
+        internal BlendStateBank(DeviceDX11 device)
         {
             AddPreset(BlendPreset.Default, new GraphicsBlendState(device));
 

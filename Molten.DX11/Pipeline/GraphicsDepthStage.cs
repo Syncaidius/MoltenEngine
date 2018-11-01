@@ -6,19 +6,19 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    internal class GraphicsDepthStage : PipelineComponent
+    internal class GraphicsDepthStage : PipelineComponent<DeviceDX11, PipeDX11>
     {
-        PipelineBindSlot<GraphicsDepthState> _slotState;
+        PipelineBindSlot<GraphicsDepthState, DeviceDX11, PipeDX11> _slotState;
         GraphicsDepthState _currentState = null;
         int _stencilRef = 0;
 
-        internal GraphicsDepthStage(GraphicsPipe pipe) : base(pipe)
+        internal GraphicsDepthStage(PipeDX11 pipe) : base(pipe)
         {
             _slotState = AddSlot<GraphicsDepthState>(0);
             _slotState.OnObjectForcedUnbind += _slotState_OnBoundObjectDisposed;
         }
 
-        private void _slotState_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
+        private void _slotState_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
             Pipe.Context.OutputMerger.DepthStencilState = null;
         }

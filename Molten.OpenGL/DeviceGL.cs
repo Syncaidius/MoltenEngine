@@ -7,7 +7,7 @@ using OpenGL;
 
 namespace Molten.Graphics
 {
-    internal class GraphicsDeviceGL : EngineObject
+    public class DeviceGL : EngineObject, IGraphicsDevice, IGraphicsPipe<DeviceGL>
     {
         GraphicsSettings _settings;
         GraphicsAdapterGL _adapter;
@@ -16,7 +16,9 @@ namespace Molten.Graphics
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
 
-        internal GraphicsDeviceGL(Logger log, GraphicsSettings settings, RenderProfiler profiler, DisplayManagerGL manager, bool enableDebugLayer)
+        uint _fboID;
+
+        internal DeviceGL(Logger log, GraphicsSettings settings, DisplayManagerGL manager, bool enableDebugLayer)
         {
             _log = log;
             _displayManager = manager;
@@ -24,11 +26,28 @@ namespace Molten.Graphics
             _settings = settings;
             _defaultProfiler = _profiler = new RenderProfiler();
             Features = new GraphicsOpenGLFeatures();
+
+            Initialize(log, settings);
+        }
+
+        private void Initialize(Logger log, GraphicsSettings settings)
+        {
+            _fboID = Gl.GenFramebuffer();
         }
 
         protected override void OnDispose()
         {
+            if (_fboID > 0)
+            {
+                Gl.BindFramebuffer(FramebufferTarget.Framebuffer, _fboID);
+                Gl.DeleteFramebuffers(_fboID);
+            }
             base.OnDispose();
+        }
+
+        public void MarkForDisposal(PipelineDisposableObject obj)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>Gets the hardware features supported by the current device.</summary>
@@ -40,5 +59,14 @@ namespace Molten.Graphics
             get => _profiler;
             set => _profiler = value ?? _defaultProfiler;
         }
+
+        /// <summary>
+        /// Gets the frame buffer object (FBO) ID.
+        /// </summary>
+        internal uint FrameBufferID => _fboID;
+
+        DeviceGL IGraphicsPipe<DeviceGL>.Device => this;
+
+        RenderProfiler IGraphicsPipe<DeviceGL>.Profiler => _profiler;
     }
 }

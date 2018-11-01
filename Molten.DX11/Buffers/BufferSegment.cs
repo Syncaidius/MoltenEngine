@@ -47,7 +47,7 @@ namespace Molten.Graphics
         /// <summary>If true, the segment is not used.</summary>
         internal bool IsFree;
 
-        internal BufferSegment(GraphicsDeviceDX11 device) : base(device) { }
+        internal BufferSegment(DeviceDX11 device) : base(device) { }
 
         internal void SetVertexFormat<T>() where T: struct, IVertexType
         {
@@ -75,13 +75,13 @@ namespace Molten.Graphics
 
         /// <summary>Copies an array of elements into the buffer.</summary>
         /// <param name="data">The elements to set </param>
-        internal void SetData<T>(GraphicsPipe pipe, T[] data) where T : struct => SetData<T>(pipe, data, 0, data.Length);
+        internal void SetData<T>(PipeDX11 pipe, T[] data) where T : struct => SetData<T>(pipe, data, 0, data.Length);
 
         /// <summary>Copies element data into the buffer.</summary>
         /// <param name="data">The source of elements to copy into the buffer.</param>
         /// <param name="offset">The ID of the first element in the buffer at which to copy the source data into.</param>
         /// <param name="count">The number of elements to copy from the source array.</param>
-        internal void SetData<T>(GraphicsPipe pipe, T[] data, int count) where T : struct => SetData<T>(pipe, data, 0, count);
+        internal void SetData<T>(PipeDX11 pipe, T[] data, int count) where T : struct => SetData<T>(pipe, data, 0, count);
 
         /// <summary>Copies element data into the buffer.</summary>
         /// <param name="data">The source of elements to copy into the buffer.</param>
@@ -90,7 +90,7 @@ namespace Molten.Graphics
         /// <param name="elementOffset">The number of elements from the beginning of the <see cref="BufferSegment"/> to offset the destination of the provided data.
         /// The number of bytes the data is offset is based on the <see cref="Stride"/> value of the buffer segment.</param>
         /// <param name="completionCallback">The callback to invoke when the set-data operation has been completed.</param>
-        internal void SetData<T>(GraphicsPipe pipe, T[] data, int startIndex, int count, int elementOffset = 0, StagingBuffer staging = null, Action completionCallback = null) where T : struct
+        internal void SetData<T>(PipeDX11 pipe, T[] data, int startIndex, int count, int elementOffset = 0, StagingBuffer staging = null, Action completionCallback = null) where T : struct
         {
             int tStride = Marshal.SizeOf(typeof(T));
             int dataSize = tStride * count;
@@ -126,7 +126,7 @@ namespace Molten.Graphics
         /// <param name="startIndex">The element index within the provided data array to start copying from.</param>
         /// <param name="count">The number of elements to transfer from the provided data array.</param>
         /// <param name="byteOffset">The number of bytes to offset the copied data within the buffer segment.</param>
-        internal void SetDataImmediate<T>(GraphicsPipe pipe, T[] data, int startIndex, int count, int elementOffset = 0, StagingBuffer staging = null) where T : struct
+        internal void SetDataImmediate<T>(PipeDX11 pipe, T[] data, int startIndex, int count, int elementOffset = 0, StagingBuffer staging = null) where T : struct
         {
             int tStride = Marshal.SizeOf<T>();
             int dataSize = tStride * count;
@@ -141,7 +141,7 @@ namespace Molten.Graphics
             Parent.Set<T>(pipe, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
         }
 
-        internal void Map(GraphicsPipe pipe, Action<GraphicsBuffer, DataStream> callback, GraphicsBuffer staging = null)
+        internal void Map(PipeDX11 pipe, Action<GraphicsBuffer, DataStream> callback, GraphicsBuffer staging = null)
         {
             Parent.Map(pipe, ByteOffset, Stride * ElementCount, (buffer, stream) =>
             {
@@ -156,7 +156,7 @@ namespace Molten.Graphics
             }, staging); 
         }
 
-        internal void GetData<T>(GraphicsPipe pipe, T[] destination, int startIndex, int count, int elementOffset = 0, Action<T[]> completionCallback = null) where T : struct
+        internal void GetData<T>(PipeDX11 pipe, T[] destination, int startIndex, int count, int elementOffset = 0, Action<T[]> completionCallback = null) where T : struct
         {
             BufferGetOperation<T> op = new BufferGetOperation<T>()
             {
@@ -172,7 +172,7 @@ namespace Molten.Graphics
             Parent.QueueOperation(op);
         }
 
-        internal void CopyTo(GraphicsPipe pipe, int sourceByteOffset, BufferSegment destination, int destByteOffset, int count, bool isImmediate = false, Action completionCallback = null)
+        internal void CopyTo(PipeDX11 pipe, int sourceByteOffset, BufferSegment destination, int destByteOffset, int count, bool isImmediate = false, Action completionCallback = null)
         {
             int bytesToCopy = Stride * count;
             int totalOffset = ByteOffset + sourceByteOffset;
@@ -210,7 +210,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal override void Refresh(GraphicsPipe pipe, PipelineBindSlot slot)
+        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
         {
             Parent.Refresh(pipe, slot);
         }

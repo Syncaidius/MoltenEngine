@@ -12,7 +12,7 @@ namespace Molten.Graphics.Hardware.Tests
     public class GraphicsDeviceDX11Tests
     {
         DisplayManagerDX11 _manager;
-        GraphicsDeviceDX11 _device;
+        DeviceDX11 _device;
 
         [TestInitialize]
         public void TestInit()
@@ -21,7 +21,7 @@ namespace Molten.Graphics.Hardware.Tests
             GraphicsSettings settings = new GraphicsSettings();
             _manager = new DisplayManagerDX11();
             _manager.Initialize(log, settings);
-            _device = new GraphicsDeviceDX11(log, settings, new RenderProfiler(), _manager, false);
+            _device = new DeviceDX11(log, settings, _manager, false);
         }
 
         [TestCleanup]
@@ -44,7 +44,7 @@ namespace Molten.Graphics.Hardware.Tests
         [TestMethod]
         public void DeferredContextAddRemove()
         {
-            GraphicsPipe pipe = _device.GetDeferredPipe();
+            PipeDX11 pipe = _device.GetDeferredPipe();
             _device.RemoveDeferredPipe(pipe);
 
             Assert.AreEqual(true, pipe.IsDisposed, "Graphics pipe was not removed after disposal");            
@@ -54,8 +54,8 @@ namespace Molten.Graphics.Hardware.Tests
         [ExpectedException(typeof(GraphicsContextException), "Incorrectly handled graphics pipe from different device")]
         public void DeferredContextOwnership()
         {
-            GraphicsDeviceDX11 otherDevice = new GraphicsDeviceDX11(Logger.Get(), new GraphicsSettings(), new RenderProfiler(), _manager, false);
-            GraphicsPipe otherPipe = otherDevice.GetDeferredPipe();
+            DeviceDX11 otherDevice = new DeviceDX11(Logger.Get(), new GraphicsSettings(), _manager, false);
+            PipeDX11 otherPipe = otherDevice.GetDeferredPipe();
 
             _device.RemoveDeferredPipe(otherPipe);
 
@@ -66,7 +66,7 @@ namespace Molten.Graphics.Hardware.Tests
         [TestMethod]
         public void DeferredPipeDisposal()
         {
-            GraphicsPipe pipe = _device.GetDeferredPipe();
+            PipeDX11 pipe = _device.GetDeferredPipe();
             pipe.Dispose();
 
             if (_device.ActivePipes.Contains(pipe))

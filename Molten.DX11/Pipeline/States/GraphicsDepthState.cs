@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    /// <summary>Stores a depth-stencil state for use with a <see cref="GraphicsPipe"/>.</summary>
-    internal class GraphicsDepthState : PipelineObject, IEquatable<GraphicsDepthState>
+    /// <summary>Stores a depth-stencil state for use with a <see cref="PipeDX11"/>.</summary>
+    internal class GraphicsDepthState : PipelineObject<DeviceDX11, PipeDX11>, IEquatable<GraphicsDepthState>
     {
         public class Face
         {
@@ -69,14 +69,14 @@ namespace Molten.Graphics
         Face _frontFace;
         Face _backFace;
 
-        internal GraphicsDepthState(GraphicsDeviceDX11 device, GraphicsDepthState source) : base(device)
+        internal GraphicsDepthState(DeviceDX11 device, GraphicsDepthState source) : base(device)
         {
             _desc = source._desc;
             _frontFace = new Face(this, _desc.FrontFace);
             _backFace = new Face(this, _desc.BackFace);
         }
 
-        internal GraphicsDepthState(GraphicsDeviceDX11 device) : base(device)
+        internal GraphicsDepthState(DeviceDX11 device) : base(device)
         {
             _desc = DepthStencilStateDescription.Default();
             _frontFace = new Face(this, _desc.FrontFace);
@@ -123,7 +123,7 @@ namespace Molten.Graphics
             _dirty = true;
         }
 
-        internal override void Refresh(GraphicsPipe pipe, PipelineBindSlot slot)
+        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
         {
             if (State == null || _dirty)
             {

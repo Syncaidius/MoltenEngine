@@ -23,7 +23,7 @@ namespace Molten.Graphics
 
         internal Action CompletionCallback;
 
-        public void Process(GraphicsPipe pipe)
+        public void Process(PipeDX11 pipe)
         {
             CompletionCallback?.Invoke();
         }

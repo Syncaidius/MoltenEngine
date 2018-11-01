@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal class SamplerBank : GraphicsStateBank<ShaderSampler, SamplerPreset>
     {
-        internal SamplerBank(GraphicsDeviceDX11 device)
+        internal SamplerBank(DeviceDX11 device)
         {
             AddPreset(SamplerPreset.Default, new ShaderSampler(device)
             {

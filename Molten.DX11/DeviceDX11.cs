@@ -14,14 +14,13 @@ namespace Molten.Graphics
     using Device = SharpDX.Direct3D11.Device;
 
     /// <summary>A Direct3D 11 graphics device.</summary>
-    /// <seealso cref="Molten.Graphics.GraphicsPipe" />
-    internal class GraphicsDeviceDX11 : GraphicsPipe
+    /// <seealso cref="Molten.Graphics.PipeDX11" />
+    public class DeviceDX11 : PipeDX11, IGraphicsDevice
     {
         Device _d3d;
         GraphicsAdapterDX<Adapter1, AdapterDescription1, Output1> _adapter;
-        List<SwapChainSurface> _swapChains;
 
-        GraphicsPipe[] _pipes;
+        PipeDX11[] _pipes;
         int[] _freePipes;
         int _freePipeCount;
         int _pipeCount;
@@ -38,22 +37,21 @@ namespace Molten.Graphics
         SamplerBank _samplerBank;
 
         ObjectPool<BufferSegment> _bufferSegmentPool;
-        ThreadedQueue<PipelineObject> _objectsToDispose;
+        ThreadedQueue<PipelineDisposableObject> _objectsToDispose;
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
-        internal GraphicsDeviceDX11(Logger log, GraphicsSettings settings, RenderProfiler profiler, DisplayManagerDX11 manager, bool enableDebugLayer)
+        internal DeviceDX11(Logger log, GraphicsSettings settings, DisplayManagerDX11 manager, bool enableDebugLayer)
         {
             _log = log;
             _displayManager = manager;
             _adapter = _displayManager.SelectedAdapter as GraphicsAdapterDX<Adapter1, AdapterDescription1, Output1>;
-            _pipes = new GraphicsPipe[0];
+            _pipes = new PipeDX11[0];
             _freePipes = new int[0];
-            _swapChains = new List<SwapChainSurface>();
             _vertexBuilder = new VertexFormatBuilder();
             _settings = settings;
             _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
-            _objectsToDispose = new ThreadedQueue<PipelineObject>();
+            _objectsToDispose = new ThreadedQueue<PipelineDisposableObject>();
 
             DeviceCreationFlags flags = DeviceCreationFlags.BgraSupport;
 
@@ -85,7 +83,7 @@ namespace Molten.Graphics
             _bufferSegmentPool.Recycle(segment);
         }
 
-        internal void MarkForDisposal(PipelineObject pObject)
+        public void MarkForDisposal(PipelineDisposableObject pObject)
         {
             if (IsDisposed)
                 pObject.PipelineDispose();
@@ -95,7 +93,7 @@ namespace Molten.Graphics
 
         internal void DisposeMarkedObjects()
         {
-            while (_objectsToDispose.TryDequeue(out PipelineObject obj))
+            while (_objectsToDispose.TryDequeue(out PipelineDisposableObject obj))
                 obj.PipelineDispose();
         }
 
@@ -113,9 +111,9 @@ namespace Molten.Graphics
             Interlocked.Add(ref _allocatedVRAM, -bytes);
         }
 
-        /// <summary>Gets a new deferred <see cref="GraphicsPipe"/>.</summary>
+        /// <summary>Gets a new deferred <see cref="PipeDX11"/>.</summary>
         /// <returns></returns>
-        internal GraphicsPipe GetDeferredPipe()
+        internal PipeDX11 GetDeferredPipe()
         {
             int id = 0;
             if (_freePipeCount > 0)
@@ -126,13 +124,13 @@ namespace Molten.Graphics
                 Array.Resize(ref _pipes, _pipes.Length + 1);
             }
 
-            GraphicsPipe pipe = new GraphicsPipe();
+            PipeDX11 pipe = new PipeDX11();
             pipe.Initialize(_log, this, new DeviceContext(_d3d), id);
             _pipes[id] = pipe;
             return pipe;
         }
 
-        internal void RemoveDeferredPipe(GraphicsPipe pipe)
+        internal void RemoveDeferredPipe(PipeDX11 pipe)
         {
             if(pipe == this)
                 throw new GraphicsContextException("Cannot remove the graphics device from itself.");
@@ -151,7 +149,7 @@ namespace Molten.Graphics
             _pipes[pipe.ID] = null;
         }
 
-        internal void SubmitContext(GraphicsPipe context)
+        internal void SubmitContext(PipeDX11 context)
         {
             if (context.Type != GraphicsContextType.Deferred)
                 throw new Exception("Cannot submit immediate graphics contexts, only deferred.");
@@ -160,7 +158,7 @@ namespace Molten.Graphics
             // TODO add the context's profiler stats to the device's main profiler.
         }
 
-        /// <summary>Disposes of the <see cref="GraphicsDeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
+        /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
             for (int i = 0; i < _pipes.Length; i++)
@@ -183,7 +181,7 @@ namespace Molten.Graphics
         /// <summary>Gets the underlying D3D device.</summary>
         internal Device D3d => _d3d;
 
-        internal GraphicsPipe[] ActivePipes => _pipes;
+        internal PipeDX11[] ActivePipes => _pipes;
 
         /// <summary>Gets an instance of <see cref="GraphicsDX11Features"/> which provides access to feature support details for the current graphics device.</summary>
         internal GraphicsDX11Features Features { get; private set; }
@@ -199,21 +197,21 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the device's blend state bank.
         /// </summary>
-        public BlendStateBank BlendBank => _blendBank;
+        internal BlendStateBank BlendBank => _blendBank;
 
         /// <summary>
         /// Gets the device's rasterizer state bank.
         /// </summary>
-        public RasterizerStateBank RasterizerBank => _rasterizerBank;
+        internal RasterizerStateBank RasterizerBank => _rasterizerBank;
 
         /// <summary>
         /// Gets the device's depth-stencil state bank.
         /// </summary>
-        public DepthStateBank DepthBank => _depthBank;
+        internal DepthStateBank DepthBank => _depthBank;
 
         /// <summary>
         /// Gets the device's texture sampler bank.
         /// </summary>
-        public SamplerBank SamplerBank => _samplerBank;
+        internal SamplerBank SamplerBank => _samplerBank;
     }
 }

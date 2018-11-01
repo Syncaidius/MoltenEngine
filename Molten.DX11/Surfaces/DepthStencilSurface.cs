@@ -154,7 +154,7 @@ namespace Molten.Graphics
             UpdateViewport();
         }
 
-        internal void Clear(GraphicsPipe pipe, DepthStencilClearFlags clearFlags = DepthStencilClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
+        internal void Clear(PipeDX11 pipe, DepthStencilClearFlags clearFlags = DepthStencilClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
         {
             if (_depthView == null)
                 CreateTexture(false);

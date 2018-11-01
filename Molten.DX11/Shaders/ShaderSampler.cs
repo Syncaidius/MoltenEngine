@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    public class ShaderSampler : PipelineObject, IShaderSampler
+    public class ShaderSampler : PipelineObject<DeviceDX11, PipeDX11>, IShaderSampler
     {
         SamplerState _state;
         SamplerStateDescription _description;
@@ -20,7 +20,7 @@ namespace Molten.Graphics
         Comparison _comparison;
         Filter _filter;
 
-        internal ShaderSampler(GraphicsDeviceDX11 device, ShaderSampler source) : base(device)
+        internal ShaderSampler(DeviceDX11 device, ShaderSampler source) : base(device)
         {
             _description = source._description;
             _isDirty = true;
@@ -30,7 +30,7 @@ namespace Molten.Graphics
             _wrapW = _description.AddressW;
         }
 
-        internal ShaderSampler(GraphicsDeviceDX11 device) : base(device)
+        internal ShaderSampler(DeviceDX11 device) : base(device)
         {
             _description = SamplerStateDescription.Default();
             _isDirty = true;
@@ -40,7 +40,7 @@ namespace Molten.Graphics
             _wrapW = _description.AddressW;
         }
 
-        internal override void Refresh(GraphicsPipe pipe, PipelineBindSlot slot)
+        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
         {
             base.Refresh(pipe, slot);
 

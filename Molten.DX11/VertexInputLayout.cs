@@ -16,8 +16,8 @@ namespace Molten.Graphics
         bool _isInstanced = false;
         ulong[] _hashKeys;
 
-        internal VertexInputLayout(GraphicsDeviceDX11 device, 
-            PipelineBindSlot<BufferSegment>[] slots, 
+        internal VertexInputLayout(DeviceDX11 device, 
+            PipelineBindSlot<BufferSegment, DeviceDX11, PipeDX11>[] slots, 
             byte[] vertexBytecode,
             ShaderIOStructure io)
         {
@@ -99,7 +99,7 @@ namespace Molten.Graphics
             }
         }
 
-        public bool IsMatch(Logger log, PipelineBindSlot<BufferSegment>[] slots, ShaderIOStructure io, int lastSlot)
+        public bool IsMatch(Logger log, PipelineBindSlot<BufferSegment, DeviceDX11, PipeDX11>[] slots, ShaderIOStructure io, int lastSlot)
         {
             bool isMatch = true;
 

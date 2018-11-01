@@ -237,7 +237,7 @@ namespace Molten.Graphics
             return null;
         }
 
-        /// <summary>Generates mip maps for the texture via the provided <see cref="GraphicsPipe"/>.</summary>
+        /// <summary>Generates mip maps for the texture via the provided <see cref="PipeDX11"/>.</summary>
         public void GenerateMipMaps()
         {
             if (!((_flags & TextureFlags.AllowMipMapGeneration) == TextureFlags.AllowMipMapGeneration))
@@ -247,7 +247,7 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        internal void GenerateMipMaps(GraphicsPipe pipe)
+        internal void GenerateMipMaps(PipeDX11 pipe)
         {
             if (SRV != null)
                 pipe.Context.GenerateMips(SRV);
@@ -379,7 +379,7 @@ namespace Molten.Graphics
             });
         }
 
-        internal TextureData GetAllData(GraphicsPipe pipe, TextureBase staging)
+        internal TextureData GetAllData(PipeDX11 pipe, TextureBase staging)
         {
             if (staging == null && !HasFlags(TextureFlags.Staging))
                 throw new TextureCopyException(this, null, "A null staging texture was provided, but this is only valid if the current texture is a staging texture. A staging texture is required to retrieve data from non-staged textures.");
@@ -442,7 +442,7 @@ namespace Molten.Graphics
         /// <param name="arraySlice">The array slice.</param>
         /// <param name="copySubresource">Copies the data via the provided staging texture. If this is true, the staging texture cannot be null.</param>
         /// <returns></returns>
-        internal unsafe TextureData.Slice GetSliceData(GraphicsPipe pipe, TextureBase staging, int level, int arraySlice)
+        internal unsafe TextureData.Slice GetSliceData(PipeDX11 pipe, TextureBase staging, int level, int arraySlice)
         {
             int subID = (arraySlice * MipMapCount) + level;
             int subWidth = _width >> level;
@@ -618,7 +618,7 @@ namespace Molten.Graphics
         /// <summary>Applies all pending changes to the texture. Take care when calling this method in multi-threaded code. Calling while the
         /// GPU may be using the texture will cause unexpected behaviour.</summary>
         /// <param name="pipe"></param>
-        internal void Apply(GraphicsPipe pipe)
+        internal void Apply(PipeDX11 pipe)
         {
             if (IsDisposed)
                 return;
@@ -635,7 +635,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal override void Refresh(GraphicsPipe pipe, PipelineBindSlot slot)
+        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
         {
             Apply(pipe);
         }

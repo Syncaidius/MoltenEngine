@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class PipelineInput : PipelineComponent
+    internal class PipelineInput : PipelineComponent<DeviceDX11, PipeDX11>
     {
         static VertexBufferBinding _nullVertexBuffer = new VertexBufferBinding(null, 0, 0);
 
         MaterialInputStage _materialStage;
 
-        PipelineBindSlot<BufferSegment>[] _slotVertexBuffers;
-        PipelineBindSlot<BufferSegment> _slotIndexBuffer;
+        PipelineBindSlot<BufferSegment, DeviceDX11, PipeDX11>[] _slotVertexBuffers;
+        PipelineBindSlot<BufferSegment, DeviceDX11, PipeDX11> _slotIndexBuffer;
 
         BufferSegment[] _vertexSegments;
         VertexBufferBinding[] _vertexBindings;
@@ -30,13 +30,13 @@ namespace Molten.Graphics
         PrimitiveTopology _prevTopology = PrimitiveTopology.Undefined;
         List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
 
-        public PipelineInput(GraphicsPipe pipe) : base(pipe)
+        public PipelineInput(PipeDX11 pipe) : base(pipe)
         {
             _materialStage = new MaterialInputStage(pipe);
             _inputAssembler = pipe.Context.InputAssembler;
 
             int vSlots = Device.Features.MaxVertexBufferSlots;
-            _slotVertexBuffers = new PipelineBindSlot<BufferSegment>[vSlots];
+            _slotVertexBuffers = new PipelineBindSlot<BufferSegment, DeviceDX11, PipeDX11>[vSlots];
             _vertexSegments = new BufferSegment[vSlots];
             _vertexBindings = new VertexBufferBinding[vSlots];
 
@@ -47,16 +47,16 @@ namespace Molten.Graphics
             }
 
             int iSlots = Device.Features.MaxIndexBufferSlots;
-            _slotIndexBuffer = new PipelineBindSlot<BufferSegment>(this, 0);
+            _slotIndexBuffer = new PipelineBindSlot<BufferSegment, DeviceDX11, PipeDX11>(this, 0);
             _slotIndexBuffer.OnObjectForcedUnbind += _slotIndexBuffer_OnBoundObjectDisposed;
         }
 
-        private void _slotIndexBuffer_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
+        private void _slotIndexBuffer_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
             Pipe.Context.InputAssembler.SetIndexBuffer(null, SharpDX.DXGI.Format.Unknown, 0);
         }
 
-        private void PipelineInput_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
+        private void PipelineInput_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
             Pipe.Context.InputAssembler.SetVertexBuffers(slot.SlotID, _nullVertexBuffer);
         }

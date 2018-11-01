@@ -51,7 +51,7 @@ namespace Molten.Graphics
 
         protected override void OnInitialize(GraphicsSettings settings)
         {
-            Device = new GraphicsDeviceDX11(Log, settings, Profiler, _displayManager, settings.EnableDebugLayer);
+            Device = new DeviceDX11(Log, settings, _displayManager, settings.EnableDebugLayer);
             _resourceManager = new ResourceManager(this);
             _compute = new ComputeManager(this.Device);
             ShaderCompiler = new HlslCompiler(this, Log);
@@ -187,7 +187,7 @@ namespace Molten.Graphics
             _depthSurface.Resize(requiredWidth, requiredHeight);
         }
 
-        internal void RenderSceneLayer(GraphicsPipe pipe, LayerRenderData layerData, RenderCamera camera)
+        internal void RenderSceneLayer(PipeDX11 pipe, LayerRenderData layerData, RenderCamera camera)
         {
             // To start with we're just going to draw ALL objects in the render tree.
             // Sorting and culling will come later
@@ -206,7 +206,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal bool ClearIfFirstUse(GraphicsPipe pipe, RenderSurface surface, Color color)
+        internal bool ClearIfFirstUse(PipeDX11 pipe, RenderSurface surface, Color color)
         {
             if (!_clearedSurfaces.Contains(surface))
             {
@@ -218,7 +218,7 @@ namespace Molten.Graphics
             return false;
         }
 
-        internal bool ClearIfFirstUse(GraphicsPipe pipe, DepthStencilSurface surface, DepthStencilClearFlags flags = DepthStencilClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
+        internal bool ClearIfFirstUse(PipeDX11 pipe, DepthStencilSurface surface, DepthStencilClearFlags flags = DepthStencilClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
         {
             if (!_clearedSurfaces.Contains(surface))
             {
@@ -260,7 +260,7 @@ namespace Molten.Graphics
         /// </summary>
         public override IDisplayManager DisplayManager => _displayManager;
 
-        internal GraphicsDeviceDX11 Device { get; private set; }
+        internal DeviceDX11 Device { get; private set; }
 
         public override IComputeManager Compute => _compute;
 

@@ -7,9 +7,9 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    internal class GraphicsRasterizerStage : PipelineComponent
+    internal class GraphicsRasterizerStage : PipelineComponent<DeviceDX11, PipeDX11>
     {
-        PipelineBindSlot<GraphicsRasterizerState> _slotState;
+        PipelineBindSlot<GraphicsRasterizerState, DeviceDX11, PipeDX11> _slotState;
         GraphicsRasterizerState _currentState = null;
 
         SharpDX.Rectangle[] _apiScissorRects;
@@ -21,7 +21,7 @@ namespace Molten.Graphics
         bool _viewportsDirty;
         ViewportF[] _nullViewport;
 
-        internal GraphicsRasterizerStage(GraphicsPipe pipe) : base(pipe)
+        internal GraphicsRasterizerStage(PipeDX11 pipe) : base(pipe)
         {
             _nullViewport = new ViewportF[1];
 
@@ -35,7 +35,7 @@ namespace Molten.Graphics
             _slotState.OnObjectForcedUnbind += _slotState_OnBoundObjectDisposed;
         }
 
-        private void _slotState_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
+        private void _slotState_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
             Pipe.Context.Rasterizer.State = null;
         }

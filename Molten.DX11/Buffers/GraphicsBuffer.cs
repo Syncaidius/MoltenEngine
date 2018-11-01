@@ -29,7 +29,7 @@ namespace Molten.Graphics
         BufferSegment _firstSegment;
         List<BufferSegment> _freeSegments;
 
-        internal GraphicsBuffer(GraphicsDeviceDX11 device,
+        internal GraphicsBuffer(DeviceDX11 device,
             BufferMode mode,
             BindFlags bindFlags,
             int byteCapacity,
@@ -163,9 +163,9 @@ namespace Molten.Graphics
         }
 
         /// <summary>Copies all the data in the current <see cref="GraphicsBuffer"/> to the destination <see cref="GraphicsBuffer"/>.</summary>
-        /// <param name="pipe">The <see cref="GraphicsPipe"/> that will perform the copy.</param>
+        /// <param name="pipe">The <see cref="PipeDX11"/> that will perform the copy.</param>
         /// <param name="destination">The <see cref="GraphicsBuffer"/> to copy to.</param>
-        internal void CopyTo(GraphicsPipe pipe, GraphicsBuffer destination)
+        internal void CopyTo(PipeDX11 pipe, GraphicsBuffer destination)
         {
             if (destination.Description.SizeInBytes < Description.SizeInBytes)
                 throw new Exception("The destination buffer is not large enough.");
@@ -178,7 +178,7 @@ namespace Molten.Graphics
             pipe.Context.CopyResource(_buffer, destination._buffer);
         }
 
-        internal void CopyTo(GraphicsPipe pipe, GraphicsBuffer destination, ResourceRegion sourceRegion, int destByteOffset = 0)
+        internal void CopyTo(PipeDX11 pipe, GraphicsBuffer destination, ResourceRegion sourceRegion, int destByteOffset = 0)
         {
             // If the current buffer is a staging buffer, initialize and apply all its pending changes.
             if (Description.Usage == ResourceUsage.Staging)
@@ -198,7 +198,7 @@ namespace Molten.Graphics
                 throw new Exception("The destination buffer must have a usage flag of Staging or Default. Only these two allow the GPU write access for copying/writing data to the destination.");
         }
 
-        internal void Map(GraphicsPipe pipe, int byteOffset, int dataSize, Action<GraphicsBuffer, DataStream> callback, GraphicsBuffer staging = null)
+        internal void Map(PipeDX11 pipe, int byteOffset, int dataSize, Action<GraphicsBuffer, DataStream> callback, GraphicsBuffer staging = null)
         {
             // Check buffer type.
             bool isDynamic = Description.Usage == ResourceUsage.Dynamic;
@@ -299,7 +299,7 @@ namespace Molten.Graphics
         }
 
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        internal void Set<T>(GraphicsPipe pipe, T[] data, int startIndex, int count, int dataStride = 0, int byteOffset = 0, StagingBuffer staging = null) 
+        internal void Set<T>(PipeDX11 pipe, T[] data, int startIndex, int count, int dataStride = 0, int byteOffset = 0, StagingBuffer staging = null) 
             where T : struct
         {
             if (dataStride == 0)
@@ -315,14 +315,14 @@ namespace Molten.Graphics
         }
 
         /// <summary>Retrieves data from a <see cref="GraphicsBuffer"/>.</summary>
-        /// <param name="pipe">The <see cref="GraphicsPipe"/> that will perform the 'get' operation.</param>
+        /// <param name="pipe">The <see cref="PipeDX11"/> that will perform the 'get' operation.</param>
         /// <param name="destination">The destination array. Must be big enough to contain the retrieved data.</param>
         /// <param name="startIndex">The start index within the destination array at which to place the retrieved data.</param>
         /// <param name="count">The number of elements to retrieve</param>
         /// <param name="dataStride">The size of the data being retrieved. The default value is 0. 
         /// A value of 0 will force the stride of <see cref="{T}"/> to be automatically calculated, which may cause a tiny performance hit.</param>
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        internal void Get<T>(GraphicsPipe pipe, T[] destination, int startIndex, int count, int dataStride, int byteOffset = 0)
+        internal void Get<T>(PipeDX11 pipe, T[] destination, int startIndex, int count, int dataStride, int byteOffset = 0)
             where T : struct
         {
             int readOffset = startIndex * dataStride;
@@ -347,7 +347,7 @@ namespace Molten.Graphics
         /// <summary>Applies any pending changes onto the buffer.</summary>
         /// <param name="pipe">The graphics pipe to use when process changes.</param>
         /// <param name="forceInitialize">If set to true, the buffer will be initialized if not done so already.</param>
-        protected void ApplyChanges(GraphicsPipe pipe)
+        protected void ApplyChanges(PipeDX11 pipe)
         {
             if (_pendingChanges.Count > 0)
             {
@@ -372,7 +372,7 @@ namespace Molten.Graphics
             return (Description.CpuAccessFlags & flag) == flag;
         }
 
-        internal override void Refresh(GraphicsPipe pipe, PipelineBindSlot slot)
+        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
         {
             ApplyChanges(pipe);
         }

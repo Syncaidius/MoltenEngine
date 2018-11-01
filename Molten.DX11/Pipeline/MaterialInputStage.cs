@@ -18,7 +18,7 @@ namespace Molten.Graphics
         int _passNumber = 0;
         bool _hasMaterialChanged;
 
-        internal MaterialInputStage(GraphicsPipe pipe) : base(pipe)
+        internal MaterialInputStage(PipeDX11 pipe) : base(pipe)
         {
             _vStage = CreateStep<VertexShader, VertexShaderStage>(pipe.Context.VertexShader, (stage, composition) => stage.Set(composition.RawShader));
             _gStage = CreateStep<GeometryShader, GeometryShaderStage>(pipe.Context.GeometryShader, (stage, composition) => stage.Set(composition.RawShader));

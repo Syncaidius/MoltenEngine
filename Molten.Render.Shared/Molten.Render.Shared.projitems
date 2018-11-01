@@ -10,8 +10,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)GraphicsDeviceFeatures.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pipeline\PipelineBindSlotBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IGraphicsDevice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IGraphicsPipe.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pipeline\PipelineBindSlot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pipeline\PipelineBindType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pipeline\PipelineObjectBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pipeline\PipelineComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pipeline\PipelineDisposableObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pipeline\PipelineObject.cs" />
   </ItemGroup>
 </Project>

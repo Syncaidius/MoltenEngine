@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public abstract class PipelineShaderObject : PipelineObject
+    public abstract class PipelineShaderObject : PipelineObject<DeviceDX11, PipeDX11>
     {
-        internal PipelineShaderObject(GraphicsDeviceDX11 device) : base(device) { }
+        internal PipelineShaderObject(DeviceDX11 device) : base(device) { }
 
         private protected override void OnPipelineDispose()
         {

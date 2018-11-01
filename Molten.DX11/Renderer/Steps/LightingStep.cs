@@ -68,7 +68,7 @@ namespace Molten.Graphics
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
-            GraphicsDeviceDX11 device = renderer.Device;
+            DeviceDX11 device = renderer.Device;
 
             _surfaceLighting.Clear(renderer.Device, context.Scene.AmbientLightColor);
             device.UnsetRenderSurfaces();
@@ -78,7 +78,7 @@ namespace Molten.Graphics
             RenderPointLights(device, camera, context.Scene);
         }
 
-        private void RenderPointLights(GraphicsPipe pipe, RenderCamera camera, SceneRenderData scene)
+        private void RenderPointLights(PipeDX11 pipe, RenderCamera camera, SceneRenderData scene)
         {
             // Calculate camera-specific information for each point light
             LightInstance instance;

@@ -144,15 +144,13 @@
     <Compile Include="Tests\GraphicsDeviceDX11Tests.cs" />
     <Compile Include="Tests\DisplayManagerDX11Tests.cs" />
     <Compile Include="Pipeline\GraphicsBlendStage.cs" />
-    <Compile Include="Pipeline\PipelineBindSlot.cs" />
-    <Compile Include="Pipeline\PipelineObject.cs" />
     <Compile Include="Pipeline\States\SamplerBank.cs" />
     <Compile Include="Pipeline\States\GraphicsBlendState.cs" />
     <Compile Include="GraphicsContextType.cs" />
     <Compile Include="Pipeline\GraphicsDepthStage.cs" />
     <Compile Include="Pipeline\States\GraphicsDepthState.cs" />
-    <Compile Include="GraphicsDeviceDX11.cs" />
-    <Compile Include="GraphicsPipe.cs" />
+    <Compile Include="DeviceDX11.cs" />
+    <Compile Include="PipeDX11.cs" />
     <Compile Include="GraphicsPipeState.cs" />
     <Compile Include="Pipeline\GraphicsRasterizerStage.cs" />
     <Compile Include="Pipeline\States\GraphicsRasterizerState.cs" />
@@ -167,7 +165,6 @@
     <Compile Include="Mesh\Mesh.cs" />
     <Compile Include="Pipeline\ComputeInputStage.cs" />
     <Compile Include="Pipeline\MaterialInputStage.cs" />
-    <Compile Include="Pipeline\PipelineComponent.cs" />
     <Compile Include="Pipeline\PipelineInput.cs" />
     <Compile Include="Pipeline\PipelineOutput.cs" />
     <Compile Include="Pipeline\PipelineShaderObject.cs" />

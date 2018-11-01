@@ -10,7 +10,7 @@ namespace Molten.Graphics
     {
         public TextureBase Destination;
 
-        public void Process(GraphicsPipe pipe, TextureBase texture)
+        public void Process(PipeDX11 pipe, TextureBase texture)
         {
             if (Destination.HasFlags(TextureFlags.Dynamic))
                 throw new TextureCopyException(texture, Destination, "Cannot copy to a dynamic texture via GPU. GPU cannot write to dynamic textures.");

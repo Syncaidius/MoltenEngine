@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    /// <summary>Stores a rasterizer state for use with a <see cref="GraphicsPipe"/>.</summary>
-    internal class GraphicsRasterizerState : PipelineObject
+    /// <summary>Stores a rasterizer state for use with a <see cref="PipeDX11"/>.</summary>
+    internal class GraphicsRasterizerState : PipelineObject<DeviceDX11, PipeDX11>
     {
         internal RasterizerState State;
         RasterizerStateDescription _desc;
@@ -18,13 +18,13 @@ namespace Molten.Graphics
         /// 
         /// </summary>
         /// <param name="source">An existing <see cref="GraphicsRasterizerState"/> instance from which to copy settings."/></param>
-        internal GraphicsRasterizerState(GraphicsDeviceDX11 device, GraphicsRasterizerState source) : base(device)
+        internal GraphicsRasterizerState(DeviceDX11 device, GraphicsRasterizerState source) : base(device)
         {
             _desc = source._desc;
             _dirty = true;
         }
 
-        internal GraphicsRasterizerState(GraphicsDeviceDX11 device) : base(device)
+        internal GraphicsRasterizerState(DeviceDX11 device) : base(device)
         {
             _desc = RasterizerStateDescription.Default();
             _dirty = true;
@@ -52,7 +52,7 @@ namespace Molten.Graphics
                 _desc.SlopeScaledDepthBias == other._desc.SlopeScaledDepthBias;
         }
 
-        internal override void Refresh(GraphicsPipe pipe, PipelineBindSlot slot)
+        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
         {
             if (State == null || _dirty)
             {

@@ -34,7 +34,7 @@ namespace Molten.Graphics
             _rtvDesc.Format = _format;
         }
 
-        internal virtual void Clear(GraphicsPipe pipe, Color color)
+        internal virtual void Clear(PipeDX11 pipe, Color color)
         {
             Apply(pipe);
 

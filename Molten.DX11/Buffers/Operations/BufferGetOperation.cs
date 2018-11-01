@@ -28,7 +28,7 @@ namespace Molten.Graphics
         /// <summary>The destination array to store the retrieved data.</summary>
         internal T[] DestinationArray;
 
-        public void Process(GraphicsPipe pipe)
+        public void Process(PipeDX11 pipe)
         {
             DestinationArray = DestinationArray ?? new T[Count];
             SourceSegment.Parent.Get<T>(pipe, DestinationArray, 0, ByteOffset, DataStride, Count);

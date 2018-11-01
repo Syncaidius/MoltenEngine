@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Molten.Collections;
 using Molten.Graphics.Textures;
 using OpenGL;
 
@@ -11,7 +12,7 @@ namespace Molten.Graphics
 {
     public delegate void TextureEvent(TextureBaseGL texture);
 
-    public abstract class TextureBaseGL : PipelineObjectGL, ITexture
+    public abstract class TextureBaseGL : PipelineObject<DeviceGL, DeviceGL>, ITexture
     {
         /// <summary>Triggered right before the internal texture resource is created.</summary>
         public event TextureEvent OnPreCreate;
@@ -28,6 +29,7 @@ namespace Molten.Graphics
 
         static int _nextSortKey = 0;
 
+        ThreadedQueue<ITextureChange> _pendingChanges;
         uint _textureID;
         int _width;
         int _height;
@@ -59,6 +61,7 @@ namespace Molten.Graphics
             _sampleCount = sampleCount;
             _renderer = renderer;
             _isBlockCompressed = BCHelper.GetBlockCompressed(_format);
+            _pendingChanges = new ThreadedQueue<ITextureChange>();
         }
 
         protected void CreateTexture(bool resize)
@@ -84,7 +87,7 @@ namespace Molten.Graphics
             OnDispose();
         }
 
-        protected override void OnDispose()
+        private protected override void OnPipelineDispose()
         {
             if (_textureID > 0)
             {
@@ -166,6 +169,28 @@ namespace Molten.Graphics
         public bool HasFlags(TextureFlags flags)
         {
             return (_flags & flags) == flags;
+        }
+
+        internal override void Refresh(DeviceGL device, PipelineBindSlot<DeviceGL, DeviceGL> slot)
+        {
+            Apply(device);
+        }
+
+        internal virtual void Apply(DeviceGL device)
+        {
+            if (IsDisposed)
+                return;
+
+            if (_textureID == 0)
+                CreateTexture(false);
+
+            // process all changes for the current pipe.
+            while (_pendingChanges.Count > 0)
+            {
+                ITextureChange change = null;
+                if (_pendingChanges.TryDequeue(out change))
+                    change.Process(this);
+            }
         }
 
         public MoltenRenderer Renderer => _renderer;

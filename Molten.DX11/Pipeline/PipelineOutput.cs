@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class PipelineOutput : PipelineComponent
+    internal class PipelineOutput : PipelineComponent<DeviceDX11, PipeDX11>
     {
         enum SlotType
         {
@@ -15,9 +15,9 @@ namespace Molten.Graphics
             DepthBuffer = 1,
         }
 
-        GraphicsPipe _pipe;
-        PipelineBindSlot<RenderSurface>[] _slotSurfaces;
-        PipelineBindSlot<DepthStencilSurface> _slotDepth;
+        PipeDX11 _pipe;
+        PipelineBindSlot<RenderSurface, DeviceDX11, PipeDX11>[] _slotSurfaces;
+        PipelineBindSlot<DepthStencilSurface, DeviceDX11, PipeDX11> _slotDepth;
 
         RenderSurface[] _surfaces;
         DepthStencilSurface _depthSurface = null;
@@ -27,12 +27,12 @@ namespace Molten.Graphics
         GraphicsDepthWritePermission _boundMode = GraphicsDepthWritePermission.Enabled;
         GraphicsDepthWritePermission _depthMode = GraphicsDepthWritePermission.Enabled;
 
-        public PipelineOutput(GraphicsPipe pipe) : base(pipe.Device)
+        public PipelineOutput(PipeDX11 pipe) : base(pipe.Device)
         {
             _pipe = pipe;
 
             int maxRTs = Device.Features.SimultaneousRenderSurfaces;
-            _slotSurfaces = new PipelineBindSlot<RenderSurface>[maxRTs];
+            _slotSurfaces = new PipelineBindSlot<RenderSurface, DeviceDX11, PipeDX11>[maxRTs];
             _surfaces = new RenderSurface[maxRTs];
             _rtViews = new RenderTargetView[maxRTs];
 
@@ -46,14 +46,14 @@ namespace Molten.Graphics
             _slotDepth.OnObjectForcedUnbind += _slotDepth_OnBoundObjectDisposed;
         }
 
-        private void SurfaceSlot_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
+        private void SurfaceSlot_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
             _rtViews[slot.SlotID] = null;
             _pipe.Context.OutputMerger.SetTargets(_depthView, _rtViews);
             Pipe.Profiler.Current.SurfaceSwaps++;
         }
 
-        private void _slotDepth_OnBoundObjectDisposed(PipelineBindSlotBase slot, PipelineObjectBase obj)
+        private void _slotDepth_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
             _depthView = null;
             _pipe.Context.OutputMerger.SetTargets(_depthView, _rtViews);

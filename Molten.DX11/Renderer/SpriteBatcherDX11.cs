@@ -25,7 +25,7 @@ namespace Molten.Graphics
         Range[] _ranges;
         int _curRange;
         int _spriteCapacity;
-        Action<GraphicsPipe, RenderCamera, Range, ObjectRenderData>[] _flushFuncs;
+        Action<PipeDX11, RenderCamera, Range, ObjectRenderData>[] _flushFuncs;
         SpriteVertex[] _vertices;
 
         Material _defaultMaterial;
@@ -53,7 +53,7 @@ namespace Molten.Graphics
             _defaultCircleMaterial = result["material", "circle"] as Material;
             _defaultTriMaterial = result["material", "triangle"] as Material;
 
-            _flushFuncs = new Action<GraphicsPipe, RenderCamera, Range, ObjectRenderData>[4]
+            _flushFuncs = new Action<PipeDX11, RenderCamera, Range, ObjectRenderData>[4]
             {
                 FlushSpriteRange,
                 FlushLineRange,
@@ -62,7 +62,7 @@ namespace Molten.Graphics
             };
         }
 
-        internal unsafe void Flush(GraphicsPipe pipe, RenderCamera camera, ObjectRenderData data)
+        internal unsafe void Flush(PipeDX11 pipe, RenderCamera camera, ObjectRenderData data)
         {
             if (NextID == 0)
                 return;
@@ -133,7 +133,7 @@ namespace Molten.Graphics
             NextID = 0;
         }
 
-        private void FlushBuffer(GraphicsPipe pipe, RenderCamera camera, ObjectRenderData data)
+        private void FlushBuffer(PipeDX11 pipe, RenderCamera camera, ObjectRenderData data)
         {
             Range range;
             int writeIndex = 0;
@@ -158,7 +158,7 @@ namespace Molten.Graphics
             }
         }
 
-        private void FlushSpriteRange(GraphicsPipe pipe, RenderCamera camera, Range range, ObjectRenderData data)
+        private void FlushSpriteRange(PipeDX11 pipe, RenderCamera camera, Range range, ObjectRenderData data)
         {
             Material mat = range.Material as Material;
 
@@ -178,19 +178,19 @@ namespace Molten.Graphics
             pipe.Draw(mat, range.VertexCount, PrimitiveTopology.PointList, range.Start);
         }
 
-        private void FlushLineRange(GraphicsPipe pipe, RenderCamera camera, Range range, ObjectRenderData data)
+        private void FlushLineRange(PipeDX11 pipe, RenderCamera camera, Range range, ObjectRenderData data)
         {
             _defaultLineMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
             pipe.Draw(_defaultLineMaterial, range.VertexCount, PrimitiveTopology.PointList, range.Start);
         }
 
-        private void FlushTriangleRange(GraphicsPipe pipe, RenderCamera camera, Range range, ObjectRenderData data)
+        private void FlushTriangleRange(PipeDX11 pipe, RenderCamera camera, Range range, ObjectRenderData data)
         {
             _defaultTriMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
             pipe.Draw(_defaultTriMaterial, range.VertexCount, PrimitiveTopology.PointList, range.Start);
         }
 
-        private void FlushCircleRange(GraphicsPipe pipe, RenderCamera camera, Range range, ObjectRenderData data)
+        private void FlushCircleRange(PipeDX11 pipe, RenderCamera camera, Range range, ObjectRenderData data)
         {
             _defaultCircleMaterial.Object.Wvp.Value = data.RenderTransform * camera.ViewProjection;
             pipe.Draw(_defaultCircleMaterial, range.VertexCount, PrimitiveTopology.PointList, range.Start);

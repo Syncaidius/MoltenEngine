@@ -47,12 +47,12 @@ namespace Molten.Graphics
             _vb.SetData(_renderer.Device, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
-        internal virtual void ApplyBuffers(GraphicsPipe pipe)
+        internal virtual void ApplyBuffers(PipeDX11 pipe)
         {
             pipe.SetVertexSegment(_vb, 0);
         }
 
-        private protected override void OnRender(GraphicsPipe pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        private protected override void OnRender(PipeDX11 pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
             if (_material == null)
                 return;

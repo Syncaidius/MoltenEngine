@@ -20,7 +20,7 @@ namespace Molten.Graphics
 
         protected override void OnInitialize(GraphicsSettings settings)
         {
-            Device = new GraphicsDeviceGL(Log, settings, Profiler, _displayManager, settings.EnableDebugLayer);
+            Device = new DeviceGL(Log, settings, _displayManager, settings.EnableDebugLayer);
             _resourceManager = new ResourceManagerGL(this);
         }
 
@@ -85,6 +85,6 @@ namespace Molten.Graphics
 
         public override IResourceManager Resources => _resourceManager;
 
-        internal GraphicsDeviceGL Device { get; private set; }
+        internal DeviceGL Device { get; private set; }
     }
 }

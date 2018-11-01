@@ -16,7 +16,7 @@ namespace Molten.Graphics
         
         internal IShaderResource[] DefaultResources;
 
-        GraphicsDeviceDX11 _device;
+        DeviceDX11 _device;
         string _filename;
         internal ShaderIOStructure InputStructure;
         Dictionary<string, string> _metadata;
@@ -31,7 +31,7 @@ namespace Molten.Graphics
 
         static int _nextSortKey;
 
-        internal HlslShader(GraphicsDeviceDX11 device, string filename = null) : base(device)
+        internal HlslShader(DeviceDX11 device, string filename = null) : base(device)
         {
             SortKey = Interlocked.Increment(ref _nextSortKey);
             _filename = filename ?? "";

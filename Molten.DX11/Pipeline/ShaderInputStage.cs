@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal abstract class ShaderInputStage<H> : PipelineComponent 
+    internal abstract class ShaderInputStage<H> : PipelineComponent<DeviceDX11, PipeDX11>
         where H: HlslShader
     {
         protected BindableValue<H> _shader;
 
-        internal ShaderInputStage(GraphicsPipe pipe) : base(pipe)
+        internal ShaderInputStage(PipeDX11 pipe) : base(pipe)
         {
             _shader = new BindableValue<H>();
         }

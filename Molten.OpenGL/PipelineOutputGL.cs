@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal interface ITextureChange
+    internal class PipelineOutputGL : PipelineComponent<DeviceGL, DeviceGL>
     {
-        void Process(PipeDX11 pipe, TextureBase texture);
+        public PipelineOutputGL(DeviceGL pipe) : base(pipe)
+        {
+
+        }
     }
 }
