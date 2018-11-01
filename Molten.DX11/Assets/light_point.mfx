@@ -5,9 +5,9 @@
     <name>main</name>
     <iterations>1</iterations>
     <vertex>VS</vertex>
-	<hull>HS</hull>
-	<domain>DS</domain>
-  <pixel>PS</pixel>
+	  <hull>HS</hull>
+	  <domain>DS</domain>
+    <fragment>PS</fragment>
     <blend preset="additive" />
     <rasterizer preset="default">
       <fill>solid</fill>
@@ -53,9 +53,9 @@
     <name>main</name>
     <iterations>1</iterations>
     <vertex>VS</vertex>
-	<hull>HS</hull>
-	<domain>DS</domain>
-  <pixel>PS_Debug</pixel>
+	  <hull>HS</hull>
+	  <domain>DS</domain>
+    <fragment>PS_Debug</fragment>
     <blend preset="additive" />
     <depth preset="defaultNoStencil" condition="debug" />
     <rasterizer preset="default" condition="debug">

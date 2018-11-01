@@ -10,7 +10,7 @@ namespace Molten.Graphics
     /// <summary>An entry-point tag parser used by <see cref="ComputeTask"/> headers.</summary>
     internal class ShaderPSParser : ShaderNodeParser
     {
-        internal override string[] SupportedNodes => new string[] { "pixel" };
+        internal override string[] SupportedNodes => new string[] { "fragment" };
 
         internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
         {

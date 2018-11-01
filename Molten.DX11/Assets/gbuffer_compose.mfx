@@ -6,7 +6,7 @@
 		<iterations>1</iterations>
 		<vertex>VS</vertex>
 		<geometry>GS</geometry>
-		<pixel>PS_Compose</pixel>
+    <fragment>PS_Compose</fragment>
     <blend preset="PreMultipliedAlpha" />
     <rasterizer preset="ScissorTest" />
     <rasterizer preset="DefaultMultisample" condition="Multisampling" />
