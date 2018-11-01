@@ -79,7 +79,7 @@ namespace Molten.Graphics
         private protected abstract void OnPipelineDispose();
 
         /// <summary>
-        /// Gets the <see cref="DeviceDX11"/> that the object is bound to.
+        /// Gets the device that the object is bound to.
         /// </summary>
         internal D Device { get; private set; }
     }

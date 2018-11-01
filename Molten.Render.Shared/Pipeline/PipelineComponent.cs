@@ -43,13 +43,13 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-        /// <summary>Gets the <see cref="DeviceDX11"/> that the current <see cref="PipelineComponent"/> is bound to.</summary>
+        /// <summary>Gets the device that the current <see cref="PipelineComponent{D, P}"/> is bound to.</summary>
         public D Device { get; private set; }
 
-        /// <summary>Gets the <see cref="PipeDX11"/> that the current <see cref="PipelineComponent"/> is bound to.</summary>
+        /// <summary>Gets the graphics pipe that the current <see cref="PipelineComponent{D, P}"/> is bound to.</summary>
         internal P Pipe { get; private set; }
 
-        /// <summary>Gets whether or not the current <see cref="PipelineComponent"/> is in a valid state.</summary>
+        /// <summary>Gets whether or not the current <see cref="PipelineComponent{D, P}"/> is in a valid state.</summary>
         internal virtual bool IsValid { get { return true; } }
     }
 }
