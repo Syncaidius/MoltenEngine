@@ -19,9 +19,11 @@ namespace Molten
             string result = "";
 
             using (Stream stream = assembly.GetManifestResourceStream(name))
-            using (StreamReader reader = new StreamReader(stream))
             {
-                result = reader.ReadToEnd();
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    result = reader.ReadToEnd();
+                }
             }
 
             return result;
