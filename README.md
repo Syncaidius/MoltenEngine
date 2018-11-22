@@ -1,5 +1,5 @@
 # Molten Engine
-[![Build Status](https://dev.azure.com/jyarwood/MoltenEngine/_apis/build/status/Syncaidius.MoltenEngine)](https://dev.azure.com/jyarwood/MoltenEngine/_build/latest?definitionId=1)  
+[![Build Status](https://dev.azure.com/jyarwood/MoltenEngine/_apis/build/status/MoltenEngine-.NET%20Desktop-CI)](https://dev.azure.com/jyarwood/MoltenEngine/_build/latest?definitionId=2)  
 [Documentation (WIP)](https://syncaidius.github.io/MoltenEngine/docs/Molten.html)
 
 Molten is a engine project I'm working on in my spare time as a means to eventually produce my own games without using a third party engine or framework such as [Unity3D](https://unity3d.com/) or [MonoGame](http://monogame.net).
@@ -9,12 +9,12 @@ In the past I've used MonoGame, XNA and Unity3D to produce a game but never felt
 While parts of this project will inevitably be a classic case of re-inventing the wheel, I'm teating it as a chance to gain more experience in the area of game engine development. 
 
 # Why Open-Source?
-I've previously attempted a game engine back in 2015 using SharpDX and while it inevitably ended in failure, I learned a great deal in terms of game engine architecture and the way a GPU works under the hood, as well as things like multi-threading, tasking and other high-performance system design elements.
+I've previously attempted a game engine back in 2015 using SharpDX and while it inevitably ended in failure, I learned a great deal in terms of game engine architecture and the way a GPU works under the hood, as well as other high-performance elements, such as multi-threading.
 
 This is my second attempt at such an engine, so being able to share the code for others to learn from and perhaps even contribute to, seems like the right thing to do. Hopefully you'll find something useful around here!
 
 # Current State
-The engine is rough around the edges at this point in time. There is no audio system, AI, cross-platform, collision/physics, deferred rendering or post-processing. Simply put, it's a giant ball of molten rock which is probably no use for producing a game yet, but it may be a good starting point for something.
+Right now, the engine is rough around the edges. There is no audio system, AI, cross-platform, collision/physics, deferred rendering or post-processing. Simply put, it's a giant ball of molten rock which is probably no use for producing a game yet, but it may be a good starting point for something.
 
 Here's a list of completed or work-in-progress (WIP) features:
   * A basic renderer with:
@@ -24,9 +24,9 @@ Here's a list of completed or work-in-progress (WIP) features:
 	* Compressed texture support
 	* [WIP] Sprite font system
   * Content manager
-  * [WIP] Modular abstraction layer - remove/replace parts of the engine without touching the core
+  * Modular abstraction layer - remove/replace parts of the engine without touching the core
   * Complete set of math types. The majority are imported from [SharpDX](https://github.com/sharpdx/SharpDX) with many additions and changes.
-  * [WIP] Mouse, keyboard and game-pad input
+  * Mouse, keyboard and game-pad input
   * Example projects
   
   
