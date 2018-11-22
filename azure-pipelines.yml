@@ -35,7 +35,16 @@ steps:
     contents: '**/$(buildConfiguration)/**/?(*.exe|*.dll|*.xml)'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
     cleanTargetFolder: true
+    overwrite: true
     flattenFolders: true
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)'
+    contents: '**/$(buildConfiguration)/Assets/**/?(*.*)'
+    targetFolder: '$(Build.ArtifactStagingDirectory)/Assets'
+    cleanTargetFolder: true
+    overwrite: true
 
 - task: PublishBuildArtifacts@1
   inputs:
