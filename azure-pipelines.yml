@@ -42,9 +42,10 @@ steps:
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)'
     contents: '**/$(buildConfiguration)/Assets/**/?(*.*)'
-    targetFolder: '$(Build.ArtifactStagingDirectory)/Assets'
+    targetFolder: '$(Build.ArtifactStagingDirectory)/Assets/**/'
     cleanTargetFolder: true
     overwrite: true
+    flattenFolders: true
 
 - task: PublishBuildArtifacts@1
   inputs:
