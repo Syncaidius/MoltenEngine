@@ -8,7 +8,7 @@ pool:
 
 variables:
   solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
+  buildPlatform: 'x64'
   buildConfiguration: 'Release'
 
 steps:
@@ -29,7 +29,12 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)'
+    contents: '**/$(buildConfiguration)/**/?(*.exe|*.dll|*.pdb)'
+
 - task: PublishBuildArtifacts@1
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-    artifactName: 'drop' 
+    artifactName: 'build' 
