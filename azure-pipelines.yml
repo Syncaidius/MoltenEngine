@@ -32,8 +32,10 @@ steps:
 - task: CopyFiles@2
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)'
-    contents: '**/$(buildConfiguration)/**/?(*.exe|*.dll|*.pdb)'
+    contents: '**/$(buildConfiguration)/**/?(*.exe|*.dll|*.xml)'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
+    cleanTargetFolder: true
+    flattenFolders: true
 
 - task: PublishBuildArtifacts@1
   inputs:
