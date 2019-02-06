@@ -136,7 +136,7 @@ namespace Molten.Graphics
 
                 if (Compile(pass.Compositions[i].EntryPoint, MaterialPass.ShaderTypes[i], context, out result.Results[i]))
                 {
-                    result.Reflections[i] = BuildIo(result.Results[i], pass.Compositions[i]);
+                    result.Reflections[i] = BuildIO(result.Results[i], pass.Compositions[i]);
                 }
                 else
                 {

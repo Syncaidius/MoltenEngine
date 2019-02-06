@@ -14,7 +14,7 @@ namespace Molten.Graphics
         public ScalarFloat3x3Variable(ShaderConstantBuffer parent)
             : base(parent)
         {
-            SizeOf = sizeof(float) * (4 * 4);
+            SizeOf = sizeof(float) * (3 * 3);
         }
 
         internal override void Write(SharpDX.DataStream stream)

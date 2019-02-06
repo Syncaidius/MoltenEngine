@@ -71,7 +71,7 @@ namespace Molten.Graphics
             return false;
         }
 
-        protected ShaderReflection BuildIo(CompilationResult code, ShaderComposition composition)
+        protected ShaderReflection BuildIO(CompilationResult code, ShaderComposition composition)
         {
             ShaderReflection shaderRef = new ShaderReflection(code);
             ShaderDescription desc = shaderRef.Description;
@@ -219,7 +219,7 @@ namespace Molten.Graphics
             }
             else
             {
-                //register all of the new buffer's variables
+                // Register all of the new buffer's variables
                 foreach (ShaderConstantVariable v in cBuffer.Variables)
                 {
                     // Check for duplicate variables

@@ -19,7 +19,7 @@ namespace Molten.Graphics
         public ScalarFloat3x3ArrayVariable(ShaderConstantBuffer parent, int expectedElements)
             : base(parent)
         {
-            _byteSize = Matrix4F.SizeInBytes;
+            _byteSize = Matrix3F.SizeInBytes;
             _expectedElements = expectedElements;
             SizeOf = _expectedElements * _byteSize;
 

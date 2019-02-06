@@ -33,10 +33,10 @@ Here's a list of completed or work-in-progress (WIP) features:
 # Long-term Goals
 In no particular order:
   * Develop core engine (renderer, audio, input, I/O, etc) to a usable state.
-  * Add linux support later in time via Mono. This also means supporting OpenGL via [OpenTK](https://opentk.github.io/)
-  * DX12/Vulkan support - DX12 will likely be first due to already being available through SharpDX
-  * Mobile support via Xamarin or whatever the best cross-platform framework is at that time this is put in to action.
-  * An example game or two to demonstrate how things work
+  * Add mac and linux support via Mono. This also means supporting OpenGL via [OpenGL.Net](https://github.com/luca-piccioni/OpenGL.Net)
+  * DX12/Vulkan support - DX12 will likely be first due to existing availability via SharpDX
+  * Mobile support via Xamarin or similar.
+  * Example game(s) to demonstrate how things work, complete with source code
 
 # Third-Party Libraries
 A special thanks to each of these great libraries, without which Molten wouldn't exist in it's current form:
