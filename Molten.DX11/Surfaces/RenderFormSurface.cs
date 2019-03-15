@@ -21,6 +21,7 @@ namespace Molten.Graphics
         DisplayMode _displayMode;
         string _title;
         bool _disposing;
+        bool _focused;
 
         System.Drawing.Size? _preBorderlessSize;
         System.Drawing.Point? _preBorderlessLocation;
@@ -36,6 +37,10 @@ namespace Molten.Graphics
         public event WindowSurfaceHandler OnRestore;
 
         public event WindowSurfaceHandler OnHandleChanged;
+
+        public event WindowSurfaceHandler OnFocusGained;
+
+        public event WindowSurfaceHandler OnFocusLost;
 
         internal RenderFormSurface(string formTitle, RendererDX11 renderer, int mipCount = 1, int sampleCount = 1)
             : base(renderer, mipCount, sampleCount)
@@ -90,6 +95,8 @@ namespace Molten.Graphics
             _form.UserResized += _form_Resized;
             _form.Move += _form_Moved;
             _form.FormClosing += _form_FormClosing;
+            _form.GotFocus += _form_GotFocus;
+            _form.LostFocus += _form_LostFocus;
 
             _form.KeyDown += (sender, args) =>
             {
@@ -99,6 +106,18 @@ namespace Molten.Graphics
 
             // Ignore all windows events
             Device.DisplayManager.DxgiFactory.MakeWindowAssociation(_form.Handle, WindowAssociationFlags.IgnoreAltEnter);
+        }
+
+        private void _form_LostFocus(object sender, EventArgs e)
+        {
+            _focused = false;
+            OnFocusLost?.Invoke(this);
+        }
+
+        private void _form_GotFocus(object sender, EventArgs e)
+        {
+            _focused = true;
+            OnFocusGained?.Invoke(this);
         }
 
         private void _form_FormClosing(object sender, FormClosingEventArgs e)
@@ -270,6 +289,8 @@ namespace Molten.Graphics
             get => _form.Text;
             set => _form.Text = value;
         }
+
+        public bool IsFocused => _focused;
 
         public IntPtr Handle => _formHandle;
 

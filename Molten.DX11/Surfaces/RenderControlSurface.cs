@@ -30,6 +30,10 @@ namespace Molten.Graphics
 
         public event WindowSurfaceHandler OnHandleChanged;
 
+        public event WindowSurfaceHandler OnFocusGained;
+
+        public event WindowSurfaceHandler OnFocusLost;
+
         internal RenderControlSurface(string formTitle, RendererDX11 renderer, int mipCount = 1, int sampleCount = 1)
             : base(renderer, mipCount, sampleCount)
         {
@@ -73,6 +77,8 @@ namespace Molten.Graphics
             _control.ParentChanged += _control_ParentChanged;
             _control.HandleDestroyed += _control_HandleDestroyed;
             _control.VisibleChanged += _control_VisibleChanged;
+            _control.GotFocus += _control_GotFocus;
+            _control.LostFocus += _control_LostFocus;
 
             _control.KeyDown += (sender, args) =>
             {
@@ -82,6 +88,16 @@ namespace Molten.Graphics
 
             // Ignore all windows events
             Device.DisplayManager.DxgiFactory.MakeWindowAssociation(_control.Handle, WindowAssociationFlags.IgnoreAltEnter);
+        }
+
+        private void _control_LostFocus(object sender, EventArgs e)
+        {
+            OnFocusGained?.Invoke(this);
+        }
+
+        private void _control_GotFocus(object sender, EventArgs e)
+        {
+            OnFocusLost?.Invoke(this);
         }
 
         private void _control_ParentChanged(object sender, EventArgs e)
@@ -244,6 +260,8 @@ namespace Molten.Graphics
         /// Gets or sets the window mode of the control.
         /// </summary>
         public WindowMode Mode { get; set; }
+
+        public bool IsFocused => throw new NotImplementedException();
 
         #region Cast operators
         public static explicit operator UserControl(RenderControlSurface surface)

@@ -18,17 +18,28 @@ namespace Molten.Graphics
         /// </summary>
         event WindowSurfaceHandler OnHandleChanged;
 
-        /// <summary>Invoked when the user tries to close the form. Invoked by the renderer it is bound to.</summary>
+        /// <summary>Invoked when the current <see cref="IWindowSurface"/> has began it's closing process. Invoked by the renderer it is bound to.</summary>
         event WindowSurfaceHandler OnClose;
 
-        /// <summary>Invoked when the user minimizes the form. Invoked by the renderer it is bound to.</summary>
+        /// <summary>Invoked when the current <see cref="IWindowSurface"/> is minimized. Invoked by the renderer it is bound to.</summary>
         event WindowSurfaceHandler OnMinimize;
 
-        /// <summary>Invoked when the users restores the form. Invoked by the renderer it is bound to.</summary>
+        /// <summary>Invoked when the current <see cref="IWindowSurface"/> is restored. Invoked by the renderer it is bound to.</summary>
         event WindowSurfaceHandler OnRestore;
+
+        /// <summary>Invoked when the current <see cref="IWindowSurface"/> gains focus.</summary>
+        event WindowSurfaceHandler OnFocusGained;
+
+        /// <summary>Invoked when the current <see cref="IWindowSurface"/> loses focus.</summary>
+        event WindowSurfaceHandler OnFocusLost;
 
         /// <summary>Gets or sets the title of the underlying form.</summary>
         string Title { get; set; }
+
+        /// <summary>
+        /// Gets whether or not the current <see cref="IWindowSurface"/> is focused.
+        /// </summary>
+        bool IsFocused { get; }
 
         /// <summary>Gets or sets the mode of the underlying form.</summary>
         WindowMode Mode { get; set; }
