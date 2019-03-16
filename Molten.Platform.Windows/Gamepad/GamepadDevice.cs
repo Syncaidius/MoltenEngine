@@ -62,12 +62,12 @@ namespace Molten.Input
             _statePrev = new Gamepad();
         }
 
-        internal override void Bind(IWindowSurface surface)
+        internal override void Bind(INativeSurface surface)
         {
             // TODO simply store the window we're bound to and only accept input if it is focused.
         }
 
-        internal override void Unbind(IWindowSurface surface)
+        internal override void Unbind(INativeSurface surface)
         {
             // TODO simply store the window we're bound to and only accept input if it is focused.
         }

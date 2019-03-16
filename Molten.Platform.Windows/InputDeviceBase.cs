@@ -20,11 +20,11 @@ namespace Molten.Input
 
         /// <summary>Occurs when the device is to bind to the provided surface.</summary>
         /// <param name="surface">The surface that the device should bind to.</param>
-        internal abstract void Bind(IWindowSurface surface);
+        internal abstract void Bind(INativeSurface surface);
 
         /// <summary>Occurs when the device is to unbind from the provided surface.</summary>
         /// <param name="surface">The surface from which the device should unbind.</param>
-        internal abstract void Unbind(IWindowSurface surface);
+        internal abstract void Unbind(INativeSurface surface);
 
         internal abstract void Update(Timing time);
 
@@ -65,7 +65,7 @@ namespace Molten.Input
         /// Gets the handle of the parent window.
         /// </summary>
         /// <returns></returns>
-        private protected IntPtr? GetWindowHandle(IWindowSurface surface)
+        private protected IntPtr? GetWindowHandle(INativeSurface surface)
         {
             // Check if the surface handle is a form. 
             // If not, find it's parent form.

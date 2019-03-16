@@ -249,7 +249,7 @@ namespace Molten.Samples
             _mesh.Material = mat;
         }
 
-        private void Window_OnClose(IWindowSurface surface)
+        private void Window_OnClose(INativeSurface surface)
         {
             Exit();
         }

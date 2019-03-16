@@ -66,7 +66,7 @@ namespace Molten.Samples
             MainScene.AddObject(obj);
         }
 
-        private void Window_OnClose(IWindowSurface surface)
+        private void Window_OnClose(INativeSurface surface)
         {
             Exit();
         }

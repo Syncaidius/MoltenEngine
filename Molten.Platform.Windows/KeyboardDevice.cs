@@ -46,7 +46,7 @@ namespace Molten.Input
         delegate IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
         WndProc _hookProcDelegate;
-        IntPtr _prevWndProc;
+        IntPtr _wndProc;
         IntPtr _hIMC;
 
         //handler variables
@@ -57,7 +57,7 @@ namespace Molten.Input
         KeyboardUpdate[] _buffer;
 
         List<Key> _pressedKeys;
-        IWindowSurface _surface;
+        INativeSurface _surface;
         IntPtr _windowHandle;
         bool _bufferUpdated;
 
@@ -79,7 +79,7 @@ namespace Molten.Input
             _keyboard.Acquire();            
         }
 
-        internal override void Bind(IWindowSurface surface)
+        internal override void Bind(INativeSurface surface)
         {
             _surface = surface;
             SurfaceHandleChanged(surface);
@@ -87,14 +87,14 @@ namespace Molten.Input
             CreateHook();
         }
 
-        internal override void Unbind(IWindowSurface surface)
+        internal override void Unbind(INativeSurface surface)
         {
             _surface.OnHandleChanged -= SurfaceHandleChanged;
             SetWindowLongDelegate(null);
             _surface = null;
         }
 
-        private void SurfaceHandleChanged(IWindowSurface surface)
+        private void SurfaceHandleChanged(INativeSurface surface)
         {
             IntPtr? handle = GetWindowHandle(surface);
 
@@ -110,7 +110,7 @@ namespace Molten.Input
             if (_hookProcDelegate != null || _windowHandle == IntPtr.Zero)
                 return;
 
-            _prevWndProc = IntPtr.Zero;
+            _wndProc = IntPtr.Zero;
             _hookProcDelegate = new WndProc(HookProc);
 
             SetWindowLongDelegate(_hookProcDelegate);
@@ -130,14 +130,14 @@ namespace Molten.Input
             {
                 IntPtr ptrVal = Marshal.GetFunctionPointerForDelegate(hook);
 
-                if (_prevWndProc == IntPtr.Zero)
-                    _prevWndProc = (IntPtr)SetWindowLongPtr(_windowHandle, GWL_WNDPROC, ptrVal);
+                if (_wndProc == IntPtr.Zero)
+                    _wndProc = (IntPtr)SetWindowLongPtr(_windowHandle, GWL_WNDPROC, ptrVal);
             }
         }
 
         private IntPtr HookProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
         {
-            IntPtr returnCode = CallWindowProc(_prevWndProc, hWnd, msg, wParam, lParam);
+            IntPtr returnCode = CallWindowProc(_wndProc, hWnd, msg, wParam, lParam);
 
             switch (msg)
             {

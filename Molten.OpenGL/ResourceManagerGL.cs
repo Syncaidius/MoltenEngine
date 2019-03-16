@@ -21,7 +21,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public IWindowSurface CreateControlSurface(string formTitle, int mipCount = 1, int sampleCount = 1)
+        public INativeSurface CreateControlSurface(string controlTitle, string controlName, int mipCount = 1, int sampleCount = 1)
         {
             throw new NotImplementedException();
         }
@@ -31,7 +31,7 @@ namespace Molten.Graphics
             throw new NotImplementedException();
         }
 
-        public IWindowSurface CreateFormSurface(string formTitle, int mipCount = 1, int sampleCount = 1)
+        public INativeSurface CreateFormSurface(string formTitle, string formName, int mipCount = 1, int sampleCount = 1)
         {
             throw new NotImplementedException();
         }

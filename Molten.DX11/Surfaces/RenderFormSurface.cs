@@ -12,16 +12,18 @@ using System.Windows.Forms;
 namespace Molten.Graphics
 {
     /// <summary>A render target that is created from, and outputs to, a device's swap chain.</summary>
-    public class RenderFormSurface : SwapChainSurface, IWindowSurface
+    public class RenderFormSurface : SwapChainSurface, INativeSurface
     {
         RenderLoop _loop;
-        RenderForm _form;
+        RenderForm _control;
         Rectangle _bounds;
         IntPtr _formHandle;
         DisplayMode _displayMode;
         string _title;
+        string _ctrlName;
         bool _disposing;
         bool _focused;
+        bool _propertiesDirty;
 
         System.Drawing.Size? _preBorderlessSize;
         System.Drawing.Point? _preBorderlessLocation;
@@ -42,34 +44,29 @@ namespace Molten.Graphics
 
         public event WindowSurfaceHandler OnFocusLost;
 
-        internal RenderFormSurface(string formTitle, RendererDX11 renderer, int mipCount = 1, int sampleCount = 1)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="formTitle"></param>
+        /// <param name="formName">The internal name of the form.</param>
+        /// <param name="renderer"></param>
+        /// <param name="mipCount"></param>
+        /// <param name="sampleCount"></param>
+        internal RenderFormSurface(string formTitle, string formName, RendererDX11 renderer, int mipCount = 1, int sampleCount = 1)
             : base(renderer, mipCount, sampleCount)
         {
             _title = formTitle;
-        }
-
-        internal void MoveToOutput(DisplayOutputDX<Adapter1, AdapterDescription1, Output1> output)
-        {
-            MoveToOutput(output, _mode);
-        }
-
-        internal void MoveToOutput(DisplayOutputDX<Adapter1, AdapterDescription1, Output1> output, WindowMode mode)
-        {
-            // TODO move the surface's render form to the specified output
-            // TODO resize the window to fit if it's too big.
-            //      OR
-            // TODO resize the window to fill the screen if fill = true;
-            // TODO set ownership of window to whatever output it is moved to.
+            _ctrlName = formName;
         }
 
         protected override void OnSwapChainMissing()
         {
-            _form = new RenderForm(_title);
-            _form.WindowState = FormWindowState.Maximized;
-            _formHandle = _form.Handle;
+            _control = new RenderForm(_title);
+            _control.WindowState = FormWindowState.Maximized;
+            _formHandle = _control.Handle;
             OnHandleChanged?.Invoke(this);
 
-            _loop = new RenderLoop(_form)
+            _loop = new RenderLoop(_control)
             {
                 UseApplicationDoEvents = false,
             };
@@ -88,24 +85,24 @@ namespace Molten.Graphics
             };
 
             _displayMode = new DisplayMode(modeDesc);
-            CreateSwapChain(_displayMode, true, _form.Handle);
+            CreateSwapChain(_displayMode, true, _control.Handle);
 
             // Subscribe to all the needed form events
-            _form.AllowUserResizing = true;
-            _form.UserResized += _form_Resized;
-            _form.Move += _form_Moved;
-            _form.FormClosing += _form_FormClosing;
-            _form.GotFocus += _form_GotFocus;
-            _form.LostFocus += _form_LostFocus;
+            _control.AllowUserResizing = true;
+            _control.UserResized += _form_Resized;
+            _control.Move += _form_Moved;
+            _control.FormClosing += _form_FormClosing;
+            _control.GotFocus += _form_GotFocus;
+            _control.LostFocus += _form_LostFocus;
 
-            _form.KeyDown += (sender, args) =>
+            _control.KeyDown += (sender, args) =>
             {
                 if (args.Alt)
                     args.Handled = true;
             };
 
             // Ignore all windows events
-            Device.DisplayManager.DxgiFactory.MakeWindowAssociation(_form.Handle, WindowAssociationFlags.IgnoreAltEnter);
+            Device.DisplayManager.DxgiFactory.MakeWindowAssociation(_control.Handle, WindowAssociationFlags.IgnoreAltEnter);
         }
 
         private void _form_LostFocus(object sender, EventArgs e)
@@ -137,13 +134,13 @@ namespace Molten.Graphics
 
             if (_mode == WindowMode.Borderless)
             {
-                w = _form.Bounds.Width;
-                h = _form.Bounds.Height;
+                w = _control.Bounds.Width;
+                h = _control.Bounds.Height;
             }
             else
             {
-                w = _form.ClientSize.Width;
-                h = _form.ClientSize.Height;
+                w = _control.ClientSize.Width;
+                h = _control.ClientSize.Height;
             }
 
             if (w != _width || h != _height)
@@ -157,22 +154,22 @@ namespace Molten.Graphics
 
             // Update current mode
             _mode = newMode;
-            System.Drawing.Rectangle clientArea = _form.ClientRectangle;
+            System.Drawing.Rectangle clientArea = _control.ClientRectangle;
 
             // Handle new mode
             switch (_mode)
             {
                 case WindowMode.Windowed:
-                    _form.FormBorderStyle = FormBorderStyle.Sizable;
+                    _control.FormBorderStyle = FormBorderStyle.Sizable;
 
                     // Calculate offset due to borders and title bars, based on the current mode of the window.
                     if (_preBorderlessLocation != null && _preBorderlessSize != null)
                     {
-                        _form.Move -= _form_Moved;
-                        _form.Location = _preBorderlessLocation.Value;
-                        _form.Size = _preBorderlessSize.Value;
+                        _control.Move -= _form_Moved;
+                        _control.Location = _preBorderlessLocation.Value;
+                        _control.Size = _preBorderlessSize.Value;
                         System.Drawing.Rectangle screenArea = _preBorderlessScreenArea.Value;
-                        _form.Move += _form_Moved;
+                        _control.Move += _form_Moved;
 
                         _bounds = new Rectangle()
                         {
@@ -190,7 +187,7 @@ namespace Molten.Graphics
                     else
                     { 
 
-                        System.Drawing.Rectangle screenArea = _form.RectangleToScreen(clientArea);
+                        System.Drawing.Rectangle screenArea = _control.RectangleToScreen(clientArea);
                         _bounds = new Rectangle()
                         {
                             X = screenArea.X,
@@ -206,18 +203,18 @@ namespace Molten.Graphics
                     // Store pre-borderless form dimensions.
                     if (_preBorderlessLocation == null && _preBorderlessSize == null)
                     {
-                        _preBorderlessLocation = _form.Location;
-                        _preBorderlessSize = _form.Size;
-                        _preBorderlessScreenArea = _form.RectangleToScreen(clientArea);
+                        _preBorderlessLocation = _control.Location;
+                        _preBorderlessSize = _control.Size;
+                        _preBorderlessScreenArea = _control.RectangleToScreen(clientArea);
                     }
 
-                    System.Drawing.Rectangle dBounds = Screen.GetBounds(_form);
+                    System.Drawing.Rectangle dBounds = Screen.GetBounds(_control);
 
-                    _form.WindowState = FormWindowState.Normal;
-                    _form.FormBorderStyle = FormBorderStyle.None;
-                    _form.TopMost = false;
+                    _control.WindowState = FormWindowState.Normal;
+                    _control.FormBorderStyle = FormBorderStyle.None;
+                    _control.TopMost = false;
 
-                    _form.Bounds = dBounds;
+                    _control.Bounds = dBounds;
                     _bounds = new Rectangle()
                     {
                         X = dBounds.X,
@@ -233,7 +230,6 @@ namespace Molten.Graphics
         {
             if (_displayMode.Width != newWidth || _displayMode.Height != newHeight)
             {
-
                 _displayMode.Width = newWidth;
                 _displayMode.Height = newHeight;
 
@@ -257,24 +253,31 @@ namespace Molten.Graphics
             {
                 DisposeObject(ref _loop);
                 DisposeObject(ref _swapChain);
-                DisposeObject(ref _form);
+                DisposeObject(ref _control);
                 return false;
             }
 
-            if (_mode != _requestedMode)
-                UpdateFormMode(_requestedMode);
+            if (_propertiesDirty)
+            {
+                if (_mode != _requestedMode)
+                    UpdateFormMode(_requestedMode);
+
+                _control.Name = _ctrlName;
+                _control.Text = _title;
+                _propertiesDirty = false;
+            }
 
             if (_loop.NextFrame())
             {
-                if (Visible != _form.Visible)
+                if (Visible != _control.Visible)
                 {
                     if (Visible)
                     {
-                        _form.Show();
+                        _control.Show();
                     }
                     else
                     {
-                        _form.Hide();
+                        _control.Hide();
                         return false;
                     }
                 }
@@ -286,26 +289,38 @@ namespace Molten.Graphics
         /// <summary>Gets or sets the form title.</summary>
         public string Title
         {
-            get => _form.Text;
-            set => _form.Text = value;
+            get => _title;
+            set
+            {
+                _title = value;
+                _propertiesDirty = true;
+            }
+        }
+
+        /// <summary>Gets or sets the form name.</summary>
+        public string Name
+        {
+            get => _ctrlName;
+            set
+            {
+                _ctrlName = value;
+                _propertiesDirty = true;
+            }
         }
 
         public bool IsFocused => _focused;
 
         public IntPtr Handle => _formHandle;
 
-        /// <summary>Gets or sets the WinForms cursor for the controller.</summary>
-        public Cursor Cursor
-        {
-            get => _form.Cursor;
-            set => _form.Cursor = value;
-        }
-
         /// <summary>Gets or sets the mode of the output form.</summary>
         public WindowMode Mode
         {
             get => _requestedMode;
-            set => _requestedMode = value;
+            set
+            {
+                _requestedMode = value;
+                _propertiesDirty = true;
+            }
         }
 
         /// <summary>Gets the bounds of the window surface.</summary>

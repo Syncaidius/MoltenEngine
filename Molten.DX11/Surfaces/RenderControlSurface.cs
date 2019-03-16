@@ -11,7 +11,7 @@ using System.Windows.Forms;
 namespace Molten.Graphics
 {
     /// <summary>A render target that is created from, and outputs to, a GUI control-based swap chain.</summary>
-    public class RenderControlSurface : SwapChainSurface, IWindowSurface
+    public class RenderControlSurface : SwapChainSurface, INativeSurface
     {
         RenderLoop _loop;
         RenderControl _control;
@@ -20,7 +20,9 @@ namespace Molten.Graphics
         IntPtr _handle;
         DisplayMode _displayMode;
         string _title;
+        string _ctrlName;
         bool _disposing;
+        bool _propertiesDirty;
 
         public event WindowSurfaceHandler OnClose;
 
@@ -34,10 +36,11 @@ namespace Molten.Graphics
 
         public event WindowSurfaceHandler OnFocusLost;
 
-        internal RenderControlSurface(string formTitle, RendererDX11 renderer, int mipCount = 1, int sampleCount = 1)
+        internal RenderControlSurface(string formTitle, string controlName, RendererDX11 renderer, int mipCount = 1, int sampleCount = 1)
             : base(renderer, mipCount, sampleCount)
         {
             _title = formTitle;
+            _ctrlName = controlName;
         }
 
         protected override void OnSwapChainMissing()
@@ -198,6 +201,13 @@ namespace Molten.Graphics
                 return false;
             }
 
+            if (_propertiesDirty)
+            {
+                _control.Name = _ctrlName;
+                _control.Text = _title;
+                _propertiesDirty = false;
+            }
+
             if (_loop.NextFrame())
             {
                 if (Visible != _control.Visible)
@@ -232,21 +242,29 @@ namespace Molten.Graphics
             DisposeObject(ref _control);
         }
 
-        /// <summary>Gets or sets the form title.</summary>
+        /// <summary>Gets or sets the control title.</summary>
         public string Title
         {
-            get => _control.Text;
-            set => _control.Text = value;
+            get => _title;
+            set
+            {
+                _title = value;
+                _propertiesDirty = true;
+            }
+        }
+
+        /// <summary>Gets or sets the form name.</summary>
+        public string Name
+        {
+            get => _ctrlName;
+            set
+            {
+                _ctrlName = value;
+                _propertiesDirty = true;
+            }
         }
 
         public IntPtr Handle => _handle;
-
-        /// <summary>Gets or sets the WinForms cursor for the controller.</summary>
-        public Cursor Cursor
-        {
-            get => _control.Cursor;
-            set => _control.Cursor = value;
-        }
 
         /// <summary>Gets the bounds of the window surface.</summary>
         public Rectangle Bounds => _bounds;

@@ -20,17 +20,19 @@ namespace Molten.Graphics
 
         /// <summary>Creates a form with a surface which can be rendered on to.</summary>
         /// <param name="formTitle">The title of the form.</param>
+        /// <param name="formName">The internal name of the form.</param>
         /// <param name="mipCount">The number of mip map levels of the form surface.</param>
         /// <param name="sampleCount">The number of samples. Anything greater than 1 will return a multi-sampled surface.</param>
         /// <returns></returns>
-        IWindowSurface CreateFormSurface(string formTitle, int mipCount = 1, int sampleCount = 1);
+        INativeSurface CreateFormSurface(string formTitle, string formName, int mipCount = 1, int sampleCount = 1);
 
         /// <summary>Creates a GUI control with a surface which can be rendered on to.</summary>
-        /// <param name="formTitle">The title of the form.</param>
+        /// <param name="controlTitle">The title of the form.</param>
+        /// <param name="controlName">The internal name of the control.</param>
         /// <param name="mipCount">The number of mip map levels of the form surface.</param>
         /// <param name="sampleCount">The number of samples. Anything greater than 1 will return a multi-sampled surface.</param>
         /// <returns></returns>
-        IWindowSurface CreateControlSurface(string formTitle, int mipCount = 1, int sampleCount = 1);
+        INativeSurface CreateControlSurface(string controlTitle, string controlName, int mipCount = 1, int sampleCount = 1);
 
         /// <summary>Creates a new 1D texture and returns it.</summary>
         /// <param name="properties">A set of 1D texture properties.</param>

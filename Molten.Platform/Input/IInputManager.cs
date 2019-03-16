@@ -14,7 +14,7 @@ namespace Molten.Input
         /// <param name="log">A logger.</param>
         void Initialize(InputSettings settings, Logger log);
 
-        /// <summary>Gets a new or existing instance of an input handler for the specified <see cref="IWindowSurface"/>.</summary>
+        /// <summary>Gets a new or existing instance of an input handler for the specified <see cref="INativeSurface"/>.</summary>
         /// <typeparam name="T">The type of handler to retrieve.</typeparam>
         /// <param name="surface">The surface for which to bind and return an input handler.</param>
         /// <returns>An input handler of the specified type.</returns>
@@ -50,7 +50,7 @@ namespace Molten.Input
         IClipboard Clipboard { get; }
 
         /// <summary>
-        /// Gets or sets the camera through which input is handled. If the camera does not have a valid <see cref="IWindowSurface"/>, input handling will be skipped.
+        /// Gets or sets the camera through which input is handled. If the camera does not have a valid <see cref="INativeSurface"/>, input handling will be skipped.
         /// </summary>
         IInputCamera Camera { get; set; }
     }

@@ -92,7 +92,7 @@ namespace Molten.ContentEditor
 
         private void UpdateWindownBounds(ITexture texture)
         {
-            IWindowSurface window = texture as IWindowSurface;
+            INativeSurface window = texture as INativeSurface;
             UI.LocalBounds = new Rectangle(0, 0, window.Width, window.Height);
         }
 

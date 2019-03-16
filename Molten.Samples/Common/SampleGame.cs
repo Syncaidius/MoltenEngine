@@ -47,7 +47,7 @@ namespace Molten.Samples
             cr.Commit();
         }
 
-        private void Window_OnHandleChanged(IWindowSurface surface)
+        private void Window_OnHandleChanged(INativeSurface surface)
         {
             if (Settings.UseGuiControl && _form == null)
             {

@@ -11,7 +11,7 @@ namespace Molten.Samples
     {
         public override string Description => "A simple multi-window test.";
 
-        List<IWindowSurface> _extraWindows;
+        List<INativeSurface> _extraWindows;
         SceneObject _player;
         List<Scene> _scenes;
         List<SceneObject> _parents;
@@ -27,7 +27,7 @@ namespace Molten.Samples
             _scenes = new List<Scene>();
             _parents = new List<SceneObject>();
             _children = new List<SceneObject>();
-            _extraWindows = new List<IWindowSurface>();
+            _extraWindows = new List<INativeSurface>();
             Random rng = new Random();
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
@@ -42,7 +42,7 @@ namespace Molten.Samples
             for (int i = 0; i < 5; i++)
             {
                 string title = $"Window #{i}";
-                IWindowSurface window = engine.Renderer.Resources.CreateFormSurface(title);
+                INativeSurface window = engine.Renderer.Resources.CreateFormSurface(title, $"Window{i}");
                 engine.Renderer.OutputSurfaces.Add(window);
 
                 SpawnScene(window);
@@ -56,7 +56,7 @@ namespace Molten.Samples
             base.OnInitialize(engine);
         }
 
-        private void SpawnScene(IWindowSurface surface)
+        private void SpawnScene(INativeSurface surface)
         {
             Scene scene = CreateScene("Test");
             scene.BackgroundColor = new Color()
@@ -127,7 +127,7 @@ namespace Molten.Samples
 
         protected override void OnContentLoaded(ContentRequest cr) { }
 
-        private void Window_OnClose(IWindowSurface surface)
+        private void Window_OnClose(INativeSurface surface)
         {
             Exit();
         }

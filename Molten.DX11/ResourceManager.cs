@@ -33,14 +33,14 @@ namespace Molten.Graphics
             return new DepthStencilSurface(_renderer, width, height, format, mipCount, arraySize, sampleCount, flags);
         }
 
-        public IWindowSurface CreateFormSurface(string formTitle, int mipCount = 1, int sampleCount = 1)
+        public INativeSurface CreateFormSurface(string formTitle, string formName, int mipCount = 1, int sampleCount = 1)
         {
-            return new RenderFormSurface(formTitle, _renderer, mipCount);
+            return new RenderFormSurface(formTitle, formName, _renderer, mipCount);
         }
 
-        public IWindowSurface CreateControlSurface(string formTitle, int mipCount = 1, int sampleCount = 1)
+        public INativeSurface CreateControlSurface(string formTitle, string controlName, int mipCount = 1, int sampleCount = 1)
         {
-            return new RenderControlSurface(formTitle, _renderer, mipCount);
+            return new RenderControlSurface(formTitle, controlName, _renderer, mipCount);
         }
 
         public IRenderSurface CreateSurface(

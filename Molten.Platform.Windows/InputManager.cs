@@ -14,7 +14,7 @@ namespace Molten.Input
         Logger _log;
 
         List<GamepadDevice> _gamepads;
-        IWindowSurface _activeSurface;
+        INativeSurface _activeSurface;
         IInputCamera _activeCamera;
         WindowsClipboard _clipboard;
 
@@ -123,7 +123,7 @@ namespace Molten.Input
 
         private void BindSurface(IRenderSurface surface)
         {
-            if (surface is IWindowSurface window)
+            if (surface is INativeSurface window)
             {
                 // Are we already bound to this surface (e.g. via a different camera).
                 if (_activeSurface != window)

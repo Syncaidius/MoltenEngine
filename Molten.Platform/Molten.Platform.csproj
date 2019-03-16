@@ -187,7 +187,7 @@
     <Compile Include="Graphics\Surfaces\IDepthStencilSurface.cs" />
     <Compile Include="Graphics\Surfaces\IRenderSurface.cs" />
     <Compile Include="Graphics\Surfaces\ISwapChainSurface.cs" />
-    <Compile Include="Graphics\Surfaces\IWindowSurface.cs" />
+    <Compile Include="Graphics\Surfaces\INativeSurface.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSCapabilities.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSFlags.cs" />
     <Compile Include="Graphics\Textures\DDS\DDSFormat.cs" />

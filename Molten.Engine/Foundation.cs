@@ -19,7 +19,7 @@ namespace Molten
     {
         Engine _engine;
         EngineThread _gameThread;
-        IWindowSurface _gameWindow;
+        INativeSurface _gameWindow;
         IKeyboardDevice _keyboard;
         IGamepadDevice _gamepad;
         IMouseDevice _mouse;
@@ -68,9 +68,9 @@ namespace Molten
             }
 
             if (Settings.UseGuiControl)
-                _gameWindow = _engine.Renderer.Resources.CreateControlSurface(Title);
+                _gameWindow = _engine.Renderer.Resources.CreateControlSurface(Title, "MainForm");
             else
-                _gameWindow = _engine.Renderer.Resources.CreateFormSurface(Title);
+                _gameWindow = _engine.Renderer.Resources.CreateFormSurface(Title, "MainControl");
 
             _engine.Renderer.OutputSurfaces.Add(_gameWindow);
             _gameWindow.Visible = true;
@@ -103,7 +103,7 @@ namespace Molten
             _gameThread.Start();
         }
 
-        private void _gameWindow_OnClose(IWindowSurface surface)
+        private void _gameWindow_OnClose(INativeSurface surface)
         {
             Exit();
         }
@@ -243,7 +243,7 @@ namespace Molten
         /// </summary>
         public IGamepadDevice Gamepad => _gamepad;
 
-        /// <summary>Gets the <see cref="IWindowSurface"/> that the game renders in to.</summary>
-        public IWindowSurface Window => _gameWindow;
+        /// <summary>Gets the <see cref="INativeSurface"/> that the game renders in to.</summary>
+        public INativeSurface Window => _gameWindow;
     }
 }
