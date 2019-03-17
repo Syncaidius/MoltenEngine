@@ -13,7 +13,9 @@ namespace Molten.Graphics
         where T : Control
     {
         T _control;
+        Control _parent;
         IntPtr _handle;
+        IntPtr? _parentHandle;
 
         RenderLoop _loop;
         protected Rectangle _bounds;
@@ -99,6 +101,8 @@ namespace Molten.Graphics
 
         protected abstract void DisposeControl();
 
+        protected abstract void OnNewParent(Control newParent, T control);
+
         protected override bool OnPresent()
         {
             if (_disposing)
@@ -113,6 +117,12 @@ namespace Molten.Graphics
             {
                 if (_mode != _requestedMode)
                     UpdateControlMode(_control, _requestedMode);
+
+                if (_parent != _control.Parent)
+                {
+                    _control.Parent = _parent;
+                    OnNewParent(_parent, _control);
+                }
 
                 _control.Name = _ctrlName;
                 _control.Text = _title;
@@ -204,6 +214,32 @@ namespace Molten.Graphics
         /// </summary>
         internal T Control => _control;
 
-        internal Control Parent { get; set; }
+        /// <summary>
+        /// Gets or sets the control's handle.
+        /// </summary>
+        public IntPtr? ParentHandle
+        {
+            get => _parentHandle;
+            set
+            {
+                if(_parentHandle != value)
+                {
+                    _parentHandle = value;
+
+                    if (_parentHandle.HasValue && _parentHandle.Value != IntPtr.Zero)
+                    {
+                        _parent = System.Windows.Forms.Control.FromHandle(_parentHandle.Value);
+                    }
+                    else
+                    {
+                        _parent = null;
+                    }
+
+                    _propertiesDirty = true;
+                }
+            }
+        }
+
+        protected Control Parent => _parent;
     }
 }

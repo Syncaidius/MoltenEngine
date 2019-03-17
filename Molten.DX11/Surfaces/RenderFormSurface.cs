@@ -26,6 +26,8 @@ namespace Molten.Graphics
 
         public event WindowSurfaceHandler OnHandleChanged;
 
+        public event WindowSurfaceHandler OnParentChanged;
+
         public event WindowSurfaceHandler OnFocusGained;
 
         public event WindowSurfaceHandler OnFocusLost;
@@ -58,12 +60,6 @@ namespace Molten.Graphics
             control.FormClosing += Control_FormClosing;
             control.GotFocus += Control_GotFocus;
             control.LostFocus += Control_LostFocus;
-            control.ParentChanged += Control_ParentChanged;
-        }
-
-        private void Control_ParentChanged(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         private void Control_LostFocus(object sender, EventArgs e)
@@ -197,10 +193,24 @@ namespace Molten.Graphics
             Control.FormClosing -= Control_FormClosing;
             Control.GotFocus -= Control_GotFocus;
             Control.LostFocus -= Control_LostFocus;
-            Control.ParentChanged -= Control_ParentChanged;
 
-            Parent = null;
+            ParentHandle = null;
             Control?.Dispose();
         }
+
+        protected override void OnNewParent(Control newParent, RenderForm control)
+        {
+            if(newParent is Form parentForm)
+            {
+                control.MdiParent = parentForm;
+                OnParentChanged?.Invoke(this);
+            }
+            else
+            {
+                throw new InvalidOperationException("RenderFormSurface cannot be parented to a non-form or non-window control.");
+            }
+        }
+
+        public IntPtr? WindowHandle => Handle;
     }
 }

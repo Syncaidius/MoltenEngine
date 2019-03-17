@@ -84,23 +84,23 @@ namespace Molten.Input
             _surface = surface;
             SurfaceHandleChanged(surface);
             _surface.OnHandleChanged += SurfaceHandleChanged;
+            _surface.OnParentChanged += SurfaceHandleChanged;
             CreateHook();
         }
 
         internal override void Unbind(INativeSurface surface)
         {
             _surface.OnHandleChanged -= SurfaceHandleChanged;
+            _surface.OnParentChanged -= SurfaceHandleChanged;
             SetWindowLongDelegate(null);
             _surface = null;
         }
 
         private void SurfaceHandleChanged(INativeSurface surface)
         {
-            IntPtr? handle = GetWindowHandle(surface);
-
-            if (handle != null)
+            if (surface.WindowHandle != null)
             {
-                _windowHandle = handle.Value;
+                _windowHandle = surface.WindowHandle.Value;
                 CreateHook();
             }
         }

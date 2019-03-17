@@ -14,9 +14,14 @@ namespace Molten.Graphics
     public interface INativeSurface : ISwapChainSurface
     {
         /// <summary>
-        /// Occurs when the underlying <see cref="Handle"/> has changed. Invoked by the renderer it is bound to.
+        /// Occurs when the underlying native <see cref="Handle"/> has changed. Invoked by the renderer it is bound to.
         /// </summary>
         event WindowSurfaceHandler OnHandleChanged;
+
+        /// <summary>
+        /// Occurs when the underlying, native control parent has changed. This affects the <see cref="WindowHandle"/> in some situations.
+        /// </summary>
+        event WindowSurfaceHandler OnParentChanged;
 
         /// <summary>Invoked when the current <see cref="INativeSurface"/> has began it's closing process. Invoked by the renderer it is bound to.</summary>
         event WindowSurfaceHandler OnClose;
@@ -52,15 +57,15 @@ namespace Molten.Graphics
         /// <summary>Gets an <see cref="IntPtr"/> to the handle of the underlying control.</summary>
         IntPtr Handle { get; }
 
-        ///// <summary>
-        ///// Gets the current <see cref="INativeSurface"/> parent's control handle. Null if no parent is assigned.
-        ///// </summary>
-        //IntPtr? ParentHandle { get; set; }
+        /// <summary>
+        /// Gets the current <see cref="INativeSurface"/> parent's control handle. Null if no parent is assigned.
+        /// </summary>
+        IntPtr? ParentHandle { get; set; }
 
-        ///// <summary>
-        ///// Gets the handle of the window or form containing the current <see cref="INativeSurface"/>. This is not neccessarily it's direct parent of ancestor.
-        ///// </summary>
-        //IntPtr? WindowHandle { get; }
+        /// <summary>
+        /// Gets the handle of the window or form containing the current <see cref="INativeSurface"/>. This is not neccessarily it's direct parent of ancestor.
+        /// </summary>
+        IntPtr? WindowHandle { get; }
 
         /// <summary>Gets the bounds of the window surface.</summary>
         Rectangle Bounds { get; }

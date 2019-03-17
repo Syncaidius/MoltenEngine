@@ -67,19 +67,20 @@ namespace Molten.Input
             _surface = surface;
             SurfaceHandleChanged(surface);
             _surface.OnHandleChanged += SurfaceHandleChanged;
+            _surface.OnParentChanged += SurfaceHandleChanged;
         }
 
         internal override void Unbind(INativeSurface surface)
         {
             _surface.OnHandleChanged -= SurfaceHandleChanged;
+            _surface.OnParentChanged -= SurfaceHandleChanged;
             _surface = null;
         }
 
         private void SurfaceHandleChanged(INativeSurface surface)
         {
-            IntPtr? handle = GetWindowHandle(surface);
-            if (handle != null)
-                _windowHandle = handle.Value;
+            if (surface.WindowHandle != null)
+                _windowHandle = surface.WindowHandle.Value;
         }
 
         public override void OpenControlPanel()

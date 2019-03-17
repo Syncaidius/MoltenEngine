@@ -21,9 +21,14 @@ namespace Molten.Graphics
 
         public event WindowSurfaceHandler OnHandleChanged;
 
+        public event WindowSurfaceHandler OnParentChanged;
+
         public event WindowSurfaceHandler OnFocusGained;
 
         public event WindowSurfaceHandler OnFocusLost;
+
+        IntPtr? _windowHandle;
+        Control _parentWindow;
 
         internal RenderControlSurface(string controlTitle, string controlName, RendererDX11 renderer, int mipCount = 1, int sampleCount = 1)
             : base(controlTitle, controlName, renderer, mipCount, sampleCount) { }
@@ -41,7 +46,7 @@ namespace Molten.Graphics
         protected override void SubscribeToControl(RenderControl control)
         {
             // Subscribe to all the needed form events
-            DetectRootParent();
+            GetParentWindow();
             control.Resize += _control_Resized;
             control.Move += _control_Moved;
             control.ParentChanged += _control_ParentChanged;
@@ -64,28 +69,40 @@ namespace Molten.Graphics
         private void _control_ParentChanged(object sender, EventArgs e)
         {
             // Unsubscribe from old parent
-            if(Parent != null)
-            {
-                Parent.Move -= _control_Moved;
-            }
+            if(_parentWindow != null)
+                _parentWindow.Move -= _control_Moved;
 
-            DetectRootParent();
+            GetParentWindow();
             UpdateControlMode(Control, _mode);
         }
 
-        private void DetectRootParent()
+        private void GetParentWindow()
         {
-            Control candidate = Control;
-            while(candidate.Parent != null)
-                candidate = candidate.Parent;
+            _windowHandle = null;
+            _parentWindow = null;
 
-            Parent = candidate;
+            // Check if the surface handle is a form. 
+            // If not, find it's parent form.
+            Control ctrl = Control;
+            while (ctrl != null)
+            {
+                if (ctrl is Form frm)
+                {
+                    _windowHandle = frm.Handle;
+                    _parentWindow = frm;
+                    break;
+                }
+                else
+                {
+                    ctrl = ctrl.Parent;
+                }
+            }
 
             // Subscribe to new parent
-            if (Parent != null)
-                Parent.Move += _control_Moved;
+            if (_parentWindow != null)
+                _parentWindow.Move += _control_Moved;
 
-            _control_Resized(Parent, new EventArgs());
+            _control_Resized(_parentWindow, new EventArgs());
         }
 
         private void _control_VisibleChanged(object sender, EventArgs e)
@@ -129,8 +146,8 @@ namespace Molten.Graphics
 
         protected override void DisposeControl()
         {
-            if (Parent != null)
-                Parent.Move -= _control_Moved;
+            if (_parentWindow != null)
+                _parentWindow.Move -= _control_Moved;
 
             Control.Resize -= _control_Resized;
             Control.Move -= _control_Moved;
@@ -140,8 +157,20 @@ namespace Molten.Graphics
             Control.GotFocus -= _control_GotFocus;
             Control.LostFocus -= _control_LostFocus;
 
-            Parent = null;
+            ParentHandle = null;
+            _parentWindow = null;
+            _windowHandle = null;
             Control.Dispose();
         }
+
+        protected override void OnNewParent(Control newParent, RenderControl control)
+        {
+            control.Size = newParent.Size;
+            control.Location = newParent.Location;
+            control.Dock = DockStyle.Fill;
+            OnParentChanged?.Invoke(this);
+        }
+
+        public IntPtr? WindowHandle => _windowHandle;
     }
 }

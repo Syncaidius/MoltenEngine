@@ -54,21 +54,14 @@ namespace Molten.Samples
                 // Create form and find placeholder panel.
                 _form = new ControlSampleForm();
                 Control[] panelsToReplace = _form.Controls.Find("panelToReplace", true);
-
                 if (panelsToReplace.Length > 0)
                 {
-                    // Replace the placeholder panel with our game's control surface.
-                    Control gameControl = Control.FromHandle(Window.Handle);
-                    gameControl.Size = panelsToReplace[0].Size;
-                    gameControl.Location = panelsToReplace[0].Location;
-                    gameControl.Anchor = panelsToReplace[0].Anchor;
+                    surface.ParentHandle = panelsToReplace[0].Handle;
 
+                    // TODO remove winforms sliders once engine has own GUI system.
                     _form.SliderRed.ValueChanged += SliderRed_ValueChanged;
                     _form.SliderGreen.ValueChanged += SliderGreen_ValueChanged;
                     _form.SliderBlue.ValueChanged += SliderBlue_ValueChanged;
-
-                    _form.Controls.Add(gameControl);
-                    _form.Controls.Remove(panelsToReplace[0]);
                     _form.Show();
                 }
             }
@@ -91,9 +84,9 @@ namespace Molten.Samples
 
         private void ChangePresentColor(int channelIndex, byte val)
         {
-            //Color color = Window.ClearColor;
-            //color[channelIndex] = val;
-            //Window.ClearColor = color;
+            Color color = MainScene.BackgroundColor;
+            color[channelIndex] = val;
+            MainScene.BackgroundColor = color;
         }
 
         private void Cr_OnCompleted(ContentRequest cr)

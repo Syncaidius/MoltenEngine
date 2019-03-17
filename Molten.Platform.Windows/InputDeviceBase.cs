@@ -61,34 +61,6 @@ namespace Molten.Input
             OnDisconnected?.Invoke(this);
         }
 
-        /// <summary>
-        /// Gets the handle of the parent window.
-        /// </summary>
-        /// <returns></returns>
-        private protected IntPtr? GetWindowHandle(INativeSurface surface)
-        {
-            // Check if the surface handle is a form. 
-            // If not, find it's parent form.
-            Control ctrl = Control.FromHandle(surface.Handle);
-            if (ctrl is Form frm)
-            {
-                return surface.Handle;
-            }
-            else
-            {
-                while (ctrl != null)
-                {
-                    frm = ctrl as Form;
-                    if (frm == null)
-                        ctrl = ctrl.Parent;
-                    else
-                        return frm.Handle;
-                }
-            }
-
-            return null;
-        }
-
         /// <summary>Returns true if the specified button is pressed.</summary>
         /// <param name="value">The button or key to check.</param>
         /// <returns>Returns true if the button is pressed.</returns>
