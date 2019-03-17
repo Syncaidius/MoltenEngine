@@ -53,10 +53,10 @@ namespace Molten.Samples
             {
                 // Create form and find placeholder panel.
                 _form = new ControlSampleForm();
-                Control[] panelsToReplace = _form.Controls.Find("panelToReplace", true);
-                if (panelsToReplace.Length > 0)
+                Control[] placeholderPanels = _form.Controls.Find("surfacePlaceholder", true);
+                if (placeholderPanels.Length > 0)
                 {
-                    surface.ParentHandle = panelsToReplace[0].Handle;
+                    surface.ParentHandle = placeholderPanels[0].Handle;
 
                     // TODO remove winforms sliders once engine has own GUI system.
                     _form.SliderRed.ValueChanged += SliderRed_ValueChanged;

@@ -28,30 +28,30 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panelToReplace = new System.Windows.Forms.Panel();
+            this.surfacePlaceholder = new System.Windows.Forms.Panel();
             this.BackgroundColor = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.trackRed = new System.Windows.Forms.TrackBar();
-            this.trackGreen = new System.Windows.Forms.TrackBar();
-            this.label2 = new System.Windows.Forms.Label();
             this.trackBlue = new System.Windows.Forms.TrackBar();
             this.label3 = new System.Windows.Forms.Label();
+            this.trackGreen = new System.Windows.Forms.TrackBar();
+            this.label2 = new System.Windows.Forms.Label();
+            this.trackRed = new System.Windows.Forms.TrackBar();
+            this.label1 = new System.Windows.Forms.Label();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.BackgroundColor.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackRed)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackGreen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBlue)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackGreen)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackRed)).BeginInit();
             this.SuspendLayout();
             // 
-            // panelToReplace
+            // surfacePlaceholder
             // 
-            this.panelToReplace.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.surfacePlaceholder.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panelToReplace.Location = new System.Drawing.Point(293, 12);
-            this.panelToReplace.Name = "panelToReplace";
-            this.panelToReplace.Size = new System.Drawing.Size(741, 567);
-            this.panelToReplace.TabIndex = 0;
+            this.surfacePlaceholder.Location = new System.Drawing.Point(293, 12);
+            this.surfacePlaceholder.Name = "surfacePlaceholder";
+            this.surfacePlaceholder.Size = new System.Drawing.Size(741, 567);
+            this.surfacePlaceholder.TabIndex = 0;
             // 
             // BackgroundColor
             // 
@@ -67,40 +67,6 @@
             this.BackgroundColor.TabIndex = 1;
             this.BackgroundColor.TabStop = false;
             this.BackgroundColor.Text = "Background Color";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 28);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(27, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Red";
-            // 
-            // trackRed
-            // 
-            this.trackRed.Location = new System.Drawing.Point(6, 44);
-            this.trackRed.Maximum = 255;
-            this.trackRed.Name = "trackRed";
-            this.trackRed.Size = new System.Drawing.Size(263, 45);
-            this.trackRed.TabIndex = 1;
-            // 
-            // trackGreen
-            // 
-            this.trackGreen.Location = new System.Drawing.Point(6, 95);
-            this.trackGreen.Maximum = 255;
-            this.trackGreen.Name = "trackGreen";
-            this.trackGreen.Size = new System.Drawing.Size(263, 45);
-            this.trackGreen.TabIndex = 3;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 79);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(36, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Green";
             // 
             // trackBlue
             // 
@@ -119,6 +85,40 @@
             this.label3.TabIndex = 4;
             this.label3.Text = "Blue";
             // 
+            // trackGreen
+            // 
+            this.trackGreen.Location = new System.Drawing.Point(6, 95);
+            this.trackGreen.Maximum = 255;
+            this.trackGreen.Name = "trackGreen";
+            this.trackGreen.Size = new System.Drawing.Size(263, 45);
+            this.trackGreen.TabIndex = 3;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 79);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(36, 13);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "Green";
+            // 
+            // trackRed
+            // 
+            this.trackRed.Location = new System.Drawing.Point(6, 44);
+            this.trackRed.Maximum = 255;
+            this.trackRed.Name = "trackRed";
+            this.trackRed.Size = new System.Drawing.Size(263, 45);
+            this.trackRed.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 28);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(27, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Red";
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Location = new System.Drawing.Point(0, 582);
@@ -134,14 +134,14 @@
             this.ClientSize = new System.Drawing.Size(1046, 604);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.BackgroundColor);
-            this.Controls.Add(this.panelToReplace);
+            this.Controls.Add(this.surfacePlaceholder);
             this.Name = "ControlSampleForm";
             this.Text = "ControlSampleForm";
             this.BackgroundColor.ResumeLayout(false);
             this.BackgroundColor.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackRed)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackGreen)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBlue)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackGreen)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackRed)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -149,7 +149,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel panelToReplace;
+        private System.Windows.Forms.Panel surfacePlaceholder;
         private System.Windows.Forms.GroupBox BackgroundColor;
         private System.Windows.Forms.TrackBar trackBlue;
         private System.Windows.Forms.Label label3;
