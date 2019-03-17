@@ -64,7 +64,7 @@ namespace Molten.Graphics
 
         private void _control_GotFocus(object sender, EventArgs e)
         {
-            IsFocused = false;
+            IsFocused = true;
             OnFocusLost?.Invoke(this);
         }
 
