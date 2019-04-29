@@ -4,7 +4,7 @@
 
 > NOTE: As of 29th April 2019 Molten will no longer be updated. 
 >
-> I feel a great sadness after hearing the news that [SharpDX](https://github.com/sharpdx/SharpDX) has been retired, as it has been the go-to C# DirectX wrapper for many years. However, many issues remain that were not resolved toward the end of its life, so I do not wish to invest time building on top of something that is no longer maintained. I have given the decision a lot of thought and therefore chose to start over in C++ where the reliance on graphics API wrappers is removed from the equation.
+>[SharpDX](https://github.com/sharpdx/SharpDX) has been retired. I find this saddening, while at the same time a great loss to the C# game developer community. It has been the go-to C# DirectX wrapper for many years. However, many issues still remain that were not resolved toward the end of its life, so I do not wish to invest time building on top of something that is no longer maintained. I have given the decision a lot of thought and therefore chose to start over in C++ where the reliance on graphics API wrappers is removed from the equation.
 >
 > Molten was always intended as a learning experience, with the goal of producing a game simply being a bonus at the end of it all, if it got that far. The repository will be sticking around in archived form, should anyone wish to learn from it, or continue their own version of the engine.
 >
