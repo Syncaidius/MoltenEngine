@@ -1,6 +1,5 @@
 # Molten Engine
 [![Build Status](https://dev.azure.com/jyarwood/MoltenEngine/_apis/build/status/MoltenEngine-.NET%20Desktop-CI)](https://dev.azure.com/jyarwood/MoltenEngine/_build/latest?definitionId=2)  
-[Documentation (WIP)](https://syncaidius.github.io/MoltenEngine/docs/Molten.html)
 
 > NOTE: As of 29th April 2019 Molten will no longer be updated. 
 >
