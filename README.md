@@ -4,13 +4,13 @@
 
 > NOTE: As of 29th April 2019 Molten will no longer be updated. 
 >
-> I have given this decision a lot of thought since the retirement of [SharpDX](https://github.com/sharpdx/SharpDX) and therefore chose to start over in C++ where the reliance on graphics API wrappers is removed from the equation.
+> I feel a great sadness after hearing the news that [SharpDX](https://github.com/sharpdx/SharpDX) has been retired, as it has been the go-to C# DirectX wrapper for many years. However, many issues remain that were not resolved toward the end of its life, so I do not wish to invest time building on top of something that is no longer maintained. I have given the decision a lot of thought and therefore chose to start over in C++ where the reliance on graphics API wrappers is removed from the equation.
 >
 > Molten was always intended as a learning experience, with the goal of producing a game simply being a bonus at the end of it all, if it got that far. The repository will be sticking around in archived form, should anyone wish to learn from it, or continue their own version of the engine.
 >
 > For the curious ones, the C++ iteration can be found in the [Ferrous Engine](https://github.com/Syncaidius/FerrousEngine) repository. As with Molten, it will remain a spare-time side project until it has progressed sufficiently.
 >
-> I feel a great sadness after hearing the news that SharpDX has been retired, as it has been the go-to C# DirectX wrapper for many years. However, many issues remain that were not resolved toward the end of its life, so I do not wish to invest time building on top of something that is no longer maintained. See you on the other side (in C++)!
+> See you on the other side (in C++)!
 
 Molten is a engine project I'm working on in my spare time as a means to eventually produce my own games without using a third party engine or framework such as [Unity3D](https://unity3d.com/) or [MonoGame](http://monogame.net).
 
