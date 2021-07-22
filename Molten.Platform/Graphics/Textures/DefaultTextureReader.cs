@@ -33,7 +33,7 @@ namespace Molten.Graphics.Textures
                 image.Warning += Image_Warning;
                 data.Width = image.Width;
                 data.Height = image.Height;
-                IPixelCollection pixels = image.GetPixels();
+                IPixelCollection<ushort> pixels = image.GetPixels();
                 TextureData.Slice slice = new TextureData.Slice()
                 {
                     Data = pixels.ToByteArray(PixelMapping.RGBA),

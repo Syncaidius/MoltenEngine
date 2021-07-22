@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj" />
   </ItemGroup>
 
 </Project>

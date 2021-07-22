@@ -1,339 +1,141 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6BCCAD84-5049-4A75-9A92-A9A5EA933D55}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>Molten.Samples</RootNamespace>
-    <AssemblyName>Molten.Samples</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>latest</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
+    <ProjectReference Include="..\Molten.Engine\Molten.Engine.csproj" />
+    <ProjectReference Include="..\Molten.Font\Molten.Font.csproj" />
+    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj" />
+    <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
+    <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj" />
+    <ProjectReference Include="..\Molten.Renderer.OpenGL\Molten.Renderer.OpenGL.csproj" />
+    <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
   </ItemGroup>
+
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
+    <None Update="App.xaml">
       <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="Skybox.cs" />
-    <Compile Include="SaveTexture.cs" />
-    <Compile Include="2DTextureTest.cs" />
-    <Compile Include="Common\SampleSceneGame.cs" />
-    <Compile Include="Common\SampleSpriteRenderComponent.cs" />
-    <Compile Include="Common\SampleVertexData.cs" />
-    <Compile Include="Common\ControlSampleForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Common\ControlSampleForm.Designer.cs">
-      <DependentUpon>ControlSampleForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DeferredRendering.cs" />
-    <Compile Include="1DTextureTest.cs" />
-    <Compile Include="SpriteBatchArrrays.cs" />
-    <Compile Include="SpriteFontStress.cs" />
-    <Compile Include="FontFileTest.cs" />
-    <Compile Include="MultiWindowGame.cs" />
-    <Compile Include="SceneParentingTest.cs" />
-    <Compile Include="SceneIndexedStressTest.cs" />
-    <Compile Include="SceneStressTest.cs" />
-    <Compile Include="SceneTexture1DArrayTest.cs" />
-    <Compile Include="SceneTexture2DArrayTest.cs" />
-    <Compile Include="SpriteBatchPrimitives.cs" />
-    <Compile Include="SpriteBatchUnfairTest.cs" />
-    <Compile Include="SpriteBatchSample.cs" />
-    <Compile Include="Common\CubeArrayVertex.cs" />
-    <Compile Include="Common\SampleGame.cs" />
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Common\ControlSampleForm.resx">
-      <DependentUpon>ControlSampleForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Content Include="Assets\1d_1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\1d_2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\1d_3.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="Assets\BasicColor.mfx">
+    </None>
+    <None Update="Assets\128_1.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\BasicTexture.mfx">
+    <None Update="Assets\128_2.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\BasicTextureArray2D.mfx">
+    <None Update="Assets\128_3.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\BasicTexture1D.mfx">
+    <None Update="Assets\1d_1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Assets\BasicTextureArray1D.mfx">
+    <None Update="Assets\1d_2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="Assets\BroshK.ttf">
+    <None Update="Assets\1d_3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\cubemap.dds">
+    </None>
+    <None Update="Assets\BasicColor.mfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_bc4.dds">
+    </None>
+    <None Update="Assets\BasicTexture.mfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_bc5.dds">
+    </None>
+    <None Update="Assets\BasicTexture1D.mfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_bc6h_fast.dds">
+    </None>
+    <None Update="Assets\BasicTextureArray1D.mfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_bc6h_fine.dds">
+    </None>
+    <None Update="Assets\BasicTextureArray2D.mfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_bc7_fast.dds">
+    </None>
+    <None Update="Assets\BroshK.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_bc7_fine.dds">
+    </None>
+    <None Update="Assets\cubemap.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_bc7_srgb_fast.dds">
+    </None>
+    <None Update="Assets\dds_bc4.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_bc7_srgb_fine.dds">
+    </None>
+    <None Update="Assets\dds_bc4_srgb.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_dxt1.dds">
+    </None>
+    <None Update="Assets\dds_bc5.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_dxt3.dds">
+    </None>
+    <None Update="Assets\dds_bc6h_fast.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_dxt5.dds">
+    </None>
+    <None Update="Assets\dds_bc6h_fine.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_dxt5_srgb.dds">
+    </None>
+    <None Update="Assets\dds_bc7_fast.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_rgba.dds">
+    </None>
+    <None Update="Assets\dds_bc7_fine.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_test_e.dds">
+    </None>
+    <None Update="Assets\dds_bc7_srgb_fast.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_test_n.dds">
+    </None>
+    <None Update="Assets\dds_bc7_srgb_fine.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Digitalt.ttf">
+    </None>
+    <None Update="Assets\dds_color_test.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\euphorigenic.ttf">
+    </None>
+    <None Update="Assets\dds_dxt1.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\metal.dds">
+    </None>
+    <None Update="Assets\dds_dxt3.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\metal_e.dds">
+    </None>
+    <None Update="Assets\dds_dxt5.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\metal_n.dds">
+    </None>
+    <None Update="Assets\dds_dxt5_srgb.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\metal_s.dds">
+    </None>
+    <None Update="Assets\dds_rgba.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="Assets\dds_test.dds">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\dds_test_e.dds">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\dds_test_n.dds">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\dds_test_red.dds">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Digitalt.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\euphorigenic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\metal.dds">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\metal_e.dds">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\metal_n.dds">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\metal_s.dds">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\png_test.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\128_1.dds">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\128_2.dds">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\128_3.dds">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_color_test.dds">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_test.dds">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\dds_test_red.dds">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\png_test.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Molten.DX11\Molten.DX11.csproj">
-      <Project>{8800afbc-8be4-4145-803e-ef8c1026a17b}</Project>
-      <Name>Molten.DX11</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Molten.Engine\Molten.Engine.csproj">
-      <Project>{8e14325b-28cc-44a8-83ed-4b5946240d88}</Project>
-      <Name>Molten.Engine</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Molten.Font\Molten.Font.csproj">
-      <Project>{4fe5b72a-3e02-46b9-ac04-b781c964890a}</Project>
-      <Name>Molten.Font</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
-      <Project>{8df4c894-b793-495e-bc14-53306f8b2972}</Project>
-      <Name>Molten.IO</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Molten.Math\Molten.Math.csproj">
-      <Project>{e59938af-a9d4-4963-b4ac-61e53d05527e}</Project>
-      <Name>Molten.Math</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Molten.OpenGL\Molten.OpenGL.csproj">
-      <Project>{051563bb-29ac-4903-ae21-72184cd18955}</Project>
-      <Name>Molten.OpenGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Molten.Platform.Windows\Molten.Platform.Windows.csproj">
-      <Project>{bda0168b-68ff-4201-8812-9c4ffe1f6a86}</Project>
-      <Name>Molten.Platform.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj">
-      <Project>{57d4a251-9082-4199-b894-6173c7f9215b}</Project>
-      <Name>Molten.Platform</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj">
-      <Project>{1e4854b0-d1a8-40ae-9038-1dea304574a5}</Project>
-      <Name>Molten.Utility</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>
