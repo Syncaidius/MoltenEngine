@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +10,7 @@
     <ProjectReference Include="..\Molten.Font\Molten.Font.csproj" />
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
+    <ProjectReference Include="..\Molten.Platform.Windows\Molten.Platform.Windows.csproj" />
     <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj" />
     <ProjectReference Include="..\Molten.Renderer.OpenGL\Molten.Renderer.OpenGL.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />

@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Engine", "Molten.Engine.csproj", "{01EA47EC-1959-401B-A67B-E44CCA62513B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Samples", "..\Molten.Samples\Molten.Samples.csproj", "{A4F099D0-81B4-4E6F-A128-A9CE5F1E89B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Samples.Windows", "..\Molten.Samples\Molten.Samples.Windows.csproj", "{A4F099D0-81B4-4E6F-A128-A9CE5F1E89B4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Math", "..\Molten.Math\Molten.Math.csproj", "{A2E707C3-EF66-422E-BBD4-A6E055BC7D91}"
 EndProject
@@ -18,6 +18,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Platform", "..\Molten.Platform\Molten.Platform.csproj", "{95BBFB2D-CE70-4651-8B00-F84E497950D3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Renderer.OpenGL", "..\Molten.Renderer.OpenGL\Molten.Renderer.OpenGL.csproj", "{ADA00FA9-DA37-4D92-AE44-E26631F92370}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Platform.Android", "..\Molten.Platform.Android\Molten.Platform.Android.csproj", "{EF901362-166F-4B92-86D2-DE4A04C4EEE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Platform.Windows", "..\Molten.Platform.Windows\Molten.Platform.Windows.csproj", "{B8156688-4CFE-4210-B9D1-611AF017FDE1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Windows", "Windows", "{599B89AD-7313-4DE5-9501-FAA741616DDC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Android", "Android", "{56E6BAEA-44EC-4A4E-B2A5-C871E09B574A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,9 +80,26 @@ Global
 		{ADA00FA9-DA37-4D92-AE44-E26631F92370}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADA00FA9-DA37-4D92-AE44-E26631F92370}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADA00FA9-DA37-4D92-AE44-E26631F92370}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF901362-166F-4B92-86D2-DE4A04C4EEE3}.Debug - No Renderer|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF901362-166F-4B92-86D2-DE4A04C4EEE3}.Debug - No Renderer|Any CPU.Build.0 = Debug|Any CPU
+		{EF901362-166F-4B92-86D2-DE4A04C4EEE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF901362-166F-4B92-86D2-DE4A04C4EEE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF901362-166F-4B92-86D2-DE4A04C4EEE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF901362-166F-4B92-86D2-DE4A04C4EEE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8156688-4CFE-4210-B9D1-611AF017FDE1}.Debug - No Renderer|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8156688-4CFE-4210-B9D1-611AF017FDE1}.Debug - No Renderer|Any CPU.Build.0 = Debug|Any CPU
+		{B8156688-4CFE-4210-B9D1-611AF017FDE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8156688-4CFE-4210-B9D1-611AF017FDE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8156688-4CFE-4210-B9D1-611AF017FDE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8156688-4CFE-4210-B9D1-611AF017FDE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A4F099D0-81B4-4E6F-A128-A9CE5F1E89B4} = {599B89AD-7313-4DE5-9501-FAA741616DDC}
+		{EF901362-166F-4B92-86D2-DE4A04C4EEE3} = {56E6BAEA-44EC-4A4E-B2A5-C871E09B574A}
+		{B8156688-4CFE-4210-B9D1-611AF017FDE1} = {599B89AD-7313-4DE5-9501-FAA741616DDC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E6F7F5AE-B47A-44D1-9195-ACABA0337E05}
