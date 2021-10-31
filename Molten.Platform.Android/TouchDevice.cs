@@ -5,22 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Platform.Android
+namespace Molten.Input
 {
-    public class TouchDevice : IInputDevice
+    public class TouchDevice : AndroidInputDeviceBase<TouchFinger>
     {
-        public bool IsConnected => throw new NotImplementedException();
 
-        public string DeviceName => throw new NotImplementedException();
-
-        public void ClearState()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OpenControlPanel()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

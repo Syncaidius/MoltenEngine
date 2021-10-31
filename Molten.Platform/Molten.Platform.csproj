@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Touch\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="8.1.0" />
   </ItemGroup>
 

@@ -12,7 +12,7 @@ using System.Windows.Forms;
 namespace Molten.Input
 {
     /// <summary>Handles mouse input.</summary>
-    public class MouseDevice : InputHandlerBase<MouseButton>, IMouseDevice
+    public class MouseDevice : InputDeviceBase<MouseButton>, IMouseDevice
     {
         /// <summary>
         /// Occurs when the mouse cursor was inside the parent window/control, but just left it.
@@ -45,8 +45,9 @@ namespace Molten.Input
         IntPtr _windowHandle;
         bool _bufferUpdated;
 
-        protected override void OnInitialize(IInputManager manager, Logger log)
+        internal override void Initialize(IInputManager manager, Logger log)
         {
+            base.Initialize(manager, log);
             InputManager diManager = manager as InputManager;
 
             _mouse = new Mouse(diManager.DirectInput);
@@ -58,7 +59,7 @@ namespace Molten.Input
             _prevState = new MouseState();
         }
 
-        public override void Bind(INativeSurface surface)
+        internal override void Bind(INativeSurface surface)
         {
             _surface = surface;
             SurfaceHandleChanged(surface);
@@ -66,7 +67,7 @@ namespace Molten.Input
             _surface.OnParentChanged += SurfaceHandleChanged;
         }
 
-        public override void Unbind(INativeSurface surface)
+        internal override void Unbind(INativeSurface surface)
         {
             _surface.OnHandleChanged -= SurfaceHandleChanged;
             _surface.OnParentChanged -= SurfaceHandleChanged;
@@ -152,7 +153,7 @@ namespace Molten.Input
 
         /// <summary>Update input handler.</summary>
         /// <param name="time">The snapshot of game time to use.</param>
-        public override void Update(Timing time)
+        internal override void Update(Timing time)
         {
             if (_surface == null)
                 return;

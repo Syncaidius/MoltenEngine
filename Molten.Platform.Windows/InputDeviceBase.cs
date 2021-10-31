@@ -11,29 +11,22 @@ namespace Molten.Input
     /// </summary>
     public abstract class InputDeviceBase : EngineObject, IInputDevice
     {
-        public void Initialize(IInputManager manager, Logger log)
+        internal virtual void Initialize(IInputManager manager, Logger log)
         {
-            if (IsInitialized)
-                throw new Exception("Device is already initialized.");
-
             Manager = manager;
-            OnInitialize(manager, log);
-            IsInitialized = true;
         }
-
-        protected abstract void OnInitialize(IInputManager manager, Logger log);
 
         public abstract void ClearState();
 
         /// <summary>Occurs when the device is to bind to the provided surface.</summary>
         /// <param name="surface">The surface that the device should bind to.</param>
-        public abstract void Bind(INativeSurface surface);
+        internal abstract void Bind(INativeSurface surface);
 
         /// <summary>Occurs when the device is to unbind from the provided surface.</summary>
         /// <param name="surface">The surface from which the device should unbind.</param>
-        public abstract void Unbind(INativeSurface surface);
+        internal abstract void Unbind(INativeSurface surface);
 
-        public abstract void Update(Timing time);
+        internal abstract void Update(Timing time);
 
         /// <summary>Attempts to open the associated control pane application for the device. 
         /// Does nothing if no control app is available.</summary>
@@ -45,8 +38,6 @@ namespace Molten.Input
         /// <summary>Gets the name of the device.</summary>
         public abstract string DeviceName { get; }
 
-        public bool IsInitialized { get; private set; }
-
         /// <summary>Gets the <see cref="IInputManager"/> that the current input device is bound to.</summary>
         public IInputManager Manager { get; private set; }
     }
@@ -55,7 +46,7 @@ namespace Molten.Input
     /// A helper base class for implementing <see cref="IInputDevice{T}"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class InputHandlerBase<T> : InputDeviceBase, IInputDevice<T> where T : struct
+    public abstract class InputDeviceBase<T> : InputDeviceBase, IInputDevice<T> where T : struct
     {
         public event InputConnectionStatusHandler<T> OnConnectionStatusChanged;
 
