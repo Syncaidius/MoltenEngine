@@ -5,12 +5,8 @@ using System.Text;
 using SharpDX.DirectInput;
 using SharpDX.Multimedia;
 using SharpDX.RawInput;
-using System.Runtime.InteropServices;
-using SharpDX;
-using SharpDX.Windows;
 using Molten.Graphics;
 using Molten.Utilities;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace Molten.Input
@@ -49,7 +45,7 @@ namespace Molten.Input
         IntPtr _windowHandle;
         bool _bufferUpdated;
 
-        internal override void Initialize(IInputManager manager, Logger log)
+        protected override void OnInitialize(IInputManager manager, Logger log)
         {
             InputManager diManager = manager as InputManager;
 
@@ -62,7 +58,7 @@ namespace Molten.Input
             _prevState = new MouseState();
         }
 
-        internal override void Bind(INativeSurface surface)
+        public override void Bind(INativeSurface surface)
         {
             _surface = surface;
             SurfaceHandleChanged(surface);
@@ -70,7 +66,7 @@ namespace Molten.Input
             _surface.OnParentChanged += SurfaceHandleChanged;
         }
 
-        internal override void Unbind(INativeSurface surface)
+        public override void Unbind(INativeSurface surface)
         {
             _surface.OnHandleChanged -= SurfaceHandleChanged;
             _surface.OnParentChanged -= SurfaceHandleChanged;
@@ -156,7 +152,7 @@ namespace Molten.Input
 
         /// <summary>Update input handler.</summary>
         /// <param name="time">The snapshot of game time to use.</param>
-        internal override void Update(Timing time)
+        public override void Update(Timing time)
         {
             if (_surface == null)
                 return;

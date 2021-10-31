@@ -65,7 +65,7 @@ namespace Molten.Input
         public event KeyHandler OnKeyPressed;
         public event KeyHandler OnKeyReleased;
 
-        internal override void Initialize(IInputManager manager, Logger log)
+        protected override void OnInitialize(IInputManager manager, Logger log)
         {
             InputManager diManager = manager as InputManager;
             
@@ -75,10 +75,10 @@ namespace Molten.Input
 
             _keyboard = new Keyboard(diManager.DirectInput);
             _keyboard.Properties.BufferSize = 256;
-            _keyboard.Acquire();            
+            _keyboard.Acquire();
         }
 
-        internal override void Bind(INativeSurface surface)
+        public override void Bind(INativeSurface surface)
         {
             _surface = surface;
             SurfaceHandleChanged(surface);
@@ -87,7 +87,7 @@ namespace Molten.Input
             CreateHook();
         }
 
-        internal override void Unbind(INativeSurface surface)
+        public override void Unbind(INativeSurface surface)
         {
             _surface.OnHandleChanged -= SurfaceHandleChanged;
             _surface.OnParentChanged -= SurfaceHandleChanged;
@@ -204,7 +204,7 @@ namespace Molten.Input
 
         /// <summary>Update input handler.</summary>
         /// <param name="time">The snapshot of game time to use.</param>
-        internal override void Update(Timing time)
+        public override void Update(Timing time)
         {
             // Update previous state with buffer
             if (_buffer != null && _bufferUpdated)

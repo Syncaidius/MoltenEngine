@@ -4,4 +4,10 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
+    <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj" />
+    <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
+  </ItemGroup>
+
 </Project>
