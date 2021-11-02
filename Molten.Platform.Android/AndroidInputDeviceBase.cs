@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,24 @@ namespace Molten.Input
 {
     public abstract class AndroidInputDeviceBase : EngineObject, IInputDevice
     {
-        public bool IsConnected => throw new NotImplementedException();
+        public abstract bool IsConnected { get; }
 
-        public string DeviceName => throw new NotImplementedException();
+        public abstract string DeviceName { get; }
+
+        internal virtual void Initialize(IInputManager manager, Logger log)
+        {
+            Manager = manager;
+        }
+
+        /// <summary>Occurs when the device is to bind to the provided surface.</summary>
+        /// <param name="surface">The surface that the device should bind to.</param>
+        internal abstract void Bind(INativeSurface surface);
+
+        /// <summary>Occurs when the device is to unbind from the provided surface.</summary>
+        /// <param name="surface">The surface from which the device should unbind.</param>
+        internal abstract void Unbind(INativeSurface surface);
+
+        internal abstract void Update(Timing time);
 
         public void ClearState()
         {
@@ -21,6 +37,8 @@ namespace Molten.Input
         {
             throw new NotImplementedException();
         }
+
+        public IInputManager Manager { get; private set; }
     }
 
     public abstract class AndroidInputDeviceBase<T> : AndroidInputDeviceBase, IInputDevice<T>

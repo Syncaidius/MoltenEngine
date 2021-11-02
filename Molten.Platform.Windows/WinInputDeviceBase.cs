@@ -9,7 +9,7 @@ namespace Molten.Input
     /// <summary>
     /// A helper base class for implementing <see cref="IInputDevice"/>.
     /// </summary>
-    public abstract class InputDeviceBase : EngineObject, IInputDevice
+    public abstract class WinInputDeviceBase : EngineObject, IInputDevice
     {
         internal virtual void Initialize(IInputManager manager, Logger log)
         {
@@ -46,7 +46,7 @@ namespace Molten.Input
     /// A helper base class for implementing <see cref="IInputDevice{T}"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class InputDeviceBase<T> : InputDeviceBase, IInputDevice<T> where T : struct
+    public abstract class InputDeviceBase<T> : WinInputDeviceBase, IInputDevice<T> where T : struct
     {
         public event InputConnectionStatusHandler<T> OnConnectionStatusChanged;
 

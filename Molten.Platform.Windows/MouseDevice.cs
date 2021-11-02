@@ -48,7 +48,7 @@ namespace Molten.Input
         internal override void Initialize(IInputManager manager, Logger log)
         {
             base.Initialize(manager, log);
-            InputManager diManager = manager as InputManager;
+            WinInputManager diManager = manager as WinInputManager;
 
             _mouse = new Mouse(diManager.DirectInput);
             _mouse.Properties.AxisMode = DeviceAxisMode.Relative;

@@ -68,7 +68,7 @@ namespace Molten.Input
         internal override void Initialize(IInputManager manager, Logger log)
         {
             base.Initialize(manager, log);
-            InputManager diManager = manager as InputManager;
+            WinInputManager diManager = manager as WinInputManager;
             
             _state = new KeyboardState();
             _prevState = new KeyboardState();

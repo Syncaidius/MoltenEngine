@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Input
 {
-    interface ITouchDevice : IInputDevice<TouchFinger>
+    public interface ITouchDevice : IInputDevice<TouchFinger>
     {
         FingerState GetFingerState(TouchFinger finger);
 
