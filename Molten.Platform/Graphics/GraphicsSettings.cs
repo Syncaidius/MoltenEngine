@@ -11,24 +11,6 @@ namespace Molten.Graphics
     [DataContract]
     public class GraphicsSettings : SettingBank
     {
-#if WIN64
-        public const string DEFAULT_RENDER = RENDERER_DX11;
-
-#else 
-        // TODO replace this with each platform's default renderer.
-        public const string DEFAULT_RENDER = RENDERER_DX11;
-#endif
-        /// <summary>The name of the default DX11 renderer library.</summary>
-        public const string RENDERER_DX11 = "Molten.DX11.dll; Molten.Graphics.RendererDX11";
-
-        /// <summary>The name of the default DX12 renderer library.</summary>
-        public const string RENDERER_DX12 = "Molten.DX12.dll; Molten.Graphics.RendererDX12";
-
-        /// <summary>
-        /// The name of the default OpenGL renderer library.
-        /// </summary>
-        public const string RENDERER_OPENGL = "Molten.OpenGL.dll; Molten.Graphics.RendererGL";
-
         /// <summary>
         /// The minimum tessellation factor for batched lights.
         /// </summary>
@@ -45,16 +27,11 @@ namespace Molten.Graphics
         {
             GraphicsAdapterID = AddSetting<int>("adapter_id", -1);
             DisplayOutputIds = AddSettingList<int>("display_id");
-            Library = AddSetting<string>("renderer", RENDERER_DX11);
             VSync = AddSetting<bool>("vsync", true);
             MSAA = AddSetting<AntiAliasMode>("msaa", 0);
             BackBufferSize = AddSetting<int>("back_buffer_size", 1);
             EnableDebugLayer = AddSetting<bool>("renderer_debug");
         }
-
-        /// <summary>Gets the renderer library to use with the engine. This can be changed to any library containing one or more implementations of <see cref="MoltenRenderer"/>.</summary>
-        [DataMember]
-        public SettingValue<string> Library { get; private set; }
 
         /// <summary>Gets or sets the UID of the <see cref="IDisplayAdapter"/> that was last used.</summary>
         [DataMember]

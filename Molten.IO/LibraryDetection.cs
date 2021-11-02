@@ -45,8 +45,8 @@ namespace Molten
 
             // Default if provided one is not found.
             loadedAssembly = Assembly.LoadFrom(parts[0]);
-            List<Type> renderers = FindType<T>(loadedAssembly).ToList();
-            if (renderers.Count == 0)
+            List<Type> types = FindType<T>(loadedAssembly).ToList();
+            if (types.Count == 0)
             {
                 log.WriteLine($"Provided {libraryLabel} library has no implementations of {type.Name}");
                 log.WriteLine($"Defaulting to {defaultTypePath} {libraryLabel} library, please restart program");
@@ -58,7 +58,7 @@ namespace Molten
             // Attempt to instanciate library object
             T instance = default(T);
             Type rType = null;
-            foreach (Type t in renderers)
+            foreach (Type t in types)
             {
                 if (t.FullName == parts[1])
                 {

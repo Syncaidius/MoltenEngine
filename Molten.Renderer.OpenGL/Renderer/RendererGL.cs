@@ -81,7 +81,7 @@ namespace Molten.Graphics
 
         public override string Name => "OpenGL";
 
-        public override IDisplayManager DisplayManager => throw new NotImplementedException();
+        public override IDisplayManager DisplayManager => _displayManager;
 
         public override IResourceManager Resources => _resourceManager;
 
