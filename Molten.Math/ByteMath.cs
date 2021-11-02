@@ -8,13 +8,31 @@ namespace Molten
     /// <summary>A helper class for converting between different computational storage measurements (e.g. bits, bytes, kilobytes, etc).</summary>
     public static class ByteMath
     {
+        public const long BYTES_IN_KiB = 1024;
+        public const long BYTES_IN_MiB = BYTES_IN_KiB * 1024;
+        public const long BYTES_IN_GiB = BYTES_IN_MiB * 1024;
+        public const long BYTES_IN_TiB = BYTES_IN_GiB * 1024;
+        public const long BYTES_IN_PiB = BYTES_IN_TiB * 1024;
+
+#if WINDOWS
+        const long BYTE_BASE = 1024;
+#else
+        const long BYTE_BASE = 1000;
+#endif
+
+        public const long BYTES_IN_KB = BYTE_BASE;
+        public const long BYTES_IN_MB = BYTES_IN_KB * BYTE_BASE;
+        public const long BYTES_IN_GB = BYTES_IN_MB * BYTE_BASE;
+        public const long BYTES_IN_TB = BYTES_IN_GB * BYTE_BASE;
+        public const long BYTES_IN_PB = BYTES_IN_TB * BYTE_BASE;
+
         /// <summary>Converts bytes into kilobytes (KB).</summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
         public static double ToKilobytes(long bytes)
         {
             double val = (float)bytes;
-            val /= 1024;
+            val /= BYTES_IN_KB;
 
             return val;
         }
@@ -25,8 +43,7 @@ namespace Molten
         public static double ToMegabytes(ulong bytes)
         {
             decimal val = (decimal)bytes;
-            val /= 1024;
-            val /= 1024;
+            val /= BYTES_IN_MB;
 
             return (double)val;
         }
@@ -37,8 +54,7 @@ namespace Molten
         public static double ToMegabytes(long bytes)
         {
             double val = bytes;
-            val /= 1024;
-            val /= 1024;
+            val /= BYTES_IN_MB;
 
             return val;
         }
@@ -49,9 +65,7 @@ namespace Molten
         public static double ToGigabytes(ulong bytes)
         {
             decimal val = (decimal)bytes;
-            val /= 1024; //to kilobytes
-            val /= 1024; //to megabytes
-            val /= 1024; //to gigabytes
+            val /= BYTES_IN_GB;
 
             return (double)val;
         }
@@ -62,9 +76,7 @@ namespace Molten
         public static double ToGigabytes(long bytes)
         {
             double val = (float)bytes;
-            val /= 1024; //to kilobytes
-            val /= 1024; //to megabytes
-            val /= 1024; //to gigabytes
+            val /= BYTES_IN_GB;
 
             return val;
         }
@@ -75,10 +87,7 @@ namespace Molten
         public static double ToTerabytes(long bytes)
         {
             double val = (float)bytes;
-            val /= 1024; //to kilobytes
-            val /= 1024; //to megabytes
-            val /= 1024; //to gigabytes
-            val /= 1024; //to terabytes
+            val /= BYTES_IN_TB;
 
             return val;
         }
@@ -89,11 +98,7 @@ namespace Molten
         public static double ToPetabytes(long bytes)
         {
             double val = (float)bytes;
-            val /= 1024; //to kilobytes
-            val /= 1024; //to megabytes
-            val /= 1024; //to gigabytes
-            val /= 1024; //to terabytes
-            val /= 1024; //to petabytes
+            val /= BYTES_IN_PB;
 
             return val;
         }
@@ -103,7 +108,7 @@ namespace Molten
         /// <returns></returns>
         public static long FromKilobytes(double kilobytes)
         {
-            kilobytes *= 1024; //to B
+            kilobytes *= BYTES_IN_KB;
             return (long)kilobytes;
         }
 
@@ -112,8 +117,7 @@ namespace Molten
         /// <returns></returns>
         public static long FromMegabytes(double megabytes)
         {
-            megabytes *= 1024; //to KB
-            megabytes *= 1024; //to B
+            megabytes *= BYTES_IN_MB;
 
             return (long)megabytes;
         }
@@ -123,9 +127,7 @@ namespace Molten
         /// <returns></returns>
         public static long FromGigabytes(double gigabytes)
         {
-            gigabytes *= 1024; //to MB
-            gigabytes *= 1024; //to KB
-            gigabytes *= 1024; //to B
+            gigabytes *= BYTES_IN_GB;
 
             return (long)gigabytes;
         }
@@ -135,10 +137,7 @@ namespace Molten
         /// <returns></returns>
         public static long FromTerabytes(double terabytes)
         {
-            terabytes *= 1024; //to gigabytes
-            terabytes *= 1024; //to megabytes
-            terabytes *= 1024; //to KB
-            terabytes *= 1024; //to B
+            terabytes *= BYTES_IN_TB;
 
 
             return (long)terabytes;
@@ -149,12 +148,7 @@ namespace Molten
         /// <returns></returns>
         public static long FromPetabytes(double petabytes)
         {
-            petabytes *= 1024; //to terabytes
-            petabytes *= 1024; //to gigabytes
-            petabytes *= 1024; //to megabytes
-            petabytes *= 1024; //to kilobytes
-            petabytes *= 1024; //to bytes
-
+            petabytes *= BYTES_IN_PB;
 
             return (long)petabytes;
         }
