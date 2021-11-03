@@ -1,0 +1,182 @@
+<material>
+  <name>light-point</name>
+  <description>Default shader for deferred point lighting.</description>
+  <pass>
+    <name>main</name>
+    <iterations>1</iterations>
+    <vertex>VS</vertex>
+	  <hull>HS</hull>
+	  <domain>DS</domain>
+    <fragment>PS</fragment>
+    <blend preset="additive" />
+    <rasterizer preset="default">
+      <fill>solid</fill>
+      <cull>front</cull>
+      <frontIsCCW>false</frontIsCCW>
+      <depthclip>false</depthclip>
+      <aaline>false</aaline>
+      <multisample>false</multisample>
+      <scissortest>false</scissortest>
+    </rasterizer>
+    <depth preset="default">
+      <reference>0</reference>
+      <comparison>GreaterEqual</comparison>
+      <writemask>Zero</writemask>
+      <writepermission>ReadOnly</writepermission>
+      <enabled>true</enabled>
+      <stencilenabled>true</stencilenabled>
+      <front>
+        <comparison>Equal</comparison>
+        <fail>Keep</fail>
+        <stencilfail>Keep</stencilfail>
+        <stencilpass>Keep</stencilpass>
+      </front>
+      <back>
+        <comparison>Equal</comparison>
+        <fail>Keep</fail>
+        <stencilfail>Keep</stencilfail>
+        <stencilpass>Keep</stencilpass>
+      </back>
+    </depth>
+    <sampler slot="1" preset="default">
+      <comparison>Always</comparison>
+      <filter>MinMagMipPoint</filter>
+      <maxanisotropy>1</maxanisotropy>
+    </sampler>
+  </pass>
+</material>
+
+<material>
+  <name>light-point-debug</name>
+  <description>Debug shader for deferred point lighting.</description>
+  <pass>
+    <name>main</name>
+    <iterations>1</iterations>
+    <vertex>VS</vertex>
+	  <hull>HS</hull>
+	  <domain>DS</domain>
+    <fragment>PS_Debug</fragment>
+    <blend preset="additive" />
+    <depth preset="defaultNoStencil" condition="debug" />
+    <rasterizer preset="default" condition="debug">
+      <fill>wireframe</fill>
+      <cull>back</cull>
+      <frontIsCCW>false</frontIsCCW>
+      <depthclip>true</depthclip>
+      <aaline>false</aaline>
+      <multisample>false</multisample>
+      <scissortest>false</scissortest>
+    </rasterizer>
+  </pass>
+</material>
+
+#include "gbuffer_common.mfx"
+#include "light_common.mfx"
+
+struct HS_OUTPUT
+{
+	float3 HemiDir : POSITION;
+	float LightID : TEXCOORD0;
+};
+
+struct DS_OUTPUT
+{
+	float4 Position : SV_POSITION;
+	float3 PositionXYW : TEXCOORD0;
+	uint LightID : BLENDINDICES;
+};
+
+/////////////////////////////////////////////////////////////////////////////
+// Hull shader
+/////////////////////////////////////////////////////////////////////////////
+
+// Custom point light constant function
+HS_CONSTANT_DATA_OUTPUT PointConstantHS(uint PatchID : SV_PrimitiveID)
+{
+	HS_CONSTANT_DATA_OUTPUT Output;
+
+	uint id = floor(0.5 * PatchID); // Light ID (2 patches per light)
+	Output.Edges[0] = Output.Edges[1] = Output.Edges[2] = Output.Edges[3] = LightData[id].Tess;
+	Output.Inside[0] = Output.Inside[1] = LightData[id].Tess;
+
+	return Output;
+}
+
+
+static const float3 HemilDir[2] = {
+	float3(1.0, 1.0, 1.0),
+	float3(-1.0, 1.0, -1.0)
+};
+
+[domain("quad")]
+[partitioning("integer")]
+[outputtopology("triangle_ccw")]
+[outputcontrolpoints(4)]
+[patchconstantfunc("PointConstantHS")]
+HS_OUTPUT HS(uint PatchID : SV_PrimitiveID)
+{
+	HS_OUTPUT Output;
+
+	uint hemiID = min(PatchID, fmod(PatchID, 2)); // use the remainder as the hemiDir ID (or the patchID if it's less than 2).
+
+	Output.LightID = floor(0.5 * PatchID);
+	Output.HemiDir = HemilDir[hemiID];
+	return Output;
+
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Domain Shader shader
+/////////////////////////////////////////////////////////////////////////////
+[domain("quad")]
+DS_OUTPUT DS(HS_CONSTANT_DATA_OUTPUT input, float2 UV : SV_DomainLocation, const OutputPatch<HS_OUTPUT, 4> quad)
+{
+	// Transform the UV's into clip-space
+	float2 posClipSpace = UV.xy * 2.0 - 1.0;
+
+	// Find the absulate maximum distance from the center
+	float2 posClipSpaceAbs = abs(posClipSpace.xy);
+	float maxLen = max(posClipSpaceAbs.x, posClipSpaceAbs.y);
+
+	// Generate the final position in clip-space
+	float3 normDir = normalize(float3(posClipSpace.xy, (maxLen - 1.0)) * quad[0].HemiDir);
+	float4 posLS = float4(normDir.xyz, 1.0);
+
+	// Transform all the way to projected space
+	DS_OUTPUT Output;
+	Output.LightID = quad[0].LightID;
+	Output.Position = mul(posLS, LightData[Output.LightID].Transform);
+
+	// Store the clip space position
+	Output.PositionXYW = Output.Position.xyw;
+
+	return Output;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Pixel shader
+/////////////////////////////////////////////////////////////////////////////
+cbuffer cbLight : register(b4)
+{
+	float3 cameraPosition			: packoffset(c0);
+}
+
+float4 PS(DS_OUTPUT input) : SV_TARGET
+{
+	MATERIAL g = UnpackGBuffer(input.PositionXYW);
+  uint lightID = input.LightID;
+  
+  float3 lightDir = normalize(LightData[lightID].Position - g.worldPos.xyz);
+  float3 diffuse = max(0, dot(lightDir, g.normal)) * LightData[lightID].Color;
+  
+  float dist = distance(LightData[lightID].Position, g.worldPos.xyz);
+  float quadAtten = 1.0 / (dist * dist);
+  float atten = max(0.0, quadAtten - LightData[lightID].RangeRcp);
+  
+  return float4(diffuse * atten, 1);
+}
+
+float4 PS_Debug() : SV_TARGET
+{
+	return float4(1.0, 1.0, 1.0, 1.0);
+}

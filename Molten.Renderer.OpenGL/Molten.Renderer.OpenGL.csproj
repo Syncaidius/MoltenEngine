@@ -22,4 +22,6 @@
     <Folder Include="Exceptions\" />
   </ItemGroup>
 
+  <Import Project="..\Molten.Renderer.Common\Molten.Renderer.Common.projitems" Label="Shared" />
+
 </Project>

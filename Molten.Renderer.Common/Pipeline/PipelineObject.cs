@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
+
     public abstract class PipelineObject<D,P> : PipelineDisposableObject
         where D : IGraphicsDevice
         where P : IGraphicsPipe<D>

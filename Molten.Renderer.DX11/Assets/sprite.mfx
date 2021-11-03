@@ -1,0 +1,81 @@
+<material>
+	<name>sprite-texture</name>
+	<description>The default material for rendering sprites in a SpriteBatch with a texture</description>
+	<pass>
+		<name>main</name>
+		<iterations>1</iterations>
+		<vertex>VS</vertex>
+		<geometry>GS</geometry>
+    <fragment>PS</fragment>
+    <blend preset="PreMultipliedAlpha" />
+    <rasterizer preset="ScissorTest" />
+    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
+    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
+	</pass>
+</material>
+
+<material>
+	<name>sprite-no-texture</name>
+	<description>The default material for rendering sprites in a SpriteBatch with no texture.</description>
+	<pass>
+		<name>main</name>
+		<iterations>1</iterations>
+		<vertex>VS</vertex>
+		<geometry>GS</geometry>
+    <fragment>PS_NoTexture</fragment>
+    <blend preset="PreMultipliedAlpha" />
+    <rasterizer preset="ScissorTest" />
+    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
+    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
+	</pass>
+</material>
+
+<material>
+  <name>line</name>
+  <description>The default material for rendering un-textured lines with 1 point per line.</description>
+  <pass>
+    <name>main</name>
+    <iterations>1</iterations>
+    <vertex>VS_Line</vertex>
+    <geometry>GS_Line</geometry>
+    <fragment>PS_NoTexture</fragment>
+    <blend preset="PreMultipliedAlpha" />
+    <rasterizer preset="ScissorTest" />
+    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
+    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
+  </pass>
+</material>
+
+<material>
+  <name>circle</name>
+  <description>The default material for rendering an un-textured circle from a single point.</description>
+  <pass>
+    <name>main</name>
+    <iterations>1</iterations>
+    <vertex>VS_Circle</vertex>
+    <geometry>GS_Circle</geometry>
+    <fragment>PS_NoTexture</fragment>
+    <blend preset="PreMultipliedAlpha" />
+    <rasterizer preset="ScissorTest" />
+    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
+    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
+  </pass>
+</material>
+
+<material>
+  <name>triangle</name>
+  <description>The default material for rendering an un-textured triangle from a single point.</description>
+  <pass>
+    <name>main</name>
+    <iterations>1</iterations>
+    <vertex>VS_Tri</vertex>
+    <geometry>GS_Tri</geometry>
+    <fragment>PS_NoTexture</fragment>
+    <blend preset="PreMultipliedAlpha" />
+    <rasterizer preset="ScissorTest" />
+    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
+    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
+  </pass>
+</material>
+
+#include "sprite_common.mfx";

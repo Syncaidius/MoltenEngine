@@ -1,0 +1,29 @@
+<material>
+	<name>gbuffer-compose</name>
+	<description>The default material for rendering sprites in a SpriteBatch with a texture</description>
+	<pass>
+		<name>main</name>
+		<iterations>1</iterations>
+		<vertex>VS</vertex>
+		<geometry>GS</geometry>
+    <fragment>PS_Compose</fragment>
+    <blend preset="PreMultipliedAlpha" />
+    <rasterizer preset="ScissorTest" />
+    <rasterizer preset="DefaultMultisample" condition="Multisampling" />
+    <rasterizer preset="ScissorTestMultiSample" condition="ScissorTest, Multisampling" />
+	</pass>
+</material>
+
+#include "sprite_common.mfx";
+
+Texture2D mapLighting;
+Texture2D mapEmissive;
+
+float4 PS_Compose( PS_IN input ) : SV_Target
+{
+  float4 col = mapDiffuse.Sample(diffuseSampler, input.uv);
+  float4 light = mapLighting.Sample(diffuseSampler, input.uv.xy);
+  float4 emissive = mapEmissive.Sample(diffuseSampler, input.uv.xy);
+  
+  return (col * light) + emissive;
+}
