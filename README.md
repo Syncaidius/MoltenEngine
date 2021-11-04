@@ -44,7 +44,7 @@ Blank - Not Started\
 
 
 # Renderer Feature Support
-See the following table for the per-renderer support and status of each feature.
+See the following table for the per-renderer support and status of each feature.\
 ✔️ Functional/Complete\
 🚧 Work in progres\
 Blank - Not Started\
