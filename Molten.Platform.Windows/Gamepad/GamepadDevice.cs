@@ -12,7 +12,7 @@ namespace Molten.Input
     using Molten.Utilities;
     using State = SharpDX.XInput.State;
 
-    public class GamepadDevice : InputHandlerBase<GamepadButtonFlags>, IGamepadDevice
+    public class GamepadDevice : WinInputDeviceBase<GamepadButtonFlags>, IGamepadDevice
     {
         Gamepad _state;
         Gamepad _statePrev;

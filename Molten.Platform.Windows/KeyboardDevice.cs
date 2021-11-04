@@ -2,18 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
-using SharpDX.Multimedia;
 using SharpDX.DirectInput;
 using System.Runtime.InteropServices;
-using SharpDX.Windows;
 using Molten.Graphics;
 using Molten.Utilities;
 
 namespace Molten.Input
 {
     /// <summary>A handler for keyboard input.</summary>
-    public class KeyboardDevice : InputHandlerBase<Key>, IKeyboardDevice
+    public class KeyboardDevice : WinInputDeviceBase<Key>, IKeyboardDevice
     {
         //various Win32 constants that are needed
         const int GWL_WNDPROC = -4;
@@ -68,7 +65,7 @@ namespace Molten.Input
 
         internal override void Initialize(IInputManager manager, Logger log)
         {
-            InputManager diManager = manager as InputManager;
+            WinInputManager diManager = manager as WinInputManager;
             
             _state = new KeyboardState();
             _prevState = new KeyboardState();

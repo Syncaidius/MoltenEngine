@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Molten.Input
 {
-    public class InputManager : EngineObject, IInputManager
+    public class WinInputManager : EngineObject, IInputManager
     {
         DirectInput _input;
 
@@ -19,8 +19,8 @@ namespace Molten.Input
         WindowsClipboard _clipboard;
 
         Dictionary<GamepadIndex, GamepadDevice> _gamepadsByIndex;
-        Dictionary<Type, InputDeviceBase> _byType = new Dictionary<Type, InputDeviceBase>();
-        List<InputDeviceBase> _devices = new List<InputDeviceBase>();
+        Dictionary<Type, WinInputDeviceBase> _byType = new Dictionary<Type, WinInputDeviceBase>();
+        List<WinInputDeviceBase> _devices = new List<WinInputDeviceBase>();
 
         /// <summary>Initializes the current input manager instance. Avoid calling this directly unless you know what you are doing.</summary>
         /// <param name="settings">The <see cref="InputSettings"/> that was provided when the engine was instanciated.</param>
@@ -34,23 +34,22 @@ namespace Molten.Input
             _clipboard = new WindowsClipboard();
         }
 
-
         public T GetCustomDevice<T>() where T : class, IInputDevice, new()
         {
             Type t = typeof(T);
-            if (_byType.TryGetValue(t, out InputDeviceBase device))
+            if (_byType.TryGetValue(t, out WinInputDeviceBase device))
             {
                 return device as T;
             }
             else
             {
-                device = new T() as InputDeviceBase;
+                device = new T() as WinInputDeviceBase;
                 AddDevice(device);
                 return device as T;
             }
         }
 
-        internal void AddDevice(InputDeviceBase device)
+        internal void AddDevice(WinInputDeviceBase device)
         {
             Type t = device.GetType();
             device.Initialize(this, _log);
@@ -65,7 +64,7 @@ namespace Molten.Input
 
         private void Device_OnDisposing(EngineObject obj)
         {
-            InputDeviceBase handler = obj as InputDeviceBase;
+            WinInputDeviceBase handler = obj as WinInputDeviceBase;
             _devices.Remove(handler);
             _byType.Remove(obj.GetType());
         }
@@ -78,6 +77,11 @@ namespace Molten.Input
         public IKeyboardDevice GetKeyboard()
         {
             return GetCustomDevice<KeyboardDevice>();
+        }
+
+        public ITouchDevice GetTouchDevice()
+        {
+            throw new NotImplementedException();
         }
 
         public IGamepadDevice GetGamepad(GamepadIndex index)
@@ -130,7 +134,7 @@ namespace Molten.Input
                 {
                     if (_activeSurface != null)
                     {
-                        foreach (InputDeviceBase device in _devices)
+                        foreach (WinInputDeviceBase device in _devices)
                         {
                             device.ClearState();
                             device.Unbind(_activeSurface);
@@ -141,7 +145,7 @@ namespace Molten.Input
 
                     if (_activeSurface != null)
                     {
-                        foreach (InputDeviceBase device in _devices)
+                        foreach (WinInputDeviceBase device in _devices)
                             device.Bind(_activeSurface);
                     }
                 }
@@ -152,7 +156,7 @@ namespace Molten.Input
                 // We know the new surface is not IWindowSurface, so unbind.
                 if (_activeSurface != null)
                 {
-                    foreach (InputDeviceBase device in _devices)
+                    foreach (WinInputDeviceBase device in _devices)
                         device.Unbind(_activeSurface);
                 }
 
@@ -162,13 +166,13 @@ namespace Molten.Input
 
         internal void ClearState()
         {
-            foreach (InputDeviceBase device in _devices)
+            foreach (WinInputDeviceBase device in _devices)
                 device.ClearState();
         }
 
         protected override void OnDispose()
         {
-            foreach (InputDeviceBase device in _byType.Values)
+            foreach (WinInputDeviceBase device in _byType.Values)
                 device.Dispose();
 
             _byType.Clear();

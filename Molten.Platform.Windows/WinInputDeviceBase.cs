@@ -3,17 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 
 namespace Molten.Input
 {
-    public abstract class InputDeviceBase : EngineObject , IInputDevice
+    /// <summary>
+    /// A helper base class for implementing <see cref="IInputDevice"/>.
+    /// </summary>
+    public abstract class WinInputDeviceBase : EngineObject, IInputDevice
     {
-        protected IInputManager _manager;
-
         internal virtual void Initialize(IInputManager manager, Logger log)
         {
-            _manager = manager;
+            Manager = manager;
         }
 
         public abstract void ClearState();
@@ -28,7 +28,8 @@ namespace Molten.Input
 
         internal abstract void Update(Timing time);
 
-        /// <summary>Attempts to open the associated control pane application for the device. Does nothing if no control app is available.</summary>
+        /// <summary>Attempts to open the associated control pane application for the device. 
+        /// Does nothing if no control app is available.</summary>
         public abstract void OpenControlPanel();
 
         /// <summary>Gets whether or not the input device is connected.</summary>
@@ -36,9 +37,16 @@ namespace Molten.Input
 
         /// <summary>Gets the name of the device.</summary>
         public abstract string DeviceName { get; }
+
+        /// <summary>Gets the <see cref="IInputManager"/> that the current input device is bound to.</summary>
+        public IInputManager Manager { get; private set; }
     }
 
-    public abstract class InputHandlerBase<T> : InputDeviceBase, IInputDevice<T> where T : struct
+    /// <summary>
+    /// A helper base class for implementing <see cref="IInputDevice{T}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class WinInputDeviceBase<T> : WinInputDeviceBase, IInputDevice<T> where T : struct
     {
         public event InputConnectionStatusHandler<T> OnConnectionStatusChanged;
 
@@ -92,6 +100,5 @@ namespace Molten.Input
         /// <param name="value">The button or key to check.</param>
         /// <returns></returns>
         public abstract bool IsHeld(T value);
-
     }
 }

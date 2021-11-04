@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Molten.Platform</RootNamespace>
     <AssemblyName>Molten.Platform.Windows</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -104,7 +104,6 @@
   <ItemGroup>
     <Compile Include="Gamepad\GamepadTrigger.cs" />
     <Compile Include="Gamepad\GamepadStick.cs" />
-    <Compile Include="InputDeviceBase.cs" />
     <Compile Include="Win32.CPU.cs" />
     <Compile Include="Win32.cs" />
     <Compile Include="Win32.IO.cs" />
@@ -112,11 +111,12 @@
     <Compile Include="Win32Helper.Structures.cs" />
     <Compile Include="WindowsClipboard.cs" />
     <Compile Include="Gamepad\GamepadDevice.cs" />
-    <Compile Include="InputManager.cs" />
     <Compile Include="KeyboardDevice.cs" />
     <Compile Include="MouseDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharpDXInterop.cs" />
+    <Compile Include="WinInputDeviceBase.cs" />
+    <Compile Include="WinInputManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">

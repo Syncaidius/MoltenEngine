@@ -9,11 +9,12 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Molten</RootNamespace>
     <AssemblyName>Molten.Platform</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -113,6 +114,7 @@
     <Compile Include="Keyboard\IKeyboardDevice.cs" />
     <Compile Include="Keyboard\Key.cs" />
     <Compile Include="Keyboard\KeyboardEvents.cs" />
+    <Compile Include="Touch\FingerState.cs" />
     <Compile Include="Mouse\IMouseDevice.cs" />
     <Compile Include="Mouse\MouseButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -228,6 +230,9 @@
     <Compile Include="Graphics\Vertices\VertexInputType.cs" />
     <Compile Include="Graphics\Vertices\VertexTexture.cs" />
     <Compile Include="Graphics\WindowMode.cs" />
+    <Compile Include="Touch\ITouchDevice.cs" />
+    <Compile Include="Touch\TouchFinger.cs" />
+    <Compile Include="Touch\TouchState.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Molten.Font\Molten.Font.csproj">
@@ -247,9 +252,7 @@
       <Name>Molten.Utility</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Touch\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
