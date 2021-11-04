@@ -79,7 +79,7 @@ namespace Molten.Input
             return GetCustomDevice<KeyboardDevice>();
         }
 
-        public ITouchDevice GetTouchDevice()
+        public ITouchDevice GetTouch()
         {
             throw new NotImplementedException();
         }

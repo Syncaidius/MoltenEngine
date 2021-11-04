@@ -133,6 +133,11 @@ namespace Molten.Input
             throw new NotImplementedException();
         }
 
+        public ITouchDevice GetTouch()
+        {
+            throw new NotImplementedException();
+        }
+
         public ITouchDevice GetTouchDevice()
         {
             return GetCustomDevice<TouchDevice>();

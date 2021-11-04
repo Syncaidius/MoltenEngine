@@ -5,13 +5,12 @@ using System.Text;
 using SharpDX.XInput;
 using SharpDX;
 using System.Runtime.InteropServices;
+using Molten.Graphics;
+using Molten.Utilities;
+using State = SharpDX.XInput.State;
 
 namespace Molten.Input
 {
-    using Molten.Graphics;
-    using Molten.Utilities;
-    using State = SharpDX.XInput.State;
-
     public class GamepadDevice : WinInputDeviceBase<GamepadButtonFlags>, IGamepadDevice
     {
         Gamepad _state;
