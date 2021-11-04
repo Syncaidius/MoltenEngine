@@ -13,7 +13,7 @@ I've previously attempted a game engine back in 2015 using SharpDX and while it 
 This is my second attempt at such an engine, so being able to share the code for others to learn from and perhaps even contribute to, seems like the right thing to do. Hopefully you'll find something useful around here!
 
 # Current Status
-See the following table for the per-platform support and status of each feature.\
+See the following table for the per-platform support and status of each feature.
 
 ✔️ Functional/Complete\
 🚧 Work in progres\
@@ -45,7 +45,7 @@ Blank - Not Started\
 
 
 # Renderer Feature Support
-See the following table for the per-renderer support and status of each feature.\
+See the following table for the per-renderer support and status of each feature.
 
 ✔️ Functional/Complete\
 🚧 Work in progres\
