@@ -63,13 +63,14 @@ namespace Molten
             Logger.DisposeAll();
         }
 
-        internal void LoadInput<I>()
-            where I : class, IInputManager, new()
+        internal void LoadInput()
         {
-            if (Input != null)
-                Log.WriteLine("Attempted to load input manager when one is already loaded!");
-
-            Input = new I();
+            Assembly inputAssembly;
+            Input = LibraryDetection.LoadInstance<IInputManager>(Log, "input", "input manager", 
+                Settings.Input.Library, 
+                Settings.Input, 
+                InputSettings.DEFAULT_LIBRARY, 
+                out inputAssembly);
 
             // Initialize
             try
@@ -85,8 +86,7 @@ namespace Molten
             }
         }
 
-        internal bool LoadRenderer<R>()
-            where R : MoltenRenderer, new()
+        internal bool LoadRenderer()
         {
             if (Renderer != null)
             {
@@ -94,7 +94,13 @@ namespace Molten
                 return false;
             }
 
-            Renderer = new R();
+            // TODO default to OpenGL if on a non-windows platform.
+            Assembly renderAssembly;
+            Renderer = LibraryDetection.LoadInstance<MoltenRenderer>(Log, "render", "renderer", 
+                Settings.Graphics.Library, 
+                Settings.Graphics, 
+                GraphicsSettings.DEFAULT_RENDER, 
+                out renderAssembly);
 
             try
             {

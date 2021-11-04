@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Forms;
 
 namespace Molten.Input
@@ -33,7 +32,7 @@ namespace Molten.Input
 
         public string GetText()
         {
-            string? result = null;
+            string result = null;
 
             RunAsSTAThread(() =>
             {

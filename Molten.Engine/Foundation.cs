@@ -1,7 +1,6 @@
 ﻿using Molten.Graphics;
 using Molten.Input;
 using Molten.Threading;
-using Molten.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace Molten
 {
+    public delegate void FoundationHandler(Foundation foundation);
+
     /// <summary>
     /// Provides a foundation on which to build a game or other type of application with Molten engine.
     /// </summary>
-    public abstract class Foundation<R, I>
-        where R : MoltenRenderer, new()
-        where I : class, IInputManager, new()
+    public abstract class Foundation
     {
         Engine _engine;
         EngineThread _gameThread;
@@ -26,9 +25,9 @@ namespace Molten
         IMouseDevice _mouse;
 
         /// <summary>
-        /// Occurs when the game is in the process of closing.
+        /// Occurs when the game is in the process of exiting.
         /// </summary>
-        public event MoltenEventHandler<Foundation<R,I>> OnClosing;
+        public event FoundationHandler OnGameExiting;
 
         /// <summary>Creates a new instance of <see cref="Foundation"/>.</summary>
         /// <param name="title"></param>
@@ -51,8 +50,8 @@ namespace Molten
                 return;
 
             _engine = new Engine(settings, ignoreSavedSettings);
-            _engine.LoadRenderer<R>();
-            _engine.LoadInput<I>();
+            _engine.LoadRenderer();
+            _engine.LoadInput();
 
             if (_engine.Input == null)
             {
@@ -91,8 +90,8 @@ namespace Molten
                 else
                 {
                     _engine.Log.WriteLine("Game exiting");
-                    OnClosing?.Invoke(this);
-                    OnClose();
+                    OnGameExiting?.Invoke(this);
+                    OnExiting();
                     ForceExit();
                 }
             }, gameThreadApartment);
@@ -199,7 +198,7 @@ namespace Molten
         protected virtual void OnFirstLoad(Engine engine) { }
 
         /// <summary>Occurs when the game is in the process of exiting. This gives the game logic a chance to correctly handle the exit, such as saving the player's progress.</summary>
-        protected virtual void OnClose() { }
+        protected virtual void OnExiting() { }
 
         /// <summary>Occurs when the game is paused (and not already paused).</summary>
         protected virtual void OnPause() { }

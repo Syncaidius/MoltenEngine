@@ -1,19 +1,198 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8E14325B-28CC-44A8-83ED-4B5946240D88}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Molten</RootNamespace>
+    <AssemblyName>Molten.Engine</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
-
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\x64\Debug\Molten.Engine.xml</DocumentationFile>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\Molten.Font\Molten.Font.csproj" />
-    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj" />
-    <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
-    <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj" />
-    <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
+    <Compile Include="Content\ContentContext.cs" />
+    <Compile Include="Content\ContentDirectory.cs" />
+    <Compile Include="Content\ContentFile.cs" />
+    <Compile Include="Content\ContentException.cs" />
+    <Compile Include="Content\ContentManager.cs" />
+    <Compile Include="Content\ContentRequest.cs" />
+    <Compile Include="Content\ContentRequestType.cs" />
+    <Compile Include="Content\ContentReloadTask.cs" />
+    <Compile Include="Content\ContentWorkerTask.cs" />
+    <Compile Include="Content\JsonExtensions.cs" />
+    <Compile Include="Content\Processors\ContentProcessor.cs" />
+    <Compile Include="Content\Processors\ShaderProcessor.cs" />
+    <Compile Include="Content\Processors\SpriteFontProcessor.cs" />
+    <Compile Include="Content\Processors\StringProcessor.cs" />
+    <Compile Include="Content\Processors\TextureProcessor.cs" />
+    <Compile Include="Content\Serialization\BrowsableStringAttribute.cs" />
+    <Compile Include="Content\Serialization\ExpandablePropertyAttribute.cs" />
+    <Compile Include="Content\Serialization\MathConverter.cs" />
+    <Compile Include="Engine.cs" />
+    <Compile Include="EngineSettings.cs" />
+    <Compile Include="GameRunState.cs" />
+    <Compile Include="Foundation.cs" />
+    <Compile Include="ObjectHandler.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SceneManager.cs" />
+    <Compile Include="Scene\Changes\SceneLayerReorder.cs" />
+    <Compile Include="Scene\Changes\SceneLayerRemove.cs" />
+    <Compile Include="Scene\Changes\SceneLayerAdd.cs" />
+    <Compile Include="Scene\Changes\SceneAddObject.cs" />
+    <Compile Include="Scene\Changes\SceneChange.cs" />
+    <Compile Include="Scene\Changes\SceneRemoveObject.cs" />
+    <Compile Include="Scene\Components\Lights\CapsuleLightComponent.cs" />
+    <Compile Include="Scene\SceneChildCollection.cs" />
+    <Compile Include="Scene\Components\SpriteRenderComponent.cs" />
+    <Compile Include="Scene\Components\RenderableComponent.cs" />
+    <Compile Include="Scene\Components\MeshComponent.cs" />
+    <Compile Include="Scene\Components\Lights\PointLightComponent.cs" />
+    <Compile Include="Scene\Components\CameraComponent.cs" />
+    <Compile Include="Scene\Components\SceneComponent.cs" />
+    <Compile Include="Scene\ICursorAcceptor.cs" />
+    <Compile Include="Scene\Scene.cs" />
+    <Compile Include="Scene\SceneClickTracker.cs" />
+    <Compile Include="Scene\SceneException.cs" />
+    <Compile Include="Scene\SceneLayer.cs" />
+    <Compile Include="Scene\SceneObject.cs" />
+    <Compile Include="Scene\SceneObjectTransform.cs" />
+    <Compile Include="Tasks\EngineAddScene.cs" />
+    <Compile Include="Tasks\EngineRemoveScene.cs" />
+    <Compile Include="Tasks\EngineTask.cs" />
+    <Compile Include="Tests\ContentManagerTests.cs" />
+    <Compile Include="Threading\EngineThread.cs" />
+    <Compile Include="Threading\WorkerGroupException.cs" />
+    <Compile Include="Threading\EngineThreadException.cs" />
+    <Compile Include="Threading\IWorkerTask.cs" />
+    <Compile Include="Threading\ThreadManager.cs" />
+    <Compile Include="Threading\WorkerGroup.cs" />
+    <Compile Include="Threading\WorkerThread.cs" />
+    <Compile Include="UISettings.cs" />
+    <Compile Include="UI\UICompoundComponent.cs" />
+    <Compile Include="Scene\SceneEventData.cs" />
+    <Compile Include="UI\Components\UIMenu.cs" />
+    <Compile Include="UI\Components\UIMenuItem.cs" />
+    <Compile Include="UI\Components\UIPanel.cs" />
+    <Compile Include="UI\UITooltip.cs" />
+    <Compile Include="UI\UIVerticalAlignment.cs" />
+    <Compile Include="UI\UIHorizontalAlignment.cs" />
+    <Compile Include="UI\Components\UILabel.cs" />
+    <Compile Include="UI\Components\UIComponent.cs" />
+    <Compile Include="UI\Components\UIException.cs" />
+    <Compile Include="UI\UIMargin.cs" />
+    <Compile Include="UI\UIPadding.cs" />
   </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\Molten.Font\Molten.Font.csproj">
+      <Project>{4fe5b72a-3e02-46b9-ac04-b781c964890a}</Project>
+      <Name>Molten.Font</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
+      <Project>{8df4c894-b793-495e-bc14-53306f8b2972}</Project>
+      <Name>Molten.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.Math\Molten.Math.csproj">
+      <Project>{e59938af-a9d4-4963-b4ac-61e53d05527e}</Project>
+      <Name>Molten.Math</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj">
+      <Project>{57d4a251-9082-4199-b894-6173c7f9215b}</Project>
+      <Name>Molten.Platform</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj">
+      <Project>{1e4854b0-d1a8-40ae-9038-1dea304574a5}</Project>
+      <Name>Molten.Utility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

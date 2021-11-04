@@ -28,9 +28,11 @@
             </Grid>
         </Button>
         <GroupBox Grid.Column="1" Header="Start-up Settings" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Height="230" Width="144">
-            <Grid Height="183">
+            <Grid Margin="0,10,0,0">
                 <CheckBox x:Name="chkDebugLayer" Content="Render API Debug" Margin="10,10,3,0" VerticalAlignment="Top" ToolTip="Attempt to enable the debug layer of the selected renderer upon startup. Performance will be reduced. Requires native code debugging to be enabled on the project."/>
                 <CheckBox x:Name="chkVsync" IsChecked="true" Content="V-Sync" Margin="10,30,3,0" VerticalAlignment="Top" ToolTip="Enables vertical synchronization (V-Sync)."/>
+                <Label Content="Renderer:" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top" Width="60" RenderTransformOrigin="0.444,0.59"/>
+                <ComboBox x:Name="cboRenderer" HorizontalAlignment="Left" Margin="10,106,0,0" VerticalAlignment="Top" Width="119"/>
                 <CheckBox x:Name="chkUseControl" ToolTip="If true, the sample will be drawn into a GUI control instead of a form." IsChecked="false" Content="Use Control" Margin="10,54,10,0" VerticalAlignment="Top"/>
             </Grid>
         </GroupBox>

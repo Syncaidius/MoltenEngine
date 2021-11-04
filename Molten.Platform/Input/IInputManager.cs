@@ -28,17 +28,11 @@ namespace Molten.Input
         IMouseDevice GetMouse();
 
         /// <summary>
-        /// Gets the default keyboard handler for the current <see cref="IInputManager"/>.
+        /// Gets the default keyboard handler for the current input library.
         /// </summary>
         /// <param name="surface">The window surface the handler will be bound to.</param>
         /// <returns></returns>
         IKeyboardDevice GetKeyboard();
-
-        /// <summary>
-        /// Gets the default touch handler for the current <see cref="IInputManager"/>.
-        /// </summary>
-        /// <returns></returns>
-        ITouchDevice GetTouchDevice();
 
         /// <summary>
         /// Gets the default gamepad handler for the current input library.

@@ -32,8 +32,8 @@ Here's a list of completed or work-in-progress (WIP) features:
 # Long-term Goals
 In no particular order:
   * Develop core engine (renderer, audio, input, I/O, etc) to a usable state.
-  * Add mac and linux support via Mono. This also means supporting OpenGL via [OpenTK](https://github.com/opentk/opentk/commits/master)
-  * Vulkan support
+  * Add mac and linux support via Mono. This also means supporting OpenGL via [OpenGL.Net](https://github.com/luca-piccioni/OpenGL.Net)
+  * DX12/Vulkan support - DX12 will likely be first due to existing availability via SharpDX
   * Mobile support via Xamarin or similar.
   * Example game(s) to demonstrate how things work, complete with source code
 
@@ -42,7 +42,7 @@ A special thanks to each of these great libraries, without which Molten wouldn't
   * [SharpDX](https://github.com/sharpdx/SharpDX) - DirectX bindings for C#
   * [Magick.NET](https://github.com/dlemstra/Magick.NET) - Extensive image library for .NET
   * [JSON.NET](https://www.newtonsoft.com/json) - JSON serialization
-  * [OpenTK](https://github.com/opentk/opentk/commits/master) - OpenGL and OpenAL bindings for C#
+  * [OpenGL.Net](https://github.com/luca-piccioni/OpenGL.Net) - OpenGL bindings for C#
 
 # Licensing
 MIT - Basically, it means you can do what you want with Molten. Fork it, chop it up and consume it for dinner. You get the idea!

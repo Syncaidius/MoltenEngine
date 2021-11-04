@@ -5,14 +5,18 @@ using System.Text;
 using SharpDX.DirectInput;
 using SharpDX.Multimedia;
 using SharpDX.RawInput;
+using System.Runtime.InteropServices;
+using SharpDX;
+using SharpDX.Windows;
 using Molten.Graphics;
 using Molten.Utilities;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace Molten.Input
 {
     /// <summary>Handles mouse input.</summary>
-    public class MouseDevice : InputDeviceBase<MouseButton>, IMouseDevice
+    public class MouseDevice : InputHandlerBase<MouseButton>, IMouseDevice
     {
         /// <summary>
         /// Occurs when the mouse cursor was inside the parent window/control, but just left it.
@@ -47,8 +51,7 @@ namespace Molten.Input
 
         internal override void Initialize(IInputManager manager, Logger log)
         {
-            base.Initialize(manager, log);
-            WinInputManager diManager = manager as WinInputManager;
+            InputManager diManager = manager as InputManager;
 
             _mouse = new Mouse(diManager.DirectInput);
             _mouse.Properties.AxisMode = DeviceAxisMode.Relative;
