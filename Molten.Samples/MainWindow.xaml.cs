@@ -1,5 +1,4 @@
-﻿using Molten.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -55,21 +54,6 @@ namespace Molten.Samples
             lstTests.MouseDoubleClick += lstTests_MouseDoubleClick;
             lstTests.SelectionChanged += lstTests_SelectionChanged;
 
-            cboRenderer.Items.Add(new RendererComboItem()
-            {
-                Content = "DirectX 11",
-                LibraryName = GraphicsSettings.RENDERER_DX11,
-            });
-
-            cboRenderer.Items.Add(new RendererComboItem()
-            {
-                Content = "OpenGL",
-                LibraryName = GraphicsSettings.RENDERER_OPENGL,
-            });
-
-            if (cboRenderer.SelectedItem == null)
-                cboRenderer.SelectedIndex = 0;
-
             LoadLastRun();
         }
 
@@ -92,7 +76,6 @@ namespace Molten.Samples
                     writer.Write(typeName);
                     writer.Write(chkDebugLayer.IsChecked.Value);
                     writer.Write(chkVsync.IsChecked.Value);
-                    writer.Write(cboRenderer.SelectedIndex);
                 }
             }
         }
@@ -112,7 +95,6 @@ namespace Molten.Samples
                     {
                         chkDebugLayer.IsChecked = reader.ReadBoolean();
                         chkVsync.IsChecked = reader.ReadBoolean();
-                        cboRenderer.SelectedIndex = reader.ReadInt32();
                         lastTestType = Type.GetType(typeName);
                         SetLastTestText(lastTestType);
                     }
@@ -121,7 +103,6 @@ namespace Molten.Samples
                         lastTestType = null; //just to be sure...
                         chkDebugLayer.IsChecked = false;
                         chkVsync.IsChecked = false;
-                        cboRenderer.SelectedIndex = 0;
                     }
                 }
             }
@@ -217,12 +198,9 @@ namespace Molten.Samples
 
         private void StartSample(Type t)
         {
-            RendererComboItem renderItem = cboRenderer.SelectedItem as RendererComboItem;
-
             EngineSettings settings = new EngineSettings();
             settings.Graphics.EnableDebugLayer.Value = chkDebugLayer.IsChecked.Value;
             settings.Graphics.VSync.Value = chkVsync.IsChecked.Value;
-            settings.Graphics.Library.Value = renderItem.LibraryName;
             settings.UseGuiControl = chkUseControl.IsChecked.Value;
 
             _curTest = Activator.CreateInstance(lastTestType) as SampleGame;

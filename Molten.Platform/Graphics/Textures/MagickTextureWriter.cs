@@ -28,7 +28,7 @@ namespace Molten.Graphics.Textures
                 slice = newData.Levels[i];
                 using (MagickImage image = new MagickImage(MagickColor.FromRgba(0,0,0,0), slice.Width, slice.Height))
                 {
-                    IPixelCollection p = image.GetPixels();
+                    IPixelCollection<byte> p = image.GetPixels();
                     p.SetPixels(slice.Data);
 
                     image.Format = MagickFormat.Rgba;

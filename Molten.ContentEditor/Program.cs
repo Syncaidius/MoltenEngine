@@ -1,4 +1,6 @@
 ﻿using Molten;
+using Molten.Graphics;
+using Molten.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +11,7 @@ namespace Molten.ContentEditor
 {
     class Program
     {
-        static Foundation _core;
+        static Foundation<RendererDX11, WinInputManager> _core;
 
         static void Main(string[] args)
         {

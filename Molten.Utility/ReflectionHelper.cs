@@ -25,7 +25,7 @@ namespace Molten
             List<Type> result = new List<Type>();
             foreach (Assembly assembly in assemblies)
             {
-                IEnumerable<Type> types = assembly.GetTypes().Where(t => t.IsSubclassOf(bType) && (includeAbstract || !t.IsAbstract));
+                IEnumerable<Type> types = assembly.DefinedTypes.Where(t => t.IsSubclassOf(bType) && (includeAbstract || !t.IsAbstract));
                 result.AddRange(types);
             }
 

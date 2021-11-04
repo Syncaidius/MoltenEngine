@@ -9,7 +9,6 @@ namespace Molten
 {
     public static class EngineInterop
     {
-
         /// <summary>A helper method for pinning a managed/C# object and providing an <see cref="IntPtr"/> to it. 
         /// Releases the pinned handle once finished.</summary>
         /// <param name="obj">The object.</param>

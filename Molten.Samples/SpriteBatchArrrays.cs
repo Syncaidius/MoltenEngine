@@ -26,7 +26,7 @@ namespace Molten.Samples
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<IMaterial>("BasicTexture.mfx");
             cr.Load<ITexture2D>("png_test.png");
-            cr.Load<ITexture2D>("128.dds;array=true;count=3");
+            cr.Load<ITexture2D>("128.dds;array=3");
             cr.OnCompleted += Cr_OnCompleted;
             cr.Commit();
 

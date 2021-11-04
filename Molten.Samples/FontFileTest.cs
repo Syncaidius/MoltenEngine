@@ -52,8 +52,8 @@ namespace Molten.Samples
             AcceptPlayerInput = false;
             Player.Transform.LocalPosition = new Vector3F(0, 0, -8);
 
-            //LoadFontFile();
-            LoadSystemFontFile("Arial");
+            LoadFontFile();
+            //LoadSystemFontFile("Arial");
             InitializeFontDebug();
             GenerateChar('Å');
 
@@ -68,7 +68,7 @@ namespace Molten.Samples
 
         private void LoadFontFile()
         {
-            string fontPath = "assets/euphorigenic.ttf";
+            string fontPath = "assets/Ananda Namaste Regular.ttf";
             //string fontPath = "assets/BroshK.ttf";
             //string fontPath = "assets/Digitalt.ttf";
             //string fontPath = "assets/NotoSansCJKkr-Regular.otf";
