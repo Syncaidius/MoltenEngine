@@ -114,12 +114,12 @@
     <Compile Include="Input\IInputDevice.cs" />
     <Compile Include="Input\IInputManager.cs" />
     <Compile Include="Input\InputSettings.cs" />
-    <Compile Include="Keyboard\IKeyboardDevice.cs" />
-    <Compile Include="Keyboard\Key.cs" />
-    <Compile Include="Keyboard\KeyboardEvents.cs" />
-    <Compile Include="Touch\FingerState.cs" />
-    <Compile Include="Mouse\IMouseDevice.cs" />
-    <Compile Include="Mouse\MouseButton.cs" />
+    <Compile Include="Input\Keyboard\IKeyboardDevice.cs" />
+    <Compile Include="Input\Keyboard\Key.cs" />
+    <Compile Include="Input\Keyboard\KeyboardEvents.cs" />
+    <Compile Include="Input\Touch\FingerState.cs" />
+    <Compile Include="Input\Mouse\IMouseDevice.cs" />
+    <Compile Include="Input\Mouse\MouseButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Graphics\AntiAliasMode.cs" />
     <Compile Include="Graphics\Buffers\BufferMode.cs" />
@@ -233,9 +233,9 @@
     <Compile Include="Graphics\Vertices\VertexInputType.cs" />
     <Compile Include="Graphics\Vertices\VertexTexture.cs" />
     <Compile Include="Graphics\WindowMode.cs" />
-    <Compile Include="Touch\ITouchDevice.cs" />
-    <Compile Include="Touch\TouchFinger.cs" />
-    <Compile Include="Touch\TouchState.cs" />
+    <Compile Include="Input\Touch\ITouchDevice.cs" />
+    <Compile Include="Input\Touch\TouchFinger.cs" />
+    <Compile Include="Input\Touch\TouchState.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Molten.Font\Molten.Font.csproj">

@@ -10,6 +10,8 @@ namespace Molten.Input
     {
         FingerState GetFingerState(TouchFinger finger);
 
+        bool IsBackPressed { get; }
+
         int GetPressedFingerCount();
     }
 }

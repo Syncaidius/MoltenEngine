@@ -18,6 +18,8 @@ namespace Molten.Input
 
         public override string DeviceName => throw new NotImplementedException();
 
+        public bool IsBackPressed => throw new NotImplementedException();
+
         public FingerState GetFingerState(TouchFinger finger)
         {
             throw new NotImplementedException();
