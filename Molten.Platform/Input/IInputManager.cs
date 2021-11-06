@@ -57,5 +57,7 @@ namespace Molten.Input
         /// Gets or sets the camera through which input is handled. If the camera does not have a valid <see cref="INativeSurface"/>, input handling will be skipped.
         /// </summary>
         IInputCamera Camera { get; set; }
+
+        IInputNavigation Navigation { get; }
     }
 }

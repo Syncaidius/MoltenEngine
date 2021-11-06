@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="AndroidInputDeviceBase.cs" />
     <Compile Include="AndroidInputManager.cs" />
+    <Compile Include="AndroidInputNavigation.cs" />
     <Compile Include="Graphics\AndroidViewSurface.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

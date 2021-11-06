@@ -113,13 +113,17 @@
     <Compile Include="Input\IInputCamera.cs" />
     <Compile Include="Input\IInputDevice.cs" />
     <Compile Include="Input\IInputManager.cs" />
+    <Compile Include="Input\IInputNavigation.cs" />
     <Compile Include="Input\InputSettings.cs" />
     <Compile Include="Input\Keyboard\IKeyboardDevice.cs" />
     <Compile Include="Input\Keyboard\Key.cs" />
     <Compile Include="Input\Keyboard\KeyboardEvents.cs" />
-    <Compile Include="Input\Touch\FingerState.cs" />
     <Compile Include="Input\Mouse\IMouseDevice.cs" />
     <Compile Include="Input\Mouse\MouseButton.cs" />
+    <Compile Include="Input\Touch\Gestures\ITouchGesture.cs" />
+    <Compile Include="Input\Touch\Gestures\Touch3PointGesture.cs" />
+    <Compile Include="Input\Touch\Gestures\Touch2PointGesture.cs" />
+    <Compile Include="Input\Touch\TouchPointSample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Graphics\AntiAliasMode.cs" />
     <Compile Include="Graphics\Buffers\BufferMode.cs" />
@@ -234,8 +238,7 @@
     <Compile Include="Graphics\Vertices\VertexTexture.cs" />
     <Compile Include="Graphics\WindowMode.cs" />
     <Compile Include="Input\Touch\ITouchDevice.cs" />
-    <Compile Include="Input\Touch\TouchFinger.cs" />
-    <Compile Include="Input\Touch\TouchState.cs" />
+    <Compile Include="Input\Touch\TouchPointState.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Molten.Font\Molten.Font.csproj">

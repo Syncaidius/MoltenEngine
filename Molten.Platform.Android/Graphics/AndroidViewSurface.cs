@@ -14,6 +14,16 @@ namespace Molten.Graphics
     // TODO inherit from an OpenGL-based surface
     public class AndroidViewSurface : INativeSurface
     {
+        public event WindowSurfaceHandler OnHandleChanged;
+        public event WindowSurfaceHandler OnParentChanged;
+        public event WindowSurfaceHandler OnClose;
+        public event WindowSurfaceHandler OnMinimize;
+        public event WindowSurfaceHandler OnRestore;
+        public event WindowSurfaceHandler OnFocusGained;
+        public event WindowSurfaceHandler OnFocusLost;
+        public event TextureHandler OnPreResize;
+        public event TextureHandler OnPostResize;
+
         View _view;
         Activity _activity;
 
@@ -80,15 +90,7 @@ namespace Molten.Graphics
 
         public MoltenRenderer Renderer => throw new NotImplementedException();
 
-        public event WindowSurfaceHandler OnHandleChanged;
-        public event WindowSurfaceHandler OnParentChanged;
-        public event WindowSurfaceHandler OnClose;
-        public event WindowSurfaceHandler OnMinimize;
-        public event WindowSurfaceHandler OnRestore;
-        public event WindowSurfaceHandler OnFocusGained;
-        public event WindowSurfaceHandler OnFocusLost;
-        public event TextureHandler OnPreResize;
-        public event TextureHandler OnPostResize;
+        public IntPtr Handle => throw new NotImplementedException();
 
         public void Clear(Color color)
         {

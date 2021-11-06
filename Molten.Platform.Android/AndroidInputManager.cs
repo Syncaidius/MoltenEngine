@@ -14,6 +14,8 @@ namespace Molten.Input
         Logger _log;
         INativeSurface _activeSurface;
         IInputCamera _activeCamera;
+        AndroidInputNavigation _navigation;
+
         Dictionary<Type, AndroidInputDeviceBase> _byType = new Dictionary<Type, AndroidInputDeviceBase>();
         List<AndroidInputDeviceBase> _devices = new List<AndroidInputDeviceBase>();
 
@@ -34,6 +36,8 @@ namespace Molten.Input
                 }
             }
         }
+
+        public IInputNavigation Navigation => _navigation;
 
         public void Initialize(InputSettings settings, Logger log)
         {
@@ -164,6 +168,8 @@ namespace Molten.Input
                 for (int i = 0; i < _devices.Count; i++)
                     _devices[i].ClearState();
             }
+
+            _navigation.Update(time);
         }
 
         protected override void OnDispose()

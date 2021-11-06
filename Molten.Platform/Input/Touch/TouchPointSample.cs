@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Input
+namespace Molten.Input.Touch
 {
-    public struct FingerState
+    public struct TouchPointSample
     {
-        public TouchFinger Finger;
-
         public Vector2F Position;
 
         public Vector2F Delta;
 
-        public TouchState State;
+        public TouchPointState State;
+
+        public int ID;
     }
 }

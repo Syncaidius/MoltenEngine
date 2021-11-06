@@ -6,12 +6,21 @@ using System.Threading.Tasks;
 
 namespace Molten.Input
 {
-    public interface ITouchDevice : IInputDevice<TouchFinger>
+    public delegate void TouchGestureHandler<T>(ITouchDevice device, T gesture) where T : ITouchGesture;
+    public interface ITouchDevice : IInputDevice<int>
     {
-        FingerState GetFingerState(TouchFinger finger);
+        public event TouchGestureHandler<Touch2PointGesture> OnPinchGesture;
 
-        bool IsBackPressed { get; }
+        TouchPointState GetState(int pointID);
 
-        int GetPressedFingerCount();
+        /// <summary>
+        /// Gets the maximum number of simultaneous touch-points (or fingers) supported by the current <see cref="ITouchDevice"/>.
+        /// </summary>
+        int MaxTouchPoints { get; }
+
+        /// <summary>
+        /// The number of active touch points on the current <see cref="ITouchDevice"/>.
+        /// </summary>
+        int TouchPointCount { get; }
     }
 }

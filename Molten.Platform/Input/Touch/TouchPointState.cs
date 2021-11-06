@@ -6,28 +6,16 @@ using System.Threading.Tasks;
 
 namespace Molten.Input
 {
-    public enum TouchFinger
+    public enum TouchPointState
     {
         None = 0,
 
-        One = 1,
+        Released = 1,
 
-        Two,
+        Pressed = 2,
 
-        Three,
+        Held = 3,
 
-        Four,
-
-        Five,
-
-        Six,
-
-        Severn,
-
-        Eight,
-
-        Nine,
-
-        Ten
+        Dragged = 4,
     }
 }

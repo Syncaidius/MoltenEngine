@@ -195,6 +195,8 @@ namespace Molten.Input
 
         public IClipboard Clipboard => _clipboard;
 
+        public IInputNavigation Navigation => throw new NotImplementedException();
+
         /// <summary>
         /// Gets or sets the current input camera, through which all input is received.
         /// </summary>
