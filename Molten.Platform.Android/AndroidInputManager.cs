@@ -1,4 +1,6 @@
-﻿using Molten.Graphics;
+﻿using Android.App;
+using Android.Views;
+using Molten.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
