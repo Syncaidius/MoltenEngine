@@ -140,7 +140,6 @@
     <Compile Include="Tasks\EngineAddScene.cs" />
     <Compile Include="Tasks\EngineRemoveScene.cs" />
     <Compile Include="Tasks\EngineTask.cs" />
-    <Compile Include="Tests\ContentManagerTests.cs" />
     <Compile Include="Threading\EngineThread.cs" />
     <Compile Include="Threading\WorkerGroupException.cs" />
     <Compile Include="Threading\EngineThreadException.cs" />

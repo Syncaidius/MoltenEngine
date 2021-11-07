@@ -142,8 +142,6 @@
     <Compile Include="Renderer\Tasks\TextureApply.cs" />
     <Compile Include="Surfaces\RenderControlSurface.cs" />
     <Compile Include="Surfaces\WinformsSurface.cs" />
-    <Compile Include="Tests\GraphicsDeviceDX11Tests.cs" />
-    <Compile Include="Tests\DisplayManagerDX11Tests.cs" />
     <Compile Include="Pipeline\GraphicsBlendStage.cs" />
     <Compile Include="Pipeline\States\SamplerBank.cs" />
     <Compile Include="Pipeline\States\GraphicsBlendState.cs" />

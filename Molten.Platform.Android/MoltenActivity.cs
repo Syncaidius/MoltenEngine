@@ -80,6 +80,7 @@ namespace Molten
         {
             if (disposing)
             {
+                BackPressed = null;
                 _splash?.Dispose();
                 _view.Dispose();
             }
