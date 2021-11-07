@@ -14,7 +14,7 @@ namespace Molten
     /// <summary>
     /// Provides a foundation on which to build a game or other type of application with Molten engine.
     /// </summary>
-    public abstract class Foundation<R, I>
+    public abstract class Foundation<R, I> : IDisposable
         where R : MoltenRenderer, new()
         where I : class, IInputManager, new()
     {
@@ -36,6 +36,18 @@ namespace Molten
         public Foundation(string title)
         {
             Title = title;
+        }
+
+        public void Dispose()
+        {
+            if (!IsDisposed)
+            {
+                IsDisposed = true;
+                ForceExit();
+                _engine.Dispose();
+                _gameThread.Dispose();
+                _gameWindow.Dispose();
+            }
         }
 
         /// <summary>Starts the game. This will trigger initialization, then start the renderer and game threads.</summary>
@@ -180,13 +192,17 @@ namespace Molten
             RunState = GameRunState.Running;
         }
 
-        /// <summary>Signals the game/engine to start the exit procedure. This will allow the game and engine to shutdown cleanly (i.e whenever they are ready to exit).</summary>
+        /// <summary>Signals the game/engine to start the exit procedure. 
+        /// This will allow the game and engine to shutdown cleanly (i.e whenever they are ready to exit).
+        /// Does not call <see cref="Dispose"/></summary>
         public void Exit()
         {
             RunState = GameRunState.Exiting;           
         }
 
-        /// <summary>Forces the game to exit. This will not give the game a chance to save (to avoid unintended side-effects from forcefully shutting the game/engine down).</summary>
+        /// <summary>Forces the game to exit. This will not give the game a chance to 
+        /// save (to avoid unintended side-effects from forcefully shutting the game/engine down).
+        /// Does not call <see cref="Dispose"/></summary>
         public void ForceExit()
         {
             _engine.Log.WriteLine("Game closed");
@@ -246,5 +262,7 @@ namespace Molten
 
         /// <summary>Gets the <see cref="INativeSurface"/> that the game renders in to.</summary>
         public INativeSurface Window => _gameWindow;
+
+        public bool IsDisposed { get; private set; }
     }
 }

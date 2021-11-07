@@ -24,22 +24,23 @@ namespace Molten.Graphics
         public event TextureHandler OnPreResize;
         public event TextureHandler OnPostResize;
 
-        View _view;
-        Activity _activity;
+        public View TargetView { get; private set; }
+
+        public Activity TargetActivity { get; private set; }
 
         public AndroidViewSurface(View view, Activity activity)
         {
-            _view = view;
-            _activity = activity;
+            TargetView = view;
+            TargetActivity = activity;
         }
 
         public string Title
         {
-            get => _activity.Title;
+            get => TargetActivity.Title;
             set
             {
-                _activity.Title = value;
-                _activity.Window?.SetTitle(value);
+                TargetActivity.Title = value;
+                TargetActivity.Window?.SetTitle(value);
             }
         }
 
@@ -51,7 +52,7 @@ namespace Molten.Graphics
 
         public bool IsFocused
         {
-            get => _activity.HasWindowFocus;
+            get => TargetActivity.HasWindowFocus;
         }
 
         public WindowMode Mode { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -74,7 +75,7 @@ namespace Molten.Graphics
 
         public bool IsBlockCompressed => throw new NotImplementedException();
 
-        public int Width => _view.Width;
+        public int Width => TargetView.Width;
 
         public int MipMapCount => throw new NotImplementedException();
 
