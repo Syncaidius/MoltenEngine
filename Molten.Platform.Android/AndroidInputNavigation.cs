@@ -15,7 +15,7 @@ namespace Molten
 {
     public class AndroidInputNavigation : IInputNavigation
     {
-        public bool IsBackPressed => throw new NotImplementedException();
+        public bool IsBackPressed => false;
 
         public bool IsContextButtonPressed => throw new NotImplementedException();
 

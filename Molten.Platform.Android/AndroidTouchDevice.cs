@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Input
 {
-    public class TouchDevice : AndroidInputDeviceBase<int>, ITouchDevice
+    public class AndroidTouchDevice : AndroidInputDeviceBase<int>, ITouchDevice
     {
         // NOTE SEE: https://github.com/MonoGame/MonoGame/blob/71b25eece3d1b92d6c9f3f32cb51dc054e099133/MonoGame.Framework/Platform/Android/MonoGameAndroidGameView.cs#L142
         //      SEE: https://github.com/MonoGame/MonoGame/blob/71b25eece3d1b92d6c9f3f32cb51dc054e099133/MonoGame.Framework/Platform/Android/AndroidGameActivity.cs
@@ -18,9 +18,9 @@ namespace Molten.Input
 
         public override string DeviceName => throw new NotImplementedException();
 
-        public int MaxTouchPoints => throw new NotImplementedException();
+        public int MaxTouchPoints => 5;
 
-        public int TouchPointCount => throw new NotImplementedException();
+        public int TouchPointCount => 0;
 
         public event TouchGestureHandler<Touch2PointGesture> OnPinchGesture;
 
@@ -36,7 +36,10 @@ namespace Molten.Input
 
         internal override void Bind(INativeSurface surface)
         {
-            throw new NotImplementedException();
+            if(surface is AndroidViewSurface vSurface)
+            {
+
+            }
         }
 
         internal override void Unbind(INativeSurface surface)
@@ -46,7 +49,7 @@ namespace Molten.Input
 
         internal override void Update(Timing time)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

@@ -42,6 +42,7 @@ namespace Molten.Input
         public void Initialize(InputSettings settings, Logger log)
         {
             _log = log;
+            _navigation = new AndroidInputNavigation();
         }
 
         private void BindSurface(IRenderSurface surface)
@@ -141,12 +142,7 @@ namespace Molten.Input
 
         public ITouchDevice GetTouch()
         {
-            throw new NotImplementedException();
-        }
-
-        public ITouchDevice GetTouchDevice()
-        {
-            return GetCustomDevice<TouchDevice>();
+            return GetCustomDevice<AndroidTouchDevice>();
         }
 
         T IInputManager.GetCustomDevice<T>()
