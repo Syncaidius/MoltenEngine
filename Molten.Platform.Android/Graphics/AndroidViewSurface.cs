@@ -4,7 +4,6 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Molten.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,9 +26,9 @@ namespace Molten.Graphics
 
         public View TargetView { get; private set; }
 
-        public MoltenActivity TargetActivity { get; private set; }
+        public IMoltenAndroidActivity TargetActivity { get; private set; }
 
-        public AndroidViewSurface(View view, MoltenActivity activity)
+        public AndroidViewSurface(View view, IMoltenAndroidActivity activity)
         {
             TargetView = view;
             TargetActivity = activity;
@@ -37,11 +36,11 @@ namespace Molten.Graphics
 
         public string Title
         {
-            get => TargetActivity.Title;
+            get => TargetActivity.UnderlyingActivity.Title;
             set
             {
-                TargetActivity.Title = value;
-                TargetActivity.Window?.SetTitle(value);
+                TargetActivity.UnderlyingActivity.Title = value;
+                TargetActivity.UnderlyingActivity.Window?.SetTitle(value);
             }
         }
 
@@ -53,7 +52,7 @@ namespace Molten.Graphics
 
         public bool IsFocused
         {
-            get => TargetActivity.HasWindowFocus;
+            get => TargetActivity.UnderlyingActivity.HasWindowFocus;
         }
 
         public WindowMode Mode { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -64,7 +63,11 @@ namespace Molten.Graphics
 
         public Rectangle Bounds => throw new NotImplementedException();
 
-        public bool Visible { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool Visible
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
 
         public Viewport Viewport => throw new NotImplementedException();
 
@@ -86,7 +89,7 @@ namespace Molten.Graphics
 
         public bool IsMultisampled => throw new NotImplementedException();
 
-        public object Tag { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public object Tag { get; set; }
 
         public int SortKey => throw new NotImplementedException();
 

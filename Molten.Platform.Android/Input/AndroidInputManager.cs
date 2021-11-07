@@ -68,6 +68,8 @@ namespace Molten.Input
                         foreach (AndroidInputDeviceBase device in _devices)
                             device.Bind(_activeSurface);
                     }
+
+                    _navigation.SetSurface(_activeSurface);
                 }
             }
             else

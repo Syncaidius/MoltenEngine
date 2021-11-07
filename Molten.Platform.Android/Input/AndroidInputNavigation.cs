@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Molten.Graphics;
 using Molten.Input;
 using Molten.Utility;
 using System;
@@ -22,9 +23,22 @@ namespace Molten
         public event MoltenEventHandler<IInputNavigation> OnBackPressed;
         public event MoltenEventHandler<IInputNavigation> OnContextButtonPressed;
 
+        AndroidViewSurface _surface;
+
         internal AndroidInputNavigation()
         {
 
+        }
+
+        internal void SetSurface(INativeSurface surface)
+        {
+            if(_surface != surface)
+            {
+                if(_surface != null)
+                {
+                    
+                }
+            }
         }
 
         internal void Update(Timing time)

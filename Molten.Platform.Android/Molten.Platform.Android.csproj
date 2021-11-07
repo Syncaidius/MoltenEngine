@@ -47,14 +47,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AndroidInputDeviceBase.cs" />
-    <Compile Include="AndroidInputManager.cs" />
-    <Compile Include="AndroidInputNavigation.cs" />
+    <Compile Include="Input\AndroidInputDeviceBase.cs" />
+    <Compile Include="Input\AndroidInputManager.cs" />
+    <Compile Include="Input\AndroidInputNavigation.cs" />
     <Compile Include="Graphics\AndroidViewSurface.cs" />
+    <Compile Include="IMoltenAndroidActivity.cs" />
     <Compile Include="MoltenActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AndroidTouchDevice.cs" />
+    <Compile Include="Input\AndroidTouchDevice.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
