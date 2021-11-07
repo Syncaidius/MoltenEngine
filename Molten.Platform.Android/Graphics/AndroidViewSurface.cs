@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Molten.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,9 +27,9 @@ namespace Molten.Graphics
 
         public View TargetView { get; private set; }
 
-        public Activity TargetActivity { get; private set; }
+        public MoltenActivity TargetActivity { get; private set; }
 
-        public AndroidViewSurface(View view, Activity activity)
+        public AndroidViewSurface(View view, MoltenActivity activity)
         {
             TargetView = view;
             TargetActivity = activity;
