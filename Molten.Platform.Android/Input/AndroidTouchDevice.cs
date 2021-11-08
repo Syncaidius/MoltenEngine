@@ -1,5 +1,7 @@
-﻿using Molten.Graphics;
+﻿using Android.Views;
+using Molten.Graphics;
 using Molten.Input;
+using Molten.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,9 +26,30 @@ namespace Molten.Input
 
         public event TouchGestureHandler<Touch2PointGesture> OnPinchGesture;
 
-        public int GetPressedFingerCount()
+        public event MoltenEventHandler<TouchPointSample> OnTouch;
+
+        AndroidViewSurface _boundSurface;
+        Queue<TouchPointSample> _queue = new Queue<TouchPointSample>();
+
+        internal override void Bind(INativeSurface surface)
         {
-            throw new NotImplementedException();
+            if (_boundSurface != surface)
+            {
+                if (surface is AndroidViewSurface vSurface)
+                {
+                    vSurface.TargetView.Touch += TargetView_Touch;
+                    _boundSurface = vSurface;   
+                }
+            }
+
+            _boundSurface = null;
+        }
+
+
+        internal override void Unbind(INativeSurface surface)
+        {
+            if (_boundSurface != null && _boundSurface == surface)
+                _boundSurface.TargetView.Touch -= TargetView_Touch;
         }
 
         public TouchPointState GetState(int pointID)
@@ -34,22 +57,16 @@ namespace Molten.Input
             throw new NotImplementedException();
         }
 
-        internal override void Bind(INativeSurface surface)
+        private void TargetView_Touch(object sender, View.TouchEventArgs e)
         {
-            if(surface is AndroidViewSurface vSurface)
-            {
-                
-            }
-        }
-
-        internal override void Unbind(INativeSurface surface)
-        {
-            throw new NotImplementedException();
+            // TODO add touch event to queue.
         }
 
         internal override void Update(Timing time)
         {
-            //throw new NotImplementedException();
+            // TODO process touch queue and trigger events accordingly.
+            // TODO figure out gestures based on number of pressed touch points.
+            // TODO individually track each active touch-point so we can form gestures easily.
         }
     }
 }
