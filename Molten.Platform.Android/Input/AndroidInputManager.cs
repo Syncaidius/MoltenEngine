@@ -68,8 +68,6 @@ namespace Molten.Input
                         foreach (AndroidInputDeviceBase device in _devices)
                             device.Bind(_activeSurface);
                     }
-
-                    _navigation.SetSurface(_activeSurface);
                 }
             }
             else
@@ -84,12 +82,16 @@ namespace Molten.Input
 
                 _activeSurface = null;
             }
+
+            _navigation.SetSurface(_activeSurface);
         }
 
         internal void ClearState()
         {
             foreach (AndroidInputDeviceBase device in _devices)
                 device.ClearState();
+
+            _navigation.Clear();
         }
 
         public T GetCustomDevice<T>() where T : class, IInputDevice, new()
