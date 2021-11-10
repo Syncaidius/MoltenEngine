@@ -1,14 +1,8 @@
-﻿using Molten.Graphics.Textures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenGL;
+﻿using OpenGL;
 
 namespace Molten.Graphics
 {
-    internal class TextureSet<T> : ITextureChange where T: struct
+    internal class TextureSet<T> : ITextureChange where T : struct
     {
         public int MipLevel;
         public T[] Data;

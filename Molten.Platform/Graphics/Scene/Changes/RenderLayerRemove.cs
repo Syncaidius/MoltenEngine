@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>A <see cref="RenderLayerAdd"/> for adding <see cref="LayerRenderData"/> to the a<see cref="SceneRenderData"/> instance.</summary>
-    internal class RenderLayerRemove : RenderSceneChange<RenderLayerRemove> 
+    internal class RenderLayerRemove : RenderSceneChange<RenderLayerRemove>
     {
         public SceneRenderData SceneData;
 

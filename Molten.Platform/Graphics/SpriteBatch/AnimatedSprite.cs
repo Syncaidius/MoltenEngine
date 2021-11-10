@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
@@ -127,7 +123,7 @@ namespace Molten.Graphics
             get => _animation;
             set
             {
-                if(_animation != value)
+                if (_animation != value)
                 {
                     _animation = value;
                     Frame = 0;

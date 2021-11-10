@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class LigatureCaretListTable : FontSubTable
     {
         /// <summary>Gets an array containing AttachPoint tables ordered by coverage index, which hold contour point indices.</summary>
         public LigatureGlyphTable[] GlyphTables { get; private set; }
 
-        internal LigatureCaretListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+        internal LigatureCaretListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort coverageOffset = reader.ReadUInt16();

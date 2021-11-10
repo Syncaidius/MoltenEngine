@@ -1,14 +1,10 @@
 ﻿using Molten.Collections;
-using Molten.Content;
 using Molten.Threading;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading;
 
 namespace Molten
 {
@@ -139,7 +135,7 @@ namespace Molten
             {
                 request.JsonSettings = _jsonSettings;
             }
-            
+
             rootDirectory = rootDirectory.StartsWith("/") ? rootDirectory.Substring(1, rootDirectory.Length - 1) : rootDirectory;
             request.RootDirectory = Path.GetFullPath(rootDirectory);
             request.Manager = this;
@@ -160,7 +156,7 @@ namespace Molten
 
         internal void Commit(ContentRequest request)
         {
-            if(request.RequestElements.Count == 0)
+            if (request.RequestElements.Count == 0)
             {
                 request.Complete();
                 _requestPool.Recycle(request);
@@ -213,7 +209,7 @@ namespace Molten
             }
             else if (file.OriginalRequestType == ContentRequestType.Deserialize)
             {
-                foreach(Type t in types)
+                foreach (Type t in types)
                 {
                     IList<object> existingObjects = file.GetObjects(t);
                     context.Input.Add(t, new List<object>(existingObjects));
@@ -338,7 +334,7 @@ namespace Molten
                             break;
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _log.WriteError($"An error occurred while processing content {context.Filename}");
                     _log.WriteError(ex, true);
@@ -394,7 +390,7 @@ namespace Molten
 
         private void DoWrite(ContentContext context, ContentProcessor proc)
         {
-             proc.OnWrite(context);
+            proc.OnWrite(context);
             _log.WriteLine($"[CONTENT] [WRITE] {context.Filename}");
         }
 

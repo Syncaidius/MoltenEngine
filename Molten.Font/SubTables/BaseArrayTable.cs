@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class BaseArrayTable : FontSubTable
     {
@@ -19,7 +13,7 @@ namespace Molten.Font
 
             for (int i = 0; i < baseCount; i++)
             {
-                for(int j = 0; j < markClassCount; j++)
+                for (int j = 0; j < markClassCount; j++)
                     anchorOffsets[i, j] = reader.ReadUInt16();
             }
 

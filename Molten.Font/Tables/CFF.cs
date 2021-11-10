@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     /// <summary>CFF — Compact Font Format table.<para/>
     /// See: http://wwwimages.adobe.com/www.adobe.com/content/dam/acom/en/devnet/font/pdfs/5176.CFF.pdf </summary>
@@ -52,7 +46,7 @@ namespace Molten.Font
 
         private void ParseNameData(EnhancedBinaryReader reader, CFFIndexTable index)
         {
-            for(int i = 0; i < index.Objects.Length; i++)
+            for (int i = 0; i < index.Objects.Length; i++)
             {
                 SetLocalOffset(reader, index.Objects[i].Offset);
                 FontName = reader.ReadString((int)index.Objects[i].DataSize);

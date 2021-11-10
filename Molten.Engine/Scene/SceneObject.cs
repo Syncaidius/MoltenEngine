@@ -2,11 +2,7 @@
 using Molten.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten
 {
@@ -146,7 +142,7 @@ namespace Molten
             // Update own transform.
             _transform.Update(time);
 
-            if((_updateFlags & ObjectUpdateFlags.Self) == ObjectUpdateFlags.Self)
+            if ((_updateFlags & ObjectUpdateFlags.Self) == ObjectUpdateFlags.Self)
             {
                 _components.For(0, 1, (index, component) =>
                 {
@@ -182,7 +178,7 @@ namespace Molten
             get => _updateFlags;
             set
             {
-                if(_updateFlags != value)
+                if (_updateFlags != value)
                 {
                     _updateFlags = value;
                     OnUpdateFlagsChanged?.Invoke(this);

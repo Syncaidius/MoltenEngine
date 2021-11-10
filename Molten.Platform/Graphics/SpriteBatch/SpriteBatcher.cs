@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
@@ -34,7 +31,7 @@ namespace Molten.Graphics
             public ITexture2D Texture;
             public IMaterial Material;
         }
-       
+
         protected SpriteItem[] Sprites;
         protected int NextID;
         Color[] _singleColorList;
@@ -97,7 +94,7 @@ namespace Molten.Graphics
                 item.Vertex.Size = new Vector2F(cache.Location.Width, cache.Location.Height) * scale;
                 item.Vertex.UV = new Vector4F(cache.Location.Left, cache.Location.Top, cache.Location.Right, cache.Location.Bottom);
                 item.Vertex.Color = color;
-                item.Vertex.Origin = Vector2F.Zero; 
+                item.Vertex.Origin = Vector2F.Zero;
 
                 // Increase pos by size of char (along X)
                 charPos.X += cache.AdvanceWidth * scale.X;
@@ -431,7 +428,7 @@ namespace Molten.Graphics
                     // Provide the previous line with the direction of the current line.
                     if (prev < i)
                         Sprites[spriteID - 1].Vertex.Origin = p2 - p1;
-                    
+
                     if (next + 1 == last) // If there is no line after the current, use the current line's direction to fill the tangent calculation.
                         item.Vertex.Origin = p2 - p1;
 
@@ -523,13 +520,13 @@ namespace Molten.Graphics
         /// <param name="arraySlice"></param>
         public void Draw(ITexture2D texture, RectangleF source, RectangleF destination, Color color, float arraySlice = 0, IMaterial material = null)
         {
-            Draw(texture, 
-                source, 
-                destination.TopLeft, 
-                destination.Size, 
-                color, 
-                0, 
-                Vector2F.Zero, 
+            Draw(texture,
+                source,
+                destination.TopLeft,
+                destination.Size,
+                color,
+                0,
+                Vector2F.Zero,
                 material,
                 arraySlice);
         }
@@ -565,7 +562,7 @@ namespace Molten.Graphics
         {
             RectangleF src = new RectangleF(0, 0, texture.Width, texture.Height);
             RectangleF dest = new RectangleF(position.X, position.Y, texture.Width, texture.Height);
-            Draw(texture, src, position, new Vector2F(src.Width, src.Height), color, 0, Vector2F.Zero, material, 0); 
+            Draw(texture, src, position, new Vector2F(src.Width, src.Height), color, 0, Vector2F.Zero, material, 0);
         }
 
         public void Draw(Sprite sprite)
@@ -609,14 +606,14 @@ namespace Molten.Graphics
         /// 0.0f will set the origin to the top-left. The origin acts as the center of the sprite.</param>
         /// <param name="material">The material to use when rendering the sprite.</param>
         /// <param name="arraySlice">The texture array slice containing the source texture.</param>
-        public void Draw(ITexture2D texture, 
-            RectangleF source, 
-            Vector2F position, 
-            Vector2F size, 
-            Color color, 
-            float rotation, 
-            Vector2F origin, 
-            IMaterial material, 
+        public void Draw(ITexture2D texture,
+            RectangleF source,
+            Vector2F position,
+            Vector2F size,
+            Color color,
+            float rotation,
+            Vector2F origin,
+            IMaterial material,
             float arraySlice)
         {
             SpriteItem item = GetItem();

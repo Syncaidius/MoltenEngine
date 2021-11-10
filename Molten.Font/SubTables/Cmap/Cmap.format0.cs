@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class CmapFormat0SubTable : CmapSubTable
     {
         byte[] _glyphIDs;
 
-        internal CmapFormat0SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
+        internal CmapFormat0SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) :
             base(reader, log, parent, offset, record)
         {
             /* This is a simple 1 to 1 mapping of character codes to glyph indices.

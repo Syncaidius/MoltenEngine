@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="ICamera"/> to a scene.</summary>
-    internal class AddCamera : RenderSceneChange<AddCamera> 
+    internal class AddCamera : RenderSceneChange<AddCamera>
     {
         public RenderCamera Camera;
         public SceneRenderData Data;

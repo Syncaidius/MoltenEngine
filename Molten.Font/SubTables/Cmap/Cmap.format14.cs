@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Molten.Font
 {
@@ -14,7 +10,7 @@ namespace Molten.Font
     {
         Dictionary<uint, VariationSelector> _varSelectors;
 
-        internal CmapFormat14SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
+        internal CmapFormat14SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) :
             base(reader, log, parent, offset, record)
         {
             uint length = reader.ReadUInt32();
@@ -32,7 +28,7 @@ namespace Molten.Font
 
             // Populate variation selectors
             _varSelectors = new Dictionary<uint, VariationSelector>();
-            for(int i = 0; i < numVarSelectorRecords; i++)
+            for (int i = 0; i < numVarSelectorRecords; i++)
             {
                 VariationSelector selector = new VariationSelector();
                 if (!FontUtil.IsNull(defaultUvsOffsets[i]))
@@ -111,7 +107,7 @@ namespace Molten.Font
 
     internal class NonDefaultUvsTable : FontSubTable
     {
-        internal NonDefaultUvsTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, VariationSelector varSelector) : 
+        internal NonDefaultUvsTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, VariationSelector varSelector) :
             base(reader, log, parent, offset)
         {
             uint numUvsMappings = reader.ReadUInt32();

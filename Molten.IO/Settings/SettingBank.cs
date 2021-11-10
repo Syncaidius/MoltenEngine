@@ -1,12 +1,6 @@
 ﻿using Molten.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Runtime.Serialization;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Molten
 {
@@ -41,7 +35,8 @@ namespace Molten
                         msg += $"{obj.ToString()}";
                     }
                 }
-                else {
+                else
+                {
                     msg = $"\t {p.Key}: {p.Value.Object}";
                 }
 

@@ -9,9 +9,6 @@ using Molten.Graphics;
 using Molten.Input;
 using Molten.Utility;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Molten
 {

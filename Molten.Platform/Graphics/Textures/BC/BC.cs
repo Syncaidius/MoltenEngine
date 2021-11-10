@@ -13,11 +13,7 @@
 //-------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
@@ -887,7 +883,7 @@ namespace Molten.Graphics.Textures
             return pColor;
         }
 
-        internal static D3DX_BC2 D3DXEncodeBC2( Color4[] pColor, BCFlags flags)
+        internal static D3DX_BC2 D3DXEncodeBC2(Color4[] pColor, BCFlags flags)
         {
             D3DX_BC2 pBC2 = new D3DX_BC2();
             Color4[] Color = new Color4[NUM_PIXELS_PER_BLOCK];

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Font
 {
@@ -30,7 +26,7 @@ namespace Molten.Font
         /// Gets the feature variations table associated with the current table. Optional (may be null).
         /// </summary>
         public FeatureVariationsTable FeatureVarTable { get; internal set; }
-        
+
         protected abstract Type[] GetLookupTypeIndex();
 
         protected abstract ushort GetExtensionIndex();

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public enum DeviceVariableTableFormat
     {
@@ -91,7 +85,7 @@ namespace Molten.Font
             int rShift = sizeof(int) - bitsPerValue;
             int[] result = new int[valCount];
 
-            for(int i = 0; i < valCount; i++)
+            for (int i = 0; i < valCount; i++)
                 _deltas[i] = (packed << (16 + (bitsPerValue * i))) >> rShift;
 
             // ushort bits for 4 packed values: 

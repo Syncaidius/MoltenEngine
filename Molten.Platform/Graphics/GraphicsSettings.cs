@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace Molten.Graphics
 {
@@ -39,18 +33,18 @@ namespace Molten.Graphics
 
         /// <summary>Gets or sets the UID of the <see cref="IDisplayOutput"/> that was last used on the last used <see cref="GraphicsAdapterID"/>.</summary>
         [DataMember]
-        public SettingValueList<int> DisplayOutputIds { get;  }
+        public SettingValueList<int> DisplayOutputIds { get; }
 
         /// <summary>Gets or sets wether Vsync is enabled.</summary>
         [DataMember]
-        public SettingValue<bool> VSync { get;  }
+        public SettingValue<bool> VSync { get; }
 
         /// <summary>Gets or sets the multi-sampled anti-aliasing (MSAA) level.</summary>
         [DataMember]
         public SettingValue<AntiAliasMode> MSAA { get; }
 
         /// <summary>Gets or sets the number of back-buffer surfaces. More tend to increase performance, but also consumes more video memory.</summary>
-        public SettingValue<int> BackBufferSize { get;  }
+        public SettingValue<int> BackBufferSize { get; }
 
         /// <summary>Gets or sets whether to enable a renderer's debug layer, if available.</summary>
         [DataMember]

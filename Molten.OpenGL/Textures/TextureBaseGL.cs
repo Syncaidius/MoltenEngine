@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Molten.Collections;
+﻿using Molten.Collections;
 using Molten.Graphics.Textures;
 using OpenGL;
+using System;
+using System.Threading;
 
 namespace Molten.Graphics
 {
@@ -43,9 +39,9 @@ namespace Molten.Graphics
         RendererGL _renderer;
         bool _isBlockCompressed;
 
-        internal TextureBaseGL(RendererGL renderer, 
-            int width, int height, int depth, TextureTarget target, 
-            int mipLevels, int arraySize, int sampleCount, 
+        internal TextureBaseGL(RendererGL renderer,
+            int width, int height, int depth, TextureTarget target,
+            int mipLevels, int arraySize, int sampleCount,
             GraphicsFormat format, TextureFlags flags) :
             base(renderer.Device)
         {

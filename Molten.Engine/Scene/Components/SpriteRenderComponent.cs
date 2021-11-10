@@ -1,9 +1,4 @@
 ﻿using Molten.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten
 {
@@ -22,8 +17,8 @@ namespace Molten
             AddToScene(obj);
             obj.OnRemovedFromScene += Obj_OnRemovedFromScene;
             obj.OnAddedToScene += Obj_OnAddedToScene;
-            
-            if(obj.Engine.Renderer != null)
+
+            if (obj.Engine.Renderer != null)
                 _spriteRenderer = obj.Engine.Renderer.Resources.CreateSpriteRenderer(OnRender);
 
             base.OnInitialize(obj);
@@ -92,7 +87,7 @@ namespace Molten
             get => _visible;
             set
             {
-                if(_visible != value)
+                if (_visible != value)
                 {
                     _visible = value;
 

@@ -3,10 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Molten
 {
@@ -166,7 +163,7 @@ namespace Molten
 
         public void WriteError(string value, string filename)
         {
-            if(string.IsNullOrWhiteSpace(filename))
+            if (string.IsNullOrWhiteSpace(filename))
                 WriteLine($"{ErrorPrefix}: {value}", ErrorColor);
             else
                 WriteLine($"{ErrorPrefix} {filename}: {value}", ErrorColor);

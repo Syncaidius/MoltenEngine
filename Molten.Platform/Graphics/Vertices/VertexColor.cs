@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {
     /// <summary>A vertex type containing just position and color data.</summary>
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct VertexColor : IVertexType
     {
         [VertexElement(VertexElementType.Vector4, VertexElementUsage.Position, 0)]

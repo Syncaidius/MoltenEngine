@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 
 namespace Molten.Font
@@ -23,7 +19,7 @@ namespace Molten.Font
         {
             _tableTypes = new Dictionary<string, TableEntry>();
             IEnumerable<Type> tableTypes = ReflectionHelper.FindTypesWithAttribute<FontTableTagAttribute>(typeof(FontTableTagAttribute).Assembly);
-            foreach(Type t in tableTypes)
+            foreach (Type t in tableTypes)
             {
                 FontTableTagAttribute att = t.GetCustomAttribute<FontTableTagAttribute>();
                 _tableTypes.Add(att.Tag, new TableEntry()
@@ -186,7 +182,7 @@ namespace Molten.Font
                                 _log.WriteDebugLine($"[{header.Tag}] Attempting to load missing dependency '{depTag}'");
                                 LoadTable(fontStartPos, tables, depHeader, toParse, toParseByTag);
                                 dep = tables.Get(depTag);
-                                if(dep == null)
+                                if (dep == null)
                                 {
                                     _log.WriteDebugLine($"[{header.Tag}] Dependency '{depTag}' failed to load correctly. Unable to load table.");
                                     dependenciesValid = false;
@@ -249,7 +245,7 @@ namespace Molten.Font
         {
             _tableStream.Position = 0;
             long bytesRemaining = header.Length;
-            while(bytesRemaining > 0)
+            while (bytesRemaining > 0)
             {
                 int toCopy = (int)Math.Min(bytesRemaining, _tableStreamBuffer.Length);
                 bytesRemaining -= _stream.Read(_tableStreamBuffer, 0, toCopy);

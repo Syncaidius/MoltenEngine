@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
-    public enum  ComparisonMode
+    public enum ComparisonMode
     {
         /// <summary>Never pass the comparison.</summary>
 

@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Molten.Graphics
 {
     /// <summary>Represents a base for a critical GPU pipeline component.</summary>
     /// <seealso cref="Molten.EngineObject" />
     internal abstract class PipelineComponent<D, P> : EngineObject
-        where D: IGraphicsDevice
+        where D : IGraphicsDevice
         where P : IGraphicsPipe<D>
     {
-        List<PipelineBindSlot<D,P>> _slots;
+        List<PipelineBindSlot<D, P>> _slots;
 
         public PipelineComponent(P pipe)
         {
@@ -27,7 +23,7 @@ namespace Molten.Graphics
         /// <param name="type">The type.</param>
         /// <param name="slotId">The slot identifier.</param>
         /// <returns></returns>
-        internal PipelineBindSlot<T, D,P> AddSlot<T>(int slotId)  where T : PipelineObject<D,P>
+        internal PipelineBindSlot<T, D, P> AddSlot<T>(int slotId) where T : PipelineObject<D, P>
         {
             PipelineBindSlot<T, D, P> slot = new PipelineBindSlot<T, D, P>(this, slotId);
             _slots.Add(slot);

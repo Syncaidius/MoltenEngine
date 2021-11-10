@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
 namespace Molten.Graphics.Textures.DDS
@@ -292,7 +289,7 @@ namespace Molten.Graphics.Textures.DDS
             string magic = "";
 
             magic += (char)((value & 0xff)); // First character
-            magic += (char)((value & 0xff00) >>8); // Second character
+            magic += (char)((value & 0xff00) >> 8); // Second character
             magic += (char)((value & 0xff0000) >> 16); // Third character
             magic += (char)((value & 0xff000000) >> 24); // Fourth character
             return magic;

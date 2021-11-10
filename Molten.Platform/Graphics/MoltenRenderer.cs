@@ -2,9 +2,6 @@
 using Molten.Graphics.Overlays;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
@@ -33,7 +30,7 @@ namespace Molten.Graphics
             try
             {
                 _chain = GetRenderChain();
-                if(_chain != null)
+                if (_chain != null)
                     Log.WriteLine("Render chain acquired");
                 else
                 {
@@ -249,7 +246,7 @@ namespace Molten.Graphics
                 OnPostRenderScene(sceneData, time);
 
                 sceneData.Profiler.End(time);
-                sceneData.PostRenderInvoke(this);   
+                sceneData.PostRenderInvoke(this);
             }
 
             // Present all output surfaces
@@ -271,7 +268,7 @@ namespace Molten.Graphics
         /// <param name="requiredWidth">The new width required by the render engine.</param>
         /// <param name="requiredHeight">The new height required by the render engine.</param>
         protected abstract void OnRebuildSurfaces(int requiredWidth, int requiredHeight);
-        
+
         /// <summary>
         /// Occurs before the render engine begins rendering all of the active scenes to be output to the user.
         /// </summary>
@@ -343,7 +340,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets a list of all the scenes current attached to the renderer.
         /// </summary>
-        protected internal List<SceneRenderData> Scenes { get; }  = new List<SceneRenderData>();
+        protected internal List<SceneRenderData> Scenes { get; } = new List<SceneRenderData>();
 
         private ThreadedQueue<RendererTask> Tasks { get; } = new ThreadedQueue<RendererTask>();
 

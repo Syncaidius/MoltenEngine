@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class ScriptListTable : FontSubTable
     {
         public ScriptRecord[] Records { get; internal set; }
 
-        internal ScriptListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+        internal ScriptListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort scriptCount = reader.ReadUInt16();
             Records = new ScriptRecord[scriptCount];
 
             ushort[] scriptTableOffsets = new ushort[scriptCount];
-            for(int i = 0; i < scriptCount; i++)
+            for (int i = 0; i < scriptCount; i++)
             {
                 Records[i] = new ScriptRecord()
                 {

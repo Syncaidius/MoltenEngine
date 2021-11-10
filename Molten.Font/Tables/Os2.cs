@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     /// <summary>Index-to-location table.<para/>
     /// <para>The indexToLoc table stores the offsets to the locations of the glyphs in the font, relative to the beginning of the glyphData table. In order to compute the length of the last glyph element, there is an extra entry after the last valid index.</para>
@@ -120,7 +114,7 @@ namespace Molten.Font
 
         public short STypoLineGap { get; internal set; }
 
-        public ushort UsWinAscent {get; internal set;}
+        public ushort UsWinAscent { get; internal set; }
 
         public ushort UsWinDescent { get; internal set; }
 

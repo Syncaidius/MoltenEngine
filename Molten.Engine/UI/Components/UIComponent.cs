@@ -1,12 +1,8 @@
-﻿using Molten.Collections;
-using Molten.Graphics;
+﻿using Molten.Graphics;
 using Molten.Input;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Molten.UI
 {
@@ -14,7 +10,7 @@ namespace Molten.UI
 
     public delegate void UIComponentParentHandler(UIComponent parent, UIComponent child);
 
-    
+
     /// <summary>
     /// The base class for all types of user interface (UI) components.
     /// </summary>
@@ -334,7 +330,7 @@ namespace Molten.UI
 
         public virtual void OnRenderUi(SpriteBatcher sb)
         {
-            if(_clippingEnabled)
+            if (_clippingEnabled)
             {
                 // TODO replace clip when masking is implemented, since we cannot use scissor-testing on 3D-transformed sprites.
                 //sb.PushClip(_clippingBounds);
@@ -621,7 +617,7 @@ namespace Molten.UI
             get => _clippingEnabled;
             set
             {
-                if(_clippingEnabled != value)
+                if (_clippingEnabled != value)
                 {
                     _clippingEnabled = value;
                     UpdateBounds();

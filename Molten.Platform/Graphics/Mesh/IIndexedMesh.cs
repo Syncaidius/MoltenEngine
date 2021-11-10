@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>A mesh which uses an index buffer to reduce the amount of vertex data, by referring to vertices by their ID in the index buffer, 
     /// essentially allowing the same vertex to be referenced multiple times.</summary>

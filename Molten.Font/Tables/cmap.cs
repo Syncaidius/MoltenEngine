@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Molten.Font
 {
@@ -74,7 +70,7 @@ namespace Molten.Font
             }
 
             Version = version;
-                Tables = new CmapSubTable[numRecords];
+            Tables = new CmapSubTable[numRecords];
 
             // Populate records based on their format
             for (int i = 0; i < numRecords; i++)

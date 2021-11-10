@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenGL;
+﻿using OpenGL;
+using System;
 
 namespace Molten.Graphics
 {
     public class Texture1DGL : TextureBaseGL, ITexture
     {
-        public Texture1DGL(Texture1DGL descTexture, TextureFlags flags) : 
+        public Texture1DGL(Texture1DGL descTexture, TextureFlags flags) :
             this(descTexture.Renderer as RendererGL, descTexture.Width, descTexture.Format, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags)
         {
         }
@@ -30,7 +26,7 @@ namespace Molten.Graphics
             TextureFlags flags = TextureFlags.None)
             : base(renderer, width, 1, 1, TextureTarget.Texture1d, mipCount, arraySize, 1, format, flags)
         {
-            
+
         }
 
         protected unsafe override void CreateResource(ref uint id, TextureTarget target, bool isResizing)

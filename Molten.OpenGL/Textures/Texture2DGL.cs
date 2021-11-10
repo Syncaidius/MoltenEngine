@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenGL;
+﻿using OpenGL;
+using System;
 
 namespace Molten.Graphics
 {
     public class Texture2DGL : TextureBaseGL, ITexture2D
     {
-        public Texture2DGL(Texture2DGL descTexture, TextureFlags flags) : 
+        public Texture2DGL(Texture2DGL descTexture, TextureFlags flags) :
             this(descTexture.Renderer as RendererGL, descTexture.Width, descTexture.Height, descTexture.Format, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags, descTexture.SampleCount)
         {
         }

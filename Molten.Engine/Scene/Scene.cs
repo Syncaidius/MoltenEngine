@@ -2,10 +2,6 @@
 using Molten.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten
 {
@@ -87,7 +83,7 @@ namespace Molten
         /// <param name="flags">The object update flags.</param>
         /// <param name="visible">Whether or not the object is spawned visible.</param>
         /// <returns>The <see cref="SceneComponent"/> which was added to the new object. It's parent object can be retrieved via <see cref="SceneComponent.Object"/>.</returns>
-        public C AddObjectWithComponent<C>(SceneLayer layer = null, ObjectUpdateFlags flags = ObjectUpdateFlags.All, bool visible = true) where C: SceneComponent, new()
+        public C AddObjectWithComponent<C>(SceneLayer layer = null, ObjectUpdateFlags flags = ObjectUpdateFlags.All, bool visible = true) where C : SceneComponent, new()
         {
             SceneObject obj = new SceneObject(Engine, ObjectUpdateFlags.All, visible);
             C com = obj.AddComponent<C>();
@@ -122,7 +118,7 @@ namespace Molten
         public void AddObject(SceneObject obj, SceneLayer layer = null)
         {
             layer = layer ?? _defaultLayer;
-            if(layer.ParentScene != this)
+            if (layer.ParentScene != this)
                 throw new SceneLayerException(this, layer, "The provided layer does not belong to the current scene.");
 
             SceneAddObject change = SceneAddObject.Get();
@@ -189,7 +185,7 @@ namespace Molten
             {
                 foreach (SceneObject up in layer.Objects)
                 {
-                    if(up.IsEnabled)
+                    if (up.IsEnabled)
                         up.Update(time);
                 }
             }

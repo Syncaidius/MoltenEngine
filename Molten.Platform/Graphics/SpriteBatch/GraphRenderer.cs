@@ -1,9 +1,4 @@
-﻿using Molten.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Molten.Graphics
 {
@@ -29,7 +24,8 @@ namespace Molten.Graphics
         {
             _interlocker.Lock(() =>
             {
-                if (_populated == _maxPoints) {
+                if (_populated == _maxPoints)
+                {
                     Array.Copy(_values, 1, _values, 0, _maxPoints - 1);
                     _populated--;
                 }
@@ -76,7 +72,7 @@ namespace Molten.Graphics
 
             _interlocker.Lock(() =>
             {
-                for(int i = 0; i < _populated; i++)
+                for (int i = 0; i < _populated; i++)
                 {
                     val = _values[i] - lowest;
                     _points[i] = new Vector2F()

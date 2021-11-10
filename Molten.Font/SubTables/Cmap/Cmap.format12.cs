@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class CmapFormat12SubTable : CmapSubTable
     {
         uint _language;
         SequenceMapGroupRecord[] _records;
 
-        internal CmapFormat12SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
+        internal CmapFormat12SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) :
             base(reader, log, parent, offset, record)
         {
             ushort reserved = reader.ReadUInt16();
@@ -20,7 +14,7 @@ namespace Molten.Font
             uint numGroups = reader.ReadUInt32();
 
             _records = new SequenceMapGroupRecord[numGroups];
-            for(int i = 0; i < numGroups; i++)
+            for (int i = 0; i < numGroups; i++)
             {
                 _records[i] = new SequenceMapGroupRecord()
                 {

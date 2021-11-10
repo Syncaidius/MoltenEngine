@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Font
 {
@@ -30,7 +27,7 @@ namespace Molten.Font
         public string GetNameString(FontNameType type, FontPlatform platform)
         {
             // TODO take into account the language.
-            foreach(NameRecord record in Records)
+            foreach (NameRecord record in Records)
             {
                 if (record.NameID == type && record.Platform == platform)
                     return record.Value;

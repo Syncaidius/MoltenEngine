@@ -1,11 +1,6 @@
 ﻿using Molten.Collections;
-using Molten.Utility.Collections;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Molten.Threading
 {
@@ -72,7 +67,7 @@ namespace Molten.Threading
 
             if (_threads.Count > count)
             {
-                while(_threads.Count > count)
+                while (_threads.Count > count)
                 {
                     WorkerThread t = _threads[0];
                     t.Exit();
@@ -81,7 +76,7 @@ namespace Molten.Threading
             }
             else if (_threads.Count < count)
             {
-                while(_threads.Count < count)
+                while (_threads.Count < count)
                 {
                     string tName = $"{_name}_{_nameCount}";
                     WorkerThread t = new WorkerThread(_manager.Engine, tName, _queue);

@@ -1,11 +1,7 @@
 ﻿using Molten.Collections;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Molten
 {
@@ -68,7 +64,7 @@ namespace Molten
             // Clear before raising the OnRemoved event.
             SceneObject[] removed = Objects.ToArray();
             Objects.Clear();
-            for(int i = 0; i < removed.Length; i++)
+            for (int i = 0; i < removed.Length; i++)
                 Interlocked.CompareExchange(ref OnRemoved, null, null)?.Invoke(this, removed[i]);
 
             removed = null;

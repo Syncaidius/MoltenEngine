@@ -1,9 +1,4 @@
-﻿using Molten.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Molten.Graphics
 {
@@ -32,7 +27,7 @@ namespace Molten.Graphics
                     case ReorderMode.PushBackward:
                         SceneData.Layers.Insert(Math.Max(0, indexOf - 1), LayerData);
                         break;
-                              
+
                     case ReorderMode.BringToFront:
                         SceneData.Layers.Add(LayerData);
                         break;

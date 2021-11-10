@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     /// <summary>A vertex type containing position, color, normal and UV data.</summary>
     public struct VertexColorNormalTexture : IVertexType
     {
@@ -42,7 +38,7 @@ namespace Molten.Graphics
         public VertexColorNormalTexture(Vector3F position, Vector3F normal, Vector2F textureCoordinates)
         {
             this.Position4 = new Vector4F(position, 1);
-            this.Color = new Color(255,255,255,255);
+            this.Color = new Color(255, 255, 255, 255);
             this.Normal = normal;
             this.UV = textureCoordinates;
         }

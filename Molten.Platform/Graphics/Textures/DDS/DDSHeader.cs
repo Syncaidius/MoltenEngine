@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-
-namespace Molten.Graphics.Textures.DDS
+﻿namespace Molten.Graphics.Textures.DDS
 {
     /// <summary>DDS_HEADER http://msdn.microsoft.com/en-us/library/windows/desktop/bb943982%28v=vs.85%29.aspx. 
     /// NOTE: Include flags in dwFlags for the members of the structure that contain valid data.</summary>

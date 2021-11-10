@@ -14,12 +14,7 @@
 
 using Molten.Collections;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
@@ -84,7 +79,7 @@ namespace Molten.Graphics.Textures
                     aUnqEndPts[i] = new BC67.INTEndPntPair[BC67.BC6H_MAX_REGIONS];
 
                 aIPixels = new INTColor[BC.NUM_PIXELS_PER_BLOCK];
-                fBestErr = float.MaxValue;                
+                fBestErr = float.MaxValue;
                 uMode = 0;
                 uShape = 0;
                 aHDRPixels = new Color4[BC.NUM_PIXELS_PER_BLOCK];
@@ -1151,7 +1146,7 @@ namespace Molten.Graphics.Textures
                     continue;
                 }
 
-                Color4 epA,  epB;
+                Color4 epA, epB;
                 BC67.OptimizeRGB(pEP.aHDRPixels, out epA, out epB, 4, np, context.auPixIdx, context);
                 aEndPts[p].A.Set(epA, pEP.bSigned);
                 aEndPts[p].B.Set(epB, pEP.bSigned);

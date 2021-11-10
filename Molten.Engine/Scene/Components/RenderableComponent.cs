@@ -1,14 +1,9 @@
 ﻿using Molten.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten
 {
     public abstract class RenderableComponent<T> : SceneComponent
-        where T: class, IRenderable
+        where T : class, IRenderable
     {
         protected T _renderable;
         protected bool _visible = true;
@@ -99,7 +94,7 @@ namespace Molten
             get => _visible;
             set
             {
-                if(_visible != value)
+                if (_visible != value)
                 {
                     _visible = value;
 

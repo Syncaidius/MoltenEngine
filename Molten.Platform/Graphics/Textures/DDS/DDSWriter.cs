@@ -1,9 +1,6 @@
 ﻿using Molten.Graphics.Textures.DDS;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace Molten.Graphics.Textures
 {
@@ -52,7 +49,7 @@ namespace Molten.Graphics.Textures
                 WriteMagicWord(writer);
                 WriteHeader(writer, ref header);
 
-                if(header.PixelFormat.FourCC == "DX10")
+                if (header.PixelFormat.FourCC == "DX10")
                 {
                     DDSHeaderDXT10 dx10 = new DDSHeaderDXT10()
                     {
@@ -177,7 +174,7 @@ namespace Molten.Graphics.Textures
             writer.Write(header.Depth);
             writer.Write(header.MipMapCount);
 
-            for(int i = 0; i < header.Reserved.Length; i++)
+            for (int i = 0; i < header.Reserved.Length; i++)
                 writer.Write(header.Reserved[i]);
 
             writer.Write(header.PixelFormat.Size);

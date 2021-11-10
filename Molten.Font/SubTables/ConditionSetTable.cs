@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class ConditionSetTable : FontSubTable
     {
         public ConditionTable[] Tables { get; internal set; }
 
-        internal ConditionSetTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+        internal ConditionSetTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort conditionCount = reader.ReadUInt16();

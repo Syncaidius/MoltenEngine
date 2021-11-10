@@ -1,9 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten
 {
@@ -38,9 +33,9 @@ namespace Molten
                 TraceWriter = settings.TraceWriter,
                 TypeNameHandling = settings.TypeNameHandling,
                 SerializationBinder = settings.SerializationBinder,
-                TypeNameAssemblyFormatHandling = settings.TypeNameAssemblyFormatHandling,               
+                TypeNameAssemblyFormatHandling = settings.TypeNameAssemblyFormatHandling,
                 ReferenceResolver = settings.ReferenceResolver,
-                ReferenceResolverProvider= settings.ReferenceResolverProvider,
+                ReferenceResolverProvider = settings.ReferenceResolverProvider,
                 TypeNameAssemblyFormat = settings.TypeNameAssemblyFormat,
                 Binder = settings.Binder,
             };

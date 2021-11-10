@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Font
 {
@@ -29,7 +25,7 @@ namespace Molten.Font
 
         public byte MarkAttachmentType { get; private set; }
 
-        public ushort MarkFilteringSet { get; private set; } 
+        public ushort MarkFilteringSet { get; private set; }
 
         public LookupSubTable<T>[] SubTables { get; private set; }
 

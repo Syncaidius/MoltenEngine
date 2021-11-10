@@ -1,9 +1,5 @@
 ﻿using Molten.Collections;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
@@ -32,7 +28,7 @@ namespace Molten.Graphics
         /// <summary>
         /// The background color of the scene.
         /// </summary>
-        public Color BackgroundColor = new Color(20,20,20,255);
+        public Color BackgroundColor = new Color(20, 20, 20, 255);
 
         /// <summary>
         /// The ambient light color.
@@ -125,7 +121,7 @@ namespace Molten.Graphics
     }
 
     public class SceneRenderData<R> : SceneRenderData
-        where R: class, IRenderable
+        where R : class, IRenderable
     {
         public override LayerRenderData CreateLayerData(string name)
         {

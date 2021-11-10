@@ -1,14 +1,10 @@
-﻿using Molten.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
 
-    public abstract class PipelineObject<D,P> : PipelineDisposableObject
+    public abstract class PipelineObject<D, P> : PipelineDisposableObject
         where D : IGraphicsDevice
         where P : IGraphicsPipe<D>
     {
@@ -64,7 +60,7 @@ namespace Molten.Graphics
         /// </summary>
         internal override sealed void PipelineDispose()
         {
-            foreach (List<PipelineBindSlot<D,P>> bindList in _binds)
+            foreach (List<PipelineBindSlot<D, P>> bindList in _binds)
             {
                 for (int j = 0; j < bindList.Count; j++)
                     bindList[j].BoundObjectDisposed(this);

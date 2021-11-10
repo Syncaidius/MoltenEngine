@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     /// <summary>A vertex type containing position, color, normal and a texture array index. Does not include any UV coordinates. 
     /// Designed for use with triplanar texturing.</summary>
     public struct TriplanarVertex : IVertexType
@@ -53,7 +49,7 @@ namespace Molten.Graphics
         public TriplanarVertex(Vector3F position, Vector3F normal, float arrayIndex)
         {
             this.Position4 = new Vector4F(position, 1);
-            this.Color = new Color(255,255,255,255);
+            this.Color = new Color(255, 255, 255, 255);
             this.Normal = normal;
             this.Tangent = new Vector3F();
             this.BiNormal = new Vector3F();
@@ -62,8 +58,8 @@ namespace Molten.Graphics
 
         public override string ToString()
         {
-            return string.Format("{Position:{0} Color:{1} Normal: {2} Tan: {3} BiN: {4} Idx: {5}}", new object[] { this.Position4, 
-                this.Color, this.Normal, this.Tangent, 
+            return string.Format("{Position:{0} Color:{1} Normal: {2} Tan: {3} BiN: {4} Idx: {5}}", new object[] { this.Position4,
+                this.Color, this.Normal, this.Tangent,
                 this.BiNormal, this.ArrayIndex });
         }
     }

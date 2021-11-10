@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class CmapFormat4SubTable : CmapSubTable
     {
         ushort[] _startCode;
-        ushort[] _endCode;    
+        ushort[] _endCode;
         short[] _idDelta;
         ushort[] _idRangeOffset;
         ushort[] _glyphIdArray;
 
-        internal CmapFormat4SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
+        internal CmapFormat4SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) :
             base(reader, log, parent, offset, record)
         {
             Header.Length = reader.ReadUInt16();
@@ -55,16 +49,16 @@ namespace Molten.Font
 
             // MS docs: You search for the first endCode that is greater than or equal to the character code you want to map. 
             int segID = 0;
-            for(int i = 0; i < _endCode.Length; i++)
+            for (int i = 0; i < _endCode.Length; i++)
             {
-                if(_endCode[i] >= codepoint)
+                if (_endCode[i] >= codepoint)
                 {
                     segID = i;
                     break;
                 }
             }
 
-            if(_startCode[segID] <= codepoint)
+            if (_startCode[segID] <= codepoint)
             {
                 /* MS docs: If the idRangeOffset is 0, the idDelta value is added directly to the character code offset (i.e. idDelta[i] + c) to get the corresponding glyph index. 
                  * Again, the idDelta arithmetic is modulo 65536. */

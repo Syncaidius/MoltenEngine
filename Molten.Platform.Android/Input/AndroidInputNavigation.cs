@@ -1,16 +1,7 @@
-﻿using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using Molten.Graphics;
+﻿using Molten.Graphics;
 using Molten.Input;
 using Molten.Utility;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Molten
 {
@@ -36,12 +27,12 @@ namespace Molten
 
         internal void SetSurface(INativeSurface surface)
         {
-            if(_surface != surface)
+            if (_surface != surface)
             {
                 // Unsubscribe from previous surface
-                if(_surface != null)
+                if (_surface != null)
                 {
-                    if(_surface is AndroidViewSurface vSurface)
+                    if (_surface is AndroidViewSurface vSurface)
                         vSurface.TargetActivity.BackPressed -= TargetActivity_BackPressed;
                 }
 

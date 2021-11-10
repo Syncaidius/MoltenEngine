@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>A <see cref="RenderSceneChange"/> for removing a <see cref="ICamera"/> from a scene.</summary>
-    internal class RemoveCamera : RenderSceneChange<RemoveCamera> 
+    internal class RemoveCamera : RenderSceneChange<RemoveCamera>
     {
         public RenderCamera Camera;
         public SceneRenderData Data;

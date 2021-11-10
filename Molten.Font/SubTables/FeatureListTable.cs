@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     /// <summary>
     /// A feature list table.<para/>
@@ -25,7 +19,7 @@ namespace Molten.Font
             ushort[] featureOffsets = new ushort[featureCount];
 
             // Prepare records and collect their feature table offsets.
-            for(int i = 0; i < featureCount; i++)
+            for (int i = 0; i < featureCount; i++)
             {
                 Records[i] = new FeatureRecord()
                 {
@@ -66,7 +60,7 @@ namespace Molten.Font
         /// </summary>
         public ushort[] LookupListIndices { get; internal set; }
 
-        internal FeatureTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset)  :
+        internal FeatureTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             FeatureParams = reader.ReadUInt16();

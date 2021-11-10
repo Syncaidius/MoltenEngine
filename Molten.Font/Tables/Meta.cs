@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     /// <summary>Index-to-location table.<para/>
     /// The metadata table contains various metadata values for the font. Different categories of metadata are identified by four-character tags. <para/>
@@ -37,7 +31,7 @@ namespace Molten.Font
 
             // Gather records for data map tables.
             DataMapRecord[] records = new DataMapRecord[dataMapsCount];
-            for(int i = 0; i < dataMapsCount; i++)
+            for (int i = 0; i < dataMapsCount; i++)
             {
                 records[i] = new DataMapRecord()
                 {
@@ -106,7 +100,7 @@ namespace Molten.Font
 
     public class RawDataMap : DataMapBase
     {
-        internal RawDataMap(EnhancedBinaryReader reader, Logger log, IFontTable parent, DataMapRecord record) : 
+        internal RawDataMap(EnhancedBinaryReader reader, Logger log, IFontTable parent, DataMapRecord record) :
             base(reader, log, parent, record)
         {
             RawData = reader.ReadBytes((int)record.DataLength);
@@ -123,7 +117,7 @@ namespace Molten.Font
     /// </summary>
     public class AsciiDataMap : DataMapBase
     {
-        internal AsciiDataMap(EnhancedBinaryReader reader, Logger log, IFontTable parent, DataMapRecord record) : 
+        internal AsciiDataMap(EnhancedBinaryReader reader, Logger log, IFontTable parent, DataMapRecord record) :
             base(reader, log, parent, record)
         {
             Data = reader.ReadString((int)record.DataLength);

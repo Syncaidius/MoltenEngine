@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     /// <summary>
     /// A base class for font sub-tables. Automatically positions the binary reader at the correct byte offset based on the parent table.

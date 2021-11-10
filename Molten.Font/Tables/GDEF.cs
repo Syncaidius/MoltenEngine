@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     /// <summary>Glyph definition table. <para/>
     /// See: https://www.microsoft.com/typography/otspec/gdef.htm </summary>
@@ -65,7 +59,7 @@ namespace Molten.Font
             }
 
             // Glyph class definition table
-            if(glyphClassDefOffset > FontUtil.NULL)
+            if (glyphClassDefOffset > FontUtil.NULL)
                 GlyphClassDefs = new ClassDefinitionTable<GlyphClass>(reader, log, this, glyphClassDefOffset, _classTranslation);
 
             // Attachment point list table

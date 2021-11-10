@@ -1,9 +1,4 @@
 ﻿using Molten.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten
 {
@@ -137,7 +132,7 @@ namespace Molten
                 _range = value;
                 _data.RangeRcp = 1.0f / (_range * _range);
 
-                if(_instance != null)
+                if (_instance != null)
                     _instance.Range = _range;
             }
         }

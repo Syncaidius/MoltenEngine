@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Molten
 {
@@ -21,9 +20,9 @@ namespace Molten
         public void Dispose()
         {
             ICollection<ThreadedList<object>> lists = _segments.Values;
-            foreach(ThreadedList<object> list in lists)
+            foreach (ThreadedList<object> list in lists)
             {
-                foreach(object obj in list)
+                foreach (object obj in list)
                 {
                     if (obj is IDisposable disposable)
                         disposable.Dispose();

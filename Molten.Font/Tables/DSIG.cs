@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Font
 {
@@ -25,7 +22,7 @@ namespace Molten.Font
             public ushort Reserved1 { get; internal set; }
 
             public ushort Reserved2 { get; internal set; }
-            
+
             [Obsolete("This is PKCS#7 data which needs processing into an actual signature. " +
                 "See: https://www.microsoft.com/typography/otspec/dsig.htm and http://fileformats.archiveteam.org/wiki/PKCS7_certificate")]
             public byte[] Data { get; set; }
@@ -34,7 +31,7 @@ namespace Molten.Font
         public class SignatureRecord
         {
             public uint Format { get; internal set; }
-            
+
             public uint Length { get; internal set; }
 
             /// <summary>The byte offset of the signature from the start of the table.</summary>

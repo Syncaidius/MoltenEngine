@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     /// <summary>A vertex type containing position, color, normal and UV data. For use with deferred rendering.</summary>
     public struct GBufferVertex : IVertexType
     {
@@ -52,8 +48,8 @@ namespace Molten.Graphics
 
         public override string ToString()
         {
-            return string.Format("[Position:{0} Normal: {1} Tan: {2} BiN: {3} UV: {4}]", new object[] { this.Position4, 
-                this.Normal, this.Tangent, 
+            return string.Format("[Position:{0} Normal: {1} Tan: {2} BiN: {3} UV: {4}]", new object[] { this.Position4,
+                this.Normal, this.Tangent,
                 this.BiNormal, this.UV });
         }
     }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     /// <summary>JSTF — Justification Table <para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/jstf </summary>
@@ -25,7 +19,7 @@ namespace Molten.Font
 
             // Populate script records
             JstfRecord[] records = new JstfRecord[scriptCount];
-            for(int i = 0; i < scriptCount; i++)
+            for (int i = 0; i < scriptCount; i++)
             {
                 records[i] = new JstfRecord()
                 {
@@ -68,7 +62,7 @@ namespace Molten.Font
         /// </summary>
         public JustificationLanguageSystemTable[] LanguageSystems { get; private set; }
 
-        internal JustificationScriptTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, JstfRecord record) : 
+        internal JustificationScriptTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, JstfRecord record) :
             base(reader, log, parent, record.Offset)
         {
             ushort extenderGlyphOffset = reader.ReadUInt16();
@@ -111,7 +105,7 @@ namespace Molten.Font
         /// </summary>
         public ushort[] Glyphs { get; private set; }
 
-        internal ExtenderGlyphTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+        internal ExtenderGlyphTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort glyphCount = reader.ReadUInt16();
@@ -175,7 +169,7 @@ namespace Molten.Font
 
         public JustificationMaximumTable ExtensionJustificationMax { get; private set; }
 
-        internal JustificationPriorityTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+        internal JustificationPriorityTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort shrinkageEnableGSUBOffset = reader.ReadUInt16();
@@ -225,7 +219,7 @@ namespace Molten.Font
         /// </summary>
         public ushort[] LookupIndices { get; private set; }
 
-        internal JustificationModListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+        internal JustificationModListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort lookupCount = reader.ReadUInt16();

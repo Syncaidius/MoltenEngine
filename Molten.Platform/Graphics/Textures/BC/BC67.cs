@@ -12,12 +12,7 @@
 // http://go.microsoft.com/fwlink/?LinkId=248926
 //-------------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
@@ -82,7 +77,7 @@ namespace Molten.Graphics.Textures
             }
         };
 
-        internal static void Swap<T>(ref T a, ref T b) where T: struct
+        internal static void Swap<T>(ref T a, ref T b) where T : struct
         {
             T temp = a;
             a = b;

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Molten.Graphics
 {
     /// <summary>A <see cref="RenderSceneChange"/> for adding a <see cref="IRenderable"/> to the root of a scene.</summary>
-    internal class RenderableAdd<R> : RenderSceneChange<RenderableAdd<R>> 
+    internal class RenderableAdd<R> : RenderSceneChange<RenderableAdd<R>>
         where R : class, IRenderable
     {
         public R Renderable;

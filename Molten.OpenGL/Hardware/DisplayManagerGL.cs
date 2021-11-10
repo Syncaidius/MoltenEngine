@@ -1,9 +1,6 @@
 ﻿using OpenGL;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
@@ -19,7 +16,7 @@ namespace Molten.Graphics
             // Create a device GL context for the purpose of detecting hardware info.
             DeviceContext deviceContext = DeviceContext.Create();
             deviceContext.IncRef();
-            IntPtr detectionContext = deviceContext.CreateContext(IntPtr.Zero); 
+            IntPtr detectionContext = deviceContext.CreateContext(IntPtr.Zero);
 
             deviceContext.MakeCurrent(detectionContext);
 
@@ -44,7 +41,7 @@ namespace Molten.Graphics
 
         public void Dispose()
         {
-            
+
         }
 
         public IDisplayAdapter GetAdapter(int id)

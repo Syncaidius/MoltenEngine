@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     /// <summary>VDMX - Vertical Device Metrics table; Relates to OpenType™ fonts with TrueType outlines ines. <para/>
     /// Under Windows, the usWinAscent and usWinDescent values from the 'OS/2' table will be used to determine the maximum black height for a font at any given size. <para/>
@@ -28,7 +22,7 @@ namespace Molten.Font
 
             // Populate ratios
             RatioRanges = new RatioRangeRecord[numRatios];
-            for(int i = 0; i < numRatios; i++)
+            for (int i = 0; i < numRatios; i++)
             {
                 RatioRanges[i] = new RatioRangeRecord()
                 {
@@ -93,7 +87,7 @@ namespace Molten.Font
 
         public VDMXRecord[] Records { get; private set; }
 
-        internal VDMXGroup(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+        internal VDMXGroup(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             // MS Docs: It is assumed that once yPelHeight reaches 255, all heights will be linear, or at least close enough to linear that it no longer matters. 
@@ -104,7 +98,7 @@ namespace Molten.Font
             StartZ = reader.ReadByte();
             EndZ = reader.ReadByte();
             Records = new VDMXRecord[recs];
-            for(int i = 0; i < recs; i++)
+            for (int i = 0; i < recs; i++)
             {
                 Records[i] = new VDMXRecord()
                 {

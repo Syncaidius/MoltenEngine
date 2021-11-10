@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class FontInfo
     {
@@ -21,7 +15,7 @@ namespace Molten.Font
         public string LicenseURL { get; private set; } = string.Empty;
 
         public string Designer { get; private set; } = string.Empty;
-        
+
         public string DesignerURL { get; private set; } = string.Empty;
 
         public string Copyright { get; private set; } = string.Empty;

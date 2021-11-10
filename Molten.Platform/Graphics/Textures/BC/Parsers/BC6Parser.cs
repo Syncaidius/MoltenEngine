@@ -1,10 +1,7 @@
 ﻿using Molten.Collections;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Molten.Graphics.Textures
 {
@@ -23,7 +20,7 @@ namespace Molten.Graphics.Textures
             int colSize = Marshal.SizeOf<Color4>();
             fixed (Color4* ptrResult = result)
             {
-                fixed(Color4* ptrColors = colors)
+                fixed (Color4* ptrColors = colors)
                     Buffer.MemoryCopy(ptrColors, ptrResult, colSize * result.Length, colSize * colors.Length);
             }
             return result;

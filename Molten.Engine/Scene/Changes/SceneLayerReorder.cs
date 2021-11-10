@@ -1,9 +1,4 @@
-﻿using Molten.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Molten
 {
@@ -31,7 +26,7 @@ namespace Molten
                         Layer.LayerID = Math.Max(0, indexOf - 1);
                         scene.Layers.Insert(Layer.LayerID, Layer);
                         break;
-                              
+
                     case ReorderMode.BringToFront:
                         Layer.LayerID = scene.Layers.Count;
                         scene.Layers.Add(Layer);

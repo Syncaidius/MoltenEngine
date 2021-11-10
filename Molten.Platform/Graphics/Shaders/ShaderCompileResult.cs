@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Molten.Graphics
 {
@@ -47,7 +43,7 @@ namespace Molten.Graphics
             {
                 if (ShaderGroups.TryGetValue(groupName, out List<IShader> group))
                 {
-                    foreach(IShader shader in group)
+                    foreach (IShader shader in group)
                     {
                         if (shader.Name == shaderName)
                             return shader;

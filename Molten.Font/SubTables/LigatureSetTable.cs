@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class LigatureSetTable : FontSubTable
     {
@@ -13,7 +7,7 @@ namespace Molten.Font
         /// </summary>
         public LigatureTable[] Tables { get; internal set; }
 
-        internal LigatureSetTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+        internal LigatureSetTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort ligatureCount = reader.ReadUInt16();
@@ -36,7 +30,7 @@ namespace Molten.Font
         /// </summary>
         public ushort[] ComponentGlyphIDs { get; private set; }
 
-        internal LigatureTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+        internal LigatureTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             LigatureGlyph = reader.ReadUInt16();

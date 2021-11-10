@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Font
 {
@@ -16,7 +12,7 @@ namespace Molten.Font
 
         internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)
         {
-            uint valueCount = header.Length / 2; 
+            uint valueCount = header.Length / 2;
             short[] shortValues = reader.ReadArray<short>((int)valueCount);
             Values = Array.ConvertAll(shortValues, item => (int)item);
         }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Input
 {
@@ -13,7 +9,7 @@ namespace Molten.Input
         Y = short.MinValue,
 
         None = 0,
-        
+
         DPadUp = 1,
 
         DPadDown = 2,
@@ -33,7 +29,7 @@ namespace Molten.Input
         LeftShoulder = 256,
 
         RightShoulder = 512,
-   
+
         A = 4096,
 
         B = 8192,

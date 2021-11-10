@@ -2,10 +2,6 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Molten.Collections
 {
@@ -200,7 +196,7 @@ namespace Molten.Collections
                             if (c.Equals(_items[i], item))
                             {
                                 result = true;
-                                    return;
+                                return;
                             }
                         }
                     }
@@ -212,7 +208,7 @@ namespace Molten.Collections
                             if (c.Equals(_items[i], item))
                             {
                                 result = true;
-                                    return;
+                                return;
                             }
                         }
 
@@ -222,7 +218,7 @@ namespace Molten.Collections
                             if (c.Equals(_items[i], item))
                             {
                                 result = true;
-                                    return;
+                                return;
                             }
                         }
                     }
@@ -281,7 +277,7 @@ namespace Molten.Collections
 
                 int copyLen = _items.Length - _queueStart;
                 Array.Copy(_items, _queueStart, newArray, 0, copyLen);
-                if(_next > 0)
+                if (_next > 0)
                     Array.Copy(_items, 0, newArray, copyLen, _next);
 
                 _queueStart = 0;
@@ -357,7 +353,7 @@ namespace Molten.Collections
                         c.CopyTo(_items, _next);
                         _next += c.Count;
                     }
-                   
+
                     _count += c.Count;
                     _isEmpty = _count == 0;
                 }

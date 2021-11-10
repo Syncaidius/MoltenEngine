@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     /// <summary>The font program table (fpgm).<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/fpgm </summary>

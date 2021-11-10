@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Input
+﻿namespace Molten.Input
 {
     /// <summary>
     /// Represents a gamepad index of player one (1) to four (4) on the local system.

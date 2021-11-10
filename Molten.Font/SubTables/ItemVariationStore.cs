@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class ItemVariationStore : FontSubTable
     {
@@ -16,7 +10,7 @@ namespace Molten.Font
         /// The regions are indicated by an array of indices into the variation region list.</summary>
         public ItemVariationData[] DeltaSets { get; private set; }
 
-        internal ItemVariationStore(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+        internal ItemVariationStore(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             Format = reader.ReadUInt16();
@@ -27,7 +21,7 @@ namespace Molten.Font
             DeltaSets = new ItemVariationData[itemVariationDataCount];
 
             // Read IVD sub-tables
-            for(int i = 0; i < itemVariationDataCount; i++)
+            for (int i = 0; i < itemVariationDataCount; i++)
                 DeltaSets[i] = new ItemVariationData(reader, log, this, ivdOffsets[i]);
 
             // Read region list
@@ -69,7 +63,7 @@ namespace Molten.Font
             RegionIndices = reader.ReadArray<ushort>(RegionIndexCount);
 
             // Read delta sets
-            for(int i = 0; i < ItemCount; i++)
+            for (int i = 0; i < ItemCount; i++)
             {
                 // Read 16-bit values first (short)
                 for (int d = 0; d < ShortDeltaCount; d++)

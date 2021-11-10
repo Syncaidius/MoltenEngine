@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Font
 {
@@ -34,7 +31,7 @@ namespace Molten.Font
         /// <returns></returns>
         public bool Drop(string tableTag)
         {
-            if(_byTag.TryGetValue(tableTag, out FontTable table))
+            if (_byTag.TryGetValue(tableTag, out FontTable table))
             {
                 _byTag.Remove(tableTag);
                 _byType.Remove(table.GetType());

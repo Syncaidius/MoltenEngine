@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
 
 namespace Molten.UI
@@ -74,7 +71,7 @@ namespace Molten.UI
             _top = top;
             _bottom = bottom;
 
-            if(!SuppressEvents)
+            if (!SuppressEvents)
                 OnChanged?.Invoke(this);
         }
 

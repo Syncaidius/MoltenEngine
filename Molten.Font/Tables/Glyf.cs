@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Font
 {
@@ -13,7 +8,7 @@ namespace Molten.Font
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/glyf </summary>
     [FontTableTag("glyf", "loca", "maxp")]
     public class Glyf : FontTable
-    {        
+    {
         public Glyph[] Glyphs { get; internal set; }
 
         internal override void Read(EnhancedBinaryReader reader, TableHeader header, Logger log, FontTableList dependencies)

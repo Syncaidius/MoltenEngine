@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten
+﻿namespace Molten
 {
     /// <summary>
     /// Provides helper methods for bitwise operations.
@@ -19,7 +13,7 @@ namespace Molten
 
         public static void Unset(ref int val, params int[] bitIDs)
         {
-            for(int i = 0; i < bitIDs.Length; i++)
+            for (int i = 0; i < bitIDs.Length; i++)
                 val &= ~(1 << bitIDs[i]);
         }
 

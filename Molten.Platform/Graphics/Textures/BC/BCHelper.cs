@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
@@ -275,8 +271,8 @@ namespace Molten.Graphics.Textures
         public static int GetBCSliceSize(GraphicsFormat format, int width, int height)
         {
             int blockSize = GetBlockSize(format);
-            int blockCountX = Math.Max(1,(width + 3) / 4);
-            int blockCountY = Math.Max(1,(height + 3) / 4);
+            int blockCountX = Math.Max(1, (width + 3) / 4);
+            int blockCountY = Math.Max(1, (height + 3) / 4);
 
             return (blockCountX * blockSize) * blockCountY;
         }

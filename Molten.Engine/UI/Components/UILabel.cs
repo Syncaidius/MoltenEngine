@@ -1,9 +1,4 @@
 ﻿using Molten.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.UI
 {
@@ -41,7 +36,8 @@ namespace Molten.UI
         {
             Rectangle cBounds = ClippingBounds;
 
-            switch (_hAlign) {
+            switch (_hAlign)
+            {
                 case UIHorizontalAlignment.Left:
                     _pos.X = cBounds.X;
                     break;
@@ -79,7 +75,7 @@ namespace Molten.UI
 
         public override void OnRenderUi(SpriteBatcher sb)
         {
-            if(_color.A > 0)
+            if (_color.A > 0)
                 sb.DrawString(_font, _text, _pos, _color);
 
             base.OnRenderUi(sb);
@@ -108,7 +104,7 @@ namespace Molten.UI
             get => _font;
             set
             {
-                if(_font != value)
+                if (_font != value)
                 {
                     _font = value;
                     _textSize = (Vector2I)_font.MeasureString(_text);

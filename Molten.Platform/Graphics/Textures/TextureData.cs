@@ -1,11 +1,5 @@
 ﻿using Molten.Graphics.Textures;
-using Molten.Graphics.Textures.DDS;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
@@ -73,9 +67,9 @@ namespace Molten.Graphics
             if (IsCompressed)
                 BCHelper.Decompress(this, log);
 
-            if(Format == GraphicsFormat.B8G8R8A8_UNorm || Format == GraphicsFormat.B8G8R8A8_Typeless || Format == GraphicsFormat.B8G8R8A8_UNorm_SRgb)
+            if (Format == GraphicsFormat.B8G8R8A8_UNorm || Format == GraphicsFormat.B8G8R8A8_Typeless || Format == GraphicsFormat.B8G8R8A8_UNorm_SRgb)
             {
-                foreach(Slice s in Levels)
+                foreach (Slice s in Levels)
                 {
                     byte temp = 0;
                     for (int i = 0; i < s.Data.Length; i += 4)

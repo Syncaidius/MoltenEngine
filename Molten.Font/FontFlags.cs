@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Font
 {
@@ -16,7 +12,7 @@ namespace Molten.Font
         /// The font is invalid; Does not contain the required tables:.These the are cmap, head, hhea, maxp, name, OS/2 and post tables.
         /// </summary>
         Invalid = 1,
-        
+
         /// <summary>
         /// The font file contains all of the required tables. These the are cmap, head, hhea, maxp, name, OS/2 and post tables.
         /// </summary>

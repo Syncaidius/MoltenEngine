@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class LigatureGlyphTable : FontSubTable
     {
@@ -14,7 +8,7 @@ namespace Molten.Font
         /// <summary>Gets the ID of the glyph that the <see cref="CaretValues"/> correspond to.</summary>
         public ushort GlyphID { get; internal set; }
 
-        internal LigatureGlyphTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CoverageTable coverage) : 
+        internal LigatureGlyphTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CoverageTable coverage) :
             base(reader, log, parent, offset)
         {
             ushort caretCount = reader.ReadUInt16();

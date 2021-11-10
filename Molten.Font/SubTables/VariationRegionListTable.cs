@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class VariationRegionListTable : FontSubTable
     {
@@ -21,7 +15,7 @@ namespace Molten.Font
             public float EndCoord { get; internal set; }
         }
 
-        internal VariationRegionListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+        internal VariationRegionListTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort axisCount = reader.ReadUInt16();

@@ -2,11 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Khronos;
-using KhronosApi = Khronos.KhronosApi;
-using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {
@@ -192,4 +187,3 @@ namespace Molten.Graphics
         public IDisplayManager Manager => _manager;
     }
 }
- 

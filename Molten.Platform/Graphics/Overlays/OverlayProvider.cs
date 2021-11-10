@@ -1,15 +1,11 @@
 ﻿using Molten.Collections;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics.Overlays
 {
     public class OverlayProvider
     {
-        ThreadedList<IRenderOverlay> _overlays  = new ThreadedList<IRenderOverlay>();
+        ThreadedList<IRenderOverlay> _overlays = new ThreadedList<IRenderOverlay>();
         int _current = 0;
 
         internal OverlayProvider()

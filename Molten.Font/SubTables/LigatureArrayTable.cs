@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class LigatureArrayTable : FontSubTable
     {
         public LigatureAttachTable[] Tables { get; private set; }
 
-        internal LigatureArrayTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, long markClassCount):
+        internal LigatureArrayTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, long markClassCount) :
             base(reader, log, parent, offset)
         {
             ushort ligatureCount = reader.ReadUInt16();
@@ -34,14 +28,14 @@ namespace Molten.Font
             Records = new ComponentRecord[componentCount];
 
             // Collect all the record anchor table offsets.
-            for(int i = 0; i < componentCount; i++)
+            for (int i = 0; i < componentCount; i++)
             {
-                for(int j = 0; j < markClassCount; j++)
+                for (int j = 0; j < markClassCount; j++)
                     offsets[i, j] = reader.ReadUInt16();
             }
 
             // Now build the records and read their anchor tables.
-            for(int i = 0; i < componentCount; i++)
+            for (int i = 0; i < componentCount; i++)
             {
                 AnchorTable[] tables = new AnchorTable[markClassCount];
                 for (int j = 0; j < markClassCount; j++)

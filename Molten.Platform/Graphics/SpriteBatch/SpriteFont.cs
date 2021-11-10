@@ -3,10 +3,6 @@ using Molten.Font;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
@@ -88,13 +84,13 @@ namespace Molten.Graphics
         /// <param name="initialPages">The initial number of pages in the underlying sprite font texture atlas. Minimum is 1.</param>
         /// <param name="charPadding">The number of pixels to add as padding around each character placed on to the font atlas. 
         /// Default value is 2. Negative padding can cause characters to overlap.</param>
-        public SpriteFont(MoltenRenderer renderer, 
-            FontFile font, 
-            int ptSize, 
-            int tabSize = 3, 
-            int texturePageSize = 512, 
-            int pointsPerCurve = 12, 
-            int initialPages = 1, 
+        public SpriteFont(MoltenRenderer renderer,
+            FontFile font,
+            int ptSize,
+            int tabSize = 3,
+            int texturePageSize = 512,
+            int pointsPerCurve = 12,
+            int initialPages = 1,
             int charPadding = 2)
         {
             Debug.Assert(texturePageSize >= MIN_PAGE_SIZE, $"Texture page size must be at least {MIN_PAGE_SIZE}");
@@ -218,7 +214,7 @@ namespace Molten.Graphics
 
             return _glyphCache[_charData[c].GlyphIndex] ?? _glyphCache[_charData[PLACEHOLDER_CHAR].GlyphIndex];
         }
-        
+
         /// <summary>Measures the provided string and returns it's width and height, in pixels.</summary>
         /// <param name="text"></param>
         /// <returns></returns>
@@ -316,7 +312,7 @@ namespace Molten.Graphics
             Rectangle? paddedLoc = null;
             _interlocker.Lock(() => paddedLoc = _packer.Insert(pWidth + padding2, pHeight + padding2));
 
-            if(paddedLoc == null)
+            if (paddedLoc == null)
             {
                 // TODO trigger a sheet resize.
                 //      -- If texture arrays are not supported/allowed, try to make the texture bigger along one dimension instead (power of 2).

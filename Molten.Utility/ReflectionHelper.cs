@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten
 {
@@ -52,7 +50,7 @@ namespace Molten
             return assembly.GetTypes().Where(t => t.IsSubclassOf(bType) && (includeAbstract || !t.IsAbstract));
         }
 
-        public static IEnumerable<Type> FindTypesWithAttribute<T>(Assembly assembly, bool includeAbstract = false) where T: Attribute
+        public static IEnumerable<Type> FindTypesWithAttribute<T>(Assembly assembly, bool includeAbstract = false) where T : Attribute
         {
             Type bType = typeof(T);
             return assembly.GetTypes().Where(t => t.GetCustomAttribute<T>() != null && (includeAbstract || !t.IsAbstract));

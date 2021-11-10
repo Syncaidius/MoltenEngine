@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class ChainRuleSetTable : FontSubTable
     {
@@ -72,7 +66,7 @@ namespace Molten.Font
 
             ushort posCount = reader.ReadUInt16();
             Records = new RuleLookupRecord[posCount];
-            for(int i = 0; i < posCount; i++)
+            for (int i = 0; i < posCount; i++)
             {
                 Records[i] = new RuleLookupRecord(
                     seqIndex: reader.ReadUInt16(),

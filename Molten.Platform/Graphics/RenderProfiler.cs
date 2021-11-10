@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
@@ -149,7 +144,7 @@ namespace Molten.Graphics
 
             // Take the oldest snapshot and move it to the front for re-use.
             Current = _snapshots[0];
-            if(_curID == MaxSnapshots)
+            if (_curID == MaxSnapshots)
             {
                 _curID--;
                 Array.Copy(_snapshots, 1, _snapshots, 0, _snapshots.Length - 1);

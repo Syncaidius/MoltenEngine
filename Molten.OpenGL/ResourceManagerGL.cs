@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
@@ -80,12 +75,12 @@ namespace Molten.Graphics
 
         public ITexture2D CreateTexture2D(Texture2DProperties properties)
         {
-            return new Texture2DGL(_renderer, 
-                properties.Width, 
-                properties.Height, 
-                properties.Format, 
-                properties.MipMapLevels, 
-                properties.ArraySize, 
+            return new Texture2DGL(_renderer,
+                properties.Width,
+                properties.Height,
+                properties.Format,
+                properties.MipMapLevels,
+                properties.ArraySize,
                 properties.Flags, properties.SampleCount);
         }
 

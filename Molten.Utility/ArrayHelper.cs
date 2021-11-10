@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten
 {
@@ -20,7 +16,7 @@ namespace Molten
 
             T[] result = new T[len];
             int startIndex = 0;
-            for(int i = 0; i < arrays.Length; i++)
+            for (int i = 0; i < arrays.Length; i++)
             {
                 Array.Copy(arrays[i], 0, result, startIndex, arrays[i].Length);
                 startIndex += arrays[i].Length;

@@ -3,9 +3,6 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
 
 namespace Molten.Collections
 {
@@ -46,7 +43,7 @@ namespace Molten.Collections
 
             _interlocker = new Interlocker();
             _items = new T[initialCapacity];
-            _capacity = _items.Length; 
+            _capacity = _items.Length;
             _locker = new object();
         }
 
@@ -99,7 +96,8 @@ namespace Molten.Collections
             });
         }
 
-        private void AddElement(T item) {
+        private void AddElement(T item)
+        {
             EnsureCapacityInternal(_count + 1);
             _items[_count++] = item;
         }

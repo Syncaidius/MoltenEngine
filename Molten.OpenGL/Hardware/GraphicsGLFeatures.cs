@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using OpenGL;
+﻿using OpenGL;
 
 namespace Molten.Graphics
 {
@@ -14,7 +11,7 @@ namespace Molten.Graphics
             Gl.Get(GetPName.MaxTextureSize, out maxTexSize);
             MaxTextureDimension = maxTexSize;
 
-              
+
             //int vTest = GL.GetInteger(GetPName.MaxTextureUnits); // Multi-texturing image units.
             //int test = GL.GetInteger(GetPName.MaxCombinedTextureImageUnits);
         }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class FeatureVariationsTable : FontSubTable
     {
@@ -30,7 +24,7 @@ namespace Molten.Font
             uint recordCount = reader.ReadUInt32();
             Records = new FeatureVariationRecord[recordCount];
             RecordOffsets[] offsets = new RecordOffsets[recordCount];
-            for(int i = 0; i < recordCount; i++)
+            for (int i = 0; i < recordCount; i++)
             {
                 offsets[i] = new RecordOffsets()
                 {
@@ -40,7 +34,7 @@ namespace Molten.Font
             }
 
             // Populate records
-            for(int i = 0; i < recordCount; i++)
+            for (int i = 0; i < recordCount; i++)
             {
                 Records[i] = new FeatureVariationRecord()
                 {

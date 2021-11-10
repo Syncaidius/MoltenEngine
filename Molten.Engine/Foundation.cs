@@ -3,11 +3,7 @@ using Molten.Input;
 using Molten.Threading;
 using Molten.Utility;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Molten
 {
@@ -28,7 +24,7 @@ namespace Molten
         /// <summary>
         /// Occurs when the game is in the process of closing.
         /// </summary>
-        public event MoltenEventHandler<Foundation<R,I>> OnClosing;
+        public event MoltenEventHandler<Foundation<R, I>> OnClosing;
 
         /// <summary>Creates a new instance of <see cref="Foundation"/>.</summary>
         /// <param name="title"></param>
@@ -55,8 +51,8 @@ namespace Molten
         /// <param name="ignoreSavedSettings">If true, the previously-saved settings will be ignored and replaced with the provided (or default) settings.</param>
         /// <param name="gameThreadApartment">The thread apartment state for the main game thread.</param>
         /// <param name="renderThreadApartment">The thread apartment state for the renderer thread</param>
-        public void Start(EngineSettings settings = null, 
-            bool ignoreSavedSettings = false, 
+        public void Start(EngineSettings settings = null,
+            bool ignoreSavedSettings = false,
             ApartmentState gameThreadApartment = ApartmentState.MTA, ApartmentState renderThreadApartment = ApartmentState.MTA)
         {
             if (_gameThread != null)
@@ -197,7 +193,7 @@ namespace Molten
         /// Does not call <see cref="Dispose"/></summary>
         public void Exit()
         {
-            RunState = GameRunState.Exiting;           
+            RunState = GameRunState.Exiting;
         }
 
         /// <summary>Forces the game to exit. This will not give the game a chance to 

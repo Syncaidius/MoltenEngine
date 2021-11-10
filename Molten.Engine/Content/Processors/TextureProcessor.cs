@@ -4,10 +4,8 @@ using Molten.Graphics.Textures.DDS;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Molten.Content
 {
@@ -171,8 +169,8 @@ namespace Molten.Content
             {
                 case ITextureCube texCube:
                     // TODO include mip-map count in resize
-                    if (texCube.Width != data.Width || 
-                        texCube.Height != data.Height || 
+                    if (texCube.Width != data.Width ||
+                        texCube.Height != data.Height ||
                         tex.MipMapCount != data.MipMapLevels)
                         texCube.Resize(data.Width, data.Height, data.MipMapLevels);
 

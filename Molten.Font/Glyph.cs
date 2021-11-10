@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Font
 {
@@ -214,9 +211,9 @@ namespace Molten.Font
 
                 default:
                     // There are at least 3 control points.
-                    for(int i = 0; i < cp.Count - 1; i++)
+                    for (int i = 0; i < cp.Count - 1; i++)
                     {
-                        Vector2F midPoint = (cp[i] + cp[i+1]) / 2f;
+                        Vector2F midPoint = (cp[i] + cp[i + 1]) / 2f;
 
                         curvePercent = 0f;
                         for (int c = 0; c < pointsPerCurve; c++)

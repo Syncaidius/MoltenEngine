@@ -1,11 +1,4 @@
-﻿using Molten.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Input
+﻿namespace Molten.Input
 {
     public delegate void InputConnectionStatusHandler<T>(IInputDevice<T> device, bool isConnected) where T : struct;
 
@@ -28,8 +21,8 @@ namespace Molten.Input
         string DeviceName { get; }
     }
 
-    public interface IInputDevice<T>  : IInputDevice 
-        where T: struct
+    public interface IInputDevice<T> : IInputDevice
+        where T : struct
     {
         /// <summary>
         /// Invoked when the connection status of the device has changed.

@@ -13,10 +13,6 @@
 //-------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
@@ -51,6 +47,6 @@ namespace Molten.Graphics.Textures
         /// <summary>
         /// // Minimal modes (usually mode 6) for BC7 compression
         /// </summary>
-        BC7_QUICK = 0x100000,        
+        BC7_QUICK = 0x100000,
     };
 }

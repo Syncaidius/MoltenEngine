@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     internal delegate void PipelineBindSlotDelegate<D, P>(PipelineBindSlot<D, P> slot, PipelineObject<D, P> obj)
         where D : IGraphicsDevice
@@ -15,14 +9,14 @@ namespace Molten.Graphics
         where P : IGraphicsPipe<D>
     {
         /// <summary>Invoked when the object bound to the slot is disposed.</summary>
-        public event PipelineBindSlotDelegate<D,P> OnObjectForcedUnbind;
+        public event PipelineBindSlotDelegate<D, P> OnObjectForcedUnbind;
 
-        internal PipelineBindSlot(PipelineComponent<D,P> parent, int slotID)
+        internal PipelineBindSlot(PipelineComponent<D, P> parent, int slotID)
         {
             SlotID = slotID;
         }
 
-        internal void BoundObjectDisposed(PipelineObject<D,P> obj)
+        internal void BoundObjectDisposed(PipelineObject<D, P> obj)
         {
             if (obj == Object)
             {
@@ -55,15 +49,15 @@ namespace Molten.Graphics
 
         internal PipelineBindType BindType { get; private protected set; }
 
-        public PipelineComponent<D,P> Parent { get; private set; }
+        public PipelineComponent<D, P> Parent { get; private set; }
     }
 
-    internal class PipelineBindSlot<T, D, P> : PipelineBindSlot<D,P>
+    internal class PipelineBindSlot<T, D, P> : PipelineBindSlot<D, P>
         where T : PipelineObject<D, P>
-        where D: IGraphicsDevice
-        where P: IGraphicsPipe<D>
+        where D : IGraphicsDevice
+        where P : IGraphicsPipe<D>
     {
-        internal PipelineBindSlot(PipelineComponent<D,P> parent, int slotID) :
+        internal PipelineBindSlot(PipelineComponent<D, P> parent, int slotID) :
             base(parent, slotID)
         { }
 

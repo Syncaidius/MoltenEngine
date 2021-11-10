@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class MarkArrayTable : FontSubTable
     {
@@ -18,7 +12,7 @@ namespace Molten.Font
             ushort[] anchorOffsets = new ushort[markCount];
 
             // Read mark record info (class + anchor offset per record).
-            for(int i = 0; i < markCount; i++)
+            for (int i = 0; i < markCount; i++)
             {
                 Records[i] = new MarkRecord()
                 {
@@ -28,7 +22,7 @@ namespace Molten.Font
             }
 
             // Read anchor tables.
-            for(int i = 0; i < markCount; i++)
+            for (int i = 0; i < markCount; i++)
                 Records[i].Table = new AnchorTable(reader, log, this, anchorOffsets[i]);
         }
     }

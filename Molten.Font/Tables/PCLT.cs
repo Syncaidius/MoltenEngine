@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace Molten.Font
 {
@@ -92,7 +88,7 @@ namespace Molten.Font
     {
         public bool IsNativeVerusConvertedFormat { get; private set; }
 
-        public PCLTVendor Vendor {get; private set;}
+        public PCLTVendor Vendor { get; private set; }
 
         public uint VendorFontID { get; private set; }
 

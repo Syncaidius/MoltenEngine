@@ -3,14 +3,11 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten
 {
     public delegate void ContentRequestHandler(ContentRequest request);
-    
+
     public enum ContentRequestState
     {
         NotCommited = 0,
@@ -121,7 +118,7 @@ namespace Molten
 
             AddElement(fn, ContentRequestType.Write, type, (e) =>
             {
-                for(int i = 0; i < obj.Length; i++)
+                for (int i = 0; i < obj.Length; i++)
                     e.AddInput(type, obj[i]);
             });
         }
@@ -180,7 +177,7 @@ namespace Molten
 
             if (type == ContentRequestType.Read || type == ContentRequestType.Deserialize)
                 _requestedFiles.Add(path);
-            
+
             c.ContentType = contentType;
             c.RequestType = type;
             c.File = new FileInfo(contentPath);

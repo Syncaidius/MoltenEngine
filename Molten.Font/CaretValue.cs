@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public enum CaretValueFormat : ushort
     {
@@ -37,7 +31,7 @@ namespace Molten.Font
         /// <summary>Gets the value of the current <see cref="CaretValue"/>. This is either an X or Y coordinate (design units), or a contour point index depending on <see cref="Format"/>.</summary>
         public int Value { get; private set; }
 
-        public DeviceVariationIndexTable VariableTable { get; private set; } 
+        public DeviceVariationIndexTable VariableTable { get; private set; }
 
         public CaretValue(CaretValueFormat format, int val, DeviceVariationIndexTable dvt)
         {

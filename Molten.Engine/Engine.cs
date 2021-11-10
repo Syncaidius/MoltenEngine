@@ -4,12 +4,7 @@ using Molten.Graphics;
 using Molten.Input;
 using Molten.Threading;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Molten
 {
@@ -26,7 +21,7 @@ namespace Molten
         /// down to the graphics and rendering chain.
         /// </summary>
         event DisplayManagerEvent OnAdapterInitialized;
-        
+
         /// <summary>
         /// Creates a new instance of <see cref="Engine"/>.
         /// </summary>
@@ -41,9 +36,9 @@ namespace Molten
                 throw new NotSupportedException("Molten engine only supports 64-bit. Please build accordingly.");
 
             Current = this;
-            Settings = initialSettings ??  new EngineSettings();
+            Settings = initialSettings ?? new EngineSettings();
 
-            if(!ignoreSavedSettings)
+            if (!ignoreSavedSettings)
                 Settings.Load();
 
             Log = Logger.Get();

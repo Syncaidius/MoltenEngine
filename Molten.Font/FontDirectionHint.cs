@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     /// <summary>A hint to a font system on what direction gylphs should flow.<para/>
     /// Depreciated (Set to 2 in newer fonts).<para/>

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Molten.Font
 {
@@ -61,14 +57,14 @@ namespace Molten.Font
                 ParseDictData(reader, log, topDictIndex, DictDataType.TopLevel, numGlyphs, sidMax);
 
                 // Check if all fdIndex in FDSelect are valid
-                foreach(byte b in _fdSelect.Values)
+                foreach (byte b in _fdSelect.Values)
                 {
                     if (b >= _fontDictLength)
                         return; // TODO failure
                 }
 
                 // Check if all charstrings (font hinting code for each glyph) are valid.
-                for(int i = 0; i < _charStrings.Count; i++)
+                for (int i = 0; i < _charStrings.Count; i++)
                 {
                     if (!ValidateType2CharStringIndex(reader, _charStrings[i], globalSubStrIndex))
                         return; // TODO failure - $"failed validating charstring set {i}";
@@ -82,7 +78,7 @@ namespace Molten.Font
 
         private bool ValidateType2CharStringIndex(EnhancedBinaryReader reader, CFFIndexTable charStringIndex, CFFIndexTable globalSubStrIndex)
         {
-            for(ushort g = 0; g < charStringIndex.Length; g++)
+            for (ushort g = 0; g < charStringIndex.Length; g++)
             {
                 if (charStringIndex.Objects[g].DataSize > ushort.MaxValue) // Max char string length
                     return false; // TODO failure
@@ -110,8 +106,8 @@ namespace Molten.Font
             return true;
         }
 
-        private bool ExecuteType2CharString(EnhancedBinaryReader reader, uint callDepth, CFFIndexTable globalSubStrIndex, 
-            CFFIndexTable localSubrsTouse, CFFIndexTable.ObjectEntry charString, Stack<uint> argStack, 
+        private bool ExecuteType2CharString(EnhancedBinaryReader reader, uint callDepth, CFFIndexTable globalSubStrIndex,
+            CFFIndexTable localSubrsTouse, CFFIndexTable.ObjectEntry charString, Stack<uint> argStack,
             out bool foundEndChar, out bool foundWidth, out uint numStems)
         {
             foundEndChar = false;
@@ -161,7 +157,7 @@ namespace Molten.Font
         {
             indexToUse = null;
 
-            if(_fdSelect.Count > 0 && _localSubrsPerFont.Count == 0)
+            if (_fdSelect.Count > 0 && _localSubrsPerFont.Count == 0)
             {
                 byte fdIndex = 0;
                 if (!_fdSelect.TryGetValue(glyphIndex, out fdIndex))
@@ -171,7 +167,8 @@ namespace Molten.Font
                     return false; // TODO failure - fdIndex exceeds local subrs per font list size.
 
                 indexToUse = _localSubrsPerFont[fdIndex];
-            }else if(_localSubrs != null)
+            }
+            else if (_localSubrs != null)
             {
                 // Second, try to use |local_subrs|. Most Latin fonts don't have FDSelect
                 // entries. If The font has a local subrs index associated with the Top
@@ -189,7 +186,7 @@ namespace Molten.Font
 
         private void ParseNameData(EnhancedBinaryReader reader, CFFIndexTable index)
         {
-            for(int i = 0; i < index.Objects.Length; i++)
+            for (int i = 0; i < index.Objects.Length; i++)
             {
                 SetLocalOffset(reader, index.Objects[i].Offset);
                 FontName = reader.ReadString((int)index.Objects[i].DataSize);
@@ -425,7 +422,7 @@ namespace Molten.Font
                                 if (lastGid >= sentinel)
                                     return; // TODO Failure
 
-                                for(ushort k = lastGid; k < sentinel; k++)
+                                for (ushort k = lastGid; k < sentinel; k++)
                                 {
                                     _fdSelect.Add(k, fdIndex);
                                     if (fdIndex == 0) // TODO do we use a nullable here? Is 0 a valid number?
@@ -486,7 +483,7 @@ namespace Molten.Font
                 } // While loop end
 
                 // Parse char sets
-                if(charSetOffset > FontUtil.NULL)
+                if (charSetOffset > FontUtil.NULL)
                 {
                     curStreamPos = reader.Position;
                     SetLocalOffset(reader, charSetOffset);
@@ -494,7 +491,7 @@ namespace Molten.Font
                     switch (format)
                     {
                         case 0:
-                            for(ushort j = 1  /* .notdef is omitted */; j < numGlyphs; j++)
+                            for (ushort j = 1  /* .notdef is omitted */; j < numGlyphs; j++)
                             {
                                 ushort sid = reader.ReadUInt16();
                                 if (!haveRos && (sid > sidMax))
@@ -507,7 +504,7 @@ namespace Molten.Font
                         case 1:
                         case 2:
                             uint total = 1; // .notdef is omitted.
-                            while(total < numGlyphs)
+                            while (total < numGlyphs)
                             {
                                 ushort sid = reader.ReadUInt16();
                                 if (!haveRos && sid > sidMax)
@@ -542,7 +539,7 @@ namespace Molten.Font
             SetLocalOffset(reader, offset);
             List<KeyValuePair<uint, DictOperandType>> operands = new List<KeyValuePair<uint, DictOperandType>>();
             long endPos = GetLocalOffset(reader) + privateLength;
-            while(GetLocalOffset(reader) < endPos)
+            while (GetLocalOffset(reader) < endPos)
             {
                 if (!ParseDictDataReadNext(reader, operands))
                     return false; // TODO failure
@@ -709,14 +706,16 @@ namespace Molten.Font
             }
 
             uint result = 0;
-            if(b0 >= 32 && b0 <= 246)
+            if (b0 >= 32 && b0 <= 246)
             {
                 result = b0 - 139;
-            }else if(b0 >= 247 && b0 <= 250)
+            }
+            else if (b0 >= 247 && b0 <= 250)
             {
                 b1 = reader.ReadByte();
                 result = (b0 - 247) * 256 + b1 + 108;
-            }else if(b0 >= 251 && b0 <= 254)
+            }
+            else if (b0 >= 251 && b0 <= 254)
             {
                 b1 = reader.ReadByte();
                 result = (uint)(-(b0 - 251U) * 256U + b1 - 108U);
@@ -741,9 +740,9 @@ namespace Molten.Font
             while (true)
             {
                 nibble = reader.ReadByte();
-                if((nibble & 0xf0) == 0xf0)
+                if ((nibble & 0xf0) == 0xf0)
                 {
-                    if((nibble & 0xf) == 0xf)
+                    if ((nibble & 0xf) == 0xf)
                     {
                         // TODO: would be better to store actual double value, rather than the dummy integer.
                         operands.Add(new KeyValuePair<uint, DictOperandType>(0, DictOperandType.Real));
@@ -751,7 +750,7 @@ namespace Molten.Font
                     }
                 }
 
-                if((nibble & 0x0f) == 0x0f)
+                if ((nibble & 0x0f) == 0x0f)
                 {
                     operands.Add(new KeyValuePair<uint, DictOperandType>(0, DictOperandType.Real));
                     return;
@@ -761,15 +760,15 @@ namespace Molten.Font
                 uint[] nibbles = new uint[2];
                 nibbles[0] = (nibble & 0xf0U) >> 8;
                 nibbles[1] = (nibble & 0x0fU);
-                for(int i = 0; i < 2; i++)
+                for (int i = 0; i < 2; i++)
                 {
-                    if(nibbles[i] == 0xD) // Reserved number
+                    if (nibbles[i] == 0xD) // Reserved number
                         return;// TODO failure
 
                     if ((nibbles[i] == 0xE) && (count > 0 || i > 0))
                         return; // TODO failure - minus sign should be the first character.
 
-                    if(nibbles[i] == 0xA) // Decimal point
+                    if (nibbles[i] == 0xA) // Decimal point
                     {
                         if (!readDecimalPoint)
                             readDecimalPoint = true;
@@ -777,7 +776,7 @@ namespace Molten.Font
                             return; // TODO failure - two or more decimal points.
                     }
 
-                    if(nibbles[i] == 0xB || nibbles[i] == 0XC) // E+ or E- (same order in IF condition)
+                    if (nibbles[i] == 0xB || nibbles[i] == 0XC) // E+ or E- (same order in IF condition)
                     {
                         if (!readE)
                             readE = true;

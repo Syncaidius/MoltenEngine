@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 
 namespace Molten.Collections
 {
@@ -304,7 +301,7 @@ namespace Molten.Collections
         /// Removes an object with the specified key from the dictionary.
         /// </summary>
         /// <param name="key">The key of the object to be removed.</param>
-         void IDictionary.Remove(object key)
+        void IDictionary.Remove(object key)
         {
             if (!_keyType.IsAssignableFrom(key.GetType()))
                 throw new ArgumentNullException("Key is not of a compatible type.");
@@ -348,7 +345,7 @@ namespace Molten.Collections
         {
             bool result = false;
             V temp = default(V);
-            _interlocker.Lock(() =>  result = _dictionary.TryGetValue(key, out temp));
+            _interlocker.Lock(() => result = _dictionary.TryGetValue(key, out temp));
             value = temp;
             return result;
         }

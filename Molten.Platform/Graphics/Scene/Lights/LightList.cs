@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
@@ -37,7 +33,7 @@ namespace Molten.Graphics
         public LightInstance New(LightData data)
         {
             int id = 0;
-            if(_freeCount > 0)
+            if (_freeCount > 0)
             {
                 id = _free[--_freeCount];
             }

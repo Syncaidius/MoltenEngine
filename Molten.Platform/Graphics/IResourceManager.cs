@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
@@ -109,9 +104,9 @@ namespace Molten.Graphics
         /// <param name="dedicatedResource">if set to <c>true</c>, the mesh is given its own dedicated resource buffer.</param>
         /// <returns></returns>
         IMesh<T> CreateMesh<T>(
-            int maxVertices, 
+            int maxVertices,
             VertexTopology topology = VertexTopology.TriangleList,
-            bool dynamic = false) 
+            bool dynamic = false)
             where T : struct, IVertexType;
 
         /// <summary>
@@ -120,10 +115,10 @@ namespace Molten.Graphics
         /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
         /// <param name="dedicatedResource">if set to <c>true</c> [dedicated resource].</param>
         /// <returns></returns>
-        IIndexedMesh<T> CreateIndexedMesh<T>(int maxVertices, int maxIndices, 
-            VertexTopology topology = VertexTopology.TriangleList, 
+        IIndexedMesh<T> CreateIndexedMesh<T>(int maxVertices, int maxIndices,
+            VertexTopology topology = VertexTopology.TriangleList,
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit,
-            bool dynamic = false) 
+            bool dynamic = false)
             where T : struct, IVertexType;
 
         /// <summary>Compiles a set of shaders from the provided source string.</summary>

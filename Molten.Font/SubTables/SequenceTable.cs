@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class SequenceTable : FontSubTable
     {
@@ -13,7 +7,7 @@ namespace Molten.Font
         /// </summary>
         public ushort[] GlyphIDs { get; internal set; }
 
-        internal SequenceTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) : 
+        internal SequenceTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset) :
             base(reader, log, parent, offset)
         {
             ushort glyphCount = reader.ReadUInt16();

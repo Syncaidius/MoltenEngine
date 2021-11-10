@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Font
 {
@@ -346,7 +342,7 @@ namespace Molten.Font
         public ClassDefinitionTable InputClasses { get; private set; }
 
         public ClassDefinitionTable LookAheadClasses { get; private set; }
-        
+
         public CoverageTable[] BacktrackCoverages { get; private set; }
 
         public CoverageTable[] InputCoverages { get; private set; }

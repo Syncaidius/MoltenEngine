@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     /// <summary>Identify a technique for resolving texture coordinates that are outside of the boundaries of a texture.</summary>
     public enum SamplerAddressMode
@@ -17,11 +11,11 @@ namespace Molten.Graphics
         /// 1, for example, the texture is addressed normally; between 1 and 2, the texture 
         /// is flipped (mirrored); between 2 and 3, the texture is normal again; and so on.</summary>
         Mirror = 2,
-  
+
         /// <summary>Texture coordinates outside the range [0.0, 1.0] are set to the texture color
         ///     at 0.0 or 1.0, respectively.</summary>
         Clamp = 3,
-  
+
         /// <summary>Texture coordinates outside the range [0.0, 1.0] are set to the border color 
         /// specified in SharpDX.Direct3D11.SamplerStateDescription or HLSL code.</summary>
         Border = 4,

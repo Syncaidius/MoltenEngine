@@ -13,11 +13,7 @@
 //-------------------------------------------------------------------------------------
 using Molten.Collections;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Graphics.Textures
 {
@@ -40,7 +36,8 @@ namespace Molten.Graphics.Textures
             internal Color[] aLDRPixels;
             internal Color4[] aHDRPixels;
 
-            internal EncodeParams(Color4[] aOriginal) {
+            internal EncodeParams(Color4[] aOriginal)
+            {
                 uMode = 0;
                 aEndPts = new BC67.LDREndPntPair[BC67.BC7_MAX_SHAPES][];
                 for (int i = 0; i < aEndPts.Length; i++)

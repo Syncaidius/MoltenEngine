@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Molten.Graphics.Textures.DDS
+﻿namespace Molten.Graphics.Textures.DDS
 {
     /// <summary>DDS_PIXELFORMAT: http://msdn.microsoft.com/en-us/library/windows/desktop/bb943984%28v=vs.85%29.aspx. 
     /// Determines what pixel format data is contained in the DDS header.</summary>

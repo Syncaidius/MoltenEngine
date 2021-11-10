@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Molten.Collections
 {
@@ -32,7 +29,7 @@ namespace Molten.Collections
             T instance = default(T);
             if (_pool.TryDequeue(out instance) == false)
                 instance = _generator();
-            
+
             return instance;
         }
 

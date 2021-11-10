@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Input
+﻿namespace Molten.Input
 {
     public delegate void KeyHandler(IKeyboardDevice device, Key key);
     public delegate void KeyPressHandler(char character, long paramVal);

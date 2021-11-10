@@ -1,17 +1,12 @@
-﻿using Molten.Graphics;
-using Molten.Graphics.Textures.DDS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Molten.Content
 {
     public class StringProcessor : ContentProcessor
     {
-        public override Type[] AcceptedTypes { get; protected set; } = new Type[] { typeof(string)};
+        public override Type[] AcceptedTypes { get; protected set; } = new Type[] { typeof(string) };
 
         public override void OnRead(ContentContext context)
         {

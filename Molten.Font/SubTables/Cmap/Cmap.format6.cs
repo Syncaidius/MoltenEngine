@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Molten.Font
+﻿namespace Molten.Font
 {
     public class CmapFormat6SubTable : CmapSubTable
     {
@@ -12,7 +6,7 @@ namespace Molten.Font
         ushort _endCode;
         ushort[] _glyphIdArray;
 
-        internal CmapFormat6SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) : 
+        internal CmapFormat6SubTable(EnhancedBinaryReader reader, Logger log, IFontTable parent, long offset, CmapEncodingRecord record) :
             base(reader, log, parent, offset, record)
         {
             ushort length = reader.ReadUInt16();
