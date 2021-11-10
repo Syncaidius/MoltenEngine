@@ -43,17 +43,23 @@ namespace Molten.Input
         IntPtr _windowHandle;
         bool _bufferUpdated;
 
-        internal override void Initialize(IInputManager manager, Logger log)
+        internal override void Initialize(WinInputManager manager, Logger log)
         {
-            WinInputManager diManager = manager as WinInputManager;
-
-            _mouse = new Mouse(diManager.DirectInput);
+            _mouse = new Mouse(manager.DirectInput);
             _mouse.Properties.AxisMode = DeviceAxisMode.Relative;
-            _mouse.Properties.BufferSize = 256;
+            _mouse.Properties.BufferSize = manager.Settings.MouseBufferSize;
+            manager.Settings.MouseBufferSize.OnChanged += MouseBufferSize_OnChanged;
             _mouse.Acquire();
 
             _state = new MouseState();
             _prevState = new MouseState();
+        }
+
+        private void MouseBufferSize_OnChanged(int oldValue, int newValue)
+        {
+            _mouse.Unacquire();
+            _mouse.Properties.BufferSize = newValue;
+            _mouse.Acquire();
         }
 
         internal override void Bind(INativeSurface surface)

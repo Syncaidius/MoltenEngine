@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SharpDX.XInput;
-using SharpDX;
-using System.Runtime.InteropServices;
 using Molten.Graphics;
 using Molten.Utilities;
 using State = SharpDX.XInput.State;
@@ -37,7 +35,7 @@ namespace Molten.Input
             _padIndex = (int)index;
         }
 
-        internal override void Initialize(IInputManager manager, Logger log)
+        internal override void Initialize(WinInputManager manager, Logger log)
         {
             base.Initialize(manager, log);
             _pad = new Controller((UserIndex)_padIndex);

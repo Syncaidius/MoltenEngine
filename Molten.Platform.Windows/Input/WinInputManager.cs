@@ -27,6 +27,7 @@ namespace Molten.Input
         /// <param name="log">A logger.</param>
         public void Initialize(InputSettings settings, Logger log)
         {
+            Settings = settings;
             _log = log;
             _input = new DirectInput();
             _gamepads = new List<GamepadDevice>();
@@ -192,6 +193,8 @@ namespace Molten.Input
 
         /// <summary>Gets the handler for the gamepad at GamepadIndex.One.</summary>
         public GamepadDevice GamePad { get { return _gamepads[0]; } }
+
+        public InputSettings Settings { get; private set; }
 
         public IClipboard Clipboard => _clipboard;
 

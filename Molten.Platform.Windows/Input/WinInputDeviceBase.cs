@@ -11,7 +11,7 @@ namespace Molten.Input
     /// </summary>
     public abstract class WinInputDeviceBase : EngineObject, IInputDevice
     {
-        internal virtual void Initialize(IInputManager manager, Logger log)
+        internal virtual void Initialize(WinInputManager manager, Logger log)
         {
             Manager = manager;
         }

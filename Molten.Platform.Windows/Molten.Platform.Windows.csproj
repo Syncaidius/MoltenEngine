@@ -102,21 +102,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gamepad\GamepadTrigger.cs" />
-    <Compile Include="Gamepad\GamepadStick.cs" />
+    <Compile Include="Input\Gamepad\GamepadTrigger.cs" />
+    <Compile Include="Input\Gamepad\GamepadStick.cs" />
     <Compile Include="Win32.CPU.cs" />
     <Compile Include="Win32.cs" />
     <Compile Include="Win32.IO.cs" />
     <Compile Include="Win32.OS.cs" />
     <Compile Include="Win32Helper.Structures.cs" />
     <Compile Include="WindowsClipboard.cs" />
-    <Compile Include="Gamepad\GamepadDevice.cs" />
-    <Compile Include="KeyboardDevice.cs" />
-    <Compile Include="MouseDevice.cs" />
+    <Compile Include="Input\Gamepad\GamepadDevice.cs" />
+    <Compile Include="Input\KeyboardDevice.cs" />
+    <Compile Include="Input\MouseDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharpDXInterop.cs" />
-    <Compile Include="WinInputDeviceBase.cs" />
-    <Compile Include="WinInputManager.cs" />
+    <Compile Include="Input\WinInputDeviceBase.cs" />
+    <Compile Include="Input\WinInputManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">

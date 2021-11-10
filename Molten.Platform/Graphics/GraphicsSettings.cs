@@ -35,25 +35,25 @@ namespace Molten.Graphics
 
         /// <summary>Gets or sets the UID of the <see cref="IDisplayAdapter"/> that was last used.</summary>
         [DataMember]
-        public SettingValue<int> GraphicsAdapterID { get; private set; }
+        public SettingValue<int> GraphicsAdapterID { get; }
 
         /// <summary>Gets or sets the UID of the <see cref="IDisplayOutput"/> that was last used on the last used <see cref="GraphicsAdapterID"/>.</summary>
         [DataMember]
-        public SettingValueList<int> DisplayOutputIds { get; private set; }
+        public SettingValueList<int> DisplayOutputIds { get;  }
 
         /// <summary>Gets or sets wether Vsync is enabled.</summary>
         [DataMember]
-        public SettingValue<bool> VSync { get; private set; }
+        public SettingValue<bool> VSync { get;  }
 
         /// <summary>Gets or sets the multi-sampled anti-aliasing (MSAA) level.</summary>
         [DataMember]
-        public SettingValue<AntiAliasMode> MSAA { get; private set; }
+        public SettingValue<AntiAliasMode> MSAA { get; }
 
         /// <summary>Gets or sets the number of back-buffer surfaces. More tend to increase performance, but also consumes more video memory.</summary>
-        public SettingValue<int> BackBufferSize { get; private set; }
+        public SettingValue<int> BackBufferSize { get;  }
 
         /// <summary>Gets or sets whether to enable a renderer's debug layer, if available.</summary>
         [DataMember]
-        public SettingValue<bool> EnableDebugLayer { get; private set; }
+        public SettingValue<bool> EnableDebugLayer { get; }
     }
 }

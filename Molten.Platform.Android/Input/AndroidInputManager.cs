@@ -1,6 +1,4 @@
-﻿using Android.App;
-using Android.Views;
-using Molten.Graphics;
+﻿using Molten.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,8 +37,11 @@ namespace Molten.Input
 
         public IInputNavigation Navigation => _navigation;
 
+        public InputSettings Settings { get; private set; }
+
         public void Initialize(InputSettings settings, Logger log)
         {
+            Settings = settings;
             _log = log;
             _navigation = new AndroidInputNavigation();
         }
@@ -147,11 +148,6 @@ namespace Molten.Input
         public ITouchDevice GetTouch()
         {
             return GetCustomDevice<AndroidTouchDevice>();
-        }
-
-        T IInputManager.GetCustomDevice<T>()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>Update's the current input manager. Avoid calling directly unless you know what you're doing.</summary>

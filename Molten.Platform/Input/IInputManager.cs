@@ -59,5 +59,10 @@ namespace Molten.Input
         IInputCamera Camera { get; set; }
 
         IInputNavigation Navigation { get; }
+
+        /// <summary>
+        /// Gets the <see cref="InputSettings"/> instance bound to the current <see cref="IInputManager"/>.
+        /// </summary>
+        InputSettings Settings { get; }
     }
 }

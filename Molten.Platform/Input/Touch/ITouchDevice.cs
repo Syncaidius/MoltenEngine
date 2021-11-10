@@ -29,5 +29,15 @@ namespace Molten.Input
         /// The number of active touch points on the current <see cref="ITouchDevice"/>.
         /// </summary>
         int TouchPointCount { get; }
+
+        /// <summary>
+        /// Gets the maximum size of the touch buffer.
+        /// </summary>
+        int MaxBufferSize { get; }
+
+        /// <summary>
+        /// Gets the current size of the touch buffer.
+        /// </summary>
+        int BufferSize { get; }
     }
 }

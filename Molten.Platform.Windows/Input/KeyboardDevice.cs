@@ -63,17 +63,23 @@ namespace Molten.Input
         public event KeyHandler OnKeyPressed;
         public event KeyHandler OnKeyReleased;
 
-        internal override void Initialize(IInputManager manager, Logger log)
-        {
-            WinInputManager diManager = manager as WinInputManager;
-            
+        internal override void Initialize(WinInputManager manager, Logger log)
+        {            
             _state = new KeyboardState();
             _prevState = new KeyboardState();
             _pressedKeys = new List<Key>();
 
-            _keyboard = new Keyboard(diManager.DirectInput);
-            _keyboard.Properties.BufferSize = 256;
+            _keyboard = new Keyboard(manager.DirectInput);
+            _keyboard.Properties.BufferSize = manager.Settings.KeyboardBufferSize;
+            manager.Settings.KeyboardBufferSize.OnChanged += KeyboardBufferSize_OnChanged;
             _keyboard.Acquire();            
+        }
+
+        private void KeyboardBufferSize_OnChanged(int oldValue, int newValue)
+        {
+            _keyboard.Unacquire();
+            _keyboard.Properties.BufferSize = newValue;
+            _keyboard.Acquire();
         }
 
         internal override void Bind(INativeSurface surface)

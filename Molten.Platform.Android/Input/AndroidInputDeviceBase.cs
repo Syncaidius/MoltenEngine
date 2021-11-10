@@ -9,11 +9,11 @@ namespace Molten.Input
 {
     public abstract class AndroidInputDeviceBase : EngineObject, IInputDevice
     {
-        public abstract bool IsConnected { get; }
+        public abstract bool IsConnected { get; protected set; }
 
         public abstract string DeviceName { get; }
 
-        internal virtual void Initialize(IInputManager manager, Logger log)
+        internal virtual void Initialize(AndroidInputManager manager, Logger log)
         {
             Manager = manager;
         }
@@ -28,15 +28,9 @@ namespace Molten.Input
 
         internal abstract void Update(Timing time);
 
-        public void ClearState()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void ClearState();
 
-        public void OpenControlPanel()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void OpenControlPanel();
 
         public IInputManager Manager { get; private set; }
     }
