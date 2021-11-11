@@ -26,7 +26,7 @@
         /// </summary>
         public Vector2F DeltaP2P3;
 
-        public TouchPointState State;
+        public TouchState State;
 
         public int ID { get; }
     }

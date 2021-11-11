@@ -26,30 +26,35 @@ namespace Molten.Input
 
         public int MaxBufferSize
         {
-            get => _queue.Length;
+            get => _buffer.Length;
             private set
             {
-                if (_queue.Length != value)
+                if (_buffer.Length != value)
                 {
                     ClearState();
-                    Array.Resize(ref _queue, value);
+                    Array.Resize(ref _buffer, value);
                 }
             }
         }
 
         public event TouchGestureHandler<Touch2PointGesture> OnPinchGesture;
 
-        public event MoltenEventHandler<TouchPointSample> OnTouch;
+        public event MoltenEventHandler<TouchPointState> OnTouch;
 
         AndroidViewSurface _boundSurface;
-        TouchPointSample[] _queue;
+        TouchPointState[] _buffer;
         TouchPointState[] _states;
+        int _bStart;
+        int _bEnd;
 
         internal override void Initialize(AndroidInputManager manager, Logger log)
         {
             base.Initialize(manager, log);
-            _queue = new TouchPointSample[manager.Settings.TouchBufferSize];
+            _buffer = new TouchPointState[manager.Settings.TouchBufferSize];
             _states = new TouchPointState[5];
+
+            ClearState();
+
             IsConnected = false;
             manager.Settings.TouchBufferSize.OnChanged += TouchSampleBufferSize_OnChanged;
         }
@@ -102,7 +107,19 @@ namespace Molten.Input
 
         public override void ClearState()
         {
-            throw new NotImplementedException();
+            _bStart = 0;
+            _bEnd = 0;
+
+            for (int i = 0; i < _states.Length; i++)
+            {
+                _states[i] = new TouchPointState()
+                {
+                    Delta = Vector2F.Zero,
+                    ID = i,
+                    Position = Vector2F.Zero,
+                    State = TouchState.Released,
+                };
+            }
         }
 
         public override void OpenControlPanel()
@@ -120,7 +137,41 @@ namespace Molten.Input
 
         private void TargetView_Touch(object sender, View.TouchEventArgs e)
         {
-            // TODO add touch event to queue.
+            // Should we circle back to the beginning of the buffer?
+            if (_bEnd == _buffer.Length)
+                _bEnd = 0;
+
+            TouchPointState tps = new TouchPointState();
+            tps.ID = e.Event.ActionIndex;
+
+            switch (e.Event.ActionMasked)
+            {
+                case MotionEventActions.PointerDown: tps.State = TouchState.Pressed; break;
+
+                case MotionEventActions.PointerUp:
+                    tps.State = TouchState.Released;
+                    break;
+
+                case MotionEventActions.Move:
+                    tps.State = TouchState.Dragged;
+                    break;
+
+                // NOTE: A movement has happened outside of the normal bounds of the UI element.
+                case MotionEventActions.Outside:
+                    tps.State = TouchState.Dragged;
+                    break;
+
+                case MotionEventActions.Scroll:
+                    tps.State = TouchState.Pressed; 
+                    break;
+            }
+
+            // TODO calculate positions and deltas
+
+            // We've handled the touch event
+            _buffer[_bEnd++] = tps;
+            _states[tps.ID] = tps;
+            e.Handled = true;
         }
 
         internal override void Update(Timing time)
@@ -128,6 +179,13 @@ namespace Molten.Input
             // TODO process touch queue and trigger events accordingly.
             // TODO figure out gestures based on number of pressed touch points.
             // TODO individually track each active touch-point so we can form gestures easily.
+            while(_bStart != _bEnd)
+            {
+                if (_bStart == _buffer.Length)
+                    _bStart = 0;
+
+                _bStart++;
+            }
         }
     }
 }

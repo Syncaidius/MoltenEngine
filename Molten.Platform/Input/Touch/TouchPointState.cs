@@ -1,15 +1,15 @@
-﻿namespace Molten.Input
+﻿using System;
+
+namespace Molten.Input
 {
-    public enum TouchPointState
+    public struct TouchPointState
     {
-        None = 0,
+        public Vector2F Position;
 
-        Released = 1,
+        public Vector2F Delta;
 
-        Pressed = 2,
+        public TouchState State;
 
-        Held = 3,
-
-        Dragged = 4,
+        public int ID;
     }
 }

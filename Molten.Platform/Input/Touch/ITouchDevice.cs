@@ -11,7 +11,7 @@ namespace Molten.Input
         /// <summary>
         /// Triggered when a touch point is updated, regardless of type.
         /// </summary>
-        public event MoltenEventHandler<TouchPointSample> OnTouch;
+        public event MoltenEventHandler<TouchPointState> OnTouch;
 
         TouchPointState GetState(int pointID);
 

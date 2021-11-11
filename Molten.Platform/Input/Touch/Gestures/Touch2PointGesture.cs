@@ -12,7 +12,7 @@
         /// </summary>
         public Vector2F Delta;
 
-        public TouchPointState State;
+        public TouchState State;
 
         public int ID { get; }
     }
