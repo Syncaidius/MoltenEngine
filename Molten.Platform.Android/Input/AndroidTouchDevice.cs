@@ -41,6 +41,7 @@ namespace Molten.Input
 
         public event MoltenEventHandler<TouchPointState> OnTouch;
 
+        MotionEvent.PointerCoords _coords;
         AndroidViewSurface _boundSurface;
         TouchPointState[] _buffer;
         TouchPointState[] _states;
@@ -52,6 +53,7 @@ namespace Molten.Input
             base.Initialize(manager, log);
             _buffer = new TouchPointState[manager.Settings.TouchBufferSize];
             _states = new TouchPointState[5];
+            _coords = new MotionEvent.PointerCoords();
 
             ClearState();
 
@@ -117,7 +119,7 @@ namespace Molten.Input
                     Delta = Vector2F.Zero,
                     ID = i,
                     Position = Vector2F.Zero,
-                    State = TouchState.Released,
+                    State = TouchState.None,
                 };
             }
         }
@@ -166,7 +168,16 @@ namespace Molten.Input
                     break;
             }
 
-            // TODO calculate positions and deltas
+            e.Event.GetPointerCoords(tps.ID, _coords);
+            tps.Position = new Vector2F(_coords.X, _coords.Y);
+            tps.Pressure = _coords.Pressure;
+            tps.Orientation = _coords.Orientation;
+            tps.Size = _coords.Size;
+
+            if (_states[tps.ID].State != TouchState.None)
+                tps.Delta = tps.Position - _states[tps.ID].Position;
+            else
+                tps.Delta = Vector2F.Zero;
 
             // We've handled the touch event
             _buffer[_bEnd++] = tps;
