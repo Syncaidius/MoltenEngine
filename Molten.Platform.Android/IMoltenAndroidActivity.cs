@@ -1,4 +1,5 @@
 ﻿using Android.App;
+using Android.Views;
 using Molten.Utility;
 
 namespace Molten
@@ -13,6 +14,8 @@ namespace Molten
         /// </summary>
         event MoltenEventHandler<IMoltenAndroidActivity> BackPressed;
 
+        event MoltenEventHandler<View> OnTargetViewChanged;
+
 
         /// <summary>Invoked when the activity receives a new activity result.</summary>
         event ActivityResultHandler OnResult;
@@ -21,5 +24,10 @@ namespace Molten
         /// Gets the underlying activity for the current <see cref="IMoltenAndroidActivity"/> implementation.
         /// </summary>
         Activity UnderlyingActivity { get; }
+
+        /// <summary>
+        /// Gets the view that the a Molten engine instance should render to.
+        /// </summary>
+        View TargetView { get; }
     }
 }

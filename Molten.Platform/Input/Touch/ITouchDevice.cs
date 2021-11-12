@@ -11,7 +11,27 @@ namespace Molten.Input
         /// <summary>
         /// Triggered when a touch point is updated, regardless of type.
         /// </summary>
-        public event MoltenEventHandler<TouchPointState> OnTouch;
+        event MoltenEventHandler<TouchPointState> OnTouch;
+
+        /// <summary>
+        /// Triggered when an active touch point is moved on the current <see cref="ITouchGesture"/>.
+        /// </summary>
+        event MoltenEventHandler<TouchPointState> OnMove;
+
+        /// <summary>
+        /// Triggered when a new touch point is pressed down on the current <see cref="ITouchGesture"/>.
+        /// </summary>
+        event MoltenEventHandler<TouchPointState> TouchDown;
+
+        /// <summary>
+        /// Triggered when an active touch point is released on the current <see cref="ITouchGesture"/>.
+        /// </summary>
+        event MoltenEventHandler<TouchPointState> TouchUp;
+
+        /// <summary>
+        /// Triggered when an active touch point is held for a period of time on the current <see cref="ITouchGesture"/>.
+        /// </summary>
+        event MoltenEventHandler<TouchPointState> TouchHeld;
 
         TouchPointState GetState(int pointID);
 

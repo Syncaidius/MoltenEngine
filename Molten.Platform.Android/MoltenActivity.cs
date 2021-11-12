@@ -32,6 +32,9 @@ namespace Molten
         /// </summary>
         public event MoltenEventHandler<IMoltenAndroidActivity> BackPressed;
 
+        public event MoltenEventHandler<View> OnTargetViewChanged;
+
+
         /// <summary>Invoked when the activity receives a new activity result.</summary>
         public event ActivityResultHandler OnResult;
 
@@ -91,6 +94,11 @@ namespace Molten
         protected abstract View OnCreateSplashView(FrameLayout view);
 
         public Activity UnderlyingActivity => this;
+
+        /// <summary>
+        /// Gets the view that the a Molten engine instance should render to.
+        /// </summary>
+        public View TargetView => null;
     }
 
     /// <summary>

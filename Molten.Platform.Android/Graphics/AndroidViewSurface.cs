@@ -3,27 +3,61 @@ using System;
 
 namespace Molten.Graphics
 {
-    // TODO inherit from an OpenGL-based surface
+    // TODO inherit from an OpenGL-based texture
     public class AndroidViewSurface : INativeSurface
     {
         public event WindowSurfaceHandler OnHandleChanged;
+
         public event WindowSurfaceHandler OnParentChanged;
+
         public event WindowSurfaceHandler OnClose;
+
         public event WindowSurfaceHandler OnMinimize;
+
         public event WindowSurfaceHandler OnRestore;
+
         public event WindowSurfaceHandler OnFocusGained;
+
         public event WindowSurfaceHandler OnFocusLost;
+
         public event TextureHandler OnPreResize;
+
         public event TextureHandler OnPostResize;
+
 
         public View TargetView { get; private set; }
 
         public IMoltenAndroidActivity TargetActivity { get; private set; }
 
-        public AndroidViewSurface(View view, IMoltenAndroidActivity activity)
+        Viewport _vp;
+
+        public AndroidViewSurface(IMoltenAndroidActivity activity)
         {
-            TargetView = view;
+            TargetView = activity.TargetView;
             TargetActivity = activity;
+
+            activity.OnTargetViewChanged += Activity_OnTargetViewChanged;
+        }
+
+        private void CalculateViewport()
+        {
+            if(TargetView != null)
+            {
+                _vp = new Viewport()
+                {
+                    X = 0,
+                    Y = 0,
+                    Width = TargetView.Width,
+                    Height = TargetView.Height
+                };
+            }
+        }
+
+        private void Activity_OnTargetViewChanged(View o)
+        {
+            TargetView = o;
+            CalculateViewport();
+            OnHandleChanged?.Invoke(this);
         }
 
         public string Title
@@ -61,17 +95,17 @@ namespace Molten.Graphics
             set => throw new NotImplementedException();
         }
 
-        public Viewport Viewport => throw new NotImplementedException();
-
-        public int Height => throw new NotImplementedException();
-
         public TextureFlags Flags => throw new NotImplementedException();
 
         public GraphicsFormat Format => throw new NotImplementedException();
 
         public bool IsBlockCompressed => throw new NotImplementedException();
 
-        public int Width => TargetView.Width;
+        public Viewport Viewport => _vp;
+
+        public int Width => _vp.Width;
+
+        public int Height => _vp.Height;
 
         public int MipMapCount => throw new NotImplementedException();
 

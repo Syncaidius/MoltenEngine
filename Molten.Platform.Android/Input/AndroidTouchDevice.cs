@@ -39,10 +39,34 @@ namespace Molten.Input
 
         public event TouchGestureHandler<Touch2PointGesture> OnPinchGesture;
 
+        /// <summary>
+        /// Triggered when any touch event occurrs on the current <see cref="AndroidTouchDevice"/>.
+        /// </summary>
         public event MoltenEventHandler<TouchPointState> OnTouch;
+
+        /// <summary>
+        /// Triggered when an active touch point is moved on the current <see cref="AndroidTouchDevice"/>.
+        /// </summary>
+        public event MoltenEventHandler<TouchPointState> OnMove;
+
+        /// <summary>
+        /// Triggered when a new touch point is pressed down on the current <see cref="AndroidTouchDevice"/>.
+        /// </summary>
+        public event MoltenEventHandler<TouchPointState> TouchDown;
+
+        /// <summary>
+        /// Triggered when an active touch point is released on the current <see cref="AndroidTouchDevice"/>.
+        /// </summary>
+        public event MoltenEventHandler<TouchPointState> TouchUp;
+
+        /// <summary>
+        /// Triggered when an active touch point is held for a period of time on the current <see cref="AndroidTouchDevice"/>.
+        /// </summary>
+        public event MoltenEventHandler<TouchPointState> TouchHeld;
 
         MotionEvent.PointerCoords _coords;
         AndroidViewSurface _boundSurface;
+        View _boundView;
         TouchPointState[] _buffer;
         TouchPointState[] _states;
         int _bStart;
@@ -72,7 +96,9 @@ namespace Molten.Input
             {
                 if (surface is AndroidViewSurface vSurface)
                 {
-                    vSurface.TargetView.Touch += TargetView_Touch;
+                    _boundView = vSurface.TargetView;
+                    _boundView.Touch += Surface_Touch;
+                    vSurface.TargetActivity.OnTargetViewChanged += TargetActivity_OnTargetViewChanged;
                     _boundSurface = vSurface;
 
                     PackageManager pm = vSurface.TargetActivity.UnderlyingActivity.PackageManager;
@@ -98,11 +124,22 @@ namespace Molten.Input
             _boundSurface = null;
         }
 
+        private void TargetActivity_OnTargetViewChanged(View o)
+        {
+            if(_boundView != null)
+                _boundView.Touch -= Surface_Touch;
+
+            o.Touch += Surface_Touch;
+        }
+
         internal override void Unbind(INativeSurface surface)
         {
             if (_boundSurface != null && _boundSurface == surface)
             {
-                _boundSurface.TargetView.Touch -= TargetView_Touch;
+                if (_boundView != null && _boundView == _boundSurface.TargetView)
+                    _boundView.Touch -= Surface_Touch;
+
+                _boundSurface.TargetActivity.OnTargetViewChanged -= TargetActivity_OnTargetViewChanged;
                 ClearState();
             }
         }
@@ -119,7 +156,7 @@ namespace Molten.Input
                     Delta = Vector2F.Zero,
                     ID = i,
                     Position = Vector2F.Zero,
-                    State = TouchState.None,
+                    State = TouchState.Released,
                 };
             }
         }
@@ -137,7 +174,7 @@ namespace Molten.Input
             return _states[pointID];
         }
 
-        private void TargetView_Touch(object sender, View.TouchEventArgs e)
+        private void Surface_Touch(object sender, View.TouchEventArgs e)
         {
             // Should we circle back to the beginning of the buffer?
             if (_bEnd == _buffer.Length)
@@ -155,16 +192,16 @@ namespace Molten.Input
                     break;
 
                 case MotionEventActions.Move:
-                    tps.State = TouchState.Dragged;
+                    tps.State = TouchState.Moved;
                     break;
 
                 // NOTE: A movement has happened outside of the normal bounds of the UI element.
                 case MotionEventActions.Outside:
-                    tps.State = TouchState.Dragged;
+                    tps.State = TouchState.Moved;
                     break;
 
                 case MotionEventActions.Scroll:
-                    tps.State = TouchState.Pressed; 
+                    tps.State = TouchState.Moved; 
                     break;
             }
 
@@ -174,14 +211,8 @@ namespace Molten.Input
             tps.Orientation = _coords.Orientation;
             tps.Size = _coords.Size;
 
-            if (_states[tps.ID].State != TouchState.None)
-                tps.Delta = tps.Position - _states[tps.ID].Position;
-            else
-                tps.Delta = Vector2F.Zero;
-
             // We've handled the touch event
             _buffer[_bEnd++] = tps;
-            _states[tps.ID] = tps;
             e.Handled = true;
         }
 
@@ -190,11 +221,36 @@ namespace Molten.Input
             // TODO process touch queue and trigger events accordingly.
             // TODO figure out gestures based on number of pressed touch points.
             // TODO individually track each active touch-point so we can form gestures easily.
-            while(_bStart != _bEnd)
+            while (_bStart != _bEnd)
             {
                 if (_bStart == _buffer.Length)
                     _bStart = 0;
 
+                TouchPointState tps = _buffer[_bStart];
+                TouchPointState last = _states[tps.ID];
+
+                // Calculate delta from last pointer state.
+                if (tps.State == TouchState.Moved && last.State != TouchState.Released)
+                {
+                    tps.Delta = tps.Position - _states[tps.ID].Position;
+                    OnTouch?.Invoke(tps);
+                    OnMove?.Invoke(tps);
+                }
+                else
+                {
+                    tps.Delta = Vector2F.Zero;
+                    OnTouch?.Invoke(tps);
+
+                    switch (tps.State)
+                    {
+                        case TouchState.Pressed: TouchDown?.Invoke(tps); break;
+                        case TouchState.Released: TouchUp?.Invoke(tps); break;
+                        case TouchState.Held: TouchHeld?.Invoke(tps); break;
+                    }
+                }
+
+                // Update latest-known state for current pointer ID.
+                _states[tps.ID] = tps;
                 _bStart++;
             }
         }
