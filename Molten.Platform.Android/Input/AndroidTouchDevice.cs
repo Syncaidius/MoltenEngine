@@ -185,9 +185,12 @@ namespace Molten.Input
 
             switch (e.Event.ActionMasked)
             {
-                case MotionEventActions.PointerDown: tps.State = TouchState.Pressed; break;
+                case MotionEventActions.PointerDown:
+                case MotionEventActions.Down: 
+                    tps.State = TouchState.Pressed; break;
 
                 case MotionEventActions.PointerUp:
+                case MotionEventActions.Up:
                     tps.State = TouchState.Released;
                     break;
 

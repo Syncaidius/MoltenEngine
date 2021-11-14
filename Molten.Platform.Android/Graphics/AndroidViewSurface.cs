@@ -1,4 +1,5 @@
-﻿using Android.Views;
+﻿using Android.OS;
+using Android.Views;
 using System;
 
 namespace Molten.Graphics
@@ -36,13 +37,15 @@ namespace Molten.Graphics
             TargetView = activity.TargetView;
             TargetActivity = activity;
 
+            CalculateViewport();
             activity.OnTargetViewChanged += Activity_OnTargetViewChanged;
         }
 
         private void CalculateViewport()
         {
-            if(TargetView != null)
+            if(TargetView != null && TargetView.Width > 0 && TargetView.Height > 0)
             {
+                // TODO correctly calculate this. The View may not be located at 0,0 within it's parent.
                 _vp = new Viewport()
                 {
                     X = 0,
@@ -50,6 +53,24 @@ namespace Molten.Graphics
                     Width = TargetView.Width,
                     Height = TargetView.Height
                 };
+            }
+            else
+            {
+                _vp = new Viewport();
+
+                // GetRealSize() was defined in JellyBeanMr1 / API 17 / Android 4.2
+                if (Build.VERSION.SdkInt < BuildVersionCodes.JellyBeanMr1)
+                {
+                    _vp.Width = TargetActivity.UnderlyingActivity.Resources.DisplayMetrics.WidthPixels;
+                    _vp.Height = TargetActivity.UnderlyingActivity.Resources.DisplayMetrics.HeightPixels;
+                }
+                else
+                {
+                    Android.Graphics.Point p = new Android.Graphics.Point();
+                    TargetActivity.UnderlyingActivity.WindowManager.DefaultDisplay.GetRealSize(p);
+                    _vp.Width = p.X;
+                    _vp.Height = p.Y;
+                }
             }
         }
 
