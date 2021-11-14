@@ -23,7 +23,7 @@ Blank - Not Started\
 | Feature                | Windows    | Android  | Linux  | Mac  |
 | :---                   | :-------:  | :-----:  | :---:  | :-:  |
 | Renderer - OpenGL      | 🚧         | 🚫      | 🚧     | 🚧  |
-| Renderer - OpenES      | 🚧         | 🚧      | 🚫     | 🚫  |
+| Renderer - OpenES      |            |         | 🚫     | 🚫  |
 | Renderer - Vulkan      |            |          |        |      |
 | Renderer - DirectX 11  | ✔️         | 🚫       | 🚫    | 🚫   |
 | Renderer - DirectX 12  |            | 🚫       | 🚫    | 🚫   |
@@ -78,7 +78,7 @@ Blank - Not Started\
 | Render into WPF        |            |         | 🚫    | 🚫          | 🚫    |
 | Render into UWP        |            |         | 🚫    | 🚫          | 🚫    |
 |[Render into MAUI](https://docs.microsoft.com/en-us/dotnet/maui/what-is-maui)|            |         |       |             |       |
-| Render into Android UI | 🚫         | 🚫      |       |              |       |
+| Render into Android UI | 🚫         | 🚫      |       | 🚫          | 🚫   |
 | Raytracing             | 🚫         |         | 🚫    | 🚫          |       |
 
 
