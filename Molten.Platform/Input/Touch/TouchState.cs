@@ -2,12 +2,14 @@
 {
     public enum TouchState
     {
-        Released = 0,
+        None = 0,
 
-        Pressed = 1,
+        Released = 1,
 
-        Held = 2,
+        Pressed = 2,
 
-        Moved = 3,
+        Held = 3,
+
+        Moved = 4,
     }
 }

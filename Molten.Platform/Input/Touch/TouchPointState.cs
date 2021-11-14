@@ -5,6 +5,11 @@ namespace Molten.Input
     public struct TouchPointState
     {
         /// <summary>
+        /// An empty <see cref="TouchPointState"/>.
+        /// </summary>
+        public static readonly TouchPointState Empty = new TouchPointState();
+
+        /// <summary>
         /// Gets the screen position of the touch point.
         /// </summary>
         public Vector2F Position;
