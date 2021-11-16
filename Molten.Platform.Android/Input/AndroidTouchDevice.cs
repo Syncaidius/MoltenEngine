@@ -209,7 +209,7 @@ namespace Molten.Input
             }
 
             e.Event.GetPointerCoords(tps.ID, _coords);
-            tps.Position = new Vector2F(_coords.X, _coords.Y);
+            tps.Position = new Vector2F(e.Event.GetX(), e.Event.GetY());
             tps.Pressure = _coords.Pressure;
             tps.Orientation = _coords.Orientation;
             tps.Size = _coords.Size;
