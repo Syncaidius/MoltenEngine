@@ -22,7 +22,7 @@ namespace Molten
             Vector2F mouseMove = mouse.Delta;
 
             //handle clicking and dragging.
-            if (mouse.IsPressed(Button))
+            if (mouse.IsDown(Button))
             {
                 //check if we're starting a new click 
                 if (PressedObject == null)

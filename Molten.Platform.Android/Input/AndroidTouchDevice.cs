@@ -8,12 +8,6 @@ namespace Molten.Input
 {
     public class AndroidTouchDevice : AndroidInputDeviceBase<int>, ITouchDevice
     {
-        // NOTE SEE: https://github.com/MonoGame/MonoGame/blob/71b25eece3d1b92d6c9f3f32cb51dc054e099133/MonoGame.Framework/Platform/Android/MonoGameAndroidGameView.cs#L142
-        //      SEE: https://github.com/MonoGame/MonoGame/blob/71b25eece3d1b92d6c9f3f32cb51dc054e099133/MonoGame.Framework/Platform/Android/AndroidGameActivity.cs
-        //      SEE: https://github.com/MonoGame/MonoGame/blob/71b25eece3d1b92d6c9f3f32cb51dc054e099133/MonoGame.Framework/Platform/Android/Input/Touch/AndroidTouchEventManager.cs
-        //      SEE: https://github.com/MonoGame/MonoGame/blob/71b25eece3d1b92d6c9f3f32cb51dc054e099133/MonoGame.Framework/Platform/Android/AndroidGameWindow.cs#L62
-        //
-        //      SEE: https://github.com/MonoGame/MonoGame/blob/a9e5ae6befc40d7c86320ffdcfcd9d9b66f786a8/MonoGame.Framework/Input/Touch/TouchPanelCapabilities.cs
         public override bool IsConnected { get; protected set; }
 
         public override string DeviceName => throw new NotImplementedException();
@@ -124,14 +118,6 @@ namespace Molten.Input
             _boundSurface = null;
         }
 
-        private void TargetActivity_OnTargetViewChanged(View o)
-        {
-            if(_boundView != null)
-                _boundView.Touch -= Surface_Touch;
-
-            o.Touch += Surface_Touch;
-        }
-
         internal override void Unbind(INativeSurface surface)
         {
             if (_boundSurface != null && _boundSurface == surface)
@@ -142,6 +128,14 @@ namespace Molten.Input
                 _boundSurface.TargetActivity.OnTargetViewChanged -= TargetActivity_OnTargetViewChanged;
                 ClearState();
             }
+        }
+
+        private void TargetActivity_OnTargetViewChanged(View o)
+        {
+            if (_boundView != null)
+                _boundView.Touch -= Surface_Touch;
+
+            o.Touch += Surface_Touch;
         }
 
         public override void ClearState()
@@ -256,6 +250,37 @@ namespace Molten.Input
                 _states[tps.ID] = tps;
                 _bStart++;
             }
+        }
+
+        public override bool IsAnyDown(params int[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                int id = values[i];
+
+                if (id > _states.Length)
+                    continue;
+
+                if (_states[id].State == TouchState.Pressed)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public override bool IsHeld(int value)
+        {
+            return _states[value].State == TouchState.Held || _states[value].State == TouchState.Moved;
+        }
+
+        public override bool IsDown(int value)
+        {
+            return _states[value].State == TouchState.Pressed;
+        }
+
+        public override bool IsTapped(int value)
+        {
+            return _states[value].State == TouchState.Pressed;
         }
     }
 }

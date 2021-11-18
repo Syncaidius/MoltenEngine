@@ -38,24 +38,12 @@ namespace Molten.Input
         public event InputConnectionHandler<T> OnConnected;
         public event InputConnectionHandler<T> OnDisconnected;
 
-        public bool IsAnyPressed(params T[] values)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract bool IsAnyDown(params T[] values);
 
-        public bool IsHeld(T value)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract bool IsHeld(T value);
 
-        public bool IsPressed(T value)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract bool IsDown(T value);
 
-        public bool IsTapped(T value)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract bool IsTapped(T value);
     }
 }

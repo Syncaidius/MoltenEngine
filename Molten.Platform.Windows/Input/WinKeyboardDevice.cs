@@ -10,7 +10,7 @@ using Molten.Utilities;
 namespace Molten.Input
 {
     /// <summary>A handler for keyboard input.</summary>
-    public class KeyboardDevice : WinInputDeviceBase<Key>, IKeyboardDevice
+    public class WinKeyboardDevice : WinInputDeviceBase<Key>, IKeyboardDevice
     {
         //various Win32 constants that are needed
         const int GWL_WNDPROC = -4;
@@ -174,7 +174,7 @@ namespace Molten.Input
         /// <summary>Returns true if the given keyboard key is pressed.</summary>
         /// <param name="key">The key to test.</param>
         /// <returns>True if pressed.</returns>
-        public override bool IsPressed(Key key)
+        public override bool IsDown(Key key)
         {
             return _state.IsPressed(key.ToApi());
         }

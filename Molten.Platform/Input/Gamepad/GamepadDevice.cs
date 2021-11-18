@@ -1,44 +1,49 @@
 ﻿namespace Molten.Input
 {
-    public interface IGamepadDevice : IInputDevice<GamepadButtonFlags>
+    public abstract class GamepadDevice : InputDevice<GamepadButtonFlags>
     {
+        public GamepadDevice(IInputManager manager, GamepadIndex index, Logger log) : base(manager, log)
+        {
+            Index = index;
+        }
+
         /// <summary>Gets or sets the vibration level of the left force-feedback motor.</summary>
-        float VibrationLeft { get; set; }
+        public abstract InputVibration VibrationLeft { get; protected set; }
 
         /// <summary>Gets or sets the vibration level of the right force-feedback motor.</summary>
-        float VibrationRight { get; set; }
+        public abstract InputVibration VibrationRight { get; protected set; }
 
         /// <summary>
         /// Gets the X and Y axis values of the left thumbstick.
         /// </summary>
-        IGamepadStick LeftThumbstick { get; }
+        public abstract InputAnalogStick LeftStick { get; protected set; }
 
         /// <summary>
         /// Gets the X and Y axis values of the right thumbstick.
         /// </summary>
-        IGamepadStick RightThumbstick { get; }
+        public abstract InputAnalogStick RightStick { get; protected set; }
 
         /// <summary>
         /// Gets the gamepad's left trigger.
         /// </summary>
-        IGamepadTrigger LeftTrigger { get; }
+        public abstract InputAnalogTrigger LeftTrigger { get; protected set; }
 
         /// <summary>
         /// Gets the gamepad's right trigger.
         /// </summary>
-        IGamepadTrigger RightTrigger { get; }
+        public abstract InputAnalogTrigger RightTrigger { get; protected set; }
 
         /// <summary>
         /// Gets the sub-type of the game pad/controller.
         /// </summary>
-        GamepadSubType SubType { get; }
+        public abstract GamepadSubType SubType { get; }
 
         /// <summary>Gets the index of the gamepad.</summary>
-        GamepadIndex PlayerIndex { get; }
+        public GamepadIndex Index { get; }
 
         /// <summary>
         /// Gets a flags value containing all of the currently-pressed gamepad buttons.
         /// </summary>
-        GamepadButtonFlags PressedButtons { get; }
+        public abstract GamepadButtonFlags PressedButtons { get; }
     }
 }

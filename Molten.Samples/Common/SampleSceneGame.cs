@@ -81,7 +81,7 @@ namespace Molten.Samples
 
             Vector2F axisDelta = Vector2F.Zero;
 
-            if (AcceptPlayerInput && Mouse.IsPressed(MouseButton.Left))
+            if (AcceptPlayerInput && Mouse.IsDown(MouseButton.Left))
                 axisDelta = new Vector2F(Mouse.Delta.Y, Mouse.Delta.X) * rotSpeed;
 
             // Gamepad movement
@@ -101,10 +101,10 @@ namespace Molten.Samples
         private Vector3F UpdateKeyboardMovement(Timing time, float speed)
         {
             Vector3F moveDelta = Vector3F.Zero;
-            if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * speed;
-            if (Keyboard.IsPressed(Key.S)) moveDelta += _player.Transform.Global.Forward * speed;
-            if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * speed;
-            if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * speed;
+            if (Keyboard.IsDown(Key.W)) moveDelta += _player.Transform.Global.Backward * speed;
+            if (Keyboard.IsDown(Key.S)) moveDelta += _player.Transform.Global.Forward * speed;
+            if (Keyboard.IsDown(Key.A)) moveDelta += _player.Transform.Global.Left * speed;
+            if (Keyboard.IsDown(Key.D)) moveDelta += _player.Transform.Global.Right * speed;
 
 
             return moveDelta;
@@ -113,10 +113,10 @@ namespace Molten.Samples
         private Vector3F UpdateGamepadMovement(Timing time, float speed)
         {
             Vector3F moveDelta = Vector3F.Zero;
-            if (Gamepad.IsPressed(GamepadButtonFlags.DPadUp)) moveDelta += _player.Transform.Global.Backward * speed;
-            if (Gamepad.IsPressed(GamepadButtonFlags.DPadDown)) moveDelta += _player.Transform.Global.Forward * speed;
-            if (Gamepad.IsPressed(GamepadButtonFlags.DPadLeft)) moveDelta += _player.Transform.Global.Left * speed;
-            if (Gamepad.IsPressed(GamepadButtonFlags.DPadRight)) moveDelta += _player.Transform.Global.Right * speed;
+            if (Gamepad.IsDown(GamepadButtonFlags.DPadUp)) moveDelta += _player.Transform.Global.Backward * speed;
+            if (Gamepad.IsDown(GamepadButtonFlags.DPadDown)) moveDelta += _player.Transform.Global.Forward * speed;
+            if (Gamepad.IsDown(GamepadButtonFlags.DPadLeft)) moveDelta += _player.Transform.Global.Left * speed;
+            if (Gamepad.IsDown(GamepadButtonFlags.DPadRight)) moveDelta += _player.Transform.Global.Right * speed;
 
             moveDelta += new Vector3F(Gamepad.LeftThumbstick.X, 0, Gamepad.LeftThumbstick.Y) * speed * 2;
             return moveDelta;

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 namespace Molten.Input
 {
     /// <summary>Handles mouse input.</summary>
-    public class MouseDevice : WinInputDeviceBase<MouseButton>, IMouseDevice
+    public class WinMouseDevice : WinInputDeviceBase<MouseButton>, IMouseDevice
     {
         /// <summary>
         /// Occurs when the mouse cursor was inside the parent window/control, but just left it.
@@ -100,11 +100,9 @@ namespace Molten.Input
         /// <summary>Returns true if the given buttonboard button is pressed.</summary>
         /// <param name="button">The button(s) to check.</param>
         /// <returns>True if pressed.</returns>
-        public override bool IsPressed(MouseButton button)
+        public override bool IsDown(MouseButton button)
         {
-            int butval = (int)button;
-
-            return _state.Buttons[butval];
+            return _state.Buttons[(int)button];
         }
 
         /// <summary>Returns true if the button is pressed, but wasn't already pressed previously.</summary>

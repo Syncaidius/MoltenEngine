@@ -13,12 +13,12 @@ namespace Molten.Input
 
         Logger _log;
 
-        List<GamepadDevice> _gamepads;
+        List<WinGamepadDevice> _gamepads;
         INativeSurface _activeSurface;
         IInputCamera _activeCamera;
         WindowsClipboard _clipboard;
 
-        Dictionary<GamepadIndex, GamepadDevice> _gamepadsByIndex;
+        Dictionary<GamepadIndex, WinGamepadDevice> _gamepadsByIndex;
         Dictionary<Type, WinInputDeviceBase> _byType = new Dictionary<Type, WinInputDeviceBase>();
         List<WinInputDeviceBase> _devices = new List<WinInputDeviceBase>();
 
@@ -30,8 +30,8 @@ namespace Molten.Input
             Settings = settings;
             _log = log;
             _input = new DirectInput();
-            _gamepads = new List<GamepadDevice>();
-            _gamepadsByIndex = new Dictionary<GamepadIndex, GamepadDevice>();
+            _gamepads = new List<WinGamepadDevice>();
+            _gamepadsByIndex = new Dictionary<GamepadIndex, WinGamepadDevice>();
             _clipboard = new WindowsClipboard();
         }
 
@@ -72,12 +72,12 @@ namespace Molten.Input
 
         public IMouseDevice GetMouse()
         {
-            return GetCustomDevice<MouseDevice>();
+            return GetCustomDevice<WinMouseDevice>();
         }
 
         public IKeyboardDevice GetKeyboard()
         {
-            return GetCustomDevice<KeyboardDevice>();
+            return GetCustomDevice<WinKeyboardDevice>();
         }
 
         public ITouchDevice GetTouch()
@@ -87,10 +87,10 @@ namespace Molten.Input
 
         public IGamepadDevice GetGamepad(GamepadIndex index)
         {
-            GamepadDevice gamepad = null;
+            WinGamepadDevice gamepad = null;
             if (!_gamepadsByIndex.TryGetValue(index, out gamepad))
             {
-                gamepad = new GamepadDevice(index);
+                gamepad = new WinGamepadDevice(index);
                 _gamepadsByIndex.Add(index, gamepad);
                 _gamepads.Add(gamepad);
                 AddDevice(gamepad);
@@ -121,7 +121,7 @@ namespace Molten.Input
         /// <summary>Retrieves a gamepad handler.</summary>
         /// <param name="index">The index of the gamepad.</param>
         /// <returns></returns>
-        public GamepadDevice GetGamepadHandler(GamepadIndex index)
+        public WinGamepadDevice GetGamepadHandler(GamepadIndex index)
         {
             return _gamepads[(int)index];
         }
@@ -182,7 +182,7 @@ namespace Molten.Input
 
             for (int i = 0; i < _gamepads.Count; i++)
             {
-                GamepadDevice gph = _gamepads[i];
+                WinGamepadDevice gph = _gamepads[i];
                 DisposeObject(ref gph);
             }
             _gamepads.Clear();
@@ -192,7 +192,7 @@ namespace Molten.Input
         public DirectInput DirectInput { get { return _input; } }
 
         /// <summary>Gets the handler for the gamepad at GamepadIndex.One.</summary>
-        public GamepadDevice GamePad { get { return _gamepads[0]; } }
+        public WinGamepadDevice GamePad { get { return _gamepads[0]; } }
 
         public InputSettings Settings { get; private set; }
 

@@ -9,7 +9,7 @@ namespace Molten.Input
     /// <summary>
     /// A helper base class for implementing <see cref="IInputDevice"/>.
     /// </summary>
-    public abstract class WinInputDeviceBase : EngineObject, IInputDevice
+    public abstract class WinInputDeviceBase : InputDevice
     {
         internal virtual void Initialize(WinInputManager manager, Logger log)
         {
@@ -18,13 +18,7 @@ namespace Molten.Input
 
         public abstract void ClearState();
 
-        /// <summary>Occurs when the device is to bind to the provided surface.</summary>
-        /// <param name="surface">The surface that the device should bind to.</param>
-        internal abstract void Bind(INativeSurface surface);
 
-        /// <summary>Occurs when the device is to unbind from the provided surface.</summary>
-        /// <param name="surface">The surface from which the device should unbind.</param>
-        internal abstract void Unbind(INativeSurface surface);
 
         internal abstract void Update(Timing time);
 
@@ -72,19 +66,19 @@ namespace Molten.Input
         /// <summary>Returns true if the specified button is pressed.</summary>
         /// <param name="value">The button or key to check.</param>
         /// <returns>Returns true if the button is pressed.</returns>
-        public abstract bool IsPressed(T value);
+        public abstract bool IsDown(T value);
 
         /// <summary>Returns true if any of the provided keys/buttons are pressed.</summary>
         /// <param name="values">The buttons or keys to check.</param>
         /// <returns></returns>
-        public bool IsAnyPressed(params T[] values)
+        public bool IsAnyDown(params T[] values)
         {
             if (values == null)
                 return false;
 
             for (int i = 0; i < values.Length; i++)
             {
-                if (IsPressed(values[i]))
+                if (IsDown(values[i]))
                     return true;
             }
 

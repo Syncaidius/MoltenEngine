@@ -9,85 +9,71 @@ using State = SharpDX.XInput.State;
 
 namespace Molten.Input
 {
-    public class GamepadDevice : WinInputDeviceBase<GamepadButtonFlags>, IGamepadDevice
+    public class WinGamepadDevice : GamepadDevice
     {
         Gamepad _state;
         Gamepad _statePrev;
         Controller _pad;
         Capabilities _capabilities;
-        int _padIndex;
-        float _vibrationLeft;
-        float _vibrationRight;
-        GamepadStick _leftThumbstick;
-        GamepadStick _rightThumbstick;
-        GamepadTrigger _leftTrigger;
-        GamepadTrigger _rightTrigger;
         GamepadButtonFlags _buttons;
         GamepadButtonFlags _prevButtons;
 
-        string _deviceName;
-        bool _isConnected;
-
         Dictionary<int, int> _heldTimers; // keeps track of how long buttons are held for.
 
-        public GamepadDevice(GamepadIndex index)
+        public WinGamepadDevice(WinInputManager manager, GamepadIndex index, Logger log) : base(manager, index, log)
         {
-            _padIndex = (int)index;
+            _pad = new Controller((UserIndex)Index);
+            _state = new Gamepad();
         }
 
-        internal override void Initialize(WinInputManager manager, Logger log)
+        protected override List<InputDeviceFeature> Initialize()
         {
-            base.Initialize(manager, log);
-            _pad = new Controller((UserIndex)_padIndex);
-            _state = new Gamepad();
-
             //initialize hold timer dictionaries.
             _heldTimers = new Dictionary<int, int>();
-            _deviceName = "Gamepad " + _padIndex;
-            _isConnected = _pad.IsConnected;
+            DeviceName = "Gamepad " + Index;
+            IsConnected = _pad.IsConnected;
 
-            _leftThumbstick = new GamepadStick(32767);
-            _rightThumbstick = new GamepadStick(32767);
-            _leftTrigger = new GamepadTrigger(255);
-            _rightTrigger = new GamepadTrigger(255);
+            LeftStick = new InputAnalogStick("Left", 32767);
+            RightStick = new InputAnalogStick("Right", 32767);
+            LeftTrigger = new InputAnalogTrigger("Left", 255);
+            RightTrigger = new InputAnalogTrigger("Right", 255);
 
             //only get state and capabilities if connected.
-            if (_isConnected)
+            if (IsConnected)
                 RetrieveDeviceInformation();
 
             // Initialize previous state
             _statePrev = new Gamepad();
+
+            return new List<InputDeviceFeature>()
+            {
+                LeftStick, RightStick, 
+                LeftTrigger, RightTrigger,
+                VibrationLeft, VibrationRight
+            };
         }
 
-        internal override void Bind(INativeSurface surface)
+        protected override void OnBind(INativeSurface surface)
         {
             // TODO simply store the window we're bound to and only accept input if it is focused.
         }
 
-        internal override void Unbind(INativeSurface surface)
+        protected override void OnUnbind(INativeSurface surface)
         {
             // TODO simply store the window we're bound to and only accept input if it is focused.
         }
 
-        public override void ClearState()
+        protected override void OnClearState()
         {
-            //reset hold timers
             foreach (int button in _heldTimers.Keys)
                 _heldTimers[button] = 0;
 
-            _leftThumbstick.Clear();
-            _rightThumbstick.Clear();
-            _leftTrigger.Clear();
-            _rightTrigger.Clear();
-
             _buttons = GamepadButtonFlags.None;
             _prevButtons = GamepadButtonFlags.None;
-        }
-
-        protected override void OnDispose()
-        {
             SetVibration(0, 0);
         }
+
+        protected override void OnDispose() { }
 
         private void RetrieveDeviceInformation()
         {
@@ -97,7 +83,7 @@ namespace Molten.Input
 
             // Add the sub-type into the name if device is not a normal gamepad.
             if (_capabilities.SubType != DeviceSubType.Gamepad)
-                _deviceName += " ( " + _capabilities.SubType + ")";
+                DeviceName += " ( " + _capabilities.SubType + ")";
         }
 
         /// <summary>Returns true if the button was only just pressed. Returns false if it was pressed in the last update too.</summary>
@@ -105,7 +91,7 @@ namespace Molten.Input
         /// <param name="value">The button(s) to check.</param>
         /// <param name="repeatCheck">Set to true if the button must not have been pressed in the previous update.</param>
         /// <returns>Returns true if the button is considered pressed.</returns>
-        public override bool IsPressed(GamepadButtonFlags value)
+        public override bool IsDown(GamepadButtonFlags value)
         {
             return _buttons.HasFlag(value);
         }
@@ -137,19 +123,9 @@ namespace Molten.Input
         /// <summary>Update input handler.</summary>
         /// <param name="time">The snapshot of time.</param>
         /// <param name="releaseInput">If set to true, will reset all held timers and stop retrieving the latest state.</param>
-        internal override void Update(Timing time)
+        protected override void OnUpdate(Timing time)
         {
-            // Handle event invocation.
-            if (_isConnected != _pad.IsConnected)
-            {
-                _isConnected = _pad.IsConnected;
-                InvokeConnectionStatus(_pad.IsConnected);
-
-                if (_isConnected)
-                    InvokeOnConnected();
-                else
-                    InvokeOnDisconnected();
-            }        
+            IsConnected = _pad.IsConnected;     
 
             //store previous states
             for (int gp = 0; gp < 4; gp++)
@@ -162,7 +138,7 @@ namespace Molten.Input
             bool releaseInput = winHandle != focusedHandle;
 
             //only update properly if release-input is not active.
-            if (releaseInput == false && _isConnected)
+            if (releaseInput == false && IsConnected)
             {
                 // Update states
                 _state = _pad.GetState().Gamepad;
@@ -170,10 +146,10 @@ namespace Molten.Input
                 _prevButtons = _statePrev.Buttons.FromApi();
 
                 // Update thumbsticks and triggers
-                _leftThumbstick.SetValues(_state.LeftThumbX, _state.LeftThumbY);
-                _rightThumbstick.SetValues(_state.RightThumbX, _state.RightThumbY);
-                _leftTrigger.SetValue(_state.LeftTrigger);
-                _rightTrigger.SetValue(_state.RightTrigger);
+                LeftStick.SetValues(_state.LeftThumbX, _state.LeftThumbY);
+                RightStick.SetValues(_state.RightThumbX, _state.RightThumbY);
+                LeftTrigger.SetValue(_state.LeftTrigger);
+                RightTrigger.SetValue(_state.RightTrigger);
 
                 // Update hold timers
                 foreach (int button in _heldTimers.Keys)
@@ -187,7 +163,7 @@ namespace Molten.Input
 
         private void SetVibration(float leftMotor, float rightMotor)
         {
-            if (_isConnected == false)
+            if (IsConnected == false)
                 return;
 
             Vibration vib = new Vibration()
@@ -199,9 +175,6 @@ namespace Molten.Input
             _pad.SetVibration(vib);
         }
 
-        /// <summary>Gets the index of the game pad.</summary>
-        public GamepadIndex PlayerIndex => (GamepadIndex)_padIndex;
-
         /// <summary>Gets the underlying state of the gamepad.</summary>
         public Gamepad State => _state;
 
@@ -212,7 +185,7 @@ namespace Molten.Input
         public Capabilities CapabilityInfo => _capabilities;
 
         /// <summary>Gets or sets the vibration level of the left force-feedback motor.</summary>
-        public float VibrationLeft
+        public InputVibration VibrationLeft
         {
             get { return _vibrationLeft; }
             set
@@ -223,7 +196,7 @@ namespace Molten.Input
         }
 
         /// <summary>Gets or sets the vibration level of the right force-feedback motor.</summary>
-        public float VibrationRight
+        public InputVibration VibrationRight
         {
             get { return _vibrationRight; }
             set
@@ -236,37 +209,34 @@ namespace Molten.Input
         /// <summary>
         /// Gets the X and Y axis values of the left thumbstick, or null if it doesn't have one.
         /// </summary>
-        public IGamepadStick LeftThumbstick => _leftThumbstick;
+        public override InputAnalogStick LeftStick { get; protected set; }
 
         /// <summary>
         /// Gets the X and Y axis values of the right thumbstick, or null if it doesn't have one.
         /// </summary>
-        public IGamepadStick RightThumbstick => _rightThumbstick;
+        public override InputAnalogStick RightStick { get; protected set; }
 
         /// <summary>
         /// Gets the gamepad's left trigger, or null if it doesn't have one.
         /// </summary>
-        public IGamepadTrigger LeftTrigger => _leftTrigger;
+        public override InputAnalogTrigger LeftTrigger { get; protected set; }
 
         /// <summary>
         /// Gets the gamepad's right trigger, or null if it doesn't have one.
         /// </summary>
-        public IGamepadTrigger RightTrigger => _rightTrigger;
-
-        /// <summary>Gets whether or not the gamepad is connected.</summary>
-        public override bool IsConnected => _isConnected;
+        public override InputAnalogTrigger RightTrigger { get; protected set; }
 
         /// <summary>
         /// Gets the gamepad/controller sub-type. For example, a joystick or steering wheel.
         /// </summary>
-        public GamepadSubType SubType => _capabilities.SubType.FromApi();
+        public override GamepadSubType SubType => _capabilities.SubType.FromApi();
 
         /// <summary>Gets the name of the gamepad.</summary>
-        public override string DeviceName => _deviceName;
+        public override string DeviceName { get; protected set; }
 
         /// <summary>
         /// Gets a flags value containing all of the currently-pressed buttons.
         /// </summary>
-        public GamepadButtonFlags PressedButtons => _buttons;
+        public override GamepadButtonFlags PressedButtons => _buttons;
     }
 }
