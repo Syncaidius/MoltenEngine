@@ -28,7 +28,7 @@ namespace Molten.Input
 
         protected override List<InputDeviceFeature> Initialize()
         {
-            //initialize hold timer dictionaries.
+            // Initialize hold timer dictionaries.
             _heldTimers = new Dictionary<int, int>();
             DeviceName = "Gamepad " + Index;
             IsConnected = _pad.IsConnected;
@@ -38,7 +38,7 @@ namespace Molten.Input
             LeftTrigger = new InputAnalogTrigger("Left", 255);
             RightTrigger = new InputAnalogTrigger("Right", 255);
 
-            //only get state and capabilities if connected.
+            // Only get state and capabilities if connected.
             if (IsConnected)
                 RetrieveDeviceInformation();
 
@@ -62,7 +62,6 @@ namespace Molten.Input
         {
             // TODO simply store the window we're bound to and only accept input if it is focused.
         }
-
         protected override void OnClearState()
         {
             foreach (int button in _heldTimers.Keys)
@@ -127,17 +126,16 @@ namespace Molten.Input
         {
             IsConnected = _pad.IsConnected;     
 
-            //store previous states
+            // Store previous states
             for (int gp = 0; gp < 4; gp++)
                 _statePrev = _state;
 
-            //TODO test against all windows, not just the current
-            //release input if window is not focused.
+            // TODO test against all windows, not just the current release input if window is not focused.
             IntPtr focusedHandle = Win32.GetForegroundWindow();
             IntPtr winHandle = focusedHandle; //TODO fix this. _input.GraphicsDevice.CurrentOutput.Handle;
             bool releaseInput = winHandle != focusedHandle;
 
-            //only update properly if release-input is not active.
+            // Only update properly if release-input is not active.
             if (releaseInput == false && IsConnected)
             {
                 // Update states
@@ -145,11 +143,12 @@ namespace Molten.Input
                 _buttons = _state.Buttons.FromApi();
                 _prevButtons = _statePrev.Buttons.FromApi();
 
-                // Update thumbsticks and triggers
+                // Update thumbsticks, triggers and vibration
                 LeftStick.SetValues(_state.LeftThumbX, _state.LeftThumbY);
                 RightStick.SetValues(_state.RightThumbX, _state.RightThumbY);
                 LeftTrigger.SetValue(_state.LeftTrigger);
                 RightTrigger.SetValue(_state.RightTrigger);
+                SetVibration(VibrationLeft.Value, VibrationRight.Value);
 
                 // Update hold timers
                 foreach (int button in _heldTimers.Keys)
@@ -185,26 +184,10 @@ namespace Molten.Input
         public Capabilities CapabilityInfo => _capabilities;
 
         /// <summary>Gets or sets the vibration level of the left force-feedback motor.</summary>
-        public InputVibration VibrationLeft
-        {
-            get { return _vibrationLeft; }
-            set
-            {
-                _vibrationLeft = MathHelper.Clamp(value, 0, 1.0f);
-                SetVibration(_vibrationLeft, _vibrationRight);
-            }
-        }
+        public override InputVibration VibrationLeft { get; protected set; }
 
         /// <summary>Gets or sets the vibration level of the right force-feedback motor.</summary>
-        public InputVibration VibrationRight
-        {
-            get { return _vibrationRight; }
-            set
-            {
-                _vibrationRight = MathHelper.Clamp(value, 0, 1.0f);
-                SetVibration(_vibrationLeft, _vibrationRight);
-            }
-        }
+        public override InputVibration VibrationRight { get; protected set; }
 
         /// <summary>
         /// Gets the X and Y axis values of the left thumbstick, or null if it doesn't have one.

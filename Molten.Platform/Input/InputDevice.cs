@@ -59,7 +59,7 @@ namespace Molten.Input
         /// <param name="surface">The surface from which the device should unbind.</param>
         internal void Unbind(INativeSurface surface)
         {
-
+            OnUnbind(surface);
         }
 
         protected abstract void OnUnbind(INativeSurface surface);
@@ -95,27 +95,88 @@ namespace Molten.Input
 #endif
         }
 
-        public bool HasFeature<T>() where T : InputDeviceFeature
+        /// <summary>Returns whether or not the input device supports one or more of the specified <see cref="InputDeviceFeature"/>. </summary>
+        /// <typeparam name="T">The type of <see cref="InputDeviceFeature"/> to check.</typeparam>
+        /// <param name="nameFilter">If provided, only features of the specified type with a name fully 
+        /// or partially-matching the gien name filter will be checked.</param>
+        /// <param name="filterCaseSensitive">If true, the name filter will also consider casing.</param>
+        /// <returns></returns>
+        public bool HasFeature<T>(string nameFilter = null, bool filterCaseSensitive = false) where T : InputDeviceFeature
         {
-            return GetFeature<T>() != null;
+            return GetFeature<T>(nameFilter, filterCaseSensitive) != null;
         }
 
+
         /// <summary>
-        /// Retrieves a device feature of the specified type, or null if the feature is unsupported.
+        /// Retrieves a device feature of the specified type, or null if the feature is unsupported. If a device contains more than one of
+        /// the specified <see cref="InputDeviceFeature"/> type, the first one will be returned, based on the order they were detected by the device.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="nameFilter">If provided, only features of the specified type with a name/description fully 
+        /// or partially-matching the gien name filter will be returned.</param>
+        /// <param name="filterCaseSensitive">If true, the name filter will also consider casing.</param>
         /// <returns></returns>
-        public T GetFeature<T>() where T: InputDeviceFeature
+        public T GetFeature<T>(string nameFilter = null, bool filterCaseSensitive = false) where T: InputDeviceFeature
         {
             Type t = typeof(T);
+
+            bool shouldFilter = !string.IsNullOrWhiteSpace(nameFilter) && !filterCaseSensitive;
+            if (shouldFilter)
+                nameFilter = nameFilter.ToLower();
 
             foreach (InputDeviceFeature f in _features)
             {
                 if (t.IsAssignableFrom(f.GetType()))
+                {
+                    if (shouldFilter)
+                    {
+                        string dn = (f.Name + f.Description).ToLower();
+
+                        if (!dn.Contains(nameFilter))
+                            continue;
+                    }
+
                     return f as T;
+                }
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Retrieve all features of the specified type on the current <see cref="InputDevice"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="InputDeviceFeature"/> to retrieve.</typeparam>
+        /// <param name="nameFilter">If provided, only features of the specified type with a name fully 
+        /// or partially-matching the gien name filter will be returned.</param>
+        /// <param name="filterCaseSensitive">If true, the name filter will also consider casing.</param>
+        /// <returns></returns>
+        public List<T> GetFeatures<T>(string nameFilter = null, bool filterCaseSensitive = false) where T: InputDeviceFeature
+        {
+            List<T> list = new List<T>();
+            Type t = typeof(T);
+
+            bool shouldFilter = !string.IsNullOrWhiteSpace(nameFilter) && !filterCaseSensitive;
+            if (shouldFilter)
+                nameFilter = nameFilter.ToLower();
+
+            foreach (InputDeviceFeature f in _features)
+            {
+                if (t.IsAssignableFrom(f.GetType()))
+                {
+                    if (shouldFilter)
+                    {
+                        string dn = (f.Name + f.Description).ToLower();
+
+                        if (!dn.Contains(nameFilter))
+                            continue;
+                    }
+
+                    list.Add(f as T);
+                }
+            }
+
+            return list;
         }
 
         /// <summary>

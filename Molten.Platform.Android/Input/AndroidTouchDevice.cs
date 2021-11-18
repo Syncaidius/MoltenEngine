@@ -58,7 +58,6 @@ namespace Molten.Input
         /// </summary>
         public event MoltenEventHandler<TouchPointState> TouchHeld;
 
-        MotionEvent.PointerCoords _coords;
         AndroidViewSurface _boundSurface;
         View _boundView;
         TouchPointState[] _buffer;
@@ -71,7 +70,6 @@ namespace Molten.Input
             base.Initialize(manager, log);
             _buffer = new TouchPointState[manager.Settings.TouchBufferSize];
             _states = new TouchPointState[5];
-            _coords = new MotionEvent.PointerCoords();
 
             ClearState();
 
@@ -202,11 +200,12 @@ namespace Molten.Input
                     break;
             }
 
-            e.Event.GetPointerCoords(tps.ID, _coords);
-            tps.Position = new Vector2F(e.Event.GetX(), e.Event.GetY());
-            tps.Pressure = _coords.Pressure;
-            tps.Orientation = _coords.Orientation;
-            tps.Size = _coords.Size;
+            float pX = e.Event.GetX();
+            float pY = e.Event.GetY();
+            tps.Position = new Vector2F(pX, pY);
+            tps.Pressure = e.Event.GetPressure(tps.ID);
+            tps.Orientation = e.Event.GetOrientation(tps.ID);
+            tps.Size = e.Event.GetSize(tps.ID);
 
             // We've handled the touch event
             _buffer[_bEnd++] = tps;
