@@ -157,14 +157,6 @@ namespace Molten.Input
             }
         }
 
-        protected override void ProcessState(ref GamepadButtonState newState, ref GamepadButtonState prevState)
-        {
-            if (prevState.State == GamepadPressState.Released)
-                newState.PressTimestamp = prevState.PressTimestamp;
-
-            newState.HeldTime = DateTime.UtcNow - newState.PressTimestamp;
-        }
-
         private GamepadButton TranslateButton(GamepadButtonFlags b)
         {
             switch (b)

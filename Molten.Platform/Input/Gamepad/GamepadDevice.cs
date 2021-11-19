@@ -1,4 +1,6 @@
-﻿namespace Molten.Input
+﻿using System;
+
+namespace Molten.Input
 {
     public abstract class GamepadDevice : InputDevice<GamepadButtonState, GamepadButton>
     {
@@ -6,6 +8,14 @@
             base(manager, manager.Settings.GamepadBufferSize, log)
         {
             Index = index;
+        }
+
+        protected override void ProcessState(ref GamepadButtonState newState, ref GamepadButtonState prevState)
+        {
+            if (prevState.State == GamepadPressState.Released)
+                newState.PressTimestamp = prevState.PressTimestamp;
+
+            newState.HeldTime = DateTime.UtcNow - newState.PressTimestamp;
         }
 
         protected override int TranslateStateID(GamepadButton idValue)
