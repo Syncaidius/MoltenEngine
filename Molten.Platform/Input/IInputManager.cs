@@ -13,25 +13,25 @@ namespace Molten.Input
         /// <typeparam name="T">The type of handler to retrieve.</typeparam>
         /// <param name="surface">The surface for which to bind and return an input handler.</param>
         /// <returns>An input handler of the specified type.</returns>
-        T GetCustomDevice<T>() where T : class, IInputDevice, new();
+        T GetCustomDevice<T>() where T : InputDevice;
 
         /// <summary>
         /// Gets the default mouse handler for the current <see cref="IInputManager"/>.
         /// </summary>
         /// <returns></returns>
-        IMouseDevice GetMouse();
+        MouseDevice GetMouse();
 
         /// <summary>
         /// Gets the default keyboard device handler for the current <see cref="IInputManager"/>.
         /// </summary>
         /// <returns></returns>
-        IKeyboardDevice GetKeyboard();
+        KeyboardDevice GetKeyboard();
 
         /// <summary>
         /// Gets the default touch device handler for the current <see cref="IInputManager"/>.
         /// </summary>
         /// <returns></returns>
-        ITouchDevice GetTouch();
+        TouchDevice GetTouch();
 
         /// <summary>
         /// Gets the default gamepad handler for the current input library.
@@ -39,7 +39,7 @@ namespace Molten.Input
         /// <param name="surface">The window surface the handler will be bound to.</param>
         /// <param name="index">The gamepad index.</param>
         /// <returns></returns>
-        IGamepadDevice GetGamepad(GamepadIndex index);
+        GamepadDevice GetGamepad(GamepadIndex index);
 
         /// <summary>Update's the current input manager. Avoid calling directly unless you know what you're doing.</summary>
         /// <param name="time">An instance of timing for the current thread.</param>

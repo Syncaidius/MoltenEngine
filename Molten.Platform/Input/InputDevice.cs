@@ -10,6 +10,8 @@ namespace Molten.Input
 {
     public delegate void InputConnectionStatusHandler(InputDevice device, bool isConnected);
 
+    public delegate void InputBufferSizeChangedHandler(InputDevice device, int oldSize, int newSize);
+
     public abstract class InputDevice : EngineObject
     {
         /// <summary>
@@ -28,17 +30,65 @@ namespace Molten.Input
         public event InputConnectionStatusHandler OnConnectionStatusChanged;
 
         /// <summary>Gets the name of the device.</summary>
-        public abstract string DeviceName { get; protected set; }
+        public abstract string DeviceName { get; }
+
+        protected Logger Log { get; }
+
+        public abstract int BufferSize { get; protected set; }
+
+        public IInputManager Manager { get; }
+
+        /// <summary>
+        /// Gets the maximum number of simultaneous states that the current <see cref="InputDevice"/> can keep track of.
+        /// </summary>
+        public abstract int MaxSimultaneousStates { get; protected set; }
+
+        /// <summary>
+        /// Gets a list of features bound to the current <see cref="InputDevice"/>.
+        /// </summary>
+        public IReadOnlyCollection<InputDeviceFeature> Features { get; }
+
+        /// <summary>Gets whether or not the current <see cref="InputDevice"/> is connected.</summary>
+        public bool IsConnected
+        {
+            get => _connected;
+            protected set
+            {
+                if (value != _connected)
+                {
+                    _connected = value;
+
+                    if (value)
+                        OnConnected?.Invoke(this);
+                    else
+                        OnDisconnected?.Invoke(this);
+
+                    OnConnectionStatusChanged?.Invoke(this, _connected);
+                }
+            }
+        }
+
+        bool _connected;
+        List<InputDeviceFeature> _features;
+
+        public InputDevice(IInputManager manager, Logger log)
+        {
+            Manager = manager;
+            Log = log;
+            _features = Initialize() ?? new List<InputDeviceFeature>();
+            Features = _features.AsReadOnly();
+        }
 
         /// <summary>
         /// Clears the current state of the input handler.
         /// </summary>
-        public void ClearState()
+        public virtual void ClearState()
         {
             OnClearState();
 
             foreach (InputDeviceFeature f in _features)
-                f.ClearState();        }
+                f.ClearState();
+        }
 
         protected abstract void OnClearState();
 
@@ -64,18 +114,6 @@ namespace Molten.Input
 
         protected abstract void OnUnbind(INativeSurface surface);
 
-        public IInputManager Manager { get; }
-
-        bool _connected;
-        List<InputDeviceFeature> _features;
-
-        public InputDevice(IInputManager manager, Logger log)
-        {
-            Manager = manager;
-            Log = log;
-            _features = Initialize();
-            Features = _features.AsReadOnly();
-        }
 
         /// <summary>
         /// Invoked during device initialization to allow the device to initialize and define it's feature-set.
@@ -179,31 +217,6 @@ namespace Molten.Input
             return list;
         }
 
-        /// <summary>
-        /// Gets a list of features bound to the current <see cref="InputDevice"/>.
-        /// </summary>
-        public IReadOnlyCollection<InputDeviceFeature> Features { get; }
-
-        /// <summary>Gets whether or not the current <see cref="InputDevice"/> is connected.</summary>
-        public bool IsConnected
-        {
-            get => _connected;
-            protected set
-            {
-                if (value != _connected)
-                {
-                    _connected = value;
-
-                    if (value)
-                        OnConnected?.Invoke(this);
-                    else
-                        OnDisconnected?.Invoke(this);
-
-                    OnConnectionStatusChanged?.Invoke(this, _connected);
-                }
-            }
-        }
-
         public void Update(Timing time)
         {
             OnUpdate(time);
@@ -213,36 +226,187 @@ namespace Molten.Input
         }
 
         protected abstract void OnUpdate(Timing time);
-
-        protected Logger Log { get; }
     }
 
-    public abstract class InputDevice<T> : InputDevice
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="S">The type of the state to be stored in the device's buffer.</typeparam>
+    /// <typeparam name="T">The input type. Must be an integer-based type. For example a key, button or touch-point enum.</typeparam>
+    public abstract class InputDevice<S, T> : InputDevice
+        where S : struct
         where T : struct
     {
-        public InputDevice(IInputManager manager, Logger log) : base(manager, log)
+        /// <summary>
+        /// Gets the buffer size of the current <see cref="InputDevice{S, T}"/>
+        /// </summary>
+        public override int BufferSize
         {
-
+            get => _buffer.Length;
+            protected set
+            {
+                int oldSize = _buffer.Length;
+                if (_buffer.Length != value)
+                {
+                    ClearState();
+                    Array.Resize(ref _buffer, value);
+                    OnBufferSizeChanged?.Invoke(this, oldSize, value);
+                }
+            }
         }
+
+        /// <summary>
+        /// Gets the maximum number of simultaneous states that the current <see cref="InputDevice"/> can keep track of.
+        /// </summary>
+        public override sealed int MaxSimultaneousStates
+        {
+            get => _states.Length;
+            protected set
+            {
+                if(_states.Length != value)
+                    Array.Resize(ref _states, value);
+            }
+        }
+
+        public event InputBufferSizeChangedHandler OnBufferSizeChanged;
+
+        S[] _buffer;
+        S[] _states;
+        int _bStart;
+        int _bEnd;
+
+        public InputDevice(IInputManager manager, int bufferSize, Logger log) : base(manager, log)
+        {
+            _buffer = new S[bufferSize]; 
+            _states = new S[5];
+        }
+
+        protected void QueueState(S state)
+        {
+            // Should we circle back to the beginning of the buffer?
+            if (_bEnd == _buffer.Length)
+                _bEnd = 0;
+
+            _buffer[_bEnd++] = state;
+        }
+
+        public override sealed void ClearState()
+        {
+            _bStart = 0;
+            _bEnd = 0;
+
+            for (int i = 0; i < _states.Length; i++)
+                _states[i] = new S();
+
+            base.ClearState();
+        }
+
+        /// <summary>
+        /// Retrieves the state of the given state ID. 
+        /// </summary>
+        /// <param name="stateID">The state ID. For example, a mouse button, key or touch-point ID.</param>
+        /// <returns></returns>
+        public S GetState(int stateID)
+        {
+            if (stateID > MaxSimultaneousStates)
+                throw new IndexOutOfRangeException($"stateID was greater than or equal to {nameof(MaxSimultaneousStates)}, which is {MaxSimultaneousStates}.");
+
+            return _states[stateID];
+        }
+
+        public new void Update(Timing time)
+        {
+            OnUpdate(time);
+
+            while (_bStart != _bEnd)
+            {
+                if (_bStart == _buffer.Length)
+                    _bStart = 0;
+
+                S state = _buffer[_bStart];
+                int stateID = GetStateID(ref state);
+                S prev = _states[stateID];
+                ProcessState(ref state, ref prev);
+
+                // Replace state with new state.
+                _states[stateID] = state;
+                _bStart++;
+            }
+
+            foreach (InputDeviceFeature f in Features)
+                f.Update(time);
+        }
+
+
+        public bool IsAnyDown(params T[] stateIDs)
+        {
+            for (int i = 0; i < stateIDs.Length; i++)
+            {
+                int id = TranslateStateID(stateIDs[i]);
+
+                if (id > _states.Length)
+                    continue;
+
+                if (GetIsDown(ref _states[id]))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool IsHeld(T stateID)
+        {
+            int id = TranslateStateID(stateID);
+            return GetIsHeld(ref _states[id]);
+        }
+
+        public bool IsDown(T stateID)
+        {
+            int id = TranslateStateID(stateID);
+            return GetIsDown(ref _states[id]);
+        }
+
+        public bool IsTapped(T stateID)
+        {
+            int id = TranslateStateID(stateID);
+            return GetIsTapped(ref _states[id]);
+        }
+
+        /// <summary>
+        /// Invoked when the current <see cref="InputDevice"/> needs to process a state from it's buffer.
+        /// </summary>
+        /// <param name="newState">The new data provided by an input state.</param>
+        /// <param name="prevState">The previous data provided by an input state.</param>
+        /// <returns>The ID of the state. For example, a key, touch-point or button ID.</returns>
+        protected abstract void ProcessState(ref S newState, ref S prevState);
+
+        /// <summary>
+        /// Invoked when the device needs to retrieve a state's ID during processing.
+        /// </summary>
+        /// <param name="state">The state of which to retrieve the state ID from.</param>
+        /// <returns></returns>
+        protected abstract int GetStateID(ref S state);
+
+        /// <summary>
+        /// Invoked when a state ID type needs translating into an integer ID.
+        /// </summary>
+        /// <param name="idValue">The value of the state ID, in the device's native state value type e.g. key or button enum.</param>
+        /// <returns></returns>
+        protected abstract int TranslateStateID(T idValue);
 
         /// <summary>Returns true if the specified input is pressed.</summary>
         /// <param name="value">The input (e.g. button or key) to check.</param>
         /// <returns>Returns true if the input is down.</returns>
-        public abstract bool IsDown(T value);
-
-        /// <summary>Returns true if any of the provided inputs are pressed.</summary>
-        /// <param name="values">The buttons or keys to check.</param>
-        /// <returns></returns>
-        public abstract bool IsAnyDown(params T[] values);
+        protected abstract bool GetIsDown(ref S state);
 
         /// <summary>Returns true if the spcified input was just pressed/down, but was not in the last update tick.</summary>
         /// <param name="value">The button or key to check.</param>
         /// <returns></returns>
-        public abstract bool IsTapped(T value);
+        protected abstract bool GetIsTapped(ref S value);
 
         /// <summary>Returns true if the specified button was pressed in both the previous and current update tick. </summary>
         /// <param name="value">The button or key to check.</param>
         /// <returns></returns>
-        public abstract bool IsHeld(T value);
+        protected abstract bool GetIsHeld(ref S value);
     }
 }

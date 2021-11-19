@@ -240,7 +240,7 @@
     <Compile Include="Graphics\Vertices\VertexInputType.cs" />
     <Compile Include="Graphics\Vertices\VertexTexture.cs" />
     <Compile Include="Graphics\WindowMode.cs" />
-    <Compile Include="Input\Touch\ITouchDevice.cs" />
+    <Compile Include="Input\Touch\TouchDevice.cs" />
     <Compile Include="Input\Touch\TouchState.cs" />
   </ItemGroup>
   <ItemGroup>
