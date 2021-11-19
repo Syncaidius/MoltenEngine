@@ -156,29 +156,7 @@ namespace Molten.Input
         /// <returns></returns>
         public T GetFeature<T>(string nameFilter = null, bool filterCaseSensitive = false) where T: InputDeviceFeature
         {
-            Type t = typeof(T);
-
-            bool shouldFilter = !string.IsNullOrWhiteSpace(nameFilter) && !filterCaseSensitive;
-            if (shouldFilter)
-                nameFilter = nameFilter.ToLower();
-
-            foreach (InputDeviceFeature f in _features)
-            {
-                if (t.IsAssignableFrom(f.GetType()))
-                {
-                    if (shouldFilter)
-                    {
-                        string dn = (f.Name + f.Description).ToLower();
-
-                        if (!dn.Contains(nameFilter))
-                            continue;
-                    }
-
-                    return f as T;
-                }
-            }
-
-            return null;
+            return GetFeatures<T>(nameFilter, filterCaseSensitive).FirstOrDefault();
         }
 
         /// <summary>
@@ -194,9 +172,12 @@ namespace Molten.Input
             List<T> list = new List<T>();
             Type t = typeof(T);
 
-            bool shouldFilter = !string.IsNullOrWhiteSpace(nameFilter) && !filterCaseSensitive;
+            bool shouldFilter = !string.IsNullOrWhiteSpace(nameFilter);
             if (shouldFilter)
-                nameFilter = nameFilter.ToLower();
+            {
+                if(!filterCaseSensitive)
+                    nameFilter = nameFilter.ToLower();
+            }
 
             foreach (InputDeviceFeature f in _features)
             {
@@ -204,7 +185,9 @@ namespace Molten.Input
                 {
                     if (shouldFilter)
                     {
-                        string dn = (f.Name + f.Description).ToLower();
+                        string dn = f.Name + f.Description;
+                        if (!filterCaseSensitive)
+                            dn = dn.ToLower();
 
                         if (!dn.Contains(nameFilter))
                             continue;
