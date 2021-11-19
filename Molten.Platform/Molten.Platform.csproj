@@ -119,6 +119,7 @@
     <Compile Include="Input\InputDevice.cs" />
     <Compile Include="Input\InputSettings.cs" />
     <Compile Include="Input\Keyboard\KeyboardDevice.cs" />
+    <Compile Include="Input\Keyboard\KeyboardKeyType.cs" />
     <Compile Include="Input\Keyboard\KeyCode.cs" />
     <Compile Include="Input\Keyboard\KeyboardEvents.cs" />
     <Compile Include="Input\Keyboard\KeyboardKeyState.cs" />
