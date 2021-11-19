@@ -1,10 +1,37 @@
 ﻿namespace Molten.Input
 {
-    public abstract class GamepadDevice : InputDevice<GamepadButtonFlags>
+    public abstract class GamepadDevice : InputDevice<GamepadButtonState, GamepadButton>
     {
-        public GamepadDevice(IInputManager manager, GamepadIndex index, Logger log) : base(manager, log)
+        public GamepadDevice(IInputManager manager, int index, Logger log) : 
+            base(manager, manager.Settings.GamepadBufferSize, log)
         {
             Index = index;
+        }
+
+        protected override int TranslateStateID(GamepadButton idValue)
+        {
+            return (int)idValue;
+        }
+
+        protected override bool GetIsDown(ref GamepadButtonState state)
+        {
+            return state.State == GamepadPressState.Pressed || 
+                state.State == GamepadPressState.Held;
+        }
+
+        protected override bool GetIsHeld(ref GamepadButtonState state)
+        {
+            return state.State == GamepadPressState.Held;
+        }
+
+        protected override bool GetIsTapped(ref GamepadButtonState state)
+        {
+            return state.State == GamepadPressState.Pressed;
+        }
+
+        protected override int GetStateID(ref GamepadButtonState state)
+        {
+            return (int)state.Button;
         }
 
         /// <summary>Gets or sets the vibration level of the left force-feedback motor.</summary>
@@ -39,11 +66,6 @@
         public abstract GamepadSubType SubType { get; }
 
         /// <summary>Gets the index of the gamepad.</summary>
-        public GamepadIndex Index { get; }
-
-        /// <summary>
-        /// Gets a flags value containing all of the currently-pressed gamepad buttons.
-        /// </summary>
-        public abstract GamepadButtonFlags PressedButtons { get; }
+        public int Index { get; }
     }
 }

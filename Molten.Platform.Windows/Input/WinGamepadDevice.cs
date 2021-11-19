@@ -11,26 +11,30 @@ namespace Molten.Input
 {
     public class WinGamepadDevice : GamepadDevice
     {
-        Gamepad _state;
-        Gamepad _statePrev;
+        static GamepadButtonFlags[] _buttons;
+
         Controller _pad;
         Capabilities _capabilities;
-        GamepadButtonFlags _buttons;
         GamepadButtonFlags _prevButtons;
 
-        Dictionary<int, int> _heldTimers; // keeps track of how long buttons are held for.
+        string _deviceName;
+        int _lastPacketNumber;
 
-        public WinGamepadDevice(WinInputManager manager, GamepadIndex index, Logger log) : base(manager, index, log)
+        static WinGamepadDevice()
+        {
+            _buttons = ReflectionHelper.EnumToArray<GamepadButtonFlags>();
+        }
+
+        public WinGamepadDevice(WinInputManager manager, int index, Logger log) : 
+            base(manager, index, log)
         {
             _pad = new Controller((UserIndex)Index);
-            _state = new Gamepad();
         }
 
         protected override List<InputDeviceFeature> Initialize()
         {
             // Initialize hold timer dictionaries.
-            _heldTimers = new Dictionary<int, int>();
-            DeviceName = "Gamepad " + Index;
+            _deviceName = "Gamepad " + Index;
             IsConnected = _pad.IsConnected;
 
             LeftStick = new InputAnalogStick("Left", 32767);
@@ -41,9 +45,6 @@ namespace Molten.Input
             // Only get state and capabilities if connected.
             if (IsConnected)
                 RetrieveDeviceInformation();
-
-            // Initialize previous state
-            _statePrev = new Gamepad();
 
             return new List<InputDeviceFeature>()
             {
@@ -64,11 +65,6 @@ namespace Molten.Input
         }
         protected override void OnClearState()
         {
-            foreach (int button in _heldTimers.Keys)
-                _heldTimers[button] = 0;
-
-            _buttons = GamepadButtonFlags.None;
-            _prevButtons = GamepadButtonFlags.None;
             SetVibration(0, 0);
         }
 
@@ -76,38 +72,11 @@ namespace Molten.Input
 
         private void RetrieveDeviceInformation()
         {
-            State padState = _pad.GetState();
-            _state = padState.Gamepad;
             _capabilities = _pad.GetCapabilities(DeviceQueryType.Gamepad);
 
             // Add the sub-type into the name if device is not a normal gamepad.
             if (_capabilities.SubType != DeviceSubType.Gamepad)
-                DeviceName += " ( " + _capabilities.SubType + ")";
-        }
-
-        /// <summary>Returns true if the button was only just pressed. Returns false if it was pressed in the last update too.</summary>
-        /// <param name="playerIndex">The controller index to read from.</param>
-        /// <param name="value">The button(s) to check.</param>
-        /// <param name="repeatCheck">Set to true if the button must not have been pressed in the previous update.</param>
-        /// <returns>Returns true if the button is considered pressed.</returns>
-        public override bool IsDown(GamepadButtonFlags value)
-        {
-            return _buttons.HasFlag(value);
-        }
-
-        public override bool IsTapped(GamepadButtonFlags value)
-        {
-            return (_buttons.HasFlag(value) == true && _prevButtons.HasFlag(value) == false);
-        }
-
-        /// <summary>Returns true if the specified button combination was pressed in both the previous and current frame. </summary>
-        /// <param name="playerIndex">The controller index to read from.</param>
-        /// <param name="buttons">The button(s) to do a held test for.</param>
-        /// <param name="interval">The interval of time the button(s) must be held for to be considered as held.</param>
-        /// <returns>True if button(s) considered held.</returns>
-        public override bool IsHeld(GamepadButtonFlags buttons)
-        {
-            return _buttons.HasFlag(buttons) && _prevButtons.HasFlag(buttons);
+                _deviceName += " ( " + _capabilities.SubType + ")";
         }
 
         /// <summary>Returns details about the status of a battery.</summary>
@@ -124,11 +93,7 @@ namespace Molten.Input
         /// <param name="releaseInput">If set to true, will reset all held timers and stop retrieving the latest state.</param>
         protected override void OnUpdate(Timing time)
         {
-            IsConnected = _pad.IsConnected;     
-
-            // Store previous states
-            for (int gp = 0; gp < 4; gp++)
-                _statePrev = _state;
+            IsConnected = _pad.IsConnected;    
 
             // TODO test against all windows, not just the current release input if window is not focused.
             IntPtr focusedHandle = Win32.GetForegroundWindow();
@@ -139,24 +104,87 @@ namespace Molten.Input
             if (releaseInput == false && IsConnected)
             {
                 // Update states
-                _state = _pad.GetState().Gamepad;
-                _buttons = _state.Buttons.FromApi();
-                _prevButtons = _statePrev.Buttons.FromApi();
+                State state = _pad.GetState();
+                if (state.PacketNumber != _lastPacketNumber)
+                {
+                    Gamepad gp = state.Gamepad;
+                    GamepadButtonFlags buttons = gp.Buttons;
 
-                // Update thumbsticks, triggers and vibration
-                LeftStick.SetValues(_state.LeftThumbX, _state.LeftThumbY);
-                RightStick.SetValues(_state.RightThumbX, _state.RightThumbY);
-                LeftTrigger.SetValue(_state.LeftTrigger);
-                RightTrigger.SetValue(_state.RightTrigger);
-                SetVibration(VibrationLeft.Value, VibrationRight.Value);
+                    // Check each available button.
+                    foreach (GamepadButtonFlags b in _buttons)
+                    {
+                        GamepadButtonState gps = new GamepadButtonState()
+                        {
+                            Button = TranslateButton(b),
+                            Pressure = 1.0f,
+                        };
 
-                // Update hold timers
-                foreach (int button in _heldTimers.Keys)
-                    _heldTimers[button] += time.ElapsedTime.Milliseconds;
+                        bool pressed = gp.Buttons.HasFlag(b);
+                        bool wasPressed = _prevButtons.HasFlag(b);
+
+                        if (pressed && !wasPressed)
+                        {
+                            gps.PressTimestamp = DateTime.UtcNow;
+                            gps.State = GamepadPressState.Pressed;
+                            QueueState(gps);
+                        }
+                        else if (pressed && wasPressed)
+                        {
+                            gps.State = GamepadPressState.Held;
+                            QueueState(gps);
+                        }
+                        else if (!pressed && wasPressed)
+                        {
+                            gps.State = GamepadPressState.Released;
+                            QueueState(gps);
+                        }
+                    }
+
+                    _prevButtons = buttons;
+                    _lastPacketNumber = state.PacketNumber;
+
+                    // Update thumbsticks, triggers and vibration
+                    LeftStick.SetValues(gp.LeftThumbX, gp.LeftThumbY);
+                    RightStick.SetValues(gp.RightThumbX, gp.RightThumbY);
+                    LeftTrigger.SetValue(gp.LeftTrigger);
+                    RightTrigger.SetValue(gp.RightTrigger);
+                    SetVibration(VibrationLeft.Value, VibrationRight.Value);
+                }
             }
             else
             {
                 ClearState();
+            }
+        }
+
+        protected override void ProcessState(ref GamepadButtonState newState, ref GamepadButtonState prevState)
+        {
+            if (prevState.State == GamepadPressState.Released)
+                newState.PressTimestamp = prevState.PressTimestamp;
+
+            newState.HeldTime = DateTime.UtcNow - newState.PressTimestamp;
+        }
+
+        private GamepadButton TranslateButton(GamepadButtonFlags b)
+        {
+            switch (b)
+            {
+                default:
+                case GamepadButtonFlags.None: return GamepadButton.None;
+                case GamepadButtonFlags.A: return GamepadButton.A;
+                case GamepadButtonFlags.B: return GamepadButton.B;
+                case GamepadButtonFlags.Back: return GamepadButton.Back;
+                case GamepadButtonFlags.DPadDown: return GamepadButton.DPadDown;
+                case GamepadButtonFlags.DPadLeft: return GamepadButton.DPadLeft;
+                case GamepadButtonFlags.DPadRight: return GamepadButton.DPadRight;
+                case GamepadButtonFlags.DPadUp: return GamepadButton.DPadUp;
+                case GamepadButtonFlags.LeftShoulder: return GamepadButton.LeftShoulder;
+                case GamepadButtonFlags.LeftThumb: return GamepadButton.LeftThumb;
+                case GamepadButtonFlags.RightShoulder: return GamepadButton.RightShoulder;
+                case GamepadButtonFlags.RightThumb: return GamepadButton.RightThumb;
+                case GamepadButtonFlags.Start: return GamepadButton.Start;
+                case GamepadButtonFlags.X: return GamepadButton.X;
+                case GamepadButtonFlags.Y: return GamepadButton.Y;
             }
         }
 
@@ -173,12 +201,6 @@ namespace Molten.Input
 
             _pad.SetVibration(vib);
         }
-
-        /// <summary>Gets the underlying state of the gamepad.</summary>
-        public Gamepad State => _state;
-
-        /// <summary>Gets the underlying state of the gamepad during the previous update.</summary>
-        public Gamepad PreviousState => _statePrev;
 
         /// <summary>Gets extra capability information about the gamepad.</summary>
         public Capabilities CapabilityInfo => _capabilities;
@@ -215,11 +237,6 @@ namespace Molten.Input
         public override GamepadSubType SubType => _capabilities.SubType.FromApi();
 
         /// <summary>Gets the name of the gamepad.</summary>
-        public override string DeviceName { get; protected set; }
-
-        /// <summary>
-        /// Gets a flags value containing all of the currently-pressed buttons.
-        /// </summary>
-        public override GamepadButtonFlags PressedButtons => _buttons;
+        public override string DeviceName => _deviceName;
     }
 }

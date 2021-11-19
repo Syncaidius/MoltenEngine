@@ -23,9 +23,9 @@ namespace Molten.Input
             return (GamepadSubType)subType;
         }
 
-        internal static GamepadButtonFlags FromApi(this SharpDX.XInput.GamepadButtonFlags flags)
+        internal static GamepadButton FromApi(this SharpDX.XInput.GamepadButtonFlags flags)
         {
-            return (GamepadButtonFlags)flags;
+            return (GamepadButton)flags;
         }
     }
 }

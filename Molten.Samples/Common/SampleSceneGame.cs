@@ -113,10 +113,10 @@ namespace Molten.Samples
         private Vector3F UpdateGamepadMovement(Timing time, float speed)
         {
             Vector3F moveDelta = Vector3F.Zero;
-            if (Gamepad.IsDown(GamepadButtonFlags.DPadUp)) moveDelta += _player.Transform.Global.Backward * speed;
-            if (Gamepad.IsDown(GamepadButtonFlags.DPadDown)) moveDelta += _player.Transform.Global.Forward * speed;
-            if (Gamepad.IsDown(GamepadButtonFlags.DPadLeft)) moveDelta += _player.Transform.Global.Left * speed;
-            if (Gamepad.IsDown(GamepadButtonFlags.DPadRight)) moveDelta += _player.Transform.Global.Right * speed;
+            if (Gamepad.IsDown(GamepadButton.DPadUp)) moveDelta += _player.Transform.Global.Backward * speed;
+            if (Gamepad.IsDown(GamepadButton.DPadDown)) moveDelta += _player.Transform.Global.Forward * speed;
+            if (Gamepad.IsDown(GamepadButton.DPadLeft)) moveDelta += _player.Transform.Global.Left * speed;
+            if (Gamepad.IsDown(GamepadButton.DPadRight)) moveDelta += _player.Transform.Global.Right * speed;
 
             moveDelta += new Vector3F(Gamepad.LeftThumbstick.X, 0, Gamepad.LeftThumbstick.Y) * speed * 2;
             return moveDelta;

@@ -82,8 +82,9 @@
     <Compile Include="Graphics\Overlays\IRenderOverlay.cs" />
     <Compile Include="Input\Features\InputAnalogStick.cs" />
     <Compile Include="Input\Features\InputAnalogTrigger.cs" />
-    <Compile Include="Input\Gamepad\GamepadButtonFlags.cs" />
-    <Compile Include="Input\Gamepad\GamepadIndex.cs" />
+    <Compile Include="Input\Gamepad\GamepadButton.cs" />
+    <Compile Include="Input\Gamepad\GamepadButtonState.cs" />
+    <Compile Include="Input\Gamepad\GamepadPressState.cs" />
     <Compile Include="Input\Gamepad\GamepadSubType.cs" />
     <Compile Include="Input\Gamepad\GamepadDevice.cs" />
     <Compile Include="Graphics\Overlays\OverlayProvider.cs" />

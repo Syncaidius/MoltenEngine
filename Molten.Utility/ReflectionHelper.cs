@@ -92,6 +92,9 @@ namespace Molten
             return type + ", " + type.Assembly.FullName.Split(delims, StringSplitOptions.RemoveEmptyEntries)[0];
         }
 
+        /// <summary>Returns an array containing all of the values in the specified enum type.</summary>
+        /// <typeparam name="T">The enum type of which to return values.</typeparam>
+        /// <returns></returns>
         public static T[] EnumToArray<T>() where T : struct
         {
             Type t = typeof(T);
