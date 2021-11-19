@@ -112,7 +112,7 @@ namespace Molten.Samples
                 return;
 
             // Cycle through window modes.
-            if (Keyboard.IsTapped(Key.F2))
+            if (Keyboard.IsTapped(KeyCode.F2))
             {
                 switch (Window.Mode)
                 {
@@ -122,7 +122,7 @@ namespace Molten.Samples
             }
 
             // Toggle overlay.
-            if (Keyboard.IsTapped(Key.F1))
+            if (Keyboard.IsTapped(KeyCode.F1))
             {
                 if (_cam2D.HasFlags(RenderCameraFlags.ShowOverlay))
                 {

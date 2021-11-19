@@ -62,7 +62,7 @@ namespace Molten.Input
             _mouse.Acquire();
         }
 
-        internal override void Bind(INativeSurface surface)
+        protected override void OnBind(INativeSurface surface)
         {
             _surface = surface;
             SurfaceHandleChanged(surface);
@@ -70,7 +70,7 @@ namespace Molten.Input
             _surface.OnParentChanged += SurfaceHandleChanged;
         }
 
-        internal override void Unbind(INativeSurface surface)
+        protected override void OnUnbind(INativeSurface surface)
         {
             _surface.OnHandleChanged -= SurfaceHandleChanged;
             _surface.OnParentChanged -= SurfaceHandleChanged;

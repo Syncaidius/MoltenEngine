@@ -1,6 +1,6 @@
 ﻿namespace Molten.Input
 {
-    public enum Key : int
+    public enum KeyCode : int
     {
         /// <summary>	
         /// No documentation.	

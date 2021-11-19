@@ -78,7 +78,7 @@ namespace Molten.Samples
             RotateParentChild(_parent, _child, time);
 
             // Save a screenhot of the window surface when space is pressed!
-            if (Keyboard.IsTapped(Key.Space))
+            if (Keyboard.IsTapped(KeyCode.Space))
             {
                 ContentRequest cr = Engine.Content.BeginRequest("assets/");
                 cr.Save<ITexture2D>("screenshot.png", Window);

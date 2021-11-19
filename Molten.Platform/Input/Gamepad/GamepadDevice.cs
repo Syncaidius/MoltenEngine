@@ -12,7 +12,7 @@ namespace Molten.Input
 
         protected override void ProcessState(ref GamepadButtonState newState, ref GamepadButtonState prevState)
         {
-            if (prevState.State == GamepadPressState.Released)
+            if (prevState.State == InputPressState.Released)
                 newState.PressTimestamp = prevState.PressTimestamp;
 
             newState.HeldTime = DateTime.UtcNow - newState.PressTimestamp;
@@ -25,18 +25,18 @@ namespace Molten.Input
 
         protected override bool GetIsDown(ref GamepadButtonState state)
         {
-            return state.State == GamepadPressState.Pressed || 
-                state.State == GamepadPressState.Held;
+            return state.State == InputPressState.Pressed || 
+                state.State == InputPressState.Held;
         }
 
         protected override bool GetIsHeld(ref GamepadButtonState state)
         {
-            return state.State == GamepadPressState.Held;
+            return state.State == InputPressState.Held;
         }
 
         protected override bool GetIsTapped(ref GamepadButtonState state)
         {
-            return state.State == GamepadPressState.Pressed;
+            return state.State == InputPressState.Pressed;
         }
 
         protected override int GetStateID(ref GamepadButtonState state)

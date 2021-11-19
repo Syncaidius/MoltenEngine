@@ -110,24 +110,24 @@ namespace Molten.Input
             {
                 case MotionEventActions.PointerDown:
                 case MotionEventActions.Down: 
-                    tps.State = TouchState.Pressed; break;
+                    tps.State = InputPressState.Pressed; break;
 
                 case MotionEventActions.PointerUp:
                 case MotionEventActions.Up:
-                    tps.State = TouchState.Released;
+                    tps.State = InputPressState.Released;
                     break;
 
                 case MotionEventActions.Move:
-                    tps.State = TouchState.Moved;
+                    tps.State = InputPressState.Moved;
                     break;
 
                 // NOTE: A movement has happened outside of the normal bounds of the UI element.
                 case MotionEventActions.Outside:
-                    tps.State = TouchState.Moved;
+                    tps.State = InputPressState.Moved;
                     break;
 
                 case MotionEventActions.Scroll:
-                    tps.State = TouchState.Moved; 
+                    tps.State = InputPressState.Moved; 
                     break;
             }
 

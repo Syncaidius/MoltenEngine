@@ -72,7 +72,7 @@ namespace Molten.Samples
         {
             base.OnUpdate(time);
 
-            if (Keyboard.IsTapped(Key.Escape))
+            if (Keyboard.IsTapped(KeyCode.Escape))
                 Exit();
 
             // Keyboard input - Again messy code for now
@@ -101,10 +101,10 @@ namespace Molten.Samples
         private Vector3F UpdateKeyboardMovement(Timing time, float speed)
         {
             Vector3F moveDelta = Vector3F.Zero;
-            if (Keyboard.IsDown(Key.W)) moveDelta += _player.Transform.Global.Backward * speed;
-            if (Keyboard.IsDown(Key.S)) moveDelta += _player.Transform.Global.Forward * speed;
-            if (Keyboard.IsDown(Key.A)) moveDelta += _player.Transform.Global.Left * speed;
-            if (Keyboard.IsDown(Key.D)) moveDelta += _player.Transform.Global.Right * speed;
+            if (Keyboard.IsDown(KeyCode.W)) moveDelta += _player.Transform.Global.Backward * speed;
+            if (Keyboard.IsDown(KeyCode.S)) moveDelta += _player.Transform.Global.Forward * speed;
+            if (Keyboard.IsDown(KeyCode.A)) moveDelta += _player.Transform.Global.Left * speed;
+            if (Keyboard.IsDown(KeyCode.D)) moveDelta += _player.Transform.Global.Right * speed;
 
 
             return moveDelta;

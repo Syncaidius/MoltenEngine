@@ -125,17 +125,17 @@ namespace Molten.Input
                         if (pressed && !wasPressed)
                         {
                             gps.PressTimestamp = DateTime.UtcNow;
-                            gps.State = GamepadPressState.Pressed;
+                            gps.State = InputPressState.Pressed;
                             QueueState(gps);
                         }
                         else if (pressed && wasPressed)
                         {
-                            gps.State = GamepadPressState.Held;
+                            gps.State = InputPressState.Held;
                             QueueState(gps);
                         }
                         else if (!pressed && wasPressed)
                         {
-                            gps.State = GamepadPressState.Released;
+                            gps.State = InputPressState.Released;
                             QueueState(gps);
                         }
                     }

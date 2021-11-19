@@ -84,7 +84,7 @@
     <Compile Include="Input\Features\InputAnalogTrigger.cs" />
     <Compile Include="Input\Gamepad\GamepadButton.cs" />
     <Compile Include="Input\Gamepad\GamepadButtonState.cs" />
-    <Compile Include="Input\Gamepad\GamepadPressState.cs" />
+    <Compile Include="Input\InputPressState.cs" />
     <Compile Include="Input\Gamepad\GamepadSubType.cs" />
     <Compile Include="Input\Gamepad\GamepadDevice.cs" />
     <Compile Include="Graphics\Overlays\OverlayProvider.cs" />
@@ -119,8 +119,9 @@
     <Compile Include="Input\InputDevice.cs" />
     <Compile Include="Input\InputSettings.cs" />
     <Compile Include="Input\Keyboard\KeyboardDevice.cs" />
-    <Compile Include="Input\Keyboard\Key.cs" />
+    <Compile Include="Input\Keyboard\KeyCode.cs" />
     <Compile Include="Input\Keyboard\KeyboardEvents.cs" />
+    <Compile Include="Input\Keyboard\KeyboardKeyState.cs" />
     <Compile Include="Input\Mouse\MouseDevice.cs" />
     <Compile Include="Input\Mouse\MouseButton.cs" />
     <Compile Include="Input\Touch\Gestures\ITouchGesture.cs" />
@@ -242,7 +243,6 @@
     <Compile Include="Graphics\Vertices\VertexTexture.cs" />
     <Compile Include="Graphics\WindowMode.cs" />
     <Compile Include="Input\Touch\TouchDevice.cs" />
-    <Compile Include="Input\Touch\TouchState.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Molten.Font\Molten.Font.csproj">

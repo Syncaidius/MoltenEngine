@@ -10,7 +10,7 @@ using Molten.Utilities;
 namespace Molten.Input
 {
     /// <summary>A handler for keyboard input.</summary>
-    public class WinKeyboardDevice : WinInputDeviceBase<Key>, IKeyboardDevice
+    public class WinKeyboardDevice : KeyboardDevice
     {
         //various Win32 constants that are needed
         const int GWL_WNDPROC = -4;
@@ -53,26 +53,31 @@ namespace Molten.Input
 
         KeyboardUpdate[] _buffer;
 
-        List<Key> _pressedKeys;
+        List<KeyCode> _pressedKeys;
         INativeSurface _surface;
         IntPtr _windowHandle;
         bool _bufferUpdated;
 
-        /// <summary>Triggered when a character key is pressed.</summary>
-        public event KeyPressHandler OnCharacterKey;
-        public event KeyHandler OnKeyPressed;
-        public event KeyHandler OnKeyReleased;
+        public WinKeyboardDevice(WinInputManager manager, Logger log) : base(manager, log)
+        {
 
-        internal override void Initialize(WinInputManager manager, Logger log)
-        {            
+        }
+
+        protected override List<InputDeviceFeature> Initialize()
+        {
             _state = new KeyboardState();
             _prevState = new KeyboardState();
-            _pressedKeys = new List<Key>();
+            _pressedKeys = new List<KeyCode>();
 
+            WinInputManager manager = Manager as WinInputManager;
             _keyboard = new Keyboard(manager.DirectInput);
-            _keyboard.Properties.BufferSize = manager.Settings.KeyboardBufferSize;
-            manager.Settings.KeyboardBufferSize.OnChanged += KeyboardBufferSize_OnChanged;
-            _keyboard.Acquire();            
+            _keyboard.Properties.BufferSize = Manager.Settings.KeyboardBufferSize;
+            Manager.Settings.KeyboardBufferSize.OnChanged += KeyboardBufferSize_OnChanged;
+            _keyboard.Acquire();
+
+            // TODO get extra features
+            List<InputDeviceFeature> features = new List<InputDeviceFeature>();
+            return features;
         }
 
         private void KeyboardBufferSize_OnChanged(int oldValue, int newValue)
@@ -82,7 +87,7 @@ namespace Molten.Input
             _keyboard.Acquire();
         }
 
-        internal override void Bind(INativeSurface surface)
+        protected override void OnBind(INativeSurface surface)
         {
             _surface = surface;
             SurfaceHandleChanged(surface);
@@ -91,7 +96,7 @@ namespace Molten.Input
             CreateHook();
         }
 
-        internal override void Unbind(INativeSurface surface)
+        protected override void OnUnbind(INativeSurface surface)
         {
             _surface.OnHandleChanged -= SurfaceHandleChanged;
             _surface.OnParentChanged -= SurfaceHandleChanged;
@@ -120,7 +125,7 @@ namespace Molten.Input
             _hIMC = ImmGetContext(_windowHandle);
         }
 
-        public override void ClearState()
+        protected override void OnClearState()
         {
             _pressedKeys.Clear();
             _state = new KeyboardState();
@@ -174,7 +179,7 @@ namespace Molten.Input
         /// <summary>Returns true if the given keyboard key is pressed.</summary>
         /// <param name="key">The key to test.</param>
         /// <returns>True if pressed.</returns>
-        public override bool IsDown(Key key)
+        public override bool IsDown(KeyCode key)
         {
             return _state.IsPressed(key.ToApi());
         }
@@ -182,7 +187,7 @@ namespace Molten.Input
         /// <summary>Returns true if the key is pressed, but wasn't already pressed previously.</summary>
         /// <param name="key">THe key to test.</param>
         /// <returns>Returns true if the key is pressed, but wasn't already pressed previously.</returns>
-        public override bool IsTapped(Key key)
+        public override bool IsTapped(KeyCode key)
         {
             bool isPressed = _state.IsPressed(key.ToApi());
             bool wasPressed = _prevState.IsPressed(key.ToApi());
@@ -193,7 +198,7 @@ namespace Molten.Input
         /// <summary>Returns true if the specified key was pressed in both the previous and current frame.</summary>
         /// <param name="key">The key to test.</param>
         /// <returns>True if key(s) considered held.</returns>
-        public override bool IsHeld(Key key)
+        public override bool IsHeld(KeyCode key)
         {
             SharpDX.DirectInput.Key sKey = key.ToApi();
             return _state.IsPressed(sKey) && _prevState.IsPressed(sKey);
@@ -240,7 +245,7 @@ namespace Molten.Input
                 {
                     for (int i = 0; i < _pressedKeys.Count; i++)
                     {
-                        Key key = _pressedKeys[i];
+                        KeyCode key = _pressedKeys[i];
                         if (_state.PressedKeys.Contains(key.ToApi()) == false)
                             OnKeyReleased?.Invoke(this, key);
                     }
@@ -252,7 +257,7 @@ namespace Molten.Input
                 // Handle newly pressed keys
                 for (int i = 0; i < _state.PressedKeys.Count; i++)
                 {
-                    Key key = _state.PressedKeys[i].FromApi();
+                    KeyCode key = _state.PressedKeys[i].FromApi();
                     _pressedKeys.Add(key);
                     OnKeyPressed?.Invoke(this, key);
                 }

@@ -5,9 +5,10 @@
     /// <summary>
     /// Represents an implementation of a mouse or pointer device.
     /// </summary>
-    public abstract class MouseDevice : InputDevice<MouseButton>
+    public abstract class MouseDevice : InputDevice<MouseButtonState, MouseButton>
     {
-        public MouseDevice(IInputManager manager, Logger log) : base(manager, log)
+        public MouseDevice(IInputManager manager, Logger log) : 
+            base(manager, manager.Settings.MouseBufferSize, log)
         {
 
         }
