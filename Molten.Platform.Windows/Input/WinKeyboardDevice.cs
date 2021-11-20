@@ -190,13 +190,13 @@ namespace Molten.Input
             {
                 case KeyCode k when (k >= KeyCode.NUM0 && k <= KeyCode.NUM9):
                     return KeyboardKeyType.Character;
-                case KeyCode k when (k >= KeyCode.NUMPAD0 && key <= KeyCode.DIVIDE):
+                case KeyCode k when (k >= KeyCode.NUMPAD0 && k <= KeyCode.DIVIDE):
                     return KeyboardKeyType.Character;
-                case KeyCode k when (key >= KeyCode.A && key <= KeyCode.Z):
+                case KeyCode k when (k >= KeyCode.A && k <= KeyCode.Z):
                     return KeyboardKeyType.Character;
-                case KeyCode k when (key >= KeyCode.OEM_1 && key <= KeyCode.OEM_3):
+                case KeyCode k when (k >= KeyCode.OEM_1 && k <= KeyCode.OEM_3):
                     return KeyboardKeyType.Character;
-                case KeyCode k when (key >= KeyCode.OEM_4 && key <= KeyCode.OEM_102):
+                case KeyCode k when (k >= KeyCode.OEM_4 && k <= KeyCode.OEM_102):
                     return KeyboardKeyType.Character;
 
                 case KeyCode.SPACE:
