@@ -7,21 +7,23 @@
     /// </summary>
     public abstract class MouseDevice : InputDevice<MouseButtonState, MouseButton>
     {
+        /// <summary>
+        /// Occurs when the mouse cursor was inside the parent window/control, but just left it.
+        /// </summary>
+        public event MouseEventHandler OnLeaveSurface;
+
+        /// <summary>
+        /// Occurs when the mouse cursor was outside of the parent window/control, but just entered it.
+        /// </summary>
+        public event MouseEventHandler OnEnterSurface;
+
+        MouseButtonState[] _buffer;
+
         public MouseDevice(InputManager manager) : 
             base(manager, manager.Settings.MouseBufferSize)
         {
 
         }
-
-        /// <summary>
-        /// Occurs when the mouse cursor was inside it's bound surface, but just left it.
-        /// </summary>
-        public abstract event MouseEventHandler OnLeaveSurface;
-
-        /// <summary>
-        /// Occurs when the mouse cursor was outside of it's bound surface, but just entered it.
-        /// </summary>
-        public abstract event MouseEventHandler OnEnterSurface;
 
         /// <summary>Positions the mouse cursor at the center of the currently-bound <see cref="IInputCamera"/>.</summary>
         public abstract void CenterInView();
@@ -44,6 +46,6 @@
         public abstract bool CursorVisible { get; set; }
 
         /// <summary>Gets or sets whether or not the mouse is contrained to the bounds of the main output.</summary>
-        public abstract bool IsConstrained { get; set; }
+        public bool IsConstrained { get; set; }
     }
 }

@@ -123,6 +123,7 @@
     <Compile Include="Input\Keyboard\KeyCode.cs" />
     <Compile Include="Input\Keyboard\KeyboardEvents.cs" />
     <Compile Include="Input\Keyboard\KeyboardKeyState.cs" />
+    <Compile Include="Input\Mouse\MouseButtonState.cs" />
     <Compile Include="Input\Mouse\MouseDevice.cs" />
     <Compile Include="Input\Mouse\MouseButton.cs" />
     <Compile Include="Input\Touch\Gestures\ITouchGesture.cs" />

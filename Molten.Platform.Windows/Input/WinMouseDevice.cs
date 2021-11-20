@@ -12,16 +12,6 @@ namespace Molten.Input
     /// <summary>Handles mouse input.</summary>
     public class WinMouseDevice : MouseDevice
     {
-        /// <summary>
-        /// Occurs when the mouse cursor was inside the parent window/control, but just left it.
-        /// </summary>
-        public event MouseEventHandler OnLeaveSurface;
-
-        /// <summary>
-        /// Occurs when the mouse cursor was outside of the parent window/control, but just entered it.
-        /// </summary>
-        public event MouseEventHandler OnEnterSurface;
-
         Mouse _mouse;
         MouseState _state;
         MouseState _prevState;
@@ -34,17 +24,22 @@ namespace Molten.Input
         float _prevWheelPos;
         float _wheelDelta;
 
-        MouseUpdate[] _buffer;
-
         bool _wasInsideControl = false;
         bool _requestedVisibility = true;
         bool _cursorVisibleState = true;
         INativeSurface _surface;
         IntPtr _windowHandle;
         bool _bufferUpdated;
+        MouseUpdate[] _pollBuffer;
 
-        internal override void Initialize(WinInputManager manager, Logger log)
+        public WinMouseDevice(WinInputManager manager) : base(manager)
         {
+
+        }
+
+        protected override List<InputDeviceFeature> Initialize()
+        {
+            WinInputManager manager = Manager as WinInputManager;
             _mouse = new Mouse(manager.DirectInput);
             _mouse.Properties.AxisMode = DeviceAxisMode.Relative;
             _mouse.Properties.BufferSize = manager.Settings.MouseBufferSize;
@@ -53,6 +48,9 @@ namespace Molten.Input
 
             _state = new MouseState();
             _prevState = new MouseState();
+
+            // TODO detect mouse features.
+            return new List<InputDeviceFeature>();
         }
 
         private void MouseBufferSize_OnChanged(int oldValue, int newValue)
@@ -144,7 +142,7 @@ namespace Molten.Input
             return pos;
         }
 
-        public override void ClearState()
+        protected override void OnClearState()
         {
             _wheelDelta = 0;
             _moved = Vector2I.Zero;
@@ -154,7 +152,7 @@ namespace Molten.Input
 
         /// <summary>Update input handler.</summary>
         /// <param name="time">The snapshot of game time to use.</param>
-        internal override void Update(Timing time)
+        protected override void OnUpdate(Timing time)
         {
             if (_surface == null)
                 return;
@@ -163,10 +161,10 @@ namespace Molten.Input
             Rectangle winBounds = _surface.Bounds;
 
             // Update previous state with previous buffer data
-            if (_buffer != null && _bufferUpdated)
+            if (_pollBuffer != null && _bufferUpdated)
             {
-                for (int i = 0; i < _buffer.Length; i++)
-                    _prevState.Update(_buffer[i]);
+                for (int i = 0; i < _pollBuffer.Length; i++)
+                    _prevState.Update(_pollBuffer[i]);
             }
 
             _bufferUpdated = false;
@@ -199,16 +197,16 @@ namespace Molten.Input
 
                 // Get latest info from mouse and buffer.
                 _mouse.Poll();
-                _buffer = _mouse.GetBufferedData();
+                _pollBuffer = _mouse.GetBufferedData();
                 _bufferUpdated = true;
 
                 // If the mouse is in a valid window, process movement, position, etc
                 if (insideControl || IsConstrained)
                 {
                     // Send all buffered updates to mouse state
-                    for (int i = 0; i < _buffer.Length; i++)
+                    for (int i = 0; i < _pollBuffer.Length; i++)
                     {
-                        _state.Update(_buffer[i]);
+                        _state.Update(_pollBuffer[i]);
                         _wheelDelta += _state.Z;
                     }
 
@@ -290,10 +288,10 @@ namespace Molten.Input
         public float WheelPosition => _wheelPos;
 
         /// <summary>Gets or sets the position of the mouse cursor.</summary>
-        public Vector2I Position
+        public override Vector2I Position
         {
             get => ToLocalPosition(_position);
-            set
+            private set
             {
                 _position = ToDesktopPosition(value);
                 Cursor.Position = new System.Drawing.Point((int)_position.X, (int)_position.Y);
@@ -301,14 +299,11 @@ namespace Molten.Input
         }
 
         /// <summary>Gets or sets whether or not the mouse cursor is visible.</summary>
-        public bool CursorVisible
+        public override bool CursorVisible
         {
             get => _requestedVisibility;
             set => _requestedVisibility = value;
         }
-
-        /// <summary>Gets or sets whether or not the mouse is contrained to the bounds of the main output.</summary>
-        public bool IsConstrained { get; set; }
 
         public override string DeviceName => _mouse.Information.ProductName;
     }
