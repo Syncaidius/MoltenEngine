@@ -19,7 +19,7 @@ namespace Molten
 
         internal AndroidInputNavigation() { }
 
-        internal void Clear()
+        internal void ClearState()
         {
             _backProcessed = false;
             IsBackPressed = false;

@@ -6,8 +6,8 @@ namespace Molten.Input
 
     public abstract class TouchDevice : InputDevice<TouchPointState, int>
     {
-        public TouchDevice(IInputManager manager, Logger log) : 
-            base(manager, manager.Settings.TouchBufferSize, log)
+        public TouchDevice(InputManager manager) : 
+            base(manager, manager.Settings.TouchBufferSize)
         {
             
         }

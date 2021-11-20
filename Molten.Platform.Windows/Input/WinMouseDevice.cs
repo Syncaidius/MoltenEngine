@@ -10,7 +10,7 @@ using System.Windows.Forms;
 namespace Molten.Input
 {
     /// <summary>Handles mouse input.</summary>
-    public class WinMouseDevice : WinInputDeviceBase<MouseButton>, IMouseDevice
+    public class WinMouseDevice : MouseDevice
     {
         /// <summary>
         /// Occurs when the mouse cursor was inside the parent window/control, but just left it.
@@ -311,8 +311,5 @@ namespace Molten.Input
         public bool IsConstrained { get; set; }
 
         public override string DeviceName => _mouse.Information.ProductName;
-
-        /// <summary>Gets whether or not the mouse is attached.</summary>
-        public override bool IsConnected => true;
     }
 }

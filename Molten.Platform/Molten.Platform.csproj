@@ -114,7 +114,7 @@
     <Compile Include="Input\Features\InputVibration.cs" />
     <Compile Include="Input\IClipboard.cs" />
     <Compile Include="Input\IInputCamera.cs" />
-    <Compile Include="Input\IInputManager.cs" />
+    <Compile Include="Input\InputManager.cs" />
     <Compile Include="Input\IInputNavigation.cs" />
     <Compile Include="Input\InputDevice.cs" />
     <Compile Include="Input\InputSettings.cs" />

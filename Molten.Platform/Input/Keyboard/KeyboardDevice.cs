@@ -5,8 +5,8 @@
 
     public abstract class KeyboardDevice : InputDevice<KeyboardKeyState, KeyCode>
     {
-        public KeyboardDevice(IInputManager manager, Logger log) : 
-            base(manager, manager.Settings.KeyboardBufferSize, log)
+        public KeyboardDevice(InputManager manager) : 
+            base(manager, manager.Settings.KeyboardBufferSize)
         {
 
         }

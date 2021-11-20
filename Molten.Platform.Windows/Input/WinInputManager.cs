@@ -7,213 +7,100 @@ using System.Text;
 
 namespace Molten.Input
 {
-    public class WinInputManager : EngineObject, IInputManager
+    public class WinInputManager : InputManager
     {
         DirectInput _input;
-
-        Logger _log;
-
         List<WinGamepadDevice> _gamepads;
         INativeSurface _activeSurface;
-        IInputCamera _activeCamera;
         WindowsClipboard _clipboard;
-
-        Dictionary<GamepadIndex, WinGamepadDevice> _gamepadsByIndex;
-        Dictionary<Type, WinInputDeviceBase> _byType = new Dictionary<Type, WinInputDeviceBase>();
-        List<WinInputDeviceBase> _devices = new List<WinInputDeviceBase>();
 
         /// <summary>Initializes the current input manager instance. Avoid calling this directly unless you know what you are doing.</summary>
         /// <param name="settings">The <see cref="InputSettings"/> that was provided when the engine was instanciated.</param>
         /// <param name="log">A logger.</param>
-        public void Initialize(InputSettings settings, Logger log)
+        protected override void OnInitialize()
         {
-            Settings = settings;
-            _log = log;
             _input = new DirectInput();
             _gamepads = new List<WinGamepadDevice>();
-            _gamepadsByIndex = new Dictionary<GamepadIndex, WinGamepadDevice>();
             _clipboard = new WindowsClipboard();
         }
 
-        public T GetCustomDevice<T>() where T : class, IInputDevice, new()
+        protected override T OnGetCustomDevice<T>()
         {
-            Type t = typeof(T);
-            if (_byType.TryGetValue(t, out WinInputDeviceBase device))
-            {
-                return device as T;
-            }
-            else
-            {
-                device = new T() as WinInputDeviceBase;
-                AddDevice(device);
-                return device as T;
-            }
+            return Activator.CreateInstance(typeof(T), args: new object[] { this }) as T;
         }
 
-        internal void AddDevice(WinInputDeviceBase device)
+        protected override void OnBindSurface(INativeSurface surface)
         {
-            Type t = device.GetType();
-            device.Initialize(this, _log);
 
-            if(_activeSurface != null)
-                device.Bind(_activeSurface);
-
-            device.OnDisposing += Device_OnDisposing;
-            _byType.Add(t, device);
-            _devices.Add(device);
         }
 
-        private void Device_OnDisposing(EngineObject obj)
+        protected override void OnClearState()
         {
-            WinInputDeviceBase handler = obj as WinInputDeviceBase;
-            _devices.Remove(handler);
-            _byType.Remove(obj.GetType());
+
         }
 
-        public IMouseDevice GetMouse()
+        public override MouseDevice GetMouse()
         {
             return GetCustomDevice<WinMouseDevice>();
         }
 
-        public IKeyboardDevice GetKeyboard()
+        public override KeyboardDevice GetKeyboard()
         {
             return GetCustomDevice<WinKeyboardDevice>();
         }
 
-        public ITouchDevice GetTouch()
+        public override TouchDevice GetTouch()
         {
             throw new NotImplementedException();
         }
 
-        public IGamepadDevice GetGamepad(GamepadIndex index)
+        protected override GamepadDevice OnGetGamepad(int index, GamepadSubType subtype)
         {
-            WinGamepadDevice gamepad = null;
-            if (!_gamepadsByIndex.TryGetValue(index, out gamepad))
-            {
-                gamepad = new WinGamepadDevice(index);
-                _gamepadsByIndex.Add(index, gamepad);
-                _gamepads.Add(gamepad);
-                AddDevice(gamepad);
-            }
+            // TODO implement Xbox One controller support: https://github.com/roblambell/XboxOneController/blob/master/XInputInject/Main.cs
+            // TODO make use of subtype parameter.
 
-            return gamepad;
+            WinGamepadDevice gp = new WinGamepadDevice(this, index);
+            gp.OnDisposing += Gp_OnDisposing;
+            _gamepads.Add(gp);
+            return gp;
+        }
+
+        private void Gp_OnDisposing(EngineObject obj)
+        {
+            WinGamepadDevice gp = obj as WinGamepadDevice;
+            gp.OnDisposing -= Gp_OnDisposing;
+            _gamepads.Remove(gp);
         }
 
         /// <summary>Update's the current input manager. Avoid calling directly unless you know what you're doing.</summary>
         /// <param name="time">An instance of timing for the current thread.</param>
-        public void Update(Timing time)
+        protected override void OnUpdate(Timing time)
         {
             if (_activeSurface != null)
             {
-                for(int i = 0; i < _devices.Count; i++)
-                    _devices[i].Update(time);
-
                 for (int i = 0; i < _gamepads.Count; i++)
                     _gamepads[i].Update(time);
-            }
-            else
-            {
-                for (int i = 0; i < _devices.Count; i++)
-                    _devices[i].ClearState();
             }
         }
 
         /// <summary>Retrieves a gamepad handler.</summary>
         /// <param name="index">The index of the gamepad.</param>
         /// <returns></returns>
-        public WinGamepadDevice GetGamepadHandler(GamepadIndex index)
+        public WinGamepadDevice GetGamepadHandler(int index)
         {
             return _gamepads[(int)index];
         }
 
-        private void BindSurface(IRenderSurface surface)
-        {
-            if (surface is INativeSurface window)
-            {
-                // Are we already bound to this surface (e.g. via a different camera).
-                if (_activeSurface != window)
-                {
-                    if (_activeSurface != null)
-                    {
-                        foreach (WinInputDeviceBase device in _devices)
-                        {
-                            device.ClearState();
-                            device.Unbind(_activeSurface);
-                        }
-                    }
-
-                    _activeSurface = window;
-
-                    if (_activeSurface != null)
-                    {
-                        foreach (WinInputDeviceBase device in _devices)
-                            device.Bind(_activeSurface);
-                    }
-                }
-            }
-            else
-            {
-                // if active surface isn't null, we were previously bound to something which was an IWindowSurface.
-                // We know the new surface is not IWindowSurface, so unbind.
-                if (_activeSurface != null)
-                {
-                    foreach (WinInputDeviceBase device in _devices)
-                        device.Unbind(_activeSurface);
-                }
-
-                _activeSurface = null;
-            }
-        }
-
-        internal void ClearState()
-        {
-            foreach (WinInputDeviceBase device in _devices)
-                device.ClearState();
-        }
-
         protected override void OnDispose()
         {
-            foreach (WinInputDeviceBase device in _byType.Values)
-                device.Dispose();
-
-            _byType.Clear();
-
-            DisposeObject(ref _input);
-
-            for (int i = 0; i < _gamepads.Count; i++)
-            {
-                WinGamepadDevice gph = _gamepads[i];
-                DisposeObject(ref gph);
-            }
             _gamepads.Clear();
-            _gamepadsByIndex.Clear();
+            DisposeObject(ref _input);
         }
 
         public DirectInput DirectInput { get { return _input; } }
 
-        /// <summary>Gets the handler for the gamepad at GamepadIndex.One.</summary>
-        public WinGamepadDevice GamePad { get { return _gamepads[0]; } }
+        public override IClipboard Clipboard => _clipboard;
 
-        public InputSettings Settings { get; private set; }
-
-        public IClipboard Clipboard => _clipboard;
-
-        public IInputNavigation Navigation => throw new NotImplementedException();
-
-        /// <summary>
-        /// Gets or sets the current input camera, through which all input is received.
-        /// </summary>
-        public IInputCamera Camera
-        {
-            get => _activeCamera;
-            set
-            {
-                if(_activeCamera != value)
-                {
-                    _activeCamera = value;
-                    BindSurface(value?.OutputSurface);
-                }
-            }
-        }
+        public override IInputNavigation Navigation => throw new NotImplementedException();
     }
 }

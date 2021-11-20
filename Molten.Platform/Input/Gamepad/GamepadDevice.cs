@@ -4,8 +4,8 @@ namespace Molten.Input
 {
     public abstract class GamepadDevice : InputDevice<GamepadButtonState, GamepadButton>
     {
-        public GamepadDevice(IInputManager manager, int index, Logger log) : 
-            base(manager, manager.Settings.GamepadBufferSize, log)
+        public GamepadDevice(InputManager manager, int index) : 
+            base(manager, manager.Settings.GamepadBufferSize)
         {
             Index = index;
         }

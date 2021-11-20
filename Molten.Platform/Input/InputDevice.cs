@@ -32,11 +32,9 @@ namespace Molten.Input
         /// <summary>Gets the name of the device.</summary>
         public abstract string DeviceName { get; }
 
-        protected Logger Log { get; }
-
         public abstract int BufferSize { get; protected set; }
 
-        public IInputManager Manager { get; }
+        public InputManager Manager { get; }
 
         /// <summary>
         /// Gets the maximum number of simultaneous states that the current <see cref="InputDevice"/> can keep track of.
@@ -71,10 +69,9 @@ namespace Molten.Input
         bool _connected;
         List<InputDeviceFeature> _features;
 
-        public InputDevice(IInputManager manager, Logger log)
+        public InputDevice(InputManager manager)
         {
             Manager = manager;
-            Log = log;
             _features = Initialize() ?? new List<InputDeviceFeature>();
             Features = _features.AsReadOnly();
         }
@@ -125,11 +122,9 @@ namespace Molten.Input
         protected void LogFeatures()
         {
 #if DEBUG
-            Log.WriteLine($"Initialized device '{DeviceName}' with {_features.Count} features: ");
+            Manager.Log.WriteLine($"Initialized device '{DeviceName}' with {_features.Count} features: ");
             foreach (InputDeviceFeature feature in _features)
-            {
-                Log.WriteLine($"   {feature.Name} - {feature.Description}");
-            }
+                Manager.Log.WriteLine($"   {feature.Name} - {feature.Description}");
 #endif
         }
 
@@ -258,7 +253,7 @@ namespace Molten.Input
         int _bStart;
         int _bEnd;
 
-        public InputDevice(IInputManager manager, int bufferSize, Logger log) : base(manager, log)
+        public InputDevice(InputManager manager, int bufferSize) : base(manager)
         {
             _buffer = new S[bufferSize]; 
             _states = new S[5];

@@ -4,6 +4,9 @@
     {
         Unknown = 0,
 
+        /// <summary>
+        /// A gamepad with the same or similar configuration as an Xbox 360 controller.
+        /// </summary>
         Gamepad = 1,
 
         Wheel = 2,
@@ -22,6 +25,12 @@
 
         GuitarBass = 11,
 
-        ArcadePad = 19
+        ArcadePad = 19,
+
+        /// <summary>
+        /// A controller with the same or similar configuration as an Xbox One controller. Xbox One controllers have additional
+        /// force feedback vibration controllers.
+        /// </summary>
+        XOnePad = 50,
     }
 }

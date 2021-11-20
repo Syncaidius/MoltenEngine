@@ -12,21 +12,21 @@ namespace Molten
     /// </summary>
     public abstract class Foundation<R, I> : IDisposable
         where R : MoltenRenderer, new()
-        where I : class, IInputManager, new()
+        where I : InputManager, new()
     {
         Engine _engine;
         EngineThread _gameThread;
         INativeSurface _gameWindow;
-        IKeyboardDevice _keyboard;
-        IGamepadDevice _gamepad;
-        IMouseDevice _mouse;
+        KeyboardDevice _keyboard;
+        GamepadDevice _gamepad;
+        MouseDevice _mouse;
 
         /// <summary>
         /// Occurs when the game is in the process of closing.
         /// </summary>
         public event MoltenEventHandler<Foundation<R, I>> OnClosing;
 
-        /// <summary>Creates a new instance of <see cref="Foundation"/>.</summary>
+        /// <summary>Creates a new instance of <see cref="Foundation{R, I}"/>.</summary>
         /// <param name="title"></param>
 
         public Foundation(string title)
@@ -86,7 +86,7 @@ namespace Molten
 
             _keyboard = _engine.Input.GetKeyboard();
             _mouse = _engine.Input.GetMouse();
-            _gamepad = _engine.Input.GetGamepad(GamepadIndex.One);
+            _gamepad = _engine.Input.GetGamepad(0);
             _engine.StartRenderer(renderThreadApartment);
 
             _gameThread = _engine.Threading.SpawnThread("game", false, true, (timing) =>
@@ -245,20 +245,23 @@ namespace Molten
         /// </summary>
         public Timing Time => _gameThread.Timing;
 
-        /// <summary>Gets the <see cref="IKeyboardDevice"/> attached to the game's main window.</summary>
-        public IKeyboardDevice Keyboard => _keyboard;
+        /// <summary>Gets the <see cref="KeyboardDevice"/> attached to the game's main window.</summary>
+        public KeyboardDevice Keyboard => _keyboard;
 
-        /// <summary>Gets the <see cref="IMouseDevice"/> attached to the game's main window.</summary>
-        public IMouseDevice Mouse => _mouse;
+        /// <summary>Gets the <see cref="MouseDevice"/> attached to the game's main window.</summary>
+        public MouseDevice Mouse => _mouse;
 
         /// <summary>
-        /// Gets the <see cref="IGamepadDevice"/> attached to the game's main window.
+        /// Gets the <see cref="GamepadDevice"/> attached to the game's main window.
         /// </summary>
-        public IGamepadDevice Gamepad => _gamepad;
+        public GamepadDevice Gamepad => _gamepad;
 
         /// <summary>Gets the <see cref="INativeSurface"/> that the game renders in to.</summary>
         public INativeSurface Window => _gameWindow;
 
+        /// <summary>
+        /// Gets whether or not the current <see cref="Foundation{R, I}"/> instance has been disposed.
+        /// </summary>
         public bool IsDisposed { get; private set; }
     }
 }

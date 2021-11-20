@@ -7,8 +7,8 @@
     /// </summary>
     public abstract class MouseDevice : InputDevice<MouseButtonState, MouseButton>
     {
-        public MouseDevice(IInputManager manager, Logger log) : 
-            base(manager, manager.Settings.MouseBufferSize, log)
+        public MouseDevice(InputManager manager) : 
+            base(manager, manager.Settings.MouseBufferSize)
         {
 
         }
