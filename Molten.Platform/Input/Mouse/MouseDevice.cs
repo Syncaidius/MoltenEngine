@@ -17,6 +17,15 @@
         /// </summary>
         public event MouseEventHandler OnEnterSurface;
 
+        public event MouseEventHandler OnMove;
+
+        public event MouseEventHandler OnButtonDown;
+
+        public event MouseEventHandler OnButtonUp;
+
+        public event MouseEventHandler OnScroll;
+
+
         MouseButtonState[] _buffer;
 
         public MouseDevice(InputManager manager) : 

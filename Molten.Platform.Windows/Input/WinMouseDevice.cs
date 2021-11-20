@@ -34,7 +34,15 @@ namespace Molten.Input
 
         public WinMouseDevice(WinInputManager manager) : base(manager)
         {
-
+            // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/using-mouse-input
+            /* TODO move keyboard message pump into WinInputManager
+            // Provide internal event for subscribing to winProc messages
+            // WinKeyboardDevice should subscribe to WinInputManager.OnWinProcMessage
+            // WinMouseDevice should subscribe to OnWinProcMessage and listen for
+                - WM_MOUSEMOVE
+                - WM_MOUSEWHEEL
+                - WM_LBUTTONDOWN + WM_LBUTTONUP + WM_LBUTTONDBLCLK
+            */
         }
 
         protected override List<InputDeviceFeature> Initialize()

@@ -63,8 +63,8 @@ namespace Molten.Input
         IntPtr _windowHandle;
         bool _bufferUpdated;
 
-        public WinKeyboardDevice(WinInputManager manager, Logger log) :
-            base(manager, log)
+        public WinKeyboardDevice(WinInputManager manager) :
+            base(manager)
         {
 
         }
