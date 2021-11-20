@@ -10,10 +10,16 @@ namespace Molten.Input
     {
         public KeyCode Key;
 
+        public long RawKeyCode;
+
         public KeyboardKeyType KeyType;
 
         public DateTime PressTimestamp;
 
         public InputPressState State;
+
+        /// <summary>Gets the character value of the key. 
+        /// This is only populated if <see cref="KeyType"/> is equal to <see cref="KeyboardKeyType.Character"/></summary>
+        public char Character = char.MinValue;
     }
 }

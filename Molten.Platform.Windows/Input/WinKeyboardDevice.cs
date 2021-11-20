@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SharpDX.DirectInput;
 using System.Runtime.InteropServices;
 using Molten.Graphics;
 using Molten.Utilities;
@@ -12,7 +11,19 @@ namespace Molten.Input
     /// <summary>A handler for keyboard input.</summary>
     public class WinKeyboardDevice : KeyboardDevice
     {
-        public override string DeviceName => _keyboard.Information.ProductName;
+        // TODO detect keyboard device properties: https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-keyboard
+
+        struct ParsedLParam
+        {
+            public long RepeatCount;
+            public long ScanCode;
+            public bool ExtendedKey;
+            public bool AltKeyPressed;
+            public bool PrevPressed;
+            public bool Pressed;
+        }
+
+        public override string DeviceName => "Windows Keyboard";
 
         //various Win32 constants that are needed
         const int GWL_WNDPROC = -4;
@@ -48,46 +59,21 @@ namespace Molten.Input
         IntPtr _wndProc;
         IntPtr _hIMC;
 
-        //handler variables
-        Keyboard _keyboard;
-        KeyboardState _state;
-        KeyboardState _prevState;
-
-        KeyboardUpdate[] _buffer;
-
-        List<KeyCode> _pressedKeys;
         INativeSurface _surface;
         IntPtr _windowHandle;
         bool _bufferUpdated;
 
-        public WinKeyboardDevice(WinInputManager manager, Logger log) : 
-            base(manager, manager.Settings.KeyboardBufferSize, og)
+        public WinKeyboardDevice(WinInputManager manager, Logger log) :
+            base(manager, log)
         {
 
         }
 
         protected override List<InputDeviceFeature> Initialize()
         {
-            _state = new KeyboardState();
-            _prevState = new KeyboardState();
-            _pressedKeys = new List<KeyCode>();
-
-            WinInputManager manager = Manager as WinInputManager;
-            _keyboard = new Keyboard(manager.DirectInput);
-            _keyboard.Properties.BufferSize = Manager.Settings.KeyboardBufferSize;
-            Manager.Settings.KeyboardBufferSize.OnChanged += KeyboardBufferSize_OnChanged;
-            _keyboard.Acquire();
-
             // TODO get extra features
             List<InputDeviceFeature> features = new List<InputDeviceFeature>();
             return features;
-        }
-
-        private void KeyboardBufferSize_OnChanged(int oldValue, int newValue)
-        {
-            _keyboard.Unacquire();
-            _keyboard.Properties.BufferSize = newValue;
-            _keyboard.Acquire();
         }
 
         protected override void OnBind(INativeSurface surface)
@@ -128,12 +114,7 @@ namespace Molten.Input
             _hIMC = ImmGetContext(_windowHandle);
         }
 
-        protected override void OnClearState()
-        {
-            _pressedKeys.Clear();
-            _state = new KeyboardState();
-            _prevState = new KeyboardState();
-        }
+        protected override void OnClearState() { }
 
         private void SetWindowLongDelegate(WndProc hook)
         {
@@ -157,8 +138,36 @@ namespace Molten.Input
                     break;
 
                 case WM_CHAR:
-                    long paramVal = lParam.ToInt64();
-                    OnCharacterKey?.Invoke((char)wParam, paramVal);
+                    IntPtr forewindow = Win32.GetForegroundWindow();
+                    if (_windowHandle == forewindow)
+                    {
+                        KeyboardKeyState state = new KeyboardKeyState()
+                        {
+                            RawKeyCode = (long)wParam,
+                            Key = (KeyCode)wParam,
+                            KeyType = ParseKeyType((long)wParam),
+                            State = InputPressState.Released
+                        };
+
+                        ParsedLParam plp = ParseLParam(ref state, lParam);
+                        if (plp.Pressed && plp.PrevPressed)
+                        {
+                            state.State = InputPressState.Held;
+                        }
+                        else if (plp.Pressed && !plp.PrevPressed)
+                        {
+                            state.State = InputPressState.Pressed;
+                            state.PressTimestamp = DateTime.UtcNow;
+                        }
+                        else if (!plp.Pressed && plp.PrevPressed)
+                        {
+                            state.State = InputPressState.Released;
+                        }
+
+                        // TODO Do we queue an extra state for 'ALT' if alt key is pressed?
+                        for(int i = 0; i < plp.RepeatCount; i++)
+                            QueueState(state);
+                    }
                     break;
                 case WM_IME_SETCONTEXT:
                     if (wParam.ToInt32() == 1)
@@ -174,102 +183,74 @@ namespace Molten.Input
             return returnCode;
         }
 
+        private KeyboardKeyType ParseKeyType(long wmChar)
+        {
+            KeyCode key = (KeyCode)wmChar;
+            switch (key)
+            {
+                case KeyCode k when (k >= KeyCode.NUM0 && k <= KeyCode.NUM9):
+                    return KeyboardKeyType.Character;
+                case KeyCode k when (k >= KeyCode.NUMPAD0 && key <= KeyCode.DIVIDE):
+                    return KeyboardKeyType.Character;
+                case KeyCode k when (key >= KeyCode.A && key <= KeyCode.Z):
+                    return KeyboardKeyType.Character;
+                case KeyCode k when (key >= KeyCode.OEM_1 && key <= KeyCode.OEM_3):
+                    return KeyboardKeyType.Character;
+                case KeyCode k when (key >= KeyCode.OEM_4 && key <= KeyCode.OEM_102):
+                    return KeyboardKeyType.Character;
+
+                case KeyCode.SPACE:
+                    return KeyboardKeyType.Character;
+
+                case KeyCode.LSHIFT:
+                case KeyCode.RSHIFT:
+                case KeyCode.SHIFT:
+                case KeyCode.LCONTROL:
+                case KeyCode.RCONTROL:
+                case KeyCode.CONTROL:
+                case KeyCode.LMENU:
+                case KeyCode.RMENU:
+                case KeyCode.MENU:
+                    return KeyboardKeyType.Modifier;
+
+                default:
+                    return KeyboardKeyType.Unknown;
+            }
+        }
+
+        /// <summary>
+        /// Parses the information held in the lParam value. 
+        /// See: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-char
+        /// </summary>
+        /// <param name="state">The state that will hold the parsed information.</param>
+        /// <param name="lParam">The raw lParam value.</param>
+        private ParsedLParam ParseLParam(ref KeyboardKeyState state, IntPtr lParam)
+        {
+            long lParamVal = IntPtr.Size == 8 ?
+                lParam.ToInt64() :
+                lParam.ToInt32();
+
+            return new ParsedLParam()
+            {
+                RepeatCount = (lParamVal & 0xFFFF),
+                ScanCode = ((lParamVal >> 16) & 0xFF),
+                ExtendedKey = ((lParamVal >> 24) & 0x01) > 0,
+                AltKeyPressed = ((lParamVal >> 29) & 0x01) > 0,
+                PrevPressed = ((lParamVal >> 30) & 0x01) > 0,
+                Pressed = ((lParamVal >> 31) & 0x01) > 0,
+            };
+        }
+
         public override void OpenControlPanel()
         {
-            _keyboard.RunControlPanel();
-        }
 
-        /// <summary>Returns true if the given keyboard key is pressed.</summary>
-        /// <param name="key">The key to test.</param>
-        /// <returns>True if pressed.</returns>
-        public override bool IsDown(KeyCode key)
-        {
-            return _state.IsPressed(key.ToApi());
-        }
-
-        /// <summary>Returns true if the key is pressed, but wasn't already pressed previously.</summary>
-        /// <param name="key">THe key to test.</param>
-        /// <returns>Returns true if the key is pressed, but wasn't already pressed previously.</returns>
-        public override bool IsTapped(KeyCode key)
-        {
-            bool isPressed = _state.IsPressed(key.ToApi());
-            bool wasPressed = _prevState.IsPressed(key.ToApi());
-
-            return isPressed == true && wasPressed == false;
-        }
-
-        /// <summary>Returns true if the specified key was pressed in both the previous and current frame.</summary>
-        /// <param name="key">The key to test.</param>
-        /// <returns>True if key(s) considered held.</returns>
-        public override bool IsHeld(KeyCode key)
-        {
-            SharpDX.DirectInput.Key sKey = key.ToApi();
-            return _state.IsPressed(sKey) && _prevState.IsPressed(sKey);
         }
 
         protected override void OnDispose()
         {
             SetWindowLongDelegate(null);
-            DisposeObject(ref _keyboard);
-            _buffer = null;
         }
 
-        /// <summary>Update input handler.</summary>
-        /// <param name="time">The snapshot of game time to use.</param>
-        internal override void Update(Timing time)
-        {
-            // Update previous state with buffer
-            if (_buffer != null && _bufferUpdated)
-            {
-                for (int i = 0; i < _buffer.Length; i++)
-                    _prevState.Update(_buffer[i]);
-            }
-
-            _bufferUpdated = false;
-            if (_windowHandle == IntPtr.Zero)
-                return;
-
-            IntPtr forewindow = Win32.GetForegroundWindow();
-
-            // Compare the foreground window to the current engine window.
-            if (_windowHandle == forewindow)
-            {
-                _keyboard.Poll();
-                _buffer = _keyboard.GetBufferedData();
-                _bufferUpdated = true;
-
-                // Update current state with new buffer data
-                if (_buffer != null)
-                    for (int i = 0; i < _buffer.Length; i++)
-                        _state.Update(_buffer[i]);
-
-                // Handle released keys
-                if (OnKeyReleased != null)
-                {
-                    for (int i = 0; i < _pressedKeys.Count; i++)
-                    {
-                        KeyCode key = _pressedKeys[i];
-                        if (_state.PressedKeys.Contains(key.ToApi()) == false)
-                            OnKeyReleased?.Invoke(this, key);
-                    }
-                }
-
-                //Clear pressed list
-                _pressedKeys.Clear();
-
-                // Handle newly pressed keys
-                for (int i = 0; i < _state.PressedKeys.Count; i++)
-                {
-                    KeyCode key = _state.PressedKeys[i].FromApi();
-                    _pressedKeys.Add(key);
-                    OnKeyPressed?.Invoke(this, key);
-                }
-            }
-            else
-            {
-                _state.PressedKeys.Clear();
-                _pressedKeys.Clear();
-            }
-        }
+        protected override void OnUpdate(Timing time) { }
     }
 }

@@ -383,13 +383,13 @@ namespace Molten.Input
         protected abstract bool GetIsDown(ref S state);
 
         /// <summary>Returns true if the spcified input was just pressed/down, but was not in the last update tick.</summary>
-        /// <param name="value">The button or key to check.</param>
+        /// <param name="state">The button or key to check.</param>
         /// <returns></returns>
-        protected abstract bool GetIsTapped(ref S value);
+        protected abstract bool GetIsTapped(ref S state);
 
         /// <summary>Returns true if the specified button was pressed in both the previous and current update tick. </summary>
-        /// <param name="value">The button or key to check.</param>
+        /// <param name="state">The button or key to check.</param>
         /// <returns></returns>
-        protected abstract bool GetIsHeld(ref S value);
+        protected abstract bool GetIsHeld(ref S state);
     }
 }
