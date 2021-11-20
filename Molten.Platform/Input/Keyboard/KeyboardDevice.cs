@@ -11,6 +11,11 @@
 
         }
 
+        protected override int TranslateStateID(KeyCode idValue)
+        {
+            return (int)idValue;
+        }
+
         /// <summary>
         /// Occurs when a character key is pressed.
         /// </summary>

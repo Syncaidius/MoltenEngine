@@ -12,6 +12,8 @@ namespace Molten.Input
     /// <summary>A handler for keyboard input.</summary>
     public class WinKeyboardDevice : KeyboardDevice
     {
+        public override string DeviceName => _keyboard.Information.ProductName;
+
         //various Win32 constants that are needed
         const int GWL_WNDPROC = -4;
         const int WM_KEYDOWN = 0x100;
@@ -58,7 +60,8 @@ namespace Molten.Input
         IntPtr _windowHandle;
         bool _bufferUpdated;
 
-        public WinKeyboardDevice(WinInputManager manager, Logger log) : base(manager, log)
+        public WinKeyboardDevice(WinInputManager manager, Logger log) : 
+            base(manager, manager.Settings.KeyboardBufferSize, og)
         {
 
         }
@@ -268,9 +271,5 @@ namespace Molten.Input
                 _pressedKeys.Clear();
             }
         }
-
-        public override bool IsConnected => true;
-
-        public override string DeviceName => _keyboard.Information.ProductName;
     }
 }
