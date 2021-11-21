@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SharpDX.DirectInput;
 using Molten.Graphics;
 using System.Windows.Forms;
 using Molten.Windows32;
@@ -12,11 +11,9 @@ namespace Molten.Input
     /// <summary>Handles mouse input.</summary>
     public class WinMouseDevice : MouseDevice
     {
-        static WinMouseButtonFlags[] _winButtons;
+        public override string DeviceName => "Windows Mouse";
 
-        Mouse _mouse;
-        MouseState _state;
-        MouseState _prevState;
+        static WinMouseButtonFlags[] _winButtons;
 
         Vector2I _position;
         Vector2I _prevPosition;
@@ -32,7 +29,6 @@ namespace Molten.Input
         INativeSurface _surface;
         IntPtr _windowHandle;
         bool _bufferUpdated;
-        MouseUpdate[] _pollBuffer;
 
         static WinMouseDevice()
         {
@@ -48,15 +44,6 @@ namespace Molten.Input
         {
             WinInputManager manager = Manager as WinInputManager;
             manager.OnWndProcMessage += Manager_OnWndProcMessage;
-
-            _mouse = new Mouse(manager.DirectInput);
-            _mouse.Properties.AxisMode = DeviceAxisMode.Relative;
-            _mouse.Properties.BufferSize = manager.Settings.MouseBufferSize;
-            manager.Settings.MouseBufferSize.OnChanged += MouseBufferSize_OnChanged;
-            _mouse.Acquire();
-
-            _state = new MouseState();
-            _prevState = new MouseState();
 
             // TODO detect mouse features.
             return new List<InputDeviceFeature>();
@@ -200,13 +187,6 @@ namespace Molten.Input
             }
         }
 
-        private void MouseBufferSize_OnChanged(int oldValue, int newValue)
-        {
-            _mouse.Unacquire();
-            _mouse.Properties.BufferSize = newValue;
-            _mouse.Acquire();
-        }
-
         protected override void OnBind(INativeSurface surface)
         {
             _surface = surface;
@@ -230,7 +210,7 @@ namespace Molten.Input
 
         public override void OpenControlPanel()
         {
-            _mouse.RunControlPanel();
+            
         }
 
         /// <summary>Positions the mouse cursor at the center of the window.</summary>
@@ -267,8 +247,6 @@ namespace Molten.Input
         {
             _wheelDelta = 0;
             _moved = Vector2I.Zero;
-            _state = new MouseState();
-            _prevState = new MouseState();
         }
 
         /// <summary>Update input handler.</summary>
@@ -280,13 +258,6 @@ namespace Molten.Input
 
             IntPtr forewindow = Win32.GetForegroundWindow();
             Rectangle winBounds = _surface.Bounds;
-
-            // Update previous state with previous buffer data
-            if (_pollBuffer != null && _bufferUpdated)
-            {
-                for (int i = 0; i < _pollBuffer.Length; i++)
-                    _prevState.Update(_pollBuffer[i]);
-            }
 
             _bufferUpdated = false;
             _moved = new Vector2I();
@@ -317,19 +288,18 @@ namespace Molten.Input
                 CheckInside(insideControl);
 
                 // Get latest info from mouse and buffer.
-                _mouse.Poll();
-                _pollBuffer = _mouse.GetBufferedData();
+
                 _bufferUpdated = true;
 
                 // If the mouse is in a valid window, process movement, position, etc
                 if (insideControl || IsConstrained)
                 {
                     // Send all buffered updates to mouse state
-                    for (int i = 0; i < _pollBuffer.Length; i++)
+                    /*for (int i = 0; i < _pollBuffer.Length; i++)
                     {
                         _state.Update(_pollBuffer[i]);
                         _wheelDelta += _state.Z;
-                    }
+                    }*/
 
                     System.Drawing.Point osPos = Cursor.Position;
                     Vector2I newPos = new Vector2I(osPos.X, osPos.Y);
@@ -396,7 +366,7 @@ namespace Molten.Input
         protected override void OnDispose()
         {
             SetCursorVisiblity(true);
-            DisposeObject(ref _mouse);
+            
         }
 
         /// <summary>Returns the amount the mouse cursor has moved a long X and Y since the last frame/update.</summary>
@@ -425,7 +395,5 @@ namespace Molten.Input
             get => _requestedVisibility;
             set => _requestedVisibility = value;
         }
-
-        public override string DeviceName => _mouse.Information.ProductName;
     }
 }
