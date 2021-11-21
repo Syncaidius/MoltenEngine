@@ -128,10 +128,6 @@ namespace Molten.Input
                 device.Bind(_activeSurface);
 
             device.OnDisposing += Device_OnDisposing;
-
-            // Walk device inheritance chain until we hit InputDevice.
-
-
             return device;
         }
 

@@ -16,6 +16,8 @@ namespace Molten.Input
 
         public Vector2I Delta;
 
-        public InputPressState State;
+        public InputAction Action;
+
+        public InputActionType ActionType;
     }
 }

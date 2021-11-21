@@ -11,6 +11,8 @@ namespace Molten.Input
 {
     internal delegate void WndProcCallbackHandler(IntPtr windowHandle, WndProcMessageType msgType, long wParam, long lParam);
 
+    // TODO support app commands: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-appcommand
+
     public class WinInputManager : InputManager
     {
         //Win32 functions that will be used

@@ -16,7 +16,7 @@ namespace Molten.Input
 
         public DateTime PressTimestamp;
 
-        public InputPressState State;
+        public InputAction State;
 
         /// <summary>Gets the character value of the key. 
         /// This is only populated if <see cref="KeyType"/> is equal to <see cref="KeyboardKeyType.Character"/></summary>

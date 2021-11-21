@@ -125,17 +125,17 @@ namespace Molten.Input
                         if (pressed && !wasPressed)
                         {
                             gps.PressTimestamp = DateTime.UtcNow;
-                            gps.State = InputPressState.Pressed;
+                            gps.State = InputAction.Pressed;
                             QueueState(gps);
                         }
                         else if (pressed && wasPressed)
                         {
-                            gps.State = InputPressState.Held;
+                            gps.State = InputAction.Held;
                             QueueState(gps);
                         }
                         else if (!pressed && wasPressed)
                         {
-                            gps.State = InputPressState.Released;
+                            gps.State = InputAction.Released;
                             QueueState(gps);
                         }
                     }

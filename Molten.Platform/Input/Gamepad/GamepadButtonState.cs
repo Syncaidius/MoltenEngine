@@ -22,7 +22,7 @@ namespace Molten.Input
         /// <summary>
         /// Gets the current button press state.
         /// </summary>
-        public InputPressState State;
+        public InputAction State;
 
         /// <summary>
         /// Gets the UTC time at which the button was last pressed.

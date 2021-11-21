@@ -23,18 +23,18 @@
 
         protected override void ProcessState(ref KeyboardKeyState newState, ref KeyboardKeyState prevState)
         {
-            if (newState.State == InputPressState.Held || 
-                (newState.State == InputPressState.Pressed && prevState.State == InputPressState.Pressed))
+            if (newState.State == InputAction.Held || 
+                (newState.State == InputAction.Pressed && prevState.State == InputAction.Pressed))
             {
-                newState.State = InputPressState.Held;
+                newState.State = InputAction.Held;
                 newState.PressTimestamp = prevState.PressTimestamp;
                 OnKeyHeld?.Invoke(this, newState);
-            }else if(newState.State == InputPressState.Pressed)
+            }else if(newState.State == InputAction.Pressed)
             {
                 OnKeyDown?.Invoke(this, newState);
-            }else if(newState.State == InputPressState.Released)
+            }else if(newState.State == InputAction.Released)
             {
-                if (prevState.State != InputPressState.Released && prevState.State != InputPressState.None)
+                if (prevState.State != InputAction.Released && prevState.State != InputAction.None)
                     newState.PressTimestamp = prevState.PressTimestamp;
 
                 OnKeyUp?.Invoke(this, newState);
@@ -43,17 +43,17 @@
 
         protected override bool GetIsDown(ref KeyboardKeyState state)
         {
-            return state.State == InputPressState.Pressed || state.State == InputPressState.Held;
+            return state.State == InputAction.Pressed || state.State == InputAction.Held;
         }
 
         protected override bool GetIsHeld(ref KeyboardKeyState state)
         {
-            return state.State == InputPressState.Held;
+            return state.State == InputAction.Held;
         }
 
         protected override bool GetIsTapped(ref KeyboardKeyState state)
         {
-            return state.State == InputPressState.Pressed;
+            return state.State == InputAction.Pressed;
         }
 
         /// <summary>

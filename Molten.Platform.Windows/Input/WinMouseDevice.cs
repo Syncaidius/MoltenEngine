@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Molten.Graphics;
 using System.Windows.Forms;
 using Molten.Windows32;
@@ -11,121 +9,143 @@ namespace Molten.Input
     /// <summary>Handles mouse input.</summary>
     public class WinMouseDevice : MouseDevice
     {
+        /// <summary>
+        /// A constant defined in the Win32 API, representing the multiple for calculating wheel deltas.
+        /// Ref: https://docs.microsoft.com/en-us/windows/win32/inputdev/WM-MOUSEWHEEL
+        /// </summary>
+        const int WHEEL_DELTA = 120;
+
         public override string DeviceName => "Windows Mouse";
 
-        static WinMouseButtonFlags[] _winButtons;
-
-        Vector2I _position;
-        Vector2I _prevPosition;
-        Vector2I _moved;
-
-        float _wheelPos;
-        float _prevWheelPos;
-        float _wheelDelta;
+        static WinMouseButtonFlags[] _winButtons = new WinMouseButtonFlags[]
+        {
+            WinMouseButtonFlags.MK_LBUTTON,
+            WinMouseButtonFlags.MK_MBUTTON,
+            WinMouseButtonFlags.MK_RBUTTON,
+            WinMouseButtonFlags.MK_XBUTTON1,
+            WinMouseButtonFlags.MK_XBUTTON2
+        };
 
         bool _wasInsideControl = false;
         bool _requestedVisibility = true;
         bool _cursorVisibleState = true;
-        INativeSurface _surface;
-        IntPtr _windowHandle;
-        bool _bufferUpdated;
-
-        static WinMouseDevice()
-        {
-            _winButtons = ReflectionHelper.EnumToArray<WinMouseButtonFlags>();
-        }
 
         public WinMouseDevice(WinInputManager manager) : base(manager)
         {
-
+            // TODO Check if mouse is connected: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-mouse-input#mouse-configuration
+            // TODO Check available buttons:
+            //      -- An application can determine the number of buttons on the mouse by
+            //         passing the SM_CMOUSEBUTTONS value to the GetSystemMetrics function.
+            // TODO Consider system scroll settings: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-mouse-input#determining-the-number-of-scroll-lines
+            // TODO detect if mouse wheel is present: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-mouse-input#detecting-a-mouse-with-a-wheel
         }
 
         protected override List<InputDeviceFeature> Initialize()
         {
             WinInputManager manager = Manager as WinInputManager;
             manager.OnWndProcMessage += Manager_OnWndProcMessage;
+            ScrollWheel = new InputScrollWheel("Vertical");
+            HScrollWheel = new InputScrollWheel("Horizontal");
 
             // TODO detect mouse features.
-            return new List<InputDeviceFeature>();
+            return new List<InputDeviceFeature>()
+            {
+                ScrollWheel,
+                HScrollWheel
+            };
         }
 
-        private void Manager_OnWndProcMessage(IntPtr windowHandle, Windows32.WndProcMessageType msgType, long wParam, long lParam)
+        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, long wParam, long lParam)
         {
             // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/using-mouse-input
 
             // Positional mouse messages.
+
             switch (msgType)
             {
                 case WndProcMessageType.WM_MOUSEACTIVATE:
 
-                    break;
+                    return;
 
                 case WndProcMessageType.WM_MOUSEHOVER:
-
-                    break;
+                    ParseButtonMessage(WinMouseButtonFlags.None, InputAction.Hover,
+                        InputActionType.None, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_MOUSEMOVE:
-
-                    break;
+                    ParseButtonMessage(WinMouseButtonFlags.None, InputAction.Released,
+                        InputActionType.None, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_MOUSEWHEEL:
-
-                    break;
+                    ParseButtonMessage(WinMouseButtonFlags.None, InputAction.VerticalScroll,
+                        InputActionType.None, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_MOUSEHWHEEL:
-
-                    break;
+                    ParseButtonMessage(WinMouseButtonFlags.None, InputAction.HorizontalScroll,
+                        InputActionType.None, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_LBUTTONDOWN:
-                    ParsePositionalMessage(WinMouseButtonFlags.MK_LBUTTON, true, wParam, lParam);
-                    break;
+                    ParseButtonMessage(WinMouseButtonFlags.MK_LBUTTON, InputAction.Pressed,
+                        InputActionType.Single, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_LBUTTONUP:
-                    ParsePositionalMessage(WinMouseButtonFlags.MK_LBUTTON, false, wParam, lParam);
-                    break;
+                    ParseButtonMessage(WinMouseButtonFlags.MK_LBUTTON, InputAction.Released,
+                        InputActionType.Single, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_LBUTTONDBLCLK:
-
-                    break;
+                    ParseButtonMessage(WinMouseButtonFlags.MK_LBUTTON, InputAction.Pressed,
+                        InputActionType.Double, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_MBUTTONDOWN:
-                    ParsePositionalMessage(WinMouseButtonFlags.MK_MBUTTON, true, wParam, lParam);
-                    break;
+                    ParseButtonMessage(WinMouseButtonFlags.MK_MBUTTON, InputAction.Pressed,
+                        InputActionType.Single, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_MBUTTONUP:
-                    ParsePositionalMessage(WinMouseButtonFlags.MK_MBUTTON, false, wParam, lParam);
-                    break;
+                    ParseButtonMessage(WinMouseButtonFlags.MK_MBUTTON, InputAction.Released,
+                        InputActionType.Single, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_MBUTTONDBLCLK:
-
-                    break;
+                    ParseButtonMessage(WinMouseButtonFlags.MK_MBUTTON, InputAction.Pressed,
+                        InputActionType.Double, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_RBUTTONDOWN:
-                    ParsePositionalMessage(WinMouseButtonFlags.MK_RBUTTON, true, wParam, lParam);
-                    break;
+                    ParseButtonMessage(WinMouseButtonFlags.MK_RBUTTON, InputAction.Pressed,
+                        InputActionType.Single, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_RBUTTONUP:
-                    ParsePositionalMessage(WinMouseButtonFlags.MK_RBUTTON, false, wParam, lParam);
-                    break;
+                    ParseButtonMessage(WinMouseButtonFlags.MK_RBUTTON, InputAction.Released,
+                        InputActionType.Single, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_RBUTTONDBLCLK:
-
-                    break;
+                    ParseButtonMessage(WinMouseButtonFlags.MK_RBUTTON, InputAction.Pressed,
+                        InputActionType.Double, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_XBUTTONDOWN:
-                    // TODO XBUTTON 1 or 2 defined in higher 16-bits of wParam.
-                    // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-xbuttondown
-                    break;
+                    ParseButtonMessage(ParseXButton(wParam), InputAction.Pressed,
+                        InputActionType.Single, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_XBUTTONUP:
-                    // TODO XBUTTON 1 or 2 defined in higher 16-bits of wParam.
-                    // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-xbuttondown
-                    break;
+                    ParseButtonMessage(ParseXButton(wParam), InputAction.Released,
+                        InputActionType.Single, wParam, lParam);
+                    return;
 
                 case WndProcMessageType.WM_XBUTTONDBLCLK:
-                    // TODO XBUTTON 1 or 2 defined in higher 16-bits of wParam.
-                    // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-xbuttondown
-                    break;
+                    ParseButtonMessage(ParseXButton(wParam), InputAction.Pressed,
+                        InputActionType.Double, wParam, lParam);
+                    return;
             }
         }
 
@@ -133,31 +153,75 @@ namespace Molten.Input
         /// Parses a message representing a mouse cursor action with coordinates attached to it.
         /// </summary>
         /// <param name="state">The <see cref="MouseButtonState"/> to update.</param>
-        /// <param name="btn"></param>
-        /// <param name="down"></param>
-        /// <param name="wParam"></param>
-        /// <param name="lParam"></param>
-        private void ParsePositionalMessage(WinMouseButtonFlags btn, bool down, long wParam, long lParam)
+        /// <param name="btn">The button that triggered the message.</param>
+        /// <param name="down">True if the button was pressed down. False if the button was released.</param>
+        /// <param name="action">The action performed</param>
+        /// <param name="aType">The type of action.</param>
+        /// <param name="wParam">The WndProc wParam value.</param>
+        /// <param name="lParam">The WndProc lParam value.</param>
+        private void ParseButtonMessage(
+            WinMouseButtonFlags btn,
+            InputAction action,
+            InputActionType aType,
+            long wParam,
+            long lParam)
         {
-            WinMouseButtonFlags btns = (WinMouseButtonFlags)wParam;
+            WinMouseButtonFlags btns = (WinMouseButtonFlags)(wParam & 0xFFFFFFFF);
             MouseButtonState state = new MouseButtonState();
             state.Position = new Vector2I(lParam);
- 
+
             // Figure out which other buttons are down and queue 'held' states for them.
-            foreach(WinMouseButtonFlags b in _winButtons)
+            foreach (WinMouseButtonFlags b in _winButtons)
             {
-                if(b != btn && (btns & b) == b)
+                if (b != btn && (btns & b) == b)
                 {
-                    state.State = InputPressState.Held;
                     state.Button = TranslateButton(b);
+                    state.Action = InputAction.Held;
+                    state.ActionType = InputActionType.None;
                     QueueState(state);
                 }
             }
 
-            // Prepare final state.
-            state.Button = TranslateButton(btn);
-            state.State = down ? InputPressState.Pressed : InputPressState.Released;
-            state.PressTimestamp = DateTime.UtcNow;
+            // Prepare state for button that triggered the current message.
+            if (btn != WinMouseButtonFlags.None)
+            {
+                state.ActionType = aType;
+                state.Button = TranslateButton(btn);
+                state.Action = action;
+                state.PressTimestamp = DateTime.UtcNow;
+
+                switch (action)
+                {
+                    case InputAction.VerticalScroll:
+                        state.Delta.Y = ParseWheelDelta(wParam);
+                        break;
+
+                    case InputAction.HorizontalScroll:
+                        state.Delta.X = ParseWheelDelta(wParam);
+                        break;
+                }
+
+                QueueState(state);
+            }
+        }
+
+        private WinMouseButtonFlags ParseXButton(long wParam)
+        {
+            WinWParamXButton xb = (WinWParamXButton)((wParam >> 16) & 0xFFFFFFFF);
+            switch (xb)
+            {
+                default:
+                case WinWParamXButton.None:
+                    return WinMouseButtonFlags.None;
+
+                case WinWParamXButton.XButton1: return WinMouseButtonFlags.MK_XBUTTON1;
+                case WinWParamXButton.XButton2: return WinMouseButtonFlags.MK_XBUTTON2;
+            }
+        }
+
+        private int ParseWheelDelta(long wParam)
+        {
+            return (int)((wParam >> 16) & 0xFFFFFFFF);
         }
 
         private MouseButton TranslateButton(WinMouseButtonFlags btn)
@@ -165,89 +229,35 @@ namespace Molten.Input
             switch (btn)
             {
                 default:
+                case WinMouseButtonFlags.None:
                 case WinMouseButtonFlags.MK_SHIFT:
-                case WinMouseButtonFlags.MK_CONTROL: 
+                case WinMouseButtonFlags.MK_CONTROL:
                     return MouseButton.None;
 
-                case WinMouseButtonFlags.MK_LBUTTON:  
+                case WinMouseButtonFlags.MK_LBUTTON:
                     return MouseButton.Left;
 
-                case WinMouseButtonFlags.MK_MBUTTON: 
+                case WinMouseButtonFlags.MK_MBUTTON:
                     return MouseButton.Middle;
 
-                case WinMouseButtonFlags.MK_RBUTTON: 
+                case WinMouseButtonFlags.MK_RBUTTON:
                     return MouseButton.Right;
 
                 case WinMouseButtonFlags.MK_XBUTTON1:
                     return MouseButton.XButton1;
 
-                case WinMouseButtonFlags.MK_XBUTTON2: 
+                case WinMouseButtonFlags.MK_XBUTTON2:
                     return MouseButton.XButton2;
 
             }
         }
 
-        protected override void OnBind(INativeSurface surface)
-        {
-            _surface = surface;
-            SurfaceHandleChanged(surface);
-            _surface.OnHandleChanged += SurfaceHandleChanged;
-            _surface.OnParentChanged += SurfaceHandleChanged;
-        }
+        protected override void OnBind(INativeSurface surface) { }
 
-        protected override void OnUnbind(INativeSurface surface)
-        {
-            _surface.OnHandleChanged -= SurfaceHandleChanged;
-            _surface.OnParentChanged -= SurfaceHandleChanged;
-            _surface = null;
-        }
+        protected override void OnUnbind(INativeSurface surface) { }
 
-        private void SurfaceHandleChanged(INativeSurface surface)
-        {
-            if (surface.WindowHandle != null)
-                _windowHandle = surface.WindowHandle.Value;
-        }
+        public override void OpenControlPanel() { }
 
-        public override void OpenControlPanel()
-        {
-            
-        }
-
-        /// <summary>Positions the mouse cursor at the center of the window.</summary>
-        public void CenterInView()
-        {
-            Rectangle winBounds = _surface.Bounds;
-            Vector2I p = winBounds.Center;
-
-            _position = new Vector2I(p.X, p.Y);
-        }
-
-        private Vector2I ToLocalPosition(Vector2I pos)
-        {
-            if (_surface != null)
-            {
-                Rectangle oBounds = _surface.Bounds;
-                pos -= new Vector2I(oBounds.X, oBounds.Y);
-            }
-            return pos;
-
-        }
-
-        private Vector2I ToDesktopPosition(Vector2I pos)
-        {
-            if (_surface != null)
-            {
-                Rectangle oBounds = _surface.Bounds;
-                pos += new Vector2I(oBounds.X, oBounds.Y);
-            }
-            return pos;
-        }
-
-        protected override void OnClearState()
-        {
-            _wheelDelta = 0;
-            _moved = Vector2I.Zero;
-        }
 
         /// <summary>Update input handler.</summary>
         /// <param name="time">The snapshot of game time to use.</param>
@@ -286,10 +296,6 @@ namespace Molten.Input
                     insideControl = false;
 
                 CheckInside(insideControl);
-
-                // Get latest info from mouse and buffer.
-
-                _bufferUpdated = true;
 
                 // If the mouse is in a valid window, process movement, position, etc
                 if (insideControl || IsConstrained)
@@ -363,30 +369,15 @@ namespace Molten.Input
             _cursorVisibleState = visible;
         }
 
+        protected override void OnSetCursorPosition(Vector2I absolute, Vector2I relative)
+        {
+            Cursor.Position = new System.Drawing.Point(absolute.X, absolute.Y);
+        }
+
         protected override void OnDispose()
         {
             SetCursorVisiblity(true);
-            
-        }
 
-        /// <summary>Returns the amount the mouse cursor has moved a long X and Y since the last frame/update.</summary>
-        public Vector2I Delta => _moved;
-
-        /// <summary>Gets the amount the mouse wheel has been moved since the last frame.</summary>
-        public float WheelDelta => _wheelDelta;
-
-        /// <summary>Gets the current scroll wheel position.</summary>
-        public float WheelPosition => _wheelPos;
-
-        /// <summary>Gets or sets the position of the mouse cursor.</summary>
-        public override Vector2I Position
-        {
-            get => ToLocalPosition(_position);
-            private set
-            {
-                _position = ToDesktopPosition(value);
-                Cursor.Position = new System.Drawing.Point((int)_position.X, (int)_position.Y);
-            }
         }
 
         /// <summary>Gets or sets whether or not the mouse cursor is visible.</summary>
@@ -395,5 +386,9 @@ namespace Molten.Input
             get => _requestedVisibility;
             set => _requestedVisibility = value;
         }
+
+        public override InputScrollWheel ScrollWheel { get; protected set; }
+
+        public override InputScrollWheel HScrollWheel { get; protected set; }
     }
 }

@@ -77,6 +77,7 @@ namespace Molten.Windows32
         WM_MBUTTONUP = 0x0208,
 
         /// <summary>
+        /// Posted when the user double-clicks the middle mouse button while the cursor is in the client area of a window.
         /// Ref: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-mbuttondblclk
         /// </summary>
         WM_MBUTTONDBLCLK = 0x0209,

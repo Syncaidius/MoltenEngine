@@ -52,22 +52,22 @@ namespace Molten.Input
                             RawKeyCode = wParam,
                             Key = (KeyCode)wParam,
                             KeyType = ParseKeyType(wParam),
-                            State = InputPressState.Released
+                            State = InputAction.Released
                         };
 
                         ParsedLParam plp = ParseLParam(ref state, lParam);
                         if (plp.Pressed && plp.PrevPressed)
                         {
-                            state.State = InputPressState.Held;
+                            state.State = InputAction.Held;
                         }
                         else if (plp.Pressed && !plp.PrevPressed)
                         {
-                            state.State = InputPressState.Pressed;
+                            state.State = InputAction.Pressed;
                             state.PressTimestamp = DateTime.UtcNow;
                         }
                         else if (!plp.Pressed && plp.PrevPressed)
                         {
-                            state.State = InputPressState.Released;
+                            state.State = InputAction.Released;
                         }
 
                         // TODO Do we queue an extra state for 'ALT' if alt key is pressed?

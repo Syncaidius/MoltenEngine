@@ -6,6 +6,11 @@ namespace Molten
     internal enum WinMouseButtonFlags
     {
         /// <summary>
+        /// No button.
+        /// </summary>
+        None = 0x0,
+
+        /// <summary>
         /// The left mouse button is depressed.
         /// </summary>
         MK_LBUTTON = 0x0001,

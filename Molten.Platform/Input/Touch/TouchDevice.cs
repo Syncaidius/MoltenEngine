@@ -47,7 +47,7 @@ namespace Molten.Input
         protected override void ProcessState(ref TouchPointState newsState, ref TouchPointState prevState)
         {
             // Calculate delta from last pointer state.
-            if (newsState.State == InputPressState.Moved && prevState.State != InputPressState.Released)
+            if (newsState.State == InputAction.Moved && prevState.State != InputAction.Released)
             {
                 newsState.Delta = newsState.Position - newsState.Position;
                 OnTouch?.Invoke(newsState);
@@ -60,28 +60,28 @@ namespace Molten.Input
 
                 switch (newsState.State)
                 {
-                    case InputPressState.Pressed: TouchDown?.Invoke(newsState); break;
-                    case InputPressState.Released: TouchUp?.Invoke(newsState); break;
-                    case InputPressState.Held: TouchHeld?.Invoke(newsState); break;
+                    case InputAction.Pressed: TouchDown?.Invoke(newsState); break;
+                    case InputAction.Released: TouchUp?.Invoke(newsState); break;
+                    case InputAction.Held: TouchHeld?.Invoke(newsState); break;
                 }
             }
         }
 
         protected override bool GetIsHeld(ref TouchPointState state)
         {
-            return state.State == InputPressState.Held || state.State == InputPressState.Moved;
+            return state.State == InputAction.Held || state.State == InputAction.Moved;
         }
 
         protected override bool GetIsDown(ref TouchPointState state)
         {
-            return state.State == InputPressState.Pressed || 
-                state.State == InputPressState.Held || 
-                state.State == InputPressState.Moved;
+            return state.State == InputAction.Pressed || 
+                state.State == InputAction.Held || 
+                state.State == InputAction.Moved;
         }
 
         protected override bool GetIsTapped(ref TouchPointState state)
         {
-            return state.State == InputPressState.Pressed;
+            return state.State == InputAction.Pressed;
         }
     }
 }
