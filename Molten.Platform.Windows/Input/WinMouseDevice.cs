@@ -58,22 +58,32 @@ namespace Molten.Input
         private void Manager_OnWndProcMessage(IntPtr windowHandle, Windows32.WndProcMessageType msgType, long wParam, long lParam)
         {
             // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/using-mouse-input
-            /* TODO move keyboard message pump into WinInputManager
-            // Provide internal event for subscribing to winProc messages
-            // WinKeyboardDevice should subscribe to WinInputManager.OnWinProcMessage
-            // WinMouseDevice should subscribe to OnWinProcMessage and listen for
-                - WM_MOUSEMOVE
-                - WM_MOUSEWHEEL
-                - WM_LBUTTONDOWN + WM_LBUTTONUP + WM_LBUTTONDBLCLK
-            */
 
+            MouseButtonState state = new MouseButtonState()
+            {
+
+            };
+
+            // Positional mouse messages.
             switch (msgType)
             {
+                case WndProcMessageType.WM_MOUSEACTIVATE:
+
+                    break;
+
+                case WndProcMessageType.WM_MOUSEHOVER:
+
+                    break;
+
                 case WndProcMessageType.WM_MOUSEMOVE:
 
                     break;
 
                 case WndProcMessageType.WM_MOUSEWHEEL:
+
+                    break;
+
+                case WndProcMessageType.WM_MOUSEHWHEEL:
 
                     break;
 
@@ -88,7 +98,54 @@ namespace Molten.Input
                 case WndProcMessageType.WM_LBUTTONDBLCLK:
 
                     break;
+
+                case WndProcMessageType.WM_MBUTTONDOWN:
+
+                    break;
+
+                case WndProcMessageType.WM_MBUTTONUP:
+
+                    break;
+
+                case WndProcMessageType.WM_MBUTTONDBLCLK:
+
+                    break;
+
+                case WndProcMessageType.WM_RBUTTONDOWN:
+
+                    break;
+
+                case WndProcMessageType.WM_RBUTTONUP:
+
+                    break;
+
+                case WndProcMessageType.WM_RBUTTONDBLCLK:
+
+                    break;
+
+                case WndProcMessageType.WM_XBUTTONDOWN:
+
+                    break;
+
+                case WndProcMessageType.WM_XBUTTONUP:
+
+                    break;
+
+                case WndProcMessageType.WM_XBUTTONDBLCLK:
+
+                    break;
             }
+        }
+
+        /// <summary>
+        /// Parses a message representing a mouse cursor action with coordinates attached to it.
+        /// </summary>
+        /// <param name="state">The <see cref="MouseButtonState"/> to update.</param>
+        /// <param name="wParam"></param>
+        /// <param name="lParam"></param>
+        private void ParseCursorAction(ref MouseButtonState state, long wParam, long lParam)
+        {
+            state.Position = new Vector2I(lParam);
         }
 
         private void MouseBufferSize_OnChanged(int oldValue, int newValue)

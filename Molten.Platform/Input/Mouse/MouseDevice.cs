@@ -25,9 +25,6 @@
 
         public event MouseEventHandler OnScroll;
 
-
-        MouseButtonState[] _buffer;
-
         public MouseDevice(InputManager manager) : 
             base(manager, manager.Settings.MouseBufferSize)
         {
