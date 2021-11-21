@@ -2,8 +2,6 @@
 
 namespace Molten.Input
 {
-    public delegate void TouchGestureHandler<T>(TouchDevice device, T gesture) where T : ITouchGesture;
-
     public abstract class TouchDevice : InputDevice<TouchPointState, int>
     {
         public TouchDevice(InputManager manager) : 
@@ -11,8 +9,6 @@ namespace Molten.Input
         {
             
         }
-
-        public event TouchGestureHandler<Touch2PointGesture> OnPinchGesture;
 
         /// <summary>
         /// Triggered when a touch point is updated, regardless of type.
