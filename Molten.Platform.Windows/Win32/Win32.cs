@@ -5,7 +5,7 @@ using System.Management;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Molten.Utilities
+namespace Molten.Windows32
 {
     /// <summary>A Win32 helper library.</summary>
     public static partial class Win32

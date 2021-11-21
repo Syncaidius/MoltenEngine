@@ -102,11 +102,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Win32.CPU.cs" />
-    <Compile Include="Win32.cs" />
-    <Compile Include="Win32.IO.cs" />
-    <Compile Include="Win32.OS.cs" />
-    <Compile Include="Win32Helper.Structures.cs" />
+    <Compile Include="Win32\Win32.CPU.cs" />
+    <Compile Include="Win32\Win32.cs" />
+    <Compile Include="Win32\Win32.IO.cs" />
+    <Compile Include="Win32\Win32.OS.cs" />
+    <Compile Include="Win32\Win32Helper.Structures.cs" />
+    <Compile Include="Win32\WndProcMessageType.cs" />
     <Compile Include="WindowsClipboard.cs" />
     <Compile Include="Input\WinGamepadDevice.cs" />
     <Compile Include="Input\WinKeyboardDevice.cs" />

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Utilities
+namespace Molten.Windows32
 {
     public class Win32IO
     {

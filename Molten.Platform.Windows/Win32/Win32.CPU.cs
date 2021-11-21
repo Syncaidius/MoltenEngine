@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Utilities
+namespace Molten.Windows32
 {
     public class Win32CPU
     {

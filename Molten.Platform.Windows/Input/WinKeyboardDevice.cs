@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Runtime.InteropServices;
 using Molten.Graphics;
-using Molten.Utilities;
+using Molten.Windows32;
 
 namespace Molten.Input
 {
@@ -25,44 +24,6 @@ namespace Molten.Input
 
         public override string DeviceName => "Windows Keyboard";
 
-        //various Win32 constants that are needed
-        const int GWL_WNDPROC = -4;
-        const int WM_KEYDOWN = 0x100;
-        const int WM_KEYUP = 0x101;
-        const int WM_CHAR = 0x102;
-        const int WM_IME_SETCONTEXT = 0x0281;
-        const int WM_INPUTLANGCHANGE = 0x51;
-        const int WM_GETDLGCODE = 0x87;
-        const int WM_IME_COMPOSITION = 0x10f;
-        const int DLGC_WANTALLKEYS = 4;
-
-        //Win32 functions that will be used
-        [DllImport("Imm32.dll", CharSet = CharSet.Unicode)]
-        static extern IntPtr ImmGetContext(IntPtr hWnd);
-
-        [DllImport("Imm32.dll", CharSet = CharSet.Unicode)]
-        static extern IntPtr ImmAssociateContext(IntPtr hWnd, IntPtr hIMC);
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        static extern long SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        static extern long SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
-        //variables for Win32 stuff
-        delegate IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
-
-        WndProc _hookProcDelegate;
-        IntPtr _wndProc;
-        IntPtr _hIMC;
-
-        INativeSurface _surface;
-        IntPtr _windowHandle;
-        bool _bufferUpdated;
-
         public WinKeyboardDevice(WinInputManager manager) :
             base(manager)
         {
@@ -71,81 +32,26 @@ namespace Molten.Input
 
         protected override List<InputDeviceFeature> Initialize()
         {
+            var manager = Manager as WinInputManager;
+            manager.OnWndProcMessage += Manager_OnWndProcMessage;
             // TODO get extra features
             List<InputDeviceFeature> features = new List<InputDeviceFeature>();
             return features;
         }
 
-        protected override void OnBind(INativeSurface surface)
+        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, long wParam, long lParam)
         {
-            _surface = surface;
-            SurfaceHandleChanged(surface);
-            _surface.OnHandleChanged += SurfaceHandleChanged;
-            _surface.OnParentChanged += SurfaceHandleChanged;
-            CreateHook();
-        }
-
-        protected override void OnUnbind(INativeSurface surface)
-        {
-            _surface.OnHandleChanged -= SurfaceHandleChanged;
-            _surface.OnParentChanged -= SurfaceHandleChanged;
-            SetWindowLongDelegate(null);
-            _surface = null;
-        }
-
-        private void SurfaceHandleChanged(INativeSurface surface)
-        {
-            if (surface.WindowHandle != null)
+            switch (msgType)
             {
-                _windowHandle = surface.WindowHandle.Value;
-                CreateHook();
-            }
-        }
-
-        private void CreateHook()
-        {
-            if (_hookProcDelegate != null || _windowHandle == IntPtr.Zero)
-                return;
-
-            _wndProc = IntPtr.Zero;
-            _hookProcDelegate = new WndProc(HookProc);
-
-            SetWindowLongDelegate(_hookProcDelegate);
-            _hIMC = ImmGetContext(_windowHandle);
-        }
-
-        protected override void OnClearState() { }
-
-        private void SetWindowLongDelegate(WndProc hook)
-        {
-            if (hook != null)
-            {
-                IntPtr ptrVal = Marshal.GetFunctionPointerForDelegate(hook);
-
-                if (_wndProc == IntPtr.Zero)
-                    _wndProc = (IntPtr)SetWindowLongPtr(_windowHandle, GWL_WNDPROC, ptrVal);
-            }
-        }
-
-        private IntPtr HookProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
-        {
-            IntPtr returnCode = CallWindowProc(_wndProc, hWnd, msg, wParam, lParam);
-
-            switch (msg)
-            {
-                case WM_GETDLGCODE:
-                    returnCode = (IntPtr)(returnCode.ToInt32() | DLGC_WANTALLKEYS);
-                    break;
-
-                case WM_CHAR:
+                case WndProcMessageType.WM_CHAR:
                     IntPtr forewindow = Win32.GetForegroundWindow();
-                    if (_windowHandle == forewindow)
+                    if (windowHandle == forewindow)
                     {
                         KeyboardKeyState state = new KeyboardKeyState()
                         {
-                            RawKeyCode = (long)wParam,
+                            RawKeyCode = wParam,
                             Key = (KeyCode)wParam,
-                            KeyType = ParseKeyType((long)wParam),
+                            KeyType = ParseKeyType(wParam),
                             State = InputPressState.Released
                         };
 
@@ -165,23 +71,19 @@ namespace Molten.Input
                         }
 
                         // TODO Do we queue an extra state for 'ALT' if alt key is pressed?
-                        for(int i = 0; i < plp.RepeatCount; i++)
+                        for (int i = 0; i < plp.RepeatCount; i++)
                             QueueState(state);
                     }
                     break;
-                case WM_IME_SETCONTEXT:
-                    if (wParam.ToInt32() == 1)
-                        ImmAssociateContext(hWnd, _hIMC);
-                    break;
-
-                case WM_INPUTLANGCHANGE:
-                    ImmAssociateContext(hWnd, _hIMC);
-                    returnCode = (IntPtr)1;
-                    break;
             }
-
-            return returnCode;
         }
+
+        protected override void OnBind(INativeSurface surface) { }
+
+        protected override void OnUnbind(INativeSurface surface) { }
+
+
+        protected override void OnClearState() { }
 
         private KeyboardKeyType ParseKeyType(long wmChar)
         {
@@ -224,20 +126,16 @@ namespace Molten.Input
         /// </summary>
         /// <param name="state">The state that will hold the parsed information.</param>
         /// <param name="lParam">The raw lParam value.</param>
-        private ParsedLParam ParseLParam(ref KeyboardKeyState state, IntPtr lParam)
+        private ParsedLParam ParseLParam(ref KeyboardKeyState state, long lParam)
         {
-            long lParamVal = IntPtr.Size == 8 ?
-                lParam.ToInt64() :
-                lParam.ToInt32();
-
             return new ParsedLParam()
             {
-                RepeatCount = (lParamVal & 0xFFFF),
-                ScanCode = ((lParamVal >> 16) & 0xFF),
-                ExtendedKey = ((lParamVal >> 24) & 0x01) > 0,
-                AltKeyPressed = ((lParamVal >> 29) & 0x01) > 0,
-                PrevPressed = ((lParamVal >> 30) & 0x01) > 0,
-                Pressed = ((lParamVal >> 31) & 0x01) > 0,
+                RepeatCount = (lParam & 0xFFFF),
+                ScanCode = ((lParam >> 16) & 0xFF),
+                ExtendedKey = ((lParam >> 24) & 0x01) > 0,
+                AltKeyPressed = ((lParam >> 29) & 0x01) > 0,
+                PrevPressed = ((lParam >> 30) & 0x01) > 0,
+                Pressed = ((lParam >> 31) & 0x01) > 0,
             };
         }
 
@@ -248,7 +146,7 @@ namespace Molten.Input
 
         protected override void OnDispose()
         {
-            SetWindowLongDelegate(null);
+           
         }
 
         protected override void OnUpdate(Timing time) { }
