@@ -86,7 +86,7 @@ namespace Molten
 
             _keyboard = _engine.Input.GetKeyboard();
             _mouse = _engine.Input.GetMouse();
-            _gamepad = _engine.Input.GetGamepad(0);
+            _gamepad = _engine.Input.GetGamepad<GamepadDevice>(0, GamepadSubType.Gamepad);
             _engine.StartRenderer(renderThreadApartment);
 
             _gameThread = _engine.Threading.SpawnThread("game", false, true, (timing) =>

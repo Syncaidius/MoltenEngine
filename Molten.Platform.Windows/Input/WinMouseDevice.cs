@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using SharpDX.DirectInput;
 using Molten.Graphics;
-using Molten.Utilities;
 using System.Windows.Forms;
+using Molten.Windows32;
 
 namespace Molten.Input
 {
@@ -34,20 +34,14 @@ namespace Molten.Input
 
         public WinMouseDevice(WinInputManager manager) : base(manager)
         {
-            // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/using-mouse-input
-            /* TODO move keyboard message pump into WinInputManager
-            // Provide internal event for subscribing to winProc messages
-            // WinKeyboardDevice should subscribe to WinInputManager.OnWinProcMessage
-            // WinMouseDevice should subscribe to OnWinProcMessage and listen for
-                - WM_MOUSEMOVE
-                - WM_MOUSEWHEEL
-                - WM_LBUTTONDOWN + WM_LBUTTONUP + WM_LBUTTONDBLCLK
-            */
+
         }
 
         protected override List<InputDeviceFeature> Initialize()
         {
             WinInputManager manager = Manager as WinInputManager;
+            manager.OnWndProcMessage += Manager_OnWndProcMessage;
+
             _mouse = new Mouse(manager.DirectInput);
             _mouse.Properties.AxisMode = DeviceAxisMode.Relative;
             _mouse.Properties.BufferSize = manager.Settings.MouseBufferSize;
@@ -59,6 +53,42 @@ namespace Molten.Input
 
             // TODO detect mouse features.
             return new List<InputDeviceFeature>();
+        }
+
+        private void Manager_OnWndProcMessage(IntPtr windowHandle, Windows32.WndProcMessageType msgType, long wParam, long lParam)
+        {
+            // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/using-mouse-input
+            /* TODO move keyboard message pump into WinInputManager
+            // Provide internal event for subscribing to winProc messages
+            // WinKeyboardDevice should subscribe to WinInputManager.OnWinProcMessage
+            // WinMouseDevice should subscribe to OnWinProcMessage and listen for
+                - WM_MOUSEMOVE
+                - WM_MOUSEWHEEL
+                - WM_LBUTTONDOWN + WM_LBUTTONUP + WM_LBUTTONDBLCLK
+            */
+
+            switch (msgType)
+            {
+                case WndProcMessageType.WM_MOUSEMOVE:
+
+                    break;
+
+                case WndProcMessageType.WM_MOUSEWHEEL:
+
+                    break;
+
+                case WndProcMessageType.WM_LBUTTONDOWN:
+
+                    break;
+
+                case WndProcMessageType.WM_LBUTTONUP:
+
+                    break;
+
+                case WndProcMessageType.WM_LBUTTONDBLCLK:
+
+                    break;
+            }
         }
 
         private void MouseBufferSize_OnChanged(int oldValue, int newValue)
@@ -101,32 +131,6 @@ namespace Molten.Input
             Vector2I p = winBounds.Center;
 
             _position = new Vector2I(p.X, p.Y);
-        }
-
-        /// <summary>Returns true if the given buttonboard button is pressed.</summary>
-        /// <param name="button">The button(s) to check.</param>
-        /// <returns>True if pressed.</returns>
-        public override bool IsDown(MouseButton button)
-        {
-            return _state.Buttons[(int)button];
-        }
-
-        /// <summary>Returns true if the button is pressed, but wasn't already pressed previously.</summary>
-        /// <param name="button">THe button(s) to test against.</param>
-        /// <returns>Returns true if the button is pressed, but wasn't already pressed previously.</returns>
-        public override bool IsTapped(MouseButton button)
-        {
-            int butval = (int)button;
-            return _state.Buttons[butval] && _prevState.Buttons[butval] == false;
-        }
-
-        /// <summary>Returns true if the specified button was pressed in both the previous and current frame.</summary>
-        /// <param name="button">The button(s) to do a held test for.</param>
-        /// <returns>True if button(s) considered held.</returns>
-        public override bool IsHeld(MouseButton button)
-        {
-            int butval = (int)button;
-            return _state.Buttons[butval] && _prevState.Buttons[butval];
         }
 
         private Vector2I ToLocalPosition(Vector2I pos)
