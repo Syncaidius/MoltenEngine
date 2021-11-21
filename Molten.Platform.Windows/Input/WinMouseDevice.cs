@@ -12,6 +12,8 @@ namespace Molten.Input
     /// <summary>Handles mouse input.</summary>
     public class WinMouseDevice : MouseDevice
     {
+        static WinMouseButtonFlags[] _winButtons;
+
         Mouse _mouse;
         MouseState _state;
         MouseState _prevState;
@@ -31,6 +33,11 @@ namespace Molten.Input
         IntPtr _windowHandle;
         bool _bufferUpdated;
         MouseUpdate[] _pollBuffer;
+
+        static WinMouseDevice()
+        {
+            _winButtons = ReflectionHelper.EnumToArray<WinMouseButtonFlags>();
+        }
 
         public WinMouseDevice(WinInputManager manager) : base(manager)
         {
@@ -59,11 +66,6 @@ namespace Molten.Input
         {
             // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/using-mouse-input
 
-            MouseButtonState state = new MouseButtonState()
-            {
-
-            };
-
             // Positional mouse messages.
             switch (msgType)
             {
@@ -88,11 +90,11 @@ namespace Molten.Input
                     break;
 
                 case WndProcMessageType.WM_LBUTTONDOWN:
-
+                    ParsePositionalMessage(WinMouseButtonFlags.MK_LBUTTON, true, wParam, lParam);
                     break;
 
                 case WndProcMessageType.WM_LBUTTONUP:
-
+                    ParsePositionalMessage(WinMouseButtonFlags.MK_LBUTTON, false, wParam, lParam);
                     break;
 
                 case WndProcMessageType.WM_LBUTTONDBLCLK:
@@ -100,11 +102,11 @@ namespace Molten.Input
                     break;
 
                 case WndProcMessageType.WM_MBUTTONDOWN:
-
+                    ParsePositionalMessage(WinMouseButtonFlags.MK_MBUTTON, true, wParam, lParam);
                     break;
 
                 case WndProcMessageType.WM_MBUTTONUP:
-
+                    ParsePositionalMessage(WinMouseButtonFlags.MK_MBUTTON, false, wParam, lParam);
                     break;
 
                 case WndProcMessageType.WM_MBUTTONDBLCLK:
@@ -112,11 +114,11 @@ namespace Molten.Input
                     break;
 
                 case WndProcMessageType.WM_RBUTTONDOWN:
-
+                    ParsePositionalMessage(WinMouseButtonFlags.MK_RBUTTON, true, wParam, lParam);
                     break;
 
                 case WndProcMessageType.WM_RBUTTONUP:
-
+                    ParsePositionalMessage(WinMouseButtonFlags.MK_RBUTTON, false, wParam, lParam);
                     break;
 
                 case WndProcMessageType.WM_RBUTTONDBLCLK:
@@ -124,15 +126,18 @@ namespace Molten.Input
                     break;
 
                 case WndProcMessageType.WM_XBUTTONDOWN:
-
+                    // TODO XBUTTON 1 or 2 defined in higher 16-bits of wParam.
+                    // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-xbuttondown
                     break;
 
                 case WndProcMessageType.WM_XBUTTONUP:
-
+                    // TODO XBUTTON 1 or 2 defined in higher 16-bits of wParam.
+                    // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-xbuttondown
                     break;
 
                 case WndProcMessageType.WM_XBUTTONDBLCLK:
-
+                    // TODO XBUTTON 1 or 2 defined in higher 16-bits of wParam.
+                    // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-xbuttondown
                     break;
             }
         }
@@ -141,11 +146,58 @@ namespace Molten.Input
         /// Parses a message representing a mouse cursor action with coordinates attached to it.
         /// </summary>
         /// <param name="state">The <see cref="MouseButtonState"/> to update.</param>
+        /// <param name="btn"></param>
+        /// <param name="down"></param>
         /// <param name="wParam"></param>
         /// <param name="lParam"></param>
-        private void ParseCursorAction(ref MouseButtonState state, long wParam, long lParam)
+        private void ParsePositionalMessage(WinMouseButtonFlags btn, bool down, long wParam, long lParam)
         {
+            WinMouseButtonFlags btns = (WinMouseButtonFlags)wParam;
+            MouseButtonState state = new MouseButtonState();
             state.Position = new Vector2I(lParam);
+ 
+            // Figure out which other buttons are down and queue 'held' states for them.
+            foreach(WinMouseButtonFlags b in _winButtons)
+            {
+                if(b != btn && (btns & b) == b)
+                {
+                    state.State = InputPressState.Held;
+                    state.Button = TranslateButton(b);
+                    QueueState(state);
+                }
+            }
+
+            // Prepare final state.
+            state.Button = TranslateButton(btn);
+            state.State = down ? InputPressState.Pressed : InputPressState.Released;
+            state.PressTimestamp = DateTime.UtcNow;
+        }
+
+        private MouseButton TranslateButton(WinMouseButtonFlags btn)
+        {
+            switch (btn)
+            {
+                default:
+                case WinMouseButtonFlags.MK_SHIFT:
+                case WinMouseButtonFlags.MK_CONTROL: 
+                    return MouseButton.None;
+
+                case WinMouseButtonFlags.MK_LBUTTON:  
+                    return MouseButton.Left;
+
+                case WinMouseButtonFlags.MK_MBUTTON: 
+                    return MouseButton.Middle;
+
+                case WinMouseButtonFlags.MK_RBUTTON: 
+                    return MouseButton.Right;
+
+                case WinMouseButtonFlags.MK_XBUTTON1:
+                    return MouseButton.XButton1;
+
+                case WinMouseButtonFlags.MK_XBUTTON2: 
+                    return MouseButton.XButton2;
+
+            }
         }
 
         private void MouseBufferSize_OnChanged(int oldValue, int newValue)

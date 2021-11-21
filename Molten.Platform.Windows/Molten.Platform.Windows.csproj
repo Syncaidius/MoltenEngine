@@ -102,6 +102,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Input\WinMouseButtonFlags.cs" />
     <Compile Include="Win32\Win32.CPU.cs" />
     <Compile Include="Win32\Win32.cs" />
     <Compile Include="Win32\Win32.IO.cs" />
