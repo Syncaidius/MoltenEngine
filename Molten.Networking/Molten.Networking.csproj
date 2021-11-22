@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConnectionRequest.cs" />
     <Compile Include="MoltenNetworkService.cs" />
     <Compile Include="NetworkMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

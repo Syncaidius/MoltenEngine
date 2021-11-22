@@ -25,6 +25,11 @@ namespace Molten.Networking
             _peer.Start();
         }
 
+        public void InitializeClient()
+        {
+            _peer = new NetClient(_configuration);
+            _peer.Start();
+        }
 
         protected override void OnUpdate(Timing timing)
         {
@@ -62,9 +67,12 @@ namespace Molten.Networking
                         Log.WriteError(msg.ReadString());
                         break;
 
+                    case NetIncomingMessageType.ConnectionApproval:
+                        Inbox.Enqueue(new LidgrenConnectionRequest(msg));
+                        break;
 
                     case NetIncomingMessageType.Data:
-                        NetworkMessage message = new NetworkMessage(msg.Data, msg.SequenceChannel);
+                        NetworkMessage message = CreateMessage(msg.Data, msg.SequenceChannel);
                         Inbox.Enqueue(message);
                         break;
 
