@@ -26,5 +26,10 @@ namespace Molten.Networking
         {
             _connection.Deny(reason);
         }
+
+        public override void Recycle()
+        {
+            _connection = null;
+        }
     }
 }

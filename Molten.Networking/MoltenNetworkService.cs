@@ -11,14 +11,14 @@ namespace Molten.Networking
     {
         private ThreadedQueue<NetworkMessage> _recycleBin;
 
-        public ThreadedQueue<NetworkMessage> Inbox { get; }
-        public ThreadedQueue<NetworkMessage> Outbox { get; }
+        public ThreadedQueue<INetworkMessage> Inbox { get; }
+        public ThreadedQueue<INetworkMessage> Outbox { get; }
 
         public MoltenNetworkService()
         {
             _recycleBin = new ThreadedQueue<NetworkMessage>();
-            Inbox = new ThreadedQueue<NetworkMessage>();
-            Outbox = new ThreadedQueue<NetworkMessage>();
+            Inbox = new ThreadedQueue<INetworkMessage>();
+            Outbox = new ThreadedQueue<INetworkMessage>();
             Log = Logger.Get();
         }
 
@@ -53,17 +53,14 @@ namespace Molten.Networking
                 return message;
             }
 
-            return new NetworkMessage(data, sequence);
+            return new NetworkMessage(this, data, sequence);
         }
 
 
         internal void RecycleMessage(NetworkMessage message)
         {
             message.Clear();
-
-            // Recycle if not a specialized message.
-            if (message.GetType() == typeof(NetworkMessage))
-                _recycleBin.Enqueue(message);
+            _recycleBin.Enqueue(message);
         }
 
         protected abstract void OnUpdate(Timing timing);

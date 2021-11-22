@@ -39,7 +39,7 @@ namespace Molten.Networking
 
         private void SendMessages()
         {
-            while (Outbox.TryDequeue(out NetworkMessage message))
+            while (Outbox.TryDequeue(out INetworkMessage message))
             {
                 NetOutgoingMessage sendMsg = _peer.CreateMessage();
                 sendMsg.Write(message.Data);
