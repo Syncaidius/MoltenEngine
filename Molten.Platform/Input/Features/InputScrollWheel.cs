@@ -29,9 +29,9 @@ namespace Molten.Input
             Description = desc;
         }
 
-        public void SetValues(int position, int delta)
+        public void SetValues(int delta)
         {
-            Position = position;
+            Position += delta;
             Delta = delta;
         }
 

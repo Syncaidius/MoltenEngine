@@ -84,6 +84,8 @@ namespace Molten.Input
 
         protected override void ProcessState(ref MouseButtonState newState, ref MouseButtonState prevState)
         {
+            Delta = Vector2I.Zero;
+
             // Perform some error checking input action
             if (newState.Action == InputAction.Held || 
                 (newState.Action == InputAction.Pressed && 
@@ -93,11 +95,15 @@ namespace Molten.Input
             }
 
             // Calculate delta
-            if (newState.Action != InputAction.None && prevState.Action != InputAction.None)
+            if (newState.Action != InputAction.None && 
+                prevState.Action != InputAction.None && prevState.Action != InputAction.Released)
             {
                 newState.Delta = newState.Position - prevState.Position;
                 newState.PressTimestamp = prevState.PressTimestamp;
+                Delta = newState.Delta;
             }
+
+            AbsolutePosition = newState.Position;
 
             switch (newState.Action)
             {
@@ -118,10 +124,12 @@ namespace Molten.Input
                     break;
 
                 case InputAction.VerticalScroll:
+                    ScrollWheel.SetValues(newState.Delta.Y);
                     OnVScroll?.Invoke(this, newState);
                     break;
 
                 case InputAction.HorizontalScroll:
+                    ScrollWheel.SetValues(newState.Delta.X);
                     OnHScroll?.Invoke(this, newState);
                     break;
 
@@ -139,13 +147,7 @@ namespace Molten.Input
         protected abstract void OnSetCursorPosition(Vector2I absolute, Vector2I relative);
 
         /// <summary>Returns the amount the mouse cursor has moved a long X and Y since the last frame/update.</summary>
-        public abstract Vector2I Delta { get; }
-
-        /// <summary>Gets the amount the vertical wheel has been moved since the last frame.</summary>
-        public int WheelDelta { get; private set; }
-
-        /// <summary>Gets the current horizontal wheel position.</summary>
-        public float WheelPosition { get; private set; }
+        public Vector2I Delta { get; private set; }
 
         /// <summary>
         /// Gets the vertical scroll wheel, if one is present. Returns null if not.
