@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30717.126
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Engine", "Molten.Engine\Molten.Engine.csproj", "{8E14325B-28CC-44A8-83ED-4B5946240D88}"
 EndProject
@@ -49,6 +49,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Platform.Android", "Molten.Platform.Android\Molten.Platform.Android.csproj", "{CA47CA1A-9388-44A4-827A-1A05B677DB18}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Test.Windows", "Molten.Test.Windows\Molten.Test.Windows.csproj", "{1E33607E-F904-4AF0-9655-092E55E7787D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Networking", "Molten.Networking\Molten.Networking.csproj", "{F613FE4A-9A85-4F0D-A934-8449CA38F08A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Networking.Lidgren", "Molten.Networking.Lidgren\Molten.Networking.Lidgren.csproj", "{C2B50475-35FB-4DAD-9632-E788517CF6B8}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -221,6 +225,30 @@ Global
 		{1E33607E-F904-4AF0-9655-092E55E7787D}.Release|x64.Build.0 = Release|Any CPU
 		{1E33607E-F904-4AF0-9655-092E55E7787D}.Release|x86.ActiveCfg = Release|Any CPU
 		{1E33607E-F904-4AF0-9655-092E55E7787D}.Release|x86.Build.0 = Release|Any CPU
+		{F613FE4A-9A85-4F0D-A934-8449CA38F08A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F613FE4A-9A85-4F0D-A934-8449CA38F08A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F613FE4A-9A85-4F0D-A934-8449CA38F08A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F613FE4A-9A85-4F0D-A934-8449CA38F08A}.Debug|x64.Build.0 = Debug|Any CPU
+		{F613FE4A-9A85-4F0D-A934-8449CA38F08A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F613FE4A-9A85-4F0D-A934-8449CA38F08A}.Debug|x86.Build.0 = Debug|Any CPU
+		{F613FE4A-9A85-4F0D-A934-8449CA38F08A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F613FE4A-9A85-4F0D-A934-8449CA38F08A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F613FE4A-9A85-4F0D-A934-8449CA38F08A}.Release|x64.ActiveCfg = Release|Any CPU
+		{F613FE4A-9A85-4F0D-A934-8449CA38F08A}.Release|x64.Build.0 = Release|Any CPU
+		{F613FE4A-9A85-4F0D-A934-8449CA38F08A}.Release|x86.ActiveCfg = Release|Any CPU
+		{F613FE4A-9A85-4F0D-A934-8449CA38F08A}.Release|x86.Build.0 = Release|Any CPU
+		{C2B50475-35FB-4DAD-9632-E788517CF6B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2B50475-35FB-4DAD-9632-E788517CF6B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2B50475-35FB-4DAD-9632-E788517CF6B8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C2B50475-35FB-4DAD-9632-E788517CF6B8}.Debug|x64.Build.0 = Debug|Any CPU
+		{C2B50475-35FB-4DAD-9632-E788517CF6B8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C2B50475-35FB-4DAD-9632-E788517CF6B8}.Debug|x86.Build.0 = Debug|Any CPU
+		{C2B50475-35FB-4DAD-9632-E788517CF6B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2B50475-35FB-4DAD-9632-E788517CF6B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2B50475-35FB-4DAD-9632-E788517CF6B8}.Release|x64.ActiveCfg = Release|Any CPU
+		{C2B50475-35FB-4DAD-9632-E788517CF6B8}.Release|x64.Build.0 = Release|Any CPU
+		{C2B50475-35FB-4DAD-9632-E788517CF6B8}.Release|x86.ActiveCfg = Release|Any CPU
+		{C2B50475-35FB-4DAD-9632-E788517CF6B8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -242,6 +270,8 @@ Global
 		{8DF4C894-B793-495E-BC14-53306F8B2972} = {08C33000-FBC9-4CF3-999C-B660E5241453}
 		{CA47CA1A-9388-44A4-827A-1A05B677DB18} = {7BD8F3B9-15EB-4FEF-B51E-083E34D62675}
 		{1E33607E-F904-4AF0-9655-092E55E7787D} = {940AA3BE-1CDB-4EFC-B811-6FA4D0562AB3}
+		{F613FE4A-9A85-4F0D-A934-8449CA38F08A} = {08C33000-FBC9-4CF3-999C-B660E5241453}
+		{C2B50475-35FB-4DAD-9632-E788517CF6B8} = {08C33000-FBC9-4CF3-999C-B660E5241453}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC16AE48-8B66-43B4-9033-C95D608AA215}
