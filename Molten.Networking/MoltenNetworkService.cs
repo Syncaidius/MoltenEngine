@@ -23,6 +23,7 @@ namespace Molten.Networking
 
 
         #region Public
+        public int RecievedMessages => _inbox.Count;
 
         // Called by network service thread.
         public void Update(Timing timing)
@@ -40,6 +41,7 @@ namespace Molten.Networking
         /// Puts the message into outbox to be sent on next update.
         /// </summary>
         /// <param name="message"></param>
+        /// <param name="recipients">Collection of connections to send the message to, broadcast if null.</param>
         public void SendMessage(INetworkMessage message, IEnumerable<INetworkConnection> recipients = null)
         {
             _outbox.Enqueue(new ValueTuple<INetworkMessage, INetworkConnection[]>(message, recipients.ToArray()));
@@ -54,18 +56,20 @@ namespace Molten.Networking
         {
             return _inbox.TryDequeue(out message);
         }
-
-        public int RecievedMessages => _inbox.Count;
+        public abstract IEnumerable<INetworkConnection> GetConnections();
 
         public abstract INetworkConnection Connect(string host, int port, byte[] data = null);
-        public abstract void Start(ServiceType type);
 
+        /// <summary>
+        /// Starts a network peer of a given type.
+        /// </summary>
+        /// <param name="type"></param>
+        public abstract void Start(ServiceType type);
 
         #endregion
 
         #region Protected
 
-        public abstract IEnumerable<INetworkConnection> GetConnections();
         protected internal abstract void OnUpdate(Timing timing);
         protected internal abstract void OnDispose();
         protected internal Logger Log { get; }

@@ -68,18 +68,29 @@ namespace Molten.Networking
             }
         }
 
-        private void SendMessages()
+        protected override void OnDispose()
         {
-            while (_outbox.TryDequeue(out (INetworkMessage message, INetworkConnection[] recipients) outgoing))
-            {
-                NetOutgoingMessage sendMsg = _peer.CreateMessage();
-                sendMsg.Write(outgoing.message.Data);
-
-                _peer.SendMessage(sendMsg, outgoing.recipients.Select(x => ((LidgrenConnection)x).Connection).ToArray(), outgoing.message.DeliveryMethod.ToLidgren(), outgoing.message.Sequence);
-            }
+            foreach (NetConnection connection in _peer.Connections)
+                connection.Disconnect("Client shudown.");
         }
 
-        public void ReadMessages()
+
+        private void SendMessages()
+        {
+            IList<NetConnection> connections = null;
+            while (_outbox.TryDequeue(out (INetworkMessage message, INetworkConnection[] recipients) outgoing))
+            {
+                if (outgoing.recipients == null || outgoing.recipients.Length == 0)
+                    connections = _peer.Connections;
+                else
+                    connections = outgoing.recipients.Select(x => ((LidgrenConnection)x).Connection).ToArray();
+
+                NetOutgoingMessage sendMsg = _peer.CreateMessage();
+                sendMsg.Write(outgoing.message.Data);
+                _peer.SendMessage(sendMsg, connections, outgoing.message.DeliveryMethod.ToLidgren(), outgoing.message.Sequence);
+            }
+        }
+        private void ReadMessages()
         {
             NetIncomingMessage msg;
             while ((msg = _peer.ReadMessage()) != null)
@@ -113,12 +124,6 @@ namespace Molten.Networking
                 }
                 _peer.Recycle(msg);
             }
-        }
-
-        protected override void OnDispose()
-        {
-            foreach (NetConnection connection in _peer.Connections)
-                connection.Disconnect("Client shudown.");
         }
     }
 }
