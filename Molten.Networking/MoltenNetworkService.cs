@@ -1,4 +1,5 @@
 ﻿using Molten.Collections;
+using Molten.Networking.Enums;
 using Molten.Networking.Message;
 using System;
 using System.Collections.Generic;
@@ -56,12 +57,16 @@ namespace Molten.Networking
 
         public int RecievedMessages => _inbox.Count;
 
+        public abstract void Connect(string host, int port, byte[] data = null);
+        public abstract void Start(ServiceType type);
+
+
         #endregion
 
         #region Protected
 
-        protected abstract void OnUpdate(Timing timing);
-        protected abstract void OnDispose();
+        protected internal abstract void OnUpdate(Timing timing);
+        protected internal abstract void OnDispose();
         protected internal Logger Log { get; }
 
         #endregion

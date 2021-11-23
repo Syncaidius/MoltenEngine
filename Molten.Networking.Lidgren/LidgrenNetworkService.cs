@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lidgren.Network;
+using Molten.Networking.Enums;
 using Molten.Networking.Message;
 
 namespace Molten.Networking
@@ -19,25 +20,40 @@ namespace Molten.Networking
             _configuration.Port = port;
         }
 
-        public void InitializeServer()
+
+        public override void Start(ServiceType type)
         {
-            _peer = new NetServer(_configuration);
+            if (type == ServiceType.Server)
+                _peer = new NetServer(_configuration);
+            else
+                _peer = new NetClient(_configuration);
+            
             _peer.Start();
-            Log.WriteLine($"Started network server on port {_peer.Port}.");
+            Log.WriteLine($"Started network ${Enum.GetName(typeof(ServiceType), type)} on port {_peer.Port}.");
         }
 
-        public void InitializeClient()
+        public override void Connect(string host, int port, byte[] data)
         {
-            _peer = new NetClient(_configuration);
-            _peer.Start();
-            Log.WriteLine($"Started network client on port {_peer.Port}.");
+            if (data != null)
+            {
+                NetOutgoingMessage sendMsg = _peer.CreateMessage();
+                sendMsg.Write(data);
+                _peer.Connect(host, port, sendMsg);
+            }
+            else
+                _peer.Connect(host, port);
+            Log.WriteLine($"Connecting to {host}:{port}.");
         }
-
 
         protected override void OnUpdate(Timing timing)
         {
-            ReadMessages();
-            SendMessages();
+            if (_peer != null)
+            {
+                ReadMessages();
+
+                if (_peer.Connections.Count > 0)
+                    SendMessages();
+            }
         }
 
         private void SendMessages()
