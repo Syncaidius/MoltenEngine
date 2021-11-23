@@ -1,5 +1,6 @@
 ﻿using Molten.Font;
 using Molten.Graphics;
+using Molten.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -60,10 +61,10 @@ namespace Molten.Samples
             Keyboard.OnCharacterKey += Keyboard_OnCharacterKey;
         }
 
-        private void Keyboard_OnCharacterKey(char character, long paramVal)
+        private void Keyboard_OnCharacterKey(KeyboardKeyState state)
         {
-            GenerateChar(character);
-            _font2Test.GetCharGlyph(character);
+            GenerateChar(state.Character);
+            _font2Test.GetCharGlyph(state.Character);
         }
 
         private void LoadFontFile()

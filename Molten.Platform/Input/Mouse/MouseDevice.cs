@@ -43,6 +43,8 @@ namespace Molten.Input
         INativeSurface _surface;
         Vector2I _relativePos;
         Vector2I _absolutePos;
+        bool _cursorVisible;
+        bool _wasInsideControl;
 
         public MouseDevice(InputManager manager) : 
             base(manager, manager.Settings.MouseBufferSize)
@@ -86,13 +88,25 @@ namespace Molten.Input
         {
             Delta = Vector2I.Zero;
 
-            // Perform some error checking input action
-            if (newState.Action == InputAction.Held || 
-                (newState.Action == InputAction.Pressed && 
-                prevState.Action == InputAction.Pressed))
+            // Is the cursor constrained to it's parent control/window?
+            Rectangle sBounds = _surface.Bounds;
+            if (IsConstrained)
             {
-                newState.Action = InputAction.Held;
+                if (newState.Position.X < sBounds.X)
+                    newState.Position.X = sBounds.X;
+                if (newState.Position.Y < sBounds.Y)
+                    newState.Position.Y = sBounds.Y;
+                if (newState.Position.X > sBounds.Width)
+                    newState.Position.X = sBounds.Width;
+                if (newState.Position.Y > sBounds.Height)
+                    newState.Position.Y = sBounds.Height;
             }
+
+            // Check if the cursor has gone outside of the bound control/window 
+            bool insideControl = newState.Position.X >= sBounds.Left &&
+                newState.Position.Y >= sBounds.Top &&
+                newState.Position.X <= sBounds.Right &&
+                newState.Position.Y <= sBounds.Bottom;            
 
             // Calculate delta
             if (newState.Action != InputAction.None && 
@@ -103,7 +117,18 @@ namespace Molten.Input
                 Delta = newState.Delta;
             }
 
+            // Perform some error checking input action
+            if (newState.Action == InputAction.Held ||
+                (newState.Action == InputAction.Pressed &&
+                prevState.Action == InputAction.Pressed))
+            {
+                newState.Action = newState.Delta != Vector2I.Zero ? 
+                    InputAction.Moved : InputAction.Held;
+            }
+
             AbsolutePosition = newState.Position;
+
+            CheckInside(insideControl, ref newState);
 
             switch (newState.Action)
             {
@@ -139,12 +164,47 @@ namespace Molten.Input
             }
         }
 
-        protected override void OnUpdate(Timing time)
+        private void CheckInside(bool insideControl, ref MouseButtonState state)
         {
-            
+            if (insideControl && !_wasInsideControl)
+                OnEnterSurface?.Invoke(this, state);
+            else if (!insideControl && _wasInsideControl)
+                OnLeaveSurface?.Invoke(this, state);
+
+            _wasInsideControl = insideControl;
         }
 
+        protected override bool GetIsDown(ref MouseButtonState state)
+        {
+            if (state.Button != MouseButton.None)
+            {
+                return state.Action == InputAction.Pressed ||
+                    state.Action == InputAction.Held ||
+                    state.Action == InputAction.Moved;
+            }
+
+            return false;
+        }
+
+        protected override bool GetIsHeld(ref MouseButtonState state)
+        {
+            return state.Action == InputAction.Held || state.Action == InputAction.Moved;
+        }
+
+        protected override bool GetIsTapped(ref MouseButtonState state)
+        {
+            return state.Action == InputAction.Pressed;
+        }
+
+        protected override void OnUpdate(Timing time) { }
+
         protected abstract void OnSetCursorPosition(Vector2I absolute, Vector2I relative);
+
+        /// <summary>
+        /// Invoked when cursor visibility has changed.
+        /// </summary>
+        /// <param name="visible"></param>
+        protected abstract void OnSetCursorVisibility(bool visible);
 
         /// <summary>Returns the amount the mouse cursor has moved a long X and Y since the last frame/update.</summary>
         public Vector2I Delta { get; private set; }
@@ -169,6 +229,7 @@ namespace Molten.Input
             {
                 _relativePos = value;
                 _absolutePos = ToAbsolutePosition(_relativePos);
+                OnSetCursorPosition(_absolutePos, _relativePos);
             }
         }
 
@@ -183,11 +244,23 @@ namespace Molten.Input
             {
                 _absolutePos = value;
                 _relativePos = ToRelativePosition(_absolutePos);
+                OnSetCursorPosition(_absolutePos, _relativePos);
             }
         }
 
         /// <summary>Gets or sets whether or not the native mouse cursor is visible.</summary>
-        public abstract bool CursorVisible { get; set; }
+        public bool IsCursorVisible
+        {
+            get => _cursorVisible;
+            set
+            {
+                if(_cursorVisible != value)
+                {
+                    _cursorVisible = value;
+                    OnSetCursorVisibility(value);
+                }
+            }
+        }
 
         /// <summary>Gets or sets whether or not the mouse is contrained to the bounds of the main output.</summary>
         public bool IsConstrained { get; set; }

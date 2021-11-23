@@ -2,99 +2,99 @@
 {
     public enum KeyCode
     {
-        CANCEL = 0x03,
+        Cancel = 0x03,
 
-        BACK = 0x08,
+        Back = 0x08,
 
-        CLEAR = 0x0C,
+        Clear = 0x0C,
 
-        RETURN = 0x0D,
+        Return = 0x0D,
 
-        SHIFT = 0x10,
+        Shift = 0x10,
 
-        CONTROL = 0x11,
+        Control = 0x11,
 
-        MENU = 0x12,
+        Menu = 0x12,
 
-        PAUSE = 0x13,
+        Pause = 0x13,
 
-        CAPITAL = 0x14,
+        Capital = 0x14,
 
-        KANA = 0x15,
+        Kana = 0x15,
 
-        HANGEUL = 0x15,
+        Hangeul = 0x15,
 
-        HANGUL = 0x15,
+        Hangul = 0x15,
 
-        JUNJA = 0x17,
+        Junja = 0x17,
 
-        FINAL = 0x18,
+        Final = 0x18,
 
-        HANJA = 0x19,
+        Hanja = 0x19,
 
-        KANJI = 0x19,
+        Kanji = 0x19,
 
-        ESCAPE = 0x1B,
+        Escape = 0x1B,
 
-        CONVERT = 0x1C,
+        Convert = 0x1C,
 
-        NONCONVERT = 0x1D,
+        NonConvert = 0x1D,
 
-        ACCEPT = 0x1E,
+        Accept = 0x1E,
 
-        MODECHANGE = 0x1F,
+        ModeChange = 0x1F,
 
-        SPACE = 0x20,
+        Space = 0x20,
 
-        PRIOR = 0x21,
+        Prior = 0x21,
 
-        NEXT = 0x22,
+        Next = 0x22,
 
-        END = 0x23,
+        End = 0x23,
 
-        HOME = 0x24,
+        Home = 0x24,
 
-        LEFT = 0x25,
+        Left = 0x25,
 
-        UP = 0x26,
+        Up = 0x26,
 
-        RIGHT = 0x27,
+        Right = 0x27,
 
-        DOWN = 0x28,
+        Down = 0x28,
 
-        SELECT = 0x29,
+        Select = 0x29,
 
-        PRINT = 0x2A,
+        Print = 0x2A,
 
-        EXECUTE = 0x2B,
+        Execute = 0x2B,
 
-        SNAPSHOT = 0x2C,
+        Snapshot = 0x2C,
 
-        INSERT = 0x2D,
+        Insert = 0x2D,
 
-        DELETE = 0x2E,
+        Delete = 0x2E,
 
-        HELP = 0x2F,
+        Help = 0x2F,
 
-        NUM0 = 0x30,
+        Num0 = 0x30,
 
-        NUM1 = 0x31,
+        Num1 = 0x31,
 
-        NUM2 = 0x32,
+        Num2 = 0x32,
 
-        NUM3 = 0x33,
+        Num3 = 0x33,
 
-        NUM4 = 0x34,
+        Num4 = 0x34,
 
-        NUM5 = 0x35,
+        Num5 = 0x35,
 
-        NUM6 = 0x36,
+        Num6 = 0x36,
 
-        NUM7 = 0x37,
+        Num7 = 0x37,
 
-        NUM8 = 0x38,
+        Num8 = 0x38,
 
-        NUM9 = 0x39,
+        Num9 = 0x39,
 
         A = 0x41,
 
@@ -148,47 +148,47 @@
 
         Z = 0x5A,
 
-        LWIN = 0x5B,
+        LWindows = 0x5B,
 
-        RWIN = 0x5C,
+        RWindows = 0x5C,
 
-        APPS = 0x5D,
+        Apps = 0x5D,
 
-        POWER = 0x5E,
+        Power = 0x5E,
 
-        SLEEP = 0x5F,
+        Sleep = 0x5F,
 
-        NUMPAD0 = 0x60,
+        Numpad0 = 0x60,
 
-        NUMPAD1 = 0x61,
+        Numpad1 = 0x61,
 
-        NUMPAD2 = 0x62,
+        Numpad2 = 0x62,
 
-        NUMPAD3 = 0x63,
+        Numpad3 = 0x63,
 
-        NUMPAD4 = 0x64,
+        Numpad4 = 0x64,
 
-        NUMPAD5 = 0x65,
+        Numpad5 = 0x65,
 
-        NUMPAD6 = 0x66,
+        Numpad6 = 0x66,
 
-        NUMPAD7 = 0x67,
+        Numpad7 = 0x67,
 
-        NUMPAD8 = 0x68,
+        Numpad8 = 0x68,
 
-        NUMPAD9 = 0x69,
+        Numpad9 = 0x69,
 
-        MULTIPLY = 0x6A,
+        Multiply = 0x6A,
 
-        ADD = 0x6B,
+        Add = 0x6B,
 
-        SEPARATOR = 0x6C,
+        Separator = 0x6C,
 
-        SUBTRACT = 0x6D,
+        Subtract = 0x6D,
 
-        DECIMAL = 0x6E,
+        Decimal = 0x6E,
 
-        DIVIDE = 0x6F,
+        Divide = 0x6F,
 
         F1 = 0x70,
 
@@ -238,106 +238,106 @@
 
         F24 = 0x87,
 
-        NUMLOCK = 0x90,
+        Numlock = 0x90,
 
-        SCROLL = 0x91,
+        Scroll = 0x91,
 
-        LSHIFT = 0xA0,
+        LShift = 0xA0,
 
-        RSHIFT = 0xA1,
+        RShift = 0xA1,
 
-        LCONTROL = 0xA2,
+        LControl = 0xA2,
 
-        RCONTROL = 0xA3,
+        RControl = 0xA3,
 
-        LMENU = 0xA4,
+        LMenu = 0xA4,
 
-        RMENU = 0xA5,
+        RMenu = 0xA5,
 
-        BROWSER_BACK = 0xA6,
+        BrowserBack = 0xA6,
 
-        BROWSER_FORWARD = 0xA7,
+        BrowserForward = 0xA7,
 
-        BROWSER_REFRESH = 0xA8,
+        BrowserRefresh = 0xA8,
 
-        BROWSER_STOP = 0xA9,
+        BrowserStop = 0xA9,
 
-        BROWSER_SEARCH = 0xAA,
+        BrowserSearch = 0xAA,
 
-        BROWSER_FAVORITES = 0xAB,
+        BrowserFavorites = 0xAB,
 
-        BROWSER_HOME = 0xAC,
+        BrowserHome = 0xAC,
 
-        VOLUME_MUTE = 0xAD,
+        VolumeMute = 0xAD,
 
-        VOLUME_DOWN = 0xAE,
+        VolumeDown = 0xAE,
 
-        VOLUME_UP = 0xAF,
+        VolumeUp = 0xAF,
 
-        MEDIA_NEXT_TRACK = 0xB0,
+        MediaNextTrack = 0xB0,
 
-        MEDIA_PREV_TRACK = 0xB1,
+        MediaPreviousTrack = 0xB1,
 
-        MEDIA_STOP = 0xB2,
+        MediaStop = 0xB2,
 
-        MEDIA_PLAY_PAUSE = 0xB3,
+        MediaPlayPause = 0xB3,
 
-        LAUNCH_MAIL = 0xB4,
+        LaunchMail = 0xB4,
 
-        LAUNCH_MEDIA_SELECT = 0xB5,
+        LaunchMediaSelect = 0xB5,
 
-        LAUNCH_APP1 = 0xB6,
+        LaunchApp1 = 0xB6,
 
-        LAUNCH_APP2 = 0xB7,
+        LaunchApp2 = 0xB7,
 
-        OEM_1 = 0xBA,
+        Oem1 = 0xBA,
 
-        OEM_SEMI_COLON = 0xBA,
+        OemSemiColon = 0xBA,
 
-        OEM_PLUS = 0xBB,
+        OemPlus = 0xBB,
 
-        OEM_COMMA = 0xBC,
+        OemComma = 0xBC,
 
-        OEM_MINUS = 0xBD,
+        OemMinus = 0xBD,
 
-        OEM_PERIOD = 0xBE,
+        OemPeriod = 0xBE,
 
-        OEM_2 = 0xBF,
+        Oem2 = 0xBF,
 
-        OEM_3 = 0xC0,
+        Oem3 = 0xC0,
 
-        OEM_4 = 0xDB,
+        Oem4 = 0xDB,
 
-        OEM_5 = 0xDC,
+        Oem5 = 0xDC,
 
-        OEM_6 = 0xDD,
+        Oem6 = 0xDD,
 
-        OEM_7 = 0xDE,
+        Oem7 = 0xDE,
 
-        OEM_8 = 0xDF,
+        Oem8 = 0xDF,
 
-        OEM_102 = 0xE2,
+        Oem102 = 0xE2,
 
-        PROCESSKEY = 0xE5,
+        ProcessKey = 0xE5,
 
-        PACKET = 0xE7,
+        Packet = 0xE7,
 
-        ATTN = 0xF6,
+        Attn = 0xF6,
 
-        CRSEL = 0xF7,
+        Crsel = 0xF7,
 
-        EXSEL = 0xF8,
+        Exsel = 0xF8,
 
-        EREOF = 0xF9,
+        Ereof = 0xF9,
 
-        PLAY = 0xFA,
+        Play = 0xFA,
 
-        ZOOM = 0xFB,
+        Zoom = 0xFB,
 
-        NONAME = 0xFC,
+        NoName = 0xFC,
 
-        PA1 = 0xFD,
+        Pa1 = 0xFD,
 
-        OEM_CLEAR = 0xFE,
+        OemClear = 0xFE,
     }
 }

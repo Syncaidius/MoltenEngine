@@ -90,29 +90,29 @@ namespace Molten.Input
             KeyCode key = (KeyCode)wmChar;
             switch (key)
             {
-                case KeyCode k when (k >= KeyCode.NUM0 && k <= KeyCode.NUM9):
+                case KeyCode k when (k >= KeyCode.Num0 && k <= KeyCode.Num9):
                     return KeyboardKeyType.Character;
-                case KeyCode k when (k >= KeyCode.NUMPAD0 && k <= KeyCode.DIVIDE):
+                case KeyCode k when (k >= KeyCode.Numpad0 && k <= KeyCode.Divide):
                     return KeyboardKeyType.Character;
                 case KeyCode k when (k >= KeyCode.A && k <= KeyCode.Z):
                     return KeyboardKeyType.Character;
-                case KeyCode k when (k >= KeyCode.OEM_1 && k <= KeyCode.OEM_3):
+                case KeyCode k when (k >= KeyCode.Oem1 && k <= KeyCode.Oem3):
                     return KeyboardKeyType.Character;
-                case KeyCode k when (k >= KeyCode.OEM_4 && k <= KeyCode.OEM_102):
-                    return KeyboardKeyType.Character;
-
-                case KeyCode.SPACE:
+                case KeyCode k when (k >= KeyCode.Oem4 && k <= KeyCode.Oem102):
                     return KeyboardKeyType.Character;
 
-                case KeyCode.LSHIFT:
-                case KeyCode.RSHIFT:
-                case KeyCode.SHIFT:
-                case KeyCode.LCONTROL:
-                case KeyCode.RCONTROL:
-                case KeyCode.CONTROL:
-                case KeyCode.LMENU:
-                case KeyCode.RMENU:
-                case KeyCode.MENU:
+                case KeyCode.Space:
+                    return KeyboardKeyType.Character;
+
+                case KeyCode.LShift:
+                case KeyCode.RShift:
+                case KeyCode.Shift:
+                case KeyCode.LControl:
+                case KeyCode.RControl:
+                case KeyCode.Control:
+                case KeyCode.LMenu:
+                case KeyCode.RMenu:
+                case KeyCode.Menu:
                     return KeyboardKeyType.Modifier;
 
                 default:

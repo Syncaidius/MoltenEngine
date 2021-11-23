@@ -85,7 +85,7 @@ namespace Molten.Samples
                 axisDelta = new Vector2F(Mouse.Delta.Y, Mouse.Delta.X) * rotSpeed;
 
             // Gamepad movement
-            axisDelta += new Vector2F(Gamepad.RightThumbstick.Y, Gamepad.RightThumbstick.X) * rotSpeed * 2f;
+            axisDelta += new Vector2F(Gamepad.RightStick.Y, Gamepad.RightStick.X) * rotSpeed * 2f;
 
             _player.Transform.LocalRotationX += axisDelta.X;
             _player.Transform.LocalRotationY += axisDelta.Y;
@@ -118,7 +118,7 @@ namespace Molten.Samples
             if (Gamepad.IsDown(GamepadButton.DPadLeft)) moveDelta += _player.Transform.Global.Left * speed;
             if (Gamepad.IsDown(GamepadButton.DPadRight)) moveDelta += _player.Transform.Global.Right * speed;
 
-            moveDelta += new Vector3F(Gamepad.LeftThumbstick.X, 0, Gamepad.LeftThumbstick.Y) * speed * 2;
+            moveDelta += new Vector3F(Gamepad.LeftStick.X, 0, Gamepad.LeftStick.Y) * speed * 2;
             return moveDelta;
         }
 
@@ -153,11 +153,11 @@ namespace Molten.Samples
 
                 // Stats
                 pos.X = 5;
-                pos.Y = 300; sb.DrawString(SampleFont, $"Left stick: {Gamepad.LeftThumbstick.X},{Gamepad.LeftThumbstick.Y}", pos, Color.White);
-                pos.Y += 20; sb.DrawString(SampleFont, $"Right stick: {Gamepad.RightThumbstick.X},{Gamepad.RightThumbstick.Y}", pos, Color.White);
+                pos.Y = 300; sb.DrawString(SampleFont, $"Left stick: {Gamepad.LeftStick.X},{Gamepad.LeftStick.Y}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Right stick: {Gamepad.RightStick.X},{Gamepad.RightStick.Y}", pos, Color.White);
                 pos.Y += 20; sb.DrawString(SampleFont, $"Left Trigger: {Gamepad.LeftTrigger.Value}", pos, Color.White);
                 pos.Y += 20; sb.DrawString(SampleFont, $"Right Trigger: {Gamepad.RightTrigger.Value}", pos, Color.White);
-                pos.Y += 20; sb.DrawString(SampleFont, $"Pressed Buttons: {Gamepad.PressedButtons}", pos, Color.White);
+                //pos.Y += 20; sb.DrawString(SampleFont, $"Pressed Buttons: {Gamepad.PressedButtons}", pos, Color.White);
             }
             else
             {

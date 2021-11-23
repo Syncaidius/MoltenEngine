@@ -36,7 +36,7 @@ namespace Molten
         }
 
         /// <summary>Invoked when <see cref="Dispose"/> is called.</summary>
-        protected abstract void OnDispose();
+        protected virtual void OnDispose() { }
 
         /// <summary>Gets whether or not the object has been disposed.</summary>
         public bool IsDisposed => _isDisposed;

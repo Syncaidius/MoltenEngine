@@ -16,7 +16,7 @@ namespace Molten
             Button = button;
         }
 
-        internal void Update(SceneManager handler, IMouseDevice mouse, Timing time)
+        internal void Update(SceneManager handler, MouseDevice mouse, Timing time)
         {
             Vector2F mousePos = mouse.Position;
             Vector2F mouseMove = mouse.Delta;

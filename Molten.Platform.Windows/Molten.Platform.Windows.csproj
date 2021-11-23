@@ -116,7 +116,6 @@
     <Compile Include="Input\WinMouseDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharpDXInterop.cs" />
-    <Compile Include="Input\WinInputDeviceBase.cs" />
     <Compile Include="Input\WinInputManager.cs" />
   </ItemGroup>
   <ItemGroup>

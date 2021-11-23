@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using SharpDX.XInput;
 using Molten.Graphics;
-using Molten.Utilities;
 using State = SharpDX.XInput.State;
+using Molten.Windows32;
 
 namespace Molten.Input
 {
