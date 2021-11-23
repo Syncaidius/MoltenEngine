@@ -48,9 +48,9 @@ namespace Molten.Input
             KeyboardKeyState state = new KeyboardKeyState()
             {
                 Key = 0,
-                KeyType = ParseKeyType(wParam),
+                KeyType = KeyboardKeyType.Normal,
                 State = InputAction.Pressed,
-                Character = char.MinValue
+                Character = char.MinValue,
             };
 
             // TODO implement keyboard messages: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-keyboard-input#keystroke-message-flags
@@ -66,7 +66,6 @@ namespace Molten.Input
 
                         plp = ParseLParam(ref state, lParam);
 
-                        // TODO Do we queue an extra state for 'ALT' if alt key is pressed?
                         for (int i = 0; i < plp.RepeatCount; i++)
                             QueueState(state);
                     }
@@ -74,7 +73,8 @@ namespace Molten.Input
 
                 case WndProcMessageType.WM_KEYDOWN:
                 case WndProcMessageType.WM_KEYUP:
-                    state.KeyType = KeyboardKeyType.Normal;
+                    state.Key = (KeyCode)(wParam & 0xFFFF);
+                    state.KeyType = ValidateKeyType(wParam);
                     plp = ParseLParam(ref state, lParam);
 
                     if (plp.Pressed && plp.PrevPressed)
@@ -104,25 +104,11 @@ namespace Molten.Input
 
         protected override void OnClearState() { }
 
-        private KeyboardKeyType ParseKeyType(long wmChar)
+        private KeyboardKeyType ValidateKeyType(long wmChar)
         {
             KeyCode key = (KeyCode)wmChar;
             switch (key)
             {
-                case KeyCode k when (k >= KeyCode.Num0 && k <= KeyCode.Num9):
-                    return KeyboardKeyType.Character;
-                case KeyCode k when (k >= KeyCode.Numpad0 && k <= KeyCode.Divide):
-                    return KeyboardKeyType.Character;
-                case KeyCode k when (k >= KeyCode.A && k <= KeyCode.Z):
-                    return KeyboardKeyType.Character;
-                case KeyCode k when (k >= KeyCode.Oem1 && k <= KeyCode.Oem3):
-                    return KeyboardKeyType.Character;
-                case KeyCode k when (k >= KeyCode.Oem4 && k <= KeyCode.Oem102):
-                    return KeyboardKeyType.Character;
-
-                case KeyCode.Space:
-                    return KeyboardKeyType.Character;
-
                 case KeyCode.LShift:
                 case KeyCode.RShift:
                 case KeyCode.Shift:
