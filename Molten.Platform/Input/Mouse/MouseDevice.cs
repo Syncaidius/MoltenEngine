@@ -1,5 +1,6 @@
 ﻿using Molten.Graphics;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Molten.Input
 {
@@ -120,10 +121,8 @@ namespace Molten.Input
                 Delta = newState.Delta;
             }
 
-            // Perform some error checking input action
-            if (newState.Action == InputAction.Held ||
-                (newState.Action == InputAction.Pressed &&
-                prevState.Action == InputAction.Pressed))
+            // Perform error checking on delta vs action
+            if (newState.Action == InputAction.Held || newState.Action == InputAction.Moved)
             {
                 newState.Action = newState.Delta != Vector2I.Zero ? 
                     InputAction.Moved : InputAction.Held;
@@ -165,6 +164,8 @@ namespace Molten.Input
                     OnHover?.Invoke(this, newState);
                     break;
             }
+
+            Debug.WriteLine($"Mouse change -- Pos: {newState.Position} -- Button: {newState.Button} -- Action: {newState.Action} -- Type: {newState.ActionType}");
         }
 
         private void CheckInside(bool insideControl, ref MouseButtonState state)

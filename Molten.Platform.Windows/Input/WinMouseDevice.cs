@@ -56,7 +56,6 @@ namespace Molten.Input
         private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, int wParam, int lParam)
         {
             // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/using-mouse-input
-
             // Positional mouse messages.
 
             switch (msgType)
@@ -71,7 +70,7 @@ namespace Molten.Input
                     return;
 
                 case WndProcMessageType.WM_MOUSEMOVE:
-                    ParseButtonMessage(WinMouseButtonFlags.None, InputAction.Released,
+                    ParseButtonMessage(WinMouseButtonFlags.None, InputAction.Moved,
                         InputActionType.None, wParam, lParam);
                     return;
 
@@ -173,38 +172,38 @@ namespace Molten.Input
             };
 
             // Figure out which other buttons are down and queue 'held' states for them.
-            foreach (WinMouseButtonFlags b in _winButtons)
+            if (action == InputAction.Moved)
             {
-                if (b != btn && (btns & b) == b)
+                foreach (WinMouseButtonFlags b in _winButtons)
                 {
-                    state.Button = TranslateButton(b);
-                    state.Action = InputAction.Held;
-                    state.ActionType = InputActionType.None;
-                    QueueState(state);
+                    if (b != btn && (btns & b) == b)
+                    {
+                        state.Button = TranslateButton(b);
+                        state.Action = InputAction.Held;
+                        state.ActionType = InputActionType.None;
+                        QueueState(state);
+                    }
                 }
             }
 
             // Prepare state for button that triggered the current message.
-            if (btn != WinMouseButtonFlags.None)
+            state.ActionType = aType;
+            state.Action = action;
+            state.PressTimestamp = DateTime.UtcNow;
+            state.Button = TranslateButton(btn);
+
+            switch (action)
             {
-                state.ActionType = aType;
-                state.Button = TranslateButton(btn);
-                state.Action = action;
-                state.PressTimestamp = DateTime.UtcNow;
+                case InputAction.VerticalScroll:
+                    state.Delta.Y = ParseWheelDelta(wParam);
+                    break;
 
-                switch (action)
-                {
-                    case InputAction.VerticalScroll:
-                        state.Delta.Y = ParseWheelDelta(wParam);
-                        break;
-
-                    case InputAction.HorizontalScroll:
-                        state.Delta.X = ParseWheelDelta(wParam);
-                        break;
-                }
-
-                QueueState(state);
+                case InputAction.HorizontalScroll:
+                    state.Delta.X = ParseWheelDelta(wParam);
+                    break;
             }
+
+            QueueState(state);
         }
 
         private WinMouseButtonFlags ParseXButton(int wParam)
