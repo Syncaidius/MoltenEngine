@@ -1,4 +1,5 @@
 ﻿using Lidgren.Network;
+using Molten.Networking.Message;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Molten.Networking
         private NetConnection _connection;
 
         public LidgrenConnectionRequest(NetIncomingMessage requestMessage) 
-            : base(requestMessage.Data, requestMessage.SequenceChannel)
+            : base(requestMessage.Data, requestMessage.DeliveryMethod.ToMolten(), requestMessage.SequenceChannel)
         {
             _connection = requestMessage.SenderConnection;
         }
@@ -20,15 +21,12 @@ namespace Molten.Networking
         public override void Approve()
         {
             _connection.Approve();
+            _connection = null;
         }
 
         public override void Reject(string reason = null)
         {
             _connection.Deny(reason);
-        }
-
-        public override void Recycle()
-        {
             _connection = null;
         }
     }

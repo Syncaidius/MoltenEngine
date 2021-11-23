@@ -41,10 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnectionRequest.cs" />
-    <Compile Include="INetworkMessage.cs" />
+    <Compile Include="Message\ConnectionRequest.cs" />
+    <Compile Include="Enums\DeliveryMethod.cs" />
+    <Compile Include="Message\INetworkMessage.cs" />
     <Compile Include="MoltenNetworkService.cs" />
-    <Compile Include="NetworkMessage.cs" />
+    <Compile Include="Message\NetworkMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -57,5 +58,6 @@
       <Name>Molten.Utility</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

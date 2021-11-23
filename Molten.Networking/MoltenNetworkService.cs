@@ -1,4 +1,5 @@
 ﻿using Molten.Collections;
+using Molten.Networking.Message;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,19 +10,20 @@ namespace Molten.Networking
 {
     public abstract class MoltenNetworkService : IDisposable
     {
-        private ThreadedQueue<NetworkMessage> _recycleBin;
-
-        public ThreadedQueue<INetworkMessage> Inbox { get; }
-        public ThreadedQueue<INetworkMessage> Outbox { get; }
-
+        protected readonly ThreadedQueue<INetworkMessage> _inbox;
+        protected readonly ThreadedQueue<INetworkMessage> _outbox;
+        
         public MoltenNetworkService()
         {
-            _recycleBin = new ThreadedQueue<NetworkMessage>();
-            Inbox = new ThreadedQueue<INetworkMessage>();
-            Outbox = new ThreadedQueue<INetworkMessage>();
             Log = Logger.Get();
+            _inbox = new ThreadedQueue<INetworkMessage>();
+            _outbox = new ThreadedQueue<INetworkMessage>();
         }
 
+
+        #region Public
+
+        // Called by network service thread.
         public void Update(Timing timing)
         {
             OnUpdate(timing);
@@ -33,40 +35,36 @@ namespace Molten.Networking
             Log.Dispose();
         }
 
-        public void SendMessage(byte[] data, int sequence)
+        /// <summary>
+        /// Puts the message into outbox to be sent on next update.
+        /// </summary>
+        /// <param name="message"></param>
+        public void SendMessage(INetworkMessage message)
         {
-            Outbox.Enqueue(CreateMessage(data, sequence));
+            _outbox.Enqueue(message);
         }
 
-
-
-
-
-
-
-
-        protected NetworkMessage CreateMessage(byte[] data, int sequence)
+        /// <summary>
+        /// Dequeues a message from the inbox if any.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public bool TryReadMessage(out INetworkMessage message)
         {
-            if (_recycleBin.TryDequeue(out NetworkMessage message))
-            {
-                message.Update(data, sequence);
-                return message;
-            }
-
-            return new NetworkMessage(this, data, sequence);
+            return _inbox.TryDequeue(out message);
         }
 
+        public int RecievedMessages => _inbox.Count;
 
-        internal void RecycleMessage(NetworkMessage message)
-        {
-            message.Clear();
-            _recycleBin.Enqueue(message);
-        }
+        #endregion
+
+        #region Protected
 
         protected abstract void OnUpdate(Timing timing);
-
         protected abstract void OnDispose();
-
         protected internal Logger Log { get; }
+
+        #endregion
+
     }
 }

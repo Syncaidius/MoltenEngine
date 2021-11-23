@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lidgren.Network;
+using Molten.Networking.Message;
 
 namespace Molten.Networking
 {
     internal class LidgrenNetworkService : Networking.MoltenNetworkService
     {
         NetPeerConfiguration _configuration;
-
         NetPeer _peer;
 
         public LidgrenNetworkService(int port, string identity)
@@ -23,13 +23,16 @@ namespace Molten.Networking
         {
             _peer = new NetServer(_configuration);
             _peer.Start();
+            Log.WriteLine($"Started network server on port {_peer.Port}.");
         }
 
         public void InitializeClient()
         {
             _peer = new NetClient(_configuration);
             _peer.Start();
+            Log.WriteLine($"Started network client on port {_peer.Port}.");
         }
+
 
         protected override void OnUpdate(Timing timing)
         {
@@ -39,11 +42,12 @@ namespace Molten.Networking
 
         private void SendMessages()
         {
-            while (Outbox.TryDequeue(out INetworkMessage message))
+            while (_outbox.TryDequeue(out INetworkMessage message))
             {
                 NetOutgoingMessage sendMsg = _peer.CreateMessage();
                 sendMsg.Write(message.Data);
-                _peer.SendMessage(sendMsg, _peer.Connections, NetDeliveryMethod.ReliableOrdered, message.Sequence);
+
+                _peer.SendMessage(sendMsg, _peer.Connections, message.DeliveryMethod.ToLidgren(), message.Sequence);
             }
         }
 
@@ -68,12 +72,11 @@ namespace Molten.Networking
                         break;
 
                     case NetIncomingMessageType.ConnectionApproval:
-                        Inbox.Enqueue(new LidgrenConnectionRequest(msg));
+                        _inbox.Enqueue(new LidgrenConnectionRequest(msg));
                         break;
 
                     case NetIncomingMessageType.Data:
-                        NetworkMessage message = CreateMessage(msg.Data, msg.SequenceChannel);
-                        Inbox.Enqueue(message);
+                        _inbox.Enqueue(new NetworkMessage(msg.Data, msg.DeliveryMethod.ToMolten(), msg.SequenceChannel));
                         break;
 
                     default:
