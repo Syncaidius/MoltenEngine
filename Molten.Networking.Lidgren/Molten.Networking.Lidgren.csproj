@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DeliveryMethodExtension.cs" />
+    <Compile Include="LidgrenConnection.cs" />
     <Compile Include="LidgrenConnectionRequest.cs" />
     <Compile Include="LidgrenNetworkService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

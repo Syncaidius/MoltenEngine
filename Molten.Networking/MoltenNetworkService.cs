@@ -12,13 +12,13 @@ namespace Molten.Networking
     public abstract class MoltenNetworkService : IDisposable
     {
         protected readonly ThreadedQueue<INetworkMessage> _inbox;
-        protected readonly ThreadedQueue<INetworkMessage> _outbox;
+        protected readonly ThreadedQueue<(INetworkMessage, INetworkConnection[])> _outbox;
         
         public MoltenNetworkService()
         {
             Log = Logger.Get();
             _inbox = new ThreadedQueue<INetworkMessage>();
-            _outbox = new ThreadedQueue<INetworkMessage>();
+            _outbox = new ThreadedQueue<(INetworkMessage, INetworkConnection[])>();
         }
 
 
@@ -40,9 +40,9 @@ namespace Molten.Networking
         /// Puts the message into outbox to be sent on next update.
         /// </summary>
         /// <param name="message"></param>
-        public void SendMessage(INetworkMessage message)
+        public void SendMessage(INetworkMessage message, IEnumerable<INetworkConnection> recipients = null)
         {
-            _outbox.Enqueue(message);
+            _outbox.Enqueue(new ValueTuple<INetworkMessage, INetworkConnection[]>(message, recipients.ToArray()));
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Molten.Networking
 
         public int RecievedMessages => _inbox.Count;
 
-        public abstract void Connect(string host, int port, byte[] data = null);
+        public abstract INetworkConnection Connect(string host, int port, byte[] data = null);
         public abstract void Start(ServiceType type);
 
 
@@ -65,6 +65,7 @@ namespace Molten.Networking
 
         #region Protected
 
+        public abstract IEnumerable<INetworkConnection> GetConnections();
         protected internal abstract void OnUpdate(Timing timing);
         protected internal abstract void OnDispose();
         protected internal Logger Log { get; }

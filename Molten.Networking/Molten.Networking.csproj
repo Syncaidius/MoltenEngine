@@ -47,7 +47,7 @@
     <Compile Include="Message\INetworkMessage.cs" />
     <Compile Include="MoltenNetworkService.cs" />
     <Compile Include="Message\NetworkMessage.cs" />
-    <Compile Include="NetworkConnection.cs" />
+    <Compile Include="INetworkConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

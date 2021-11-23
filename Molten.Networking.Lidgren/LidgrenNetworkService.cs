@@ -32,8 +32,18 @@ namespace Molten.Networking
             Log.WriteLine($"Started network ${Enum.GetName(typeof(ServiceType), type)} on port {_peer.Port}.");
         }
 
-        public override void Connect(string host, int port, byte[] data)
+        /// <summary>
+        /// Gets all connections from underlying network peer.
+        /// </summary>
+        /// <returns></returns>
+        public override IEnumerable<INetworkConnection> GetConnections()
         {
+            return _peer.Connections.Select(x => new LidgrenConnection(x));
+        }
+
+        public override INetworkConnection Connect(string host, int port, byte[] data)
+        {
+            NetConnection connection = null;
             if (data != null)
             {
                 NetOutgoingMessage sendMsg = _peer.CreateMessage();
@@ -43,6 +53,8 @@ namespace Molten.Networking
             else
                 _peer.Connect(host, port);
             Log.WriteLine($"Connecting to {host}:{port}.");
+
+            return new LidgrenConnection(connection);
         }
 
         protected override void OnUpdate(Timing timing)
@@ -58,12 +70,12 @@ namespace Molten.Networking
 
         private void SendMessages()
         {
-            while (_outbox.TryDequeue(out INetworkMessage message))
+            while (_outbox.TryDequeue(out (INetworkMessage message, INetworkConnection[] recipients) outgoing))
             {
                 NetOutgoingMessage sendMsg = _peer.CreateMessage();
-                sendMsg.Write(message.Data);
+                sendMsg.Write(outgoing.message.Data);
 
-                _peer.SendMessage(sendMsg, _peer.Connections, message.DeliveryMethod.ToLidgren(), message.Sequence);
+                _peer.SendMessage(sendMsg, outgoing.recipients.Select(x => ((LidgrenConnection)x).Connection).ToArray(), outgoing.message.DeliveryMethod.ToLidgren(), outgoing.message.Sequence);
             }
         }
 
