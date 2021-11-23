@@ -90,4 +90,4 @@ A special thanks to each of these great libraries, without which Molten wouldn't
   * [OpenTK](https://opentk.net/) - OpenGL, OpenAL and input bindings for C#
 
 # Licensing
-MIT - You can do what you want with Molten. Fork it, chop it up and consume it for dinner. You get the idea!
+[MIT](LICENSE) - You can do what you want with Molten. Fork it, chop it up and consume it for dinner. You get the idea!
