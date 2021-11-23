@@ -241,7 +241,7 @@ namespace Molten.Input
             get => _states.Length;
             protected set
             {
-                if(_states.Length != value)
+                if(_states == null || _states.Length != value)
                     Array.Resize(ref _states, value);
             }
         }
@@ -256,7 +256,9 @@ namespace Molten.Input
         public InputDevice(InputManager manager, int bufferSize) : base(manager)
         {
             _buffer = new S[bufferSize]; 
-            _states = new S[5];
+
+            if(_states == null)
+                _states = new S[5];
         }
 
         protected void QueueState(S state)

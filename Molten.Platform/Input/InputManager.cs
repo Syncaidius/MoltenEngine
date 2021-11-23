@@ -38,6 +38,7 @@ namespace Molten.Input
             Settings = settings;
             Log = log;
 
+            _gamepadsByIndex = new Dictionary<int, GamepadDevice>();
             _byType = new Dictionary<Type, InputDevice>();
             _devices = new List<InputDevice>();
 

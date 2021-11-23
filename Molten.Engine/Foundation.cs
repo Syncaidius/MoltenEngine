@@ -34,6 +34,9 @@ namespace Molten
             Title = title;
         }
 
+        /// <summary>
+        /// Disposes of the foundation and it's underlying <see cref="Engine"/> instance.
+        /// </summary>
         public void Dispose()
         {
             if (!IsDisposed)
@@ -154,7 +157,8 @@ namespace Molten
         }
 
         /// <summary>Creates a new <see cref="SceneObject"/> at specified position.</summary>
-        /// <param name="updateFlags">The update flags to set on the newly spawned object.</param>
+        /// <param name="position">The world position at which to create a new <see cref="SceneObject"/>.</param>
+        /// <param name="flags">The update flags to set on the newly spawned object.</param>
         /// <param name="scene">The scene to automatically add the object to. Default value is null.</param>
         /// <returns></returns>
         public SceneObject CreateObject(Vector3F position, Scene scene = null, ObjectUpdateFlags flags = ObjectUpdateFlags.All)
@@ -206,11 +210,21 @@ namespace Molten
             RunState = GameRunState.Exited;
         }
 
+        /// <summary>
+        /// Invoked when the current <see cref="Foundation{R, I}"/> needs to be initialized.
+        /// </summary>
+        /// <param name="engine"></param>
         protected virtual void OnInitialize(Engine engine) { }
 
+        /// <summary>
+        /// Invoked when the current <see cref="Foundation{R, I}"/> is done initializing and 
+        /// can begin loading for the first time.
+        /// </summary>
+        /// <param name="engine"></param>
         protected virtual void OnFirstLoad(Engine engine) { }
 
-        /// <summary>Occurs when the game is in the process of exiting. This gives the game logic a chance to correctly handle the exit, such as saving the player's progress.</summary>
+        /// <summary>Occurs when the game is in the process of exiting. This gives the game logic a
+        /// chance to correctly handle the exit, such as saving the player's progress.</summary>
         protected virtual void OnClose() { }
 
         /// <summary>Occurs when the game is paused (and not already paused).</summary>
@@ -222,7 +236,7 @@ namespace Molten
         /// <summary>
         /// Occurs when the game is being updated, making it a good place to put your game logic.
         /// </summary>
-        /// <param name="time"></param>
+        /// <param name="time">A <see cref="Timing"/> instance for tracking game time, frame rate and other statistics.</param>
         protected abstract void OnUpdate(Timing time);
 
         /// <summary>Gets or sets title of the game.</summary>

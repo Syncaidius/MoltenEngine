@@ -28,19 +28,21 @@ namespace Molten.Input
         public WinGamepadDevice(WinInputManager manager, int index) : 
             base(manager, index)
         {
-            _pad = new Controller((UserIndex)Index);
         }
 
         protected override List<InputDeviceFeature> Initialize()
         {
             // Initialize hold timer dictionaries.
             _deviceName = "Gamepad " + Index;
+            _pad = new Controller((UserIndex)Index);
             IsConnected = _pad.IsConnected;
 
             LeftStick = new InputAnalogStick("Left", 32767);
             RightStick = new InputAnalogStick("Right", 32767);
             LeftTrigger = new InputAnalogTrigger("Left", 255);
             RightTrigger = new InputAnalogTrigger("Right", 255);
+            VibrationLeft = new InputVibration("Left", 1.0f);
+            VibrationRight = new InputVibration("Right", 1.0f);
 
             // Only get state and capabilities if connected.
             if (IsConnected)

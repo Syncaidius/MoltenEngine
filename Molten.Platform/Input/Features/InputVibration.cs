@@ -22,7 +22,7 @@ namespace Molten.Input
 
         public override string Description { get; }
 
-        public InputVibration(float maxValue, string name, string desc = "Vibrator")
+        public InputVibration(string name, float maxValue, string desc = "Vibrator")
         {
             Name = name;
             Description = desc;
