@@ -50,7 +50,7 @@ namespace Molten.Input
                 Key = 0,
                 KeyType = ParseKeyType(wParam),
                 State = InputAction.Pressed,
-                Character = (char)wParam
+                Character = char.MinValue
             };
 
             // TODO implement keyboard messages: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-keyboard-input#keystroke-message-flags
