@@ -189,14 +189,7 @@ namespace Molten.Input
 
         /// <summary>Update's the current input manager. Avoid calling directly unless you know what you're doing.</summary>
         /// <param name="time">An instance of timing for the current thread.</param>
-        protected override void OnUpdate(Timing time)
-        {
-            if (_surface != null)
-            {
-                for (int i = 0; i < _gamepads.Count; i++)
-                    _gamepads[i].Update(time);
-            }
-        }
+        protected override void OnUpdate(Timing time) { }
 
         /// <summary>Retrieves a gamepad handler.</summary>
         /// <param name="index">The index of the gamepad.</param>

@@ -195,7 +195,7 @@ namespace Molten.Input
             return list;
         }
 
-        public void Update(Timing time)
+        internal virtual void Update(Timing time)
         {
             OnUpdate(time);
 
@@ -294,7 +294,7 @@ namespace Molten.Input
             return _states[stateID];
         }
 
-        public new void Update(Timing time)
+        internal override void Update(Timing time)
         {
             OnUpdate(time);
 

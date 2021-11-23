@@ -8,7 +8,10 @@ namespace Molten.Input
 {
     public enum KeyboardKeyType
     {
-        Unknown = 0,
+        /// <summary>
+        /// A normal key press with no specific purpose or intention.
+        /// </summary>
+        Normal = 0,
 
         /// <summary>
         /// The key represents a character.

@@ -10,8 +10,6 @@ namespace Molten.Input
     {
         public KeyCode Key;
 
-        public long RawKeyCode;
-
         public KeyboardKeyType KeyType;
 
         public DateTime PressTimestamp;

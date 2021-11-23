@@ -39,6 +39,12 @@
 
                 OnKeyUp?.Invoke(this, newState);
             }
+
+            if(newState.KeyType == KeyboardKeyType.Character)
+            {
+                if (newState.State == InputAction.Pressed || newState.State == InputAction.Held)
+                    OnCharacterKey?.Invoke(newState);
+            }
         }
 
         protected override bool GetIsDown(ref KeyboardKeyState state)

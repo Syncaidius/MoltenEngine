@@ -35,6 +35,7 @@ namespace Molten.Input
             var manager = Manager as WinInputManager;
             MaxSimultaneousStates = (int)KeyCode.OemClear;
             manager.OnWndProcMessage += Manager_OnWndProcMessage;
+
             // TODO get extra features
             List<InputDeviceFeature> features = new List<InputDeviceFeature>();
             return features;
@@ -42,39 +43,56 @@ namespace Molten.Input
 
         private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, long wParam, long lParam)
         {
+            IntPtr forewindow = Win32.GetForegroundWindow();
+            ParsedLParam plp;
+            KeyboardKeyState state = new KeyboardKeyState()
+            {
+                Key = 0,
+                KeyType = ParseKeyType(wParam),
+                State = InputAction.Pressed,
+                Character = (char)wParam
+            };
+
+            // TODO implement keyboard messages: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-keyboard-input#keystroke-message-flags
             switch (msgType)
             {
                 case WndProcMessageType.WM_CHAR:
-                    IntPtr forewindow = Win32.GetForegroundWindow();
                     if (windowHandle == forewindow)
                     {
-                        KeyboardKeyState state = new KeyboardKeyState()
-                        {
-                            RawKeyCode = wParam,
-                            Key = (KeyCode)wParam,
-                            KeyType = ParseKeyType(wParam),
-                            State = InputAction.Released
-                        };
+                        state.Key = 0;
+                        state.Character = (char)wParam;
+                        state.State = InputAction.Pressed;
+                        state.KeyType = KeyboardKeyType.Character;
 
-                        ParsedLParam plp = ParseLParam(ref state, lParam);
-                        if (plp.Pressed && plp.PrevPressed)
-                        {
-                            state.State = InputAction.Held;
-                        }
-                        else if (plp.Pressed && !plp.PrevPressed)
-                        {
-                            state.State = InputAction.Pressed;
-                            state.PressTimestamp = DateTime.UtcNow;
-                        }
-                        else if (!plp.Pressed && plp.PrevPressed)
-                        {
-                            state.State = InputAction.Released;
-                        }
+                        plp = ParseLParam(ref state, lParam);
 
                         // TODO Do we queue an extra state for 'ALT' if alt key is pressed?
                         for (int i = 0; i < plp.RepeatCount; i++)
                             QueueState(state);
                     }
+                    break;
+
+                case WndProcMessageType.WM_KEYDOWN:
+                case WndProcMessageType.WM_KEYUP:
+                    state.KeyType = KeyboardKeyType.Normal;
+                    plp = ParseLParam(ref state, lParam);
+
+                    if (plp.Pressed && plp.PrevPressed)
+                    {
+                        state.State = InputAction.Held;
+                    }
+                    else if (plp.Pressed && !plp.PrevPressed)
+                    {
+                        state.State = InputAction.Pressed;
+                        state.PressTimestamp = DateTime.UtcNow;
+                    }
+                    else if (!plp.Pressed && plp.PrevPressed)
+                    {
+                        state.State = InputAction.Released;
+                    }
+
+                    for (int i = 0; i < plp.RepeatCount; i++)
+                        QueueState(state);
                     break;
             }
         }
@@ -117,7 +135,7 @@ namespace Molten.Input
                     return KeyboardKeyType.Modifier;
 
                 default:
-                    return KeyboardKeyType.Unknown;
+                    return KeyboardKeyType.Normal;
             }
         }
 
@@ -133,10 +151,10 @@ namespace Molten.Input
             {
                 RepeatCount = (lParam & 0xFFFF),
                 ScanCode = ((lParam >> 16) & 0xFF),
-                ExtendedKey = ((lParam >> 24) & 0x01) > 0,
-                AltKeyPressed = ((lParam >> 29) & 0x01) > 0,
-                PrevPressed = ((lParam >> 30) & 0x01) > 0,
-                Pressed = ((lParam >> 31) & 0x01) > 0,
+                ExtendedKey = ((lParam >> 24) & 0x01) == 1,
+                AltKeyPressed = ((lParam >> 29) & 0x01) == 1,
+                PrevPressed = ((lParam >> 30) & 0x01) == 1,
+                Pressed = ((lParam >> 31) & 0x01) == 0,
             };
         }
 

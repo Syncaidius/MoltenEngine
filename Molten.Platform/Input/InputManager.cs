@@ -124,6 +124,7 @@ namespace Molten.Input
         public T GetCustomDevice<T>() where T : InputDevice
         {
             T device = OnGetCustomDevice<T>();
+            AddDevice(device);
 
             if (_activeSurface != null)
                 device.Bind(_activeSurface);
