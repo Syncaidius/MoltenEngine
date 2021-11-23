@@ -41,7 +41,7 @@ namespace Molten.Input
             return features;
         }
 
-        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, long wParam, long lParam)
+        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, int wParam, int lParam)
         {
             IntPtr forewindow = Win32.GetForegroundWindow();
             ParsedLParam plp;

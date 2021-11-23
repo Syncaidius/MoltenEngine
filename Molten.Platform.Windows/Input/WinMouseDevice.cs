@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Molten.Graphics;
 using System.Windows.Forms;
 using Molten.Windows32;
 
@@ -26,7 +25,6 @@ namespace Molten.Input
             WinMouseButtonFlags.MK_XBUTTON2
         };
 
-        bool _wasInsideControl = false;
         bool _requestedVisibility = true;
         bool _cursorVisibility = true;
 
@@ -55,7 +53,7 @@ namespace Molten.Input
             };
         }
 
-        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, long wParam, long lParam)
+        private void Manager_OnWndProcMessage(IntPtr windowHandle, WndProcMessageType msgType, int wParam, int lParam)
         {
             // See: https://docs.microsoft.com/en-us/windows/win32/inputdev/using-mouse-input
 
@@ -163,12 +161,16 @@ namespace Molten.Input
             WinMouseButtonFlags btn,
             InputAction action,
             InputActionType aType,
-            long wParam,
-            long lParam)
+            int wParam,
+            int lParam)
         {
             WinMouseButtonFlags btns = (WinMouseButtonFlags)(wParam & 0xFFFFFFFF);
             MouseButtonState state = new MouseButtonState();
-            state.Position = new Vector2I(lParam);
+            state.Position = new Vector2I()
+            {
+                X = lParam & 0xFFFF,
+                Y = (lParam >> 16) & 0xFFFF,
+            };
 
             // Figure out which other buttons are down and queue 'held' states for them.
             foreach (WinMouseButtonFlags b in _winButtons)
@@ -205,7 +207,7 @@ namespace Molten.Input
             }
         }
 
-        private WinMouseButtonFlags ParseXButton(long wParam)
+        private WinMouseButtonFlags ParseXButton(int wParam)
         {
             WinWParamXButton xb = (WinWParamXButton)((wParam >> 16) & 0xFFFFFFFF);
             switch (xb)
@@ -219,7 +221,7 @@ namespace Molten.Input
             }
         }
 
-        private int ParseWheelDelta(long wParam)
+        private int ParseWheelDelta(int wParam)
         {
             return (int)((wParam >> 16) & 0xFFFFFFFF);
         }
@@ -251,10 +253,6 @@ namespace Molten.Input
 
             }
         }
-
-        protected override void OnBind(INativeSurface surface) { }
-
-        protected override void OnUnbind(INativeSurface surface) { }
 
         public override void OpenControlPanel() { }
 
@@ -291,9 +289,9 @@ namespace Molten.Input
             _requestedVisibility = visible;
         }
 
-        protected override void OnSetCursorPosition(Vector2I absolute, Vector2I relative)
+        protected override void OnSetCursorPosition(Vector2I position)
         {
-            Cursor.Position = new System.Drawing.Point(absolute.X, absolute.Y);
+            Cursor.Position = new System.Drawing.Point(position.X, position.Y);
         }
 
         protected override void OnDispose()

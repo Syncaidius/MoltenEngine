@@ -1,5 +1,4 @@
-﻿using SharpDX.DirectInput;
-using Molten.Graphics;
+﻿using Molten.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,7 @@ using Molten.Windows32;
 
 namespace Molten.Input
 {
-    internal delegate void WndProcCallbackHandler(IntPtr windowHandle, WndProcMessageType msgType, long wParam, long lParam);
+    internal delegate void WndProcCallbackHandler(IntPtr windowHandle, WndProcMessageType msgType, int wParam, int lParam);
 
     // TODO support app commands: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-appcommand
 
@@ -39,7 +38,6 @@ namespace Molten.Input
         const int GWL_WNDPROC = -4;
         const int DLGC_WANTALLKEYS = 4;
 
-        DirectInput _input;
         List<WinGamepadDevice> _gamepads;
         INativeSurface _surface;
         WindowsClipboard _clipboard;
@@ -53,7 +51,6 @@ namespace Molten.Input
         /// <param name="log">A logger.</param>
         protected override void OnInitialize()
         {
-            _input = new DirectInput();
             _gamepads = new List<WinGamepadDevice>();
             _clipboard = new WindowsClipboard();
         }
@@ -85,10 +82,10 @@ namespace Molten.Input
         {
             IntPtr returnCode = CallWindowProc(_wndProc, hWnd, msg, wParam, lParam);
             WndProcMessageType msgType = (WndProcMessageType)msg;
-            long wp = (long)wParam;
+            int wp = (int)((long)wParam & int.MaxValue);
 
-            long lp = IntPtr.Size == 8 ?
-                lParam.ToInt64() :
+            int lp = IntPtr.Size == 8 ?
+                (int)(lParam.ToInt64() & int.MaxValue) :
                 lParam.ToInt32();
 
             switch (msgType)
@@ -204,10 +201,7 @@ namespace Molten.Input
             SetWindowLongDelegate(null);
 
             _gamepads.Clear();
-            DisposeObject(ref _input);
         }
-
-        public DirectInput DirectInput { get { return _input; } }
 
         public override IClipboard Clipboard => _clipboard;
 

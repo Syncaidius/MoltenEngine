@@ -41,8 +41,7 @@ namespace Molten.Input
         public event MouseEventHandler OnHScroll;
 
         INativeSurface _surface;
-        Vector2I _relativePos;
-        Vector2I _absolutePos;
+        Vector2I _position;
         bool _cursorVisible;
         bool _wasInsideControl;
 
@@ -59,19 +58,20 @@ namespace Molten.Input
                 return;
 
             Rectangle winBounds = _surface.Bounds;
-            AbsolutePosition = winBounds.Center;
+            Position = winBounds.Center;
+            OnSetCursorPosition(Position);
         }
 
-        private Vector2I ToRelativePosition(Vector2I pos)
+        protected override void OnBind(INativeSurface surface)
         {
-            Rectangle oBounds = _surface.Bounds;
-            return pos - new Vector2I(oBounds.X, oBounds.Y);
+            _surface = surface;
         }
 
-        private Vector2I ToAbsolutePosition(Vector2I pos)
+        protected override void OnUnbind(INativeSurface surface)
         {
-            Rectangle oBounds = _surface.Bounds;
-            return pos + new Vector2I(oBounds.X, oBounds.Y);
+            // Only un-set if the surface passed in matches the bound one, otherwise ignore.
+            if (_surface == surface)
+                _surface = null;
         }
 
         protected override int GetStateID(ref MouseButtonState state)
@@ -86,6 +86,9 @@ namespace Molten.Input
 
         protected override void ProcessState(ref MouseButtonState newState, ref MouseButtonState prevState)
         {
+            if (_surface == null)
+                return;
+
             Delta = Vector2I.Zero;
 
             // Is the cursor constrained to it's parent control/window?
@@ -126,7 +129,7 @@ namespace Molten.Input
                     InputAction.Moved : InputAction.Held;
             }
 
-            AbsolutePosition = newState.Position;
+            Position = newState.Position;
 
             CheckInside(insideControl, ref newState);
 
@@ -198,7 +201,7 @@ namespace Molten.Input
 
         protected override void OnUpdate(Timing time) { }
 
-        protected abstract void OnSetCursorPosition(Vector2I absolute, Vector2I relative);
+        protected abstract void OnSetCursorPosition(Vector2I position);
 
         /// <summary>
         /// Invoked when cursor visibility has changed.
@@ -222,31 +225,7 @@ namespace Molten.Input
         /// <summary>
         /// Gets the position of the mouse cursor, relative to the bound <see cref="INativeSurface"/>.
         /// </summary>
-        public Vector2I Position
-        {
-            get => _relativePos;
-            set
-            {
-                _relativePos = value;
-                _absolutePos = ToAbsolutePosition(_relativePos);
-                OnSetCursorPosition(_absolutePos, _relativePos);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the absolute position of the mouse cursor. 
-        /// This is the absolute native position across all of the client's display area/screens.
-        /// </summary>
-        public Vector2I AbsolutePosition
-        {
-            get => _absolutePos;
-            set
-            {
-                _absolutePos = value;
-                _relativePos = ToRelativePosition(_absolutePos);
-                OnSetCursorPosition(_absolutePos, _relativePos);
-            }
-        }
+        public Vector2I Position { get; private set; }
 
         /// <summary>Gets or sets whether or not the native mouse cursor is visible.</summary>
         public bool IsCursorVisible
