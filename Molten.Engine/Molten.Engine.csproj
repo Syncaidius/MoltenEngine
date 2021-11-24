@@ -175,6 +175,10 @@
       <Project>{e59938af-a9d4-4963-b4ac-61e53d05527e}</Project>
       <Name>Molten.Math</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Molten.Networking\Molten.Networking.csproj">
+      <Project>{f613fe4a-9a85-4f0d-a934-8449ca38f08a}</Project>
+      <Name>Molten.Networking</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj">
       <Project>{57d4a251-9082-4199-b894-6173c7f9215b}</Project>
       <Name>Molten.Platform</Name>

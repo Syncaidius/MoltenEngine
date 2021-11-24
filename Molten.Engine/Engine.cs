@@ -2,6 +2,7 @@
 using Molten.Font;
 using Molten.Graphics;
 using Molten.Input;
+using Molten.Networking;
 using Molten.Threading;
 using System;
 using System.Threading;
@@ -110,6 +111,29 @@ namespace Molten
             return true;
         }
 
+
+        internal void LoadNetworkService<N>()
+            where N : MoltenNetworkService, new()
+        {
+            if (NetworkService != null)
+                Log.WriteLine("Attempted to load network service when one is already loaded!");
+
+            NetworkService = new N();
+
+            // Initialize
+            try
+            {
+                //Input.Initialize(Settings.Input, Log);
+                Log.WriteLine($"Initialized network service");
+            }
+            catch (Exception e)
+            {
+                Log.WriteLine("Failed to initialize network service");
+                Log.WriteError(e);
+                Input = null;
+            }
+        }
+
         private void LoadDefaultFont(EngineSettings settings)
         {
             try
@@ -168,6 +192,45 @@ namespace Molten
             RenderThread = null;
         }
 
+
+        /// <summary>Starts the renderer thread.</summary>
+        /// <param name="apartmentState">The apartment state of the renderer thread. The default value is multithreaded aparment (MTA).</param>
+        public void StartNetworkService(ApartmentState apartmentState = ApartmentState.MTA)
+        {
+            if (NetworkService == null)
+            {
+                Log.WriteLine("A network service has not be loaded. Unable to start service.");
+                Log.WriteDebugLine($"Please ensure Engine.{nameof(LoadNetworkService)}() was called and a valid network library was provided.");
+                return;
+            }
+
+            if (NetworkThread != null)
+            {
+                Log.WriteLine("Ignored attempt to start network thread while already running");
+                return;
+            }
+
+            NetworkThread = Threading.SpawnThread("Network_main", true, false, (time) =>
+            {
+                NetworkService.Update(time);
+            }, apartmentState);
+
+            Log.WriteLine("Network thread started");
+        }
+
+        /// <summary>Stops the renderer thread.</summary>
+        public void StopNetworkService()
+        {
+            if (NetworkService == null || NetworkThread == null)
+            {
+                Log.WriteLine("Ignored attempt to stop network service while not running");
+                return;
+            }
+
+            NetworkThread.Dispose();
+            NetworkThread = null;
+        }
+
         internal void AddScene(Scene scene)
         {
             EngineAddScene task = EngineAddScene.Get();
@@ -214,6 +277,15 @@ namespace Molten
 
         /// <summary>Gets the renderer attached to the current <see cref="Engine"/> instance.</summary>>
         public MoltenRenderer Renderer { get; private set; }
+
+
+        /// <summary>
+        /// [Internal] Gets the <see cref="NetworkService"/> thread. Null if the network service was not started.
+        /// </summary>
+        internal EngineThread NetworkThread { get; private set; }
+
+        /// <summary>Gets the network service attached to the current <see cref="Engine"/> instance.</summary>>
+        public MoltenNetworkService NetworkService { get; private set; }
 
         /// <summary>Gets the log attached to the current <see cref="Engine"/> instance.</summary>
         internal Logger Log { get; }
