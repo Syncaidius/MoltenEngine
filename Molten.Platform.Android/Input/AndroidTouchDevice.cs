@@ -20,6 +20,11 @@ namespace Molten.Input
 
         }
 
+        protected override int GetMaxSimultaneousStates()
+        {
+            return 5;
+        }
+
         protected override List<InputDeviceFeature> Initialize()
         {
             ClearState();
