@@ -187,6 +187,8 @@ namespace Molten.Input
                 for (int i = 0; i < _devices.Count; i++)
                     _devices[i].ClearState();
             }
+
+            UpdateID++;
         }
 
         protected override void OnDispose()
@@ -239,5 +241,11 @@ namespace Molten.Input
         /// Gets the <see cref="Logger"/> bound to the current <see cref="InputManager"/> instance.
         /// </summary>
         public Logger Log { get; private set; }
+
+        /// <summary>
+        /// Gets the input update/frame ID. 
+        /// This is usually equal to the number of times <see cref="InputManager.Update(Timing)"/> has been called.
+        /// </summary>
+        public uint UpdateID { get; private set; }
     }
 }

@@ -19,5 +19,7 @@ namespace Molten.Input
         public InputAction Action;
 
         public InputActionType ActionType;
+
+        public uint UpdateID;
     }
 }

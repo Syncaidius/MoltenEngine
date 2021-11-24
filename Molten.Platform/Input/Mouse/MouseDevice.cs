@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -42,7 +43,6 @@ namespace Molten.Input
         public event MouseEventHandler OnHScroll;
 
         INativeSurface _surface;
-        Vector2I _position;
         bool _cursorVisible;
         bool _wasInsideControl;
 
@@ -90,6 +90,7 @@ namespace Molten.Input
             if (_surface == null)
                 return;
 
+            newState.UpdateID = Manager.UpdateID;
             Delta = Vector2I.Zero;
 
             // Is the cursor constrained to it's parent control/window?
@@ -110,10 +111,25 @@ namespace Molten.Input
             bool insideControl = newState.Position.X >= sBounds.Left &&
                 newState.Position.Y >= sBounds.Top &&
                 newState.Position.X <= sBounds.Right &&
-                newState.Position.Y <= sBounds.Bottom;            
+                newState.Position.Y <= sBounds.Bottom;
+
+            // Prioritise press/release actions over anything else
+            if (newState.UpdateID == prevState.UpdateID)
+            {
+                if (newState.Action == InputAction.Held ||
+                    newState.Action == InputAction.Moved ||
+                    newState.Action == InputAction.Hover)
+                {
+                    if (prevState.Action == InputAction.Pressed || prevState.Action == InputAction.Released)
+                    {
+                        Debug.WriteLine($"Merged state -- B: {newState.Button} -- New Action: {newState.Action} -- Prev Action: {prevState.Action}");
+                        newState = prevState;
+                    }
+                }
+            }
 
             // Calculate delta
-            if (newState.Action != InputAction.None && 
+            if (newState.Action != InputAction.None &&
                 prevState.Action != InputAction.None && prevState.Action != InputAction.Released)
             {
                 newState.Delta = newState.Position - prevState.Position;
@@ -124,13 +140,16 @@ namespace Molten.Input
             // Perform error checking on delta vs action
             if (newState.Action == InputAction.Held || newState.Action == InputAction.Moved)
             {
-                newState.Action = newState.Delta != Vector2I.Zero ? 
+                newState.Action = newState.Delta != Vector2I.Zero ?
                     InputAction.Moved : InputAction.Held;
             }
 
             Position = newState.Position;
 
             CheckInside(insideControl, ref newState);
+
+            if (newState.UpdateID == prevState.UpdateID && newState.Action == prevState.Action)
+                return;
 
             switch (newState.Action)
             {
@@ -165,7 +184,7 @@ namespace Molten.Input
                     break;
             }
 
-            Debug.WriteLine($"Mouse change -- Pos: {newState.Position} -- Button: {newState.Button} -- Action: {newState.Action} -- Type: {newState.ActionType}");
+            Debug.WriteLine($"Mouse change -- UID: {newState.UpdateID} -- P: {newState.Position} -- Button: {newState.Button} -- Action: {newState.Action} -- Type: {newState.ActionType}");
         }
 
         private void CheckInside(bool insideControl, ref MouseButtonState state)

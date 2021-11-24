@@ -40,6 +40,8 @@ namespace Molten.Input
 
         protected override List<InputDeviceFeature> Initialize()
         {
+            MaxSimultaneousStates = (int)MouseButton.XButton2;
+
             WinInputManager manager = Manager as WinInputManager;
             manager.OnWndProcMessage += Manager_OnWndProcMessage;
             ScrollWheel = new InputScrollWheel("Vertical");
