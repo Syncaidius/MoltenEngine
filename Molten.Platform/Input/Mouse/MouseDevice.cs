@@ -1,7 +1,6 @@
 ﻿using Molten.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Molten.Input
 {
@@ -121,10 +120,7 @@ namespace Molten.Input
                     newState.Action == InputAction.Hover)
                 {
                     if (prevState.Action == InputAction.Pressed || prevState.Action == InputAction.Released)
-                    {
-                        Debug.WriteLine($"Merged state -- B: {newState.Button} -- New Action: {newState.Action} -- Prev Action: {prevState.Action}");
                         newState = prevState;
-                    }
                 }
             }
 
@@ -183,8 +179,6 @@ namespace Molten.Input
                     OnHover?.Invoke(this, newState);
                     break;
             }
-
-            Debug.WriteLine($"Mouse change -- UID: {newState.UpdateID} -- P: {newState.Position} -- Button: {newState.Button} -- Action: {newState.Action} -- Type: {newState.ActionType}");
         }
 
         private void CheckInside(bool insideControl, ref MouseButtonState state)

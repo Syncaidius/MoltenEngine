@@ -30,6 +30,11 @@ namespace Molten.Input
         {
         }
 
+        protected override int GetMaxSimultaneousStates()
+        {
+            return (int)GamepadButton.Y + 1;
+        }
+
         protected override List<InputDeviceFeature> Initialize()
         {
             // Initialize hold timer dictionaries.
@@ -115,6 +120,9 @@ namespace Molten.Input
                     // Check each available button.
                     foreach (GamepadButtonFlags b in _buttons)
                     {
+                        if (b == GamepadButtonFlags.None)
+                            continue;
+
                         GamepadButtonState gps = new GamepadButtonState()
                         {
                             Button = TranslateButton(b),
@@ -127,17 +135,17 @@ namespace Molten.Input
                         if (pressed && !wasPressed)
                         {
                             gps.PressTimestamp = DateTime.UtcNow;
-                            gps.State = InputAction.Pressed;
+                            gps.Action = InputAction.Pressed;
                             QueueState(gps);
                         }
                         else if (pressed && wasPressed)
                         {
-                            gps.State = InputAction.Held;
+                            gps.Action = InputAction.Held;
                             QueueState(gps);
                         }
                         else if (!pressed && wasPressed)
                         {
-                            gps.State = InputAction.Released;
+                            gps.Action = InputAction.Released;
                             QueueState(gps);
                         }
                     }

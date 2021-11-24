@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Molten.Input
 {
@@ -12,10 +13,11 @@ namespace Molten.Input
 
         protected override void ProcessState(ref GamepadButtonState newState, ref GamepadButtonState prevState)
         {
-            if (prevState.State == InputAction.Released)
+            if (prevState.Action == InputAction.Released)
                 newState.PressTimestamp = prevState.PressTimestamp;
 
             newState.HeldTime = DateTime.UtcNow - newState.PressTimestamp;
+            Debug.WriteLine($"Gamepad -- A: {newState.Action} -- B: {newState.Button}");
         }
 
         protected override int TranslateStateID(GamepadButton idValue)
@@ -25,18 +27,18 @@ namespace Molten.Input
 
         protected override bool GetIsDown(ref GamepadButtonState state)
         {
-            return state.State == InputAction.Pressed || 
-                state.State == InputAction.Held;
+            return state.Action == InputAction.Pressed || 
+                state.Action == InputAction.Held;
         }
 
         protected override bool GetIsHeld(ref GamepadButtonState state)
         {
-            return state.State == InputAction.Held;
+            return state.Action == InputAction.Held;
         }
 
         protected override bool GetIsTapped(ref GamepadButtonState state)
         {
-            return state.State == InputAction.Pressed;
+            return state.Action == InputAction.Pressed;
         }
 
         protected override int GetStateID(ref GamepadButtonState state)

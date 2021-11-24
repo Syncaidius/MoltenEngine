@@ -30,10 +30,14 @@ namespace Molten.Input
 
         }
 
+        protected override int GetMaxSimultaneousStates()
+        {
+            return (int)KeyCode.OemClear + 1;
+        }
+
         protected override List<InputDeviceFeature> Initialize()
         {
             var manager = Manager as WinInputManager;
-            MaxSimultaneousStates = (int)KeyCode.OemClear;
             manager.OnWndProcMessage += Manager_OnWndProcMessage;
 
             // TODO get extra features

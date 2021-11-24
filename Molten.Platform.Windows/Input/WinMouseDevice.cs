@@ -38,9 +38,13 @@ namespace Molten.Input
             // TODO detect if mouse wheel is present: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-mouse-input#detecting-a-mouse-with-a-wheel
         }
 
+        protected override int GetMaxSimultaneousStates()
+        {
+            return (int)MouseButton.XButton2 + 1;
+        }
+
         protected override List<InputDeviceFeature> Initialize()
         {
-            MaxSimultaneousStates = (int)MouseButton.XButton2;
 
             WinInputManager manager = Manager as WinInputManager;
             manager.OnWndProcMessage += Manager_OnWndProcMessage;

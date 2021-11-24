@@ -72,6 +72,7 @@ namespace Molten.Input
         public InputDevice(InputManager manager)
         {
             Manager = manager;
+            MaxSimultaneousStates = GetMaxSimultaneousStates();
             _features = Initialize() ?? new List<InputDeviceFeature>();
             Features = _features.AsReadOnly();
         }
@@ -86,6 +87,8 @@ namespace Molten.Input
             foreach (InputDeviceFeature f in _features)
                 f.ClearState();
         }
+
+        protected abstract int GetMaxSimultaneousStates();
 
         protected abstract void OnClearState();
 
