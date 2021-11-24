@@ -44,7 +44,7 @@ namespace Molten.Networking
         /// <param name="recipients">Collection of connections to send the message to, broadcast if null.</param>
         public void SendMessage(INetworkMessage message, IEnumerable<INetworkConnection> recipients = null)
         {
-            _outbox.Enqueue(new ValueTuple<INetworkMessage, INetworkConnection[]>(message, recipients.ToArray()));
+            _outbox.Enqueue(new ValueTuple<INetworkMessage, INetworkConnection[]>(message, recipients?.ToArray()));
         }
 
         /// <summary>
@@ -56,6 +56,8 @@ namespace Molten.Networking
         {
             return _inbox.TryDequeue(out message);
         }
+
+
         public abstract IEnumerable<INetworkConnection> GetConnections();
 
         public abstract INetworkConnection Connect(string host, int port, byte[] data = null);
@@ -64,7 +66,7 @@ namespace Molten.Networking
         /// Starts a network peer of a given type.
         /// </summary>
         /// <param name="type"></param>
-        public abstract void Start(ServiceType type);
+        public abstract void Start(ServiceType type, int port, string identity);
 
         #endregion
 

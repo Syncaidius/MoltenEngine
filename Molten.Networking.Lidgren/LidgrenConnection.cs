@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Networking
 {
-    internal class LidgrenConnection : INetworkConnection
+    public class LidgrenConnection : INetworkConnection
     {
         NetConnection _connection;
 

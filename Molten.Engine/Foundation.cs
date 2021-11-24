@@ -115,6 +115,11 @@ namespace Molten
             _gameThread.Start();
         }
 
+        protected void LoadNetworkingService<N>() where N : Networking.MoltenNetworkService, new()
+        {
+            _engine.LoadNetworkService<N>();
+        }
+
         private void _gameWindow_OnClose(INativeSurface surface)
         {
             Exit();

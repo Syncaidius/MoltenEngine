@@ -9,27 +9,25 @@ using Molten.Networking.Message;
 
 namespace Molten.Networking
 {
-    internal class LidgrenNetworkService : Networking.MoltenNetworkService
+    public class LidgrenNetworkService : Networking.MoltenNetworkService
     {
         NetPeerConfiguration _configuration;
         NetPeer _peer;
 
-        public LidgrenNetworkService(int port, string identity)
+        public override void Start(ServiceType type, int port, string identity)
         {
             _configuration = new NetPeerConfiguration(identity);
             _configuration.Port = port;
-        }
+            _configuration.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
+            //_configuration.LocalAddress = System.Net.IPAddress.Loopback;
 
-
-        public override void Start(ServiceType type)
-        {
             if (type == ServiceType.Server)
                 _peer = new NetServer(_configuration);
             else
                 _peer = new NetClient(_configuration);
             
             _peer.Start();
-            Log.WriteLine($"Started network ${Enum.GetName(typeof(ServiceType), type)} on port {_peer.Port}.");
+            Log.WriteLine($"Started network {Enum.GetName(typeof(ServiceType), type)} on port {_peer.Port}.");
         }
 
         /// <summary>
@@ -41,7 +39,7 @@ namespace Molten.Networking
             return _peer.Connections.Select(x => new LidgrenConnection(x));
         }
 
-        public override INetworkConnection Connect(string host, int port, byte[] data)
+        public override INetworkConnection Connect(string host, int port, byte[] data = null)
         {
             NetConnection connection = null;
             if (data != null)
@@ -115,7 +113,10 @@ namespace Molten.Networking
                         break;
 
                     case NetIncomingMessageType.Data:
-                        _inbox.Enqueue(new NetworkMessage(msg.Data, msg.DeliveryMethod.ToMolten(), msg.SequenceChannel));
+                        Log.WriteDebugLine("Recieved message: " + msg.ReadString());
+                        byte[] destination = new byte[msg.LengthBytes];
+                        Array.Copy(msg.Data, destination, msg.LengthBytes);
+                        _inbox.Enqueue(new NetworkMessage(destination, msg.DeliveryMethod.ToMolten(), msg.SequenceChannel));
                         break;
 
                     default:

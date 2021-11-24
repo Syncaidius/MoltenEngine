@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Networking
 {
-    internal class LidgrenConnectionRequest : ConnectionRequest
+    public class LidgrenConnectionRequest : ConnectionRequest
     {
         private NetConnection _connection;
 

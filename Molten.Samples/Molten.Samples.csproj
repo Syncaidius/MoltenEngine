@@ -129,6 +129,7 @@
     <Compile Include="DeferredRendering.cs" />
     <Compile Include="1DTextureTest.cs" />
     <Compile Include="SpriteBatchArrrays.cs" />
+    <Compile Include="NetworkingTest.cs" />
     <Compile Include="SpriteFontStress.cs" />
     <Compile Include="FontFileTest.cs" />
     <Compile Include="MultiWindowGame.cs" />
@@ -324,6 +325,14 @@
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj">
       <Project>{e59938af-a9d4-4963-b4ac-61e53d05527e}</Project>
       <Name>Molten.Math</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.Networking.Lidgren\Molten.Networking.Lidgren.csproj">
+      <Project>{c2b50475-35fb-4dad-9632-e788517cf6b8}</Project>
+      <Name>Molten.Networking.Lidgren</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Molten.Networking\Molten.Networking.csproj">
+      <Project>{f613fe4a-9a85-4f0d-a934-8449ca38f08a}</Project>
+      <Name>Molten.Networking</Name>
     </ProjectReference>
     <ProjectReference Include="..\Molten.OpenGL\Molten.Renderer.OpenGL.csproj">
       <Project>{051563bb-29ac-4903-ae21-72184cd18955}</Project>
