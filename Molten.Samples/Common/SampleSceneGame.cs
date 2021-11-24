@@ -72,7 +72,7 @@ namespace Molten.Samples
         {
             base.OnUpdate(time);
 
-            if (Keyboard.IsTapped(Key.Escape))
+            if (Keyboard.IsTapped(KeyCode.Escape))
                 Exit();
 
             // Keyboard input - Again messy code for now
@@ -81,11 +81,11 @@ namespace Molten.Samples
 
             Vector2F axisDelta = Vector2F.Zero;
 
-            if (AcceptPlayerInput && Mouse.IsPressed(MouseButton.Left))
+            if (AcceptPlayerInput && Mouse.IsDown(MouseButton.Left))
                 axisDelta = new Vector2F(Mouse.Delta.Y, Mouse.Delta.X) * rotSpeed;
 
             // Gamepad movement
-            axisDelta += new Vector2F(Gamepad.RightThumbstick.Y, Gamepad.RightThumbstick.X) * rotSpeed * 2f;
+            axisDelta += new Vector2F(Gamepad.RightStick.Y, Gamepad.RightStick.X) * rotSpeed * 2f;
 
             _player.Transform.LocalRotationX += axisDelta.X;
             _player.Transform.LocalRotationY += axisDelta.Y;
@@ -101,10 +101,10 @@ namespace Molten.Samples
         private Vector3F UpdateKeyboardMovement(Timing time, float speed)
         {
             Vector3F moveDelta = Vector3F.Zero;
-            if (Keyboard.IsPressed(Key.W)) moveDelta += _player.Transform.Global.Backward * speed;
-            if (Keyboard.IsPressed(Key.S)) moveDelta += _player.Transform.Global.Forward * speed;
-            if (Keyboard.IsPressed(Key.A)) moveDelta += _player.Transform.Global.Left * speed;
-            if (Keyboard.IsPressed(Key.D)) moveDelta += _player.Transform.Global.Right * speed;
+            if (Keyboard.IsDown(KeyCode.W)) moveDelta += _player.Transform.Global.Backward * speed;
+            if (Keyboard.IsDown(KeyCode.S)) moveDelta += _player.Transform.Global.Forward * speed;
+            if (Keyboard.IsDown(KeyCode.A)) moveDelta += _player.Transform.Global.Left * speed;
+            if (Keyboard.IsDown(KeyCode.D)) moveDelta += _player.Transform.Global.Right * speed;
 
 
             return moveDelta;
@@ -113,12 +113,12 @@ namespace Molten.Samples
         private Vector3F UpdateGamepadMovement(Timing time, float speed)
         {
             Vector3F moveDelta = Vector3F.Zero;
-            if (Gamepad.IsPressed(GamepadButtonFlags.DPadUp)) moveDelta += _player.Transform.Global.Backward * speed;
-            if (Gamepad.IsPressed(GamepadButtonFlags.DPadDown)) moveDelta += _player.Transform.Global.Forward * speed;
-            if (Gamepad.IsPressed(GamepadButtonFlags.DPadLeft)) moveDelta += _player.Transform.Global.Left * speed;
-            if (Gamepad.IsPressed(GamepadButtonFlags.DPadRight)) moveDelta += _player.Transform.Global.Right * speed;
+            if (Gamepad.IsDown(GamepadButton.DPadUp)) moveDelta += _player.Transform.Global.Backward * speed;
+            if (Gamepad.IsDown(GamepadButton.DPadDown)) moveDelta += _player.Transform.Global.Forward * speed;
+            if (Gamepad.IsDown(GamepadButton.DPadLeft)) moveDelta += _player.Transform.Global.Left * speed;
+            if (Gamepad.IsDown(GamepadButton.DPadRight)) moveDelta += _player.Transform.Global.Right * speed;
 
-            moveDelta += new Vector3F(Gamepad.LeftThumbstick.X, 0, Gamepad.LeftThumbstick.Y) * speed * 2;
+            moveDelta += new Vector3F(Gamepad.LeftStick.X, 0, Gamepad.LeftStick.Y) * speed * 2;
             return moveDelta;
         }
 
@@ -153,11 +153,11 @@ namespace Molten.Samples
 
                 // Stats
                 pos.X = 5;
-                pos.Y = 300; sb.DrawString(SampleFont, $"Left stick: {Gamepad.LeftThumbstick.X},{Gamepad.LeftThumbstick.Y}", pos, Color.White);
-                pos.Y += 20; sb.DrawString(SampleFont, $"Right stick: {Gamepad.RightThumbstick.X},{Gamepad.RightThumbstick.Y}", pos, Color.White);
+                pos.Y = 300; sb.DrawString(SampleFont, $"Left stick: {Gamepad.LeftStick.X},{Gamepad.LeftStick.Y}", pos, Color.White);
+                pos.Y += 20; sb.DrawString(SampleFont, $"Right stick: {Gamepad.RightStick.X},{Gamepad.RightStick.Y}", pos, Color.White);
                 pos.Y += 20; sb.DrawString(SampleFont, $"Left Trigger: {Gamepad.LeftTrigger.Value}", pos, Color.White);
                 pos.Y += 20; sb.DrawString(SampleFont, $"Right Trigger: {Gamepad.RightTrigger.Value}", pos, Color.White);
-                pos.Y += 20; sb.DrawString(SampleFont, $"Pressed Buttons: {Gamepad.PressedButtons}", pos, Color.White);
+                //pos.Y += 20; sb.DrawString(SampleFont, $"Pressed Buttons: {Gamepad.PressedButtons}", pos, Color.White);
             }
             else
             {

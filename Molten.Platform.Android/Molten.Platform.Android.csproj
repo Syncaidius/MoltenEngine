@@ -47,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Input\AndroidInputDeviceBase.cs" />
     <Compile Include="Input\AndroidInputManager.cs" />
     <Compile Include="Input\AndroidInputNavigation.cs" />
     <Compile Include="Graphics\AndroidViewSurface.cs" />

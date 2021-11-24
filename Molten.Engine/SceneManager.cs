@@ -73,7 +73,7 @@ namespace Molten
             Focused = null;
         }
 
-        internal void HandleInput(IMouseDevice mouse, Timing time)
+        internal void HandleInput(MouseDevice mouse, Timing time)
         {
             Vector2F cursorPos = mouse.Position;
             Vector2F cursorDelta = mouse.Delta;
@@ -136,8 +136,8 @@ namespace Molten
                     _tooltip.Position = cursorPos + new Vector2F(16); // TODO Offset this position based on font/cursor size, not a hard-coded value.
 
                     // Handle scroll wheel event
-                    if (mouse.WheelDelta != 0)
-                        Hovered.InvokeCursorWheelScroll(mouse.WheelPosition, mouse.WheelDelta);
+                    if (mouse.ScrollWheel.Delta != 0)
+                        Hovered.InvokeCursorWheelScroll(mouse.ScrollWheel);
                 }
             }
         }

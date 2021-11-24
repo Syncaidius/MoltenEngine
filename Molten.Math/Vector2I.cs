@@ -36,13 +36,51 @@ namespace Molten
         public static readonly Vector2I Zero = new Vector2I(0, 0);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Vector2F"/> struct.
+        /// Initializes a new instance of the <see cref="Vector2I"/> struct using a packed <see cref="byte"/> containing two 4-bit values.
         /// </summary>
-        /// <param name="value">The value that will be assigned to all components.</param>
-        public Vector2I(int value)
+        /// <param name="packedValue">The packed <see cref="byte"/> containing the X and Y values.
+        /// The lowest 4 bits provide the X value.
+        /// The highest 4 bits provide the Y value.</param>
+        public Vector2I(byte packedValue)
         {
-            X = value;
-            Y = value;
+            X = packedValue & 0xF;
+            Y = (packedValue >> 4) & 0xF;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Vector2I"/> struct using a packed <see cref="short"/> containing two 8-bit values.
+        /// </summary>
+        /// <param name="packedValue">The packed <see cref="short"/> containing the X and Y values.
+        /// The lowest 8 bits provide the X value.
+        /// The highest 8 bits provide the Y value.</param>
+        public Vector2I(short packedValue)
+        {
+            X = packedValue & 0xFF;
+            Y = (packedValue >> 8) & 0xFF;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Vector2I"/> struct using a packed <see cref="int"/> containing two 16-bit values.
+        /// </summary>
+        /// <param name="packedValue">The packed <see cref="int"/> containing the X and Y values.
+        /// The lowest 16 bits provide the X value.
+        /// The highest 16 bits provide the Y value.</param>
+        public Vector2I(int packedValue)
+        {
+            X = packedValue & 0xFFFF;
+            Y = (packedValue >> 16) & 0xFFFF;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Vector2I"/> struct using a packed <see cref="long"/> containing two 32-bit values.
+        /// </summary>
+        /// <param name="packedValue">The packed <see cref="long"/> containing the X and Y values. 
+        /// The lowest 32 bits provide the X value.
+        /// The highest 32 bits provide the Y value.</param>
+        public Vector2I(long packedValue)
+        {
+            X = (int)(packedValue & 0xFFFFFFFF);
+            Y = (int)((packedValue >> 32) & 0xFFFFFFFF);
         }
 
         /// <summary>

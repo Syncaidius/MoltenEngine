@@ -80,12 +80,6 @@
     <Reference Include="SharpDX.Desktop, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.Desktop.4.2.0\lib\net45\SharpDX.Desktop.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.DirectInput, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.DirectInput.4.2.0\lib\net45\SharpDX.DirectInput.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.RawInput, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.RawInput.4.2.0\lib\net45\SharpDX.RawInput.dll</HintPath>
-    </Reference>
     <Reference Include="SharpDX.XInput, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.XInput.4.2.0\lib\net45\SharpDX.XInput.dll</HintPath>
     </Reference>
@@ -102,20 +96,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Input\Gamepad\GamepadTrigger.cs" />
-    <Compile Include="Input\Gamepad\GamepadStick.cs" />
-    <Compile Include="Win32.CPU.cs" />
-    <Compile Include="Win32.cs" />
-    <Compile Include="Win32.IO.cs" />
-    <Compile Include="Win32.OS.cs" />
-    <Compile Include="Win32Helper.Structures.cs" />
+    <Compile Include="Input\WinMouseButtonFlags.cs" />
+    <Compile Include="Input\WinWParamXButton.cs" />
+    <Compile Include="Win32\Win32.CPU.cs" />
+    <Compile Include="Win32\Win32.cs" />
+    <Compile Include="Win32\Win32.IO.cs" />
+    <Compile Include="Win32\Win32.OS.cs" />
+    <Compile Include="Win32\Win32Helper.Structures.cs" />
+    <Compile Include="Win32\WndProcMessageType.cs" />
     <Compile Include="WindowsClipboard.cs" />
-    <Compile Include="Input\Gamepad\GamepadDevice.cs" />
-    <Compile Include="Input\KeyboardDevice.cs" />
-    <Compile Include="Input\MouseDevice.cs" />
+    <Compile Include="Input\WinGamepadDevice.cs" />
+    <Compile Include="Input\WinKeyboardDevice.cs" />
+    <Compile Include="Input\WinMouseDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharpDXInterop.cs" />
-    <Compile Include="Input\WinInputDeviceBase.cs" />
     <Compile Include="Input\WinInputManager.cs" />
   </ItemGroup>
   <ItemGroup>

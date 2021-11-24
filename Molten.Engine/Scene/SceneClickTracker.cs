@@ -16,13 +16,13 @@ namespace Molten
             Button = button;
         }
 
-        internal void Update(SceneManager handler, IMouseDevice mouse, Timing time)
+        internal void Update(SceneManager handler, MouseDevice mouse, Timing time)
         {
             Vector2F mousePos = mouse.Position;
             Vector2F mouseMove = mouse.Delta;
 
             //handle clicking and dragging.
-            if (mouse.IsPressed(Button))
+            if (mouse.IsDown(Button))
             {
                 //check if we're starting a new click 
                 if (PressedObject == null)

@@ -20,7 +20,7 @@ namespace Molten
 
         void InvokeCursorClickCompleted(Vector2F pos, bool wasDragged, MouseButton button);
 
-        void InvokeCursorWheelScroll(float wheelPos, float wheelDelta);
+        void InvokeCursorWheelScroll(InputScrollWheel wheel);
 
         void InvokeCursorEnter(Vector2F pos);
 

@@ -107,7 +107,7 @@ namespace Molten
     public abstract class MoltenActivity<T, R, I> : MoltenActivity
         where T : Foundation<R, I>
         where R : MoltenRenderer, new()
-        where I : class, IInputManager, new()
+        where I : InputManager, new()
     {
         public MoltenActivity(string initialTitle = "Molten Android App")
         {

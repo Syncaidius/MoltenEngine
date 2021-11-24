@@ -12,21 +12,21 @@ namespace Molten
     /// </summary>
     public abstract class Foundation<R, I> : IDisposable
         where R : MoltenRenderer, new()
-        where I : class, IInputManager, new()
+        where I : InputManager, new()
     {
         Engine _engine;
         EngineThread _gameThread;
         INativeSurface _gameWindow;
-        IKeyboardDevice _keyboard;
-        IGamepadDevice _gamepad;
-        IMouseDevice _mouse;
+        KeyboardDevice _keyboard;
+        GamepadDevice _gamepad;
+        MouseDevice _mouse;
 
         /// <summary>
         /// Occurs when the game is in the process of closing.
         /// </summary>
         public event MoltenEventHandler<Foundation<R, I>> OnClosing;
 
-        /// <summary>Creates a new instance of <see cref="Foundation"/>.</summary>
+        /// <summary>Creates a new instance of <see cref="Foundation{R, I}"/>.</summary>
         /// <param name="title"></param>
 
         public Foundation(string title)
@@ -34,6 +34,9 @@ namespace Molten
             Title = title;
         }
 
+        /// <summary>
+        /// Disposes of the foundation and it's underlying <see cref="Engine"/> instance.
+        /// </summary>
         public void Dispose()
         {
             if (!IsDisposed)
@@ -86,7 +89,7 @@ namespace Molten
 
             _keyboard = _engine.Input.GetKeyboard();
             _mouse = _engine.Input.GetMouse();
-            _gamepad = _engine.Input.GetGamepad(GamepadIndex.One);
+            _gamepad = _engine.Input.GetGamepad<GamepadDevice>(0, GamepadSubType.Gamepad);
             _engine.StartRenderer(renderThreadApartment);
 
             _gameThread = _engine.Threading.SpawnThread("game", false, true, (timing) =>
@@ -154,7 +157,8 @@ namespace Molten
         }
 
         /// <summary>Creates a new <see cref="SceneObject"/> at specified position.</summary>
-        /// <param name="updateFlags">The update flags to set on the newly spawned object.</param>
+        /// <param name="position">The world position at which to create a new <see cref="SceneObject"/>.</param>
+        /// <param name="flags">The update flags to set on the newly spawned object.</param>
         /// <param name="scene">The scene to automatically add the object to. Default value is null.</param>
         /// <returns></returns>
         public SceneObject CreateObject(Vector3F position, Scene scene = null, ObjectUpdateFlags flags = ObjectUpdateFlags.All)
@@ -206,11 +210,21 @@ namespace Molten
             RunState = GameRunState.Exited;
         }
 
+        /// <summary>
+        /// Invoked when the current <see cref="Foundation{R, I}"/> needs to be initialized.
+        /// </summary>
+        /// <param name="engine"></param>
         protected virtual void OnInitialize(Engine engine) { }
 
+        /// <summary>
+        /// Invoked when the current <see cref="Foundation{R, I}"/> is done initializing and 
+        /// can begin loading for the first time.
+        /// </summary>
+        /// <param name="engine"></param>
         protected virtual void OnFirstLoad(Engine engine) { }
 
-        /// <summary>Occurs when the game is in the process of exiting. This gives the game logic a chance to correctly handle the exit, such as saving the player's progress.</summary>
+        /// <summary>Occurs when the game is in the process of exiting. This gives the game logic a
+        /// chance to correctly handle the exit, such as saving the player's progress.</summary>
         protected virtual void OnClose() { }
 
         /// <summary>Occurs when the game is paused (and not already paused).</summary>
@@ -222,7 +236,7 @@ namespace Molten
         /// <summary>
         /// Occurs when the game is being updated, making it a good place to put your game logic.
         /// </summary>
-        /// <param name="time"></param>
+        /// <param name="time">A <see cref="Timing"/> instance for tracking game time, frame rate and other statistics.</param>
         protected abstract void OnUpdate(Timing time);
 
         /// <summary>Gets or sets title of the game.</summary>
@@ -245,20 +259,23 @@ namespace Molten
         /// </summary>
         public Timing Time => _gameThread.Timing;
 
-        /// <summary>Gets the <see cref="IKeyboardDevice"/> attached to the game's main window.</summary>
-        public IKeyboardDevice Keyboard => _keyboard;
+        /// <summary>Gets the <see cref="KeyboardDevice"/> attached to the game's main window.</summary>
+        public KeyboardDevice Keyboard => _keyboard;
 
-        /// <summary>Gets the <see cref="IMouseDevice"/> attached to the game's main window.</summary>
-        public IMouseDevice Mouse => _mouse;
+        /// <summary>Gets the <see cref="MouseDevice"/> attached to the game's main window.</summary>
+        public MouseDevice Mouse => _mouse;
 
         /// <summary>
-        /// Gets the <see cref="IGamepadDevice"/> attached to the game's main window.
+        /// Gets the <see cref="GamepadDevice"/> attached to the game's main window.
         /// </summary>
-        public IGamepadDevice Gamepad => _gamepad;
+        public GamepadDevice Gamepad => _gamepad;
 
         /// <summary>Gets the <see cref="INativeSurface"/> that the game renders in to.</summary>
         public INativeSurface Window => _gameWindow;
 
+        /// <summary>
+        /// Gets whether or not the current <see cref="Foundation{R, I}"/> instance has been disposed.
+        /// </summary>
         public bool IsDisposed { get; private set; }
     }
 }

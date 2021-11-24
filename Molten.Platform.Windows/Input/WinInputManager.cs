@@ -1,219 +1,210 @@
-﻿using SharpDX.DirectInput;
-using Molten.Graphics;
+﻿using Molten.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.InteropServices;
+using Molten.Windows32;
 
 namespace Molten.Input
 {
-    public class WinInputManager : EngineObject, IInputManager
+    internal delegate void WndProcCallbackHandler(IntPtr windowHandle, WndProcMessageType msgType, int wParam, int lParam);
+
+    // TODO support app commands: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-appcommand
+
+    public class WinInputManager : InputManager
     {
-        DirectInput _input;
+        //Win32 functions that will be used
+        [DllImport("Imm32.dll", CharSet = CharSet.Unicode)]
+        static extern IntPtr ImmGetContext(IntPtr hWnd);
 
-        Logger _log;
+        [DllImport("Imm32.dll", CharSet = CharSet.Unicode)]
+        static extern IntPtr ImmAssociateContext(IntPtr hWnd, IntPtr hIMC);
 
-        List<GamepadDevice> _gamepads;
-        INativeSurface _activeSurface;
-        IInputCamera _activeCamera;
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        static extern long SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        static extern long SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        delegate IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+        internal event WndProcCallbackHandler OnWndProcMessage;
+
+        // Various Win32 constants that are needed
+        const int GWL_WNDPROC = -4;
+        const int DLGC_WANTALLKEYS = 4;
+
+        List<WinGamepadDevice> _gamepads;
+        INativeSurface _surface;
         WindowsClipboard _clipboard;
-
-        Dictionary<GamepadIndex, GamepadDevice> _gamepadsByIndex;
-        Dictionary<Type, WinInputDeviceBase> _byType = new Dictionary<Type, WinInputDeviceBase>();
-        List<WinInputDeviceBase> _devices = new List<WinInputDeviceBase>();
+        WndProc _hookProcDelegate;
+        IntPtr _windowHandle;
+        IntPtr _wndProc;
+        IntPtr _hIMC;
 
         /// <summary>Initializes the current input manager instance. Avoid calling this directly unless you know what you are doing.</summary>
         /// <param name="settings">The <see cref="InputSettings"/> that was provided when the engine was instanciated.</param>
         /// <param name="log">A logger.</param>
-        public void Initialize(InputSettings settings, Logger log)
+        protected override void OnInitialize()
         {
-            Settings = settings;
-            _log = log;
-            _input = new DirectInput();
-            _gamepads = new List<GamepadDevice>();
-            _gamepadsByIndex = new Dictionary<GamepadIndex, GamepadDevice>();
+            _gamepads = new List<WinGamepadDevice>();
             _clipboard = new WindowsClipboard();
         }
 
-        public T GetCustomDevice<T>() where T : class, IInputDevice, new()
+        private void CreateHook()
         {
-            Type t = typeof(T);
-            if (_byType.TryGetValue(t, out WinInputDeviceBase device))
+            if (_hookProcDelegate != null || _windowHandle == IntPtr.Zero)
+                return;
+
+            _wndProc = IntPtr.Zero;
+            _hookProcDelegate = new WndProc(HookProc);
+
+            SetWindowLongDelegate(_hookProcDelegate);
+            _hIMC = ImmGetContext(_windowHandle);
+        }
+
+        private void SetWindowLongDelegate(WndProc hook)
+        {
+            if (hook != null)
             {
-                return device as T;
+                IntPtr ptrVal = Marshal.GetFunctionPointerForDelegate(hook);
+
+                if (_wndProc == IntPtr.Zero)
+                    _wndProc = (IntPtr)SetWindowLongPtr(_windowHandle, GWL_WNDPROC, ptrVal);
             }
-            else
+        }
+
+        private IntPtr HookProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
+        {
+            IntPtr returnCode = CallWindowProc(_wndProc, hWnd, msg, wParam, lParam);
+            WndProcMessageType msgType = (WndProcMessageType)msg;
+            int wp = (int)((long)wParam & int.MaxValue);
+
+            int lp = IntPtr.Size == 8 ?
+                (int)(lParam.ToInt64() & int.MaxValue) :
+                lParam.ToInt32();
+
+            switch (msgType)
             {
-                device = new T() as WinInputDeviceBase;
-                AddDevice(device);
-                return device as T;
+                case WndProcMessageType.WM_GETDLGCODE:
+                    returnCode = (IntPtr)(returnCode.ToInt32() | DLGC_WANTALLKEYS);
+                    break;
+
+                case WndProcMessageType.WM_IME_SETCONTEXT:
+                    if (wp == 1)
+                        ImmAssociateContext(hWnd, _hIMC);
+                    break;
+
+                case WndProcMessageType.WM_INPUTLANGCHANGE:
+                    ImmAssociateContext(hWnd, _hIMC);
+                    returnCode = (IntPtr)1;
+                    break;
+            }
+
+            OnWndProcMessage?.Invoke(_windowHandle, msgType, wp, lp);
+
+            return returnCode;
+        }
+
+        protected override T OnGetCustomDevice<T>()
+        {
+            return Activator.CreateInstance(typeof(T), args: new object[] { this }) as T;
+        }
+
+        protected override void OnBindSurface(INativeSurface surface)
+        {
+            if(_surface != surface)
+            {
+                if(_surface != null)
+                {
+                    _surface.OnHandleChanged -= SurfaceHandleChanged;
+                    _surface.OnParentChanged -= SurfaceHandleChanged;
+                    SetWindowLongDelegate(null);
+                }
+
+                _surface = surface;
+                if(_surface != null)
+                {
+                    SurfaceHandleChanged(surface);
+                    _surface.OnHandleChanged += SurfaceHandleChanged;
+                    _surface.OnParentChanged += SurfaceHandleChanged;
+                    CreateHook();
+                }
             }
         }
 
-        internal void AddDevice(WinInputDeviceBase device)
+        private void SurfaceHandleChanged(INativeSurface surface)
         {
-            Type t = device.GetType();
-            device.Initialize(this, _log);
-
-            if(_activeSurface != null)
-                device.Bind(_activeSurface);
-
-            device.OnDisposing += Device_OnDisposing;
-            _byType.Add(t, device);
-            _devices.Add(device);
+            if (surface.WindowHandle != null)
+            {
+                _windowHandle = surface.WindowHandle.Value;
+                CreateHook();
+            }
         }
 
-        private void Device_OnDisposing(EngineObject obj)
+        protected override void OnClearState()
         {
-            WinInputDeviceBase handler = obj as WinInputDeviceBase;
-            _devices.Remove(handler);
-            _byType.Remove(obj.GetType());
+
         }
 
-        public IMouseDevice GetMouse()
+        public override MouseDevice GetMouse()
         {
-            return GetCustomDevice<MouseDevice>();
+            return GetCustomDevice<WinMouseDevice>();
         }
 
-        public IKeyboardDevice GetKeyboard()
+        public override KeyboardDevice GetKeyboard()
         {
-            return GetCustomDevice<KeyboardDevice>();
+            return GetCustomDevice<WinKeyboardDevice>();
         }
 
-        public ITouchDevice GetTouch()
+        public override TouchDevice GetTouch()
         {
             throw new NotImplementedException();
         }
 
-        public IGamepadDevice GetGamepad(GamepadIndex index)
+        protected override GamepadDevice OnGetGamepad(int index, GamepadSubType subtype)
         {
-            GamepadDevice gamepad = null;
-            if (!_gamepadsByIndex.TryGetValue(index, out gamepad))
-            {
-                gamepad = new GamepadDevice(index);
-                _gamepadsByIndex.Add(index, gamepad);
-                _gamepads.Add(gamepad);
-                AddDevice(gamepad);
-            }
+            // TODO implement Xbox One controller support: https://github.com/roblambell/XboxOneController/blob/master/XInputInject/Main.cs
+            // TODO make use of subtype parameter.
 
-            return gamepad;
+            WinGamepadDevice gp = new WinGamepadDevice(this, index);
+            gp.OnDisposing += Gp_OnDisposing;
+            _gamepads.Add(gp);
+            return gp;
+        }
+
+        private void Gp_OnDisposing(EngineObject obj)
+        {
+            WinGamepadDevice gp = obj as WinGamepadDevice;
+            gp.OnDisposing -= Gp_OnDisposing;
+            _gamepads.Remove(gp);
         }
 
         /// <summary>Update's the current input manager. Avoid calling directly unless you know what you're doing.</summary>
         /// <param name="time">An instance of timing for the current thread.</param>
-        public void Update(Timing time)
-        {
-            if (_activeSurface != null)
-            {
-                for(int i = 0; i < _devices.Count; i++)
-                    _devices[i].Update(time);
-
-                for (int i = 0; i < _gamepads.Count; i++)
-                    _gamepads[i].Update(time);
-            }
-            else
-            {
-                for (int i = 0; i < _devices.Count; i++)
-                    _devices[i].ClearState();
-            }
-        }
+        protected override void OnUpdate(Timing time) { }
 
         /// <summary>Retrieves a gamepad handler.</summary>
         /// <param name="index">The index of the gamepad.</param>
         /// <returns></returns>
-        public GamepadDevice GetGamepadHandler(GamepadIndex index)
+        public WinGamepadDevice GetGamepadHandler(int index)
         {
             return _gamepads[(int)index];
         }
 
-        private void BindSurface(IRenderSurface surface)
-        {
-            if (surface is INativeSurface window)
-            {
-                // Are we already bound to this surface (e.g. via a different camera).
-                if (_activeSurface != window)
-                {
-                    if (_activeSurface != null)
-                    {
-                        foreach (WinInputDeviceBase device in _devices)
-                        {
-                            device.ClearState();
-                            device.Unbind(_activeSurface);
-                        }
-                    }
-
-                    _activeSurface = window;
-
-                    if (_activeSurface != null)
-                    {
-                        foreach (WinInputDeviceBase device in _devices)
-                            device.Bind(_activeSurface);
-                    }
-                }
-            }
-            else
-            {
-                // if active surface isn't null, we were previously bound to something which was an IWindowSurface.
-                // We know the new surface is not IWindowSurface, so unbind.
-                if (_activeSurface != null)
-                {
-                    foreach (WinInputDeviceBase device in _devices)
-                        device.Unbind(_activeSurface);
-                }
-
-                _activeSurface = null;
-            }
-        }
-
-        internal void ClearState()
-        {
-            foreach (WinInputDeviceBase device in _devices)
-                device.ClearState();
-        }
-
         protected override void OnDispose()
         {
-            foreach (WinInputDeviceBase device in _byType.Values)
-                device.Dispose();
+            SetWindowLongDelegate(null);
 
-            _byType.Clear();
-
-            DisposeObject(ref _input);
-
-            for (int i = 0; i < _gamepads.Count; i++)
-            {
-                GamepadDevice gph = _gamepads[i];
-                DisposeObject(ref gph);
-            }
             _gamepads.Clear();
-            _gamepadsByIndex.Clear();
         }
 
-        public DirectInput DirectInput { get { return _input; } }
+        public override IClipboard Clipboard => _clipboard;
 
-        /// <summary>Gets the handler for the gamepad at GamepadIndex.One.</summary>
-        public GamepadDevice GamePad { get { return _gamepads[0]; } }
-
-        public InputSettings Settings { get; private set; }
-
-        public IClipboard Clipboard => _clipboard;
-
-        public IInputNavigation Navigation => throw new NotImplementedException();
-
-        /// <summary>
-        /// Gets or sets the current input camera, through which all input is received.
-        /// </summary>
-        public IInputCamera Camera
-        {
-            get => _activeCamera;
-            set
-            {
-                if(_activeCamera != value)
-                {
-                    _activeCamera = value;
-                    BindSurface(value?.OutputSurface);
-                }
-            }
-        }
+        public override IInputNavigation Navigation => throw new NotImplementedException();
     }
 }

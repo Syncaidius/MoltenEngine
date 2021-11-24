@@ -16,6 +16,46 @@ namespace Molten
         public static readonly Vector2UI Zero = new Vector2UI(0, 0);
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Vector2UI"/> struct using a packed <see cref="byte"/> containing two 4-bit values.
+        /// </summary>
+        /// <param name="packedValue">The packed <see cref="byte"/> containing the X and Y values.</param>
+        public Vector2UI(byte packedValue)
+        {
+            X = (uint)packedValue & 0xF;
+            Y = (uint)(packedValue >> 4) & 0xF;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Vector2F"/> struct using a packed <see cref="short"/> containing two 8-bit values.
+        /// </summary>
+        /// <param name="packedValue">The packed <see cref="short"/> containing the X and Y values.</param>
+        public Vector2UI(ushort packedValue)
+        {
+            X = (uint)packedValue & 0xFF;
+            Y = (uint)(packedValue >> 8) & 0xFF;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Vector2F"/> struct using a packed <see cref="int"/> containing two 16-bit values.
+        /// </summary>
+        /// <param name="packedValue">The packed <see cref="int"/> containing the X and Y values.</param>
+        public Vector2UI(uint packedValue)
+        {
+            X = packedValue & 0xFFFF;
+            Y = (packedValue >> 16) & 0xFFFF;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Vector2F"/> struct using a packed <see cref="long"/> containing two 32-bit values.
+        /// </summary>
+        /// <param name="packedValue">The packed <see cref="long"/> containing the X and Y values.</param>
+        public Vector2UI(ulong packedValue)
+        {
+            X = (uint)(packedValue & 0xFFFFFFFF);
+            Y = (uint)((packedValue >> 32) & 0xFFFFFFFF);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Vector2UI"/> struct.
         /// </summary>
         /// <param name="x">The x.</param>

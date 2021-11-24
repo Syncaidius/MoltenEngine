@@ -59,7 +59,7 @@ namespace Molten
         }
 
         internal void LoadInput<I>()
-            where I : class, IInputManager, new()
+            where I : InputManager, new()
         {
             if (Input != null)
                 Log.WriteLine("Attempted to load input manager when one is already loaded!");
@@ -238,7 +238,7 @@ namespace Molten
         public SpriteFont DefaultFont { get; private set; }
 
         /// <summary>Gets the input manager attached to the current <see cref="Engine"/> instance.</summary>
-        public IInputManager Input { get; private set; }
+        public InputManager Input { get; private set; }
 
         /// <summary>
         /// Gets the internal scene manager for the current <see cref="Engine"/> instance.

@@ -22,7 +22,7 @@ namespace Molten.Input
         /// <summary>
         /// The state of the touch point.
         /// </summary>
-        public TouchState State;
+        public InputAction State;
 
         /// <summary>
         /// The touch point ID.
