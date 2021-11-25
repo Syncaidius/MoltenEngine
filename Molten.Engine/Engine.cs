@@ -2,9 +2,10 @@
 using Molten.Font;
 using Molten.Graphics;
 using Molten.Input;
-using Molten.Networking;
+using Molten.Network;
 using Molten.Threading;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Molten
@@ -13,6 +14,7 @@ namespace Molten
     public class Engine : IDisposable
     {
         ThreadedQueue<EngineTask> _taskQueue;
+        List<EngineService> _services;
 
         /// <summary>Gets the current instance of the engine. There can only be one active per application.</summary>
         public static Engine Current { get; private set; }
@@ -47,8 +49,14 @@ namespace Molten
             Log.WriteDebugLine("Engine Instantiated");
             Threading = new ThreadManager(this, Log);
             _taskQueue = new ThreadedQueue<EngineTask>();
+            _services = new List<EngineService>(Settings.StartupServices);
             Content = new ContentManager(Log, this, null, Settings.ContentWorkerThreads);
             Scenes = new SceneManager(Settings.UI);
+
+            Renderer = GetService<MoltenRenderer>();
+            Input = GetService<InputManager>();
+            Net = GetService<NetworkManager>();
+
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
@@ -59,26 +67,17 @@ namespace Molten
             Logger.DisposeAll();
         }
 
-        internal void LoadInput<I>()
-            where I : InputManager, new()
+        public T GetService<T>() where T: EngineService
         {
-            if (Input != null)
-                Log.WriteLine("Attempted to load input manager when one is already loaded!");
-
-            Input = new I();
-
-            // Initialize
-            try
+            Type t = typeof(T);
+            foreach(EngineService service in Settings.StartupServices)
             {
-                Input.Initialize(Settings.Input, Log);
-                Log.WriteLine($"Initialized input manager");
+                Type serviceType = service.GetType();
+                if (t.GetType().IsAssignableFrom(serviceType))
+                    return service as T;
             }
-            catch (Exception e)
-            {
-                Log.WriteLine("Failed to initialize input manager");
-                Log.WriteError(e);
-                Input = null;
-            }
+
+            return null;
         }
 
         internal bool LoadRenderer<R>()
@@ -111,29 +110,6 @@ namespace Molten
             return true;
         }
 
-
-        internal void LoadNetworkService<N>()
-            where N : MoltenNetworkService, new()
-        {
-            if (NetworkService != null)
-                Log.WriteLine("Attempted to load network service when one is already loaded!");
-
-            NetworkService = new N();
-
-            // Initialize
-            try
-            {
-                //Input.Initialize(Settings.Input, Log);
-                Log.WriteLine($"Initialized network service");
-            }
-            catch (Exception e)
-            {
-                Log.WriteLine("Failed to initialize network service");
-                Log.WriteError(e);
-                Input = null;
-            }
-        }
-
         private void LoadDefaultFont(EngineSettings settings)
         {
             try
@@ -154,81 +130,87 @@ namespace Molten
             }
         }
 
-        /// <summary>Starts the renderer thread.</summary>
-        /// <param name="apartmentState">The apartment state of the renderer thread. The default value is multithreaded aparment (MTA).</param>
-        public void StartRenderer(ApartmentState apartmentState = ApartmentState.MTA)
+        /// <summary>
+        /// Starts the engine and it's services.
+        /// </summary>
+        public void Start(ApartmentState apartmentState = ApartmentState.MTA)
         {
-            if (Renderer == null)
+            foreach (EngineService service in _services)
             {
-                Log.WriteLine("A renderer has not be loaded. Unable to start renderer");
-                Log.WriteDebugLine("Please ensure Engine.LoadRenderer() was called and a valid renderer library was provided.");
-                return;
+                if (service.IsInitialized)
+                    service.Start();
             }
 
-            if (RenderThread != null)
+            if(Renderer != null)
             {
-                Log.WriteLine("Ignored attempt to start renderer thread while already running");
-                return;
+                if (RenderThread == null)
+                {
+                    RenderThread = Threading.SpawnThread("Renderer_main", true, false, (time) =>
+                    {
+                        Renderer.Present(time);
+                    }, apartmentState);
+                    Log.WriteLine("Started renderer thread");
+                }
+                else
+                {
+                    Log.WriteLine("Ignored attempt to start renderer thread while already running");
+                }
             }
 
-            RenderThread = Threading.SpawnThread("Renderer_main", true, false, (time) =>
+            if (Net != null)
             {
-                Renderer.Present(time);
-            }, apartmentState);
+                if (NetworkThread == null)
+                {
+                    NetworkThread = Threading.SpawnThread("Network_main", true, false, (time) =>
+                    {
+                        NetworkService.Update(time);
+                    }, apartmentState);
 
-            Log.WriteLine("Renderer thread started");
+                    Log.WriteLine("Started network thread");
+                }
+                else
+                {
+                    Log.WriteLine("Ignored attempt to start network thread while already running");
+                }
+            }
         }
 
-        /// <summary>Stops the renderer thread.</summary>
-        public void StopRenderer()
+        /// <summary>
+        /// Stops the engine and it's services.
+        /// </summary>
+        public void Stop()
         {
+            foreach (EngineService service in _services)
+            {
+                if (service.IsInitialized)
+                    service.Start();
+            }
+
+            // Stop render thread.
             if (Renderer == null || RenderThread == null)
             {
                 Log.WriteLine("Ignored attempt to stop renderer while not running");
                 return;
             }
-
-            RenderThread.Dispose();
-            RenderThread = null;
-        }
-
-
-        /// <summary>Starts the renderer thread.</summary>
-        /// <param name="apartmentState">The apartment state of the renderer thread. The default value is multithreaded aparment (MTA).</param>
-        public void StartNetworkService(ApartmentState apartmentState = ApartmentState.MTA)
-        {
-            if (NetworkService == null)
+            else
             {
-                Log.WriteLine("A network service has not be loaded. Unable to start service.");
-                Log.WriteDebugLine($"Please ensure Engine.{nameof(LoadNetworkService)}() was called and a valid network library was provided.");
-                return;
+                RenderThread.Dispose();
+                RenderThread = null;
+                Log.WriteLine("Stopped render thread");
             }
 
-            if (NetworkThread != null)
-            {
-                Log.WriteLine("Ignored attempt to start network thread while already running");
-                return;
-            }
-
-            NetworkThread = Threading.SpawnThread("Network_main", true, false, (time) =>
-            {
-                NetworkService.Update(time);
-            }, apartmentState);
-
-            Log.WriteLine("Network thread started");
-        }
-
-        /// <summary>Stops the renderer thread.</summary>
-        public void StopNetworkService()
-        {
+            // Stop network thread
             if (NetworkService == null || NetworkThread == null)
             {
                 Log.WriteLine("Ignored attempt to stop network service while not running");
                 return;
             }
-
-            NetworkThread.Dispose();
-            NetworkThread = null;
+            else
+            {
+                NetworkThread.Dispose();
+                NetworkThread = null;
+                Log.WriteLine("Stopped network thread");
+            }
         }
 
         internal void AddScene(Scene scene)
@@ -260,6 +242,9 @@ namespace Molten
         /// </summary>
         public void Dispose()
         {
+            if (IsDisposed)
+                return;
+
             Log.WriteDebugLine("Shutting down engine");
             Threading.Dispose();
             Renderer?.Dispose();
@@ -268,6 +253,7 @@ namespace Molten
             Logger.DisposeAll();
             Settings.Save();
             Current = null;
+            IsDisposed = true;
         }
 
         /// <summary>
@@ -275,7 +261,7 @@ namespace Molten
         /// </summary>
         internal EngineThread RenderThread { get; private set; }
 
-        /// <summary>Gets the renderer attached to the current <see cref="Engine"/> instance.</summary>>
+        /// <summary>Gets the <see cref="MoltenRenderer"/> attached to the current <see cref="Engine"/> instance.</summary>>
         public MoltenRenderer Renderer { get; private set; }
 
 
@@ -285,7 +271,7 @@ namespace Molten
         internal EngineThread NetworkThread { get; private set; }
 
         /// <summary>Gets the network service attached to the current <see cref="Engine"/> instance.</summary>>
-        public MoltenNetworkService NetworkService { get; private set; }
+        public NetworkManager NetworkService { get; private set; }
 
         /// <summary>Gets the log attached to the current <see cref="Engine"/> instance.</summary>
         internal Logger Log { get; }
@@ -309,12 +295,19 @@ namespace Molten
         /// </summary>
         public SpriteFont DefaultFont { get; private set; }
 
-        /// <summary>Gets the input manager attached to the current <see cref="Engine"/> instance.</summary>
+        /// <summary>Gets the <see cref="InputManager"/> attached to the current <see cref="Engine"/> instance.</summary>
         public InputManager Input { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="NetworkManager"/> attached to the current <see cref="Engine"/> instance.
+        /// </summary>
+        public NetworkManager Net { get; private set; }
 
         /// <summary>
         /// Gets the internal scene manager for the current <see cref="Engine"/> instance.
         /// </summary>
         internal SceneManager Scenes { get; }
+
+        public bool IsDisposed { get; private set; }
     }
 }

@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Networking.Enums
+namespace Molten.Network
 {
-    public enum ServiceType
+    public enum NetApplicationMode
     {
         Client = 1,
+
         Server = 2,
     }
 }

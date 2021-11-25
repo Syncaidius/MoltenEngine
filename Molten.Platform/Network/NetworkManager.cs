@@ -1,22 +1,20 @@
 ﻿using Molten.Collections;
-using Molten.Networking.Enums;
-using Molten.Networking.Message;
+using Molten.Network.Message;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Networking
+namespace Molten.Network
 {
-    public abstract class MoltenNetworkService : IDisposable
+    public abstract class NetworkManager : EngineService<NetworkSettings>
     {
         protected readonly ThreadedQueue<INetworkMessage> _inbox;
         protected readonly ThreadedQueue<(INetworkMessage, INetworkConnection[])> _outbox;
         
-        public MoltenNetworkService()
+        public NetworkManager()
         {
-            Log = Logger.Get();
             _inbox = new ThreadedQueue<INetworkMessage>();
             _outbox = new ThreadedQueue<(INetworkMessage, INetworkConnection[])>();
         }
@@ -31,9 +29,9 @@ namespace Molten.Networking
             OnUpdate(timing);
         }
 
-        public void Dispose()
+        protected override void OnDispose()
         {
-            OnDispose();
+            base.OnDispose();
             Log.Dispose();
         }
 
@@ -66,14 +64,14 @@ namespace Molten.Networking
         /// Starts a network peer of a given type.
         /// </summary>
         /// <param name="type"></param>
-        public abstract void Start(ServiceType type, int port, string identity);
+        public abstract void Start(NetApplicationMode type, int port, string identity);
 
         #endregion
 
         #region Protected
 
         protected internal abstract void OnUpdate(Timing timing);
-        protected internal abstract void OnDispose();
+
         protected internal Logger Log { get; }
 
         #endregion

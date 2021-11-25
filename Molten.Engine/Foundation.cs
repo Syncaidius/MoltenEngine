@@ -8,12 +8,16 @@ using System.Threading;
 namespace Molten
 {
     /// <summary>
-    /// Provides a headless (no input or rendering capability) on which to build a game or other type 
-    /// of application with Molten engine.
+    /// Provides a foundation on which to build a game or other type of application with Molten engine.
     /// </summary>
     public abstract class Foundation : IDisposable
     {
+        Engine _engine;
         EngineThread _gameThread;
+        INativeSurface _gameWindow;
+        KeyboardDevice _keyboard;
+        GamepadDevice _gamepad;
+        MouseDevice _mouse;
 
         /// <summary>
         /// Occurs when the game is in the process of closing.
@@ -28,43 +32,6 @@ namespace Molten
             Title = title;
         }
 
-        /// <summary>Starts the game. This will trigger initialization, then start the renderer and game threads.</summary>
-        /// <param name="settings">The settings for the game. If this is null, the default settings will be used.</param>
-        /// <param name="ignoreSavedSettings">If true, the previously-saved settings will be ignored and 
-        /// replaced with the provided (or default) settings.</param>
-        /// <param name="gameThreadApartment">The thread apartment state for the main game thread.</param>
-        /// <param name="renderThreadApartment">The thread apartment state for the renderer thread</param>
-        public void Start(EngineSettings settings = null,
-            bool ignoreSavedSettings = false,
-            ApartmentState gameThreadApartment = ApartmentState.MTA, ApartmentState renderThreadApartment = ApartmentState.MTA)
-        {
-            if (_gameThread != null)
-                return;
-
-            Engine = new Engine(settings, ignoreSavedSettings);
-
-            _gameThread = Engine.Threading.SpawnThread("game", false, true, (timing) =>
-            {
-                if (RunState != GameRunState.Exiting)
-                {
-                    OnUpdate(timing);
-                    Engine.Update(timing);
-                }
-                else
-                {
-                    Engine.Log.WriteLine("Game exiting");
-                    OnClosing?.Invoke(this);
-                    OnClose();
-                    ForceExit();
-                }
-            }, gameThreadApartment);
-
-            OnInitialize(Engine);
-            OnFirstLoad(Engine);
-
-            _gameThread.Start();
-        }
-
         /// <summary>
         /// Disposes of the foundation and it's underlying <see cref="Engine"/> instance.
         /// </summary>
@@ -74,9 +41,94 @@ namespace Molten
             {
                 IsDisposed = true;
                 ForceExit();
-                Engine.Dispose();
-                OnDispose();
+                _engine.Dispose();
+                _gameThread.Dispose();
+                _gameWindow.Dispose();
             }
+        }
+
+        /// <summary>Starts the game. This will trigger initialization, then start the renderer and game threads.</summary>
+        /// <param name="settings">The settings for the game. If this is null, the default settings will be used.</param>
+        /// <param name="ignoreSavedSettings">If true, the previously-saved settings will be ignored and replaced with the provided (or default) settings.</param>
+        /// <param name="gameThreadApartment">The thread apartment state for the main game thread.</param>
+        /// <param name="renderThreadApartment">The thread apartment state for the renderer thread</param>
+        public bool Start(EngineSettings settings = null,
+            bool ignoreSavedSettings = false,
+            ApartmentState gameThreadApartment = ApartmentState.MTA, ApartmentState renderThreadApartment = ApartmentState.MTA)
+        {
+            if (_gameThread != null)
+                return true;
+
+            _engine = new Engine(settings, ignoreSavedSettings);
+
+            // Did a module fail to start and shutdown the engine?
+            if (_engine.IsDisposed)
+            {
+                RunState = GameRunState.Exited;
+                return false;
+            }
+            if (_engine.Input == null)
+            {
+                _engine.Log.WriteError("Input library failed to initialize. Forcing game exit.");
+                ForceExit();
+                return;
+            }
+
+            if (_engine.Renderer == null)
+            {
+                _engine.Log.WriteError("Renderer failed to initialize. Forcing game exit.");
+                ForceExit();
+                return;
+            }
+
+            if (Settings.UseGuiControl)
+                _gameWindow = _engine.Renderer.Resources.CreateControlSurface(Title, "MainForm");
+            else
+                _gameWindow = _engine.Renderer.Resources.CreateFormSurface(Title, "MainControl");
+
+            _engine.Renderer.OutputSurfaces.Add(_gameWindow);
+            _gameWindow.Visible = true;
+
+            _keyboard = _engine.Input.GetKeyboard();
+            _mouse = _engine.Input.GetMouse();
+            _gamepad = _engine.Input.GetGamepad<GamepadDevice>(0, GamepadSubType.Gamepad);
+            _engine.StartRenderer(renderThreadApartment);
+
+            _gameThread = _engine.Threading.SpawnThread("game", false, true, (timing) =>
+            {
+                if (RunState != GameRunState.Exiting)
+                {
+                    OnUpdate(timing);
+                    _engine.Update(timing);
+                }
+                else
+                {
+                    _engine.Log.WriteLine("Game exiting");
+                    OnClosing?.Invoke(this);
+                    OnClose();
+                    ForceExit();
+                }
+            }, gameThreadApartment);
+
+            OnInitialize(Engine);
+            OnFirstLoad(Engine);
+
+            _gameWindow.OnClose += _gameWindow_OnClose;
+            _gameThread.Start();
+        }
+
+        private void _gameWindow_OnClose(INativeSurface surface)
+        {
+            Exit();
+        }
+
+        /// <summary>
+        /// Dispatches a callback to the renderer thread, to be executed on it's next update tick.
+        /// </summary>
+        /// <param name="callback"></param>
+        public void DispatchToRenderThread(Action callback)
+        {
+            Engine.RenderThread.Dispatch(callback);
         }
 
         /// <summary>
@@ -155,9 +207,8 @@ namespace Molten
         /// Does not call <see cref="Dispose"/></summary>
         public void ForceExit()
         {
-            Engine.Log.WriteLine("Game closed");
-            Engine.Dispose();
-            _gameThread.Dispose();
+            _engine.Log.WriteLine("Game closed");
+            _engine.Dispose();
             RunState = GameRunState.Exited;
         }
 
@@ -173,11 +224,6 @@ namespace Molten
         /// </summary>
         /// <param name="engine"></param>
         protected virtual void OnFirstLoad(Engine engine) { }
-
-        /// <summary>
-        /// Invoked when the <see cref="Foundation"/> is disposing.
-        /// </summary>
-        protected abstract void OnDispose();
 
         /// <summary>Occurs when the game is in the process of exiting. This gives the game logic a
         /// chance to correctly handle the exit, such as saving the player's progress.</summary>
@@ -199,112 +245,39 @@ namespace Molten
         public string Title { get; set; }
 
         /// <summary>Gets the game's engine settings.</summary>
-        public EngineSettings Settings => Engine.Settings;
+        public EngineSettings Settings => _engine.Settings;
 
         /// <summary>Gets the game's current run state.</summary>
         public GameRunState RunState { get; private set; }
 
         /// <summary>Gets the engine instance used by the game.</summary>
-        public Engine Engine { get; private set; }
+        public Engine Engine => _engine;
 
         /// <summary>Gets the game and engine <see cref="Logger"/>. It is used to write information into the game's log file.</summary>
-        public Logger Log => Engine.Log;
+        public Logger Log => _engine.Log;
 
         /// <summary>
         /// Gets the <see cref="Timing"/> instance of the game's main thread.
         /// </summary>
         public Timing Time => _gameThread.Timing;
 
-        /// <summary>
-        /// Gets whether or not the current <see cref="Foundation{R, I}"/> instance has been disposed.
-        /// </summary>
-        public bool IsDisposed { get; private set; }
-    }
-
-    /// <summary>
-    /// Provides a foundation on which to build a game or other type 
-    /// of application with Molten engine.
-    /// </summary>
-    public abstract class Foundation<R, I> : Foundation
-        where R : MoltenRenderer, new()
-        where I : InputManager, new()
-    {
-        /// <summary>Creates a new instance of <see cref="Foundation{R, I}"/>.</summary>
-        /// <param name="title"></param>
-
-        public Foundation(string title) : 
-            base(title)
-        {
-            Title = title;
-        }
-
-        protected override void OnDispose()
-        {
-            Window.Dispose();
-        }
-
-        protected override void OnInitialize(Engine engine)
-        {
-            Engine.LoadRenderer<R>();
-            Engine.LoadInput<I>();
-
-            if (Engine.Input == null)
-            {
-                Engine.Log.WriteError("Input library failed to initialize. Forcing game exit.");
-                ForceExit();
-                return;
-            }
-
-            if (Engine.Renderer == null)
-            {
-                Engine.Log.WriteError("Renderer failed to initialize. Forcing game exit.");
-                ForceExit();
-                return;
-            }
-
-            if (Settings.UseGuiControl)
-                Window = Engine.Renderer.Resources.CreateControlSurface(Title, "MainForm");
-            else
-                Window = Engine.Renderer.Resources.CreateFormSurface(Title, "MainControl");
-
-            Window.OnClose += _gameWindow_OnClose;
-            Engine.Renderer.OutputSurfaces.Add(Window);
-            Window.Visible = true;
-
-            Keyboard = Engine.Input.GetKeyboard();
-            Mouse = Engine.Input.GetMouse();
-            Gamepad = Engine.Input.GetGamepad<GamepadDevice>(0, GamepadSubType.Gamepad);
-            Engine.StartRenderer(ApartmentState.MTA);
-
-            base.OnInitialize(engine);
-        }
-
-        private void _gameWindow_OnClose(INativeSurface surface)
-        {
-            Exit();
-        }
-
-        /// <summary>
-        /// Dispatches a callback to the renderer thread, to be executed on it's next update tick.
-        /// </summary>
-        /// <param name="callback"></param>
-        public void DispatchToRenderThread(Action callback)
-        {
-            Engine.RenderThread.Dispatch(callback);
-        }
-
         /// <summary>Gets the <see cref="KeyboardDevice"/> attached to the game's main window.</summary>
-        public KeyboardDevice Keyboard { get; private set; }
+        public KeyboardDevice Keyboard => _keyboard;
 
         /// <summary>Gets the <see cref="MouseDevice"/> attached to the game's main window.</summary>
-        public MouseDevice Mouse { get; private set; }
+        public MouseDevice Mouse => _mouse;
 
         /// <summary>
         /// Gets the <see cref="GamepadDevice"/> attached to the game's main window.
         /// </summary>
-        public GamepadDevice Gamepad { get; private set; }
+        public GamepadDevice Gamepad => _gamepad;
 
         /// <summary>Gets the <see cref="INativeSurface"/> that the game renders in to.</summary>
-        public INativeSurface Window { get; private set; }
+        public INativeSurface Window => _gameWindow;
+
+        /// <summary>
+        /// Gets whether or not the current <see cref="Foundation{R, I}"/> instance has been disposed.
+        /// </summary>
+        public bool IsDisposed { get; private set; }
     }
 }

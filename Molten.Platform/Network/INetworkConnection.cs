@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Networking
+namespace Molten.Network
 {
     public interface INetworkConnection
     {
         string Host { get; }
+
         int Port { get; }
     }
 }

@@ -1,7 +1,11 @@
 ﻿using Molten.Graphics;
 using Molten.Input;
+using Molten.Network;
+using Molten.Utility;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
@@ -16,6 +20,24 @@ namespace Molten
             Graphics = new GraphicsSettings();
             Input = new InputSettings();
             UI = new UISettings();
+        }
+
+        public void AddService<T, S>(MoltenEventHandler<EngineService<S>, S> initCallback) 
+            where T : EngineService<S>, new()
+            where S : SettingBank
+        {
+            // Check if service is already in startup list.
+            Type t = typeof(T);
+            foreach(EngineService s in StartupServices)
+            {
+                Type sType = s.GetType();
+                if (sType.IsAssignableFrom(t) || t.IsAssignableFrom(sType))
+                    throw new Exception($"Cannot add service of the same or derived type as another ({sType} and {t}).");
+            }
+
+            T service = new T();
+            service.OnInitialized += initCallback;
+            StartupServices.Add(service);
         }
 
         public void Load()
@@ -65,6 +87,12 @@ namespace Molten
         public InputSettings Input { get; private set; }
 
         /// <summary>
+        /// Gets the network settings bank.
+        /// </summary>
+        [DataMember]
+        public NetworkSettings Network { get; private set; }
+
+        /// <summary>
         /// Gets the user interface (UI) settings bank.
         /// </summary>
         [DataMember]
@@ -102,5 +130,10 @@ namespace Molten
         /// Gets or sets whether the engine should render into a native GUI control.
         /// </summary>
         public bool UseGuiControl { get; set; } = false;
+
+        /// <summary>
+        /// A list of services to be initialized once the engine is started.
+        /// </summary>
+        internal List<EngineService> StartupServices { get; } = new List<EngineService>();
     }
 }

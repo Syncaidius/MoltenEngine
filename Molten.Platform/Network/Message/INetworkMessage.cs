@@ -1,11 +1,10 @@
-﻿using Molten.Networking.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Networking.Message
+namespace Molten.Network.Message
 {
     public interface INetworkMessage
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Molten.Input
 {
-    public abstract class InputManager : EngineObject
+    public abstract class InputManager : EngineService<InputSettings>
     {
         /// <summary>
         /// Gets or sets the camera through which input is handled. 
@@ -43,6 +43,11 @@ namespace Molten.Input
             _devices = new List<InputDevice>();
 
             OnInitialize();
+        }
+
+        public override void Start()
+        {
+
         }
 
         private void BindSurface(IRenderSurface surface)

@@ -170,6 +170,15 @@
     <Compile Include="Input\Mouse\MouseDevice.cs" />
     <Compile Include="Input\Mouse\MouseButton.cs" />
     <Compile Include="Input\Touch\TouchPointState.cs" />
+    <Compile Include="EngineService.cs" />
+    <Compile Include="Network\DeliveryMethod.cs" />
+    <Compile Include="Network\INetworkConnection.cs" />
+    <Compile Include="Network\Message\ConnectionRequest.cs" />
+    <Compile Include="Network\Message\INetworkMessage.cs" />
+    <Compile Include="Network\Message\NetworkMessage.cs" />
+    <Compile Include="Network\NetApplicationMode.cs" />
+    <Compile Include="Network\NetworkManager.cs" />
+    <Compile Include="Network\NetworkSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Graphics\AntiAliasMode.cs" />
     <Compile Include="Graphics\Buffers\BufferMode.cs" />

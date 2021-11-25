@@ -18,6 +18,6 @@ namespace Molten.Input
 
         /// <summary>Gets the character value of the key. 
         /// This is only populated if <see cref="KeyType"/> is equal to <see cref="KeyboardKeyType.Character"/></summary>
-        public char Character = char.MinValue;
+        public char Character;
     }
 }
