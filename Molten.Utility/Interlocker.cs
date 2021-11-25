@@ -8,8 +8,12 @@ namespace Molten
     /// </summary>
     public class Interlocker
     {
-        Thread _thread;
         int _blockingVal;
+
+        /// <summary>
+        /// Gets the <see cref="Thread"/> which locked the current <see cref="Interlocker"/>.
+        /// </summary>
+        public Thread LockingThread { get; private set; }
 
         /// <summary>
         /// Takes the lock by internally using <see cref="Interlocked.Exchange(ref int, int)"/>. Skips lock checks if the current thread already holds the lock.
@@ -17,15 +21,17 @@ namespace Molten
         /// <param name="callback"></param>
         public void Lock(Action callback)
         {
-            if (_thread != Thread.CurrentThread)
+            // Ignore locking if the current thread already own's the lock.
+            // This allows nested locks on the same thread.
+            if (LockingThread != Thread.CurrentThread)
             {
                 SpinWait spin = new SpinWait();
                 while (0 != Interlocked.Exchange(ref _blockingVal, 1))
                     spin.SpinOnce();
 
-                _thread = Thread.CurrentThread;
+                LockingThread = Thread.CurrentThread;
                 callback();
-                _thread = null;
+                LockingThread = null;
                 Interlocked.Exchange(ref _blockingVal, 0);
             }
             else
@@ -42,7 +48,7 @@ namespace Molten
         public void Throw<T>(string message) where T : Exception
         {
             T ex = Activator.CreateInstance(typeof(T), message) as T;
-            _thread = null;
+            LockingThread = null;
             Interlocked.Exchange(ref _blockingVal, 0);
             throw ex;
         }
@@ -53,7 +59,7 @@ namespace Molten
         /// <param name="exception">The exception to be thrown.</param>
         public void Throw(Exception exception)
         {
-            _thread = null;
+            LockingThread = null;
             Interlocked.Exchange(ref _blockingVal, 0);
             throw exception;
         }

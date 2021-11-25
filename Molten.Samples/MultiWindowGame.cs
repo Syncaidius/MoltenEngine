@@ -9,6 +9,8 @@ namespace Molten.Samples
 {
     public class MultiWindowGame : SampleGame
     {
+        public int WINDOW_COUNT = 5;
+
         public override string Description => "A simple multi-window test.";
 
         List<INativeSurface> _extraWindows;
@@ -24,6 +26,8 @@ namespace Molten.Samples
 
         protected override void OnInitialize(Engine engine)
         {
+            base.OnInitialize(engine);
+
             _scenes = new List<Scene>();
             _parents = new List<SceneObject>();
             _children = new List<SceneObject>();
@@ -39,7 +43,7 @@ namespace Molten.Samples
             _mesh.SetVertices(SampleVertexData.ColoredCube);
 
             SpawnScene(Window);
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < WINDOW_COUNT; i++)
             {
                 string title = $"Window #{i}";
                 INativeSurface window = engine.Renderer.Resources.CreateFormSurface(title, $"Window{i}");
@@ -52,8 +56,6 @@ namespace Molten.Samples
                 window.OnClose += Window_OnClose;
                 window.Visible = true;
             }
-
-            base.OnInitialize(engine);
         }
 
         private void SpawnScene(INativeSurface surface)
