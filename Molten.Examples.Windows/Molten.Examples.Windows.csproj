@@ -195,7 +195,6 @@
     <Compile Include="DeferredRendering.cs" />
     <Compile Include="1DTextureTest.cs" />
     <Compile Include="SpriteBatchArrrays.cs" />
-    <Compile Include="SpriteFontStress.cs" />
     <Compile Include="FontFileTest.cs" />
     <Compile Include="MultiWindowGame.cs" />
     <Compile Include="SceneParentingTest.cs" />
