@@ -309,10 +309,12 @@ namespace Molten.Input
                 S state = _buffer[_bStart];
                 int stateID = GetStateID(ref state);
                 S prev = _states[stateID];
-                ProcessState(ref state, ref prev);
+                bool accept = ProcessState(ref state, ref prev);
 
-                // Replace state with new state.
-                _states[stateID] = state;
+                // Replace state with new state, if accepted.
+                if (accept)
+                    _states[stateID] = state;
+
                 _bStart++;
             }
 
@@ -361,7 +363,7 @@ namespace Molten.Input
         /// <param name="newState">The new data provided by an input state.</param>
         /// <param name="prevState">The previous data provided by an input state.</param>
         /// <returns>The ID of the state. For example, a key, touch-point or button ID.</returns>
-        protected abstract void ProcessState(ref S newState, ref S prevState);
+        protected abstract bool ProcessState(ref S newState, ref S prevState);
 
         /// <summary>
         /// Invoked when the device needs to retrieve a state's ID during processing.

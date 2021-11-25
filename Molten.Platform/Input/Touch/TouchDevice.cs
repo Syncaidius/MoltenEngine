@@ -44,7 +44,7 @@ namespace Molten.Input
 
         protected override sealed int GetStateID(ref TouchPointState state) => state.ID;
 
-        protected override void ProcessState(ref TouchPointState newsState, ref TouchPointState prevState)
+        protected override bool ProcessState(ref TouchPointState newsState, ref TouchPointState prevState)
         {
             // Calculate delta from last pointer state.
             if (newsState.State == InputAction.Moved && prevState.State != InputAction.Released)
@@ -65,6 +65,8 @@ namespace Molten.Input
                     case InputAction.Held: TouchHeld?.Invoke(newsState); break;
                 }
             }
+
+            return true;
         }
 
         protected override bool GetIsHeld(ref TouchPointState state)

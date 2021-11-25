@@ -14,8 +14,8 @@ namespace Molten.Input
 
         struct ParsedLParam
         {
-            public long RepeatCount;
-            public long ScanCode;
+            public int RepeatCount;
+            public int ScanCode;
             public bool ExtendedKey;
             public bool AltKeyPressed;
             public bool PrevPressed;
@@ -53,52 +53,51 @@ namespace Molten.Input
             {
                 Key = 0,
                 KeyType = KeyboardKeyType.Normal,
-                State = InputAction.Pressed,
+                Action = InputAction.Pressed,
                 Character = char.MinValue,
             };
 
-            // TODO implement keyboard messages: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-keyboard-input#keystroke-message-flags
-            switch (msgType)
+            if (windowHandle == forewindow)
             {
-                case WndProcMessageType.WM_CHAR:
-                    if (windowHandle == forewindow)
-                    {
-                        state.Key = 0;
-                        state.Character = (char)wParam;
-                        state.State = InputAction.Pressed;
-                        state.KeyType = KeyboardKeyType.Character;
+                switch (msgType)
+                {
+                    case WndProcMessageType.WM_CHAR:
+                        if (windowHandle == forewindow)
+                        {
+                            state.Key = 0;
+                            state.Character = (char)wParam;
+                            state.Action = InputAction.Pressed;
+                            state.KeyType = KeyboardKeyType.Character;
+                            QueueKeyState(ref state, lParam);
+                        }
+                        break;
 
-                        plp = ParseLParam(ref state, lParam);
-
-                        for (int i = 0; i < plp.RepeatCount; i++)
-                            QueueState(state);
-                    }
-                    break;
-
-                case WndProcMessageType.WM_KEYDOWN:
-                case WndProcMessageType.WM_KEYUP:
-                    state.Key = (KeyCode)(wParam & 0xFFFF);
-                    state.KeyType = ValidateKeyType(wParam);
-                    plp = ParseLParam(ref state, lParam);
-
-                    if (plp.Pressed && plp.PrevPressed)
-                    {
-                        state.State = InputAction.Held;
-                    }
-                    else if (plp.Pressed && !plp.PrevPressed)
-                    {
-                        state.State = InputAction.Pressed;
+                    case WndProcMessageType.WM_KEYDOWN:
+                        state.Key = (KeyCode)(wParam & 0xFFFF);
+                        state.KeyType = ValidateKeyType(wParam);
+                        state.Action = InputAction.Pressed;
                         state.PressTimestamp = DateTime.UtcNow;
-                    }
-                    else if (!plp.Pressed && plp.PrevPressed)
-                    {
-                        state.State = InputAction.Released;
-                    }
+                        QueueKeyState(ref state, lParam);
+                        break;
+                    case WndProcMessageType.WM_KEYUP:
+                        state.Key = (KeyCode)(wParam & 0xFFFF);
+                        state.KeyType = ValidateKeyType(wParam);
+                        state.Action = InputAction.Released;
 
-                    for (int i = 0; i < plp.RepeatCount; i++)
-                        QueueState(state);
-                    break;
+                        QueueKeyState(ref state, lParam);
+                        break;
+                }
             }
+
+            // TODO implement keyboard messages: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-keyboard-input#keystroke-message-flags
+        }
+
+        private void QueueKeyState(ref KeyboardKeyState state, int lParam)
+        {
+            ParsedLParam plp = ParseLParam(ref state, lParam);
+
+            for (int i = 0; i < plp.RepeatCount; i++)
+                QueueState(state);
         }
 
         protected override void OnBind(INativeSurface surface) { }
@@ -135,7 +134,7 @@ namespace Molten.Input
         /// </summary>
         /// <param name="state">The state that will hold the parsed information.</param>
         /// <param name="lParam">The raw lParam value.</param>
-        private ParsedLParam ParseLParam(ref KeyboardKeyState state, long lParam)
+        private ParsedLParam ParseLParam(ref KeyboardKeyState state, int lParam)
         {
             return new ParsedLParam()
             {

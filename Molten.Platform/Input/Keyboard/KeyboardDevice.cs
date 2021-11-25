@@ -1,4 +1,6 @@
-﻿namespace Molten.Input
+﻿using System.Diagnostics;
+
+namespace Molten.Input
 {
     public delegate void KeyHandler(KeyboardDevice device, KeyboardKeyState state);
     public delegate void KeyPressHandler(KeyboardKeyState state);
@@ -21,45 +23,58 @@
             return (int)state.Key;
         }
 
-        protected override void ProcessState(ref KeyboardKeyState newState, ref KeyboardKeyState prevState)
+        protected override bool ProcessState(ref KeyboardKeyState newState, ref KeyboardKeyState prevState)
         {
-            if (newState.State == InputAction.Held || 
-                (newState.State == InputAction.Pressed && prevState.State == InputAction.Pressed))
+            if (newState.Action == InputAction.Held || 
+                (newState.Action == InputAction.Pressed && prevState.Action == InputAction.Pressed))
             {
-                newState.State = InputAction.Held;
+                newState.Action = InputAction.Held;
                 newState.PressTimestamp = prevState.PressTimestamp;
                 OnKeyHeld?.Invoke(this, newState);
-            }else if(newState.State == InputAction.Pressed)
-            {
-                OnKeyDown?.Invoke(this, newState);
-            }else if(newState.State == InputAction.Released)
-            {
-                if (prevState.State != InputAction.Released && prevState.State != InputAction.None)
-                    newState.PressTimestamp = prevState.PressTimestamp;
+            }
 
-                OnKeyUp?.Invoke(this, newState);
+            if (newState.Action != InputAction.None && prevState.Action != InputAction.None && 
+                prevState.Action != InputAction.Released)
+            {
+                newState.PressTimestamp = prevState.PressTimestamp;
             }
 
             if(newState.KeyType == KeyboardKeyType.Character)
             {
-                if (newState.State == InputAction.Pressed || newState.State == InputAction.Held)
+                if (newState.Action == InputAction.Pressed || 
+                    newState.Action == InputAction.Held)
+                {
                     OnCharacterKey?.Invoke(newState);
+                }
+
+                // Don't accept character key events as key states.
+                return false;
             }
+            else
+            {
+                if (newState.Action == InputAction.Pressed)
+                    OnKeyDown?.Invoke(this, newState);
+                else if (newState.Action == InputAction.Released)
+                    OnKeyUp?.Invoke(this, newState);
+            }
+
+            Debug.WriteLine($"KB State -- Key: {newState.Key} -- Action: {newState.Action} -- Type: {newState.KeyType}");
+            return true;
         }
 
         protected override bool GetIsDown(ref KeyboardKeyState state)
         {
-            return state.State == InputAction.Pressed || state.State == InputAction.Held;
+            return state.Action == InputAction.Pressed || state.Action == InputAction.Held;
         }
 
         protected override bool GetIsHeld(ref KeyboardKeyState state)
         {
-            return state.State == InputAction.Held;
+            return state.Action == InputAction.Held;
         }
 
         protected override bool GetIsTapped(ref KeyboardKeyState state)
         {
-            return state.State == InputAction.Pressed;
+            return state.Action == InputAction.Pressed;
         }
 
         /// <summary>

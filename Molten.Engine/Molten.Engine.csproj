@@ -200,7 +200,6 @@
     <Compile Include="Tasks\EngineRemoveScene.cs" />
     <Compile Include="Tasks\EngineTask.cs" />
     <Compile Include="Threading\EngineThread.cs" />
-    <Compile Include="Threading\ThreadingApartment.cs" />
     <Compile Include="Threading\WorkerGroupException.cs" />
     <Compile Include="Threading\EngineThreadException.cs" />
     <Compile Include="Threading\IWorkerTask.cs" />

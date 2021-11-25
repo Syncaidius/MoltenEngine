@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace Molten.Input
 {
@@ -11,13 +10,14 @@ namespace Molten.Input
             Index = index;
         }
 
-        protected override void ProcessState(ref GamepadButtonState newState, ref GamepadButtonState prevState)
+        protected override bool ProcessState(ref GamepadButtonState newState, ref GamepadButtonState prevState)
         {
             if (prevState.Action == InputAction.Released)
                 newState.PressTimestamp = prevState.PressTimestamp;
 
             newState.HeldTime = DateTime.UtcNow - newState.PressTimestamp;
-            Debug.WriteLine($"Gamepad -- A: {newState.Action} -- B: {newState.Button}");
+
+            return true;
         }
 
         protected override int TranslateStateID(GamepadButton idValue)

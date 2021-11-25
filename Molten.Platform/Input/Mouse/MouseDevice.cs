@@ -84,10 +84,10 @@ namespace Molten.Input
             return (int)idValue;
         }
 
-        protected override void ProcessState(ref MouseButtonState newState, ref MouseButtonState prevState)
+        protected override bool ProcessState(ref MouseButtonState newState, ref MouseButtonState prevState)
         {
             if (_surface == null)
-                return;
+                return true;
 
             newState.UpdateID = Manager.UpdateID;
             Delta = Vector2I.Zero;
@@ -145,7 +145,7 @@ namespace Molten.Input
             CheckInside(insideControl, ref newState);
 
             if (newState.UpdateID == prevState.UpdateID && newState.Action == prevState.Action)
-                return;
+                return true;
 
             switch (newState.Action)
             {
@@ -179,6 +179,8 @@ namespace Molten.Input
                     OnHover?.Invoke(this, newState);
                     break;
             }
+
+            return true;
         }
 
         private void CheckInside(bool insideControl, ref MouseButtonState state)
