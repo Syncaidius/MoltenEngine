@@ -28,7 +28,7 @@ namespace Molten.Input
         bool _requestedVisibility = true;
         bool _cursorVisibility = true;
 
-        public WinMouseDevice(WinInputManager manager) : base(manager)
+        internal WinMouseDevice(WinInputManager manager) : base(manager)
         {
             // TODO Check if mouse is connected: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-mouse-input#mouse-configuration
             // TODO Check available buttons:

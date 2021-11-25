@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using Molten.Windows32;
+using System.Reflection;
 
 namespace Molten.Input
 {
@@ -112,7 +113,8 @@ namespace Molten.Input
 
         protected override T OnGetCustomDevice<T>()
         {
-            return Activator.CreateInstance(typeof(T), args: new object[] { this }) as T;
+            BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+            return Activator.CreateInstance(typeof(T), flags, null, args: new object[] { this }, null) as T;
         }
 
         protected override void OnBindSurface(INativeSurface surface)

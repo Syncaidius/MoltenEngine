@@ -24,7 +24,7 @@ namespace Molten.Input
 
         public override string DeviceName => "Windows Keyboard";
 
-        public WinKeyboardDevice(WinInputManager manager) :
+        internal WinKeyboardDevice(WinInputManager manager) :
             base(manager)
         {
 
