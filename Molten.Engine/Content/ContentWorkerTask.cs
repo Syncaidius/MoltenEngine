@@ -19,7 +19,7 @@ namespace Molten
             Request = null;
         }
 
-        public void Run(Engine engine)
+        public void Run()
         {
             Request.Manager.ProcessRequest(Request);
             OnCompleted?.Invoke(this);

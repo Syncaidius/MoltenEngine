@@ -34,7 +34,7 @@ namespace Molten.Input
 
         public abstract int BufferSize { get; protected set; }
 
-        public InputManager Manager { get; }
+        public InputService Manager { get; }
 
         /// <summary>
         /// Gets the maximum number of simultaneous states that the current <see cref="InputDevice"/> can keep track of.
@@ -69,7 +69,7 @@ namespace Molten.Input
         bool _connected;
         List<InputDeviceFeature> _features;
 
-        public InputDevice(InputManager manager)
+        public InputDevice(InputService manager)
         {
             Manager = manager;
             MaxSimultaneousStates = GetMaxSimultaneousStates();
@@ -256,7 +256,7 @@ namespace Molten.Input
         int _bStart;
         int _bEnd;
 
-        public InputDevice(InputManager manager, int bufferSize) : base(manager)
+        public InputDevice(InputService manager, int bufferSize) : base(manager)
         {
             _buffer = new S[bufferSize]; 
 

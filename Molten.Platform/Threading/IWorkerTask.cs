@@ -7,6 +7,6 @@
         /// <summary>Invoked when a <see cref="WorkerThread"/> completes a task.</summary>
         event WorkerTaskCompletedEvent OnCompleted;
 
-        void Run(Engine engine);
+        void Run();
     }
 }

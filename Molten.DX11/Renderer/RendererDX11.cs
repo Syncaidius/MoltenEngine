@@ -11,7 +11,7 @@ using SharpDX.DXGI;
 
 namespace Molten.Graphics
 {
-    public class RendererDX11 : MoltenRenderer
+    public class RendererDX11 : RenderService
     {
         DisplayManagerDX11 _displayManager;
         ResourceManager _resourceManager;
@@ -49,8 +49,10 @@ namespace Molten.Graphics
             _displayManager.Initialize(Log, settings);
         }
 
-        protected override void OnInitialize(GraphicsSettings settings)
+        protected override void OnInitialize(GraphicsSettings settings, Logger mainLog)
         {
+            base.OnInitialize(settings, mainLog);
+
             Device = new DeviceDX11(Log, settings, _displayManager, settings.EnableDebugLayer);
             _resourceManager = new ResourceManager(this);
             _compute = new ComputeManager(this.Device);

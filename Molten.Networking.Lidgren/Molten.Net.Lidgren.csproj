@@ -56,9 +56,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeliveryMethodExtension.cs" />
-    <Compile Include="LidgrenConnection.cs" />
+    <Compile Include="Extensions\ConnectionStatusExtension.cs" />
+    <Compile Include="Extensions\DeliveryMethodExtension.cs" />
     <Compile Include="LidgrenConnectionRequest.cs" />
+    <Compile Include="LidgrenConnection.cs" />
+    <Compile Include="LidgrenConnectionStatusChanged.cs" />
     <Compile Include="LidgrenNetworkService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

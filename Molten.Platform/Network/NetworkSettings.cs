@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Molten.Network
+namespace Molten.Net
 {
     [DataContract]
     public class NetworkSettings : SettingBank
@@ -13,14 +13,12 @@ namespace Molten.Network
         /// <summary>
         /// The start-up application mode of a <see cref="NetworkManager"/>.
         /// </summary>
-        public NetApplicationMode ApplicationMode { get; set; } = NetApplicationMode.Client;
+        public NetworkMode NetMode { get; set; } = NetworkMode.Client;
 
         /// <summary>
         /// The port to bind a network manager to.
         /// </summary>
         [DataMember]
         public SettingValue<int> Port { get; }
-
-        public string Identity { get; set; }
     }
 }

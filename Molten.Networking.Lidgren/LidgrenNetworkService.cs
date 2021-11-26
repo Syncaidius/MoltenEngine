@@ -4,30 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Lidgren.Network;
-using Molten.Networking.Enums;
-using Molten.Networking.Message;
+using Molten.Net.Message;
+using Molten.Threading;
 
-namespace Molten.Networking
+namespace Molten.Net
 {
-    public class LidgrenNetworkService : Networking.MoltenNetworkService
+    public class LidgrenNetworkService : NetworkService
     {
         NetPeerConfiguration _configuration;
         NetPeer _peer;
 
-        public override void Start(ServiceType type, int port, string identity)
+        protected override ThreadingMode OnStart()
         {
-            _configuration = new NetPeerConfiguration(identity);
-            _configuration.Port = port;
+            _configuration = new NetPeerConfiguration(Identity);
+            _configuration.Port = Settings.Port;
             _configuration.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
             //_configuration.LocalAddress = System.Net.IPAddress.Loopback;
 
-            if (type == ServiceType.Server)
+            if (Settings.NetMode == NetworkMode.Server)
                 _peer = new NetServer(_configuration);
             else
                 _peer = new NetClient(_configuration);
-            
+
             _peer.Start();
-            Log.WriteLine($"Started network {Enum.GetName(typeof(ServiceType), type)} on port {_peer.Port}.");
+            Log.WriteLine($"Started network {Settings.NetMode} on port {_peer.Port}.");
+
+            return base.OnStart();
         }
 
         /// <summary>

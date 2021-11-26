@@ -67,7 +67,7 @@ namespace Molten.Graphics
         GlyphCache[] _glyphCache;
         CharData[] _charData;
         SceneRenderData _renderData;
-        MoltenRenderer _renderer;
+        RenderService _renderer;
         ThreadedQueue<ushort> _pendingGlyphs;
         Interlocker _interlocker;
 
@@ -84,7 +84,7 @@ namespace Molten.Graphics
         /// <param name="initialPages">The initial number of pages in the underlying sprite font texture atlas. Minimum is 1.</param>
         /// <param name="charPadding">The number of pixels to add as padding around each character placed on to the font atlas. 
         /// Default value is 2. Negative padding can cause characters to overlap.</param>
-        public SpriteFont(MoltenRenderer renderer,
+        public SpriteFont(RenderService renderer,
             FontFile font,
             int ptSize,
             int tabSize = 3,
@@ -165,7 +165,7 @@ namespace Molten.Graphics
             _renderData.IsVisible = false;
         }
 
-        private void _renderData_OnPostRender(MoltenRenderer renderer, SceneRenderData data)
+        private void _renderData_OnPostRender(RenderService renderer, SceneRenderData data)
         {
             _renderer.Resources.ResolveTexture(_rt, _tex);
         }

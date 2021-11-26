@@ -15,7 +15,7 @@ namespace Molten.Input
         AndroidViewSurface _boundSurface;
         View _boundView;
 
-        internal AndroidTouchDevice(AndroidInputManager manager) : base(manager)
+        internal AndroidTouchDevice(AndroidInputService manager) : base(manager)
         {
 
         }

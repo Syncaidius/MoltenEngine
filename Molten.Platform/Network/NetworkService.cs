@@ -1,20 +1,22 @@
 ﻿using Molten.Collections;
-using Molten.Network.Message;
+using Molten.Net.Message;
+using Molten.Threading;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Network
+namespace Molten.Net
 {
-    public abstract class NetworkManager : EngineService<NetworkSettings>
+    public abstract class NetworkService : EngineService<NetworkSettings>
     {
         protected readonly ThreadedQueue<INetworkMessage> _inbox;
         protected readonly ThreadedQueue<(INetworkMessage, INetworkConnection[])> _outbox;
-        
-        public NetworkManager()
+
+        public NetworkService()
         {
+            Log = Logger.Get();
             _inbox = new ThreadedQueue<INetworkMessage>();
             _outbox = new ThreadedQueue<(INetworkMessage, INetworkConnection[])>();
         }
@@ -22,18 +24,6 @@ namespace Molten.Network
 
         #region Public
         public int RecievedMessages => _inbox.Count;
-
-        // Called by network service thread.
-        public void Update(Timing timing)
-        {
-            OnUpdate(timing);
-        }
-
-        protected override void OnDispose()
-        {
-            base.OnDispose();
-            Log.Dispose();
-        }
 
         /// <summary>
         /// Puts the message into outbox to be sent on next update.
@@ -60,19 +50,38 @@ namespace Molten.Network
 
         public abstract INetworkConnection Connect(string host, int port, byte[] data = null);
 
-        /// <summary>
-        /// Starts a network peer of a given type.
-        /// </summary>
-        /// <param name="type"></param>
-        public abstract void Start(NetApplicationMode type, int port, string identity);
-
         #endregion
 
         #region Protected
 
-        protected internal abstract void OnUpdate(Timing timing);
+        protected override void OnInitialize(NetworkSettings settings, Logger log)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override ThreadingMode OnStart()
+        {
+            // NOTE access Settings property of base EngineService to get network settings/config.
+
+            return ThreadingMode.SeparateThread;
+        }
+
+        protected override void OnStop()
+        {
+            _outbox.Clear();
+        }
+
+        protected override void OnDispose()
+        {
+            Log.Dispose();
+        }
 
         protected internal Logger Log { get; }
+
+        /// <summary>
+        /// Gets the network identifier of the current network service.
+        /// </summary>
+        public string Identity { get; set; } = "Molten Player";
 
         #endregion
 

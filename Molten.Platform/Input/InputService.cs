@@ -1,10 +1,11 @@
 ﻿using Molten.Graphics;
+using Molten.Threading;
 using System;
 using System.Collections.Generic;
 
 namespace Molten.Input
 {
-    public abstract class InputManager : EngineService<InputSettings>
+    public abstract class InputService : EngineService<InputSettings>
     {
         /// <summary>
         /// Gets or sets the camera through which input is handled. 
@@ -33,21 +34,13 @@ namespace Molten.Input
         /// <summary>Initializes the current input manager instance. Avoid calling this directly unless you know what you are doing.</summary>
         /// <param name="settings">The <see cref="InputSettings"/> that was provided when the engine was instanciated.</param>
         /// <param name="log">A logger.</param>
-        public void Initialize(InputSettings settings, Logger log)
+        protected override void OnInitialize(InputSettings settings, Logger log)
         {
-            Settings = settings;
             Log = log;
 
             _gamepadsByIndex = new Dictionary<int, GamepadDevice>();
             _byType = new Dictionary<Type, InputDevice>();
             _devices = new List<InputDevice>();
-
-            OnInitialize();
-        }
-
-        public override void Start()
-        {
-
         }
 
         private void BindSurface(IRenderSurface surface)
@@ -178,10 +171,8 @@ namespace Molten.Input
 
         /// <summary>Update's the current input manager. Avoid calling directly unless you know what you're doing.</summary>
         /// <param name="time">An instance of timing for the current thread.</param>
-        public void Update(Timing time)
+        protected override void OnUpdate(Timing time)
         {
-            OnUpdate(time);
-
             if (_activeSurface != null)
             {
                 for (int i = 0; i < _devices.Count; i++)
@@ -196,6 +187,13 @@ namespace Molten.Input
             UpdateID++;
         }
 
+        protected sealed override ThreadingMode OnStart()
+        {
+            return ThreadingMode.MainThread;
+        }
+
+        protected override void OnStop() { }
+
         protected override void OnDispose()
         {
             foreach (InputDevice device in _byType.Values)
@@ -203,8 +201,6 @@ namespace Molten.Input
 
             _byType.Clear();
         }
-
-        protected abstract void OnInitialize();
 
         protected abstract T OnGetCustomDevice<T>() where T : InputDevice;
 
@@ -230,7 +226,6 @@ namespace Molten.Input
         /// <returns></returns>
         public abstract TouchDevice GetTouch();
 
-        protected abstract void OnUpdate(Timing time);
 
         /// <summary>Gets the implementation of <see cref="IClipboard"/> bound to the current input manager.</summary>
         public abstract IClipboard Clipboard { get; }
@@ -238,18 +233,13 @@ namespace Molten.Input
         public abstract IInputNavigation Navigation { get; }
 
         /// <summary>
-        /// Gets the <see cref="InputSettings"/> instance bound to the current <see cref="IInputManager"/>.
-        /// </summary>
-        public InputSettings Settings { get; private set; }
-
-        /// <summary>
-        /// Gets the <see cref="Logger"/> bound to the current <see cref="InputManager"/> instance.
+        /// Gets the <see cref="Logger"/> bound to the current <see cref="InputService"/> instance.
         /// </summary>
         public Logger Log { get; private set; }
 
         /// <summary>
         /// Gets the input update/frame ID. 
-        /// This is usually equal to the number of times <see cref="InputManager.Update(Timing)"/> has been called.
+        /// This is usually equal to the number of times <see cref="InputService.Update(Timing)"/> has been called.
         /// </summary>
         public uint UpdateID { get; private set; }
     }

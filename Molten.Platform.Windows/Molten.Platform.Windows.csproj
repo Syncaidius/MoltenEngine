@@ -168,7 +168,7 @@
     <Compile Include="Input\WinMouseDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SharpDXInterop.cs" />
-    <Compile Include="Input\WinInputManager.cs" />
+    <Compile Include="Input\WinInputService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">

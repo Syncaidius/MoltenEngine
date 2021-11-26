@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace Molten.Samples
 {
-    public abstract class SampleGame : Foundation<RendererDX11, WinInputManager>
+    public abstract class SampleGame : Foundation
     {
         SpriteFont _sampleFont;
         bool _baseContentLoaded;

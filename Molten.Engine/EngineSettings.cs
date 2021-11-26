@@ -1,6 +1,6 @@
 ﻿using Molten.Graphics;
 using Molten.Input;
-using Molten.Network;
+using Molten.Net;
 using Molten.Utility;
 using Newtonsoft.Json;
 using System;
@@ -22,6 +22,13 @@ namespace Molten
             UI = new UISettings();
         }
 
+        /// <summary>
+        /// Adds a new <see cref="EngineService"/> to be attached to an <see cref="Engine"/> instance upon initialization.
+        /// </summary>
+        /// <typeparam name="T">The type of <see cref="EngineService"/>.</typeparam>
+        /// <typeparam name="S">The type of <see cref="SettingBank"/> that the service expects.</typeparam>
+        /// <param name="initCallback">The initialization callback to attach to the service.</param>
+        /// <exception cref="Exception"></exception>
         public void AddService<T, S>(MoltenEventHandler<EngineService<S>, S> initCallback) 
             where T : EngineService<S>, new()
             where S : SettingBank
@@ -32,7 +39,8 @@ namespace Molten
             {
                 Type sType = s.GetType();
                 if (sType.IsAssignableFrom(t) || t.IsAssignableFrom(sType))
-                    throw new Exception($"Cannot add service of the same or derived type as another ({sType} and {t}).");
+                    throw new EngineServiceException(null, 
+                        $"Cannot add startup service of the same or derived type as another ({sType} and {t}).");
             }
 
             T service = new T();
@@ -40,9 +48,12 @@ namespace Molten
             StartupServices.Add(service);
         }
 
+        /// <summary>
+        /// Load settings from the file located at the path defined in <see cref="Path"/>
+        /// </summary>
         public void Load()
         {
-            if (!File.Exists(Filename))
+            if (!File.Exists(Path))
                 return;
 
             string json = "";
@@ -50,7 +61,7 @@ namespace Molten
             JsonSerializerSettings jsonSettings = new JsonSerializerSettings() { Formatting = Formatting.Indented };
             jsonSettings.Converters = JsonConverters;
 
-            using (FileStream stream = new FileStream(Filename, FileMode.Open, FileAccess.Read))
+            using (FileStream stream = new FileStream(Path, FileMode.Open, FileAccess.Read))
             {
                 using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                 {
@@ -67,7 +78,7 @@ namespace Molten
             jsonSettings.Converters = JsonConverters;
             string json = JsonConvert.SerializeObject(this, jsonSettings);
 
-            using (FileStream stream = new FileStream(Filename, FileMode.Create, FileAccess.Write, FileShare.None))
+            using (FileStream stream = new FileStream(Path, FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8))
                 {
@@ -98,8 +109,8 @@ namespace Molten
         [DataMember]
         public UISettings UI { get; private set; }
 
-        /// <summary>Gets or sets the name of the settings file.</summary>
-        public string Filename { get; set; } = "settings.json";
+        /// <summary>Gets or sets the path (and filename) of the settings file.</summary>
+        public string Path { get; set; } = "settings.json";
 
         /// <summary>Gets or sets the number of content worker threads. Changing this value will only have an affect before <see cref="Engine"/> is instantiated.</summary>
         public int ContentWorkerThreads { get; set; } = 2;

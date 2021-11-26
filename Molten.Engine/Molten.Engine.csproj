@@ -199,13 +199,6 @@
     <Compile Include="Tasks\EngineAddScene.cs" />
     <Compile Include="Tasks\EngineRemoveScene.cs" />
     <Compile Include="Tasks\EngineTask.cs" />
-    <Compile Include="Threading\EngineThread.cs" />
-    <Compile Include="Threading\WorkerGroupException.cs" />
-    <Compile Include="Threading\EngineThreadException.cs" />
-    <Compile Include="Threading\IWorkerTask.cs" />
-    <Compile Include="Threading\ThreadManager.cs" />
-    <Compile Include="Threading\WorkerGroup.cs" />
-    <Compile Include="Threading\WorkerThread.cs" />
     <Compile Include="UISettings.cs" />
     <Compile Include="UI\UICompoundComponent.cs" />
     <Compile Include="Scene\SceneEventData.cs" />

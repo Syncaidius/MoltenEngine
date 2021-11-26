@@ -7,7 +7,7 @@ namespace Molten.Input
 
     public abstract class KeyboardDevice : InputDevice<KeyboardKeyState, KeyCode>
     {
-        public KeyboardDevice(InputManager manager) : 
+        public KeyboardDevice(InputService manager) : 
             base(manager, manager.Settings.KeyboardBufferSize)
         {
 

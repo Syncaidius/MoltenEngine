@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Network.Message
+namespace Molten.Net.Message
 {
     public abstract class ConnectionRequest : INetworkMessage
     {
@@ -19,6 +19,7 @@ namespace Molten.Network.Message
             DeliveryMethod = deliveryMethod;
         }
 
+        public abstract INetworkConnection Connection { get; }
         public abstract void Approve();
         public abstract void Reject(string reason);
     }

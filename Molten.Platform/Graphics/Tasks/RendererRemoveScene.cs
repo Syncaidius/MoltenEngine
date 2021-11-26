@@ -10,7 +10,7 @@
             Data = null;
         }
 
-        public override void Process(MoltenRenderer renderer)
+        public override void Process(RenderService renderer)
         {
             renderer.Scenes.Remove(Data);
             Recycle(this);

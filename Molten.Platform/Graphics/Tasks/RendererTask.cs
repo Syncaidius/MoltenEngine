@@ -6,7 +6,7 @@ namespace Molten.Graphics
     {
         public abstract void Clear();
 
-        public abstract void Process(MoltenRenderer renderer);
+        public abstract void Process(RenderService renderer);
     }
 
     public abstract class RendererTask<T> : RendererTask

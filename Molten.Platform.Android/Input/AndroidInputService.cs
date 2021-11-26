@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Molten.Input
 {
-    public class AndroidInputManager : InputManager
+    public class AndroidInputService : InputService
     {
         AndroidInputNavigation _navigation;
 
@@ -13,8 +13,10 @@ namespace Molten.Input
 
         public override IInputNavigation Navigation => _navigation;
 
-        protected override void OnInitialize()
+        protected override void OnInitialize(InputSettings settings, Logger log)
         {
+            base.OnInitialize(settings, log);
+
             _navigation = new AndroidInputNavigation();
         }
 
@@ -54,6 +56,8 @@ namespace Molten.Input
         protected override void OnUpdate(Timing time)
         {
             _navigation.Update(time);
+
+            base.OnUpdate(time);
         }
 
         protected override void OnClearState()

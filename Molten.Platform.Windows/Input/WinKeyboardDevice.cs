@@ -24,7 +24,7 @@ namespace Molten.Input
 
         public override string DeviceName => "Windows Keyboard";
 
-        internal WinKeyboardDevice(WinInputManager manager) :
+        internal WinKeyboardDevice(WinInputService manager) :
             base(manager)
         {
 
@@ -37,7 +37,7 @@ namespace Molten.Input
 
         protected override List<InputDeviceFeature> Initialize()
         {
-            var manager = Manager as WinInputManager;
+            var manager = Manager as WinInputService;
             manager.OnWndProcMessage += Manager_OnWndProcMessage;
 
             // TODO get extra features

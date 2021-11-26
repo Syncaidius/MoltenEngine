@@ -8,14 +8,12 @@ namespace Molten.Threading
         ThreadedQueue<IWorkerTask> _queue;
         AutoResetEvent _reset;
         Thread _thread;
-        Engine _engine;
         bool _shouldExit;
 
-        internal WorkerThread(Engine engine, string name, ThreadedQueue<IWorkerTask> taskQueue)
+        internal WorkerThread(string name, ThreadedQueue<IWorkerTask> taskQueue)
         {
             _reset = new AutoResetEvent(false);
             _queue = taskQueue;
-            _engine = engine;
 
             _thread = new Thread(() =>
             {
@@ -24,7 +22,7 @@ namespace Molten.Threading
                 while (!_shouldExit)
                 {
                     if (_queue != null && _queue.TryDequeue(out task))
-                        task.Run(_engine);
+                        task.Run();
                     else
                         _reset.WaitOne();
                 }

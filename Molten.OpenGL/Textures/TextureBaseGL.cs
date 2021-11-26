@@ -189,7 +189,7 @@ namespace Molten.Graphics
             }
         }
 
-        public MoltenRenderer Renderer => _renderer;
+        public RenderService Renderer => _renderer;
 
         public TextureFlags Flags => _flags;
 

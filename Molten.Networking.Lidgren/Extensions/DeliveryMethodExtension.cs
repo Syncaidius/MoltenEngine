@@ -1,12 +1,11 @@
 ﻿using Lidgren.Network;
-using Molten.Networking.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Networking
+namespace Molten.Net
 {
     internal static class DeliveryMethodExtension
     {
@@ -33,7 +32,7 @@ namespace Molten.Networking
 
                 case NetDeliveryMethod.ReliableOrdered:
                     return DeliveryMethod.ReliableOrdered;
-            
+
                 case NetDeliveryMethod.Unknown:
                 default:
                     return DeliveryMethod.Unknown;

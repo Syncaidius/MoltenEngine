@@ -11,11 +11,9 @@ namespace Molten.Threading
         ThreadedDictionary<string, WorkerGroup> _groupsByName;
         ThreadedList<EngineThread> _threads;
         ThreadedList<WorkerGroup> _groups;
-        Engine _engine;
 
-        internal ThreadManager(Engine engine, Logger log)
+        public ThreadManager(Logger log)
         {
-            _engine = engine;
             _log = log;
             _threads = new ThreadedList<EngineThread>();
             _groups = new ThreadedList<WorkerGroup>();
@@ -89,7 +87,5 @@ namespace Molten.Threading
             for (int i = _threads.Count - 1; i >= 0; i--)
                 _threads[i].DisposeAndJoin();
         }
-
-        internal Engine Engine => _engine;
     }
 }

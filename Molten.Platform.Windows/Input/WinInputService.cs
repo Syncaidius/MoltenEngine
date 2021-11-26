@@ -13,7 +13,7 @@ namespace Molten.Input
 
     // TODO support app commands: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-appcommand
 
-    public class WinInputManager : InputManager
+    public class WinInputService : InputService
     {
         //Win32 functions that will be used
         [DllImport("Imm32.dll", CharSet = CharSet.Unicode)]
@@ -50,8 +50,10 @@ namespace Molten.Input
         /// <summary>Initializes the current input manager instance. Avoid calling this directly unless you know what you are doing.</summary>
         /// <param name="settings">The <see cref="InputSettings"/> that was provided when the engine was instanciated.</param>
         /// <param name="log">A logger.</param>
-        protected override void OnInitialize()
+        protected override void OnInitialize(InputSettings settings, Logger log)
         {
+            base.OnInitialize(settings, log);
+
             _gamepads = new List<WinGamepadDevice>();
             _clipboard = new WindowsClipboard();
         }

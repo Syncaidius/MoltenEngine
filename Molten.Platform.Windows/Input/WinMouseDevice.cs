@@ -28,7 +28,7 @@ namespace Molten.Input
         bool _requestedVisibility = true;
         bool _cursorVisibility = true;
 
-        internal WinMouseDevice(WinInputManager manager) : base(manager)
+        internal WinMouseDevice(WinInputService manager) : base(manager)
         {
             // TODO Check if mouse is connected: https://docs.microsoft.com/en-us/windows/win32/inputdev/about-mouse-input#mouse-configuration
             // TODO Check available buttons:
@@ -46,7 +46,7 @@ namespace Molten.Input
         protected override List<InputDeviceFeature> Initialize()
         {
 
-            WinInputManager manager = Manager as WinInputManager;
+            WinInputService manager = Manager as WinInputService;
             manager.OnWndProcMessage += Manager_OnWndProcMessage;
             ScrollWheel = new InputScrollWheel("Vertical");
             HScrollWheel = new InputScrollWheel("Horizontal");

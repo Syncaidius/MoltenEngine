@@ -49,15 +49,13 @@ namespace Molten
 
         /// <summary>Starts the game. This will trigger initialization, then start the renderer and game threads.</summary>
         /// <param name="settings">The settings for the game. If this is null, the default settings will be used.</param>
-        /// <param name="ignoreSavedSettings">If true, the previously-saved settings will be ignored and replaced with the provided (or default) settings.</param>
-        /// <param name="gameThreadApartment">The thread apartment state for the main game thread.</param>
-        /// <param name="renderThreadApartment">The thread apartment state for the renderer thread</param>
-        public bool Start(EngineSettings settings = null,
-            bool ignoreSavedSettings = false,
-            ApartmentState gameThreadApartment = ApartmentState.MTA, ApartmentState renderThreadApartment = ApartmentState.MTA)
+        /// <param name="ignoreSavedSettings">If true, the previously-saved settings will be ignored and 
+        /// replaced with the provided (or default) settings.</param>
+        public void Start(EngineSettings settings = null,
+            bool ignoreSavedSettings = false)
         {
-            if (_gameThread != null)
-                return true;
+            if (_engine != null)
+                return;
 
             _engine = new Engine(settings, ignoreSavedSettings);
 
@@ -65,16 +63,16 @@ namespace Molten
             if (_engine.IsDisposed)
             {
                 RunState = GameRunState.Exited;
-                return false;
+                return;
             }
-            if (_engine.Input == null)
+            if (_engine.Input.State == EngineServiceState.Error)
             {
                 _engine.Log.WriteError("Input library failed to initialize. Forcing game exit.");
                 ForceExit();
                 return;
             }
 
-            if (_engine.Renderer == null)
+            if (_engine.Renderer.State == EngineServiceState.Error)
             {
                 _engine.Log.WriteError("Renderer failed to initialize. Forcing game exit.");
                 ForceExit();
@@ -92,14 +90,16 @@ namespace Molten
             _keyboard = _engine.Input.GetKeyboard();
             _mouse = _engine.Input.GetMouse();
             _gamepad = _engine.Input.GetGamepad<GamepadDevice>(0, GamepadSubType.Gamepad);
-            _engine.StartRenderer(renderThreadApartment);
 
-            _gameThread = _engine.Threading.SpawnThread("game", false, true, (timing) =>
+            OnInitialize(Engine);
+            OnFirstLoad(Engine);
+
+            _gameWindow.OnClose += _gameWindow_OnClose;
+            _engine.Start((timing) =>
             {
                 if (RunState != GameRunState.Exiting)
                 {
                     OnUpdate(timing);
-                    _engine.Update(timing);
                 }
                 else
                 {
@@ -108,13 +108,7 @@ namespace Molten
                     OnClose();
                     ForceExit();
                 }
-            }, gameThreadApartment);
-
-            OnInitialize(Engine);
-            OnFirstLoad(Engine);
-
-            _gameWindow.OnClose += _gameWindow_OnClose;
-            _gameThread.Start();
+            });
         }
 
         private void _gameWindow_OnClose(INativeSurface surface)

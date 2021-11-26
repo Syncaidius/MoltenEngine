@@ -27,7 +27,7 @@ namespace Molten.Graphics
             Destination = null;
         }
 
-        public override void Process(MoltenRenderer renderer)
+        public override void Process(RenderService renderer)
         {
             int subSource = (Source.MipMapCount * SourceArraySlice) + SourceMipLevel;
             int subDest = (Destination.MipMapCount * DestArraySlice) + DestMipLevel;

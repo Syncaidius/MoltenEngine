@@ -31,11 +31,11 @@ Blank - Not Started\
 | Audio - XAudio 2       |            | 🚫       | 🚫    | 🚫   |
 | Keyboard support       | ✔️          |          |        |      |
 | Mouse support          | ✔️          |          |        |      |
-| Touch support          |            | 🚧       |        |      |
+| Touch support          |            | ✔️       |        |      |
 | Game pad support       | ✔️         |          |        |      |
 | Entity component system| ✔️         | ✔️       | ✔️     | ✔️    |
 | Example projects       | ✔️         |          |        |      |
-| Networking             |            |          |        |      |
+| Networking             | 🚧         |          |        |      |
 | 2D Physics engine      |            |          |        |      |
 | 3D Physics engine      |            |          |        |      |
 | Google Analytics       |            |          |        |      |

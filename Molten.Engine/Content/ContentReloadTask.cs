@@ -20,7 +20,7 @@ namespace Molten
             File = null;
         }
 
-        public void Run(Engine engine)
+        public void Run()
         {
             Manager.ReloadFile(File);
             OnCompleted?.Invoke(this);

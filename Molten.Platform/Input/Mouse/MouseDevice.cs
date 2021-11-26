@@ -45,7 +45,7 @@ namespace Molten.Input
         bool _cursorVisible;
         bool _wasInsideControl;
 
-        public MouseDevice(InputManager manager) : 
+        public MouseDevice(InputService manager) : 
             base(manager, manager.Settings.MouseBufferSize)
         {
 

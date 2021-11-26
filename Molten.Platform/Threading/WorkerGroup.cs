@@ -79,7 +79,7 @@ namespace Molten.Threading
                 while (_threads.Count < count)
                 {
                     string tName = $"{_name}_{_nameCount}";
-                    WorkerThread t = new WorkerThread(_manager.Engine, tName, _queue);
+                    WorkerThread t = new WorkerThread(tName, _queue);
                     _threads.Add(t);
                     t.Start();
                     _nameCount++;

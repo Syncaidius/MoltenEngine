@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Molten.Graphics
 {
-    public delegate void SceneRenderDataHandler(MoltenRenderer renderer, SceneRenderData data);
+    public delegate void SceneRenderDataHandler(RenderService renderer, SceneRenderData data);
 
     /// <summary>
     /// A class for storing renderer-specific information about a scene.
@@ -94,12 +94,12 @@ namespace Molten.Graphics
         /// <summary>
         /// Invokes <see cref="OnPreRender"/> event.
         /// </summary>
-        public void PreRenderInvoke(MoltenRenderer renderer) => OnPreRender?.Invoke(renderer, this);
+        public void PreRenderInvoke(RenderService renderer) => OnPreRender?.Invoke(renderer, this);
 
         /// <summary>
         /// Invokes <see cref="OnPostRender"/> event.
         /// </summary>
-        public void PostRenderInvoke(MoltenRenderer renderer) => OnPostRender?.Invoke(renderer, this);
+        public void PostRenderInvoke(RenderService renderer) => OnPostRender?.Invoke(renderer, this);
 
         /* TODO:
         *  - Edit PointLights and CapsuleLights.Data directly in light scene components (e.g. PointLightComponent).
