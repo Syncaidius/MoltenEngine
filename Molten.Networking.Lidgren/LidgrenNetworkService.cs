@@ -17,17 +17,17 @@ namespace Molten.Net
         protected override ThreadingMode OnStart()
         {
             _configuration = new NetPeerConfiguration(Identity);
-            _configuration.Port = Settings.Port;
+            _configuration.Port = Settings.Network.Port;
             _configuration.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
             //_configuration.LocalAddress = System.Net.IPAddress.Loopback;
 
-            if (Settings.NetMode == NetworkMode.Server)
+            if (Settings.Network.Mode == NetworkMode.Server)
                 _peer = new NetServer(_configuration);
             else
                 _peer = new NetClient(_configuration);
 
             _peer.Start();
-            Log.WriteLine($"Started network {Settings.NetMode} on port {_peer.Port}.");
+            Log.WriteLine($"Started network {Settings.Network.Mode} on port {_peer.Port}.");
 
             return base.OnStart();
         }

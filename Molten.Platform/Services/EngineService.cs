@@ -10,15 +10,37 @@ namespace Molten
 {
     public abstract class EngineService : EngineObject
     {
+        public event MoltenEventHandler<EngineService> OnInitialized;
+
         /// <summary>
         /// Invoked after the current <see cref="EngineService"/> has 
         /// completed a <see cref="Start(ThreadManager, Logger)"/> invocation.
         /// </summary>
         public event MoltenEventHandler<EngineService> OnStarted;
 
+        /// <summary>
+        /// Invoked if an initialization or start-up error occurs.
+        /// </summary>
         public event MoltenEventHandler<EngineService> OnError;
 
-        public abstract void Initialize(SettingBank settings, Logger log);
+        public void Initialize(EngineSettings settings, Logger log)
+        {
+            Settings = settings;
+            try
+            {
+                log.WriteLine($"Initializing service: {this.GetType()}");
+                OnInitialize(Settings, log);
+                log.WriteLine($"Completed initialization of service: {this}");
+                State = EngineServiceState.Initialized;
+                OnInitialized?.Invoke(this);
+            }
+            catch (Exception ex)
+            {
+                State = EngineServiceState.Error;
+                log.WriteError($"Failed to initialize service: {this}");
+                log.WriteError(ex);
+            }
+        }
 
         /// <summary>
         /// Requests the current <see cref="EngineService"/> to start.
@@ -33,6 +55,7 @@ namespace Molten
             if (State == EngineServiceState.Error)
             {
                 log.WriteError($"Cannot start service {this} due to error.");
+                OnError?.Invoke(this);
                 return;
             }
 
@@ -45,7 +68,7 @@ namespace Molten
                 ThreadMode = OnStart();
                 if (ThreadMode == ThreadingMode.SeparateThread)
                 {
-                    Thread = threadManager.SpawnThread($"service_{this}", true, false, OnUpdate);
+                    Thread = threadManager.SpawnThread($"service_{this}", true, false, Update);
                     log.WriteLine($"Started service thread: {Thread.Name}");
                 }
 
@@ -58,6 +81,7 @@ namespace Molten
                 State = EngineServiceState.Error;
                 log.WriteError($"Failed to start service: {this}");
                 log.WriteError(ex);
+                OnError?.Invoke(this);
             }
         }
 
@@ -65,9 +89,30 @@ namespace Molten
         {
             OnStop();
 
-            Thread.Dispose();
+            Thread?.Dispose();
+        }
+
+        protected override void OnDispose()
+        {
+            base.OnDispose();
+
+            Thread?.DisposeAndJoin();
+
+            State = EngineServiceState.Disposed;
             Thread = null;
         }
+
+        public void Update(Timing time)
+        {
+            // TODO track update time taken.
+            OnUpdate(time);
+        }
+
+        protected abstract void OnInitialize(EngineSettings settings, Logger log);
+
+        /// <summary>Invoked when the current <see cref="EngineService"/> needs to be updated.</summary>
+        /// <param name="time"></param>
+        protected abstract void OnUpdate(Timing time);
 
         /// <summary>
         /// Invokved when the current <see cref="EngineService"/> has been requested to start.
@@ -79,19 +124,6 @@ namespace Molten
         /// Invoked when the current <see cref="EngineService"/> has been requested to stop.
         /// </summary>
         protected abstract void OnStop();
-
-
-        public void Update(Timing time)
-        {
-            // TODO track update time taken.
-            OnUpdate(time);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="time"></param>
-        protected abstract void OnUpdate(Timing time);
 
         public EngineServiceState State { get; protected set; }
 
@@ -105,34 +137,7 @@ namespace Molten
         /// Gets the threading mode of the current <see cref="EngineService"/>.
         /// </summary>
         public ThreadingMode ThreadMode { get; protected set; }
-    }
 
-    public abstract class EngineService<T> : EngineService
-        where T : SettingBank
-    {
-        public event MoltenEventHandler<EngineService<T>, T> OnInitialized;
-
-        public override sealed void Initialize(SettingBank settings, Logger log)
-        {
-            Settings = settings as T;
-            try
-            {
-                log.WriteLine($"Initializing service: {this.GetType()}");
-                OnInitialize(Settings, log);
-                log.WriteLine($"Completed initialization of service: {this}");
-                State = EngineServiceState.Initialized;
-                OnInitialized.Invoke(this, Settings);
-            }
-            catch(Exception ex)
-            {
-                State = EngineServiceState.Error;
-                log.WriteError($"Failed to initialize service: {this}");
-                log.WriteError(ex);
-            }
-        }
-
-        protected abstract void OnInitialize(T settings, Logger log);
-
-        public T Settings { get; private set; }
+        public EngineSettings Settings { get; private set; }
     }
 }

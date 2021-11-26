@@ -7,7 +7,9 @@ namespace Molten.Content
 {
     public class SpriteFontProcessor : ContentProcessor
     {
-        public override Type[] AcceptedTypes { get; protected set; } = new Type[] { typeof(SpriteFont) };
+        public override Type[] AcceptedTypes { get; } = new Type[] { typeof(SpriteFont) };
+
+        public override Type[] RequiredServices => null;
 
         public override void OnRead(ContentContext context)
         {

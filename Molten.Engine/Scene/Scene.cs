@@ -22,7 +22,10 @@ namespace Molten
         {
             Name = name;
             Engine = engine;
-            RenderData = engine.Renderer.CreateRenderData();
+
+            if(engine.Renderer != null)
+                RenderData = engine.Renderer.CreateRenderData();
+
             engine.AddScene(this);
 
             Layers = new List<SceneLayer>();
@@ -32,10 +35,21 @@ namespace Molten
             engine.Log.WriteLine($"Created scene '{name}'");
         }
 
+        /// <summary>
+        /// Adds a <see cref="SceneLayer"/> to the current <see cref="Scene"/>.
+        /// </summary>
+        /// <param name="name">The name of the layer.</param>
+        /// <param name="ignoreRaycastHit">If true, any scene raycasts will ignore this layer.</param>
+        /// <returns></returns>
         public SceneLayer AddLayer(string name, bool ignoreRaycastHit = false)
         {
-            LayerRenderData layerData = RenderData.CreateLayerData(name);
-            RenderData.AddLayer(layerData);
+            LayerRenderData layerData = null;
+
+            if (RenderData != null)
+            {
+                layerData = RenderData.CreateLayerData(name);
+                RenderData.AddLayer(layerData);
+            }
 
             SceneLayerAdd change = SceneLayerAdd.Get();
             change.ParentScene = this;
@@ -52,6 +66,9 @@ namespace Molten
             return layer;
         }
 
+        /// <summary>Removes a <see cref="SceneLayer"/> from the current <see cref="Scene"/>.</summary>
+        /// <param name="layer">The <see cref="SceneLayer"/> to be removed.</param>
+        /// <exception cref="SceneLayerException"></exception>
         public void RemoveLayer(SceneLayer layer)
         {
             if (layer.ParentScene != this)
@@ -60,7 +77,7 @@ namespace Molten
             if (layer == _defaultLayer)
                 throw new SceneLayerException(this, layer, "The default layer cannot be removed from a scene.");
 
-            RenderData.RemoveLayer(layer.Data);
+            RenderData?.RemoveLayer(layer.Data);
             SceneLayerRemove change = SceneLayerRemove.Get();
             change.ParentScene = this;
             change.Layer = layer;
@@ -194,7 +211,7 @@ namespace Molten
         protected override void OnDispose()
         {
             Engine.RemoveScene(this);
-            Engine.Renderer.DestroyRenderData(RenderData);
+            Engine.Renderer?.DestroyRenderData(RenderData);
             Engine.Log.WriteLine($"Destroyed scene '{Name}'");
             base.OnDispose();
         }
@@ -205,8 +222,12 @@ namespace Molten
         /// <summary>Gets or sets whether the scene is rendered.</summary>
         public bool IsVisible
         {
-            get => RenderData.IsVisible;
-            set => RenderData.IsVisible = value;
+            get => RenderData?.IsVisible ?? false;
+            set
+            {
+                if (RenderData != null)
+                    RenderData.IsVisible = value;
+            }
         }
 
         /// <summary>Gets the name of the scene.</summary>
@@ -218,8 +239,12 @@ namespace Molten
         /// <summary>Gets or sets the background color of the scene.</summary>
         public Color BackgroundColor
         {
-            get => RenderData.BackgroundColor;
-            set => RenderData.BackgroundColor = value;
+            get => RenderData?.BackgroundColor ?? Color.Transparent;
+            set
+            {
+                if(RenderData != null)
+                    RenderData.BackgroundColor = value;
+            }
         }
 
         /// <summary>
@@ -227,8 +252,12 @@ namespace Molten
         /// </summary>
         public Color AmbientColor
         {
-            get => RenderData.AmbientLightColor;
-            set => RenderData.AmbientLightColor = value;
+            get => RenderData?.AmbientLightColor ?? Color.Transparent;
+            set
+            {
+                if(RenderData != null)
+                    RenderData.AmbientLightColor = value;
+            }
         }
 
         /// <summary>
@@ -238,9 +267,8 @@ namespace Molten
 
         /// <summary>
         /// Gets the scene's debug overlay. 
-        /// The overlay can be added to another scene as an <see cref="IRenderable2D"/> object if you want to render the overlay into a different scene.
         /// </summary>
-        public RenderProfiler Profiler => RenderData.Profiler;
+        public RenderProfiler Profiler => RenderData?.Profiler;
 
         /// <summary>
         /// Gets or sets the input bounds of the current <see cref="Scene"/> instance. A cursor must be within these bounds for the scene to receive cursor input. <para/>
@@ -253,8 +281,14 @@ namespace Molten
         /// </summary>
         public ITextureCube SkyboxTeture
         {
-            get => RenderData.SkyboxTexture;
-            set => RenderData.SkyboxTexture = value;
+            get => RenderData?.SkyboxTexture;
+            set
+            {
+                if(RenderData != null)
+                {
+                    RenderData.SkyboxTexture = value;
+                }
+            }
         }
     }
 }

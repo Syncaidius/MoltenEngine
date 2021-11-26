@@ -1,5 +1,6 @@
 ﻿using Molten.Graphics;
 using Molten.Input;
+using Molten.Net;
 using Molten.Threading;
 using Molten.Utility;
 using System;
@@ -12,7 +13,6 @@ namespace Molten
     public abstract class Foundation : IDisposable
     {
         Engine _engine;
-        EngineThread _gameThread;
         INativeSurface _gameWindow;
         KeyboardDevice _keyboard;
         GamepadDevice _gamepad;
@@ -41,7 +41,6 @@ namespace Molten
                 IsDisposed = true;
                 ForceExit();
                 _engine.Dispose();
-                _gameThread.Dispose();
                 _gameWindow.Dispose();
             }
         }
@@ -56,7 +55,9 @@ namespace Molten
             if (_engine != null)
                 return;
 
+            OnStart(settings);
             _engine = new Engine(settings, ignoreSavedSettings);
+            _engine.Initialize();
 
             // Did a module fail to start and shutdown the engine?
             if (_engine.IsDisposed)
@@ -64,36 +65,51 @@ namespace Molten
                 RunState = GameRunState.Exited;
                 return;
             }
-            if (_engine.Input.State == EngineServiceState.Error)
+
+            foreach (EngineService service in settings.StartupServices)
             {
-                _engine.Log.WriteError("Input library failed to initialize. Forcing game exit.");
-                ForceExit();
-                return;
+                switch (service)
+                {
+                    case InputService iService:
+                        if (_engine.Input.State == EngineServiceState.Error)
+                        {
+                            _engine.Log.WriteError("Input library failed to initialize. Forcing game exit.");
+                            ForceExit();
+                            return;
+                        }
+
+                        _keyboard = _engine.Input.GetKeyboard();
+                        _mouse = _engine.Input.GetMouse();
+                        _gamepad = _engine.Input.GetGamepad<GamepadDevice>(0, GamepadSubType.Gamepad);
+                        break;
+
+                    case RenderService rService:
+                        if (_engine.Renderer.State == EngineServiceState.Error)
+                        {
+                            _engine.Log.WriteError("Renderer failed to initialize. Forcing game exit.");
+                            ForceExit();
+                            return;
+                        }
+
+                        if (Settings.UseGuiControl)
+                            _gameWindow = _engine.Renderer.Resources.CreateControlSurface(Title, "MainControl");
+                        else
+                            _gameWindow = _engine.Renderer.Resources.CreateFormSurface(Title, "MainForm");
+
+                        _engine.Renderer.OutputSurfaces.Add(_gameWindow);
+                        _gameWindow.Visible = true;
+                        _gameWindow.OnClose += _gameWindow_OnClose;
+                        break;
+
+                    case NetworkService nService:
+                        // TODO setup a net player identity for the current foundation instance.
+                        break;
+                }
             }
-
-            if (_engine.Renderer.State == EngineServiceState.Error)
-            {
-                _engine.Log.WriteError("Renderer failed to initialize. Forcing game exit.");
-                ForceExit();
-                return;
-            }
-
-            if (Settings.UseGuiControl)
-                _gameWindow = _engine.Renderer.Resources.CreateControlSurface(Title, "MainControl");
-            else
-                _gameWindow = _engine.Renderer.Resources.CreateFormSurface(Title, "MainForm");
-
-            _engine.Renderer.OutputSurfaces.Add(_gameWindow);
-            _gameWindow.Visible = true;
-
-            _keyboard = _engine.Input.GetKeyboard();
-            _mouse = _engine.Input.GetMouse();
-            _gamepad = _engine.Input.GetGamepad<GamepadDevice>(0, GamepadSubType.Gamepad);
 
             OnInitialize(Engine);
             OnFirstLoad(Engine);
 
-            _gameWindow.OnClose += _gameWindow_OnClose;
             _engine.Start((timing) =>
             {
                 if (RunState != GameRunState.Exiting)
@@ -109,6 +125,14 @@ namespace Molten
                 }
             });
         }
+
+        /// <summary>
+        /// Invoked before the current <see cref="Foundation"/> start-up process begins, 
+        /// after a call to <see cref="Start(EngineSettings, bool)"/>.
+        /// This is a good point to inject any custom setting modifications that your foundation-derived class may require.
+        /// </summary>
+        /// <param name="settings"></param>
+        protected abstract void OnStart(EngineSettings settings);
 
         private void _gameWindow_OnClose(INativeSurface surface)
         {
@@ -130,7 +154,7 @@ namespace Molten
         /// <param name="callback"></param>
         public void DispatchToGameThread(Action callback)
         {
-            _gameThread.Dispatch(callback);
+            _engine.MainThread.Dispatch(callback);
         }
 
         /// <summary>Creates a new instance of <see cref="Scene"/> and automatically binds it to the game engine.</summary>
@@ -250,9 +274,9 @@ namespace Molten
         public Logger Log => _engine.Log;
 
         /// <summary>
-        /// Gets the <see cref="Timing"/> instance of the game's main thread.
+        /// Gets the <see cref="Timing"/> instance of the engine's main thread.
         /// </summary>
-        public Timing Time => _gameThread.Timing;
+        public Timing Time => _engine.MainThread.Timing;
 
         /// <summary>Gets the <see cref="KeyboardDevice"/> attached to the game's main window.</summary>
         public KeyboardDevice Keyboard => _keyboard;

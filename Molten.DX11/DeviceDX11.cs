@@ -41,7 +41,7 @@ namespace Molten.Graphics
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
-        internal DeviceDX11(Logger log, GraphicsSettings settings, DisplayManagerDX11 manager, bool enableDebugLayer)
+        internal DeviceDX11(Logger log, GraphicsSettings settings, DisplayManagerDX11 manager)
         {
             _log = log;
             _displayManager = manager;
@@ -55,7 +55,7 @@ namespace Molten.Graphics
 
             DeviceCreationFlags flags = DeviceCreationFlags.BgraSupport;
 
-            if (enableDebugLayer)
+            if (settings.EnableDebugLayer)
             {
                 _log.WriteLine("Renderer debug layer enabled");
                 flags |= DeviceCreationFlags.Debug;

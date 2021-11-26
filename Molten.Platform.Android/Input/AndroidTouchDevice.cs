@@ -28,7 +28,7 @@ namespace Molten.Input
         protected override List<InputDeviceFeature> Initialize()
         {
             IsConnected = false;
-            Manager.Settings.TouchBufferSize.OnChanged += TouchSampleBufferSize_OnChanged;
+            Manager.Settings.Input.TouchBufferSize.OnChanged += TouchSampleBufferSize_OnChanged;
 
             return null;
         }

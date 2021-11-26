@@ -14,7 +14,7 @@ namespace Molten.Graphics
 
         uint _fboID;
 
-        internal DeviceGL(Logger log, GraphicsSettings settings, DisplayManagerGL manager, bool enableDebugLayer)
+        internal DeviceGL(Logger log, GraphicsSettings settings, DisplayManagerGL manager)
         {
             _log = log;
             _displayManager = manager;

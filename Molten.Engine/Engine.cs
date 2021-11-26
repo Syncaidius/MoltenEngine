@@ -45,7 +45,7 @@ namespace Molten
             Threading = new ThreadManager(Log);
             _taskQueue = new ThreadedQueue<EngineTask>();
             _services = new List<EngineService>(Settings.StartupServices);
-            Content = new ContentManager(Log, this, null, Settings.ContentWorkerThreads);
+            Content = new ContentManager(Log, this, Settings.ContentWorkerThreads);
             Scenes = new SceneManager(Settings.UI);
 
             Renderer = GetService<RenderService>();
@@ -56,6 +56,15 @@ namespace Molten
                 Renderer.OnStarted += Renderer_OnStarted;
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        /// <summary>
+        /// Initializes (but doesn't start) the engine and it's bound servics.
+        /// </summary>
+        public void Initialize()
+        {
+            foreach (EngineService service in _services)
+                service.Initialize(Settings, Log);
         }
 
         private void Renderer_OnStarted(EngineService o)
@@ -81,11 +90,40 @@ namespace Molten
             foreach(EngineService service in Settings.StartupServices)
             {
                 Type serviceType = service.GetType();
-                if (t.GetType().IsAssignableFrom(serviceType))
+                if (t.IsAssignableFrom(serviceType))
                     return service as T;
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets whether a <see cref="EngineService"/> of the specified type is available. 
+        /// </summary>
+        /// <typeparam name="T">The type of engine service to check for availability.</typeparam>
+        /// <returns></returns>
+        public bool IsServiceAvailable<T>() where T : EngineService
+        {
+            return IsServiceAvailable(typeof(T));
+        }
+
+        /// <summary>
+        /// Gets whether a <see cref="EngineService"/> of the specified type is available. 
+        /// If a service state is not equal to <see cref="EngineServiceState.Running"/>, it is not considered as available.
+        /// </summary>
+        ///<param name="type">The <see cref="Type"/> of engine service to check for availability</param>
+        /// <returns></returns>
+        public bool IsServiceAvailable(Type type)
+        {
+            foreach (EngineService service in Settings.StartupServices)
+            {
+                Type serviceType = service.GetType();
+                if (type.GetType().IsAssignableFrom(serviceType))
+                    return service.State == EngineServiceState.Running || 
+                        service.State == EngineServiceState.Initialized;
+            }
+
+            return false;
         }
 
         private void LoadDefaultFont(EngineSettings settings)
@@ -130,7 +168,20 @@ namespace Molten
             _mainThread.Dispose();
 
             foreach (EngineService service in _services)
+            {
                 service.Stop();
+
+                // Wait for the service thread to stop.
+                while (service.State != EngineServiceState.Initialized)
+                {
+                    if (service.Thread != null)
+                    {
+                        if (service.Thread.IsDisposed)
+                            break;
+                        Thread.Sleep(10);
+                    }
+                }
+            }
         }
 
         internal void AddScene(Scene scene)
@@ -207,6 +258,12 @@ namespace Molten
 
         /// <summary>Gets the thread manager bound to the engine.</summary>
         public ThreadManager Threading { get; }
+
+        /// <summary>
+        /// Gets the main <see cref="EngineThread"/> of the current <see cref="Engine"/> instance.
+        /// Core/game update logic is usually done on this thread.
+        /// </summary>
+        public EngineThread MainThread { get; private set; }
 
         /// <summary>
         /// Gets the main content manager bound to the current engine instance. <para/>

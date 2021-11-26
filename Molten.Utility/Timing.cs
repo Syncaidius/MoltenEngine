@@ -59,8 +59,6 @@ namespace Molten
         }
 
         /// <summary>Runs a timing update. Returns the number of updates needed to advance. If it falls behind, a value of more than 1 will be returned.</summary>
-        /// <param name="fixedTimeStep">If true, Thread.Sleep will be called to sleep off excess/spare frame time.</param>
-        /// <returns>The number of updates needed to catch up.</returns>
         public void Update()
         {
             // SEE: https://github.com/MonoGame/MonoGame/blob/develop/MonoGame.Framework/Game.cs

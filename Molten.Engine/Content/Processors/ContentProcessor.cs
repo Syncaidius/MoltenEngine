@@ -1,22 +1,1 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Molten
-{
-    public abstract class ContentProcessor
-    {
-        /// <summary>Invoked when a content retrieval request was called with metadata tags (prefixed with @) or when multiple objects are available which were loaded from the same file.</summary>
-        /// <param name="contentType">The type of content being loaded.</param>
-        /// <param name="metadata">An array of metadata strings that were attached to the request.</param>
-        /// <param name="groupContent">A list of viable objects which match the requested filename</param>
-        /// <returns></returns>
-        public virtual object OnGet(Engine engine, Type contentType, Dictionary<string, string> metadata, IList<object> groupContent) { return groupContent[0]; }
-
-        public abstract void OnRead(ContentContext context);
-
-        public abstract void OnWrite(ContentContext context);
-
-        /// <summary>Gets a list of accepted </summary>
-        public abstract Type[] AcceptedTypes { get; protected set; }
-    }
-}
+﻿using System; using System.Collections.Generic;  namespace Molten {     /// <summary>     /// Provides a base implementation for content processors, used by a <see cref="ContentManager"/>.     /// </summary>     public abstract class ContentProcessor     {         /// <summary>Invoked when a content retrieval request was called with metadata tags (prefixed with @) or when multiple objects are available which were loaded from the same file.</summary>         /// <param name="engine">The <see cref="Engine"/> instance that content should be bound to.</param>         /// <param name="contentType">The type of content being loaded.</param>         /// <param name="metadata">An array of metadata strings that were attached to the request.</param>         /// <param name="groupContent">A list of viable objects which match the requested filename</param>         /// <returns></returns>         public virtual object OnGet(Engine engine, Type contentType, Dictionary<string, string> metadata, IList<object> groupContent) { return groupContent[0]; }          /// <summary>         /// Invoked when content matching <see cref="AcceptedTypes"/> needs to be read.         /// </summary>         /// <param name="context">The <see cref="ContentContext"/> with which to read content.</param>         public abstract void OnRead(ContentContext context);          /// <summary>         /// Invoked when content matching <see cref="AcceptedTypes"/> needs to be written.         /// </summary>         /// <param name="context">The <see cref="ContentContext"/> with which to write content.</param>         public abstract void OnWrite(ContentContext context);          /// <summary>Gets a list of accepted </summary>         public abstract Type[] AcceptedTypes { get; }          /// <summary>         /// Gets a list of types for required <see cref="EngineService"/>.          /// If the bound <see cref="Engine"/> instance is missing any of them, the content processor will not be used.         /// </summary>         public abstract Type[] RequiredServices { get; }     } } 

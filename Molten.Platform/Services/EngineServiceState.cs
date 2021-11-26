@@ -29,6 +29,11 @@ namespace Molten
         Running = 3,
 
         /// <summary>
+        /// The service has been disposed.
+        /// </summary>
+        Disposed = 4,
+
+        /// <summary>
         /// The service failed due to an error.
         /// </summary>
         Error = 10,

@@ -1,6 +1,7 @@
-﻿using System.Runtime.Serialization;
+﻿using Molten.Net;
+using System.Runtime.Serialization;
 
-namespace Molten.Net
+namespace Molten
 {
     [DataContract]
     public class NetworkSettings : SettingBank
@@ -13,7 +14,7 @@ namespace Molten.Net
         /// <summary>
         /// The start-up application mode of a <see cref="NetworkManager"/>.
         /// </summary>
-        public NetworkMode NetMode { get; set; } = NetworkMode.Client;
+        public NetworkMode Mode { get; set; } = NetworkMode.Client;
 
         /// <summary>
         /// The port to bind a network manager to.

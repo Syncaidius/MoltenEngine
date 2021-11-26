@@ -50,7 +50,7 @@ namespace Molten.Input
         /// <summary>Initializes the current input manager instance. Avoid calling this directly unless you know what you are doing.</summary>
         /// <param name="settings">The <see cref="InputSettings"/> that was provided when the engine was instanciated.</param>
         /// <param name="log">A logger.</param>
-        protected override void OnInitialize(InputSettings settings, Logger log)
+        protected override void OnInitialize(EngineSettings settings, Logger log)
         {
             base.OnInitialize(settings, log);
 

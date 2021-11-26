@@ -48,7 +48,7 @@ namespace Molten.Threading
             WorkerGroup group = new WorkerGroup(this, name, workerCount, workerQueue);
             _groups.Add(group);
             _groupsByName.Add(name, group);
-            _log.WriteLine($"Spawned worker group '{group.Name}");
+            _log.WriteLine($"Spawned worker group '{group.Name}'");
             return group;
         }
 
@@ -86,6 +86,13 @@ namespace Molten.Threading
         {
             for (int i = _threads.Count - 1; i >= 0; i--)
                 _threads[i].DisposeAndJoin();
+
+            for (int i = _groups.Count - 1; i >= 0; i--)
+                _groups[i].Dispose();
+
+            _groups.Clear();
+            _groupsByName.Clear();
+            _threads.Clear();
         }
     }
 }

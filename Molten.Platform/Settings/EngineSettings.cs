@@ -15,8 +15,11 @@ namespace Molten
     [DataContract]
     public class EngineSettings : SettingBank
     {
+        List<EngineService> _startupServices;
         public EngineSettings()
         {
+            _startupServices = new List<EngineService>();
+            StartupServices = _startupServices.AsReadOnly();
             Graphics = new GraphicsSettings();
             Input = new InputSettings();
             UI = new UISettings();
@@ -29,23 +32,25 @@ namespace Molten
         /// <typeparam name="S">The type of <see cref="SettingBank"/> that the service expects.</typeparam>
         /// <param name="initCallback">The initialization callback to attach to the service.</param>
         /// <exception cref="Exception"></exception>
-        public void AddService<T, S>(MoltenEventHandler<EngineService<S>, S> initCallback) 
-            where T : EngineService<S>, new()
-            where S : SettingBank
+        public void AddService<T>(MoltenEventHandler<EngineService> initCallback = null)
+            where T : EngineService, new()
         {
             // Check if service is already in startup list.
             Type t = typeof(T);
-            foreach(EngineService s in StartupServices)
+            foreach (EngineService s in StartupServices)
             {
                 Type sType = s.GetType();
                 if (sType.IsAssignableFrom(t) || t.IsAssignableFrom(sType))
-                    throw new EngineServiceException(null, 
+                    throw new EngineServiceException(null,
                         $"Cannot add startup service of the same or derived type as another ({sType} and {t}).");
             }
 
             T service = new T();
-            service.OnInitialized += initCallback;
-            StartupServices.Add(service);
+
+            if (initCallback != null)
+                service.OnInitialized += initCallback;
+
+            _startupServices.Add(service);
         }
 
         /// <summary>
@@ -116,11 +121,6 @@ namespace Molten
         public int ContentWorkerThreads { get; set; } = 2;
 
         /// <summary>
-        /// Gets a list of <see cref="ContentProcessor"/> instances that will be added to every new instantiation of <see cref="ContentManager"/>.
-        /// </summary>
-        public List<ContentProcessor> CustomContentProcessors { get; private set; } = new List<ContentProcessor>();
-
-        /// <summary>
         /// Gets a list of <see cref="JsonConverter"/> instances that will be to added every new instantiation of <see cref="ContentManager"/>.
         /// </summary>
         public List<JsonConverter> JsonConverters { get; private set; } = new List<JsonConverter>()
@@ -129,7 +129,7 @@ namespace Molten
         };
 
         /// <summary>Gets or sets the product name.</summary>
-        public string ProductName { get; set; } = "Stone Bolt Game";
+        public string ProductName { get; set; } = "Molten Game";
 
         /// <summary>Gets or sets the default font.</summary>
         public string DefaultFontName { get; set; } = "Arial";
@@ -145,6 +145,6 @@ namespace Molten
         /// <summary>
         /// A list of services to be initialized once the engine is started.
         /// </summary>
-        internal List<EngineService> StartupServices { get; } = new List<EngineService>();
+        public IReadOnlyCollection<EngineService> StartupServices { get; }
     }
 }

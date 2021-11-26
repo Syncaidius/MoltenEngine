@@ -6,7 +6,9 @@ namespace Molten.Content
 {
     public class StringProcessor : ContentProcessor
     {
-        public override Type[] AcceptedTypes { get; protected set; } = new Type[] { typeof(string) };
+        public override Type[] AcceptedTypes { get; } = new Type[] { typeof(string) };
+
+        public override Type[] RequiredServices => null;
 
         public override void OnRead(ContentContext context)
         {

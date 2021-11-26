@@ -21,10 +21,17 @@ namespace Molten.Samples
 
         public SampleGame(string title) : base(title) { }
 
+        protected override void OnStart(EngineSettings settings)
+        {
+            settings.AddService<RendererDX11>();
+            settings.AddService<WinInputService>();
+        }
+
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
-            Window.OnHandleChanged += Window_OnHandleChanged;
+            if(Window != null)
+                Window.OnHandleChanged += Window_OnHandleChanged;
 
             MainScene = CreateScene("Main");
             _spriteLayer = MainScene.AddLayer("sprite", true);
@@ -38,7 +45,9 @@ namespace Molten.Samples
             _cam2D.MaxDrawDistance = 1.0f;
             _cam2D.OutputSurface = Window;
             _cam2D.LayerMask = BitwiseHelper.Set(_cam2D.LayerMask, 0);
-            Engine.Input.Camera = _cam2D;
+
+            if (engine.Input != null && engine.Input.State == EngineServiceState.Initialized)
+                Engine.Input.Camera = _cam2D;
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");
             cr.Load<SpriteFont>("BroshK.ttf;size=24");
@@ -112,33 +121,39 @@ namespace Molten.Samples
                 return;
 
             // Cycle through window modes.
-            if (Keyboard.IsTapped(KeyCode.F2))
-            {
-                switch (Window.Mode)
-                {
-                    case WindowMode.Borderless: Window.Mode = WindowMode.Windowed; break;
-                    case WindowMode.Windowed: Window.Mode = WindowMode.Borderless; break;
-                }
-            }
+            if (Engine.Renderer == null || Engine.Renderer.State != EngineServiceState.Running)
+                return;
 
-            // Toggle overlay.
-            if (Keyboard.IsTapped(KeyCode.F1))
+            if (Engine.Input != null && Engine.Input.State == EngineServiceState.Running)
             {
-                if (_cam2D.HasFlags(RenderCameraFlags.ShowOverlay))
+                if (Keyboard.IsTapped(KeyCode.F2))
                 {
-                    int cur = Engine.Renderer.Overlay.Current;
-
-                    // Remove overlay flag if we've hit the last overlay.
-                    if (!Engine.Renderer.Overlay.Next())
+                    switch (Window.Mode)
                     {
-                        _cam2D.Flags &= ~RenderCameraFlags.ShowOverlay;
-                        Engine.Renderer.Overlay.Current = 0;
+                        case WindowMode.Borderless: Window.Mode = WindowMode.Windowed; break;
+                        case WindowMode.Windowed: Window.Mode = WindowMode.Borderless; break;
                     }
                 }
-                else
+
+                // Toggle overlay.
+                if (Keyboard.IsTapped(KeyCode.F1))
                 {
-                    Engine.Renderer.Overlay.Current = 0;
-                    _cam2D.Flags |= RenderCameraFlags.ShowOverlay;
+                    if (_cam2D.HasFlags(RenderCameraFlags.ShowOverlay))
+                    {
+                        int cur = Engine.Renderer.Overlay.Current;
+
+                        // Remove overlay flag if we've hit the last overlay.
+                        if (!Engine.Renderer.Overlay.Next())
+                        {
+                            _cam2D.Flags &= ~RenderCameraFlags.ShowOverlay;
+                            Engine.Renderer.Overlay.Current = 0;
+                        }
+                    }
+                    else
+                    {
+                        Engine.Renderer.Overlay.Current = 0;
+                        _cam2D.Flags |= RenderCameraFlags.ShowOverlay;
+                    }
                 }
             }
         }

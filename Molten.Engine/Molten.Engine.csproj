@@ -136,8 +136,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -165,11 +165,7 @@
     <Compile Include="Content\Processors\SpriteFontProcessor.cs" />
     <Compile Include="Content\Processors\StringProcessor.cs" />
     <Compile Include="Content\Processors\TextureProcessor.cs" />
-    <Compile Include="Content\Serialization\BrowsableStringAttribute.cs" />
-    <Compile Include="Content\Serialization\ExpandablePropertyAttribute.cs" />
-    <Compile Include="Content\Serialization\MathConverter.cs" />
     <Compile Include="Engine.cs" />
-    <Compile Include="EngineSettings.cs" />
     <Compile Include="GameRunState.cs" />
     <Compile Include="Foundation.cs" />
     <Compile Include="ObjectHandler.cs" />
@@ -199,7 +195,6 @@
     <Compile Include="Tasks\EngineAddScene.cs" />
     <Compile Include="Tasks\EngineRemoveScene.cs" />
     <Compile Include="Tasks\EngineTask.cs" />
-    <Compile Include="UISettings.cs" />
     <Compile Include="UI\UICompoundComponent.cs" />
     <Compile Include="Scene\SceneEventData.cs" />
     <Compile Include="UI\Components\UIMenu.cs" />
@@ -240,11 +235,10 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,4 +1,5 @@
 ﻿using Molten.Collections;
+using System;
 using System.Threading;
 
 namespace Molten.Threading
@@ -51,6 +52,7 @@ namespace Molten.Threading
             _shouldExit = true;
             Wake();
         }
+
 
         public string Name => _thread.Name;
     }

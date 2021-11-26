@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Net
 {
-    public abstract class NetworkService : EngineService<NetworkSettings>
+    public abstract class NetworkService : EngineService
     {
         protected readonly ThreadedQueue<INetworkMessage> _inbox;
         protected readonly ThreadedQueue<(INetworkMessage, INetworkConnection[])> _outbox;
@@ -54,7 +54,7 @@ namespace Molten.Net
 
         #region Protected
 
-        protected override void OnInitialize(NetworkSettings settings, Logger log)
+        protected override void OnInitialize(EngineSettings settings, Logger log)
         {
             throw new NotImplementedException();
         }

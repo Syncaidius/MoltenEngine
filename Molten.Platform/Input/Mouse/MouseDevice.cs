@@ -46,7 +46,7 @@ namespace Molten.Input
         bool _wasInsideControl;
 
         public MouseDevice(InputService manager) : 
-            base(manager, manager.Settings.MouseBufferSize)
+            base(manager, manager.Settings.Input.MouseBufferSize)
         {
 
         }
