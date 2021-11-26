@@ -90,6 +90,7 @@ namespace Molten
             OnStop();
 
             Thread?.Dispose();
+            State = EngineServiceState.Initialized;
         }
 
         protected override void OnDispose()

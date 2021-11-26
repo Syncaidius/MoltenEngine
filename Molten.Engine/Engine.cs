@@ -118,7 +118,7 @@ namespace Molten
             foreach (EngineService service in Settings.StartupServices)
             {
                 Type serviceType = service.GetType();
-                if (type.GetType().IsAssignableFrom(serviceType))
+                if (type.IsAssignableFrom(serviceType))
                     return service.State == EngineServiceState.Running || 
                         service.State == EngineServiceState.Initialized;
             }
