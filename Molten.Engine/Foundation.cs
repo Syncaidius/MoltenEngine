@@ -3,7 +3,6 @@ using Molten.Input;
 using Molten.Threading;
 using Molten.Utility;
 using System;
-using System.Threading;
 
 namespace Molten
 {
@@ -80,9 +79,9 @@ namespace Molten
             }
 
             if (Settings.UseGuiControl)
-                _gameWindow = _engine.Renderer.Resources.CreateControlSurface(Title, "MainForm");
+                _gameWindow = _engine.Renderer.Resources.CreateControlSurface(Title, "MainControl");
             else
-                _gameWindow = _engine.Renderer.Resources.CreateFormSurface(Title, "MainControl");
+                _gameWindow = _engine.Renderer.Resources.CreateFormSurface(Title, "MainForm");
 
             _engine.Renderer.OutputSurfaces.Add(_gameWindow);
             _gameWindow.Visible = true;
@@ -207,13 +206,13 @@ namespace Molten
         }
 
         /// <summary>
-        /// Invoked when the current <see cref="Foundation{R, I}"/> needs to be initialized.
+        /// Invoked when the current <see cref="Foundation"/> needs to be initialized.
         /// </summary>
         /// <param name="engine"></param>
         protected virtual void OnInitialize(Engine engine) { }
 
         /// <summary>
-        /// Invoked when the current <see cref="Foundation{R, I}"/> is done initializing and 
+        /// Invoked when the current <see cref="Foundation"/> is done initializing and 
         /// can begin loading for the first time.
         /// </summary>
         /// <param name="engine"></param>
@@ -270,7 +269,7 @@ namespace Molten
         public INativeSurface Window => _gameWindow;
 
         /// <summary>
-        /// Gets whether or not the current <see cref="Foundation{R, I}"/> instance has been disposed.
+        /// Gets whether or not the current <see cref="Foundation"/> instance has been disposed.
         /// </summary>
         public bool IsDisposed { get; private set; }
     }
