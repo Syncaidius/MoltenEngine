@@ -102,12 +102,10 @@ namespace Molten
     }
 
     /// <summary>
-    /// An Android <see cref="Activity"/> implementation for initializting and using a Molten <see cref="Foundation{R, I}"/>.
+    /// An Android <see cref="Activity"/> implementation for initializting and using a Molten <see cref="Foundation"/>.
     /// </summary>
-    public abstract class MoltenActivity<T, R, I> : MoltenActivity
-        where T : Foundation<R, I>
-        where R : MoltenRenderer, new()
-        where I : InputManager, new()
+    public abstract class MoltenActivity<T> : MoltenActivity
+        where T : Foundation
     {
         public MoltenActivity(string initialTitle = "Molten Android App")
         {
@@ -124,16 +122,12 @@ namespace Molten
 
         protected override void OnCreateApp(FrameLayout view)
         {
-            Type tMainType = typeof(Foundation<,>);
-            Type[] tGenerics = { typeof(R), typeof(I) };
-
-            Type fType = tMainType.MakeGenericType(tGenerics);
-            FoundationInstance = (Foundation<R, I>)Activator.CreateInstance(fType, new object[] { Title });
+            FoundationInstance = Activator.CreateInstance(typeof(T), new object[] { this.Title }) as T;
         }
 
         /// <summary>
-        /// Gets the <see cref="Foundation{R, I}"/> instanced bound to the current <see cref="MoltenActivity{T, R, I}"/>.
+        /// Gets the <see cref="Foundation"/> instanced bound to the current <see cref="MoltenActivity{T, R, I}"/>.
         /// </summary>
-        public Foundation<R, I> FoundationInstance { get; private set; }
+        public T FoundationInstance { get; private set; }
     }
 }
