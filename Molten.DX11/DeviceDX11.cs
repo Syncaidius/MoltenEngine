@@ -1,23 +1,19 @@
-﻿using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
-using Molten.Collections;
+﻿using Molten.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    using Device = SharpDX.Direct3D11.Device;
-
     /// <summary>A Direct3D 11 graphics device.</summary>
     /// <seealso cref="Molten.Graphics.PipeDX11" />
-    public class DeviceDX11 : PipeDX11, IGraphicsDevice
+    public unsafe class DeviceDX11 : PipeDX11, IGraphicsDevice
     {
-        Device _d3d;
+        ID3D11Device* _d3d;
         GraphicsAdapterDX<Adapter1, AdapterDescription1, Output1> _adapter;
 
         PipeDX11[] _pipes;

@@ -1,6 +1,4 @@
-﻿using SharpDX;
-using SharpDX.DXGI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,11 +18,11 @@ namespace Molten.Graphics
             _adapter = adapter;
         }
 
+        /// <summary>Gets the orientation of the current <see cref="IDisplayOutput" />.</summary>
+        public abstract DisplayOrientation Orientation { get; }
+
         /// <summary>Gets the name of the output.</summary>
         public string Name { get; protected set; } = "";
-
-        /// <summary>Gets the orientation of the current <see cref="T:Molten.IDisplayOutput" />.</summary>
-        public abstract DisplayOrientation Orientation { get; }
 
         /// <summary>Gets the adapter that the display device is connected to.</summary>
         public IDisplayAdapter Adapter { get { return _adapter; } }

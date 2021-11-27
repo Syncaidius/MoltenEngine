@@ -1,4 +1,4 @@
-﻿using SharpDX.DXGI;
+﻿using Silk.NET.DXGI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,20 +8,20 @@ namespace Molten.Graphics
 {
     public class DisplayMode
     {
-        public ModeDescription Description;
+        public ModeDesc1 Description;
 
-        public DisplayMode(ModeDescription desc)
+        public DisplayMode(ref ModeDesc1 desc)
         {
             Description = desc;
         }
 
-        public int Width
+        public uint Width
         {
             get => Description.Width;
             set => Description.Width = value;
         }
 
-        public int Height
+        public uint Height
         {
             get => Description.Height;
             set => Description.Height = value;
@@ -35,8 +35,8 @@ namespace Molten.Graphics
 
         public Format Format { get { return Description.Format; } }
 
-        public DisplayModeScaling Scaling { get { return Description.Scaling; } }
+        public ModeScaling Scaling { get { return Description.Scaling; } }
 
-        public DisplayModeScanlineOrder ScanLineOrdering { get { return Description.ScanlineOrdering; } }
+        public ModeScanlineOrder ScanLineOrdering { get { return Description.ScanlineOrdering; } }
     }
 }

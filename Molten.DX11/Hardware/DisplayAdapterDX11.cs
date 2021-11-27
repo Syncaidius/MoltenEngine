@@ -3,22 +3,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+
 namespace Molten.Graphics
 {
-    public class GraphicsAdapterDX<A, D, O> : IDisplayAdapter
-        where A : DXGIAdapter
-        where D : struct
-        where O : Output
+    public unsafe class DisplayAdapterDX11 : IDisplayAdapter
     {
-        A _adapter;
-        AdapterDesc _desc;
+        /// <summary>Gets the native DXGI adapter that this instance represents.</summary>
+        public IDXGIAdapter1 Native;
 
-        DisplayOutputDX11<A,D, O>[] _connectedOutputs;
+        AdapterDesc1 _desc;
+
+        DisplayOutputDX11[] _connectedOutputs;
         List<GraphicsOutput> _activeOutputs;
-
         IDisplayManager _manager;
         string _name;
-        
+
 
         /// <summary> Occurs when an <see cref="T:Molten.IDisplayOutput" /> is connected to the current <see cref="T:Molten.IDisplayAdapter" />.</summary>
         public event DisplayOutputChanged OnOutputActivated;
@@ -26,24 +26,31 @@ namespace Molten.Graphics
         /// <summary>Occurs when an <see cref="T:Molten.IDisplayOutput" /> is disconnected from the current <see cref="T:Molten.IDisplayAdapter" />. </summary>
         public event DisplayOutputChanged OnOutputDeactivated;
 
-        public GraphicsAdapterDX(IDisplayManager manager, A adapter, D desc, O[] outputs, int id)
+        public DisplayAdapterDX11(IDisplayManager manager, ref IDXGIAdapter1 adapter, 
+            ref AdapterDesc1 desc, IDXGIOutput1[] outputs, 
+            int id)
         {
             _manager = manager;
-            _adapter = adapter;
+            Native = adapter;
             _activeOutputs = new List<GraphicsOutput>();
             ID = id;
-            _desc = _adapter.Description;
-            _name = _desc.Description.Replace("\0", string.Empty);
+            Native.GetDesc1(ref _desc);
+
+            fixed (char* d = _desc.Description)
+                _name = new string(d);
+
+            _name.Replace("\0", string.Empty);
+
             PopulateVendor();
 
-            long shared = _desc.SharedSystemMemory;
+            nuint shared = _desc.SharedSystemMemory;
             if (shared < 0)
                 _desc.SharedSystemMemory = 0;
 
-            _connectedOutputs = new DisplayOutputDX11<A, D, O>[outputs.Length];
+            _connectedOutputs = new DisplayOutputDX11[outputs.Length];
 
             for (int i = 0; i < _connectedOutputs.Length; i++)
-                _connectedOutputs[i] = new DisplayOutputDX<A, D, O>(this, outputs[i]);
+                _connectedOutputs[i] = new DisplayOutputDX11(this, outputs[i]);
         }
 
         private void PopulateVendor()
@@ -130,11 +137,8 @@ namespace Molten.Graphics
 
         public override string ToString()
         {
-            return _desc.Description;
+            return _name;
         }
-
-        /// <summary>Gets the DXGI adapter this instance represents.</summary>
-        public A Adapter => _adapter;
 
         /// <summary>Gets the vendor's name of the adapter.</summary>
         public string Name => _name;
