@@ -25,8 +25,10 @@ namespace Molten.Input
 
         protected override bool ProcessState(ref KeyboardKeyState newState, ref KeyboardKeyState prevState)
         {
-            if (newState.Action == InputAction.Held || 
-                (newState.Action == InputAction.Pressed && prevState.Action == InputAction.Pressed))
+            if (newState.Action == InputAction.Held ||
+                (newState.Action == InputAction.Pressed &&
+                (prevState.Action == InputAction.Pressed || prevState.Action == InputAction.Held))
+                )
             {
                 newState.Action = InputAction.Held;
                 newState.PressTimestamp = prevState.PressTimestamp;

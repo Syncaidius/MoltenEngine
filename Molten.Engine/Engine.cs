@@ -200,8 +200,7 @@ namespace Molten
 
         private void Update(Timing time)
         {
-            EngineTask task = null;
-            while (_taskQueue.TryDequeue(out task))
+            while (_taskQueue.TryDequeue(out EngineTask task))
                 task.Process(this, time);
 
             // Update services that are set to run on the main engine thread.
