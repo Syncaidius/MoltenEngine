@@ -10,15 +10,15 @@ namespace Molten.Graphics
         where T : struct
     {
         /// <summary>The number of bytes to offset the change, from the start of the provided <see cref="Segment"/>.</summary>
-        public int ByteOffset;
+        public uint ByteOffset;
 
         /// <summary>The number of bytes per element in <see cref="Data"/>.</summary>
-        public int DataStride;
+        public uint DataStride;
 
         /// <summary>The number of elements to be copied.</summary>
-        public int Count;
+        public uint Count;
 
-        internal int StartIndex;
+        internal uint StartIndex;
 
         /// <summary>The data to be set.</summary>
         public T[] Data;

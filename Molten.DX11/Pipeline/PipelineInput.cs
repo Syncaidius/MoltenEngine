@@ -1,4 +1,6 @@
 ﻿using Molten.Graphics.Shaders;
+using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +52,7 @@ namespace Molten.Graphics
 
         private void _slotIndexBuffer_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
-            Pipe.Context.InputAssembler.SetIndexBuffer(null, SharpDX.DXGI.Format.Unknown, 0);
+            Pipe.Context.InputAssembler.SetIndexBuffer(null, Format.FormatUnknown, 0);
         }
 
         private void PipelineInput_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
@@ -58,7 +60,7 @@ namespace Molten.Graphics
             Pipe.Context.InputAssembler.SetVertexBuffers(slot.SlotID, _nullVertexBuffer);
         }
 
-        internal void Refresh(MaterialPass pass, StateConditions conditions, VertexTopology topology)
+        internal unsafe void Refresh(MaterialPass pass, StateConditions conditions, VertexTopology topology)
         {
             // Update shader pipeline stages
             _materialStage.Refresh(pass, conditions);
@@ -113,7 +115,7 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    _inputAssembler.SetIndexBuffer(null, SharpDX.DXGI.Format.Unknown, 0);
+                    _inputAssembler.SetIndexBuffer(null, Format.FormatUnknown, 0);
                 }
             }
 
@@ -121,7 +123,7 @@ namespace Molten.Graphics
             if (anyVbChanged || _materialStage.HasMaterialChanged)
             {
                 _vertexLayout = GetInputLayout();
-                Pipe.Context.InputAssembler.InputLayout = _vertexLayout.Layout;
+                Pipe.Context->IASetInputLayout(_vertexLayout.Native);
             }
         }
 
@@ -234,7 +236,7 @@ namespace Molten.Graphics
         {
             if (seg != null)
             {
-                if ((seg.Parent.Description.BindFlags & BindFlags.VertexBuffer) != BindFlags.VertexBuffer)
+                if ((seg.Parent.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
                     throw new InvalidOperationException("The provided buffer segment is not part of a vertex buffer.");
             }
 
@@ -252,7 +254,7 @@ namespace Molten.Graphics
             {
                 if (segments[i] != null)
                 {
-                    if ((segments[i].Parent.Description.BindFlags & BindFlags.VertexBuffer) != BindFlags.VertexBuffer)
+                    if ((segments[i].Parent.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
                         throw new InvalidOperationException($"The provided buffer segment at index {i} is not part of a vertex buffer.");
                 }
 
@@ -270,7 +272,7 @@ namespace Molten.Graphics
         {
             if (seg != null)
             {
-                if ((seg.Parent.Description.BindFlags & BindFlags.IndexBuffer) != BindFlags.IndexBuffer)
+                if ((seg.Parent.Description.BindFlags & BindFlag.BindIndexBuffer) != BindFlag.BindIndexBuffer)
                     throw new InvalidOperationException("The provided buffer segment is not part of an index buffer.");
             }
 

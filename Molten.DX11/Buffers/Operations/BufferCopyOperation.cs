@@ -1,5 +1,4 @@
-﻿using SharpDX.Direct3D11;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,10 +15,10 @@ namespace Molten.Graphics
         internal ResourceRegion SourceRegion;
 
         /// <summary>The number of bytes to offset the data in the <see cref="DestinationBuffer"/>.</summary>
-        internal int DestinationByteOffset;
+        internal uint DestinationByteOffset;
 
         /// <summary>The number of bytes per element in <see cref="Data"/>.</summary>
-        public int DataStride;
+        public uint DataStride;
 
         internal Action CompletionCallback;
 

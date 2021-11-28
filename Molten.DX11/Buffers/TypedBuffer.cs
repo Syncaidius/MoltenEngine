@@ -96,7 +96,7 @@ namespace Molten.Graphics
                 return;
 
             // Create a new shader resource view
-            SRV = new ShaderResourceView(Device.D3d, _buffer, new ShaderResourceViewDescription()
+            SRV = new ShaderResourceView(Device.D3d, Native, new ShaderResourceViewDescription()
             {
                 BufferEx = new ShaderResourceViewDescription.ExtendedBufferResource()
                 {

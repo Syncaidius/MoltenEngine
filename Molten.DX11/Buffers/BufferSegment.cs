@@ -1,36 +1,33 @@
-﻿using SharpDX.Direct3D11;
-using SharpDX.DXGI;
-using Molten.Collections;
+﻿using Molten.Collections;
+using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using SharpDX;
 
 namespace Molten.Graphics
 {
-    using Buffer = SharpDX.Direct3D11.Buffer;
-
-    internal class BufferSegment : PipelineShaderObject, IPoolable, ICloneable
+    internal unsafe class BufferSegment : PipelineShaderObject, IPoolable, ICloneable
     {
         /// <summary>The start byte of the segment within it's parent section buffer.</summary>
-        internal int ByteOffset;
+        internal uint ByteOffset;
 
         /// <summary>The size of the segment in bytes. This is <see cref="ElementCount"/> multiplied by <see cref="Stride"/>.</summary>
-        internal int ByteCount;
+        internal uint ByteCount;
 
         /// <summary>The number of elements that the segment can hold.</summary>
-        internal int ElementCount;
+        internal uint ElementCount;
 
         /// <summary>The size of a single element within the segment, in bytes.</summary>
-        internal int Stride;
+        internal uint Stride;
 
         /// <summary>The mapped buffer that the segment belongs to.</summary>
         internal GraphicsBuffer Parent;
 
-        internal Buffer Buffer => Parent.Buffer;
+        internal ID3D11Buffer* Buffer => Parent.Buffer;
 
         /// <summary>The previous segment (if any) within the mapped buffer.</summary>
         internal BufferSegment Previous;
@@ -64,24 +61,24 @@ namespace Molten.Graphics
             switch (format)
             {
                 case IndexBufferFormat.Unsigned32Bit:
-                    DataFormat = Format.R32_UInt;
+                    DataFormat = Format.FormatR32Uint;
                     break;
 
                 case IndexBufferFormat.Unsigned16Bit:
-                    DataFormat = Format.R16_UInt;
+                    DataFormat = Format.FormatR16Uint;
                     break;
             }
         }
 
         /// <summary>Copies an array of elements into the buffer.</summary>
         /// <param name="data">The elements to set </param>
-        internal void SetData<T>(PipeDX11 pipe, T[] data) where T : struct => SetData<T>(pipe, data, 0, data.Length);
+        internal void SetData<T>(PipeDX11 pipe, T[] data) where T : struct => SetData<T>(pipe, data, 0, (uint)data.Length);
 
         /// <summary>Copies element data into the buffer.</summary>
         /// <param name="data">The source of elements to copy into the buffer.</param>
         /// <param name="offset">The ID of the first element in the buffer at which to copy the source data into.</param>
         /// <param name="count">The number of elements to copy from the source array.</param>
-        internal void SetData<T>(PipeDX11 pipe, T[] data, int count) where T : struct => SetData<T>(pipe, data, 0, count);
+        internal void SetData<T>(PipeDX11 pipe, T[] data, uint count) where T : struct => SetData<T>(pipe, data, 0, count);
 
         /// <summary>Copies element data into the buffer.</summary>
         /// <param name="data">The source of elements to copy into the buffer.</param>
@@ -90,13 +87,13 @@ namespace Molten.Graphics
         /// <param name="elementOffset">The number of elements from the beginning of the <see cref="BufferSegment"/> to offset the destination of the provided data.
         /// The number of bytes the data is offset is based on the <see cref="Stride"/> value of the buffer segment.</param>
         /// <param name="completionCallback">The callback to invoke when the set-data operation has been completed.</param>
-        internal void SetData<T>(PipeDX11 pipe, T[] data, int startIndex, int count, int elementOffset = 0, StagingBuffer staging = null, Action completionCallback = null) where T : struct
+        internal void SetData<T>(PipeDX11 pipe, T[] data, uint startIndex, uint count, uint elementOffset = 0, StagingBuffer staging = null, Action completionCallback = null) where T : struct
         {
-            int tStride = Marshal.SizeOf(typeof(T));
-            int dataSize = tStride * count;
-            int writeOffset = elementOffset * tStride;
-            int finalBufferPos = dataSize + writeOffset + ByteOffset;
-            int segmentBounds = ByteOffset + ByteCount;
+            uint tStride = (uint)Marshal.SizeOf(typeof(T));
+            uint dataSize = tStride * count;
+            uint writeOffset = elementOffset * tStride;
+            uint finalBufferPos = dataSize + writeOffset + ByteOffset;
+            uint segmentBounds = ByteOffset + ByteCount;
 
             // Ensure the buffer can fit the provided data.
             if (finalBufferPos > segmentBounds)
@@ -126,13 +123,13 @@ namespace Molten.Graphics
         /// <param name="startIndex">The element index within the provided data array to start copying from.</param>
         /// <param name="count">The number of elements to transfer from the provided data array.</param>
         /// <param name="byteOffset">The number of bytes to offset the copied data within the buffer segment.</param>
-        internal void SetDataImmediate<T>(PipeDX11 pipe, T[] data, int startIndex, int count, int elementOffset = 0, StagingBuffer staging = null) where T : struct
+        internal void SetDataImmediate<T>(PipeDX11 pipe, T[] data, uint startIndex, uint count, uint elementOffset = 0, StagingBuffer staging = null) where T : struct
         {
-            int tStride = Marshal.SizeOf<T>();
-            int dataSize = tStride * count;
-            int writeOffset = elementOffset * tStride;
-            int finalBytePos = dataSize + writeOffset + ByteOffset;
-            int segmentBounds = ByteOffset + ByteCount;
+            uint tStride = (uint)Marshal.SizeOf<T>();
+            uint dataSize = tStride * count;
+            uint writeOffset = elementOffset * tStride;
+            uint finalBytePos = dataSize + writeOffset + ByteOffset;
+            uint segmentBounds = ByteOffset + ByteCount;
 
             // Ensure the buffer can fit the provided data.
             if (finalBytePos > segmentBounds)
@@ -148,7 +145,7 @@ namespace Molten.Graphics
                 if (Parent.Mode == BufferMode.DynamicRing)
                 {
                     ByteOffset = (int)stream.Position;
-                    if (Parent.HasFlags(BindFlags.VertexBuffer))
+                    if (Parent.HasFlags(BindFlag.BindVertexBuffer))
                         VertexBinding = new VertexBufferBinding(Buffer, Stride, ByteOffset);
                 }
 
@@ -172,13 +169,13 @@ namespace Molten.Graphics
             Parent.QueueOperation(op);
         }
 
-        internal void CopyTo(PipeDX11 pipe, int sourceByteOffset, BufferSegment destination, int destByteOffset, int count, bool isImmediate = false, Action completionCallback = null)
+        internal void CopyTo(PipeDX11 pipe, uint sourceByteOffset, BufferSegment destination, uint destByteOffset, uint count, bool isImmediate = false, Action completionCallback = null)
         {
-            int bytesToCopy = Stride * count;
-            int totalOffset = ByteOffset + sourceByteOffset;
-            int lastByte = totalOffset + bytesToCopy;
+            uint bytesToCopy = Stride * count;
+            uint totalOffset = ByteOffset + sourceByteOffset;
+            uint lastByte = totalOffset + bytesToCopy;
 
-            int destLastByte = destination.ByteOffset + destination.ByteCount;
+            uint destLastByte = destination.ByteOffset + destination.ByteCount;
             if (lastByte > destLastByte)
                 throw new OverflowException("specified copy region would exceed the bounds of the destination segment.");
 
@@ -257,7 +254,7 @@ namespace Molten.Graphics
 
         /// <summary>Take's bytes off the previous segment and adds them to the current.</summary>
         /// <param name="bytesToTake">The bytes to take.</param>
-        internal void TakeFromPrevious(int bytesToTake)
+        internal void TakeFromPrevious(uint bytesToTake)
         {
             ByteOffset -= bytesToTake;
             ByteCount += bytesToTake;
@@ -274,7 +271,7 @@ namespace Molten.Graphics
         /// <summary>Decreases the size of the current segment by the specified amount of bytes, from the front, then adds  it to the next segment's back.</summary>
         /// <param name="recipient">The recipient.</param>
         /// <param name="bytesToTake">The bytes to take.</param>
-        internal void TakeFromNext(int bytesToTake)
+        internal void TakeFromNext(uint bytesToTake)
         {
             ByteCount += bytesToTake;
             Next.ByteOffset += bytesToTake;
@@ -288,7 +285,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal BufferSegment SplitFromBack(int bytesToTake)
+        internal BufferSegment SplitFromBack(uint bytesToTake)
         {
             BufferSegment seg = Device.GetBufferSegment();
             seg.LinkNext(this);
@@ -304,7 +301,7 @@ namespace Molten.Graphics
             return seg;
         }
 
-        internal BufferSegment SplitFromFront(int bytesToTake)
+        internal BufferSegment SplitFromFront(uint bytesToTake)
         {
             BufferSegment seg = Device.GetBufferSegment();
             seg.LinkNext(Next);

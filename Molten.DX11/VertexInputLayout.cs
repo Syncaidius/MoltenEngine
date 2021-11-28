@@ -1,17 +1,17 @@
-﻿using SharpDX.Direct3D11;
-using Molten.Collections;
+﻿using Molten.Collections;
 using Molten.Graphics.Shaders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
     /// <summary>A helper class that safely wraps InputLayout.</summary>
-    internal class VertexInputLayout : EngineObject
+    internal unsafe class VertexInputLayout : EngineObject
     {
-        internal InputLayout Layout;
+        internal ID3D11InputLayout* Native;
         bool _valid = true;
         bool _isInstanced = false;
         ulong[] _hashKeys;
@@ -69,7 +69,7 @@ namespace Molten.Graphics
             // Attempt creation of input layout.
             if (_valid)
             {
-                Layout = new InputLayout(device.D3d, vertexBytecode, finalElements);
+                Native = new InputLayout(device.D3d, vertexBytecode, finalElements);
             }
             else
             {
@@ -140,7 +140,7 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            DisposeObject(ref Layout);
+            DisposeObject(ref Native);
         }
 
         /// <summary>Gets whether or not the input layout is valid.</summary>
