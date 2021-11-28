@@ -6,16 +6,36 @@ namespace Molten
 {
     public delegate void EngineObjectHandler(EngineObject obj);
 
+    /// <summary>
+    /// A helper base class for tracking and managing game objects. Provides a disposal structure and unique ID system.
+    /// </summary>
     [DataContract]
     public abstract class EngineObject : IDisposable
     {
         bool _isDisposed;
 
+        [ThreadStatic]
+        static uint _idCounter;
+
+        ulong _id;
+
+        /// <summary>
+        /// Invoked when the current <see cref="EngineObject"/> is being disposed.
+        /// </summary>
         public event EngineObjectHandler OnDisposing;
+
+        /// <summary>
+        /// Creates a new instance of <see cref="EngineObject"/>.
+        /// </summary>
+        public EngineObject()
+        {
+            _id = ((ulong)Thread.CurrentThread.ManagedThreadId << 32) | _idCounter++;
+        }
 
         /// <summary>Safely disposes of an object which may also be null.</summary>
         /// <param name="disposable">The object to dispose.</param>
-        protected void DisposeObject<T>(ref T disposable) where T : IDisposable
+        protected void DisposeObject<T>(ref T disposable) 
+            where T : IDisposable
         {
             if (disposable != null)
             {
@@ -24,7 +44,8 @@ namespace Molten
             }
         }
 
-        /// <summary>Disposes of the current <see cref="EngineObject"/> instance and releases its ID to be reused by a new object.</summary>
+        /// <summary>Disposes of the current <see cref="EngineObject"/> instance and 
+        /// releases its ID to be reused by a new object.</summary>
         public void Dispose()
         {
             if (_isDisposed)
@@ -36,7 +57,7 @@ namespace Molten
         }
 
         /// <summary>Invoked when <see cref="Dispose"/> is called.</summary>
-        protected virtual void OnDispose() { }
+        protected abstract void OnDispose();
 
         /// <summary>Gets whether or not the object has been disposed.</summary>
         public bool IsDisposed => _isDisposed;
@@ -45,5 +66,10 @@ namespace Molten
         /// Gets or sets the tag object.
         /// </summary>
         public object Tag { get; set; }
+
+        /// <summary>
+        /// Gets the unique <see cref="EngineObject"/> ID (EOID) of the current <see cref="EngineObject"/>.
+        /// </summary>
+        public ulong EOID => _id;
     }
 }

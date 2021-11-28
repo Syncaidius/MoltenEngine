@@ -77,8 +77,6 @@ namespace Molten.Graphics
                 &ptrDevice,
                 &highestFeatureLevel,
                 &ptrContext);
-            /*using (var defaultDevice = new Device(_adapter.Adapter, flags, FeatureLevel.Level_11_0))
-                Native = defaultDevice.QueryInterface<Device>();*/
 
             Features = new GraphicsDX11Features(Native);
             _rasterizerBank = new RasterizerStateBank(this);
