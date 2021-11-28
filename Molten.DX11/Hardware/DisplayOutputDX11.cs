@@ -7,14 +7,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public unsafe class DisplayOutputDX11 : GraphicsOutput
+    public unsafe class DisplayOutputDX11 : EngineObject
     {
         internal IDXGIOutput1* Native;
         OutputDesc* _desc;
         DisplayAdapterDX11 _adapter;
 
-        internal DisplayOutputDX11(DisplayAdapterDX11 adapter, IDXGIOutput1* output) : 
-            base(adapter)
+        internal DisplayOutputDX11(DisplayAdapterDX11 adapter, IDXGIOutput1* output)
         {
             _adapter = adapter;
             Native = output;
@@ -27,7 +26,6 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             Native->Release();
-            base.OnDispose();
         }
 
         public DisplayMode[] GetSupportedModes(Format format)
@@ -48,12 +46,18 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets the resolution/size of the dekstop bound to the output, if any.</summary>
-        public override Rectangle DesktopBounds => _desc.DesktopCoordinates.FromApi();
+        public Rectangle DesktopBounds => _desc->DesktopCoordinates.FromApi();
 
         /// <summary>Gets whether or not the output is bound to a desktop.</summary>
-        public bool IsBoundToDesktop { get { return _desc.AttachedToDesktop > 0; } }
+        public bool IsBoundToDesktop { get { return _desc->AttachedToDesktop > 0; } }
 
-        /// <summary>Gets the orientation of the current <see cref="T:Molten.IDisplayOutput" />.</summary>
-        public override DisplayOrientation Orientation => (DisplayOrientation)_desc.Rotation;
+        /// <summary>Gets the orientation of the current <see cref="IDisplayOutput" />.</summary>
+        public DisplayOrientation Orientation => (DisplayOrientation)_desc->Rotation;
+
+        /// <summary>Gets the name of the output.</summary>
+        public string Name { get; protected set; } = "";
+
+        /// <summary>Gets the adapter that the display device is connected to.</summary>
+        public IDisplayAdapter Adapter => _adapter;
     }
 }

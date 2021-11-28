@@ -223,6 +223,7 @@
     <Compile Include="Interop\DeviceCreationFlags.cs" />
     <Compile Include="Interop\DxgiError.cs" />
     <Compile Include="Interop\DXGIHelper.cs" />
+    <Compile Include="Interop\SharpDXInterop.cs" />
     <Compile Include="Renderer\MainSurfaceType.cs" />
     <Compile Include="Renderer\RenderChain.Context.cs" />
     <Compile Include="Renderer\RenderChain.cs" />
@@ -412,7 +413,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="..\Molten.DX.Shared\Molten.DX.Shared.projitems" Label="Shared" />
   <Import Project="..\Molten.Render.Shared\Molten.Render.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
