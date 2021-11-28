@@ -1,11 +1,8 @@
-﻿using SharpDX;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
-using Molten.Graphics.Textures;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
@@ -22,7 +19,7 @@ namespace Molten.Graphics
             RendererDX11 renderer,
             int width,
             int height,
-            Format format = SharpDX.DXGI.Format.R8G8B8A8_SNorm,
+            Format format = Format.FormatR8G8B8A8SNorm,
             int mipCount = 1,
             int arraySize = 1,
             int sampleCount = 1,

@@ -112,7 +112,7 @@ namespace Molten.Graphics
         TextureFlags Flags { get; }
 
         /// <summary>Gets the format of the texture.</summary>
-        GraphicsFormat Format { get; }
+        GraphicsFormat DataFormat { get; }
 
         /// <summary>Gets whether or not the texture is using a supported block-compressed format.</summary>
         bool IsBlockCompressed { get; }

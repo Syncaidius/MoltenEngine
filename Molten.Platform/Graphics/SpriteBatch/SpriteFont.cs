@@ -127,7 +127,7 @@ namespace Molten.Graphics
                 Width = _pageSize,
                 Height = _pageSize,
                 ArraySize = initialPages,
-                Format = _rt.Format,
+                Format = _rt.DataFormat,
             });
 
             _rt.Clear(Color.Transparent);

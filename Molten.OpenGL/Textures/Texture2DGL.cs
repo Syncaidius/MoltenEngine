@@ -6,7 +6,7 @@ namespace Molten.Graphics
     public class Texture2DGL : TextureBaseGL, ITexture2D
     {
         public Texture2DGL(Texture2DGL descTexture, TextureFlags flags) :
-            this(descTexture.Renderer as RendererGL, descTexture.Width, descTexture.Height, descTexture.Format, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags, descTexture.SampleCount)
+            this(descTexture.Renderer as RendererGL, descTexture.Width, descTexture.Height, descTexture.DataFormat, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags, descTexture.SampleCount)
         {
         }
 
@@ -14,7 +14,7 @@ namespace Molten.Graphics
         /// of the provided texture in to the new instance.</summary>
         /// <param name="descTexture"></param>
         internal Texture2DGL(Texture2DGL descTexture)
-            : this(descTexture.Renderer as RendererGL, descTexture.Width, descTexture.Height, descTexture.Format, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags, descTexture.SampleCount)
+            : this(descTexture.Renderer as RendererGL, descTexture.Width, descTexture.Height, descTexture.DataFormat, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags, descTexture.SampleCount)
         { }
 
         internal Texture2DGL(
@@ -39,7 +39,7 @@ namespace Molten.Graphics
                 Height = Height,
                 ArraySize = ArraySize,
                 Flags = Flags,
-                Format = Format,
+                Format = DataFormat,
                 MipMapLevels = MipMapCount,
                 SampleCount = SampleCount,
             };
@@ -73,7 +73,7 @@ namespace Molten.Graphics
             // NOTE - Khronos.org: "Again, if you use more than one mipmaps, you should change the GL_TEXTURE_MAX_LEVEL to state how many you will use 
             //               (minus 1. The base/max level is a closed range), then perform a glTexImage2D (note the lack of "Sub") for each mipmap."
             for (int i = 0; i < MipMapCount; i++)
-                Gl.TexImage2D(target, i, Format.ToInternal(), Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+                Gl.TexImage2D(target, i, DataFormat.ToInternal(), Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
         }
     }
 }

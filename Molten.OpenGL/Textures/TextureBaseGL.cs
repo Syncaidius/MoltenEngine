@@ -193,7 +193,7 @@ namespace Molten.Graphics
 
         public TextureFlags Flags => _flags;
 
-        public GraphicsFormat Format => _format;
+        public GraphicsFormat DataFormat => _format;
 
         public bool IsBlockCompressed => _isBlockCompressed;
 

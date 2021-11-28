@@ -34,7 +34,7 @@ namespace Molten.Graphics
                 if (Area != null)
                     throw new NotImplementedException("Area-based SetData on block-compressed texture is currently unsupported. Sorry!");
 
-                blockSize = BCHelper.GetBlockSize(texture.Format);
+                blockSize = BCHelper.GetBlockSize(texture.DataFormat);
 
                 // Collect total level size.
                 for (int i = 0; i < texture.MipMapCount; i++)

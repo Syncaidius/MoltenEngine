@@ -1,13 +1,10 @@
-﻿using SharpDX;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
-using Molten.Graphics.Textures.DDS;
+﻿using Molten.Graphics.Textures.DDS;
 using Molten.Graphics.Textures;
 using System;
 
 namespace Molten.Graphics
 {
-    using SharpDX.Direct3D;
+    using Silk.NET.DXGI;
     using System.IO;
     using System.Runtime.InteropServices;
     using Resource = SharpDX.Direct3D11.Resource;
@@ -22,7 +19,8 @@ namespace Molten.Graphics
         /// <param name="descTexture"></param>
         /// <param name="flags">A set of flags to override those of the provided texture.</param>
         internal Texture2DDX11(Texture2DDX11 descTexture, TextureFlags flags)
-            : this(descTexture.Renderer as RendererDX11, descTexture.Width, descTexture.Height, descTexture.DxFormat, descTexture.MipMapCount, descTexture.ArraySize, flags)
+            : this(descTexture.Renderer as RendererDX11, descTexture.Width, descTexture.Height, 
+                  descTexture.DxFormat, descTexture.MipMapCount, descTexture.ArraySize, flags)
         { }
 
         /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
@@ -36,7 +34,7 @@ namespace Molten.Graphics
             RendererDX11 renderer,
             int width,
             int height,
-            Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
+            Format format = Format.FormatR8G8B8A8Unorm,
             int mipCount = 1,
             int arraySize = 1,
             TextureFlags flags = TextureFlags.None,
@@ -70,7 +68,7 @@ namespace Molten.Graphics
                 Height = _height,
                 ArraySize = _arraySize,
                 Flags = _flags,
-                Format = this.Format,
+                Format = this.DataFormat,
                 MipMapLevels = _mipCount,
                 SampleCount = _sampleCount,
             };
@@ -125,7 +123,8 @@ namespace Molten.Graphics
             };
         }
 
-        protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
+        protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, 
+            int newMipMapCount, int newArraySize, Format newFormat)
         {
             _description.ArraySize = newArraySize;
             _description.Width = newWidth;

@@ -154,17 +154,17 @@ namespace Molten.Graphics
             UpdateViewport();
         }
 
-        internal void Clear(PipeDX11 pipe, DepthStencilClearFlags clearFlags = DepthStencilClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
+        internal void Clear(PipeDX11 pipe, DepthClearFlags clearFlags = DepthClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
         {
             if (_depthView == null)
                 CreateTexture(false);
 
-            pipe.Context.ClearDepthStencilView(_depthView, clearFlags, depth, stencil);
+            pipe.Context->ClearDepthStencilView(_depthView, clearFlags, depth, stencil);
         }
 
         public void Clear(DepthClearFlags clearFlags = DepthClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
         {
-            Clear(Device, (DepthStencilClearFlags)clearFlags, depth, stencil);
+            Clear(Device, clearFlags, depth, stencil);
         }
 
         private protected override void OnPipelineDispose()

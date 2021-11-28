@@ -118,7 +118,7 @@ namespace Molten.Graphics
 
         public TextureFlags Flags => throw new NotImplementedException();
 
-        public GraphicsFormat Format => throw new NotImplementedException();
+        public GraphicsFormat DataFormat => throw new NotImplementedException();
 
         public bool IsBlockCompressed => throw new NotImplementedException();
 

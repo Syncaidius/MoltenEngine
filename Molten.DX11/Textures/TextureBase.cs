@@ -3,12 +3,12 @@ using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SharpDX.DXGI;
 using Molten.Collections;
-using Molten.Graphics.Textures.DDS;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Molten.Graphics.Textures;
+using Silk.NET.DXGI;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
@@ -57,7 +57,8 @@ namespace Molten.Graphics
 
         static int _nextSortKey = 0;
 
-        internal TextureBase(RendererDX11 renderer, int width, int height, int depth, int mipCount, int arraySize, int sampleCount, Format format, TextureFlags flags) : base(renderer.Device)
+        internal TextureBase(RendererDX11 renderer, int width, int height, int depth, int mipCount, 
+            int arraySize, int sampleCount, Format format, TextureFlags flags) : base(renderer.Device)
         {
             SortKey = Interlocked.Increment(ref _nextSortKey);
             _renderer = renderer;
@@ -86,7 +87,7 @@ namespace Molten.Graphics
                 Width = _width,
                 ArraySize = _arraySize,
                 Flags = _flags,
-                Format = this.Format,
+                Format = this.DataFormat,
                 MipMapLevels = _mipCount,
             };
         }
@@ -114,21 +115,21 @@ namespace Molten.Graphics
             }
         }
 
-        protected BindFlags GetBindFlags()
+        protected BindFlag GetBindFlags()
         {
-            BindFlags result = BindFlags.None;
+            BindFlag result = 0;
 
             if (HasFlags(TextureFlags.AllowUAV))
-                result |= BindFlags.UnorderedAccess;
+                result |= BindFlag.BindUnorderedAccess;
 
             if (!HasFlags(TextureFlags.NoShaderResource))
-                result |= BindFlags.ShaderResource;
+                result |= BindFlag.BindShaderResource;
 
             if (this is RenderSurface)
-                result |= BindFlags.RenderTarget;
+                result |= BindFlag.BindRenderTarget;
 
             if (this is DepthStencilSurface)
-                result |= BindFlags.DepthStencil;
+                result |= BindFlag.BindDepthStencil;
 
             return result;
         }
@@ -156,15 +157,14 @@ namespace Molten.Graphics
                 return ResourceUsage.Default;
         }
 
-        protected CpuAccessFlags GetAccessFlags()
+        protected CpuAccessFlag GetAccessFlags()
         {
             if (HasFlags(TextureFlags.Staging))
-                return CpuAccessFlags.Read;
+                return CpuAccessFlag.CpuAccessRead;
             else if (HasFlags(TextureFlags.Dynamic))
-                return CpuAccessFlags.Write;
+                return CpuAccessFlag.CpuAccessWrite;
             else
-                return CpuAccessFlags.None;
-
+                return 0;
         }
 
         protected void CreateTexture(bool resize)
@@ -408,7 +408,7 @@ namespace Molten.Graphics
             {
                 ArraySize = _arraySize,
                 Flags = _flags,
-                Format = Format,
+                Format = DataFormat,
                 Height = _height,
                 HighestMipMap = 0,
                 IsCompressed = _isBlockCompressed,
@@ -417,7 +417,7 @@ namespace Molten.Graphics
                 Width = _width,
             };
 
-            int blockSize = BCHelper.GetBlockSize(Format);
+            int blockSize = BCHelper.GetBlockSize(DataFormat);
             int expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
             int expectedSlicePitch = expectedRowPitch * Height;
 
@@ -463,7 +463,7 @@ namespace Molten.Graphics
             // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347
 
 
-            int blockSize = BCHelper.GetBlockSize(Format);
+            int blockSize = BCHelper.GetBlockSize(DataFormat);
             int expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
             int expectedSlicePitch = expectedRowPitch * Height;
 
@@ -553,7 +553,7 @@ namespace Molten.Graphics
         {
             TextureBase destTexture = destination as TextureBase;
 
-            if (this.Format != destination.Format)
+            if (this.DataFormat != destination.DataFormat)
                 throw new TextureCopyException(this, destTexture, "The source and destination texture formats do not match.");
 
             // Validate dimensions.
@@ -579,7 +579,7 @@ namespace Molten.Graphics
             if (destination.HasFlags(TextureFlags.Dynamic))
                 throw new TextureCopyException(this, destTexture, "Cannot copy to a dynamic texture via GPU. GPU cannot write to dynamic textures.");
 
-            if (this.Format != destination.Format)
+            if (this.DataFormat != destination.DataFormat)
                 throw new TextureCopyException(this, destTexture, "The source and destination texture formats do not match.");
 
             // Validate dimensions.
@@ -646,7 +646,7 @@ namespace Molten.Graphics
         /// <summary>Gets the format of the texture.</summary>
         public Format DxFormat => _format;
 
-        public GraphicsFormat Format => (GraphicsFormat)_format;
+        public GraphicsFormat DataFormat => (GraphicsFormat)_format;
 
         /// <summary>Gets whether or not the texture is using a supported block-compressed format.</summary>
         public bool IsBlockCompressed => _isBlockCompressed;

@@ -117,7 +117,7 @@ namespace Molten.Graphics
         /// <param name="destination">The destination texture.</param>
         public void ResolveTexture(ITexture source, ITexture destination)
         {
-            if (source.Format != destination.Format)
+            if (source.DataFormat != destination.DataFormat)
                 throw new Exception("The source and destination texture must be the same format.");
 
             int arrayLevels = Math.Min(source.ArraySize, destination.ArraySize);
@@ -152,7 +152,7 @@ namespace Molten.Graphics
             int destMiplevel,
             int destArraySlice)
         {
-            if (source.Format != destination.Format)
+            if (source.DataFormat != destination.DataFormat)
                 throw new Exception("The source and destination texture must be the same format.");
 
             TextureResolve task = TextureResolve.Get();
