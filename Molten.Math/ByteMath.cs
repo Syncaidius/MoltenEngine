@@ -8,175 +8,153 @@ namespace Molten
     /// <summary>A helper class for converting between different computational storage measurements (e.g. bits, bytes, kilobytes, etc).</summary>
     public static class ByteMath
     {
+        public const ulong BITS_IN_BYTE = 8;
+
+#if X64 || X86 || WIN32 || WINDOWS
+        public const ulong B_BASE = 1024;
+#else
+        public const ulong B_BASE = 1000;
+#endif
+
+        public const ulong BYTES_IN_KB = B_BASE;
+        public const ulong BYTES_IN_MB = BYTES_IN_KB * B_BASE;
+        public const ulong BYTES_IN_GB = BYTES_IN_MB * B_BASE;
+        public const ulong BYTES_IN_TB = BYTES_IN_GB * B_BASE;
+        public const ulong BYTES_IN_PB = BYTES_IN_TB * B_BASE;
+
+        public const ulong IB_BASE = 1024;
+        public const ulong BYTES_IN_KIB = IB_BASE;
+        public const ulong BYTES_IN_MIB = BYTES_IN_KB * B_BASE;
+        public const ulong BYTES_IN_GIB = BYTES_IN_MB * B_BASE;
+        public const ulong BYTES_IN_TIB = BYTES_IN_GB * B_BASE;
+        public const ulong BYTES_IN_PIB = BYTES_IN_TB * B_BASE;
+
         /// <summary>Converts bytes into kilobytes (KB).</summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
-        public static double ToKilobytes(long bytes)
+        public static double ToKilobytes(long b)
         {
-            double val = (float)bytes;
-            val /= 1024;
-
-            return val;
+            return (double)b / BYTES_IN_KB;
         }
 
         /// <summary>Converts bytes into megabytes (MB).</summary>
-        /// <param name="bytes"></param>
+        /// <param name="b">The number of bytes.</param>
         /// <returns></returns>
-        public static double ToMegabytes(ulong bytes)
+        public static double ToMegabytes(ulong b)
         {
-            decimal val = (decimal)bytes;
-            val /= 1024;
-            val /= 1024;
-
-            return (double)val;
+            return (double)b / BYTES_IN_MB;
         }
 
         /// <summary>Converts bytes into megabytes (MB).</summary>
-        /// <param name="bytes"></param>
+        /// <param name="b">The number of bytes.</param>
         /// <returns></returns>
-        public static double ToMegabytes(long bytes)
+        public static double ToMegabytes(long b)
         {
-            double val = bytes;
-            val /= 1024;
-            val /= 1024;
-
-            return val;
+            return (double)b / BYTES_IN_MB;
         }
 
         /// <summary>Converts bytes into gigbytes (GB).</summary>
-        /// <param name="bytes"></param>
+        /// <param name="b">The number of bytes.</param>
         /// <returns></returns>
-        public static double ToGigabytes(ulong bytes)
+        public static double ToGigabytes(ulong b)
         {
-            decimal val = (decimal)bytes;
-            val /= 1024; //to kilobytes
-            val /= 1024; //to megabytes
-            val /= 1024; //to gigabytes
-
-            return (double)val;
+            return (double)b / BYTES_IN_GB;
         }
 
         /// <summary>Converts bytes into gigbytes (GB).</summary>
-        /// <param name="bytes"></param>
+        /// <param name="b">The number of bytes.</param>
         /// <returns></returns>
-        public static double ToGigabytes(long bytes)
+        public static double ToGigabytes(long b)
         {
-            double val = (float)bytes;
-            val /= 1024; //to kilobytes
-            val /= 1024; //to megabytes
-            val /= 1024; //to gigabytes
-
-            return val;
+            return (double)b / BYTES_IN_GB;
         }
 
         /// <summary>Converts bytes into terabytes (TB).</summary>
-        /// <param name="bytes"></param>
+        /// <param name="b">The number of bytes.</param>
         /// <returns></returns>
-        public static double ToTerabytes(long bytes)
+        public static double ToTerabytes(long b)
         {
-            double val = (float)bytes;
-            val /= 1024; //to kilobytes
-            val /= 1024; //to megabytes
-            val /= 1024; //to gigabytes
-            val /= 1024; //to terabytes
-
-            return val;
+            return (double)b / BYTES_IN_TB;
         }
 
         /// <summary>Converts bytes into petabytes (PB).</summary>
-        /// <param name="bytes"></param>
+        /// <param name="b">The number of bytes.</param>
         /// <returns></returns>
-        public static double ToPetabytes(long bytes)
+        public static double ToPetabytes(long b)
         {
-            double val = (float)bytes;
-            val /= 1024; //to kilobytes
-            val /= 1024; //to megabytes
-            val /= 1024; //to gigabytes
-            val /= 1024; //to terabytes
-            val /= 1024; //to petabytes
-
-            return val;
+            return (double)b / BYTES_IN_PB;
         }
 
         /// <summary>Converts kilobytes into bytes. </summary>
-        /// <param name="kilobytes"></param>
+        /// <param name="kb">The number of kilobytes.</param>
         /// <returns></returns>
-        public static long FromKilobytes(double kilobytes)
+        public static long FromKilobytes(double kb)
         {
-            kilobytes *= 1024; //to B
-            return (long)kilobytes;
+            return (long)(kb * BYTES_IN_KB);
         }
 
         /// <summary>Converts megabytes into bytes. </summary>
-        /// <param name="megabytes"></param>
+        /// <param name="mb">The number of megabytes.</param>
         /// <returns></returns>
-        public static long FromMegabytes(double megabytes)
+        public static long FromMegabytes(double mb)
         {
-            megabytes *= 1024; //to KB
-            megabytes *= 1024; //to B
-
-            return (long)megabytes;
+            return (long)(mb * BYTES_IN_MB);
         }
 
-        /// <summary>Converts gigabytes into bytes. </summary>
-        /// <param name="gigabytes"></param>
+        /// <summary>Converts gigabytes into bytes.</summary>
+        /// <param name="gb">The number of gigabytes.</param>
         /// <returns></returns>
-        public static long FromGigabytes(double gigabytes)
+        public static long FromGigabytes(double gb)
         {
-            gigabytes *= 1024; //to MB
-            gigabytes *= 1024; //to KB
-            gigabytes *= 1024; //to B
-
-            return (long)gigabytes;
+            return (long)(gb * BYTES_IN_GB);
         }
 
         /// <summary>Converts terabytes into bytes. </summary>
-        /// <param name="petabytes"></param>
+        /// <param name="tb">The number of terabytes.</param>
         /// <returns></returns>
-        public static long FromTerabytes(double terabytes)
+        public static long FromTerabytes(double tb)
         {
-            terabytes *= 1024; //to gigabytes
-            terabytes *= 1024; //to megabytes
-            terabytes *= 1024; //to KB
-            terabytes *= 1024; //to B
-
-
-            return (long)terabytes;
+            return (long)(tb * BYTES_IN_TB);
         }
 
         /// <summary>Converts petabytes into bytes. </summary>
-        /// <param name="terabytes"></param>
+        /// <param name="pb"></param>
         /// <returns></returns>
-        public static long FromPetabytes(double petabytes)
+        public static long FromPetabytes(double pb)
         {
-            petabytes *= 1024; //to terabytes
-            petabytes *= 1024; //to gigabytes
-            petabytes *= 1024; //to megabytes
-            petabytes *= 1024; //to kilobytes
-            petabytes *= 1024; //to bytes
-
-
-            return (long)petabytes;
+            return (long)(pb * BYTES_IN_PB);
         }
 
         /// <summary>Converts bytes into bits.</summary>
-        /// <param name="bytes"></param>
+        /// <param name="b">The number of bytes</param>
         /// <returns></returns>
-        public static long ToBits(long bytes)
+        public static ulong ToBits(ulong b)
         {
-            bytes *= 8;
+            return b * BITS_IN_BYTE;
+        }
 
-            return bytes;
+        /// <summary>Converts bytes into bits.</summary>
+        /// <param name="b">The number of bytes</param>
+        /// <returns></returns>
+        public static ulong ToBits(long b)
+        {
+            return (ulong)b * BITS_IN_BYTE;
         }
 
         /// <summary>Converts bits into bytes.</summary>
-        /// <param name="bits"></param>
+        /// <param name="bits">The number of bits.</param>
         /// <returns></returns>
         public static long FromBits(long bits)
         {
-            bits /= 8;
+            return bits / (long)BITS_IN_BYTE;
+        }
 
-            return bits;
+        /// <summary>Converts bits into bytes.</summary>
+        /// <param name="bits">The number of bits.</param>
+        /// <returns></returns>
+        public static ulong FromBits(ulong bits)
+        {
+            return (ulong)bits / BITS_IN_BYTE;
         }
     }
 }

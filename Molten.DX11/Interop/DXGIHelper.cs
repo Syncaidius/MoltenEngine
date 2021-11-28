@@ -48,23 +48,23 @@ namespace Molten.Graphics
         /// Enumerates a DXGI list/function and returns a managed array 
         /// of pointers to enumerated DXGI objects of the given type.
         /// </summary>
-        /// <typeparam name="T">The type of object to enumerate.</typeparam>
-        /// <typeparam name="C">The intermediate type to be converted to <typeparamref name="T"/></typeparam>
+        /// <typeparam name="RETURN_TYPE">The type of object to return after converting <typeparamref name="ENUM_TYPE"/> to <typeparamref name="RETURN_TYPE"/>.</typeparam>
+        /// <typeparam name="ENUM_TYPE">The intermediate type to be converted to <typeparamref name="RETURN_TYPE"/></typeparam>
         /// <param name="enumFunc">The DXGI enum function to invoke when iterating.</param>
         /// <returns></returns>
-        public unsafe static T*[] EnumArray<T, C>(DXGIEnumFunc<C> enumFunc)
-            where T : unmanaged
-            where C: unmanaged
+        public unsafe static RETURN_TYPE*[] EnumArray<RETURN_TYPE, ENUM_TYPE>(DXGIEnumFunc<ENUM_TYPE> enumFunc)
+            where RETURN_TYPE : unmanaged
+            where ENUM_TYPE: unmanaged
         {
-            uint count = GetEnumCount<C>(enumFunc);
+            uint count = GetEnumCount<ENUM_TYPE>(enumFunc);
 
             // Now build the array
-            T*[] result = new T*[count];
+            RETURN_TYPE*[] result = new RETURN_TYPE*[count];
             for (uint i = 0; i < count; i++)
             {
-                C* tVal = null;
+                ENUM_TYPE* tVal = null;
                 enumFunc(i, ref tVal);
-                result[i] = (T*)tVal;
+                result[i] = (RETURN_TYPE*)tVal;
             }
 
             return result;
@@ -73,8 +73,8 @@ namespace Molten.Graphics
         /// <summary>
         /// Returns the number of enumerable items available from a DXGI function.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="enumFunc"></param>
+        /// <typeparam name="T">The type of object to enumerate.</typeparam>
+        /// <param name="enumFunc">The DXGI enumeration function.</param>
         /// <returns></returns>
         public unsafe static uint GetEnumCount<T>(DXGIEnumFunc<T> enumFunc)
             where T : unmanaged

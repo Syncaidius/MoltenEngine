@@ -25,7 +25,6 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            base.OnDispose();
             _dxgiFactory->Release();
             _api.Dispose();
         }
@@ -52,7 +51,7 @@ namespace Molten.Graphics
             {
                 AdapterDesc1* desc = null;
                 detected[i]->GetDesc1(desc);
-                DisplayAdapterDX11 adapter = InstanciateAdapter(ref detected[i], desc, i);
+                DisplayAdapterDX11 adapter = new DisplayAdapterDX11(this, detected[i], desc, i);
                 _adapters.Add(adapter);
 
                 if (adapter.OutputCount > 0)
@@ -106,24 +105,10 @@ namespace Molten.Graphics
                 preferredAdapter.AddActiveOutput(preferredAdapter.GetOutput(id));
 
             // Log preferred adapter stats
-            _log.WriteLine($"Chosen {preferredAdapter.Name.Replace("\0", "")}");
+            _log.WriteLine($"Chosen {preferredAdapter.Name}");
             _log.WriteLine($"    Dedicated VRAM: {preferredAdapter.DedicatedVideoMemory:N2} MB");
             _log.WriteLine($"    System RAM dedicated to video: {preferredAdapter.DedicatedSystemMemory:N2} MB");
             _log.WriteLine($"    Shared system RAM: {preferredAdapter.SharedSystemMemory:N2} MB");
-        }
-
-        private DisplayAdapterDX11 InstanciateAdapter(ref IDXGIAdapter1* adapter, AdapterDesc1* desc, int id)
-        {
-            IDXGIAdapter1* adapt = adapter;
-
-            // Get the adapter's outputs and convert them to the correct type.
-            IDXGIOutput1*[] outputs = DXGIHelper.EnumArray<IDXGIOutput1, IDXGIOutput>(adapter->EnumOutputs);
-
-            Output1[] result = new Output1[outputs.Length];
-            for (int i = 0; i < result.Length; i++)
-                result[i] = new Output1(outputs[i].NativePointer);
-
-            return new GraphicsAdapterDX<Adapter1, AdapterDescription1, Output1>(this, adapter, desc, result, id);
         }
 
         /// <summary>

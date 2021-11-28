@@ -26,9 +26,7 @@ namespace Molten.Graphics
         /// <summary>Occurs when an <see cref="T:Molten.IDisplayOutput" /> is disconnected from the current <see cref="T:Molten.IDisplayAdapter" />. </summary>
         public event DisplayOutputChanged OnOutputDeactivated;
 
-        public DisplayAdapterDX11(IDisplayManager manager, IDXGIAdapter1* adapter, 
-            AdapterDesc1* desc, IDXGIOutput1*[] outputs, 
-            int id)
+        public DisplayAdapterDX11(IDisplayManager manager, IDXGIAdapter1* adapter, AdapterDesc1* desc,            int id)
         {
             _manager = manager;
             Native = adapter;
@@ -48,6 +46,7 @@ namespace Molten.Graphics
             sharedMemory = sharedMemory < 0 ? 0 : sharedMemory;
             SharedSystemMemory = ByteMath.ToMegabytes(sharedMemory);
 
+            IDXGIOutput1*[] outputs = DXGIHelper.EnumArray<IDXGIOutput1, IDXGIOutput>(adapter->EnumOutputs);
             _connectedOutputs = new DisplayOutputDX11[outputs.Length];
 
             for (int i = 0; i < _connectedOutputs.Length; i++)
@@ -56,8 +55,6 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            base.OnDispose();
-
             Native->Release();
             Native = null;
         }
