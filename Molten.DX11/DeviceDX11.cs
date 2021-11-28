@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 using System.Threading;
 using Silk.NET.Direct3D11;
 using Silk.NET.Core.Native;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
     /// <summary>A Direct3D 11 graphics device.</summary>
-    /// <seealso cref="Molten.Graphics.PipeDX11" />
+    /// <seealso cref="PipeDX11" />
     public unsafe class DeviceDX11 : PipeDX11, IGraphicsDevice
     {
-        internal ID3D11Device* Native;
+        internal ID3D11Device1* Native;
         internal ID3D11DeviceContext1* ImmediateContext;
 
         D3D11 _api;
@@ -61,27 +62,31 @@ namespace Molten.Graphics
                 flags |= DeviceCreationFlags.Debug;
             }
 
-            D3DFeatureLevel d3DFeatureLevel = D3DFeatureLevel.D3DFeatureLevel110;
-            D3DFeatureLevel d3dCreatedfeatureLevel = D3DFeatureLevel.D3DFeatureLevel110;
-            _api.CreateDevice(_adapter.Native, 
+            D3DFeatureLevel requestedFeatureLevel = D3DFeatureLevel.D3DFeatureLevel110;
+            D3DFeatureLevel highestFeatureLevel = D3DFeatureLevel.D3DFeatureLevel110;
+            IDXGIAdapter* adapter = (IDXGIAdapter*)_adapter.Native;
+            ID3D11Device* ptrDevice = (ID3D11Device*)Native;
+            ID3D11DeviceContext* ptrContext = (ID3D11DeviceContext*)ImmediateContext;
+
+            HResult r = _api.CreateDevice(adapter, 
                 D3DDriverType.D3DDriverTypeHardware,
                 0,
                 (uint)flags, 
-                ref d3DFeatureLevel, 1,
+                &requestedFeatureLevel, 1,
                 D3D11.SdkVersion,
-                Native,
-                d3dCreatedfeatureLevel,
-                ref ImmediateContext);
+                &ptrDevice,
+                &highestFeatureLevel,
+                &ptrContext);
             /*using (var defaultDevice = new Device(_adapter.Adapter, flags, FeatureLevel.Level_11_0))
                 Native = defaultDevice.QueryInterface<Device>();*/
 
-            Features = new GraphicsDX11Features(ref Native);
+            Features = new GraphicsDX11Features(Native);
             _rasterizerBank = new RasterizerStateBank(this);
             _blendBank = new BlendStateBank(this);
             _depthBank = new DepthStateBank(this);
             _samplerBank = new SamplerBank(this);
 
-            Initialize(_log, this, Native.ImmediateContext, 0);
+            Initialize(_log, this, ImmediateContext, 0);
         }
 
         internal BufferSegment GetBufferSegment()
@@ -136,7 +141,7 @@ namespace Molten.Graphics
             }
 
             PipeDX11 pipe = new PipeDX11();
-            pipe.Initialize(_log, this, new DeviceContext(Native), id);
+            pipe.Initialize(_log, this, ImmediateContext, id);
             _pipes[id] = pipe;
             return pipe;
         }
@@ -181,7 +186,11 @@ namespace Molten.Graphics
             DisposeObject(ref _blendBank);
             DisposeObject(ref _depthBank);
             DisposeObject(ref _samplerBank);
+
+            ImmediateContext->Release();
             Native->Release();
+            ImmediateContext = null;
+            Native = null;
             _api.Dispose();
 
             _bufferSegmentPool.Dispose();

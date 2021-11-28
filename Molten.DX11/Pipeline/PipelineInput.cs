@@ -1,7 +1,4 @@
-﻿using SharpDX.D3DCompiler;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using Molten.Graphics.Shaders;
+﻿using Molten.Graphics.Shaders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,7 +58,7 @@ namespace Molten.Graphics
             Pipe.Context.InputAssembler.SetVertexBuffers(slot.SlotID, _nullVertexBuffer);
         }
 
-        internal void Refresh(MaterialPass pass, StateConditions conditions, PrimitiveTopology topology)
+        internal void Refresh(MaterialPass pass, StateConditions conditions, VertexTopology topology)
         {
             // Update shader pipeline stages
             _materialStage.Refresh(pass, conditions);

@@ -221,6 +221,8 @@
     <Compile Include="Hardware\DisplayMode.cs" />
     <Compile Include="Hardware\DisplayOutputDX11.cs" />
     <Compile Include="Interop\DeviceCreationFlags.cs" />
+    <Compile Include="Interop\DxgiError.cs" />
+    <Compile Include="Interop\DXGIHelper.cs" />
     <Compile Include="Renderer\MainSurfaceType.cs" />
     <Compile Include="Renderer\RenderChain.Context.cs" />
     <Compile Include="Renderer\RenderChain.cs" />

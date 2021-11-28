@@ -10,19 +10,19 @@ using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    internal class GraphicsDX11Features : GraphicsDeviceFeatures
+    internal unsafe class GraphicsDX11Features : GraphicsDeviceFeatures
     {
-        ID3D11Device _d3d;
+        ID3D11Device1* _d3d;
 
         D3DFeatureLevel _featureLevel;
         CounterCapabilities _counterCap;
 
         // DX11 resource limits: https://msdn.microsoft.com/en-us/library/windows/desktop/ff819065%28v=vs.85%29.aspx
 
-        internal GraphicsDX11Features(ref ID3D11Device d3dDevice)
+        internal GraphicsDX11Features(ID3D11Device1* d3dDevice)
         {
             _d3d = d3dDevice;
-            _featureLevel = _d3d.GetFeatureLevel();
+            _featureLevel = _d3d->GetFeatureLevel();
 
             Compute = new GraphicsComputeFeatures(ref _d3d);
             Shaders = new GraphicsShaderFeatures(ref _d3d, _featureLevel);

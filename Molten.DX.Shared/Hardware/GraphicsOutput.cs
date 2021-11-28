@@ -9,7 +9,7 @@ namespace Molten.Graphics
     /// <seealso cref="Molten.IDisplayOutput" />
     /// <typeparam name="A">The DXGI Adapter type</typeparam>
     /// <typeparam name="D">The type of adapter description</typeparam>
-    public abstract class GraphicsOutput : IDisplayOutput
+    public abstract class GraphicsOutput : EngineObject, IDisplayOutput
     {
         IDisplayAdapter _adapter;
 

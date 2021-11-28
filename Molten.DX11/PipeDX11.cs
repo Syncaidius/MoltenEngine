@@ -1,16 +1,15 @@
-﻿using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using Molten.Collections;
+﻿using Molten.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
     /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="DeviceContext"/>.</summary>
-    public class PipeDX11 : EngineObject, IGraphicsPipe<DeviceDX11>
+    public unsafe class PipeDX11 : EngineObject, IGraphicsPipe<DeviceDX11>
     {
         class DrawInfo
         {
@@ -36,13 +35,13 @@ namespace Molten.Graphics
         GraphicsValidationResult _drawResult;
 
         DeviceDX11 _device;
-        DeviceContext _context;
+        ID3D11DeviceContext1* _context;
         PipeStateStack _stateStack;
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
         DrawInfo _drawInfo;
 
-        internal void Initialize(Logger log, DeviceDX11 device, DeviceContext context, int id)
+        internal void Initialize(Logger log, DeviceDX11 device, ID3D11DeviceContext1* context, int id)
         {
             ID = id;
             _context = context;
@@ -51,12 +50,12 @@ namespace Molten.Graphics
             _drawInfo = new DrawInfo();
             Log = log;
 
-            if (Context.TypeInfo == DeviceContextType.Immediate)
+            if (_context->GetType() == DeviceContextType.DeviceContextImmediate)
                 Type = GraphicsContextType.Immediate;
             else
                 Type = GraphicsContextType.Deferred;
 
-            _context.ClearState();
+            _context->ClearState();
 
             _stateStack = new PipeStateStack(this);
             _computeStage = new ComputeInputStage(this);
@@ -149,9 +148,9 @@ namespace Molten.Graphics
 
         private GraphicsValidationResult ApplyState(Material material, MaterialPass pass,
             GraphicsValidationMode mode,
-            PrimitiveTopology topology)
+            VertexTopology topology)
         {
-            if (topology == PrimitiveTopology.Undefined)
+            if (topology == VertexTopology.Undefined)
                 return GraphicsValidationResult.UndefinedTopology;
 
             GraphicsValidationResult result = GraphicsValidationResult.Successful;
@@ -197,11 +196,13 @@ namespace Molten.Graphics
             _drawInfo.Reset();
         }
 
-        /// <summary>Draw non-indexed, non-instanced primitives. All queued compute shader dispatch requests are also processed</summary>
+        /// <summary>Draw non-indexed, non-instanced primitives. 
+        /// All queued compute shader dispatch requests are also processed</summary>
         /// <param name="vertexCount">The number of vertices to draw from the provided vertex buffer(s).</param>
         /// <param name="vertexStartIndex">The vertex to start drawing from.</param>
-        /// <param name="topology">The primitive topolog to use when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
-        public void Draw(Material material, int vertexCount, PrimitiveTopology topology, int vertexStartIndex = 0)
+        /// <param name="topology">The primitive topology to use when drawing with a NULL vertex buffer. 
+        /// Vertex buffers always override this when applied.</param>
+        public void Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
         {
 #if DEBUG
             if (!_drawInfo.Began)
@@ -221,7 +222,7 @@ namespace Molten.Graphics
                         // Re-render the same pass for K iterations.
                         for (int k = 0; k < pass.Iterations; k++)
                         {
-                            _context.Draw(vertexCount, vertexStartIndex);
+                            _context->Draw(vertexCount, vertexStartIndex);
                             Profiler.Current.DrawCalls++;
                         }
                     }
@@ -242,11 +243,11 @@ namespace Molten.Graphics
         /// <param name="vertexStartIndex">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
         public void DrawInstanced(Material material,
-            int vertexCountPerInstance,
-            int instanceCount,
-            PrimitiveTopology topology,
-            int vertexStartIndex = 0,
-            int instanceStartIndex = 0)
+            uint vertexCountPerInstance,
+            uint instanceCount,
+            VertexTopology topology,
+            uint vertexStartIndex = 0,
+            uint instanceStartIndex = 0)
         {
             if (!_drawInfo.Began)
                 throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before calling a Draw___() method.");
@@ -263,7 +264,7 @@ namespace Molten.Graphics
                         // Re-render the same pass for K iterations.
                         for (int k = 0; k < pass.Iterations; k++)
                         {
-                            _context.DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
+                            _context->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
                             Profiler.Current.DrawCalls++;
                         }
                     }
@@ -284,10 +285,10 @@ namespace Molten.Graphics
         /// <param name="startIndex">The index to start drawing from.</param>
         /// <param name="topology">The toplogy to apply when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
         public void DrawIndexed(Material material,
-            int indexCount,
-            PrimitiveTopology topology,
+            uint indexCount,
+            VertexTopology topology,
             int vertexIndexOffset = 0,
-            int startIndex = 0)
+            uint startIndex = 0)
         {
             if (!_drawInfo.Began)
                 throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before calling a Draw___() method.");
@@ -304,7 +305,7 @@ namespace Molten.Graphics
                         // Re-render the same pass for K iterations.
                         for (int k = 0; k < pass.Iterations; k++)
                         {
-                            _context.DrawIndexed(indexCount, startIndex, vertexIndexOffset);
+                            _context->DrawIndexed(indexCount, startIndex, vertexIndexOffset);
                             Profiler.Current.DrawCalls++;
                         }
                     }
@@ -326,13 +327,13 @@ namespace Molten.Graphics
         /// <param name="vertexIndexOffset">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
         public void DrawIndexedInstanced(Material material,
-            int indexCountPerInstance,
-            int instanceCount,
-            PrimitiveTopology topology,
+            uint indexCountPerInstance,
+            uint instanceCount,
+            VertexTopology topology,
             StateConditions conditions,
-            int startIndex = 0,
+            uint startIndex = 0,
             int vertexIndexOffset = 0,
-            int instanceStartIndex = 0)
+            uint instanceStartIndex = 0)
         {
             if (!_drawInfo.Began)
                 throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before calling a Draw___() method.");
@@ -349,7 +350,7 @@ namespace Molten.Graphics
                         // Re-render the same pass for K iterations.
                         for (int k = 0; k < pass.Iterations; k++)
                         {
-                            _context.DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex);
+                            _context->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndex, vertexIndexOffset, instanceStartIndex);
                             Profiler.Current.DrawCalls++;
                         }
                     }
@@ -433,7 +434,8 @@ namespace Molten.Graphics
             // Dispose context.
             if (Type != GraphicsContextType.Immediate)
             {
-                DisposeObject(ref _context);
+                _context->Release();
+                _context = null;
                 _device.RemoveDeferredPipe(this);
             }
 
@@ -447,7 +449,7 @@ namespace Molten.Graphics
 
         internal DeviceDX11 Device => _device;
 
-        internal DeviceContext Context => _context;
+        internal ID3D11DeviceContext1* Context => _context;
 
         internal Logger Log { get; private set; }
 

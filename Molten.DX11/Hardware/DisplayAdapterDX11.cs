@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public unsafe class DisplayAdapterDX11 : IDisplayAdapter
+    public unsafe class DisplayAdapterDX11 : EngineObject, IDisplayAdapter
     {
         /// <summary>Gets the native DXGI adapter that this instance represents.</summary>
         public IDXGIAdapter1* Native;
 
-        AdapterDesc1 _desc;
+        AdapterDesc1* _desc;
 
         DisplayOutputDX11[] _connectedOutputs;
         List<GraphicsOutput> _activeOutputs;
@@ -27,25 +27,26 @@ namespace Molten.Graphics
         public event DisplayOutputChanged OnOutputDeactivated;
 
         public DisplayAdapterDX11(IDisplayManager manager, IDXGIAdapter1* adapter, 
-            ref AdapterDesc1 desc, IDXGIOutput1*[] outputs, 
+            AdapterDesc1* desc, IDXGIOutput1*[] outputs, 
             int id)
         {
             _manager = manager;
             Native = adapter;
             _activeOutputs = new List<GraphicsOutput>();
             ID = id;
-            Native->GetDesc1(ref _desc);
+            _desc = desc;
 
-            fixed (char* d = _desc.Description)
-                _name = new string(d);
-
+            _name = new string(_desc->Description);
             _name.Replace("\0", string.Empty);
 
             PopulateVendor();
 
-            nuint shared = _desc.SharedSystemMemory;
-            if (shared < 0)
-                _desc.SharedSystemMemory = 0;
+            DedicatedSystemMemory = ByteMath.ToMegabytes(_desc->DedicatedSystemMemory);
+            DedicatedVideoMemory = ByteMath.ToMegabytes(_desc->DedicatedVideoMemory);
+
+            nuint sharedMemory = _desc->SharedSystemMemory;
+            sharedMemory = sharedMemory < 0 ? 0 : sharedMemory;
+            SharedSystemMemory = ByteMath.ToMegabytes(sharedMemory);
 
             _connectedOutputs = new DisplayOutputDX11[outputs.Length];
 
@@ -53,16 +54,19 @@ namespace Molten.Graphics
                 _connectedOutputs[i] = new DisplayOutputDX11(this, outputs[i]);
         }
 
-        ~DisplayAdapterDX11()
+        protected override void OnDispose()
         {
+            base.OnDispose();
+
             Native->Release();
+            Native = null;
         }
 
         private void PopulateVendor()
         {
             // See: https://pcisig.com/membership/member-companies
             // See: https://gamedev.stackexchange.com/a/31626/116135
-            switch (_desc.VendorId)
+            switch (_desc->VendorId)
             {
                 case 0x1002:
                 case 0x1022:
@@ -149,13 +153,13 @@ namespace Molten.Graphics
         public string Name => _name;
 
         /// <summary>Gets the amount of dedicated video memory, in megabytes.</summary>
-        public double DedicatedVideoMemory => ByteMath.ToMegabytes((long)_desc.DedicatedVideoMemory);
+        public double DedicatedVideoMemory { get; }
 
         /// <summary>Gets the amount of system memory dedicated to the adapter.</summary>
-        public double DedicatedSystemMemory => ByteMath.ToMegabytes((long)_desc.DedicatedSystemMemory);
+        public double DedicatedSystemMemory { get; }
 
         /// <summary>Gets the amount of system memory that is being shared with the adapter.</summary>
-        public double SharedSystemMemory => ByteMath.ToMegabytes((long)_desc.SharedSystemMemory);
+        public double SharedSystemMemory { get; }
 
         /// <summary>Gets the ID of the adapter.</summary>
         public int ID { get; private set; }
@@ -167,7 +171,7 @@ namespace Molten.Graphics
         public int OutputCount => _connectedOutputs.Length;
 
         /// <summary>
-        /// Gets the <see cref="T:Molten.Graphics.IDisplayManager" /> that spawned the adapter.
+        /// Gets the <see cref="IDisplayManager" /> that spawned the adapter.
         /// </summary>
         public IDisplayManager Manager => _manager;
     }
