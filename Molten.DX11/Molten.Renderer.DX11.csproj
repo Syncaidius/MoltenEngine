@@ -220,6 +220,7 @@
     <Compile Include="Exceptions\UnsupportedFeatureException.cs" />
     <Compile Include="Hardware\DisplayMode.cs" />
     <Compile Include="Hardware\DisplayOutputDX11.cs" />
+    <Compile Include="Interop\DeviceCreationFlags.cs" />
     <Compile Include="Renderer\MainSurfaceType.cs" />
     <Compile Include="Renderer\RenderChain.Context.cs" />
     <Compile Include="Renderer\RenderChain.cs" />
@@ -340,7 +341,7 @@
     <Compile Include="Shaders\Variables\Texture1DVariable.cs" />
     <Compile Include="Shaders\Variables\Texture2DVariable.cs" />
     <Compile Include="Shaders\Variables\TextureCubeVariable.cs" />
-    <Compile Include="SilkInterop.cs" />
+    <Compile Include="Interop\SilkInterop.cs" />
     <Compile Include="Surfaces\DepthStencilSurface.cs" />
     <Compile Include="Surfaces\RenderFormSurface.cs" />
     <Compile Include="Surfaces\RenderSurface.cs" />

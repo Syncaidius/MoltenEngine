@@ -10,7 +10,7 @@ namespace Molten.Graphics
     public unsafe class DisplayAdapterDX11 : IDisplayAdapter
     {
         /// <summary>Gets the native DXGI adapter that this instance represents.</summary>
-        public IDXGIAdapter1 Native;
+        public IDXGIAdapter1* Native;
 
         AdapterDesc1 _desc;
 
@@ -26,15 +26,15 @@ namespace Molten.Graphics
         /// <summary>Occurs when an <see cref="T:Molten.IDisplayOutput" /> is disconnected from the current <see cref="T:Molten.IDisplayAdapter" />. </summary>
         public event DisplayOutputChanged OnOutputDeactivated;
 
-        public DisplayAdapterDX11(IDisplayManager manager, ref IDXGIAdapter1 adapter, 
-            ref AdapterDesc1 desc, IDXGIOutput1[] outputs, 
+        public DisplayAdapterDX11(IDisplayManager manager, IDXGIAdapter1* adapter, 
+            ref AdapterDesc1 desc, IDXGIOutput1*[] outputs, 
             int id)
         {
             _manager = manager;
             Native = adapter;
             _activeOutputs = new List<GraphicsOutput>();
             ID = id;
-            Native.GetDesc1(ref _desc);
+            Native->GetDesc1(ref _desc);
 
             fixed (char* d = _desc.Description)
                 _name = new string(d);
@@ -51,6 +51,11 @@ namespace Molten.Graphics
 
             for (int i = 0; i < _connectedOutputs.Length; i++)
                 _connectedOutputs[i] = new DisplayOutputDX11(this, outputs[i]);
+        }
+
+        ~DisplayAdapterDX11()
+        {
+            Native->Release();
         }
 
         private void PopulateVendor()

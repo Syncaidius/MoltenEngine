@@ -9,7 +9,6 @@
     <Import_RootNamespace>Molten.Graphics</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Hardware\GraphicsAdapterDX.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Hardware\GraphicsDisplayManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Hardware\GraphicsOutput.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SharpDXInterop.cs" />

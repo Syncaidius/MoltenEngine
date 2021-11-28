@@ -1,4 +1,5 @@
 ﻿using SharpDX.Direct3D11;
+using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Molten.Graphics
 {
     public class GraphicsComputeFeatures
     {
-        Device _d3d;
+        ID3D11Device _d3d;
 
-        internal GraphicsComputeFeatures(Device d3d)
+        internal GraphicsComputeFeatures(ref ID3D11Device d3d)
         {
             _d3d = d3d;
         }

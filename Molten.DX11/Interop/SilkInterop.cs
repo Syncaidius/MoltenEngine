@@ -1,4 +1,5 @@
-﻿using Silk.NET.Direct3D11;
+﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D11;
 using Silk.NET.Maths;
 using System;
 using System.Collections.Generic;
@@ -34,9 +35,9 @@ namespace Molten.Graphics
             return (InputClassification)type;
         }
 
-        public static SharpDX.Direct3D.PrimitiveTopology ToApi(this VertexTopology type)
+        public static D3DPrimitiveTopology ToApi(this VertexTopology type)
         {
-            return (SharpDX.Direct3D.PrimitiveTopology)type;
+            return (D3DPrimitiveTopology)type;
         }
 
         public static Rectangle<int> ToApi(this Rectangle r)
@@ -67,7 +68,7 @@ namespace Molten.Graphics
             return (VertexInputType)type;
         }
 
-        public static VertexTopology FromApi(this SharpDX.Direct3D.PrimitiveTopology topology)
+        public static VertexTopology FromApi(this D3DPrimitiveTopology topology)
         {
             return (VertexTopology)topology;
         }

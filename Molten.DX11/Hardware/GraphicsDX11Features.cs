@@ -5,41 +5,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SharpDX.Direct3D;
+using Silk.NET.Direct3D11;
+using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    using Device = SharpDX.Direct3D11.Device;
-
     internal class GraphicsDX11Features : GraphicsDeviceFeatures
     {
-        Device _d3d;
+        ID3D11Device _d3d;
 
-        FeatureLevel _featureLevel;
+        D3DFeatureLevel _featureLevel;
         CounterCapabilities _counterCap;
 
         // DX11 resource limits: https://msdn.microsoft.com/en-us/library/windows/desktop/ff819065%28v=vs.85%29.aspx
 
-        internal GraphicsDX11Features(Device d3dDevice)
+        internal GraphicsDX11Features(ref ID3D11Device d3dDevice)
         {
             _d3d = d3dDevice;
-            _featureLevel = _d3d.FeatureLevel;
+            _featureLevel = _d3d.GetFeatureLevel();
 
-            Compute = new GraphicsComputeFeatures(_d3d);
-            Shaders = new GraphicsShaderFeatures(_d3d, _featureLevel);
+            Compute = new GraphicsComputeFeatures(ref _d3d);
+            Shaders = new GraphicsShaderFeatures(ref _d3d, _featureLevel);
             MiscFeatures = _d3d.CheckD3D11Feature();
             _counterCap = _d3d.GetCounterCapabilities();
 
             //calculate level-specific features.
-            switch (_d3d.FeatureLevel)
+            switch (_featureLevel)
             {
-                case FeatureLevel.Level_9_1:
-                case FeatureLevel.Level_9_2:
-                case FeatureLevel.Level_9_3:
-                case FeatureLevel.Level_10_0:
-                case FeatureLevel.Level_10_1:
+                case D3DFeatureLevel.D3DFeatureLevel91:
+                case D3DFeatureLevel.D3DFeatureLevel92:
+                case D3DFeatureLevel.D3DFeatureLevel93:
+                case D3DFeatureLevel.D3DFeatureLevel100:
+                case D3DFeatureLevel.D3DFeatureLevel101:
                     throw new UnsupportedFeatureException("Feature level " + _d3d.FeatureLevel);
 
-                case FeatureLevel.Level_11_0:
+                case D3DFeatureLevel.D3DFeatureLevel110:
                     SimultaneousRenderSurfaces = 8;
                     MaxTextureDimension = 16384;
                     MaxCubeMapDimension = 16384;
@@ -64,7 +64,7 @@ namespace Molten.Graphics
                     Compute.MaxThreadGroupZ = 64;
                     Compute.MaxDispatchXYDimension = 65535;
                     Compute.MaxDispatchZDimension = 65535;
-                    Compute.Supported = _d3d.CheckFeatureSupport(SharpDX.Direct3D11.Feature.ComputeShaders);
+                    Compute.Supported = _d3d.CheckFeatureSupport(Feature.ComputeShaders);
                     
                     break;
             }

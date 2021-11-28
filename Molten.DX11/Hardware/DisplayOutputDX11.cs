@@ -9,21 +9,26 @@ namespace Molten.Graphics
 {
     public unsafe class DisplayOutputDX11 : GraphicsOutput
     {
-        internal IDXGIOutput1 Native;
+        internal IDXGIOutput1* Native;
         OutputDesc _desc;
         DisplayAdapterDX11 _adapter;
 
-        internal DisplayOutputDX11(DisplayAdapterDX11 adapter, ref IDXGIOutput1 output) : 
+        internal DisplayOutputDX11(DisplayAdapterDX11 adapter, IDXGIOutput1* output) : 
             base(adapter)
         {
             _adapter = adapter;
             Native = output;
-            Native.GetDesc(ref _desc);
+            Native->GetDesc(ref _desc);
 
             fixed (char* d = _desc.DeviceName)
                 Name = new string(d);
 
             Name = Name.Replace("\0", string.Empty);
+        }
+
+        ~DisplayOutputDX11()
+        {
+            Native->Release();
         }
 
         public DisplayMode[] GetSupportedModes(Format format)
@@ -32,7 +37,7 @@ namespace Molten.Graphics
             uint* modeCount = (uint*)0;
             ModeDesc1* modeDescs = (ModeDesc1*)0;
 
-            Native.GetDisplayModeList1(format, flags, modeCount, modeDescs);
+            Native->GetDisplayModeList1(format, flags, modeCount, modeDescs);
             ModeDesc1[] m = new ModeDesc1[(int)modeCount];
             DisplayMode[] modes = new DisplayMode[m.Length];
 

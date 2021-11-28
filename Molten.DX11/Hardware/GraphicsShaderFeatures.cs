@@ -1,5 +1,7 @@
 ﻿using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
+using Silk.NET.Core.Native;
+using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +12,9 @@ namespace Molten.Graphics
 {
     public class GraphicsShaderFeatures
     {
-        Device _d3d;
+        ID3D11Device _d3d;
 
-        internal GraphicsShaderFeatures(Device d3d, FeatureLevel level)
+        internal GraphicsShaderFeatures(ref ID3D11Device d3d, D3DFeatureLevel level)
         {
             _d3d = d3d;
 
@@ -20,7 +22,7 @@ namespace Molten.Graphics
             HullAndDomain = true;
             DoublePrecision = _d3d.CheckFeatureSupport(Feature.ShaderDoubles);
 
-            if (level >= FeatureLevel.Level_11_1)
+            if (level >= D3DFeatureLevel.D3DFeatureLevel111)
             {
                 FeatureDataShaderMinimumPrecisionSupport min = _d3d.CheckShaderMinimumPrecisionSupport();
                 MinimumPrecision = (ShaderMinimumPrecisionSupport)min.AllOtherShaderStagesMinPrecision;
