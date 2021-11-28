@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 namespace Molten.Graphics
 {
     using Collections;
+    using Silk.NET.Direct3D11;
     using Buffer = SharpDX.Direct3D11.Buffer;
 
     internal partial class GraphicsBuffer : PipelineShaderObject
@@ -31,7 +32,7 @@ namespace Molten.Graphics
 
         internal GraphicsBuffer(DeviceDX11 device,
             BufferMode mode,
-            BindFlags bindFlags,
+            BindFlag bindFlags,
             int byteCapacity,
             ResourceOptionFlags optionFlags = ResourceOptionFlags.None, 
             StagingBufferFlags stagingType = StagingBufferFlags.None, 

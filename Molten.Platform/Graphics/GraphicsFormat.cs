@@ -343,6 +343,180 @@
         BC7_UNorm = 98,
 
         ///<Summary>A block-compression format. 4 For information about block-compression formats, see Texture Block Compression in Direct3D 11.</Summary>
-        BC7_UNorm_SRgb = 99
+        BC7_UNorm_SRgb = 99,
+
+        /// <summary>
+        /// Most common YUV 4:4:4 video resource format. 
+        /// Valid view formats for this video resource format are DXGI_FORMAT_R8G8B8A8_UNORM and DXGI_FORMAT_R8G8B8A8_UINT. 
+        /// For UAVs, an additional valid view format is DXGI_FORMAT_R32_UINT. By using DXGI_FORMAT_R32_UINT for UAVs, 
+        /// you can both read and write as opposed to just write for DXGI_FORMAT_R8G8B8A8_UNORM and DXGI_FORMAT_R8G8B8A8_UINT. 
+        /// Supported view types are SRV, RTV, and UAV.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        Ayuv = 100,
+
+        /// <summary>
+        /// 10-bit per channel packed YUV 4:4:4 video resource format. Valid view formats for this video resource format are 
+        /// DXGI_FORMAT_R10G10B10A2_UNORM and DXGI_FORMAT_R10G10B10A2_UINT. For UAVs, an additional valid view format is 
+        /// DXGI_FORMAT_R32_UINT. By using DXGI_FORMAT_R32_UINT for UAVs, you can both read and write as opposed to just write for 
+        /// DXGI_FORMAT_R10G10B10A2_UNORM and DXGI_FORMAT_R10G10B10A2_UINT. Supported view types are SRV and UAV. 
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        Y410 = 101,
+
+        /// <summary>16-bit per channel packed YUV 4:4:4 video resource format. 
+        /// Valid view formats for this video resource format are DXGI_FORMAT_R16G16B16A16_UNORM and DXGI_FORMAT_R16G16B16A16_UINT. 
+        /// Supported view types are SRV and UAV. One view provides a straightforward mapping of the entire surface. 
+        /// The mapping to the view channel is U->R16, Y->G16, V->B16 and A->A16.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format</summary>
+        Y416 = 102,
+
+        /// <summary>
+        /// Most common YUV 4:2:0 video resource format. 
+        /// Valid luminance data view formats for this video resource format are DXGI_FORMAT_R8_UNORM and DXGI_FORMAT_R8_UINT. 
+        /// Valid chrominance data view formats (width and height are each 1/2 of luminance view) for this video resource format 
+        /// are DXGI_FORMAT_R8G8_UNORM and DXGI_FORMAT_R8G8_UINT. Supported view types are SRV, RTV, and UAV. 
+        /// For luminance data view, the mapping to the view channel is Y->R8. For chrominance data view, the mapping to the 
+        /// view channel is U->R8 and V->G8.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        NV12 = 103,
+
+        /// <summary>
+        /// 10-bit per channel planar YUV 4:2:0 video resource format. 
+        /// Valid luminance data view formats for this video resource format are DXGI_FORMAT_R16_UNORM and DXGI_FORMAT_R16_UINT. 
+        /// The runtime does not enforce whether the lowest 6 bits are 0 (given that this video resource format is a 
+        /// 10-bit format that uses 16 bits). If required, application shader code would have to enforce this manually. 
+        /// From the runtime's point of view, DXGI_FORMAT_P010 is no different than DXGI_FORMAT_P016.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format 
+        /// </summary>
+        P010 = 104,
+
+        /// <summary>
+        /// 16-bit per channel planar YUV 4:2:0 video resource format. Valid luminance data view formats for this video 
+        /// resource format are DXGI_FORMAT_R16_UNORM and DXGI_FORMAT_R16_UINT. Valid chrominance data view formats 
+        /// (width and height are each 1/2 of luminance view) for this video resource format are 
+        /// DXGI_FORMAT_R16G16_UNORM and DXGI_FORMAT_R16G16_UINT. For UAVs, an additional valid chrominance data view 
+        /// format is DXGI_FORMAT_R32_UINT. 
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        P016 = 105,
+
+        /// <summary>
+        /// 8-bit per channel planar YUV 4:2:0 video resource format. 
+        /// This format is subsampled where each pixel has its own Y value, but each 2x2 pixel block shares a 
+        /// single U and V value. The runtime requires that the width and height of all resources that are 
+        /// created with this format are multiples of 2. The runtime also requires that the left, right, top, 
+        /// and bottom members of any RECT that are used for this format are multiples of 2.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        Opaque_420 = 106,
+
+        /// <summary>
+        /// Most common YUV 4:2:2 video resource format. Valid view formats for this video resource format are
+        /// DXGI_FORMAT_R8G8B8A8_UNORM and DXGI_FORMAT_R8G8B8A8_UINT. 
+        /// For UAVs, an additional valid view format is DXGI_FORMAT_R32_UINT. 
+        /// By using DXGI_FORMAT_R32_UINT for UAVs, you can both read and write as opposed to just write 
+        /// for DXGI_FORMAT_R8G8B8A8_UNORM and DXGI_FORMAT_R8G8B8A8_UINT.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        Yuy2 = 107,
+
+        /// <summary>
+        /// 10-bit per channel packed YUV 4:2:2 video resource format. Valid view formats for this video resource 
+        /// format are DXGI_FORMAT_R16G16B16A16_UNORM and DXGI_FORMAT_R16G16B16A16_UINT. 
+        /// The runtime does not enforce whether the lowest 6 bits are 0 (given that this video resource format is a 10-bit 
+        /// format that uses 16 bits). If required, application shader code would have to enforce this manually. 
+        /// From the runtime's point of view, DXGI_FORMAT_Y210 is no different than DXGI_FORMAT_Y216. 
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// This value is not supported until Windows 8.
+        /// </summary>
+        Y210 = 108,
+
+        /// <summary>
+        /// 16-bit per channel packed YUV 4:2:2 video resource format. Valid view formats for this video resource format 
+        /// are DXGI_FORMAT_R16G16B16A16_UNORM and DXGI_FORMAT_R16G16B16A16_UINT. Supported view types are SRV and UAV. 
+        /// One view provides a straightforward mapping of the entire surface. The mapping to the view channel is Y0->R16,
+        /// U->G16, Y1->B16 and V->A16.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        Y216 = 109,
+
+        /// <summary>
+        /// Most common planar YUV 4:1:1 video resource format. Valid luminance data view 
+        /// formats for this video resource format are DXGI_FORMAT_R8_UNORM and DXGI_FORMAT_R8_UINT. 
+        /// Valid chrominance data view formats (width and height are each 1/4 of luminance view) for 
+        /// this video resource format are DXGI_FORMAT_R8G8_UNORM and DXGI_FORMAT_R8G8_UINT. 
+        /// Supported view types are SRV, RTV, and UAV. 
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        NV11 = 110,
+
+        /// <summary>
+        /// 4-bit palletized YUV format that is commonly used for DVD subpicture.
+        /// For more info about YUV formats for video rendering, see Recommended 8-Bit YUV Formats for Video Rendering.
+        /// Direct3D 11.1:  This value is not supported until Windows 8.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        AI44 = 111,
+
+        /// <summary>
+        /// 4-bit palletized YUV format that is commonly used for DVD subpicture.
+        /// For more info about YUV formats for video rendering, see Recommended 8-Bit YUV Formats for Video Rendering.
+        /// Direct3D 11.1:  This value is not supported until Windows 8.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        IA44 = 112,
+
+        /// <summary>
+        /// 8-bit palletized format that is used for palletized RGB data when the processor processes ISDB-T data and for palletized YUV data when the processor processes BluRay data.
+        /// For more info about YUV formats for video rendering, see Recommended 8-Bit YUV Formats for Video Rendering.
+        /// Direct3D 11.1:  This value is not supported until Windows 8.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        P8 = 113,
+
+        /// <summary>
+        /// 8-bit palletized format with 8 bits of alpha that is used for palletized YUV data when the processor processes BluRay data.
+        /// For more info about YUV formats for video rendering, see Recommended 8-Bit YUV Formats for Video Rendering.
+        /// Direct3D 11.1:  This value is not supported until Windows 8.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        A8P8 = 114,
+
+        /// <summary>
+        /// A four-component, 16-bit unsigned-normalized integer format that supports 4 bits for each channel including alpha.
+        /// Direct3D 11.1:  This value is not supported until Windows 8.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        B4G4R4A4Unorm = 115,
+
+        /// <summary>
+        /// A video format; an 8-bit version of a hybrid planar 4:2:2 format.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        P208 = 130,
+
+        /// <summary>
+        /// An 8 bit YCbCrA 4:4 rendering format.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        V208 = 131,
+
+        /// <summary>
+        /// An 8 bit YCbCrA 4:4:4:4 rendering format.
+        /// See: https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+        /// </summary>
+        V408 = 132,
+
+        SamplerFeedbackMinMipOpaque = 189,
+
+        SamplerFeedbackMipRegionUsedOpaque = 190,
+
+        /// <summary>
+        /// Forces this enumeration to compile to 32 bits in size. Without this value, some compilers would allow this enumeration to compile to a
+        /// size other than 32 bits. This value is not used.
+        /// </summary>
+        ForceUInt = 191,
     }
 }
