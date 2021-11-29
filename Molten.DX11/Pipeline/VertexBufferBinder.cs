@@ -89,16 +89,11 @@ namespace Molten.Graphics
 
             if (segment != null)
             {
-                if (segment.Buffer.Native != Buffers[slot] ||
-                    segment.Stride != Strides[slot] ||
-                    segment.ByteOffset != Offsets[slot])
-                {
-                    if (slot <= _minChanged)
-                        _minChanged = slot;
+                if (slot <= _minChanged)
+                    _minChanged = slot;
 
-                    if (slot >= _maxChanged)
-                        _maxChanged = slot;
-                }
+                if (slot >= _maxChanged)
+                    _maxChanged = slot;
             }
         }
     }
