@@ -78,5 +78,8 @@ namespace Molten.Graphics
         /// Gets the device that the object is bound to.
         /// </summary>
         internal D Device { get; private set; }
+
+        /// <summary>Gets the latest tracked change version of the current <see cref="PipelineObject{D, P}"/>.</summary>
+        public nuint Version { get; protected set; }
     }
 }

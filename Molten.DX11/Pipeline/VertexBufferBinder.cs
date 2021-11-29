@@ -73,7 +73,6 @@ namespace Molten.Graphics
                 }
 
                 p++;
-                bCount++;
             }
 
             _pipe.Context->IASetVertexBuffers(_minChanged, bCount, pBuffers, pStrides, pOffsets);

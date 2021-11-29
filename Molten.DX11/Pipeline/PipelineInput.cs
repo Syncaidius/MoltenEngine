@@ -28,8 +28,6 @@ namespace Molten.Graphics
         public PipelineInput(PipeDX11 pipe) : base(pipe)
         {
             _materialStage = new MaterialInputStage(pipe);
-
-            int vSlots = Device.Features.MaxVertexBufferSlots;
             _vbBinder = new VertexBufferBinder(pipe);
 
             int iSlots = Device.Features.MaxIndexBufferSlots;
