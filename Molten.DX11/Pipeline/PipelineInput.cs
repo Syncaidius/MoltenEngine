@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics.Shaders;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 using System;
@@ -9,41 +10,27 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class PipelineInput : PipelineComponent<DeviceDX11, PipeDX11>
+    internal unsafe class PipelineInput : PipelineComponent<DeviceDX11, PipeDX11>
     {
-        static VertexBufferBinding _nullVertexBuffer = new VertexBufferBinding(null, 0, 0);
-
         MaterialInputStage _materialStage;
 
-        PipelineBindSlot<BufferSegment, DeviceDX11, PipeDX11>[] _slotVertexBuffers;
+        VertexBufferBinder _vbBinder;
         PipelineBindSlot<BufferSegment, DeviceDX11, PipeDX11> _slotIndexBuffer;
 
-        BufferSegment[] _vertexSegments;
-        VertexBufferBinding[] _vertexBindings;
         BufferSegment _indexSegment;
         VertexInputLayout _vertexLayout;
 
         int _vertexSlotCount = 0;
-        InputAssemblerStage _inputAssembler;
 
-        PrimitiveTopology _prevTopology = PrimitiveTopology.Undefined;
+        VertexTopology _prevTopology = VertexTopology.Undefined;
         List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
 
         public PipelineInput(PipeDX11 pipe) : base(pipe)
         {
             _materialStage = new MaterialInputStage(pipe);
-            _inputAssembler = pipe.Context.InputAssembler;
 
             int vSlots = Device.Features.MaxVertexBufferSlots;
-            _slotVertexBuffers = new PipelineBindSlot<BufferSegment, DeviceDX11, PipeDX11>[vSlots];
-            _vertexSegments = new BufferSegment[vSlots];
-            _vertexBindings = new VertexBufferBinding[vSlots];
-
-            for (int i = 0; i < vSlots; i++)
-            {
-                _slotVertexBuffers[i] = AddSlot<BufferSegment>(i);
-                _slotVertexBuffers[i].OnObjectForcedUnbind += PipelineInput_OnBoundObjectDisposed;
-            }
+            _vbBinder = new VertexBufferBinder(pipe);
 
             int iSlots = Device.Features.MaxIndexBufferSlots;
             _slotIndexBuffer = new PipelineBindSlot<BufferSegment, DeviceDX11, PipeDX11>(this, 0);
@@ -52,12 +39,7 @@ namespace Molten.Graphics
 
         private void _slotIndexBuffer_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
-            Pipe.Context.InputAssembler.SetIndexBuffer(null, Format.FormatUnknown, 0);
-        }
-
-        private void PipelineInput_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
-        {
-            Pipe.Context.InputAssembler.SetVertexBuffers(slot.SlotID, _nullVertexBuffer);
+            Pipe.Context->IASetIndexBuffer(null, Format.FormatUnknown, 0);
         }
 
         internal unsafe void Refresh(MaterialPass pass, StateConditions conditions, VertexTopology topology)
@@ -85,20 +67,20 @@ namespace Molten.Graphics
                     }
                     else
                     {
-                        _vertexBindings[i] = vb.VertexBinding;
-                        _inputAssembler.SetVertexBuffers(i, vb.VertexBinding);
+                        _vertexBindings[i] = vb.Binding;
+                        _inputAssembler.SetVertexBuffers(i, vb.Binding);
                     }
                 }
-                else if(vb != null && _vertexBindings[i].Offset != vb.VertexBinding.Offset)
+                else if(vb != null && _vertexBindings[i].Offset != vb.Binding.Offset)
                 {
-                    _vertexBindings[i] = vb.VertexBinding;
-                    _inputAssembler.SetVertexBuffers(i, vb.VertexBinding);
+                    _vertexBindings[i] = vb.Binding;
+                    _inputAssembler.SetVertexBuffers(i, vb.Binding);
                 }
             }
 
             if (_prevTopology != topology)
             {
-                _inputAssembler.PrimitiveTopology = topology;
+                Pipe.Context->IASetPrimitiveTopology((D3DPrimitiveTopology)topology);
                 _prevTopology = topology;
             }
 
@@ -236,7 +218,7 @@ namespace Molten.Graphics
         {
             if (seg != null)
             {
-                if ((seg.Parent.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
+                if ((seg.Buffer.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
                     throw new InvalidOperationException("The provided buffer segment is not part of a vertex buffer.");
             }
 
@@ -254,7 +236,7 @@ namespace Molten.Graphics
             {
                 if (segments[i] != null)
                 {
-                    if ((segments[i].Parent.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
+                    if ((segments[i].Buffer.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
                         throw new InvalidOperationException($"The provided buffer segment at index {i} is not part of a vertex buffer.");
                 }
 
@@ -272,7 +254,7 @@ namespace Molten.Graphics
         {
             if (seg != null)
             {
-                if ((seg.Parent.Description.BindFlags & BindFlag.BindIndexBuffer) != BindFlag.BindIndexBuffer)
+                if ((seg.Buffer.Description.BindFlags & BindFlag.BindIndexBuffer) != BindFlag.BindIndexBuffer)
                     throw new InvalidOperationException("The provided buffer segment is not part of an index buffer.");
             }
 

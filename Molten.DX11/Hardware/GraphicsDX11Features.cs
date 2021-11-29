@@ -1,10 +1,7 @@
-﻿using SharpDX.Direct3D11;
-using SharpDX.DXGI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SharpDX.Direct3D;
 using Silk.NET.Direct3D11;
 using Silk.NET.Core.Native;
 
@@ -162,7 +159,7 @@ namespace Molten.Graphics
         internal int MaxIndexBufferSlots { get; private set; }
 
         /// <summary>Gets the maximum supported number of vertex buffer slots.</summary>
-        internal int MaxVertexBufferSlots { get; private set; }
+        internal uint MaxVertexBufferSlots { get; private set; }
 
         /// <summary>Gets the maximum supported number of constant buffer slots.</summary>
         internal int MaxConstantBufferSlots { get; private set; }

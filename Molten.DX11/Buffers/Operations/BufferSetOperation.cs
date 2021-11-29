@@ -31,7 +31,7 @@ namespace Molten.Graphics
 
         public void Process(PipeDX11 pipe)
         {
-            DestinationSegment.Parent.Set<T>(pipe, Data, StartIndex, Count, DataStride, ByteOffset, Staging);
+            DestinationSegment.Buffer.Set<T>(pipe, Data, StartIndex, Count, DataStride, ByteOffset, Staging);
             CompletionCallback?.Invoke();
         }
     }

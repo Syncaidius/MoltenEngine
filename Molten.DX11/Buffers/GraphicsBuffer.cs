@@ -21,7 +21,7 @@ namespace Molten.Graphics
         uint _ringPos;
 
         internal BufferDescription Description;
-        internal VertexBufferBinding VertexBinding;
+        internal BufferBinding VertexBinding;
 
         ThreadedQueue<IBufferOperation> _pendingChanges;
         BufferSegment _firstSegment;
@@ -144,7 +144,7 @@ namespace Molten.Graphics
             Device.AllocateVRAM(Description.SizeInBytes);
 
             _firstSegment = Device.GetBufferSegment();
-            _firstSegment.Parent = this;
+            _firstSegment.Buffer = this;
             _firstSegment.ByteOffset = 0;
             _firstSegment.ByteCount = _byteCapacity;
             _firstSegment.IsFree = true;
@@ -321,10 +321,10 @@ namespace Molten.Graphics
         /// <param name="dataStride">The size of the data being retrieved. The default value is 0. 
         /// A value of 0 will force the stride of <see cref="{T}"/> to be automatically calculated, which may cause a tiny performance hit.</param>
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        internal void Get<T>(PipeDX11 pipe, T[] destination, int startIndex, int count, int dataStride, int byteOffset = 0)
+        internal void Get<T>(PipeDX11 pipe, T[] destination, uint startIndex, uint count, uint dataStride, uint byteOffset = 0)
             where T : struct
         {
-            int readOffset = startIndex * dataStride;
+            uint readOffset = startIndex * dataStride;
 
             if ((Description.CpuAccessFlags & CpuAccessFlag.CpuAccessRead) != CpuAccessFlag.CpuAccessRead)
                 throw new InvalidOperationException("Cannot use GetData() on a non-readable buffer.");
@@ -386,9 +386,6 @@ namespace Molten.Graphics
 
         internal virtual void CreateResources(int stride, int byteoffset, int elementCount)
         {
-            if (HasFlags(BindFlag.BindVertexBuffer))
-                VertexBinding = new VertexBufferBinding(Native, stride, byteoffset);
-
             if (HasFlags(BindFlag.BindShaderResource))
             {
                 SRV = new ShaderResourceView(Device.Native, Native, new ShaderResourceViewDescription()
@@ -425,7 +422,7 @@ namespace Molten.Graphics
             segment.UAV?.Dispose();
 
             if (HasFlags(BindFlag.BindVertexBuffer))
-                segment.VertexBinding = new VertexBufferBinding(segment.Buffer, segment.Stride, segment.ByteOffset);
+                segment.Binding = new VertexBufferBinding(segment.Buffer, segment.Stride, segment.ByteOffset);
 
             if (HasFlags(BindFlag.BindShaderResource))
             {

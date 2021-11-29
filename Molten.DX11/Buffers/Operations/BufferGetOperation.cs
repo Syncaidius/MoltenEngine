@@ -9,16 +9,16 @@ namespace Molten.Graphics
     internal struct BufferGetOperation<T> : IBufferOperation where T : struct
     {
         /// <summary>The number of bytes to offset the change, from the start of the provided <see cref="SourceSegment"/>.</summary>
-        internal int ByteOffset;
+        internal uint ByteOffset;
 
         /// <summary>The number of bytes per element in <see cref="Data"/>.</summary>
-        internal int DataStride;
+        internal uint DataStride;
 
         /// <summary>The number of elements to be copied.</summary>
-        internal int Count;
+        internal uint Count;
 
         /// <summary>The first index at which to start placing the retrieved data within <see cref="DestinationArray"/>.</summary>
-        internal int DestinationIndex;
+        internal uint DestinationIndex;
 
         internal BufferSegment SourceSegment;
 
@@ -31,7 +31,7 @@ namespace Molten.Graphics
         public void Process(PipeDX11 pipe)
         {
             DestinationArray = DestinationArray ?? new T[Count];
-            SourceSegment.Parent.Get<T>(pipe, DestinationArray, 0, ByteOffset, DataStride, Count);
+            SourceSegment.Buffer.Get<T>(pipe, DestinationArray, 0, ByteOffset, DataStride, Count);
 
             CompletionCallback.Invoke(DestinationArray);
         }

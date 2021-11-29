@@ -11,7 +11,7 @@
         /// <summary>Invoked when the object bound to the slot is disposed.</summary>
         public event PipelineBindSlotDelegate<D, P> OnObjectForcedUnbind;
 
-        internal PipelineBindSlot(PipelineComponent<D, P> parent, int slotID)
+        internal PipelineBindSlot(PipelineComponent<D, P> parent, uint slotID)
         {
             SlotID = slotID;
         }
@@ -43,7 +43,7 @@
 
         protected abstract void OnForceUnbind();
 
-        internal int SlotID { get; private set; }
+        internal uint SlotID { get; private set; }
 
         internal abstract PipelineObject<D, P> Object { get; }
 
@@ -57,7 +57,7 @@
         where D : IGraphicsDevice
         where P : IGraphicsPipe<D>
     {
-        internal PipelineBindSlot(PipelineComponent<D, P> parent, int slotID) :
+        internal PipelineBindSlot(PipelineComponent<D, P> parent, uint slotID) :
             base(parent, slotID)
         { }
 

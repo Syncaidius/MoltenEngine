@@ -12,22 +12,11 @@ namespace Molten.Graphics
 {
     internal unsafe class BufferSegment : PipelineShaderObject, IPoolable, ICloneable
     {
-        /// <summary>The start byte of the segment within it's parent section buffer.</summary>
-        internal uint ByteOffset;
-
         /// <summary>The size of the segment in bytes. This is <see cref="ElementCount"/> multiplied by <see cref="Stride"/>.</summary>
         internal uint ByteCount;
 
         /// <summary>The number of elements that the segment can hold.</summary>
         internal uint ElementCount;
-
-        /// <summary>The size of a single element within the segment, in bytes.</summary>
-        internal uint Stride;
-
-        /// <summary>The mapped buffer that the segment belongs to.</summary>
-        internal GraphicsBuffer Parent;
-
-        internal ID3D11Buffer* Buffer => Parent.Buffer;
 
         /// <summary>The previous segment (if any) within the mapped buffer.</summary>
         internal BufferSegment Previous;
@@ -35,7 +24,20 @@ namespace Molten.Graphics
         /// <summary>The next segment (if any) within the mapped buffer.</summary>
         internal BufferSegment Next;
 
-        internal VertexBufferBinding VertexBinding;
+        /// <summary>
+        /// The <see cref="GraphicsBuffer"/> that contains the current <see cref="BufferSegment"/>
+        /// </summary>
+        internal GraphicsBuffer Buffer;
+
+        /// <summary>
+        /// The byte offset within the <see cref="Buffer"/> <see cref="GraphicsBuffer"/>.
+        /// </summary>
+        internal uint ByteOffset;
+
+        /// <summary>
+        /// The size of each element within the buffer, in bytes.
+        /// </summary>
+        internal uint Stride;
 
         internal VertexFormat VertexFormat;
 
@@ -48,12 +50,12 @@ namespace Molten.Graphics
 
         internal void SetVertexFormat<T>() where T: struct, IVertexType
         {
-            VertexFormat = Parent.Device.VertexBuilder.GetFormat<T>();
+            VertexFormat = Buffer.Device.VertexBuilder.GetFormat<T>();
         }
 
         internal void SetVertexFormat(Type vertexType)
         {
-            VertexFormat = Parent.Device.VertexBuilder.GetFormat(vertexType);
+            VertexFormat = Buffer.Device.VertexBuilder.GetFormat(vertexType);
         }
 
         internal void SetIndexFormat(IndexBufferFormat format)
@@ -113,7 +115,7 @@ namespace Molten.Graphics
 
             // Copy data and queue operation.
             Array.Copy(data, startIndex, op.Data, 0, count);
-            Parent.QueueOperation(op);
+            Buffer.QueueOperation(op);
         }
 
         /// <summary>Immediately sets the data on the buffer.</summary>
@@ -135,19 +137,15 @@ namespace Molten.Graphics
             if (finalBytePos > segmentBounds)
                 throw new OverflowException($"Provided data's final byte position {finalBytePos} would exceed the segment's bounds (byte {segmentBounds})");
 
-            Parent.Set<T>(pipe, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
+            Buffer.Set<T>(pipe, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
         }
 
         internal void Map(PipeDX11 pipe, Action<GraphicsBuffer, DataStream> callback, GraphicsBuffer staging = null)
         {
-            Parent.Map(pipe, ByteOffset, Stride * ElementCount, (buffer, stream) =>
+            Buffer.Map(pipe, ByteOffset, Stride * ElementCount, (buffer, stream) =>
             {
-                if (Parent.Mode == BufferMode.DynamicRing)
-                {
+                if (Buffer.Mode == BufferMode.DynamicRing)
                     ByteOffset = (int)stream.Position;
-                    if (Parent.HasFlags(BindFlag.BindVertexBuffer))
-                        VertexBinding = new VertexBufferBinding(Buffer, Stride, ByteOffset);
-                }
 
                 callback(buffer, stream);
             }, staging); 
@@ -166,7 +164,7 @@ namespace Molten.Graphics
                 SourceSegment = this,
             };
 
-            Parent.QueueOperation(op);
+            Buffer.QueueOperation(op);
         }
 
         internal void CopyTo(PipeDX11 pipe, uint sourceByteOffset, BufferSegment destination, uint destByteOffset, uint count, bool isImmediate = false, Action completionCallback = null)
@@ -189,33 +187,33 @@ namespace Molten.Graphics
 
             if (isImmediate)
             {
-                Parent.CopyTo(pipe, destination.Parent, sourceRegion, destination.ByteOffset + destByteOffset);
+                Buffer.CopyTo(pipe, destination.Buffer, sourceRegion, destination.ByteOffset + destByteOffset);
             }
             else
             {
                 BufferCopyOperation op = new BufferCopyOperation()
                 {
                     CompletionCallback = completionCallback,
-                    SourceBuffer = Parent,
-                    DestinationBuffer = destination.Parent,
+                    SourceBuffer = Buffer,
+                    DestinationBuffer = destination.Buffer,
                     DataStride = Stride,
                     DestinationByteOffset = destination.ByteOffset + destByteOffset,
                     SourceRegion = sourceRegion,
                 };
 
-                Parent.QueueOperation(op);
+                Buffer.QueueOperation(op);
             }
         }
 
         internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
         {
-            Parent.Refresh(pipe, slot);
+            Buffer.Refresh(pipe, slot);
         }
 
         /// <summary>Releases the buffer space reserved by the segment.</summary>
         internal void Release()
         {
-            Parent.Deallocate(this);
+            Buffer.Deallocate(this);
         }
 
         /// <summary>Clears segment's internal data.</summary>
@@ -224,7 +222,6 @@ namespace Molten.Graphics
             Previous = null;
             Next = null;
             VertexFormat = null;
-            VertexBinding = new VertexBufferBinding();
             SetIndexFormat(IndexBufferFormat.Unsigned32Bit);
 
             UAV?.Dispose();
@@ -293,7 +290,7 @@ namespace Molten.Graphics
 
             seg.ByteCount = bytesToTake;
             seg.ByteOffset = ByteOffset;
-            seg.Parent = Parent;
+            seg.Buffer = Buffer;
 
             ByteOffset += bytesToTake;
             ByteCount -= bytesToTake;
@@ -310,7 +307,7 @@ namespace Molten.Graphics
             ByteCount -= bytesToTake;
             seg.ByteCount = bytesToTake;
             seg.ByteOffset = ByteOffset + ByteCount;
-            seg.Parent = Parent;
+            seg.Buffer = Buffer;
             return seg;
         }
 
@@ -329,7 +326,7 @@ namespace Molten.Graphics
             dest.DataFormat = DataFormat;
             dest.IsFree = IsFree;
             dest.Next = Next;
-            dest.Parent = Parent;
+            dest.Buffer = Buffer;
             dest.Previous = Previous;
             dest.SRV = SRV;
             dest.Stride = Stride;

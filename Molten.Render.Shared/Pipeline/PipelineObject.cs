@@ -68,7 +68,7 @@ namespace Molten.Graphics
                 bindList.Clear();
             }
 
-            base.OnDispose(); // Signal bindings about disposal first (via base class).
+            base.Dispose(); // Signal bindings about disposal first (via base class).
             OnPipelineDispose();
         }
 
