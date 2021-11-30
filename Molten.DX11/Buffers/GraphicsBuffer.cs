@@ -13,12 +13,10 @@ namespace Molten.Graphics
 {
     internal unsafe partial class GraphicsBuffer : PipelineShaderObject
     {
-        protected uint _byteCapacity;
         protected uint _structuredStride = 0;
         protected Array _initialData;
         internal ID3D11Buffer* Native;
-        
-        BufferMode _mode;
+
         uint _ringPos;
 
         internal BufferDesc Description;
@@ -37,8 +35,7 @@ namespace Molten.Graphics
             Array initialData = null) : base(device)
         {
             _freeSegments = new List<BufferSegment>();
-            _byteCapacity = byteCapacity;
-            _mode = mode;
+            Mode = mode;
             _pendingChanges = new ThreadedQueue<IBufferOperation>();
             _structuredStride = structuredStride;
 
@@ -47,13 +44,13 @@ namespace Molten.Graphics
 
             _initialData = initialData;
 
-            BuildDescription(bindFlags, optionFlags, stagingType);
+            BuildDescription(bindFlags, optionFlags, stagingType, byteCapacity);
 
             if (initialData != null)
             {
                 EngineInterop.PinObject(initialData, (ptr) =>
                 {
-                    InitializeBuffer(ptr);
+                    InitializeBuffer(ptr.ToPointer());
                 });
             }
             else
@@ -74,7 +71,12 @@ namespace Molten.Graphics
             // TODO consider running based off the number of segments in _freeSegments list.
         }
 
-        private void BuildDescription(BindFlag flags, ResourceMiscFlag opFlags, StagingBufferFlags stageMode)
+        private void BuildDescription(
+            BindFlag flags, 
+            ResourceMiscFlag opFlags, 
+            StagingBufferFlags stageMode, 
+            uint byteCapacity,
+            uint structureByteStride = 0)
         {
             Description = new BufferDesc();
             Description.Usage = Usage.UsageDefault;
@@ -82,7 +84,7 @@ namespace Molten.Graphics
             Description.MiscFlags = (uint)opFlags;
 
             // Buffer mode.
-            switch (_mode)
+            switch (Mode)
             {
                 case BufferMode.Default:
                     Description.Usage = Usage.UsageDefault;
@@ -117,9 +119,17 @@ namespace Molten.Graphics
                 if ((stageMode & StagingBufferFlags.Write) == StagingBufferFlags.Write)
                     Description.CPUAccessFlags = (uint)CpuAccessFlag.CpuAccessWrite;
             }
+
+            // Ensure structured buffers get the stride info.
+            if (Description.MiscFlags == (uint)ResourceMiscFlag.ResourceMiscBufferStructured)
+                Description.StructureByteStride = structureByteStride;
         }
 
-        protected virtual void InitializeBuffer(IntPtr? initialDataPtr)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="initialDataPtr">A pointer to data that the buffer should initially be populated with.</param>
+        protected virtual void InitializeBuffer(void* initialDataPtr)
         {
             // Dispose of old static buffer
             if (Native != null)
@@ -129,24 +139,17 @@ namespace Molten.Graphics
                 Native = null;
             }
 
-            // Set correct buffer size.
-            Description.ByteWidth = _byteCapacity;
+            uint byteCount = Description.ByteWidth;
+            SubresourceData ssd = new SubresourceData(initialDataPtr, byteCount, byteCount);
 
-            // Ensure structured buffers get the stride info.
-            if (Description.MiscFlags == (uint)ResourceMiscFlag.ResourceMiscBufferStructured)
-                Description.StructureByteStride = _structuredStride;
+            Device.Native->CreateBuffer(ref Description, ref ssd, ref Native);
+            Device.AllocateVRAM(byteCount);
 
-            if (initialDataPtr != null)
-                Native = new ID3D11Buffer(Device.Native, initialDataPtr.Value, Description);
-            else
-                Native = new ID3D11Buffer(Device.Native, Description);
-
-            Device.AllocateVRAM(Description.ByteWidth);
-
+            // Allocate the first segment.
             _firstSegment = Device.GetBufferSegment();
             _firstSegment.Buffer = this;
             _firstSegment.ByteOffset = 0;
-            _firstSegment.ByteCount = _byteCapacity;
+            _firstSegment.ByteCount = byteCount;
             _firstSegment.IsFree = true;
 
             _freeSegments.Add(_firstSegment);
@@ -154,7 +157,7 @@ namespace Molten.Graphics
 
         protected virtual void OnValidateAllocationStride(uint stride)
         {
-            if ((Description.BindFlags & (uint)BindFlag.BindUnorderedAccess) == (uint)BindFlag.BindUnorderedAccess)
+            if (((BindFlag)Description.BindFlags & BindFlag.BindUnorderedAccess) == BindFlag.BindUnorderedAccess)
             {
                 if (stride != _structuredStride)
                     throw new GraphicsBufferException("Buffer is structured. Stride must match that of the structured buffer.");
@@ -190,7 +193,8 @@ namespace Molten.Graphics
 
         private void ValidateCopyBufferUsage(GraphicsBuffer destination)
         {
-            if (Description.Usage != Usage.UsageDefault && Description.Usage != Usage.UsageImmutable)
+            if (Description.Usage != Usage.UsageDefault && 
+                Description.Usage != Usage.UsageImmutable)
                 throw new Exception("The current buffer must have a usage flag of Default or Immutable. Only these flags allow the GPU read access for copying/reading data from the buffer.");
 
             if (destination.Description.Usage != Usage.UsageDefault)
@@ -213,7 +217,7 @@ namespace Molten.Graphics
             // Check if the buffer is a dynamic-writable
             if (isDynamic || isStaged)
             {
-                switch (_mode)
+                switch (Mode)
                 {
                     case BufferMode.DynamicDiscard:
                         stream = pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0);
@@ -226,16 +230,16 @@ namespace Molten.Graphics
                         // See: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476181(v=vs.85).aspx
                         if (HasFlags(BindFlag.BindVertexBuffer) || HasFlags(BindFlag.BindIndexBuffer))
                         {
-                            if (_ringPos > 0 && _ringPos + dataSize < _byteCapacity)
+                            if (_ringPos > 0 && _ringPos + dataSize < Description.ByteWidth)
                             {
-                                pipe.Context.MapSubresource(Native, MapMode.WriteNoOverwrite, 0, out stream);
+                                stream = pipe.MapResource(Native, 0, Map.MapWriteNoOverwrite, 0);
                                 pipe.Profiler.Current.MapNoOverwriteCount++;
                                 stream.Position = _ringPos;
                                 _ringPos += dataSize;
                             }
                             else
                             {                                
-                                pipe.Context.MapSubresource(Native, MapMode.WriteDiscard, 0, out stream);
+                                stream = pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0);
                                 pipe.Profiler.Current.MapDiscardCount++;
                                 stream.Position = 0;
                                 _ringPos = dataSize;
@@ -243,20 +247,20 @@ namespace Molten.Graphics
                         }
                         else
                         {
-                            pipe.Context.MapSubresource(Native, MapMode.WriteDiscard, 0, out stream);
+                            stream = pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0);
                             pipe.Profiler.Current.MapDiscardCount++;
                             stream.Position = byteOffset;
                         }
                         break;
 
                     default:
-                        pipe.Context.MapSubresource(Native, MapMode.Write, 0, out stream);
+                        stream = pipe.MapResource(Native, 0, Map.MapWrite, 0);
                         pipe.Profiler.Current.MapWriteCount++;
                         break;
                 }     
                 
                 callback(this, stream);
-                pipe.Context.UnmapSubresource(Native, 0);
+                pipe.UnmapResource(Native, 0);
             }
             else
             {
@@ -276,17 +280,17 @@ namespace Molten.Graphics
                 // Write updated data into buffer
                 if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
                 {
-                    pipe.Context.MapSubresource(staging.Native, MapMode.WriteDiscard, 0, out stream);
+                    stream = pipe.MapResource(staging.Native, 0, Map.MapWriteDiscard, 0);
                     pipe.Profiler.Current.MapDiscardCount++;
                 }
                 else
                 {
-                    pipe.Context.MapSubresource(staging.Native, MapMode.Write, 0, out stream);
+                    stream = pipe.MapResource(staging.Native, 0, Map.MapWrite, 0);
                     pipe.Profiler.Current.MapWriteCount++;
                 }
 
                 callback(staging, stream);
-                pipe.Context.UnmapSubresource(staging.Native, 0);
+                pipe.UnmapResource(staging.Native, 0);
 
                 ResourceRegion stagingRegion = new ResourceRegion()
                 {
@@ -302,7 +306,14 @@ namespace Molten.Graphics
         }
 
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
-        internal void Set<T>(PipeDX11 pipe, T[] data, uint startIndex, uint count, uint dataStride = 0, uint byteOffset = 0, StagingBuffer staging = null) 
+        internal void Set<T>(
+            PipeDX11 pipe, 
+            T[] data, 
+            uint startIndex, 
+            uint count,
+            uint dataStride = 0, 
+            uint byteOffset = 0, 
+            StagingBuffer staging = null) 
             where T : struct
         {
             if (dataStride == 0)
@@ -311,7 +322,7 @@ namespace Molten.Graphics
             uint writeOffset = startIndex * dataStride;
             uint dataSize = count * dataStride;
 
-            Map(pipe, byteOffset, dataSize, (buffer, stream) =>
+            GetStream(pipe, byteOffset, dataSize, (buffer, stream) =>
             {
                 stream.WriteRange(data, startIndex, count);
             }, staging);
@@ -338,13 +349,13 @@ namespace Molten.Graphics
 
             //now set the structured variable's data
             DataStream stream = null;
-            DataBox dataBox = pipe.Context.MapSubresource(Native, 0, MapMode.Read, 0, out stream);
+            DataBox dataBox = pipe.Context.MapSubresource(Native, 0, Map.MapRead, 0, out stream);
             pipe.Profiler.Current.MapReadCount++;
             stream.Position = byteOffset;
             stream.ReadRange<T>(destination, readOffset, count);
 
             // Unmap
-            pipe.Context.UnmapSubresource(Native, 0);
+            pipe.UnmapResource(Native, 0);
         }
 
         /// <summary>Applies any pending changes onto the buffer.</summary>
@@ -383,7 +394,7 @@ namespace Molten.Graphics
         private protected override void OnPipelineDispose()
         {
             if (Native != null)
-                Device.DeallocateVRAM(_byteCapacity);
+                Device.DeallocateVRAM(Description.ByteWidth);
 
             base.OnPipelineDispose();
         }
@@ -441,7 +452,8 @@ namespace Molten.Graphics
 
             if (HasFlags(BindFlag.BindUnorderedAccess))
             {
-                segment.UAV = new UnorderedAccessView(Device.Native, Native, new UnorderedAccessViewDesc()
+                ID3D11UnorderedAccessView* uav = null;
+                UnorderedAccessViewDesc uavDesc = new UnorderedAccessViewDesc()
                 {
                     Format = Format.FormatUnknown,
                     ViewDimension = UavDimension.UavDimensionBuffer,
@@ -451,7 +463,9 @@ namespace Molten.Graphics
                         FirstElement = _structuredStride,
                         Flags = 0,
                     }
-                });
+                };
+
+                Device.Native->CreateUnorderedAccessView((ID3D11Resource*)Native, ref uavDesc, ref segment.UAV);
             }
         }
 
@@ -613,8 +627,12 @@ namespace Molten.Graphics
 
         private void SegmentResized(BufferSegment segment, uint oldByteCount, uint newByteCount, uint oldElementCount, uint newElementCount)
         {
-            segment.UAV?.Dispose();
-            segment.SRV?.Dispose();
+            if(segment.UAV != null)
+                segment.UAV->Release();
+
+            if(segment.SRV != null)
+                segment.SRV->Release();
+
             CreateResources(segment);
             OnSegmentResized(segment, oldByteCount, newByteCount, oldElementCount, newElementCount);
         }
@@ -629,10 +647,10 @@ namespace Molten.Graphics
         public uint StructuredStride => _structuredStride;
 
         /// <summary>Gets the capacity of a single section within the buffer, in bytes.</summary>
-        public uint ByteCapacity => _byteCapacity;
+        public uint ByteCapacity => Description.ByteWidth;
 
         /// <summary>Gets the flags that were passed in to the buffer when it was created.</summary>
-        public BufferMode Mode => _mode;
+        public BufferMode Mode { get; }
 
         /// <summary>Gets the bind flags associated with the buffer.</summary>
         public BindFlag BindFlags => (BindFlag)Description.BindFlags;

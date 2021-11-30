@@ -71,23 +71,18 @@ namespace Molten.Graphics
             _output.DepthWritePermission = GraphicsDepthWritePermission.Enabled;
         }
 
-        internal ResourceStream MapResource(ID3D11Resource* resource, uint subresource, Map mapType, MapFlag mapFlags)
-        {
-            MappedSubresource mapped = new MappedSubresource();
-            Context->Map(resource, subresource, mapType, (uint)mapFlags, ref mapped);
-            return new ResourceStream(mapped, mapType);
-        }
-
-        internal ResourceStream MapResource(void* resource, uint subresource, Map mapType, MapFlag mapFlags)
+        internal ResourceStream MapResource<T>(T* resource, uint subresource, Map mapType, MapFlag mapFlags)
+            where T: unmanaged
         {
             MappedSubresource mapped = new MappedSubresource();
             Context->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapped);
             return new ResourceStream(mapped, mapType);
         }
 
-        internal void UnmapResource(ID3D11Resource* resource, uint subresource)
+        internal void UnmapResource<T>(T* resource, uint subresource)
+            where T : unmanaged
         {
-            Context->Unmap(resource, subresource);
+            Context->Unmap((ID3D11Resource*)resource, subresource);
         }
 
         /// <summary>Dispatches a compute effect to the GPU.</summary>
