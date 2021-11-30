@@ -1,19 +1,18 @@
-﻿using SharpDX.D3DCompiler;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
-using Molten.Utility;
+﻿using Molten.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
     /// <summary>A kind of helper class that automatically generates a shader input layout ready for use,
     /// while also generating useful metadata that can be used to validate vertex input at engine level.</summary>
-    public class ShaderIOStructure
+    public unsafe class ShaderIOStructure
     {
-        public InputElement[] Elements;
+        public InputElementDesc[] Elements;
         public int HashKey { get; private set; }
 
         // Reference: http://takinginitiative.wordpress.com/2011/12/11/directx-1011-basic-shader-reflection-automatic-input-layout-creation/
@@ -21,10 +20,10 @@ namespace Molten.Graphics
         /// <summary>Creates a new instance of ShaderInputLayout.</summary>
         /// <param name="shaderRef">The shader reflection instance to extract input layout data from.</param>
         /// <param name="desc"></param>
-        public ShaderIOStructure(ShaderReflection shaderRef, ref ShaderDescription desc, ShaderIOStructureType type)
+        public ShaderIOStructure(ID3D11ShaderReflection* shaderRef, ref ShaderDesc desc, ShaderIOStructureType type)
         {
             string signature = "";
-            int count = 0;
+            uint count = 0;
             switch (type)
             {
                 case ShaderIOStructureType.Input:
@@ -36,7 +35,7 @@ namespace Molten.Graphics
                     break;
             }
 
-            Elements = new InputElement[count];
+            Elements = new InputElementDesc[count];
 
             for (int i = 0; i < count; i++)
             {
@@ -53,14 +52,14 @@ namespace Molten.Graphics
                         break;
                 }
 
-                InputElement el = new InputElement()
+                InputElementDesc el = new InputElementDesc()
                 {
                     SemanticName = pDesc.SemanticName.ToUpper(),
                     SemanticIndex = pDesc.SemanticIndex,
-                    Slot = 0, // This does not need to be set. A shader has a single layout, 
+                    InputSlot = 0, // This does not need to be set. A shader has a single layout, 
                     InstanceDataStepRate = 0, // This does not need to be set. The data is set via Context.DrawInstanced + vertex data/layout.
                     AlignedByteOffset = 16 * pDesc.Register,
-                    Classification = InputClassification.PerVertexData,
+                    InputSlotClass = InputClassification.InputPerVertexData,
                 };
 
                 //A piece of hax to fix some derpy bug: https://github.com/sharpdx/SharpDX/issues/553
@@ -75,46 +74,46 @@ namespace Molten.Graphics
                 {
                     case RegisterComponentMaskFlags.ComponentX:
                         if (comType == RegisterComponentType.UInt32)
-                            el.Format = Format.R32_UInt;
+                            el.Format = Format.FormatR32Uint;
                         else if (comType == RegisterComponentType.SInt32)
-                            el.Format = Format.R32_SInt;
+                            el.Format = Format.FormatR32Sint;
                         else if (comType == RegisterComponentType.Float32)
-                            el.Format = Format.R32_Float;
+                            el.Format = Format.FormatR32Float;
                         break;
 
                     case RegisterComponentMaskFlags.ComponentX | RegisterComponentMaskFlags.ComponentY:
                         if (comType == RegisterComponentType.UInt32)
-                            el.Format = Format.R32G32_UInt;
+                            el.Format = Format.FormatR32G32Uint;
                         else if (comType == RegisterComponentType.SInt32)
-                            el.Format = Format.R32G32_SInt;
+                            el.Format = Format.FormatR32G32Sint;
                         else if (comType == RegisterComponentType.Float32)
-                            el.Format = Format.R32G32_Float;
+                            el.Format = Format.FormatR32G32Float;
                         break;
 
                     case RegisterComponentMaskFlags.ComponentX | RegisterComponentMaskFlags.ComponentY |
                 RegisterComponentMaskFlags.ComponentZ:
                         if (comType == RegisterComponentType.UInt32)
-                            el.Format = Format.R32G32B32_UInt;
+                            el.Format = Format.FormatR32G32B32Uint;
                         else if (comType == RegisterComponentType.SInt32)
-                            el.Format = Format.R32G32B32_SInt;
+                            el.Format = Format.FormatR32G32B32Sint;
                         else if (comType == RegisterComponentType.Float32)
-                            el.Format = Format.R32G32B32_Float;
+                            el.Format = Format.FormatR32G32B32Float;
                         break;
 
                     case RegisterComponentMaskFlags.ComponentX | RegisterComponentMaskFlags.ComponentY |
                 RegisterComponentMaskFlags.ComponentZ | RegisterComponentMaskFlags.ComponentW:
                         if (comType == RegisterComponentType.UInt32)
-                            el.Format = Format.R32G32B32A32_UInt;
+                            el.Format = Format.FormatR32G32B32A32Uint;
                         else if (comType == RegisterComponentType.SInt32)
-                            el.Format = Format.R32G32B32A32_SInt;
+                            el.Format = Format.FormatR32G32B32A32Sint;
                         else if (comType == RegisterComponentType.Float32)
-                            el.Format = Format.R32G32B32A32_Float;
+                            el.Format = Format.FormatR32G32B32A32Float;
                         break;
                 }
 
                 //store the element
                 Elements[i] = el;
-                signature += $"{el.Format}{el.SemanticIndex}{el.Classification}{el.AlignedByteOffset}{el.SemanticName}";
+                signature += $"{el.Format}{el.SemanticIndex}{el.InputSlotClass}{el.AlignedByteOffset}{el.SemanticName}";
                 byte[] bytes = Encoding.UTF8.GetBytes(signature);
                 HashKey = HashHelper.ComputeFNV(bytes);
             }
@@ -124,7 +123,7 @@ namespace Molten.Graphics
         /// <param name="format"></param>
         /// <param name="startElement">The first element within the IO structure at which to start comparing.</param>
         /// <returns></returns>
-        public bool IsCompatible(VertexFormat format, int startElement)
+        public bool IsCompatible(VertexFormat format, uint startElement)
         {
             if (startElement >= Elements.Length)
             {
@@ -132,7 +131,7 @@ namespace Molten.Graphics
             }
             else
             {
-                int end = startElement + format.Elements.Length;
+                uint end = startElement + (uint)format.Elements.Length;
                 if (end > Elements.Length)
                 {
                     return false;
@@ -140,7 +139,7 @@ namespace Molten.Graphics
                 else
                 {
                     // Run comparison test
-                    for (int i = startElement; i < end; i++)
+                    for (uint i = startElement; i < end; i++)
                     {
                         if (format.Elements[i].SemanticName != Elements[i].SemanticName)
                             return false;

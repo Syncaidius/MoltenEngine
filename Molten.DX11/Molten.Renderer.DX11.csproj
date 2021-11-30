@@ -213,6 +213,7 @@
     <Compile Include="Buffers\ShaderConstantBuffer.cs" />
     <Compile Include="Buffers\StagingBuffer.cs" />
     <Compile Include="Buffers\TypedBuffer.cs" />
+    <Compile Include="Data\ResourceStreamException.cs" />
     <Compile Include="Hardware\DisplayAdapterDX11.cs" />
     <Compile Include="Hardware\DisplayManagerDX11.cs" />
     <Compile Include="Exceptions\GraphicsContextException.cs" />
@@ -224,7 +225,8 @@
     <Compile Include="Interop\DxgiError.cs" />
     <Compile Include="Interop\DXGIHelper.cs" />
     <Compile Include="Interop\SharpDXInterop.cs" />
-    <Compile Include="Pipeline\ResourceRegion.cs" />
+    <Compile Include="Data\ResourceStream.cs" />
+    <Compile Include="Data\ResourceRegion.cs" />
     <Compile Include="Pipeline\VertexBufferBinder.cs" />
     <Compile Include="Renderer\MainSurfaceType.cs" />
     <Compile Include="Renderer\RenderChain.Context.cs" />

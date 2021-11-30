@@ -20,8 +20,6 @@ namespace Molten.Graphics
         BufferSegment _indexSegment;
         VertexInputLayout _vertexLayout;
 
-        int _vertexSlotCount = 0;
-
         VertexTopology _prevTopology = VertexTopology.Undefined;
         List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
 

@@ -71,6 +71,25 @@ namespace Molten.Graphics
             _output.DepthWritePermission = GraphicsDepthWritePermission.Enabled;
         }
 
+        internal ResourceStream MapResource(ID3D11Resource* resource, uint subresource, Map mapType, MapFlag mapFlags)
+        {
+            MappedSubresource mapped = new MappedSubresource();
+            Context->Map(resource, subresource, mapType, (uint)mapFlags, ref mapped);
+            return new ResourceStream(mapped, mapType);
+        }
+
+        internal ResourceStream MapResource(void* resource, uint subresource, Map mapType, MapFlag mapFlags)
+        {
+            MappedSubresource mapped = new MappedSubresource();
+            Context->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapped);
+            return new ResourceStream(mapped, mapType);
+        }
+
+        internal void UnmapResource(ID3D11Resource* resource, uint subresource)
+        {
+            Context->Unmap(resource, subresource);
+        }
+
         /// <summary>Dispatches a compute effect to the GPU.</summary>
         public void Dispatch(ComputeTask task, int x, int y, int z)
         {
@@ -438,8 +457,6 @@ namespace Molten.Graphics
                 _context = null;
                 _device.RemoveDeferredPipe(this);
             }
-
-            base.OnDispose();
         }
 
         DeviceDX11 IGraphicsPipe<DeviceDX11>.Device => _device;

@@ -21,9 +21,9 @@ namespace Molten.Graphics
             byte[] vertexBytecode,
             ShaderIOStructure io)
         {
-            int maxSlots = device.Features.MaxVertexBufferSlots;
+            uint maxSlots = device.Features.MaxVertexBufferSlots;
             _hashKeys = new ulong[maxSlots];
-            List<InputElement> elements = new List<InputElement>();
+            List<InputElementDesc> elements = new List<InputElementDesc>();
             VertexFormat format = null;
 
             for (int i = 0; i < maxSlots; i++)
@@ -36,7 +36,7 @@ namespace Molten.Graphics
                 /* Check if the current vertex segment's format matches 
                    the part of the shader's input structure it's meant to represent. */
                 int startID = elements.Count;
-                bool inputMatch = io.IsCompatible(format, startID);
+                bool inputMatch = io.IsCompatible(format, (int)startID);
                 if (inputMatch == false)
                 {
                     _valid = false;
@@ -47,11 +47,11 @@ namespace Molten.Graphics
                 elements.AddRange(format.Elements);
                 for (int eID = startID; eID < elements.Count; eID++)
                 {
-                    InputElement e = elements[eID];
-                    e.Slot = i; // Vertex buffer input slot.
+                    InputElementDesc e = elements[eID];
+                    e.InputSlot = i; // Vertex buffer input slot.
                     elements[eID] = e;
 
-                    _isInstanced = _isInstanced || elements[eID].Classification == InputClassification.PerInstanceData;
+                    _isInstanced = _isInstanced || elements[eID].InputSlotClass == InputClassification.InputPerInstanceData;
                 }
 
                 _hashKeys[i] = (ulong)format.HashKey << 32 | (uint)io.HashKey;
@@ -64,12 +64,16 @@ namespace Molten.Graphics
                 elements.Add(nullFormat.Elements[0]);
             }
 
-            InputElement[] finalElements = elements.ToArray();
+            InputElementDesc[] finalElements = elements.ToArray();
 
             // Attempt creation of input layout.
             if (_valid)
             {
-                Native = new InputLayout(device.D3d, vertexBytecode, finalElements);
+                device.Native->CreateInputLayout(finalElements, 
+                    finalElements.Length, 
+                    vertexBytecode, 
+                    vertexBytecode.Length, 
+                    ref Native);
             }
             else
             {
@@ -140,7 +144,8 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            DisposeObject(ref Native);
+            Native->Release();
+            Native = null;
         }
 
         /// <summary>Gets whether or not the input layout is valid.</summary>

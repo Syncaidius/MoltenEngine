@@ -1,4 +1,4 @@
-﻿using SharpDX.Direct3D11;
+﻿using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +8,9 @@ namespace Molten.Graphics
 {
     public sealed class VertexFormat
     {
-        internal InputElement[] Elements;
+        internal InputElementDesc[] Elements;
 
-        public VertexFormat(InputElement[] elements, int sizeOf, int hash)
+        public VertexFormat(InputElementDesc[] elements, int sizeOf, int hash)
         {
             SizeOf = sizeOf;
             Elements = elements;

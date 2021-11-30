@@ -140,18 +140,23 @@ namespace Molten.Graphics
             Buffer.Set<T>(pipe, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
         }
 
-        internal void Map(PipeDX11 pipe, Action<GraphicsBuffer, DataStream> callback, GraphicsBuffer staging = null)
+        internal void Map(PipeDX11 pipe, Action<GraphicsBuffer, ResourceStream> callback, GraphicsBuffer staging = null)
         {
-            Buffer.Map(pipe, ByteOffset, Stride * ElementCount, (buffer, stream) =>
+            Buffer.GetStream(pipe, ByteOffset, Stride * ElementCount, (buffer, stream) =>
             {
                 if (Buffer.Mode == BufferMode.DynamicRing)
-                    ByteOffset = (int)stream.Position;
+                    ByteOffset = (uint)stream.Position;
 
                 callback(buffer, stream);
             }, staging); 
         }
 
-        internal void GetData<T>(PipeDX11 pipe, T[] destination, int startIndex, int count, int elementOffset = 0, Action<T[]> completionCallback = null) where T : struct
+        internal void GetData<T>(PipeDX11 pipe, 
+            T[] destination, 
+            uint startIndex, 
+            uint count, 
+            uint elementOffset = 0, 
+            Action<T[]> completionCallback = null) where T : struct
         {
             BufferGetOperation<T> op = new BufferGetOperation<T>()
             {
@@ -159,7 +164,7 @@ namespace Molten.Graphics
                 DestinationArray = destination,
                 DestinationIndex = startIndex,
                 Count = count,
-                DataStride = Marshal.SizeOf<T>(),
+                DataStride = (uint)Marshal.SizeOf<T>(),
                 CompletionCallback = completionCallback,
                 SourceSegment = this,
             };

@@ -44,14 +44,11 @@ namespace Molten.Graphics
                 throw new Exception();
         }
 
-        /// <summary>Invoked when the object is given a chance to refresh while bound to a pipeline slot.</summary>
-        /// <param name="pipe">The pipe.</param>
-        /// <param name="slot">The slot.</param>
-        internal virtual void Refresh(P pipe, PipelineBindSlot<D, P> slot) { }
-
 
         protected override sealed void OnDispose()
         {
+            // We don't want to delete or dispose any parts of the object right now,
+            // in case the render thread is still using it.
             Device.MarkForDisposal(this);
         }
 
@@ -68,9 +65,13 @@ namespace Molten.Graphics
                 bindList.Clear();
             }
 
-            base.Dispose(); // Signal bindings about disposal first (via base class).
             OnPipelineDispose();
         }
+
+        /// <summary>Invoked when the object is given a chance to refresh while bound to a pipeline slot.</summary>
+        /// <param name="pipe">The pipe.</param>
+        /// <param name="slot">The slot.</param>
+        internal virtual void Refresh(P pipe, PipelineBindSlot<D, P> slot) { }
 
         private protected abstract void OnPipelineDispose();
 
