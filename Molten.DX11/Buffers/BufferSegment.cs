@@ -222,17 +222,17 @@ namespace Molten.Graphics
         }
 
         /// <summary>Clears segment's internal data.</summary>
-        public void Clear()
+        public void ClearForPool()
         {
             Previous = null;
             Next = null;
             VertexFormat = null;
             SetIndexFormat(IndexBufferFormat.Unsigned32Bit);
 
-            UAV?.Dispose();
+            UAV->Release();
             UAV = null;
 
-            SRV?.Dispose();
+            SRV->Release();
             SRV = null;
         }
 

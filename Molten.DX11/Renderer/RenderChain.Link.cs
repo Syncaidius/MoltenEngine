@@ -22,7 +22,7 @@ namespace Molten.Graphics
                 _chain = chain;
             }
 
-            public void Clear()
+            public void ClearForPool()
             {
                 _previous.Clear();
                 _next.Clear();

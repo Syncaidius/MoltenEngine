@@ -5,7 +5,7 @@
     {
         public Scene Scene;
 
-        public override void Clear()
+        public override void ClearForPool()
         {
             Scene = null;
         }

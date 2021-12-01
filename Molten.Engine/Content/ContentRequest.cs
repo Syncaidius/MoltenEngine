@@ -186,7 +186,7 @@ namespace Molten
             RequestElements.Add(c);
         }
 
-        public void Clear()
+        public void ClearForPool()
         {
             State = ContentRequestState.NotCommited;
             Manager = null;

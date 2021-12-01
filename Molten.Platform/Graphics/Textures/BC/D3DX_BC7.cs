@@ -23,7 +23,7 @@ namespace Molten.Graphics.Textures
         internal class Context : BCContext, IPoolable
         {
 
-            public void Clear()
+            public void ClearForPool()
             {
 
             }

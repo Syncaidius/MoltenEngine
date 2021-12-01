@@ -4,7 +4,7 @@ namespace Molten
 {
     internal abstract class SceneChange : IPoolable
     {
-        public abstract void Clear();
+        public abstract void ClearForPool();
 
         internal abstract void Process(Scene scene);
     }

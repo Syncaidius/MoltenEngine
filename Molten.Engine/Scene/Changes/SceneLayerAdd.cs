@@ -6,7 +6,7 @@
 
         public SceneLayer Layer;
 
-        public override void Clear()
+        public override void ClearForPool()
         {
             Layer = null;
             ParentScene = null;

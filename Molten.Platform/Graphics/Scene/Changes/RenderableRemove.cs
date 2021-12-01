@@ -12,7 +12,7 @@ namespace Molten.Graphics
 
         public LayerRenderData<R> LayerData;
 
-        public override void Clear()
+        public override void ClearForPool()
         {
             Renderable = default;
             Data = null;

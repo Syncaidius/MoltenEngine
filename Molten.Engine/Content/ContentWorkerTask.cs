@@ -14,7 +14,7 @@ namespace Molten
         public event WorkerTaskCompletedEvent OnCompleted;
         internal ContentRequest Request;
 
-        public void Clear()
+        public void ClearForPool()
         {
             Request = null;
         }

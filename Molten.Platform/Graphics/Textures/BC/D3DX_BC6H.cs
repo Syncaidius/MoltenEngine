@@ -54,7 +54,7 @@ namespace Molten.Graphics.Textures
                     aPalette_indices[i] = new INTColor[BC67.BC6H_MAX_INDICES];
             }
 
-            public void Clear()
+            public void ClearForPool()
             {
                 EP.fBestErr = float.MaxValue;
                 EP.uShape = 0;

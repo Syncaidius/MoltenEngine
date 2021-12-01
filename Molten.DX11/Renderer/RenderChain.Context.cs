@@ -32,7 +32,7 @@ namespace Molten.Graphics
                 _curComposition = 1 - _curComposition;
             }
 
-            public void Clear()
+            public void ClearForPool()
             {
                 _curComposition = 0;
                 HasComposed = false;

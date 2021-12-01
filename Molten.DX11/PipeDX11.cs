@@ -71,12 +71,14 @@ namespace Molten.Graphics
             _output.DepthWritePermission = GraphicsDepthWritePermission.Enabled;
         }
 
-        internal ResourceStream MapResource<T>(T* resource, uint subresource, Map mapType, MapFlag mapFlags)
+        internal MappedSubresource MapResource<T>(T* resource, uint subresource, Map mapType, MapFlag mapFlags, out ResourceStream stream)
             where T: unmanaged
         {
-            MappedSubresource mapped = new MappedSubresource();
-            Context->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapped);
-            return new ResourceStream(mapped, mapType);
+            MappedSubresource mapping = new MappedSubresource();
+            Context->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
+            stream = new ResourceStream(mapping, mapType);
+
+            return mapping;
         }
 
         internal void UnmapResource<T>(T* resource, uint subresource)

@@ -4,7 +4,7 @@ namespace Molten.Graphics
 {
     public abstract class RenderSceneChange : IPoolable
     {
-        public abstract void Clear();
+        public abstract void ClearForPool();
 
         public abstract void Process();
     }

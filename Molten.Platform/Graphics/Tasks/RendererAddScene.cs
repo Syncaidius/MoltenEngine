@@ -5,7 +5,7 @@
     {
         public SceneRenderData Data;
 
-        public override void Clear()
+        public override void ClearForPool()
         {
             Data = null;
         }

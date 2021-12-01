@@ -6,7 +6,7 @@
         public RenderCamera Camera;
         public SceneRenderData Data;
 
-        public override void Clear()
+        public override void ClearForPool()
         {
             Camera = null;
             Data = null;

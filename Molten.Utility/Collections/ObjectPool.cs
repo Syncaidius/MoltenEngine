@@ -37,7 +37,7 @@ namespace Molten.Collections
         /// <param name="item">The item to recycle.</param>
         public void Recycle(T item)
         {
-            item.Clear();
+            item.ClearForPool();
             _pool.Enqueue(item);
         }
 
@@ -64,6 +64,6 @@ namespace Molten.Collections
         /// <summary>
         /// Clears the object's state. This is automatically called by an <see cref="ObjectPool{T}"/>
         /// </summary>
-        void Clear();
+        void ClearForPool();
     }
 }

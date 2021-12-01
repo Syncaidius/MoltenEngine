@@ -8,7 +8,7 @@ namespace Molten
         public SceneLayer Layer;
         public ReorderMode Mode;
 
-        public override void Clear()
+        public override void ClearForPool()
         {
             Layer = null;
         }

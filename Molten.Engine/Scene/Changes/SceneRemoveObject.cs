@@ -6,7 +6,7 @@
 
         internal SceneLayer Layer;
 
-        public override void Clear()
+        public override void ClearForPool()
         {
             Object = null;
             Layer = null;

@@ -7,7 +7,7 @@
 
         public LayerRenderData LayerData;
 
-        public override void Clear()
+        public override void ClearForPool()
         {
             SceneData = null;
             LayerData = null;

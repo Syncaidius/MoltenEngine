@@ -9,7 +9,7 @@ namespace Molten.Graphics
         public SceneRenderData SceneData;
         public ReorderMode Mode;
 
-        public override void Clear()
+        public override void ClearForPool()
         {
             LayerData = null;
             SceneData = null;

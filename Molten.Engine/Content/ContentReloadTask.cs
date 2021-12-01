@@ -15,7 +15,7 @@ namespace Molten
         internal ContentFile File;
         internal ContentManager Manager;
 
-        public void Clear()
+        public void ClearForPool()
         {
             File = null;
         }

@@ -4,7 +4,7 @@ namespace Molten
 {
     internal abstract class EngineTask : IPoolable
     {
-        public abstract void Clear();
+        public abstract void ClearForPool();
 
         public abstract void Process(Engine engine, Timing time);
     }

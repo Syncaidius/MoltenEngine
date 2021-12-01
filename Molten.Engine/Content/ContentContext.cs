@@ -11,7 +11,7 @@ namespace Molten
 
         internal ContentContext() { }
 
-        void IPoolable.Clear()
+        void IPoolable.ClearForPool()
         {
             Clear();
         }

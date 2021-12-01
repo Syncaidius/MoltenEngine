@@ -220,7 +220,7 @@ namespace Molten.Graphics
                 switch (Mode)
                 {
                     case BufferMode.DynamicDiscard:
-                        stream = pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0);
+                        pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0, out stream);
                         stream.Position = byteOffset;
                         pipe.Profiler.Current.MapDiscardCount++;
                         break;
@@ -232,14 +232,14 @@ namespace Molten.Graphics
                         {
                             if (_ringPos > 0 && _ringPos + dataSize < Description.ByteWidth)
                             {
-                                stream = pipe.MapResource(Native, 0, Map.MapWriteNoOverwrite, 0);
+                                pipe.MapResource(Native, 0, Map.MapWriteNoOverwrite, 0, out stream);
                                 pipe.Profiler.Current.MapNoOverwriteCount++;
                                 stream.Position = _ringPos;
                                 _ringPos += dataSize;
                             }
                             else
                             {                                
-                                stream = pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0);
+                                pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0, out stream);
                                 pipe.Profiler.Current.MapDiscardCount++;
                                 stream.Position = 0;
                                 _ringPos = dataSize;
@@ -247,14 +247,14 @@ namespace Molten.Graphics
                         }
                         else
                         {
-                            stream = pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0);
+                            pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0, out stream);
                             pipe.Profiler.Current.MapDiscardCount++;
                             stream.Position = byteOffset;
                         }
                         break;
 
                     default:
-                        stream = pipe.MapResource(Native, 0, Map.MapWrite, 0);
+                        pipe.MapResource(Native, 0, Map.MapWrite, 0, out stream);
                         pipe.Profiler.Current.MapWriteCount++;
                         break;
                 }     
@@ -275,17 +275,17 @@ namespace Molten.Graphics
                     throw new GraphicsBufferException("The provided staging buffer is invalid. Must be either dynamic or staged.");
 
                 if (staging.Description.ByteWidth < dataSize)
-                    throw new GraphicsBufferException($"The provided staging buffer is not large enough ({staging.Description.SizeInBytes} bytes) to fit the provided data ({dataSize} bytes).");
+                    throw new GraphicsBufferException($"The provided staging buffer is not large enough ({staging.Description.ByteWidth} bytes) to fit the provided data ({dataSize} bytes).");
 
                 // Write updated data into buffer
                 if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
                 {
-                    stream = pipe.MapResource(staging.Native, 0, Map.MapWriteDiscard, 0);
+                    pipe.MapResource(staging.Native, 0, Map.MapWriteDiscard, 0, out stream);
                     pipe.Profiler.Current.MapDiscardCount++;
                 }
                 else
                 {
-                    stream = pipe.MapResource(staging.Native, 0, Map.MapWrite, 0);
+                    pipe.MapResource(staging.Native, 0, Map.MapWrite, 0, out stream);
                     pipe.Profiler.Current.MapWriteCount++;
                 }
 
@@ -348,8 +348,8 @@ namespace Molten.Graphics
                 throw new ArgumentException("The provided destination array is not large enough.");
 
             //now set the structured variable's data
-            DataStream stream = null;
-            DataBox dataBox = pipe.Context.MapSubresource(Native, 0, Map.MapRead, 0, out stream);
+            ResourceStream stream = null;
+            MappedSubresource dataBox = pipe.MapResource(Native, 0, Map.MapRead, 0, out stream);
             pipe.Profiler.Current.MapReadCount++;
             stream.Position = byteOffset;
             stream.ReadRange<T>(destination, readOffset, count);
@@ -399,74 +399,56 @@ namespace Molten.Graphics
             base.OnPipelineDispose();
         }
 
-        internal virtual void CreateResources(uint stride, uint byteoffset, uint elementCount)
+        private void CreateResources(uint stride, uint byteOffset, uint elementCount,
+            ref ID3D11ShaderResourceView* srv, ref ID3D11UnorderedAccessView* uav)
         {
             if (HasFlags(BindFlag.BindShaderResource))
             {
-                SRV = new ShaderResourceView(Device.Native, Native, new ShaderResourceViewDesc()
+                if (srv != null)
+                    srv->Release();
+
+                ShaderResourceViewDesc srvDesc = new ShaderResourceViewDesc()
                 {
                     Buffer = new BufferSrv()
                     {
                         NumElements = elementCount,
-                        FirstElement = byteoffset,
+                        FirstElement = byteOffset,
                     },
                     ViewDimension = D3DSrvDimension.D3D11SrvDimensionBuffer,
                     Format = Format.FormatUnknown,
-                });
+                };
+
+                Device.Native->CreateShaderResourceView((ID3D11Resource*)Native, ref srvDesc, ref srv);
             }
 
             if (HasFlags(BindFlag.BindUnorderedAccess))
             {
-                UAV = new UnorderedAccessView(Device.Native, Native, new UnorderedAccessViewDesc()
-                {
-                    Format = Format.FormatUnknown,
-                    ViewDimension = UavDimension.UavDimensionBuffer,
-                    Buffer = new BufferUav()
-                    {
-                        NumElements = elementCount,
-                        FirstElement = byteoffset / _structuredStride,
-                        Flags = 0,
-                    }
-                });
-            }
-        }
+                if (uav != null)
+                    uav->Release();
 
-        private void CreateResources(BufferSegment segment)
-        {
-            segment.SRV?.Dispose();
-            segment.UAV?.Dispose();
-
-            if (HasFlags(BindFlag.BindShaderResource))
-            {
-                segment.SRV = new ShaderResourceView(Device.Native, Native, new ShaderResourceViewDesc()
-                {
-                    Buffer = new BufferSrv()
-                    {
-                        NumElements = segment.ElementCount,
-                        FirstElement = segment.ByteOffset,
-                    },
-                    ViewDimension = D3DSrvDimension.D3D11SrvDimensionBuffer,
-                    Format = Format.FormatUnknown,
-                });
-            }
-
-            if (HasFlags(BindFlag.BindUnorderedAccess))
-            {
-                ID3D11UnorderedAccessView* uav = null;
                 UnorderedAccessViewDesc uavDesc = new UnorderedAccessViewDesc()
                 {
                     Format = Format.FormatUnknown,
                     ViewDimension = UavDimension.UavDimensionBuffer,
                     Buffer = new BufferUav()
                     {
-                        NumElements = segment.ElementCount,
-                        FirstElement = _structuredStride,
+                        NumElements = elementCount,
+                        FirstElement = byteOffset / _structuredStride,
                         Flags = 0,
                     }
                 };
-
-                Device.Native->CreateUnorderedAccessView((ID3D11Resource*)Native, ref uavDesc, ref segment.UAV);
+                Device.Native->CreateUnorderedAccessView((ID3D11Resource*)Native, ref uavDesc, ref uav);
             }
+        }
+
+        internal virtual void CreateResources(uint stride, uint byteOffset, uint elementCount)
+        {
+            CreateResources(stride, byteOffset, elementCount, ref SRV, ref UAV);
+        }
+
+        private void CreateResources(BufferSegment segment)
+        {
+            CreateResources(segment.Stride, segment.ByteOffset, segment.ElementCount, ref segment.SRV, ref segment.UAV);
         }
 
         internal BufferSegment Allocate<T>(uint count) where T : struct
