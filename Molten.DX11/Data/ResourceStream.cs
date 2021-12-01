@@ -48,11 +48,11 @@ namespace Molten.Graphics
         /// Writes an array of values to the current <see cref="ResourceStream"/>.
         /// </summary>
         /// <typeparam name="T">The type of element to write.</typeparam>
-        /// <param name="value"></param>
-        /// <param name="startIndex"></param>
-        /// <param name="count"></param>
+        /// <param name="values">The array of values from which to write to the current <see cref="ResourceStream"/>.</param>
+        /// <param name="startIndex">The start index within <paramref name="values"/> to start copying.</param>
+        /// <param name="count">The number of elements to write from <paramref name="values"/> to the current <see cref="ResourceStream"/>.</param>
         /// <exception cref="ResourceStreamException"></exception>
-        public void WriteRange<T>(T[] value, uint startIndex, uint count)
+        public void WriteRange<T>(T[] values, uint startIndex, uint count)
             where T : struct
         {
             if (!_canWrite)
@@ -62,7 +62,7 @@ namespace Molten.Graphics
             long numBytes = sizeOf * count;
             int byteOffset = (int)startIndex * sizeOf;
 
-            EngineInterop.PinObject(value, (p) =>
+            EngineInterop.PinObject(values, (p) =>
             {
                 p += byteOffset;
                 void* ptr = p.ToPointer();
@@ -73,7 +73,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Writes an array of values to the current <see cref="ResourceStream"/>.
+        /// Reads an array of values from the current <see cref="ResourceStream"/>.
         /// </summary>
         /// <typeparam name="T">The type of element to read.</typeparam>
         /// <param name="destination">The destination array to which values will be read into.</param>
