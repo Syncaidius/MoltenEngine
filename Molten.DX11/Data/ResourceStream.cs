@@ -44,14 +44,27 @@ namespace Molten.Graphics
             Position += numBytes;
         }
 
-        public void Write<T>(T[] value) where T : unmanaged
+        /// <summary>
+        /// Writes an array of values to the current <see cref="ResourceStream"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of element to write.</typeparam>
+        /// <param name="value"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="count"></param>
+        /// <exception cref="ResourceStreamException"></exception>
+        public void WriteRange<T>(T[] value, uint startIndex, uint count)
+            where T : struct
         {
             if (!_canWrite)
                 throw new ResourceStreamException(_mapType, $"Map mode does not allow writing.");
 
-            long numBytes = sizeof(T) * value.Length;
+            int sizeOf = Marshal.SizeOf<T>();
+            long numBytes = sizeOf * count;
+            int byteOffset = (int)startIndex * sizeOf;
+
             EngineInterop.PinObject(value, (p) =>
             {
+                p += byteOffset;
                 void* ptr = p.ToPointer();
                 Buffer.MemoryCopy(ptr, _mapping.PData, numBytes, numBytes);
             });
@@ -59,13 +72,31 @@ namespace Molten.Graphics
             Position += numBytes;
         }
 
-        public void Write<T>(T* value, uint numElements) where T : unmanaged
+        /// <summary>
+        /// Writes an array of values to the current <see cref="ResourceStream"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of element to read.</typeparam>
+        /// <param name="destination">The destination array to which values will be read into.</param>
+        /// <param name="startIndex">The index at which to place the first copied element within the <paramref name="destination"/>.</param>
+        /// <param name="count">The number of elements to read from the current <see cref="ResourceStream"/>.</param>
+        /// <exception cref="ResourceStreamException"></exception>
+        public void ReadRange<T>(T[] destination, uint startIndex, uint count)
+            where T : struct
         {
             if (!_canWrite)
                 throw new ResourceStreamException(_mapType, $"Map mode does not allow writing.");
 
-            long numBytes = sizeof(T) * numElements;
-            Buffer.MemoryCopy(value, _mapping.PData, numBytes, numBytes);
+            int sizeOf = Marshal.SizeOf<T>();
+            long numBytes = sizeOf * count;
+            int byteOffset = (int)startIndex * sizeOf;
+
+            EngineInterop.PinObject(destination, (p) =>
+            {
+                p += byteOffset;
+                void* ptr = p.ToPointer();
+                Buffer.MemoryCopy(_mapping.PData, ptr, numBytes, numBytes);
+            });
+
             Position += numBytes;
         }
     }

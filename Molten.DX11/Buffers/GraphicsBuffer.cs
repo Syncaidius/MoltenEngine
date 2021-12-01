@@ -319,7 +319,6 @@ namespace Molten.Graphics
             if (dataStride == 0)
                 dataStride = (uint)Marshal.SizeOf<T>();
 
-            uint writeOffset = startIndex * dataStride;
             uint dataSize = count * dataStride;
 
             GetStream(pipe, byteOffset, dataSize, (buffer, stream) =>
@@ -609,12 +608,6 @@ namespace Molten.Graphics
 
         private void SegmentResized(BufferSegment segment, uint oldByteCount, uint newByteCount, uint oldElementCount, uint newElementCount)
         {
-            if(segment.UAV != null)
-                segment.UAV->Release();
-
-            if(segment.SRV != null)
-                segment.SRV->Release();
-
             CreateResources(segment);
             OnSegmentResized(segment, oldByteCount, newByteCount, oldElementCount, newElementCount);
         }
