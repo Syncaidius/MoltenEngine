@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SharpDX;
 using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
@@ -15,7 +14,7 @@ namespace Molten.Graphics
         int _byteSize;
         internal int ExpectedElements;
 
-        public ScalarArray(ShaderConstantBuffer parent, int expectedElements)
+        public ScalarArray(ShaderConstantBuffer parent, uint expectedElements)
             : base(parent)
         {
             _elementType = typeof(T);
@@ -24,7 +23,7 @@ namespace Molten.Graphics
             SizeOf = expectedElements * _byteSize;
         }
 
-        internal override void Write(SharpDX.DataStream stream)
+        internal override void Write(ResourceStream stream)
         {
             if (_value != null)
             {

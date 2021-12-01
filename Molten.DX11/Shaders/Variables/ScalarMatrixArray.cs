@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SharpDX;
 using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
@@ -11,17 +10,17 @@ namespace Molten.Graphics
     internal class ScalarMatrixArray<T> : ShaderConstantVariable where T : struct
     {
         Type _elementType;
-        int _components;
-        int _stride;
+        uint _components;
+        uint _stride;
 
-        int _valueBytes;
-        int _expectedElements;
+        uint _valueBytes;
+        uint _expectedElements;
         Array _value;
 
-        internal ScalarMatrixArray(ShaderConstantBuffer parent, int rows, int columns, int expectedElements) : base(parent)
+        internal ScalarMatrixArray(ShaderConstantBuffer parent, uint rows, uint columns, uint expectedElements) : base(parent)
         {
             _elementType = typeof(T);
-            _stride = Marshal.SizeOf(_elementType);
+            _stride = (uint)Marshal.SizeOf(_elementType);
             _components = columns * rows;
             _expectedElements = expectedElements;
             SizeOf = (_stride * _components) * _expectedElements;
@@ -30,7 +29,7 @@ namespace Molten.Graphics
             _value = tempVal;
         }
 
-        internal override void Write(DataStream stream)
+        internal override void Write(ResourceStream stream)
         {
             if (_value != null)
             {
@@ -64,7 +63,7 @@ namespace Molten.Graphics
                     {
                         _value = (Array)value;
 
-                        _valueBytes = _value.Length * _stride;
+                        _valueBytes = (uint)_value.Length * _stride;
 
                         if (_valueBytes != SizeOf)
                             throw new InvalidOperationException("Value that was set is not of the expected size (" + SizeOf + " bytes)");

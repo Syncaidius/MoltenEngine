@@ -182,7 +182,7 @@ namespace Molten.Graphics
             if (lastByte > destLastByte)
                 throw new OverflowException("specified copy region would exceed the bounds of the destination segment.");
 
-            ResourceRegion sourceRegion = new ResourceRegion()
+            Box sourceRegion = new Box()
             {
                 Left = totalOffset,
                 Right = lastByte,

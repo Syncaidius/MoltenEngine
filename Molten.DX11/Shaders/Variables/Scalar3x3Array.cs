@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SharpDX;
 using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
@@ -12,14 +11,14 @@ namespace Molten.Graphics
     {
         Type _elementType = typeof(Matrix3F);
         Matrix3F[] _value;
-        int _byteSize;
-        int _expectedElements;
+        uint _byteSize;
+        uint _expectedElements;
         bool _isDirty = false;
 
-        public ScalarFloat3x3ArrayVariable(ShaderConstantBuffer parent, int expectedElements)
+        public ScalarFloat3x3ArrayVariable(ShaderConstantBuffer parent, uint expectedElements)
             : base(parent)
         {
-            _byteSize = Matrix3F.SizeInBytes;
+            _byteSize = (uint)Matrix3F.SizeInBytes;
             _expectedElements = expectedElements;
             SizeOf = _expectedElements * _byteSize;
 
@@ -29,7 +28,7 @@ namespace Molten.Graphics
             _isDirty = true;
         }
 
-        internal override void Write(SharpDX.DataStream stream)
+        internal override void Write(ResourceStream stream)
         {
             if (_value != null)
             {

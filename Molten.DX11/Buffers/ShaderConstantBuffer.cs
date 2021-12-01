@@ -1,18 +1,17 @@
-﻿using SharpDX;
-using SharpDX.D3DCompiler;
-using SharpDX.Direct3D11;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Molten.Graphics.Shaders;
 using Molten.Utility;
+using Silk.NET.Core.Native;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
     internal class ShaderConstantBuffer : GraphicsBuffer
     {
-        internal ConstantBufferFlags Flags;
+        internal ConstantBufferFlag Flags;
         internal ConstantBufferType Type;
         internal ShaderConstantVariable[] Variables;
         internal bool DirtyVariables;
@@ -20,24 +19,24 @@ namespace Molten.Graphics
         internal string BufferName;
         internal int Hash;
 
-        internal ShaderConstantBuffer(DeviceDX11 device, BufferMode flags, ConstantBuffer desc)
-            : base(device, flags, BindFlags.ConstantBuffer, desc.Description.Size)
+        internal ShaderConstantBuffer(DeviceDX11 device, BufferMode flags, ref ID3D11ShaderReflectionConstantBuffer srConstBuffer)
+            : base(device, flags, BindFlag.BindConstantBuffer, srConstBuffer.Description.Size)
         {
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
 
             // Read sdescription data
-            BufferName = desc.Description.Name;
-            Flags = desc.Description.Flags;
-            Type = desc.Description.Type;
+            BufferName = srConstBuffer.Description.Name;
+            Flags = srConstBuffer.Description.Flags;
+            Type = srConstBuffer.Description.Type;
 
             string hashString = BufferName;
-            int variableCount = desc.Description.VariableCount;
+            int variableCount = srConstBuffer.Description.VariableCount;
             Variables = new ShaderConstantVariable[variableCount];
 
             // Read all variables from the constant buffer
             for (int c = 0; c < variableCount; c++)
             {
-                ShaderReflectionVariable variable = desc.GetVariable(c);
+                ShaderReflectionVariable variable = srConstBuffer.GetVariable(c);
                 ShaderReflectionType t = variable.GetVariableType();
 
                 ShaderConstantVariable sv = GetShaderVariable(t);
@@ -59,7 +58,7 @@ namespace Molten.Graphics
             // Generate hash for comparing constant buffers.
             byte[] hashData = StringHelper.GetBytes(hashString, Encoding.Unicode);
             Hash = HashHelper.ComputeFNV(hashData);
-            Description.SizeInBytes = desc.Description.Size;
+            Description.SizeInBytes = srConstBuffer.Description.Size;
         }
 
         internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
@@ -92,68 +91,70 @@ namespace Molten.Graphics
         /// <summary>Figures out what type to use for a shader variable.</summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        private ShaderConstantVariable GetShaderVariable(ShaderReflectionType t)
+        private unsafe ShaderConstantVariable GetShaderVariable(ref ID3D11ShaderReflectionType t)
         {
-            ShaderTypeDescription desc = t.Description;
-            int columns = desc.ColumnCount;
-            int rows = desc.RowCount;
+            ShaderTypeDesc* desc = null;
+            t.GetDesc(desc);
 
-            switch (desc.Class)
+            uint columns = desc->Columns;
+            uint rows = desc->Rows;
+
+            switch (desc->Class)
             {
                 default:
-                    if (desc.ElementCount > 0)
+                    if (desc->Elements > 0)
                     {
-                        switch (desc.Type)
+                        switch (desc->Type)
                         {
-                            case ShaderVariableType.Int:
-                                return new ScalarArray<int>(this, desc.ElementCount);
-                            case ShaderVariableType.UInt:
-                                return new ScalarArray<uint>(this, desc.ElementCount);
-                            case ShaderVariableType.Float:
-                                return new ScalarArray<float>(this, desc.ElementCount);
+                            case D3DShaderVariableType.D3DSvtInt:
+                                return new ScalarArray<int>(this, desc->Elements);
+                            case D3DShaderVariableType.D3DSvtUint:
+                                return new ScalarArray<uint>(this, desc->Elements);
+                            case D3DShaderVariableType.D3DSvtFloat:
+                                return new ScalarArray<float>(this, desc->Elements);
                         }
                     }
                     else
                     {
-                        switch (desc.Type)
+                        switch (desc->Type)
                         {
-                            case ShaderVariableType.Int:
+                            case D3DShaderVariableType.D3DSvtInt:
                                 return new ScalarVariable<int>(this, rows, columns);
-                            case ShaderVariableType.UInt:
+                            case D3DShaderVariableType.D3DSvtUint:
                                 return new ScalarVariable<uint>(this, rows, columns);
-                            case ShaderVariableType.Float:
+                            case D3DShaderVariableType.D3DSvtFloat:
                                 return new ScalarVariable<float>(this, rows, columns);
                         }
                     }
                     break;
 
-                case ShaderVariableClass.MatrixColumns:
-                    if (desc.ElementCount > 0)
+                case D3DShaderVariableClass.D3DSvcMatrixColumns:
+                    if (desc->Elements > 0)
                     {
-                        switch (desc.Type)
+                        switch (desc->Type)
                         {
-                            case ShaderVariableType.Float:
-                                if (desc.ColumnCount == 4 && desc.RowCount == 4)
-                                    return new ScalarFloat4x4ArrayVariable(this, desc.ElementCount);
-                                else if (desc.ColumnCount == 3 && desc.RowCount == 3)
-                                    return new ScalarFloat3x3ArrayVariable(this, desc.ElementCount);
+                            case D3DShaderVariableType.D3DSvtFloat:
+                                if (desc->Columns == 4 && desc->Rows == 4)
+                                    return new ScalarFloat4x4ArrayVariable(this, desc->Elements);
+                                else if (desc->Columns == 3 && desc->Rows == 3)
+                                    return new ScalarFloat3x3ArrayVariable(this, desc->Elements);
                                 else
-                                    return new ScalarMatrixArray<float>(this, rows, columns, desc.ElementCount);
+                                    return new ScalarMatrixArray<float>(this, rows, columns, desc->Elements);
 
                             default:
-                                return new ScalarMatrixArray<float>(this, rows, columns, desc.ElementCount);
+                                return new ScalarMatrixArray<float>(this, rows, columns, desc->Elements);
                         }
                     }
                     else
                     {
-                        switch (desc.Type)
+                        switch (desc->Type)
                         {
-                            case ShaderVariableType.Float:
-                                if (desc.ColumnCount == 4 && desc.RowCount == 4)
+                            case D3DShaderVariableType.D3DSvtFloat:
+                                if (desc->Columns == 4 && desc->Rows == 4)
                                     return new ScalarFloat4x4Variable(this);
-                                else if (desc.ColumnCount == 2 && desc.RowCount == 3)
+                                else if (desc->Columns == 2 && desc->Rows == 3)
                                     return new ScalarFloat3x2Variable(this);
-                                else if (desc.ColumnCount == 3 && desc.RowCount == 3)
+                                else if (desc->Columns == 3 && desc->Rows == 3)
                                     return new ScalarFloat3x3Variable(this);
                                 else
                                     return new ScalarVariable<float>(this, rows, columns);

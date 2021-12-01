@@ -12,14 +12,14 @@ namespace Molten.Graphics
     {
         Type _elementType = typeof(Matrix4F);
         Matrix4F[] _value;
-        int _byteSize;
-        int _expectedElements;
+        uint _byteSize;
+        uint _expectedElements;
         bool _isDirty;
 
-        public ScalarFloat4x4ArrayVariable(ShaderConstantBuffer parent, int expectedElements)
+        public ScalarFloat4x4ArrayVariable(ShaderConstantBuffer parent, uint expectedElements)
             : base(parent)
         {
-            _byteSize = Matrix4F.SizeInBytes;
+            _byteSize = (uint)Matrix4F.SizeInBytes;
             _expectedElements = expectedElements;
             _value = new Matrix4F[_expectedElements];
             SizeOf = _expectedElements * _byteSize;
@@ -30,7 +30,7 @@ namespace Molten.Graphics
             _isDirty = true;
         }
 
-        internal override void Write(SharpDX.DataStream stream)
+        internal override void Write(ResourceStream stream)
         {
             if (_value != null)
             {

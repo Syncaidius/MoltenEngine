@@ -10,13 +10,13 @@ namespace Molten.Graphics
 {
     internal class ScalarVariable<T> : ShaderConstantVariable where T : struct 
     {
-        int _expectedElements;
-        int _stride;
+        uint _expectedElements;
+        uint _stride;
 
-        int _valueBytes;
+        uint _valueBytes;
         unsafe object _value;
 
-        internal ScalarVariable(ShaderConstantBuffer parent, int rows, int columns) : base(parent)
+        internal ScalarVariable(ShaderConstantBuffer parent, uint rows, uint columns) : base(parent)
         {
             _stride = Marshal.SizeOf<T>();
             _expectedElements = columns * rows;
@@ -26,7 +26,7 @@ namespace Molten.Graphics
             _value = tempVal;
         }
 
-        internal override void Write(DataStream stream)
+        internal override void Write(ResourceStream stream)
         {
             // Pin array so a pointer can be retrieved safely.
             GCHandle handle = GCHandle.Alloc(_value, GCHandleType.Pinned);
@@ -47,7 +47,7 @@ namespace Molten.Graphics
             set
             {
                 Type t = value.GetType();
-                int valBytes = Marshal.SizeOf(t);
+                uint valBytes = (uint)Marshal.SizeOf(t);
 
                 if (valBytes != SizeOf)
                 {

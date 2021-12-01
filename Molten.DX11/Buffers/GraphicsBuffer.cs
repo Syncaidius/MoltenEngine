@@ -181,14 +181,14 @@ namespace Molten.Graphics
             pipe.Context->CopyResource(this, destination);
         }
 
-        internal void CopyTo(PipeDX11 pipe, GraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0)
+        internal void CopyTo(PipeDX11 pipe, GraphicsBuffer destination, Box sourceRegion, uint destByteOffset = 0)
         {
             // If the current buffer is a staging buffer, initialize and apply all its pending changes.
             if (Description.Usage == Usage.UsageStaging)
                 ApplyChanges(pipe);
 
             ValidateCopyBufferUsage(destination);
-            pipe.Context->CopySubresourceRegion(this, 0, sourceRegion, destination, 0, destByteOffset);
+            pipe.CopyResourceRegion(this, 0, ref sourceRegion, destination, 0, new Vector3UI(destByteOffset,0,0));
             pipe.Profiler.Current.CopySubresourceCount++;
         }
 

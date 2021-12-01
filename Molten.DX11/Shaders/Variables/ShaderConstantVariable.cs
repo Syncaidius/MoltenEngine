@@ -1,6 +1,4 @@
-﻿using SharpDX;
-using SharpDX.D3DCompiler;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,10 +8,10 @@ namespace Molten.Graphics
     public abstract class ShaderConstantVariable : IShaderValue
     {
         /// <summary>Gets the byte offset of the variable.</summary>
-        internal int ByteOffset;
+        internal uint ByteOffset;
 
         /// <summary>The size of the variable's data in bytes.</summary>
-        internal int SizeOf;
+        internal long SizeOf;
 
         internal ShaderConstantVariable(ShaderConstantBuffer parent)
         {
@@ -31,7 +29,7 @@ namespace Molten.Graphics
 
         /// <summary>Called when the variable's value needs to be written to a buffer.</summary>
         /// <param name="stream">The data stream to write the value(s) into.</param>
-        internal abstract void Write(DataStream stream);
+        internal abstract void Write(ResourceStream stream);
 
         /// <summary>Gets the shader buffer which owns the variable.</summary>
         internal ShaderConstantBuffer ParentBuffer { get; private set; }
