@@ -87,6 +87,14 @@ namespace Molten.Graphics
             Context->Unmap((ID3D11Resource*)resource, subresource);
         }
 
+        internal void CopyResourceRegion(
+            ID3D11Resource* source, uint srcSubresource, ref Box sourceRegion, 
+            ID3D11Resource* dest, uint destSubresource, Vector3UI destStart)
+        {
+            Context->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
+                source, srcSubresource, ref sourceRegion);
+        }
+
         /// <summary>Dispatches a compute effect to the GPU.</summary>
         public void Dispatch(ComputeTask task, int x, int y, int z)
         {

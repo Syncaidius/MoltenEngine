@@ -143,6 +143,7 @@ namespace Molten.Graphics
             SubresourceData ssd = new SubresourceData(initialDataPtr, byteCount, byteCount);
 
             Device.Native->CreateBuffer(ref Description, ref ssd, ref Native);
+
             Device.AllocateVRAM(byteCount);
 
             // Allocate the first segment.
@@ -177,7 +178,7 @@ namespace Molten.Graphics
                 ApplyChanges(pipe);
 
             ValidateCopyBufferUsage(destination);
-            pipe.Context->CopyResource((ID3D11Resource*)Native, (ID3D11Resource*)destination.Native);
+            pipe.Context->CopyResource(this, destination);
         }
 
         internal void CopyTo(PipeDX11 pipe, GraphicsBuffer destination, ResourceRegion sourceRegion, uint destByteOffset = 0)
@@ -187,7 +188,7 @@ namespace Molten.Graphics
                 ApplyChanges(pipe);
 
             ValidateCopyBufferUsage(destination);
-            pipe.Context->CopySubresourceRegion(Native, 0, sourceRegion, destination.Native, 0, destByteOffset);
+            pipe.Context->CopySubresourceRegion(this, 0, sourceRegion, destination, 0, destByteOffset);
             pipe.Profiler.Current.CopySubresourceCount++;
         }
 
@@ -266,7 +267,7 @@ namespace Molten.Graphics
             {
                 // Write to the provided staging buffer instead.
                 if (staging == null)
-                    throw new GraphicsBufferException("Staging buffer required. Non-dynamic/staged buffers require a staging buffer to 'set' data.");
+                    throw new GraphicsBufferException("Staging buffer required. Non-dynamic/staged buffers require a staging buffer to access data.");
 
                 isDynamic = staging.Description.Usage == Usage.UsageDynamic;
                 isStaged = staging.Description.Usage == Usage.UsageStaging;
@@ -292,15 +293,15 @@ namespace Molten.Graphics
                 callback(staging, stream);
                 pipe.UnmapResource(staging.Native, 0);
 
-                ResourceRegion stagingRegion = new ResourceRegion()
+                Box stagingRegion = new Box()
                 {
                     Left = 0,
                     Right = dataSize,
                     Back = 1,
                     Bottom = 1,
                 };
-
-                pipe.Context.CopySubresourceRegion(staging.Native, 0, stagingRegion, Native, 0, byteOffset);
+                pipe.CopyResourceRegion(staging, 0, ref stagingRegion, 
+                    this, 0, new Vector3UI(byteOffset, 0, 0));
                 pipe.Profiler.Current.CopySubresourceCount++;
             }
         }
@@ -417,7 +418,7 @@ namespace Molten.Graphics
                     Format = Format.FormatUnknown,
                 };
 
-                Device.Native->CreateShaderResourceView((ID3D11Resource*)Native, ref srvDesc, ref srv);
+                Device.Native->CreateShaderResourceView(this, ref srvDesc, ref srv);
             }
 
             if (HasFlags(BindFlag.BindUnorderedAccess))
@@ -436,7 +437,7 @@ namespace Molten.Graphics
                         Flags = 0,
                     }
                 };
-                Device.Native->CreateUnorderedAccessView((ID3D11Resource*)Native, ref uavDesc, ref uav);
+                Device.Native->CreateUnorderedAccessView(this, ref uavDesc, ref uav);
             }
         }
 
@@ -645,5 +646,10 @@ namespace Molten.Graphics
         /// Gets a value indicating whether the current buffer has unordered access.
         /// </summary>
         public bool IsUnorderedAccess => ((BindFlag)Description.BindFlags & BindFlag.BindUnorderedAccess) == BindFlag.BindUnorderedAccess;
+    
+        public static implicit operator ID3D11Resource*(GraphicsBuffer b)
+        {
+            return (ID3D11Resource*)b.Native;
+        }
     }
 }
