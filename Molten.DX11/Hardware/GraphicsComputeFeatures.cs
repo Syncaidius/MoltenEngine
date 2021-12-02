@@ -1,28 +1,38 @@
-﻿using SharpDX.Direct3D11;
-using Silk.NET.Direct3D11;
+﻿using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Feature = Silk.NET.Direct3D11.Feature;
 
 namespace Molten.Graphics
 {
-    public class GraphicsComputeFeatures
+    public unsafe class GraphicsComputeFeatures
     {
-        ID3D11Device _d3d;
+        ID3D11Device* _device;
 
-        internal GraphicsComputeFeatures(ref ID3D11Device d3d)
+        internal GraphicsComputeFeatures(ID3D11Device* device)
         {
-            _d3d = d3d;
+            _device = device;
         }
 
         /// <summary>Returns all of the supported compute shader features for the provided DXGI format.</summary>
         /// <param name="format">The format of which to retrieve compute shader support.</param>
         /// <returns></returns>
-        public ComputeShaderFormatSupport GetComputeShaderSupport(SharpDX.DXGI. Format format)
+        public FormatSupport2 GetComputeShaderSupport(Format format)
         {
-            return _d3d.CheckComputeShaderFormatSupport(format);
+            FeatureDataFormatSupport2 supportData = new FeatureDataFormatSupport2()
+            {
+                InFormat = format,
+            };
+
+            _device->CheckFeatureSupport(Feature.FeatureFormatSupport2,
+                &supportData,
+                (uint)sizeof(FeatureDataFormatSupport2));
+
+            return (FormatSupport2)supportData.OutFormatSupport2;
         }
 
         /// <summary>Gets the maximum supported size of a compute shader thread group.</summary>

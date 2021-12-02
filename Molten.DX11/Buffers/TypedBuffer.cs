@@ -1,17 +1,17 @@
-﻿using SharpDX.Direct3D11;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SharpDX;
-using SharpDX.D3DCompiler;
 using System.Runtime.InteropServices;
+using Silk.NET.Direct3D11;
+using Silk.NET.Core.Native;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
     /// <summary>A typed, structured buffer. This is the application-equivilent of a typed Buffer and RWBuffer in HLSL. </summary>
     /// <typeparam name="T"></typeparam>
-    internal class TypedBuffer<T> : GraphicsBuffer where T : struct
+    internal unsafe class TypedBuffer<T> : GraphicsBuffer where T : struct
     {
         static Type[] AcceptedTypes = new Type[]
         {
@@ -46,14 +46,14 @@ namespace Molten.Graphics
         public TypedBuffer(
             DeviceDX11 device, 
             BufferMode flags, 
-            int capacity, 
+            uint capacity, 
             bool unorderedAccess = false, 
             bool shaderResource = true)
             : base(device, 
                   flags,
-                  (shaderResource ? BindFlags.ShaderResource : BindFlags.None) | (unorderedAccess ? BindFlags.UnorderedAccess : BindFlags.None), 
+                  (shaderResource ? BindFlag.BindShaderResource : 0) | (unorderedAccess ? BindFlag.BindUnorderedAccess : 0), 
                   capacity, 
-                  ResourceOptionFlags.BufferStructured)
+                  ResourceMiscFlag.ResourceMiscBufferStructured)
         {
             _bufferType = typeof(T);
             ValidateType();
@@ -63,12 +63,12 @@ namespace Molten.Graphics
         /// <param name="device">The graphics device to bind the buffer to.</param>
         /// <param name="stride">The expected size of 1 element, in bytes.</param>
         /// <param name="capacity">The number of elements the buffer should be able to hold.</param>
-        public TypedBuffer(DeviceDX11 device, BufferMode mode, int stride, int capacity)
+        public TypedBuffer(DeviceDX11 device, BufferMode mode, uint stride, uint capacity)
             : base(device, 
                   mode, 
-                  BindFlags.ShaderResource, 
+                  BindFlag.BindShaderResource, 
                   capacity, 
-                  ResourceOptionFlags.BufferStructured)
+                  ResourceMiscFlag.ResourceMiscBufferStructured)
         {
             ValidateType();
         }
@@ -85,28 +85,32 @@ namespace Molten.Graphics
             throw new InvalidOperationException("Typed buffers only accept scalar, vector and Matrix2x2 value types.");
         }
 
-        internal override void CreateResources(int stride, int byteoffset, int elementCount)
+        internal override void CreateResources(uint stride, uint byteoffset, uint elementCount)
         {
             Type allocatedType = typeof(T);
             if (allocatedType != _bufferType)
                 throw new InvalidOperationException("Typed buffers can only accept the data type they were initialized with.");
             
             // No SRV if the shader resource flag isn't present.
-            if ((Description.BindFlags & BindFlags.ShaderResource) != BindFlags.ShaderResource)
+            if (((BindFlag)Description.BindFlags & BindFlag.BindShaderResource) != BindFlag.BindShaderResource)
                 return;
 
-            // Create a new shader resource view
-            SRV = new ShaderResourceView(Device.D3d, Native, new ShaderResourceViewDescription()
+            if (SRV != null)
+                SRV->Release();
+
+            ShaderResourceViewDesc srvDesc = new ShaderResourceViewDesc()
             {
-                BufferEx = new ShaderResourceViewDescription.ExtendedBufferResource()
+                BufferEx = new BufferexSrv()
                 {
-                    ElementCount = elementCount,
+                    NumElements = elementCount,
                     FirstElement = 0,
-                    Flags = ShaderResourceViewExtendedBufferFlags.None,
+                    Flags = 0 // See: https://docs.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_bufferex_srv_flag
                 },
-                Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Buffer,
-                Format = SharpDX.DXGI.Format.Unknown,
-            });
+                ViewDimension = D3DSrvDimension.D3D11SrvDimensionBuffer,
+                Format = Format.FormatUnknown,
+            };
+
+            Device.Native->CreateShaderResourceView(this, ref srvDesc, ref SRV);
         }
     }
 }

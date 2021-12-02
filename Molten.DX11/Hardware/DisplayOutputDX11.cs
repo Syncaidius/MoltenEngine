@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public unsafe class DisplayOutputDX11 : EngineObject
+    public unsafe class DisplayOutputDX11 : EngineObject, IDisplayOutput
     {
         internal IDXGIOutput1* Native;
         OutputDesc* _desc;

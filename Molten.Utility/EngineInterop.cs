@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Molten
 {
@@ -25,5 +26,31 @@ namespace Molten
             }
         }
 
+        /// <summary>
+        /// Decodes a string from the provided byte array pointer, using the specified <see cref="Encoding"/>.
+        /// If no <see cref="Encoding"/> is specified, the default one will be used.
+        /// </summary>
+        /// <param name="bytes">A pointer to an array of bytes.</param>
+        /// <param name="encoding">An encoding to use. If null, the default <see cref="Encoding"/> will be used.</param>
+        /// <returns></returns>
+        public unsafe static string StringFromBytes(byte* bytes, Encoding encoding = null)
+        {
+            int len = 0;
+            byte* p = bytes;
+            byte c = *p;
+
+            while (c != 0)
+            {
+                p++;
+                len++;
+
+                c = *p;
+            }
+
+            if (len > 0)
+                return (encoding ?? Encoding.Default).GetString(bytes, len);
+            else
+                return string.Empty;
+        }
     }
 }

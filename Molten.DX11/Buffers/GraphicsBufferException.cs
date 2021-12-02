@@ -8,6 +8,6 @@ namespace Molten.Graphics
 {
     public class GraphicsBufferException : Exception
     {
-        public GraphicsBufferException(string message) : base(message) { }
+        internal GraphicsBufferException(string message) : base(message) { }
     }
 }

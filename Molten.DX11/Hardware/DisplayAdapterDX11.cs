@@ -15,7 +15,7 @@ namespace Molten.Graphics
         AdapterDesc1* _desc;
 
         DisplayOutputDX11[] _connectedOutputs;
-        List<GraphicsOutput> _activeOutputs;
+        List<DisplayOutputDX11> _activeOutputs;
         IDisplayManager _manager;
         string _name;
 
@@ -30,7 +30,7 @@ namespace Molten.Graphics
         {
             _manager = manager;
             Native = adapter;
-            _activeOutputs = new List<GraphicsOutput>();
+            _activeOutputs = new List<DisplayOutputDX11>();
             ID = id;
             _desc = desc;
 
@@ -109,7 +109,7 @@ namespace Molten.Graphics
 
             if (!_activeOutputs.Contains(output))
             {
-                _activeOutputs.Add(output as GraphicsOutput);
+                _activeOutputs.Add(output as DisplayOutputDX11);
                 OnOutputActivated?.Invoke(output);
             }
         }
@@ -119,7 +119,7 @@ namespace Molten.Graphics
             if (output.Adapter != this)
                 throw new AdapterOutputException(output, "Cannot remove active output: Bound to another adapter.");
 
-            if (_activeOutputs.Remove(output as GraphicsOutput))
+            if (_activeOutputs.Remove(output as DisplayOutputDX11))
                 OnOutputDeactivated?.Invoke(output);
         }
 
