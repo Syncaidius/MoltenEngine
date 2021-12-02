@@ -1,6 +1,4 @@
-﻿using SharpDX.D3DCompiler;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
+﻿using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -186,9 +184,12 @@ namespace Molten.Graphics
             shader.Resources[bindPoint] = obj;
         }
 
-        private ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext context, HlslShader shader, ConstantBuffer buffer)
+        private unsafe ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext context, HlslShader shader, ID3D11ShaderReflectionConstantBuffer* buffer)
         {
-            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.Device, BufferMode.DynamicDiscard, buffer);
+            ShaderBufferDesc* desc = null;
+            buffer->GetDesc(desc);
+
+            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.Device, BufferMode.DynamicDiscard, desc, buffer);
             string localName = cBuffer.BufferName;
 
             if (cBuffer.BufferName == "$Globals")

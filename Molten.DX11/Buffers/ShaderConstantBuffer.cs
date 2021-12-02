@@ -2,42 +2,42 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Molten.Graphics.Shaders;
 using Molten.Utility;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    internal class ShaderConstantBuffer : GraphicsBuffer
+    internal unsafe class ShaderConstantBuffer : GraphicsBuffer
     {
-        internal ConstantBufferFlag Flags;
-        internal ConstantBufferType Type;
+        internal D3DShaderCBufferFlags Flags;
+        internal D3DCBufferType Type;
         internal ShaderConstantVariable[] Variables;
         internal bool DirtyVariables;
         internal Dictionary<string, ShaderConstantVariable> _varLookup;
         internal string BufferName;
         internal int Hash;
 
-        internal ShaderConstantBuffer(DeviceDX11 device, BufferMode flags, ref ID3D11ShaderReflectionConstantBuffer srConstBuffer)
-            : base(device, flags, BindFlag.BindConstantBuffer, srConstBuffer.Description.Size)
+        internal ShaderConstantBuffer(DeviceDX11 device, BufferMode flags, 
+            ID3D11ShaderReflectionConstantBuffer* srConstBuffer, ShaderBufferDesc* desc)
+            : base(device, flags, BindFlag.BindConstantBuffer, desc->Size)
         {
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
 
             // Read sdescription data
-            BufferName = srConstBuffer.Description.Name;
-            Flags = srConstBuffer.Description.Flags;
-            Type = srConstBuffer.Description.Type;
+            BufferName = desc->Name;
+            Flags = (D3DShaderCBufferFlags)desc->UFlags;
+            Type = desc->Type;
 
             string hashString = BufferName;
-            int variableCount = srConstBuffer.Description.VariableCount;
+            uint variableCount = desc->Variables;
             Variables = new ShaderConstantVariable[variableCount];
 
             // Read all variables from the constant buffer
-            for (int c = 0; c < variableCount; c++)
+            for (uint c = 0; c < variableCount; c++)
             {
-                ShaderReflectionVariable variable = srConstBuffer.GetVariable(c);
-                ShaderReflectionType t = variable.GetVariableType();
+                ID3D11ShaderReflectionVariable* variable = srConstBuffer->GetVariableByIndex(c);
+                ID3D11ShaderReflectionType* t = variable->GetType();
 
                 ShaderConstantVariable sv = GetShaderVariable(t);
 
@@ -70,8 +70,8 @@ namespace Molten.Graphics
                 DirtyVariables = false;
 
                 //write updated data into constant buffer
-                DataStream bufferData;
-                DataBox data = pipe.Context.MapSubresource(Native, MapMode.WriteDiscard, MapFlags.None, out bufferData);
+                ResourceStream bufferData;
+                MappedSubresource data = pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0, out bufferData);
                 {
                     // Re-write all data to the variable buffer to maintain byte-ordering.
                     for (int i = 0; i < Variables.Length; i++)
@@ -80,7 +80,7 @@ namespace Molten.Graphics
                         Variables[i].Write(bufferData);
                     }
                 }
-                pipe.Context.UnmapSubresource(Native, 0);
+                pipe.UnmapResource(Native, 0);
             }
             else
             {
@@ -91,10 +91,10 @@ namespace Molten.Graphics
         /// <summary>Figures out what type to use for a shader variable.</summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        private unsafe ShaderConstantVariable GetShaderVariable(ref ID3D11ShaderReflectionType t)
+        private unsafe ShaderConstantVariable GetShaderVariable(ID3D11ShaderReflectionType* t)
         {
             ShaderTypeDesc* desc = null;
-            t.GetDesc(desc);
+            t->GetDesc(desc);
 
             uint columns = desc->Columns;
             uint rows = desc->Rows;
