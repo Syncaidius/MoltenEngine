@@ -4,38 +4,34 @@ using System.Linq;
 using System.Text;
 using Silk.NET.Direct3D11;
 using Silk.NET.Core.Native;
+using Silk.NET.DXGI;
+
+using Feature = Silk.NET.Direct3D11.Feature;
 
 namespace Molten.Graphics
 {
+
     internal unsafe class GraphicsDX11Features : GraphicsDeviceFeatures
     {
-        ID3D11Device1* _d3d;
-
-        D3DFeatureLevel _featureLevel;
+        ID3D11Device1* _device;
         CounterCapabilities _counterCap;
 
         // DX11 resource limits: https://msdn.microsoft.com/en-us/library/windows/desktop/ff819065%28v=vs.85%29.aspx
 
         internal GraphicsDX11Features(ID3D11Device1* d3dDevice)
         {
-            _d3d = d3dDevice;
-            _featureLevel = _d3d->GetFeatureLevel();
+            _device = d3dDevice;
+            FeatureLevel = _device->GetFeatureLevel();
 
-            Compute = new GraphicsComputeFeatures(ref _d3d);
-            Shaders = new GraphicsShaderFeatures(ref _d3d, _featureLevel);
-            MiscFeatures = _d3d.CheckD3D11Feature();
-            _counterCap = _d3d.GetCounterCapabilities();
+            Compute = new GraphicsComputeFeatures(this);
+            Shaders = new GraphicsShaderFeatures(this);
+            MiscFeatures = GetFeatureSupport<FeatureDataD3D11Options>(Feature.FeatureD3D11Options);
+            _counterCap = _device.GetCounterCapabilities();
 
             //calculate level-specific features.
-            switch (_featureLevel)
+            switch (FeatureLevel)
             {
-                case D3DFeatureLevel.D3DFeatureLevel91:
-                case D3DFeatureLevel.D3DFeatureLevel92:
-                case D3DFeatureLevel.D3DFeatureLevel93:
-                case D3DFeatureLevel.D3DFeatureLevel100:
-                case D3DFeatureLevel.D3DFeatureLevel101:
-                    throw new UnsupportedFeatureException("Feature level " + _d3d.FeatureLevel);
-
+                default:
                 case D3DFeatureLevel.D3DFeatureLevel110:
                     SimultaneousRenderSurfaces = 8;
                     MaxTextureDimension = 16384;
@@ -57,28 +53,41 @@ namespace Molten.Graphics
                     MaxVertexBufferSlots = 32;
                     MaxConstantBufferSlots = 15;
 
-                    Compute.MaxThreadGroupSize = 1024;
-                    Compute.MaxThreadGroupZ = 64;
-                    Compute.MaxDispatchXYDimension = 65535;
-                    Compute.MaxDispatchZDimension = 65535;
-                    Compute.Supported = _d3d.CheckFeatureSupport(Feature.ComputeShaders);
+
                     
                     break;
             }
 
-            if (_d3d.CheckThreadingSupport(out bool cResources, out bool cLists).Success)
+            if (_device.CheckThreadingSupport(out bool cResources, out bool cLists).Success)
             {
                 ConcurrentResources = cResources;
                 CommandLists = cLists;
             }
         }
 
+        internal void GetFeatureSupport<T>(Feature feature, T* pData) where T : unmanaged
+        {
+            uint sizeOf = (uint)sizeof(T);
+            _device->CheckFeatureSupport(feature, pData, sizeOf);
+        }
+
+        internal T GetFeatureSupport<T>(Feature feature) where T : unmanaged
+        {
+            uint sizeOf = (uint)sizeof(T);
+            T data = new T();
+            _device->CheckFeatureSupport(feature, &data, sizeOf);
+            return data;
+        }
+
         /// <summary>Returns a set of format support flags for the specified format, or none if format support checks are not supported.</summary>
         /// <param name="format"></param>
         /// <returns></returns>
-        internal FormatSupport GetSupportedFormatFeatures(Format format)
+        internal unsafe FormatSupport GetFormatSupport(Format format)
         {
-            return _d3d.CheckFormatSupport(format);
+            uint fData = 0;
+            _device->CheckFormatSupport(format, &fData);
+
+            return (FormatSupport)fData;
         }
 
         /// <summary>Returns true if core features of the provided format are supported by the graphics device.</summary>
@@ -86,14 +95,14 @@ namespace Molten.Graphics
         /// <returns></returns>
         internal bool IsFormatSupported(Format format)
         {
-            FormatSupport support = _d3d.CheckFormatSupport(format);
+            FormatSupport support = GetFormatSupport(format);
 
-            bool supported = (support & FormatSupport.Texture2D) == FormatSupport.Texture2D;
-            supported = supported && (support & FormatSupport.Texture3D) == FormatSupport.Texture3D;
-            supported = supported && (support & FormatSupport.CpuLockable) == FormatSupport.CpuLockable;
-            supported = supported && (support & FormatSupport.ShaderSample) == FormatSupport.ShaderSample;
-            supported = supported && (support & FormatSupport.ShaderLoad) == FormatSupport.ShaderLoad;
-            supported = supported && (support & FormatSupport.Mip) == FormatSupport.Mip;
+            bool supported = support.HasFlag(FormatSupport.FormatSupportTexture2D | 
+                FormatSupport.FormatSupportTexture3D | 
+                FormatSupport.FormatSupportCpuLockable |
+                FormatSupport.FormatSupportShaderSample | 
+                FormatSupport.FormatSupportShaderLoad | 
+                FormatSupport.FormatSupportMip);
 
             return supported;
         }
@@ -106,14 +115,16 @@ namespace Molten.Graphics
         /// <returns></returns>
         internal int GetMultisampleQualityLevels(Format format, int sampleCount)
         {
-            return _d3d.CheckMultisampleQualityLevels(format, sampleCount);
+            return _device.CheckMultisampleQualityLevels(format, sampleCount);
         }
 
         /// <summary>Gets a <see cref="CounterCapabilities>"/> containing details of the device's counter support.</summary>
         internal CounterCapabilities CounterSupport => _counterCap;
 
-        /// <summary>Gets the feature level of the current device.</summary>
-        internal FeatureLevel Level { get; private set; }
+        /// <summary>Gets the <see cref="D3DFeatureLevel"/> of the current device.</summary>
+        internal D3DFeatureLevel FeatureLevel { get; }
+
+        internal D3DFeatureLevel MaxFeatureLevel { get; }
 
         /// <summary>Gets an instance of <see cref="GraphicsComputeFeatures"/> which contains the supported compute features of a <see cref="DeviceDX11"/>.</summary>
         internal GraphicsComputeFeatures Compute { get; private set; }

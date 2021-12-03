@@ -1,6 +1,4 @@
-﻿using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using Silk.NET.Core.Native;
+﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
@@ -10,23 +8,28 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class GraphicsShaderFeatures
+    public unsafe class GraphicsShaderFeatures
     {
-        ID3D11Device _d3d;
+        GraphicsDX11Features _features;
 
-        internal GraphicsShaderFeatures(ref ID3D11Device d3d, D3DFeatureLevel level)
+        internal GraphicsShaderFeatures(GraphicsDX11Features features)
         {
-            _d3d = d3d;
+            _features = features;
 
             Geometry = true;
             HullAndDomain = true;
-            DoublePrecision = _d3d.CheckFeatureSupport(Feature.ShaderDoubles);
 
-            if (level >= D3DFeatureLevel.D3DFeatureLevel111)
+            FeatureDataDoubles fData = _features.GetFeatureSupport<FeatureDataDoubles>(Feature.FeatureDoubles);
+            DoublePrecision = fData.DoublePrecisionFloatShaderOps > 0;
+
+            // DirectX 11.1 or higher features
+            if (_features.FeatureLevel >= D3DFeatureLevel.D3DFeatureLevel111)
             {
-                FeatureDataShaderMinimumPrecisionSupport min = _d3d.CheckShaderMinimumPrecisionSupport();
-                MinimumPrecision = (ShaderMinimumPrecisionSupport)min.AllOtherShaderStagesMinPrecision;
-                MinimumPrecisionPixelShaders = (ShaderMinimumPrecisionSupport)min.PixelShaderMinPrecision;
+                FeatureDataShaderMinPrecisionSupport mData =
+                    _features.GetFeatureSupport<FeatureDataShaderMinPrecisionSupport>(Feature.FeatureShaderMinPrecisionSupport);
+                
+                MinimumPrecision = mData.AllOtherShaderStagesMinPrecision;
+                MinimumPrecisionPixelShaders = mData.PixelShaderMinPrecision;
             }
         }
 
@@ -39,8 +42,14 @@ namespace Molten.Graphics
         /// <summary>Gets whether or not the use of the double-precision shaders in HLSL, is supported. Refer to SharpDX.Direct3D11.FeatureDataDoubles.</summary>
         public bool DoublePrecision { get; private set; }
 
-        public ShaderMinimumPrecisionSupport MinimumPrecision { get; set; }
+        /// <summary>
+        /// Gets the minimum precision of all non-pixel-shader stages.
+        /// </summary>
+        public uint MinimumPrecision { get; private set; }
 
-        public ShaderMinimumPrecisionSupport MinimumPrecisionPixelShaders { get; set; }
+        /// <summary>
+        /// Gets the minimum precision of the pixel-shader stage.
+        /// </summary>
+        public uint MinimumPrecisionPixelShaders { get; private set; }
     }
 }

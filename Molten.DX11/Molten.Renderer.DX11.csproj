@@ -213,6 +213,7 @@
     <Compile Include="Buffers\ShaderConstantBuffer.cs" />
     <Compile Include="Buffers\StagingBuffer.cs" />
     <Compile Include="Buffers\TypedBuffer.cs" />
+    <Compile Include="Interop\SilkEnumExtensions.cs" />
     <Compile Include="Pipeline\Data\ResourceStreamException.cs" />
     <Compile Include="Hardware\DisplayAdapterDX11.cs" />
     <Compile Include="Hardware\DisplayManagerDX11.cs" />
@@ -348,7 +349,7 @@
     <Compile Include="Shaders\Variables\Texture1DVariable.cs" />
     <Compile Include="Shaders\Variables\Texture2DVariable.cs" />
     <Compile Include="Shaders\Variables\TextureCubeVariable.cs" />
-    <Compile Include="Interop\SilkInterop.cs" />
+    <Compile Include="Interop\SilkMathExtensions.cs" />
     <Compile Include="Surfaces\DepthStencilSurface.cs" />
     <Compile Include="Surfaces\RenderFormSurface.cs" />
     <Compile Include="Surfaces\RenderSurface.cs" />

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>Interop between SharpDX DX11 and engine types.</summary>
-    public static class SilkInterop
+    public static class SilkMathExtensions
     {
         /// <summary>Converts a comparison mode to a SharpDX.Direct3D11.Comparison.</summary>
         /// <param name="val">The value to convert.</param>
