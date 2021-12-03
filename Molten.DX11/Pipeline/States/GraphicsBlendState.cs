@@ -1,18 +1,17 @@
-﻿using SharpDX.Direct3D11;
-using SharpDX.Mathematics.Interop;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
     /// <summary>Stores a blend state for use with a <see cref="PipeDX11"/>.</summary>
     internal class GraphicsBlendState : PipelineObject<DeviceDX11, PipeDX11>, IEquatable<GraphicsBlendState>
     {
-        internal BlendState State;
-        BlendStateDescription _desc;
+        internal ID3D11BlendState1 Native;
+        BlendDesc1 _desc;
 
         bool _dirty;
         Color4 _blendFactor;
@@ -84,22 +83,22 @@ namespace Molten.Graphics
 
         internal override void Refresh(PipeDX11 context, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
         {
-            if (State == null || _dirty)
+            if (Native == null || _dirty)
             {
                 _dirty = false;
 
                 // Dispose of previous state object
-                if (State != null)
-                    State.Dispose();
+                if (Native != null)
+                    Native.Dispose();
 
                 // Create new state
-                State = new BlendState(context.Device.D3d, _desc);
+                Native = new BlendState(context.Device.D3d, _desc);
             }
         }
 
         private protected override void OnPipelineDispose()
         {
-            DisposeObject(ref State);
+            DisposeObject(ref Native);
         }
 
         public bool AlphaToCoverageEnable

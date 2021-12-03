@@ -11,7 +11,7 @@ namespace Molten.Graphics
     /// <seealso cref="Molten.Graphics.IIndexedMesh" />
     public class StandardIndexedMesh : IndexedMesh<GBufferVertex>
     {
-        internal StandardIndexedMesh(RendererDX11 renderer, int maxVertices, int maxIndices, VertexTopology topology, IndexBufferFormat indexFormat, bool dynamic) :
+        internal StandardIndexedMesh(RendererDX11 renderer, uint maxVertices, uint maxIndices, VertexTopology topology, IndexBufferFormat indexFormat, bool dynamic) :
             base(renderer, maxVertices, maxIndices, topology, indexFormat, dynamic)
         { }
 
@@ -36,7 +36,7 @@ namespace Molten.Graphics
             mat.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
 
             ApplyResources(mat);
-            renderer.Device.DrawIndexed(mat, _indexCount, _topology);
+            renderer.Device.DrawIndexed(mat, _indexCount, Topology);
         }
     }
 }

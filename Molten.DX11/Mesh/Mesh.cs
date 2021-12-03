@@ -1,5 +1,4 @@
-﻿using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
+﻿using Silk.NET.Core.Native;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,35 +12,33 @@ namespace Molten.Graphics
         // private protected is new in C# 7.2. See: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/private-protected
         private protected RendererDX11 _renderer;
         private protected BufferSegment _vb; 
-        private protected int _maxVertices;
-        private protected PrimitiveTopology _topology;
         private protected Material _material;
-        private protected int _vertexCount;
+        private protected uint _vertexCount;
         private protected bool _isDynamic;
 
-        internal Mesh(RendererDX11 renderer, int maxVertices, VertexTopology topology, bool dynamic) : base(renderer.Device)
+        internal Mesh(RendererDX11 renderer, uint maxVertices, VertexTopology topology, bool dynamic) : base(renderer.Device)
         {
             _renderer = renderer;
-            _maxVertices = maxVertices;
-            _topology = topology.ToApi();
+            MaxVertices = maxVertices;
+            Topology = topology;
 
             GraphicsBuffer vBuffer = dynamic ? renderer.DynamicVertexBuffer : renderer.StaticVertexBuffer;
 
-            _vb = vBuffer.Allocate<T>(maxVertices);
+            _vb = vBuffer.Allocate<T>(MaxVertices);
             _vb.SetVertexFormat<T>();
         }
 
         public void SetVertices(T[] data)
         {
-            SetVertices(data, 0, data.Length);
+            SetVertices(data, 0, (uint)data.Length);
         }
 
-        public void SetVertices(T[] data, int count)
+        public void SetVertices(T[] data, uint count)
         {
             SetVertices(data, 0, count);
         }
 
-        public void SetVertices(T[] data, int startIndex, int count)
+        public void SetVertices(T[] data, uint startIndex, uint count)
         {
             _vertexCount = count;
             _vb.SetData(_renderer.Device, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
@@ -62,7 +59,7 @@ namespace Molten.Graphics
             _material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
             _material.Object.World.Value = data.RenderTransform;
 
-            renderer.Device.Draw(_material, _vertexCount, _topology);
+            renderer.Device.Draw(_material, _vertexCount, Topology);
 
             /* TODO: According to: https://www.gamedev.net/forums/topic/667328-vertices-and-indices-in-the-same-buffer/
             *  - A buffer can be bound as both a vertex and index buffer
@@ -76,9 +73,9 @@ namespace Molten.Graphics
             _vb.Release();
         }
 
-        public int MaxVertices => _maxVertices;
+        public uint MaxVertices { get; }
 
-        public VertexTopology Topology => _topology.FromApi();
+        public VertexTopology Topology { get; }
 
         internal Material Material
         {
@@ -92,7 +89,7 @@ namespace Molten.Graphics
             set => Material = value as Material;
         }
 
-        public int VertexCount => _vertexCount;
+        public uint VertexCount => _vertexCount;
 
         public bool IsDynamic => _isDynamic;
 

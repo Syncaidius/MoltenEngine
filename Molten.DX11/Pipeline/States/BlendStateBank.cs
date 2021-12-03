@@ -1,9 +1,9 @@
-﻿using SharpDX.Direct3D11;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
@@ -16,13 +16,13 @@ namespace Molten.Graphics
             // Additive blending preset.
             GraphicsBlendState state = new GraphicsBlendState(device, new RenderTargetBlendDescription()
             {
-                SourceBlend = BlendOption.One,
-                DestinationBlend = BlendOption.One,
-                BlendOperation = BlendOperation.Add,
-                SourceAlphaBlend = BlendOption.One,
-                DestinationAlphaBlend = BlendOption.One,
-                AlphaBlendOperation = BlendOperation.Add,
-                RenderTargetWriteMask = ColorWriteMaskFlags.All,
+                SourceBlend = Blend.BlendOne,
+                DestinationBlend = Blend.BlendOne,
+                BlendOperation = BlendOp.BlendOpAdd,
+                SourceAlphaBlend = Blend.BlendOne,
+                DestinationAlphaBlend = Blend.BlendOne,
+                AlphaBlendOperation = BlendOp.BlendOpAdd,
+                RenderTargetWriteMask = ColorWriteEnable.ColorWriteEnableAll,
                 IsBlendEnabled = true,
             })
             {
@@ -35,15 +35,15 @@ namespace Molten.Graphics
             // Pre-multiplied alpha
             state = new GraphicsBlendState(device, new RenderTargetBlendDescription()
             {
-                SourceBlend = BlendOption.SourceAlpha,
-                DestinationBlend = BlendOption.InverseSourceAlpha,
-                BlendOperation = BlendOperation.Add,
+                SourceBlend = Blend.BlendSrcAlpha,
+                DestinationBlend = Blend.BlendInvSrcAlpha,
+                BlendOperation = BlendOp.BlendOpAdd,
 
-                SourceAlphaBlend = BlendOption.InverseDestinationAlpha,
-                DestinationAlphaBlend = BlendOption.One,
-                AlphaBlendOperation = BlendOperation.Add,
+                SourceAlphaBlend = Blend.BlendInvDestAlpha,
+                DestinationAlphaBlend = Blend.BlendOne,
+                AlphaBlendOperation = BlendOp.BlendOpAdd,
 
-                RenderTargetWriteMask = ColorWriteMaskFlags.All,
+                RenderTargetWriteMask = ColorWriteEnable.ColorWriteEnableAll,
                 IsBlendEnabled = true,
             })
             {

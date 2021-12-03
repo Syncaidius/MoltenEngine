@@ -1,4 +1,4 @@
-﻿using SharpDX.Direct3D11;
+﻿using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +10,8 @@ namespace Molten.Graphics
     /// <summary>Stores a rasterizer state for use with a <see cref="PipeDX11"/>.</summary>
     internal class GraphicsRasterizerState : PipelineObject<DeviceDX11, PipeDX11>
     {
-        internal RasterizerState State;
-        RasterizerStateDescription _desc;
+        internal ID3D11RasterizerState Native;
+        RasterizerDesc1 _desc;
         bool _dirty;
 
         /// <summary>
@@ -54,22 +54,22 @@ namespace Molten.Graphics
 
         internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
         {
-            if (State == null || _dirty)
+            if (Native == null || _dirty)
             {
                 _dirty = false;
 
                 //dispose of previous state object
-                if (State != null)
-                    State.Dispose();
+                if (Native != null)
+                    Native.Dispose();
 
                 //create new state
-                State = new RasterizerState(pipe.Device.D3d, _desc);
+                Native = new RasterizerState(pipe.Device.D3d, _desc);
             }
         }
 
         private protected override void OnPipelineDispose()
         {
-            DisposeObject(ref State);
+            DisposeObject(ref Native);
         }
 
         public CullMode CullMode

@@ -230,7 +230,7 @@ namespace Molten.Graphics
         {
 #if DEBUG
             if (!_drawInfo.Began)
-                throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before calling a Draw___() method.");
+                throw new GraphicsContextException($"GraphicsPipe: BeginDraw() must be called before calling {nameof(Draw)}()");
 #endif
 
             // Re-render the same material for I iterations.
@@ -274,7 +274,7 @@ namespace Molten.Graphics
             uint instanceStartIndex = 0)
         {
             if (!_drawInfo.Began)
-                throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before calling a Draw___() method.");
+                throw new GraphicsContextException($"GraphicsPipe: BeginDraw() must be called before calling {nameof(DrawInstanced)}()");
 
             // Re-render the same material for I iterations.
             for (int i = 0; i < material.Iterations; i++)
@@ -315,7 +315,7 @@ namespace Molten.Graphics
             uint startIndex = 0)
         {
             if (!_drawInfo.Began)
-                throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before calling a Draw___() method.");
+                throw new GraphicsContextException($"GraphicsPipe: BeginDraw() must be called before calling {nameof(DrawIndexed)}()");
 
             // Re-render the same material for I iterations.
             for (int i = 0; i < material.Iterations; i++)
@@ -360,7 +360,7 @@ namespace Molten.Graphics
             uint instanceStartIndex = 0)
         {
             if (!_drawInfo.Began)
-                throw new GraphicsContextException("GraphicsPipe: BeginDraw() must be called before calling a Draw___() method.");
+                throw new GraphicsContextException($"GraphicsPipe: BeginDraw() must be called before calling {nameof(DrawIndexedInstanced)}()");
 
             // Re-render the same material for I iterations.
             for (int i = 0; i < material.Iterations; i++)

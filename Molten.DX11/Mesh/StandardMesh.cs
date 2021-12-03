@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     public class StandardMesh : Mesh<GBufferVertex>
     {
-        internal StandardMesh(RendererDX11 renderer, int maxVertices, VertexTopology topology, bool dynamic) : 
+        internal StandardMesh(RendererDX11 renderer, uint maxVertices, VertexTopology topology, bool dynamic) : 
             base(renderer, maxVertices, topology, dynamic)
         {
 
@@ -35,7 +35,7 @@ namespace Molten.Graphics
             mat.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
 
             ApplyResources(mat);
-            renderer.Device.Draw(mat, _vertexCount, _topology);
+            renderer.Device.Draw(mat, _vertexCount, Topology);
         }
     }
 }

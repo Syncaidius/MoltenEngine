@@ -1,6 +1,4 @@
-﻿using SharpDX.Direct3D11;
-using SharpDX.Mathematics.Interop;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,11 +35,11 @@ namespace Molten.Graphics
         {
             bool stateChanged = _slotState.Bind(Pipe, _currentState, PipelineBindType.Output);
 
-            if (_state != _currentState.State || _blendFactor != _currentState.BlendFactor || _blendSampleMask != _currentState.BlendSampleMask)
+            if (_state != _currentState.Native || _blendFactor != _currentState.BlendFactor || _blendSampleMask != _currentState.BlendSampleMask)
             {
                 _blendFactor = _currentState.BlendFactor;
                 _blendSampleMask = _currentState.BlendSampleMask;
-                Pipe.Context.OutputMerger.SetBlendState(_currentState.State, _blendFactor.ToRawApi(), _blendSampleMask);
+                Pipe.Context.OutputMerger.SetBlendState(_currentState.Native, _blendFactor.ToRawApi(), _blendSampleMask);
             }
         }
 

@@ -14,11 +14,11 @@ namespace Molten.Graphics
     public class IndexedMesh<T> : Mesh<T>, IIndexedMesh<T> where T : struct, IVertexType
     {
         private protected BufferSegment _ib;
-        private protected int _maxIndices;
         private protected IndexBufferFormat _iFormat;
-        private protected int _indexCount;
+        private protected uint _maxIndices;
+        private protected uint _indexCount;
 
-        internal IndexedMesh(RendererDX11 renderer, int maxVertices, int maxIndices, VertexTopology topology, IndexBufferFormat indexFormat, bool dynamic) : 
+        internal IndexedMesh(RendererDX11 renderer, uint maxVertices, uint maxIndices, VertexTopology topology, IndexBufferFormat indexFormat, bool dynamic) : 
             base(renderer, maxVertices, topology, dynamic)
         {
             _maxIndices = maxIndices;
@@ -44,15 +44,15 @@ namespace Molten.Graphics
 
         public void SetIndices<I>(I[] data) where I : struct
         {
-            SetIndices<I>(data, 0, data.Length);
+            SetIndices<I>(data, 0, (uint)data.Length);
         }
 
-        public void SetIndices<I>(I[] data, int count) where I : struct
+        public void SetIndices<I>(I[] data, uint count) where I : struct
         {
             SetIndices<I>(data, 0, count);
         }
 
-        public void SetIndices<I>(I[] data, int startIndex, int count) where I : struct
+        public void SetIndices<I>(I[] data, uint startIndex, uint count) where I : struct
         {
             _indexCount = count;
             _ib.SetData(_renderer.Device, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
@@ -73,11 +73,11 @@ namespace Molten.Graphics
             ApplyResources(_material);
             _material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
 
-            renderer.Device.DrawIndexed(_material, _indexCount, _topology);
+            renderer.Device.DrawIndexed(_material, _indexCount, Topology);
         }
 
-        public int MaxIndices => _maxIndices;
+        public int MaxIndices { get; }
 
-        public int IndexCount => _indexCount;
+        public int IndexCount { get; }
     }
 }

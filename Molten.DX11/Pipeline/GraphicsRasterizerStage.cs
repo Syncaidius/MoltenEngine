@@ -1,6 +1,4 @@
-﻿using SharpDX;
-using SharpDX.Direct3D11;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -134,7 +132,7 @@ namespace Molten.Graphics
             bool stateChanged = _slotState.Bind(Pipe, _currentState, PipelineBindType.Output);
 
             if (stateChanged)   // Update rasterizer state.
-                Pipe.Context.Rasterizer.State = _slotState.BoundObject.State;
+                Pipe.Context.Rasterizer.State = _slotState.BoundObject.Native;
 
             // Check if scissor rects need updating
             if (_scissorRectsDirty)

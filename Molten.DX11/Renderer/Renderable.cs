@@ -17,18 +17,18 @@ namespace Molten.Graphics
             _resources = new IShaderResource[0];
         }
 
-        public void SetResource(IShaderResource resource, int slot)
+        public void SetResource(IShaderResource resource, uint slot)
         {
             if (slot >= Device.Features.MaxInputResourceSlots)
                 throw new IndexOutOfRangeException("The maximum slot number must be less than the maximum supported by the graphics device.");
 
             if (slot >= _resources.Length)
-                Array.Resize(ref _resources, slot + 1);
+                Array.Resize(ref _resources, (int)slot + 1);
 
             _resources[slot] = resource;
         }
 
-        public IShaderResource GetResource(int slot)
+        public IShaderResource GetResource(uint slot)
         {
             if (slot >= _resources.Length)
                 return null;
