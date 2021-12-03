@@ -9,7 +9,6 @@ namespace Molten.Graphics
 {
     internal static class SilkEnumExtensions
     {
-
         public static bool HasFlag(this FormatSupport value, FormatSupport flag)
         {
             return (value & flag) == flag;

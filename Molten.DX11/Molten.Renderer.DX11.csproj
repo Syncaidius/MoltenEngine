@@ -213,6 +213,7 @@
     <Compile Include="Buffers\ShaderConstantBuffer.cs" />
     <Compile Include="Buffers\StagingBuffer.cs" />
     <Compile Include="Buffers\TypedBuffer.cs" />
+    <Compile Include="Hardware\DX11CommandListSupport.cs" />
     <Compile Include="Interop\SilkEnumExtensions.cs" />
     <Compile Include="Pipeline\Data\ResourceStreamException.cs" />
     <Compile Include="Hardware\DisplayAdapterDX11.cs" />

@@ -14,7 +14,6 @@ namespace Molten.Graphics
     internal unsafe class GraphicsDX11Features : GraphicsDeviceFeatures
     {
         ID3D11Device1* _device;
-        CounterCapabilities _counterCap;
 
         // DX11 resource limits: https://msdn.microsoft.com/en-us/library/windows/desktop/ff819065%28v=vs.85%29.aspx
 
@@ -26,7 +25,10 @@ namespace Molten.Graphics
             Compute = new GraphicsComputeFeatures(this);
             Shaders = new GraphicsShaderFeatures(this);
             MiscFeatures = GetFeatureSupport<FeatureDataD3D11Options>(Feature.FeatureD3D11Options);
-            _counterCap = _device.GetCounterCapabilities();
+
+            CounterInfo cInfo = new CounterInfo();
+            _device->CheckCounterInfo(&cInfo);
+            CounterSupport = cInfo;
 
             //calculate level-specific features.
             switch (FeatureLevel)
@@ -58,11 +60,11 @@ namespace Molten.Graphics
                     break;
             }
 
-            if (_device.CheckThreadingSupport(out bool cResources, out bool cLists).Success)
-            {
-                ConcurrentResources = cResources;
-                CommandLists = cLists;
-            }
+            FeatureDataThreading fThreadData = GetFeatureSupport<FeatureDataThreading>(Feature.FeatureThreading);
+            ConcurrentResources = fThreadData.DriverConcurrentCreates > 0;
+            CommandListSupport = fThreadData.DriverCommandLists > 0 ? 
+                DX11CommandListSupport.Supported : 
+                DX11CommandListSupport.Emulated;
         }
 
         internal void GetFeatureSupport<T>(Feature feature, T* pData) where T : unmanaged
@@ -113,13 +115,15 @@ namespace Molten.Graphics
         /// <param name="format">The format to test quality levels against.</param>
         /// <param name="sampleCount">The sample count to test against.</param>
         /// <returns></returns>
-        internal int GetMultisampleQualityLevels(Format format, int sampleCount)
+        internal uint GetMultisampleQualityLevels(Format format, uint sampleCount)
         {
-            return _device.CheckMultisampleQualityLevels(format, sampleCount);
+            uint numQualityLevels = 0;
+            _device->CheckMultisampleQualityLevels(format, sampleCount, &numQualityLevels);
+            return numQualityLevels;
         }
 
         /// <summary>Gets a <see cref="CounterCapabilities>"/> containing details of the device's counter support.</summary>
-        internal CounterCapabilities CounterSupport => _counterCap;
+        internal CounterInfo CounterSupport { get; }
 
         /// <summary>Gets the <see cref="D3DFeatureLevel"/> of the current device.</summary>
         internal D3DFeatureLevel FeatureLevel { get; }
@@ -187,6 +191,6 @@ namespace Molten.Graphics
 
         /// <summary>Gets whether or not command lists are supported. That is, rendering commands issued by an immediate context can be concurrent with 
         /// object creation on separate threads with low risk of a frame rate stutter.</summary>
-        internal bool CommandLists { get; private set; }
+        internal DX11CommandListSupport CommandListSupport { get; private set; }
     }
 }
