@@ -8,9 +8,33 @@ using Silk.NET.Direct3D11;
 namespace Molten.Graphics
 {
     /// <summary>Stores a blend state for use with a <see cref="PipeDX11"/>.</summary>
-    internal class GraphicsBlendState : PipelineObject<DeviceDX11, PipeDX11>, IEquatable<GraphicsBlendState>
+    internal unsafe class GraphicsBlendState : PipelineObject<DeviceDX11, PipeDX11>, IEquatable<GraphicsBlendState>
     {
-        internal ID3D11BlendState1 Native;
+        static BlendDesc1 _defaultDesc;
+
+        static GraphicsBlendState()
+        {
+            _defaultDesc = new BlendDesc1()
+            {
+                AlphaToCoverageEnable = 0,
+                IndependentBlendEnable = 0,
+            };
+
+            _defaultDesc.RenderTarget[0] = new RenderTargetBlendDesc1()
+            {
+                SrcBlend = Blend.BlendOne,
+                DestBlend = Blend.BlendZero,
+                BlendOp = BlendOp.BlendOpAdd,
+                SrcBlendAlpha = Blend.BlendOne,
+                DestBlendAlpha = Blend.BlendZero,
+                BlendOpAlpha = BlendOp.BlendOpAdd,
+                RenderTargetWriteMask = (byte)ColorWriteEnable.ColorWriteEnableAll,
+                BlendEnable = 1,
+                LogicOpEnable = 0,
+            };
+        }
+
+        internal ID3D11BlendState1* Native;
         BlendDesc1 _desc;
 
         bool _dirty;
@@ -19,27 +43,27 @@ namespace Molten.Graphics
 
         internal GraphicsBlendState(DeviceDX11 device, GraphicsBlendState source) : base(device)
         {
-            _desc = source._desc.Clone();
+            _desc = source._desc;
             _blendFactor = source._blendFactor;
             _blendSampleMask = source._blendSampleMask;
         }
 
         internal GraphicsBlendState(DeviceDX11 device) : base(device)
         {
-            _desc = BlendStateDescription.Default();
+            _desc = _defaultDesc;
             _blendFactor = new Color4(1, 1, 1, 1);
             _blendSampleMask = 0xffffffff;
         }
 
-        internal GraphicsBlendState(DeviceDX11 device, RenderTargetBlendDescription rtDesc) : base(device)
+        internal GraphicsBlendState(DeviceDX11 device, RenderTargetBlendDesc1 rtDesc) : base(device)
         {
-            _desc = BlendStateDescription.Default();
+            _desc = _defaultDesc;
             _desc.RenderTarget[0] = rtDesc;
             _blendFactor = new Color4(1, 1, 1, 1);
             _blendSampleMask = 0xffffffff;
         }
 
-        internal RenderTargetBlendDescription GetSurfaceBlendState(int index)
+        internal RenderTargetBlendDesc1 GetSurfaceBlendState(int index)
         {
             return _desc.RenderTarget[index];
         }
@@ -54,26 +78,26 @@ namespace Molten.Graphics
 
         public bool Equals(GraphicsBlendState other)
         {
-            if (_desc.IndependentBlendEnable != other.IndependentBlendEnable)
+            if (_desc.IndependentBlendEnable != other._desc.IndependentBlendEnable)
                 return false;
 
-            if (_desc.AlphaToCoverageEnable != other.AlphaToCoverageEnable)
+            if (_desc.AlphaToCoverageEnable != other._desc.AlphaToCoverageEnable)
                 return false;
 
             // Equality check against all RT blend states
-            for(int i = 0; i < _desc.RenderTarget.Length; i++)
+            for(int i = 0; i < Device.Features.SimultaneousRenderSurfaces; i++)
             {
-                RenderTargetBlendDescription rt = _desc.RenderTarget[i];
-                RenderTargetBlendDescription otherRt = other._desc.RenderTarget[i];
+                RenderTargetBlendDesc1 rt = _desc.RenderTarget[i];
+                RenderTargetBlendDesc1 otherRt = other._desc.RenderTarget[i];
 
-                if (rt.AlphaBlendOperation != otherRt.AlphaBlendOperation ||
-                    rt.BlendOperation != otherRt.BlendOperation ||
-                    rt.DestinationAlphaBlend != otherRt.DestinationAlphaBlend ||
-                    rt.DestinationBlend != otherRt.DestinationBlend ||
-                    rt.IsBlendEnabled != otherRt.IsBlendEnabled ||
+                if (rt.BlendOpAlpha != otherRt.BlendOpAlpha ||
+                    rt.BlendOp != otherRt.BlendOp ||
+                    rt.DestBlendAlpha != otherRt.DestBlendAlpha ||
+                    rt.DestBlend != otherRt.DestBlend ||
+                    rt.BlendEnable != otherRt.BlendEnable ||
                     rt.RenderTargetWriteMask != otherRt.RenderTargetWriteMask ||
-                    rt.SourceAlphaBlend != otherRt.SourceAlphaBlend ||
-                    rt.SourceBlend != otherRt.SourceBlend)
+                    rt.SrcBlendAlpha != otherRt.SrcBlendAlpha ||
+                    rt.SrcBlend != otherRt.SrcBlend)
                 {
                     return false;
                 }
@@ -89,34 +113,41 @@ namespace Molten.Graphics
 
                 // Dispose of previous state object
                 if (Native != null)
-                    Native.Dispose();
+                {
+                    Native->Release();
+                    Native = null;
+                }
 
                 // Create new state
-                Native = new BlendState(context.Device.D3d, _desc);
+                Device.Native->CreateBlendState1(ref _desc, ref Native);
             }
         }
 
         private protected override void OnPipelineDispose()
         {
-            DisposeObject(ref Native);
+            if(Native != null)
+            {
+                Native->Release();
+                Native = null;
+            }
         }
 
         public bool AlphaToCoverageEnable
         {
-            get => _desc.AlphaToCoverageEnable;
+            get => _desc.AlphaToCoverageEnable > 0;
             set
             {
-                _desc.AlphaToCoverageEnable = value;
+                _desc.AlphaToCoverageEnable = value ? 1 : 0;
                 _dirty = true;
             }
         }
 
         public bool IndependentBlendEnable
         {
-            get => _desc.IndependentBlendEnable;
+            get => _desc.IndependentBlendEnable > 0;
             set
             {
-                _desc.IndependentBlendEnable = value;
+                _desc.IndependentBlendEnable = value ? 1 : 0;
                 _dirty = true;
             }
         }
@@ -144,7 +175,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="rtIndex">The render target/surface blend index.</param>
         /// <returns></returns>
-        internal RenderTargetBlendDescription this[int rtIndex]
+        internal RenderTargetBlendDesc1 this[int rtIndex]
         {
             get => _desc.RenderTarget[rtIndex];
             set
