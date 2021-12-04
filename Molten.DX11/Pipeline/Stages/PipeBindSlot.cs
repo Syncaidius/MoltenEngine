@@ -61,17 +61,13 @@ namespace Molten.Graphics
                 Stage.Pipe.Profiler.Current.Bindings++;
                 return true;
             }
-            else
+            else if (Value != null)
             {
-                // Check for version difference.
-                if (Value != null)
+                if (_boundVersion != Value.Version)
                 {
-                    if (_boundVersion != Value.Version)
-                    {
-                        _boundVersion = Value.Version;
-                        Stage.Pipe.Profiler.Current.Bindings++;
-                        return true;
-                    }
+                    _boundVersion = Value.Version;
+                    Stage.Pipe.Profiler.Current.Bindings++;
+                    return true;
                 }
             }
 
