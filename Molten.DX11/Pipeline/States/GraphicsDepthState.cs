@@ -183,6 +183,11 @@ namespace Molten.Graphics
             }
         }
 
+        public static implicit operator ID3D11DepthStencilState*(GraphicsDepthState state)
+        {
+            return state.Native;
+        }
+
         internal bool IsDepthEnabled
         {
             get { return _desc.DepthEnable > 0; }
@@ -256,7 +261,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets or sets the stencil reference value. The default value is 0.</summary>
-        public int StencilReference { get; set; }
+        public uint StencilReference { get; set; }
 
         /// <summary>
         /// Gets or sets the depth write permission. the default value is <see cref="GraphicsDepthWritePermission.Enabled"/>.

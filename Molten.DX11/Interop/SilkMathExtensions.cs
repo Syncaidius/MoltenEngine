@@ -45,6 +45,11 @@ namespace Molten.Graphics
             return new Rectangle<int>(r.X, r.Y, r.Width, r.Height);
         }
 
+        public static Silk.NET.Direct3D11.Viewport ToApi(this ViewportF r)
+        {
+            return new Silk.NET.Direct3D11.Viewport(r.X, r.Y, r.Width, r.Height, r.MinDepth, r.MaxDepth);
+        }
+
         /// <summary>Converts a comparison mode to a SharpDX.Direct3D11.Comparison.</summary>
         /// <param name="val">The value to convert.</param>
         /// <returns></returns>
@@ -76,6 +81,11 @@ namespace Molten.Graphics
         public static Rectangle FromApi(this Rectangle<int> rect)
         {
             return new Rectangle(rect.Origin.X, rect.Origin.Y, rect.Size.X, rect.Size.Y);
+        }
+
+        public static ViewportF ToApi(this Silk.NET.Direct3D11.Viewport r)
+        {
+            return new ViewportF(r.TopLeftX, r.TopLeftY, r.Width, r.Height, r.MinDepth, r.MaxDepth);
         }
     }
 }

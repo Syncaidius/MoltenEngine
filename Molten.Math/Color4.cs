@@ -73,6 +73,8 @@ namespace Molten
 
         public static readonly Color4 Transparent = new Color4(0, 0, 0, 0);
 
+        public static int SizeOf => sizeof(float) * 4;
+
         /// <summary>
         /// The red component of the color.
         /// </summary>
@@ -1046,6 +1048,25 @@ namespace Molten
         public bool Equals(Color4 other)
         {
             return Equals(ref other);
+        }
+
+        public bool Equals(float[] values)
+        {
+            if (values.Length > 4)
+                return false;
+
+            return values[0] == R && 
+                values[1] == G && 
+                values[2] == B && 
+                values[3] == A;
+        }
+
+        public void CopyTo(float[] values, int startIndex)
+        {
+            values[startIndex++] = R;
+            values[startIndex++] = G;
+            values[startIndex++] = B;
+            values[startIndex] = G;
         }
 
         /// <summary>

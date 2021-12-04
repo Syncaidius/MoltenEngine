@@ -1,28 +1,35 @@
-﻿using System;
+﻿using Silk.NET.Direct3D11;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Molten.Graphics
 {
-    internal class GraphicsBlendStage : PipelineComponent<DeviceDX11, PipeDX11>
+    internal unsafe class GraphicsBlendStage : PipelineComponent<DeviceDX11, PipeDX11>
     {
         PipelineBindSlot<GraphicsBlendState, DeviceDX11, PipeDX11> _slotState;
         GraphicsBlendState _currentState;
 
-        BlendState _state;
+        ID3D11BlendState* _nativeState;
         uint _blendSampleMask;
-        Color4 _blendFactor;
+        float[] _blendFactor;
 
         internal GraphicsBlendStage(PipeDX11 context) : base(context)
         {
+            _blendFactor = new float[4];
             _slotState = AddSlot<GraphicsBlendState>(0);
             _slotState.OnObjectForcedUnbind += _slotState_OnBoundObjectDisposed;
         }
 
         private void _slotState_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
-            Pipe.Context.OutputMerger.BlendState = null;
+            GraphicsBlendState state = obj as GraphicsBlendState;
+            if (state.Native == _nativeState)
+            {
+                _nativeState = null;
+                Pipe.Context->OMSetBlendState(_nativeState, ref _blendFactor[0], _blendSampleMask);
+            }
         }
 
         protected override void OnDispose()
@@ -35,11 +42,14 @@ namespace Molten.Graphics
         {
             bool stateChanged = _slotState.Bind(Pipe, _currentState, PipelineBindType.Output);
 
-            if (_state != _currentState.Native || _blendFactor != _currentState.BlendFactor || _blendSampleMask != _currentState.BlendSampleMask)
+            if (_nativeState != _currentState.Native ||  
+                _blendSampleMask != _currentState.BlendSampleMask &&
+                !_currentState.BlendFactor.Equals(_blendFactor))
             {
-                _blendFactor = _currentState.BlendFactor;
-                _blendSampleMask = _currentState.BlendSampleMask;
-                Pipe.Context.OutputMerger.SetBlendState(_currentState.Native, _blendFactor.ToRawApi(), _blendSampleMask);
+                _nativeState = _currentState.Native;
+                _currentState.BlendFactor.CopyTo(_blendFactor, 0);
+                _blendSampleMask = _currentState.BlendSampleMask; 
+                Pipe.Context->OMSetBlendState((ID3D11BlendState*)_nativeState, ref _blendFactor[0], _blendSampleMask);
             }
         }
 

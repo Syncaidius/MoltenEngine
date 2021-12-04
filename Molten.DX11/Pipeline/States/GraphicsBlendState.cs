@@ -124,6 +124,16 @@ namespace Molten.Graphics
             }
         }
 
+        public static implicit operator ID3D11BlendState*(GraphicsBlendState state)
+        {
+            return (ID3D11BlendState*)state.Native;
+        }
+
+        public static implicit operator ID3D11BlendState1*(GraphicsBlendState state)
+        {
+            return state.Native;
+        }
+
         private protected override void OnPipelineDispose()
         {
             if(Native != null)

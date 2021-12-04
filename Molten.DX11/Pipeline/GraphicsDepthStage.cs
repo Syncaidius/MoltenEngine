@@ -1,15 +1,18 @@
-﻿using System;
+﻿using Silk.NET.Direct3D11;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Molten.Graphics
 {
-    internal class GraphicsDepthStage : PipelineComponent<DeviceDX11, PipeDX11>
+    internal unsafe class GraphicsDepthStage : PipelineComponent<DeviceDX11, PipeDX11>
     {
         PipelineBindSlot<GraphicsDepthState, DeviceDX11, PipeDX11> _slotState;
         GraphicsDepthState _currentState = null;
-        int _stencilRef = 0;
+
+        ID3D11DepthStencilState* _nativeState;
+        uint _stencilRef = 0;
 
         internal GraphicsDepthStage(PipeDX11 pipe) : base(pipe)
         {
@@ -19,7 +22,14 @@ namespace Molten.Graphics
 
         private void _slotState_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
-            Pipe.Context.OutputMerger.DepthStencilState = null;
+            GraphicsDepthState state = obj as GraphicsDepthState;
+            if (state.Native == _nativeState)
+            {
+                _nativeState = null;
+                _currentState = null;
+                _stencilRef = 0;
+                Pipe.Context->OMSetDepthStencilState(_nativeState, _stencilRef);
+            }
         }
 
         protected override void OnDispose()
@@ -35,7 +45,8 @@ namespace Molten.Graphics
             if (stateChanged || _stencilRef != _currentState.StencilReference)
             {
                 _stencilRef = _currentState.StencilReference;
-                Pipe.Context.OutputMerger.SetDepthStencilState(_currentState.Native, _stencilRef);
+                _nativeState = _currentState.Native;
+                Pipe.Context->OMSetDepthStencilState(_nativeState, _stencilRef);
             }
         }
 

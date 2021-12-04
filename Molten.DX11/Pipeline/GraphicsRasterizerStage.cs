@@ -1,20 +1,20 @@
-﻿using System;
+﻿using Silk.NET.Direct3D11;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Molten.Graphics
 {
-    internal class GraphicsRasterizerStage : PipelineComponent<DeviceDX11, PipeDX11>
+    internal unsafe class GraphicsRasterizerStage : PipelineComponent<DeviceDX11, PipeDX11>
     {
         PipelineBindSlot<GraphicsRasterizerState, DeviceDX11, PipeDX11> _slotState;
-        GraphicsRasterizerState _currentState = null;
 
-        SharpDX.Rectangle[] _apiScissorRects;
+        Silk.NET.Maths.Rectangle<int>[] _apiScissorRects;
         Rectangle[] _scissorRects;
         bool _scissorRectsDirty;
 
-        SharpDX.Mathematics.Interop.RawViewportF[] _apiViewports;
+        Silk.NET.Direct3D11.Viewport[] _apiViewports;
         ViewportF[] _viewports;
         bool _viewportsDirty;
         ViewportF[] _nullViewport;
@@ -26,8 +26,8 @@ namespace Molten.Graphics
             int maxRTs = pipe.Device.Features.SimultaneousRenderSurfaces;
             _scissorRects = new Rectangle[maxRTs];
             _viewports = new ViewportF[maxRTs];
-            _apiScissorRects = new SharpDX.Rectangle[maxRTs];
-            _apiViewports = new SharpDX.Mathematics.Interop.RawViewportF[maxRTs];
+            _apiScissorRects = new Silk.NET.Maths.Rectangle<int>[maxRTs];
+            _apiViewports = new Silk.NET.Direct3D11.Viewport[maxRTs];
 
             _slotState = AddSlot<GraphicsRasterizerState>(0);
             _slotState.OnObjectForcedUnbind += _slotState_OnBoundObjectDisposed;
@@ -35,12 +35,16 @@ namespace Molten.Graphics
 
         private void _slotState_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
-            Pipe.Context.Rasterizer.State = null;
+            if(Current == obj)
+            {
+                ID3D11RasterizerState* tmpState = null;
+                Pipe.Context->RSSetState(tmpState);
+            }
         }
 
         protected override void OnDispose()
         {
-            _currentState = null;
+            Current = null;
 
             base.OnDispose();
         }
@@ -129,10 +133,10 @@ namespace Molten.Graphics
         internal void Refresh()
         {
             // Ensure the default preset is used if a null state was requested.
-            bool stateChanged = _slotState.Bind(Pipe, _currentState, PipelineBindType.Output);
+            bool stateChanged = _slotState.Bind(Pipe, Current, PipelineBindType.Output);
 
             if (stateChanged)   // Update rasterizer state.
-                Pipe.Context.Rasterizer.State = _slotState.BoundObject.Native;
+                Pipe.Context->RSSetState(Current);
 
             // Check if scissor rects need updating
             if (_scissorRectsDirty)
@@ -140,7 +144,7 @@ namespace Molten.Graphics
                 for (int i = 0; i < _scissorRects.Length; i++)
                     _apiScissorRects[i] = _scissorRects[i].ToApi();
 
-                Pipe.Context.Rasterizer.SetScissorRectangles(_apiScissorRects);
+                Pipe.Context->RSSetScissorRects((uint)_apiScissorRects.Length, ref _apiScissorRects[0]);
                 _scissorRectsDirty = false;
             }
 
@@ -148,24 +152,17 @@ namespace Molten.Graphics
             if (_viewportsDirty)
             {
                 for (int i = 0; i < _viewports.Length; i++)
-                    _apiViewports[i] = _viewports[i].ToRawApi();
+                    _apiViewports[i] = _viewports[i].ToApi();
 
-                Pipe.Context.Rasterizer.SetViewports(_apiViewports, _viewports.Length);
+                Pipe.Context->RSSetViewports((uint)_viewports.Length, ref _apiViewports[0]);
                 _viewportsDirty = false;
             }
         }
 
         /// <summary>Gets the currently active blend state.</summary>
-        public GraphicsRasterizerState Current
-        {
-            get { return _currentState; }
-            set { _currentState = value; }
-        }
+        public GraphicsRasterizerState Current { get; set; }
 
         /// <summary>Gets the number of applied viewports.</summary>
-        public int ViewportCount
-        {
-            get { return _viewports.Length; }
-        }
+        public int ViewportCount => _viewports.Length;
     }
 }
