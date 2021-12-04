@@ -26,12 +26,10 @@ namespace Molten.Graphics
         GraphicsDepthStage _depthStencil;
         GraphicsBlendStage _blendState;
         GraphicsRasterizerStage _rasterizer;
-
         ComputeInputStage _computeStage;
         PipelineInput _input;
         PipelineOutput _output;
 
-        VertexInputLayout _curInputLayout;
         GraphicsValidationResult _drawResult;
 
         DeviceDX11 _device;
@@ -452,8 +450,6 @@ namespace Molten.Graphics
             DisposeObject(ref _depthStencil);
             DisposeObject(ref _blendState);
             DisposeObject(ref _rasterizer);
-
-            DisposeObject(ref _curInputLayout);
 
             // Dispose context.
             if (Type != GraphicsContextType.Immediate)

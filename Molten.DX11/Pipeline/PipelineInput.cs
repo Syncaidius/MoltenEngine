@@ -275,6 +275,7 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
+            DisposeObject(ref _vertexLayout);
             DisposeObject(ref _materialStage);
 
             // Dispose input layouts.

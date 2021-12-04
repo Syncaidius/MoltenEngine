@@ -214,6 +214,7 @@
     <Compile Include="Buffers\StagingBuffer.cs" />
     <Compile Include="Buffers\TypedBuffer.cs" />
     <Compile Include="Hardware\DX11CommandListSupport.cs" />
+    <Compile Include="Interop\DX11Interop.cs" />
     <Compile Include="Interop\SilkEnumExtensions.cs" />
     <Compile Include="Pipeline\Data\ResourceStreamException.cs" />
     <Compile Include="Hardware\DisplayAdapterDX11.cs" />
@@ -228,6 +229,14 @@
     <Compile Include="Interop\DXGIHelper.cs" />
     <Compile Include="Interop\SharpDXInterop.cs" />
     <Compile Include="Pipeline\Data\ResourceStream.cs" />
+    <Compile Include="Pipeline\Stages\InputAssemblerStage.cs" />
+    <Compile Include="Pipeline\Stages\PipeBindable.cs" />
+    <Compile Include="Pipeline\Stages\PipeBindableResource.cs" />
+    <Compile Include="Pipeline\Stages\PipeBindTypeFlags.cs" />
+    <Compile Include="Pipeline\Stages\PipeStageType.cs" />
+    <Compile Include="Pipeline\Stages\PipeBindSlot.cs" />
+    <Compile Include="Pipeline\Stages\PipeShaderStage.cs" />
+    <Compile Include="Pipeline\Stages\PipeStage.cs" />
     <Compile Include="Pipeline\VertexBufferBinder.cs" />
     <Compile Include="Renderer\MainSurfaceType.cs" />
     <Compile Include="Renderer\RenderChain.Context.cs" />
