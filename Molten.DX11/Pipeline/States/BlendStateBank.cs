@@ -14,16 +14,16 @@ namespace Molten.Graphics
             AddPreset(BlendPreset.Default, new GraphicsBlendState(device));
 
             // Additive blending preset.
-            GraphicsBlendState state = new GraphicsBlendState(device, new RenderTargetBlendDescription()
+            GraphicsBlendState state = new GraphicsBlendState(device, new RenderTargetBlendDesc1()
             {
-                SourceBlend = Blend.BlendOne,
-                DestinationBlend = Blend.BlendOne,
-                BlendOperation = BlendOp.BlendOpAdd,
-                SourceAlphaBlend = Blend.BlendOne,
-                DestinationAlphaBlend = Blend.BlendOne,
-                AlphaBlendOperation = BlendOp.BlendOpAdd,
-                RenderTargetWriteMask = ColorWriteEnable.ColorWriteEnableAll,
-                IsBlendEnabled = true,
+                SrcBlend = Blend.BlendOne,
+                DestBlend = Blend.BlendOne,
+                BlendOp = BlendOp.BlendOpAdd,
+                SrcBlendAlpha = Blend.BlendOne,
+                DestBlendAlpha = Blend.BlendOne,
+                BlendOpAlpha = BlendOp.BlendOpAdd,
+                RenderTargetWriteMask = (byte)ColorWriteEnable.ColorWriteEnableAll,
+                BlendEnable = 1,
             })
             {
                 AlphaToCoverageEnable = false,
@@ -33,18 +33,18 @@ namespace Molten.Graphics
             AddPreset(BlendPreset.Additive, state);
 
             // Pre-multiplied alpha
-            state = new GraphicsBlendState(device, new RenderTargetBlendDescription()
+            state = new GraphicsBlendState(device, new RenderTargetBlendDesc1()
             {
-                SourceBlend = Blend.BlendSrcAlpha,
-                DestinationBlend = Blend.BlendInvSrcAlpha,
-                BlendOperation = BlendOp.BlendOpAdd,
+                SrcBlend = Blend.BlendSrcAlpha,
+                DestBlend = Blend.BlendInvSrcAlpha,
+                BlendOp = BlendOp.BlendOpAdd,
 
-                SourceAlphaBlend = Blend.BlendInvDestAlpha,
-                DestinationAlphaBlend = Blend.BlendOne,
-                AlphaBlendOperation = BlendOp.BlendOpAdd,
+                SrcBlendAlpha = Blend.BlendInvDestAlpha,
+                DestBlendAlpha = Blend.BlendOne,
+                BlendOpAlpha = BlendOp.BlendOpAdd,
 
-                RenderTargetWriteMask = ColorWriteEnable.ColorWriteEnableAll,
-                IsBlendEnabled = true,
+                RenderTargetWriteMask = (byte)ColorWriteEnable.ColorWriteEnableAll,
+                BlendEnable = 1,
             })
             {
                 AlphaToCoverageEnable = false,

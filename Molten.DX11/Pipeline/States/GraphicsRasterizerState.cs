@@ -8,11 +8,31 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>Stores a rasterizer state for use with a <see cref="PipeDX11"/>.</summary>
-    internal class GraphicsRasterizerState : PipelineObject<DeviceDX11, PipeDX11>
+    internal unsafe class GraphicsRasterizerState : PipelineObject<DeviceDX11, PipeDX11>
     {
-        internal ID3D11RasterizerState Native;
+        static RasterizerDesc1 _defaultDesc;
+
+        internal ID3D11RasterizerState1* Native;
         RasterizerDesc1 _desc;
         bool _dirty;
+
+        static GraphicsRasterizerState()
+        {
+            _defaultDesc = new RasterizerDesc1()
+            {
+                FillMode = FillMode.FillSolid,
+                CullMode = CullMode.CullBack,
+                FrontCounterClockwise = 0,
+                DepthBias = 0,
+                SlopeScaledDepthBias = 0.0f,
+                DepthBiasClamp = 0.0f,
+                DepthClipEnable = 1,
+                ScissorEnable = 0,
+                MultisampleEnable = 0,
+                AntialiasedLineEnable = 0,
+                ForcedSampleCount = 0,
+            };
+        }
 
         /// <summary>
         /// 
@@ -26,7 +46,7 @@ namespace Molten.Graphics
 
         internal GraphicsRasterizerState(DeviceDX11 device) : base(device)
         {
-            _desc = RasterizerStateDescription.Default();
+            _desc = _defaultDesc;
             _dirty = true;
         }
 
@@ -44,11 +64,11 @@ namespace Molten.Graphics
                 _desc.DepthBias == other._desc.DepthBias &&
                 _desc.DepthBiasClamp == other._desc.DepthBiasClamp &&
                 _desc.FillMode == other._desc.FillMode &&
-                _desc.IsAntialiasedLineEnabled == other._desc.IsAntialiasedLineEnabled &&
-                _desc.IsDepthClipEnabled == other._desc.IsDepthClipEnabled &&
-                _desc.IsFrontCounterClockwise == other._desc.IsFrontCounterClockwise &&
-                _desc.IsMultisampleEnabled == other._desc.IsMultisampleEnabled &&
-                _desc.IsScissorEnabled == other._desc.IsScissorEnabled &&
+                _desc.AntialiasedLineEnable == other._desc.AntialiasedLineEnable &&
+                _desc.DepthClipEnable == other._desc.DepthClipEnable &&
+                _desc.FrontCounterClockwise == other._desc.FrontCounterClockwise &&
+                _desc.MultisampleEnable == other._desc.MultisampleEnable &&
+                _desc.ScissorEnable == other._desc.ScissorEnable &&
                 _desc.SlopeScaledDepthBias == other._desc.SlopeScaledDepthBias;
         }
 
@@ -60,16 +80,23 @@ namespace Molten.Graphics
 
                 //dispose of previous state object
                 if (Native != null)
-                    Native.Dispose();
+                {
+                    Native->Release();
+                    Native = null;
+                }
 
                 //create new state
-                Native = new RasterizerState(pipe.Device.D3d, _desc);
+                Device.Native->CreateRasterizerState1(ref _desc, ref Native);
             }
         }
 
         private protected override void OnPipelineDispose()
         {
-            DisposeObject(ref Native);
+            if(Native != null)
+            {
+                Native->Release();
+                Native = null;
+            }
         }
 
         public CullMode CullMode
@@ -114,50 +141,50 @@ namespace Molten.Graphics
 
         public bool IsAntialiasedLineEnabled
         {
-            get { return _desc.IsAntialiasedLineEnabled; }
+            get { return _desc.AntialiasedLineEnable > 0; }
             set
             {
-                _desc.IsAntialiasedLineEnabled = value;
+                _desc.AntialiasedLineEnable = value ? 1 : 0;
                 _dirty = true;
             }
         }
 
         public bool IsDepthClipEnabled
         {
-            get { return _desc.IsDepthClipEnabled; }
+            get { return _desc.DepthClipEnable > 0; }
             set
             {
-                _desc.IsDepthClipEnabled = value;
+                _desc.DepthClipEnable = value ? 1 : 0;
                 _dirty = true;
             }
         }
 
         public bool IsFrontCounterClockwise
         {
-            get { return _desc.IsFrontCounterClockwise; }
+            get { return _desc.FrontCounterClockwise > 0; }
             set
             {
-                _desc.IsFrontCounterClockwise = value;
+                _desc.FrontCounterClockwise = value ? 1 : 0;
                 _dirty = true;
             }
         }
 
         public bool IsMultisampleEnabled
         {
-            get { return _desc.IsMultisampleEnabled; }
+            get { return _desc.MultisampleEnable > 0; }
             set
             {
-                _desc.IsMultisampleEnabled = value;
+                _desc.MultisampleEnable = value ? 1 : 0;
                 _dirty = true;
             }
         }
 
         public bool IsScissorEnabled
         {
-            get { return _desc.IsScissorEnabled; }
+            get { return _desc.ScissorEnable > 0; }
             set
             {
-                _desc.IsScissorEnabled = value;
+                _desc.ScissorEnable = value ? 1 : 0;
                 _dirty = true;
             }
         }

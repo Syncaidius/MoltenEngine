@@ -1,4 +1,4 @@
-﻿using SharpDX.Direct3D11;
+﻿using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,14 +23,14 @@ namespace Molten.Graphics
             AddPreset(DepthStencilPreset.ZDisabled, new GraphicsDepthState(device)
             {
                 IsDepthEnabled = false,
-                DepthWriteMask = DepthWriteMask.Zero,
+                DepthWriteMask = DepthWriteMask.DepthWriteMaskZero,
             });
 
             AddPreset(DepthStencilPreset.Sprite2D, new GraphicsDepthState(device)
             {
                 IsDepthEnabled = true,
                 IsStencilEnabled = true,
-                DepthComparison = Comparison.LessEqual,
+                DepthComparison = ComparisonFunc.ComparisonLessEqual,
             });
         }
 

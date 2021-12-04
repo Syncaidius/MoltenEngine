@@ -3,83 +3,113 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
     /// <summary>Stores a depth-stencil state for use with a <see cref="PipeDX11"/>.</summary>
-    internal class GraphicsDepthState : PipelineObject<DeviceDX11, PipeDX11>, IEquatable<GraphicsDepthState>
+    internal unsafe class GraphicsDepthState : PipelineObject<DeviceDX11, PipeDX11>, IEquatable<GraphicsDepthState>
     {
         public class Face
         {
-            internal DepthStencilOperationDescription _desc;
+            internal DepthStencilopDesc _desc;
             GraphicsDepthState _parent;
 
-            internal Face(GraphicsDepthState parent, DepthStencilOperationDescription defaultDesc)
+            internal Face(GraphicsDepthState parent, ref DepthStencilopDesc defaultDesc)
             {
                 _parent = parent;
                 _desc = defaultDesc;
             }
 
-            public Comparison Comparison
+            public ComparisonFunc Comparison
             {
-                get { return _desc.Comparison; }
+                get { return _desc.StencilFunc; }
                 set
                 {
-                    _desc.Comparison = value;
+                    _desc.StencilFunc = value;
                     _parent._dirty = true;
                 }
             }
 
-            public StencilOperation PassOperation
+            public StencilOp PassOperation
             {
-                get { return _desc.PassOperation; }
+                get { return _desc.StencilPassOp; }
                 set
                 {
-                    _desc.PassOperation = value;
+                    _desc.StencilPassOp = value;
                     _parent._dirty = true;
                 }
             }
 
-            public StencilOperation FailOperation
+            public StencilOp FailOperation
             {
-                get { return _desc.FailOperation; }
+                get { return _desc.StencilFailOp; }
                 set
                 {
-                    _desc.FailOperation = value;
+                    _desc.StencilFailOp = value;
                     _parent._dirty = true;
                 }
             }
 
-            public StencilOperation DepthFailOperation
+            public StencilOp DepthFailOperation
             {
-                get { return _desc.DepthFailOperation; }
+                get { return _desc.StencilDepthFailOp; }
                 set
                 {
-                    _desc.DepthFailOperation = value;
+                    _desc.StencilDepthFailOp = value;
                     _parent._dirty = true;
                 }
             }
         }
 
-        internal DepthStencilState State;
-        DepthStencilStateDescription _desc;
+        static DepthStencilDesc _defaultDesc;
+
+        internal ID3D11DepthStencilState* Native;
+        DepthStencilDesc _desc;
         internal bool _dirty;
 
         Face _frontFace;
         Face _backFace;
 
+        static GraphicsDepthState()
+        {
+            _defaultDesc = new DepthStencilDesc()
+            {
+                DepthEnable = 1,
+                DepthWriteMask = DepthWriteMask.DepthWriteMaskAll,
+                DepthFunc = ComparisonFunc.ComparisonLess,
+                StencilEnable = 0,
+                StencilReadMask = D3D11.DefaultStencilReadMask,
+                StencilWriteMask = D3D11.DefaultStencilWriteMask,
+                FrontFace = new DepthStencilopDesc()
+                {
+                    StencilFunc = ComparisonFunc.ComparisonAlways,
+                    StencilDepthFailOp = StencilOp.StencilOpKeep,
+                    StencilPassOp = StencilOp.StencilOpKeep,
+                    StencilFailOp = StencilOp.StencilOpKeep,
+                },
+                BackFace = new DepthStencilopDesc()
+                {
+                    StencilFunc = ComparisonFunc.ComparisonAlways,
+                    StencilDepthFailOp = StencilOp.StencilOpKeep,
+                    StencilPassOp = StencilOp.StencilOpKeep,
+                    StencilFailOp = StencilOp.StencilOpKeep,
+                }
+            };
+        }
+
         internal GraphicsDepthState(DeviceDX11 device, GraphicsDepthState source) : base(device)
         {
             _desc = source._desc;
-            _frontFace = new Face(this, _desc.FrontFace);
-            _backFace = new Face(this, _desc.BackFace);
+            _frontFace = new Face(this, ref _desc.FrontFace);
+            _backFace = new Face(this, ref _desc.BackFace);
         }
 
         internal GraphicsDepthState(DeviceDX11 device) : base(device)
         {
-            _desc = DepthStencilStateDescription.Default();
-            _frontFace = new Face(this, _desc.FrontFace);
-            _backFace = new Face(this, _desc.BackFace);
+            _desc = _defaultDesc;
+            _frontFace = new Face(this, ref _desc.FrontFace);
+            _backFace = new Face(this, ref _desc.BackFace);
         }
 
         public override bool Equals(object obj)
@@ -95,28 +125,28 @@ namespace Molten.Graphics
             if (!CompareOperation(ref _desc.BackFace, ref other._desc.BackFace) || !CompareOperation(ref _desc.FrontFace, ref other._desc.FrontFace))
                 return false;
 
-            return _desc.DepthComparison == other._desc.DepthComparison &&
-                _desc.IsDepthEnabled == other._desc.IsDepthEnabled &&
-                _desc.IsStencilEnabled == other._desc.IsStencilEnabled &&
+            return _desc.DepthFunc == other._desc.DepthFunc &&
+                _desc.DepthEnable == other._desc.DepthEnable &&
+                _desc.StencilEnable == other._desc.StencilEnable &&
                 _desc.StencilReadMask == other._desc.StencilReadMask &&
                 _desc.StencilWriteMask == other._desc.StencilWriteMask;
         }
 
-        private static bool CompareOperation(ref DepthStencilOperationDescription op, ref DepthStencilOperationDescription other)
+        private static bool CompareOperation(ref DepthStencilopDesc op, ref DepthStencilopDesc other)
         {
-            return op.Comparison == other.Comparison &&
-                op.DepthFailOperation == other.DepthFailOperation &&
-                op.FailOperation == other.FailOperation &&
-                op.PassOperation == other.PassOperation;
+            return op.StencilFunc == other.StencilFunc &&
+                op.StencilDepthFailOp == other.StencilDepthFailOp &&
+                op.StencilFailOp == other.StencilFailOp &&
+                op.StencilPassOp == other.StencilPassOp;
         }
 
-        public void SetFrontFace(DepthStencilOperationDescription desc)
+        public void SetFrontFace(DepthStencilopDesc desc)
         {
             _frontFace._desc = desc;
             _dirty = true;
         }
 
-        public void SetBackFace(DepthStencilOperationDescription desc)
+        public void SetBackFace(DepthStencilopDesc desc)
         {
             _backFace._desc = desc;
             _dirty = true;
@@ -124,44 +154,51 @@ namespace Molten.Graphics
 
         internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
         {
-            if (State == null || _dirty)
+            if (Native == null || _dirty)
             {
                 _dirty = false;
 
                 //dispose of previous state object
-                if (State != null)
-                    State.Dispose();
+                if (Native != null)
+                {
+                    Native->Release();
+                    Native = null;
+                }
 
                 //copy the front and back-face settings into the main description
                 _desc.FrontFace = _frontFace._desc;
                 _desc.BackFace = _backFace._desc;
 
                 //create new state
-                State = new DepthStencilState(pipe.Device.D3d, _desc);
+                Device.Native->CreateDepthStencilState(ref _desc, ref Native);
             }
         }
 
         private protected override void OnPipelineDispose()
         {
-            DisposeObject(ref State);
+            if (Native != null)
+            {
+                Native->Release();
+                Native = null;
+            }
         }
 
         internal bool IsDepthEnabled
         {
-            get { return _desc.IsDepthEnabled; }
+            get { return _desc.DepthEnable > 0; }
             set
             {
-                _desc.IsDepthEnabled = value;
+                _desc.DepthEnable = value ? 1 : 0;
                 _dirty = true;
             }
         }
 
         internal bool IsStencilEnabled
         {
-            get { return _desc.IsStencilEnabled; }
+            get { return _desc.StencilEnable > 0; }
             set
             {
-                _desc.IsStencilEnabled = value;
+                _desc.StencilEnable = value ? 1 : 0;
                 _dirty = true;
             }
         }
@@ -176,12 +213,12 @@ namespace Molten.Graphics
             }
         }
 
-        internal Comparison DepthComparison
+        internal ComparisonFunc DepthComparison
         {
-            get { return _desc.DepthComparison; }
+            get { return _desc.DepthFunc; }
             set
             {
-                _desc.DepthComparison = value;
+                _desc.DepthFunc = value;
                 _dirty = true;
             }
         }

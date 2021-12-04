@@ -1,4 +1,4 @@
-﻿using SharpDX.Direct3D11;
+﻿using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +16,7 @@ namespace Molten.Graphics
             //wireframe preset.
              AddPreset(RasterizerPreset.Wireframe, new GraphicsRasterizerState(device)
             {
-                FillMode = FillMode.Wireframe,
+                FillMode = FillMode.FillWireframe,
             });
 
             //scissor test preset
@@ -28,7 +28,7 @@ namespace Molten.Graphics
             //no culling preset.
              AddPreset(RasterizerPreset.NoCulling, new GraphicsRasterizerState(device)
             {
-                CullMode = CullMode.None,
+                CullMode = CullMode.CullNone,
             });
 
              AddPreset(RasterizerPreset.DefaultMultisample, new GraphicsRasterizerState(device)

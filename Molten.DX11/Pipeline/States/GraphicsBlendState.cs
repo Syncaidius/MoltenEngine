@@ -31,6 +31,7 @@ namespace Molten.Graphics
                 RenderTargetWriteMask = (byte)ColorWriteEnable.ColorWriteEnableAll,
                 BlendEnable = 1,
                 LogicOpEnable = 0,
+                LogicOp = LogicOp.LogicOpNoop
             };
         }
 

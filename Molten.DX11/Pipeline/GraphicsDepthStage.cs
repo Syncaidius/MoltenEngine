@@ -35,7 +35,7 @@ namespace Molten.Graphics
             if (stateChanged || _stencilRef != _currentState.StencilReference)
             {
                 _stencilRef = _currentState.StencilReference;
-                Pipe.Context.OutputMerger.SetDepthStencilState(_currentState.State, _stencilRef);
+                Pipe.Context.OutputMerger.SetDepthStencilState(_currentState.Native, _stencilRef);
             }
         }
 
