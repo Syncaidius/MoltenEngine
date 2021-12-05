@@ -10,20 +10,15 @@ namespace Molten.Graphics
     internal unsafe abstract class PipeBindableResource : PipeBindable
     {
         /// <summary>Gets or sets the <see cref="ID3D11UnorderedAccessView"/> attached to the object.</summary>
-        internal ID3D11UnorderedAccessView1* UAV;
+        internal protected ID3D11UnorderedAccessView1* UAV { get; protected set; }
 
         /// <summary>Gets the <see cref="ID3D11ShaderResourceView"/> attached to the object.</summary>
-        internal ID3D11ShaderResourceView1* SRV;
+        internal protected ID3D11ShaderResourceView1* SRV { get; protected set; }
 
         internal PipeBindableResource(PipeStageType canBindTo, PipeBindTypeFlags bindTypeFlags) : 
             base(canBindTo, bindTypeFlags)
         {
 
-        }
-
-        protected override bool OnValidatebind(PipeBindSlot slot)
-        {
-            throw new NotImplementedException();
         }
 
         #region Implicit cast operators
@@ -47,5 +42,21 @@ namespace Molten.Graphics
             return resource.SRV;
         }
         #endregion
+    }
+
+    internal unsafe abstract class PipeBindableResource<T> : PipeBindableResource
+        where T : unmanaged
+    {
+        internal PipeBindableResource(PipeStageType canBindTo, PipeBindTypeFlags bindTypeFlags) : 
+            base(canBindTo, bindTypeFlags)
+        {
+        }
+
+        internal abstract T* Native { get; }
+
+        public static implicit operator ID3D11Resource*(PipeBindableResource<T> resource)
+        {
+            return (ID3D11Resource*)resource.Native;
+        }
     }
 }

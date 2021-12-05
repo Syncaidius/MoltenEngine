@@ -6,21 +6,17 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal abstract class PipeBindSlot : EngineObject
+    public abstract class PipeBindSlot : EngineObject
     {
-        internal PipeBindSlot(PipeStage parent, uint slotID, PipeBindTypeFlags slotType)
+        internal PipeBindSlot(PipeStage parent, uint slotID, PipeBindTypeFlags slotType, string namePrefix)
         {
             Stage = parent;
             SlotID = slotID;
             SlotType = slotType;
+            Name = $"{namePrefix} slot {SlotID}";
         }
 
         internal abstract bool Bind();
-
-        protected override void OnDispose()
-        {
-            // TODO Call PipeBindable.UnbindFrom(slot) o nbound object.
-        }
 
         internal PipeStage Stage { get; }
 
@@ -32,13 +28,17 @@ namespace Molten.Graphics
     internal sealed class PipeBindSlot<T> : PipeBindSlot
         where T : PipeBindable
     {
-        T _boundValue;
         uint _boundVersion;
 
-        internal PipeBindSlot(PipeStage stage, uint slotID, PipeBindTypeFlags slotType) : 
-            base(stage, slotID, slotType)
+        internal PipeBindSlot(PipeStage stage, uint slotID, PipeBindTypeFlags slotType, string namePrefix) : 
+            base(stage, slotID, slotType, $"{namePrefix}_{typeof(T).Name}")
         {
 
+        }
+
+        protected override void OnDispose()
+        {
+            BoundValue.UnbindFrom(this);
         }
 
         /// <summary>
@@ -47,15 +47,15 @@ namespace Molten.Graphics
         /// <returns>True, if changes were detected.</returns>
         internal override bool Bind()
         {
-            if (_boundValue != Value)
+            if (BoundValue != Value)
             {
-                _boundValue?.UnbindFrom(this);
-                _boundValue = Value;
+                BoundValue?.UnbindFrom(this);
+                BoundValue = Value;
 
-                if (_boundValue != null)
+                if (BoundValue != null)
                 {
-                    _boundVersion = _boundValue.Version;
-                    _boundValue.BindTo(this);
+                    _boundVersion = BoundValue.Version;
+                    BoundValue.BindTo(this);
                 }
 
                 Stage.Pipe.Profiler.Current.Bindings++;
@@ -78,5 +78,7 @@ namespace Molten.Graphics
         /// Gets or sets the value of the slot. This will be applied during the next pipe/context bind call.
         /// </summary>
         internal T Value { get; set; }
+
+        internal T BoundValue { get; set; }
     }
 }

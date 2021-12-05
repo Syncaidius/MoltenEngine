@@ -30,6 +30,7 @@ namespace Molten
         public EngineObject()
         {
             _id = ((ulong)Thread.CurrentThread.ManagedThreadId << 32) | _idCounter++;
+            Name = $"EO {_id}";
         }
 
         /// <summary>Safely disposes of an object which may also be null.</summary>
@@ -71,5 +72,10 @@ namespace Molten
         /// Gets the unique <see cref="EngineObject"/> ID (EOID) of the current <see cref="EngineObject"/>.
         /// </summary>
         public ulong EOID => _id;
+
+        /// <summary>
+        /// Gets the name of the object. Multiple <see cref="EngineObject"/> can have the same name.
+        /// </summary>
+        public string Name { get; protected set; }
     }
 }

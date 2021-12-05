@@ -12,7 +12,6 @@ namespace Molten.Graphics
     /// </summary>
     internal unsafe abstract class PipeStage : EngineObject
     {
-
         internal PipeStage(PipeDX11 pipe, PipeStageType stageType)
         {
             Pipe = pipe;
@@ -20,23 +19,16 @@ namespace Molten.Graphics
             AllSlots = new List<PipeBindSlot>();
         }
 
-        protected PipeBindSlot<T>[] DefineSlots<T>(uint slotCount, PipeBindTypeFlags slotType)
+        protected PipeBindSlotGroup<T> DefineSlotGroup<T>(uint slotCount, PipeBindTypeFlags slotType, string namePrefix)
             where T : PipeBindable
         {
-            PipeBindSlot<T>[] slots = new PipeBindSlot<T>[slotCount];
-            for (uint i = 0; i < slotCount; i++)
-            {
-                slots[i] = new PipeBindSlot<T>(this, i, slotType);
-                AllSlots.Add(slots[i]);
-            }
-
-            return slots;
+            return new PipeBindSlotGroup<T>(this, slotCount, slotType, namePrefix);
         }
 
-        protected PipeBindSlot<T> DefineSlot<T>(uint slotID, PipeBindTypeFlags slotType)
+        protected PipeBindSlot<T> DefineSlot<T>(uint slotID, PipeBindTypeFlags slotType, string namePrefix)
             where T : PipeBindable
         {
-            PipeBindSlot<T> slot = new PipeBindSlot<T>(this, slotID, slotType);
+            PipeBindSlot<T> slot = new PipeBindSlot<T>(this, slotID, slotType, namePrefix);
             AllSlots.Add(slot);
             return slot;
         }

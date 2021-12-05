@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal enum PipeStageType
+    public enum PipeStageType
     {
         None = 0,
 
@@ -24,6 +24,8 @@ namespace Molten.Graphics
 
         ComputeShader = 7,
 
-        OutputMerger = 8
+        OutputMerger = 8,
+
+        StreamOutput = 9,
     }
 }

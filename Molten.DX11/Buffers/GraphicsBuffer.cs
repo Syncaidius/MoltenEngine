@@ -13,7 +13,6 @@ namespace Molten.Graphics
 {
     internal unsafe partial class GraphicsBuffer : PipelineShaderObject
     {
-        protected uint _structuredStride = 0;
         protected Array _initialData;
         internal ID3D11Buffer* Native;
 
@@ -37,14 +36,13 @@ namespace Molten.Graphics
             _freeSegments = new List<BufferSegment>();
             Mode = mode;
             _pendingChanges = new ThreadedQueue<IBufferOperation>();
-            _structuredStride = structuredStride;
 
             if (mode == BufferMode.Immutable && initialData == null)
                 throw new ArgumentNullException("Initial data cannot be null when buffer mode is Immutable.");
 
             _initialData = initialData;
 
-            BuildDescription(bindFlags, optionFlags, stagingType, byteCapacity);
+            BuildDescription(bindFlags, optionFlags, stagingType, byteCapacity, structuredStride);
 
             if (initialData != null)
             {
@@ -76,7 +74,7 @@ namespace Molten.Graphics
             ResourceMiscFlag opFlags, 
             StagingBufferFlags stageMode, 
             uint byteCapacity,
-            uint structureByteStride = 0)
+            uint structureByteStride)
         {
             Description = new BufferDesc();
             Description.Usage = Usage.UsageDefault;
@@ -160,7 +158,7 @@ namespace Molten.Graphics
         {
             if (((BindFlag)Description.BindFlags & BindFlag.BindUnorderedAccess) == BindFlag.BindUnorderedAccess)
             {
-                if (stride != _structuredStride)
+                if (stride != Description.StructureByteStride)
                     throw new GraphicsBufferException("Buffer is structured. Stride must match that of the structured buffer.");
             }
         }
@@ -433,7 +431,7 @@ namespace Molten.Graphics
                     Buffer = new BufferUav()
                     {
                         NumElements = elementCount,
-                        FirstElement = byteOffset / _structuredStride,
+                        FirstElement = byteOffset / Description.StructureByteStride,
                         Flags = 0,
                     }
                 };
@@ -620,7 +618,7 @@ namespace Molten.Graphics
 
         /// <summary>Gets the structured stride which <see cref="BufferSegment"/> instances must adhere to if they belong to the current <see cref="GraphicsBuffer"/>. 
         /// This is ignored and unused if the <see cref="GraphicsBuffer"/> does not carry the <see cref="ResourceOptionFlags.BufferStructured"/> flag.</summary>
-        public uint StructuredStride => _structuredStride;
+        public uint StructuredStride => Description.StructureByteStride;
 
         /// <summary>Gets the capacity of a single section within the buffer, in bytes.</summary>
         public uint ByteCapacity => Description.ByteWidth;

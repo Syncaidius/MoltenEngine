@@ -9,9 +9,8 @@ namespace Molten.Graphics
     /// <summary>
     /// Represents a DX11 bindable pipeline object.
     /// </summary>
-    internal abstract class PipeBindable : EngineObject
+    public abstract class PipeBindable : EngineObject
     {
-
         internal PipeBindable(PipeStageType canBindTo, PipeBindTypeFlags bindTypeFlags)
         {
             BindTypeFlags = bindTypeFlags;
@@ -26,10 +25,8 @@ namespace Molten.Graphics
         /// <returns>True if the binding succeeded.</returns>
         internal bool BindTo(PipeBindSlot slot)
         {
-            if (!OnValidatebind(slot))
-                return false;
-
             BoundTo.Add(slot);
+            OnBind(slot, slot.Stage.Pipe);
             return true;
         }
 
@@ -38,7 +35,12 @@ namespace Molten.Graphics
             BoundTo.Remove(slot);
         }
 
-        protected abstract bool OnValidatebind(PipeBindSlot slot);
+        /// <summary>
+        /// Invoked right before the current <see cref="PipeBindable"/> is due to be bound to a <see cref="PipeDX11"/>.
+        /// </summary>
+        /// <param name="slot">The <see cref="PipeBindSlot"/> which contains the current <see cref="PipeBindable"/>.</param>
+        /// <param name="pipe">The <see cref="PipeDX11"/> that the current <see cref="PipeBindable"/> is to be bound to.</param>
+        protected abstract void OnBind(PipeBindSlot slot, PipeDX11 pipe);
 
         internal protected uint Version { get; protected set; }
 

@@ -138,22 +138,22 @@ namespace Molten.Graphics
         internal FeatureDataD3D11Options MiscFeatures { get; private set; }
 
         /// <summary>Undocumented.</summary>
-        internal int MaxVolumeExtent { get; private set; }
+        internal uint MaxVolumeExtent { get; private set; }
 
         /// <summary>The maximum number of times a texture is allowed to repeat.</summary>
-        internal int MaxTextureRepeat { get; private set; }
+        internal uint MaxTextureRepeat { get; private set; }
 
         /// <summary>The maximum anisotropy level that the device supports.</summary>
-        internal int MaxAnisotropy { get; private set; }
+        internal uint MaxAnisotropy { get; private set; }
 
         /// <summary>Gets the maximum number of primitives (triangles) the device can render in a single draw call.</summary>
         internal uint MaxPrimitiveCount { get; private set; }
 
         /// <summary>Gets the max number of shader resource input slots that the device supports for all shader stages.</summary>
-        internal int MaxInputResourceSlots { get; private set; }
+        internal uint MaxInputResourceSlots { get; private set; }
 
         /// <summary>Gets the max number of sampler slots that the device supports for all shader stages.</summary>
-        internal int MaxSamplerSlots { get; private set; }
+        internal uint MaxSamplerSlots { get; private set; }
 
         /// <summary>Gets whether or not the device supports occlusion queries.</summary>
         internal bool OcclusionQueries { get; private set; }
@@ -171,16 +171,16 @@ namespace Molten.Graphics
         internal ShaderModel MaximumShaderModel { get; private set; }
 
         /// <summary>Gets the maximum supported number of index buffer slots.</summary>
-        internal int MaxIndexBufferSlots { get; private set; }
+        internal uint MaxIndexBufferSlots { get; private set; }
 
         /// <summary>Gets the maximum supported number of vertex buffer slots.</summary>
         internal uint MaxVertexBufferSlots { get; private set; }
 
         /// <summary>Gets the maximum supported number of constant buffer slots.</summary>
-        internal int MaxConstantBufferSlots { get; private set; }
+        internal uint MaxConstantBufferSlots { get; private set; }
 
         /// <summary>Gets the maximum number of supported un-ordered access views in a compute shader.</summary>
-        internal int MaxUnorderedAccessViews { get; private set; }
+        internal uint MaxUnorderedAccessViews { get; private set; }
 
         /// <summary>Gets whether or not the device supports hardware instances.</summary>
         internal bool HardwareInstancing { get; private set; }
