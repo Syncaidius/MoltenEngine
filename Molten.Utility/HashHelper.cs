@@ -4,13 +4,13 @@ namespace Molten.Utility
 {
     public static class HashHelper
     {
-        const int P = 16777619;
+        const int Prime = 16777619;
 
         // Table of prime numbers to use as hash table sizes. 
         // The entry used for capacity is the smallest prime number in this array
         // that is larger than twice the previous capacity. 
 
-        public static readonly int[] primes = {
+        public static readonly int[] Primes = {
             3, 7, 11, 17, 23, 29, 37, 47, 59, 71, 89, 107, 131, 163, 197, 239, 293, 353, 431, 521, 631, 761, 919,
             1103, 1327, 1597, 1931, 2333, 2801, 3371, 4049, 4861, 5839, 7013, 8419, 10103, 12143, 14591,
             17519, 21023, 25229, 30293, 36353, 43627, 52361, 62851, 75431, 90523, 108631, 130363, 156437,
@@ -42,34 +42,30 @@ namespace Molten.Utility
             if (min < 0)
                 throw new IndexOutOfRangeException("Min cannot be less than 0.");
 
-            for (int i = 0; i < primes.Length; i++)
+            for (int i = 0; i < Primes.Length; i++)
             {
-                int prime = primes[i];
+                int prime = Primes[i];
                 if (prime >= min)
-                {
                     return prime;
-                }
             }
 
             // Outside of our predefined table. Compute the hard way. 
-            for (int i = (min | 1); i < Int32.MaxValue; i += 2)
+            for (int i = (min | 1); i < int.MaxValue; i += 2)
             {
                 if (IsPrime(i))
-                {
                     return i;
-                }
             }
             return min;
         }
 
         public static int GetMinPrime()
         {
-            return primes[0];
+            return Primes[0];
         }
 
         // Modified FNV Hash in C#
         // http://stackoverflow.com/a/468084
-        /// <summary>Generates a simple but generally unique hash key using FNC hashing, from a set of data, which
+        /// <summary>Generates a simple but generally unique hash key using FNV hashing, from a set of data, which
         /// can be used as a fast key for collections or comparisons.</summary>
         /// <param name="data"></param>
         /// <returns></returns>
@@ -80,7 +76,7 @@ namespace Molten.Utility
                 int hash = (int)2166136261;
 
                 for (int i = 0; i < data.Length; i++)
-                    hash = (hash ^ data[i]) * P;
+                    hash = (hash ^ data[i]) * Prime;
 
                 hash += hash << 13;
                 hash ^= hash >> 7;

@@ -387,7 +387,7 @@
     <Compile Include="Textures\TextureBase.cs" />
     <Compile Include="Textures\TextureExceptions.cs" />
     <Compile Include="Textures\WICFormatConverter.cs" />
-    <Compile Include="VertexInputLayout.cs" />
+    <Compile Include="Pipeline\NewPipe\VertexInputLayout.cs" />
     <Compile Include="Vertices\VertexFormat.cs" />
     <Compile Include="Vertices\VertexFormatBuilder.cs" />
     <Compile Include="Vertices\VertexWithID.cs" />

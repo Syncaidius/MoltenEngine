@@ -60,5 +60,10 @@ namespace Molten.Graphics
         /// <see cref="PipeBindSlotGroup{T}"/> that was changed, during the previous <see cref="BindAll"/> call.
         /// </summary>
         public uint LastChanged { get; private set; }
+
+        /// <summary>
+        /// Gets the number of slots in the current <see cref="PipeBindSlotGroup{T}"/>.
+        /// </summary>
+        public int SlotCount => _slots.Length;
     }
 }

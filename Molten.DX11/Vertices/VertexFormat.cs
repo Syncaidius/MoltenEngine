@@ -14,13 +14,13 @@ namespace Molten.Graphics
         {
             SizeOf = sizeOf;
             Elements = elements;
-            HashKey = hash;
+            UID = hash;
         }
 
         /// <summary>Gets the total size of the Vertex Format, in bytes.</summary>
         public int SizeOf { get; private set; }
 
         /// <summary>Gets the hash key associated with the vertex format instance.</summary>
-        public int HashKey { get; private set; }
+        public int UID { get; private set; }
     }
 }

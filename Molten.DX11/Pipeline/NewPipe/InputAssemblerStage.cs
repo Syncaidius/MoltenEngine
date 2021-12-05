@@ -10,6 +10,8 @@ namespace Molten.Graphics
     internal unsafe class InputAssemblerStage : PipeStage
     {
         VertexTopology _boundTopology;
+        VertexInputLayout _boundLayout;
+        List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
 
         /* TODO:
          *  - Add MaterialBinder which replicates the MaterialInputStage functionality of old pipeline
@@ -35,9 +37,17 @@ namespace Molten.Graphics
                 Pipe.Context->IASetPrimitiveTopology(_boundTopology.ToApi());
             }
 
-            if (VertexBuffers.BindAll(BindVertexBuffers))
-            {
+            bool vsChanged = false;
+            bool gsChanged = false;
+            bool hsChanged = false;
+            bool dsChanged = false;
+            bool psChanged = false;
 
+            // Does the vertex input layout need updating?
+            if (VertexBuffers.BindAll(BindVertexBuffers) || vsChanged)
+            {
+                _boundLayout = GetInputLayout();
+                Pipe.Context->IASetInputLayout(_boundLayout);
             }
 
             // Check index buffer
@@ -79,6 +89,29 @@ namespace Molten.Graphics
             }
 
             Pipe.Context->IASetVertexBuffers(startSlot, numChanged, pBuffers, pStrides, pOffsets);
+        }
+
+
+        /// <summary>Retrieves or creates a usable input layout for the provided vertex buffers and sub-effect.</summary>
+        /// <returns>An instance of InputLayout.</returns>
+        private VertexInputLayout GetInputLayout()
+        {
+            // Retrieve layout list or create new one if needed.
+            foreach (VertexInputLayout l in _cachedLayouts)
+            {
+                bool match = l.IsMatch(Device.Log, _slotVertexBuffers, _materialStage.BoundShader.InputStructure, _vertexSlotCount);
+                if (match)
+                    return l;
+            }
+
+            // A new layout is required
+            VertexInputLayout input = new VertexInputLayout(Device,
+                _slotVertexBuffers,
+                _materialStage.BoundShader.InputStructureByteCode,
+                _materialStage.BoundShader.InputStructure);
+            _cachedLayouts.Add(input);
+
+            return input;
         }
 
         public PipeBindSlotGroup<PipeBufferSegment> VertexBuffers { get; }

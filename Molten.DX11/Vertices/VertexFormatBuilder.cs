@@ -1,5 +1,4 @@
-﻿using SharpDX.Direct3D11;
-using Molten.Comparers;
+﻿using Molten.Comparers;
 using Molten.Utility;
 using System;
 using System.Collections.Generic;
@@ -86,9 +85,10 @@ namespace Molten.Graphics
                 }
             }
 
-            var bytes = System.Text.Encoding.UTF8.GetBytes(signature);
-            int hash = HashHelper.ComputeFNV(bytes);
-            return new VertexFormat(elements.ToArray(), elementAlignedOffset, hash);
+            // TODO improve hashing
+            var bytes = Encoding.UTF8.GetBytes(signature);
+            int uid = HashHelper.ComputeFNV(bytes);
+            return new VertexFormat(elements.ToArray(), elementAlignedOffset, uid);
         }
 
         private string GetSemanticName(VertexElementUsage usage)
