@@ -242,7 +242,6 @@
     <Compile Include="Pipeline\NewPipe\Shaders\PipeSampler.cs" />
     <Compile Include="Pipeline\NewPipe\Buffers\PipeBuffer.cs" />
     <Compile Include="Pipeline\NewPipe\Shaders\PipeShader.cs" />
-    <Compile Include="Pipeline\VertexBufferBinder.cs" />
     <Compile Include="Renderer\MainSurfaceType.cs" />
     <Compile Include="Renderer\RenderChain.Context.cs" />
     <Compile Include="Renderer\RenderChain.cs" />

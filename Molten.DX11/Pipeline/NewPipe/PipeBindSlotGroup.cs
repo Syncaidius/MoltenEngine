@@ -9,7 +9,7 @@ namespace Molten.Graphics
     internal class PipeBindSlotGroup<T>
         where T : PipeBindable
     {
-        public delegate void PipeBindSlotGroupCallback(PipeBindSlot<T>[] slots, uint start, uint end, uint numChanged);
+        public delegate void PipeBindSlotGroupCallback(PipeBindSlot<T>[] slots, uint startSlot, uint endSlot, uint numChanged);
 
         PipeBindSlot<T>[] _slots;
 
