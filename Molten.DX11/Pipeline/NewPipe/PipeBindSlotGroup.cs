@@ -39,16 +39,6 @@ namespace Molten.Graphics
                     if (slot.Index > LastChanged)
                         LastChanged = slot.Index;
                 }
-                
-                // Update tracking for first and last bound slot index.
-                if(slot.BoundValue != null)
-                {
-                    if (slot.Index < FirstBound)
-                        FirstBound = slot.Index;
-
-                    if (slot.Index > LastBound)
-                        LastBound = slot.Index;
-                }
             }
 
             // If first slot is less than last slot, changes occurred.
@@ -56,10 +46,9 @@ namespace Molten.Graphics
             {
                 uint numChanged = LastChanged - FirstChanged;
                 bindCallback?.Invoke(this, numChanged);
+
                 return true;
             }
-
-            // Check the first and last bound
 
             return false;
         }
@@ -88,15 +77,5 @@ namespace Molten.Graphics
         /// Gets the number of slots in the current <see cref="PipeBindSlotGroup{T}"/>.
         /// </summary>
         public int SlotCount => _slots.Length;
-
-        /// <summary>
-        /// Gets the first slot index that has a value bound to it.
-        /// </summary>
-        public uint FirstBound { get; private set; }
-
-        /// <summary>
-        /// Gets the last slot index that has a value bound to it.
-        /// </summary>
-        public uint LastBound { get; private set; }
     }
 }

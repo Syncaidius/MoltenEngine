@@ -19,7 +19,7 @@ namespace Molten.Graphics
             byte[] vertexBytecode,
             ShaderIOStructure io) : base(device)
         {
-            int maxSlots = vbSlots.SlotCount;
+            uint maxSlots = device.Features.MaxVertexBufferSlots;
             _hashKeys = new ulong[maxSlots];
             List<InputElementDesc> elements = new List<InputElementDesc>();
             VertexFormat format = null;
