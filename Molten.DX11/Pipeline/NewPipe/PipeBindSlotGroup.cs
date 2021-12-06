@@ -27,14 +27,29 @@ namespace Molten.Graphics
         {
             // Reset trackers
             FirstChanged = uint.MaxValue;
-            LastChanged = uint.MinValue;
+            LastChanged = 0;
+            FirstBound = uint.MaxValue;
+            LastBound = 0;
 
             foreach(PipeBindSlot<T> slot in _slots)
             {
                 if (slot.Bind())
                 {
-                    FirstChanged = slot.SlotID < FirstChanged ? slot.SlotID : FirstChanged;
-                    LastChanged = slot.SlotID > LastChanged ? slot.SlotID : LastChanged;
+                    if (slot.Index < FirstChanged)
+                        FirstChanged = slot.Index;
+
+                    if (slot.Index > LastChanged)
+                        LastChanged = slot.Index;
+                }
+                
+                // Update tracking for first and last bound slot index.
+                if(slot.BoundValue != null)
+                {
+                    if (slot.Index < FirstBound)
+                        FirstBound = slot.Index;
+
+                    if (slot.Index > LastBound)
+                        LastBound = slot.Index;
                 }
             }
 
@@ -46,8 +61,19 @@ namespace Molten.Graphics
                 return true;
             }
 
+            if (FirstBound > LastBound)
+                LastBound = FirstBound;
+
             return false;
         }
+
+        /// <summary>
+        /// Gets the <see cref="PipeBindSlot{T}"/> at the specified slot ID/Index, 
+        /// within the current <see cref="PipeBindSlotGroup{T}"/>.
+        /// </summary>
+        /// <param name="index">The slot ID/index.</param>
+        /// <returns></returns>
+        public PipeBindSlot<T> this[uint index] => _slots[index];
 
         /// <summary>
         /// Gets the first <see cref="PipeBindSlot{T}"/> in the current 
@@ -65,5 +91,15 @@ namespace Molten.Graphics
         /// Gets the number of slots in the current <see cref="PipeBindSlotGroup{T}"/>.
         /// </summary>
         public int SlotCount => _slots.Length;
+
+        /// <summary>
+        /// Gets the first slot index that has a value bound to it.
+        /// </summary>
+        public uint FirstBound { get; private set; }
+
+        /// <summary>
+        /// Gets the last slot index that has a value bound to it.
+        /// </summary>
+        public uint LastBound { get; private set; }
     }
 }

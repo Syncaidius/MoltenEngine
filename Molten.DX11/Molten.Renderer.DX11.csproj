@@ -238,8 +238,6 @@
     <Compile Include="Pipeline\NewPipe\PipeBindSlot.cs" />
     <Compile Include="Pipeline\NewPipe\PipeShaderStage.cs" />
     <Compile Include="Pipeline\NewPipe\PipeStage.cs" />
-    <Compile Include="Pipeline\NewPipe\Shaders\PipeSampler.cs" />
-    <Compile Include="Pipeline\NewPipe\Shaders\PipeShader.cs" />
     <Compile Include="Renderer\MainSurfaceType.cs" />
     <Compile Include="Renderer\RenderChain.Context.cs" />
     <Compile Include="Renderer\RenderChain.cs" />
@@ -277,7 +275,6 @@
     <Compile Include="Pipeline\MaterialInputStage.cs" />
     <Compile Include="Pipeline\PipelineInput.cs" />
     <Compile Include="Pipeline\PipelineOutput.cs" />
-    <Compile Include="Pipeline\PipelineShaderObject.cs" />
     <Compile Include="Pipeline\States\DepthStateBank.cs" />
     <Compile Include="Pipeline\States\GraphicsStateBank.cs" />
     <Compile Include="Pipeline\States\BlendStateBank.cs" />

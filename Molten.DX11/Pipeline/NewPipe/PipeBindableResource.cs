@@ -21,6 +21,21 @@ namespace Molten.Graphics
 
         }
 
+        internal override void PipelineDispose()
+        {
+            if(UAV != null)
+            {
+                UAV->Release();
+                UAV = null;
+            }
+
+            if(SRV != null)
+            {
+                SRV->Release();
+                SRV = null;
+            }
+        }
+
         #region Implicit cast operators
         public static implicit operator ID3D11UnorderedAccessView*(PipeBindableResource resource)
         {

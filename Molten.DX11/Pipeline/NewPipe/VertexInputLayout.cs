@@ -17,7 +17,7 @@ namespace Molten.Graphics
         ulong[] _hashKeys;
 
         internal VertexInputLayout(DeviceDX11 device, 
-            PipeBindSlotGroup<PipeBufferSegment> vbSlots, 
+            PipeBindSlotGroup<BufferSegment> vbSlots, 
             byte[] vertexBytecode,
             ShaderIOStructure io)
         {
@@ -28,15 +28,15 @@ namespace Molten.Graphics
 
             for (uint i = 0; i < maxSlots; i++)
             {
-                if (vbSlots[i].BoundObject == null)
+                if (vbSlots[i].BoundValue == null)
                     continue;
 
-                format = vbSlots[i].BoundObject.VertexFormat;
+                format = vbSlots[i].BoundValue.VertexFormat;
 
                 /* Check if the current vertex segment's format matches 
                    the part of the shader's input structure it's meant to represent. */
-                int startID = elements.Count;
-                bool inputMatch = io.IsCompatible(format, (int)startID);
+                uint startID = (uint)elements.Count;
+                bool inputMatch = io.IsCompatible(format, startID);
                 if (inputMatch == false)
                 {
                     _valid = false;
@@ -78,7 +78,7 @@ namespace Molten.Graphics
             else
             {
                 device.Log.WriteWarning($"Vertex formats do not match the input layout of shader:");
-                for (int i = 0; i < vbSlots.Length; i++)
+                for (int i = 0; i < vbSlots.SlotCount; i++)
                 {
                     if (vbSlots[i].BoundObject == null)
                         continue;
@@ -103,14 +103,14 @@ namespace Molten.Graphics
             }
         }
 
-        public bool IsMatch(Logger log, PipelineBindSlot<BufferSegment, DeviceDX11, PipeDX11>[] slots, ShaderIOStructure io, int lastSlot)
+        public bool IsMatch(Logger log, PipeBindSlotGroup<BufferSegment> slots, ShaderIOStructure io, uint lastSlot)
         {
             bool isMatch = true;
 
-            for (int i = 0; i < lastSlot; i++)
+            for (uint i = 0; i < lastSlot; i++)
             {
                 // If resource is null, check if is actually meant to be.
-                if (slots[i].BoundObject == null)
+                if (slots[i].BoundValue == null)
                 {
                     if (_hashKeys[i] == 0)
                     {
@@ -124,14 +124,14 @@ namespace Molten.Graphics
                 }
 
                 // Prevent vertex segments with no format from crashing the application.
-                if (slots[i].BoundObject.VertexFormat == null)
+                if (slots[i].BoundValue.VertexFormat == null)
                 {
                     log.WriteWarning($"Missing format for vertex segment in slot {i}. Skipping validation. This may cause a false input layout match.");
                     continue;
                 }
 
                 // if composite hash-key does not match the one held by the input layout, flag match as false and abort.
-                ulong comKey = (ulong)slots[i].BoundObject.VertexFormat.UID << 32 | (uint)io.HashKey;
+                ulong comKey = (ulong)slots[i].BoundValue.VertexFormat.UID << 32 | (uint)io.HashKey;
                 if (comKey != _hashKeys[i])
                 {
                     isMatch = false;

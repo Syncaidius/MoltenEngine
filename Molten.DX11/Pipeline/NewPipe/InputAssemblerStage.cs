@@ -24,8 +24,8 @@ namespace Molten.Graphics
             base(pipe, stageType)
         {
             uint maxVBuffers = pipe.Device.Features.MaxVertexBufferSlots;
-            VertexBuffers = DefineSlotGroup<PipeBufferSegment>(maxVBuffers, PipeBindTypeFlags.Input, "V-Buffer");
-            IndexBuffer = DefineSlot<PipeBufferSegment>(1, PipeBindTypeFlags.Input, "I-Buffer");
+            VertexBuffers = DefineSlotGroup<BufferSegment>(maxVBuffers, PipeBindTypeFlags.Input, "V-Buffer");
+            IndexBuffer = DefineSlot<BufferSegment>(1, PipeBindTypeFlags.Input, "I-Buffer");
         }
 
         internal override void Bind()
@@ -53,12 +53,12 @@ namespace Molten.Graphics
             // Check index buffer
             if (IndexBuffer.Bind())
             {
-                PipeBufferSegment ib = IndexBuffer.BoundValue;
+                BufferSegment ib = IndexBuffer.BoundValue;
                 Pipe.Context->IASetIndexBuffer(ib.Buffer.Native, ib.DataFormat, ib.ByteOffset);
             }
         }
 
-        private void BindVertexBuffers(PipeBindSlot<PipeBufferSegment>[] slots, uint startSlot, uint endSlot, uint numChanged)
+        private void BindVertexBuffers(PipeBindSlot<BufferSegment>[] slots, uint startSlot, uint endSlot, uint numChanged)
         {
             int iNumChanged = (int)numChanged;
 
@@ -66,7 +66,7 @@ namespace Molten.Graphics
             uint* pStrides = stackalloc uint[iNumChanged];
             uint* pOffsets = stackalloc uint[iNumChanged];
             uint p = 0;
-            PipeBufferSegment seg = null;
+            BufferSegment seg = null;
             
             for (uint i = startSlot; i <= endSlot; i++)
             {
@@ -114,9 +114,9 @@ namespace Molten.Graphics
             return input;
         }
 
-        public PipeBindSlotGroup<PipeBufferSegment> VertexBuffers { get; }
+        public PipeBindSlotGroup<BufferSegment> VertexBuffers { get; }
 
-        public PipeBindSlot<PipeBufferSegment> IndexBuffer { get;}
+        public PipeBindSlot<BufferSegment> IndexBuffer { get;}
 
         public VertexTopology Topology { get; set; }
     }

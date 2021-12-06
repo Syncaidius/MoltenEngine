@@ -374,6 +374,8 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
+            base.PipelineDispose();
+
             if (Native != null)
             {
                 Native->Release();

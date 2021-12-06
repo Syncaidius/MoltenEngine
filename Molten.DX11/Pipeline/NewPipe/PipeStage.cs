@@ -46,6 +46,8 @@ namespace Molten.Graphics
 
         internal PipeDX11 Pipe { get; }
 
+        internal DeviceDX11 Device => Pipe.Device;
+
         /// <summary>
         /// Gets the type of the current <see cref="PipeStage"/>.
         /// </summary>

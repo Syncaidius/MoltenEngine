@@ -11,17 +11,30 @@ namespace Molten.Graphics
         internal PipeBindSlot(PipeStage parent, uint slotID, PipeBindTypeFlags slotType, string namePrefix)
         {
             Stage = parent;
-            SlotID = slotID;
+            Index = slotID;
             SlotType = slotType;
-            Name = $"{namePrefix} slot {SlotID}";
+            Name = $"{namePrefix} slot {Index}";
         }
 
+        /// <summary>
+        /// Invoked when the current <see cref="PipeBindSlot"/> should check/update value bindings.
+        /// </summary>
+        /// <returns></returns>
         internal abstract bool Bind();
 
+        /// <summary>
+        /// Gets the parent <see cref="PipeStage"/> that the current <see cref="PipeBindSlot"/> belongs to.
+        /// </summary>
         internal PipeStage Stage { get; }
 
-        internal uint SlotID { get; }
+        /// <summary>
+        /// Gets the slot index.
+        /// </summary>
+        internal uint Index { get; }
 
+        /// <summary>
+        /// Gets the slot type of the current <see cref="PipeBindSlot"/>.
+        /// </summary>
         internal PipeBindTypeFlags SlotType { get; }
     }
 
