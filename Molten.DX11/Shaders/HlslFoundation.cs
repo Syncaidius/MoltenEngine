@@ -39,11 +39,6 @@ namespace Molten.Graphics
         private protected override void OnPipelineDispose() { }
 
         /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
-        public string Name { get; internal set; } = "<no name>";
-
-        /// <summary>
         /// Gets or sets the number of iterations the shader/component should be run.
         /// </summary>
         public int Iterations { get; set; } = 1;

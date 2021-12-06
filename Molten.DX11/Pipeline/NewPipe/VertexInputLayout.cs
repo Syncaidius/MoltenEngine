@@ -99,7 +99,7 @@ namespace Molten.Graphics
 
         public bool IsMatch(Logger log, PipeBindSlotGroup<BufferSegment> grp, ShaderIOStructure io)
         {
-            for (uint i = 0; i < grp.LastBound; i++)
+            for (uint i = 0; i < Device.Features.MaxVertexBufferSlots; i++)
             {
                 // If null vertex buffer, check if shader actually need one to be present.
                 if (grp[i].BoundValue == null)

@@ -9,11 +9,10 @@ namespace Molten.Graphics
     /// <summary>
     /// Represents a DX11 bindable pipeline object.
     /// </summary>
-    public abstract class PipeBindable : EngineObject
+    public abstract class PipeBindable : PipeObject
     {
-        internal PipeBindable(DeviceDX11 device)
+        internal PipeBindable(DeviceDX11 device) : base(device)
         {
-            Device = device;
             BoundTo = new HashSet<PipeBindSlot>();
         }
 
@@ -38,13 +37,6 @@ namespace Molten.Graphics
             BoundTo.Remove(slot);
         }
 
-        protected override sealed void OnDispose()
-        {
-            Device.MarkForDisposal(this);
-        }
-
-        internal abstract void PipelineDispose();
-
         /// <summary>
         /// Invoked right before the current <see cref="PipeBindable"/> is due to be bound to a <see cref="PipeDX11"/>.
         /// </summary>
@@ -55,7 +47,5 @@ namespace Molten.Graphics
         internal protected uint Version { get; protected set; }
 
         internal HashSet<PipeBindSlot> BoundTo { get; }
-
-        public DeviceDX11 Device { get; }
     }
 }

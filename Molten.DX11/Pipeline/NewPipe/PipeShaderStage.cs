@@ -11,8 +11,7 @@ namespace Molten.Graphics
     /// Represents a managed device context pipeline stage.
     /// </summary>
     /// <typeparam name="T">T</typeparam>
-    internal unsafe abstract class PipeShaderStage<T, S> : PipeStage
-        where T: PipeShader
+    internal unsafe abstract class PipeShaderStage : PipeStage
     {
         internal PipeShaderStage(PipeDX11 pipe, ShaderType shaderType) :
            base(pipe, shaderType.ToStageType())
@@ -20,7 +19,7 @@ namespace Molten.Graphics
             ShaderStageType = shaderType;
 
             uint maxSamplers = pipe.Device.Features.MaxSamplerSlots;
-            Samplers = DefineSlotGroup<PipeSampler>(maxSamplers, PipeBindTypeFlags.Input, "Sampler");
+            Samplers = DefineSlotGroup<ShaderSampler>(maxSamplers, PipeBindTypeFlags.Input, "Sampler");
 
             uint maxResources = pipe.Device.Features.MaxInputResourceSlots;
             Resources = DefineSlotGroup<PipeBindableResource>(maxResources, PipeBindTypeFlags.Input, "Resource");
@@ -28,7 +27,7 @@ namespace Molten.Graphics
             uint maxCBuffers = pipe.Device.Features.MaxConstantBufferSlots;
             ConstantBuffers = DefineSlotGroup<ShaderConstantBuffer>(maxCBuffers, PipeBindTypeFlags.Input, "C-Buffer");
 
-            Shader = DefineSlot<T>(0, PipeBindTypeFlags.Input, "Shader");
+            Shader = DefineSlot<HlslShader>(0, PipeBindTypeFlags.Input, "Shader");
         }
 
         protected abstract void OnBind();
@@ -45,7 +44,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the shader bind slot for the current <see cref="PipeShaderStage{T, S}"/>
         /// </summary>
-        internal PipeBindSlot<T> Shader { get; }
+        internal PipeBindSlot<HlslShader> Shader { get; }
 
         public ShaderType ShaderStageType { get; }
     }

@@ -13,16 +13,19 @@ namespace Molten.Graphics
         PipeBindSlot<VertexInputLayout> _vertexLayout;
         List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
 
+        PipeMaterialBinder _materialBinder;
+
         /* TODO:
          *  - Add MaterialBinder which replicates the MaterialInputStage functionality of old pipeline
          *  - Add VertexInputLayout functionality
          *  - 
-         * 
-         * 
          */
+
         public InputAssemblerStage(PipeDX11 pipe, PipeStageType stageType) : 
             base(pipe, stageType)
         {
+            _materialBinder = new PipeMaterialBinder(pipe);
+
             uint maxVBuffers = pipe.Device.Features.MaxVertexBufferSlots;
             VertexBuffers = DefineSlotGroup<BufferSegment>(maxVBuffers, PipeBindTypeFlags.Input, "V-Buffer");
             IndexBuffer = DefineSlot<BufferSegment>(0, PipeBindTypeFlags.Input, "I-Buffer");

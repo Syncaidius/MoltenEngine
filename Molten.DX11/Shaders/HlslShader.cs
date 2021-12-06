@@ -16,7 +16,6 @@ namespace Molten.Graphics
         
         internal IShaderResource[] DefaultResources;
 
-        DeviceDX11 _device;
         string _filename;
         internal ShaderIOStructure InputStructure;
         Dictionary<string, string> _metadata;
@@ -35,7 +34,6 @@ namespace Molten.Graphics
         {
             SortKey = Interlocked.Increment(ref _nextSortKey);
             _filename = filename ?? "";
-            _device = device;
             _metadata = new Dictionary<string, string>();
         }
 
@@ -69,30 +67,18 @@ namespace Molten.Graphics
         /// <returns></returns>
         public IShaderValue this[string varName]
         {
-            set
-            {
-                //if the shader is invalid, skip applying data
-                //if (!_isValid)
-                //    return;
-
-                IShaderValue varInstance = null;
-
-                if (Variables.TryGetValue(varName, out varInstance))
-                    varInstance.Value = value;
-            }
-
             get
             {
-                //if the shader is invalid, skip applying data
-                //if (!_isValid)
-                //    return null;
-
-                IShaderValue varInstance = null;
-
-                if (Variables.TryGetValue(varName, out varInstance))
+                if (Variables.TryGetValue(varName, out IShaderValue varInstance))
                     return varInstance;
                 else
                     return null;
+            }
+
+            set
+            {
+                if (Variables.TryGetValue(varName, out IShaderValue varInstance))
+                    varInstance.Value = value;
             }
         }
 

@@ -27,5 +27,7 @@ namespace Molten.Graphics
         OutputMerger = 8,
 
         StreamOutput = 9,
+
+        MaterialBinder = 10,
     }
 }

@@ -234,10 +234,13 @@
     <Compile Include="Pipeline\NewPipe\PipeBindableResource.cs" />
     <Compile Include="Pipeline\NewPipe\PipeBindSlotGroup.cs" />
     <Compile Include="Pipeline\NewPipe\PipeBindTypeFlags.cs" />
+    <Compile Include="Pipeline\NewPipe\PipeMaterialBinder.cs" />
+    <Compile Include="Pipeline\NewPipe\PipeObject.cs" />
     <Compile Include="Pipeline\NewPipe\PipeStageType.cs" />
     <Compile Include="Pipeline\NewPipe\PipeBindSlot.cs" />
     <Compile Include="Pipeline\NewPipe\PipeShaderStage.cs" />
     <Compile Include="Pipeline\NewPipe\PipeStage.cs" />
+    <Compile Include="Pipeline\NewPipe\Shaders\ShaderStageBinder.cs" />
     <Compile Include="Renderer\MainSurfaceType.cs" />
     <Compile Include="Renderer\RenderChain.Context.cs" />
     <Compile Include="Renderer\RenderChain.cs" />
