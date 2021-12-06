@@ -14,7 +14,7 @@ namespace Molten.Graphics
 
         }
 
-        protected override void OnBind(PipeBindSlot slot, PipeDX11 pipe)
+        protected override void Refresh(PipeBindSlot slot, PipeDX11 pipe)
         {
             throw new NotImplementedException();
         }

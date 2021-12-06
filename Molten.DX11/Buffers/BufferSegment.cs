@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe class BufferSegment : PipelineShaderObject, IPoolable, ICloneable
+    internal unsafe class BufferSegment : PipeBindableResource<ID3D11Buffer>, IPoolable
     {
         /// <summary>The size of the segment in bytes. This is <see cref="ElementCount"/> multiplied by <see cref="Stride"/>.</summary>
         internal uint ByteCount;
@@ -28,6 +28,8 @@ namespace Molten.Graphics
         /// The <see cref="GraphicsBuffer"/> that contains the current <see cref="BufferSegment"/>
         /// </summary>
         internal GraphicsBuffer Buffer;
+
+        internal override unsafe ID3D11Buffer* Native => Buffer.Native;
 
         /// <summary>
         /// The byte offset within the <see cref="Buffer"/> <see cref="GraphicsBuffer"/>.
@@ -210,15 +212,21 @@ namespace Molten.Graphics
             }
         }
 
-        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
+        protected internal override void Refresh(PipeBindSlot slot, PipeDX11 pipe)
         {
-            Buffer.Refresh(pipe, slot);
+            Buffer.Refresh(slot, pipe);
         }
 
         /// <summary>Releases the buffer space reserved by the segment.</summary>
         internal void Release()
         {
             Buffer.Deallocate(this);
+        }
+
+        internal override void PipelineDispose()
+        {
+            Release();
+            IsDisposed = false;
         }
 
         /// <summary>Clears segment's internal data.</summary>
@@ -314,29 +322,6 @@ namespace Molten.Graphics
             seg.ByteOffset = ByteOffset + ByteCount;
             seg.Buffer = Buffer;
             return seg;
-        }
-
-        public object Clone()
-        {
-            BufferSegment clone = Device.GetBufferSegment();
-            CloneTo(clone);
-            return clone;
-        }
-
-        public void CloneTo(BufferSegment dest)
-        {
-            dest.ByteCount = ByteCount;
-            dest.ByteOffset = ByteOffset;
-            dest.ElementCount = ElementCount;
-            dest.DataFormat = DataFormat;
-            dest.IsFree = IsFree;
-            dest.Next = Next;
-            dest.Buffer = Buffer;
-            dest.Previous = Previous;
-            dest.SRV = SRV;
-            dest.Stride = Stride;
-            dest.UAV = UAV;
-            dest.VertexFormat = VertexFormat;
         }
     }
 }

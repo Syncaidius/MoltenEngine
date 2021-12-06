@@ -12,8 +12,6 @@ namespace Molten
     [DataContract]
     public abstract class EngineObject : IDisposable
     {
-        bool _isDisposed;
-
         [ThreadStatic]
         static uint _idCounter;
 
@@ -49,10 +47,10 @@ namespace Molten
         /// releases its ID to be reused by a new object.</summary>
         public void Dispose()
         {
-            if (_isDisposed)
+            if (IsDisposed)
                 return;
 
-            _isDisposed = true;
+            IsDisposed = true;
             Interlocked.CompareExchange(ref OnDisposing, null, null)?.Invoke(this);
             OnDispose();
         }
@@ -61,7 +59,7 @@ namespace Molten
         protected abstract void OnDispose();
 
         /// <summary>Gets whether or not the object has been disposed.</summary>
-        public bool IsDisposed => _isDisposed;
+        public bool IsDisposed { get; protected set; }
 
         /// <summary>
         /// Gets or sets the tag object.

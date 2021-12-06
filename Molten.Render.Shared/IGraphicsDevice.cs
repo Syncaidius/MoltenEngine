@@ -2,6 +2,6 @@
 {
     public interface IGraphicsDevice
     {
-        void MarkForDisposal(PipelineDisposableObject obj);
+        void MarkForDisposal(PipeBindable obj);
     }
 }

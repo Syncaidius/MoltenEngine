@@ -50,12 +50,21 @@ namespace Molten.Graphics
             if (BoundValue != Value)
             {
                 BoundValue?.UnbindFrom(this);
-                BoundValue = Value;
 
-                if (BoundValue != null)
+                if (Value != null)
                 {
-                    _boundVersion = BoundValue.Version;
-                    BoundValue.BindTo(this);
+                    // Did the new bind fail?
+                    if (!Value.BindTo(this))
+                    {
+                        BoundValue = null;
+#if DEBUG
+                        Value.Device.Log.WriteError($"Failed to bind {Value.Name} to {this.Name}");
+#endif
+                        return false;
+                    }
+
+                    _boundVersion = Value.Version;
+                    BoundValue = Value;
                 }
 
                 Stage.Pipe.Profiler.Current.Bindings++;
@@ -63,11 +72,14 @@ namespace Molten.Graphics
             }
             else if (Value != null)
             {
-                if (_boundVersion != Value.Version)
+                if (BoundValue.BindTo(this))
                 {
-                    _boundVersion = Value.Version;
-                    Stage.Pipe.Profiler.Current.Bindings++;
-                    return true;
+                    if (_boundVersion != Value.Version)
+                    {
+                        _boundVersion = Value.Version;
+                        Stage.Pipe.Profiler.Current.Bindings++;
+                        return true;
+                    }
                 }
             }
 

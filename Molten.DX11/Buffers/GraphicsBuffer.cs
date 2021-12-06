@@ -11,11 +11,10 @@ using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    internal unsafe partial class GraphicsBuffer : PipelineShaderObject
+    internal unsafe partial class GraphicsBuffer : PipeBindableResource<ID3D11Buffer>
     {
-        protected Array _initialData;
-        internal ID3D11Buffer* Native;
-
+        ID3D11Buffer* _native;
+        BufferDesc _desc;
         uint _ringPos;
 
         internal BufferDesc Description;
@@ -37,24 +36,8 @@ namespace Molten.Graphics
             Mode = mode;
             _pendingChanges = new ThreadedQueue<IBufferOperation>();
 
-            if (mode == BufferMode.Immutable && initialData == null)
-                throw new ArgumentNullException("Initial data cannot be null when buffer mode is Immutable.");
-
-            _initialData = initialData;
-
             BuildDescription(bindFlags, optionFlags, stagingType, byteCapacity, structuredStride);
-
-            if (initialData != null)
-            {
-                EngineInterop.PinObject(initialData, (ptr) =>
-                {
-                    InitializeBuffer(ptr.ToPointer());
-                });
-            }
-            else
-            {
-                InitializeBuffer(null);
-            }
+            InitializeBuffer(initialData);
         }
 
         internal void QueueOperation(IBufferOperation op)
@@ -127,20 +110,20 @@ namespace Molten.Graphics
         /// 
         /// </summary>
         /// <param name="initialDataPtr">A pointer to data that the buffer should initially be populated with.</param>
-        protected virtual void InitializeBuffer(void* initialDataPtr)
+        protected virtual void InitializeBuffer(Array initialData)
         {
-            // Dispose of old static buffer
-            if (Native != null)
-            {
-                Device.DeallocateVRAM(Description.ByteWidth);
-                Native->Release();
-                Native = null;
-            }
+            if (Mode == BufferMode.Immutable && initialData == null)
+                throw new ArgumentNullException("Initial data cannot be null when buffer mode is Immutable.");
 
-            uint byteCount = Description.ByteWidth;
-            SubresourceData ssd = new SubresourceData(initialDataPtr, byteCount, byteCount);
+            uint byteCount = _desc.ByteWidth;
 
-            Device.Native->CreateBuffer(ref Description, ref ssd, ref Native);
+            SubresourceData ssd = new SubresourceData(null, byteCount, byteCount);
+            if (initialData != null)
+                EngineInterop.PinObject(initialData, (ptr) => ssd.PSysMem = ptr.ToPointer());
+            else
+                ssd = new SubresourceData(null, byteCount, byteCount);
+
+            Device.Native->CreateBuffer(ref _desc, ref ssd, ref _native);
 
             Device.AllocateVRAM(byteCount);
 
@@ -384,17 +367,19 @@ namespace Molten.Graphics
             return ((CpuAccessFlag)Description.CPUAccessFlags & flag) == flag;
         }
 
-        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
+        protected internal override void Refresh(PipeBindSlot slot, PipeDX11 pipe)
         {
             ApplyChanges(pipe);
         }
 
-        private protected override void OnPipelineDispose()
+        internal override void PipelineDispose()
         {
             if (Native != null)
+            {
+                Native->Release();
+                _native = null;
                 Device.DeallocateVRAM(Description.ByteWidth);
-
-            base.OnPipelineDispose();
+            }
         }
 
         private void CreateResources(uint stride, uint byteOffset, uint elementCount,
@@ -505,6 +490,10 @@ namespace Molten.Graphics
                 segment.Previous.ByteCount += segment.ByteCount;
                 segment.Previous.ByteCount += segment.Next.ByteCount;
                 segment.Previous.LinkNext(segment.Next.Next);
+
+                // The next one will be listed in _freeSegments, so removei t.
+                _freeSegments.Remove(segment.Next);
+
                 Device.RecycleBufferSegment(segment.Next);
                 Device.RecycleBufferSegment(segment);
             }
@@ -630,7 +619,7 @@ namespace Molten.Graphics
         public BindFlag BindFlags => (BindFlag)Description.BindFlags;
 
         /// <summary>Gets the underlying DirectX 11 buffer. </summary>
-        internal ID3D11Buffer* Buffer => Native;
+        internal override ID3D11Buffer* Native => Native;
 
         /// <summary>Gets the resource usage flags associated with the buffer.</summary>
         public ResourceMiscFlag ResourceFlags => (ResourceMiscFlag)Description.MiscFlags;
