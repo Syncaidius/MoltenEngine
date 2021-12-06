@@ -10,7 +10,7 @@ namespace Molten.Graphics
     internal unsafe class InputAssemblerStage : PipeStage
     {
         VertexTopology _boundTopology;
-        VertexInputLayout _boundLayout;
+        PipeBindSlot<VertexInputLayout> _vertexLayout;
         List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
 
         /* TODO:
@@ -25,7 +25,8 @@ namespace Molten.Graphics
         {
             uint maxVBuffers = pipe.Device.Features.MaxVertexBufferSlots;
             VertexBuffers = DefineSlotGroup<BufferSegment>(maxVBuffers, PipeBindTypeFlags.Input, "V-Buffer");
-            IndexBuffer = DefineSlot<BufferSegment>(1, PipeBindTypeFlags.Input, "I-Buffer");
+            IndexBuffer = DefineSlot<BufferSegment>(0, PipeBindTypeFlags.Input, "I-Buffer");
+            _vertexLayout = DefineSlot<VertexInputLayout>(0, PipeBindTypeFlags.Input, "Vertex Input Layout");
         }
 
         internal override void Bind()
@@ -43,18 +44,19 @@ namespace Molten.Graphics
             bool dsChanged = false;
             bool psChanged = false;
 
-            // Does the vertex input layout need updating?
-            if (VertexBuffers.BindAll(BindVertexBuffers) || vsChanged)
-            {
-                _boundLayout = GetInputLayout();
-                Pipe.Context->IASetInputLayout(_boundLayout);
-            }
-
             // Check index buffer
             if (IndexBuffer.Bind())
             {
                 BufferSegment ib = IndexBuffer.BoundValue;
                 Pipe.Context->IASetIndexBuffer(ib.Buffer.Native, ib.DataFormat, ib.ByteOffset);
+            }
+
+            // Does the vertex input layout need updating?
+            if (VertexBuffers.BindAll(BindVertexBuffers) || vsChanged)
+            {
+                _vertexLayout.Value = GetInputLayout();
+                _vertexLayout.Bind();
+                Pipe.Context->IASetInputLayout(_vertexLayout.BoundValue);
             }
         }
 
@@ -99,14 +101,14 @@ namespace Molten.Graphics
             // Retrieve layout list or create new one if needed.
             foreach (VertexInputLayout l in _cachedLayouts)
             {
-                bool match = l.IsMatch(Device.Log, _slotVertexBuffers, _materialStage.BoundShader.InputStructure, _vertexSlotCount);
+                bool match = l.IsMatch(Device.Log, VertexBuffers, 
+                    _materialStage.BoundShader.InputStructure, _vertexSlotCount);
                 if (match)
                     return l;
             }
 
             // A new layout is required
-            VertexInputLayout input = new VertexInputLayout(Device,
-                _slotVertexBuffers,
+            VertexInputLayout input = new VertexInputLayout(Device, VertexBuffers,
                 _materialStage.BoundShader.InputStructureByteCode,
                 _materialStage.BoundShader.InputStructure);
             _cachedLayouts.Add(input);

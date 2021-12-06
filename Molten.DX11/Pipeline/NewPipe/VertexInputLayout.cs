@@ -1,6 +1,4 @@
-﻿using Molten.Collections;
-using Molten.Graphics.Shaders;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +7,7 @@ using Silk.NET.Direct3D11;
 namespace Molten.Graphics
 {
     /// <summary>A helper class that safely wraps InputLayout.</summary>
-    internal unsafe class VertexInputLayout : EngineObject
+    internal unsafe class VertexInputLayout : PipeBindable
     {
         internal ID3D11InputLayout* Native;
         bool _valid = true;
@@ -19,7 +17,7 @@ namespace Molten.Graphics
         internal VertexInputLayout(DeviceDX11 device, 
             PipeBindSlotGroup<BufferSegment> vbSlots, 
             byte[] vertexBytecode,
-            ShaderIOStructure io)
+            ShaderIOStructure io) : base(device)
         {
             int maxSlots = vbSlots.SlotCount;
             _hashKeys = new ulong[maxSlots];
@@ -35,8 +33,8 @@ namespace Molten.Graphics
 
                 /* Check if the current vertex segment's format matches 
                    the part of the shader's input structure it's meant to represent. */
-                uint startID = (uint)elements.Count;
-                bool inputMatch = io.IsCompatible(format, startID);
+                int startID = elements.Count;
+                bool inputMatch = io.IsCompatible(format, (uint)startID);
                 if (inputMatch == false)
                 {
                     _valid = false;
@@ -51,7 +49,7 @@ namespace Molten.Graphics
                     e.InputSlot = i; // Vertex buffer input slot.
                     elements[eID] = e;
 
-                    _isInstanced = _isInstanced || elements[eID].InputSlotClass == InputClassification.InputPerInstanceData;
+                    _isInstanced = _isInstanced || e.InputSlotClass == InputClassification.InputPerInstanceData;
                 }
 
                 _hashKeys[i] = (ulong)format.UID << 32 | (uint)io.HashKey;
@@ -69,22 +67,19 @@ namespace Molten.Graphics
             // Attempt creation of input layout.
             if (_valid)
             {
-                device.Native->CreateInputLayout(finalElements, 
-                    finalElements.Length, 
-                    vertexBytecode, 
-                    vertexBytecode.Length, 
+                device.Native->CreateInputLayout(ref finalElements[0], (uint)finalElements.Length,
+                    ref vertexBytecode[0], (uint)vertexBytecode.Length,
                     ref Native);
             }
             else
             {
                 device.Log.WriteWarning($"Vertex formats do not match the input layout of shader:");
-                for (int i = 0; i < vbSlots.SlotCount; i++)
+                for (uint i = 0; i < vbSlots.SlotCount; i++)
                 {
-                    if (vbSlots[i].BoundObject == null)
+                    if (vbSlots[i].BoundValue == null)
                         continue;
 
-                    format = vbSlots[i].BoundObject.VertexFormat;
-
+                    format = vbSlots[i].BoundValue.VertexFormat;
 
                     device.Log.WriteWarning("Format - Buffer slot "+ i + ": ");
                     for (int f = 0; f < format.Elements.Length; f++)
@@ -101,6 +96,11 @@ namespace Molten.Graphics
                         " -- index: " + finalElements[i].SemanticIndex);
                 }
             }
+        }
+
+        protected internal override void Refresh(PipeBindSlot slot, PipeDX11 pipe)
+        {
+            // Do nothing. Vertex input layouts build everything they need in the constructor.
         }
 
         public bool IsMatch(Logger log, PipeBindSlotGroup<BufferSegment> slots, ShaderIOStructure io, uint lastSlot)
@@ -142,7 +142,7 @@ namespace Molten.Graphics
             return isMatch;
         }
 
-        protected override void OnDispose()
+        internal override void PipelineDispose()
         {
             Native->Release();
             Native = null;
