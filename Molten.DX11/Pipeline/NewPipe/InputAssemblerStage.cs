@@ -60,7 +60,7 @@ namespace Molten.Graphics
             }
         }
 
-        private void BindVertexBuffers(PipeBindSlot<BufferSegment>[] slots, uint startSlot, uint endSlot, uint numChanged)
+        private void BindVertexBuffers(PipeBindSlotGroup<BufferSegment> grp, uint numChanged)
         {
             int iNumChanged = (int)numChanged;
 
@@ -70,9 +70,9 @@ namespace Molten.Graphics
             uint p = 0;
             BufferSegment seg = null;
             
-            for (uint i = startSlot; i <= endSlot; i++)
+            for (uint i = grp.FirstChanged; i <= grp.LastChanged; i++)
             {
-                seg = slots[i].BoundValue;
+                seg = grp[i].BoundValue;
 
                 if (seg != null)
                 {
@@ -90,7 +90,7 @@ namespace Molten.Graphics
                 p++;
             }
 
-            Pipe.Context->IASetVertexBuffers(startSlot, numChanged, pBuffers, pStrides, pOffsets);
+            Pipe.Context->IASetVertexBuffers(grp.FirstChanged, numChanged, pBuffers, pStrides, pOffsets);
         }
 
 
@@ -102,7 +102,8 @@ namespace Molten.Graphics
             foreach (VertexInputLayout l in _cachedLayouts)
             {
                 bool match = l.IsMatch(Device.Log, VertexBuffers, 
-                    _materialStage.BoundShader.InputStructure, _vertexSlotCount);
+                    _materialStage.BoundShader.InputStructure);
+
                 if (match)
                     return l;
             }

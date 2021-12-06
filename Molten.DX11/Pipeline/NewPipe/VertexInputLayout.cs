@@ -32,7 +32,7 @@ namespace Molten.Graphics
                 format = vbSlots[i].BoundValue.VertexFormat;
 
                 /* Check if the current vertex segment's format matches 
-                   the part of the shader's input structure it's meant to represent. */
+                   the part of the shader's input structure that it's meant to represent. */
                 int startID = elements.Count;
                 bool inputMatch = io.IsCompatible(format, (uint)startID);
                 if (inputMatch == false)
@@ -83,18 +83,12 @@ namespace Molten.Graphics
 
                     device.Log.WriteWarning("Format - Buffer slot "+ i + ": ");
                     for (int f = 0; f < format.Elements.Length; f++)
-                    {
-                        device.Log.WriteWarning("\t[" + f + "] " + format.Elements[f].SemanticName +
-                            " -- index: " + format.Elements[f].SemanticIndex);
-                    }
+                        device.Log.WriteWarning($"\t[{f}]{format.Elements[f].SemanticName} -- index: {format.Elements[f].SemanticIndex)}";
                 }
 
                 device.Log.WriteWarning("Shader Input Structure: ");
                 for (int i = 0; i < finalElements.Length; i++)
-                {
-                    device.Log.WriteWarning("\t[" + i + "] " + finalElements[i].SemanticName +
-                        " -- index: " + finalElements[i].SemanticIndex);
-                }
+                    device.Log.WriteWarning($"\t[{i}]{finalElements[i].SemanticName} -- index: {finalElements[i].SemanticIndex)}";
             }
         }
 
@@ -103,43 +97,34 @@ namespace Molten.Graphics
             // Do nothing. Vertex input layouts build everything they need in the constructor.
         }
 
-        public bool IsMatch(Logger log, PipeBindSlotGroup<BufferSegment> slots, ShaderIOStructure io, uint lastSlot)
+        public bool IsMatch(Logger log, PipeBindSlotGroup<BufferSegment> grp, ShaderIOStructure io)
         {
-            bool isMatch = true;
-
-            for (uint i = 0; i < lastSlot; i++)
+            for (uint i = 0; i < grp.LastBound; i++)
             {
-                // If resource is null, check if is actually meant to be.
-                if (slots[i].BoundValue == null)
+                // If null vertex buffer, check if shader actually need one to be present.
+                if (grp[i].BoundValue == null)
                 {
+                    // if shader's buffer hash is null for this slot, it's allowed to be null, otherwise no match.
                     if (_hashKeys[i] == 0)
-                    {
                         continue;
-                    }
                     else
-                    {
-                        isMatch = false;
-                        break;
-                    }
+                        return false;
                 }
 
                 // Prevent vertex segments with no format from crashing the application.
-                if (slots[i].BoundValue.VertexFormat == null)
+                if (grp[i].BoundValue.VertexFormat == null)
                 {
                     log.WriteWarning($"Missing format for vertex segment in slot {i}. Skipping validation. This may cause a false input layout match.");
                     continue;
                 }
 
                 // if composite hash-key does not match the one held by the input layout, flag match as false and abort.
-                ulong comKey = (ulong)slots[i].BoundValue.VertexFormat.UID << 32 | (uint)io.HashKey;
+                ulong comKey = (ulong)grp[i].BoundValue.VertexFormat.UID << 32 | (uint)io.HashKey;
                 if (comKey != _hashKeys[i])
-                {
-                    isMatch = false;
-                    break;
-                }
+                    return false;
             }
 
-            return isMatch;
+            return true;
         }
 
         internal override void PipelineDispose()
@@ -154,15 +139,9 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets whether or not the input layout is valid.</summary>
-        internal bool IsValid
-        {
-            get { return _valid; }
-        }
+        internal bool IsValid => _valid;
 
         /// <summary>Gets whether or not the vertex input layout is designed for use with instanced draw calls.</summary>
-        public bool IsInstanced
-        {
-            get { return _isInstanced; }
-        }
+        public bool IsInstanced => _isInstanced;
     }
 }

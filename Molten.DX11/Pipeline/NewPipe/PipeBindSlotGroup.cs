@@ -9,7 +9,7 @@ namespace Molten.Graphics
     internal class PipeBindSlotGroup<T>
         where T : PipeBindable
     {
-        public delegate void PipeBindSlotGroupCallback(PipeBindSlot<T>[] slots, uint startSlot, uint endSlot, uint numChanged);
+        public delegate void PipeBindSlotGroupCallback(PipeBindSlotGroup<T> grp, uint numChanged);
 
         PipeBindSlot<T>[] _slots;
 
@@ -28,8 +28,6 @@ namespace Molten.Graphics
             // Reset trackers
             FirstChanged = uint.MaxValue;
             LastChanged = 0;
-            FirstBound = uint.MaxValue;
-            LastBound = 0;
 
             foreach(PipeBindSlot<T> slot in _slots)
             {
@@ -57,12 +55,11 @@ namespace Molten.Graphics
             if(FirstChanged < LastChanged)
             {
                 uint numChanged = LastChanged - FirstChanged;
-                bindCallback?.Invoke(_slots, FirstChanged, LastChanged, numChanged);
+                bindCallback?.Invoke(this, numChanged);
                 return true;
             }
 
-            if (FirstBound > LastBound)
-                LastBound = FirstBound;
+            // Check the first and last bound
 
             return false;
         }
