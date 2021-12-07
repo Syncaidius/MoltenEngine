@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class PipeBindSlotGroup<T>
+    internal class PipeSlotGroup<T>
         where T : PipeBindable
     {
-        public delegate void PipeBindSlotGroupCallback(PipeBindSlotGroup<T> grp, uint numChanged);
+        public delegate void PipeBindSlotGroupCallback(PipeSlotGroup<T> grp, uint numChanged);
 
         PipeBindSlot<T>[] _slots;
 
-        internal PipeBindSlotGroup(PipeStage stage, uint slotCount, PipeBindTypeFlags slotType, string namePrefix)
+        internal PipeSlotGroup(PipeStage stage, uint slotCount, PipeBindTypeFlags slotType, string namePrefix)
         {
             _slots = new PipeBindSlot<T>[slotCount];
 
@@ -23,11 +23,12 @@ namespace Molten.Graphics
             stage.AllSlots.AddRange(_slots);
         }
 
-        public bool BindAll(PipeBindSlotGroupCallback bindCallback)
+        public bool BindAll()
         {
             // Reset trackers
             FirstChanged = uint.MaxValue;
             LastChanged = 0;
+            NumSlotsChanged = 0;
 
             foreach(PipeBindSlot<T> slot in _slots)
             {
@@ -44,9 +45,7 @@ namespace Molten.Graphics
             // If first slot is less than last slot, changes occurred.
             if(FirstChanged < LastChanged)
             {
-                uint numChanged = LastChanged - FirstChanged;
-                bindCallback?.Invoke(this, numChanged);
-
+                NumSlotsChanged = LastChanged - FirstChanged;
                 return true;
             }
 
@@ -55,7 +54,7 @@ namespace Molten.Graphics
 
         /// <summary>
         /// Gets the <see cref="PipeBindSlot{T}"/> at the specified slot ID/Index, 
-        /// within the current <see cref="PipeBindSlotGroup{T}"/>.
+        /// within the current <see cref="PipeSlotGroup{T}"/>.
         /// </summary>
         /// <param name="index">The slot ID/index.</param>
         /// <returns></returns>
@@ -63,18 +62,23 @@ namespace Molten.Graphics
 
         /// <summary>
         /// Gets the first <see cref="PipeBindSlot{T}"/> in the current 
-        /// <see cref="PipeBindSlotGroup{T}"/> that was changed, during the previous <see cref="BindAll"/> call.
+        /// <see cref="PipeSlotGroup{T}"/> that was changed, during the previous <see cref="BindAll"/> call.
         /// </summary>
         public uint FirstChanged { get; private set; }
 
         /// <summary>
         /// Gets the last <see cref="PipeBindSlot{T}"/> in the current 
-        /// <see cref="PipeBindSlotGroup{T}"/> that was changed, during the previous <see cref="BindAll"/> call.
+        /// <see cref="PipeSlotGroup{T}"/> that was changed, during the previous <see cref="BindAll"/> call.
         /// </summary>
         public uint LastChanged { get; private set; }
 
         /// <summary>
-        /// Gets the number of slots in the current <see cref="PipeBindSlotGroup{T}"/>.
+        /// Gets the number of slots that were changed during the last <see cref="BindAll"/> call.
+        /// </summary>
+        public uint NumSlotsChanged { get; private set; }
+
+        /// <summary>
+        /// Gets the number of slots in the current <see cref="PipeSlotGroup{T}"/>.
         /// </summary>
         public int SlotCount => _slots.Length;
     }

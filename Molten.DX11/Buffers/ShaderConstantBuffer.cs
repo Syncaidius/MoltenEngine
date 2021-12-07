@@ -60,7 +60,7 @@ namespace Molten.Graphics
             Description.ByteWidth = desc->Size;
         }
 
-        protected internal override void Refresh(PipeBindSlot slot, PipeDX11 pipe)
+        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
         {
             // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
             if (DirtyVariables)

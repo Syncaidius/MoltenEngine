@@ -15,7 +15,7 @@ namespace Molten.Graphics
         ulong[] _hashKeys;
 
         internal VertexInputLayout(DeviceDX11 device, 
-            PipeBindSlotGroup<BufferSegment> vbSlots, 
+            PipeSlotGroup<BufferSegment> vbSlots, 
             byte[] vertexBytecode,
             ShaderIOStructure io) : base(device)
         {
@@ -83,21 +83,21 @@ namespace Molten.Graphics
 
                     device.Log.WriteWarning("Format - Buffer slot "+ i + ": ");
                     for (int f = 0; f < format.Elements.Length; f++)
-                        device.Log.WriteWarning($"\t[{f}]{format.Elements[f].SemanticName} -- index: {format.Elements[f].SemanticIndex)}";
+                        device.Log.WriteWarning($"\t[{f}]{format.Elements[f].SemanticName} -- index: {format.Elements[f].SemanticIndex}");
                 }
 
                 device.Log.WriteWarning("Shader Input Structure: ");
                 for (int i = 0; i < finalElements.Length; i++)
-                    device.Log.WriteWarning($"\t[{i}]{finalElements[i].SemanticName} -- index: {finalElements[i].SemanticIndex)}";
+                    device.Log.WriteWarning($"\t[{i}]{finalElements[i].SemanticName} -- index: {finalElements[i].SemanticIndex}");
             }
         }
 
-        protected internal override void Refresh(PipeBindSlot slot, PipeDX11 pipe)
+        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
         {
             // Do nothing. Vertex input layouts build everything they need in the constructor.
         }
 
-        public bool IsMatch(Logger log, PipeBindSlotGroup<BufferSegment> grp, ShaderIOStructure io)
+        public bool IsMatch(Logger log, PipeSlotGroup<BufferSegment> grp, ShaderIOStructure io)
         {
             for (uint i = 0; i < Device.Features.MaxVertexBufferSlots; i++)
             {

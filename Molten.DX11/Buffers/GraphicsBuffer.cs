@@ -367,7 +367,7 @@ namespace Molten.Graphics
             return ((CpuAccessFlag)Description.CPUAccessFlags & flag) == flag;
         }
 
-        protected internal override void Refresh(PipeBindSlot slot, PipeDX11 pipe)
+        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
         {
             ApplyChanges(pipe);
         }

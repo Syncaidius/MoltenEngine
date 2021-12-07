@@ -13,15 +13,15 @@ namespace Molten.Graphics
     {
         internal PipeBindable(DeviceDX11 device) : base(device)
         {
-            BoundTo = new HashSet<PipeBindSlot>();
+            BoundTo = new HashSet<PipeSlot>();
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="slot">The <see cref="PipeBindSlot"/> to bind to.</param>
+        /// <param name="slot">The <see cref="PipeSlot"/> to bind to.</param>
         /// <returns>True if the binding succeeded.</returns>
-        internal bool BindTo(PipeBindSlot slot)
+        internal bool BindTo(PipeSlot slot)
         {
             // TODO validate binding. Allow bindable to do it's own validation too.
             // If validation fails, return false here.
@@ -32,7 +32,7 @@ namespace Molten.Graphics
             return true;
         }
 
-        internal void UnbindFrom(PipeBindSlot slot)
+        internal void UnbindFrom(PipeSlot slot)
         {
             BoundTo.Remove(slot);
         }
@@ -40,12 +40,12 @@ namespace Molten.Graphics
         /// <summary>
         /// Invoked right before the current <see cref="PipeBindable"/> is due to be bound to a <see cref="PipeDX11"/>.
         /// </summary>
-        /// <param name="slot">The <see cref="PipeBindSlot"/> which contains the current <see cref="PipeBindable"/>.</param>
+        /// <param name="slot">The <see cref="PipeSlot"/> which contains the current <see cref="PipeBindable"/>.</param>
         /// <param name="pipe">The <see cref="PipeDX11"/> that the current <see cref="PipeBindable"/> is to be bound to.</param>
-        protected internal abstract void Refresh(PipeBindSlot slot, PipeDX11 pipe);
+        protected internal abstract void Refresh(PipeSlot slot, PipeDX11 pipe);
 
         internal protected uint Version { get; protected set; }
 
-        internal HashSet<PipeBindSlot> BoundTo { get; }
+        internal HashSet<PipeSlot> BoundTo { get; }
     }
 }

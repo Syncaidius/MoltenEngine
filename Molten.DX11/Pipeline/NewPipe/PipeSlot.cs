@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public abstract class PipeBindSlot : EngineObject
+    public abstract class PipeSlot : EngineObject
     {
-        internal PipeBindSlot(PipeStage parent, uint slotID, PipeBindTypeFlags slotType, string namePrefix)
+        internal PipeSlot(PipeStage parent, uint slotID, PipeBindTypeFlags slotType, string namePrefix)
         {
             Stage = parent;
             Index = slotID;
@@ -17,13 +17,13 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Invoked when the current <see cref="PipeBindSlot"/> should check/update value bindings.
+        /// Invoked when the current <see cref="PipeSlot"/> should check/update value bindings.
         /// </summary>
         /// <returns></returns>
         internal abstract bool Bind();
 
         /// <summary>
-        /// Gets the parent <see cref="PipeStage"/> that the current <see cref="PipeBindSlot"/> belongs to.
+        /// Gets the parent <see cref="PipeStage"/> that the current <see cref="PipeSlot"/> belongs to.
         /// </summary>
         internal PipeStage Stage { get; }
 
@@ -33,12 +33,12 @@ namespace Molten.Graphics
         internal uint Index { get; }
 
         /// <summary>
-        /// Gets the slot type of the current <see cref="PipeBindSlot"/>.
+        /// Gets the slot type of the current <see cref="PipeSlot"/>.
         /// </summary>
         internal PipeBindTypeFlags SlotType { get; }
     }
 
-    internal sealed class PipeBindSlot<T> : PipeBindSlot
+    internal sealed class PipeBindSlot<T> : PipeSlot
         where T : PipeBindable
     {
         uint _boundVersion;

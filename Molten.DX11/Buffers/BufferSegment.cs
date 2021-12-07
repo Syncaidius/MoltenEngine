@@ -212,7 +212,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected internal override void Refresh(PipeBindSlot slot, PipeDX11 pipe)
+        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
         {
             Buffer.Refresh(slot, pipe);
         }

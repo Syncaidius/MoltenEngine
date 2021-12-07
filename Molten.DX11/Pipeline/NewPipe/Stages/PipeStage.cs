@@ -16,13 +16,13 @@ namespace Molten.Graphics
         {
             Pipe = pipe;
             StageType = stageType;
-            AllSlots = new List<PipeBindSlot>();
+            AllSlots = new List<PipeSlot>();
         }
 
-        protected PipeBindSlotGroup<T> DefineSlotGroup<T>(uint slotCount, PipeBindTypeFlags slotType, string namePrefix)
+        protected PipeSlotGroup<T> DefineSlotGroup<T>(uint slotCount, PipeBindTypeFlags slotType, string namePrefix)
             where T : PipeBindable
         {
-            return new PipeBindSlotGroup<T>(this, slotCount, slotType, namePrefix);
+            return new PipeSlotGroup<T>(this, slotCount, slotType, namePrefix);
         }
 
         protected PipeBindSlot<T> DefineSlot<T>(uint slotID, PipeBindTypeFlags slotType, string namePrefix)
@@ -35,7 +35,7 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            foreach (PipeBindSlot slot in AllSlots)
+            foreach (PipeSlot slot in AllSlots)
                 slot.Dispose();
         }
 
@@ -53,6 +53,6 @@ namespace Molten.Graphics
         /// </summary>
         internal PipeStageType StageType { get; }
 
-        internal List<PipeBindSlot> AllSlots { get; }
+        internal List<PipeSlot> AllSlots { get; }
     }
 }

@@ -142,7 +142,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.0\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.DotNet.PlatformAbstractions, Version=3.1.6.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.DotNet.PlatformAbstractions.3.1.6\lib\net45\Microsoft.DotNet.PlatformAbstractions.dll</HintPath>
@@ -151,23 +151,23 @@
       <HintPath>..\packages\Microsoft.Extensions.DependencyModel.3.1.1\lib\net451\Microsoft.Extensions.DependencyModel.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Silk.NET.Core, Version=2.10.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Silk.NET.Core.2.10.1\lib\netstandard2.0\Silk.NET.Core.dll</HintPath>
+    <Reference Include="Silk.NET.Core, Version=2.11.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.Core.2.11.0\lib\netstandard2.0\Silk.NET.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Silk.NET.Direct3D.Compilers, Version=2.10.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Silk.NET.Direct3D.Compilers.2.10.1\lib\netstandard2.0\Silk.NET.Direct3D.Compilers.dll</HintPath>
+    <Reference Include="Silk.NET.Direct3D.Compilers, Version=2.11.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.Direct3D.Compilers.2.11.0\lib\netstandard2.0\Silk.NET.Direct3D.Compilers.dll</HintPath>
     </Reference>
-    <Reference Include="Silk.NET.Direct3D11, Version=2.10.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Silk.NET.Direct3D11.2.10.1\lib\netstandard2.0\Silk.NET.Direct3D11.dll</HintPath>
+    <Reference Include="Silk.NET.Direct3D11, Version=2.11.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.Direct3D11.2.11.0\lib\netstandard2.0\Silk.NET.Direct3D11.dll</HintPath>
     </Reference>
-    <Reference Include="Silk.NET.DXGI, Version=2.10.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Silk.NET.DXGI.2.10.1\lib\netstandard2.0\Silk.NET.DXGI.dll</HintPath>
+    <Reference Include="Silk.NET.DXGI, Version=2.11.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.DXGI.2.11.0\lib\netstandard2.0\Silk.NET.DXGI.dll</HintPath>
     </Reference>
-    <Reference Include="Silk.NET.Maths, Version=2.10.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Silk.NET.Maths.2.10.1\lib\netstandard2.0\Silk.NET.Maths.dll</HintPath>
+    <Reference Include="Silk.NET.Maths, Version=2.11.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Silk.NET.Maths.2.11.0\lib\netstandard2.0\Silk.NET.Maths.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -229,18 +229,18 @@
     <Compile Include="Interop\DXGIHelper.cs" />
     <Compile Include="Interop\SharpDXInterop.cs" />
     <Compile Include="Pipeline\Data\ResourceStream.cs" />
-    <Compile Include="Pipeline\NewPipe\InputAssemblerStage.cs" />
+    <Compile Include="Pipeline\NewPipe\Stages\InputAssemblerStage.cs" />
     <Compile Include="Pipeline\NewPipe\PipeBindable.cs" />
     <Compile Include="Pipeline\NewPipe\PipeBindableResource.cs" />
-    <Compile Include="Pipeline\NewPipe\PipeBindSlotGroup.cs" />
+    <Compile Include="Pipeline\NewPipe\PipeSlotGroup.cs" />
     <Compile Include="Pipeline\NewPipe\PipeBindTypeFlags.cs" />
     <Compile Include="Pipeline\NewPipe\PipeMaterialBinder.cs" />
     <Compile Include="Pipeline\NewPipe\PipeObject.cs" />
     <Compile Include="Pipeline\NewPipe\PipeStageType.cs" />
-    <Compile Include="Pipeline\NewPipe\PipeBindSlot.cs" />
-    <Compile Include="Pipeline\NewPipe\PipeShaderStage.cs" />
-    <Compile Include="Pipeline\NewPipe\PipeStage.cs" />
-    <Compile Include="Pipeline\NewPipe\Shaders\ShaderStageBinder.cs" />
+    <Compile Include="Pipeline\NewPipe\PipeSlot.cs" />
+    <Compile Include="Pipeline\NewPipe\Stages\PipeShaderStage.cs" />
+    <Compile Include="Pipeline\NewPipe\Stages\PipeStage.cs" />
+    <Compile Include="Pipeline\NewPipe\Stages\ShaderVertexStage.cs" />
     <Compile Include="Renderer\MainSurfaceType.cs" />
     <Compile Include="Renderer\RenderChain.Context.cs" />
     <Compile Include="Renderer\RenderChain.cs" />

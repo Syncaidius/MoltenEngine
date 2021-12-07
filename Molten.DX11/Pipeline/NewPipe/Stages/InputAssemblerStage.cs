@@ -55,17 +55,18 @@ namespace Molten.Graphics
             }
 
             // Does the vertex input layout need updating?
-            if (VertexBuffers.BindAll(BindVertexBuffers) || vsChanged)
+            if (VertexBuffers.BindAll() || vsChanged)
             {
+                BindVertexBuffers(VertexBuffers);
                 _vertexLayout.Value = GetInputLayout();
                 _vertexLayout.Bind();
                 Pipe.Context->IASetInputLayout(_vertexLayout.BoundValue);
             }
         }
 
-        private void BindVertexBuffers(PipeBindSlotGroup<BufferSegment> grp, uint numChanged)
+        private void BindVertexBuffers(PipeSlotGroup<BufferSegment> grp)
         {
-            int iNumChanged = (int)numChanged;
+            int iNumChanged = (int)grp.NumSlotsChanged;
 
             ID3D11Buffer** pBuffers = stackalloc ID3D11Buffer*[iNumChanged];
             uint* pStrides = stackalloc uint[iNumChanged];
@@ -93,7 +94,7 @@ namespace Molten.Graphics
                 p++;
             }
 
-            Pipe.Context->IASetVertexBuffers(grp.FirstChanged, numChanged, pBuffers, pStrides, pOffsets);
+            Pipe.Context->IASetVertexBuffers(grp.FirstChanged, grp.NumSlotsChanged, pBuffers, pStrides, pOffsets);
         }
 
 
@@ -120,7 +121,7 @@ namespace Molten.Graphics
             return input;
         }
 
-        public PipeBindSlotGroup<BufferSegment> VertexBuffers { get; }
+        public PipeSlotGroup<BufferSegment> VertexBuffers { get; }
 
         public PipeBindSlot<BufferSegment> IndexBuffer { get;}
 

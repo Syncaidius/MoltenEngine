@@ -30,16 +30,42 @@ namespace Molten.Graphics
             Shader = DefineSlot<HlslShader>(0, PipeBindTypeFlags.Input, "Shader");
         }
 
-        protected abstract void OnBind();
+        internal override void Bind()
+        {
+            if (ConstantBuffers.BindAll())
+            {
+                int nChanged = (int)ConstantBuffers.NumSlotsChanged;
+                ID3D11Buffer** cBuffers = stackalloc ID3D11Buffer*[nChanged];
+                uint* cFirstConstants = stackalloc uint[nChanged];
+                uint* cNumConstants = stackalloc uint[nChanged];
+
+                uint sid = ConstantBuffers.FirstChanged;
+
+                for (int i = 0; i < nChanged; i++)
+                {
+                    cBuffers[i] = ConstantBuffers[sid].BoundValue.Native;
+                    cFirstConstants[i] = 0;
+                    cNumConstants[i] = (uint)ConstantBuffers[sid].BoundValue.Variables.Length;
+                }
+
+                OnBindConstants(ConstantBuffers, cBuffers, cFirstConstants, cNumConstants);
+            }
+
+            // TODO Set Resources
+            // TODO Set Samplers
+            // TODO Set actual shader
+        }
+        protected abstract void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,
+            ID3D11Buffer** buffers, uint* firsConstants, uint* numConstants);
 
         /// <summary>
         /// Gets the slots for binding <see cref="ShaderSampler"/> to the current <see cref="PipeShaderStage"/>.
         /// </summary>
-        internal PipeBindSlotGroup<PipeSampler> Samplers { get; }
+        internal PipeSlotGroup<PipeSampler> Samplers { get; }
 
-        internal PipeBindSlotGroup<PipeBindableResource> Resources { get; }
+        internal PipeSlotGroup<PipeBindableResource> Resources { get; }
 
-        internal PipeBindSlotGroup<ShaderConstantBuffer> ConstantBuffers { get; }
+        internal PipeSlotGroup<ShaderConstantBuffer> ConstantBuffers { get; }
 
         /// <summary>
         /// Gets the shader bind slot for the current <see cref="PipeShaderStage{T, S}"/>
