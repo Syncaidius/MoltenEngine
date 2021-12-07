@@ -36,6 +36,11 @@ namespace Molten.Graphics
             }
         }
 
+        /// <summary>
+        /// Gets the underlying native <see cref="ID3D11Resource"/> pointer.
+        /// </summary>
+        internal abstract void* RawNative { get; }
+
         #region Implicit cast operators
         public static implicit operator ID3D11UnorderedAccessView*(PipeBindableResource resource)
         {
@@ -45,6 +50,11 @@ namespace Molten.Graphics
         public static implicit operator ID3D11ShaderResourceView*(PipeBindableResource resource)
         {
             return resource.SRV;
+        }
+
+        public static implicit operator ID3D11Resource*(PipeBindableResource resource)
+        {
+            return (ID3D11Resource*)resource.RawNative;
         }
         #endregion
     }
@@ -59,9 +69,6 @@ namespace Molten.Graphics
 
         internal abstract T* Native { get; }
 
-        public static implicit operator ID3D11Resource*(PipeBindableResource<T> resource)
-        {
-            return (ID3D11Resource*)resource.Native;
-        }
+        internal override sealed unsafe void* RawNative => Native;
     }
 }

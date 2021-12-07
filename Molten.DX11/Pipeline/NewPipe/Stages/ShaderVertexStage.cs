@@ -19,5 +19,11 @@ namespace Molten.Graphics
         {
             Pipe.Context->VSSetConstantBuffers1(grp.FirstChanged, grp.NumSlotsChanged, buffers, firstConstants, numConstants);
         }
+
+        protected override unsafe void OnBindResources(PipeSlotGroup<PipeBindableResource> grp, 
+            ID3D11ShaderResourceView** srvs)
+        {
+            Pipe.Context->VSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
+        }
     }
 }

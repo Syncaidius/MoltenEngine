@@ -635,10 +635,5 @@ namespace Molten.Graphics
         /// Gets a value indicating whether the current buffer has unordered access.
         /// </summary>
         public bool IsUnorderedAccess => ((BindFlag)Description.BindFlags & BindFlag.BindUnorderedAccess) == BindFlag.BindUnorderedAccess;
-    
-        public static implicit operator ID3D11Resource*(GraphicsBuffer b)
-        {
-            return (ID3D11Resource*)b.Native;
-        }
     }
 }
