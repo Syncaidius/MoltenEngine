@@ -69,10 +69,19 @@ namespace Molten
         /// </summary>
         public static readonly Color4 White = new Color4(1.0f, 1.0f, 1.0f, 1.0f);
 
+        /// <summary>
+        /// The transparent color (0,0,0,0). Identical to <see cref="Transparent"/>.
+        /// </summary>
         public static readonly Color4 Zero = new Color4(0, 0, 0, 0);
 
+        /// <summary>
+        /// The transparent color (0,0,0,0). Identical to <see cref="Zero"/>.
+        /// </summary>
         public static readonly Color4 Transparent = new Color4(0, 0, 0, 0);
 
+        /// <summary>
+        /// The total size of <see cref="Color4"/>, in bytes.
+        /// </summary>
         public static int SizeOf => sizeof(float) * 4;
 
         /// <summary>
@@ -185,6 +194,22 @@ namespace Molten
             G = values[1];
             B = values[2];
             A = values[3];
+        }
+
+        /// <summary>
+        /// Re-interprets a <see cref="float"/> pointer as a <see cref="Color4"/>. The pointer should point to the start of data
+        /// containing four (RGBA) <see cref="float"/> values.
+        /// </summary>
+        /// <param name="ptr"></param>
+        /// <returns></returns>
+        public unsafe static Color4 FromFloatPtr(float* ptr)
+        {
+            return *(Color4*)ptr;
+        }
+
+        public unsafe static float* ToFloatPtr(Color4 color)
+        {
+            return (float*)&color;
         }
 
         /// <summary>

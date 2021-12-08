@@ -93,6 +93,7 @@ namespace Molten.Graphics
             if (Shader.Bind())
                 OnBindShader(Shader);
         }
+
         protected abstract void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,
             ID3D11Buffer** buffers, uint* firsConstants, uint* numConstants);
 
