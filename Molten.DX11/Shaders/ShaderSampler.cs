@@ -11,7 +11,6 @@ namespace Molten.Graphics
         internal ID3D11SamplerState* Native;
         SamplerDesc _desc;
         bool _isDirty;
-        bool _isComparison;
 
         internal ShaderSampler(DeviceDX11 device, ShaderSampler source) : base(device)
         {
@@ -35,7 +34,15 @@ namespace Molten.Graphics
                 BorderColor = new Color4(1f),
             };
 
+            CheckIfComparisonSampler();
             _isDirty = true;
+        }
+
+        private void CheckIfComparisonSampler()
+        {
+            IsComparisonSampler = _desc.Filter >= Filter.FilterComparisonMinMagMipPoint &&
+                    _desc.Filter <= Filter.FilterComparisonAnisotropic;
+
         }
 
         protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
@@ -66,9 +73,7 @@ namespace Molten.Graphics
         internal void SetDescription(ref SamplerDesc description)
         {
             _desc = description;
-            _isComparison = _desc.Filter >= Filter.FilterComparisonMinMagMipPoint &&
-                    _desc.Filter <= Filter.FilterComparisonAnisotropic;
-
+            CheckIfComparisonSampler();
             _isDirty = true;
         }
 
@@ -125,6 +130,7 @@ namespace Molten.Graphics
             set
             {
                 _desc.ComparisonFunc = value.ToApi();
+                CheckIfComparisonSampler();
                 _isDirty = true;
             }
         }
@@ -136,7 +142,7 @@ namespace Molten.Graphics
             set
             {
                 _desc.Filter = value.ToApi();
-                _isComparison = _desc.Filter >= Filter.FilterComparisonMinMagMipPoint && 
+                IsComparisonSampler = _desc.Filter >= Filter.FilterComparisonMinMagMipPoint && 
                     _desc.Filter <= Filter.FilterComparisonAnisotropic;
                 _isDirty = true;
             }
@@ -193,6 +199,6 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets whether or not the sampler a comparison sampler. This is determined by the <see cref="FilterMode"/> mode.</summary>
-        public bool IsComparisonSampler => _isComparison;
+        public bool IsComparisonSampler { get; private set; }
     }
 }
