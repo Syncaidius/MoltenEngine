@@ -20,11 +20,11 @@
         ComparisonMode ComparisonFunc { get; set; }
 
         /// <summary>Gets or sets the filtering method to use when sampling a texture (see SharpDX.Direct3D11.Filter).</summary>
-        SamplerFilter Filter { get; set; }
+        SamplerFilter FilterMode { get; set; }
 
         /// <summary>Clamping value used if SharpDX.Direct3D11.Filter.Anisotropic or SharpDX.Direct3D11.Filter.ComparisonAnisotropic 
         /// is specified in SamplerFilter. Valid values are between 1 and 16.</summary>
-        int MaxAnisotropy { get; set; }
+        uint MaxAnisotropy { get; set; }
 
         /// <summary>Upper end of the mipmap range to clamp access to, where 0 is the largest
         ///     and most detailed mipmap level and any level higher than that is less detailed.
@@ -41,7 +41,7 @@
         /// the texture will be sampled at mipmap level 5.</summary>
         float LodBias { get; set; }
 
-        /// <summary>Gets whether or not the sampler a comparison sampler. This is determined by the <see cref="Filter"/> mode.</summary>
+        /// <summary>Gets whether or not the sampler a comparison sampler. This is determined by the <see cref="FilterMode"/> mode.</summary>
         bool IsComparisonSampler { get; }
     }
 }

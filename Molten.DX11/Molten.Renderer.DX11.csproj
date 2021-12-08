@@ -234,7 +234,6 @@
     <Compile Include="Pipeline\NewPipe\PipeBindableResource.cs" />
     <Compile Include="Pipeline\NewPipe\PipeSlotGroup.cs" />
     <Compile Include="Pipeline\NewPipe\PipeBindTypeFlags.cs" />
-    <Compile Include="Pipeline\NewPipe\PipeMaterialBinder.cs" />
     <Compile Include="Pipeline\NewPipe\PipeObject.cs" />
     <Compile Include="Pipeline\NewPipe\PipeStageType.cs" />
     <Compile Include="Pipeline\NewPipe\PipeSlot.cs" />

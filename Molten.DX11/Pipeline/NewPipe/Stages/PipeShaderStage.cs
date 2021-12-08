@@ -107,7 +107,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the slots for binding <see cref="ShaderSampler"/> to the current <see cref="PipeShaderStage"/>.
         /// </summary>
-        internal PipeSlotGroup<PipeSampler> Samplers { get; }
+        internal PipeSlotGroup<ShaderSampler> Samplers { get; }
 
         internal PipeSlotGroup<PipeBindableResource> Resources { get; }
 

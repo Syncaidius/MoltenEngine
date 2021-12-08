@@ -25,5 +25,15 @@ namespace Molten.Graphics
         {
             Pipe.Context->VSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
         }
+
+        protected override unsafe void OnBindSamplers(PipeSlotGroup<PipeBindableResource> grp, ID3D11SamplerState** resources)
+        {
+            Pipe.Context->VSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
+        }
+
+        protected override void OnBindShader(PipeSlot<HlslShader> slot)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

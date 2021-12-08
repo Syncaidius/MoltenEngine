@@ -87,7 +87,7 @@ namespace Molten.Graphics
 
                     case "filter":
                         if (Enum.TryParse(child.InnerText, true, out SamplerFilter filter))
-                            sampler.Filter = filter;
+                            sampler.FilterMode = filter;
                         else
                             InvalidEnumMessage<SamplerFilter>(context, child, "filter");
                         break;

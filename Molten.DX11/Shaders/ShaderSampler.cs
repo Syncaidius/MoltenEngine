@@ -1,88 +1,84 @@
-﻿using SharpDX;
-using SharpDX.Direct3D11;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    public class ShaderSampler : PipelineObject<DeviceDX11, PipeDX11>, IShaderSampler
+    public unsafe class ShaderSampler : PipeBindable, IShaderSampler
     {
-        SamplerState _state;
-        SamplerStateDescription _description;
+        internal ID3D11SamplerState* Native;
+        SamplerDesc _desc;
         bool _isDirty;
         bool _isComparison;
 
-        TextureAddressMode _wrapU;
-        TextureAddressMode _wrapV;
-        TextureAddressMode _wrapW;
-        Comparison _comparison;
-        Filter _filter;
-
         internal ShaderSampler(DeviceDX11 device, ShaderSampler source) : base(device)
         {
-            _description = source._description;
+            _desc = source._desc;
             _isDirty = true;
-
-            _wrapU = _description.AddressU;
-            _wrapV = _description.AddressV;
-            _wrapW = _description.AddressW;
         }
 
         internal ShaderSampler(DeviceDX11 device) : base(device)
         {
-            _description = SamplerStateDescription.Default();
-            _isDirty = true;
+            _desc = new SamplerDesc()
+            {
+                Filter = Filter.FilterComparisonMinMagMipLinear,
+                AddressU = TextureAddressMode.TextureAddressClamp,
+                AddressV = TextureAddressMode.TextureAddressClamp,
+                AddressW = TextureAddressMode.TextureAddressClamp,
+                MinLOD = float.MinValue,
+                MaxLOD = float.MaxValue,
+                MipLODBias = 0f,
+                MaxAnisotropy = 1,
+                ComparisonFunc = Silk.NET.Direct3D11.ComparisonFunc.ComparisonNever,
+                BorderColor = new Color4(1f),
+            };
 
-            _wrapU = _description.AddressU;
-            _wrapV = _description.AddressV;
-            _wrapW = _description.AddressW;
+            _isDirty = true;
         }
 
-        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
+        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
         {
-            base.Refresh(pipe, slot);
-
+            // If the sampler was actually dirty, recreate it.
             if (_isDirty)
             {
-                // If the sampler was actually dirty, recreate it.
-                if (_isDirty)
-                {
-                    int fVal = (int)_description.Filter;
+                int fVal = (int)_desc.Filter;
+                PipelineDispose();
 
-                    // Dispose the old sampler
-                    DisposeObject(ref _state);
-
-                    _state = new SamplerState(pipe.Device.D3d, _description);
-                }
-
+                pipe.Device.Native->CreateSamplerState(ref _desc, ref Native);
                 _isDirty = false;
+                Version++;
             }
         }
 
-        private protected override void OnPipelineDispose()
+        internal override void PipelineDispose()
         {
-            if(_state != null)
-                _state.Dispose();
+            if (Native != null)
+            {
+                Native->Release();
+                Native = null;
+            }
         }
 
         /// <summary>Sets the entire sampler state description.</summary>
         /// <param name="description">The description to apply to the state.</param>
-        internal void SetDescription(SamplerStateDescription description)
+        internal void SetDescription(ref SamplerDesc description)
         {
-            _description = description;
+            _desc = description;
+            _isComparison = _desc.Filter >= Filter.FilterComparisonMinMagMipPoint &&
+                    _desc.Filter <= Filter.FilterComparisonAnisotropic;
+
             _isDirty = true;
         }
 
         /// <summary>Gets or sets the method to use for resolving a U texture coordinate that is outside the 0 to 1 range.</summary>
         public SamplerAddressMode AddressU
         {
-            get { return _wrapU.FromApi(); }
+            get { return _desc.AddressU.FromApi(); }
             set
             {
-                _wrapU = value.ToApi();
-                _description.AddressU = _wrapU;
+                _desc.AddressU = value.ToApi();
                 _isDirty = true;
             }
         }
@@ -90,11 +86,10 @@ namespace Molten.Graphics
         /// <summary>Gets or sets the method to use for resolving a V texture coordinate that is outside the 0 to 1 range.</summary>
         public SamplerAddressMode AddressV
         {
-            get { return _wrapV.FromApi(); }
+            get { return _desc.AddressV.FromApi(); }
             set
             {
-                _wrapV = value.ToApi();
-                _description.AddressV = _wrapV;
+                _desc.AddressV = value.ToApi();
                 _isDirty = true;
             }
         }
@@ -102,11 +97,10 @@ namespace Molten.Graphics
         /// <summary>Gets or sets the method to use for resolving a W texture coordinate that is outside the 0 to 1 range.</summary>
         public SamplerAddressMode AddressW
         {
-            get { return _wrapW.FromApi(); }
+            get { return _desc.AddressW.FromApi(); }
             set
             {
-                _wrapW = value.ToApi();
-                _description.AddressW = _wrapW;
+                _desc.AddressW = value.ToApi();
                 _isDirty = true;
             }
         }
@@ -115,10 +109,10 @@ namespace Molten.Graphics
         /// for AddressU, AddressV, or AddressW. Range must be between 0.0 and 1.0 inclusive.</summary>
         public Color4 BorderColor
         {
-            get { return _description.BorderColor.FromRawApi(); }
+            get { return _desc.BorderColor.FromRawApi(); }
             set
             {
-                _description.BorderColor = value.ToApi();
+                _desc.BorderColor = value.ToApi();
                 _isDirty = true;
             }
         }
@@ -127,38 +121,35 @@ namespace Molten.Graphics
         /// The function options are listed in SharpDX.Direct3D11.Comparison.</summary>
         public ComparisonMode ComparisonFunc
         {
-            get { return _comparison.FromApi(); }
+            get { return _desc.ComparisonFunc.FromApi(); }
             set
             {
-                _comparison = value.ToApi();
-                _description.ComparisonFunction = _comparison;
+                _desc.ComparisonFunc = value.ToApi();
                 _isDirty = true;
             }
         }
 
         /// <summary>Gets or sets the filtering method to use when sampling a texture (see SharpDX.Direct3D11.Filter).</summary>
-        public SamplerFilter Filter
+        public SamplerFilter FilterMode
         {
-            get { return _filter.FromApi(); }
+            get { return _desc.Filter.FromApi(); }
             set
             {
-                _filter = value.ToApi();
-                _description.Filter = _filter;
-
-                int fVal = (int)_description.Filter;
-                _isComparison = fVal >= 128 && fVal <= 213;
+                _desc.Filter = value.ToApi();
+                _isComparison = _desc.Filter >= Filter.FilterComparisonMinMagMipPoint && 
+                    _desc.Filter <= Filter.FilterComparisonAnisotropic;
                 _isDirty = true;
             }
         }
 
         /// <summary>Clamping value used if SharpDX.Direct3D11.Filter.Anisotropic or SharpDX.Direct3D11.Filter.ComparisonAnisotropic 
         /// is specified in SamplerFilter. Valid values are between 1 and 16.</summary>
-        public int MaxAnisotropy
+        public uint MaxAnisotropy
         {
-            get { return _description.MaximumAnisotropy; }
+            get { return _desc.MaxAnisotropy; }
             set
             {
-                _description.MaximumAnisotropy = value;
+                _desc.MaxAnisotropy = value;
                 _isDirty = true;
             }
         }
@@ -168,10 +159,10 @@ namespace Molten.Graphics
         ///     on LOD set this to a large value such as D3D11_FLOAT32_MAX.</summary>
         public float MaxMipMapLod
         {
-            get { return _description.MaximumLod; }
+            get { return _desc.MaxLOD; }
             set
             {
-                _description.MaximumLod = value;
+                _desc.MaxLOD = value;
                 _isDirty = true;
             }
         }
@@ -180,10 +171,10 @@ namespace Molten.Graphics
         /// and any level higher than that is less detailed.</summary>
         public float MinMipMapLod
         {
-            get { return _description.MinimumLod; }
+            get { return _desc.MinLOD; }
             set
             {
-                _description.MinimumLod = value;
+                _desc.MinLOD = value;
                 _isDirty = true;
             }
         }
@@ -193,18 +184,15 @@ namespace Molten.Graphics
         /// the texture will be sampled at mipmap level 5.</summary>
         public float LodBias
         {
-            get { return _description.MipLodBias; }
+            get { return _desc.MipLODBias; }
             set
             {
-                _description.MipLodBias = value;
+                _desc.MipLODBias = value;
                 _isDirty = true;
             }
         }
 
-        /// <summary>Gets the underlying sampler state.</summary>
-        internal SamplerState State { get { return _state; } }
-
-        /// <summary>Gets whether or not the sampler a comparison sampler. This is determined by the <see cref="Filter"/> mode.</summary>
+        /// <summary>Gets whether or not the sampler a comparison sampler. This is determined by the <see cref="FilterMode"/> mode.</summary>
         public bool IsComparisonSampler => _isComparison;
     }
 }

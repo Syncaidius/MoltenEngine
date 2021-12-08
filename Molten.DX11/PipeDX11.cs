@@ -181,7 +181,8 @@ namespace Molten.Graphics
 
             _input.Material = material;
             _input.Refresh(pass, _drawInfo.Conditions, topology);
-            _output.DepthWritePermission = DepthWriteOverride != GraphicsDepthWritePermission.Enabled ? DepthWriteOverride : pass.DepthState[_drawInfo.Conditions].WritePermission;
+            _output.DepthWritePermission = DepthWriteOverride != GraphicsDepthWritePermission.Enabled ? 
+                DepthWriteOverride : pass.DepthState[_drawInfo.Conditions].WritePermission;
             _output.Refresh();
 
             _blendState.Current = pass.BlendState[_drawInfo.Conditions];
@@ -220,7 +221,7 @@ namespace Molten.Graphics
             _drawInfo.Reset();
         }
 
-        private void DrawInternal(Material mat, GraphicsValidationMode mode, VertexTopology topology, 
+        private void DrawCommon(Material mat, GraphicsValidationMode mode, VertexTopology topology, 
             PipeDrawCallback drawCallback, PipeDrawCallback failCallback)
         {
             if (!_drawInfo.Began)
@@ -260,7 +261,7 @@ namespace Molten.Graphics
         /// Vertex buffers always override this when applied.</param>
         public void Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
         {
-            DrawInternal(material, GraphicsValidationMode.Unindexed, topology, (pass, iteration, passNumber) =>
+            DrawCommon(material, GraphicsValidationMode.Unindexed, topology, (pass, iteration, passNumber) =>
             {
                 _context->Draw(vertexCount, vertexStartIndex);
             },
@@ -285,8 +286,7 @@ namespace Molten.Graphics
             uint vertexStartIndex = 0,
             uint instanceStartIndex = 0)
         {
-            DrawInternal(material, GraphicsValidationMode.Instanced, topology,
-                (pass, iteration, passNum) =>
+            DrawCommon(material, GraphicsValidationMode.Instanced, topology, (pass, iteration, passNum) =>
             {
                 _context->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
             },
@@ -310,7 +310,7 @@ namespace Molten.Graphics
             int vertexIndexOffset = 0,
             uint startIndex = 0)
         {
-            DrawInternal(material, GraphicsValidationMode.Indexed, topology, (pass, it, passNum) =>
+            DrawCommon(material, GraphicsValidationMode.Indexed, topology, (pass, it, passNum) =>
             {
                 _context->DrawIndexed(indexCount, startIndex, vertexIndexOffset);
             },
@@ -338,7 +338,7 @@ namespace Molten.Graphics
             int vertexIndexOffset = 0,
             uint instanceStartIndex = 0)
         {
-            DrawInternal(material, GraphicsValidationMode.Indexed, topology, (pass, it, passNum) =>
+            DrawCommon(material, GraphicsValidationMode.Indexed, topology, (pass, it, passNum) =>
             {
                 _context->DrawIndexedInstanced(indexCountPerInstance, instanceCount,
                     startIndex, vertexIndexOffset, instanceStartIndex);
