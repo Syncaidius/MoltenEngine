@@ -10,7 +10,7 @@ namespace Molten.Graphics
     internal unsafe class InputAssemblerStage : PipeStage
     {
         VertexTopology _boundTopology;
-        PipeBindSlot<VertexInputLayout> _vertexLayout;
+        PipeSlot<VertexInputLayout> _vertexLayout;
         List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
 
         PipeMaterialBinder _materialBinder;
@@ -123,7 +123,7 @@ namespace Molten.Graphics
 
         public PipeSlotGroup<BufferSegment> VertexBuffers { get; }
 
-        public PipeBindSlot<BufferSegment> IndexBuffer { get;}
+        public PipeSlot<BufferSegment> IndexBuffer { get;}
 
         public VertexTopology Topology { get; set; }
     }

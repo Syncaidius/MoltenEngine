@@ -16,9 +16,7 @@ namespace Molten.Graphics
             BoundTo = new HashSet<PipeSlot>();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary>Invoked when the current <see cref="PipeBindable"/> is to be bound to a <see cref="PipeSlot"/>.</summary>
         /// <param name="slot">The <see cref="PipeSlot"/> to bind to.</param>
         /// <returns>True if the binding succeeded.</returns>
         internal bool BindTo(PipeSlot slot)

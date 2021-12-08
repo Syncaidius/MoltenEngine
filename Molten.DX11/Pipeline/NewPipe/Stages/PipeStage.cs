@@ -25,10 +25,10 @@ namespace Molten.Graphics
             return new PipeSlotGroup<T>(this, slotCount, slotType, namePrefix);
         }
 
-        protected PipeBindSlot<T> DefineSlot<T>(uint slotID, PipeBindTypeFlags slotType, string namePrefix)
+        protected PipeSlot<T> DefineSlot<T>(uint slotID, PipeBindTypeFlags slotType, string namePrefix)
             where T : PipeBindable
         {
-            PipeBindSlot<T> slot = new PipeBindSlot<T>(this, slotID, slotType, namePrefix);
+            PipeSlot<T> slot = new PipeSlot<T>(this, slotID, slotType, namePrefix);
             AllSlots.Add(slot);
             return slot;
         }

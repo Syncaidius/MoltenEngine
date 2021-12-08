@@ -8,15 +8,17 @@ namespace Molten.Graphics
 {
     internal class PipeMaterialBinder : PipeStage
     {
+        ShaderVertexStage _vs;
+
         public PipeMaterialBinder(PipeDX11 pipe) : 
             base(pipe, PipeStageType.MaterialBinder)
         {
-
+            _vs = new ShaderVertexStage(pipe);
         }
 
         internal override void Bind()
         {
-            
+            _vs.Bind();
         }
     }
 }

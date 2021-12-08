@@ -229,8 +229,8 @@
     <Compile Include="Interop\DXGIHelper.cs" />
     <Compile Include="Interop\SharpDXInterop.cs" />
     <Compile Include="Pipeline\Data\ResourceStream.cs" />
-    <Compile Include="Pipeline\NewPipe\Stages\InputAssemblerStage.cs" />
     <Compile Include="Pipeline\NewPipe\PipeBindable.cs" />
+    <Compile Include="Pipeline\NewPipe\Stages\InputAssemblerStage.cs" />
     <Compile Include="Pipeline\NewPipe\PipeBindableResource.cs" />
     <Compile Include="Pipeline\NewPipe\PipeSlotGroup.cs" />
     <Compile Include="Pipeline\NewPipe\PipeBindTypeFlags.cs" />

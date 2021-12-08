@@ -72,12 +72,7 @@ namespace Molten.Graphics
 
                 uint sid = Resources.FirstChanged;
                 for (int i = 0; i < numChanged; i++)
-                {
-                    if (Resources[sid] != null)
-                        srvs[i] = Resources[sid].BoundValue;
-                    else
-                        srvs[i] = null;
-                }
+                    srvs[i] = Resources[sid].BoundValue ?? null;
 
                 OnBindResources(Resources, srvs);
             }
@@ -90,17 +85,13 @@ namespace Molten.Graphics
 
                 uint sid = Samplers.FirstChanged;
                 for (int i = 0; i < numChanged; i++)
-                {
-                    if (Samplers[sid] != null)
-                        srvs[i] = Samplers[sid].BoundValue;
-                    else
-                        srvs[i] = null;
-                }
+                    samplers[i] = Samplers[sid].BoundValue ?? null;
 
                 OnBindSamplers(Samplers, samplers);
             }
 
-            // TODO Set actual shader
+            if (Shader.Bind())
+                OnBindShader(Shader);
         }
         protected abstract void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,
             ID3D11Buffer** buffers, uint* firsConstants, uint* numConstants);
@@ -110,6 +101,8 @@ namespace Molten.Graphics
 
         protected abstract void OnBindSamplers(PipeSlotGroup<PipeBindableResource> grp,
             ID3D11SamplerState** resources);
+
+        protected abstract void OnBindShader(PipeSlot<HlslShader> slot);
 
         /// <summary>
         /// Gets the slots for binding <see cref="ShaderSampler"/> to the current <see cref="PipeShaderStage"/>.
@@ -123,7 +116,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the shader bind slot for the current <see cref="PipeShaderStage{T, S}"/>
         /// </summary>
-        internal PipeBindSlot<HlslShader> Shader { get; }
+        internal PipeSlot<HlslShader> Shader { get; }
 
         public ShaderType ShaderStageType { get; }
     }

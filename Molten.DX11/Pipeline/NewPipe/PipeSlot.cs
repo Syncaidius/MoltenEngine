@@ -38,12 +38,12 @@ namespace Molten.Graphics
         internal PipeBindTypeFlags SlotType { get; }
     }
 
-    internal sealed class PipeBindSlot<T> : PipeSlot
+    internal sealed class PipeSlot<T> : PipeSlot
         where T : PipeBindable
     {
         uint _boundVersion;
 
-        internal PipeBindSlot(PipeStage stage, uint slotID, PipeBindTypeFlags slotType, string namePrefix) : 
+        internal PipeSlot(PipeStage stage, uint slotID, PipeBindTypeFlags slotType, string namePrefix) : 
             base(stage, slotID, slotType, $"{namePrefix}_{typeof(T).Name}")
         {
 
