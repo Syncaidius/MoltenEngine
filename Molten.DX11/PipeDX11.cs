@@ -11,7 +11,7 @@ namespace Molten.Graphics
     internal delegate void PipeDrawCallback(MaterialPass pass, uint iteration, uint passNumber);
 
     /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="DeviceContext"/>.</summary>
-    public unsafe class PipeDX11 : EngineObject, IGraphicsPipe<DeviceDX11>
+    public unsafe class PipeDX11 : EngineObject
     {
         class DrawInfo
         {
@@ -433,8 +433,6 @@ namespace Molten.Graphics
                 _device.RemoveDeferredPipe(this);
             }
         }
-
-        DeviceDX11 IGraphicsPipe<DeviceDX11>.Device => _device;
 
         /// <summary>Gets the current <see cref="PipeDX11"/> type. This value will not change during the context's life.</summary>
         public GraphicsContextType Type { get; private set; }

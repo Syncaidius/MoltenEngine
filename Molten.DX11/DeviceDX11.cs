@@ -13,7 +13,7 @@ namespace Molten.Graphics
 {
     /// <summary>A Direct3D 11 graphics device.</summary>
     /// <seealso cref="PipeDX11" />
-    public unsafe class DeviceDX11 : PipeDX11, IGraphicsDevice
+    public unsafe class DeviceDX11 : PipeDX11
     {
         internal ID3D11Device1* Native;
         internal ID3D11DeviceContext1* ImmediateContext;
@@ -78,7 +78,7 @@ namespace Molten.Graphics
                 &highestFeatureLevel,
                 &ptrContext);
 
-            Features = new GraphicsDX11Features(Native);
+            Features = new DeviceFeaturesDX11(Native);
             _rasterizerBank = new RasterizerStateBank(this);
             _blendBank = new BlendStateBank(this);
             _depthBank = new DepthStateBank(this);
@@ -199,8 +199,8 @@ namespace Molten.Graphics
 
         internal PipeDX11[] ActivePipes => _pipes;
 
-        /// <summary>Gets an instance of <see cref="GraphicsDX11Features"/> which provides access to feature support details for the current graphics device.</summary>
-        internal GraphicsDX11Features Features { get; private set; }
+        /// <summary>Gets an instance of <see cref="DeviceFeaturesDX11"/> which provides access to feature support details for the current graphics device.</summary>
+        internal DeviceFeaturesDX11 Features { get; private set; }
 
         internal DisplayManagerDX11 DisplayManager => _displayManager;
 

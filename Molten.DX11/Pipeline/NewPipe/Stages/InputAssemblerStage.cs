@@ -51,7 +51,7 @@ namespace Molten.Graphics
             if (IndexBuffer.Bind())
             {
                 BufferSegment ib = IndexBuffer.BoundValue;
-                Pipe.Context->IASetIndexBuffer(ib.Buffer.Native, ib.DataFormat, ib.ByteOffset);
+                Pipe.Context->IASetIndexBuffer(ib.Buffer.NativePtr, ib.DataFormat, ib.ByteOffset);
             }
 
             // Does the vertex input layout need updating?
@@ -80,7 +80,7 @@ namespace Molten.Graphics
 
                 if (seg != null)
                 {
-                    pBuffers[p] = seg.Buffer.Native;
+                    pBuffers[p] = seg.Buffer.NativePtr;
                     pStrides[p] = seg.Stride;
                     pOffsets[p] = seg.ByteOffset;
                 }

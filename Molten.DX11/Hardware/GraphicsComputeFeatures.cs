@@ -12,9 +12,9 @@ namespace Molten.Graphics
 {
     public class GraphicsComputeFeatures
     {
-        GraphicsDX11Features _features;
+        DeviceFeaturesDX11 _features;
 
-        internal GraphicsComputeFeatures(GraphicsDX11Features features)
+        internal GraphicsComputeFeatures(DeviceFeaturesDX11 features)
         {
             _features = features;
 

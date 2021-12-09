@@ -202,7 +202,7 @@ namespace Molten.Graphics
                 switch (Mode)
                 {
                     case BufferMode.DynamicDiscard:
-                        pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0, out stream);
+                        pipe.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
                         stream.Position = byteOffset;
                         pipe.Profiler.Current.MapDiscardCount++;
                         break;
@@ -214,14 +214,14 @@ namespace Molten.Graphics
                         {
                             if (_ringPos > 0 && _ringPos + dataSize < Description.ByteWidth)
                             {
-                                pipe.MapResource(Native, 0, Map.MapWriteNoOverwrite, 0, out stream);
+                                pipe.MapResource(NativePtr, 0, Map.MapWriteNoOverwrite, 0, out stream);
                                 pipe.Profiler.Current.MapNoOverwriteCount++;
                                 stream.Position = _ringPos;
                                 _ringPos += dataSize;
                             }
                             else
                             {                                
-                                pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0, out stream);
+                                pipe.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
                                 pipe.Profiler.Current.MapDiscardCount++;
                                 stream.Position = 0;
                                 _ringPos = dataSize;
@@ -229,20 +229,20 @@ namespace Molten.Graphics
                         }
                         else
                         {
-                            pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0, out stream);
+                            pipe.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
                             pipe.Profiler.Current.MapDiscardCount++;
                             stream.Position = byteOffset;
                         }
                         break;
 
                     default:
-                        pipe.MapResource(Native, 0, Map.MapWrite, 0, out stream);
+                        pipe.MapResource(NativePtr, 0, Map.MapWrite, 0, out stream);
                         pipe.Profiler.Current.MapWriteCount++;
                         break;
                 }     
                 
                 callback(this, stream);
-                pipe.UnmapResource(Native, 0);
+                pipe.UnmapResource(NativePtr, 0);
             }
             else
             {
@@ -262,17 +262,17 @@ namespace Molten.Graphics
                 // Write updated data into buffer
                 if (isDynamic) // Always discard staging buffer data, since the old data is no longer needed after it's been copied to it's target resource.
                 {
-                    pipe.MapResource(staging.Native, 0, Map.MapWriteDiscard, 0, out stream);
+                    pipe.MapResource(staging.NativePtr, 0, Map.MapWriteDiscard, 0, out stream);
                     pipe.Profiler.Current.MapDiscardCount++;
                 }
                 else
                 {
-                    pipe.MapResource(staging.Native, 0, Map.MapWrite, 0, out stream);
+                    pipe.MapResource(staging.NativePtr, 0, Map.MapWrite, 0, out stream);
                     pipe.Profiler.Current.MapWriteCount++;
                 }
 
                 callback(staging, stream);
-                pipe.UnmapResource(staging.Native, 0);
+                pipe.UnmapResource(staging.NativePtr, 0);
 
                 Box stagingRegion = new Box()
                 {
@@ -330,13 +330,13 @@ namespace Molten.Graphics
 
             //now set the structured variable's data
             ResourceStream stream = null;
-            MappedSubresource dataBox = pipe.MapResource(Native, 0, Map.MapRead, 0, out stream);
+            MappedSubresource dataBox = pipe.MapResource(NativePtr, 0, Map.MapRead, 0, out stream);
             pipe.Profiler.Current.MapReadCount++;
             stream.Position = byteOffset;
             stream.ReadRange<T>(destination, readOffset, count);
 
             // Unmap
-            pipe.UnmapResource(Native, 0);
+            pipe.UnmapResource(NativePtr, 0);
         }
 
         /// <summary>Applies any pending changes onto the buffer.</summary>
@@ -376,9 +376,9 @@ namespace Molten.Graphics
         {
             base.PipelineDispose();
 
-            if (Native != null)
+            if (NativePtr != null)
             {
-                Native->Release();
+                NativePtr->Release();
                 _native = null;
                 Device.DeallocateVRAM(Description.ByteWidth);
             }
@@ -621,7 +621,9 @@ namespace Molten.Graphics
         public BindFlag BindFlags => (BindFlag)Description.BindFlags;
 
         /// <summary>Gets the underlying DirectX 11 buffer. </summary>
-        internal override ID3D11Buffer* Native => Native;
+        internal override ID3D11Buffer* ResourcePtr => _native;
+
+        internal override unsafe ID3D11Resource* NativePtr => (ID3D11Resource*)_native;
 
         /// <summary>Gets the resource usage flags associated with the buffer.</summary>
         public ResourceMiscFlag ResourceFlags => (ResourceMiscFlag)Description.MiscFlags;

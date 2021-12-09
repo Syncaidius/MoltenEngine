@@ -10,9 +10,9 @@ namespace Molten.Graphics
 {
     public unsafe class GraphicsShaderFeatures
     {
-        GraphicsDX11Features _features;
+        DeviceFeaturesDX11 _features;
 
-        internal GraphicsShaderFeatures(GraphicsDX11Features features)
+        internal GraphicsShaderFeatures(DeviceFeaturesDX11 features)
         {
             _features = features;
 

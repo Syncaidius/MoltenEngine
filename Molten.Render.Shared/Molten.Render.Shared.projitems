@@ -9,9 +9,6 @@
     <Import_RootNamespace>Molten.Graphics</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)GraphicsDeviceFeatures.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IGraphicsDevice.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IGraphicsPipe.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pipeline\PipelineBindSlot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pipeline\PipelineBindType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pipeline\PipelineComponent.cs" />

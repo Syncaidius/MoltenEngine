@@ -46,4 +46,28 @@ namespace Molten.Graphics
 
         internal HashSet<PipeSlot> BoundTo { get; }
     }
+
+    public unsafe abstract class PipeBindable<T> : PipeBindable
+        where T : unmanaged
+    {
+        internal PipeBindable(DeviceDX11 device) : base(device)
+        {
+
+        }
+
+        /// <summary>
+        /// Gets the native pointer of the current <see cref="PipeBindable{T}"/>, as a <typeparamref name="T"/> pointer.
+        /// </summary>
+        internal abstract T* NativePtr { get; }
+
+        /// <summary>
+        /// Gets the native pointer of the current <see cref="PipeBindable{T}"/>,as a <see cref="void"/> pointer.
+        /// </summary>
+        internal void* RawNative => NativePtr;
+
+        public static implicit operator T*(PipeBindable<T> bindable)
+        {
+            return bindable.NativePtr;
+        }
+    }
 }

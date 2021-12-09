@@ -70,7 +70,7 @@ namespace Molten.Graphics
 
                 //write updated data into constant buffer
                 ResourceStream bufferData;
-                MappedSubresource data = pipe.MapResource(Native, 0, Map.MapWriteDiscard, 0, out bufferData);
+                MappedSubresource data = pipe.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out bufferData);
                 {
                     // Re-write all data to the variable buffer to maintain byte-ordering.
                     for (int i = 0; i < Variables.Length; i++)
@@ -79,7 +79,7 @@ namespace Molten.Graphics
                         Variables[i].Write(bufferData);
                     }
                 }
-                pipe.UnmapResource(Native, 0);
+                pipe.UnmapResource(NativePtr, 0);
             }
             else
             {

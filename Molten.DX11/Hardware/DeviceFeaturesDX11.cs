@@ -11,13 +11,13 @@ using Feature = Silk.NET.Direct3D11.Feature;
 namespace Molten.Graphics
 {
 
-    internal unsafe class GraphicsDX11Features : GraphicsDeviceFeatures
+    internal unsafe class DeviceFeaturesDX11
     {
         ID3D11Device1* _device;
 
         // DX11 resource limits: https://msdn.microsoft.com/en-us/library/windows/desktop/ff819065%28v=vs.85%29.aspx
 
-        internal GraphicsDX11Features(ID3D11Device1* d3dDevice)
+        internal DeviceFeaturesDX11(ID3D11Device1* d3dDevice)
         {
             _device = d3dDevice;
             FeatureLevel = _device->GetFeatureLevel();
@@ -192,5 +192,18 @@ namespace Molten.Graphics
         /// <summary>Gets whether or not command lists are supported. That is, rendering commands issued by an immediate context can be concurrent with 
         /// object creation on separate threads with low risk of a frame rate stutter.</summary>
         internal DX11CommandListSupport CommandListSupport { get; private set; }
+
+        /// <summary>Gets the maximum size of a single texture dimension i.e 2048 
+        /// would mean the max texture size is 2048x2048.</summary>
+        internal int MaxTextureDimension { get; private protected set; }
+
+        /// <summary>
+        /// Gets the maximum number of render targets (draw buffers) a fragment shader can output to simultaneously.
+        /// </summary>
+        internal int SimultaneousRenderSurfaces { get; private protected set; }
+
+        /// <summary>Gets the maximum size of a single cube map dimension i.e 2048 would mean 
+        /// the max map size is 2048x2048.</summary>
+        internal int MaxCubeMapDimension { get; private protected set; }
     }
 }

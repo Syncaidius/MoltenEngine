@@ -48,7 +48,7 @@ namespace Molten.Graphics
                     cb = ConstantBuffers[sid].BoundValue;
                     if (cb != null)
                     {
-                        cBuffers[i] = cb.Native;
+                        cBuffers[i] = cb.NativePtr;
                         cFirstConstants[i] = 0; // TODO implement this using BufferSegment
                         cNumConstants[i] = (uint)cb.Variables.Length;
                     }

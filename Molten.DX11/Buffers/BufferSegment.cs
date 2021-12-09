@@ -29,7 +29,9 @@ namespace Molten.Graphics
         /// </summary>
         internal GraphicsBuffer Buffer;
 
-        internal override unsafe ID3D11Buffer* Native => Buffer.Native;
+        internal override ID3D11Buffer* ResourcePtr => Buffer.ResourcePtr;
+
+        internal override unsafe ID3D11Resource* NativePtr => Buffer.NativePtr;
 
         /// <summary>
         /// The byte offset within the <see cref="Buffer"/> <see cref="GraphicsBuffer"/>.

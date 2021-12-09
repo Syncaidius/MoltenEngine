@@ -267,7 +267,7 @@
     <Compile Include="GraphicsValidationMode.cs" />
     <Compile Include="GraphicsValidationResult.cs" />
     <Compile Include="Hardware\GraphicsComputeFeatures.cs" />
-    <Compile Include="Hardware\GraphicsDX11Features.cs" />
+    <Compile Include="Hardware\DeviceFeaturesDX11.cs" />
     <Compile Include="Hardware\GraphicsShaderFeatures.cs" />
     <Compile Include="Mesh\StandardIndexedMesh.cs" />
     <Compile Include="Mesh\StandardMesh.cs" />
