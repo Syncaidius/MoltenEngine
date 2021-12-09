@@ -25,7 +25,7 @@ Blank - Not Started\
 | Renderer - OpenGL      | 🚧         | 🚫      | 🚧     | 🚧  |
 | Renderer - OpenES      |            |         | 🚫     | 🚫  |
 | Renderer - Vulkan      |            |          |        |      |
-| Renderer - DirectX 11  | ✔️         | 🚫       | 🚫    | 🚫   |
+| Renderer - DirectX 11  | 🚧        | 🚫       | 🚫    | 🚫   |
 | Renderer - DirectX 12  |            | 🚫       | 🚫    | 🚫   |
 | Audio - OpenAL         |            |          |        |      |
 | Audio - XAudio 2       |            | 🚫       | 🚫    | 🚫   |
