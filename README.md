@@ -74,8 +74,8 @@ Blank - Not Started\
 | static skyboxes        | ✔️         |         |        |             |       |
 | real-time skyboxes     |            |         |        |             |       |
 | multi-window support   | ✔️         |         |        | 🚫          |       |
-| Render into WinForms   | ✔️         |         | 🚫    | 🚫          | 🚫    |
-| Render into WPF        |            |         | 🚫    | 🚫          | 🚫    |
+| Render into WinForms   | ✔️         |         |        | 🚫          | 🚫    |
+| Render into WPF        |            |         |        | 🚫          | 🚫    |
 | Render into UWP        |            |         | 🚫    | 🚫          | 🚫    |
 |[Render into MAUI](https://docs.microsoft.com/en-us/dotnet/maui/what-is-maui)|            |         |       |             |       |
 | Render into Android UI | 🚫         | 🚫      |       | 🚫          | 🚫   |
