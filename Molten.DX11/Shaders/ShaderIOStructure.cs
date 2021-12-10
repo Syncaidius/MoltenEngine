@@ -55,7 +55,7 @@ namespace Molten.Graphics
 
                 InputElementDesc el = new InputElementDesc()
                 {
-                    SemanticName = pDesc.SemanticName.ToUpper(),
+                    SemanticName = pDesc.SemanticName,
                     SemanticIndex = pDesc.SemanticIndex,
                     InputSlot = 0, // This does not need to be set. A shader has a single layout, 
                     InstanceDataStepRate = 0, // This does not need to be set. The data is set via Context.DrawInstanced + vertex data/layout.
@@ -116,7 +116,8 @@ namespace Molten.Graphics
 
                 //store the element
                 Elements[i] = el;
-                signature += $"{el.Format}{el.SemanticIndex}{el.InputSlotClass}{el.AlignedByteOffset}{el.SemanticName}";
+                string semName = EngineInterop.StringFromBytes(el.SemanticName);
+                signature += $"{el.Format}{el.SemanticIndex}{el.InputSlotClass}{el.AlignedByteOffset}{semName}";
                 byte[] bytes = Encoding.UTF8.GetBytes(signature);
                 HashKey = HashHelper.ComputeFNV(bytes);
             }
