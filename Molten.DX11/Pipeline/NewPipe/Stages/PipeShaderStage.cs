@@ -48,7 +48,7 @@ namespace Molten.Graphics
                     cb = ConstantBuffers[sid].BoundValue;
                     if (cb != null)
                     {
-                        cBuffers[i] = cb.NativePtr;
+                        cBuffers[i] = cb.ResourcePtr;
                         cFirstConstants[i] = 0; // TODO implement this using BufferSegment
                         cNumConstants[i] = (uint)cb.Variables.Length;
                     }
@@ -100,7 +100,7 @@ namespace Molten.Graphics
         protected abstract void OnBindResources(PipeSlotGroup<PipeBindableResource> grp,
             ID3D11ShaderResourceView** resources);
 
-        protected abstract void OnBindSamplers(PipeSlotGroup<PipeBindableResource> grp,
+        protected abstract void OnBindSamplers(PipeSlotGroup<ShaderSampler> grp,
             ID3D11SamplerState** resources);
 
         protected abstract void OnBindShader(PipeSlot<HlslShader> slot);
@@ -110,8 +110,14 @@ namespace Molten.Graphics
         /// </summary>
         internal PipeSlotGroup<ShaderSampler> Samplers { get; }
 
+        /// <summary>
+        /// Gets the slots for binding <see cref="PipeBindableResource"/> to the current <see cref="PipeShaderStage"/>.
+        /// </summary>
         internal PipeSlotGroup<PipeBindableResource> Resources { get; }
 
+        /// <summary>
+        /// Gets the slots for binding <see cref="ShaderConstantBuffer"/> to the current <see cref="PipeShaderStage"/>/
+        /// </summary>
         internal PipeSlotGroup<ShaderConstantBuffer> ConstantBuffers { get; }
 
         /// <summary>
@@ -119,6 +125,9 @@ namespace Molten.Graphics
         /// </summary>
         internal PipeSlot<HlslShader> Shader { get; }
 
+        /// <summary>
+        /// Gets the type of shader stage that the current <see cref="PipeShaderStage"/> represents.
+        /// </summary>
         public ShaderType ShaderStageType { get; }
     }
 }

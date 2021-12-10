@@ -18,7 +18,7 @@ namespace Molten.Graphics
             _slots = new PipeSlot<T>[slotCount];
 
             for (uint i = 0; i < slotCount; i++)
-                _slots[i] = new PipeSlot<T>(stage, i, slotType, namePrefix);
+                _slots[i] = new PipeSlot<T>(stage, i, slotType, namePrefix, true);
 
             stage.AllSlots.AddRange(_slots);
         }
@@ -46,6 +46,7 @@ namespace Molten.Graphics
             if(FirstChanged < LastChanged)
             {
                 NumSlotsChanged = LastChanged - FirstChanged;
+                Stage.Pipe.Profiler.Current.Bindings++;
                 return true;
             }
 
@@ -76,6 +77,11 @@ namespace Molten.Graphics
         /// Gets the number of slots that were changed during the last <see cref="BindAll"/> call.
         /// </summary>
         public uint NumSlotsChanged { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="PipeStage"/> that the current <see cref="PipeSlotGroup{T}"/> is bound to.
+        /// </summary>
+        public PipeStage Stage { get; }
 
         /// <summary>
         /// Gets the number of slots in the current <see cref="PipeSlotGroup{T}"/>.

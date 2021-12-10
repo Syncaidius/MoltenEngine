@@ -28,7 +28,7 @@ namespace Molten.Graphics
         protected PipeSlot<T> DefineSlot<T>(uint slotID, PipeBindTypeFlags slotType, string namePrefix)
             where T : PipeBindable
         {
-            PipeSlot<T> slot = new PipeSlot<T>(this, slotID, slotType, namePrefix);
+            PipeSlot<T> slot = new PipeSlot<T>(this, slotID, slotType, namePrefix, false);
             AllSlots.Add(slot);
             return slot;
         }

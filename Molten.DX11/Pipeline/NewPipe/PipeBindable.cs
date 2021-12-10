@@ -42,8 +42,15 @@ namespace Molten.Graphics
         /// <param name="pipe">The <see cref="PipeDX11"/> that the current <see cref="PipeBindable"/> is to be bound to.</param>
         protected internal abstract void Refresh(PipeSlot slot, PipeDX11 pipe);
 
+        /// <summary>
+        /// Gets the instance-specific version of the current <see cref="PipeBindable"/>. Any change which will require a device
+        /// update should increase this value. E.g. Resizing a texture, recompiling a shader/material, etc.
+        /// </summary>
         internal protected uint Version { get; protected set; }
 
+        /// <summary>
+        /// Gets a list of slots that the current <see cref="PipeBindable"/> is bound to.
+        /// </summary>
         internal HashSet<PipeSlot> BoundTo { get; }
     }
 

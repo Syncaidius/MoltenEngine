@@ -8,8 +8,9 @@ namespace Molten.Graphics
 {
     public abstract class PipeSlot : EngineObject
     {
-        internal PipeSlot(PipeStage parent, uint slotID, PipeBindTypeFlags slotType, string namePrefix)
+        internal PipeSlot(PipeStage parent, uint slotID, PipeBindTypeFlags slotType, string namePrefix, bool grpMember)
         {
+            IsGroupMember = grpMember;
             Stage = parent;
             Index = slotID;
             SlotType = slotType;
@@ -36,17 +37,23 @@ namespace Molten.Graphics
         /// Gets the slot type of the current <see cref="PipeSlot"/>.
         /// </summary>
         internal PipeBindTypeFlags SlotType { get; }
+
+        /// <summary>
+        /// Gets whether or not the slot is part of a pipe slot group.
+        /// </summary>
+        public bool IsGroupMember { get; }
     }
 
     internal sealed class PipeSlot<T> : PipeSlot
         where T : PipeBindable
     {
         uint _boundVersion;
+        uint _bindIncrement;
 
-        internal PipeSlot(PipeStage stage, uint slotID, PipeBindTypeFlags slotType, string namePrefix) : 
-            base(stage, slotID, slotType, $"{namePrefix}_{typeof(T).Name}")
+        internal PipeSlot(PipeStage stage, uint slotID, PipeBindTypeFlags slotType, string namePrefix, bool grpMember) : 
+            base(stage, slotID, slotType, $"{namePrefix}_{typeof(T).Name}", grpMember)
         {
-
+            _bindIncrement = grpMember ? 0 : 1U;
         }
 
         protected override void OnDispose()
@@ -80,7 +87,7 @@ namespace Molten.Graphics
                     BoundValue = Value;
                 }
 
-                Stage.Pipe.Profiler.Current.Bindings++;
+                Stage.Pipe.Profiler.Current.Bindings += _bindIncrement;
                 return true;
             }
             else if (Value != null)
@@ -90,7 +97,7 @@ namespace Molten.Graphics
                     if (_boundVersion != Value.Version)
                     {
                         _boundVersion = Value.Version;
-                        Stage.Pipe.Profiler.Current.Bindings++;
+                        Stage.Pipe.Profiler.Current.Bindings += _bindIncrement;
                         return true;
                     }
                 }
@@ -104,6 +111,9 @@ namespace Molten.Graphics
         /// </summary>
         internal T Value { get; set; }
 
+        /// <summary>
+        /// Gets the value that was bound to the current <see cref="PipeSlot{T}"/> during the last <see cref="Bind"/> call.
+        /// </summary>
         internal T BoundValue { get; set; }
     }
 }

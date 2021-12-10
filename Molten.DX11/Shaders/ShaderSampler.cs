@@ -6,9 +6,11 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    public unsafe class ShaderSampler : PipeBindable, IShaderSampler
+    public unsafe class ShaderSampler : PipeBindable<ID3D11SamplerState>, IShaderSampler
     {
-        internal ID3D11SamplerState* Native;
+        internal override unsafe ID3D11SamplerState* NativePtr => _native;
+
+        ID3D11SamplerState* _native;
         SamplerDesc _desc;
         bool _isDirty;
 
@@ -53,7 +55,7 @@ namespace Molten.Graphics
                 int fVal = (int)_desc.Filter;
                 PipelineDispose();
 
-                pipe.Device.Native->CreateSamplerState(ref _desc, ref Native);
+                pipe.Device.Native->CreateSamplerState(ref _desc, ref _native);
                 _isDirty = false;
                 Version++;
             }
@@ -61,10 +63,10 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            if (Native != null)
+            if (_native != null)
             {
-                Native->Release();
-                Native = null;
+                _native->Release();
+                _native = null;
             }
         }
 

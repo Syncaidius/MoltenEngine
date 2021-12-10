@@ -7,18 +7,18 @@ namespace Molten.Graphics
     {
         public class Snapshot
         {
-            public int DrawCalls { get; set; }
+            public uint DrawCalls { get; set; }
 
-            public int Bindings { get; set; }
+            public uint Bindings { get; set; }
 
-            public int BufferSwaps { get; set; }
+            public uint BufferSwaps { get; set; }
 
-            public int ShaderSwaps { get; set; }
+            public uint ShaderSwaps { get; set; }
 
-            public int SurfaceSwaps { get; set; }
+            public uint SurfaceSwaps { get; set; }
 
             /// <summary>The total number of triangles that were rendered in the previous frame.</summary>
-            public int PrimitiveCount { get; set; }
+            public uint PrimitiveCount { get; set; }
 
             /// <summary>The time it took to render the previous frame.</summary>
             public double Time { get; set; }
@@ -38,19 +38,19 @@ namespace Molten.Graphics
             /// </summary>
             public ulong AllocatedVRAM { get; set; }
 
-            public int MapDiscardCount { get; set; }
+            public uint MapDiscardCount { get; set; }
 
-            public int MapNoOverwriteCount { get; set; }
+            public uint MapNoOverwriteCount { get; set; }
 
-            public int MapWriteCount { get; set; }
+            public uint MapWriteCount { get; set; }
 
-            public int MapReadCount { get; set; }
+            public uint MapReadCount { get; set; }
 
-            public int UpdateSubresourceCount { get; set; }
+            public uint UpdateSubresourceCount { get; set; }
 
-            public int CopySubresourceCount { get; set; }
+            public uint CopySubresourceCount { get; set; }
 
-            public int CopyResourceCount { get; set; }
+            public uint CopyResourceCount { get; set; }
 
             public void Clear()
             {
