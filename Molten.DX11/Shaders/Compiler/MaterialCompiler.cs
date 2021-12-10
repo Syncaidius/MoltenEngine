@@ -4,9 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using SharpDX.D3DCompiler;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
 
 namespace Molten.Graphics
 {

@@ -1,5 +1,4 @@
-﻿using SharpDX.D3DCompiler;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +8,8 @@ namespace Molten.Graphics
 {
     internal class ShaderCompilerContext
     {
+        // TODO implement Silk.NET.Direct3D.Compilers.IDxcResult
+
         internal ShaderCompileResult Result = new ShaderCompileResult();
 
         /// <summary>

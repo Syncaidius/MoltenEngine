@@ -1,5 +1,4 @@
-﻿using SharpDX.Direct3D11;
-using Molten.Graphics.Textures;
+﻿using Molten.Graphics.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,7 @@ namespace Molten.Graphics
 
         internal RWTexture2DVariable(HlslShader shader) : base(shader) { }
 
-        protected override PipelineShaderObject OnSetUnorderedResource(object value)
+        protected override PipeBindableResource OnSetUnorderedResource(object value)
         {
             _texture = value as Texture2DDX11;
 

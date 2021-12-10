@@ -1,4 +1,4 @@
-﻿using SharpDX.D3DCompiler;
+﻿using Silk.NET.Direct3D.Compilers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,14 +11,40 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
+    // TODO: implement DXC compiler: https://simoncoenen.com/blog/programming/graphics/DxcCompiling
+
     internal class HlslCompiler
     {
+        Dictionary<HlslCompilerFlags, string> _argLookup = new Dictionary<HlslCompilerFlags, string>()
+        {
+            [HlslCompilerFlags.AllResourcesBound] = "-all_resources_bound",
+            [HlslCompilerFlags.AvoidFlowControl] = "-Gfa",
+            [HlslCompilerFlags.Debug] = "-Zi",
+            [HlslCompilerFlags.DebugNameForBinary] = "-Zsb",
+            [HlslCompilerFlags.DebugNameForSource] = "-Zss",
+            [HlslCompilerFlags.EnableBackwardsCompatibility] = "-Gec",
+            [HlslCompilerFlags.EnableStrictness] = "-Ges",
+            [HlslCompilerFlags.IeeeStrictness] = "Gis",
+            [HlslCompilerFlags.None] = "",
+            [HlslCompilerFlags.OptimizationLevel0] = "-O0",
+            [HlslCompilerFlags.OptimizationLevel1] = "-O1",
+            [HlslCompilerFlags.OptimizationLevel2] = "-O2",
+            [HlslCompilerFlags.OptimizationLevel3] = "-O3",
+            [HlslCompilerFlags.PackMatrixColumnMajor] = "-Zpc",
+            [HlslCompilerFlags.PackMatrixRowMajor] = "-Zpr",
+            [HlslCompilerFlags.PreferFlowControl] = "-Gfp",
+            [HlslCompilerFlags.ResourcesMayAlias] = "-res_may_alias",
+            [HlslCompilerFlags.SkipOptimizations] = "-Od",
+            [HlslCompilerFlags.SkipValidation] = "-Vd",
+            [HlslCompilerFlags.WarningsAreErrors] = "-WX",
+        };
+
         internal static readonly string[] NewLineSeparators = new string[] { "\n", Environment.NewLine };
         Dictionary<string, HlslSubCompiler> _subCompilers;
         Logger _log;
         RendererDX11 _renderer;
         Include _defaultIncluder;
-
+        Silk.NET.Direct3D.Compilers.IDxcUtils test;
         Dictionary<string, ShaderNodeParser> _parsers;
 
         internal HlslCompiler(RendererDX11 renderer, Logger log)

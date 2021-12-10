@@ -42,7 +42,8 @@ namespace Molten.Graphics
         /// <summary>
         /// Bind the stage to it's <see cref="ID3D11DeviceContext1"/> context.
         /// </summary>
-        internal abstract void Bind();
+        /// <returns>True if a key pipeline resource was updated on the current <see cref="PipeStage"/>. E.g. A shader.</returns>
+        internal abstract bool Bind();
 
         internal PipeDX11 Pipe { get; }
 

@@ -25,7 +25,7 @@ namespace Molten.Graphics
         private void _slotState_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
             GraphicsBlendState state = obj as GraphicsBlendState;
-            if (state.Native == _nativeState)
+            if (state._native == _nativeState)
             {
                 _nativeState = null;
                 Pipe.Context->OMSetBlendState(_nativeState, ref _blendFactor[0], _blendSampleMask);
@@ -42,11 +42,11 @@ namespace Molten.Graphics
         {
             bool stateChanged = _slotState.Bind(Pipe, _currentState, PipelineBindType.Output);
 
-            if (_nativeState != _currentState.Native ||  
+            if (_nativeState != _currentState._native ||  
                 _blendSampleMask != _currentState.BlendSampleMask &&
                 !_currentState.BlendFactor.Equals(_blendFactor))
             {
-                _nativeState = _currentState.Native;
+                _nativeState = _currentState._native;
                 _currentState.BlendFactor.CopyTo(_blendFactor, 0);
                 _blendSampleMask = _currentState.BlendSampleMask; 
                 Pipe.Context->OMSetBlendState((ID3D11BlendState*)_nativeState, ref _blendFactor[0], _blendSampleMask);

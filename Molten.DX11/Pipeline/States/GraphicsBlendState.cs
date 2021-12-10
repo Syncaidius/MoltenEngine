@@ -8,7 +8,7 @@ using Silk.NET.Direct3D11;
 namespace Molten.Graphics
 {
     /// <summary>Stores a blend state for use with a <see cref="PipeDX11"/>.</summary>
-    internal unsafe class GraphicsBlendState : PipelineObject<DeviceDX11, PipeDX11>, IEquatable<GraphicsBlendState>
+    internal unsafe class GraphicsBlendState : PipeBindable<ID3D11BlendState1>, IEquatable<GraphicsBlendState>
     {
         static BlendDesc1 _defaultDesc;
 
@@ -35,7 +35,9 @@ namespace Molten.Graphics
             };
         }
 
-        internal ID3D11BlendState1* Native;
+        internal override unsafe ID3D11BlendState1* NativePtr => _native;
+
+        ID3D11BlendState1* _native;
         BlendDesc1 _desc;
 
         bool _dirty;
@@ -106,40 +108,40 @@ namespace Molten.Graphics
             return true;
         }
 
-        internal override void Refresh(PipeDX11 context, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
+        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
         {
-            if (Native == null || _dirty)
+            if (_native == null || _dirty)
             {
                 _dirty = false;
 
                 // Dispose of previous state object
-                if (Native != null)
+                if (_native != null)
                 {
-                    Native->Release();
-                    Native = null;
+                    _native->Release();
+                    _native = null;
                 }
 
                 // Create new state
-                Device.Native->CreateBlendState1(ref _desc, ref Native);
+                Device.Native->CreateBlendState1(ref _desc, ref _native);
             }
         }
 
         public static implicit operator ID3D11BlendState*(GraphicsBlendState state)
         {
-            return (ID3D11BlendState*)state.Native;
+            return (ID3D11BlendState*)state._native;
         }
 
         public static implicit operator ID3D11BlendState1*(GraphicsBlendState state)
         {
-            return state.Native;
+            return state._native;
         }
 
-        private protected override void OnPipelineDispose()
+        internal override void PipelineDispose()
         {
-            if(Native != null)
+            if(_native != null)
             {
-                Native->Release();
-                Native = null;
+                _native->Release();
+                _native = null;
             }
         }
 

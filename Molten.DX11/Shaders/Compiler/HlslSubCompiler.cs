@@ -14,9 +14,9 @@ namespace Molten.Graphics
     {
 
 #if RELEASE
-         ShaderFlags _compileFlags = ShaderFlags.OptimizationLevel3;
+         ShaderCompileFlags _compileFlags = ShaderCompileFlags.OptimizationLevel3;
 #else
-        ShaderFlags _compileFlags = ShaderFlags.WarningsAreErrors;
+        HlslCompilerFlags _compileFlags = HlslCompilerFlags.WarningsAreErrors;
 #endif
 
         internal abstract List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header);

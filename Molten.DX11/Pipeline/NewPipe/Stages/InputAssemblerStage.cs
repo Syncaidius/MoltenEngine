@@ -41,7 +41,7 @@ namespace Molten.Graphics
                 Pipe.Context->IASetPrimitiveTopology(_boundTopology.ToApi());
             }
 
-            bool vsChanged = false;
+            bool vsChanged = _vs.Bind();
             bool gsChanged = false;
             bool hsChanged = false;
             bool dsChanged = false;
@@ -51,7 +51,7 @@ namespace Molten.Graphics
             if (IndexBuffer.Bind())
             {
                 BufferSegment ib = IndexBuffer.BoundValue;
-                Pipe.Context->IASetIndexBuffer(ib.Buffer.NativePtr, ib.DataFormat, ib.ByteOffset);
+                Pipe.Context->IASetIndexBuffer(ib.Buffer.ResourcePtr, ib.DataFormat, ib.ByteOffset);
             }
 
             // Does the vertex input layout need updating?
@@ -80,7 +80,7 @@ namespace Molten.Graphics
 
                 if (seg != null)
                 {
-                    pBuffers[p] = seg.Buffer.NativePtr;
+                    pBuffers[p] = seg.Buffer.ResourcePtr;
                     pStrides[p] = seg.Stride;
                     pOffsets[p] = seg.ByteOffset;
                 }

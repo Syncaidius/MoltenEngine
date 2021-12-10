@@ -30,7 +30,7 @@ namespace Molten.Graphics
             Shader = DefineSlot<HlslShader>(0, PipeBindTypeFlags.Input, "Shader");
         }
 
-        internal override void Bind()
+        internal override bool Bind()
         {
             // Set constant buffers
             if (ConstantBuffers.BindAll())
@@ -91,7 +91,12 @@ namespace Molten.Graphics
             }
 
             if (Shader.Bind())
+            {
                 OnBindShader(Shader);
+                return true;
+            }
+
+            return false;
         }
 
         protected abstract void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,

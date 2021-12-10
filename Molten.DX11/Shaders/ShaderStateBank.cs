@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     internal class ShaderStateBank<T> : EngineObject
-        where T : PipelineDisposableObject
+        where T : PipeObject
     {
         T[] _states;
 
@@ -32,8 +32,6 @@ namespace Molten.Graphics
         {
             for (int i = 0; i < _states.Length; i++)
                 DisposeObject(ref _states[i]);
-
-            base.OnDispose();
         }
 
         public T this[StateConditions conditions]

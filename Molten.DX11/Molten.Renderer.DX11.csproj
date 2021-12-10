@@ -251,6 +251,7 @@
     <Compile Include="Renderer\SurfaceConfig.cs" />
     <Compile Include="Renderer\Tasks\TextureApply.cs" />
     <Compile Include="Shaders\Compiler\Reflection\ShaderVariableInfo.cs" />
+    <Compile Include="Shaders\Compiler\HlslCompilerFlags.cs" />
     <Compile Include="Surfaces\RenderControlSurface.cs" />
     <Compile Include="Surfaces\WinformsSurface.cs" />
     <Compile Include="Pipeline\GraphicsBlendStage.cs" />

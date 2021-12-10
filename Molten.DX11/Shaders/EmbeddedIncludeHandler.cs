@@ -1,5 +1,4 @@
-﻿using SharpDX.D3DCompiler;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,6 +13,8 @@ namespace Molten.Graphics
         IDisposable _disposable;
         Assembly _assembly;
         string _namespace;
+
+        // TODO wrap functionality of Silk.NET.Core.Native.ID3DInclude
 
         /// <summary>
         /// 

@@ -8,7 +8,7 @@ using Silk.NET.Direct3D11;
 namespace Molten.Graphics
 {
     /// <summary>Stores a depth-stencil state for use with a <see cref="PipeDX11"/>.</summary>
-    internal unsafe class GraphicsDepthState : PipelineObject<DeviceDX11, PipeDX11>, IEquatable<GraphicsDepthState>
+    internal unsafe class GraphicsDepthState : PipeBindable<ID3D11DepthStencilState>, IEquatable<GraphicsDepthState>
     {
         public class Face
         {
@@ -64,7 +64,8 @@ namespace Molten.Graphics
 
         static DepthStencilDesc _defaultDesc;
 
-        internal ID3D11DepthStencilState* Native;
+        internal override unsafe ID3D11DepthStencilState* NativePtr => _native;
+        ID3D11DepthStencilState* _native;
         DepthStencilDesc _desc;
         internal bool _dirty;
 
@@ -152,17 +153,17 @@ namespace Molten.Graphics
             _dirty = true;
         }
 
-        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
+        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
         {
-            if (Native == null || _dirty)
+            if (_native == null || _dirty)
             {
                 _dirty = false;
 
                 //dispose of previous state object
-                if (Native != null)
+                if (_native != null)
                 {
-                    Native->Release();
-                    Native = null;
+                    _native->Release();
+                    _native = null;
                 }
 
                 //copy the front and back-face settings into the main description
@@ -170,22 +171,22 @@ namespace Molten.Graphics
                 _desc.BackFace = _backFace._desc;
 
                 //create new state
-                Device.Native->CreateDepthStencilState(ref _desc, ref Native);
+                Device.Native->CreateDepthStencilState(ref _desc, ref _native);
             }
         }
 
-        private protected override void OnPipelineDispose()
+        internal override void PipelineDispose()
         {
-            if (Native != null)
+            if (_native != null)
             {
-                Native->Release();
-                Native = null;
+                _native->Release();
+                _native = null;
             }
         }
 
         public static implicit operator ID3D11DepthStencilState*(GraphicsDepthState state)
         {
-            return state.Native;
+            return state._native;
         }
 
         internal bool IsDepthEnabled

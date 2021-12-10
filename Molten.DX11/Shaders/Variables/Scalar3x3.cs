@@ -17,7 +17,7 @@ namespace Molten.Graphics
             SizeOf = sizeof(float) * (3 * 3);
         }
 
-        internal override void Write(SharpDX.DataStream stream)
+        internal override void Write(ResourceStream stream)
         {
             stream.Write(_value);
         }

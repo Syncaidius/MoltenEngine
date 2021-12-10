@@ -1,5 +1,4 @@
-﻿using SharpDX.Direct3D11;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,17 +7,17 @@ namespace Molten.Graphics
 {
     internal abstract class ShaderResourceVariable : IShaderValue
     {
-        PipelineShaderObject _resource;
+        PipeBindableResource _resource;
 
         internal ShaderResourceVariable(HlslShader shader)
         {
             Parent = shader;
         }
 
-        protected abstract PipelineShaderObject OnSetResource(object value);
+        protected abstract PipeBindableResource OnSetResource(object value);
 
         /// <summary>Gets the resource bound to the variable.</summary>
-        internal PipelineShaderObject Resource { get { return _resource; } }
+        internal PipeBindableResource Resource { get { return _resource; } }
 
         public string Name { get; set; }
 

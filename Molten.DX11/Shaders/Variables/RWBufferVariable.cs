@@ -1,6 +1,4 @@
-﻿using SharpDX.Direct3D11;
-using Molten.Graphics.Textures;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +11,7 @@ namespace Molten.Graphics
 
         internal RWBufferVariable(HlslShader shader) : base(shader) { }
 
-        protected override PipelineShaderObject OnSetUnorderedResource(object value)
+        protected override PipeBindableResource OnSetUnorderedResource(object value)
         {
             _buffer = value as GraphicsBuffer;
             if (_buffer != null && _buffer.IsUnorderedAccess == false)

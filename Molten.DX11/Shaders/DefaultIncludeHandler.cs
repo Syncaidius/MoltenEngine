@@ -1,4 +1,4 @@
-﻿using SharpDX.D3DCompiler;
+﻿using Silk.NET.Core.Native;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +12,9 @@ namespace Molten.Graphics.Shaders
         Stream _stream;
         IDisposable _disposable;
 
-        public void Close(System.IO.Stream stream)
+        // TODO wrap functionality of Silk.NET.Core.Native.ID3DInclude
+
+        public void Close(Stream stream)
         {
             _stream.Close();
         }

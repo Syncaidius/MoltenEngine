@@ -9,7 +9,7 @@ namespace Molten.Graphics
     /// <summary>
     /// An a base class implementation of key shader components (e.g. name, render states, samplers, etc).
     /// </summary>
-    public abstract class HlslFoundation : PipelineObject<DeviceDX11, PipeDX11>
+    public abstract class HlslFoundation : PipeObject
     {
         /// <summary>
         /// The texture samplers to be used with the shader/component.
@@ -35,8 +35,6 @@ namespace Molten.Graphics
         {
             Samplers = new ShaderStateBank<ShaderSampler>[0];
         }
-
-        private protected override void OnPipelineDispose() { }
 
         /// <summary>
         /// Gets or sets the number of iterations the shader/component should be run.

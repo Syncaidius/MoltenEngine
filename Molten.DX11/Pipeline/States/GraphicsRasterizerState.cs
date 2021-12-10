@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>Stores a rasterizer state for use with a <see cref="PipeDX11"/>.</summary>
-    internal unsafe class GraphicsRasterizerState : PipelineObject<DeviceDX11, PipeDX11>
+    internal unsafe class GraphicsRasterizerState : PipeBindable<ID3D11RasterizerState1>
     {
         static RasterizerDesc1 _defaultDesc;
 
-        internal ID3D11RasterizerState1* Native;
+        internal override unsafe ID3D11RasterizerState1* NativePtr => _native;
+
+        ID3D11RasterizerState1* _native;
         RasterizerDesc1 _desc;
         bool _dirty;
 
@@ -72,41 +74,41 @@ namespace Molten.Graphics
                 _desc.SlopeScaledDepthBias == other._desc.SlopeScaledDepthBias;
         }
 
-        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
+        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
         {
-            if (Native == null || _dirty)
+            if (_native == null || _dirty)
             {
                 _dirty = false;
 
                 //dispose of previous state object
-                if (Native != null)
+                if (_native != null)
                 {
-                    Native->Release();
-                    Native = null;
+                    _native->Release();
+                    _native = null;
                 }
 
                 //create new state
-                Device.Native->CreateRasterizerState1(ref _desc, ref Native);
+                Device.Native->CreateRasterizerState1(ref _desc, ref _native);
             }
         }
 
-        private protected override void OnPipelineDispose()
+        internal override void PipelineDispose()
         {
-            if(Native != null)
+            if(_native != null)
             {
-                Native->Release();
-                Native = null;
+                _native->Release();
+                _native = null;
             }
         }
 
         public static implicit operator ID3D11RasterizerState* (GraphicsRasterizerState state)
         {
-            return (ID3D11RasterizerState*)state.Native;
+            return (ID3D11RasterizerState*)state._native;
         }
 
         public static implicit operator ID3D11RasterizerState1*(GraphicsRasterizerState state)
         {
-            return state.Native;
+            return state._native;
         }
 
         public CullMode CullMode

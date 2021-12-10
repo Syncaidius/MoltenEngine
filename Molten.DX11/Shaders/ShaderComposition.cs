@@ -9,15 +9,15 @@ namespace Molten.Graphics
     internal class ShaderComposition
     {
         /// <summary>A list of const buffers the shader stage requires to be bound.</summary>
-        internal List<int> ConstBufferIds = new List<int>();
+        internal List<uint> ConstBufferIds = new List<uint>();
 
         /// <summary>A list of resources that must be bound to the shader stage.</summary>
-        internal List<int> ResourceIds = new List<int>();
+        internal List<uint> ResourceIds = new List<uint>();
 
         /// <summary>A list of samplers that must be bound to the shader stage.</summary>
-        internal List<int> SamplerIds = new List<int>();
+        internal List<uint> SamplerIds = new List<uint>();
 
-        internal List<int> UnorderedAccessIds = new List<int>();
+        internal List<uint> UnorderedAccessIds = new List<uint>();
 
         internal ShaderIOStructure InputStructure;
 
@@ -33,11 +33,12 @@ namespace Molten.Graphics
         }
     }
 
-    internal class ShaderComposition<T> : ShaderComposition where T : DeviceChild
+    internal unsafe class ShaderComposition<T> : ShaderComposition 
+        where T : unmanaged
     {
         internal ShaderComposition(bool optional) : base(optional) { }
 
         /// <summary>The underlying, compiled HLSL shader object.</summary>
-        internal T RawShader;
+        internal T* RawShader;
     }
 }

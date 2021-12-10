@@ -23,7 +23,7 @@ namespace Molten.Graphics
         private void _slotState_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
         {
             GraphicsDepthState state = obj as GraphicsDepthState;
-            if (state.Native == _nativeState)
+            if (state._native == _nativeState)
             {
                 _nativeState = null;
                 _currentState = null;
@@ -45,7 +45,7 @@ namespace Molten.Graphics
             if (stateChanged || _stencilRef != _currentState.StencilReference)
             {
                 _stencilRef = _currentState.StencilReference;
-                _nativeState = _currentState.Native;
+                _nativeState = _currentState._native;
                 Pipe.Context->OMSetDepthStencilState(_nativeState, _stencilRef);
             }
         }

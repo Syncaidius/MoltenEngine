@@ -1,5 +1,4 @@
-﻿using SharpDX.D3DCompiler;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,7 +17,7 @@ namespace Molten.Graphics
             _directory = directory ?? "";
         }
 
-        public void Close(System.IO.Stream stream)
+        public void Close(Stream stream)
         {
             _stream.Close();
         }

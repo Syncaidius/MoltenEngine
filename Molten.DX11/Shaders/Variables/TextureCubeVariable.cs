@@ -1,5 +1,4 @@
-﻿using SharpDX.Direct3D11;
-using Molten.Graphics.Textures;
+﻿using Molten.Graphics.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,7 @@ namespace Molten.Graphics
 
         internal TextureCubeVariable(HlslShader shader) : base(shader) { }
 
-        protected override PipelineShaderObject OnSetResource(object value)
+        protected override PipeBindableResource OnSetResource(object value)
         {
             if (value != null)
                 _texture = value as TextureCubeDX11;

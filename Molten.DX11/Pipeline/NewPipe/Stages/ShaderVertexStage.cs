@@ -9,6 +9,8 @@ namespace Molten.Graphics
 {
     internal class ShaderVertexStage : PipeShaderStage
     {
+        // TODO wrap functionality of Silk.NET.Core.Native.ID3DInclude
+
         public ShaderVertexStage(PipeDX11 pipe) : 
             base(pipe, ShaderType.VertexShader)
         {
