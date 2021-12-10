@@ -63,12 +63,14 @@ namespace Molten.Graphics
                     InputSlotClass = InputClassification.InputPerVertexData,
                 };
 
+                RegisterComponentMaskFlags pDescMask = (RegisterComponentMaskFlags)pDesc.Mask;
+
                 //A piece of hax to fix some derpy bug: https://github.com/sharpdx/SharpDX/issues/553
                 //but bit-shifting to the right by 8bits seems to fix it.
-                RegisterComponentMaskFlags usageMask = (pDesc.UsageMask & RegisterComponentMaskFlags.ComponentX);
-                usageMask |= (pDesc.UsageMask & RegisterComponentMaskFlags.ComponentY);
-                usageMask |= (pDesc.UsageMask & RegisterComponentMaskFlags.ComponentZ);
-                usageMask |= (pDesc.UsageMask & RegisterComponentMaskFlags.ComponentW);
+                RegisterComponentMaskFlags usageMask = (pDescMask & RegisterComponentMaskFlags.ComponentX);
+                usageMask |= (pDescMask & RegisterComponentMaskFlags.ComponentY);
+                usageMask |= (pDescMask & RegisterComponentMaskFlags.ComponentZ);
+                usageMask |= (pDescMask & RegisterComponentMaskFlags.ComponentW);
 
                 D3DRegisterComponentType comType = pDesc.ComponentType;
                 switch (usageMask)
