@@ -32,7 +32,7 @@ namespace Molten.Graphics
             _vertexLayout = DefineSlot<VertexInputLayout>(0, PipeBindTypeFlags.Input, "Vertex Input Layout");
         }
 
-        internal override void Bind()
+        internal override bool Bind()
         {
             // Check topology
             if (_boundTopology != Topology)
@@ -47,21 +47,27 @@ namespace Molten.Graphics
             bool dsChanged = false;
             bool psChanged = false;
 
+            bool ibChanged = IndexBuffer.Bind();
+            bool vbChanged = VertexBuffers.BindAll();
+
             // Check index buffer
-            if (IndexBuffer.Bind())
+            if (ibChanged)
             {
                 BufferSegment ib = IndexBuffer.BoundValue;
                 Pipe.Context->IASetIndexBuffer(ib.Buffer.ResourcePtr, ib.DataFormat, ib.ByteOffset);
             }
 
             // Does the vertex input layout need updating?
-            if (VertexBuffers.BindAll() || vsChanged)
+            if (vbChanged|| vsChanged)
             {
                 BindVertexBuffers(VertexBuffers);
                 _vertexLayout.Value = GetInputLayout();
                 _vertexLayout.Bind();
                 Pipe.Context->IASetInputLayout(_vertexLayout.BoundValue);
             }
+
+            return vsChanged || gsChanged || hsChanged || 
+                dsChanged || psChanged || ibChanged || vbChanged;
         }
 
         private void BindVertexBuffers(PipeSlotGroup<BufferSegment> grp)
