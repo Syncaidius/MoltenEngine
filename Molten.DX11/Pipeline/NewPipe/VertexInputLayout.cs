@@ -10,7 +10,7 @@ namespace Molten.Graphics
     internal unsafe class VertexInputLayout : PipeBindable
     {
         internal ID3D11InputLayout* Native;
-        bool _valid = true;
+        bool _validMatch = true;
         bool _isInstanced = false;
         ulong[] _hashKeys;
 
@@ -37,12 +37,13 @@ namespace Molten.Graphics
                 bool inputMatch = io.IsCompatible(format, (uint)startID);
                 if (inputMatch == false)
                 {
-                    _valid = false;
+                    _validMatch = false;
                     break;
                 }
 
                 // Collate vertex format elements into layout and set the correct input slot for each element.
                 elements.AddRange(format.Elements);
+
                 for (int eID = startID; eID < elements.Count; eID++)
                 {
                     InputElementDesc e = elements[eID];
@@ -65,7 +66,7 @@ namespace Molten.Graphics
             InputElementDesc[] finalElements = elements.ToArray();
 
             // Attempt creation of input layout.
-            if (_valid)
+            if (_validMatch)
             {
                 device.Native->CreateInputLayout(ref finalElements[0], (uint)finalElements.Length,
                     ref vertexBytecode[0], (uint)vertexBytecode.Length,
@@ -81,14 +82,23 @@ namespace Molten.Graphics
 
                     format = vbSlots[i].BoundValue.VertexFormat;
 
-                    device.Log.WriteWarning("Format - Buffer slot "+ i + ": ");
+                    device.Log.WriteWarning("Format - Buffer slot " + i + ": ");
                     for (int f = 0; f < format.Elements.Length; f++)
-                        device.Log.WriteWarning($"\t[{f}]{format.Elements[f].SemanticName} -- index: {format.Elements[f].SemanticIndex}");
+                    {
+                        // TODO cache semantic name somewhere to prevent re-parsing each time we build a layout.
+                        string semName = EngineInterop.StringFromBytes(format.Elements[f].SemanticName);
+                        device.Log.WriteWarning($"\t[{f}]{semName} -- index: {format.Elements[f].SemanticIndex}");
+                    }
                 }
 
+                // List final input structure.
                 device.Log.WriteWarning("Shader Input Structure: ");
                 for (int i = 0; i < finalElements.Length; i++)
-                    device.Log.WriteWarning($"\t[{i}]{finalElements[i].SemanticName} -- index: {finalElements[i].SemanticIndex}");
+                {
+                    // TODO cache semantic name somewhere to prevent re-parsing each time we build a layout.
+                    string semName = EngineInterop.StringFromBytes(format.Elements[i].SemanticName);
+                    device.Log.WriteWarning($"\t[{i}]{semName} -- index: {finalElements[i].SemanticIndex}");
+                }
             }
         }
 
@@ -139,7 +149,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets whether or not the input layout is valid.</summary>
-        internal bool IsValid => _valid;
+        internal bool IsValid => _validMatch;
 
         /// <summary>Gets whether or not the vertex input layout is designed for use with instanced draw calls.</summary>
         public bool IsInstanced => _isInstanced;

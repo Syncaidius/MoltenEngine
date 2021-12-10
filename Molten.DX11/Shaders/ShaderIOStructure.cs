@@ -114,7 +114,7 @@ namespace Molten.Graphics
                         break;
                 }
 
-                //store the element
+                // Store the element
                 Elements[i] = el;
                 string semName = EngineInterop.StringFromBytes(el.SemanticName);
                 signature += $"{el.Format}{el.SemanticIndex}{el.InputSlotClass}{el.AlignedByteOffset}{semName}";
