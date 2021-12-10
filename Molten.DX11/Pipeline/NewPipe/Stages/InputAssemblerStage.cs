@@ -54,7 +54,7 @@ namespace Molten.Graphics
             if (ibChanged)
             {
                 BufferSegment ib = IndexBuffer.BoundValue;
-                Pipe.Context->IASetIndexBuffer(ib.Buffer.ResourcePtr, ib.DataFormat, ib.ByteOffset);
+                Pipe.Context->IASetIndexBuffer(ib.Buffer, ib.DataFormat, ib.ByteOffset);
             }
 
             // Does the vertex input layout need updating?

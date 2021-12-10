@@ -62,5 +62,9 @@ namespace Molten.Graphics
         /// </summary>
         internal abstract T* ResourcePtr { get; }
 
+        public static implicit operator T*(PipeBindableResource<T> resource)
+        {
+            return resource.ResourcePtr;
+        }
     }
 }
