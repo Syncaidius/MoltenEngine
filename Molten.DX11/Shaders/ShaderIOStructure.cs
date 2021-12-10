@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
+using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
@@ -37,18 +38,18 @@ namespace Molten.Graphics
 
             Elements = new InputElementDesc[count];
 
-            for (int i = 0; i < count; i++)
+            for (uint i = 0; i < count; i++)
             {
-                ShaderParameterDescription pDesc = new ShaderParameterDescription();
+                SignatureParameterDesc pDesc = new SignatureParameterDesc();
 
                 switch (type)
                 {
                     case ShaderIOStructureType.Input:
-                        pDesc = shaderRef.GetInputParameterDescription(i);
+                        shaderRef->GetInputParameterDesc(i, ref pDesc);
                         break;
 
                     case ShaderIOStructureType.Output:
-                        pDesc = shaderRef.GetOutputParameterDescription(i);
+                        shaderRef->GetOutputParameterDesc(i, ref pDesc);
                         break;
                 }
 
@@ -69,44 +70,44 @@ namespace Molten.Graphics
                 usageMask |= (pDesc.UsageMask & RegisterComponentMaskFlags.ComponentZ);
                 usageMask |= (pDesc.UsageMask & RegisterComponentMaskFlags.ComponentW);
 
-                RegisterComponentType comType = pDesc.ComponentType;
+                D3DRegisterComponentType comType = pDesc.ComponentType;
                 switch (usageMask)
                 {
                     case RegisterComponentMaskFlags.ComponentX:
-                        if (comType == RegisterComponentType.UInt32)
+                        if (comType == D3DRegisterComponentType.D3DRegisterComponentUint32)
                             el.Format = Format.FormatR32Uint;
-                        else if (comType == RegisterComponentType.SInt32)
+                        else if (comType == D3DRegisterComponentType.D3DRegisterComponentSint32)
                             el.Format = Format.FormatR32Sint;
-                        else if (comType == RegisterComponentType.Float32)
+                        else if (comType == D3DRegisterComponentType.D3DRegisterComponentFloat32)
                             el.Format = Format.FormatR32Float;
                         break;
 
                     case RegisterComponentMaskFlags.ComponentX | RegisterComponentMaskFlags.ComponentY:
-                        if (comType == RegisterComponentType.UInt32)
+                        if (comType == D3DRegisterComponentType.D3DRegisterComponentUint32)
                             el.Format = Format.FormatR32G32Uint;
-                        else if (comType == RegisterComponentType.SInt32)
+                        else if (comType == D3DRegisterComponentType.D3DRegisterComponentSint32)
                             el.Format = Format.FormatR32G32Sint;
-                        else if (comType == RegisterComponentType.Float32)
+                        else if (comType == D3DRegisterComponentType.D3DRegisterComponentFloat32)
                             el.Format = Format.FormatR32G32Float;
                         break;
 
                     case RegisterComponentMaskFlags.ComponentX | RegisterComponentMaskFlags.ComponentY |
                 RegisterComponentMaskFlags.ComponentZ:
-                        if (comType == RegisterComponentType.UInt32)
+                        if (comType == D3DRegisterComponentType.D3DRegisterComponentUint32)
                             el.Format = Format.FormatR32G32B32Uint;
-                        else if (comType == RegisterComponentType.SInt32)
+                        else if (comType == D3DRegisterComponentType.D3DRegisterComponentSint32)
                             el.Format = Format.FormatR32G32B32Sint;
-                        else if (comType == RegisterComponentType.Float32)
+                        else if (comType == D3DRegisterComponentType.D3DRegisterComponentFloat32)
                             el.Format = Format.FormatR32G32B32Float;
                         break;
 
                     case RegisterComponentMaskFlags.ComponentX | RegisterComponentMaskFlags.ComponentY |
                 RegisterComponentMaskFlags.ComponentZ | RegisterComponentMaskFlags.ComponentW:
-                        if (comType == RegisterComponentType.UInt32)
+                        if (comType == D3DRegisterComponentType.D3DRegisterComponentUint32)
                             el.Format = Format.FormatR32G32B32A32Uint;
-                        else if (comType == RegisterComponentType.SInt32)
+                        else if (comType == D3DRegisterComponentType.D3DRegisterComponentSint32)
                             el.Format = Format.FormatR32G32B32A32Sint;
-                        else if (comType == RegisterComponentType.Float32)
+                        else if (comType == D3DRegisterComponentType.D3DRegisterComponentFloat32)
                             el.Format = Format.FormatR32G32B32A32Float;
                         break;
                 }
