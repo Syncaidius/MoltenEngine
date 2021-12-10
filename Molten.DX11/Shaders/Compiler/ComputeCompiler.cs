@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Silk.NET.Core.Native;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SharpDX.D3DCompiler;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
 
 namespace Molten.Graphics
 {
@@ -48,12 +46,12 @@ namespace Molten.Graphics
 
             switch (inputType)
             {
-                case ShaderInputType.UnorderedAccessViewRWStructured:
+                case D3DShaderInputType.D3D11SitUavRwstructured:
                     if (ct != null)
                         OnBuildRWStructuredVariable(context, ct, binding);
                     break;
 
-                case ShaderInputType.UnorderedAccessViewRWTyped:
+                case D3DShaderInputType.D3D11SitUavRwtyped:
                     if (ct != null)
                         OnBuildRWTypedVariable(context, ct, binding);
                     break;
@@ -78,11 +76,11 @@ namespace Molten.Graphics
 
             switch (binding.Dimension)
             {
-                case ShaderResourceViewDimension.Texture1D:
+                case D3DSrvDimension.D3D101SrvDimensionTexture1D:
                     resource = GetVariableResource<RWTexture1DVariable>(context, shader, binding);
                     break;
 
-                case ShaderResourceViewDimension.Texture2D:
+                case D3DSrvDimension.D3D101SrvDimensionTexture2D:
                     resource = GetVariableResource<RWTexture2DVariable>(context, shader, binding);
                     break;
             }
