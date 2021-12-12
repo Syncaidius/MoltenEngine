@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.Direct3D.Compilers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,25 +9,23 @@ namespace Molten.Graphics
 {
     internal class ShaderCompilerContext
     {
-        // TODO implement Silk.NET.Direct3D.Compilers.IDxcResult
-
         internal ShaderCompileResult Result = new ShaderCompileResult();
 
         /// <summary>
         /// HLSL shader objects stored by entry-point name
         /// </summary>
-        internal Dictionary<string, CompilationResult> HlslShaders = new Dictionary<string, CompilationResult>();
+        internal Dictionary<string, IDxcResult> HlslShaders { get; } = new Dictionary<string, IDxcResult>();
 
-        internal Dictionary<string, ShaderConstantBuffer> ConstantBuffers = new Dictionary<string, ShaderConstantBuffer>();
+        internal Dictionary<string, ShaderConstantBuffer> ConstantBuffers { get; } = new Dictionary<string, ShaderConstantBuffer>();
 
-        internal List<string> Errors = new List<string>();
+        internal List<string> Errors { get; } = new List<string>();
 
-        internal List<string> Messages = new List<string>();
+        internal List<string> Messages { get; } = new List<string>();
 
-        internal HlslCompiler Compiler;
+        internal HlslCompiler Compiler { get; set; }
 
-        internal string Filename;
+        internal string Filename { get; set; }
 
-        internal string Source;
+        internal string Source { get; set; }
     }
 }

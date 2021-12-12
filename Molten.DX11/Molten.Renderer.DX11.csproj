@@ -251,6 +251,7 @@
     <Compile Include="Renderer\Steps\SkyboxStep.cs" />
     <Compile Include="Renderer\SurfaceConfig.cs" />
     <Compile Include="Renderer\Tasks\TextureApply.cs" />
+    <Compile Include="Shaders\Compiler\Includers\HlslIncluder.cs" />
     <Compile Include="Shaders\Compiler\Reflection\ShaderVariableInfo.cs" />
     <Compile Include="Shaders\Compiler\HlslCompilerFlags.cs" />
     <Compile Include="Surfaces\RenderControlSurface.cs" />
@@ -332,8 +333,7 @@
     <Compile Include="Shaders\Compiler\Parsers\ShaderPassParser.cs" />
     <Compile Include="Shaders\Compute\ComputeManager.cs" />
     <Compile Include="Shaders\Compute\ComputeTask.cs" />
-    <Compile Include="Shaders\DefaultIncludeHandler.cs" />
-    <Compile Include="Shaders\EmbeddedIncludeHandler.cs" />
+    <Compile Include="Shaders\Compiler\Includers\EmbeddedIncluder.cs" />
     <Compile Include="Shaders\HlslShader.cs" />
     <Compile Include="Shaders\Materials\Material.cs" />
     <Compile Include="Shaders\HlslIncludeHandler.cs" />

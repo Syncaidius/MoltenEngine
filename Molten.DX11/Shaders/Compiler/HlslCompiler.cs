@@ -62,7 +62,7 @@ namespace Molten.Graphics
             _renderer = renderer;
             _log = log;
             _subCompilers = new Dictionary<string, HlslSubCompiler>();
-            _defaultIncluder = new EmbeddedIncludeHandler(typeof(EmbeddedIncludeHandler).Assembly);
+            _defaultIncluder = new EmbeddedIncluder(typeof(EmbeddedIncluder).Assembly);
 
             AddSubCompiler<MaterialCompiler>("material");
             AddSubCompiler<ComputeCompiler>("compute");

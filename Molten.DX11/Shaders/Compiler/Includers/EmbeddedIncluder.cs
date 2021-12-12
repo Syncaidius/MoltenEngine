@@ -7,10 +7,8 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    internal class EmbeddedIncludeHandler : Include
+    internal class EmbeddedIncluder : HlslIncluder
     {
-        Stream _stream;
-        IDisposable _disposable;
         Assembly _assembly;
         string _namespace;
 
@@ -21,7 +19,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="assembly"></param>
         /// <param name="nSpace">The namespace from which the include handler will load files out of.</param>
-        public EmbeddedIncludeHandler(Assembly assembly, string nSpace = "Molten.Graphics.Assets")
+        public EmbeddedIncluder(Assembly assembly, string nSpace = "Molten.Graphics.Assets")
         {
             _assembly = assembly;
             _namespace = nSpace;
@@ -31,6 +29,8 @@ namespace Molten.Graphics
         {
             _stream.Close();
         }
+
+
 
         public Stream Open(IncludeType type, string fileName, Stream parentStream)
         {
