@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
@@ -86,7 +87,7 @@ namespace Molten.Graphics
                     for (int f = 0; f < format.Elements.Length; f++)
                     {
                         // TODO cache semantic name somewhere to prevent re-parsing each time we build a layout.
-                        string semName = EngineInterop.StringFromBytes(format.Elements[f].SemanticName);
+                        string semName = SilkMarshal.PtrToString((nint)format.Elements[f].SemanticName);
                         device.Log.WriteWarning($"\t[{f}]{semName} -- index: {format.Elements[f].SemanticIndex}");
                     }
                 }
@@ -96,7 +97,7 @@ namespace Molten.Graphics
                 for (int i = 0; i < finalElements.Length; i++)
                 {
                     // TODO cache semantic name somewhere to prevent re-parsing each time we build a layout.
-                    string semName = EngineInterop.StringFromBytes(format.Elements[i].SemanticName);
+                    string semName = SilkMarshal.PtrToString((nint)format.Elements[i].SemanticName);
                     device.Log.WriteWarning($"\t[{i}]{semName} -- index: {finalElements[i].SemanticIndex}");
                 }
             }

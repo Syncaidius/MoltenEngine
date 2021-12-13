@@ -116,7 +116,7 @@ namespace Molten.Graphics
 
                 // Store the element
                 Elements[i] = el;
-                string semName = EngineInterop.StringFromBytes(el.SemanticName);
+                string semName = SilkMarshal.PtrToString((nint)el.SemanticName);
                 signature += $"{el.Format}{el.SemanticIndex}{el.InputSlotClass}{el.AlignedByteOffset}{semName}";
                 byte[] bytes = Encoding.UTF8.GetBytes(signature);
                 HashKey = HashHelper.ComputeFNV(bytes);

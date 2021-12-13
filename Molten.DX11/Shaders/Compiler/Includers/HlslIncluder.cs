@@ -38,5 +38,10 @@ namespace Molten.Graphics
         /// Gets the default DXC include handler for the current <see cref="HlslIncluder"/>.
         /// </summary>
         protected IDxcIncludeHandler* DefaultHandler => _defaultHandler;
+
+        public static implicit operator IDxcIncludeHandler*(HlslIncluder includer)
+        {
+            return includer._handler;
+        }
     }
 }

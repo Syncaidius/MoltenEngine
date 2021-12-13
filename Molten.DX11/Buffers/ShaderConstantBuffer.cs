@@ -25,7 +25,7 @@ namespace Molten.Graphics
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
 
             // Read sdescription data
-            BufferName = EngineInterop.StringFromBytes(desc->Name);
+            BufferName = SilkMarshal.PtrToString((nint)desc->Name);
             Flags = (D3DShaderCBufferFlags)desc->UFlags;
             Type = desc->Type;
 
@@ -44,7 +44,7 @@ namespace Molten.Graphics
                 if (sv == null) // TODO remove this exception!
                     throw new NotSupportedException("Shader pipeline does not support HLSL variables of type: " + info.TypeDesc->Type + " -- " + info.TypeDesc->Class);
 
-                sv.Name = EngineInterop.StringFromBytes(info.Description->Name);
+                sv.Name = SilkMarshal.PtrToString((nint)info.Description->Name);
                 sv.ByteOffset = info.Description->StartOffset;
 
                 _varLookup.Add(sv.Name, sv);
