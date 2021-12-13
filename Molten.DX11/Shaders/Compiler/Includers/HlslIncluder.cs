@@ -12,26 +12,31 @@ namespace Molten.Graphics
         IDxcIncludeHandler* _handler;
         IDxcIncludeHandler* _defaultHandler;
 
-        internal HlslIncluder(DeviceDX11 device, IDxcUtils* utils) : base(device)
+        internal HlslIncluder(HlslCompiler compiler) : base(compiler.Device)
         {
-            Utils = utils;
+            Utils = compiler.Utils;
             Utils->CreateDefaultIncludeHandler(ref _defaultHandler);
+            Utils->CreateDefaultIncludeHandler(ref _handler);
 
             SilkInterop.OverrideFunc(this.GetType(), "LoadSource", _handler->LpVtbl, 3);
         }
 
-        protected abstract IDxcIncludeHandler* CreateNativeHandler();
-
-        public unsafe virtual int LoadSource(char* pFilename, IDxcBlob** ppIncludeSource)
-        {
-            return Utils->CreateDefaultIncludeHandler(ref _defaultHandler);
-        }
+        public unsafe abstract int LoadSource(char* pFilename, IDxcBlob** ppIncludeSource);
 
         internal override void PipelineDispose()
         {
             _handler->Release();
+            _defaultHandler->Release();
         }
 
+        /// <summary>
+        /// Gets the DXC utils instance bound to the current <see cref="HlslIncluder"/>.
+        /// </summary>
         protected IDxcUtils* Utils { get; }
+
+        /// <summary>
+        /// Gets the default DXC include handler for the current <see cref="HlslIncluder"/>.
+        /// </summary>
+        protected IDxcIncludeHandler* DefaultHandler => _defaultHandler;
     }
 }

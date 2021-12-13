@@ -13,7 +13,7 @@ namespace Molten.Graphics
 {
     // TODO: implement DXC compiler: https://simoncoenen.com/blog/programming/graphics/DxcCompiling
 
-    internal class HlslCompiler
+    internal unsafe class HlslCompiler
     {
         Dictionary<HlslCompilerFlags, string> _argLookup = new Dictionary<HlslCompilerFlags, string>()
         {
@@ -43,8 +43,7 @@ namespace Molten.Graphics
         Dictionary<string, HlslSubCompiler> _subCompilers;
         Logger _log;
         RendererDX11 _renderer;
-        Include _defaultIncluder;
-        Silk.NET.Direct3D.Compilers.IDxcUtils test;
+        HlslIncluder _defaultIncluder;
         Dictionary<string, ShaderNodeParser> _parsers;
 
         internal HlslCompiler(RendererDX11 renderer, Logger log)
@@ -59,10 +58,12 @@ namespace Molten.Graphics
                     _parsers.Add(nodeName, parser);
             }
 
+            Dxc = DXC.GetApi();
+            Utils = Dxc.CreateInstance(IDxcUtils.Guid, )
             _renderer = renderer;
             _log = log;
             _subCompilers = new Dictionary<string, HlslSubCompiler>();
-            _defaultIncluder = new EmbeddedIncluder(typeof(EmbeddedIncluder).Assembly);
+            _defaultIncluder = new EmbeddedIncluder(this, typeof(EmbeddedIncluder).Assembly);
 
             AddSubCompiler<MaterialCompiler>("material");
             AddSubCompiler<ComputeCompiler>("compute");
@@ -274,5 +275,11 @@ namespace Molten.Graphics
                 }
             }
         }
+
+        internal IDxcUtils* Utils { get; }
+
+        internal DXC Dxc { get; }
+
+        internal DeviceDX11 Device => _renderer.Device;
     }
 }
