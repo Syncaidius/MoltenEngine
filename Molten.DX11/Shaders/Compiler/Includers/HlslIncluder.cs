@@ -17,8 +17,7 @@ namespace Molten.Graphics
             Utils = utils;
             Utils->CreateDefaultIncludeHandler(ref _defaultHandler);
 
-            // TODO apply v-table overrides here
-            SilkInterop.OverrideFunc(this.GetType(), "LoadSource", _handler->LpVtbl, )
+            SilkInterop.OverrideFunc(this.GetType(), "LoadSource", _handler->LpVtbl, 3);
         }
 
         protected abstract IDxcIncludeHandler* CreateNativeHandler();

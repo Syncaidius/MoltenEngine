@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.Direct3D.Compilers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,9 +31,7 @@ namespace Molten.Graphics
             _stream.Close();
         }
 
-
-
-        public Stream Open(IncludeType type, string fileName, Stream parentStream)
+        public override unsafe int LoadSource(char* pFilename, IDxcBlob** ppIncludeSource)
         {
             string embeddedName = _namespace + "." + fileName;
             _stream = EmbeddedResource.GetStream(embeddedName, _assembly);
