@@ -1,4 +1,5 @@
-﻿using Silk.NET.Direct3D11;
+﻿using Silk.NET.Direct3D.Compilers;
+using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,11 +7,9 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Xml;
-
 namespace Molten.Graphics
 {
-    internal abstract class HlslSubCompiler
+    internal unsafe abstract class HlslSubCompiler
     {
 
 #if RELEASE
@@ -69,9 +68,9 @@ namespace Molten.Graphics
             return false;
         }
 
-        protected ShaderReflection BuildIO(CompilationResult code, ShaderComposition composition)
+        protected ShaderReflection BuildIO(IDxcResult* result, ShaderComposition composition)
         {
-            ShaderReflection shaderRef = new ShaderReflection(code);
+            ShaderReflection shaderRef = new ShaderReflection(result);
             ShaderDescription desc = shaderRef.Description;
             composition.InputStructure = new ShaderIOStructure(shaderRef, ref desc, ShaderIOStructureType.Input);
             composition.OutputStructure = new ShaderIOStructure(shaderRef, ref desc, ShaderIOStructureType.Output);
@@ -79,7 +78,7 @@ namespace Molten.Graphics
             return shaderRef;
         }
 
-        protected bool BuildStructure<T>(ShaderCompilerContext context, HlslShader shader, ShaderReflection shaderRef, CompilationResult code, ShaderComposition<T> composition) 
+        protected bool BuildStructure<T>(ShaderCompilerContext context, HlslShader shader, ShaderReflection shaderRef, IDxcResult* result, ShaderComposition<T> composition) 
             where T : DeviceChild
         {
             //build variable data
@@ -148,7 +147,7 @@ namespace Molten.Graphics
 
             }
 
-            composition.RawShader = Activator.CreateInstance(typeof(T), shader.Device.D3d, code.Bytecode.Data, null) as T;
+            composition.RawShader = Activator.CreateInstance(typeof(T), shader.Device.D3d, result.Bytecode.Data, null) as T;
             return true;
         }
 
@@ -280,7 +279,7 @@ namespace Molten.Graphics
         /// <param name="filename"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        protected bool Compile(string entryPoint, ShaderType type, ShaderCompilerContext context, out CompilationResult result)
+        protected bool Compile(string entryPoint, ShaderType type, ShaderCompilerContext context, ref IDxcResult* result)
         {
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.

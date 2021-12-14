@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal class MaterialCompiler : HlslSubCompiler
+    internal unsafe class MaterialCompiler : HlslSubCompiler
     {
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
 

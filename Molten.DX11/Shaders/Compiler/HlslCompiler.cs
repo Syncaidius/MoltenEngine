@@ -17,26 +17,26 @@ namespace Molten.Graphics
     {
         Dictionary<HlslCompilerFlags, string> _argLookup = new Dictionary<HlslCompilerFlags, string>()
         {
-            [HlslCompilerFlags.AllResourcesBound] = "-all_resources_bound",
-            [HlslCompilerFlags.AvoidFlowControl] = "-Gfa",
-            [HlslCompilerFlags.Debug] = "-Zi",
-            [HlslCompilerFlags.DebugNameForBinary] = "-Zsb",
-            [HlslCompilerFlags.DebugNameForSource] = "-Zss",
-            [HlslCompilerFlags.EnableBackwardsCompatibility] = "-Gec",
-            [HlslCompilerFlags.EnableStrictness] = "-Ges",
-            [HlslCompilerFlags.IeeeStrictness] = "Gis",
+            [HlslCompilerFlags.AllResourcesBound] = DXC.ArgAllResourcesBound,
+            [HlslCompilerFlags.AvoidFlowControl] = DXC.ArgAvoidFlowControl,
+            [HlslCompilerFlags.Debug] = DXC.ArgDebug,
+            [HlslCompilerFlags.DebugNameForBinary] = DXC.ArgDebugNameForBinary,
+            [HlslCompilerFlags.DebugNameForSource] = DXC.ArgDebugNameForSource,
+            [HlslCompilerFlags.EnableBackwardsCompatibility] = DXC.ArgEnableBackwardsCompatibility,
+            [HlslCompilerFlags.EnableStrictness] = DXC.ArgEnableStrictness,
+            [HlslCompilerFlags.IeeeStrictness] = DXC.ArgIeeeStrictness,
             [HlslCompilerFlags.None] = "",
-            [HlslCompilerFlags.OptimizationLevel0] = "-O0",
-            [HlslCompilerFlags.OptimizationLevel1] = "-O1",
-            [HlslCompilerFlags.OptimizationLevel2] = "-O2",
-            [HlslCompilerFlags.OptimizationLevel3] = "-O3",
-            [HlslCompilerFlags.PackMatrixColumnMajor] = "-Zpc",
-            [HlslCompilerFlags.PackMatrixRowMajor] = "-Zpr",
-            [HlslCompilerFlags.PreferFlowControl] = "-Gfp",
-            [HlslCompilerFlags.ResourcesMayAlias] = "-res_may_alias",
-            [HlslCompilerFlags.SkipOptimizations] = "-Od",
-            [HlslCompilerFlags.SkipValidation] = "-Vd",
-            [HlslCompilerFlags.WarningsAreErrors] = "-WX",
+            [HlslCompilerFlags.OptimizationLevel0] = DXC.ArgOptimizationLevel0,
+            [HlslCompilerFlags.OptimizationLevel1] = DXC.ArgOptimizationLevel1,
+            [HlslCompilerFlags.OptimizationLevel2] = DXC.ArgOptimizationLevel2,
+            [HlslCompilerFlags.OptimizationLevel3] = DXC.ArgOptimizationLevel3,
+            [HlslCompilerFlags.PackMatrixColumnMajor] = DXC.ArgPackMatrixColumnMajor,
+            [HlslCompilerFlags.PackMatrixRowMajor] = DXC.ArgPackMatrixRowMajor,
+            [HlslCompilerFlags.PreferFlowControl] = DXC.ArgPreferFlowControl,
+            [HlslCompilerFlags.ResourcesMayAlias] = DXC.ArgResourcesMayAlias,
+            [HlslCompilerFlags.SkipOptimizations] = DXC.ArgSkipOptimizations,
+            [HlslCompilerFlags.SkipValidation] = DXC.ArgSkipValidation,
+            [HlslCompilerFlags.WarningsAreErrors] = DXC.ArgWarningsAreErrors,
         };
 
         internal static readonly string[] NewLineSeparators = new string[] { "\n", Environment.NewLine };
@@ -179,42 +179,24 @@ namespace Molten.Graphics
                 }
             }
 
-            // Pre-process HLSL source
-            string hlslError = "";
-            try
-            {
-                finalSource = ShaderBytecode.Preprocess(finalSource, null, includer ?? _defaultIncluder, out hlslError);
-            }
-            catch (Exception e)
-            {
-                hlslError = e.Message;
-            }
+            context.Source = finalSource;
+            context.Filename = filename;
 
-            // Proceed if there is no pre-processor errors.
-            if (!string.IsNullOrWhiteSpace(hlslError) == false)
+            // Compile any headers that matching _subCompiler keys (e.g. material or compute)
+            foreach (string nodeName in headers.Keys)
             {
-                context.Source = finalSource;
-                context.Filename = filename;
-
-                foreach (string nodeName in headers.Keys)
+                HlslSubCompiler com = _subCompilers[nodeName];
+                List<string> nodeHeaders = headers[nodeName];
+                foreach (string header in nodeHeaders)
                 {
-                    HlslSubCompiler com = _subCompilers[nodeName];
-                    List<string> nodeHeaders = headers[nodeName];
-                    foreach (string header in nodeHeaders)
-                    {
-                        List<IShader> parseResult = com.Parse(context, _renderer, header);
+                    List<IShader> parseResult = com.Parse(context, _renderer, header);
 
-                        // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
-                        foreach (HlslShader shader in parseResult)
-                            shader.DefaultResources = new IShaderResource[shader.Resources.Length];
+                    // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
+                    foreach (HlslShader shader in parseResult)
+                        shader.DefaultResources = new IShaderResource[shader.Resources.Length];
 
-                        context.Result.AddResult(nodeName, parseResult);
-                    }
+                    context.Result.AddResult(nodeName, parseResult);
                 }
-            }
-            else
-            {
-                context.Errors.Add($"{filename ?? "Shader source error"}: {hlslError}");
             }
 
             if (string.IsNullOrWhiteSpace(filename))

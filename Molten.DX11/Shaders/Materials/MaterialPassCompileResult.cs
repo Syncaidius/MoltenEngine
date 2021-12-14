@@ -1,23 +1,23 @@
-﻿using SharpDX.D3DCompiler;
-using Molten.Graphics.Shaders;
+﻿using Molten.Graphics.Shaders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.Direct3D.Compilers;
 
 namespace Molten.Graphics
 {
-    internal class MaterialPassCompileResult
+    internal unsafe class MaterialPassCompileResult
     {
         internal MaterialPassCompileResult(MaterialPass pass)
         {
             Pass = pass;
-            Results = new CompilationResult[MaterialPass.ShaderTypes.Length];
+            Results = new IDxcResult*[MaterialPass.ShaderTypes.Length];
             Reflections = new ShaderReflection[MaterialPass.ShaderTypes.Length];
         }
 
-        internal CompilationResult[] Results;
+        internal IDxcResult*[] Results;
 
         internal ShaderReflection[] Reflections;
 
@@ -27,25 +27,25 @@ namespace Molten.Graphics
 
         internal MaterialPass Pass { get; private set; }
 
-        internal CompilationResult VertexResult => Results[0];
+        internal IDxcResult* VertexResult => Results[0];
 
-        internal CompilationResult HullResult => Results[1];
+        internal IDxcResult* HullResult => Results[1];
 
-        internal CompilationResult DomainResult => Results[2];
+        internal IDxcResult* DomainResult => Results[2];
 
-        internal CompilationResult GeometryResult => Results[3];
+        internal IDxcResult* GeometryResult => Results[3];
 
-        internal CompilationResult PixelResult => Results[4];
+        internal IDxcResult* PixelResult => Results[4];
 
-        internal ShaderReflection VertexReflection => Reflections[0];
+        internal IDxcResult* VertexReflection => Reflections[0];
 
-        internal ShaderReflection HullReflection => Reflections[1];
+        internal IDxcResult* HullReflection => Reflections[1];
 
-        internal ShaderReflection DomainReflection => Reflections[2];
+        internal IDxcResult* DomainReflection => Reflections[2];
 
-        internal ShaderReflection GeometryReflection => Reflections[3];
+        internal IDxcResult* GeometryReflection => Reflections[3];
 
-        internal ShaderReflection PixelReflection => Reflections[4];
+        internal IDxcResult* PixelReflection => Reflections[4];
 
         internal List<string> Errors = new List<string>();
 
