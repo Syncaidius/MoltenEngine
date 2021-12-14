@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Direct3D.Compilers;
+using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,6 +9,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
+
+using DxcBuffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics
 {
@@ -70,6 +73,34 @@ namespace Molten.Graphics
 
             AddSubCompiler<MaterialCompiler>("material");
             AddSubCompiler<ComputeCompiler>("compute");
+        }
+
+        /// <summary>
+        /// Retrieves the debug PDB data from a shader compilation result (<see cref="IDxcResult"/>).
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="outData"></param>
+        /// <param name="outPath"></param>
+        internal void GetDxcOutput(IDxcResult* result, OutKind outputType, 
+            ref IDxcBlob* outData, IDxcBlobUtf16** outPath = null)
+        {
+            void* pData = null;
+            IDxcBlobUtf16* pDataPath = null;
+            Guid iid = IDxcBlob.Guid;
+            result->GetOutput(outputType, &iid, &pData, outPath);
+            pData = (IDxcBlob*)pData;
+        }
+
+        internal ID3D11ShaderReflection* GetDxcReflection(IDxcResult* result)
+        {
+            IDxcBlob* outData = null;
+            DxcBuffer* reflectionBuffer = null;
+            Guid iid = ID3D11ShaderReflection.Guid;
+            void* pReflection = null;
+
+            GetDxcOutput(result, OutKind.OutReflection, ref outData);
+            Utils->CreateReflection(reflectionBuffer, ref iid, ref pReflection);
+            return (ID3D11ShaderReflection*)pReflection;
         }
 
         /*
