@@ -59,7 +59,10 @@ namespace Molten.Graphics
             }
 
             Dxc = DXC.GetApi();
-            Utils = Dxc.CreateInstance(IDxcUtils.Guid, )
+            IDxcUtils* dxcUtil = null;
+            Dxc.CreateInstance(rclsid, IDxcUtils.Guid, ref dxcUtil); // TODO should rclsid be IDcUtils.Guid? or should riid?
+            Utils = dxcUtil;
+
             _renderer = renderer;
             _log = log;
             _subCompilers = new Dictionary<string, HlslSubCompiler>();
@@ -134,7 +137,7 @@ namespace Molten.Graphics
             _subCompilers.Add(nodeName, sub);
         }
 
-        internal ShaderCompileResult CompileEmbedded(string filename, Include includer = null)
+        internal ShaderCompileResult CompileEmbedded(string filename)
         {
             string source = null;
             using (Stream stream = EmbeddedResource.GetStream(filename, typeof(RendererDX11).Assembly))
@@ -143,10 +146,10 @@ namespace Molten.Graphics
                     source = reader.ReadToEnd();
             }
 
-            return Compile(source, filename, includer);
+            return Compile(source, filename);
         }
 
-        internal ShaderCompileResult Compile(string source, string filename = null, Include includer = null)
+        internal ShaderCompileResult Compile(string source, string filename = null, HlslIncluder includer = null)
         {
             ShaderCompilerContext context = new ShaderCompilerContext() { Compiler = this };
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>();
@@ -159,7 +162,8 @@ namespace Molten.Graphics
                 {
                     headers.Add(nodeName, nodeHeaders);
 
-                    // Remove the headers from the source. This reduces the source we need to check through to find other headear types.
+                    // Remove the XML Molten headers from the source.
+                    // This reduces the source we need to check through to find other header types.
                     foreach (string h in nodeHeaders)
                     {
                         int index = source.IndexOf(h);
