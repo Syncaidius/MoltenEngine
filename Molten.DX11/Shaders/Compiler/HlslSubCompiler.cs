@@ -13,9 +13,9 @@ namespace Molten.Graphics
     {
 
 #if RELEASE
-         ShaderCompileFlags _compileFlags = ShaderCompileFlags.OptimizationLevel3;
+         HlslCompilerArg _compileFlags = HlslCompilerArg.OptimizationLevel3;
 #else
-        HlslCompilerFlags _compileFlags = HlslCompilerFlags.WarningsAreErrors;
+        HlslCompilerArg _compileFlags = HlslCompilerArg.WarningsAreErrors;
 #endif
 
         internal abstract List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header);
@@ -68,17 +68,14 @@ namespace Molten.Graphics
             return false;
         }
 
-        protected ShaderReflection BuildIO(IDxcResult* result, ShaderComposition composition)
+        protected void BuildIO(HlslCompileResult result, ShaderComposition composition)
         {
-            ShaderReflection shaderRef = new ShaderReflection(result);
-            ShaderDescription desc = shaderRef.Description;
-            composition.InputStructure = new ShaderIOStructure(shaderRef, ref desc, ShaderIOStructureType.Input);
-            composition.OutputStructure = new ShaderIOStructure(shaderRef, ref desc, ShaderIOStructureType.Output);
-
-            return shaderRef;
+            composition.InputStructure = new ShaderIOStructure(result, ShaderIOStructureType.Input);
+            composition.OutputStructure = new ShaderIOStructure(result, ShaderIOStructureType.Output);
         }
 
-        protected bool BuildStructure<T>(ShaderCompilerContext context, HlslShader shader, ShaderReflection shaderRef, IDxcResult* result, ShaderComposition<T> composition) 
+        protected bool BuildStructure<T>(ShaderCompilerContext context, HlslShader shader, 
+            ShaderReflection shaderRef, IDxcResult* result, ShaderComposition<T> composition) 
             where T : DeviceChild
         {
             //build variable data
@@ -279,7 +276,7 @@ namespace Molten.Graphics
         /// <param name="filename"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        protected bool Compile(string entryPoint, ShaderType type, ShaderCompilerContext context, ref IDxcResult* result)
+        protected bool Compile(string entryPoint, ShaderType type, ShaderCompilerContext context, out HlslCompileResult result)
         {
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.

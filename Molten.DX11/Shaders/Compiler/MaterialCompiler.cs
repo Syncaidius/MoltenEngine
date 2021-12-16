@@ -133,7 +133,7 @@ namespace Molten.Graphics
 
                 if (Compile(pass.Compositions[i].EntryPoint, MaterialPass.ShaderTypes[i], context, out result.Results[i]))
                 {
-                    result.Reflections[i] = BuildIO(result.Results[i], pass.Compositions[i]);
+                    BuildIO(result.Results[i], pass.Compositions[i]);
                 }
                 else
                 {
@@ -143,8 +143,8 @@ namespace Molten.Graphics
             }
 
             // Fill in any extra metadata
-            if (result.Reflections[MaterialPass.ID_GEOMETRY] != null)
-                pass.GeometryPrimitive = result.Reflections[MaterialPass.ID_GEOMETRY].GeometryShaderSInputPrimitive;
+            if (result.Results[MaterialPass.ID_GEOMETRY].Reflection != null)
+                pass.GeometryPrimitive = result.Results[MaterialPass.ID_GEOMETRY].Reflection->GetGSInputPrimitive();
 
             // Validate I/O structure of each shader stage.
             if (_layoutValidator.Validate(result))

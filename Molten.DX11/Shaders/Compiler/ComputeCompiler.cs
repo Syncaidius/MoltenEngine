@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D.Compilers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class ComputeCompiler : HlslSubCompiler
+    internal unsafe class ComputeCompiler : HlslSubCompiler
     {
         internal override List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header)
         {
@@ -16,8 +17,8 @@ namespace Molten.Graphics
             try
             {
                 context.Compiler.ParserHeader(compute, ref header, context);
-                CompilationResult computeResult = null;
-                if (Compile(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out computeResult))
+                IDxcResult* computeResult = null;
+                if (Compile(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, ref computeResult))
                 {
                     ShaderReflection shaderRef = new ShaderReflection(computeResult.Bytecode);
                     if (BuildStructure(context, compute, shaderRef, computeResult, compute.Composition))

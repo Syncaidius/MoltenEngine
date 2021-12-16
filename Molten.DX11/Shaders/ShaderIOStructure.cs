@@ -21,18 +21,18 @@ namespace Molten.Graphics
         /// <summary>Creates a new instance of ShaderInputLayout.</summary>
         /// <param name="shaderRef">The shader reflection instance to extract input layout data from.</param>
         /// <param name="desc"></param>
-        public ShaderIOStructure(ID3D11ShaderReflection* shaderRef, ref ShaderDesc desc, ShaderIOStructureType type)
+        internal ShaderIOStructure(HlslCompileResult result, ShaderIOStructureType type)
         {
             string signature = "";
             uint count = 0;
             switch (type)
             {
                 case ShaderIOStructureType.Input:
-                    count = desc.InputParameters;
+                    count = result.Description->InputParameters;
                     break;
 
                 case ShaderIOStructureType.Output:
-                    count = desc.OutputParameters;
+                    count = result.Description->OutputParameters;
                     break;
             }
 
@@ -45,11 +45,11 @@ namespace Molten.Graphics
                 switch (type)
                 {
                     case ShaderIOStructureType.Input:
-                        shaderRef->GetInputParameterDesc(i, ref pDesc);
+                        result.Reflection->GetInputParameterDesc(i, ref pDesc);
                         break;
 
                     case ShaderIOStructureType.Output:
-                        shaderRef->GetOutputParameterDesc(i, ref pDesc);
+                        result.Reflection->GetOutputParameterDesc(i, ref pDesc);
                         break;
                 }
 

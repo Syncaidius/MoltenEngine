@@ -14,7 +14,7 @@ namespace Molten.Graphics
         /// <summary>
         /// HLSL shader objects stored by entry-point name
         /// </summary>
-        internal Dictionary<string, IDxcResult> HlslShaders { get; } = new Dictionary<string, IDxcResult>();
+        internal Dictionary<string, HlslCompileResult> HlslShaders { get; } = new Dictionary<string, HlslCompileResult>();
 
         internal Dictionary<string, ShaderConstantBuffer> ConstantBuffers { get; } = new Dictionary<string, ShaderConstantBuffer>();
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.Core.Native;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,13 +43,13 @@ namespace Molten.Graphics
             Compositions[ID_PIXEL] = PixelShader;
         }
 
-        internal GraphicsValidationResult ValidateInput(PrimitiveTopology topology)
+        internal GraphicsValidationResult ValidateInput(D3DPrimitiveTopology topology)
         {
             GraphicsValidationResult result = GraphicsValidationResult.Successful;
 
             if(HullShader.RawShader != null)
             {
-                if (topology < PrimitiveTopology.PatchListWith1ControlPoints)
+                if (topology < D3DPrimitiveTopology.D3D11PrimitiveTopology1ControlPointPatchlist)
                     result |= GraphicsValidationResult.HullPatchTopologyExpected;
             }
 
@@ -67,7 +68,7 @@ namespace Molten.Graphics
 
         internal ShaderComposition<PixelShader> PixelShader;
 
-        internal InputPrimitive GeometryPrimitive;
+        internal D3DPrimitive GeometryPrimitive;
 
         /// <summary>Gets or sets whether or not the pass will be run.</summary>
         /// <value>

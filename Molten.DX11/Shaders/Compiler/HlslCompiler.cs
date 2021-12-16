@@ -10,44 +10,18 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 
-using DxcBuffer = Silk.NET.Direct3D.Compilers.Buffer;
-
 namespace Molten.Graphics
 {
-    // TODO: implement DXC compiler: https://simoncoenen.com/blog/programming/graphics/DxcCompiling
-
-    internal unsafe class HlslCompiler
+    internal unsafe class HlslCompiler : EngineObject
     {
-        Dictionary<HlslCompilerFlags, string> _argLookup = new Dictionary<HlslCompilerFlags, string>()
-        {
-            [HlslCompilerFlags.AllResourcesBound] = DXC.ArgAllResourcesBound,
-            [HlslCompilerFlags.AvoidFlowControl] = DXC.ArgAvoidFlowControl,
-            [HlslCompilerFlags.Debug] = DXC.ArgDebug,
-            [HlslCompilerFlags.DebugNameForBinary] = DXC.ArgDebugNameForBinary,
-            [HlslCompilerFlags.DebugNameForSource] = DXC.ArgDebugNameForSource,
-            [HlslCompilerFlags.EnableBackwardsCompatibility] = DXC.ArgEnableBackwardsCompatibility,
-            [HlslCompilerFlags.EnableStrictness] = DXC.ArgEnableStrictness,
-            [HlslCompilerFlags.IeeeStrictness] = DXC.ArgIeeeStrictness,
-            [HlslCompilerFlags.None] = "",
-            [HlslCompilerFlags.OptimizationLevel0] = DXC.ArgOptimizationLevel0,
-            [HlslCompilerFlags.OptimizationLevel1] = DXC.ArgOptimizationLevel1,
-            [HlslCompilerFlags.OptimizationLevel2] = DXC.ArgOptimizationLevel2,
-            [HlslCompilerFlags.OptimizationLevel3] = DXC.ArgOptimizationLevel3,
-            [HlslCompilerFlags.PackMatrixColumnMajor] = DXC.ArgPackMatrixColumnMajor,
-            [HlslCompilerFlags.PackMatrixRowMajor] = DXC.ArgPackMatrixRowMajor,
-            [HlslCompilerFlags.PreferFlowControl] = DXC.ArgPreferFlowControl,
-            [HlslCompilerFlags.ResourcesMayAlias] = DXC.ArgResourcesMayAlias,
-            [HlslCompilerFlags.SkipOptimizations] = DXC.ArgSkipOptimizations,
-            [HlslCompilerFlags.SkipValidation] = DXC.ArgSkipValidation,
-            [HlslCompilerFlags.WarningsAreErrors] = DXC.ArgWarningsAreErrors,
-        };
-
         internal static readonly string[] NewLineSeparators = new string[] { "\n", Environment.NewLine };
         Dictionary<string, HlslSubCompiler> _subCompilers;
         Logger _log;
         RendererDX11 _renderer;
         HlslIncluder _defaultIncluder;
         Dictionary<string, ShaderNodeParser> _parsers;
+        IDxcCompiler3* _compiler;
+        IDxcUtils* _utils;
 
         internal HlslCompiler(RendererDX11 renderer, Logger log)
         {
@@ -62,9 +36,8 @@ namespace Molten.Graphics
             }
 
             Dxc = DXC.GetApi();
-            IDxcUtils* dxcUtil = null;
-            Dxc.CreateInstance(rclsid, IDxcUtils.Guid, ref dxcUtil); // TODO should rclsid be IDcUtils.Guid? or should riid?
-            Utils = dxcUtil;
+            _utils = CreateInstance<IDxcUtils>();
+            _compiler = CreateInstance<IDxcCompiler3>();
 
             _renderer = renderer;
             _log = log;
@@ -75,32 +48,20 @@ namespace Molten.Graphics
             AddSubCompiler<ComputeCompiler>("compute");
         }
 
-        /// <summary>
-        /// Retrieves the debug PDB data from a shader compilation result (<see cref="IDxcResult"/>).
-        /// </summary>
-        /// <param name="result"></param>
-        /// <param name="outData"></param>
-        /// <param name="outPath"></param>
-        internal void GetDxcOutput(IDxcResult* result, OutKind outputType, 
-            ref IDxcBlob* outData, IDxcBlobUtf16** outPath = null)
+        protected override void OnDispose()
         {
-            void* pData = null;
-            IDxcBlobUtf16* pDataPath = null;
-            Guid iid = IDxcBlob.Guid;
-            result->GetOutput(outputType, &iid, &pData, outPath);
-            pData = (IDxcBlob*)pData;
+            _compiler->Release();
+            _utils->Release();
+            Dxc.Dispose();
         }
 
-        internal ID3D11ShaderReflection* GetDxcReflection(IDxcResult* result)
+        private T* CreateInstance<T>() where T: unmanaged
         {
-            IDxcBlob* outData = null;
-            DxcBuffer* reflectionBuffer = null;
-            Guid iid = ID3D11ShaderReflection.Guid;
-            void* pReflection = null;
+            void* ppv = null;
+            fixed (Guid* riid = &IDxcUtils.Guid)
+                Dxc.CreateInstance(riid, riid, ref ppv); // TODO should rclsid or riid be Type.Guid (e.g. IDcUtils.Guid)?
 
-            GetDxcOutput(result, OutKind.OutReflection, ref outData);
-            Utils->CreateReflection(reflectionBuffer, ref iid, ref pReflection);
-            return (ID3D11ShaderReflection*)pReflection;
+            return (T*)ppv;
         }
 
         /*
@@ -293,10 +254,12 @@ namespace Molten.Graphics
             }
         }
 
-        internal IDxcUtils* Utils { get; }
-
         internal DXC Dxc { get; }
 
         internal DeviceDX11 Device => _renderer.Device;
+
+        internal RendererDX11 Renderer => _renderer;
+
+        internal IDxcCompiler3* Native => _compiler;
     }
 }
