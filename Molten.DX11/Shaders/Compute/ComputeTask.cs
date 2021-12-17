@@ -1,4 +1,4 @@
-﻿using SharpDX.Direct3D11;
+﻿using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +10,17 @@ namespace Molten.Graphics
     public class ComputeTask : HlslShader, IComputeTask
     {
         internal RWVariable[] UAVs;
-        internal ShaderComposition<ComputeShader> Composition = new ShaderComposition<ComputeShader>(false);
+        internal ShaderComposition<ID3D11ComputeShader> Composition = new ShaderComposition<ID3D11ComputeShader>(false);
 
-        internal ComputeTask(DeviceDX11 device, string filename = null) : base(device, filename)
+        internal ComputeTask(DeviceDX11 device, string filename = null) :
+            base(device, filename)
         {
             UAVs = new RWVariable[0];
         }
 
-        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
+        internal override void PipelineDispose()
         {
-            base.Refresh(pipe, slot);
+            Composition.Dispose();
         }
     }
 }

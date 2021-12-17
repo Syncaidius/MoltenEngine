@@ -1,4 +1,5 @@
-﻿using Silk.NET.Direct3D11;
+﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,21 +7,24 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    public sealed class VertexFormat
+    public sealed class VertexFormat : EngineObject
     {
         internal InputElementDesc[] Elements;
 
-        public VertexFormat(InputElementDesc[] elements, int sizeOf, int hash)
+        public VertexFormat(InputElementDesc[] elements, uint sizeOf)
         {
             SizeOf = sizeOf;
             Elements = elements;
-            UID = hash;
+        }
+
+        protected unsafe override void OnDispose()
+        {
+            // Dispose of element string pointers, since they were statically-allocated by Silk.NET
+            for (uint i = 0; i < Elements.Length; i++)
+                SilkMarshal.Free((nint)Elements[i].SemanticName);
         }
 
         /// <summary>Gets the total size of the Vertex Format, in bytes.</summary>
-        public int SizeOf { get; private set; }
-
-        /// <summary>Gets the hash key associated with the vertex format instance.</summary>
-        public int UID { get; private set; }
+        public uint SizeOf { get; private set; }
     }
 }

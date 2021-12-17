@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.Core.Native;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class ShaderComposition
+    internal abstract class ShaderComposition : IDisposable
     {
         /// <summary>A list of const buffers the shader stage requires to be bound.</summary>
         internal List<uint> ConstBufferIds = new List<uint>();
@@ -27,6 +28,8 @@ namespace Molten.Graphics
 
         internal bool Optional;
 
+        public abstract void Dispose();
+
         internal ShaderComposition(bool optional)
         {
             Optional = optional;
@@ -40,5 +43,10 @@ namespace Molten.Graphics
 
         /// <summary>The underlying, compiled HLSL shader object.</summary>
         internal T* RawShader;
+
+        public override void Dispose()
+        {
+            ((IUnknown*)RawShader)->Release();
+        }
     }
 }

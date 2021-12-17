@@ -42,16 +42,16 @@ namespace Molten.Graphics
             return $"{this.GetType().Name} shader -- {Name}";
         }
 
-        public void SetDefaultResource(IShaderResource resource, int slot)
+        public void SetDefaultResource(IShaderResource resource, uint slot)
         {
             if (slot >= DefaultResources.Length)
                 throw new IndexOutOfRangeException($"The highest slot number must be less-or-equal to the highest slot number used in the shader source code ({DefaultResources.Length}).");
 
-            Array.Resize(ref DefaultResources, slot + 1);
+            EngineInterop.ArrayResize(ref DefaultResources, slot + 1);
             DefaultResources[slot] = resource;
         }
 
-        public IShaderResource GetDefaultResource(int slot)
+        public IShaderResource GetDefaultResource(uint slot)
         {
             if (slot >= DefaultResources.Length)
                 throw new IndexOutOfRangeException($"The highest slot number must be less-or-equal to the highest slot number used in the shader source code ({DefaultResources.Length}).");

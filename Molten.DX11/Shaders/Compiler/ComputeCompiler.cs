@@ -1,5 +1,5 @@
 ﻿using Silk.NET.Core.Native;
-using Silk.NET.Direct3D.Compilers;
+using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,17 +12,20 @@ namespace Molten.Graphics
     {
         internal override List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header)
         {
-            List<IShader> result = new List<IShader>();
+            List<IShader> shaders = new List<IShader>();
             ComputeTask compute = new ComputeTask(renderer.Device, context.Filename);
             try
             {
                 context.Compiler.ParserHeader(compute, ref header, context);
-                HlslCompileResult computeResult = null;
-                if (Compile(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out computeResult))
+                HlslCompileResult result = null;
+                if (Compile(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out result))
                 {
-                    if (BuildStructure(context, compute, computeResult, compute.Composition))
+                    if(BuildStructure(context, compute, result, compute.Composition))
                     {
-                        compute.Composition.RawShader = new ComputeShader(renderer.Device.D3d, computeResult.Bytecode);
+                        void* byteCode = result.ByteCode->GetBufferPointer();
+                        nuint numBytes = result.ByteCode->GetBufferSize();
+                        ID3D11ClassLinkage* linkage = null;
+                        renderer.Device.Native->CreateComputeShader(result.ByteCode, numBytes, linkage, ref compute.Composition.RawShader);
                     }
                 }
             }
@@ -33,60 +36,61 @@ namespace Molten.Graphics
 
             if(context.Errors.Count == 0)
             {
-                result.Add(compute);
+                shaders.Add(compute);
                 (renderer.Compute as ComputeManager).AddTask(compute);
             }
 
-            return result;
+            return shaders;
         }
 
-        protected override void OnBuildVariableStructure(ShaderCompilerContext context, HlslShader shader, ShaderReflection reflection, InputBindingDescription binding, ShaderInputType inputType)
+        protected override void OnBuildVariableStructure(ShaderCompilerContext context, HlslShader shader,
+            HlslCompileResult result, HlslInputBindDescription bind)
         {
             ComputeTask ct = shader as ComputeTask;
 
-            switch (inputType)
+            switch (bind.Ptr->Type)
             {
                 case D3DShaderInputType.D3D11SitUavRwstructured:
                     if (ct != null)
-                        OnBuildRWStructuredVariable(context, ct, binding);
+                        OnBuildRWStructuredVariable(context, ct, bind);
                     break;
 
                 case D3DShaderInputType.D3D11SitUavRwtyped:
                     if (ct != null)
-                        OnBuildRWTypedVariable(context, ct, binding);
+                        OnBuildRWTypedVariable(context, ct, bind);
                     break;
             }
         }
 
-        protected void OnBuildRWStructuredVariable(ShaderCompilerContext context, ComputeTask shader, InputBindingDescription binding)
+        protected void OnBuildRWStructuredVariable(ShaderCompilerContext context, ComputeTask shader, HlslInputBindDescription bind)
         {
-            RWBufferVariable rwBuffer = GetVariableResource<RWBufferVariable>(context, shader, binding);
-            int bindPoint = binding.BindPoint;
+            RWBufferVariable rwBuffer = GetVariableResource<RWBufferVariable>(context, shader, bind);
+            uint bindPoint = bind.Ptr->BindPoint;
 
             if (bindPoint >= shader.UAVs.Length)
-                Array.Resize(ref shader.UAVs, bindPoint + 1);
+                EngineInterop.ArrayResize(ref shader.UAVs, bindPoint + 1);
 
             shader.UAVs[bindPoint] = rwBuffer;
         }
 
-        protected void OnBuildRWTypedVariable(ShaderCompilerContext context, ComputeTask shader, InputBindingDescription binding)
+        protected void OnBuildRWTypedVariable(ShaderCompilerContext context, ComputeTask shader, HlslInputBindDescription bind)
         {
             RWVariable resource = null;
-            int bindPoint = binding.BindPoint;
+            uint bindPoint = bind.Ptr->BindPoint;
 
-            switch (binding.Dimension)
+            switch (bind.Ptr->Dimension)
             {
                 case D3DSrvDimension.D3D101SrvDimensionTexture1D:
-                    resource = GetVariableResource<RWTexture1DVariable>(context, shader, binding);
+                    resource = GetVariableResource<RWTexture1DVariable>(context, shader, bind);
                     break;
 
                 case D3DSrvDimension.D3D101SrvDimensionTexture2D:
-                    resource = GetVariableResource<RWTexture2DVariable>(context, shader, binding);
+                    resource = GetVariableResource<RWTexture2DVariable>(context, shader, bind);
                     break;
             }
 
             if (bindPoint >= shader.UAVs.Length)
-                Array.Resize(ref shader.UAVs, bindPoint + 1);
+                EngineInterop.ArrayResize(ref shader.UAVs, bindPoint + 1);
 
             // Store the resource variable
             shader.UAVs[bindPoint] = resource;

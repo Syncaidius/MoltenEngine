@@ -1,5 +1,7 @@
 ﻿using Molten.Comparers;
-using Molten.Utility;
+using Silk.NET.Core.Native;
+using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +14,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>A helper class for building <see cref="VertexFormat"/> objects.</summary>
-    internal class VertexFormatBuilder
+    internal unsafe class VertexFormatBuilder
     {
         class FieldElement
         {
@@ -60,11 +62,10 @@ namespace Molten.Graphics
             }
 
             fieldElements = fieldElements.OrderBy(e => e.Offset, _ptrComparer).ToList();
-            List<InputElement> elements = new List<InputElement>();
+            List<InputElementDesc> elements = new List<InputElementDesc>();
 
             // Now figure out what kind of InputElement each field represents.
-            int elementAlignedOffset = 0;
-            string signature = "";
+            uint elementAlignedOffset = 0;
             foreach(FieldElement e in fieldElements)
             {
                 VertexElementAttribute att = e.Info.GetCustomAttribute<VertexElementAttribute>();
@@ -74,21 +75,18 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    InputElement el = new InputElement();
-                    el.SemanticName = GetSemanticName(att.Usage);
+                    InputElementDesc el = new InputElementDesc();
+                    string sn = GetSemanticName(att.Usage);
+                    el.SemanticName = (byte*)SilkMarshal.StringToPtr(sn);
                     el.SemanticIndex = att.SemanticIndex;
                     el.AlignedByteOffset = elementAlignedOffset;
-                    el.Classification = att.Classification.ToApi();
+                    el.InputSlotClass = att.Classification.ToApi();
                     elementAlignedOffset += CalculateElement(att.Type, ref el);
-                    signature += $"{elementAlignedOffset}{el.Format}{el.SemanticIndex}{att.Usage}{el.Classification}";
                     elements.Add(el);
                 }
             }
 
-            // TODO improve hashing
-            var bytes = Encoding.UTF8.GetBytes(signature);
-            int uid = HashHelper.ComputeFNV(bytes);
-            return new VertexFormat(elements.ToArray(), elementAlignedOffset, uid);
+            return new VertexFormat(elements.ToArray(), elementAlignedOffset);
         }
 
         private string GetSemanticName(VertexElementUsage usage)
@@ -140,100 +138,100 @@ namespace Molten.Graphics
         /// <param name="type">The type of the element. This is passed in because <see cref="InputElement"/> cannot store the type information for us.</param>
         /// <param name="element">The element to calculate the format and size of.</param>
         /// <returns>The expected size of the element.</returns>
-        private int CalculateElement(VertexElementType type, ref InputElement element)
+        private uint CalculateElement(VertexElementType type, ref InputElementDesc element)
         {
             switch (type)
             {
                 case VertexElementType.Float:
-                    element.Format =  SharpDX.DXGI.Format.R32_Float;
+                    element.Format =  Format.FormatR32Float;
                     return  4;
 
                 case VertexElementType.Vector2:
-                    element.Format =  SharpDX.DXGI.Format.R32G32_Float;
+                    element.Format =  Format.FormatR32G32Float;
                     return  8;
 
                 case VertexElementType.Vector3:
-                    element.Format =  SharpDX.DXGI.Format.R32G32B32_Float;
+                    element.Format =  Format.FormatR32G32B32Float;
                     return  12;
 
                 case VertexElementType.Vector4:
-                    element.Format =  SharpDX.DXGI.Format.R32G32B32A32_Float;
+                    element.Format =  Format.FormatR32G32B32A32Float;
                     return  16;
 
                 case VertexElementType.Color:
-                    element.Format =  SharpDX.DXGI.Format.R8G8B8A8_UNorm;
+                    element.Format =  Format.FormatR8G8B8A8Unorm;
                     return  4;
 
                 case VertexElementType.Byte:
-                    element.Format =  SharpDX.DXGI.Format.R8_UInt;
+                    element.Format =  Format.FormatR8Uint;
                     return  1;
 
                 case VertexElementType.Byte4:
-                    element.Format =  SharpDX.DXGI.Format.R8G8B8A8_UInt;
+                    element.Format =  Format.FormatR8G8B8A8Uint;
                     return  4;
 
                 case VertexElementType.Short:
-                    element.Format =  SharpDX.DXGI.Format.R16_SInt;
+                    element.Format =  Format.FormatR16Sint;
                     return  2;
 
                 case VertexElementType.Short2:
-                    element.Format =  SharpDX.DXGI.Format.R16G16_SInt;
+                    element.Format =  Format.FormatR16G16Sint;
                     return  4;
 
                 case VertexElementType.Short4:
-                    element.Format =  SharpDX.DXGI.Format.R16G16B16A16_SInt;
+                    element.Format =  Format.FormatR16G16B16A16Sint;
                     return  8;
 
                 case VertexElementType.NormalizedShort2:
-                    element.Format =  SharpDX.DXGI.Format.R16G16_SNorm;
+                    element.Format =  Format.FormatR16G16SNorm;
                     return  4;
 
                 case VertexElementType.NormalizedShort4:
-                    element.Format =  SharpDX.DXGI.Format.R16G16B16A16_SNorm;
+                    element.Format =  Format.FormatR16G16B16A16SNorm;
                     return  8;
 
                 case VertexElementType.Half:
-                    element.Format =  SharpDX.DXGI.Format.R16_Float;
+                    element.Format =  Format.FormatR16Float;
                     return  2;
 
                 case VertexElementType.Half2:
-                    element.Format =  SharpDX.DXGI.Format.R16G16_Float;
+                    element.Format =  Format.FormatR16G16Float;
                     return  4;
 
                 case VertexElementType.Half4:
-                    element.Format =  SharpDX.DXGI.Format.R16G16B16A16_Float;
+                    element.Format =  Format.FormatR16G16B16A16Float;
                     return  8;
 
                 case VertexElementType.Int:
-                    element.Format =  SharpDX.DXGI.Format.R32_SInt;
+                    element.Format =  Format.FormatR32Sint;
                     return  4;
 
                 case VertexElementType.Int2:
-                    element.Format =  SharpDX.DXGI.Format.R32G32_SInt;
+                    element.Format =  Format.FormatR32G32Sint;
                     return  8;
 
                 case VertexElementType.Int3:
-                    element.Format =  SharpDX.DXGI.Format.R32G32B32_SInt;
+                    element.Format =  Format.FormatR32G32B32Sint;
                     return  12;
 
                 case VertexElementType.Int4:
-                    element.Format =  SharpDX.DXGI.Format.R32G32B32A32_SInt;
+                    element.Format =  Format.FormatR32G32B32A32Sint;
                     return  16;
 
                 case VertexElementType.UInt:
-                    element.Format =  SharpDX.DXGI.Format.R32_UInt;
+                    element.Format =  Format.FormatR32Uint;
                     return  4;
 
                 case VertexElementType.UInt2:
-                    element.Format =  SharpDX.DXGI.Format.R32G32_UInt;
+                    element.Format =  Format.FormatR32G32Uint;
                     return  8;
 
                 case VertexElementType.UInt3:
-                    element.Format =  SharpDX.DXGI.Format.R32G32B32_UInt;
+                    element.Format =  Format.FormatR32G32B32Uint;
                     return  12;
 
                 case VertexElementType.UInt4:
-                    element.Format =  SharpDX.DXGI.Format.R32G32B32A32_UInt;
+                    element.Format =  Format.FormatR32G32B32A32Uint;
                     return  16;
 
                 default:

@@ -9,12 +9,11 @@ using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    /// <summary>A kind of helper class that automatically generates a shader input layout ready for use,
-    /// while also generating useful metadata that can be used to validate vertex input at engine level.</summary>
-    public unsafe class ShaderIOStructure
+    /// <summary>Represents an automatically generated shader input layout. 
+    /// Also generating useful metadata that can be used to validate vertex input at engine level.</summary>
+    public unsafe class ShaderIOStructure : EngineObject
     {
         public InputElementDesc[] Elements;
-        public int HashKey { get; private set; }
 
         // Reference: http://takinginitiative.wordpress.com/2011/12/11/directx-1011-basic-shader-reflection-automatic-input-layout-creation/
 
@@ -23,16 +22,15 @@ namespace Molten.Graphics
         /// <param name="desc"></param>
         internal ShaderIOStructure(HlslCompileResult result, ShaderIOStructureType type)
         {
-            string signature = "";
             uint count = 0;
             switch (type)
             {
                 case ShaderIOStructureType.Input:
-                    count = result.Description->InputParameters;
+                    count = result.Reflection.Desc->InputParameters;
                     break;
 
                 case ShaderIOStructureType.Output:
-                    count = result.Description->OutputParameters;
+                    count = result.Reflection.Desc->OutputParameters;
                     break;
             }
 
@@ -45,11 +43,11 @@ namespace Molten.Graphics
                 switch (type)
                 {
                     case ShaderIOStructureType.Input:
-                        result.Reflection->GetInputParameterDesc(i, ref pDesc);
+                        result.Reflection.Desc->GetInputParameterDesc(i, ref pDesc);
                         break;
 
                     case ShaderIOStructureType.Output:
-                        result.Reflection->GetOutputParameterDesc(i, ref pDesc);
+                        result.Reflection.Desc->GetOutputParameterDesc(i, ref pDesc);
                         break;
                 }
 
@@ -64,9 +62,6 @@ namespace Molten.Graphics
                 };
 
                 RegisterComponentMaskFlags pDescMask = (RegisterComponentMaskFlags)pDesc.Mask;
-
-                //A piece of hax to fix some derpy bug: https://github.com/sharpdx/SharpDX/issues/553
-                //but bit-shifting to the right by 8bits seems to fix it.
                 RegisterComponentMaskFlags usageMask = (pDescMask & RegisterComponentMaskFlags.ComponentX);
                 usageMask |= (pDescMask & RegisterComponentMaskFlags.ComponentY);
                 usageMask |= (pDescMask & RegisterComponentMaskFlags.ComponentZ);
@@ -116,12 +111,10 @@ namespace Molten.Graphics
 
                 // Store the element
                 Elements[i] = el;
-                string semName = SilkMarshal.PtrToString((nint)el.SemanticName);
-                signature += $"{el.Format}{el.SemanticIndex}{el.InputSlotClass}{el.AlignedByteOffset}{semName}";
-                byte[] bytes = Encoding.UTF8.GetBytes(signature);
-                HashKey = HashHelper.ComputeFNV(bytes);
             }
         }
+
+        protected override void OnDispose() { }
 
         /// <summary>Tests to see if the layout of a vertex format matches the layout of the shader input structure.</summary>
         /// <param name="format"></param>

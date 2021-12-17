@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe delegate T* HlslCreateShaderCallback<T>(HlslCompileResult result, HlslShader shader) where T: unmanaged;
     internal unsafe abstract class HlslSubCompiler
     {
 
@@ -78,7 +77,7 @@ namespace Molten.Graphics
         }
 
         protected bool BuildStructure<T>(ShaderCompilerContext context, HlslShader shader, 
-            HlslCompileResult result, ShaderComposition<T> composition, HlslCreateShaderCallback<T> createCallback) 
+            HlslCompileResult result, ShaderComposition<T> composition) 
             where T : unmanaged
         {
             for (uint r = 0; r < result.Reflection.Desc->BoundResources; r++)
@@ -148,8 +147,6 @@ namespace Molten.Graphics
                 }
             }
 
-            // TODO retrieve compiled shader for result.ShaderBytecode
-            composition.RawShader = createCallback(result, shader);
             return true;
         }
 

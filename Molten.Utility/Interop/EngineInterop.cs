@@ -66,6 +66,9 @@ namespace Molten
         /// least the same size as <paramref name="array"/></param>
         public unsafe static void ArrayResize<T>(ref T[] array, uint newSize)
         {
+            if (array.Length > newSize)
+                throw new Exception("New array size cannot be smaller than the provided array's length.");
+
             Type t = typeof(T);
             uint eSize = (uint)Marshal.SizeOf(t);
             T[] newArray = new T[newSize];

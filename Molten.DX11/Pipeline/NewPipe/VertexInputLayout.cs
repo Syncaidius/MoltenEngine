@@ -20,12 +20,11 @@ namespace Molten.Graphics
             byte[] vertexBytecode,
             ShaderIOStructure io) : base(device)
         {
-            uint maxSlots = device.Features.MaxVertexBufferSlots;
-            _hashKeys = new ulong[maxSlots];
+            _hashKeys = new ulong[vbSlots.SlotCount];
             List<InputElementDesc> elements = new List<InputElementDesc>();
             VertexFormat format = null;
 
-            for (uint i = 0; i < maxSlots; i++)
+            for (uint i = 0; i < vbSlots.SlotCount; i++)
             {
                 if (vbSlots[i].BoundValue == null)
                     continue;
@@ -54,7 +53,7 @@ namespace Molten.Graphics
                     _isInstanced = _isInstanced || e.InputSlotClass == InputClassification.InputPerInstanceData;
                 }
 
-                _hashKeys[i] = (ulong)format.UID << 32 | (uint)io.HashKey;
+                _hashKeys[i] = io.EOID;
             }
 
             // Check if there are actually any elements. If not, use the default placeholder vertex type.
@@ -110,7 +109,7 @@ namespace Molten.Graphics
 
         public bool IsMatch(Logger log, PipeSlotGroup<BufferSegment> grp, ShaderIOStructure io)
         {
-            for (uint i = 0; i < Device.Features.MaxVertexBufferSlots; i++)
+            for (uint i = 0; i < grp.SlotCount; i++)
             {
                 // If null vertex buffer, check if shader actually need one to be present.
                 if (grp[i].BoundValue == null)
@@ -129,9 +128,7 @@ namespace Molten.Graphics
                     continue;
                 }
 
-                // if composite hash-key does not match the one held by the input layout, flag match as false and abort.
-                ulong comKey = (ulong)grp[i].BoundValue.VertexFormat.UID << 32 | (uint)io.HashKey;
-                if (comKey != _hashKeys[i])
+                if (grp[i].BoundValue.VertexFormat.EOID != _hashKeys[i])
                     return false;
             }
 
