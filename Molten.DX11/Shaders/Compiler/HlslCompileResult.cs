@@ -20,15 +20,10 @@ namespace Molten.Graphics
         IDxcUtils* _utils;
         Logger _log;
 
-        ID3D11ShaderReflection* _reflection;
-        ShaderDesc* _desc;
-
         IDxcBlob* _pdbData;
         IDxcBlobUtf16* _pdbPath;
 
-        internal ID3D11ShaderReflection* Reflection => _reflection;
-
-        internal ShaderDesc* Description => _desc;
+        internal HlslReflection Reflection { get; private set; }
 
         internal IDxcBlob* PdbData => _pdbData;
 
@@ -60,7 +55,7 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            _reflection->Release();
+            Reflection.Dispose();
         }
 
         /// <summary>
@@ -94,8 +89,7 @@ namespace Molten.Graphics
 
             GetDxcOutput(OutKind.OutReflection, ref outData);
             _utils->CreateReflection(reflectionBuffer, ref iid, ref pReflection);
-            _reflection = (ID3D11ShaderReflection*)pReflection;
-            _reflection->GetDesc(_desc);
+            Reflection = new HlslReflection((ID3D11ShaderReflection*)pReflection);
         }
     }
 }

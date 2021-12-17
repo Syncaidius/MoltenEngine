@@ -36,26 +36,19 @@ namespace Molten.Graphics
                 case ShaderType.HullShader:
                     pString += "hs_";
                     break;
+
+                case ShaderType.LibShader:
+                    pString += "lib_";
+                    break;
+
+                default:
+                    throw new InvalidOperationException("Cannot convert unknown shader model value.");
             }
 
-            switch (model)
-            {
-                case ShaderModel.Model3_0:
-                    pString += "3_0";
-                    break;
-                case ShaderModel.Model4_0:
-                    pString += "4_0";
-                    break;
-                case ShaderModel.Model4_1:
-                    pString += "4_1";
-                    break;
-                case ShaderModel.Model5_0:
-                    pString += "5_0";
-                    break;
-                default:
-                    pString += "4_0";
-                    break;
-            }
+            if (profile != ShaderType.Unknown)
+                pString += model.ToString().Replace("Model", "");
+            else
+                throw new InvalidOperationException("Cannot convert unknown shader profile type.");
 
             return pString;
         }

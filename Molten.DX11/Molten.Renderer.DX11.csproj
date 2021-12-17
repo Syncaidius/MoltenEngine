@@ -253,8 +253,10 @@
     <Compile Include="Renderer\Tasks\TextureApply.cs" />
     <Compile Include="Shaders\Compiler\DxcArgumentBuilder.cs" />
     <Compile Include="Shaders\Compiler\HlslCompileResult.cs" />
+    <Compile Include="Shaders\Compiler\Reflection\HlslInputBindDescription.cs" />
     <Compile Include="Shaders\Compiler\Includers\DefaultIncluder.cs" />
     <Compile Include="Shaders\Compiler\Includers\HlslIncluder.cs" />
+    <Compile Include="Shaders\Compiler\Reflection\HlslReflection.cs" />
     <Compile Include="Shaders\Compiler\Reflection\ShaderVariableInfo.cs" />
     <Compile Include="Shaders\Compiler\HlslCompilerArg.cs" />
     <Compile Include="Surfaces\RenderControlSurface.cs" />

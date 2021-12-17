@@ -17,11 +17,10 @@ namespace Molten.Graphics
             try
             {
                 context.Compiler.ParserHeader(compute, ref header, context);
-                IDxcResult* computeResult = null;
-                if (Compile(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, ref computeResult))
+                HlslCompileResult computeResult = null;
+                if (Compile(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out computeResult))
                 {
-                    ShaderReflection shaderRef = new ShaderReflection(computeResult.Bytecode);
-                    if (BuildStructure(context, compute, shaderRef, computeResult, compute.Composition))
+                    if (BuildStructure(context, compute, computeResult, compute.Composition))
                     {
                         compute.Composition.RawShader = new ComputeShader(renderer.Device.D3d, computeResult.Bytecode);
                     }

@@ -25,6 +25,11 @@ namespace Molten.Graphics
 
         internal HlslCompiler(RendererDX11 renderer, Logger log)
         {
+            _renderer = renderer;
+            _log = log;
+            _subCompilers = new Dictionary<string, HlslSubCompiler>();
+            _defaultIncluder = new EmbeddedIncluder(this, typeof(EmbeddedIncluder).Assembly);
+
             // Detect and instantiate node parsers
             _parsers = new Dictionary<string, ShaderNodeParser>();
             IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser>();
@@ -36,13 +41,9 @@ namespace Molten.Graphics
             }
 
             Dxc = DXC.GetApi();
+            ArgBuilder = new DxcArgumentBuilder(_log);
             _utils = CreateInstance<IDxcUtils>();
             _compiler = CreateInstance<IDxcCompiler3>();
-
-            _renderer = renderer;
-            _log = log;
-            _subCompilers = new Dictionary<string, HlslSubCompiler>();
-            _defaultIncluder = new EmbeddedIncluder(this, typeof(EmbeddedIncluder).Assembly);
 
             AddSubCompiler<MaterialCompiler>("material");
             AddSubCompiler<ComputeCompiler>("compute");
@@ -261,5 +262,7 @@ namespace Molten.Graphics
         internal RendererDX11 Renderer => _renderer;
 
         internal IDxcCompiler3* Native => _compiler;
+
+        internal DxcArgumentBuilder ArgBuilder { get; }
     }
 }

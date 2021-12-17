@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Molten
 {
+    /// <summary>
+    /// Provides helper methods to aid interopability with native libraries or unsafe code.
+    /// </summary>
     public static class EngineInterop
     {
         /// <summary>A helper method for pinning a managed/C# object and providing an <see cref="IntPtr"/> to it. 
@@ -52,6 +55,44 @@ namespace Molten
                 return (encoding ?? Encoding.Default).GetString(bytes, len);
             else
                 return string.Empty;
+        }
+
+        /// <summary>
+        /// An implementation of <see cref="Array.Resize{T}(ref T[], int)"/> that is not constrained 
+        /// to [<see cref="int.MaxValue"/>] number of elements.
+        /// </summary>
+        /// <param name="array">The array to be resized.</param>
+        /// <param name="newSize">The new size of the array, must be at 
+        /// least the same size as <paramref name="array"/></param>
+        public unsafe static void ArrayResize<T>(ref T[] array, uint newSize)
+        {
+            Type t = typeof(T);
+            uint eSize = (uint)Marshal.SizeOf(t);
+            T[] newArray = new T[newSize];
+            GCHandle hArray = GCHandle.Alloc(array, GCHandleType.Pinned);
+
+            try
+            {
+                void* ptrArray = hArray.AddrOfPinnedObject().ToPointer();
+                GCHandle hNewArray = GCHandle.Alloc(newArray, GCHandleType.Pinned);
+                try
+                {
+                    ulong arrayBytes = (ulong)array.LongLength * eSize;
+                    ulong available = (ulong)newArray.LongLength * eSize;
+                    void* ptrNewArray = hNewArray.AddrOfPinnedObject().ToPointer();
+                    Buffer.MemoryCopy(ptrArray, ptrNewArray, available, arrayBytes);
+                }
+                finally
+                {
+                    hNewArray.Free();
+                }
+            }
+            finally
+            {
+                hArray.Free();
+            }
+
+            array = newArray;
         }
     }
 }
