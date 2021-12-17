@@ -16,6 +16,7 @@ namespace Molten.Graphics
     internal unsafe class HlslCompileResult : EngineObject
     {
         internal IDxcResult* Result;
+        IDxcBlob* _byteCode;
 
         IDxcUtils* _utils;
         Logger _log;
@@ -29,11 +30,15 @@ namespace Molten.Graphics
 
         internal IDxcBlobUtf16* PdbPath => _pdbPath;
 
+        internal IDxcBlob* ByteCode => _byteCode;
+
         internal HlslCompileResult(IDxcUtils* utils, IDxcResult* result, Logger log)
         {
             _utils = utils;
             _log = log;
             Result = result;
+
+            LoadByteCode();
 
             uint numOutputs = Result->GetNumOutputs();
             for(uint i = 0; i < numOutputs; i++)
@@ -90,6 +95,11 @@ namespace Molten.Graphics
             GetDxcOutput(OutKind.OutReflection, ref outData);
             _utils->CreateReflection(reflectionBuffer, ref iid, ref pReflection);
             Reflection = new HlslReflection((ID3D11ShaderReflection*)pReflection);
+        }
+
+        private void LoadByteCode()
+        {
+            Result->GetResult(ref _byteCode);
         }
     }
 }

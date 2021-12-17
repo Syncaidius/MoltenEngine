@@ -143,8 +143,8 @@ namespace Molten.Graphics
             }
 
             // Fill in any extra metadata
-            if (result.Results[MaterialPass.ID_GEOMETRY].Reflection != null)
-                pass.GeometryPrimitive = result.Results[MaterialPass.ID_GEOMETRY].Reflection->GetGSInputPrimitive();
+            if (result.GeometryResult != null)
+                pass.GeometryPrimitive = result.GeometryResult.Reflection.Ptr->GetGSInputPrimitive();
 
             // Validate I/O structure of each shader stage.
             if (_layoutValidator.Validate(result))
@@ -162,39 +162,39 @@ namespace Molten.Graphics
             // Vertex Shader
             if (pResult.VertexResult != null)
             {
-                if (!BuildStructure(context, material, pResult.VertexReflection, pResult.VertexResult, pass.VertexShader))
+                if (!BuildStructure(context, material, pResult.VertexResult, pass.VertexShader))
                     pResult.Errors.Add($"Invalid vertex shader structure for '{pResult.Pass.VertexShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // Hull Shader
             if (pResult.HullResult != null)
             {
-                if (!BuildStructure(context, material, pResult.HullReflection, pResult.HullResult, pass.HullShader))
+                if (!BuildStructure(context, material, pResult.HullResult, pass.HullShader))
                     pResult.Errors.Add($"Invalid hull shader structure for '{pResult.Pass.HullShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // Domain Shader
             if (pResult.DomainResult != null)
             {
-                if (!BuildStructure(context, material, pResult.DomainReflection, pResult.DomainResult, pass.DomainShader))
+                if (!BuildStructure(context, material, pResult.DomainResult, pass.DomainShader))
                     pResult.Errors.Add($"Invalid domain shader structure for '{pResult.Pass.DomainShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // Geometry Shader
             if (pResult.GeometryResult != null)
             {
-                if (!BuildStructure(context, material, pResult.GeometryReflection, pResult.GeometryResult, pass.GeometryShader))
+                if (!BuildStructure(context, material, pResult.GeometryResult, pass.GeometryShader))
                     pResult.Errors.Add($"Invalid geometry shader structure for '{pResult.Pass.GeometryShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // PixelShader Shader
             if (pResult.PixelResult != null)
             {
-                if (!BuildStructure(context, material, pResult.PixelReflection, pResult.PixelResult, pass.PixelShader))
+                if (!BuildStructure(context, material, pResult.PixelResult, pass.PixelShader))
                     pResult.Errors.Add($"Invalid pixel shader structure for '{pResult.Pass.PixelShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
         }
 
-        protected override void OnBuildVariableStructure(ShaderCompilerContext context, HlslShader shader, ShaderReflection reflection, InputBindingDescription binding, ShaderInputType inputType) { }
+        protected override void OnBuildVariableStructure(ShaderCompilerContext context, HlslShader shader, HlslCompileResult result, HlslInputBindDescription bind) { }
     }
 }
