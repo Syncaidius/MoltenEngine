@@ -41,13 +41,17 @@ namespace Molten.Graphics
             LoadByteCode();
 
             uint numOutputs = Result->GetNumOutputs();
-            for(uint i = 0; i < numOutputs; i++)
+            log.WriteDebugLine($"{numOutputs} DXC outputs found: ");
+
+            for (uint i = 0; i < numOutputs; i++)
             {
                 OutKind o = Result->GetOutputByIndex(i);
+
                 switch (o)
                 {
                     default:
                     case OutKind.OutNone:
+                        _log.WriteWarning($"\t Unsupported output-kind in DXC result: {o}");
                         break;
 
                     case OutKind.OutPdb: LoadPdbData(); break;
@@ -61,6 +65,9 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             Reflection.Dispose();
+            _pdbPath->Release();
+            _pdbData->Release();
+            _byteCode->Release();
         }
 
         /// <summary>
@@ -76,13 +83,17 @@ namespace Molten.Graphics
             IDxcBlobUtf16* pDataPath = null;
             Guid iid = IDxcBlob.Guid;
             Result->GetOutput(outputType, &iid, &pData, outPath);
-            pData = (IDxcBlob*)pData;
+            outData = (IDxcBlob*)pData;
         }
 
         private void LoadPdbData()
         {
             fixed(IDxcBlobUtf16** pPath = &_pdbPath)
                 GetDxcOutput(OutKind.OutPdb, ref _pdbData, pPath);
+
+            string strPath = _pdbPath->GetStringPointerS();
+            nuint dataSize = _pdbData->GetBufferSize();
+            _log.WriteDebugLine($"\t Loaded DXC PDB data -- Bytes: {dataSize} -- Path: {strPath}");
         }
 
         private void LoadReflection()
@@ -95,11 +106,19 @@ namespace Molten.Graphics
             GetDxcOutput(OutKind.OutReflection, ref outData);
             _utils->CreateReflection(reflectionBuffer, ref iid, ref pReflection);
             Reflection = new HlslReflection((ID3D11ShaderReflection*)pReflection);
+
+            nuint dataSize = outData->GetBufferSize();
+            _log.WriteDebugLine($"\t Loaded DXC Reflection data -- Bytes: {dataSize}");
         }
 
         private void LoadByteCode()
         {
             Result->GetResult(ref _byteCode);
+        }
+
+        private void WriteErrors()
+        {
+            // TODO write errors to _log
         }
     }
 }
