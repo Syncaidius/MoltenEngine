@@ -1,12 +1,11 @@
-﻿using Silk.NET.Core.Native;
+﻿using Molten.Utility;
+using Silk.NET.Core.Native;
 using System;
 using System.Runtime.Serialization;
 using System.Threading;
 
 namespace Molten
 {
-    public delegate void EngineObjectHandler(EngineObject obj);
-
     /// <summary>
     /// A helper base class for tracking and managing game objects. Provides a disposal structure and unique ID system.
     /// </summary>
@@ -21,7 +20,7 @@ namespace Molten
         /// <summary>
         /// Invoked when the current <see cref="EngineObject"/> is being disposed.
         /// </summary>
-        public event EngineObjectHandler OnDisposing;
+        public event MoltenEventHandler<EngineObject> OnDisposing;
 
         /// <summary>
         /// Creates a new instance of <see cref="EngineObject"/>.
