@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
     /// <summary>A helper class that safely wraps InputLayout.</summary>
-    internal unsafe class VertexInputLayout : PipeBindable
+    internal unsafe class VertexInputLayout : PipeBindable<ID3D11InputLayout>
     {
-        internal ID3D11InputLayout* Native;
+        ID3D11InputLayout* _native;
         bool _isValid = true;
         bool _isInstanced = false;
         ulong[] _expectedFormatIDs;
@@ -70,7 +69,7 @@ namespace Molten.Graphics
             {
                 device.Native->CreateInputLayout(ref finalElements[0], (uint)finalElements.Length,
                     ref vertexBytecode[0], (uint)vertexBytecode.Length,
-                    ref Native);
+                    ref _native);
             }
             else
             {
@@ -84,21 +83,13 @@ namespace Molten.Graphics
 
                     device.Log.WriteWarning("Format - Buffer slot " + i + ": ");
                     for (int f = 0; f < format.Elements.Length; f++)
-                    {
-                        // TODO cache semantic name somewhere to prevent re-parsing each time we build a layout.
-                        string semName = SilkMarshal.PtrToString((nint)format.Elements[f].SemanticName);
-                        device.Log.WriteWarning($"\t[{f}]{semName} -- index: {format.Elements[f].SemanticIndex}");
-                    }
+                        device.Log.WriteWarning($"\t[{f}]{format.SemanticNames[f]} -- index: {format.Elements[f].SemanticIndex} -- slot: {i}");
                 }
 
                 // List final input structure.
                 device.Log.WriteWarning("Shader Input Structure: ");
                 for (int i = 0; i < finalElements.Length; i++)
-                {
-                    // TODO cache semantic name somewhere to prevent re-parsing each time we build a layout.
-                    string semName = SilkMarshal.PtrToString((nint)format.Elements[i].SemanticName);
-                    device.Log.WriteWarning($"\t[{i}]{semName} -- index: {finalElements[i].SemanticIndex}");
-                }
+                    device.Log.WriteWarning($"\t[{i}]{format.SemanticNames[i]} -- index: {finalElements[i].SemanticIndex} -- slot: {finalElements[i].InputSlot}");
             }
         }
 
@@ -139,12 +130,7 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            ReleaseSilkPtr(ref Native);
-        }
-
-        public static implicit operator ID3D11InputLayout*(VertexInputLayout layout)
-        {
-            return layout.Native;
+            ReleaseSilkPtr(ref _native);
         }
 
         /// <summary>Gets whether or not the input layout is valid.</summary>
@@ -152,5 +138,7 @@ namespace Molten.Graphics
 
         /// <summary>Gets whether or not the vertex input layout is designed for use with instanced draw calls.</summary>
         public bool IsInstanced => _isInstanced;
+
+        internal override unsafe ID3D11InputLayout* NativePtr => _native;
     }
 }

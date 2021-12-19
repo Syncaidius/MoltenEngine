@@ -31,7 +31,7 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             for (int i = 0; i < _states.Length; i++)
-                DisposeObject(ref _states[i]);
+                _states[i].Dispose();
         }
 
         public T this[StateConditions conditions]

@@ -5,10 +5,10 @@ namespace Molten.Comparers
 {
     public class IntPtrComparer : IComparer<IntPtr>
     {
-        public int Compare(IntPtr x, IntPtr y)
+        public unsafe int Compare(IntPtr x, IntPtr y)
         {
-            long ix = x.ToInt64();
-            long iy = y.ToInt64();
+            nuint ix = (nuint)x.ToPointer();
+            nuint iy = (nuint)y.ToPointer();
 
             if (ix < iy)
                 return -1;

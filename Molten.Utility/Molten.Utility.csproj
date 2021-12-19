@@ -186,6 +186,7 @@
     <Compile Include="ArrayHelper.cs" />
     <Compile Include="BindableValue.cs" />
     <Compile Include="BitwiseHelper.cs" />
+    <Compile Include="Cache\TypedObjectCache.cs" />
     <Compile Include="Collections\ObjectPool.cs" />
     <Compile Include="Collections\ThreadedDictionary.cs" />
     <Compile Include="Collections\ThreadedHashSet.cs" />
@@ -203,6 +204,7 @@
     <Compile Include="HashHelper.cs" />
     <Compile Include="Interlocker.cs" />
     <Compile Include="Interop\SilkInterop.cs" />
+    <Compile Include="Cache\ObjectCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferencedObject.cs" />
     <Compile Include="ReflectionHelper.cs" />

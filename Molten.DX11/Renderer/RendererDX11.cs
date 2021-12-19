@@ -60,7 +60,7 @@ namespace Molten.Graphics
             ShaderCompiler = new HlslCompiler(this, Log);
             _clearedSurfaces = new HashSet<Texture2DDX11>();
 
-            int maxBufferSize = (int)ByteMath.FromMegabytes(3.5);
+            uint maxBufferSize = (uint)ByteMath.FromMegabytes(3.5);
             StaticVertexBuffer = new GraphicsBuffer(Device, BufferMode.Default, BindFlag.BindVertexBuffer | BindFlag.BindIndexBuffer, maxBufferSize);
             DynamicVertexBuffer = new GraphicsBuffer(Device, BufferMode.DynamicRing, BindFlag.BindVertexBuffer | BindFlag.BindIndexBuffer, maxBufferSize);
 

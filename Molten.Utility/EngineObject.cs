@@ -15,8 +15,6 @@ namespace Molten
         [ThreadStatic]
         static uint _idCounter;
 
-        ulong _id;
-
         /// <summary>
         /// Invoked when the current <see cref="EngineObject"/> is being disposed.
         /// </summary>
@@ -27,20 +25,8 @@ namespace Molten
         /// </summary>
         public EngineObject()
         {
-            _id = ((ulong)Thread.CurrentThread.ManagedThreadId << 32) | _idCounter++;
-            Name = $"EO {_id}";
-        }
-
-        /// <summary>Safely disposes of an object which may also be null.</summary>
-        /// <param name="disposable">The object to dispose.</param>
-        protected void DisposeObject<T>(ref T disposable) 
-            where T : IDisposable
-        {
-            if (disposable != null)
-            {
-                disposable.Dispose();
-                disposable = default;
-            }
+            EOID = ((ulong)Thread.CurrentThread.ManagedThreadId << 32) | _idCounter++;
+            Name = $"EO {EOID}";
         }
 
         /// <summary>Releases the specified pointer, sets it to null and returns the updated, unmanaged reference count.</summary>
@@ -84,7 +70,7 @@ namespace Molten
         /// <summary>
         /// Gets the unique <see cref="EngineObject"/> ID (EOID) of the current <see cref="EngineObject"/>.
         /// </summary>
-        public ulong EOID => _id;
+        public ulong EOID { get; }
 
         /// <summary>
         /// Gets the name of the object. Multiple <see cref="EngineObject"/> can have the same name.

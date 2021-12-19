@@ -27,7 +27,6 @@ namespace Molten.Graphics
         int _pipeCount;
 
         Logger _log;
-        VertexFormatBuilder _vertexBuilder;
         DisplayManagerDX11 _displayManager;
         GraphicsSettings _settings;
         long _allocatedVRAM;
@@ -49,7 +48,7 @@ namespace Molten.Graphics
             _adapter = _displayManager.SelectedAdapter as DisplayAdapterDX11;
             _pipes = new PipeDX11[0];
             _freePipes = new int[0];
-            _vertexBuilder = new VertexFormatBuilder();
+            VertexFormatCache = new TypedObjectCache<IVertexType, VertexFormat>(VertexFormat.FromType);
             _settings = settings;
             _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
             _objectsToDispose = new ThreadedQueue<PipeObject>();
@@ -179,11 +178,11 @@ namespace Molten.Graphics
                 _pipes[i]?.Dispose();
 
             // TODO dispose of all bound IGraphicsResource
-
-            DisposeObject(ref _rasterizerBank);
-            DisposeObject(ref _blendBank);
-            DisposeObject(ref _depthBank);
-            DisposeObject(ref _samplerBank);
+            VertexFormatCache.Dispose();
+            RasterizerBank.Dispose();
+            BlendBank.Dispose();
+            DepthBank.Dispose();
+            SamplerBank.Dispose();
 
             ReleaseSilkPtr(ref ImmediateContext);
             ReleaseSilkPtr(ref Native);
@@ -204,7 +203,7 @@ namespace Molten.Graphics
 
         internal GraphicsSettings Settings => _settings;
 
-        internal VertexFormatBuilder VertexBuilder => _vertexBuilder;
+        internal TypedObjectCache<IVertexType, VertexFormat> VertexFormatCache { get; }
 
         internal long AllocatedVRAM => _allocatedVRAM;
 

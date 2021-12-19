@@ -416,14 +416,13 @@ namespace Molten.Graphics
         /// <summary>Dispoes of the current <see cref="PipeDX11"/> instance.</summary>
         protected override void OnDispose()
         {
-            DisposeObject(ref _output);
-            DisposeObject(ref _input);
-            DisposeObject(ref _computeStage);
+            _output.Dispose();
+            _input.Dispose();
+            _computeStage.Dispose();
 
-            // Dispose of graphical stages
-            DisposeObject(ref _depthStencil);
-            DisposeObject(ref _blendState);
-            DisposeObject(ref _rasterizer);
+            _depthStencil.Dispose();
+            _blendState.Dispose();
+            _rasterizer.Dispose();
 
             // Dispose context.
             if (Type != GraphicsContextType.Immediate)
