@@ -41,7 +41,7 @@ namespace Molten.Graphics
                 }
 
                 // Collate vertex format elements into layout and set the correct input slot for each element.
-                elements.AddRange(format.Elements);
+                elements.AddRange(format.Data.Elements);
 
                 for (int eID = startID; eID < elements.Count; eID++)
                 {
@@ -59,7 +59,7 @@ namespace Molten.Graphics
             if (elements.Count == 0)
             {
                 VertexFormat nullFormat = device.VertexFormatCache.Get<VertexWithID>();
-                elements.Add(nullFormat.Elements[0]);
+                elements.Add(nullFormat.Data.Elements[0]);
             }
 
             InputElementDesc[] finalElements = elements.ToArray();
@@ -82,14 +82,14 @@ namespace Molten.Graphics
                     format = vbSlots[i].BoundValue.VertexFormat;
 
                     device.Log.WriteWarning("Format - Buffer slot " + i + ": ");
-                    for (int f = 0; f < format.Elements.Length; f++)
-                        device.Log.WriteWarning($"\t[{f}]{format.Metadata[f].Name} -- index: {format.Elements[f].SemanticIndex} -- slot: {i}");
+                    for (int f = 0; f < format.Data.Elements.Length; f++)
+                        device.Log.WriteWarning($"\t[{f}]{format.Data.Names[f]} -- index: {format.Data.Elements[f].SemanticIndex} -- slot: {i}");
                 }
 
                 // List final input structure.
                 device.Log.WriteWarning("Shader Input Structure: ");
                 for (int i = 0; i < finalElements.Length; i++)
-                    device.Log.WriteWarning($"\t[{i}]{format.Metadata[i].Name} -- index: {finalElements[i].SemanticIndex} -- slot: {finalElements[i].InputSlot}");
+                    device.Log.WriteWarning($"\t[{i}]{format.Data.Names[i]} -- index: {finalElements[i].SemanticIndex} -- slot: {finalElements[i].InputSlot}");
             }
         }
 

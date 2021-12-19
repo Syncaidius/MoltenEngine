@@ -19,31 +19,19 @@ namespace Molten.Graphics
             public IntPtr Offset;
         }
 
-        internal struct SemanticMetadata
-        {
-            public string Name;
-        }
-
         static IntPtrComparer _ptrComparer = new IntPtrComparer();
 
-        internal InputElementDesc[] Elements;
+        internal InputElementData Data { get; }
+ 
 
-        /// <summary>
-        /// Contains extra/helper information about input elements
-        /// </summary>
-        internal SemanticMetadata[] Metadata { get; }
-
-        private unsafe VertexFormat(int elementCount)
+        private unsafe VertexFormat(uint elementCount)
         {
-            Elements = new InputElementDesc[elementCount];
-            Metadata = new SemanticMetadata[elementCount];
+            Data = new InputElementData(elementCount);
         }
 
         protected unsafe override void OnDispose()
         {
-            // Dispose of element string pointers, since they were statically-allocated by Silk.NET
-            for (uint i = 0; i < Elements.Length; i++)
-                SilkMarshal.Free((nint)Elements[i].SemanticName);
+            Data.Dispose();
         }
 
         /// <summary>Gets the total size of the Vertex Format, in bytes.</summary>
@@ -72,9 +60,9 @@ namespace Molten.Graphics
 
             fieldElements = fieldElements.OrderBy(e => e.Offset, _ptrComparer).ToList();
 
-            int eCount = 0;
+            uint eCount = 0;
             for (int ec = 0; ec < fieldElements.Count; ec++)
-                eCount += fieldElements[ec] != null ? 1 : 0;
+                eCount += fieldElements[ec] != null ? 1U : 0;
 
             VertexFormat vf = new VertexFormat(eCount);
             eCount = 0;
@@ -90,10 +78,10 @@ namespace Molten.Graphics
                 else
                 {
                     InputElementDesc el = new InputElementDesc();
-                    vf.Metadata[eCount].Name = GetSemanticName(att.Usage);
-                    vf.Elements[eCount] = new InputElementDesc()
+                    vf.Data.Names[eCount] = GetSemanticName(att.Usage);
+                    vf.Data.Elements[eCount] = new InputElementDesc()
                     {
-                        SemanticName = (byte*)SilkMarshal.StringToPtr(vf.Metadata[eCount].Name),
+                        SemanticName = (byte*)SilkMarshal.StringToPtr(vf.Data.Names[eCount]),
                         SemanticIndex = att.SemanticIndex,
                         AlignedByteOffset = vf.SizeOf,
                         InputSlotClass = att.Classification.ToApi(),

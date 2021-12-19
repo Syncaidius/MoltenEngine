@@ -11,9 +11,9 @@ namespace Molten.Graphics
 {
     /// <summary>Represents an automatically generated shader input layout. 
     /// Also generating useful metadata that can be used to validate vertex input at engine level.</summary>
-    public unsafe class ShaderIOStructure : EngineObject
+    internal unsafe class ShaderIOStructure : EngineObject
     {
-        public InputElementDesc[] Elements;
+        internal InputElementData Data;
 
         // Reference: http://takinginitiative.wordpress.com/2011/12/11/directx-1011-basic-shader-reflection-automatic-input-layout-creation/
 
@@ -34,7 +34,7 @@ namespace Molten.Graphics
                     break;
             }
 
-            Elements = new InputElementDesc[count];
+            Data = new InputElementData(count);
 
             for (uint i = 0; i < count; i++)
             {
@@ -43,11 +43,11 @@ namespace Molten.Graphics
                 switch (type)
                 {
                     case ShaderIOStructureType.Input:
-                        result.Reflection.Desc->GetInputParameterDesc(i, ref pDesc);
+                        result.Reflection.Ptr->GetInputParameterDesc(i, ref pDesc);
                         break;
 
                     case ShaderIOStructureType.Output:
-                        result.Reflection.Desc->GetOutputParameterDesc(i, ref pDesc);
+                        result.Reflection.Ptr->GetOutputParameterDesc(i, ref pDesc);
                         break;
                 }
 
@@ -110,11 +110,15 @@ namespace Molten.Graphics
                 }
 
                 // Store the element
-                Elements[i] = el;
+                Data.Elements[i] = el;
+                Data.Names[i] = SilkMarshal.PtrToString((nint)pDesc.SemanticName);
             }
         }
 
-        protected override void OnDispose() { }
+        protected override void OnDispose()
+        {
+            Data.Dispose();
+        }
 
         /// <summary>Tests to see if the layout of a vertex format matches the layout of the shader input structure.</summary>
         /// <param name="format"></param>
@@ -122,61 +126,12 @@ namespace Molten.Graphics
         /// <returns></returns>
         public bool IsCompatible(VertexFormat format, uint startElement)
         {
-            if (startElement >= Elements.Length)
-            {
-                return false;
-            }
-            else
-            {
-                uint end = startElement + (uint)format.Elements.Length;
-                if (end > Elements.Length)
-                {
-                    return false;
-                }
-                else
-                {
-                    // Run comparison test
-                    uint fe = 0;
-                    for (uint i = startElement; i < end; i++)
-                    {
-                        if (format.Metadata[fe].Name != Elements[i].SemanticName)
-                            return false;
-
-                        if (format.Metadata[fe].Name != Elements[i].SemanticIndex)
-                            return false;
-
-                        fe++;
-                    }
-                }
-            }
-
-            return true;
+            return Data.IsCompatible(format.Data, startElement);
         }
 
         public bool IsCompatible(ShaderIOStructure other)
         {
-            bool valid = true;
-
-            if (other.Elements.Length != Elements.Length)
-            {
-                valid = false;
-            }
-            else
-            {
-                for (int i = 0; i < other.Elements.Length; i++)
-                {
-                    if (other.Elements[i].SemanticName != Elements[i].SemanticName)
-                        valid = false;
-
-                    if (other.Elements[i].SemanticIndex != Elements[i].SemanticIndex)
-                        valid = false;
-
-                    if (!valid)
-                        break;
-                }
-            }
-
-            return true;
+            return Data.IsCompatible(other.Data);
         }
     }
 
