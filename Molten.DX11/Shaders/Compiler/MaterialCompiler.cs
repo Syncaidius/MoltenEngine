@@ -108,7 +108,7 @@ namespace Molten.Graphics
                 }
 
                 material.InputStructure = material.Passes[0].VertexShader.InputStructure;
-                material.InputStructureByteCode = firstPassResult.VertexResult.Bytecode;
+                material.InputStructureByteCode = firstPassResult.VertexResult.ByteCode;
                 result.Add(material);
 
                 material.Scene = new SceneMaterialProperties(material);

@@ -1,4 +1,4 @@
-﻿using SharpDX.D3DCompiler;
+﻿using Silk.NET.Core.Native;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +36,7 @@ namespace Molten.Graphics
                 ShaderIOStructure input = stages[i].InputStructure;
 
                 // If the input expects anything, check compatibility. Skip compat check if input does not expect anything (length 0).
-                if (input.Elements.Length > 0 && !output.IsCompatible(input))
+                if (input.Data.Elements.Length > 0 && !output.IsCompatible(input))
                 {
                     Type currentCompositionType = stages[i].GetType().GenericTypeArguments[0];
                     Type previousCompositionType = previous.GetType().GenericTypeArguments[0];
@@ -46,10 +46,10 @@ namespace Molten.Graphics
                     pResult.Errors.Add($"\tFilename: {pass.Material.Filename ?? "N/A"}");
                     pResult.Errors.Add($"\tOutput -- {previousCompositionType.Name}:");
 
-                    if (output.Elements.Length > 0)
+                    if (output.Data.Elements.Length > 0)
                     {
-                        for (int o = 0; o < output.Elements.Length; o++)
-                            pResult.Errors.Add($"\t\t[{o}] {output.Elements[o].SemanticName} -- index: {output.Elements[o].SemanticIndex}");
+                        for (int o = 0; o < output.Data.Elements.Length; o++)
+                            pResult.Errors.Add($"\t\t[{o}] {output.Data.Names[o]} -- index: {output.Data.Elements[o].SemanticIndex}");
                     }
                     else
                     {
@@ -57,8 +57,8 @@ namespace Molten.Graphics
                     }
 
                     pResult.Errors.Add($"\tInput: {currentCompositionType.Name}:");
-                    for (int o = 0; o < input.Elements.Length; o++)
-                        pResult.Errors.Add($"\t\t[{o}] {input.Elements[o].SemanticName} -- index: {input.Elements[o].SemanticIndex}");
+                    for (int o = 0; o < input.Data.Elements.Length; o++)
+                        pResult.Errors.Add($"\t\t[{o}] {input.Data.Names[o]} -- index: {input.Data.Elements[o].SemanticIndex}");
 
                     valid = false;
                 }
@@ -74,14 +74,14 @@ namespace Molten.Graphics
         private bool CheckTessellationShaders(MaterialPassCompileResult pResult)
         {
             bool valid = true;
-            ShaderReflection hullRef = pResult.Reflections[MaterialPass.ID_HULL];
-            ShaderReflection domainRef = pResult.Reflections[MaterialPass.ID_DOMAIN];
+            HlslCompileResult hs = pResult.Results[MaterialPass.ID_HULL];
+            HlslCompileResult ds = pResult.Results[MaterialPass.ID_DOMAIN];
 
-            if(hullRef != null && domainRef == null)
+            if(hs != null && ds == null)
             {
                 pResult.Errors.Add($"Material pass '{pResult.Pass.Name}' Has a hull shader but no domain shader. Both or neither must be present.");
                 valid = false;
-            }else if(hullRef == null && domainRef != null)
+            }else if(hs == null && ds != null)
             {
                 pResult.Errors.Add($"Material pass '{pResult.Pass.Name}' Has a domain shader but no hull shader. Both or neither must be present.");
                 valid = false;
@@ -93,9 +93,9 @@ namespace Molten.Graphics
         private bool CheckGeometryTessellationAdjacency(MaterialPassCompileResult pResult)
         {
             bool valid = true;
-            ShaderReflection geometryRef = pResult.Reflections[MaterialPass.ID_GEOMETRY];
-            ShaderReflection hullRef = pResult.Reflections[MaterialPass.ID_HULL];
-            ShaderReflection domainRef = pResult.Reflections[MaterialPass.ID_DOMAIN];
+            HlslCompileResult geometryRef = pResult.Results[MaterialPass.ID_GEOMETRY];
+            HlslCompileResult hullRef = pResult.Results[MaterialPass.ID_HULL];
+            HlslCompileResult domainRef = pResult.Results[MaterialPass.ID_DOMAIN];
 
             if (geometryRef == null || hullRef == null || domainRef == null)
                 return valid;
@@ -104,8 +104,8 @@ namespace Molten.Graphics
                 * see: https://msdn.microsoft.com/en-us/library/windows/desktop/ff476340%28v=vs.85%29.aspx
                 * quote: "A geometry shader that expects primitives with adjacency (for example, 6 vertices per triangle) is 
                 * not valid when tessellation is active (this results in undefined behavior, which the debug layer will complain about)."*/
-            valid = pResult.Pass.GeometryPrimitive == InputPrimitive.LineWithAdjacency || 
-                pResult.Pass.GeometryPrimitive == InputPrimitive.TriangleWithAdjacency;
+            valid = pResult.Pass.GeometryPrimitive == D3DPrimitive.D3DPrimitiveLineAdj || 
+                pResult.Pass.GeometryPrimitive == D3DPrimitive.D3DPrimitiveTriangleAdj;
 
             return valid;
         }

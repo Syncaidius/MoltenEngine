@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal abstract class ShaderComposition : EngineObject
+    internal abstract class ShaderComposition : PipeBindable
     {
         /// <summary>A list of const buffers the shader stage requires to be bound.</summary>
         internal List<uint> ConstBufferIds = new List<uint>();
@@ -28,21 +28,24 @@ namespace Molten.Graphics
 
         internal bool Optional;
 
-        internal ShaderComposition(bool optional)
+        internal ShaderComposition(DeviceDX11 device, bool optional) : base(device)
         {
             Optional = optional;
         }
+
+        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe) { }
     }
 
     internal unsafe class ShaderComposition<T> : ShaderComposition 
         where T : unmanaged
     {
-        internal ShaderComposition(bool optional) : base(optional) { }
+        internal ShaderComposition(DeviceDX11 device, bool optional) : 
+            base(device, optional) { }
 
         /// <summary>The underlying, compiled HLSL shader object.</summary>
         internal T* RawShader;
 
-        protected override void OnDispose()
+        internal override void PipelineDispose()
         {
             ReleaseSilkPtr(ref RawShader);
         }

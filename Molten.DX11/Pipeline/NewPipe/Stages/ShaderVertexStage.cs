@@ -7,22 +7,20 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class ShaderVertexStage : PipeShaderStage
+    internal class ShaderVertexStage : PipeShaderStage<ID3D11VertexShader>
     {
-        // TODO wrap functionality of Silk.NET.Core.Native.ID3DInclude
-
-        public ShaderVertexStage(PipeDX11 pipe) : 
+        public ShaderVertexStage(PipeDX11 pipe) :
             base(pipe, ShaderType.VertexShader)
         {
         }
 
-        protected override unsafe void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp, 
+        protected override unsafe void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,
             ID3D11Buffer** buffers, uint* firstConstants, uint* numConstants)
         {
             Pipe.Context->VSSetConstantBuffers1(grp.FirstChanged, grp.NumSlotsChanged, buffers, firstConstants, numConstants);
         }
 
-        protected override unsafe void OnBindResources(PipeSlotGroup<PipeBindableResource> grp, 
+        protected override unsafe void OnBindResources(PipeSlotGroup<PipeBindableResource> grp,
             ID3D11ShaderResourceView** srvs)
         {
             Pipe.Context->VSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
@@ -33,9 +31,12 @@ namespace Molten.Graphics
             Pipe.Context->VSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
         }
 
-        protected override void OnBindShader(PipeSlot<HlslShader> slot)
+        protected override unsafe void OnBindShader(PipeSlot<ShaderComposition<ID3D11VertexShader>> slot)
         {
-            throw new NotImplementedException();
+            if (slot.BoundValue != null)
+                Pipe.Context->VSSetShader(slot.BoundValue.RawShader, null, 0);
+            else
+                Pipe.Context->VSSetShader(null, null, 0);
         }
     }
 }

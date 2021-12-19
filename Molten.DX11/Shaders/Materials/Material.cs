@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.Direct3D.Compilers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace Molten.Graphics
     public class Material : HlslShader, IMaterial
     {
         internal MaterialPass[] Passes = new MaterialPass[0];
-        internal byte[] InputStructureByteCode;
+        internal unsafe IDxcBlob* InputStructureByteCode;
 
         // TODO move these to back to the HLSL compiler via a metadata system.
         internal string DefaultVSEntryPoint;

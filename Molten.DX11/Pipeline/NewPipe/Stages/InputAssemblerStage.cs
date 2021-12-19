@@ -24,16 +24,23 @@ namespace Molten.Graphics
             VertexBuffers = DefineSlotGroup<BufferSegment>(maxVBuffers, PipeBindTypeFlags.Input, "V-Buffer");
             IndexBuffer = DefineSlot<BufferSegment>(0, PipeBindTypeFlags.Input, "I-Buffer");
             _vertexLayout = DefineSlot<VertexInputLayout>(0, PipeBindTypeFlags.Input, "Vertex Input Layout");
+            Material = DefineSlot<Material>(0, PipeBindTypeFlags.Input, "Material");
         }
 
-        internal override bool Bind()
+        internal bool Bind(MaterialPass pass, StateConditions conditions, VertexTopology topology)
         {
             // Check topology
-            if (_boundTopology != Topology)
+            if (_boundTopology != topology)
             {
-                _boundTopology = Topology;
+                _boundTopology = topology;
                 Pipe.Context->IASetPrimitiveTopology(_boundTopology.ToApi());
             }
+
+            _vs.Shader.Value = pass.VertexShader;
+            _gs.Shader.Value = pass.GeometryShader;
+            _hs.Shader.Value = pass.HullShader;
+            _ds.Shader.Value = pass.DomainShader;
+            _ps.Shader.Value = pass.PixelShader;
 
             bool vsChanged = _vs.Bind();
             bool gsChanged = false;
@@ -122,6 +129,6 @@ namespace Molten.Graphics
 
         public PipeSlot<BufferSegment> IndexBuffer { get;}
 
-        public VertexTopology Topology { get; set; }
+        public PipeSlot<Material> Material { get; }
     }
 }
