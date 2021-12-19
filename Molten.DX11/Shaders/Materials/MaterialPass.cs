@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class MaterialPass : HlslFoundation, IMaterialPass
+    public unsafe class MaterialPass : HlslFoundation, IMaterialPass
     {
         internal const int ID_VERTEX = 0;
         internal const int ID_HULL = 1;
@@ -26,15 +27,16 @@ namespace Molten.Graphics
 
         Material _parent;
 
-        internal MaterialPass(Material material) : base(material.Device)
+        internal MaterialPass(Material material, string name) : base(material.Device)
         {
             _parent = material;
+            Name = name;
 
-            VertexShader = new ShaderComposition<VertexShader>(false);
-            HullShader = new ShaderComposition<HullShader>(true);
-            DomainShader = new ShaderComposition<DomainShader>(true);
-            GeometryShader = new ShaderComposition<GeometryShader>(true);
-            PixelShader = new ShaderComposition<PixelShader>(false);
+            VertexShader = new ShaderComposition<ID3D11VertexShader>(false);
+            GeometryShader = new ShaderComposition<ID3D11GeometryShader>(true);
+            HullShader = new ShaderComposition<ID3D11HullShader>(true);
+            DomainShader = new ShaderComposition<ID3D11DomainShader>(true);
+            PixelShader = new ShaderComposition<ID3D11PixelShader>(false);
             Compositions = new ShaderComposition[ShaderTypes.Length];
             Compositions[ID_VERTEX] = VertexShader;
             Compositions[ID_HULL] = HullShader;
@@ -56,17 +58,23 @@ namespace Molten.Graphics
             return result;
         }
 
+        internal override void PipelineDispose()
+        {
+            for (int i = 0; i < Compositions.Length; i++)
+                Compositions[i].Dispose();
+        }
+
         internal ShaderComposition[] Compositions;
 
-        internal ShaderComposition<VertexShader> VertexShader;
+        internal ShaderComposition<ID3D11VertexShader> VertexShader { get; }
 
-        internal ShaderComposition<HullShader> HullShader;
+        internal ShaderComposition<ID3D11GeometryShader> GeometryShader { get; }
 
-        internal ShaderComposition<DomainShader> DomainShader;
+        internal ShaderComposition<ID3D11HullShader> HullShader { get; }
 
-        internal ShaderComposition<GeometryShader> GeometryShader;
+        internal ShaderComposition<ID3D11DomainShader> DomainShader { get; }
 
-        internal ShaderComposition<PixelShader> PixelShader;
+        internal ShaderComposition<ID3D11PixelShader> PixelShader { get; }
 
         internal D3DPrimitive GeometryPrimitive;
 

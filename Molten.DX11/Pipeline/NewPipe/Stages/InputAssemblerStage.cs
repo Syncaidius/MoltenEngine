@@ -105,9 +105,7 @@ namespace Molten.Graphics
             // Retrieve layout list or create new one if needed.
             foreach (VertexInputLayout l in _cachedLayouts)
             {
-                bool match = l.IsMatch(Device.Log, VertexBuffers);
-
-                if (match)
+                if (l.IsMatch(Device.Log, VertexBuffers))
                     return l;
             }
 

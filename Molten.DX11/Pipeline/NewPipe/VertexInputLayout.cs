@@ -58,7 +58,7 @@ namespace Molten.Graphics
             // Check if there are actually any elements. If not, use the default placeholder vertex type.
             if (elements.Count == 0)
             {
-                VertexFormat nullFormat = device.VertexBuilder.GetFormat<VertexWithID>();
+                VertexFormat nullFormat = device.VertexFormatCache.Get<VertexWithID>();
                 elements.Add(nullFormat.Elements[0]);
             }
 
@@ -83,13 +83,13 @@ namespace Molten.Graphics
 
                     device.Log.WriteWarning("Format - Buffer slot " + i + ": ");
                     for (int f = 0; f < format.Elements.Length; f++)
-                        device.Log.WriteWarning($"\t[{f}]{format.SemanticNames[f]} -- index: {format.Elements[f].SemanticIndex} -- slot: {i}");
+                        device.Log.WriteWarning($"\t[{f}]{format.Metadata[f].Name} -- index: {format.Elements[f].SemanticIndex} -- slot: {i}");
                 }
 
                 // List final input structure.
                 device.Log.WriteWarning("Shader Input Structure: ");
                 for (int i = 0; i < finalElements.Length; i++)
-                    device.Log.WriteWarning($"\t[{i}]{format.SemanticNames[i]} -- index: {finalElements[i].SemanticIndex} -- slot: {finalElements[i].InputSlot}");
+                    device.Log.WriteWarning($"\t[{i}]{format.Metadata[i].Name} -- index: {finalElements[i].SemanticIndex} -- slot: {finalElements[i].InputSlot}");
             }
         }
 

@@ -17,9 +17,9 @@
         /// </summary>
         /// <param name="resource">The resource.</param>
         /// <param name="slot">The slot number.</param>
-        void SetDefaultResource(IShaderResource resource, int slot);
+        void SetDefaultResource(IShaderResource resource, uint slot);
 
-        IShaderResource GetDefaultResource(int slot);
+        IShaderResource GetDefaultResource(uint slot);
 
         /// <summary>Gets the number of passes in the material.</summary>
         /// <value>

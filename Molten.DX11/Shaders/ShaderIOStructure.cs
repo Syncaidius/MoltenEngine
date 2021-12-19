@@ -139,13 +139,10 @@ namespace Molten.Graphics
                     uint fe = 0;
                     for (uint i = startElement; i < end; i++)
                     {
-                        // TODO reimplement this to use strings and not byte* - may be different, despite same string data
-                        PleaseReimplementThis;
-
-                        if (format.Elements[fe].SemanticName != Elements[i].SemanticName)
+                        if (format.Metadata[fe].Name != Elements[i].SemanticName)
                             return false;
 
-                        if (format.Elements[fe].SemanticIndex != Elements[i].SemanticIndex)
+                        if (format.Metadata[fe].Name != Elements[i].SemanticIndex)
                             return false;
 
                         fe++;
