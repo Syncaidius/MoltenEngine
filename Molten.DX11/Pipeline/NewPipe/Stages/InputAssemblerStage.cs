@@ -15,12 +15,6 @@ namespace Molten.Graphics
 
         ShaderVertexStage _vs;
 
-        /* TODO:
-         *  - Move old MaterialInputStage functionality into this class.
-         *  - Add VertexInputLayout functionality
-         *  - 
-         */
-
         public InputAssemblerStage(PipeDX11 pipe, PipeStageType stageType) : 
             base(pipe, stageType)
         {
@@ -111,8 +105,7 @@ namespace Molten.Graphics
             // Retrieve layout list or create new one if needed.
             foreach (VertexInputLayout l in _cachedLayouts)
             {
-                bool match = l.IsMatch(Device.Log, VertexBuffers, 
-                    _materialStage.BoundShader.InputStructure);
+                bool match = l.IsMatch(Device.Log, VertexBuffers);
 
                 if (match)
                     return l;

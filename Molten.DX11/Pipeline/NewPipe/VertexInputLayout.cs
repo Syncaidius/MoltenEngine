@@ -11,19 +11,20 @@ namespace Molten.Graphics
     internal unsafe class VertexInputLayout : PipeBindable
     {
         internal ID3D11InputLayout* Native;
-        bool _validMatch = true;
+        bool _isValid = true;
         bool _isInstanced = false;
-        ulong[] _hashKeys;
+        ulong[] _expectedFormatIDs;
 
         internal VertexInputLayout(DeviceDX11 device, 
             PipeSlotGroup<BufferSegment> vbSlots, 
             byte[] vertexBytecode,
             ShaderIOStructure io) : base(device)
         {
-            _hashKeys = new ulong[vbSlots.SlotCount];
+            _expectedFormatIDs = new ulong[vbSlots.SlotCount];
             List<InputElementDesc> elements = new List<InputElementDesc>();
             VertexFormat format = null;
 
+            // Store the EOID of each expected vertext format.
             for (uint i = 0; i < vbSlots.SlotCount; i++)
             {
                 if (vbSlots[i].BoundValue == null)
@@ -34,10 +35,9 @@ namespace Molten.Graphics
                 /* Check if the current vertex segment's format matches 
                    the part of the shader's input structure that it's meant to represent. */
                 int startID = elements.Count;
-                bool inputMatch = io.IsCompatible(format, (uint)startID);
-                if (inputMatch == false)
+                if (!io.IsCompatible(format, (uint)startID))
                 {
-                    _validMatch = false;
+                    _isValid = false;
                     break;
                 }
 
@@ -53,7 +53,7 @@ namespace Molten.Graphics
                     _isInstanced = _isInstanced || e.InputSlotClass == InputClassification.InputPerInstanceData;
                 }
 
-                _hashKeys[i] = io.EOID;
+                _expectedFormatIDs[i] = format.EOID;
             }
 
             // Check if there are actually any elements. If not, use the default placeholder vertex type.
@@ -66,7 +66,7 @@ namespace Molten.Graphics
             InputElementDesc[] finalElements = elements.ToArray();
 
             // Attempt creation of input layout.
-            if (_validMatch)
+            if (_isValid)
             {
                 device.Native->CreateInputLayout(ref finalElements[0], (uint)finalElements.Length,
                     ref vertexBytecode[0], (uint)vertexBytecode.Length,
@@ -107,28 +107,30 @@ namespace Molten.Graphics
             // Do nothing. Vertex input layouts build everything they need in the constructor.
         }
 
-        public bool IsMatch(Logger log, PipeSlotGroup<BufferSegment> grp, ShaderIOStructure io)
+        public bool IsMatch(Logger log, PipeSlotGroup<BufferSegment> grp)
         {
             for (uint i = 0; i < grp.SlotCount; i++)
             {
+                BufferSegment seg = grp[i].BoundValue;
+
                 // If null vertex buffer, check if shader actually need one to be present.
-                if (grp[i].BoundValue == null)
+                if (seg == null)
                 {
                     // if shader's buffer hash is null for this slot, it's allowed to be null, otherwise no match.
-                    if (_hashKeys[i] == 0)
+                    if (_expectedFormatIDs[i] == 0)
                         continue;
                     else
                         return false;
                 }
 
-                // Prevent vertex segments with no format from crashing the application.
-                if (grp[i].BoundValue.VertexFormat == null)
+                // Prevent vertex buffer segments with no format from crashing the application.
+                if (seg.VertexFormat == null)
                 {
-                    log.WriteWarning($"Missing format for vertex segment in slot {i}. Skipping validation. This may cause a false input layout match.");
+                    log.WriteWarning($"Missing format for bound vertex segment {seg.Name} in slot {i}. Skipping validation. This may cause a false input layout match.");
                     continue;
                 }
 
-                if (grp[i].BoundValue.VertexFormat.EOID != _hashKeys[i])
+                if (seg.VertexFormat.EOID != _expectedFormatIDs[i])
                     return false;
             }
 
@@ -146,7 +148,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets whether or not the input layout is valid.</summary>
-        internal bool IsValid => _validMatch;
+        internal bool IsValid => _isValid;
 
         /// <summary>Gets whether or not the vertex input layout is designed for use with instanced draw calls.</summary>
         public bool IsInstanced => _isInstanced;

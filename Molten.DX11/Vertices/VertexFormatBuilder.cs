@@ -23,12 +23,21 @@ namespace Molten.Graphics
         }
 
         Dictionary<Type, VertexFormat> _cache = new Dictionary<Type, VertexFormat>();
+        Dictionary<ulong, VertexFormat> _cacheByID = new Dictionary<ulong, VertexFormat>();
         IntPtrComparer _ptrComparer = new IntPtrComparer();
 
         internal VertexFormat GetFormat<T>() where T: struct, IVertexType
         {
             Type t = typeof(T);
             return GetFormat(t);
+        }
+
+        internal VertexFormat GetFormatByID(ulong id)
+        {
+            if (_cacheByID.TryGetValue(id, out VertexFormat format))
+                return format;
+            else
+                return null;
         }
 
         internal VertexFormat GetFormat(Type t)
@@ -40,6 +49,7 @@ namespace Molten.Graphics
             {
                 format = BuildFormat(t);
                 _cache.Add(t, format);
+                _cacheByID.Add(format.EOID, format);
             }
 
             return format;
