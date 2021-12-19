@@ -185,10 +185,8 @@ namespace Molten.Graphics
             DisposeObject(ref _depthBank);
             DisposeObject(ref _samplerBank);
 
-            ImmediateContext->Release();
-            Native->Release();
-            ImmediateContext = null;
-            Native = null;
+            ReleaseSilkPtr(ref ImmediateContext);
+            ReleaseSilkPtr(ref Native);
             _api.Dispose();
 
             _bufferSegmentPool.Dispose();

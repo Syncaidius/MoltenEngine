@@ -23,17 +23,8 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            if(UAV != null)
-            {
-                UAV->Release();
-                UAV = null;
-            }
-
-            if(SRV != null)
-            {
-                SRV->Release();
-                SRV = null;
-            }
+            ReleaseSilkPtr(ref UAV);
+            ReleaseSilkPtr(ref SRV);
         }
 
         #region Implicit cast operators

@@ -428,8 +428,7 @@ namespace Molten.Graphics
             // Dispose context.
             if (Type != GraphicsContextType.Immediate)
             {
-                _context->Release();
-                _context = null;
+                ReleaseSilkPtr(ref _context);
                 _device.RemoveDeferredPipe(this);
             }
         }

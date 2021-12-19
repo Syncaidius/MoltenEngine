@@ -11,13 +11,13 @@ namespace Molten.Graphics
     /// <summary>
     /// Encapsulates HLSL shader-related reflection information.
     /// </summary>
-    internal unsafe class HlslReflection : IDisposable
+    internal unsafe class HlslReflection : EngineObject
     {
-        internal readonly ID3D11ShaderReflection* Ptr;
+        internal ID3D11ShaderReflection* Ptr;
 
-        internal readonly ShaderDesc* Desc;
+        internal ShaderDesc* Desc;
 
-        internal readonly HlslInputBindDescription[] BindDescs;
+        internal HlslInputBindDescription[] BindDescs;
 
         internal HlslReflection(ID3D11ShaderReflection* reflection)
         {
@@ -33,9 +33,9 @@ namespace Molten.Graphics
             }
         }
 
-        public void Dispose()
+        protected override void OnDispose()
         {
-            Ptr->Release();
+            ReleaseSilkPtr(ref Ptr);
         }
     }
 }

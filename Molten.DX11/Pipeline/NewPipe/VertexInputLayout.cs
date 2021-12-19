@@ -137,8 +137,7 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            Native->Release();
-            Native = null;
+            ReleaseSilkPtr(ref Native);
         }
 
         public static implicit operator ID3D11InputLayout*(VertexInputLayout layout)

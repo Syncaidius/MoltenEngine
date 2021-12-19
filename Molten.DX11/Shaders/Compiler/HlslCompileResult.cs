@@ -22,13 +22,12 @@ namespace Molten.Graphics
         Logger _log;
 
         IDxcBlob* _pdbData;
-        IDxcBlobUtf16* _pdbPath;
 
         internal HlslReflection Reflection { get; private set; }
 
         internal IDxcBlob* PdbData => _pdbData;
 
-        internal IDxcBlobUtf16* PdbPath => _pdbPath;
+        internal string PdbPath { get; private set; }
 
         internal IDxcBlob* ByteCode => _byteCode;
 
@@ -65,9 +64,8 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             Reflection.Dispose();
-            _pdbPath->Release();
-            _pdbData->Release();
-            _byteCode->Release();
+            ReleaseSilkPtr(ref _pdbData);
+            ReleaseSilkPtr(ref _byteCode);
         }
 
         /// <summary>
@@ -88,12 +86,14 @@ namespace Molten.Graphics
 
         private void LoadPdbData()
         {
-            fixed(IDxcBlobUtf16** pPath = &_pdbPath)
-                GetDxcOutput(OutKind.OutPdb, ref _pdbData, pPath);
+            IDxcBlobUtf16* pPdbPath = null;
+            GetDxcOutput(OutKind.OutPdb, ref _pdbData, &pPdbPath);
 
-            string strPath = _pdbPath->GetStringPointerS();
+            PdbPath = pPdbPath->GetStringPointerS();
             nuint dataSize = _pdbData->GetBufferSize();
-            _log.WriteDebugLine($"\t Loaded DXC PDB data -- Bytes: {dataSize} -- Path: {strPath}");
+            _log.WriteDebugLine($"\t Loaded DXC PDB data -- Bytes: {dataSize} -- Path: {PdbPath}");
+
+            ReleaseSilkPtr(ref pPdbPath);
         }
 
         private void LoadReflection()
@@ -118,7 +118,11 @@ namespace Molten.Graphics
 
         private void WriteErrors()
         {
-            // TODO write errors to _log
+            IDxcBlobEncoding* pErrorBlob = null;
+            Result->GetErrorBuffer(&pErrorBlob);
+
+
+            ReleaseSilkPtr(ref pErrorBlob);
         }
     }
 }

@@ -55,8 +55,7 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            Native->Release();
-            Native = null;
+            ReleaseSilkPtr(ref Native);
         }
 
         private void PopulateVendor()

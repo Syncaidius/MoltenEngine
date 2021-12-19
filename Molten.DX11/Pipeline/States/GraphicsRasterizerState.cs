@@ -79,13 +79,7 @@ namespace Molten.Graphics
             if (_native == null || _dirty)
             {
                 _dirty = false;
-
-                //dispose of previous state object
-                if (_native != null)
-                {
-                    _native->Release();
-                    _native = null;
-                }
+                ReleaseSilkPtr(ref _native);
 
                 //create new state
                 Device.Native->CreateRasterizerState1(ref _desc, ref _native);
@@ -94,11 +88,7 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            if(_native != null)
-            {
-                _native->Release();
-                _native = null;
-            }
+            ReleaseSilkPtr(ref _native);
         }
 
         public static implicit operator ID3D11RasterizerState* (GraphicsRasterizerState state)

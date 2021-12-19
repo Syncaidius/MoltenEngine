@@ -158,13 +158,7 @@ namespace Molten.Graphics
             if (_native == null || _dirty)
             {
                 _dirty = false;
-
-                //dispose of previous state object
-                if (_native != null)
-                {
-                    _native->Release();
-                    _native = null;
-                }
+                ReleaseSilkPtr(ref _native);
 
                 //copy the front and back-face settings into the main description
                 _desc.FrontFace = _frontFace._desc;
@@ -177,11 +171,7 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            if (_native != null)
-            {
-                _native->Release();
-                _native = null;
-            }
+            ReleaseSilkPtr(ref _native);
         }
 
         public static implicit operator ID3D11DepthStencilState*(GraphicsDepthState state)

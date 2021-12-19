@@ -25,7 +25,7 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            Native->Release();
+            ReleaseSilkPtr(ref Native);
         }
 
         public DisplayMode[] GetSupportedModes(Format format)

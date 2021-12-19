@@ -25,7 +25,7 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            _dxgiFactory->Release();
+            ReleaseSilkPtr(ref _dxgiFactory);
             _api.Dispose();
         }
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal abstract class ShaderComposition : IDisposable
+    internal abstract class ShaderComposition : EngineObject
     {
         /// <summary>A list of const buffers the shader stage requires to be bound.</summary>
         internal List<uint> ConstBufferIds = new List<uint>();
@@ -28,8 +28,6 @@ namespace Molten.Graphics
 
         internal bool Optional;
 
-        public abstract void Dispose();
-
         internal ShaderComposition(bool optional)
         {
             Optional = optional;
@@ -44,9 +42,9 @@ namespace Molten.Graphics
         /// <summary>The underlying, compiled HLSL shader object.</summary>
         internal T* RawShader;
 
-        public override void Dispose()
+        protected override void OnDispose()
         {
-            ((IUnknown*)RawShader)->Release();
+            ReleaseSilkPtr(ref RawShader);
         }
     }
 }

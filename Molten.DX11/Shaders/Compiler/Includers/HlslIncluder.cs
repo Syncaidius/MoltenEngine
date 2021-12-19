@@ -25,8 +25,8 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            _handler->Release();
-            _defaultHandler->Release();
+            ReleaseSilkPtr(ref _handler);
+            ReleaseSilkPtr(ref _defaultHandler);
         }
 
         /// <summary>

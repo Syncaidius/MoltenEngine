@@ -94,8 +94,7 @@ namespace Molten.Graphics
             if (((BindFlag)Description.BindFlags & BindFlag.BindShaderResource) != BindFlag.BindShaderResource)
                 return;
 
-            if (SRV != null)
-                SRV->Release();
+            ReleaseSilkPtr(ref SRV);
 
             ShaderResourceViewDesc srvDesc = new ShaderResourceViewDesc()
             {

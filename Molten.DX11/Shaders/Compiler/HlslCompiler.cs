@@ -51,8 +51,8 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            _compiler->Release();
-            _utils->Release();
+            ReleaseSilkPtr(ref _compiler);
+            ReleaseSilkPtr(ref _utils);
             Dxc.Dispose();
         }
 
@@ -264,5 +264,7 @@ namespace Molten.Graphics
         internal IDxcCompiler3* Native => _compiler;
 
         internal DxcArgumentBuilder ArgBuilder { get; }
+
+        internal IDxcUtils* Utils => _utils;
     }
 }
