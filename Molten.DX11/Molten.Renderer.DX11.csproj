@@ -259,6 +259,7 @@
     <Compile Include="Shaders\Compiler\Reflection\HlslReflection.cs" />
     <Compile Include="Shaders\Compiler\Reflection\ShaderVariableInfo.cs" />
     <Compile Include="Shaders\Compiler\HlslCompilerArg.cs" />
+    <Compile Include="Shaders\Compiler\ResultDesc.cs" />
     <Compile Include="Surfaces\RenderControlSurface.cs" />
     <Compile Include="Surfaces\WinformsSurface.cs" />
     <Compile Include="Pipeline\GraphicsBlendStage.cs" />

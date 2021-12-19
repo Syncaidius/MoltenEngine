@@ -1,4 +1,5 @@
-﻿using Silk.NET.Direct3D.Compilers;
+﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
@@ -121,6 +122,11 @@ namespace Molten.Graphics
             IDxcBlobEncoding* pErrorBlob = null;
             Result->GetErrorBuffer(&pErrorBlob);
 
+            void* ptrErrors = pErrorBlob->GetBufferPointer();
+            nuint numBytes = pErrorBlob->GetBufferSize();
+            string strErrors = SilkMarshal.PtrToString((nint)ptrErrors);
+
+            _log.WriteError(strErrors);
 
             ReleaseSilkPtr(ref pErrorBlob);
         }
