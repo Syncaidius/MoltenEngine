@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
@@ -16,7 +17,7 @@ namespace Molten.Graphics
 
         internal VertexInputLayout(DeviceDX11 device, 
             PipeSlotGroup<BufferSegment> vbSlots, 
-            byte[] vertexBytecode,
+            IDxcBlob* vertexBytecode,
             ShaderIOStructure io) : base(device)
         {
             _expectedFormatIDs = new ulong[vbSlots.SlotCount];
@@ -67,9 +68,10 @@ namespace Molten.Graphics
             // Attempt creation of input layout.
             if (_isValid)
             {
+                void* ptrByteCode = vertexBytecode->GetBufferPointer();
+                nuint numBytes = vertexBytecode->GetBufferSize();
                 device.Native->CreateInputLayout(ref finalElements[0], (uint)finalElements.Length,
-                    ref vertexBytecode[0], (uint)vertexBytecode.Length,
-                    ref _native);
+                    ptrByteCode, numBytes, ref _native);
             }
             else
             {

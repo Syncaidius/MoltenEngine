@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,19 @@ namespace Molten.Graphics
         List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
 
         ShaderVertexStage _vs;
+        ShaderGeometryStage _gs;
+        ShaderHullStage _hs;
+        ShaderDomainStage _ds;
+        ShaderPixelStage _ps;
 
         public InputAssemblerStage(PipeDX11 pipe, PipeStageType stageType) : 
             base(pipe, stageType)
         {
             _vs = new ShaderVertexStage(pipe);
+            _gs = new ShaderGeometryStage(pipe);
+            _hs = new ShaderHullStage(pipe);
+            _ds = new ShaderDomainStage(pipe);
+            _ps = new ShaderPixelStage(pipe);
 
             uint maxVBuffers = pipe.Device.Features.MaxVertexBufferSlots;
             VertexBuffers = DefineSlotGroup<BufferSegment>(maxVBuffers, PipeBindTypeFlags.Input, "V-Buffer");
@@ -55,7 +64,10 @@ namespace Molten.Graphics
             if (ibChanged)
             {
                 BufferSegment ib = IndexBuffer.BoundValue;
-                Pipe.Context->IASetIndexBuffer(ib.Buffer, ib.DataFormat, ib.ByteOffset);
+                if (ib != null)
+                    Pipe.Context->IASetIndexBuffer(ib.Buffer, ib.DataFormat, ib.ByteOffset);
+                else
+                    Pipe.Context->IASetIndexBuffer(null, Format.FormatUnknown, 0);
             }
 
             // Does the vertex input layout need updating?
@@ -116,13 +128,23 @@ namespace Molten.Graphics
                     return l;
             }
 
-            // A new layout is required
             VertexInputLayout input = new VertexInputLayout(Device, VertexBuffers,
-                _materialStage.BoundShader.InputStructureByteCode,
-                _materialStage.BoundShader.InputStructure);
+                Material.BoundValue.InputStructureByteCode,
+                Material.BoundValue.InputStructure);
             _cachedLayouts.Add(input);
 
             return input;
+        }
+
+        protected override void OnDispose()
+        {
+            base.OnDispose();
+
+            _vs.Dispose();
+            _gs.Dispose();
+            _hs.Dispose();
+            _ds.Dispose();
+            _ps.Dispose();
         }
 
         public PipeSlotGroup<BufferSegment> VertexBuffers { get; }

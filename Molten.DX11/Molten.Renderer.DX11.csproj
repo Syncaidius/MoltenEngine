@@ -240,6 +240,10 @@
     <Compile Include="Pipeline\NewPipe\PipeSlot.cs" />
     <Compile Include="Pipeline\NewPipe\Stages\PipeShaderStage.cs" />
     <Compile Include="Pipeline\NewPipe\Stages\PipeStage.cs" />
+    <Compile Include="Pipeline\NewPipe\Stages\ShaderPixelStage.cs" />
+    <Compile Include="Pipeline\NewPipe\Stages\ShaderDomainStage.cs" />
+    <Compile Include="Pipeline\NewPipe\Stages\ShaderHullStage.cs" />
+    <Compile Include="Pipeline\NewPipe\Stages\ShaderGeometryStage.cs" />
     <Compile Include="Pipeline\NewPipe\Stages\ShaderVertexStage.cs" />
     <Compile Include="Pipeline\RegisterComponentMaskFlags.cs" />
     <Compile Include="Renderer\MainSurfaceType.cs" />
