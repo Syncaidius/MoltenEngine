@@ -24,8 +24,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Font", "Molten.Font\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Renderer.OpenGL", "Molten.OpenGL\Molten.Renderer.OpenGL.csproj", "{051563BB-29AC-4903-AE21-72184CD18955}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Molten.Render.Shared", "Molten.Render.Shared\Molten.Render.Shared.shproj", "{035457C8-3C75-4592-8B9B-D8BB4A95E99B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Toolset", "Toolset", "{A6E7A581-04EF-4B7D-949F-D3E224D86535}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.ContentEditor", "Molten.ContentEditor\Molten.ContentEditor.csproj", "{79C2C186-B724-4BF4-AAE7-311ED7A872F2}"
@@ -51,11 +49,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Net.Lidgren", "Molten.Networking.Lidgren\Molten.Net.Lidgren.csproj", "{C2B50475-35FB-4DAD-9632-E788517CF6B8}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Molten.Render.Shared\Molten.Render.Shared.projitems*{035457c8-3c75-4592-8b9b-d8bb4a95e99b}*SharedItemsImports = 13
-		Molten.Render.Shared\Molten.Render.Shared.projitems*{051563bb-29ac-4903-ae21-72184cd18955}*SharedItemsImports = 4
-		Molten.Render.Shared\Molten.Render.Shared.projitems*{8800afbc-8be4-4145-803e-ef8c1026a17b}*SharedItemsImports = 4
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Android_Debug|Any CPU = Android_Debug|Any CPU
 		Android_Debug|x64 = Android_Debug|x64
@@ -389,7 +382,6 @@ Global
 		{8800AFBC-8BE4-4145-803E-EF8C1026A17B} = {940AA3BE-1CDB-4EFC-B811-6FA4D0562AB3}
 		{4FE5B72A-3E02-46B9-AC04-B781C964890A} = {08C33000-FBC9-4CF3-999C-B660E5241453}
 		{051563BB-29AC-4903-AE21-72184CD18955} = {08C33000-FBC9-4CF3-999C-B660E5241453}
-		{035457C8-3C75-4592-8B9B-D8BB4A95E99B} = {08C33000-FBC9-4CF3-999C-B660E5241453}
 		{A6E7A581-04EF-4B7D-949F-D3E224D86535} = {08C33000-FBC9-4CF3-999C-B660E5241453}
 		{79C2C186-B724-4BF4-AAE7-311ED7A872F2} = {A6E7A581-04EF-4B7D-949F-D3E224D86535}
 		{57D4A251-9082-4199-B894-6173C7F9215B} = {08C33000-FBC9-4CF3-999C-B660E5241453}

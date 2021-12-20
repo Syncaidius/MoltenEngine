@@ -229,20 +229,20 @@
     <Compile Include="Interop\SharpDXInterop.cs" />
     <Compile Include="Pipeline\Data\ResourceStream.cs" />
     <Compile Include="Pipeline\InputElementData.cs" />
-    <Compile Include="Pipeline\NewPipe\PipeBindable.cs" />
-    <Compile Include="Pipeline\NewPipe\Stages\InputAssemblerStage.cs" />
-    <Compile Include="Pipeline\NewPipe\PipeBindableResource.cs" />
-    <Compile Include="Pipeline\NewPipe\PipeSlotGroup.cs" />
-    <Compile Include="Pipeline\NewPipe\PipeBindTypeFlags.cs" />
-    <Compile Include="Pipeline\NewPipe\PipeObject.cs" />
-    <Compile Include="Pipeline\NewPipe\PipeSlot.cs" />
-    <Compile Include="Pipeline\NewPipe\Stages\PipeShaderStage.cs" />
-    <Compile Include="Pipeline\NewPipe\Stages\PipeStage.cs" />
-    <Compile Include="Pipeline\NewPipe\Stages\ShaderPixelStage.cs" />
-    <Compile Include="Pipeline\NewPipe\Stages\ShaderDomainStage.cs" />
-    <Compile Include="Pipeline\NewPipe\Stages\ShaderHullStage.cs" />
-    <Compile Include="Pipeline\NewPipe\Stages\ShaderGeometryStage.cs" />
-    <Compile Include="Pipeline\NewPipe\Stages\ShaderVertexStage.cs" />
+    <Compile Include="Pipeline\PipeBindable.cs" />
+    <Compile Include="Pipeline\Stages\InputAssemblerStage.cs" />
+    <Compile Include="Pipeline\PipeBindableResource.cs" />
+    <Compile Include="Pipeline\PipeSlotGroup.cs" />
+    <Compile Include="Pipeline\PipeBindTypeFlags.cs" />
+    <Compile Include="Pipeline\PipeObject.cs" />
+    <Compile Include="Pipeline\PipeSlot.cs" />
+    <Compile Include="Pipeline\Stages\PipeShaderStage.cs" />
+    <Compile Include="Pipeline\Stages\PipeStage.cs" />
+    <Compile Include="Pipeline\Stages\ShaderPixelStage.cs" />
+    <Compile Include="Pipeline\Stages\ShaderDomainStage.cs" />
+    <Compile Include="Pipeline\Stages\ShaderHullStage.cs" />
+    <Compile Include="Pipeline\Stages\ShaderGeometryStage.cs" />
+    <Compile Include="Pipeline\Stages\ShaderVertexStage.cs" />
     <Compile Include="Pipeline\RegisterComponentMaskFlags.cs" />
     <Compile Include="Renderer\MainSurfaceType.cs" />
     <Compile Include="Renderer\RenderChain.Context.cs" />
@@ -264,16 +264,16 @@
     <Compile Include="Shaders\Compiler\HlslCompilerArg.cs" />
     <Compile Include="Surfaces\RenderControlSurface.cs" />
     <Compile Include="Surfaces\WinformsSurface.cs" />
-    <Compile Include="Pipeline\GraphicsBlendStage.cs" />
+    <Compile Include="Pipeline\Stages\GraphicsBlendStage.cs" />
     <Compile Include="Pipeline\States\SamplerBank.cs" />
     <Compile Include="Pipeline\States\GraphicsBlendState.cs" />
     <Compile Include="GraphicsContextType.cs" />
-    <Compile Include="Pipeline\GraphicsDepthStage.cs" />
+    <Compile Include="Pipeline\Stages\GraphicsDepthStage.cs" />
     <Compile Include="Pipeline\States\GraphicsDepthState.cs" />
     <Compile Include="DeviceDX11.cs" />
     <Compile Include="PipeDX11.cs" />
     <Compile Include="GraphicsPipeState.cs" />
-    <Compile Include="Pipeline\GraphicsRasterizerStage.cs" />
+    <Compile Include="Pipeline\Stages\GraphicsRasterizerStage.cs" />
     <Compile Include="Pipeline\States\GraphicsRasterizerState.cs" />
     <Compile Include="GraphicsValidationMode.cs" />
     <Compile Include="GraphicsValidationResult.cs" />
@@ -284,15 +284,13 @@
     <Compile Include="Mesh\StandardMesh.cs" />
     <Compile Include="Mesh\IndexedMesh.cs" />
     <Compile Include="Mesh\Mesh.cs" />
-    <Compile Include="Pipeline\ComputeInputStage.cs" />
-    <Compile Include="Pipeline\MaterialInputStage.cs" />
-    <Compile Include="Pipeline\PipelineInput.cs" />
+    <Compile Include="Pipeline\Stages\ComputeInputStage.cs" />
+    <Compile Include="Pipeline\Stages\MaterialInputStage.cs" />
     <Compile Include="Pipeline\PipelineOutput.cs" />
     <Compile Include="Pipeline\States\DepthStateBank.cs" />
     <Compile Include="Pipeline\States\GraphicsStateBank.cs" />
     <Compile Include="Pipeline\States\BlendStateBank.cs" />
     <Compile Include="Pipeline\States\RasterizerStateBank.cs" />
-    <Compile Include="Pipeline\ShaderInputStage.cs" />
     <Compile Include="Pipeline\ShaderStep.cs" />
     <Compile Include="PipeStateStack.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -393,8 +391,8 @@
     <Compile Include="Textures\TextureBase.cs" />
     <Compile Include="Textures\TextureExceptions.cs" />
     <Compile Include="Textures\WICFormatConverter.cs" />
-    <Compile Include="Pipeline\NewPipe\VertexInputLayout.cs" />
-    <Compile Include="Vertices\VertexFormat.cs" />
+    <Compile Include="Pipeline\VertexInputLayout.cs" />
+    <Compile Include="Pipeline\VertexFormat.cs" />
     <Compile Include="Vertices\VertexWithID.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -437,6 +435,5 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="..\Molten.Render.Shared\Molten.Render.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
