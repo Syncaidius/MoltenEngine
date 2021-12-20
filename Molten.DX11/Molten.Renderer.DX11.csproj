@@ -286,7 +286,6 @@
     <Compile Include="Mesh\StandardMesh.cs" />
     <Compile Include="Mesh\IndexedMesh.cs" />
     <Compile Include="Mesh\Mesh.cs" />
-    <Compile Include="Pipeline\Stages\ComputeInputStage.cs" />
     <Compile Include="Pipeline\Stages\MaterialInputStage.cs" />
     <Compile Include="Pipeline\PipelineOutput.cs" />
     <Compile Include="Pipeline\States\DepthStateBank.cs" />
