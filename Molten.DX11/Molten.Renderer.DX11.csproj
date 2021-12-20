@@ -230,6 +230,7 @@
     <Compile Include="Pipeline\Data\ResourceStream.cs" />
     <Compile Include="Pipeline\InputElementData.cs" />
     <Compile Include="Pipeline\PipeBindable.cs" />
+    <Compile Include="Pipeline\Stages\PipeStateStage.cs" />
     <Compile Include="Pipeline\Stages\InputAssemblerStage.cs" />
     <Compile Include="Pipeline\PipeBindableResource.cs" />
     <Compile Include="Pipeline\PipeSlotGroup.cs" />
@@ -238,6 +239,7 @@
     <Compile Include="Pipeline\PipeSlot.cs" />
     <Compile Include="Pipeline\Stages\PipeShaderStage.cs" />
     <Compile Include="Pipeline\Stages\PipeStage.cs" />
+    <Compile Include="Pipeline\Stages\ShaderComputeStage.cs" />
     <Compile Include="Pipeline\Stages\ShaderPixelStage.cs" />
     <Compile Include="Pipeline\Stages\ShaderDomainStage.cs" />
     <Compile Include="Pipeline\Stages\ShaderHullStage.cs" />

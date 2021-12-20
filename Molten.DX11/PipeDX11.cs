@@ -31,7 +31,7 @@ namespace Molten.Graphics
         GraphicsRasterizerStage _rasterizer;
 
         InputAssemblerStage _input;
-        ComputeInputStage _computeStage;
+        ShaderComputeStage _compute;
         PipelineOutput _output;
 
         DeviceDX11 _device;
@@ -58,7 +58,7 @@ namespace Molten.Graphics
             _context->ClearState();
 
             _stateStack = new PipeStateStack(this);
-            _computeStage = new ComputeInputStage(this);
+            _compute = new ShaderComputeStage(this);
             _input = new InputAssemblerStage(this);
             _output = new PipelineOutput(this);
 
@@ -96,14 +96,14 @@ namespace Molten.Graphics
         }
 
         /// <summary>Dispatches a compute effect to the GPU.</summary>
-        public void Dispatch(ComputeTask task, int x, int y, int z)
+        public void Dispatch(ComputeTask task, uint x, uint y, uint z)
         {
-            _computeStage.Shader = task;
+            _compute.Task.Value = task;
 
             // TODO fix null UAV on depth texture (possibly issue with TextureBase).
 
-            _output.Refresh(); // TODO Why is this here??? Compute shaders don't output to surfaces/RTs?
-            _computeStage.Dispatch(x, y, z);
+            _output.Refresh(); // Refresh any outputs that may be used by the compute task (Render targets!).
+            _compute.Dispatch(x, y, z);
         }
 
         /// <summary>Sets a list of render surfaces.</summary>
@@ -170,7 +170,12 @@ namespace Molten.Graphics
             _stateStack.Pop();
         }
 
-        private GraphicsValidationResult ApplyState(Material material, MaterialPass pass,
+        private void ApplyMaterialPass(MaterialPass pass)
+        {
+            
+        }
+
+        private GraphicsValidationResult ApplyState(MaterialPass pass,
             GraphicsValidationMode mode,
             VertexTopology topology)
         {
@@ -179,21 +184,20 @@ namespace Molten.Graphics
 
             GraphicsValidationResult result = GraphicsValidationResult.Successful;
 
-            _input.Material.Value = material;
-            _input.Bind(pass, _drawInfo.Conditions, topology);
+            _input.Bind(_drawInfo.Conditions, topology);
 
             _output.DepthWritePermission = DepthWriteOverride != GraphicsDepthWritePermission.Enabled ? 
                 DepthWriteOverride : pass.DepthState[_drawInfo.Conditions].WritePermission;
             _output.Refresh();
 
-            _blendState.Current = pass.BlendState[_drawInfo.Conditions];
-            _rasterizer.Current = pass.RasterizerState[_drawInfo.Conditions];
-            _depthStencil.Current = pass.DepthState[_drawInfo.Conditions];
+            _blendState.State.Value = pass.BlendState[_drawInfo.Conditions];
+            _rasterizer.State.Value = pass.RasterizerState[_drawInfo.Conditions];
+            _depthStencil.State.Value = pass.DepthState[_drawInfo.Conditions];
 
             // Apply render targets and states.
-            _depthStencil.Refresh();
-            _blendState.Refresh();
-            _rasterizer.Refresh();
+            _depthStencil.Bind();
+            _blendState.Bind();
+            _rasterizer.Bind();
 
             // Validate all pipeline components.
             result |= _input.Validate(mode);
@@ -230,13 +234,15 @@ namespace Molten.Graphics
             if (!_drawInfo.Began)
                 throw new GraphicsContextException($"GraphicsPipe: BeginDraw() must be called before calling {nameof(Draw)}()");
 
-            // Re-render the same material for I iterations.
+            _input.Material.Value = mat;
+
+            // Re-render the same material for mat.Iterations.
             for (uint i = 0; i < mat.Iterations; i++)
             {
                 for (uint j = 0; j < mat.PassCount; j++)
                 {
                     MaterialPass pass = mat.Passes[j];
-                    vResult = ApplyState(mat, pass, mode, topology);
+                    vResult = ApplyState(pass, mode, topology);
 
                     if (vResult == GraphicsValidationResult.Successful)
                     {
@@ -440,7 +446,7 @@ namespace Molten.Graphics
         {
             _output.Dispose();
             _input.Dispose();
-            _computeStage.Dispose();
+            _compute.Dispose();
 
             _depthStencil.Dispose();
             _blendState.Dispose();

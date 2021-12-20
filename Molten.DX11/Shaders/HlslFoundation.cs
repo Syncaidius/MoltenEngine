@@ -36,6 +36,8 @@ namespace Molten.Graphics
             Samplers = new ShaderStateBank<ShaderSampler>[0];
         }
 
+        protected internal override sealed void Refresh(PipeSlot slot, PipeDX11 pipe) { }
+
         /// <summary>
         /// Gets or sets the number of iterations the shader/component should be run.
         /// </summary>

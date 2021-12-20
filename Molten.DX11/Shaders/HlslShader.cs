@@ -28,11 +28,8 @@ namespace Molten.Graphics
 
         public Dictionary<string, string> Metadata => _metadata;
 
-        static int _nextSortKey;
-
         internal HlslShader(DeviceDX11 device, string filename = null) : base(device)
         {
-            SortKey = Interlocked.Increment(ref _nextSortKey);
             _filename = filename ?? "";
             _metadata = new Dictionary<string, string>();
         }
@@ -81,10 +78,5 @@ namespace Molten.Graphics
                     varInstance.Value = value;
             }
         }
-
-        /// <summary>
-        /// Gets the sort key assigned to the current shader.
-        /// </summary>
-        public int SortKey { get; }
     }
 }

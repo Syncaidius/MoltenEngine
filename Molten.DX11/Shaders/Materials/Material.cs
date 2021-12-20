@@ -69,6 +69,12 @@ namespace Molten.Graphics
             return _passesByName[name];
         }
 
+        internal override void PipelineDispose()
+        {
+            for (int i = 0; i < Passes.Length; i++)
+                Passes[i].Dispose();
+        }
+
         internal ObjectMaterialProperties Object { get; set; }
 
         internal LightMaterialProperties Light { get; set; }

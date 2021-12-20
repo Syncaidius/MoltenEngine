@@ -125,11 +125,6 @@ namespace Molten.Graphics
             return (ID3D11BlendState*)state._native;
         }
 
-        public static implicit operator ID3D11BlendState1*(GraphicsBlendState state)
-        {
-            return state._native;
-        }
-
         internal override void PipelineDispose()
         {
             ReleaseSilkPtr(ref _native);

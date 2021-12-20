@@ -96,11 +96,6 @@ namespace Molten.Graphics
             return (ID3D11RasterizerState*)state._native;
         }
 
-        public static implicit operator ID3D11RasterizerState1*(GraphicsRasterizerState state)
-        {
-            return state._native;
-        }
-
         public CullMode CullMode
         {
             get { return _desc.CullMode; }

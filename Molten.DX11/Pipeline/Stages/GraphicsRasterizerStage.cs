@@ -6,10 +6,8 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    internal unsafe class GraphicsRasterizerStage : PipelineComponent<DeviceDX11, PipeDX11>
+    internal unsafe class GraphicsRasterizerStage : PipeStateStage<GraphicsRasterizerState, ID3D11RasterizerState1>
     {
-        PipelineBindSlot<GraphicsRasterizerState, DeviceDX11, PipeDX11> _slotState;
-
         Silk.NET.Maths.Rectangle<int>[] _apiScissorRects;
         Rectangle[] _scissorRects;
         bool _scissorRectsDirty;
@@ -29,24 +27,6 @@ namespace Molten.Graphics
             _apiScissorRects = new Silk.NET.Maths.Rectangle<int>[maxRTs];
             _apiViewports = new Silk.NET.Direct3D11.Viewport[maxRTs];
 
-            _slotState = AddSlot<GraphicsRasterizerState>(0);
-            _slotState.OnObjectForcedUnbind += _slotState_OnBoundObjectDisposed;
-        }
-
-        private void _slotState_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
-        {
-            if(Current == obj)
-            {
-                ID3D11RasterizerState* tmpState = null;
-                Pipe.Context->RSSetState(tmpState);
-            }
-        }
-
-        protected override void OnDispose()
-        {
-            Current = null;
-
-            base.OnDispose();
         }
 
         public void SetScissorRectangle(Rectangle rect, int slot = 0)
@@ -129,14 +109,15 @@ namespace Molten.Graphics
             return _viewports[index];
         }
 
-        /// <summary>Applies the current state to the device. Called internally.</summary>
-        internal void Refresh()
+        protected override void BindState(GraphicsRasterizerState state)
         {
-            // Ensure the default preset is used if a null state was requested.
-            bool stateChanged = _slotState.Bind(Pipe, Current, PipelineBindType.Output);
+            state = state ?? Device.RasterizerBank.GetPreset(RasterizerPreset.Default);
+            Pipe.Context->RSSetState(state);
+        }
 
-            if (stateChanged)   // Update rasterizer state.
-                Pipe.Context->RSSetState(Current);
+        public new void Bind()
+        {
+            base.Bind();
 
             // Check if scissor rects need updating
             if (_scissorRectsDirty)
@@ -158,9 +139,6 @@ namespace Molten.Graphics
                 _viewportsDirty = false;
             }
         }
-
-        /// <summary>Gets the currently active blend state.</summary>
-        public GraphicsRasterizerState Current { get; set; }
 
         /// <summary>Gets the number of applied viewports.</summary>
         public int ViewportCount => _viewports.Length;

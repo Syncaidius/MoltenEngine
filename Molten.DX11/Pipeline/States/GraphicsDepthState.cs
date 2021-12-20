@@ -174,11 +174,6 @@ namespace Molten.Graphics
             ReleaseSilkPtr(ref _native);
         }
 
-        public static implicit operator ID3D11DepthStencilState*(GraphicsDepthState state)
-        {
-            return state._native;
-        }
-
         internal bool IsDepthEnabled
         {
             get { return _desc.DepthEnable > 0; }

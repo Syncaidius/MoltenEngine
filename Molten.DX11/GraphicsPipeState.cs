@@ -37,7 +37,7 @@ namespace Molten.Graphics
         public void Capture()
         {
             _blendState = _pipe.BlendState.Current;
-            _depthState = _pipe.DepthStencil.Current;
+            _depthState = _pipe.DepthStencil.State;
             _rasterState = _pipe.Rasterizer.Current;
 
             _pipe.GetVertexSegments(_vSegments);

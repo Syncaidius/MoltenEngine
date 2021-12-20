@@ -10,7 +10,7 @@ namespace Molten.Graphics
     /// <summary>
     /// Represents a managed device context pipeline stage.
     /// </summary>
-    /// <typeparam name="T">T</typeparam>
+    /// <typeparam name="T">The type of DX11 shader to be handled by this stage.</typeparam>
     internal unsafe abstract class PipeShaderStage<T> : PipeStage
         where T : unmanaged
     {
