@@ -12,10 +12,9 @@ namespace Molten.Graphics
     /// </summary>
     internal unsafe abstract class PipeStage : EngineObject
     {
-        internal PipeStage(PipeDX11 pipe, PipeStageType stageType)
+        internal PipeStage(PipeDX11 pipe)
         {
             Pipe = pipe;
-            StageType = stageType;
             AllSlots = new List<PipeSlot>();
         }
 
@@ -42,11 +41,6 @@ namespace Molten.Graphics
         internal PipeDX11 Pipe { get; }
 
         internal DeviceDX11 Device => Pipe.Device;
-
-        /// <summary>
-        /// Gets the type of the current <see cref="PipeStage"/>.
-        /// </summary>
-        internal PipeStageType StageType { get; }
 
         internal List<PipeSlot> AllSlots { get; }
     }

@@ -14,10 +14,10 @@ namespace Molten.Graphics
     internal unsafe abstract class PipeShaderStage<T> : PipeStage
         where T : unmanaged
     {
-        internal PipeShaderStage(PipeDX11 pipe, ShaderType shaderType) :
-           base(pipe, shaderType.ToStageType())
+        internal PipeShaderStage(PipeDX11 pipe, ShaderType shaderType) : base(pipe)
         {
             ShaderStageType = shaderType;
+            Name = $"Pipe{pipe.EOID} {shaderType} stage";
 
             uint maxSamplers = pipe.Device.Features.MaxSamplerSlots;
             Samplers = DefineSlotGroup<ShaderSampler>(maxSamplers, PipeBindTypeFlags.Input, "Sampler");

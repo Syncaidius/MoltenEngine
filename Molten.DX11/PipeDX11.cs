@@ -8,7 +8,8 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    internal delegate void PipeDrawCallback(MaterialPass pass, uint iteration, uint passNumber);
+    internal delegate void PipeDrawCallback(MaterialPass pass);
+    internal delegate void PipeDrawFailCallback(MaterialPass pass, uint iteration, uint passNumber, GraphicsValidationResult result);
 
     /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="DeviceContext"/>.</summary>
     public unsafe class PipeDX11 : EngineObject
@@ -28,11 +29,10 @@ namespace Molten.Graphics
         GraphicsDepthStage _depthStencil;
         GraphicsBlendStage _blendState;
         GraphicsRasterizerStage _rasterizer;
-        ComputeInputStage _computeStage;
-        PipelineInput _input;
-        PipelineOutput _output;
 
-        GraphicsValidationResult _drawResult;
+        InputAssemblerStage _input;
+        ComputeInputStage _computeStage;
+        PipelineOutput _output;
 
         DeviceDX11 _device;
         ID3D11DeviceContext1* _context;
@@ -59,7 +59,7 @@ namespace Molten.Graphics
 
             _stateStack = new PipeStateStack(this);
             _computeStage = new ComputeInputStage(this);
-            _input = new PipelineInput(this);
+            _input = new InputAssemblerStage(this);
             _output = new PipelineOutput(this);
 
             _depthStencil = new GraphicsDepthStage(this);
@@ -179,8 +179,9 @@ namespace Molten.Graphics
 
             GraphicsValidationResult result = GraphicsValidationResult.Successful;
 
-            _input.Material = material;
-            _input.Refresh(pass, _drawInfo.Conditions, topology);
+            _input.Material.Value = material;
+            _input.Bind(pass, _drawInfo.Conditions, topology);
+
             _output.DepthWritePermission = DepthWriteOverride != GraphicsDepthWritePermission.Enabled ? 
                 DepthWriteOverride : pass.DepthState[_drawInfo.Conditions].WritePermission;
             _output.Refresh();
@@ -221,9 +222,11 @@ namespace Molten.Graphics
             _drawInfo.Reset();
         }
 
-        private void DrawCommon(Material mat, GraphicsValidationMode mode, VertexTopology topology, 
-            PipeDrawCallback drawCallback, PipeDrawCallback failCallback)
+        private GraphicsValidationResult DrawCommon(Material mat, GraphicsValidationMode mode, VertexTopology topology, 
+            PipeDrawCallback drawCallback, PipeDrawFailCallback failCallback)
         {
+            GraphicsValidationResult vResult = GraphicsValidationResult.Successful;
+
             if (!_drawInfo.Began)
                 throw new GraphicsContextException($"GraphicsPipe: BeginDraw() must be called before calling {nameof(Draw)}()");
 
@@ -233,24 +236,26 @@ namespace Molten.Graphics
                 for (uint j = 0; j < mat.PassCount; j++)
                 {
                     MaterialPass pass = mat.Passes[j];
-                    _drawResult = ApplyState(mat, pass, mode, topology);
+                    vResult = ApplyState(mat, pass, mode, topology);
 
-                    if (_drawResult == GraphicsValidationResult.Successful)
+                    if (vResult == GraphicsValidationResult.Successful)
                     {
                         // Re-render the same pass for K iterations.
                         for (int k = 0; k < pass.Iterations; k++)
                         {
-                            drawCallback(pass, i, j);
+                            drawCallback(pass);
                             Profiler.Current.DrawCalls++;
                         }
                     }
                     else
                     {
-                        failCallback(pass, i, j);
+                        failCallback(pass, i, j, vResult);
                         break;
                     }
                 }
             }
+
+            return vResult;
         }
 
         /// <summary>Draw non-indexed, non-instanced primitives. 
@@ -259,15 +264,15 @@ namespace Molten.Graphics
         /// <param name="vertexStartIndex">The vertex to start drawing from.</param>
         /// <param name="topology">The primitive topology to use when drawing with a NULL vertex buffer. 
         /// Vertex buffers always override this when applied.</param>
-        public void Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
+        public GraphicsValidationResult Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
         {
-            DrawCommon(material, GraphicsValidationMode.Unindexed, topology, (pass, iteration, passNumber) =>
+            return DrawCommon(material, GraphicsValidationMode.Unindexed, topology, (pass) =>
             {
                 _context->Draw(vertexCount, vertexStartIndex);
             },
-            (pass, iteration, passNumber) =>
+            (pass, iteration, passNumber, vResult) =>
             {
-                _device.Log.WriteWarning($"Draw() call failed with result: {_drawResult} -- " + 
+                _device.Log.WriteWarning($"Draw() call failed with result: {vResult} -- " + 
                     $"Iteration: M{iteration}/{material.Iterations}P{passNumber}/{material.PassCount} -- " +
                     $"Material: {material.Name} -- Topology: {topology} -- VertexCount: { vertexCount}");
             });
@@ -279,20 +284,20 @@ namespace Molten.Graphics
         /// <param name="topology">The expected topology of the indexed vertex data.</param>
         /// <param name="vertexStartIndex">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public void DrawInstanced(Material material,
+        public GraphicsValidationResult DrawInstanced(Material material,
             uint vertexCountPerInstance,
             uint instanceCount,
             VertexTopology topology,
             uint vertexStartIndex = 0,
             uint instanceStartIndex = 0)
         {
-            DrawCommon(material, GraphicsValidationMode.Instanced, topology, (pass, iteration, passNum) =>
+            return DrawCommon(material, GraphicsValidationMode.Instanced, topology, (pass) =>
             {
                 _context->DrawInstanced(vertexCountPerInstance, instanceCount, vertexStartIndex, instanceStartIndex);
             },
-            (pass, iteration, passNum) =>
+            (pass, iteration, passNum, vResult) =>
             {
-                _device.Log.WriteWarning($"DrawInstanced() call failed with result: {_drawResult} -- " + 
+                _device.Log.WriteWarning($"DrawInstanced() call failed with result: {vResult} -- " + 
                         $"Iteration: M{iteration}/{material.Iterations}P{passNum}/{material.PassCount} -- Material: {material.Name} -- " +
                         $"Topology: {topology} -- VertexCount: { vertexCountPerInstance} -- Instances: {instanceCount}");
             });
@@ -304,19 +309,19 @@ namespace Molten.Graphics
         /// <param name="indexCount">The number of indices to be drawn.</param>
         /// <param name="startIndex">The index to start drawing from.</param>
         /// <param name="topology">The toplogy to apply when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
-        public void DrawIndexed(Material material,
+        public GraphicsValidationResult DrawIndexed(Material material,
             uint indexCount,
             VertexTopology topology,
             int vertexIndexOffset = 0,
             uint startIndex = 0)
         {
-            DrawCommon(material, GraphicsValidationMode.Indexed, topology, (pass, it, passNum) =>
+            return DrawCommon(material, GraphicsValidationMode.Indexed, topology, (pass) =>
             {
                 _context->DrawIndexed(indexCount, startIndex, vertexIndexOffset);
             },
-            (pass, it, passNum) =>
+            (pass, it, passNum, vResult) =>
             {
-                _device.Log.WriteWarning($"DrawIndexed() call failed with result: {_drawResult} -- " +
+                _device.Log.WriteWarning($"DrawIndexed() call failed with result: {vResult} -- " +
                     $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
                     $" -- Material: {material.Name} -- Topology: {topology} -- indexCount: { indexCount}");
             });
@@ -329,7 +334,7 @@ namespace Molten.Graphics
         /// <param name="startIndex">The start index.</param>
         /// <param name="vertexIndexOffset">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public void DrawIndexedInstanced(Material material,
+        public GraphicsValidationResult DrawIndexedInstanced(Material material,
             uint indexCountPerInstance,
             uint instanceCount,
             VertexTopology topology,
@@ -338,14 +343,14 @@ namespace Molten.Graphics
             int vertexIndexOffset = 0,
             uint instanceStartIndex = 0)
         {
-            DrawCommon(material, GraphicsValidationMode.Indexed, topology, (pass, it, passNum) =>
+            return DrawCommon(material, GraphicsValidationMode.Indexed, topology, (pass) =>
             {
                 _context->DrawIndexedInstanced(indexCountPerInstance, instanceCount,
                     startIndex, vertexIndexOffset, instanceStartIndex);
             },
-            (pass, it, passNum) =>
+            (pass, it, passNum, vResult) =>
             {
-                _device.Log.WriteWarning($"DrawIndexed() call failed with result: {_drawResult} -- " +
+                _device.Log.WriteWarning($"DrawIndexed() call failed with result: {vResult} -- " +
                     $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
                     $" -- Material: {material.Name} -- Topology: {topology} -- Indices-per-instance: { indexCountPerInstance}");
             });
@@ -358,9 +363,9 @@ namespace Molten.Graphics
         /// <param name="segment">The buffer.</param>
         /// <param name="slot">The input slot ID.</param>
         /// <param name="byteOffset">The number of bytes to offset the starting point within the buffer.</param>
-        internal void SetVertexSegment(BufferSegment segment, int slot)
+        internal void SetVertexSegment(BufferSegment segment, uint slot)
         {
-            _input.SetVertexSegment(segment, slot);
+            _input.VertexBuffers[slot].Value = segment;
         }
 
         /// <summary>Sets a list of vertex buffers to input slots.</summary>
@@ -370,17 +375,29 @@ namespace Molten.Graphics
         /// <param name="byteOffsets">A list of byte offsets. each entry/element corresponds to the buffers in the buffer array.</param>
         internal void SetVertexSegments(BufferSegment[] segments)
         {
-            _input.SetVertexSegments(segments, 0, 0, segments.Length);
+            SetVertexSegments(segments, segments.Length, 0, 0);
         }
 
         /// <summary>Sets a list of vertex buffers to input slots.</summary>
         /// <param name="segments">The buffers to set.</param>
-        /// <param name="startIndex">The index within the buffer list/array to start setting.</param>
+        /// <param name="startIndex">The index within 'segments' array to start setting.</param>
         /// <param name="firstSlot">The input slot to start setting.</param>
         /// <param name="byteOffsets">A list of byte offsets. each entry/element corresponds to the buffers in the buffer array.</param>
-        internal void SetVertexSegments(BufferSegment[] segments, int count, int firstSlot, int startIndex)
+        internal void SetVertexSegments(BufferSegment[] segments, int count, uint firstSlot, uint startIndex)
         {
-            _input.SetVertexSegments(segments, firstSlot, startIndex, count);
+            uint end = startIndex + (uint)count;
+            uint slotID = firstSlot;
+
+            for (uint i = startIndex; i < end; i++)
+            {
+                if (segments[i] != null)
+                {
+                    if (((BindFlag)segments[i].Buffer.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
+                        throw new InvalidOperationException($"The provided buffer segment at index {i} is not part of a vertex buffer.");
+                }
+
+                _input.VertexBuffers[slotID++].Value = segments[i];
+            }
         }
 
         /// <summary>Sets a index buffer.</summary>
@@ -388,21 +405,26 @@ namespace Molten.Graphics
         /// <param name="byteOffset">The number of bytes to offset the starting point within the buffer.</param>
         internal void SetIndexSegment(BufferSegment segment)
         {
-            _input.SetIndexSegment(segment);
+            _input.IndexBuffer.Value = segment;
         }
 
         /// <summary>Copyies a list of vertex <see cref="BufferSegment"/> that are set on the current <see cref="PipeDX11"/>. Any empty slots will be null.</summary>
         /// <param name="destination"></param>
         internal void GetVertexSegments(BufferSegment[] destination)
         {
-            _input.GetVertexSegments(destination);
+            int needed = _input.VertexBuffers.SlotCount;
+            if (destination.Length < needed)
+                throw new InvalidOperationException($"The destination array is too small. Needs {needed} but has {destination.Length} capacity.");
+
+            for (uint i = 0; i < needed; i++)
+                destination[i] = _input.VertexBuffers[i].Value;
         }
 
         /// <summary>Returns the current index <see cref="BufferSegment"/>, or null if not set.</summary>
         /// <returns></returns>
         internal BufferSegment GetIndexSegment()
         {
-            return _input.GetIndexSegment();
+            return _input.IndexBuffer.Value;
         }
 
         /// <summary>Clears the first render target that is set on the device.</summary>
@@ -467,12 +489,6 @@ namespace Molten.Graphics
         {
             get { return _rasterizer; }
         }
-
-        /// <summary>Gets the result flags of the last draw call.</summary>
-        internal GraphicsValidationResult DrawResult { get { return _drawResult; } }
-
-        /// <summary>Gets the pipeline input.</summary>
-        internal PipelineInput Input { get { return _input; } }
 
         /// <summary>Gets the pipeline output.</summary>
         internal PipelineOutput Output { get { return _output; } }

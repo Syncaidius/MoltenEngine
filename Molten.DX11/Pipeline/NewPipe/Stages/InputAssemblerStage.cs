@@ -20,8 +20,7 @@ namespace Molten.Graphics
         ShaderDomainStage _ds;
         ShaderPixelStage _ps;
 
-        public InputAssemblerStage(PipeDX11 pipe, PipeStageType stageType) : 
-            base(pipe, stageType)
+        public InputAssemblerStage(PipeDX11 pipe) : base(pipe)
         {
             _vs = new ShaderVertexStage(pipe);
             _gs = new ShaderGeometryStage(pipe);
@@ -134,6 +133,81 @@ namespace Molten.Graphics
             _cachedLayouts.Add(input);
 
             return input;
+        }
+
+        internal GraphicsValidationResult Validate(GraphicsValidationMode mode)
+        {
+            GraphicsValidationResult result = GraphicsValidationResult.Successful;
+
+            result |= CheckMaterial();
+
+            // Validate and update mode-specific data if needed.
+            switch (mode)
+            {
+                case GraphicsValidationMode.Indexed:
+                    result |= CheckVertexSegment();
+                    result |= CheckIndexSegment();
+                    break;
+
+                case GraphicsValidationMode.Instanced:
+                    result |= CheckVertexSegment();
+                    result |= CheckInstancing();
+                    break;
+
+                case GraphicsValidationMode.InstancedIndexed:
+                    result |= CheckVertexSegment();
+                    result |= CheckIndexSegment();
+                    result |= CheckInstancing();
+                    break;
+            }
+
+            
+            return result;
+        }
+
+
+        /// <summary>Validate vertex buffer and vertex shader.</summary>
+        /// <param name="vbChanged">Has the vertex buffer changed.</param>
+        /// <param name="veChanged">Has the vertex effect changed.</param>
+        /// <returns></returns>
+        private GraphicsValidationResult CheckMaterial()
+        {
+            GraphicsValidationResult result = GraphicsValidationResult.Successful;
+
+            if (Material.BoundValue == null)
+                result |= GraphicsValidationResult.MissingMaterial;
+
+            return result;
+        }
+
+        private GraphicsValidationResult CheckVertexSegment()
+        {
+            GraphicsValidationResult result = GraphicsValidationResult.Successful;
+
+            if (VertexBuffers[0].BoundValue == null)
+                result |= GraphicsValidationResult.MissingVertexSegment;
+
+            return result;
+        }
+
+        private GraphicsValidationResult CheckIndexSegment()
+        {
+            GraphicsValidationResult result = GraphicsValidationResult.Successful;
+
+            // If the index buffer is null, this method will always fail because 
+            // it assumes it is only being called during an indexed draw call.
+            if (IndexBuffer.BoundValue == null)
+                result |= GraphicsValidationResult.MissingIndexSegment;
+
+            return result;
+        }
+
+        private GraphicsValidationResult CheckInstancing()
+        {
+            if (_vertexLayout.BoundValue != null && _vertexLayout.BoundValue.IsInstanced)
+                return GraphicsValidationResult.Successful;
+            else
+                return GraphicsValidationResult.NonInstancedVertexLayout;
         }
 
         protected override void OnDispose()
