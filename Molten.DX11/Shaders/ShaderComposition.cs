@@ -42,8 +42,8 @@ namespace Molten.Graphics
     internal unsafe class ShaderComposition<T> : ShaderComposition 
         where T : unmanaged
     {
-        internal ShaderComposition(DeviceDX11 device, bool optional) : 
-            base(device, optional) { }
+        internal ShaderComposition(HlslShader parentShader, bool optional) : 
+            base(parentShader, optional) { }
 
         /// <summary>The underlying, compiled HLSL shader object.</summary>
         internal T* RawShader;

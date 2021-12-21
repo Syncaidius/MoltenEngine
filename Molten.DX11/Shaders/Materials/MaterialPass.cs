@@ -33,11 +33,11 @@ namespace Molten.Graphics
             _parent = material;
             Name = name;
 
-            VertexShader = new ShaderComposition<ID3D11VertexShader>(material.Device, false);
-            GeometryShader = new ShaderComposition<ID3D11GeometryShader>(material.Device, true);
-            HullShader = new ShaderComposition<ID3D11HullShader>(material.Device, true);
-            DomainShader = new ShaderComposition<ID3D11DomainShader>(material.Device, true);
-            PixelShader = new ShaderComposition<ID3D11PixelShader>(material.Device, false);
+            VertexShader = new ShaderComposition<ID3D11VertexShader>(material, false);
+            GeometryShader = new ShaderComposition<ID3D11GeometryShader>(material, true);
+            HullShader = new ShaderComposition<ID3D11HullShader>(material, true);
+            DomainShader = new ShaderComposition<ID3D11DomainShader>(material, true);
+            PixelShader = new ShaderComposition<ID3D11PixelShader>(material, false);
 
             Compositions = new ShaderComposition[ShaderTypes.Length];
             Compositions[ID_VERTEX] = VertexShader;

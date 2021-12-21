@@ -10,12 +10,13 @@ namespace Molten.Graphics
     public class ComputeTask : HlslShader, IComputeTask
     {
         internal RWVariable[] UAVs;
-        internal ShaderComposition<ID3D11ComputeShader> Composition = new ShaderComposition<ID3D11ComputeShader>(false);
+        internal ShaderComposition<ID3D11ComputeShader> Composition;
 
         internal ComputeTask(DeviceDX11 device, string filename = null) :
             base(device, filename)
         {
             UAVs = new RWVariable[0];
+            Composition = new ShaderComposition<ID3D11ComputeShader>(this, false);
         }
 
         internal override void PipelineDispose()

@@ -68,6 +68,16 @@ namespace Molten.Graphics
             Task.Bind();
             Shader.Value = Task.BoundValue.Composition;
 
+            if (Shader.Value != null)
+            {
+                // Apply unordered acces views to slots
+                for (int i = 0; i < Shader.Value.UnorderedAccessIds.Count; i++)
+                {
+                    uint slotID = Shader.Value.UnorderedAccessIds[i];
+                    UAResources[slotID].Value = Task.Value.UAVs[slotID]?.UnorderedResource;
+                }
+            }
+
             // Call base.Bind() to bind all resources, samplers and buffers on device compute stage.
             base.Bind();
 
