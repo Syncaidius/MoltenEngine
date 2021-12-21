@@ -35,7 +35,7 @@ namespace Molten.Graphics
             Material = DefineSlot<Material>(0, PipeBindTypeFlags.Input, "Material");
         }
 
-        internal bool Bind(StateConditions conditions, VertexTopology topology)
+        internal bool Bind(MaterialPass pass, StateConditions conditions, VertexTopology topology)
         {
             bool matChanged = Material.Bind();
 
@@ -46,11 +46,17 @@ namespace Molten.Graphics
                 Pipe.Context->IASetPrimitiveTopology(_boundTopology.ToApi());
             }
 
+            _vs.Shader.Value = pass.VertexShader;
+            _gs.Shader.Value = pass.GeometryShader;
+            _hs.Shader.Value = pass.HullShader;
+            _ds.Shader.Value = pass.DomainShader;
+            _ps.Shader.Value = pass.PixelShader;
+
             bool vsChanged = _vs.Bind();
-            bool gsChanged = false;
-            bool hsChanged = false;
-            bool dsChanged = false;
-            bool psChanged = false;
+            bool gsChanged = _gs.Bind();
+            bool hsChanged = _hs.Bind();
+            bool dsChanged = _ds.Bind();
+            bool psChanged = _ps.Bind();
 
             bool ibChanged = IndexBuffer.Bind();
             bool vbChanged = VertexBuffers.BindAll();

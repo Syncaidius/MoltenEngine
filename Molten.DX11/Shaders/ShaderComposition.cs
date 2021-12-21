@@ -28,8 +28,11 @@ namespace Molten.Graphics
 
         internal bool Optional;
 
-        internal ShaderComposition(DeviceDX11 device, bool optional) : base(device)
+        internal HlslShader Parent { get; }
+
+        internal ShaderComposition(HlslShader parentShader, bool optional) : base(parentShader.Device)
         {
+            Parent = parentShader;
             Optional = optional;
         }
 

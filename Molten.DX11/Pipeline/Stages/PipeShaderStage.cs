@@ -33,8 +33,49 @@ namespace Molten.Graphics
 
         internal bool Bind()
         {
+            bool shaderChanged = Shader.Bind();
+
+            if (shaderChanged)
+            {
+                ShaderComposition<T> composition = Shader.BoundValue;
+                OnBindShader(Shader);
+
+                if (composition != null)
+                {
+                    // Apply pass constant buffers to slots
+                    for (int i = 0; i < composition.ConstBufferIds.Count; i++)
+                    {
+                        uint slotID = composition.ConstBufferIds[i];
+                        ConstantBuffers[slotID].Value = composition.Parent.ConstBuffers[slotID];
+                    }
+
+                    // Apply pass resources to slots
+                    for (int i = 0; i < composition.ConstBufferIds.Count; i++)
+                    {
+                        uint slotID = composition.ResourceIds[i];
+                        Resources[slotID].Value = composition.Parent.Resources[slotID]?.Resource;
+                    }
+
+                    // Apply pass samplers to slots
+                    for (int i = 0; i < composition.SamplerIds.Count; i++)
+                    {
+                        uint slotID = composition.SamplerIds[i];
+                        Samplers[slotID].Value = composition.Parent.SamplerVariables[slotID]?.Sampler;
+                    }
+                }
+                else
+                {
+                    // Do we unbind stage resources?
+                }
+            }
+
+
+            bool cbChanged = ConstantBuffers.BindAll();
+            bool resChanged = Resources.BindAll();
+            bool samplersChanged = Samplers.BindAll();
+
             // Set constant buffers
-            if (ConstantBuffers.BindAll())
+            if (cbChanged)
             {
                 int numChanged = (int)ConstantBuffers.NumSlotsChanged;
                 ID3D11Buffer** cBuffers = stackalloc ID3D11Buffer*[numChanged];
@@ -66,7 +107,7 @@ namespace Molten.Graphics
             }
 
             // Set resources
-            if (Resources.BindAll())
+            if (resChanged)
             {
                 int numChanged = (int)Resources.NumSlotsChanged;
                 ID3D11ShaderResourceView** srvs = stackalloc ID3D11ShaderResourceView*[numChanged];
@@ -79,7 +120,7 @@ namespace Molten.Graphics
             }
 
             // Bind samplers
-            if (Samplers.BindAll())
+            if (samplersChanged)
             {
                 int numChanged = (int)Samplers.NumSlotsChanged;
                 ID3D11SamplerState** samplers = stackalloc ID3D11SamplerState*[numChanged];
@@ -91,13 +132,7 @@ namespace Molten.Graphics
                 OnBindSamplers(Samplers, samplers);
             }
 
-            if (Shader.Bind())
-            {
-                OnBindShader(Shader);
-                return true;
-            }
-
-            return false;
+            return shaderChanged || cbChanged || resChanged || samplersChanged;
         }
 
         protected abstract void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,

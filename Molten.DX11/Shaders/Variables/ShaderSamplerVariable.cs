@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     public class ShaderSamplerVariable : IShaderValue
     {
-        internal ShaderSampler Sampler;
+        internal ShaderSampler Sampler { get; private set; }
 
         internal ShaderSamplerVariable(HlslShader shader)
         {

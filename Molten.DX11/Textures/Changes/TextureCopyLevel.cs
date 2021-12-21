@@ -1,5 +1,4 @@
-﻿using SharpDX.Direct3D11;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,8 +23,8 @@ namespace Molten.Graphics
             int destSub = (DestinationSlice * Destination.MipMapCount) + DestinationLevel;
 
             int destSubID = (DestinationSlice * texture.MipMapCount) + DestinationLevel;
-            pipe.Context.CopySubresourceRegion(texture.UnderlyingResource, srcSub, null, Destination.UnderlyingResource, destSub);
-            pipe.Profiler.Current.CopySubresourceCount++;
+            pipe.CopyResourceRegion(texture.UnderlyingResource, srcSub, null, Destination.UnderlyingResource, destSub, Vector3UI.Zero);
+            
         }
     }
 }

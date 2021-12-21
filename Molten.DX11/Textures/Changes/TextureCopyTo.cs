@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal struct TextureCopyTo : ITextureChange
+    internal unsafe struct TextureCopyTo : ITextureChange
     {
         public TextureBase Destination;
 
@@ -21,7 +21,7 @@ namespace Molten.Graphics
                 Destination.Depth != texture.Depth)
                 throw new TextureCopyException(texture, Destination, "The source and destination textures must have the same dimensions.");
 
-            pipe.Context.CopyResource(texture.UnderlyingResource, Destination.UnderlyingResource);
+            pipe.Context->CopyResource(Destination.UnderlyingResource, texture.UnderlyingResource);
         }
     }
 }

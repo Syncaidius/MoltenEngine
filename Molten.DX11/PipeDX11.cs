@@ -93,6 +93,8 @@ namespace Molten.Graphics
         {
             Context->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
                 source, srcSubresource, ref sourceRegion);
+
+            Profiler.Current.CopySubresourceCount++;
         }
 
         /// <summary>Dispatches a compute effect to the GPU.</summary>
@@ -170,11 +172,6 @@ namespace Molten.Graphics
             _stateStack.Pop();
         }
 
-        private void ApplyMaterialPass(MaterialPass pass)
-        {
-            
-        }
-
         private GraphicsValidationResult ApplyState(MaterialPass pass,
             GraphicsValidationMode mode,
             VertexTopology topology)
@@ -184,7 +181,7 @@ namespace Molten.Graphics
 
             GraphicsValidationResult result = GraphicsValidationResult.Successful;
 
-            _input.Bind(_drawInfo.Conditions, topology);
+            _input.Bind(pass, _drawInfo.Conditions, topology);
 
             _output.DepthWritePermission = DepthWriteOverride != GraphicsDepthWritePermission.Enabled ? 
                 DepthWriteOverride : pass.DepthState[_drawInfo.Conditions].WritePermission;
