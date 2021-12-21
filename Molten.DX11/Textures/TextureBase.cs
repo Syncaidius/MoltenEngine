@@ -1,6 +1,4 @@
-﻿using SharpDX;
-using SharpDX.Direct3D11;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Molten.Collections;
@@ -12,11 +10,9 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    using Resource = SharpDX.Direct3D11.Resource;
-
     public delegate void TextureEvent(TextureBase texture);
 
-    public abstract partial class TextureBase : PipelineShaderObject, ITexture
+    public abstract partial class TextureBase : PipeBindableResource, ITexture
     {
         ThreadedQueue<ITextureChange> _pendingChanges;
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.DXGI;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -172,28 +173,28 @@ namespace Molten.Graphics
             return new SpriteRendererDX11(_renderer.Device, callback);
         }
 
-        IMesh<GBufferVertex> IResourceManager.CreateMesh(int maxVertices, VertexTopology topology, bool dynamic)
+        IMesh<GBufferVertex> IResourceManager.CreateMesh(uint maxVertices, VertexTopology topology, bool dynamic)
         {
             return new StandardMesh(_renderer, maxVertices, topology, dynamic);
         }
 
-        public IIndexedMesh<GBufferVertex> CreateIndexedMesh(int maxVertices,
-            int maxIndices, 
+        public IIndexedMesh<GBufferVertex> CreateIndexedMesh(uint maxVertices,
+            uint maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 
             bool dynamic = false)
         {
             return new StandardIndexedMesh(_renderer, maxVertices, maxIndices, topology, IndexBufferFormat.Unsigned32Bit, dynamic);
         }
 
-        public IMesh<T> CreateMesh<T>(int maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
+        public IMesh<T> CreateMesh<T>(uint maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
             where T : struct, IVertexType
         {
             return new Mesh<T>(_renderer, maxVertices, topology, dynamic);
         }
 
         public IIndexedMesh<T> CreateIndexedMesh<T>(
-            int maxVertices, 
-            int maxIndices, 
+            uint maxVertices, 
+            uint maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit, 
             bool dynamic = false)

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
@@ -23,7 +24,7 @@ namespace Molten.Graphics
         internal Texture1DDX11(
             RendererDX11 renderer, 
             int width, 
-            Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, 
+            Format format = Format.FormatR8G8B8A8Unorm, 
             int mipCount = 1, 
             int arraySize = 1,
             TextureFlags flags = TextureFlags.None)

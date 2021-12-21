@@ -1,14 +1,12 @@
 ﻿using Molten.Graphics.Textures.DDS;
 using Molten.Graphics.Textures;
 using System;
+using Silk.NET.DXGI;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Molten.Graphics
 {
-    using Silk.NET.DXGI;
-    using System.IO;
-    using System.Runtime.InteropServices;
-    using Resource = SharpDX.Direct3D11.Resource;
-
     public class Texture2DDX11 : TextureBase, ITexture2D
     {
         protected Texture2D _texture;

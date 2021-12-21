@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Silk.NET.DXGI;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
@@ -20,7 +22,8 @@ namespace Molten.Graphics
         public event TextureHandler OnPostResize;
 
         internal TextureCubeDX11(RendererDX11 renderer, int width,
-            int height, Format format = SharpDX.DXGI.Format.R8G8B8A8_UNorm, int mipCount = 1, int cubeCount = 1, TextureFlags flags = TextureFlags.None)
+            int height, Format format = Format.FormatR8G8B8A8Unorm, int mipCount = 1, 
+            int cubeCount = 1, TextureFlags flags = TextureFlags.None)
             : base(renderer, width, height, 1, mipCount, 6, 1, format, flags)
         {
             _cubeCount = cubeCount;
@@ -31,7 +34,7 @@ namespace Molten.Graphics
                 MipLevels = mipCount,
                 ArraySize = 6 * _cubeCount,
                 Format = format,
-                BindFlags = BindFlags.ShaderResource,
+                BindFlags = BindFlag.BindShaderResource,
                 CpuAccessFlags = GetAccessFlags(),
                 SampleDescription = new SampleDescription()
                 {

@@ -7,8 +7,14 @@ namespace Molten.Graphics
     {
         public class Snapshot
         {
+            /// <summary>
+            /// The number of draw calls made during a frame.
+            /// </summary>
             public uint DrawCalls { get; set; }
 
+            /// <summary>
+            /// The number of total GPU/API resource/object bindings called during a frame.
+            /// </summary>
             public uint Bindings { get; set; }
 
             public uint BufferSwaps { get; set; }

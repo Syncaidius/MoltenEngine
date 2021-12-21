@@ -286,12 +286,11 @@
     <Compile Include="Mesh\StandardMesh.cs" />
     <Compile Include="Mesh\IndexedMesh.cs" />
     <Compile Include="Mesh\Mesh.cs" />
-    <Compile Include="PipelineOutput.cs" />
+    <Compile Include="Stages\PipelineOutput.cs" />
     <Compile Include="States\DepthStateBank.cs" />
     <Compile Include="States\GraphicsStateBank.cs" />
     <Compile Include="States\BlendStateBank.cs" />
     <Compile Include="States\RasterizerStateBank.cs" />
-    <Compile Include="ShaderStep.cs" />
     <Compile Include="PipeStateStack.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer\Renderable.cs" />
