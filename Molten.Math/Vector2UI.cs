@@ -121,34 +121,6 @@ namespace Molten
             }
         }
 
-        /// <summary>
-        /// Implements the operator ==.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Vector2UI left, Vector2UI right)
-        {
-            return left.Equals(ref right);
-        }
-
-        /// <summary>
-        /// Implements the operator !=.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Vector2UI left, Vector2UI right)
-        {
-            return !left.Equals(ref right);
-        }
-
         public override string ToString()
         {
             return string.Format("({0},{1})", X, Y);
@@ -184,9 +156,92 @@ namespace Molten
             return new Vector2UI((uint)value.X, (uint)value.Y);
         }
 
-        public static Vector2I operator /(Vector2UI left, Vector2UI right)
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(Vector2UI left, Vector2UI right)
+        {
+            return left.Equals(ref right);
+        }
+
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(Vector2UI left, Vector2UI right)
+        {
+            return !left.Equals(ref right);
+        }
+
+        public static Vector2UI operator /(Vector2UI left, Vector2UI right)
         {
             return new Vector2UI(left.X / right.X, left.Y / right.Y);
+        }
+
+        public static Vector2UI operator /(Vector2UI left, float right)
+        {
+            return new Vector2UI(left.X / (uint)right, left.Y * (uint)right);
+        }
+
+        public static Vector2UI operator /(Vector2UI left, uint right)
+        {
+            return new Vector2UI(left.X / right, left.Y / right);
+        }
+
+        public static Vector2UI operator +(Vector2UI left, Vector2UI right)
+        {
+            return new Vector2UI(left.X + right.X, left.Y + right.Y);
+        }
+
+        public static Vector2UI operator +(Vector2UI left, float right)
+        {
+            return new Vector2UI(left.X + (uint)right, left.Y + (uint)right);
+        }
+
+        public static Vector2UI operator +(Vector2UI left, uint right)
+        {
+            return new Vector2UI(left.X + right, left.Y + right);
+        }
+
+        public static Vector2UI operator -(Vector2UI left, Vector2UI right)
+        {
+            return new Vector2UI(left.X - right.X, left.Y - right.Y);
+        }
+
+        public static Vector2UI operator -(Vector2UI left, float right)
+        {
+            return new Vector2UI(left.X - (uint)right, left.Y - (uint)right);
+        }
+
+        public static Vector2UI operator -(Vector2UI left, uint right)
+        {
+            return new Vector2UI(left.X - right, left.Y - right);
+        }
+
+        public static Vector2UI operator *(Vector2UI left, Vector2UI right)
+        {
+            return new Vector2UI(left.X * right.X, left.Y * right.Y);
+        }
+
+        public static Vector2UI operator *(Vector2UI left, float right)
+        {
+            return new Vector2UI(left.X * (uint)right, left.Y * (uint)right);
+        }
+
+        public static Vector2UI operator *(Vector2UI left, uint right)
+        {
+            return new Vector2UI(left.X * right, left.Y * right);
         }
 
         /// <summary>

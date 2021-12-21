@@ -72,7 +72,7 @@ namespace Molten.Graphics
                 foreach (Slice s in Levels)
                 {
                     byte temp = 0;
-                    for (int i = 0; i < s.Data.Length; i += 4)
+                    for (uint i = 0; i < s.Data.Length; i += 4)
                     {
                         temp = s.Data[i];
                         s.Data[i] = s.Data[i + 2];
@@ -82,7 +82,7 @@ namespace Molten.Graphics
             }
         }
 
-        public static int GetLevelID(int mipMapCount, int targetMip, int targetArraySlice)
+        public static uint GetLevelID(uint mipMapCount, uint targetMip, uint targetArraySlice)
         {
             return (targetArraySlice * mipMapCount) + targetMip;
         }

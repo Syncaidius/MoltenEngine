@@ -191,6 +191,7 @@
     <Compile Include="HalfUtils.cs" />
     <Compile Include="DoublePrecision\RectangleD.cs" />
     <Compile Include="DoublePrecision\Vector2D.cs" />
+    <Compile Include="RectangleUI.cs" />
     <Compile Include="Vector2I.cs" />
     <Compile Include="DoublePrecision\Vector3D.cs" />
     <Compile Include="Vector3I.cs" />

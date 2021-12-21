@@ -248,15 +248,14 @@ namespace Molten.Graphics
                 pipe.Context.GenerateMips(SRV);
         }
 
-        public void SetData<T>(Rectangle area, T[] data, int bytesPerPixel, int level, int arrayIndex = 0) where T : struct
+        public void SetData<T>(Rectangle area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : struct
         {
-            int eSize = Marshal.SizeOf(typeof(T));
-            int count = data.Length;
-            int texturePitch = area.Width * bytesPerPixel;
-            int pixels = area.Width * area.Height;
+            uint count = data.Length;
+            uint texturePitch = area.Width * bytesPerPixel;
+            uint pixels = area.Width * area.Height;
 
-            int expectedBytes = pixels * bytesPerPixel;
-            int dataBytes = data.Length * eSize;
+            uint expectedBytes = pixels * bytesPerPixel;
+            uint dataBytes = data.Length * eSize;
 
             if (pixels != data.Length)
                 throw new Exception($"The provided data does not match the provided area of {area.Width}x{area.Height}. Expected {expectedBytes} bytes. {dataBytes} bytes were provided.");
@@ -268,7 +267,7 @@ namespace Molten.Graphics
 
             TextureSet<T> change = new TextureSet<T>()
             {
-                Stride = eSize,
+                Stride = (uint)Marshal.SizeOf(typeof(T)),
                 Count = count,
                 Data = new T[count],
                 Pitch = texturePitch,
@@ -292,30 +291,31 @@ namespace Molten.Graphics
         /// <param name="arrayCount">The number of array slices to copy from the provided <see cref="TextureData"/>.</param>
         /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
         /// <param name="destArraySlice">The array slice index within the current texture to start copying to.<</param>
-        public void SetData(TextureData data, int srcMipIndex, int srcArraySlice, int mipCount, int arrayCount, int destMipIndex = 0, int destArraySlice = 0)
+        public void SetData(TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount,
+            uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0)
         {
             TextureData.Slice level = null;
 
-            for(int a = 0; a < arrayCount; a++)
+            for(uint a = 0; a < arrayCount; a++)
             {
-                for(int m = 0; m < mipCount; m++)
+                for(uint m = 0; m < mipCount; m++)
                 {
-                    int slice = srcArraySlice + a;
-                    int mip = srcMipIndex + m;
-                    int dataID = TextureData.GetLevelID(data.MipMapLevels, mip, slice);
+                    uint slice = srcArraySlice + a;
+                    uint mip = srcMipIndex + m;
+                    uint dataID = TextureData.GetLevelID(data.MipMapLevels, mip, slice);
                     level = data.Levels[dataID];
 
                     if (level.TotalBytes == 0)
                         continue;
 
-                    int destSlice = destArraySlice + a;
-                    int destMip = destMipIndex + m;
+                    uint destSlice = destArraySlice + a;
+                    uint destMip = destMipIndex + m;
                     SetData(destMip, level.Data, 0, level.TotalBytes, level.Pitch, destSlice);
                 }
             }
         }
 
-        public void SetData(TextureData.Slice data, int mipIndex, int arraySlice)
+        public void SetData(TextureData.Slice data, uint mipIndex, uint arraySlice)
         {
             TextureSet<byte> change = new TextureSet<byte>()
             {
@@ -332,13 +332,11 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        public void SetData<T>(int level, T[] data, int startIndex, int count, int pitch, int arrayIndex) where T : struct
+        public void SetData<T>(uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex) where T : struct
         {
-            int eSize = Marshal.SizeOf(typeof(T));
-
             TextureSet<T> change = new TextureSet<T>()
             {
-                Stride = eSize,
+                Stride = (uint)Marshal.SizeOf(typeof(T)),
                 Count = count,
                 Data = new T[count],
                 Pitch = pitch,
