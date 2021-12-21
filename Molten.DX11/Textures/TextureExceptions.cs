@@ -34,13 +34,20 @@ namespace Molten.Graphics
         public TextureCopyException(TextureBase source, TextureBase destination, string message)
             : base(message)
         {
-            Source = source;
-            Destination = destination;
+            SourceTexture = source;
+            DestTexture = destination;
+
         }
 
-        public TextureBase Source { get; private set; }
+        /// <summary>
+        /// The source texture.
+        /// </summary>
+        public TextureBase SourceTexture { get; private set; }
 
-        public TextureBase Destination { get; private set; }
+        /// <summary>
+        /// The destination texture.
+        /// </summary>
+        public TextureBase DestTexture { get; private set; }
     }
 
     public class TextureDescriptionException : Exception

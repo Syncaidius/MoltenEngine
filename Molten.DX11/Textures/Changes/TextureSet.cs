@@ -1,6 +1,4 @@
 ﻿using Molten.Graphics.Textures;
-using SharpDX;
-using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,23 +9,23 @@ namespace Molten.Graphics
 {
     internal class TextureSet<T> : ITextureChange where T: struct
     {
-        public int MipLevel;
+        public uint MipLevel;
         public T[] Data;
-        public int StartIndex;
-        public int Pitch;
-        public int ArrayIndex;
+        public uint StartIndex;
+        public uint Pitch;
+        public uint ArrayIndex;
 
-        public int Count;
-        public int Stride;
+        public uint Count;
+        public uint Stride;
         public Rectangle? Area;
 
         public void Process(PipeDX11 pipe, TextureBase texture)
         {
             //C alculate size of a single array slice
-            int arraySliceBytes = 0;
-            int blockSize = 8; // default block size
-            int levelWidth = texture.Width;
-            int levelHeight = texture.Height;
+            uint arraySliceBytes = 0;
+            uint blockSize = 8; // default block size
+            uint levelWidth = texture.Width;
+            uint levelHeight = texture.Height;
 
             if (texture.IsBlockCompressed)
             {
@@ -37,7 +35,7 @@ namespace Molten.Graphics
                 blockSize = BCHelper.GetBlockSize(texture.DataFormat);
 
                 // Collect total level size.
-                for (int i = 0; i < texture.MipMapCount; i++)
+                for (uint i = 0; i < texture.MipMapCount; i++)
                 {
                     arraySliceBytes += BCHelper.GetBCLevelSize(levelWidth, levelHeight, blockSize);
                     levelWidth /= 2;

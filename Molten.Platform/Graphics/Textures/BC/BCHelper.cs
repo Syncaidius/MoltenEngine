@@ -14,7 +14,7 @@ namespace Molten.Graphics.Textures
         /// <summary>
         /// The expected width and height of a DDS data block, in pixels.
         /// </summary>
-        public const int BLOCK_DIMENSIONS = 4;
+        public const uint BLOCK_DIMENSIONS = 4;
 
         static Dictionary<GraphicsFormat, BCBlockParser> _parsers;
 
@@ -42,11 +42,11 @@ namespace Molten.Graphics.Textures
 
             if (_parsers.TryGetValue(data.Format, out parser))
             {
-                for (int a = 0; a < data.ArraySize; a++)
+                for (uint a = 0; a < data.ArraySize; a++)
                 {
-                    for (int i = 0; i < data.MipMapLevels; i++)
+                    for (uint i = 0; i < data.MipMapLevels; i++)
                     {
-                        int levelID = (a * data.MipMapLevels) + i;
+                        uint levelID = (a * data.MipMapLevels) + i;
                         byte[] decompressed = DecompressLevel(parser, levels[levelID], log);
 
                         data.Levels[levelID] = new TextureData.Slice()
@@ -55,7 +55,7 @@ namespace Molten.Graphics.Textures
                             Height = levels[i].Height,
                             Width = levels[i].Width,
                             Pitch = levels[i].Width * 4,
-                            TotalBytes = decompressed.Length,
+                            TotalBytes = (uint)decompressed.LongLength,
                         };
                     }
                 }
@@ -74,30 +74,30 @@ namespace Molten.Graphics.Textures
             {
                 using (BinaryReader imageReader = new BinaryReader(stream))
                 {
-                    int blockCountX = Math.Max(1, (compressed.Width + 3) / BLOCK_DIMENSIONS);
-                    int blockCountY = Math.Max(1, (compressed.Height + 3) / BLOCK_DIMENSIONS);
-                    int blockWidth = Math.Min(compressed.Width, BLOCK_DIMENSIONS);
-                    int blockHeight = Math.Min(compressed.Height, BLOCK_DIMENSIONS);
+                    uint blockCountX = Math.Max(1, (compressed.Width + 3) / BLOCK_DIMENSIONS);
+                    uint blockCountY = Math.Max(1, (compressed.Height + 3) / BLOCK_DIMENSIONS);
+                    uint blockWidth = Math.Min(compressed.Width, BLOCK_DIMENSIONS);
+                    uint blockHeight = Math.Min(compressed.Height, BLOCK_DIMENSIONS);
 
-                    for (int blockY = 0; blockY < blockCountY; blockY++)
+                    for (uint blockY = 0; blockY < blockCountY; blockY++)
                     {
-                        for (int blockX = 0; blockX < blockCountX; blockX++)
+                        for (uint blockX = 0; blockX < blockCountX; blockX++)
                         {
                             Color4[] pixels = parser.Decode(imageReader, log);
 
                             // Transfer the decompressed pixel data into the image.
-                            int index = 0;
-                            for (int bpy = 0; bpy < BLOCK_DIMENSIONS; bpy++)
+                            uint index = 0;
+                            for (uint bpy = 0; bpy < BLOCK_DIMENSIONS; bpy++)
                             {
-                                int py = (blockY << 2) + bpy;
-                                for (int bpx = 0; bpx < BLOCK_DIMENSIONS; bpx++)
+                                uint py = (blockY << 2) + bpy;
+                                for (uint bpx = 0; bpx < BLOCK_DIMENSIONS; bpx++)
                                 {
                                     Color c = (Color)pixels[index++];
 
-                                    int px = (blockX << 2) + bpx;
+                                    uint px = (blockX << 2) + bpx;
                                     if ((px < compressed.Width) && (py < compressed.Height))
                                     {
-                                        int offset = ((py * compressed.Width) + px) << 2;
+                                        uint offset = ((py * compressed.Width) + px) << 2;
                                         result[offset] = c.R;
                                         result[offset + 1] = c.G;
                                         result[offset + 2] = c.B;
@@ -131,15 +131,13 @@ namespace Molten.Graphics.Textures
             BCBlockParser parser = null;
             if (_parsers.TryGetValue(gFormat, out parser))
             {
-                for (int a = 0; a < data.ArraySize; a++)
+                for (uint a = 0; a < data.ArraySize; a++)
                 {
-                    for (int i = 0; i < data.MipMapLevels; i++)
+                    for (uint i = 0; i < data.MipMapLevels; i++)
                     {
-                        int levelID = (a * (int)data.MipMapLevels) + i;
+                        uint levelID = (a * data.MipMapLevels) + i;
                         byte[] levelData = CompressLevel(parser, levels[levelID], log);
-                        int pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * BCHelper.GetBlockSize(gFormat));
-
-                        int blockCountY = (levels[i].Height + 3) / 4;
+                        uint pitch = Math.Max(1, ((levels[i].Width + 3) / 4) * BCHelper.GetBlockSize(gFormat));
 
                         data.Levels[levelID] = new TextureData.Slice()
                         {
@@ -147,7 +145,7 @@ namespace Molten.Graphics.Textures
                             Height = levels[i].Height,
                             Width = levels[i].Width,
                             Pitch = pitch,
-                            TotalBytes = levelData.Length,
+                            TotalBytes = (uint)levelData.LongLength,
                         };
                     }
                 }
@@ -159,10 +157,10 @@ namespace Molten.Graphics.Textures
 
         private static byte[] CompressLevel(BCBlockParser parser, TextureData.Slice uncompressed, Logger log)
         {
-            int blockCountX = Math.Max(1, (uncompressed.Width + 3) / BLOCK_DIMENSIONS);
-            int blockCountY = Math.Max(1, (uncompressed.Height + 3) / BLOCK_DIMENSIONS);
-            int blockWidth = Math.Min(uncompressed.Width, BLOCK_DIMENSIONS);
-            int blockHeight = Math.Min(uncompressed.Height, BLOCK_DIMENSIONS);
+            uint blockCountX = Math.Max(1, (uncompressed.Width + 3) / BLOCK_DIMENSIONS);
+            uint blockCountY = Math.Max(1, (uncompressed.Height + 3) / BLOCK_DIMENSIONS);
+            uint blockWidth = Math.Min(uncompressed.Width, BLOCK_DIMENSIONS);
+            uint blockHeight = Math.Min(uncompressed.Height, BLOCK_DIMENSIONS);
             byte[] result = null;
             Stopwatch blockTimer = new Stopwatch();
             Stopwatch mainTimer = new Stopwatch();
@@ -172,27 +170,27 @@ namespace Molten.Graphics.Textures
             {
                 using (BinaryWriter writer = new BinaryWriter(stream))
                 {
-                    for (int blockY = 0; blockY < blockCountY; blockY++)
+                    for (uint blockY = 0; blockY < blockCountY; blockY++)
                     {
                         blockTimer.Reset();
                         blockTimer.Start();
-                        for (int blockX = 0; blockX < blockCountX; blockX++)
+                        for (uint blockX = 0; blockX < blockCountX; blockX++)
                         {
 
                             // Assemble color table for current block.
                             int index = 0;
                             Color4[] colTable = new Color4[BC.NUM_PIXELS_PER_BLOCK];
 
-                            for (int bpy = 0; bpy < BLOCK_DIMENSIONS; bpy++)
+                            for (uint bpy = 0; bpy < BLOCK_DIMENSIONS; bpy++)
                             {
-                                int py = (blockY << 2) + bpy;
-                                for (int bpx = 0; bpx < BLOCK_DIMENSIONS; bpx++)
+                                uint py = (blockY << 2) + bpy;
+                                for (uint bpx = 0; bpx < BLOCK_DIMENSIONS; bpx++)
                                 {
 
-                                    int px = (blockX << 2) + bpx;
+                                    uint px = (blockX << 2) + bpx;
                                     if ((px < uncompressed.Width) && (py < uncompressed.Height))
                                     {
-                                        int offset = ((py * uncompressed.Width) + px) << 2;
+                                        uint offset = ((py * uncompressed.Width) + px) << 2;
                                         colTable[index++] = new Color()
                                         {
                                             R = uncompressed.Data[offset],
@@ -223,7 +221,7 @@ namespace Molten.Graphics.Textures
         /// A block is 4x4 pixels.</summary>
         /// <param name="format">The format.</param>
         /// <returns></returns>
-        public static int GetBlockSize(GraphicsFormat format)
+        public static uint GetBlockSize(GraphicsFormat format)
         {
             switch (format)
             {
@@ -232,7 +230,7 @@ namespace Molten.Graphics.Textures
                 case GraphicsFormat.BC4_SNorm:
                 case GraphicsFormat.BC4_UNorm:
                 case GraphicsFormat.BC4_Typeless:
-                    return 8;
+                    return 8U;
 
                 case GraphicsFormat.BC2_UNorm:
                 case GraphicsFormat.BC2_UNorm_SRgb:
@@ -247,10 +245,10 @@ namespace Molten.Graphics.Textures
                 case GraphicsFormat.BC7_UNorm_SRgb:
                 case GraphicsFormat.BC7_UNorm:
                 case GraphicsFormat.BC7_Typeless:
-                    return 16;
+                    return 16U;
             }
 
-            return 0;
+            return 0U;
         }
 
         /// <summary>
@@ -268,11 +266,11 @@ namespace Molten.Graphics.Textures
         /// <param name="height">The expected height.</param>
         /// <param name="width">The expected width.</param>
         /// <returns></returns>
-        public static int GetBCSliceSize(GraphicsFormat format, int width, int height)
+        public static uint GetBCSliceSize(GraphicsFormat format, uint width, uint height)
         {
-            int blockSize = GetBlockSize(format);
-            int blockCountX = Math.Max(1, (width + 3) / 4);
-            int blockCountY = Math.Max(1, (height + 3) / 4);
+            uint blockSize = GetBlockSize(format);
+            uint blockCountX = Math.Max(1, (width + 3) / 4);
+            uint blockCountY = Math.Max(1, (height + 3) / 4);
 
             return (blockCountX * blockSize) * blockCountY;
         }

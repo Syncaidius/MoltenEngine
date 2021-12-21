@@ -1,4 +1,4 @@
-﻿using SharpDX.DXGI;
+﻿using Silk.NET.DXGI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +9,15 @@ namespace Molten.Graphics
 {
     internal struct TextureResize : ITextureChange
     {
-        public int NewWidth;
+        public uint NewWidth;
 
-        public int NewHeight;
+        public uint NewHeight;
 
-        public int NewDepth;
+        public uint NewDepth;
 
-        public int NewMipMapCount;
+        public uint NewMipMapCount;
 
-        public int NewArraySize;
+        public uint NewArraySize;
 
         public Format NewFormat;
 

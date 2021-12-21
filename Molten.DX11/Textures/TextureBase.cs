@@ -39,12 +39,12 @@ namespace Molten.Graphics
         protected bool _isBlockCompressed;
         protected Format _format;
 
-        protected int _width;
-        protected int _height;
-        protected int _depth;
-        protected int _mipCount;
-        protected int _arraySize;
-        protected int _sampleCount;
+        protected uint _width;
+        protected uint _height;
+        protected uint _depth;
+        protected uint _mipCount;
+        protected uint _arraySize;
+        protected uint _sampleCount;
         protected Resource _resource;
         RendererDX11 _renderer;
 
@@ -56,7 +56,6 @@ namespace Molten.Graphics
         internal TextureBase(RendererDX11 renderer, int width, int height, int depth, int mipCount, 
             int arraySize, int sampleCount, Format format, TextureFlags flags) : base(renderer.Device)
         {
-            SortKey = Interlocked.Increment(ref _nextSortKey);
             _renderer = renderer;
             _flags = flags;
             ValidateFlagCombination();
@@ -438,11 +437,11 @@ namespace Molten.Graphics
         /// <param name="arraySlice">The array slice.</param>
         /// <param name="copySubresource">Copies the data via the provided staging texture. If this is true, the staging texture cannot be null.</param>
         /// <returns></returns>
-        internal unsafe TextureData.Slice GetSliceData(PipeDX11 pipe, TextureBase staging, int level, int arraySlice)
+        internal unsafe TextureData.Slice GetSliceData(PipeDX11 pipe, TextureBase staging, uint level, uint arraySlice)
         {
-            int subID = (arraySlice * MipMapCount) + level;
-            int subWidth = _width >> level;
-            int subHeight = _height >> level;
+            uint subID = (arraySlice * MipMapCount) + level;
+            uint subWidth = _width >> level;
+            uint subHeight = _height >> level;
 
             Resource resToMap = _resource;
 
@@ -454,14 +453,14 @@ namespace Molten.Graphics
             }
 
             // Now pull data from it
-            DataBox databox = pipe.Context.MapSubresource(resToMap, subID, MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
+            DataBox databox = pipe.Context.MapSubresource(resToMap, subID, Map.MapRead, MapFlags.None);
             // NOTE: Databox: "The row pitch in the mapping indicate the offsets you need to use to jump between rows."
             // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347
 
 
-            int blockSize = BCHelper.GetBlockSize(DataFormat);
-            int expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
-            int expectedSlicePitch = expectedRowPitch * Height;
+            uint blockSize = BCHelper.GetBlockSize(DataFormat);
+            uint expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
+            uint expectedSlicePitch = expectedRowPitch * Height;
 
             if (blockSize > 0)
                 BCHelper.GetBCLevelSizeAndPitch(subWidth, subHeight, blockSize, out expectedSlicePitch, out expectedRowPitch);
@@ -495,7 +494,7 @@ namespace Molten.Graphics
             return slice;
         }
 
-        internal void SetSizeInternal(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
+        internal void SetSizeInternal(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {
             // Avoid resizing/recreation if nothing has actually changed.
             if (_width == newWidth && 
@@ -519,7 +518,8 @@ namespace Molten.Graphics
         }
 
 
-        protected virtual void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat) { }
+        protected virtual void UpdateDescription(uint newWidth, uint newHeight, 
+            uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat) { }
 
         protected abstract Resource CreateResource(bool resize);
 
@@ -528,12 +528,12 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        public void Resize(int newWidth)
+        public void Resize(uint newWidth)
         {
             Resize(newWidth, _mipCount, _format.FromApi());
         }
 
-        public void Resize(int newWidth, int newMipMapCount, GraphicsFormat newFormat)
+        public void Resize(uint newWidth, uint newMipMapCount, GraphicsFormat newFormat)
         {
             QueueChange(new TextureResize()
             {
@@ -648,24 +648,24 @@ namespace Molten.Graphics
         public bool IsBlockCompressed => _isBlockCompressed;
 
         /// <summary>Gets the width of the texture.</summary>
-        public int Width => _width;
+        public uint Width => _width;
 
         /// <summary>Gets the height of the texture.</summary>
-        public int Height => _height;
+        public uint Height => _height;
 
         /// <summary>Gets the depth of the texture. For a 3D texture this is the number of slices.</summary>
-        public int Depth => _depth;
+        public uint Depth => _depth;
 
         /// <summary>Gets the number of mip map levels in the texture.</summary>
-        public int MipMapCount => _mipCount;
+        public uint MipMapCount => _mipCount;
 
         /// <summary>Gets the number of array slices in the texture. For a cube-map, this value will a multiple of 6. For example, a cube map with 2 array elements will have 12 array slices.</summary>
-        public int ArraySize => _arraySize;
+        public uint ArraySize => _arraySize;
 
         /// <summary>
         /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 
         /// </summary>
-        public int SampleCount => _sampleCount;
+        public uint SampleCount => _sampleCount;
 
         /// <summary>
         /// Gets whether or not the texture is multisampled. This is true if <see cref="SampleCount"/> is greater than 1.
@@ -683,10 +683,5 @@ namespace Molten.Graphics
         /// Gets the renderer that the texture is bound to.
         /// </summary>
         public RenderService Renderer => _renderer;
-
-        /// <summary>
-        /// Gets the sort key associated with the current texture.
-        /// </summary>
-        public int SortKey { get; }
     }
 }

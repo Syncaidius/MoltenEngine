@@ -69,7 +69,6 @@ namespace Molten.Graphics
                 }
             }
 
-
             bool cbChanged = ConstantBuffers.BindAll();
             bool resChanged = Resources.BindAll();
             bool samplersChanged = Samplers.BindAll();
