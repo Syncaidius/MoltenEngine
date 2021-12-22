@@ -10,9 +10,9 @@
 
 <#
 string outputPath = this.Host.ResolvePath("");
-string[] _types = new string[]{"sbyte", "byte", "int", "uint", "short", "ushort", "long", "ulong", "float", "double", "decimal"};
-string[] _names = new string[]{"SByte", "Byte", "Vector", "Vector", "Half", "Half", "Vector", "Vector", "Vector", "Vector"};
-string[] _postfixes = new string[]{"", "", "I", "UI", "", "U", "L", "UL", "F", "D", "DC"};
+string[] _types = new string[]{"sbyte", "byte", "int", "uint", "short", "ushort", "long", "ulong", "float", "double", "decimal", "nint", "nuint"};
+string[] _names = new string[]{"SByte", "Byte", "Vector", "Vector", "Half", "Half", "Vector", "Vector", "Vector", "Vector", "Vector", "Vector", "Vector"};
+string[] _postfixes = new string[]{"", "", "I", "UI", "", "U", "L", "UL", "F", "D", "DC", "N", "NU"};
 string _propertyMap = "xyzw";
 string _propertyMapUpper = "XYZW";
 
