@@ -18,14 +18,14 @@ namespace Molten.Graphics
         /// <param name="flags">A set of flags to override those of the provided texture.</param>
         internal Texture2DDX11(Texture2DDX11 descTexture, TextureFlags flags)
             : this(descTexture.Renderer as RendererDX11, descTexture.Width, descTexture.Height, 
-                  descTexture.DxFormat, descTexture.MipMapCount, descTexture.ArraySize, flags)
+                  descTexture.DxgiFormat, descTexture.MipMapCount, descTexture.ArraySize, flags)
         { }
 
         /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
         /// <param name="descTexture"></param>
         internal Texture2DDX11(Texture2DDX11 descTexture)
-            : this(descTexture.Renderer as RendererDX11, descTexture.Width, descTexture.Height, descTexture.DxFormat, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags)
+            : this(descTexture.Renderer as RendererDX11, descTexture.Width, descTexture.Height, descTexture.DxgiFormat, descTexture.MipMapCount, descTexture.ArraySize, descTexture.Flags)
         { }
 
         internal Texture2DDX11(

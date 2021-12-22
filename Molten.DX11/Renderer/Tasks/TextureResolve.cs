@@ -34,7 +34,7 @@ namespace Molten.Graphics
 
             (renderer as RendererDX11).Device.Context.ResolveSubresource(Source.UnderlyingResource, subSource, 
                 Destination.UnderlyingResource, subDest, 
-                Source.DxFormat);
+                Source.DxgiFormat);
             Recycle(this);
         }
     }

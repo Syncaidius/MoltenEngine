@@ -75,7 +75,7 @@ namespace Molten.Graphics
                 Width = _bounds.Width,
                 Height = _bounds.Height,
                 RefreshRate = new Rational(60, 1),
-                Format = DxFormat,
+                Format = DxgiFormat,
                 Scaling = DisplayModeScaling.Stretched,
                 ScanlineOrdering = DisplayModeScanlineOrder.Progressive,
             };

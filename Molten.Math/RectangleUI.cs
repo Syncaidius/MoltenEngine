@@ -353,7 +353,7 @@ namespace Molten
 
         /// <summary>Determines whether this rectangle entirely contains a specified rectangle.</summary>
         /// <param name="value">The rectangle to evaluate.</param>
-        public bool Contains(Rectangle value)
+        public bool Contains(RectangleUI value)
         {
             bool result;
             Contains(ref value, out result);
@@ -363,7 +363,7 @@ namespace Molten
         /// <summary>Determines whether this rectangle entirely contains a specified rectangle.</summary>
         /// <param name="value">The rectangle to evaluate.</param>
         /// <param name="result">[OutAttribute] On exit, is true if this rectangle entirely contains the specified rectangle, or false if not.</param>
-        public void Contains(ref Rectangle value, out bool result)
+        public void Contains(ref RectangleUI value, out bool result)
         {
             result = (X <= value.X) && (value.Right <= Right) && (Y <= value.Y) && (value.Bottom <= Bottom);
         }
@@ -391,7 +391,7 @@ namespace Molten
 
         /// <summary>Determines whether a specified rectangle intersects with this rectangle.</summary>
         /// <param name="value">The rectangle to evaluate.</param>
-        public bool Intersects(Rectangle value)
+        public bool Intersects(RectangleUI value)
         {
             bool result;
             Intersects(ref value, out result);
@@ -403,7 +403,7 @@ namespace Molten
         /// </summary>
         /// <param name="value">The rectangle to evaluate</param>
         /// <param name="result">[OutAttribute] true if the specified rectangle intersects with this one; false otherwise.</param>
-        public void Intersects(ref Rectangle value, out bool result)
+        public void Intersects(ref RectangleUI value, out bool result)
         {
             result = (value.X < Right) && (X < value.Right) && (value.Y < Bottom) && (Y < value.Bottom);
         }
@@ -447,9 +447,9 @@ namespace Molten
         /// <param name="value1">The first rectangle to contain.</param>
         /// <param name="value2">The second rectangle to contain.</param>
         /// <returns>The union rectangle.</returns>
-        public static Rectangle Union(Rectangle value1, Rectangle value2)
+        public static RectangleUI Union(RectangleUI value1, RectangleUI value2)
         {
-            Rectangle result;
+            RectangleUI result;
             Union(ref value1, ref value2, out result);
             return result;
         }
@@ -460,13 +460,13 @@ namespace Molten
         /// <param name="value1">The first rectangle to contain.</param>
         /// <param name="value2">The second rectangle to contain.</param>
         /// <param name="result">[OutAttribute] The rectangle that must be the union of the first two rectangles.</param>
-        public static void Union(ref Rectangle value1, ref Rectangle value2, out Rectangle result)
+        public static void Union(ref RectangleUI value1, ref RectangleUI value2, out RectangleUI result)
         {
             var left = Math.Min(value1.Left, value2.Left);
             var right = Math.Max(value1.Right, value2.Right);
             var top = Math.Min(value1.Top, value2.Top);
             var bottom = Math.Max(value1.Bottom, value2.Bottom);
-            result = new Rectangle(left, top, right - left, bottom - top);
+            result = new RectangleUI(left, top, right - left, bottom - top);
         }
 
         /// <summary>

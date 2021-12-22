@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Molten.Collections;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Molten.Graphics.Textures;
 using Silk.NET.DXGI;
 using Silk.NET.Direct3D11;
@@ -12,7 +11,7 @@ namespace Molten.Graphics
 {
     public delegate void TextureEvent(TextureBase texture);
 
-    public abstract partial class TextureBase : PipeBindableResource, ITexture
+    public unsafe abstract partial class TextureBase : PipeBindableResource, ITexture
     {
         ThreadedQueue<ITextureChange> _pendingChanges;
 
@@ -35,17 +34,7 @@ namespace Molten.Graphics
         /// </summary>
         public event TextureHandler OnPostResize;
 
-        protected TextureFlags _flags;
-        protected bool _isBlockCompressed;
-        protected Format _format;
-
-        protected uint _width;
-        protected uint _height;
-        protected uint _depth;
-        protected uint _mipCount;
-        protected uint _arraySize;
-        protected uint _sampleCount;
-        protected Resource _resource;
+        ID3D11Resource* _native;
         RendererDX11 _renderer;
 
         ShaderResourceViewDescription _srvDescription;
@@ -53,37 +42,37 @@ namespace Molten.Graphics
 
         static int _nextSortKey = 0;
 
-        internal TextureBase(RendererDX11 renderer, int width, int height, int depth, int mipCount, 
-            int arraySize, int sampleCount, Format format, TextureFlags flags) : base(renderer.Device)
+        internal TextureBase(RendererDX11 renderer, uint width, uint height, uint depth, uint mipCount, 
+            uint arraySize, uint sampleCount, Format format, TextureFlags flags) : base(renderer.Device)
         {
             _renderer = renderer;
-            _flags = flags;
+            Flags = flags;
             ValidateFlagCombination();
 
             _pendingChanges = new ThreadedQueue<ITextureChange>();
 
-            _width = width;
-            _height = height;
-            _depth = depth;
-            _mipCount = mipCount;
-            _arraySize = arraySize;
-            _sampleCount = sampleCount;
-            _format = format;
+            Width = width;
+            Height = height;
+            Depth = depth;
+            MipMapCount = mipCount;
+            ArraySize = arraySize;
+            SampleCount = sampleCount;
+            DxgiFormat = format;
             IsValid = false;
 
             _srvDescription = new ShaderResourceViewDescription();
-            _isBlockCompressed = BCHelper.GetBlockCompressed(_format.FromApi());
+            _isBlockCompressed = BCHelper.GetBlockCompressed(DxgiFormat.FromApi());
         }
 
         public Texture1DProperties Get1DProperties()
         {
             return new Texture1DProperties()
             {
-                Width = _width,
-                ArraySize = _arraySize,
-                Flags = _flags,
-                Format = this.DataFormat,
-                MipMapLevels = _mipCount,
+                Width = Width,
+                ArraySize = ArraySize,
+                Flags = Flags,
+                Format = DataFormat,
+                MipMapLevels = MipMapCount,
             };
         }
 
@@ -98,15 +87,15 @@ namespace Molten.Graphics
             if (HasFlags(TextureFlags.AllowMipMapGeneration))
             {
                 if(HasFlags(TextureFlags.NoShaderResource) || !(this is RenderSurface))
-                    throw new TextureFlagException(_flags, "Mip-map generation is only available on render-surface shader resources.");
+                    throw new TextureFlagException(Flags, "Mip-map generation is only available on render-surface shader resources.");
             }
 
             if (HasFlags(TextureFlags.Staging))
             {
-                if (_flags != (TextureFlags.Staging) && _flags != (TextureFlags.Staging | TextureFlags.NoShaderResource))
-                    throw new TextureFlagException(_flags, "Staging textures cannot have other flags set except NoShaderResource.");
+                if (Flags != (TextureFlags.Staging) && Flags != (TextureFlags.Staging | TextureFlags.NoShaderResource))
+                    throw new TextureFlagException(Flags, "Staging textures cannot have other flags set except NoShaderResource.");
 
-                _flags |= TextureFlags.NoShaderResource;
+                Flags |= TextureFlags.NoShaderResource;
             }
         }
 
@@ -142,14 +131,14 @@ namespace Molten.Graphics
             return result;
         }
 
-        protected ResourceUsage GetUsageFlags()
+        protected Usage GetUsageFlags()
         {
             if (HasFlags(TextureFlags.Staging))
-                return ResourceUsage.Staging;
+                return Usage.UsageStaging;
             else if (HasFlags(TextureFlags.Dynamic))
-                return ResourceUsage.Dynamic;
+                return Usage.UsageDynamic;
             else
-                return ResourceUsage.Default;
+                return Usage.UsageDefault;
         }
 
         protected CpuAccessFlag GetAccessFlags()
@@ -168,9 +157,9 @@ namespace Molten.Graphics
 
             // Dispose of old resources
             OnDisposeForRecreation();
-            _resource = CreateResource(resize);
+            _native = CreateResource(resize);
 
-            if (_resource != null)
+            if (_native != null)
             {
                 UAV?.Dispose();
                 SRV?.Dispose();
@@ -196,7 +185,7 @@ namespace Molten.Graphics
                 OnCreateFailed?.Invoke(this);
             }
 
-            IsValid = _resource != null;
+            IsValid = _native != null;
         }
 
         protected abstract void SetUAVDescription(ShaderResourceViewDescription srvDesc, ref UnorderedAccessViewDescription desc);
@@ -205,20 +194,21 @@ namespace Molten.Graphics
 
         protected virtual void OnDisposeForRecreation()
         {
-            OnPipelineDispose();
+            PipelineDispose();
         }
 
-        private protected override void OnPipelineDispose()
+
+        internal override void PipelineDispose()
         {
-            base.OnPipelineDispose();
+            base.PipelineDispose();
 
             //TrackDeallocation();
-            DisposeObject(ref _resource);
+            ReleaseSilkPtr(ref _resource);
         }
 
         public bool HasFlags(TextureFlags flags)
         {
-            return (_flags & flags) == flags;
+            return (Flags & flags) == flags;
         }
 
         /// <summary>Queries the underlying texture's interface.</summary>
@@ -235,7 +225,7 @@ namespace Molten.Graphics
         /// <summary>Generates mip maps for the texture via the provided <see cref="PipeDX11"/>.</summary>
         public void GenerateMipMaps()
         {
-            if (!((_flags & TextureFlags.AllowMipMapGeneration) == TextureFlags.AllowMipMapGeneration))
+            if (!((Flags & TextureFlags.AllowMipMapGeneration) == TextureFlags.AllowMipMapGeneration))
                 throw new Exception("Cannot generate mip-maps for texture. Must have flag: TextureFlags.AllowMipMapGeneration.");
 
             TexturegenMipMaps change = new TexturegenMipMaps();
@@ -248,20 +238,20 @@ namespace Molten.Graphics
                 pipe.Context.GenerateMips(SRV);
         }
 
-        public void SetData<T>(Rectangle area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : struct
+        public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : struct
         {
-            uint count = data.Length;
+            uint count = (uint)data.Length;
             uint texturePitch = area.Width * bytesPerPixel;
             uint pixels = area.Width * area.Height;
 
             uint expectedBytes = pixels * bytesPerPixel;
-            uint dataBytes = data.Length * eSize;
+            uint dataBytes = (uint)data.Length * (uint)Marshal.SizeOf(typeof(T));
 
             if (pixels != data.Length)
                 throw new Exception($"The provided data does not match the provided area of {area.Width}x{area.Height}. Expected {expectedBytes} bytes. {dataBytes} bytes were provided.");
 
             // Do a bounds check
-            Rectangle texBounds = new Rectangle(0, 0, _width, _height);
+            RectangleUI texBounds = new RectangleUI(0, 0, Width, Height);
             if (!texBounds.Contains(area))
                 throw new Exception("The provided area would go outside of the current texture's bounds.");
 
@@ -361,7 +351,7 @@ namespace Molten.Graphics
             });
         }
 
-        public void GetData(ITexture stagingTexture, int mipLevel, int arrayIndex, Action<TextureData.Slice> callback)
+        public void GetData(ITexture stagingTexture, uint mipLevel, uint arrayIndex, Action<TextureData.Slice> callback)
         {
             _pendingChanges.Enqueue(new TextureGetSlice()
             {
@@ -388,39 +378,39 @@ namespace Molten.Graphics
 
             staging.Apply(pipe);
 
-            Resource resToMap = _resource;
+            ID3D11Resource* resToMap = _native;
 
             if (staging != null)
             {
-                pipe.Context.CopyResource(_resource, staging.UnderlyingResource);
+                pipe.Context->CopyResource(staging.NativePtr, _native);
                 pipe.Profiler.Current.CopyResourceCount++;
-                resToMap = staging._resource;
+                resToMap = staging._native;
             }
 
             TextureData data = new TextureData()
             {
-                ArraySize = _arraySize,
-                Flags = _flags,
+                ArraySize = ArraySize,
+                Flags = Flags,
                 Format = DataFormat,
-                Height = _height,
+                Height = Height,
                 HighestMipMap = 0,
-                IsCompressed = _isBlockCompressed,
-                Levels = new TextureData.Slice[_arraySize * MipMapCount],
-                MipMapLevels = _mipCount,
-                Width = _width,
+                IsCompressed = IsBlockCompressed,
+                Levels = new TextureData.Slice[ArraySize * MipMapCount],
+                MipMapLevels = MipMapCount,
+                Width = Width,
             };
 
-            int blockSize = BCHelper.GetBlockSize(DataFormat);
-            int expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
-            int expectedSlicePitch = expectedRowPitch * Height;
+            uint blockSize = BCHelper.GetBlockSize(DataFormat);
+            uint expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
+            uint expectedSlicePitch = expectedRowPitch * Height;
 
             // Iterate over each array slice.
-            for (int a = 0; a < _arraySize; a++)
+            for (uint a = 0; a < ArraySize; a++)
             {
                 // Iterate over all mip-map levels of the array slice.
-                for (int i = 0; i < _mipCount; i++)
+                for (uint i = 0; i < MipMapCount; i++)
                 {
-                    int subID = (a * _mipCount) + i;
+                    uint subID = (a * MipMapCount) + i;
                     data.Levels[subID] = GetSliceData(pipe, staging, i, a);
                 }
             }
@@ -438,16 +428,16 @@ namespace Molten.Graphics
         internal unsafe TextureData.Slice GetSliceData(PipeDX11 pipe, TextureBase staging, uint level, uint arraySlice)
         {
             uint subID = (arraySlice * MipMapCount) + level;
-            uint subWidth = _width >> level;
-            uint subHeight = _height >> level;
+            uint subWidth = Width >> (int)level;
+            uint subHeight = Height >> (int)level;
 
-            Resource resToMap = _resource;
+            ID3D11Resource* resToMap = _native;
 
             if (staging != null)
             {
-                pipe.Context.CopySubresourceRegion(_resource, subID, null, staging._resource, subID);
+                pipe.CopyResourceRegion(_native, subID, null, staging._native, subID, Vector3UI.Zero);
                 pipe.Profiler.Current.CopySubresourceCount++;
-                resToMap = staging._resource;
+                resToMap = staging._native;
             }
 
             // Now pull data from it
@@ -478,7 +468,7 @@ namespace Molten.Graphics
                     p += databox.RowPitch;
                 }
             }
-            pipe.Context.UnmapSubresource(_resource, subID);
+            pipe.UnmapResource(_native, subID);
 
             TextureData.Slice slice = new TextureData.Slice()
             {
@@ -495,22 +485,22 @@ namespace Molten.Graphics
         internal void SetSizeInternal(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {
             // Avoid resizing/recreation if nothing has actually changed.
-            if (_width == newWidth && 
-                _height == newHeight && 
-                _depth == newDepth && 
-                _mipCount == newMipMapCount && 
-                _arraySize == newArraySize && 
-                _format == newFormat)
+            if (Width == newWidth && 
+                Height == newHeight && 
+                Depth == newDepth && 
+                MipMapCount == newMipMapCount && 
+                ArraySize == newArraySize && 
+                DxgiFormat == newFormat)
                 return;
 
             OnPreResize?.Invoke(this);
-            _width = Math.Max(1, newWidth);
-            _height = Math.Max(1, newHeight);
-            _depth = Math.Max(1, newDepth);
-            _mipCount = Math.Max(1, newMipMapCount);
-            _format = newFormat;
+            Width = Math.Max(1, newWidth);
+            Height = Math.Max(1, newHeight);
+            Depth = Math.Max(1, newDepth);
+            MipMapCount = Math.Max(1, newMipMapCount);
+            DxgiFormat = newFormat;
 
-            UpdateDescription(_width, _height, _depth, Math.Max(1, newMipMapCount), Math.Max(1, newArraySize), newFormat);
+            UpdateDescription(Width, Height, Depth, Math.Max(1, newMipMapCount), Math.Max(1, newArraySize), newFormat);
             CreateTexture(true);
             OnPostResize?.Invoke(this);
         }
@@ -519,7 +509,7 @@ namespace Molten.Graphics
         protected virtual void UpdateDescription(uint newWidth, uint newHeight, 
             uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat) { }
 
-        protected abstract Resource CreateResource(bool resize);
+        protected abstract ID3D11Resource* CreateResource(bool resize);
 
         private protected void QueueChange(ITextureChange change)
         {
@@ -528,7 +518,7 @@ namespace Molten.Graphics
 
         public void Resize(uint newWidth)
         {
-            Resize(newWidth, _mipCount, _format.FromApi());
+            Resize(newWidth, MipMapCount, DxgiFormat.FromApi());
         }
 
         public void Resize(uint newWidth, uint newMipMapCount, GraphicsFormat newFormat)
@@ -536,10 +526,10 @@ namespace Molten.Graphics
             QueueChange(new TextureResize()
             {
                 NewWidth = newWidth,
-                NewHeight = _height,
+                NewHeight = Height,
                 NewMipMapCount = newMipMapCount,
-                NewArraySize = _arraySize,
-                NewFormat = _format,
+                NewArraySize = ArraySize,
+                NewFormat = DxgiFormat,
             });
         }
 
@@ -566,7 +556,7 @@ namespace Molten.Graphics
             _renderer.PushTask(applyTask);
         }
 
-        public void CopyTo(int sourceLevel, int sourceSlice, ITexture destination, int destLevel, int destSlice)
+        public void CopyTo(uint sourceLevel, uint sourceSlice, ITexture destination, uint destLevel, uint destSlice)
         {
             TextureBase destTexture = destination as TextureBase;
 
@@ -617,65 +607,61 @@ namespace Molten.Graphics
             if (IsDisposed)
                 return;
 
-            if(_resource == null)
+            if(_native == null)
                 CreateTexture(false);
 
             // process all changes for the current pipe.
             while (_pendingChanges.Count > 0)
             {
-                ITextureChange change = null;
-                if (_pendingChanges.TryDequeue(out change))
+                if (_pendingChanges.TryDequeue(out ITextureChange change))
                     change.Process(pipe, this);
             }
         }
 
-        internal override void Refresh(PipeDX11 pipe, PipelineBindSlot<DeviceDX11, PipeDX11> slot)
+        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
         {
             Apply(pipe);
         }
 
         /// <summary>Gets the flags that were passed in when the texture was created.</summary>
-        public TextureFlags Flags => _flags;
+        public TextureFlags Flags { get; protected set; }
 
         /// <summary>Gets the format of the texture.</summary>
-        public Format DxFormat => _format;
+        public Format DxgiFormat { get; protected set; }
 
-        public GraphicsFormat DataFormat => (GraphicsFormat)_format;
+        public GraphicsFormat DataFormat => (GraphicsFormat)DxgiFormat;
 
         /// <summary>Gets whether or not the texture is using a supported block-compressed format.</summary>
-        public bool IsBlockCompressed => _isBlockCompressed;
+        public bool IsBlockCompressed { get; protected set; }
 
         /// <summary>Gets the width of the texture.</summary>
-        public uint Width => _width;
+        public uint Width { get; protected set; }
 
         /// <summary>Gets the height of the texture.</summary>
-        public uint Height => _height;
+        public uint Height { get; protected set; }
 
         /// <summary>Gets the depth of the texture. For a 3D texture this is the number of slices.</summary>
-        public uint Depth => _depth;
+        public uint Depth { get; protected set; }
 
         /// <summary>Gets the number of mip map levels in the texture.</summary>
-        public uint MipMapCount => _mipCount;
+        public uint MipMapCount { get; protected set; }
 
         /// <summary>Gets the number of array slices in the texture. For a cube-map, this value will a multiple of 6. For example, a cube map with 2 array elements will have 12 array slices.</summary>
-        public uint ArraySize => _arraySize;
+        public uint ArraySize { get; protected set; }
 
         /// <summary>
         /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 
         /// </summary>
-        public uint SampleCount => _sampleCount;
+        public uint SampleCount { get; protected set; }
 
         /// <summary>
         /// Gets whether or not the texture is multisampled. This is true if <see cref="SampleCount"/> is greater than 1.
         /// </summary>
-        public bool IsMultisampled => _sampleCount > 1;
+        public bool IsMultisampled => SampleCount > 1;
 
         public bool IsValid { get; protected set; }
 
-        /// <summary>
-        /// Gets the underlying texture resource.
-        /// </summary>
-        internal Resource UnderlyingResource => _resource;
+        internal override unsafe ID3D11Resource* NativePtr => _native;
 
         /// <summary>
         /// Gets the renderer that the texture is bound to.

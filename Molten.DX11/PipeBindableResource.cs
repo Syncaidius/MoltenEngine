@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class PipeBindableResource : PipeBindable<ID3D11Resource>
+    public unsafe abstract class PipeBindableResource : PipeBindable<ID3D11Resource>
     {
         /// <summary>Gets or sets the <see cref="ID3D11UnorderedAccessView"/> attached to the object.</summary>
         internal protected ID3D11UnorderedAccessView* UAV;

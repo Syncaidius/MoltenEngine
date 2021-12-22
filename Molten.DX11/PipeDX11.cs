@@ -97,6 +97,16 @@ namespace Molten.Graphics
             Profiler.Current.CopySubresourceCount++;
         }
 
+        internal void CopyResourceRegion(
+    ID3D11Resource* source, uint srcSubresource, Box* sourceRegion,
+    ID3D11Resource* dest, uint destSubresource, Vector3UI destStart)
+        {
+            Context->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
+                source, srcSubresource, sourceRegion);
+
+            Profiler.Current.CopySubresourceCount++;
+        }
+
         /// <summary>Dispatches a compute effect to the GPU.</summary>
         public void Dispatch(ComputeTask task, uint x, uint y, uint z)
         {

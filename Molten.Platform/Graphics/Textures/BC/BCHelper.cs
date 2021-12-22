@@ -280,9 +280,9 @@ namespace Molten.Graphics.Textures
         /// <param name="height"></param>
         /// <param name="blockSize">The number of bytes per block.</param>
         /// <returns></returns>
-        public static int GetBCPitch(int width, int height, int blockSize)
+        public static uint GetBCPitch(uint width, uint height, uint blockSize)
         {
-            int numBlocksWide = Math.Max(1, (width + 3) / 4);
+            uint numBlocksWide = Math.Max(1, (width + 3) / 4);
             return numBlocksWide * blockSize;
         }
 
@@ -291,18 +291,18 @@ namespace Molten.Graphics.Textures
         /// <param name="height">The height of the level.</param>
         /// <param name="blockSize">The block size of the compression format.</param>
         /// <returns></returns>
-        public static int GetBCLevelSize(int width, int height, int blockSize)
+        public static uint GetBCLevelSize(uint width, uint height, uint blockSize)
         {
-            int numBlocksWide = Math.Max(1, (width + 3) / 4);
-            int numBlocksHigh = Math.Max(1, (height + 3) / 4);
-            int blockPitch = numBlocksWide * blockSize;
+            uint numBlocksWide = Math.Max(1, (width + 3) / 4);
+            uint numBlocksHigh = Math.Max(1, (height + 3) / 4);
+            uint blockPitch = numBlocksWide * blockSize;
             return blockPitch * numBlocksHigh;
         }
 
-        public static void GetBCLevelSizeAndPitch(int width, int height, int blockSize, out int levelSize, out int blockPitch)
+        public static void GetBCLevelSizeAndPitch(uint width, uint height, uint blockSize, out uint levelSize, out uint blockPitch)
         {
-            int numBlocksWide = Math.Max(1, (width + 3) / 4);
-            int numBlocksHigh = Math.Max(1, (height + 3) / 4);
+            uint numBlocksWide = Math.Max(1, (width + 3) / 4);
+            uint numBlocksHigh = Math.Max(1, (height + 3) / 4);
             blockPitch = numBlocksWide * blockSize;
             levelSize = blockPitch * numBlocksHigh;
         }

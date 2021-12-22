@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics.Textures;
+using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace Molten.Graphics
 
         public uint Count;
         public uint Stride;
-        public Rectangle? Area;
+        public RectangleUI? Area;
 
         public void Process(PipeDX11 pipe, TextureBase texture)
         {
@@ -56,9 +57,9 @@ namespace Molten.Graphics
             //======DATA TRANSFER===========
             EngineInterop.PinObject(Data, (ptr) =>
             {
-                int startBytes = StartIndex * Stride;
-                IntPtr dataPtr = ptr + startBytes;
-                int subLevel = (texture.MipMapCount * ArrayIndex) + MipLevel;
+                uint startBytes = StartIndex * Stride;
+                IntPtr dataPtr = (IntPtr)((uint)ptr + startBytes);
+                uint subLevel = (texture.MipMapCount * ArrayIndex) + MipLevel;
 
                 if (texture.HasFlags(TextureFlags.Dynamic))
                 {
@@ -66,7 +67,7 @@ namespace Molten.Graphics
                     DataBox destBox = pipe.Context.MapSubresource(
                         texture.UnderlyingResource, 
                         subLevel, 
-                        MapMode.WriteDiscard, 
+                        Map.MapWriteDiscard, 
                         MapFlags.None, 
                         out stream);
 
@@ -109,8 +110,8 @@ namespace Molten.Graphics
                     {
                         if (Area != null)
                         {
-                            Rectangle rect = Area.Value;
-                            int areaPitch = Stride * rect.Width;
+                            RectangleUI rect = Area.Value;
+                            uint areaPitch = Stride * rect.Width;
                             DataBox box = new DataBox(dataPtr, areaPitch, Data.Length);
                             ResourceRegion region = new ResourceRegion();
                             region.Top = rect.Y;
@@ -123,10 +124,10 @@ namespace Molten.Graphics
                         }
                         else
                         {
-                            int x = 0;
-                            int y = 0;
-                            int w = Math.Max(texture.Width >> MipLevel, 1);
-                            int h = Math.Max(texture.Height >> MipLevel, 1);
+                            uint x = 0;
+                            uint y = 0;
+                            uint w = Math.Max(texture.Width >> MipLevel, 1);
+                            uint h = Math.Max(texture.Height >> MipLevel, 1);
                             DataBox box = new DataBox(dataPtr, Pitch, arraySliceBytes);
                             ResourceRegion region = new ResourceRegion();
                             region.Top = y;
