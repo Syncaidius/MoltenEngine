@@ -55,9 +55,6 @@ namespace Molten.Graphics
         public void WriteRange<T>(T[] values, uint startIndex, uint count)
             where T : struct
         {
-            if (!_canWrite)
-                throw new ResourceStreamException(_mapType, $"Map mode does not allow writing.");
-
             int sizeOf = Marshal.SizeOf<T>();
             long numBytes = sizeOf * count;
             int byteOffset = (int)startIndex * sizeOf;
@@ -66,9 +63,16 @@ namespace Molten.Graphics
             {
                 p += byteOffset;
                 void* ptr = p.ToPointer();
-                Buffer.MemoryCopy(ptr, _mapping.PData, numBytes, numBytes);
+                WriteRange(ptr, numBytes);
             });
+        }
 
+        public void WriteRange(void* ptrData, long numBytes)
+        {
+            if (!_canWrite)
+                throw new ResourceStreamException(_mapType, $"Map mode does not allow writing.");
+
+            Buffer.MemoryCopy(ptrData, _mapping.PData, numBytes, numBytes);
             Position += numBytes;
         }
 

@@ -118,15 +118,15 @@ namespace Molten.Graphics
             return result;
         }
 
-        protected ResourceOptionFlags GetResourceFlags()
+        protected ResourceMiscFlag GetResourceFlags()
         {
-            ResourceOptionFlags result = ResourceOptionFlags.None;
+            ResourceMiscFlag result = 0;
 
             if (HasFlags(TextureFlags.SharedResource))
-                result |= ResourceOptionFlags.Shared;
+                result |= ResourceMiscFlag.ResourceMiscShared;
 
             if (HasFlags(TextureFlags.AllowMipMapGeneration))
-                result |= ResourceOptionFlags.GenerateMipMaps;
+                result |= ResourceMiscFlag.ResourceMiscGenerateMips;
 
             return result;
         }
@@ -161,8 +161,8 @@ namespace Molten.Graphics
 
             if (_native != null)
             {
-                UAV?.Dispose();
-                SRV?.Dispose();
+                ReleaseSilkPtr(ref UAV);
+                ReleaseSilkPtr(ref SRV);
 
                 //TrackAllocation();
 

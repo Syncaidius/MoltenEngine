@@ -20,7 +20,7 @@ namespace Molten.Graphics
         public uint Stride;
         public RectangleUI? Area;
 
-        public void Process(PipeDX11 pipe, TextureBase texture)
+        public unsafe void Process(PipeDX11 pipe, TextureBase texture)
         {
             //C alculate size of a single array slice
             uint arraySliceBytes = 0;
@@ -58,41 +58,45 @@ namespace Molten.Graphics
             EngineInterop.PinObject(Data, (ptr) =>
             {
                 uint startBytes = StartIndex * Stride;
-                IntPtr dataPtr = (IntPtr)((uint)ptr + startBytes);
+                byte* ptrData = (byte*)ptr.ToPointer();
+                ptrData += startBytes;
+
                 uint subLevel = (texture.MipMapCount * ArrayIndex) + MipLevel;
 
                 if (texture.HasFlags(TextureFlags.Dynamic))
                 {
-                    DataStream stream = null;
-                    DataBox destBox = pipe.Context.MapSubresource(
-                        texture.UnderlyingResource, 
+                    ResourceStream stream = null;
+
+                    MappedSubresource destBox = pipe.MapResource(
+                        texture.NativePtr, 
                         subLevel, 
                         Map.MapWriteDiscard, 
-                        MapFlags.None, 
+                        0, 
                         out stream);
 
                     // Are we constrained to an area of the texture?
                     if (Area != null)
                     {
-                        Rectangle rect = Area.Value;
-                        int areaPitch = Stride * rect.Width;
-                        int aX = rect.X;
-                        int aY = rect.Y;
+                        RectangleUI rect = Area.Value;
+                        uint areaPitch = Stride * rect.Width;
+                        uint aX = rect.X;
+                        uint aY = rect.Y;
 
-                        for (int y = aY, end = rect.Bottom; y < end; y++)
+                        for (uint y = aY, end = rect.Bottom; y < end; y++)
                         {
                             stream.Position = (Pitch * aY) + (aX * Stride);
-                            stream.WriteRange(dataPtr, areaPitch);
-                            dataPtr += areaPitch;
+                            stream.WriteRange(ptrData, areaPitch);
+                            ptrData += areaPitch;
                             aY++;
                         }
                     }
                     else
                     {
-                        stream.WriteRange(dataPtr, Count);
+                        long numBytes = Count * Stride;
+                        stream.WriteRange(ptrData, Count);
                     }
 
-                    pipe.Context.UnmapSubresource(texture.UnderlyingResource, subLevel);
+                    pipe.UnmapResource(texture.NativePtr, subLevel);
                     pipe.Profiler.Current.MapDiscardCount++;
                 }
                 else
@@ -100,11 +104,11 @@ namespace Molten.Graphics
                     if (texture.IsBlockCompressed)
                     {
                         // Calculate mip-map level size.
-                        levelWidth = texture.Width >> MipLevel;
-                        levelHeight = texture.Height >> MipLevel;
-                        int bcPitch = BCHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
+                        levelWidth = texture.Width >> (int)MipLevel;
+                        levelHeight = texture.Height >> (int)MipLevel;
+                        uint bcPitch = BCHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
                         DataBox box = new DataBox(dataPtr, bcPitch, arraySliceBytes);
-                        pipe.Context.UpdateSubresource(box, texture.UnderlyingResource, subLevel);
+                        pipe.Context.UpdateSubresource1(box, texture.UnderlyingResource, subLevel);
                     }
                     else
                     {
@@ -120,14 +124,14 @@ namespace Molten.Graphics
                             region.Bottom = rect.Bottom;
                             region.Left = rect.X;
                             region.Right = rect.Right;
-                            pipe.Context.UpdateSubresource(box, texture.UnderlyingResource, subLevel, region);
+                            pipe.Context.UpdateSubresource1(box, texture.UnderlyingResource, subLevel, region);
                         }
                         else
                         {
                             uint x = 0;
                             uint y = 0;
-                            uint w = Math.Max(texture.Width >> MipLevel, 1);
-                            uint h = Math.Max(texture.Height >> MipLevel, 1);
+                            uint w = Math.Max(texture.Width >> (int)MipLevel, 1);
+                            uint h = Math.Max(texture.Height >> (int)MipLevel, 1);
                             DataBox box = new DataBox(dataPtr, Pitch, arraySliceBytes);
                             ResourceRegion region = new ResourceRegion();
                             region.Top = y;
@@ -136,7 +140,7 @@ namespace Molten.Graphics
                             region.Bottom = y + h;
                             region.Left = x;
                             region.Right = x + w;
-                            pipe.Context.UpdateSubresource(box, texture.UnderlyingResource, subLevel, region);
+                            pipe.Context.UpdateSubresource1(box, texture.UnderlyingResource, subLevel, region);
                         }
 
 
