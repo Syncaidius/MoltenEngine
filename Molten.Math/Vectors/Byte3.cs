@@ -1,6 +1,9 @@
+using System.Runtime.InteropServices;
+
 namespace Molten.Math
 {
 	///<summary>A <see cref = "byte"/> vector comprised of 3 components.</summary>
+	[StructLayout(LayoutKind.Sequential)]
 	public partial struct Byte3
 	{
 		///<summary>The X component.</summary>
@@ -23,12 +26,22 @@ namespace Molten.Math
 #region operators
 		public static Byte3 operator +(Byte3 left, Byte3 right)
 		{
-			return new Byte3()
-			{
-				X = left.X + right.X,
-				Y = left.Y + right.Y,
-				Z = left.Z + right.Z,
-			};
+			return new Byte3(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
+		}
+
+		public static Byte3 operator -(Byte3 left, Byte3 right)
+		{
+			return new Byte3(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
+		}
+
+		public static Byte3 operator /(Byte3 left, Byte3 right)
+		{
+			return new Byte3(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
+		}
+
+		public static Byte3 operator *(Byte3 left, Byte3 right)
+		{
+			return new Byte3(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
 		}
 #endregion
 	}

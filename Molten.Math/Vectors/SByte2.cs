@@ -3,9 +3,12 @@
 
 
 
+using System.Runtime.InteropServices;
+
 namespace Molten.Math
 {
 	///<summary>A <see cref = "sbyte"/> vector comprised of 2 components.</summary>
+	[StructLayout(LayoutKind.Sequential)]
 	public partial struct SByte2
 	{
 		///<summary>The X component.</summary>
@@ -24,11 +27,22 @@ namespace Molten.Math
 #region operators
 		public static SByte2 operator +(SByte2 left, SByte2 right)
 		{
-			return new SByte2()
-			{
-				X = left.X + right.X,
-				Y = left.Y + right.Y,
-			};
+			return new SByte2(left.X + right.X, left.Y + right.Y);
+		}
+
+		public static SByte2 operator -(SByte2 left, SByte2 right)
+		{
+			return new SByte2(left.X - right.X, left.Y - right.Y);
+		}
+
+		public static SByte2 operator /(SByte2 left, SByte2 right)
+		{
+			return new SByte2(left.X / right.X, left.Y / right.Y);
+		}
+
+		public static SByte2 operator *(SByte2 left, SByte2 right)
+		{
+			return new SByte2(left.X * right.X, left.Y * right.Y);
 		}
 #endregion
 	}

@@ -1,6 +1,9 @@
+using System.Runtime.InteropServices;
+
 namespace Molten.Math
 {
 	///<summary>A <see cref = "ushort"/> vector comprised of 2 components.</summary>
+	[StructLayout(LayoutKind.Sequential)]
 	public partial struct Half2U
 	{
 		///<summary>The X component.</summary>
@@ -19,11 +22,22 @@ namespace Molten.Math
 #region operators
 		public static Half2U operator +(Half2U left, Half2U right)
 		{
-			return new Half2U()
-			{
-				X = left.X + right.X,
-				Y = left.Y + right.Y,
-			};
+			return new Half2U(left.X + right.X, left.Y + right.Y);
+		}
+
+		public static Half2U operator -(Half2U left, Half2U right)
+		{
+			return new Half2U(left.X - right.X, left.Y - right.Y);
+		}
+
+		public static Half2U operator /(Half2U left, Half2U right)
+		{
+			return new Half2U(left.X / right.X, left.Y / right.Y);
+		}
+
+		public static Half2U operator *(Half2U left, Half2U right)
+		{
+			return new Half2U(left.X * right.X, left.Y * right.Y);
 		}
 #endregion
 	}

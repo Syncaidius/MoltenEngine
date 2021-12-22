@@ -1,6 +1,9 @@
+using System.Runtime.InteropServices;
+
 namespace Molten.Math
 {
 	///<summary>A <see cref = "nuint"/> vector comprised of 3 components.</summary>
+	[StructLayout(LayoutKind.Sequential)]
 	public partial struct Vector3NU
 	{
 		///<summary>The X component.</summary>
@@ -23,12 +26,22 @@ namespace Molten.Math
 #region operators
 		public static Vector3NU operator +(Vector3NU left, Vector3NU right)
 		{
-			return new Vector3NU()
-			{
-				X = left.X + right.X,
-				Y = left.Y + right.Y,
-				Z = left.Z + right.Z,
-			};
+			return new Vector3NU(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
+		}
+
+		public static Vector3NU operator -(Vector3NU left, Vector3NU right)
+		{
+			return new Vector3NU(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
+		}
+
+		public static Vector3NU operator /(Vector3NU left, Vector3NU right)
+		{
+			return new Vector3NU(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
+		}
+
+		public static Vector3NU operator *(Vector3NU left, Vector3NU right)
+		{
+			return new Vector3NU(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
 		}
 #endregion
 	}
