@@ -219,6 +219,40 @@
     <Compile Include="Noise\PerlinNoise.cs" />
     <Compile Include="Plane.cs" />
     <Compile Include="Shape.cs" />
+    <Compile Include="Vectors\Integer\Byte2.cs" />
+    <Compile Include="Vectors\Integer\Byte3.cs" />
+    <Compile Include="Vectors\Integer\Byte4.cs" />
+    <Compile Include="Vectors\Integer\Half2.cs" />
+    <Compile Include="Vectors\Integer\Half2U.cs" />
+    <Compile Include="Vectors\Integer\Half3.cs" />
+    <Compile Include="Vectors\Integer\Half3U.cs" />
+    <Compile Include="Vectors\Integer\Half4.cs" />
+    <Compile Include="Vectors\Integer\Half4U.cs" />
+    <Compile Include="Vectors\Integer\SByte2.cs" />
+    <Compile Include="Vectors\Integer\SByte3.cs" />
+    <Compile Include="Vectors\Integer\SByte4.cs" />
+    <Compile Include="Vectors\Integer\Vector2I.cs" />
+    <Compile Include="Vectors\Integer\Vector2L.cs" />
+    <Compile Include="Vectors\Integer\Vector2UI.cs" />
+    <Compile Include="Vectors\Integer\Vector2UL.cs" />
+    <Compile Include="Vectors\Integer\Vector3I.cs" />
+    <Compile Include="Vectors\Integer\Vector3L.cs" />
+    <Compile Include="Vectors\Integer\Vector3UI.cs" />
+    <Compile Include="Vectors\Integer\Vector3UL.cs" />
+    <Compile Include="Vectors\Integer\Vector4I.cs" />
+    <Compile Include="Vectors\Integer\Vector4L.cs" />
+    <Compile Include="Vectors\Integer\Vector4UI.cs" />
+    <Compile Include="Vectors\Integer\Vector4UL.cs" />
+    <Compile Include="Vectors\t4_helpers.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>t4_helpers.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Vectors\t4_vector_integer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>t4_vector_integer.tt</DependentUpon>
+    </Compile>
     <Compile Include="Winding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuaternionF.cs" />
@@ -240,6 +274,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Vectors\t4_helpers.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_helpers.cs</LastGenOutput>
+    </Content>
+    <Content Include="Vectors\t4_vector_integer.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_vector_integer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

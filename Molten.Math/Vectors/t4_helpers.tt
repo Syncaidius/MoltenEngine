@@ -1,0 +1,36 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+
+
+<#+
+public void SaveFile(string folder, string fileName, string content)
+{
+	using (FileStream fs = new FileStream(Path.Combine(folder, fileName.Trim() + ".cs"), FileMode.Create))
+    {
+        using (StreamWriter str = new StreamWriter(fs))
+        {
+            str.WriteLine(content);
+            str.Flush();
+        }
+    }
+}
+
+public string GetConstructorArgs(string type, string map, int count, string prefix = "", string postfix = "")
+{
+    if(map.Length < count)
+        throw new Exception("Map length is shorter than count");
+        
+    string r = "";
+    for(int i = 0; i < count; i++)
+    {
+        if(i > 0) r += ", ";
+        r += $"{type} {prefix}{map[i]}{postfix}";
+    }
+
+    return r;
+}
+#>
