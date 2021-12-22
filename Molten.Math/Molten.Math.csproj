@@ -242,21 +242,30 @@
       <DependentUpon>t4_vector.tt</DependentUpon>
     </Compile>
     <Compile Include="Vectors\Vector2D.cs" />
+    <Compile Include="Vectors\Vector2DC.cs" />
     <Compile Include="Vectors\Vector2F.cs" />
     <Compile Include="Vectors\Vector2I.cs" />
     <Compile Include="Vectors\Vector2L.cs" />
+    <Compile Include="Vectors\Vector2N.cs" />
+    <Compile Include="Vectors\Vector2NU.cs" />
     <Compile Include="Vectors\Vector2UI.cs" />
     <Compile Include="Vectors\Vector2UL.cs" />
     <Compile Include="Vectors\Vector3D.cs" />
+    <Compile Include="Vectors\Vector3DC.cs" />
     <Compile Include="Vectors\Vector3F.cs" />
     <Compile Include="Vectors\Vector3I.cs" />
     <Compile Include="Vectors\Vector3L.cs" />
+    <Compile Include="Vectors\Vector3N.cs" />
+    <Compile Include="Vectors\Vector3NU.cs" />
     <Compile Include="Vectors\Vector3UI.cs" />
     <Compile Include="Vectors\Vector3UL.cs" />
     <Compile Include="Vectors\Vector4D.cs" />
+    <Compile Include="Vectors\Vector4DC.cs" />
     <Compile Include="Vectors\Vector4F.cs" />
     <Compile Include="Vectors\Vector4I.cs" />
     <Compile Include="Vectors\Vector4L.cs" />
+    <Compile Include="Vectors\Vector4N.cs" />
+    <Compile Include="Vectors\Vector4NU.cs" />
     <Compile Include="Vectors\Vector4UI.cs" />
     <Compile Include="Vectors\Vector4UL.cs" />
     <Compile Include="Winding.cs" />
