@@ -27,8 +27,9 @@ namespace Molten
         /// </summary>
         public Color Color { get; set; } = Color.White;
 
-        public RectangleF Bounds { get; private set; }
-
+        /// <summary>
+        /// Creates a new instance of <see cref="Shape"/>.
+        /// </summary>
         public Shape() { }
 
         /// <summary>
