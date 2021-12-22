@@ -15,6 +15,17 @@ namespace Molten.Math
 			X = x;
 			Y = y;
 		}
+
+#region operators
+		public static Half2 operator +(Half2 left, Half2 right)
+		{
+			return new Half2()
+			{
+				X = left.X + right.X,
+				Y = left.Y + right.Y,
+			};
+		}
+#endregion
 	}
 }
 

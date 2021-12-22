@@ -23,6 +23,19 @@ namespace Molten.Math
 			Z = z;
 			W = w;
 		}
+
+#region operators
+		public static Vector4UL operator +(Vector4UL left, Vector4UL right)
+		{
+			return new Vector4UL()
+			{
+				X = left.X + right.X,
+				Y = left.Y + right.Y,
+				Z = left.Z + right.Z,
+				W = left.W + right.W,
+			};
+		}
+#endregion
 	}
 }
 

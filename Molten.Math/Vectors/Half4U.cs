@@ -23,6 +23,19 @@ namespace Molten.Math
 			Z = z;
 			W = w;
 		}
+
+#region operators
+		public static Half4U operator +(Half4U left, Half4U right)
+		{
+			return new Half4U()
+			{
+				X = left.X + right.X,
+				Y = left.Y + right.Y,
+				Z = left.Z + right.Z,
+				W = left.W + right.W,
+			};
+		}
+#endregion
 	}
 }
 

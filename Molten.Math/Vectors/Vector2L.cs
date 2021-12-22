@@ -15,6 +15,17 @@ namespace Molten.Math
 			X = x;
 			Y = y;
 		}
+
+#region operators
+		public static Vector2L operator +(Vector2L left, Vector2L right)
+		{
+			return new Vector2L()
+			{
+				X = left.X + right.X,
+				Y = left.Y + right.Y,
+			};
+		}
+#endregion
 	}
 }
 

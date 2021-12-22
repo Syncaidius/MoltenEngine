@@ -19,6 +19,18 @@ namespace Molten.Math
 			Y = y;
 			Z = z;
 		}
+
+#region operators
+		public static Half3U operator +(Half3U left, Half3U right)
+		{
+			return new Half3U()
+			{
+				X = left.X + right.X,
+				Y = left.Y + right.Y,
+				Z = left.Z + right.Z,
+			};
+		}
+#endregion
 	}
 }
 

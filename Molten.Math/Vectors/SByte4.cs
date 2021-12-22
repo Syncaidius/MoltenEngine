@@ -23,6 +23,19 @@ namespace Molten.Math
 			Z = z;
 			W = w;
 		}
+
+#region operators
+		public static SByte4 operator +(SByte4 left, SByte4 right)
+		{
+			return new SByte4()
+			{
+				X = left.X + right.X,
+				Y = left.Y + right.Y,
+				Z = left.Z + right.Z,
+				W = left.W + right.W,
+			};
+		}
+#endregion
 	}
 }
 

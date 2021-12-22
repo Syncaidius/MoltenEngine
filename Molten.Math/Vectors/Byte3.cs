@@ -19,6 +19,18 @@ namespace Molten.Math
 			Y = y;
 			Z = z;
 		}
+
+#region operators
+		public static Byte3 operator +(Byte3 left, Byte3 right)
+		{
+			return new Byte3()
+			{
+				X = left.X + right.X,
+				Y = left.Y + right.Y,
+				Z = left.Z + right.Z,
+			};
+		}
+#endregion
 	}
 }
 

@@ -15,6 +15,17 @@ namespace Molten.Math
 			X = x;
 			Y = y;
 		}
+
+#region operators
+		public static Byte2 operator +(Byte2 left, Byte2 right)
+		{
+			return new Byte2()
+			{
+				X = left.X + right.X,
+				Y = left.Y + right.Y,
+			};
+		}
+#endregion
 	}
 }
 

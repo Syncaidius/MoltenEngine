@@ -19,6 +19,18 @@ namespace Molten.Math
 			Y = y;
 			Z = z;
 		}
+
+#region operators
+		public static Vector3UI operator +(Vector3UI left, Vector3UI right)
+		{
+			return new Vector3UI()
+			{
+				X = left.X + right.X,
+				Y = left.Y + right.Y,
+				Z = left.Z + right.Z,
+			};
+		}
+#endregion
 	}
 }
 

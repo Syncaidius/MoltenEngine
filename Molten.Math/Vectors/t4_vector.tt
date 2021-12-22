@@ -9,11 +9,12 @@
 <#@ output extension=".txt" #>
 
 <#
-string outputPath = this.Host.ResolvePath("Integer");
-string[] _types = new string[]{"sbyte", "byte", "int", "uint", "short", "ushort", "long", "ulong"};
-string[] _names = new string[]{"SByte", "Byte", "Vector", "Vector", "Half", "Half", "Vector", "Vector"};
-string[] _postfixes = new string[]{"", "", "I", "UI", "", "U", "L", "UL"};
+string outputPath = this.Host.ResolvePath("");
+string[] _types = new string[]{"sbyte", "byte", "int", "uint", "short", "ushort", "long", "ulong", "float", "double", "decimal"};
+string[] _names = new string[]{"SByte", "Byte", "Vector", "Vector", "Half", "Half", "Vector", "Vector", "Vector", "Vector"};
+string[] _postfixes = new string[]{"", "", "I", "UI", "", "U", "L", "UL", "F", "D", "DC"};
 string _propertyMap = "xyzw";
+string _propertyMapUpper = "XYZW";
 
 int[] _sizes = new int[]{2, 3, 4};
 
@@ -35,8 +36,8 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-		///<summary>The <#=_propertyMap.ToUpper()[p]#> component.</summary>
-		public <#=_types[i]#> <#=_propertyMap.ToUpper()[p]#>;
+		///<summary>The <#=_propertyMapUpper[p]#> component.</summary>
+		public <#=_types[i]#> <#=_propertyMapUpper[p]#>;
 
 <#
 		}
@@ -48,11 +49,28 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=_propertyMap.ToUpper()[p]#> = <#=_propertyMap[p]#>;
+			<#=_propertyMapUpper[p]#> = <#=_propertyMap[p]#>;
 <#
 		}
 #>
 		}
+
+#region operators
+		public static <#=fullName#> operator +(<#=fullName#> left, <#=fullName#> right)
+		{
+			return new <#=fullName#>()
+			{
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+				<#=_propertyMapUpper[p]#> = left.<#=_propertyMapUpper[p]#> + right.<#=_propertyMapUpper[p]#>,
+<#
+		}
+#>
+			};
+		}
+#endregion
 	}
 }
 <#

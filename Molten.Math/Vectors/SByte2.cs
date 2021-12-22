@@ -20,6 +20,17 @@ namespace Molten.Math
 			X = x;
 			Y = y;
 		}
+
+#region operators
+		public static SByte2 operator +(SByte2 left, SByte2 right)
+		{
+			return new SByte2()
+			{
+				X = left.X + right.X,
+				Y = left.Y + right.Y,
+			};
+		}
+#endregion
 	}
 }
 
