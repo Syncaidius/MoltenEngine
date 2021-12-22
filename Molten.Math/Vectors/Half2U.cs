@@ -12,6 +12,11 @@ namespace Molten.Math
 		///<summary>The Y component.</summary>
 		public ushort Y;
 
+
+		public static Half2U One = new Half2U((ushort)1, (ushort)1);
+
+		public static Half2U Zero = new Half2U(0, 0);
+
 		///<summary>Creates a new instance of <see cref = "Half2U"/></summary>
 		public Half2U(ushort x, ushort y)
 		{

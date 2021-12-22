@@ -15,6 +15,11 @@ namespace Molten.Math
 		///<summary>The Z component.</summary>
 		public byte Z;
 
+
+		public static Byte3 One = new Byte3(1, 1, 1);
+
+		public static Byte3 Zero = new Byte3(0, 0, 0);
+
 		///<summary>Creates a new instance of <see cref = "Byte3"/></summary>
 		public Byte3(byte x, byte y, byte z)
 		{

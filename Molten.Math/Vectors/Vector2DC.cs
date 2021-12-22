@@ -12,6 +12,11 @@ namespace Molten.Math
 		///<summary>The Y component.</summary>
 		public decimal Y;
 
+
+		public static Vector2DC One = new Vector2DC(1M, 1M);
+
+		public static Vector2DC Zero = new Vector2DC(0M, 0M);
+
 		///<summary>Creates a new instance of <see cref = "Vector2DC"/></summary>
 		public Vector2DC(decimal x, decimal y)
 		{

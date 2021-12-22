@@ -18,6 +18,11 @@ namespace Molten.Math
 		///<summary>The W component.</summary>
 		public byte W;
 
+
+		public static Byte4 One = new Byte4(1, 1, 1, 1);
+
+		public static Byte4 Zero = new Byte4(0, 0, 0, 0);
+
 		///<summary>Creates a new instance of <see cref = "Byte4"/></summary>
 		public Byte4(byte x, byte y, byte z, byte w)
 		{

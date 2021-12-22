@@ -18,6 +18,11 @@ namespace Molten.Math
 		///<summary>The W component.</summary>
 		public uint W;
 
+
+		public static Vector4UI One = new Vector4UI(1U, 1U, 1U, 1U);
+
+		public static Vector4UI Zero = new Vector4UI(0U, 0U, 0U, 0U);
+
 		///<summary>Creates a new instance of <see cref = "Vector4UI"/></summary>
 		public Vector4UI(uint x, uint y, uint z, uint w)
 		{

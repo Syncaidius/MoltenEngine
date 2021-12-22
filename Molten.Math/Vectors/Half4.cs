@@ -18,6 +18,11 @@ namespace Molten.Math
 		///<summary>The W component.</summary>
 		public short W;
 
+
+		public static Half4 One = new Half4((short)1, (short)1, (short)1, (short)1);
+
+		public static Half4 Zero = new Half4(0, 0, 0, 0);
+
 		///<summary>Creates a new instance of <see cref = "Half4"/></summary>
 		public Half4(short x, short y, short z, short w)
 		{

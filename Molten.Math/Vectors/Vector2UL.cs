@@ -12,6 +12,11 @@ namespace Molten.Math
 		///<summary>The Y component.</summary>
 		public ulong Y;
 
+
+		public static Vector2UL One = new Vector2UL(1UL, 1UL);
+
+		public static Vector2UL Zero = new Vector2UL(0UL, 0UL);
+
 		///<summary>Creates a new instance of <see cref = "Vector2UL"/></summary>
 		public Vector2UL(ulong x, ulong y)
 		{

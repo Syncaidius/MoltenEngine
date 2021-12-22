@@ -12,6 +12,11 @@ namespace Molten.Math
 		///<summary>The Y component.</summary>
 		public byte Y;
 
+
+		public static Byte2 One = new Byte2(1, 1);
+
+		public static Byte2 Zero = new Byte2(0, 0);
+
 		///<summary>Creates a new instance of <see cref = "Byte2"/></summary>
 		public Byte2(byte x, byte y)
 		{

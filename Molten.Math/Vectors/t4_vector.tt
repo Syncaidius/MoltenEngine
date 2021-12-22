@@ -13,6 +13,8 @@ string outputPath = this.Host.ResolvePath("");
 string[] _types = new string[]{"sbyte", "byte", "int", "uint", "short", "ushort", "long", "ulong", "float", "double", "decimal", "nint", "nuint"};
 string[] _names = new string[]{"SByte", "Byte", "Vector", "Vector", "Half", "Half", "Vector", "Vector", "Vector", "Vector", "Vector", "Vector", "Vector"};
 string[] _postfixes = new string[]{"", "", "I", "UI", "", "U", "L", "UL", "F", "D", "DC", "N", "NU"};
+string[] _one = new string[]{"1", "1", "1", "1U", "(short)1", "(ushort)1", "1L", "1UL", "1F", "1D", "1M", "1", "1U"};
+string[] _zero = new string[]{"0", "0", "0", "0U", "0", "0", "0L", "0UL", "0F", "0D", "0M", "0", "0U"};
 string _propertyMap = "xyzw";
 string _propertyMapUpper = "XYZW";
 
@@ -45,6 +47,11 @@ namespace Molten.Math
 <#
 		}
 #>
+
+		public static <#=fullName#> One = new <#=fullName#>(<#for(int p = 0; p < size; p++){#><#=_one[i]#><#=(p < (size-1) ? ", " : "")#><#}#>);
+
+		public static <#=fullName#> Zero = new <#=fullName#>(<#for(int p = 0; p < size; p++){#><#=_zero[i]#><#=(p < (size-1) ? ", " : "")#><#}#>);
+
 		///<summary>Creates a new instance of <see cref = "<#=fullName#>"/></summary>
 		public <#=fullName#>(<#=GetConstructorArgs(tName, _propertyMap, size)#>)
 		{

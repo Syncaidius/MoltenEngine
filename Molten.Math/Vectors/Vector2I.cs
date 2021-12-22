@@ -12,6 +12,11 @@ namespace Molten.Math
 		///<summary>The Y component.</summary>
 		public int Y;
 
+
+		public static Vector2I One = new Vector2I(1, 1);
+
+		public static Vector2I Zero = new Vector2I(0, 0);
+
 		///<summary>Creates a new instance of <see cref = "Vector2I"/></summary>
 		public Vector2I(int x, int y)
 		{

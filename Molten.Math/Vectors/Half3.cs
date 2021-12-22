@@ -15,6 +15,11 @@ namespace Molten.Math
 		///<summary>The Z component.</summary>
 		public short Z;
 
+
+		public static Half3 One = new Half3((short)1, (short)1, (short)1);
+
+		public static Half3 Zero = new Half3(0, 0, 0);
+
 		///<summary>Creates a new instance of <see cref = "Half3"/></summary>
 		public Half3(short x, short y, short z)
 		{

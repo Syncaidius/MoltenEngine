@@ -15,6 +15,11 @@ namespace Molten.Math
 		///<summary>The Z component.</summary>
 		public decimal Z;
 
+
+		public static Vector3DC One = new Vector3DC(1M, 1M, 1M);
+
+		public static Vector3DC Zero = new Vector3DC(0M, 0M, 0M);
+
 		///<summary>Creates a new instance of <see cref = "Vector3DC"/></summary>
 		public Vector3DC(decimal x, decimal y, decimal z)
 		{

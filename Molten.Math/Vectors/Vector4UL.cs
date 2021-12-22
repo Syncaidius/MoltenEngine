@@ -18,6 +18,11 @@ namespace Molten.Math
 		///<summary>The W component.</summary>
 		public ulong W;
 
+
+		public static Vector4UL One = new Vector4UL(1UL, 1UL, 1UL, 1UL);
+
+		public static Vector4UL Zero = new Vector4UL(0UL, 0UL, 0UL, 0UL);
+
 		///<summary>Creates a new instance of <see cref = "Vector4UL"/></summary>
 		public Vector4UL(ulong x, ulong y, ulong z, ulong w)
 		{

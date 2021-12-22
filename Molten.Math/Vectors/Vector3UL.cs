@@ -15,6 +15,11 @@ namespace Molten.Math
 		///<summary>The Z component.</summary>
 		public ulong Z;
 
+
+		public static Vector3UL One = new Vector3UL(1UL, 1UL, 1UL);
+
+		public static Vector3UL Zero = new Vector3UL(0UL, 0UL, 0UL);
+
 		///<summary>Creates a new instance of <see cref = "Vector3UL"/></summary>
 		public Vector3UL(ulong x, ulong y, ulong z)
 		{

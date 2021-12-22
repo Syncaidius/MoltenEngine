@@ -15,6 +15,11 @@ namespace Molten.Math
 		///<summary>The Z component.</summary>
 		public double Z;
 
+
+		public static Vector3D One = new Vector3D(1D, 1D, 1D);
+
+		public static Vector3D Zero = new Vector3D(0D, 0D, 0D);
+
 		///<summary>Creates a new instance of <see cref = "Vector3D"/></summary>
 		public Vector3D(double x, double y, double z)
 		{

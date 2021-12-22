@@ -15,6 +15,11 @@ namespace Molten.Math
 		///<summary>The Z component.</summary>
 		public long Z;
 
+
+		public static Vector3L One = new Vector3L(1L, 1L, 1L);
+
+		public static Vector3L Zero = new Vector3L(0L, 0L, 0L);
+
 		///<summary>Creates a new instance of <see cref = "Vector3L"/></summary>
 		public Vector3L(long x, long y, long z)
 		{

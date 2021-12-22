@@ -18,6 +18,11 @@ namespace Molten.Math
 		///<summary>The W component.</summary>
 		public long W;
 
+
+		public static Vector4L One = new Vector4L(1L, 1L, 1L, 1L);
+
+		public static Vector4L Zero = new Vector4L(0L, 0L, 0L, 0L);
+
 		///<summary>Creates a new instance of <see cref = "Vector4L"/></summary>
 		public Vector4L(long x, long y, long z, long w)
 		{

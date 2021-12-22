@@ -15,6 +15,11 @@ namespace Molten.Math
 		///<summary>The Z component.</summary>
 		public nint Z;
 
+
+		public static Vector3N One = new Vector3N(1, 1, 1);
+
+		public static Vector3N Zero = new Vector3N(0, 0, 0);
+
 		///<summary>Creates a new instance of <see cref = "Vector3N"/></summary>
 		public Vector3N(nint x, nint y, nint z)
 		{
