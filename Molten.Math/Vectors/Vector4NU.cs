@@ -32,25 +32,51 @@ namespace Molten.Math
 			W = w;
 		}
 
-#region operators
+#region Add operators
 		public static Vector4NU operator +(Vector4NU left, Vector4NU right)
 		{
 			return new Vector4NU(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
 		}
 
+		public static Vector4NU operator +(Vector4NU left, nuint right)
+		{
+			return new Vector4NU(left.X + right, left.Y + right, left.Z + right, left.W + right);
+		}
+#endregion
+
+#region Subtract operators
 		public static Vector4NU operator -(Vector4NU left, Vector4NU right)
 		{
 			return new Vector4NU(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
 		}
 
+		public static Vector4NU operator -(Vector4NU left, nuint right)
+		{
+			return new Vector4NU(left.X - right, left.Y - right, left.Z - right, left.W - right);
+		}
+#endregion
+
+#region division operators
 		public static Vector4NU operator /(Vector4NU left, Vector4NU right)
 		{
 			return new Vector4NU(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
 		}
 
+		public static Vector4NU operator /(Vector4NU left, nuint right)
+		{
+			return new Vector4NU(left.X / right, left.Y / right, left.Z / right, left.W / right);
+		}
+#endregion
+
+#region Multiply operators
 		public static Vector4NU operator *(Vector4NU left, Vector4NU right)
 		{
 			return new Vector4NU(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
+		}
+
+		public static Vector4NU operator *(Vector4NU left, nuint right)
+		{
+			return new Vector4NU(left.X * right, left.Y * right, left.Z * right, left.W * right);
 		}
 #endregion
 	}

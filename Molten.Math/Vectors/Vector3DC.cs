@@ -28,25 +28,51 @@ namespace Molten.Math
 			Z = z;
 		}
 
-#region operators
+#region Add operators
 		public static Vector3DC operator +(Vector3DC left, Vector3DC right)
 		{
 			return new Vector3DC(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
 		}
 
+		public static Vector3DC operator +(Vector3DC left, decimal right)
+		{
+			return new Vector3DC(left.X + right, left.Y + right, left.Z + right);
+		}
+#endregion
+
+#region Subtract operators
 		public static Vector3DC operator -(Vector3DC left, Vector3DC right)
 		{
 			return new Vector3DC(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
 		}
 
+		public static Vector3DC operator -(Vector3DC left, decimal right)
+		{
+			return new Vector3DC(left.X - right, left.Y - right, left.Z - right);
+		}
+#endregion
+
+#region division operators
 		public static Vector3DC operator /(Vector3DC left, Vector3DC right)
 		{
 			return new Vector3DC(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
 		}
 
+		public static Vector3DC operator /(Vector3DC left, decimal right)
+		{
+			return new Vector3DC(left.X / right, left.Y / right, left.Z / right);
+		}
+#endregion
+
+#region Multiply operators
 		public static Vector3DC operator *(Vector3DC left, Vector3DC right)
 		{
 			return new Vector3DC(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+		}
+
+		public static Vector3DC operator *(Vector3DC left, decimal right)
+		{
+			return new Vector3DC(left.X * right, left.Y * right, left.Z * right);
 		}
 #endregion
 	}

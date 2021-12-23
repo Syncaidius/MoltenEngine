@@ -24,25 +24,51 @@ namespace Molten.Math
 			Y = y;
 		}
 
-#region operators
+#region Add operators
 		public static Byte2 operator +(Byte2 left, Byte2 right)
 		{
 			return new Byte2(left.X + right.X, left.Y + right.Y);
 		}
 
+		public static Byte2 operator +(Byte2 left, byte right)
+		{
+			return new Byte2(left.X + right, left.Y + right);
+		}
+#endregion
+
+#region Subtract operators
 		public static Byte2 operator -(Byte2 left, Byte2 right)
 		{
 			return new Byte2(left.X - right.X, left.Y - right.Y);
 		}
 
+		public static Byte2 operator -(Byte2 left, byte right)
+		{
+			return new Byte2(left.X - right, left.Y - right);
+		}
+#endregion
+
+#region division operators
 		public static Byte2 operator /(Byte2 left, Byte2 right)
 		{
 			return new Byte2(left.X / right.X, left.Y / right.Y);
 		}
 
+		public static Byte2 operator /(Byte2 left, byte right)
+		{
+			return new Byte2(left.X / right, left.Y / right);
+		}
+#endregion
+
+#region Multiply operators
 		public static Byte2 operator *(Byte2 left, Byte2 right)
 		{
 			return new Byte2(left.X * right.X, left.Y * right.Y);
+		}
+
+		public static Byte2 operator *(Byte2 left, byte right)
+		{
+			return new Byte2(left.X * right, left.Y * right);
 		}
 #endregion
 	}

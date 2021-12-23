@@ -32,25 +32,51 @@ namespace Molten.Math
 			W = w;
 		}
 
-#region operators
+#region Add operators
 		public static SByte4 operator +(SByte4 left, SByte4 right)
 		{
 			return new SByte4(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
 		}
 
+		public static SByte4 operator +(SByte4 left, sbyte right)
+		{
+			return new SByte4(left.X + right, left.Y + right, left.Z + right, left.W + right);
+		}
+#endregion
+
+#region Subtract operators
 		public static SByte4 operator -(SByte4 left, SByte4 right)
 		{
 			return new SByte4(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
 		}
 
+		public static SByte4 operator -(SByte4 left, sbyte right)
+		{
+			return new SByte4(left.X - right, left.Y - right, left.Z - right, left.W - right);
+		}
+#endregion
+
+#region division operators
 		public static SByte4 operator /(SByte4 left, SByte4 right)
 		{
 			return new SByte4(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
 		}
 
+		public static SByte4 operator /(SByte4 left, sbyte right)
+		{
+			return new SByte4(left.X / right, left.Y / right, left.Z / right, left.W / right);
+		}
+#endregion
+
+#region Multiply operators
 		public static SByte4 operator *(SByte4 left, SByte4 right)
 		{
 			return new SByte4(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
+		}
+
+		public static SByte4 operator *(SByte4 left, sbyte right)
+		{
+			return new SByte4(left.X * right, left.Y * right, left.Z * right, left.W * right);
 		}
 #endregion
 	}

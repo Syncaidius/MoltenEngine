@@ -24,25 +24,51 @@ namespace Molten.Math
 			Y = y;
 		}
 
-#region operators
+#region Add operators
 		public static Half2 operator +(Half2 left, Half2 right)
 		{
 			return new Half2(left.X + right.X, left.Y + right.Y);
 		}
 
+		public static Half2 operator +(Half2 left, short right)
+		{
+			return new Half2(left.X + right, left.Y + right);
+		}
+#endregion
+
+#region Subtract operators
 		public static Half2 operator -(Half2 left, Half2 right)
 		{
 			return new Half2(left.X - right.X, left.Y - right.Y);
 		}
 
+		public static Half2 operator -(Half2 left, short right)
+		{
+			return new Half2(left.X - right, left.Y - right);
+		}
+#endregion
+
+#region division operators
 		public static Half2 operator /(Half2 left, Half2 right)
 		{
 			return new Half2(left.X / right.X, left.Y / right.Y);
 		}
 
+		public static Half2 operator /(Half2 left, short right)
+		{
+			return new Half2(left.X / right, left.Y / right);
+		}
+#endregion
+
+#region Multiply operators
 		public static Half2 operator *(Half2 left, Half2 right)
 		{
 			return new Half2(left.X * right.X, left.Y * right.Y);
+		}
+
+		public static Half2 operator *(Half2 left, short right)
+		{
+			return new Half2(left.X * right, left.Y * right);
 		}
 #endregion
 	}

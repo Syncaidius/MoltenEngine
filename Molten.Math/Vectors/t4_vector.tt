@@ -65,25 +65,51 @@ namespace Molten.Math
 #>
 		}
 
-#region operators
+#region Add operators
 		public static <#=fullName#> operator +(<#=fullName#> left, <#=fullName#> right)
 		{
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_propertyMapUpper[p]#> + right.<#=_propertyMapUpper[p]#><#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
+		public static <#=fullName#> operator +(<#=fullName#> left, <#=_types[i]#> right)
+		{
+			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_propertyMapUpper[p]#> + right<#=(p < (size-1) ? ", " : "")#><#}#>);
+		}
+#endregion
+
+#region Subtract operators
 		public static <#=fullName#> operator -(<#=fullName#> left, <#=fullName#> right)
 		{
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_propertyMapUpper[p]#> - right.<#=_propertyMapUpper[p]#><#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
+		public static <#=fullName#> operator -(<#=fullName#> left, <#=_types[i]#> right)
+		{
+			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_propertyMapUpper[p]#> - right<#=(p < (size-1) ? ", " : "")#><#}#>);
+		}
+#endregion
+
+#region division operators
 		public static <#=fullName#> operator /(<#=fullName#> left, <#=fullName#> right)
 		{
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_propertyMapUpper[p]#> / right.<#=_propertyMapUpper[p]#><#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
+		public static <#=fullName#> operator /(<#=fullName#> left, <#=_types[i]#> right)
+		{
+			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_propertyMapUpper[p]#> / right<#=(p < (size-1) ? ", " : "")#><#}#>);
+		}
+#endregion
+
+#region Multiply operators
 		public static <#=fullName#> operator *(<#=fullName#> left, <#=fullName#> right)
 		{
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_propertyMapUpper[p]#> * right.<#=_propertyMapUpper[p]#><#=(p < (size-1) ? ", " : "")#><#}#>);
+		}
+
+		public static <#=fullName#> operator *(<#=fullName#> left, <#=_types[i]#> right)
+		{
+			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_propertyMapUpper[p]#> * right<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 #endregion
 	}

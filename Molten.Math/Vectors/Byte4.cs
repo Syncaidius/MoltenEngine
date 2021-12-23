@@ -32,25 +32,51 @@ namespace Molten.Math
 			W = w;
 		}
 
-#region operators
+#region Add operators
 		public static Byte4 operator +(Byte4 left, Byte4 right)
 		{
 			return new Byte4(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
 		}
 
+		public static Byte4 operator +(Byte4 left, byte right)
+		{
+			return new Byte4(left.X + right, left.Y + right, left.Z + right, left.W + right);
+		}
+#endregion
+
+#region Subtract operators
 		public static Byte4 operator -(Byte4 left, Byte4 right)
 		{
 			return new Byte4(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
 		}
 
+		public static Byte4 operator -(Byte4 left, byte right)
+		{
+			return new Byte4(left.X - right, left.Y - right, left.Z - right, left.W - right);
+		}
+#endregion
+
+#region division operators
 		public static Byte4 operator /(Byte4 left, Byte4 right)
 		{
 			return new Byte4(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
 		}
 
+		public static Byte4 operator /(Byte4 left, byte right)
+		{
+			return new Byte4(left.X / right, left.Y / right, left.Z / right, left.W / right);
+		}
+#endregion
+
+#region Multiply operators
 		public static Byte4 operator *(Byte4 left, Byte4 right)
 		{
 			return new Byte4(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
+		}
+
+		public static Byte4 operator *(Byte4 left, byte right)
+		{
+			return new Byte4(left.X * right, left.Y * right, left.Z * right, left.W * right);
 		}
 #endregion
 	}

@@ -29,25 +29,51 @@ namespace Molten.Math
 			Y = y;
 		}
 
-#region operators
+#region Add operators
 		public static SByte2 operator +(SByte2 left, SByte2 right)
 		{
 			return new SByte2(left.X + right.X, left.Y + right.Y);
 		}
 
+		public static SByte2 operator +(SByte2 left, sbyte right)
+		{
+			return new SByte2(left.X + right, left.Y + right);
+		}
+#endregion
+
+#region Subtract operators
 		public static SByte2 operator -(SByte2 left, SByte2 right)
 		{
 			return new SByte2(left.X - right.X, left.Y - right.Y);
 		}
 
+		public static SByte2 operator -(SByte2 left, sbyte right)
+		{
+			return new SByte2(left.X - right, left.Y - right);
+		}
+#endregion
+
+#region division operators
 		public static SByte2 operator /(SByte2 left, SByte2 right)
 		{
 			return new SByte2(left.X / right.X, left.Y / right.Y);
 		}
 
+		public static SByte2 operator /(SByte2 left, sbyte right)
+		{
+			return new SByte2(left.X / right, left.Y / right);
+		}
+#endregion
+
+#region Multiply operators
 		public static SByte2 operator *(SByte2 left, SByte2 right)
 		{
 			return new SByte2(left.X * right.X, left.Y * right.Y);
+		}
+
+		public static SByte2 operator *(SByte2 left, sbyte right)
+		{
+			return new SByte2(left.X * right, left.Y * right);
 		}
 #endregion
 	}

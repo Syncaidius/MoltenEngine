@@ -28,25 +28,51 @@ namespace Molten.Math
 			Z = z;
 		}
 
-#region operators
+#region Add operators
 		public static Vector3UI operator +(Vector3UI left, Vector3UI right)
 		{
 			return new Vector3UI(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
 		}
 
+		public static Vector3UI operator +(Vector3UI left, uint right)
+		{
+			return new Vector3UI(left.X + right, left.Y + right, left.Z + right);
+		}
+#endregion
+
+#region Subtract operators
 		public static Vector3UI operator -(Vector3UI left, Vector3UI right)
 		{
 			return new Vector3UI(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
 		}
 
+		public static Vector3UI operator -(Vector3UI left, uint right)
+		{
+			return new Vector3UI(left.X - right, left.Y - right, left.Z - right);
+		}
+#endregion
+
+#region division operators
 		public static Vector3UI operator /(Vector3UI left, Vector3UI right)
 		{
 			return new Vector3UI(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
 		}
 
+		public static Vector3UI operator /(Vector3UI left, uint right)
+		{
+			return new Vector3UI(left.X / right, left.Y / right, left.Z / right);
+		}
+#endregion
+
+#region Multiply operators
 		public static Vector3UI operator *(Vector3UI left, Vector3UI right)
 		{
 			return new Vector3UI(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+		}
+
+		public static Vector3UI operator *(Vector3UI left, uint right)
+		{
+			return new Vector3UI(left.X * right, left.Y * right, left.Z * right);
 		}
 #endregion
 	}

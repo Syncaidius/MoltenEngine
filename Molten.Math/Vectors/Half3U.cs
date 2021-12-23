@@ -28,25 +28,51 @@ namespace Molten.Math
 			Z = z;
 		}
 
-#region operators
+#region Add operators
 		public static Half3U operator +(Half3U left, Half3U right)
 		{
 			return new Half3U(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
 		}
 
+		public static Half3U operator +(Half3U left, ushort right)
+		{
+			return new Half3U(left.X + right, left.Y + right, left.Z + right);
+		}
+#endregion
+
+#region Subtract operators
 		public static Half3U operator -(Half3U left, Half3U right)
 		{
 			return new Half3U(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
 		}
 
+		public static Half3U operator -(Half3U left, ushort right)
+		{
+			return new Half3U(left.X - right, left.Y - right, left.Z - right);
+		}
+#endregion
+
+#region division operators
 		public static Half3U operator /(Half3U left, Half3U right)
 		{
 			return new Half3U(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
 		}
 
+		public static Half3U operator /(Half3U left, ushort right)
+		{
+			return new Half3U(left.X / right, left.Y / right, left.Z / right);
+		}
+#endregion
+
+#region Multiply operators
 		public static Half3U operator *(Half3U left, Half3U right)
 		{
 			return new Half3U(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+		}
+
+		public static Half3U operator *(Half3U left, ushort right)
+		{
+			return new Half3U(left.X * right, left.Y * right, left.Z * right);
 		}
 #endregion
 	}

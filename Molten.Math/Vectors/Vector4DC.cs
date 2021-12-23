@@ -32,25 +32,51 @@ namespace Molten.Math
 			W = w;
 		}
 
-#region operators
+#region Add operators
 		public static Vector4DC operator +(Vector4DC left, Vector4DC right)
 		{
 			return new Vector4DC(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
 		}
 
+		public static Vector4DC operator +(Vector4DC left, decimal right)
+		{
+			return new Vector4DC(left.X + right, left.Y + right, left.Z + right, left.W + right);
+		}
+#endregion
+
+#region Subtract operators
 		public static Vector4DC operator -(Vector4DC left, Vector4DC right)
 		{
 			return new Vector4DC(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
 		}
 
+		public static Vector4DC operator -(Vector4DC left, decimal right)
+		{
+			return new Vector4DC(left.X - right, left.Y - right, left.Z - right, left.W - right);
+		}
+#endregion
+
+#region division operators
 		public static Vector4DC operator /(Vector4DC left, Vector4DC right)
 		{
 			return new Vector4DC(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
 		}
 
+		public static Vector4DC operator /(Vector4DC left, decimal right)
+		{
+			return new Vector4DC(left.X / right, left.Y / right, left.Z / right, left.W / right);
+		}
+#endregion
+
+#region Multiply operators
 		public static Vector4DC operator *(Vector4DC left, Vector4DC right)
 		{
 			return new Vector4DC(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
+		}
+
+		public static Vector4DC operator *(Vector4DC left, decimal right)
+		{
+			return new Vector4DC(left.X * right, left.Y * right, left.Z * right, left.W * right);
 		}
 #endregion
 	}

@@ -24,25 +24,51 @@ namespace Molten.Math
 			Y = y;
 		}
 
-#region operators
+#region Add operators
 		public static Vector2NU operator +(Vector2NU left, Vector2NU right)
 		{
 			return new Vector2NU(left.X + right.X, left.Y + right.Y);
 		}
 
+		public static Vector2NU operator +(Vector2NU left, nuint right)
+		{
+			return new Vector2NU(left.X + right, left.Y + right);
+		}
+#endregion
+
+#region Subtract operators
 		public static Vector2NU operator -(Vector2NU left, Vector2NU right)
 		{
 			return new Vector2NU(left.X - right.X, left.Y - right.Y);
 		}
 
+		public static Vector2NU operator -(Vector2NU left, nuint right)
+		{
+			return new Vector2NU(left.X - right, left.Y - right);
+		}
+#endregion
+
+#region division operators
 		public static Vector2NU operator /(Vector2NU left, Vector2NU right)
 		{
 			return new Vector2NU(left.X / right.X, left.Y / right.Y);
 		}
 
+		public static Vector2NU operator /(Vector2NU left, nuint right)
+		{
+			return new Vector2NU(left.X / right, left.Y / right);
+		}
+#endregion
+
+#region Multiply operators
 		public static Vector2NU operator *(Vector2NU left, Vector2NU right)
 		{
 			return new Vector2NU(left.X * right.X, left.Y * right.Y);
+		}
+
+		public static Vector2NU operator *(Vector2NU left, nuint right)
+		{
+			return new Vector2NU(left.X * right, left.Y * right);
 		}
 #endregion
 	}
