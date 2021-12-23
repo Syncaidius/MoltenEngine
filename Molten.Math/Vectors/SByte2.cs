@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 namespace Molten.Math
 {
 	///<summary>A <see cref = "sbyte"/> vector comprised of 2 components.</summary>
-	[StructLayout(LayoutKind.Sequential)]
+	[StructLayout(LayoutKind.Sequential, Pack=1)]
 	public partial struct SByte2
 	{
 		///<summary>The X component.</summary>
@@ -17,6 +17,9 @@ namespace Molten.Math
 		///<summary>The Y component.</summary>
 		public sbyte Y;
 
+
+		///<summary>The size of <see cref="SByte2"/>, in bytes.</summary>
+		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(SByte2));
 
 		public static SByte2 One = new SByte2(1, 1);
 

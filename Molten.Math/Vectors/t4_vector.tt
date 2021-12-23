@@ -13,6 +13,7 @@ string outputPath = this.Host.ResolvePath("");
 string[] _types = new string[]{"sbyte", "byte", "int", "uint", "short", "ushort", "long", "ulong", "float", "double", "decimal", "nint", "nuint"};
 string[] _names = new string[]{"SByte", "Byte", "Vector", "Vector", "Half", "Half", "Vector", "Vector", "Vector", "Vector", "Vector", "Vector", "Vector"};
 string[] _postfixes = new string[]{"", "", "I", "UI", "", "U", "L", "UL", "F", "D", "DC", "N", "NU"};
+int[] _pack = new int[]{1, 1, 4, 4 , 2, 2, 8, 8, 4, 8, 16, 0, 0};
 string[] _one = new string[]{"1", "1", "1", "1U", "(short)1", "(ushort)1", "1L", "1UL", "1F", "1D", "1M", "1", "1U"};
 string[] _zero = new string[]{"0", "0", "0", "0U", "0", "0", "0L", "0UL", "0F", "0D", "0M", "0", "0U"};
 string _propertyMap = "xyzw";
@@ -34,7 +35,7 @@ using System.Runtime.InteropServices;
 namespace Molten.Math
 {
 	///<summary>A <see cref = "<#=_types[i]#>"/> vector comprised of <#=size#> components.</summary>
-	[StructLayout(LayoutKind.Sequential)]
+	[StructLayout(LayoutKind.Sequential, Pack=<#=_pack[i]#>)]
 	public partial struct <#=fullName#>
 	{
 <#
@@ -47,6 +48,9 @@ namespace Molten.Math
 <#
 		}
 #>
+
+		///<summary>The size of <see cref="<#=fullName#>"/>, in bytes.</summary>
+		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(<#=fullName#>));
 
 		public static <#=fullName#> One = new <#=fullName#>(<#for(int p = 0; p < size; p++){#><#=_one[i]#><#=(p < (size-1) ? ", " : "")#><#}#>);
 

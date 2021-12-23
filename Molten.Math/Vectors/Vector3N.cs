@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Molten.Math
 {
 	///<summary>A <see cref = "nint"/> vector comprised of 3 components.</summary>
-	[StructLayout(LayoutKind.Sequential)]
+	[StructLayout(LayoutKind.Sequential, Pack=0)]
 	public partial struct Vector3N
 	{
 		///<summary>The X component.</summary>
@@ -15,6 +15,9 @@ namespace Molten.Math
 		///<summary>The Z component.</summary>
 		public nint Z;
 
+
+		///<summary>The size of <see cref="Vector3N"/>, in bytes.</summary>
+		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector3N));
 
 		public static Vector3N One = new Vector3N(1, 1, 1);
 

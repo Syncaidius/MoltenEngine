@@ -62,11 +62,6 @@ namespace Molten
         public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector2F));
 
         /// <summary>
-        /// A <see cref="Vector2F"/> with all of its components set to zero.
-        /// </summary>
-        public static readonly Vector2F Zero = new Vector2F();
-
-        /// <summary>
         /// The X unit <see cref="Vector2F"/> (1, 0).
         /// </summary>
         public static readonly Vector2F UnitX = new Vector2F(1.0f, 0.0f);
@@ -75,11 +70,6 @@ namespace Molten
         /// The Y unit <see cref="Vector2F"/> (0, 1).
         /// </summary>
         public static readonly Vector2F UnitY = new Vector2F(0.0f, 1.0f);
-
-        /// <summary>
-        /// A <see cref="Vector2F"/> with all of its components set to one.
-        /// </summary>
-        public static readonly Vector2F One = new Vector2F(1.0f, 1.0f);
 
         /// <summary>
         /// The X component of the vector.

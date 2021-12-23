@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Molten.Math
 {
 	///<summary>A <see cref = "short"/> vector comprised of 4 components.</summary>
-	[StructLayout(LayoutKind.Sequential)]
+	[StructLayout(LayoutKind.Sequential, Pack=2)]
 	public partial struct Half4
 	{
 		///<summary>The X component.</summary>
@@ -18,6 +18,9 @@ namespace Molten.Math
 		///<summary>The W component.</summary>
 		public short W;
 
+
+		///<summary>The size of <see cref="Half4"/>, in bytes.</summary>
+		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Half4));
 
 		public static Half4 One = new Half4((short)1, (short)1, (short)1, (short)1);
 

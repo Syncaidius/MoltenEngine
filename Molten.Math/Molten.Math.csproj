@@ -236,13 +236,21 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>t4_helpers.tt</DependentUpon>
     </Compile>
+    <Compile Include="Vectors\t4_vector.fp.common.cs">
+      <DependentUpon>t4_vector.fp.common.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Vectors\t4_vector.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>t4_vector.tt</DependentUpon>
     </Compile>
+    <Compile Include="Vectors\Vector2D.common.cs" />
     <Compile Include="Vectors\Vector2D.cs" />
+    <Compile Include="Vectors\Vector2DC.common.cs" />
     <Compile Include="Vectors\Vector2DC.cs" />
+    <Compile Include="Vectors\Vector2F.common.cs" />
     <Compile Include="Vectors\Vector2F.cs" />
     <Compile Include="Vectors\Vector2I.cs" />
     <Compile Include="Vectors\Vector2L.cs" />
@@ -250,8 +258,11 @@
     <Compile Include="Vectors\Vector2NU.cs" />
     <Compile Include="Vectors\Vector2UI.cs" />
     <Compile Include="Vectors\Vector2UL.cs" />
+    <Compile Include="Vectors\Vector3D.common.cs" />
     <Compile Include="Vectors\Vector3D.cs" />
+    <Compile Include="Vectors\Vector3DC.common.cs" />
     <Compile Include="Vectors\Vector3DC.cs" />
+    <Compile Include="Vectors\Vector3F.common.cs" />
     <Compile Include="Vectors\Vector3F.cs" />
     <Compile Include="Vectors\Vector3I.cs" />
     <Compile Include="Vectors\Vector3L.cs" />
@@ -259,8 +270,11 @@
     <Compile Include="Vectors\Vector3NU.cs" />
     <Compile Include="Vectors\Vector3UI.cs" />
     <Compile Include="Vectors\Vector3UL.cs" />
+    <Compile Include="Vectors\Vector4D.common.cs" />
     <Compile Include="Vectors\Vector4D.cs" />
+    <Compile Include="Vectors\Vector4DC.common.cs" />
     <Compile Include="Vectors\Vector4DC.cs" />
+    <Compile Include="Vectors\Vector4F.common.cs" />
     <Compile Include="Vectors\Vector4F.cs" />
     <Compile Include="Vectors\Vector4I.cs" />
     <Compile Include="Vectors\Vector4L.cs" />
@@ -294,6 +308,10 @@
     <Content Include="Vectors\t4_helpers.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_helpers.cs</LastGenOutput>
+    </Content>
+    <Content Include="Vectors\t4_vector.fp.common.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_vector.fp.common.cs</LastGenOutput>
     </Content>
     <Content Include="Vectors\t4_vector.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

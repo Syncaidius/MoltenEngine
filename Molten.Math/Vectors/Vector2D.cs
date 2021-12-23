@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Molten.Math
 {
 	///<summary>A <see cref = "double"/> vector comprised of 2 components.</summary>
-	[StructLayout(LayoutKind.Sequential)]
+	[StructLayout(LayoutKind.Sequential, Pack=8)]
 	public partial struct Vector2D
 	{
 		///<summary>The X component.</summary>
@@ -12,6 +12,9 @@ namespace Molten.Math
 		///<summary>The Y component.</summary>
 		public double Y;
 
+
+		///<summary>The size of <see cref="Vector2D"/>, in bytes.</summary>
+		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector2D));
 
 		public static Vector2D One = new Vector2D(1D, 1D);
 

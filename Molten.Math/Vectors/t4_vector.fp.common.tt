@@ -1,0 +1,45 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+
+<#@ include file="t4_helpers.tt" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".txt" #>
+
+<#
+string outputPath = this.Host.ResolvePath("");
+string[] _types = new string[]{"float", "double", "decimal"};
+string[] _names = new string[]{"Vector", "Vector", "Vector"};
+string[] _postfixes = new string[]{"F", "D", "DC"};
+string _propertyMap = "xyzw";
+string _propertyMapUpper = "XYZW";
+
+int[] _sizes = new int[]{2, 3, 4};
+
+for(int i = 0; i < _types.Length; i++)
+{
+	string tName = _types[i];
+
+	foreach(int size in _sizes)
+	{
+		string fullName = $"{_names[i]}{size}{_postfixes[i]}";
+		string fn = $"{fullName}.common";
+#>
+using System.Runtime.InteropServices;
+
+namespace Molten
+{
+	///<summary>A <see cref = "<#=_types[i]#>"/> vector comprised of <#=size#> components.</summary>
+	public partial struct <#=fullName#>
+	{
+
+	}
+}
+<#
+		SaveFile(outputPath, fn, this.GenerationEnvironment.ToString());
+		this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+	}
+}
+#>
