@@ -35,6 +35,31 @@ namespace Molten.Math
 			W = w;
 		}
 
+#region Common Functions
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="Half4"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector</param>
+        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static void DistanceSquared(ref Half4 value1, ref Half4 value2, out short result)
+        {
+            short x = value1.X - value2.X;
+            short y = value1.Y - value2.Y;
+            short z = value1.Z - value2.Z;
+            short w = value1.W - value2.W;
+
+            result = (x * x) + (y * y) + (z * z) + (w * w);
+        }
+#endregion
+
 #region Add operators
 		public static Half4 operator +(Half4 left, Half4 right)
 		{

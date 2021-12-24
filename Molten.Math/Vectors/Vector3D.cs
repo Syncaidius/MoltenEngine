@@ -31,6 +31,30 @@ namespace Molten.Math
 			Z = z;
 		}
 
+#region Common Functions
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="Vector3D"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector</param>
+        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static void DistanceSquared(ref Vector3D value1, ref Vector3D value2, out double result)
+        {
+            double x = value1.X - value2.X;
+            double y = value1.Y - value2.Y;
+            double z = value1.Z - value2.Z;
+
+            result = (x * x) + (y * y) + (z * z);
+        }
+#endregion
+
 #region Add operators
 		public static Vector3D operator +(Vector3D left, Vector3D right)
 		{

@@ -12,7 +12,7 @@
 string outputPath = this.Host.ResolvePath("");
 string[] _types = new string[]{"sbyte", "byte", "int", "uint", "short", "ushort", "long", "ulong", "float", "double", "decimal", "nint", "nuint"};
 string[] _names = new string[]{"SByte", "Byte", "Vector", "Vector", "Half", "Half", "Vector", "Vector", "Vector", "Vector", "Vector", "Vector", "Vector"};
-string[] _postfixes = new string[]{"", "", "I", "UI", "", "U", "L", "UL", "F", "D", "DC", "N", "NU"};
+string[] _postfixes = new string[]{"", "", "I", "UI", "", "U", "L", "UL", "F", "D", "M", "N", "NU"};
 int[] _pack = new int[]{1, 1, 4, 4 , 2, 2, 8, 8, 4, 8, 16, 0, 0};
 string[] _one = new string[]{"1", "1", "1", "1U", "(short)1", "(ushort)1", "1L", "1UL", "1F", "1D", "1M", "1", "1U"};
 string[] _zero = new string[]{"0", "0", "0", "0U", "0", "0", "0L", "0UL", "0F", "0D", "0M", "0", "0U"};
@@ -68,6 +68,37 @@ namespace Molten.Math
 		}
 #>
 		}
+
+#region Common Functions
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="<#=fullName#>"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector</param>
+        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static void DistanceSquared(ref <#=fullName#> value1, ref <#=fullName#> value2, out <#=_types[i]#> result)
+        {
+<#
+			string r ="";
+			for(int d = 0; d < size; d++)
+			{
+				r+= $"({_propertyMap[d]} * {_propertyMap[d]}){(d < (size-1) ? " + " : "")}";
+#>
+            <#=_types[i]#> <#=_propertyMap[d]#> = value1.<#=_propertyMapUpper[d]#> - value2.<#=_propertyMapUpper[d]#>;
+<#
+			}
+#>
+
+            result = <#=r#>;
+        }
+#endregion
 
 #region Add operators
 		public static <#=fullName#> operator +(<#=fullName#> left, <#=fullName#> right)
