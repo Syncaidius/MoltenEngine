@@ -3,6 +3,7 @@
 
 
 
+using System;
 using System.Runtime.InteropServices;
 
 namespace Molten.Math
@@ -53,6 +54,29 @@ namespace Molten.Math
 
             result = (x * x) + (y * y);
         }
+
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="SByte2"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The squared distance between the two vectors.</returns>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static sbyte DistanceSquared(ref SByte2 value1, ref SByte2 value2)
+        {
+            sbyte x = value1.X - value2.X;
+            sbyte y = value1.Y - value2.Y;
+
+            return (x * x) + (y * y);
+        }
+
+
 #endregion
 
 #region Add operators
@@ -100,6 +124,31 @@ namespace Molten.Math
 		public static SByte2 operator *(SByte2 left, sbyte right)
 		{
 			return new SByte2(left.X * right, left.Y * right);
+		}
+#endregion
+
+#region Indexers
+		public sbyte this[int index]
+		{
+			get
+			{
+				switch(index)
+				{
+					case 0: return X;
+					case 1: return Y;
+				}
+				throw new ArgumentOutOfRangeException("index", "Indices for SByte2 run from 0 to 1, inclusive.");
+			}
+
+			set
+			{
+				switch(index)
+				{
+					case 0: X = value; break;
+					case 1: Y = value; break;
+				}
+				throw new ArgumentOutOfRangeException("index", "Indices for SByte2 run from 0 to 1, inclusive.");
+			}
 		}
 #endregion
 	}

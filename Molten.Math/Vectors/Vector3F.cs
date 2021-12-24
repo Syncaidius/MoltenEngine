@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Molten.Math
@@ -53,6 +54,30 @@ namespace Molten.Math
 
             result = (x * x) + (y * y) + (z * z);
         }
+
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="Vector3F"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The squared distance between the two vectors.</returns>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static float DistanceSquared(ref Vector3F value1, ref Vector3F value2)
+        {
+            float x = value1.X - value2.X;
+            float y = value1.Y - value2.Y;
+            float z = value1.Z - value2.Z;
+
+            return (x * x) + (y * y) + (z * z);
+        }
+
+
 #endregion
 
 #region Add operators
@@ -100,6 +125,33 @@ namespace Molten.Math
 		public static Vector3F operator *(Vector3F left, float right)
 		{
 			return new Vector3F(left.X * right, left.Y * right, left.Z * right);
+		}
+#endregion
+
+#region Indexers
+		public float this[int index]
+		{
+			get
+			{
+				switch(index)
+				{
+					case 0: return X;
+					case 1: return Y;
+					case 2: return Z;
+				}
+				throw new ArgumentOutOfRangeException("index", "Indices for Vector3F run from 0 to 2, inclusive.");
+			}
+
+			set
+			{
+				switch(index)
+				{
+					case 0: X = value; break;
+					case 1: Y = value; break;
+					case 2: Z = value; break;
+				}
+				throw new ArgumentOutOfRangeException("index", "Indices for Vector3F run from 0 to 2, inclusive.");
+			}
 		}
 #endregion
 	}

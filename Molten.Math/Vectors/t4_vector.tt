@@ -18,6 +18,7 @@ string[] _one = new string[]{"1", "1", "1", "1U", "(short)1", "(ushort)1", "1L",
 string[] _zero = new string[]{"0", "0", "0", "0U", "0", "0", "0L", "0UL", "0F", "0D", "0M", "0", "0U"};
 string _propertyMap = "xyzw";
 string _propertyMapUpper = "XYZW";
+string r = "";
 
 int[] _sizes = new int[]{2, 3, 4};
 
@@ -30,6 +31,7 @@ for(int i = 0; i < _types.Length; i++)
 		string fullName = $"{_names[i]}{size}{_postfixes[i]}";
 		string fn = $"{fullName}";
 #>
+using System;
 using System.Runtime.InteropServices;
 
 namespace Molten.Math
@@ -86,7 +88,7 @@ namespace Molten.Math
 		public static void DistanceSquared(ref <#=fullName#> value1, ref <#=fullName#> value2, out <#=_types[i]#> result)
         {
 <#
-			string r ="";
+			r ="";
 			for(int d = 0; d < size; d++)
 			{
 				r+= $"({_propertyMap[d]} * {_propertyMap[d]}){(d < (size-1) ? " + " : "")}";
@@ -98,6 +100,37 @@ namespace Molten.Math
 
             result = <#=r#>;
         }
+
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="<#=fullName#>"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The squared distance between the two vectors.</returns>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static <#=_types[i]#> DistanceSquared(ref <#=fullName#> value1, ref <#=fullName#> value2)
+        {
+<#
+			r = "";
+			for(int d = 0; d < size; d++)
+			{
+				r+= $"({_propertyMap[d]} * {_propertyMap[d]}){(d < (size-1) ? " + " : "")}";
+#>
+            <#=_types[i]#> <#=_propertyMap[d]#> = value1.<#=_propertyMapUpper[d]#> - value2.<#=_propertyMapUpper[d]#>;
+<#
+			}
+#>
+
+            return <#=r#>;
+        }
+
+
 #endregion
 
 #region Add operators
@@ -145,6 +178,43 @@ namespace Molten.Math
 		public static <#=fullName#> operator *(<#=fullName#> left, <#=_types[i]#> right)
 		{
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_propertyMapUpper[p]#> * right<#=(p < (size-1) ? ", " : "")#><#}#>);
+		}
+#endregion
+
+#region Indexers
+		public <#=_types[i]#> this[int index]
+		{
+			get
+			{
+				switch(index)
+				{
+<#
+					for(int p = 0; p < size; p++)
+					{
+#>
+					case <#=p#>: return <#=_propertyMapUpper[p]#>;
+<#
+					}
+#>
+				}
+				throw new ArgumentOutOfRangeException("index", "Indices for <#=fullName#> run from 0 to <#=(size-1)#>, inclusive.");
+			}
+
+			set
+			{
+				switch(index)
+				{
+<#
+					for(int p = 0; p < size; p++)
+					{
+#>
+					case <#=p#>: <#=_propertyMapUpper[p]#> = value; break;
+<#
+					}
+#>
+				}
+				throw new ArgumentOutOfRangeException("index", "Indices for <#=fullName#> run from 0 to <#=(size-1)#>, inclusive.");
+			}
 		}
 #endregion
 	}
