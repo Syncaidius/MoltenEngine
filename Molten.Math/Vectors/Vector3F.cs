@@ -22,9 +22,24 @@ namespace Molten.Math
 
 		public static Vector3F One = new Vector3F(1F, 1F, 1F);
 
+		/// <summary>
+        /// The X unit <see cref="Vector3F"/>.
+        /// </summary>
+		public static Vector3F UnitX = new Vector3F(1F, 0F, 0F);
+
+		/// <summary>
+        /// The Y unit <see cref="Vector3F"/>.
+        /// </summary>
+		public static Vector3F UnitY = new Vector3F(0F, 1F, 0F);
+
+		/// <summary>
+        /// The Z unit <see cref="Vector3F"/>.
+        /// </summary>
+		public static Vector3F UnitZ = new Vector3F(0F, 0F, 1F);
+
 		public static Vector3F Zero = new Vector3F(0F, 0F, 0F);
 
-		///<summary>Creates a new instance of <see cref = "Vector3F"/></summary>
+		///<summary>Creates a new instance of <see cref = "Vector3F"/>.</summary>
 		public Vector3F(float x, float y, float z)
 		{
 			X = x;
@@ -129,6 +144,14 @@ namespace Molten.Math
 #endregion
 
 #region Indexers
+		/// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the X, Y or Z component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 2].</exception>
+        
 		public float this[int index]
 		{
 			get

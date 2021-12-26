@@ -25,9 +25,29 @@ namespace Molten.Math
 
 		public static Vector4N One = new Vector4N(1, 1, 1, 1);
 
+		/// <summary>
+        /// The X unit <see cref="Vector4N"/>.
+        /// </summary>
+		public static Vector4N UnitX = new Vector4N(1, 0, 0, 0);
+
+		/// <summary>
+        /// The Y unit <see cref="Vector4N"/>.
+        /// </summary>
+		public static Vector4N UnitY = new Vector4N(0, 1, 0, 0);
+
+		/// <summary>
+        /// The Z unit <see cref="Vector4N"/>.
+        /// </summary>
+		public static Vector4N UnitZ = new Vector4N(0, 0, 1, 0);
+
+		/// <summary>
+        /// The W unit <see cref="Vector4N"/>.
+        /// </summary>
+		public static Vector4N UnitW = new Vector4N(0, 0, 0, 1);
+
 		public static Vector4N Zero = new Vector4N(0, 0, 0, 0);
 
-		///<summary>Creates a new instance of <see cref = "Vector4N"/></summary>
+		///<summary>Creates a new instance of <see cref = "Vector4N"/>.</summary>
 		public Vector4N(nint x, nint y, nint z, nint w)
 		{
 			X = x;
@@ -135,6 +155,14 @@ namespace Molten.Math
 #endregion
 
 #region Indexers
+		/// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the X, Y, Z or W component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>
+        
 		public nint this[int index]
 		{
 			get

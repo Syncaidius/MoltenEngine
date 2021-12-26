@@ -19,9 +19,19 @@ namespace Molten.Math
 
 		public static Vector2L One = new Vector2L(1L, 1L);
 
+		/// <summary>
+        /// The X unit <see cref="Vector2L"/>.
+        /// </summary>
+		public static Vector2L UnitX = new Vector2L(1L, 0L);
+
+		/// <summary>
+        /// The Y unit <see cref="Vector2L"/>.
+        /// </summary>
+		public static Vector2L UnitY = new Vector2L(0L, 1L);
+
 		public static Vector2L Zero = new Vector2L(0L, 0L);
 
-		///<summary>Creates a new instance of <see cref = "Vector2L"/></summary>
+		///<summary>Creates a new instance of <see cref = "Vector2L"/>.</summary>
 		public Vector2L(long x, long y)
 		{
 			X = x;
@@ -123,6 +133,14 @@ namespace Molten.Math
 #endregion
 
 #region Indexers
+		/// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the X or Y component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 1].</exception>
+        
 		public long this[int index]
 		{
 			get

@@ -22,9 +22,24 @@ namespace Molten.Math
 
 		public static SByte3 One = new SByte3(1, 1, 1);
 
+		/// <summary>
+        /// The X unit <see cref="SByte3"/>.
+        /// </summary>
+		public static SByte3 UnitX = new SByte3(1, 0, 0);
+
+		/// <summary>
+        /// The Y unit <see cref="SByte3"/>.
+        /// </summary>
+		public static SByte3 UnitY = new SByte3(0, 1, 0);
+
+		/// <summary>
+        /// The Z unit <see cref="SByte3"/>.
+        /// </summary>
+		public static SByte3 UnitZ = new SByte3(0, 0, 1);
+
 		public static SByte3 Zero = new SByte3(0, 0, 0);
 
-		///<summary>Creates a new instance of <see cref = "SByte3"/></summary>
+		///<summary>Creates a new instance of <see cref = "SByte3"/>.</summary>
 		public SByte3(sbyte x, sbyte y, sbyte z)
 		{
 			X = x;
@@ -129,6 +144,14 @@ namespace Molten.Math
 #endregion
 
 #region Indexers
+		/// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the X, Y or Z component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 2].</exception>
+        
 		public sbyte this[int index]
 		{
 			get

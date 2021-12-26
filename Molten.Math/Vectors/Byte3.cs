@@ -22,9 +22,24 @@ namespace Molten.Math
 
 		public static Byte3 One = new Byte3(1, 1, 1);
 
+		/// <summary>
+        /// The X unit <see cref="Byte3"/>.
+        /// </summary>
+		public static Byte3 UnitX = new Byte3(1, 0, 0);
+
+		/// <summary>
+        /// The Y unit <see cref="Byte3"/>.
+        /// </summary>
+		public static Byte3 UnitY = new Byte3(0, 1, 0);
+
+		/// <summary>
+        /// The Z unit <see cref="Byte3"/>.
+        /// </summary>
+		public static Byte3 UnitZ = new Byte3(0, 0, 1);
+
 		public static Byte3 Zero = new Byte3(0, 0, 0);
 
-		///<summary>Creates a new instance of <see cref = "Byte3"/></summary>
+		///<summary>Creates a new instance of <see cref = "Byte3"/>.</summary>
 		public Byte3(byte x, byte y, byte z)
 		{
 			X = x;
@@ -129,6 +144,14 @@ namespace Molten.Math
 #endregion
 
 #region Indexers
+		/// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the X, Y or Z component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 2].</exception>
+        
 		public byte this[int index]
 		{
 			get

@@ -25,9 +25,29 @@ namespace Molten.Math
 
 		public static Half4U One = new Half4U((ushort)1, (ushort)1, (ushort)1, (ushort)1);
 
+		/// <summary>
+        /// The X unit <see cref="Half4U"/>.
+        /// </summary>
+		public static Half4U UnitX = new Half4U((ushort)1, 0, 0, 0);
+
+		/// <summary>
+        /// The Y unit <see cref="Half4U"/>.
+        /// </summary>
+		public static Half4U UnitY = new Half4U(0, (ushort)1, 0, 0);
+
+		/// <summary>
+        /// The Z unit <see cref="Half4U"/>.
+        /// </summary>
+		public static Half4U UnitZ = new Half4U(0, 0, (ushort)1, 0);
+
+		/// <summary>
+        /// The W unit <see cref="Half4U"/>.
+        /// </summary>
+		public static Half4U UnitW = new Half4U(0, 0, 0, (ushort)1);
+
 		public static Half4U Zero = new Half4U(0, 0, 0, 0);
 
-		///<summary>Creates a new instance of <see cref = "Half4U"/></summary>
+		///<summary>Creates a new instance of <see cref = "Half4U"/>.</summary>
 		public Half4U(ushort x, ushort y, ushort z, ushort w)
 		{
 			X = x;
@@ -135,6 +155,14 @@ namespace Molten.Math
 #endregion
 
 #region Indexers
+		/// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the X, Y, Z or W component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>
+        
 		public ushort this[int index]
 		{
 			get

@@ -22,9 +22,24 @@ namespace Molten.Math
 
 		public static Vector3UL One = new Vector3UL(1UL, 1UL, 1UL);
 
+		/// <summary>
+        /// The X unit <see cref="Vector3UL"/>.
+        /// </summary>
+		public static Vector3UL UnitX = new Vector3UL(1UL, 0UL, 0UL);
+
+		/// <summary>
+        /// The Y unit <see cref="Vector3UL"/>.
+        /// </summary>
+		public static Vector3UL UnitY = new Vector3UL(0UL, 1UL, 0UL);
+
+		/// <summary>
+        /// The Z unit <see cref="Vector3UL"/>.
+        /// </summary>
+		public static Vector3UL UnitZ = new Vector3UL(0UL, 0UL, 1UL);
+
 		public static Vector3UL Zero = new Vector3UL(0UL, 0UL, 0UL);
 
-		///<summary>Creates a new instance of <see cref = "Vector3UL"/></summary>
+		///<summary>Creates a new instance of <see cref = "Vector3UL"/>.</summary>
 		public Vector3UL(ulong x, ulong y, ulong z)
 		{
 			X = x;
@@ -129,6 +144,14 @@ namespace Molten.Math
 #endregion
 
 #region Indexers
+		/// <summary>
+        /// Gets or sets the component at the specified index.
+        /// </summary>
+        /// <value>The value of the X, Y or Z component, depending on the index.</value>
+        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on.</param>
+        /// <returns>The value of the component at the specified index.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 2].</exception>
+        
 		public ulong this[int index]
 		{
 			get
