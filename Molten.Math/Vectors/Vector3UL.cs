@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Molten.Math
 {
-	///<summary>A <see cref = "ulong"/> vector comprised of 3 components.</summary>
+	///<summary>A <see cref = "ulong"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=8)]
 	public partial struct Vector3UL
 	{
@@ -129,6 +129,23 @@ namespace Molten.Math
 		{
 			return new Vector3UL(-X, -Y, -Z);
 		}
+
+		/// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector3UL"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">When the method completes, contains the linear interpolation of the two vectors.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref Vector3UL start, ref Vector3UL end, float amount, out Vector3UL result)
+        {
+			result.X = (ulong)((1f - amount) * start.X + amount * end.X);
+			result.Y = (ulong)((1f - amount) * start.Y + amount * end.Y);
+			result.Z = (ulong)((1f - amount) * start.Z + amount * end.Z);
+        }
 #endregion
 
 #region Add operators

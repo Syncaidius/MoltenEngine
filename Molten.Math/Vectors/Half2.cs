@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Molten.Math
 {
-	///<summary>A <see cref = "short"/> vector comprised of 2 components.</summary>
+	///<summary>A <see cref = "short"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=2)]
 	public partial struct Half2
 	{
@@ -117,6 +117,22 @@ namespace Molten.Math
 		{
 			return new Half2(-X, -Y);
 		}
+
+		/// <summary>
+        /// Performs a linear interpolation between two <see cref="Half2"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">When the method completes, contains the linear interpolation of the two vectors.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref Half2 start, ref Half2 end, float amount, out Half2 result)
+        {
+			result.X = (short)((1f - amount) * start.X + amount * end.X);
+			result.Y = (short)((1f - amount) * start.Y + amount * end.Y);
+        }
 #endregion
 
 #region Add operators

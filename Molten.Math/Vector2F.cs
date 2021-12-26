@@ -88,26 +88,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Reverses the direction of a given vector.
-        /// </summary>
-        /// <param name="value">The vector to negate.</param>
-        /// <param name="result">When the method completes, contains a vector facing in the opposite direction.</param>
-        public static void Negate(ref Vector2F value, out Vector2F result)
-        {
-            result = new Vector2F(-value.X, -value.Y);
-        }
-
-        /// <summary>
-        /// Reverses the direction of a given vector.
-        /// </summary>
-        /// <param name="value">The vector to negate.</param>
-        /// <returns>A vector facing in the opposite direction.</returns>
-        public static Vector2F Negate(Vector2F value)
-        {
-            return new Vector2F(-value.X, -value.Y);
-        }
-
-        /// <summary>
         /// Returns a <see cref="Vector2F"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
         /// <param name="value1">A <see cref="Vector2F"/> containing the 2D Cartesian coordinates of vertex 1 of the triangle.</param>

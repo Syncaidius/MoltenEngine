@@ -37,7 +37,7 @@ using System.Runtime.InteropServices;
 
 namespace Molten.Math
 {
-	///<summary>A <see cref = "<#=_types[i]#>"/> vector comprised of <#=size#> components.</summary>
+	///<summary>A <see cref = "<#=_types[i]#>"/> vector comprised of <#=_strSize[size]#> components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=<#=_pack[i]#>)]
 	public partial struct <#=fullName#>
 	{
@@ -185,6 +185,28 @@ namespace Molten.Math
 		{
 			return new <#=fullName#>(<#=GetParamSentence(_pMapUpper, size, ", ", ", ", "-")#>);
 		}
+
+		/// <summary>
+        /// Performs a linear interpolation between two <#=SeeRef(fullName)#>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">When the method completes, contains the linear interpolation of the two vectors.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref <#=fullName#> start, ref <#=fullName#> end, float amount, out <#=fullName#> result)
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			result.<#=_pMapUpper[p]#> = (<#=_types[i]#>)((1f - amount) * start.<#=_pMapUpper[p]#> + amount * end.<#=_pMapUpper[p]#>);
+<#
+		}
+#>
+        }
 #endregion
 
 #region Add operators

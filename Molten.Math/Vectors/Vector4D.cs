@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Molten.Math
 {
-	///<summary>A <see cref = "double"/> vector comprised of 4 components.</summary>
+	///<summary>A <see cref = "double"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=8)]
 	public partial struct Vector4D
 	{
@@ -141,6 +141,24 @@ namespace Molten.Math
 		{
 			return new Vector4D(-X, -Y, -Z, -W);
 		}
+
+		/// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector4D"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">When the method completes, contains the linear interpolation of the two vectors.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref Vector4D start, ref Vector4D end, float amount, out Vector4D result)
+        {
+			result.X = (double)((1f - amount) * start.X + amount * end.X);
+			result.Y = (double)((1f - amount) * start.Y + amount * end.Y);
+			result.Z = (double)((1f - amount) * start.Z + amount * end.Z);
+			result.W = (double)((1f - amount) * start.W + amount * end.W);
+        }
 #endregion
 
 #region Add operators
