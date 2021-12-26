@@ -32,23 +32,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Vector2F"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the X and Y components of the vector. This must be an array with two elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
-        public Vector2F(float[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != 2)
-                throw new ArgumentOutOfRangeException("values", "There must be two and only two input values for Vector2.");
-
-            X = values[0];
-            Y = values[1];
-        }
-
-        /// <summary>
         /// Gets a value indicting whether this instance is normalized.
         /// </summary>
         public bool IsNormalized
@@ -102,15 +85,6 @@ namespace Molten
                 X *= inv;
                 Y *= inv;
             }
-        }
-
-        /// <summary>
-        /// Creates an array containing the elements of the vector.
-        /// </summary>
-        /// <returns>A two-element array containing the components of the vector.</returns>
-        public float[] ToArray()
-        {
-            return new float[] { X, Y };
         }
 
         /// <summary>

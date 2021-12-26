@@ -33,4 +33,21 @@ public string GetConstructorArgs(string type, string map, int count, string pref
 
     return r;
 }
+
+public string GetParamSentence(string pMap, int size, string delimiter = ", ", string finalDelimiter = "", string pPrefix = "", string pPostfix = "")
+{
+    string r = "";
+    for(int i = 0; i < size; i++)
+    {
+        r += $"{pPrefix}{pMap[i]}{pPostfix}";
+        r += i < (size - 1) ? (i < (size - 2) ? ", " : finalDelimiter) : ""; 
+    }
+
+    return r;
+}
+
+public string SeeRef(string typeName)
+{
+    return $"<see cref=\"{typeName}\"/>";
+}
 #>

@@ -124,7 +124,23 @@ namespace Molten.Math
             return (x * x) + (y * y) + (z * z) + (w * w);
         }
 
+		/// <summary>
+        /// Creates an array containing the elements of the current <see cref="Vector4D"/>.
+        /// </summary>
+        /// <returns>A four-element array containing the components of the vector.</returns>
+        public double[] ToArray()
+        {
+            return new double[] { X, Y, Z, W};
+        }
 
+		/// <summary>
+        /// Reverses the direction of the current <see cref="Vector4D"/>.
+        /// </summary>
+        /// <returns>A <see cref="Vector4D"/> facing the opposite direction.</returns>
+		public Vector4D Negate()
+		{
+			return new Vector4D(-X, -Y, -Z, -W);
+		}
 #endregion
 
 #region Add operators

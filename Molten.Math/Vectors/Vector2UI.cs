@@ -100,7 +100,23 @@ namespace Molten.Math
             return (x * x) + (y * y);
         }
 
+		/// <summary>
+        /// Creates an array containing the elements of the current <see cref="Vector2UI"/>.
+        /// </summary>
+        /// <returns>A two-element array containing the components of the vector.</returns>
+        public uint[] ToArray()
+        {
+            return new uint[] { X, Y};
+        }
 
+		/// <summary>
+        /// Reverses the direction of the current <see cref="Vector2UI"/>.
+        /// </summary>
+        /// <returns>A <see cref="Vector2UI"/> facing the opposite direction.</returns>
+		public Vector2UI Negate()
+		{
+			return new Vector2UI(-X, -Y);
+		}
 #endregion
 
 #region Add operators

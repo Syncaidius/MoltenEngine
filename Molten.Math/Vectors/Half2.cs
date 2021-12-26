@@ -100,7 +100,23 @@ namespace Molten.Math
             return (x * x) + (y * y);
         }
 
+		/// <summary>
+        /// Creates an array containing the elements of the current <see cref="Half2"/>.
+        /// </summary>
+        /// <returns>A two-element array containing the components of the vector.</returns>
+        public short[] ToArray()
+        {
+            return new short[] { X, Y};
+        }
 
+		/// <summary>
+        /// Reverses the direction of the current <see cref="Half2"/>.
+        /// </summary>
+        /// <returns>A <see cref="Half2"/> facing the opposite direction.</returns>
+		public Half2 Negate()
+		{
+			return new Half2(-X, -Y);
+		}
 #endregion
 
 #region Add operators

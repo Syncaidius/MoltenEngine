@@ -112,7 +112,23 @@ namespace Molten.Math
             return (x * x) + (y * y) + (z * z);
         }
 
+		/// <summary>
+        /// Creates an array containing the elements of the current <see cref="Byte3"/>.
+        /// </summary>
+        /// <returns>A three-element array containing the components of the vector.</returns>
+        public byte[] ToArray()
+        {
+            return new byte[] { X, Y, Z};
+        }
 
+		/// <summary>
+        /// Reverses the direction of the current <see cref="Byte3"/>.
+        /// </summary>
+        /// <returns>A <see cref="Byte3"/> facing the opposite direction.</returns>
+		public Byte3 Negate()
+		{
+			return new Byte3(-X, -Y, -Z);
+		}
 #endregion
 
 #region Add operators

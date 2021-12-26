@@ -16,6 +16,7 @@ string[] _postfixes = new string[]{"", "", "I", "UI", "", "U", "L", "UL", "F", "
 int[] _pack = new int[]{1, 1, 4, 4 , 2, 2, 8, 8, 4, 8, 16, 0, 0};
 string[] _one = new string[]{"1", "1", "1", "1U", "(short)1", "(ushort)1", "1L", "1UL", "1F", "1D", "1M", "1", "1U"};
 string[] _zero = new string[]{"0", "0", "0", "0U", "0", "0", "0L", "0UL", "0F", "0D", "0M", "0", "0U"};
+string[] _strSize = new string[]{"zero", "one", "two", "three", "four", "five", "six"};
 string _pMap = "xyzw";
 string _pMapUpper = "XYZW";
 string r = "";
@@ -87,7 +88,7 @@ namespace Molten.Math
 		/// <summary>
         /// Initializes a new instance of the <see cref="<#=fullName#>"/> struct.
         /// </summary>
-        /// <param name="values">The values to assign to the <#for(int p = 0; p < size; p++){#><#=_pMapUpper[p]#><#=(p < (size-1) ? (p < (size - 2) ? ", " : " and ") : "")#><#}#> components of the vector. This must be an array with <#=size#> elements.</param>
+        /// <param name="values">The values to assign to the <#=GetParamSentence(_pMapUpper, size, ", ", " and ")#> components of the vector. This must be an array with <#=size#> elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
         public <#=fullName#>(<#=_types[i]#>[] values)
@@ -110,7 +111,7 @@ namespace Molten.Math
 
 #region Common Functions
 		/// <summary>
-        /// Calculates the squared distance between two <see cref="<#=fullName#>"/> vectors.
+        /// Calculates the squared distance between two <#=SeeRef(fullName)#> vectors.
         /// </summary>
         /// <param name="value1">The first vector.</param>
         /// <param name="value2">The second vector</param>
@@ -139,7 +140,7 @@ namespace Molten.Math
         }
 
 		/// <summary>
-        /// Calculates the squared distance between two <see cref="<#=fullName#>"/> vectors.
+        /// Calculates the squared distance between two <#=SeeRef(fullName)#> vectors.
         /// </summary>
         /// <param name="value1">The first vector.</param>
         /// <param name="value2">The second vector.</param>
@@ -167,7 +168,23 @@ namespace Molten.Math
             return <#=r#>;
         }
 
+		/// <summary>
+        /// Creates an array containing the elements of the current <see cref="<#=fullName#>"/>.
+        /// </summary>
+        /// <returns>A <#=_strSize[size]#>-element array containing the components of the vector.</returns>
+        public <#=_types[i]#>[] ToArray()
+        {
+            return new <#=_types[i]#>[] { <#=GetParamSentence(_pMapUpper, size, ", ", ", ")#>};
+        }
 
+		/// <summary>
+        /// Reverses the direction of the current <#=SeeRef(fullName)#>.
+        /// </summary>
+        /// <returns>A <#=SeeRef(fullName)#> facing the opposite direction.</returns>
+		public <#=fullName#> Negate()
+		{
+			return new <#=fullName#>(<#=GetParamSentence(_pMapUpper, size, ", ", ", ", "-")#>);
+		}
 #endregion
 
 #region Add operators
@@ -226,7 +243,7 @@ namespace Molten.Math
 		/// <summary>
         /// Gets or sets the component at the specified index.
         /// </summary>
-        /// <value>The value of the <#for(int vp = 0; vp < size; vp++){#><#=_pMapUpper[vp]#><#=(vp < (size-1) ? (vp <size - 2 ? ", " : " or ") : "")#><#}#> component, depending on the index.</value>
+        /// <value>The value of the <#=GetParamSentence(_pMapUpper, size, ",", " or ")#> component, depending on the index.</value>
         /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component and so on.</param>
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, <#=(size-1)#>].</exception>
