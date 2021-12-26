@@ -47,6 +47,7 @@ namespace Molten.Math
 
 		public static Half4 Zero = new Half4(0, 0, 0, 0);
 
+#region Constructors
 		///<summary>Creates a new instance of <see cref = "Half4"/>.</summary>
 		public Half4(short x, short y, short z, short w)
 		{
@@ -55,6 +56,26 @@ namespace Molten.Math
 			Z = z;
 			W = w;
 		}
+
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Half4"/> struct.
+        /// </summary>
+        /// <param name="values">The values to assign to the X, Y, Z and W components of the vector. This must be an array with 4 elements.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
+        public Half4(short[] values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+            if (values.Length != 4)
+                throw new ArgumentOutOfRangeException("values", "There must be 4 and only 4 input values for Half4.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+        }
+#endregion
 
 #region Common Functions
 		/// <summary>
@@ -152,6 +173,10 @@ namespace Molten.Math
 		{
 			return new Half4(left.X * right, left.Y * right, left.Z * right, left.W * right);
 		}
+#endregion
+
+#region Properties
+
 #endregion
 
 #region Indexers

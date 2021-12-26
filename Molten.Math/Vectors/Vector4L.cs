@@ -47,6 +47,7 @@ namespace Molten.Math
 
 		public static Vector4L Zero = new Vector4L(0L, 0L, 0L, 0L);
 
+#region Constructors
 		///<summary>Creates a new instance of <see cref = "Vector4L"/>.</summary>
 		public Vector4L(long x, long y, long z, long w)
 		{
@@ -55,6 +56,26 @@ namespace Molten.Math
 			Z = z;
 			W = w;
 		}
+
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Vector4L"/> struct.
+        /// </summary>
+        /// <param name="values">The values to assign to the X, Y, Z and W components of the vector. This must be an array with 4 elements.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
+        public Vector4L(long[] values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+            if (values.Length != 4)
+                throw new ArgumentOutOfRangeException("values", "There must be 4 and only 4 input values for Vector4L.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+        }
+#endregion
 
 #region Common Functions
 		/// <summary>
@@ -152,6 +173,10 @@ namespace Molten.Math
 		{
 			return new Vector4L(left.X * right, left.Y * right, left.Z * right, left.W * right);
 		}
+#endregion
+
+#region Properties
+
 #endregion
 
 #region Indexers

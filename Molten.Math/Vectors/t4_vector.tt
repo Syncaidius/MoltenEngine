@@ -70,6 +70,7 @@ namespace Molten.Math
 #>
 		public static <#=fullName#> Zero = new <#=fullName#>(<#for(int p = 0; p < size; p++){#><#=_zero[i]#><#=(p < (size-1) ? ", " : "")#><#}#>);
 
+#region Constructors
 		///<summary>Creates a new instance of <see cref = "<#=fullName#>"/>.</summary>
 		public <#=fullName#>(<#=GetConstructorArgs(tName, _pMap, size)#>)
 		{
@@ -82,6 +83,30 @@ namespace Molten.Math
 		}
 #>
 		}
+
+		/// <summary>
+        /// Initializes a new instance of the <see cref="<#=fullName#>"/> struct.
+        /// </summary>
+        /// <param name="values">The values to assign to the <#for(int p = 0; p < size; p++){#><#=_pMapUpper[p]#><#=(p < (size-1) ? (p < (size - 2) ? ", " : " and ") : "")#><#}#> components of the vector. This must be an array with <#=size#> elements.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
+        public <#=fullName#>(<#=_types[i]#>[] values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+            if (values.Length != <#=size#>)
+                throw new ArgumentOutOfRangeException("values", "There must be <#=size#> and only <#=size#> input values for <#=fullName#>.");
+
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=_pMapUpper[p]#> = values[<#=p#>];
+<#
+		}
+#>
+        }
+#endregion
 
 #region Common Functions
 		/// <summary>
@@ -191,6 +216,10 @@ namespace Molten.Math
 		{
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_pMapUpper[p]#> * right<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
+#endregion
+
+#region Properties
+
 #endregion
 
 #region Indexers

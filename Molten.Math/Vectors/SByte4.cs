@@ -47,6 +47,7 @@ namespace Molten.Math
 
 		public static SByte4 Zero = new SByte4(0, 0, 0, 0);
 
+#region Constructors
 		///<summary>Creates a new instance of <see cref = "SByte4"/>.</summary>
 		public SByte4(sbyte x, sbyte y, sbyte z, sbyte w)
 		{
@@ -55,6 +56,26 @@ namespace Molten.Math
 			Z = z;
 			W = w;
 		}
+
+		/// <summary>
+        /// Initializes a new instance of the <see cref="SByte4"/> struct.
+        /// </summary>
+        /// <param name="values">The values to assign to the X, Y, Z and W components of the vector. This must be an array with 4 elements.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
+        public SByte4(sbyte[] values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+            if (values.Length != 4)
+                throw new ArgumentOutOfRangeException("values", "There must be 4 and only 4 input values for SByte4.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+			W = values[3];
+        }
+#endregion
 
 #region Common Functions
 		/// <summary>
@@ -152,6 +173,10 @@ namespace Molten.Math
 		{
 			return new SByte4(left.X * right, left.Y * right, left.Z * right, left.W * right);
 		}
+#endregion
+
+#region Properties
+
 #endregion
 
 #region Indexers

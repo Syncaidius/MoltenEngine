@@ -39,6 +39,7 @@ namespace Molten.Math
 
 		public static Byte3 Zero = new Byte3(0, 0, 0);
 
+#region Constructors
 		///<summary>Creates a new instance of <see cref = "Byte3"/>.</summary>
 		public Byte3(byte x, byte y, byte z)
 		{
@@ -46,6 +47,25 @@ namespace Molten.Math
 			Y = y;
 			Z = z;
 		}
+
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Byte3"/> struct.
+        /// </summary>
+        /// <param name="values">The values to assign to the X, Y and Z components of the vector. This must be an array with 3 elements.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
+        public Byte3(byte[] values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+            if (values.Length != 3)
+                throw new ArgumentOutOfRangeException("values", "There must be 3 and only 3 input values for Byte3.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+        }
+#endregion
 
 #region Common Functions
 		/// <summary>
@@ -141,6 +161,10 @@ namespace Molten.Math
 		{
 			return new Byte3(left.X * right, left.Y * right, left.Z * right);
 		}
+#endregion
+
+#region Properties
+
 #endregion
 
 #region Indexers

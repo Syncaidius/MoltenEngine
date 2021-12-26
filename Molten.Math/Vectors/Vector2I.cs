@@ -31,12 +31,31 @@ namespace Molten.Math
 
 		public static Vector2I Zero = new Vector2I(0, 0);
 
+#region Constructors
 		///<summary>Creates a new instance of <see cref = "Vector2I"/>.</summary>
 		public Vector2I(int x, int y)
 		{
 			X = x;
 			Y = y;
 		}
+
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Vector2I"/> struct.
+        /// </summary>
+        /// <param name="values">The values to assign to the X and Y components of the vector. This must be an array with 2 elements.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
+        public Vector2I(int[] values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+            if (values.Length != 2)
+                throw new ArgumentOutOfRangeException("values", "There must be 2 and only 2 input values for Vector2I.");
+
+			X = values[0];
+			Y = values[1];
+        }
+#endregion
 
 #region Common Functions
 		/// <summary>
@@ -130,6 +149,10 @@ namespace Molten.Math
 		{
 			return new Vector2I(left.X * right, left.Y * right);
 		}
+#endregion
+
+#region Properties
+
 #endregion
 
 #region Indexers

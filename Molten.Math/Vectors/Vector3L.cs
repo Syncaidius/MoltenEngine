@@ -39,6 +39,7 @@ namespace Molten.Math
 
 		public static Vector3L Zero = new Vector3L(0L, 0L, 0L);
 
+#region Constructors
 		///<summary>Creates a new instance of <see cref = "Vector3L"/>.</summary>
 		public Vector3L(long x, long y, long z)
 		{
@@ -46,6 +47,25 @@ namespace Molten.Math
 			Y = y;
 			Z = z;
 		}
+
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Vector3L"/> struct.
+        /// </summary>
+        /// <param name="values">The values to assign to the X, Y and Z components of the vector. This must be an array with 3 elements.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
+        public Vector3L(long[] values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+            if (values.Length != 3)
+                throw new ArgumentOutOfRangeException("values", "There must be 3 and only 3 input values for Vector3L.");
+
+			X = values[0];
+			Y = values[1];
+			Z = values[2];
+        }
+#endregion
 
 #region Common Functions
 		/// <summary>
@@ -141,6 +161,10 @@ namespace Molten.Math
 		{
 			return new Vector3L(left.X * right, left.Y * right, left.Z * right);
 		}
+#endregion
+
+#region Properties
+
 #endregion
 
 #region Indexers

@@ -31,12 +31,31 @@ namespace Molten.Math
 
 		public static Half2U Zero = new Half2U(0, 0);
 
+#region Constructors
 		///<summary>Creates a new instance of <see cref = "Half2U"/>.</summary>
 		public Half2U(ushort x, ushort y)
 		{
 			X = x;
 			Y = y;
 		}
+
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Half2U"/> struct.
+        /// </summary>
+        /// <param name="values">The values to assign to the X and Y components of the vector. This must be an array with 2 elements.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
+        public Half2U(ushort[] values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+            if (values.Length != 2)
+                throw new ArgumentOutOfRangeException("values", "There must be 2 and only 2 input values for Half2U.");
+
+			X = values[0];
+			Y = values[1];
+        }
+#endregion
 
 #region Common Functions
 		/// <summary>
@@ -130,6 +149,10 @@ namespace Molten.Math
 		{
 			return new Half2U(left.X * right, left.Y * right);
 		}
+#endregion
+
+#region Properties
+
 #endregion
 
 #region Indexers
