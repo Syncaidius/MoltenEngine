@@ -128,10 +128,13 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Byte2 start, ref Byte2 end, float amount, out Byte2 result)
+        public static Byte2 Lerp(ref Byte2 start, ref Byte2 end, float amount)
         {
-			result.X = (byte)((1f - amount) * start.X + amount * end.X);
-			result.Y = (byte)((1f - amount) * start.Y + amount * end.Y);
+			return new Byte2()
+			{
+				X = (byte)((1f - amount) * start.X + amount * end.X),
+				Y = (byte)((1f - amount) * start.Y + amount * end.Y),
+			};
         }
 #endregion
 
@@ -145,6 +148,16 @@ namespace Molten.Math
 		{
 			return new Byte2(left.X + right, left.Y + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Byte2"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Byte2"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Byte2"/>.</returns>
+        public static Byte2 operator +(Byte2 value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -157,6 +170,16 @@ namespace Molten.Math
 		{
 			return new Byte2(left.X - right, left.Y - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Byte2"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Byte2"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Byte2"/>.</returns>
+        public static Byte2 operator -(Byte2 value)
+        {
+            return new Byte2(-value.X, -value.Y);
+        }
 #endregion
 
 #region division operators

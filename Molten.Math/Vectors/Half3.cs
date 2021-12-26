@@ -140,11 +140,14 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Half3 start, ref Half3 end, float amount, out Half3 result)
+        public static Half3 Lerp(ref Half3 start, ref Half3 end, float amount)
         {
-			result.X = (short)((1f - amount) * start.X + amount * end.X);
-			result.Y = (short)((1f - amount) * start.Y + amount * end.Y);
-			result.Z = (short)((1f - amount) * start.Z + amount * end.Z);
+			return new Half3()
+			{
+				X = (short)((1f - amount) * start.X + amount * end.X),
+				Y = (short)((1f - amount) * start.Y + amount * end.Y),
+				Z = (short)((1f - amount) * start.Z + amount * end.Z),
+			};
         }
 #endregion
 
@@ -158,6 +161,16 @@ namespace Molten.Math
 		{
 			return new Half3(left.X + right, left.Y + right, left.Z + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Half3"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Half3"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Half3"/>.</returns>
+        public static Half3 operator +(Half3 value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -170,6 +183,16 @@ namespace Molten.Math
 		{
 			return new Half3(left.X - right, left.Y - right, left.Z - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Half3"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Half3"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Half3"/>.</returns>
+        public static Half3 operator -(Half3 value)
+        {
+            return new Half3(-value.X, -value.Y, -value.Z);
+        }
 #endregion
 
 #region division operators

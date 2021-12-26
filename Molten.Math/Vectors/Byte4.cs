@@ -152,12 +152,15 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Byte4 start, ref Byte4 end, float amount, out Byte4 result)
+        public static Byte4 Lerp(ref Byte4 start, ref Byte4 end, float amount)
         {
-			result.X = (byte)((1f - amount) * start.X + amount * end.X);
-			result.Y = (byte)((1f - amount) * start.Y + amount * end.Y);
-			result.Z = (byte)((1f - amount) * start.Z + amount * end.Z);
-			result.W = (byte)((1f - amount) * start.W + amount * end.W);
+			return new Byte4()
+			{
+				X = (byte)((1f - amount) * start.X + amount * end.X),
+				Y = (byte)((1f - amount) * start.Y + amount * end.Y),
+				Z = (byte)((1f - amount) * start.Z + amount * end.Z),
+				W = (byte)((1f - amount) * start.W + amount * end.W),
+			};
         }
 #endregion
 
@@ -171,6 +174,16 @@ namespace Molten.Math
 		{
 			return new Byte4(left.X + right, left.Y + right, left.Z + right, left.W + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Byte4"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Byte4"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Byte4"/>.</returns>
+        public static Byte4 operator +(Byte4 value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -183,6 +196,16 @@ namespace Molten.Math
 		{
 			return new Byte4(left.X - right, left.Y - right, left.Z - right, left.W - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Byte4"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Byte4"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Byte4"/>.</returns>
+        public static Byte4 operator -(Byte4 value)
+        {
+            return new Byte4(-value.X, -value.Y, -value.Z, -value.W);
+        }
 #endregion
 
 #region division operators

@@ -152,12 +152,15 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Vector4D start, ref Vector4D end, float amount, out Vector4D result)
+        public static Vector4D Lerp(ref Vector4D start, ref Vector4D end, float amount)
         {
-			result.X = (double)((1f - amount) * start.X + amount * end.X);
-			result.Y = (double)((1f - amount) * start.Y + amount * end.Y);
-			result.Z = (double)((1f - amount) * start.Z + amount * end.Z);
-			result.W = (double)((1f - amount) * start.W + amount * end.W);
+			return new Vector4D()
+			{
+				X = (double)((1f - amount) * start.X + amount * end.X),
+				Y = (double)((1f - amount) * start.Y + amount * end.Y),
+				Z = (double)((1f - amount) * start.Z + amount * end.Z),
+				W = (double)((1f - amount) * start.W + amount * end.W),
+			};
         }
 #endregion
 
@@ -171,6 +174,16 @@ namespace Molten.Math
 		{
 			return new Vector4D(left.X + right, left.Y + right, left.Z + right, left.W + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Vector4D"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4D"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Vector4D"/>.</returns>
+        public static Vector4D operator +(Vector4D value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -183,6 +196,16 @@ namespace Molten.Math
 		{
 			return new Vector4D(left.X - right, left.Y - right, left.Z - right, left.W - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Vector4D"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4D"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Vector4D"/>.</returns>
+        public static Vector4D operator -(Vector4D value)
+        {
+            return new Vector4D(-value.X, -value.Y, -value.Z, -value.W);
+        }
 #endregion
 
 #region division operators

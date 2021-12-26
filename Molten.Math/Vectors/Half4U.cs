@@ -152,12 +152,15 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Half4U start, ref Half4U end, float amount, out Half4U result)
+        public static Half4U Lerp(ref Half4U start, ref Half4U end, float amount)
         {
-			result.X = (ushort)((1f - amount) * start.X + amount * end.X);
-			result.Y = (ushort)((1f - amount) * start.Y + amount * end.Y);
-			result.Z = (ushort)((1f - amount) * start.Z + amount * end.Z);
-			result.W = (ushort)((1f - amount) * start.W + amount * end.W);
+			return new Half4U()
+			{
+				X = (ushort)((1f - amount) * start.X + amount * end.X),
+				Y = (ushort)((1f - amount) * start.Y + amount * end.Y),
+				Z = (ushort)((1f - amount) * start.Z + amount * end.Z),
+				W = (ushort)((1f - amount) * start.W + amount * end.W),
+			};
         }
 #endregion
 
@@ -171,6 +174,16 @@ namespace Molten.Math
 		{
 			return new Half4U(left.X + right, left.Y + right, left.Z + right, left.W + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Half4U"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Half4U"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Half4U"/>.</returns>
+        public static Half4U operator +(Half4U value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -183,6 +196,16 @@ namespace Molten.Math
 		{
 			return new Half4U(left.X - right, left.Y - right, left.Z - right, left.W - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Half4U"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Half4U"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Half4U"/>.</returns>
+        public static Half4U operator -(Half4U value)
+        {
+            return new Half4U(-value.X, -value.Y, -value.Z, -value.W);
+        }
 #endregion
 
 #region division operators

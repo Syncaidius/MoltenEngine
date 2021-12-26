@@ -196,16 +196,19 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref <#=fullName#> start, ref <#=fullName#> end, float amount, out <#=fullName#> result)
+        public static <#=fullName#> Lerp(ref <#=fullName#> start, ref <#=fullName#> end, float amount)
         {
+			return new <#=fullName#>()
+			{
 <#
 		for(int p = 0; p < size; p++)
 		{
 #>
-			result.<#=_pMapUpper[p]#> = (<#=_types[i]#>)((1f - amount) * start.<#=_pMapUpper[p]#> + amount * end.<#=_pMapUpper[p]#>);
+				<#=_pMapUpper[p]#> = (<#=_types[i]#>)((1f - amount) * start.<#=_pMapUpper[p]#> + amount * end.<#=_pMapUpper[p]#>),
 <#
 		}
 #>
+			};
         }
 #endregion
 
@@ -219,6 +222,16 @@ namespace Molten.Math
 		{
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_pMapUpper[p]#> + right<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
+
+		/// <summary>
+        /// Assert a <#=SeeRef(fullName)#> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <#=SeeRef(fullName)#> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <#=SeeRef(fullName)#>.</returns>
+        public static <#=fullName#> operator +(<#=fullName#> value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -231,6 +244,16 @@ namespace Molten.Math
 		{
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_pMapUpper[p]#> - right<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <#=SeeRef(fullName)#>.
+        /// </summary>
+        /// <param name="value">The <#=SeeRef(fullName)#> to reverse.</param>
+        /// <returns>The reversed <#=SeeRef(fullName)#>.</returns>
+        public static <#=fullName#> operator -(<#=fullName#> value)
+        {
+            return new <#=fullName#>(<#=GetParamSentence(_pMapUpper, size, ", ", ", ", "-value.")#>);
+        }
 #endregion
 
 #region division operators

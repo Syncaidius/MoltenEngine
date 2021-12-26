@@ -264,39 +264,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs a linear interpolation between two vectors.
-        /// </summary>
-        /// <param name="start">Start vector.</param>
-        /// <param name="end">End vector.</param>
-        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <param name="result">When the method completes, contains the linear interpolation of the two vectors.</param>
-        /// <remarks>
-        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
-        /// </remarks>
-        public static void Lerp(ref Vector2F start, ref Vector2F end, float amount, out Vector2F result)
-        {
-            result.X = MathHelper.Lerp(start.X, end.X, amount);
-            result.Y = MathHelper.Lerp(start.Y, end.Y, amount);
-        }
-
-        /// <summary>
-        /// Performs a linear interpolation between two vectors.
-        /// </summary>
-        /// <param name="start">Start vector.</param>
-        /// <param name="end">End vector.</param>
-        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <returns>The linear interpolation of the two vectors.</returns>
-        /// <remarks>
-        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
-        /// </remarks>
-        public static Vector2F Lerp(Vector2F start, Vector2F end, float amount)
-        {
-            Vector2F result;
-            Lerp(ref start, ref end, amount, out result);
-            return result;
-        }
-
-        /// <summary>
         /// Performs a cubic interpolation between two vectors.
         /// </summary>
         /// <param name="start">Start vector.</param>
@@ -869,49 +836,6 @@ namespace Molten
             {
                 TransformNormal(ref source[i], ref transform, out destination[i]);
             }
-        }
-
-        /// <summary>
-        /// Adds two vectors.
-        /// </summary>
-        /// <param name="left">The first vector to add.</param>
-        /// <param name="right">The second vector to add.</param>
-        /// <returns>The sum of the two vectors.</returns>
-        public static Vector2F operator +(Vector2F left, Vector2F right)
-        {
-            return new Vector2F(left.X + right.X, left.Y + right.Y);
-        }
-
-        /// <summary>
-        /// Multiplies a vector with another by performing component-wise multiplication equivalent to <see cref="Multiply(ref Vector2F,ref Vector2F,out Vector2F)"/>.
-        /// </summary>
-        /// <param name="left">The first vector to multiply.</param>
-        /// <param name="right">The second vector to multiply.</param>
-        /// <returns>The multiplication of the two vectors.</returns>
-        public static Vector2F operator *(Vector2F left, Vector2F right)
-        {
-            return new Vector2F(left.X * right.X, left.Y * right.Y);
-        }
-
-        /// <summary>
-        /// Assert a vector (return it unchanged).
-        /// </summary>
-        /// <param name="value">The vector to assert (unchanged).</param>
-        /// <returns>The asserted (unchanged) vector.</returns>
-        public static Vector2F operator +(Vector2F value)
-        {
-            return value;
-        }
-
-        /// <summary>
-        /// Subtracts two vectors.
-        /// </summary>
-        /// <param name="left">The first vector to subtract.</param>
-        /// <param name="right">The second vector to subtract.</param>
-        /// <returns>The difference of the two vectors.</returns>
-        public static Vector2F operator -(Vector2F left, Vector2F right)
-        {
-            return new Vector2F(left.X - right.X, left.Y - right.Y);
         }
 
         /// <summary>

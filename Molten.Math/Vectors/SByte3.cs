@@ -140,11 +140,14 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref SByte3 start, ref SByte3 end, float amount, out SByte3 result)
+        public static SByte3 Lerp(ref SByte3 start, ref SByte3 end, float amount)
         {
-			result.X = (sbyte)((1f - amount) * start.X + amount * end.X);
-			result.Y = (sbyte)((1f - amount) * start.Y + amount * end.Y);
-			result.Z = (sbyte)((1f - amount) * start.Z + amount * end.Z);
+			return new SByte3()
+			{
+				X = (sbyte)((1f - amount) * start.X + amount * end.X),
+				Y = (sbyte)((1f - amount) * start.Y + amount * end.Y),
+				Z = (sbyte)((1f - amount) * start.Z + amount * end.Z),
+			};
         }
 #endregion
 
@@ -158,6 +161,16 @@ namespace Molten.Math
 		{
 			return new SByte3(left.X + right, left.Y + right, left.Z + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="SByte3"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="SByte3"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="SByte3"/>.</returns>
+        public static SByte3 operator +(SByte3 value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -170,6 +183,16 @@ namespace Molten.Math
 		{
 			return new SByte3(left.X - right, left.Y - right, left.Z - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="SByte3"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="SByte3"/> to reverse.</param>
+        /// <returns>The reversed <see cref="SByte3"/>.</returns>
+        public static SByte3 operator -(SByte3 value)
+        {
+            return new SByte3(-value.X, -value.Y, -value.Z);
+        }
 #endregion
 
 #region division operators

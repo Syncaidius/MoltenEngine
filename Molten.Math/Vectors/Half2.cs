@@ -128,10 +128,13 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Half2 start, ref Half2 end, float amount, out Half2 result)
+        public static Half2 Lerp(ref Half2 start, ref Half2 end, float amount)
         {
-			result.X = (short)((1f - amount) * start.X + amount * end.X);
-			result.Y = (short)((1f - amount) * start.Y + amount * end.Y);
+			return new Half2()
+			{
+				X = (short)((1f - amount) * start.X + amount * end.X),
+				Y = (short)((1f - amount) * start.Y + amount * end.Y),
+			};
         }
 #endregion
 
@@ -145,6 +148,16 @@ namespace Molten.Math
 		{
 			return new Half2(left.X + right, left.Y + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Half2"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Half2"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Half2"/>.</returns>
+        public static Half2 operator +(Half2 value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -157,6 +170,16 @@ namespace Molten.Math
 		{
 			return new Half2(left.X - right, left.Y - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Half2"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Half2"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Half2"/>.</returns>
+        public static Half2 operator -(Half2 value)
+        {
+            return new Half2(-value.X, -value.Y);
+        }
 #endregion
 
 #region division operators

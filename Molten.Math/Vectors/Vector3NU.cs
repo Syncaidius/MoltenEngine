@@ -140,11 +140,14 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Vector3NU start, ref Vector3NU end, float amount, out Vector3NU result)
+        public static Vector3NU Lerp(ref Vector3NU start, ref Vector3NU end, float amount)
         {
-			result.X = (nuint)((1f - amount) * start.X + amount * end.X);
-			result.Y = (nuint)((1f - amount) * start.Y + amount * end.Y);
-			result.Z = (nuint)((1f - amount) * start.Z + amount * end.Z);
+			return new Vector3NU()
+			{
+				X = (nuint)((1f - amount) * start.X + amount * end.X),
+				Y = (nuint)((1f - amount) * start.Y + amount * end.Y),
+				Z = (nuint)((1f - amount) * start.Z + amount * end.Z),
+			};
         }
 #endregion
 
@@ -158,6 +161,16 @@ namespace Molten.Math
 		{
 			return new Vector3NU(left.X + right, left.Y + right, left.Z + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Vector3NU"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Vector3NU"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Vector3NU"/>.</returns>
+        public static Vector3NU operator +(Vector3NU value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -170,6 +183,16 @@ namespace Molten.Math
 		{
 			return new Vector3NU(left.X - right, left.Y - right, left.Z - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Vector3NU"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector3NU"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Vector3NU"/>.</returns>
+        public static Vector3NU operator -(Vector3NU value)
+        {
+            return new Vector3NU(-value.X, -value.Y, -value.Z);
+        }
 #endregion
 
 #region division operators

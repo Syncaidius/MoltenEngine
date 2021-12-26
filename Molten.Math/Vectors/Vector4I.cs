@@ -152,12 +152,15 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Vector4I start, ref Vector4I end, float amount, out Vector4I result)
+        public static Vector4I Lerp(ref Vector4I start, ref Vector4I end, float amount)
         {
-			result.X = (int)((1f - amount) * start.X + amount * end.X);
-			result.Y = (int)((1f - amount) * start.Y + amount * end.Y);
-			result.Z = (int)((1f - amount) * start.Z + amount * end.Z);
-			result.W = (int)((1f - amount) * start.W + amount * end.W);
+			return new Vector4I()
+			{
+				X = (int)((1f - amount) * start.X + amount * end.X),
+				Y = (int)((1f - amount) * start.Y + amount * end.Y),
+				Z = (int)((1f - amount) * start.Z + amount * end.Z),
+				W = (int)((1f - amount) * start.W + amount * end.W),
+			};
         }
 #endregion
 
@@ -171,6 +174,16 @@ namespace Molten.Math
 		{
 			return new Vector4I(left.X + right, left.Y + right, left.Z + right, left.W + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Vector4I"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4I"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Vector4I"/>.</returns>
+        public static Vector4I operator +(Vector4I value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -183,6 +196,16 @@ namespace Molten.Math
 		{
 			return new Vector4I(left.X - right, left.Y - right, left.Z - right, left.W - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Vector4I"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4I"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Vector4I"/>.</returns>
+        public static Vector4I operator -(Vector4I value)
+        {
+            return new Vector4I(-value.X, -value.Y, -value.Z, -value.W);
+        }
 #endregion
 
 #region division operators

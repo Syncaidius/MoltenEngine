@@ -152,12 +152,15 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Vector4F start, ref Vector4F end, float amount, out Vector4F result)
+        public static Vector4F Lerp(ref Vector4F start, ref Vector4F end, float amount)
         {
-			result.X = (float)((1f - amount) * start.X + amount * end.X);
-			result.Y = (float)((1f - amount) * start.Y + amount * end.Y);
-			result.Z = (float)((1f - amount) * start.Z + amount * end.Z);
-			result.W = (float)((1f - amount) * start.W + amount * end.W);
+			return new Vector4F()
+			{
+				X = (float)((1f - amount) * start.X + amount * end.X),
+				Y = (float)((1f - amount) * start.Y + amount * end.Y),
+				Z = (float)((1f - amount) * start.Z + amount * end.Z),
+				W = (float)((1f - amount) * start.W + amount * end.W),
+			};
         }
 #endregion
 
@@ -171,6 +174,16 @@ namespace Molten.Math
 		{
 			return new Vector4F(left.X + right, left.Y + right, left.Z + right, left.W + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Vector4F"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4F"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Vector4F"/>.</returns>
+        public static Vector4F operator +(Vector4F value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -183,6 +196,16 @@ namespace Molten.Math
 		{
 			return new Vector4F(left.X - right, left.Y - right, left.Z - right, left.W - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Vector4F"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4F"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Vector4F"/>.</returns>
+        public static Vector4F operator -(Vector4F value)
+        {
+            return new Vector4F(-value.X, -value.Y, -value.Z, -value.W);
+        }
 #endregion
 
 #region division operators

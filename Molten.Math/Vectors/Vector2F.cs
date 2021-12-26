@@ -128,10 +128,13 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Vector2F start, ref Vector2F end, float amount, out Vector2F result)
+        public static Vector2F Lerp(ref Vector2F start, ref Vector2F end, float amount)
         {
-			result.X = (float)((1f - amount) * start.X + amount * end.X);
-			result.Y = (float)((1f - amount) * start.Y + amount * end.Y);
+			return new Vector2F()
+			{
+				X = (float)((1f - amount) * start.X + amount * end.X),
+				Y = (float)((1f - amount) * start.Y + amount * end.Y),
+			};
         }
 #endregion
 
@@ -145,6 +148,16 @@ namespace Molten.Math
 		{
 			return new Vector2F(left.X + right, left.Y + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Vector2F"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Vector2F"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Vector2F"/>.</returns>
+        public static Vector2F operator +(Vector2F value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -157,6 +170,16 @@ namespace Molten.Math
 		{
 			return new Vector2F(left.X - right, left.Y - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Vector2F"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector2F"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Vector2F"/>.</returns>
+        public static Vector2F operator -(Vector2F value)
+        {
+            return new Vector2F(-value.X, -value.Y);
+        }
 #endregion
 
 #region division operators

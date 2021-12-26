@@ -152,12 +152,15 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Vector4L start, ref Vector4L end, float amount, out Vector4L result)
+        public static Vector4L Lerp(ref Vector4L start, ref Vector4L end, float amount)
         {
-			result.X = (long)((1f - amount) * start.X + amount * end.X);
-			result.Y = (long)((1f - amount) * start.Y + amount * end.Y);
-			result.Z = (long)((1f - amount) * start.Z + amount * end.Z);
-			result.W = (long)((1f - amount) * start.W + amount * end.W);
+			return new Vector4L()
+			{
+				X = (long)((1f - amount) * start.X + amount * end.X),
+				Y = (long)((1f - amount) * start.Y + amount * end.Y),
+				Z = (long)((1f - amount) * start.Z + amount * end.Z),
+				W = (long)((1f - amount) * start.W + amount * end.W),
+			};
         }
 #endregion
 
@@ -171,6 +174,16 @@ namespace Molten.Math
 		{
 			return new Vector4L(left.X + right, left.Y + right, left.Z + right, left.W + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Vector4L"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4L"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Vector4L"/>.</returns>
+        public static Vector4L operator +(Vector4L value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -183,6 +196,16 @@ namespace Molten.Math
 		{
 			return new Vector4L(left.X - right, left.Y - right, left.Z - right, left.W - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Vector4L"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4L"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Vector4L"/>.</returns>
+        public static Vector4L operator -(Vector4L value)
+        {
+            return new Vector4L(-value.X, -value.Y, -value.Z, -value.W);
+        }
 #endregion
 
 #region division operators

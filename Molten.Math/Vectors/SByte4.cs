@@ -152,12 +152,15 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref SByte4 start, ref SByte4 end, float amount, out SByte4 result)
+        public static SByte4 Lerp(ref SByte4 start, ref SByte4 end, float amount)
         {
-			result.X = (sbyte)((1f - amount) * start.X + amount * end.X);
-			result.Y = (sbyte)((1f - amount) * start.Y + amount * end.Y);
-			result.Z = (sbyte)((1f - amount) * start.Z + amount * end.Z);
-			result.W = (sbyte)((1f - amount) * start.W + amount * end.W);
+			return new SByte4()
+			{
+				X = (sbyte)((1f - amount) * start.X + amount * end.X),
+				Y = (sbyte)((1f - amount) * start.Y + amount * end.Y),
+				Z = (sbyte)((1f - amount) * start.Z + amount * end.Z),
+				W = (sbyte)((1f - amount) * start.W + amount * end.W),
+			};
         }
 #endregion
 
@@ -171,6 +174,16 @@ namespace Molten.Math
 		{
 			return new SByte4(left.X + right, left.Y + right, left.Z + right, left.W + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="SByte4"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="SByte4"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="SByte4"/>.</returns>
+        public static SByte4 operator +(SByte4 value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -183,6 +196,16 @@ namespace Molten.Math
 		{
 			return new SByte4(left.X - right, left.Y - right, left.Z - right, left.W - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="SByte4"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="SByte4"/> to reverse.</param>
+        /// <returns>The reversed <see cref="SByte4"/>.</returns>
+        public static SByte4 operator -(SByte4 value)
+        {
+            return new SByte4(-value.X, -value.Y, -value.Z, -value.W);
+        }
 #endregion
 
 #region division operators

@@ -152,12 +152,15 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Vector4UI start, ref Vector4UI end, float amount, out Vector4UI result)
+        public static Vector4UI Lerp(ref Vector4UI start, ref Vector4UI end, float amount)
         {
-			result.X = (uint)((1f - amount) * start.X + amount * end.X);
-			result.Y = (uint)((1f - amount) * start.Y + amount * end.Y);
-			result.Z = (uint)((1f - amount) * start.Z + amount * end.Z);
-			result.W = (uint)((1f - amount) * start.W + amount * end.W);
+			return new Vector4UI()
+			{
+				X = (uint)((1f - amount) * start.X + amount * end.X),
+				Y = (uint)((1f - amount) * start.Y + amount * end.Y),
+				Z = (uint)((1f - amount) * start.Z + amount * end.Z),
+				W = (uint)((1f - amount) * start.W + amount * end.W),
+			};
         }
 #endregion
 
@@ -171,6 +174,16 @@ namespace Molten.Math
 		{
 			return new Vector4UI(left.X + right, left.Y + right, left.Z + right, left.W + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Vector4UI"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4UI"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Vector4UI"/>.</returns>
+        public static Vector4UI operator +(Vector4UI value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -183,6 +196,16 @@ namespace Molten.Math
 		{
 			return new Vector4UI(left.X - right, left.Y - right, left.Z - right, left.W - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Vector4UI"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4UI"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Vector4UI"/>.</returns>
+        public static Vector4UI operator -(Vector4UI value)
+        {
+            return new Vector4UI(-value.X, -value.Y, -value.Z, -value.W);
+        }
 #endregion
 
 #region division operators

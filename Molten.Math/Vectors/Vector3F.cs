@@ -140,11 +140,14 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Vector3F start, ref Vector3F end, float amount, out Vector3F result)
+        public static Vector3F Lerp(ref Vector3F start, ref Vector3F end, float amount)
         {
-			result.X = (float)((1f - amount) * start.X + amount * end.X);
-			result.Y = (float)((1f - amount) * start.Y + amount * end.Y);
-			result.Z = (float)((1f - amount) * start.Z + amount * end.Z);
+			return new Vector3F()
+			{
+				X = (float)((1f - amount) * start.X + amount * end.X),
+				Y = (float)((1f - amount) * start.Y + amount * end.Y),
+				Z = (float)((1f - amount) * start.Z + amount * end.Z),
+			};
         }
 #endregion
 
@@ -158,6 +161,16 @@ namespace Molten.Math
 		{
 			return new Vector3F(left.X + right, left.Y + right, left.Z + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Vector3F"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Vector3F"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Vector3F"/>.</returns>
+        public static Vector3F operator +(Vector3F value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -170,6 +183,16 @@ namespace Molten.Math
 		{
 			return new Vector3F(left.X - right, left.Y - right, left.Z - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Vector3F"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector3F"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Vector3F"/>.</returns>
+        public static Vector3F operator -(Vector3F value)
+        {
+            return new Vector3F(-value.X, -value.Y, -value.Z);
+        }
 #endregion
 
 #region division operators

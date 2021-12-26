@@ -128,10 +128,13 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Vector2I start, ref Vector2I end, float amount, out Vector2I result)
+        public static Vector2I Lerp(ref Vector2I start, ref Vector2I end, float amount)
         {
-			result.X = (int)((1f - amount) * start.X + amount * end.X);
-			result.Y = (int)((1f - amount) * start.Y + amount * end.Y);
+			return new Vector2I()
+			{
+				X = (int)((1f - amount) * start.X + amount * end.X),
+				Y = (int)((1f - amount) * start.Y + amount * end.Y),
+			};
         }
 #endregion
 
@@ -145,6 +148,16 @@ namespace Molten.Math
 		{
 			return new Vector2I(left.X + right, left.Y + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Vector2I"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Vector2I"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Vector2I"/>.</returns>
+        public static Vector2I operator +(Vector2I value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -157,6 +170,16 @@ namespace Molten.Math
 		{
 			return new Vector2I(left.X - right, left.Y - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Vector2I"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector2I"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Vector2I"/>.</returns>
+        public static Vector2I operator -(Vector2I value)
+        {
+            return new Vector2I(-value.X, -value.Y);
+        }
 #endregion
 
 #region division operators

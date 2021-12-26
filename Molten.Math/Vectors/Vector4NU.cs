@@ -152,12 +152,15 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static void Lerp(ref Vector4NU start, ref Vector4NU end, float amount, out Vector4NU result)
+        public static Vector4NU Lerp(ref Vector4NU start, ref Vector4NU end, float amount)
         {
-			result.X = (nuint)((1f - amount) * start.X + amount * end.X);
-			result.Y = (nuint)((1f - amount) * start.Y + amount * end.Y);
-			result.Z = (nuint)((1f - amount) * start.Z + amount * end.Z);
-			result.W = (nuint)((1f - amount) * start.W + amount * end.W);
+			return new Vector4NU()
+			{
+				X = (nuint)((1f - amount) * start.X + amount * end.X),
+				Y = (nuint)((1f - amount) * start.Y + amount * end.Y),
+				Z = (nuint)((1f - amount) * start.Z + amount * end.Z),
+				W = (nuint)((1f - amount) * start.W + amount * end.W),
+			};
         }
 #endregion
 
@@ -171,6 +174,16 @@ namespace Molten.Math
 		{
 			return new Vector4NU(left.X + right, left.Y + right, left.Z + right, left.W + right);
 		}
+
+		/// <summary>
+        /// Assert a <see cref="Vector4NU"/> (return it unchanged).
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4NU"/> to assert (unchanged).</param>
+        /// <returns>The asserted (unchanged) <see cref="Vector4NU"/>.</returns>
+        public static Vector4NU operator +(Vector4NU value)
+        {
+            return value;
+        }
 #endregion
 
 #region Subtract operators
@@ -183,6 +196,16 @@ namespace Molten.Math
 		{
 			return new Vector4NU(left.X - right, left.Y - right, left.Z - right, left.W - right);
 		}
+
+		/// <summary>
+        /// Negate/reverse the direction of a <see cref="Vector4NU"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4NU"/> to reverse.</param>
+        /// <returns>The reversed <see cref="Vector4NU"/>.</returns>
+        public static Vector4NU operator -(Vector4NU value)
+        {
+            return new Vector4NU(-value.X, -value.Y, -value.Z, -value.W);
+        }
 #endregion
 
 #region division operators
