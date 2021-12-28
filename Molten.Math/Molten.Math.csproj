@@ -231,15 +231,10 @@
     <Compile Include="Vectors\SByte2.cs" />
     <Compile Include="Vectors\SByte3.cs" />
     <Compile Include="Vectors\SByte4.cs" />
-    <Compile Include="Vectors\t4_helpers.cs">
+    <Compile Include="Vectors\t4_header.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>t4_helpers.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Vectors\t4_vector.fp.common.cs">
-      <DependentUpon>t4_vector.fp.common.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
+      <DependentUpon>t4_header.tt</DependentUpon>
     </Compile>
     <Compile Include="Vectors\t4_vector.cs">
       <AutoGen>True</AutoGen>
@@ -310,9 +305,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Vectors\t4_helpers.tt">
+    <Content Include="Vectors\t4_header.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>t4_helpers.cs</LastGenOutput>
+      <LastGenOutput>t4_header.cs</LastGenOutput>
     </Content>
     <Content Include="Vectors\t4_vector.fp.common.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
