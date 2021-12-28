@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Globalization;
 
 namespace Molten.Math
 {
@@ -75,6 +76,14 @@ namespace Molten.Math
 			Z = values[2];
 			W = values[3];
         }
+
+		public unsafe Vector4UL(ulong* ptr)
+		{
+			X = ptr[0];
+			Y = ptr[1];
+			Z = ptr[2];
+			W = ptr[3];
+		}
 #endregion
 
 #region Common Functions
@@ -162,6 +171,98 @@ namespace Molten.Math
 				W = (ulong)((1f - amount) * start.W + amount * end.W),
 			};
         }
+
+		/// <summary>
+        /// Returns a <see cref="Vector4UL"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector4UL"/>.</param>
+        /// <param name="right">The second source <see cref="Vector4UL"/>.</param>
+        /// <returns>A <see cref="Vector4UL"/> containing the smallest components of the source vectors.</returns>
+		public static Vector4UL Min(Vector4UL left, Vector4UL right)
+		{
+			return new Vector4UL()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+				Z = (left.Z < right.Z) ? left.Z : right.Z,
+				W = (left.W < right.W) ? left.W : right.W,
+			};
+		}
+
+		/// <summary>
+        /// Returns a <see cref="Vector4UL"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector4UL"/>.</param>
+        /// <param name="right">The second source <see cref="Vector4UL"/>.</param>
+        /// <returns>A <see cref="Vector4UL"/> containing the largest components of the source vectors.</returns>
+		public static Vector4UL Max(Vector4UL left, Vector4UL right)
+		{
+			return new Vector4UL()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+				Z = (left.Z > right.Z) ? left.Z : right.Z,
+				W = (left.W > right.W) ? left.W : right.W,
+			};
+		}
+#endregion
+
+#region To-String
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Vector4UL"/>.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Vector4UL"/>.
+        /// </returns>
+        public string ToString(string format)
+        {
+            if (format == null)
+                return ToString();
+
+            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2} W:{3}", 
+			X.ToString(format, CultureInfo.CurrentCulture), Y.ToString(format, CultureInfo.CurrentCulture), Z.ToString(format, CultureInfo.CurrentCulture), W.ToString(format, CultureInfo.CurrentCulture));
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Vector4UL"/>.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Vector4UL"/>.
+        /// </returns>
+        public string ToString(IFormatProvider formatProvider)
+        {
+            return string.Format(formatProvider, "X:{0} Y:{1} Z:{2} W:{3}", X, Y, Z, W);
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Vector4UL"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Vector4UL"/>.
+        /// </returns>
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2} W:{3}", X, Y, Z, W);
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Vector4UL"/>.
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Vector4UL"/>.
+        /// </returns>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (format == null)
+                return ToString(formatProvider);
+
+            return string.Format(formatProvider, "X:{0} Y:{1} Z:{2} W:{3}", X.ToString(format, formatProvider), Y.ToString(format, formatProvider), Z.ToString(format, formatProvider), W.ToString(format, formatProvider));
+        }
 #endregion
 
 #region Add operators
@@ -233,6 +334,10 @@ namespace Molten.Math
 #endregion
 
 #region Properties
+
+#endregion
+
+#region Static Methods
 
 #endregion
 

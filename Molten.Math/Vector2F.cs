@@ -153,15 +153,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Saturates this instance in the range [0,1]
-        /// </summary>
-        public void Saturate()
-        {
-            X = X < 0.0f ? 0.0f : X > 1.0f ? 1.0f : X;
-            Y = Y < 0.0f ? 0.0f : Y > 1.0f ? 1.0f : Y;
-        }
-
-        /// <summary>
         /// Calculates the distance between two vectors.
         /// </summary>
         /// <param name="value1">The first vector.</param>
@@ -364,56 +355,6 @@ namespace Molten
         {
             Vector2F result;
             CatmullRom(ref value1, ref value2, ref value3, ref value4, amount, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Returns a vector containing the largest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source vector.</param>
-        /// <param name="right">The second source vector.</param>
-        /// <param name="result">When the method completes, contains an new vector composed of the largest components of the source vectors.</param>
-        public static void Max(ref Vector2F left, ref Vector2F right, out Vector2F result)
-        {
-            result.X = (left.X > right.X) ? left.X : right.X;
-            result.Y = (left.Y > right.Y) ? left.Y : right.Y;
-        }
-
-        /// <summary>
-        /// Returns a vector containing the largest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source vector.</param>
-        /// <param name="right">The second source vector.</param>
-        /// <returns>A vector containing the largest components of the source vectors.</returns>
-        public static Vector2F Max(Vector2F left, Vector2F right)
-        {
-            Vector2F result;
-            Max(ref left, ref right, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Returns a vector containing the smallest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source vector.</param>
-        /// <param name="right">The second source vector.</param>
-        /// <param name="result">When the method completes, contains an new vector composed of the smallest components of the source vectors.</param>
-        public static void Min(ref Vector2F left, ref Vector2F right, out Vector2F result)
-        {
-            result.X = (left.X < right.X) ? left.X : right.X;
-            result.Y = (left.Y < right.Y) ? left.Y : right.Y;
-        }
-
-        /// <summary>
-        /// Returns a vector containing the smallest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source vector.</param>
-        /// <param name="right">The second source vector.</param>
-        /// <returns>A vector containing the smallest components of the source vectors.</returns>
-        public static Vector2F Min(Vector2F left, Vector2F right)
-        {
-            Vector2F result;
-            Min(ref left, ref right, out result);
             return result;
         }
 
@@ -839,115 +780,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Reverses the direction of a given vector.
-        /// </summary>
-        /// <param name="value">The vector to negate.</param>
-        /// <returns>A vector facing in the opposite direction.</returns>
-        public static Vector2F operator -(Vector2F value)
-        {
-            return new Vector2F(-value.X, -value.Y);
-        }
-
-        /// <summary>
-        /// Scales a vector by the given value.
-        /// </summary>
-        /// <param name="value">The vector to scale.</param>
-        /// <param name="scale">The amount by which to scale the vector.</param>
-        /// <returns>The scaled vector.</returns>
-        public static Vector2F operator *(float scale, Vector2F value)
-        {
-            return new Vector2F(value.X * scale, value.Y * scale);
-        }
-
-        /// <summary>
-        /// Scales a vector by the given value.
-        /// </summary>
-        /// <param name="value">The vector to scale.</param>
-        /// <param name="scale">The amount by which to scale the vector.</param>
-        /// <returns>The scaled vector.</returns>
-        public static Vector2F operator *(Vector2F value, float scale)
-        {
-            return new Vector2F(value.X * scale, value.Y * scale);
-        }
-
-        /// <summary>
-        /// Scales a vector by the given value.
-        /// </summary>
-        /// <param name="value">The vector to scale.</param>
-        /// <param name="scale">The amount by which to scale the vector.</param>
-        /// <returns>The scaled vector.</returns>
-        public static Vector2F operator /(Vector2F value, float scale)
-        {
-            return new Vector2F(value.X / scale, value.Y / scale);
-        }
-
-        /// <summary>
-        /// Scales a vector by the given value.
-        /// </summary>
-        /// <param name="scale">The amount by which to scale the vector.</param>
-        /// <param name="value">The vector to scale.</param>  
-        /// <returns>The scaled vector.</returns>
-        public static Vector2F operator /(float scale , Vector2F value)
-        {
-            return new Vector2F(scale / value.X, scale / value.Y);
-        }
-
-        /// <summary>
-        /// Scales a vector by the given value.
-        /// </summary>
-        /// <param name="value">The vector to scale.</param>
-        /// <param name="scale">The amount by which to scale the vector.</param>
-        /// <returns>The scaled vector.</returns>
-        public static Vector2F operator /(Vector2F value, Vector2F scale)
-        {
-            return new Vector2F(value.X / scale.X, value.Y / scale.Y);
-        }
-
-        /// <summary>
-        /// Perform a component-wise addition
-        /// </summary>
-        /// <param name="value">The input vector.</param>
-        /// <param name="scalar">The scalar value to be added on elements</param>
-        /// <returns>The vector with added scalar for each element.</returns>
-        public static Vector2F operator +(Vector2F value, float scalar)
-        {
-            return new Vector2F(value.X + scalar, value.Y + scalar);
-        }
-
-        /// <summary>
-        /// Perform a component-wise addition
-        /// </summary>
-        /// <param name="value">The input vector.</param>
-        /// <param name="scalar">The scalar value to be added on elements</param>
-        /// <returns>The vector with added scalar for each element.</returns>
-        public static Vector2F operator +(float scalar, Vector2F value)
-        {
-            return new Vector2F(scalar + value.X, scalar + value.Y);
-        }
-
-        /// <summary>
-        /// Perform a component-wise subtraction
-        /// </summary>
-        /// <param name="value">The input vector.</param>
-        /// <param name="scalar">The scalar value to be subtraced from elements</param>
-        /// <returns>The vector with subtraced scalar from each element.</returns>
-        public static Vector2F operator -(Vector2F value, float scalar)
-        {
-            return new Vector2F(value.X - scalar, value.Y - scalar);
-        }
-
-        /// <summary>
-        /// Perform a component-wise subtraction
-        /// </summary>
-        /// <param name="value">The input vector.</param>
-        /// <param name="scalar">The scalar value to be subtraced from elements</param>
-        /// <returns>The vector with subtraced scalar from each element.</returns>
-        public static Vector2F operator -(float scalar, Vector2F value)
-        {
-            return new Vector2F(scalar - value.X, scalar - value.Y);
-        }
-
-        /// <summary>
         /// Tests for equality between two objects.
         /// </summary>
         /// <param name="left">The first value to compare.</param>
@@ -1027,60 +859,6 @@ namespace Molten
                 X = MathHelper.Clamp(vec.X, min, max),
                 Y = MathHelper.Clamp(vec.Y, min, max),
             };
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1}", X, Y);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
-        public string ToString(string format)
-        {
-            if (format == null)
-                return ToString();
-
-            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1}", X.ToString(format, CultureInfo.CurrentCulture), Y.ToString(format, CultureInfo.CurrentCulture));
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
-        public string ToString(IFormatProvider formatProvider)
-        {
-            return string.Format(formatProvider, "X:{0} Y:{1}", X, Y);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
-        public string ToString(string format, IFormatProvider formatProvider)
-        {
-            if (format == null)
-                ToString(formatProvider);
-
-            return string.Format(formatProvider, "X:{0} Y:{1}", X.ToString(format, formatProvider), Y.ToString(format, formatProvider));
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Globalization;
 
 namespace Molten.Math
 {
@@ -55,6 +56,12 @@ namespace Molten.Math
 			X = values[0];
 			Y = values[1];
         }
+
+		public unsafe Half2(short* ptr)
+		{
+			X = ptr[0];
+			Y = ptr[1];
+		}
 #endregion
 
 #region Common Functions
@@ -136,6 +143,94 @@ namespace Molten.Math
 				Y = (short)((1f - amount) * start.Y + amount * end.Y),
 			};
         }
+
+		/// <summary>
+        /// Returns a <see cref="Half2"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Half2"/>.</param>
+        /// <param name="right">The second source <see cref="Half2"/>.</param>
+        /// <returns>A <see cref="Half2"/> containing the smallest components of the source vectors.</returns>
+		public static Half2 Min(Half2 left, Half2 right)
+		{
+			return new Half2()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+			};
+		}
+
+		/// <summary>
+        /// Returns a <see cref="Half2"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Half2"/>.</param>
+        /// <param name="right">The second source <see cref="Half2"/>.</param>
+        /// <returns>A <see cref="Half2"/> containing the largest components of the source vectors.</returns>
+		public static Half2 Max(Half2 left, Half2 right)
+		{
+			return new Half2()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+			};
+		}
+#endregion
+
+#region To-String
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Half2"/>.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Half2"/>.
+        /// </returns>
+        public string ToString(string format)
+        {
+            if (format == null)
+                return ToString();
+
+            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1}", 
+			X.ToString(format, CultureInfo.CurrentCulture), Y.ToString(format, CultureInfo.CurrentCulture));
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Half2"/>.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Half2"/>.
+        /// </returns>
+        public string ToString(IFormatProvider formatProvider)
+        {
+            return string.Format(formatProvider, "X:{0} Y:{1}", X, Y);
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Half2"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Half2"/>.
+        /// </returns>
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1}", X, Y);
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Half2"/>.
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Half2"/>.
+        /// </returns>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (format == null)
+                return ToString(formatProvider);
+
+            return string.Format(formatProvider, "X:{0} Y:{1}", X.ToString(format, formatProvider), Y.ToString(format, formatProvider));
+        }
 #endregion
 
 #region Add operators
@@ -207,6 +302,10 @@ namespace Molten.Math
 #endregion
 
 #region Properties
+
+#endregion
+
+#region Static Methods
 
 #endregion
 

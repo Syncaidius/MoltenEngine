@@ -13,8 +13,11 @@ string outputPath = this.Host.ResolvePath("");
 string[] _types = new string[]{"float", "double", "decimal"};
 string[] _names = new string[]{"Vector", "Vector", "Vector"};
 string[] _postfixes = new string[]{"F", "D", "M"};
-string _propertyMap = "xyzw";
-string _propertyMapUpper = "XYZW";
+string[] _one = new string[]{"1F", "1D", "1M"};
+string[] _zero = new string[]{"0F", "0D", "0M"};
+string[] _strSize = new string[]{"zero", "one", "two", "three", "four", "five", "six"};
+string _pMap = "xyzw";
+string _pMapUpper = "XYZW";
 
 int[] _sizes = new int[]{2, 3, 4};
 
@@ -34,7 +37,20 @@ namespace Molten.Math
 	///<summary>A <see cref = "<#=_types[i]#>"/> vector comprised of <#=size#> components.</summary>
 	public partial struct <#=fullName#>
 	{
-
+		/// <summary>
+        /// Saturates this instance in the range [0,1]
+        /// </summary>
+        public void Saturate()
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=_pMapUpper[p]#> = <#=_pMapUpper[p]#> < <#=_zero[i]#> ? <#=_zero[i]#> : <#=_pMapUpper[p]#> > <#=_one[i]#> ? <#=_one[i]#> : <#=_pMapUpper[p]#>;
+<#
+		}
+#>
+        }
 	}
 }
 <#

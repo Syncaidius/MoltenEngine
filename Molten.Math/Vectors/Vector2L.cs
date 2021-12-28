@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Globalization;
 
 namespace Molten.Math
 {
@@ -55,6 +56,12 @@ namespace Molten.Math
 			X = values[0];
 			Y = values[1];
         }
+
+		public unsafe Vector2L(long* ptr)
+		{
+			X = ptr[0];
+			Y = ptr[1];
+		}
 #endregion
 
 #region Common Functions
@@ -136,6 +143,94 @@ namespace Molten.Math
 				Y = (long)((1f - amount) * start.Y + amount * end.Y),
 			};
         }
+
+		/// <summary>
+        /// Returns a <see cref="Vector2L"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector2L"/>.</param>
+        /// <param name="right">The second source <see cref="Vector2L"/>.</param>
+        /// <returns>A <see cref="Vector2L"/> containing the smallest components of the source vectors.</returns>
+		public static Vector2L Min(Vector2L left, Vector2L right)
+		{
+			return new Vector2L()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+			};
+		}
+
+		/// <summary>
+        /// Returns a <see cref="Vector2L"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector2L"/>.</param>
+        /// <param name="right">The second source <see cref="Vector2L"/>.</param>
+        /// <returns>A <see cref="Vector2L"/> containing the largest components of the source vectors.</returns>
+		public static Vector2L Max(Vector2L left, Vector2L right)
+		{
+			return new Vector2L()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+			};
+		}
+#endregion
+
+#region To-String
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// </returns>
+        public string ToString(string format)
+        {
+            if (format == null)
+                return ToString();
+
+            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1}", 
+			X.ToString(format, CultureInfo.CurrentCulture), Y.ToString(format, CultureInfo.CurrentCulture));
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// </returns>
+        public string ToString(IFormatProvider formatProvider)
+        {
+            return string.Format(formatProvider, "X:{0} Y:{1}", X, Y);
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// </returns>
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1}", X, Y);
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Vector2L"/>.
+        /// </returns>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (format == null)
+                return ToString(formatProvider);
+
+            return string.Format(formatProvider, "X:{0} Y:{1}", X.ToString(format, formatProvider), Y.ToString(format, formatProvider));
+        }
 #endregion
 
 #region Add operators
@@ -207,6 +302,10 @@ namespace Molten.Math
 #endregion
 
 #region Properties
+
+#endregion
+
+#region Static Methods
 
 #endregion
 

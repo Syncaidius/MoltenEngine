@@ -34,6 +34,7 @@ for(int i = 0; i < _types.Length; i++)
 #>
 using System;
 using System.Runtime.InteropServices;
+using System.Globalization;
 
 namespace Molten.Math
 {
@@ -107,6 +108,18 @@ namespace Molten.Math
 		}
 #>
         }
+
+		public unsafe <#=fullName#>(<#=_types[i]#>* ptr)
+		{
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=_pMapUpper[p]#> = ptr[<#=p#>];
+<#
+		}
+#>
+		}
 #endregion
 
 #region Common Functions
@@ -210,6 +223,111 @@ namespace Molten.Math
 #>
 			};
         }
+
+		/// <summary>
+        /// Returns a <#=SeeRef(fullName)#> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <#=SeeRef(fullName)#>.</param>
+        /// <param name="right">The second source <#=SeeRef(fullName)#>.</param>
+        /// <returns>A <#=SeeRef(fullName)#> containing the smallest components of the source vectors.</returns>
+		public static <#=fullName#> Min(<#=fullName#> left, <#=fullName#> right)
+		{
+			return new <#=fullName#>()
+			{
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+				<#=_pMapUpper[p]#> = (left.<#=_pMapUpper[p]#> < right.<#=_pMapUpper[p]#>) ? left.<#=_pMapUpper[p]#> : right.<#=_pMapUpper[p]#>,
+<#
+		}
+#>
+			};
+		}
+
+		/// <summary>
+        /// Returns a <#=SeeRef(fullName)#> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <#=SeeRef(fullName)#>.</param>
+        /// <param name="right">The second source <#=SeeRef(fullName)#>.</param>
+        /// <returns>A <#=SeeRef(fullName)#> containing the largest components of the source vectors.</returns>
+		public static <#=fullName#> Max(<#=fullName#> left, <#=fullName#> right)
+		{
+			return new <#=fullName#>()
+			{
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+				<#=_pMapUpper[p]#> = (left.<#=_pMapUpper[p]#> > right.<#=_pMapUpper[p]#>) ? left.<#=_pMapUpper[p]#> : right.<#=_pMapUpper[p]#>,
+<#
+		}
+#>
+			};
+		}
+#endregion
+
+#region To-String
+<#
+		string strFormat = "";
+		for(int fmt = 0; fmt < size; fmt++)
+			strFormat += $"{_pMapUpper[fmt]}:{("{"+fmt+"}")}{(fmt < (size-1) ? " " : "")}";
+#>
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <#=SeeRef(fullName)#>.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <#=SeeRef(fullName)#>.
+        /// </returns>
+        public string ToString(string format)
+        {
+            if (format == null)
+                return ToString();
+
+            return string.Format(CultureInfo.CurrentCulture, "<#=strFormat#>", 
+			<#=GetParamSentence(_pMapUpper, size, ", ", ", ", "", ".ToString(format, CultureInfo.CurrentCulture)")#>);
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <#=SeeRef(fullName)#>.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <#=SeeRef(fullName)#>.
+        /// </returns>
+        public string ToString(IFormatProvider formatProvider)
+        {
+            return string.Format(formatProvider, "<#=strFormat#>", <#=GetParamSentence(_pMapUpper, size, ", ", ", ")#>);
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <#=SeeRef(fullName)#>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <#=SeeRef(fullName)#>.
+        /// </returns>
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentCulture, "<#=strFormat#>", <#=GetParamSentence(_pMapUpper, size, ", ", ", ")#>);
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <#=SeeRef(fullName)#>.
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <#=SeeRef(fullName)#>.
+        /// </returns>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (format == null)
+                return ToString(formatProvider);
+
+            return string.Format(formatProvider, "<#=strFormat#>", <#=GetParamSentence(_pMapUpper, size, ", ", ", ", "", ".ToString(format, formatProvider)")#>);
+        }
 #endregion
 
 #region Add operators
@@ -281,6 +399,10 @@ namespace Molten.Math
 #endregion
 
 #region Properties
+
+#endregion
+
+#region Static Methods
 
 #endregion
 

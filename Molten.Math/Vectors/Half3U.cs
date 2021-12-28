@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Globalization;
 
 namespace Molten.Math
 {
@@ -65,6 +66,13 @@ namespace Molten.Math
 			Y = values[1];
 			Z = values[2];
         }
+
+		public unsafe Half3U(ushort* ptr)
+		{
+			X = ptr[0];
+			Y = ptr[1];
+			Z = ptr[2];
+		}
 #endregion
 
 #region Common Functions
@@ -149,6 +157,96 @@ namespace Molten.Math
 				Z = (ushort)((1f - amount) * start.Z + amount * end.Z),
 			};
         }
+
+		/// <summary>
+        /// Returns a <see cref="Half3U"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Half3U"/>.</param>
+        /// <param name="right">The second source <see cref="Half3U"/>.</param>
+        /// <returns>A <see cref="Half3U"/> containing the smallest components of the source vectors.</returns>
+		public static Half3U Min(Half3U left, Half3U right)
+		{
+			return new Half3U()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+				Z = (left.Z < right.Z) ? left.Z : right.Z,
+			};
+		}
+
+		/// <summary>
+        /// Returns a <see cref="Half3U"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Half3U"/>.</param>
+        /// <param name="right">The second source <see cref="Half3U"/>.</param>
+        /// <returns>A <see cref="Half3U"/> containing the largest components of the source vectors.</returns>
+		public static Half3U Max(Half3U left, Half3U right)
+		{
+			return new Half3U()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+				Z = (left.Z > right.Z) ? left.Z : right.Z,
+			};
+		}
+#endregion
+
+#region To-String
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Half3U"/>.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Half3U"/>.
+        /// </returns>
+        public string ToString(string format)
+        {
+            if (format == null)
+                return ToString();
+
+            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2}", 
+			X.ToString(format, CultureInfo.CurrentCulture), Y.ToString(format, CultureInfo.CurrentCulture), Z.ToString(format, CultureInfo.CurrentCulture));
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Half3U"/>.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Half3U"/>.
+        /// </returns>
+        public string ToString(IFormatProvider formatProvider)
+        {
+            return string.Format(formatProvider, "X:{0} Y:{1} Z:{2}", X, Y, Z);
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Half3U"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Half3U"/>.
+        /// </returns>
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2}", X, Y, Z);
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="Half3U"/>.
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="Half3U"/>.
+        /// </returns>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (format == null)
+                return ToString(formatProvider);
+
+            return string.Format(formatProvider, "X:{0} Y:{1} Z:{2}", X.ToString(format, formatProvider), Y.ToString(format, formatProvider), Z.ToString(format, formatProvider));
+        }
 #endregion
 
 #region Add operators
@@ -220,6 +318,10 @@ namespace Molten.Math
 #endregion
 
 #region Properties
+
+#endregion
+
+#region Static Methods
 
 #endregion
 

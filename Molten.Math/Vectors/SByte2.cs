@@ -5,6 +5,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Globalization;
 
 namespace Molten.Math
 {
@@ -60,6 +61,12 @@ namespace Molten.Math
 			X = values[0];
 			Y = values[1];
         }
+
+		public unsafe SByte2(sbyte* ptr)
+		{
+			X = ptr[0];
+			Y = ptr[1];
+		}
 #endregion
 
 #region Common Functions
@@ -141,6 +148,94 @@ namespace Molten.Math
 				Y = (sbyte)((1f - amount) * start.Y + amount * end.Y),
 			};
         }
+
+		/// <summary>
+        /// Returns a <see cref="SByte2"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="SByte2"/>.</param>
+        /// <param name="right">The second source <see cref="SByte2"/>.</param>
+        /// <returns>A <see cref="SByte2"/> containing the smallest components of the source vectors.</returns>
+		public static SByte2 Min(SByte2 left, SByte2 right)
+		{
+			return new SByte2()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+			};
+		}
+
+		/// <summary>
+        /// Returns a <see cref="SByte2"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="SByte2"/>.</param>
+        /// <param name="right">The second source <see cref="SByte2"/>.</param>
+        /// <returns>A <see cref="SByte2"/> containing the largest components of the source vectors.</returns>
+		public static SByte2 Max(SByte2 left, SByte2 right)
+		{
+			return new SByte2()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+			};
+		}
+#endregion
+
+#region To-String
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="SByte2"/>.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="SByte2"/>.
+        /// </returns>
+        public string ToString(string format)
+        {
+            if (format == null)
+                return ToString();
+
+            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1}", 
+			X.ToString(format, CultureInfo.CurrentCulture), Y.ToString(format, CultureInfo.CurrentCulture));
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="SByte2"/>.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="SByte2"/>.
+        /// </returns>
+        public string ToString(IFormatProvider formatProvider)
+        {
+            return string.Format(formatProvider, "X:{0} Y:{1}", X, Y);
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="SByte2"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="SByte2"/>.
+        /// </returns>
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1}", X, Y);
+        }
+
+		/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this <see cref="SByte2"/>.
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this <see cref="SByte2"/>.
+        /// </returns>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (format == null)
+                return ToString(formatProvider);
+
+            return string.Format(formatProvider, "X:{0} Y:{1}", X.ToString(format, formatProvider), Y.ToString(format, formatProvider));
+        }
 #endregion
 
 #region Add operators
@@ -212,6 +307,10 @@ namespace Molten.Math
 #endregion
 
 #region Properties
+
+#endregion
+
+#region Static Methods
 
 #endregion
 
