@@ -173,6 +173,24 @@ namespace Molten.Math
 				Y = (left.Y > right.Y) ? left.Y : right.Y,
 			};
 		}
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(byte min, byte max)
+        {
+			X = X < min ? min : X > max ? max : X;
+			Y = Y < min ? min : Y > max ? max : Y;
+        }
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(Byte2 min, Byte2 max)
+        {
+			X = X < min.X ? min.X : X > max.X ? max.X : X;
+			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
+        }
 #endregion
 
 #region To-String
@@ -306,7 +324,31 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="Byte2"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static Byte2 Clamp(Byte2 value, byte min, byte max)
+        {
+			return new Byte2()
+			{
+				X = value.X < min ? min : value.X > max ? max : value.X,
+				Y = value.Y < min ? min : value.Y > max ? max : value.Y,
+			};
+        }
 
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="Byte2"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static Byte2 Clamp(Byte2 value, Byte2 min, Byte2 max)
+        {
+			return new Byte2()
+			{
+				X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X,
+				Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y,
+			};
+        }
 #endregion
 
 #region Indexers

@@ -265,6 +265,36 @@ namespace Molten.Math
 #>
 			};
 		}
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(<#=_types[i]#> min, <#=_types[i]#> max)
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=_pMapUpper[p]#> = <#=_pMapUpper[p]#> < min ? min : <#=_pMapUpper[p]#> > max ? max : <#=_pMapUpper[p]#>;
+<#
+		}
+#>
+        }
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(<#=fullName#> min, <#=fullName#> max)
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=_pMapUpper[p]#> = <#=_pMapUpper[p]#> < min.<#=_pMapUpper[p]#> ? min.<#=_pMapUpper[p]#> : <#=_pMapUpper[p]#> > max.<#=_pMapUpper[p]#> ? max.<#=_pMapUpper[p]#> : <#=_pMapUpper[p]#>;
+<#
+		}
+#>
+        }
 #endregion
 
 #region To-String
@@ -403,7 +433,43 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <#=SeeRef(fullName)#> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static <#=fullName#> Clamp(<#=fullName#> value, <#=_types[i]#> min, <#=_types[i]#> max)
+        {
+			return new <#=fullName#>()
+			{
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+				<#=_pMapUpper[p]#> = value.<#=_pMapUpper[p]#> < min ? min : value.<#=_pMapUpper[p]#> > max ? max : value.<#=_pMapUpper[p]#>,
+<#
+		}
+#>
+			};
+        }
 
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <#=SeeRef(fullName)#> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static <#=fullName#> Clamp(<#=fullName#> value, <#=fullName#> min, <#=fullName#> max)
+        {
+			return new <#=fullName#>()
+			{
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+				<#=_pMapUpper[p]#> = value.<#=_pMapUpper[p]#> < min.<#=_pMapUpper[p]#> ? min.<#=_pMapUpper[p]#> : value.<#=_pMapUpper[p]#> > max.<#=_pMapUpper[p]#> ? max.<#=_pMapUpper[p]#> : value.<#=_pMapUpper[p]#>,
+<#
+		}
+#>
+			};
+        }
 #endregion
 
 #region Indexers

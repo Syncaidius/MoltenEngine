@@ -189,6 +189,26 @@ namespace Molten.Math
 				Z = (left.Z > right.Z) ? left.Z : right.Z,
 			};
 		}
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(uint min, uint max)
+        {
+			X = X < min ? min : X > max ? max : X;
+			Y = Y < min ? min : Y > max ? max : Y;
+			Z = Z < min ? min : Z > max ? max : Z;
+        }
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(Vector3UI min, Vector3UI max)
+        {
+			X = X < min.X ? min.X : X > max.X ? max.X : X;
+			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
+			Z = Z < min.Z ? min.Z : Z > max.Z ? max.Z : Z;
+        }
 #endregion
 
 #region To-String
@@ -322,7 +342,33 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="Vector3UI"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static Vector3UI Clamp(Vector3UI value, uint min, uint max)
+        {
+			return new Vector3UI()
+			{
+				X = value.X < min ? min : value.X > max ? max : value.X,
+				Y = value.Y < min ? min : value.Y > max ? max : value.Y,
+				Z = value.Z < min ? min : value.Z > max ? max : value.Z,
+			};
+        }
 
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="Vector3UI"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static Vector3UI Clamp(Vector3UI value, Vector3UI min, Vector3UI max)
+        {
+			return new Vector3UI()
+			{
+				X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X,
+				Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y,
+				Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z,
+			};
+        }
 #endregion
 
 #region Indexers

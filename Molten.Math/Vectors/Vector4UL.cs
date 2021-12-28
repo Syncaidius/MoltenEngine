@@ -205,6 +205,28 @@ namespace Molten.Math
 				W = (left.W > right.W) ? left.W : right.W,
 			};
 		}
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(ulong min, ulong max)
+        {
+			X = X < min ? min : X > max ? max : X;
+			Y = Y < min ? min : Y > max ? max : Y;
+			Z = Z < min ? min : Z > max ? max : Z;
+			W = W < min ? min : W > max ? max : W;
+        }
+
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public void Clamp(Vector4UL min, Vector4UL max)
+        {
+			X = X < min.X ? min.X : X > max.X ? max.X : X;
+			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
+			Z = Z < min.Z ? min.Z : Z > max.Z ? max.Z : Z;
+			W = W < min.W ? min.W : W > max.W ? max.W : W;
+        }
 #endregion
 
 #region To-String
@@ -338,7 +360,35 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="Vector4UL"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static Vector4UL Clamp(Vector4UL value, ulong min, ulong max)
+        {
+			return new Vector4UL()
+			{
+				X = value.X < min ? min : value.X > max ? max : value.X,
+				Y = value.Y < min ? min : value.Y > max ? max : value.Y,
+				Z = value.Z < min ? min : value.Z > max ? max : value.Z,
+				W = value.W < min ? min : value.W > max ? max : value.W,
+			};
+        }
 
+		/// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="Vector4UL"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static Vector4UL Clamp(Vector4UL value, Vector4UL min, Vector4UL max)
+        {
+			return new Vector4UL()
+			{
+				X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X,
+				Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y,
+				Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z,
+				W = value.W < min.W ? min.W : value.W > max.W ? max.W : value.W,
+			};
+        }
 #endregion
 
 #region Indexers
