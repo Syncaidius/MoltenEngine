@@ -227,6 +227,17 @@ namespace Molten.Math
 			Z = Z < min.Z ? min.Z : Z > max.Z ? max.Z : Z;
 			W = W < min.W ? min.W : W > max.W ? max.W : W;
         }
+
+		/// <summary>
+        /// Calculates the dot product of two <see cref="Byte4"/> vectors.
+        /// </summary>
+        /// <param name="left">First <see cref="Byte4"/> source vector</param>
+        /// <param name="right">Second <see cref="Byte4"/> source vector.</param>
+        /// <param name="result">When the method completes, contains the dot product of the two <see cref="Byte4"/> vectors.</param>
+        public static byte Dot(Byte4 left, Byte4 right)
+        {
+			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+        }
 #endregion
 
 #region To-String

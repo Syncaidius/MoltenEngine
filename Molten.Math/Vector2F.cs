@@ -936,15 +936,6 @@ namespace Molten
             Y = (float)Math.Pow(Y, power);
         }
 
-        /// <summary>Clamps the component values to within the given range.</summary>
-        /// <param name="min">The minimum value of each component.</param>
-        /// <param name="max">The maximum value of each component.</param>
-        public void Clamp(float min, float max)
-        {
-            X = MathHelper.Clamp(X, min, max);
-            Y = MathHelper.Clamp(Y, min, max);
-        }
-
         /// <summary>Rounds all components down to the nearest unit.</summary>
         public void Floor()
         {

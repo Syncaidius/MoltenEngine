@@ -227,6 +227,17 @@ namespace Molten.Math
 			Z = Z < min.Z ? min.Z : Z > max.Z ? max.Z : Z;
 			W = W < min.W ? min.W : W > max.W ? max.W : W;
         }
+
+		/// <summary>
+        /// Calculates the dot product of two <see cref="Vector4UL"/> vectors.
+        /// </summary>
+        /// <param name="left">First <see cref="Vector4UL"/> source vector</param>
+        /// <param name="right">Second <see cref="Vector4UL"/> source vector.</param>
+        /// <param name="result">When the method completes, contains the dot product of the two <see cref="Vector4UL"/> vectors.</param>
+        public static ulong Dot(Vector4UL left, Vector4UL right)
+        {
+			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+        }
 #endregion
 
 #region To-String

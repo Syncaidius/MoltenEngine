@@ -209,6 +209,17 @@ namespace Molten.Math
 			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
 			Z = Z < min.Z ? min.Z : Z > max.Z ? max.Z : Z;
         }
+
+		/// <summary>
+        /// Calculates the dot product of two <see cref="Vector3D"/> vectors.
+        /// </summary>
+        /// <param name="left">First <see cref="Vector3D"/> source vector</param>
+        /// <param name="right">Second <see cref="Vector3D"/> source vector.</param>
+        /// <param name="result">When the method completes, contains the dot product of the two <see cref="Vector3D"/> vectors.</param>
+        public static double Dot(Vector3D left, Vector3D right)
+        {
+			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+        }
 #endregion
 
 #region To-String

@@ -196,6 +196,17 @@ namespace Molten.Math
 			X = X < min.X ? min.X : X > max.X ? max.X : X;
 			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
         }
+
+		/// <summary>
+        /// Calculates the dot product of two <see cref="SByte2"/> vectors.
+        /// </summary>
+        /// <param name="left">First <see cref="SByte2"/> source vector</param>
+        /// <param name="right">Second <see cref="SByte2"/> source vector.</param>
+        /// <param name="result">When the method completes, contains the dot product of the two <see cref="SByte2"/> vectors.</param>
+        public static sbyte Dot(SByte2 left, SByte2 right)
+        {
+			return (left.X * right.X) + (left.Y * right.Y);
+        }
 #endregion
 
 #region To-String

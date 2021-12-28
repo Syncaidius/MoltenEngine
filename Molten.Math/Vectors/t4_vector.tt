@@ -295,6 +295,17 @@ namespace Molten.Math
 		}
 #>
         }
+
+		/// <summary>
+        /// Calculates the dot product of two <#=SeeRef(fullName)#> vectors.
+        /// </summary>
+        /// <param name="left">First <#=SeeRef(fullName)#> source vector</param>
+        /// <param name="right">Second <#=SeeRef(fullName)#> source vector.</param>
+        /// <param name="result">When the method completes, contains the dot product of the two <#=SeeRef(fullName)#> vectors.</param>
+        public static <#=_types[i]#> Dot(<#=fullName#> left, <#=fullName#> right)
+        {
+			return <#for(int p = 0; p < size; p++){#>(left.<#=_pMapUpper[p]#> * right.<#=_pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
+        }
 #endregion
 
 #region To-String
