@@ -6,7 +6,7 @@ namespace Molten.Math
 {
 	///<summary>A <see cref = "double"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=8)]
-	public partial struct Vector2D
+	public partial struct Vector2D : IFormattable
 	{
 		///<summary>The X component.</summary>
 		public double X;
@@ -211,15 +211,14 @@ namespace Molten.Math
         /// <param name="value2">Second source position <see cref="Vector2D"/> vector.</param>
         /// <param name="tangent2">Second source tangent <see cref="Vector2D"/> vector.</param>
         /// <param name="amount">Weighting factor.</param>
-        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
-        public static Vector2D Hermite(ref Vector2D value1, ref Vector2D tangent1, ref Vector2D value2, ref Vector2D tangent2, float amount)
+        public static Vector2D Hermite(ref Vector2D value1, ref Vector2D tangent1, ref Vector2D value2, ref Vector2D tangent2, double amount)
         {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
-            float part2 = (-2.0f * cubed) + (3.0f * squared);
-            float part3 = (cubed - (2.0f * squared)) + amount;
-            float part4 = cubed - squared;
+            double squared = amount * amount;
+            double cubed = amount * squared;
+            double part1 = ((2.0D * cubed) - (3.0D * squared)) + 1.0D;
+            double part2 = (-2.0D * cubed) + (3.0D * squared);
+            double part3 = (cubed - (2.0D * squared)) + amount;
+            double part4 = cubed - squared;
 
 			return new Vector2D()
 			{

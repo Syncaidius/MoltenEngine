@@ -6,7 +6,7 @@ namespace Molten.Math
 {
 	///<summary>A <see cref = "float"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
-	public partial struct Vector3F
+	public partial struct Vector3F : IFormattable
 	{
 		///<summary>The X component.</summary>
 		public float X;
@@ -26,19 +26,19 @@ namespace Molten.Math
 		/// <summary>
         /// The X unit <see cref="Vector3F"/>.
         /// </summary>
-		public static Vector3F UnitX = new Vector3F(1F, 0, 0);
+		public static Vector3F UnitX = new Vector3F(1F, 0F, 0F);
 
 		/// <summary>
         /// The Y unit <see cref="Vector3F"/>.
         /// </summary>
-		public static Vector3F UnitY = new Vector3F(0, 1F, 0);
+		public static Vector3F UnitY = new Vector3F(0F, 1F, 0F);
 
 		/// <summary>
         /// The Z unit <see cref="Vector3F"/>.
         /// </summary>
-		public static Vector3F UnitZ = new Vector3F(0, 0, 1F);
+		public static Vector3F UnitZ = new Vector3F(0F, 0F, 1F);
 
-		public static Vector3F Zero = new Vector3F(0, 0, 0);
+		public static Vector3F Zero = new Vector3F(0F, 0F, 0F);
 
 #region Constructors
 		///<summary>Creates a new instance of <see cref = "Vector3F"/>.</summary>
@@ -229,14 +229,13 @@ namespace Molten.Math
         /// <param name="value2">Second source position <see cref="Vector3F"/> vector.</param>
         /// <param name="tangent2">Second source tangent <see cref="Vector3F"/> vector.</param>
         /// <param name="amount">Weighting factor.</param>
-        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
         public static Vector3F Hermite(ref Vector3F value1, ref Vector3F tangent1, ref Vector3F value2, ref Vector3F tangent2, float amount)
         {
             float squared = amount * amount;
             float cubed = amount * squared;
-            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
-            float part2 = (-2.0f * cubed) + (3.0f * squared);
-            float part3 = (cubed - (2.0f * squared)) + amount;
+            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
+            float part2 = (-2.0F * cubed) + (3.0F * squared);
+            float part3 = (cubed - (2.0F * squared)) + amount;
             float part4 = cubed - squared;
 
 			return new Vector3F()

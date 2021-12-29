@@ -16,6 +16,7 @@ struct TypeData
     public string Postfix; //Name post-fix
     public string DT;       // DataType
     public string FP;       // Floating-point type
+    public string FPL;      // Floating-point literal
     public string Pack;       // Packing
     public string One;     // Value for 1 or One
     public string Zero;    // Value for 0 or Zero

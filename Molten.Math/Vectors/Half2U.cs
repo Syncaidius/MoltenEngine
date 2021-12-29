@@ -6,7 +6,7 @@ namespace Molten.Math
 {
 	///<summary>A <see cref = "ushort"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=2)]
-	public partial struct Half2U
+	public partial struct Half2U : IFormattable
 	{
 		///<summary>The X component.</summary>
 		public ushort X;
@@ -211,20 +211,19 @@ namespace Molten.Math
         /// <param name="value2">Second source position <see cref="Half2U"/> vector.</param>
         /// <param name="tangent2">Second source tangent <see cref="Half2U"/> vector.</param>
         /// <param name="amount">Weighting factor.</param>
-        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
-        public static Half2U Hermite(ref Half2U value1, ref Half2U tangent1, ref Half2U value2, ref Half2U tangent2, float amount)
+        public static Half2U Hermite(ref Half2U value1, ref Half2U tangent1, ref Half2U value2, ref Half2U tangent2, ushort amount)
         {
             float squared = amount * amount;
             float cubed = amount * squared;
-            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
-            float part2 = (-2.0f * cubed) + (3.0f * squared);
-            float part3 = (cubed - (2.0f * squared)) + amount;
+            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
+            float part2 = (-2.0F * cubed) + (3.0F * squared);
+            float part3 = (cubed - (2.0F * squared)) + amount;
             float part4 = cubed - squared;
 
 			return new Half2U()
 			{
-				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
-				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
+				X = (ushort)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
+				Y = (ushort)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
 			};
         }
 #endregion

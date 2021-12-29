@@ -6,7 +6,7 @@ namespace Molten.Math
 {
 	///<summary>A <see cref = "ulong"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=8)]
-	public partial struct Vector4UL
+	public partial struct Vector4UL : IFormattable
 	{
 		///<summary>The X component.</summary>
 		public ulong X;
@@ -247,22 +247,21 @@ namespace Molten.Math
         /// <param name="value2">Second source position <see cref="Vector4UL"/> vector.</param>
         /// <param name="tangent2">Second source tangent <see cref="Vector4UL"/> vector.</param>
         /// <param name="amount">Weighting factor.</param>
-        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
-        public static Vector4UL Hermite(ref Vector4UL value1, ref Vector4UL tangent1, ref Vector4UL value2, ref Vector4UL tangent2, float amount)
+        public static Vector4UL Hermite(ref Vector4UL value1, ref Vector4UL tangent1, ref Vector4UL value2, ref Vector4UL tangent2, ulong amount)
         {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
-            float part2 = (-2.0f * cubed) + (3.0f * squared);
-            float part3 = (cubed - (2.0f * squared)) + amount;
-            float part4 = cubed - squared;
+            double squared = amount * amount;
+            double cubed = amount * squared;
+            double part1 = ((2.0D * cubed) - (3.0D * squared)) + 1.0D;
+            double part2 = (-2.0D * cubed) + (3.0D * squared);
+            double part3 = (cubed - (2.0D * squared)) + amount;
+            double part4 = cubed - squared;
 
 			return new Vector4UL()
 			{
-				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
-				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
-				Z = (((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4),
-				W = (((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4),
+				X = (ulong)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
+				Y = (ulong)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
+				Z = (ulong)((((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4)),
+				W = (ulong)((((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4)),
 			};
         }
 #endregion

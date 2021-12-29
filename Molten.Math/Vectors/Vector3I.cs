@@ -6,7 +6,7 @@ namespace Molten.Math
 {
 	///<summary>A <see cref = "int"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
-	public partial struct Vector3I
+	public partial struct Vector3I : IFormattable
 	{
 		///<summary>The X component.</summary>
 		public int X;
@@ -229,21 +229,20 @@ namespace Molten.Math
         /// <param name="value2">Second source position <see cref="Vector3I"/> vector.</param>
         /// <param name="tangent2">Second source tangent <see cref="Vector3I"/> vector.</param>
         /// <param name="amount">Weighting factor.</param>
-        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
-        public static Vector3I Hermite(ref Vector3I value1, ref Vector3I tangent1, ref Vector3I value2, ref Vector3I tangent2, float amount)
+        public static Vector3I Hermite(ref Vector3I value1, ref Vector3I tangent1, ref Vector3I value2, ref Vector3I tangent2, int amount)
         {
             float squared = amount * amount;
             float cubed = amount * squared;
-            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
-            float part2 = (-2.0f * cubed) + (3.0f * squared);
-            float part3 = (cubed - (2.0f * squared)) + amount;
+            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
+            float part2 = (-2.0F * cubed) + (3.0F * squared);
+            float part3 = (cubed - (2.0F * squared)) + amount;
             float part4 = cubed - squared;
 
 			return new Vector3I()
 			{
-				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
-				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
-				Z = (((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4),
+				X = (int)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
+				Y = (int)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
+				Z = (int)((((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4)),
 			};
         }
 #endregion

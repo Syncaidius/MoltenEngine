@@ -6,7 +6,7 @@ namespace Molten.Math
 {
 	///<summary>A <see cref = "byte"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=1)]
-	public partial struct Byte4
+	public partial struct Byte4 : IFormattable
 	{
 		///<summary>The X component.</summary>
 		public byte X;
@@ -247,22 +247,21 @@ namespace Molten.Math
         /// <param name="value2">Second source position <see cref="Byte4"/> vector.</param>
         /// <param name="tangent2">Second source tangent <see cref="Byte4"/> vector.</param>
         /// <param name="amount">Weighting factor.</param>
-        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
-        public static Byte4 Hermite(ref Byte4 value1, ref Byte4 tangent1, ref Byte4 value2, ref Byte4 tangent2, float amount)
+        public static Byte4 Hermite(ref Byte4 value1, ref Byte4 tangent1, ref Byte4 value2, ref Byte4 tangent2, byte amount)
         {
             float squared = amount * amount;
             float cubed = amount * squared;
-            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
-            float part2 = (-2.0f * cubed) + (3.0f * squared);
-            float part3 = (cubed - (2.0f * squared)) + amount;
+            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
+            float part2 = (-2.0F * cubed) + (3.0F * squared);
+            float part3 = (cubed - (2.0F * squared)) + amount;
             float part4 = cubed - squared;
 
 			return new Byte4()
 			{
-				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
-				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
-				Z = (((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4),
-				W = (((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4),
+				X = (byte)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
+				Y = (byte)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
+				Z = (byte)((((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4)),
+				W = (byte)((((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4)),
 			};
         }
 #endregion

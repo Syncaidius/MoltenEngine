@@ -6,7 +6,7 @@ namespace Molten.Math
 {
 	///<summary>A <see cref = "ushort"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=2)]
-	public partial struct Half4U
+	public partial struct Half4U : IFormattable
 	{
 		///<summary>The X component.</summary>
 		public ushort X;
@@ -247,22 +247,21 @@ namespace Molten.Math
         /// <param name="value2">Second source position <see cref="Half4U"/> vector.</param>
         /// <param name="tangent2">Second source tangent <see cref="Half4U"/> vector.</param>
         /// <param name="amount">Weighting factor.</param>
-        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
-        public static Half4U Hermite(ref Half4U value1, ref Half4U tangent1, ref Half4U value2, ref Half4U tangent2, float amount)
+        public static Half4U Hermite(ref Half4U value1, ref Half4U tangent1, ref Half4U value2, ref Half4U tangent2, ushort amount)
         {
             float squared = amount * amount;
             float cubed = amount * squared;
-            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
-            float part2 = (-2.0f * cubed) + (3.0f * squared);
-            float part3 = (cubed - (2.0f * squared)) + amount;
+            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
+            float part2 = (-2.0F * cubed) + (3.0F * squared);
+            float part3 = (cubed - (2.0F * squared)) + amount;
             float part4 = cubed - squared;
 
 			return new Half4U()
 			{
-				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
-				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
-				Z = (((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4),
-				W = (((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4),
+				X = (ushort)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
+				Y = (ushort)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
+				Z = (ushort)((((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4)),
+				W = (ushort)((((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4)),
 			};
         }
 #endregion

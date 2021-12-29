@@ -6,7 +6,7 @@ namespace Molten.Math
 {
 	///<summary>A <see cref = "decimal"/> vector comprised of four components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=16)]
-	public partial struct Vector4M
+	public partial struct Vector4M : IFormattable
 	{
 		///<summary>The X component.</summary>
 		public decimal X;
@@ -247,15 +247,14 @@ namespace Molten.Math
         /// <param name="value2">Second source position <see cref="Vector4M"/> vector.</param>
         /// <param name="tangent2">Second source tangent <see cref="Vector4M"/> vector.</param>
         /// <param name="amount">Weighting factor.</param>
-        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
-        public static Vector4M Hermite(ref Vector4M value1, ref Vector4M tangent1, ref Vector4M value2, ref Vector4M tangent2, float amount)
+        public static Vector4M Hermite(ref Vector4M value1, ref Vector4M tangent1, ref Vector4M value2, ref Vector4M tangent2, decimal amount)
         {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
-            float part2 = (-2.0f * cubed) + (3.0f * squared);
-            float part3 = (cubed - (2.0f * squared)) + amount;
-            float part4 = cubed - squared;
+            decimal squared = amount * amount;
+            decimal cubed = amount * squared;
+            decimal part1 = ((2.0M * cubed) - (3.0M * squared)) + 1.0M;
+            decimal part2 = (-2.0M * cubed) + (3.0M * squared);
+            decimal part3 = (cubed - (2.0M * squared)) + amount;
+            decimal part4 = cubed - squared;
 
 			return new Vector4M()
 			{

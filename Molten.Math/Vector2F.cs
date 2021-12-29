@@ -119,40 +119,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Restricts a value to be within a specified range.
-        /// </summary>
-        /// <param name="value">The value to clamp.</param>
-        /// <param name="min">The minimum value.</param>
-        /// <param name="max">The maximum value.</param>
-        /// <param name="result">When the method completes, contains the clamped value.</param>
-        public static void Clamp(ref Vector2F value, ref Vector2F min, ref Vector2F max, out Vector2F result)
-        {
-            float x = value.X;
-            x = (x > max.X) ? max.X : x;
-            x = (x < min.X) ? min.X : x;
-
-            float y = value.Y;
-            y = (y > max.Y) ? max.Y : y;
-            y = (y < min.Y) ? min.Y : y;
-
-            result = new Vector2F(x, y);
-        }
-
-        /// <summary>
-        /// Restricts a value to be within a specified range.
-        /// </summary>
-        /// <param name="value">The value to clamp.</param>
-        /// <param name="min">The minimum value.</param>
-        /// <param name="max">The maximum value.</param>
-        /// <returns>The clamped value.</returns>
-        public static Vector2F Clamp(Vector2F value, Vector2F min, Vector2F max)
-        {
-            Vector2F result;
-            Clamp(ref value, ref min, ref max, out result);
-            return result;
-        }
-
-        /// <summary>
         /// Calculates the distance between two vectors.
         /// </summary>
         /// <param name="value1">The first vector.</param>

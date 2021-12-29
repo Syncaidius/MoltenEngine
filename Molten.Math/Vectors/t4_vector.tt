@@ -30,7 +30,7 @@ namespace Molten.Math
 {
 	///<summary>A <see cref = "<#=_def[i].DT#>"/> vector comprised of <#=_strSize[size]#> components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=<#=_def[i].Pack#>)]
-	public partial struct <#=fullName#>
+	public partial struct <#=fullName#> : IFormattable
 	{
 <#
 		for(int p = 0; p < size; p++)
@@ -305,24 +305,32 @@ namespace Molten.Math
         /// <param name="value2">Second source position <#=SeeRef(fullName)#> vector.</param>
         /// <param name="tangent2">Second source tangent <#=SeeRef(fullName)#> vector.</param>
         /// <param name="amount">Weighting factor.</param>
-        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
-        public static <#=fullName#> Hermite(ref <#=fullName#> value1, ref <#=fullName#> tangent1, ref <#=fullName#> value2, ref <#=fullName#> tangent2, float amount)
+        public static <#=fullName#> Hermite(ref <#=fullName#> value1, ref <#=fullName#> tangent1, ref <#=fullName#> value2, ref <#=fullName#> tangent2, <#=_def[i].DT#> amount)
         {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
-            float part2 = (-2.0f * cubed) + (3.0f * squared);
-            float part3 = (cubed - (2.0f * squared)) + amount;
-            float part4 = cubed - squared;
+            <#=_def[i].FP#> squared = amount * amount;
+            <#=_def[i].FP#> cubed = amount * squared;
+            <#=_def[i].FP#> part1 = ((2.0<#=_def[i].FPL#> * cubed) - (3.0<#=_def[i].FPL#> * squared)) + 1.0<#=_def[i].FPL#>;
+            <#=_def[i].FP#> part2 = (-2.0<#=_def[i].FPL#> * cubed) + (3.0<#=_def[i].FPL#> * squared);
+            <#=_def[i].FP#> part3 = (cubed - (2.0<#=_def[i].FPL#> * squared)) + amount;
+            <#=_def[i].FP#> part4 = cubed - squared;
 
 			return new <#=fullName#>()
 			{
 <#
 		for(int p = 0; p < size; p++)
 		{
+			if(_def[i].DT == _def[i].FP)
+			{
 #>
 				<#=_pMapUpper[p]#> = (((value1.<#=_pMapUpper[p]#> * part1) + (value2.<#=_pMapUpper[p]#> * part2)) + (tangent1.<#=_pMapUpper[p]#> * part3)) + (tangent2.<#=_pMapUpper[p]#> * part4),
 <#
+			}
+			else
+			{
+#>
+				<#=_pMapUpper[p]#> = (<#=_def[i].DT#>)((((value1.<#=_pMapUpper[p]#> * part1) + (value2.<#=_pMapUpper[p]#> * part2)) + (tangent1.<#=_pMapUpper[p]#> * part3)) + (tangent2.<#=_pMapUpper[p]#> * part4)),
+<#
+			}
 		}
 #>
 			};
