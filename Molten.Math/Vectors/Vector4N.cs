@@ -264,6 +264,24 @@ namespace Molten.Math
 				W = (nint)((((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4)),
 			};
         }
+
+		/// <summary>
+        /// Returns a <see cref="Vector4N"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// </summary>
+        /// <param name="value1">A <see cref="Vector4N"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <see cref="Vector4N"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <see cref="Vector4N"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
+        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
+        public static Vector4N Barycentric(ref Vector4N value1, ref Vector4N value2, ref Vector4N value3, nint amount1, nint amount2)
+        {
+			return new Vector4N(
+				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
+				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
+				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)), 
+				(value1.W + (amount1 * (value2.W - value1.W))) + (amount2 * (value3.W - value1.W))
+			);
+        }
 #endregion
 
 #region To-String

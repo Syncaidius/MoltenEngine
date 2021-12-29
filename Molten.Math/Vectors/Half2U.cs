@@ -226,6 +226,22 @@ namespace Molten.Math
 				Y = (ushort)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
 			};
         }
+
+		/// <summary>
+        /// Returns a <see cref="Half2U"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// </summary>
+        /// <param name="value1">A <see cref="Half2U"/> containing the 2D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <see cref="Half2U"/> containing the 2D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <see cref="Half2U"/> containing the 2D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
+        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
+        public static Half2U Barycentric(ref Half2U value1, ref Half2U value2, ref Half2U value3, ushort amount1, ushort amount2)
+        {
+			return new Half2U(
+				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
+				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))
+			);
+        }
 #endregion
 
 #region To-String
