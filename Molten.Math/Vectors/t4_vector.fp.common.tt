@@ -10,29 +10,27 @@
 
 <#
 string outputPath = this.Host.ResolvePath("");
-bool[] _gen = new bool[]{false, false, false, false, false, false, false, false, true, true, true, false, false};
+List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "vector_defs.json");
 string _pMap = "xyzw";
 string _pMapUpper = "XYZW";
 
-for(int i = 0; i < _types.Length; i++)
+for(int i = 0; i < _def.Count; i++)
 {
-	if(!_gen[i])
+	if(!_def[i].IsFPType)
 	{
 		continue;
 	}
 
-	string tName = _types[i];
-
 	foreach(int size in _vectorSizes)
 	{
-		string fullName = $"{_names[i]}{size}{_postfixes[i]}";
+		string fullName = $"{_def[i].Name}{size}{_def[i].Postfix}";
 		string fn = $"{fullName}.common";
 #>
 using System.Runtime.InteropServices;
 
 namespace Molten.Math
 {
-	///<summary>A <see cref = "<#=_types[i]#>"/> vector comprised of <#=size#> components.</summary>
+	///<summary>A <see cref = "<#=_def[i].DT#>"/> vector comprised of <#=size#> components.</summary>
 	public partial struct <#=fullName#>
 	{
 		/// <summary>
@@ -44,7 +42,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=_pMapUpper[p]#> = <#=_pMapUpper[p]#> < <#=_zero[i]#> ? <#=_zero[i]#> : <#=_pMapUpper[p]#> > <#=_one[i]#> ? <#=_one[i]#> : <#=_pMapUpper[p]#>;
+			<#=_pMapUpper[p]#> = <#=_pMapUpper[p]#> < <#=_def[i].Zero#> ? <#=_def[i].Zero#> : <#=_pMapUpper[p]#> > <#=_def[i].One#> ? <#=_def[i].One#> : <#=_pMapUpper[p]#>;
 <#
 		}
 #>

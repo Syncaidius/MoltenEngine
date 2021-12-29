@@ -23,14 +23,14 @@ namespace Molten.Math
 		/// <summary>
         /// The X unit <see cref="Vector2F"/>.
         /// </summary>
-		public static Vector2F UnitX = new Vector2F(1F, 0F);
+		public static Vector2F UnitX = new Vector2F(1F, 0);
 
 		/// <summary>
         /// The Y unit <see cref="Vector2F"/>.
         /// </summary>
-		public static Vector2F UnitY = new Vector2F(0F, 1F);
+		public static Vector2F UnitY = new Vector2F(0, 1F);
 
-		public static Vector2F Zero = new Vector2F(0F, 0F);
+		public static Vector2F Zero = new Vector2F(0, 0);
 
 #region Constructors
 		///<summary>Creates a new instance of <see cref = "Vector2F"/>.</summary>
@@ -201,6 +201,31 @@ namespace Molten.Math
         public static float Dot(Vector2F left, Vector2F right)
         {
 			return (left.X * right.X) + (left.Y * right.Y);
+        }
+
+		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Vector2F"/> vector.</param>
+        /// <param name="tangent1">First source tangent <see cref="Vector2F"/> vector.</param>
+        /// <param name="value2">Second source position <see cref="Vector2F"/> vector.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Vector2F"/> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
+        public static Vector2F Hermite(ref Vector2F value1, ref Vector2F tangent1, ref Vector2F value2, ref Vector2F tangent2, float amount)
+        {
+            float squared = amount * amount;
+            float cubed = amount * squared;
+            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
+            float part2 = (-2.0f * cubed) + (3.0f * squared);
+            float part3 = (cubed - (2.0f * squared)) + amount;
+            float part4 = cubed - squared;
+
+			return new Vector2F()
+			{
+				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
+				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
+			};
         }
 #endregion
 

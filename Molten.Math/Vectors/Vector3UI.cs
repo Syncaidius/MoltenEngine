@@ -26,19 +26,19 @@ namespace Molten.Math
 		/// <summary>
         /// The X unit <see cref="Vector3UI"/>.
         /// </summary>
-		public static Vector3UI UnitX = new Vector3UI(1U, 0U, 0U);
+		public static Vector3UI UnitX = new Vector3UI(1U, 0, 0);
 
 		/// <summary>
         /// The Y unit <see cref="Vector3UI"/>.
         /// </summary>
-		public static Vector3UI UnitY = new Vector3UI(0U, 1U, 0U);
+		public static Vector3UI UnitY = new Vector3UI(0, 1U, 0);
 
 		/// <summary>
         /// The Z unit <see cref="Vector3UI"/>.
         /// </summary>
-		public static Vector3UI UnitZ = new Vector3UI(0U, 0U, 1U);
+		public static Vector3UI UnitZ = new Vector3UI(0, 0, 1U);
 
-		public static Vector3UI Zero = new Vector3UI(0U, 0U, 0U);
+		public static Vector3UI Zero = new Vector3UI(0, 0, 0);
 
 #region Constructors
 		///<summary>Creates a new instance of <see cref = "Vector3UI"/>.</summary>
@@ -219,6 +219,32 @@ namespace Molten.Math
         public static uint Dot(Vector3UI left, Vector3UI right)
         {
 			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+        }
+
+		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Vector3UI"/> vector.</param>
+        /// <param name="tangent1">First source tangent <see cref="Vector3UI"/> vector.</param>
+        /// <param name="value2">Second source position <see cref="Vector3UI"/> vector.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Vector3UI"/> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
+        public static Vector3UI Hermite(ref Vector3UI value1, ref Vector3UI tangent1, ref Vector3UI value2, ref Vector3UI tangent2, float amount)
+        {
+            float squared = amount * amount;
+            float cubed = amount * squared;
+            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
+            float part2 = (-2.0f * cubed) + (3.0f * squared);
+            float part3 = (cubed - (2.0f * squared)) + amount;
+            float part4 = cubed - squared;
+
+			return new Vector3UI()
+			{
+				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
+				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
+				Z = (((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4),
+			};
         }
 #endregion
 

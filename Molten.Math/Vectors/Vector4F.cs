@@ -29,24 +29,24 @@ namespace Molten.Math
 		/// <summary>
         /// The X unit <see cref="Vector4F"/>.
         /// </summary>
-		public static Vector4F UnitX = new Vector4F(1F, 0F, 0F, 0F);
+		public static Vector4F UnitX = new Vector4F(1F, 0, 0, 0);
 
 		/// <summary>
         /// The Y unit <see cref="Vector4F"/>.
         /// </summary>
-		public static Vector4F UnitY = new Vector4F(0F, 1F, 0F, 0F);
+		public static Vector4F UnitY = new Vector4F(0, 1F, 0, 0);
 
 		/// <summary>
         /// The Z unit <see cref="Vector4F"/>.
         /// </summary>
-		public static Vector4F UnitZ = new Vector4F(0F, 0F, 1F, 0F);
+		public static Vector4F UnitZ = new Vector4F(0, 0, 1F, 0);
 
 		/// <summary>
         /// The W unit <see cref="Vector4F"/>.
         /// </summary>
-		public static Vector4F UnitW = new Vector4F(0F, 0F, 0F, 1F);
+		public static Vector4F UnitW = new Vector4F(0, 0, 0, 1F);
 
-		public static Vector4F Zero = new Vector4F(0F, 0F, 0F, 0F);
+		public static Vector4F Zero = new Vector4F(0, 0, 0, 0);
 
 #region Constructors
 		///<summary>Creates a new instance of <see cref = "Vector4F"/>.</summary>
@@ -237,6 +237,33 @@ namespace Molten.Math
         public static float Dot(Vector4F left, Vector4F right)
         {
 			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+        }
+
+		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Vector4F"/> vector.</param>
+        /// <param name="tangent1">First source tangent <see cref="Vector4F"/> vector.</param>
+        /// <param name="value2">Second source position <see cref="Vector4F"/> vector.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Vector4F"/> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
+        public static Vector4F Hermite(ref Vector4F value1, ref Vector4F tangent1, ref Vector4F value2, ref Vector4F tangent2, float amount)
+        {
+            float squared = amount * amount;
+            float cubed = amount * squared;
+            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
+            float part2 = (-2.0f * cubed) + (3.0f * squared);
+            float part3 = (cubed - (2.0f * squared)) + amount;
+            float part4 = cubed - squared;
+
+			return new Vector4F()
+			{
+				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
+				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
+				Z = (((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4),
+				W = (((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4),
+			};
         }
 #endregion
 

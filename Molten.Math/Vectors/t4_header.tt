@@ -3,16 +3,25 @@
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
+<#@ assembly name="Newtonsoft.Json" #>
+<#@ import namespace="Newtonsoft.Json" #>
 <#@ output extension=".cs" #>
 
 
 <#+
-string[] _types = new string[]{"sbyte", "byte", "int", "uint", "short", "ushort", "long", "ulong", "float", "double", "decimal", "nint", "nuint"};
-string[] _names = new string[]{"SByte", "Byte", "Vector", "Vector", "Half", "Half", "Vector", "Vector", "Vector", "Vector", "Vector", "Vector", "Vector"};
-string[] _postfixes = new string[]{"", "", "I", "UI", "", "U", "L", "UL", "F", "D", "M", "N", "NU"};
-int[] _pack = new int[]{1, 1, 4, 4 , 2, 2, 8, 8, 4, 8, 16, 0, 0};
-string[] _one = new string[]{"1", "1", "1", "1U", "(short)1", "(ushort)1", "1L", "1UL", "1F", "1D", "1M", "1", "1U"};
-string[] _zero = new string[]{"0", "0", "0", "0U", "0", "0", "0L", "0UL", "0F", "0D", "0M", "0", "0U"};
+// TODO move to Json file
+struct TypeData
+{
+    public string Name;     // Name
+    public string Postfix; //Name post-fix
+    public string DT;       // DataType
+    public string FP;       // Floating-point type
+    public string Pack;       // Packing
+    public string One;     // Value for 1 or One
+    public string Zero;    // Value for 0 or Zero
+    public bool IsFPType;   //The type is a floating-point type
+}
+
 string[] _strSize = new string[]{"zero", "one", "two", "three", "four", "five", "six", "seven", "eight"};
 int[] _vectorSizes = new int[]{2, 3, 4};
 
@@ -26,6 +35,12 @@ public void SaveFile(string folder, string fileName, string content)
             str.Flush();
         }
     }
+}
+
+public List<T> ReadJsonDef<T>(string folder, string fileName) where T : struct
+{
+    string json = File.ReadAllText(Path.Combine(folder, fileName.Trim()));
+    return JsonConvert.DeserializeObject<List<T>>(json);
 }
 
 public string GetConstructorArgs(string type, string map, int count, string prefix = "", string postfix = "")

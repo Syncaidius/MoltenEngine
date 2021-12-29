@@ -5,7 +5,7 @@ using System.Globalization;
 namespace Molten.Math
 {
 	///<summary>A <see cref = "nint"/> vector comprised of three components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=0)]
+	[StructLayout(LayoutKind.Sequential, Pack=sizeof(nint))]
 	public partial struct Vector3N
 	{
 		///<summary>The X component.</summary>
@@ -219,6 +219,32 @@ namespace Molten.Math
         public static nint Dot(Vector3N left, Vector3N right)
         {
 			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+        }
+
+		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Vector3N"/> vector.</param>
+        /// <param name="tangent1">First source tangent <see cref="Vector3N"/> vector.</param>
+        /// <param name="value2">Second source position <see cref="Vector3N"/> vector.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Vector3N"/> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
+        public static Vector3N Hermite(ref Vector3N value1, ref Vector3N tangent1, ref Vector3N value2, ref Vector3N tangent2, float amount)
+        {
+            float squared = amount * amount;
+            float cubed = amount * squared;
+            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
+            float part2 = (-2.0f * cubed) + (3.0f * squared);
+            float part3 = (cubed - (2.0f * squared)) + amount;
+            float part4 = cubed - squared;
+
+			return new Vector3N()
+			{
+				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
+				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
+				Z = (((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4),
+			};
         }
 #endregion
 

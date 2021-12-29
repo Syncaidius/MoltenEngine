@@ -303,6 +303,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Vectors\vector_defs.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Vectors\t4_header.tt">

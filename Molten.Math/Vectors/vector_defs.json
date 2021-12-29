@@ -1,0 +1,132 @@
+[
+  {
+    "Name": "SByte",
+    "Postfix": "",
+    "DT": "sbyte",
+    "FP": "float",
+    "Pack": "1",
+    "One": "1",
+    "Zero": "0",
+    "IsFPType":  false
+  },
+  {
+    "Name": "Byte",
+    "Postfix": "",
+    "DT": "byte",
+    "FP": "float",
+    "Pack": "1",
+    "One": "1",
+    "Zero": "0",
+    "IsFPType": false
+  },
+  {
+    "Name": "Vector",
+    "Postfix": "I",
+    "DT": "int",
+    "FP": "float",
+    "Pack": "4",
+    "One": "1",
+    "Zero": "0",
+    "IsFPType": false
+  },
+  {
+    "Name": "Vector",
+    "Postfix": "UI",
+    "DT": "uint",
+    "FP": "float",
+    "Pack": "4",
+    "One": "1U",
+    "Zero": "0",
+    "IsFPType": false
+  },
+  {
+    "Name": "Half",
+    "Postfix": "",
+    "DT": "short",
+    "FP": "float",
+    "Pack": "2",
+    "One": "(short)1",
+    "Zero": "0",
+    "IsFPType": false
+  },
+  {
+    "Name": "Half",
+    "Postfix": "U",
+    "DT": "ushort",
+    "FP": "float",
+    "Pack": "2",
+    "One": "(ushort)1",
+    "Zero": "0",
+    "IsFPType": false
+  },
+  {
+    "Name": "Vector",
+    "Postfix": "L",
+    "DT": "long",
+    "FP": "double",
+    "Pack": "8",
+    "One": "1L",
+    "Zero": "0",
+    "IsFPType": false
+  },
+  {
+    "Name": "Vector",
+    "Postfix": "UL",
+    "DT": "ulong",
+    "FP": "double",
+    "Pack": "8",
+    "One": "1UL",
+    "Zero": "0",
+    "IsFPType": false
+  },
+  {
+    "Name": "Vector",
+    "Postfix": "F",
+    "DT": "float",
+    "FP": "float",
+    "Pack": "4",
+    "One": "1F",
+    "Zero": "0F",
+    "IsFPType": true
+  },
+  {
+    "Name": "Vector",
+    "Postfix": "D",
+    "DT": "double",
+    "FP": "double",
+    "Pack": "8",
+    "One": "1D",
+    "Zero": "0D",
+    "IsFPType": true
+  },
+  {
+    "Name": "Vector",
+    "Postfix": "M",
+    "DT": "decimal",
+    "FP": "decimal",
+    "Pack": "16",
+    "One": "1M",
+    "Zero": "0M",
+    "IsFPType": true
+  },
+  {
+    "Name": "Vector",
+    "Postfix": "N",
+    "DT": "nint",
+    "FP": "float",
+    "Pack": "sizeof(nint)",
+    "One": "1",
+    "Zero": "0",
+    "IsFPType": false
+  },
+  {
+    "Name": "Vector",
+    "Postfix": "NU",
+    "DT": "nuint",
+    "FP": "float",
+    "Pack": "sizeof(nuint)",
+    "One": "1U",
+    "Zero": "0",
+    "IsFPType": false
+  }
+]

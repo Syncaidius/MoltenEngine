@@ -211,28 +211,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the dot product of two vectors.
-        /// </summary>
-        /// <param name="left">First source vector.</param>
-        /// <param name="right">Second source vector.</param>
-        /// <param name="result">When the method completes, contains the dot product of the two vectors.</param>
-        public static void Dot(ref Vector2F left, ref Vector2F right, out float result)
-        {
-            result = (left.X * right.X) + (left.Y * right.Y);
-        }
-
-        /// <summary>
-        /// Calculates the dot product of two vectors.
-        /// </summary>
-        /// <param name="left">First source vector.</param>
-        /// <param name="right">Second source vector.</param>
-        /// <returns>The dot product of the two vectors.</returns>
-        public static float Dot(Vector2F left, Vector2F right)
-        {
-            return (left.X * right.X) + (left.Y * right.Y);
-        }
-
-        /// <summary>
         /// Converts the vector into a unit vector.
         /// </summary>
         /// <param name="value">The vector to normalize.</param>

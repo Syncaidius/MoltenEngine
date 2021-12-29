@@ -207,6 +207,31 @@ namespace Molten.Math
         {
 			return (left.X * right.X) + (left.Y * right.Y);
         }
+
+		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="SByte2"/> vector.</param>
+        /// <param name="tangent1">First source tangent <see cref="SByte2"/> vector.</param>
+        /// <param name="value2">Second source position <see cref="SByte2"/> vector.</param>
+        /// <param name="tangent2">Second source tangent <see cref="SByte2"/> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <param name="result">When the method completes, contains the result of the Hermite spline interpolation.</param>
+        public static SByte2 Hermite(ref SByte2 value1, ref SByte2 tangent1, ref SByte2 value2, ref SByte2 tangent2, float amount)
+        {
+            float squared = amount * amount;
+            float cubed = amount * squared;
+            float part1 = ((2.0f * cubed) - (3.0f * squared)) + 1.0f;
+            float part2 = (-2.0f * cubed) + (3.0f * squared);
+            float part3 = (cubed - (2.0f * squared)) + amount;
+            float part4 = cubed - squared;
+
+			return new SByte2()
+			{
+				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
+				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
+			};
+        }
 #endregion
 
 #region To-String
