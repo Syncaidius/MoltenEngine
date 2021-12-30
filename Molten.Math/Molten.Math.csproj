@@ -241,10 +241,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>t4_vector.tt</DependentUpon>
     </Compile>
-    <Compile Include="Vectors\t4_vector.fp.common1.cs">
+    <Compile Include="Vectors\t4_vector.fp.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>t4_vector.fp.common.tt</DependentUpon>
+      <DependentUpon>t4_vector.fp.tt</DependentUpon>
     </Compile>
     <Compile Include="Vectors\Vector2D.common.cs" />
     <Compile Include="Vectors\Vector2D.cs" />
@@ -310,9 +310,9 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_header.cs</LastGenOutput>
     </Content>
-    <Content Include="Vectors\t4_vector.fp.common.tt">
+    <Content Include="Vectors\t4_vector.fp.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>t4_vector.fp.common1.cs</LastGenOutput>
+      <LastGenOutput>t4_vector.fp.cs</LastGenOutput>
     </Content>
     <Content Include="Vectors\t4_vector.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

@@ -9,6 +9,7 @@
     "One": "1",
     "Zero": "0",
     "IsFPType": false,
+    "Unsigned":  false
   },
   {
     "Name": "Byte",
@@ -19,7 +20,8 @@
     "Pack": "1",
     "One": "1",
     "Zero": "0",
-    "IsFPType": false
+    "IsFPType": false,
+    "Unsigned": true
   },
   {
     "Name": "Vector",
@@ -30,7 +32,8 @@
     "Pack": "4",
     "One": "1",
     "Zero": "0",
-    "IsFPType": false
+    "IsFPType": false,
+    "Unsigned": false
   },
   {
     "Name": "Vector",
@@ -41,7 +44,8 @@
     "Pack": "4",
     "One": "1U",
     "Zero": "0",
-    "IsFPType": false
+    "IsFPType": false,
+    "Unsigned": true
   },
   {
     "Name": "Half",
@@ -52,7 +56,8 @@
     "Pack": "2",
     "One": "(short)1",
     "Zero": "0",
-    "IsFPType": false
+    "IsFPType": false,
+    "Unsigned": false
   },
   {
     "Name": "Half",
@@ -63,7 +68,8 @@
     "Pack": "2",
     "One": "(ushort)1",
     "Zero": "0",
-    "IsFPType": false
+    "IsFPType": false,
+    "Unsigned": true
   },
   {
     "Name": "Vector",
@@ -74,7 +80,8 @@
     "Pack": "8",
     "One": "1L",
     "Zero": "0",
-    "IsFPType": false
+    "IsFPType": false,
+    "Unsigned": false
   },
   {
     "Name": "Vector",
@@ -85,7 +92,8 @@
     "Pack": "8",
     "One": "1UL",
     "Zero": "0",
-    "IsFPType": false
+    "IsFPType": false,
+    "Unsigned": true
   },
   {
     "Name": "Vector",
@@ -96,7 +104,8 @@
     "Pack": "4",
     "One": "1F",
     "Zero": "0F",
-    "IsFPType": true
+    "IsFPType": true,
+    "Unsigned": false
   },
   {
     "Name": "Vector",
@@ -107,7 +116,8 @@
     "Pack": "8",
     "One": "1D",
     "Zero": "0D",
-    "IsFPType": true
+    "IsFPType": true,
+    "Unsigned": false
   },
   {
     "Name": "Vector",
@@ -118,7 +128,8 @@
     "Pack": "16",
     "One": "1M",
     "Zero": "0M",
-    "IsFPType": true
+    "IsFPType": true,
+    "Unsigned": false
   },
   {
     "Name": "Vector",
@@ -129,7 +140,8 @@
     "Pack": "sizeof(nint)",
     "One": "1",
     "Zero": "0",
-    "IsFPType": false
+    "IsFPType": false,
+    "Unsigned": false
   },
   {
     "Name": "Vector",
@@ -140,6 +152,7 @@
     "Pack": "sizeof(nuint)",
     "One": "1U",
     "Zero": "0",
-    "IsFPType": false
+    "IsFPType": false,
+    "Unsigned": true
   }
 ]

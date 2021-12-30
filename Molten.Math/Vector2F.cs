@@ -767,19 +767,6 @@ namespace Molten
             return new Vector4F(value, 0.0f, 0.0f);
         }
 
-        /// <summary>T</summary>
-        /// <param name="vec"></param>
-        /// <param name="vec">The vector.</param>
-        /// <returns></returns>
-        public static Vector2F Truncate(Vector2F vec)
-        {
-            return new Vector2F()
-            {
-                X = (Math.Abs(vec.X) - 0.0001 < 0) ? 0 : vec.X,
-                Y = (Math.Abs(vec.Y) - 0.0001 < 0) ? 0 : vec.Y,
-            };
-        }
-
         /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
         /// If so this method truncates that value to zero.</summary>
         /// <param name="power">The power.</param>
@@ -878,20 +865,6 @@ namespace Molten
         {
             X = (float)Math.Pow(X, power);
             Y = (float)Math.Pow(Y, power);
-        }
-
-        /// <summary>Rounds all components down to the nearest unit.</summary>
-        public void Floor()
-        {
-            X = (float)Math.Floor(X);
-            Y = (float)Math.Floor(Y);
-        }
-
-        /// <summary>Rounds all components up to the nearest unit.</summary>
-        public void Ceiling()
-        {
-            X = (float)Math.Ceiling(X);
-            Y = (float)Math.Ceiling(Y);
         }
 
         /// <summary>

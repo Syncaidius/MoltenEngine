@@ -18,6 +18,20 @@ namespace Molten.Math
 			X = X < 0F ? 0F : X > 1F ? 1F : X;
 			Y = Y < 0F ? 0F : Y > 1F ? 1F : Y;
         }
+
+		/// <summary>Rounds all components down to the nearest unit.</summary>
+        public void Floor()
+        {
+			X = (float)Math.Floor(X);
+			Y = (float)Math.Floor(Y);
+        }
+
+        /// <summary>Rounds all components up to the nearest unit.</summary>
+        public void Ceiling()
+        {
+			X = (float)Math.Ceiling(X);
+			Y = (float)Math.Ceiling(Y);
+        }
 	}
 }
 

@@ -14,6 +14,22 @@ namespace Molten.Math
 			Y = Y < 0F ? 0F : Y > 1F ? 1F : Y;
 			Z = Z < 0F ? 0F : Z > 1F ? 1F : Z;
         }
+
+		/// <summary>Rounds all components down to the nearest unit.</summary>
+        public void Floor()
+        {
+			X = (float)Math.Floor(X);
+			Y = (float)Math.Floor(Y);
+			Z = (float)Math.Floor(Z);
+        }
+
+        /// <summary>Rounds all components up to the nearest unit.</summary>
+        public void Ceiling()
+        {
+			X = (float)Math.Ceiling(X);
+			Y = (float)Math.Ceiling(Y);
+			Z = (float)Math.Ceiling(Z);
+        }
 	}
 }
 

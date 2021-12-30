@@ -15,6 +15,24 @@ namespace Molten.Math
 			Z = Z < 0D ? 0D : Z > 1D ? 1D : Z;
 			W = W < 0D ? 0D : W > 1D ? 1D : W;
         }
+
+		/// <summary>Rounds all components down to the nearest unit.</summary>
+        public void Floor()
+        {
+			X = Math.Floor(X);
+			Y = Math.Floor(Y);
+			Z = Math.Floor(Z);
+			W = Math.Floor(W);
+        }
+
+        /// <summary>Rounds all components up to the nearest unit.</summary>
+        public void Ceiling()
+        {
+			X = Math.Ceiling(X);
+			Y = Math.Ceiling(Y);
+			Z = Math.Ceiling(Z);
+			W = Math.Ceiling(W);
+        }
 	}
 }
 

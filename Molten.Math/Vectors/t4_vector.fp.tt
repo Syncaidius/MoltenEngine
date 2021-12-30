@@ -47,6 +47,32 @@ namespace Molten.Math
 		}
 #>
         }
+
+		/// <summary>Rounds all components down to the nearest unit.</summary>
+        public void Floor()
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=_pMapUpper[p]#> = <#=(_def[i].DT == "float" ? "(float)" : "")#>Math.Floor(<#=_pMapUpper[p]#>);
+<#
+		}
+#>
+        }
+
+        /// <summary>Rounds all components up to the nearest unit.</summary>
+        public void Ceiling()
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=_pMapUpper[p]#> = <#=(_def[i].DT == "float" ? "(float)" : "")#>Math.Ceiling(<#=_pMapUpper[p]#>);
+<#
+		}
+#>
+        }
 	}
 }
 <#

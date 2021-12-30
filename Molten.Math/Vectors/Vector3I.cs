@@ -261,6 +261,14 @@ namespace Molten.Math
 				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))
 			);
         }
+
+		/// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
+        public void Truncate()
+        {
+				X = (Math.Abs(X) - 0.0001F < 0) ? 0 : X;
+				Y = (Math.Abs(Y) - 0.0001F < 0) ? 0 : X;
+				Z = (Math.Abs(Z) - 0.0001F < 0) ? 0 : X;
+        }
 #endregion
 
 #region To-String
@@ -420,6 +428,19 @@ namespace Molten.Math
 				Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y,
 				Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z,
 			};
+        }
+
+		/// <summary>Truncate each near-zero component of a vector towards zero.</summary>
+        /// <param name="vec">The Vector3I to be truncated.</param>
+        /// <returns></returns>
+        public static Vector3I Truncate(Vector3I value)
+        {
+            return new Vector3I()
+            {
+				X = (Math.Abs(value.X) - 0.0001F < 0) ? 0 : value.X,
+				Y = (Math.Abs(value.Y) - 0.0001F < 0) ? 0 : value.X,
+				Z = (Math.Abs(value.Z) - 0.0001F < 0) ? 0 : value.X,
+            };
         }
 #endregion
 
