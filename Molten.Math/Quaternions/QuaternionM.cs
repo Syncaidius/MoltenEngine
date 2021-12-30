@@ -7,7 +7,7 @@ namespace Molten.Math
 {
 	///<summary>Represents a four dimensional mathematical QuaternionM.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack = 16)]
-	public partial struct QuaternionM
+	public partial struct QuaternionM : IFormattable
 	{
 		/// <summary>
         /// The size of the <see cref="QuaternionM"/> type, in bytes.
@@ -200,54 +200,108 @@ namespace Molten.Math
                 return hashCode;
             }
         }
+
+        /// <summary>
+        /// Computes the quaternion rotation between two normalized vectors.
+        /// </summary>
+        /// <param name="v1">First unit-length vector.</param>
+        /// <param name="v2">Second unit-length vector.</param>
+        /// <param name="q">Quaternion representing the rotation from v1 to v2.</param>
+        public static QuaternionM GetQuaternionBetweenNormalizedVectors(ref Vector3M v1, ref Vector3M v2)
+        {
+            decimal dot;
+            QuaternionM q;
+            Vector3M.Dot(ref v1, ref v2, out dot);
+            //For non-normal vectors, the multiplying the axes length squared would be necessary:
+            //float w = dot + (float)Math.Sqrt(v1.LengthSquared() * v2.LengthSquared());
+            if (dot < -0.9999M) //parallel, opposing direction
+            {
+                //If this occurs, the rotation required is ~180 degrees.
+                //The problem is that we could choose any perpendicular axis for the rotation. It's not uniquely defined.
+                //The solution is to pick an arbitrary perpendicular axis.
+                //Project onto the plane which has the lowest component magnitude.
+                //On that 2d plane, perform a 90 degree rotation.
+                decimal absX = Math.Abs(v1.X);
+                decimal absY = Math.Abs(v1.Y);
+                decimal absZ = Math.Abs(v1.Z);
+                if (absX < absY && absX < absZ)
+                    q = new QuaternionM(0, -v1.Z, v1.Y, 0);
+                else if (absY < absZ)
+                    q = new QuaternionM(-v1.Z, 0, v1.X, 0);
+                else
+                    q = new QuaternionM(-v1.Y, v1.X, 0, 0);
+            }
+            else
+            {
+                Vector3M axis;
+                Vector3M.Cross(ref v1, ref v2, out axis);
+                q = new QuaternionM(axis.X, axis.Y, axis.Z, dot + 1);
+            }
+            q.Normalize();
+
+            return q;
+        }
+#endregion
+
+#region To-String Methods
+/// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2} W:{3}", X, Y, Z, W);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
+        public string ToString(string format)
+        {
+            if (format == null)
+                return ToString();
+
+            return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Z:{2} W:{3}", X.ToString(format, CultureInfo.CurrentCulture),
+                Y.ToString(format, CultureInfo.CurrentCulture), Z.ToString(format, CultureInfo.CurrentCulture), W.ToString(format, CultureInfo.CurrentCulture));
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider formatProvider)
+        {
+            return string.Format(formatProvider, "X:{0} Y:{1} Z:{2} W:{3}", X, Y, Z, W);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (format == null)
+                return ToString(formatProvider);
+
+            return string.Format(formatProvider, "X:{0} Y:{1} Z:{2} W:{3}", X.ToString(format, formatProvider),
+                Y.ToString(format, formatProvider), Z.ToString(format, formatProvider), W.ToString(format, formatProvider));
+        }
 #endregion
 
 #region Static Methods
-        /// <summary>
-        /// Multiplies a <see cref="QuaternionM"/> by another.
-        /// </summary>
-        /// <param name="left">The first QuaternionM to multiply.</param>
-        /// <param name="right">The second QuaternionM to multiply.</param>
-        /// <param name="result">When the method completes, contains the multiplied QuaternionM.</param>
-        public static QuaternionM Multiply(ref QuaternionM left, ref QuaternionM right)
-        {
-            decimal lx = left.X;
-            decimal ly = left.Y;
-            decimal lz = left.Z;
-            decimal lw = left.W;
-            decimal rx = right.X;
-            decimal ry = right.Y;
-            decimal rz = right.Z;
-            decimal rw = right.W;
-            decimal a = (ly * rz - lz * ry);
-            decimal b = (lz * rx - lx * rz);
-            decimal c = (lx * ry - ly * rx);
-            decimal d = (lx * rx + ly * ry + lz * rz);
-
-            return new QuaternionM()
-            {
-                X = (lx * rw + rx * lw) + a,
-                Y = (ly * rw + ry * lw) + b,
-                Z = (lz * rw + rz * lw) + c,
-                W = lw * rw - d
-            };
-        }
-        /// <summary>
-        /// Scales a <see cref="QuaternionM"/> by the given value.
-        /// </summary>
-        /// <param name="value">The quaternion to scale.</param>
-        /// <param name="scale">The amount by which to scale the quaternion.</param>
-        public static QuaternionM Multiply(ref QuaternionF value, float scale)
-        {
-            return new QuaternionM()
-            {
-                X = value.X * scale,
-                Y = value.Y * scale,
-                Z = value.Z * scale,
-                W = value.W * scale,
-            };
-        }
-
         /// <summary>
         /// Multiplies two <see cref="QuaternionM"/> together in opposite order.
         /// </summary>
@@ -273,6 +327,72 @@ namespace Molten.Math
             };
         }
 
+#endregion
+
+#region Operators - Multiply
+        /// <summary>
+        /// Scales a quaternion by the given value.
+        /// </summary>
+        /// <param name="value">The quaternion to scale.</param>
+        /// <param name="scale">The amount by which to scale the quaternion.</param>
+        /// <returns>The scaled quaternion.</returns>
+        public static QuaternionM operator *(decimal scale, QuaternionM value)
+        {
+            return new QuaternionM()
+            {
+                X = value.X * scale,
+                Y = value.Y * scale,
+                Z = value.Z * scale,
+                W = value.W * scale,
+            };
+        }
+
+        /// <summary>
+        /// Scales a quaternion by the given value.
+        /// </summary>
+        /// <param name="value">The quaternion to scale.</param>
+        /// <param name="scale">The amount by which to scale the quaternion.</param>
+        /// <returns>The scaled quaternion.</returns>
+        public static QuaternionM operator *(QuaternionM value, decimal scale)
+        {
+            return new QuaternionM()
+            {
+                X = value.X * scale,
+                Y = value.Y * scale,
+                Z = value.Z * scale,
+                W = value.W * scale,
+            };
+        }
+
+        /// <summary>
+        /// Multiplies a quaternion by another.
+        /// </summary>
+        /// <param name="left">The first quaternion to multiply.</param>
+        /// <param name="right">The second quaternion to multiply.</param>
+        /// <returns>The multiplied quaternion.</returns>
+        public static QuaternionM operator *(QuaternionM left, QuaternionM right)
+        {
+            decimal lx = left.X;
+            decimal ly = left.Y;
+            decimal lz = left.Z;
+            decimal lw = left.W;
+            decimal rx = right.X;
+            decimal ry = right.Y;
+            decimal rz = right.Z;
+            decimal rw = right.W;
+            decimal a = (ly * rz - lz * ry);
+            decimal b = (lz * rx - lx * rz);
+            decimal c = (lx * ry - ly * rx);
+            decimal d = (lx * rx + ly * ry + lz * rz);
+
+            return new QuaternionM()
+            {
+                X = (lx * rw + rx * lw) + a,
+                Y = (ly * rw + ry * lw) + b,
+                Z = (lz * rw + rz * lw) + c,
+                W = lw * rw - d
+            };
+        }
 #endregion
 
 #region Indexers
