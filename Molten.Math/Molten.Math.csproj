@@ -193,7 +193,6 @@
     <Compile Include="DoublePrecision\Vector2D.cs" />
     <Compile Include="Quaternions\QuaternionD.cs" />
     <Compile Include="Quaternions\QuaternionF.cs" />
-    <Compile Include="Quaternions\QuaternionM.cs" />
     <Compile Include="Quaternions\t4_quaternions.cs">
       <DependentUpon>t4_quaternions.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -260,8 +259,6 @@
     <Compile Include="Vectors\Vector2F.cs" />
     <Compile Include="Vectors\Vector2I.cs" />
     <Compile Include="Vectors\Vector2L.cs" />
-    <Compile Include="Vectors\Vector2M.common.cs" />
-    <Compile Include="Vectors\Vector2M.cs" />
     <Compile Include="Vectors\Vector2N.cs" />
     <Compile Include="Vectors\Vector2NU.cs" />
     <Compile Include="Vectors\Vector2UI.cs" />
@@ -272,8 +269,6 @@
     <Compile Include="Vectors\Vector3F.cs" />
     <Compile Include="Vectors\Vector3I.cs" />
     <Compile Include="Vectors\Vector3L.cs" />
-    <Compile Include="Vectors\Vector3M.common.cs" />
-    <Compile Include="Vectors\Vector3M.cs" />
     <Compile Include="Vectors\Vector3N.cs" />
     <Compile Include="Vectors\Vector3NU.cs" />
     <Compile Include="Vectors\Vector3UI.cs" />
@@ -284,8 +279,6 @@
     <Compile Include="Vectors\Vector4F.cs" />
     <Compile Include="Vectors\Vector4I.cs" />
     <Compile Include="Vectors\Vector4L.cs" />
-    <Compile Include="Vectors\Vector4M.common.cs" />
-    <Compile Include="Vectors\Vector4M.cs" />
     <Compile Include="Vectors\Vector4N.cs" />
     <Compile Include="Vectors\Vector4NU.cs" />
     <Compile Include="Vectors\Vector4UI.cs" />

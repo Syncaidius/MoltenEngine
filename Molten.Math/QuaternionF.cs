@@ -54,7 +54,7 @@ namespace Molten
     /// Represents a four dimensional mathematical quaternion.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct QuaternionF : IEquatable<QuaternionF>, IFormattable
+    public struct QuaternionF : IEquatable<QuaternionF>
     {
         /// <summary>
         /// The X component of the quaternion.
@@ -148,22 +148,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Converts the quaternion into a unit quaternion.
-        /// </summary>
-        public void Normalize()
-        {
-            float length = Length();
-            if (!MathHelper.IsZero(length))
-            {
-                float inverse = 1.0f / length;
-                X *= inverse;
-                Y *= inverse;
-                Z *= inverse;
-                W *= inverse;
-            }
-        }
-
-        /// <summary>
         /// Divides two quaternions.
         /// </summary>
         /// <param name="left">The first quaternion to divde.</param>
@@ -202,59 +186,7 @@ namespace Molten
             QuaternionF result;
             Add(ref left, ref right, out result);
             return result;
-        }
-
-        /// <summary>
-        /// Subtracts two quaternions.
-        /// </summary>
-        /// <param name="left">The first quaternion to subtract.</param>
-        /// <param name="right">The second quaternion to subtract.</param>
-        /// <param name="result">When the method completes, contains the difference of the two quaternions.</param>
-        public static void Subtract(ref QuaternionF left, ref QuaternionF right, out QuaternionF result)
-        {
-            result.X = left.X - right.X;
-            result.Y = left.Y - right.Y;
-            result.Z = left.Z - right.Z;
-            result.W = left.W - right.W;
-        }
-
-        /// <summary>
-        /// Subtracts two quaternions.
-        /// </summary>
-        /// <param name="left">The first quaternion to subtract.</param>
-        /// <param name="right">The second quaternion to subtract.</param>
-        /// <returns>The difference of the two quaternions.</returns>
-        public static QuaternionF Subtract(QuaternionF left, QuaternionF right)
-        {
-            QuaternionF result;
-            Subtract(ref left, ref right, out result);
-            return result;
         }      
-
-        /// <summary>
-        /// Reverses the direction of a given quaternion.
-        /// </summary>
-        /// <param name="value">The quaternion to negate.</param>
-        /// <param name="result">When the method completes, contains a quaternion facing in the opposite direction.</param>
-        public static void Negate(ref QuaternionF value, out QuaternionF result)
-        {
-            result.X = -value.X;
-            result.Y = -value.Y;
-            result.Z = -value.Z;
-            result.W = -value.W;
-        }
-
-        /// <summary>
-        /// Reverses the direction of a given quaternion.
-        /// </summary>
-        /// <param name="value">The quaternion to negate.</param>
-        /// <returns>A quaternion facing in the opposite direction.</returns>
-        public static QuaternionF Negate(QuaternionF value)
-        {
-            QuaternionF result;
-            Negate(ref value, out result);
-            return result;
-        }
 
         /// <summary>
         /// Returns a <see cref="QuaternionF"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
@@ -1054,30 +986,7 @@ namespace Molten
             return result;
         }
 
-        /// <summary>
-        /// Subtracts two quaternions.
-        /// </summary>
-        /// <param name="left">The first quaternion to subtract.</param>
-        /// <param name="right">The second quaternion to subtract.</param>
-        /// <returns>The difference of the two quaternions.</returns>
-        public static QuaternionF operator -(QuaternionF left, QuaternionF right)
-        {
-            QuaternionF result;
-            Subtract(ref left, ref right, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Reverses the direction of a given quaternion.
-        /// </summary>
-        /// <param name="value">The quaternion to negate.</param>
-        /// <returns>A quaternion facing in the opposite direction.</returns>
-        public static QuaternionF operator -(QuaternionF value)
-        {
-            QuaternionF result;
-            Negate(ref value, out result);
-            return result;
-        }
+        
 
         /// <summary>
         /// Adds two quaternions.

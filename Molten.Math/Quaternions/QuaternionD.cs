@@ -241,6 +241,22 @@ namespace Molten.Math
 
             return q;
         }
+
+        /// <summary>
+        /// Converts the <see cref="QuaternionD"/> into a unit quaternion.
+        /// </summary>
+        public void Normalize()
+        {
+            double length = Length();
+            if (!MathHelper.IsZero(length))
+            {
+                D inverse = 1.0D / length;
+                X *= inverse;
+                Y *= inverse;
+                Z *= inverse;
+                W *= inverse;
+            }
+        }
 #endregion
 
 #region To-String Methods
@@ -326,7 +342,6 @@ namespace Molten.Math
                 W = aW * bW - aX * bX - aY * bY - aZ * bZ
             };
         }
-
 #endregion
 
 #region Operators - Multiply
@@ -391,6 +406,41 @@ namespace Molten.Math
                 Y = (ly * rw + ry * lw) + b,
                 Z = (lz * rw + rz * lw) + c,
                 W = lw * rw - d
+            };
+        }
+#endregion
+
+#region Operators - Subtract
+        /// <summary>
+        /// Subtracts two quaternions.
+        /// </summary>
+        /// <param name="left">The first quaternion to subtract.</param>
+        /// <param name="right">The second quaternion to subtract.</param>
+        /// <returns>The difference of the two quaternions.</returns>
+        public static QuaternionD operator -(QuaternionD left, QuaternionD right)
+        {
+            return new QuaternionD()
+            {
+            X = left.X - right.X,
+            Y = left.Y - right.Y,
+            Z = left.Z - right.Z,
+            W = left.W - right.W
+            };
+        }
+
+        /// <summary>
+        /// Reverses the direction of a given quaternion.
+        /// </summary>
+        /// <param name="value">The quaternion to negate.</param>
+        /// <returns>A quaternion facing in the opposite direction.</returns>
+        public static QuaternionD operator -(QuaternionD value)
+        {
+            return new QuaternionD()
+            {
+                X = -value.X,
+                Y = -value.Y,
+                Z = -value.Z,
+                W = -value.W
             };
         }
 #endregion

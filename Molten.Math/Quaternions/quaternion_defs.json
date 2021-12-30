@@ -22,17 +22,5 @@
     "Zero": "0D",
     "IsFPType": true,
     "Unsigned": false
-  },
-  {
-    "Name": "Quaternion",
-    "Postfix": "M",
-    "DT": "decimal",
-    "FP": "decimal",
-    "FPL": "M",
-    "Pack": "16",
-    "One": "1M",
-    "Zero": "0M",
-    "IsFPType": true,
-    "Unsigned": false
   }
 ]
