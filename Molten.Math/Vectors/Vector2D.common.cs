@@ -27,6 +27,27 @@ namespace Molten.Math
 			X = Math.Ceiling(X);
 			Y = Math.Ceiling(Y);
         }
+
+		/// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
+        public void Truncate()
+        {
+				X = (Math.Abs(X) - 0.0001D < 0) ? 0 : X;
+				Y = (Math.Abs(Y) - 0.0001D < 0) ? 0 : X;
+        }
+
+#region Static Methods
+		/// <summary>Truncate each near-zero component of a vector towards zero.</summary>
+        /// <param name="vec">The Vector2D to be truncated.</param>
+        /// <returns></returns>
+        public static Vector2D Truncate(Vector2D value)
+        {
+            return new Vector2D()
+            {
+				X = (Math.Abs(value.X) - 0.0001D < 0) ? 0 : value.X,
+				Y = (Math.Abs(value.Y) - 0.0001D < 0) ? 0 : value.X,
+            };
+        }
+#endregion
 	}
 }
 

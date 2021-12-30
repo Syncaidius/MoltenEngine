@@ -356,19 +356,6 @@ namespace Molten.Math
 #>
 			);
         }
-
-		/// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
-        public void Truncate()
-        {
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
-				<#=_pMapUpper[p]#> = (Math.Abs(<#=_pMapUpper[p]#>) - 0.0001<#=_def[i].FPL#> < 0) ? 0 : X;
-<#
-		}
-#>
-        }
 #endregion
 
 #region To-String
@@ -543,24 +530,6 @@ namespace Molten.Math
 		}
 #>
 			};
-        }
-
-		/// <summary>Truncate each near-zero component of a vector towards zero.</summary>
-        /// <param name="vec">The <#=fullName#> to be truncated.</param>
-        /// <returns></returns>
-        public static <#=fullName#> Truncate(<#=fullName#> value)
-        {
-            return new <#=fullName#>()
-            {
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
-				<#=_pMapUpper[p]#> = (Math.Abs(value.<#=_pMapUpper[p]#>) - 0.0001<#=_def[i].FPL#> < 0) ? 0 : value.X,
-<#
-		}
-#>
-            };
         }
 #endregion
 

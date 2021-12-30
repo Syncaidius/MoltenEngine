@@ -848,17 +848,6 @@ namespace Molten
             return Equals(ref strongValue);
         }
 
-        /// <summary>
-        /// Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.
-        /// </summary>
-        /// <returns>A truncated Vector4</returns>
-        public void Truncate()
-        {
-            X = (Math.Abs(X) - 0.0001 < 0) ? 0 : X;
-            Y = (Math.Abs(Y) - 0.0001 < 0) ? 0 : Y;
-        }
-
         /// <summary>Updates the component values to the power of the specified value.</summary>
         /// <param name="power"></param>
         public void Pow(float power)
