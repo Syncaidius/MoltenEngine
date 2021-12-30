@@ -68,6 +68,47 @@ namespace Molten.Math
         ///<summary>The W component of the <#=fullName#>.</summary>
 		public <#=_def[i].DT#> W;
 
+        /// <summary>
+        /// Gets a value indicting whether this  <see cref="<#=fullName#>"/> is normalized.
+        /// </summary>
+        public bool IsNormalized
+        {
+            get { return MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W)); }
+        }
+
+        /// <summary>
+        /// Gets the angle of the  <see cref="<#=fullName#>"/>.
+        /// </summary>
+        /// <value>The quaternion's angle.</value>
+        public float Angle
+        {
+            get
+            {
+                float length = (X * X) + (Y * Y) + (Z * Z);
+                if (MathHelper.IsZero(length))
+                    return 0.0<#=_def[i].FPL#>;
+
+                return <#=(_def[i].DT == "float" ? "(float)" : "")#>(2.0 * Math.Acos(MathHelper.Clamp(W, -1<#=_def[i].FPL#>, 1<#=_def[i].FPL#>)));
+            }
+        }
+
+        /// <summary>
+        /// Gets the axis components of the <#=fullName#>.
+        /// </summary>
+        /// <value>The axis components of the <#=fullName#>.</value>
+        public Vector3<#=_def[i].Postfix#> Axis
+        {
+            get
+            {
+                <#=_def[i].DT#> length = (X * X) + (Y * Y) + (Z * Z);
+                if (MathHelper.IsZero(length))
+                    return Vector3F.UnitX;
+
+                <#=_def[i].DT#> inv = 1.0<#=_def[i].FPL#>  / <#=(_def[i].DT == "float" ? "(float)" : "")#>Math.Sqrt(length);
+                return new Vector3<#=_def[i].Postfix#>(X * inv, Y * inv, Z * inv);
+            }
+        }
+
 #region Constructors
         /// <summary>
         /// Initializes a new instance of the <#=SeeRef(fullName)#> struct.
@@ -277,11 +318,40 @@ namespace Molten.Math
             <#=_def[i].DT#> length = Length();
             if (!MathHelper.IsZero(length))
             {
-                <#=_def[i].FPL#> inverse = 1.0<#=_def[i].FPL#> / length;
+                <#=_def[i].DT#> inverse = 1.0<#=_def[i].FPL#> / length;
                 X *= inverse;
                 Y *= inverse;
                 Z *= inverse;
                 W *= inverse;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the length of the <#=fullName#>.
+        /// </summary>
+        /// <returns>The length of the <#=fullName#>.</returns>
+        /// <remarks>
+        /// <see cref="<#=fullName#>.LengthSquared"/> may be preferred when only the relative length is needed and speed is of the essence.
+        /// </remarks>
+        public <#=_def[i].DT#> Length()
+        {
+            return <#=(_def[i].DT == "float" ? "(float)" : "")#>Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
+        }
+
+        /// <summary>
+        /// Conjugates and renormalizes the <#=fullName#>.
+        /// </summary>
+        public void Invert()
+        {
+            <#=_def[i].DT#> lengthSq = LengthSquared();
+            if (!MathHelper.IsZero(lengthSq))
+            {
+                lengthSq = 1.0<#=_def[i].FPL#> / lengthSq;
+
+                X = -X * lengthSq;
+                Y = -Y * lengthSq;
+                Z = -Z * lengthSq;
+                W = W * lengthSq;
             }
         }
 #endregion

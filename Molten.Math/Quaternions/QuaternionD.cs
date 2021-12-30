@@ -41,6 +41,47 @@ namespace Molten.Math
         ///<summary>The W component of the QuaternionD.</summary>
 		public double W;
 
+        /// <summary>
+        /// Gets a value indicting whether this  <see cref="QuaternionD"/> is normalized.
+        /// </summary>
+        public bool IsNormalized
+        {
+            get { return MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W)); }
+        }
+
+        /// <summary>
+        /// Gets the angle of the  <see cref="QuaternionD"/>.
+        /// </summary>
+        /// <value>The quaternion's angle.</value>
+        public float Angle
+        {
+            get
+            {
+                float length = (X * X) + (Y * Y) + (Z * Z);
+                if (MathHelper.IsZero(length))
+                    return 0.0D;
+
+                return (2.0 * Math.Acos(MathHelper.Clamp(W, -1D, 1D)));
+            }
+        }
+
+        /// <summary>
+        /// Gets the axis components of the QuaternionD.
+        /// </summary>
+        /// <value>The axis components of the QuaternionD.</value>
+        public Vector3D Axis
+        {
+            get
+            {
+                double length = (X * X) + (Y * Y) + (Z * Z);
+                if (MathHelper.IsZero(length))
+                    return Vector3F.UnitX;
+
+                double inv = 1.0D  / Math.Sqrt(length);
+                return new Vector3D(X * inv, Y * inv, Z * inv);
+            }
+        }
+
 #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="QuaternionD"/> struct.
@@ -250,11 +291,40 @@ namespace Molten.Math
             double length = Length();
             if (!MathHelper.IsZero(length))
             {
-                D inverse = 1.0D / length;
+                double inverse = 1.0D / length;
                 X *= inverse;
                 Y *= inverse;
                 Z *= inverse;
                 W *= inverse;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the length of the QuaternionD.
+        /// </summary>
+        /// <returns>The length of the QuaternionD.</returns>
+        /// <remarks>
+        /// <see cref="QuaternionD.LengthSquared"/> may be preferred when only the relative length is needed and speed is of the essence.
+        /// </remarks>
+        public double Length()
+        {
+            return Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
+        }
+
+        /// <summary>
+        /// Conjugates and renormalizes the QuaternionD.
+        /// </summary>
+        public void Invert()
+        {
+            double lengthSq = LengthSquared();
+            if (!MathHelper.IsZero(lengthSq))
+            {
+                lengthSq = 1.0D / lengthSq;
+
+                X = -X * lengthSq;
+                Y = -Y * lengthSq;
+                Z = -Z * lengthSq;
+                W = W * lengthSq;
             }
         }
 #endregion
