@@ -23,21 +23,16 @@ namespace Molten.Math
 
 		public static Half3 One = new Half3((short)1, (short)1, (short)1);
 
-		/// <summary>
-        /// The X unit <see cref="Half3"/>.
-        /// </summary>
+		/// <summary>The X unit <see cref="Half3"/>.</summary>
 		public static Half3 UnitX = new Half3((short)1, 0, 0);
 
-		/// <summary>
-        /// The Y unit <see cref="Half3"/>.
-        /// </summary>
+		/// <summary>The Y unit <see cref="Half3"/>.</summary>
 		public static Half3 UnitY = new Half3(0, (short)1, 0);
 
-		/// <summary>
-        /// The Z unit <see cref="Half3"/>.
-        /// </summary>
+		/// <summary>The Z unit <see cref="Half3"/>.</summary>
 		public static Half3 UnitZ = new Half3(0, 0, (short)1);
 
+		/// <summary>Represents a zero'd Half3.</summary>
 		public static Half3 Zero = new Half3(0, 0, 0);
 
 #region Constructors
@@ -67,6 +62,9 @@ namespace Molten.Math
 			Z = values[2];
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Half3"/> struct from an unsafe pointer. The pointer should point to an array of three elements.
+        /// </summary>
 		public unsafe Half3(short* ptr)
 		{
 			X = ptr[0];

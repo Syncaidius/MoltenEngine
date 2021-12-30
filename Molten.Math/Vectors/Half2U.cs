@@ -20,16 +20,13 @@ namespace Molten.Math
 
 		public static Half2U One = new Half2U((ushort)1, (ushort)1);
 
-		/// <summary>
-        /// The X unit <see cref="Half2U"/>.
-        /// </summary>
+		/// <summary>The X unit <see cref="Half2U"/>.</summary>
 		public static Half2U UnitX = new Half2U((ushort)1, 0);
 
-		/// <summary>
-        /// The Y unit <see cref="Half2U"/>.
-        /// </summary>
+		/// <summary>The Y unit <see cref="Half2U"/>.</summary>
 		public static Half2U UnitY = new Half2U(0, (ushort)1);
 
+		/// <summary>Represents a zero'd Half2U.</summary>
 		public static Half2U Zero = new Half2U(0, 0);
 
 #region Constructors
@@ -57,6 +54,9 @@ namespace Molten.Math
 			Y = values[1];
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Half2U"/> struct from an unsafe pointer. The pointer should point to an array of two elements.
+        /// </summary>
 		public unsafe Half2U(ushort* ptr)
 		{
 			X = ptr[0];

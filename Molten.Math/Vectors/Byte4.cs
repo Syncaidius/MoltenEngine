@@ -26,26 +26,19 @@ namespace Molten.Math
 
 		public static Byte4 One = new Byte4(1, 1, 1, 1);
 
-		/// <summary>
-        /// The X unit <see cref="Byte4"/>.
-        /// </summary>
+		/// <summary>The X unit <see cref="Byte4"/>.</summary>
 		public static Byte4 UnitX = new Byte4(1, 0, 0, 0);
 
-		/// <summary>
-        /// The Y unit <see cref="Byte4"/>.
-        /// </summary>
+		/// <summary>The Y unit <see cref="Byte4"/>.</summary>
 		public static Byte4 UnitY = new Byte4(0, 1, 0, 0);
 
-		/// <summary>
-        /// The Z unit <see cref="Byte4"/>.
-        /// </summary>
+		/// <summary>The Z unit <see cref="Byte4"/>.</summary>
 		public static Byte4 UnitZ = new Byte4(0, 0, 1, 0);
 
-		/// <summary>
-        /// The W unit <see cref="Byte4"/>.
-        /// </summary>
+		/// <summary>The W unit <see cref="Byte4"/>.</summary>
 		public static Byte4 UnitW = new Byte4(0, 0, 0, 1);
 
+		/// <summary>Represents a zero'd Byte4.</summary>
 		public static Byte4 Zero = new Byte4(0, 0, 0, 0);
 
 #region Constructors
@@ -77,6 +70,9 @@ namespace Molten.Math
 			W = values[3];
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Byte4"/> struct from an unsafe pointer. The pointer should point to an array of four elements.
+        /// </summary>
 		public unsafe Byte4(byte* ptr)
 		{
 			X = ptr[0];

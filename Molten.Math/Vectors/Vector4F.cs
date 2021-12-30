@@ -26,26 +26,19 @@ namespace Molten.Math
 
 		public static Vector4F One = new Vector4F(1F, 1F, 1F, 1F);
 
-		/// <summary>
-        /// The X unit <see cref="Vector4F"/>.
-        /// </summary>
+		/// <summary>The X unit <see cref="Vector4F"/>.</summary>
 		public static Vector4F UnitX = new Vector4F(1F, 0F, 0F, 0F);
 
-		/// <summary>
-        /// The Y unit <see cref="Vector4F"/>.
-        /// </summary>
+		/// <summary>The Y unit <see cref="Vector4F"/>.</summary>
 		public static Vector4F UnitY = new Vector4F(0F, 1F, 0F, 0F);
 
-		/// <summary>
-        /// The Z unit <see cref="Vector4F"/>.
-        /// </summary>
+		/// <summary>The Z unit <see cref="Vector4F"/>.</summary>
 		public static Vector4F UnitZ = new Vector4F(0F, 0F, 1F, 0F);
 
-		/// <summary>
-        /// The W unit <see cref="Vector4F"/>.
-        /// </summary>
+		/// <summary>The W unit <see cref="Vector4F"/>.</summary>
 		public static Vector4F UnitW = new Vector4F(0F, 0F, 0F, 1F);
 
+		/// <summary>Represents a zero'd Vector4F.</summary>
 		public static Vector4F Zero = new Vector4F(0F, 0F, 0F, 0F);
 
 #region Constructors
@@ -77,6 +70,9 @@ namespace Molten.Math
 			W = values[3];
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Vector4F"/> struct from an unsafe pointer. The pointer should point to an array of four elements.
+        /// </summary>
 		public unsafe Vector4F(float* ptr)
 		{
 			X = ptr[0];

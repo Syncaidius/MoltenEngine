@@ -26,26 +26,19 @@ namespace Molten.Math
 
 		public static Half4U One = new Half4U((ushort)1, (ushort)1, (ushort)1, (ushort)1);
 
-		/// <summary>
-        /// The X unit <see cref="Half4U"/>.
-        /// </summary>
+		/// <summary>The X unit <see cref="Half4U"/>.</summary>
 		public static Half4U UnitX = new Half4U((ushort)1, 0, 0, 0);
 
-		/// <summary>
-        /// The Y unit <see cref="Half4U"/>.
-        /// </summary>
+		/// <summary>The Y unit <see cref="Half4U"/>.</summary>
 		public static Half4U UnitY = new Half4U(0, (ushort)1, 0, 0);
 
-		/// <summary>
-        /// The Z unit <see cref="Half4U"/>.
-        /// </summary>
+		/// <summary>The Z unit <see cref="Half4U"/>.</summary>
 		public static Half4U UnitZ = new Half4U(0, 0, (ushort)1, 0);
 
-		/// <summary>
-        /// The W unit <see cref="Half4U"/>.
-        /// </summary>
+		/// <summary>The W unit <see cref="Half4U"/>.</summary>
 		public static Half4U UnitW = new Half4U(0, 0, 0, (ushort)1);
 
+		/// <summary>Represents a zero'd Half4U.</summary>
 		public static Half4U Zero = new Half4U(0, 0, 0, 0);
 
 #region Constructors
@@ -77,6 +70,9 @@ namespace Molten.Math
 			W = values[3];
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Half4U"/> struct from an unsafe pointer. The pointer should point to an array of four elements.
+        /// </summary>
 		public unsafe Half4U(ushort* ptr)
 		{
 			X = ptr[0];

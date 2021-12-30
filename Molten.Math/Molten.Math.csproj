@@ -191,6 +191,14 @@
     <Compile Include="HalfUtils.cs" />
     <Compile Include="DoublePrecision\RectangleD.cs" />
     <Compile Include="DoublePrecision\Vector2D.cs" />
+    <Compile Include="Quaternions\QuaternionD.cs" />
+    <Compile Include="Quaternions\QuaternionF.cs" />
+    <Compile Include="Quaternions\QuaternionM.cs" />
+    <Compile Include="Quaternions\t4_quaternions.cs">
+      <DependentUpon>t4_quaternions.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="RectangleUI.cs" />
     <Compile Include="Vector2I.cs" />
     <Compile Include="DoublePrecision\Vector3D.cs" />
@@ -231,7 +239,7 @@
     <Compile Include="Vectors\SByte2.cs" />
     <Compile Include="Vectors\SByte3.cs" />
     <Compile Include="Vectors\SByte4.cs" />
-    <Compile Include="Vectors\t4_header.cs">
+    <Compile Include="t4_header.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>t4_header.tt</DependentUpon>
@@ -303,10 +311,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Quaternions\quaternion_defs.json" />
     <None Include="Vectors\vector_defs.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Vectors\t4_header.tt">
+    <Content Include="Quaternions\t4_quaternions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_quaternions.cs</LastGenOutput>
+    </Content>
+    <Content Include="t4_header.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_header.cs</LastGenOutput>
     </Content>
@@ -322,6 +335,16 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Matrices\" />
+    <Folder Include="Shapes\2D\Box\" />
+    <Folder Include="Shapes\2D\Circles\" />
+    <Folder Include="Shapes\2D\Lines\" />
+    <Folder Include="Shapes\2D\Rectangles\" />
+    <Folder Include="Shapes\3D\Frustums\" />
+    <Folder Include="Shapes\3D\Plains\" />
+    <Folder Include="Shapes\3D\Rays\" />
+    <Folder Include="Shapes\3D\Spheres\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

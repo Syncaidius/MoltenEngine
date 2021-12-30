@@ -57,26 +57,6 @@ namespace Molten
     public struct QuaternionF : IEquatable<QuaternionF>, IFormattable
     {
         /// <summary>
-        /// The size of the <see cref="QuaternionF"/> type, in bytes.
-        /// </summary>
-        public static readonly int SizeInBytes = Marshal.SizeOf(typeof(QuaternionF));
-
-        /// <summary>
-        /// A <see cref="QuaternionF"/> with all of its components set to zero.
-        /// </summary>
-        public static readonly QuaternionF Zero = new QuaternionF();
-
-        /// <summary>
-        /// A <see cref="QuaternionF"/> with all of its components set to one.
-        /// </summary>
-        public static readonly QuaternionF One = new QuaternionF(1.0f, 1.0f, 1.0f, 1.0f);
-
-        /// <summary>
-        /// The identity <see cref="QuaternionF"/> (0, 0, 0, 1).
-        /// </summary>
-        public static readonly QuaternionF Identity = new QuaternionF(0.0f, 0.0f, 0.0f, 1.0f);
-
-        /// <summary>
         /// The X component of the quaternion.
         /// </summary>
         public float X;
@@ -95,102 +75,6 @@ namespace Molten
         /// The W component of the quaternion.
         /// </summary>
         public float W;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuaternionF"/> struct.
-        /// </summary>
-        /// <param name="value">The value that will be assigned to all components.</param>
-        public QuaternionF(float value)
-        {
-            X = value;
-            Y = value;
-            Z = value;
-            W = value;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuaternionF"/> struct.
-        /// </summary>
-        /// <param name="value">A vector containing the values with which to initialize the components.</param>
-        public QuaternionF(Vector4F value)
-        {
-            X = value.X;
-            Y = value.Y;
-            Z = value.Z;
-            W = value.W;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuaternionF"/> struct.
-        /// </summary>
-        /// <param name="value">A vector containing the values with which to initialize the X, Y, and Z components.</param>
-        /// <param name="w">Initial value for the W component of the quaternion.</param>
-        public QuaternionF(Vector3F value, float w)
-        {
-            X = value.X;
-            Y = value.Y;
-            Z = value.Z;
-            W = w;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuaternionF"/> struct.
-        /// </summary>
-        /// <param name="value">A vector containing the values with which to initialize the X and Y components.</param>
-        /// <param name="z">Initial value for the Z component of the quaternion.</param>
-        /// <param name="w">Initial value for the W component of the quaternion.</param>
-        public QuaternionF(Vector2F value, float z, float w)
-        {
-            X = value.X;
-            Y = value.Y;
-            Z = z;
-            W = w;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuaternionF"/> struct.
-        /// </summary>
-        /// <param name="x">Initial value for the X component of the quaternion.</param>
-        /// <param name="y">Initial value for the Y component of the quaternion.</param>
-        /// <param name="z">Initial value for the Z component of the quaternion.</param>
-        /// <param name="w">Initial value for the W component of the quaternion.</param>
-        public QuaternionF(float x, float y, float z, float w)
-        {
-            X = x;
-            Y = y;
-            Z = z;
-            W = w;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="QuaternionF"/> struct.
-        /// </summary>
-        /// <param name="values">The values to assign to the X, Y, Z, and W components of the quaternion. This must be an array with four elements.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-        public QuaternionF(float[] values)
-        {
-            if (values == null)
-                throw new ArgumentNullException("values");
-            if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for Quaternion.");
-
-            X = values[0];
-            Y = values[1];
-            Z = values[2];
-            W = values[3];
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is equivalent to the identity quaternion.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if this instance is an identity quaternion; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsIdentity
-        {
-            get { return this.Equals(Identity); }
-        }
 
         /// <summary>
         /// Gets a value indicting whether this instance is normalized.
@@ -234,62 +118,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets or sets the component at the specified index.
-        /// </summary>
-        /// <value>The value of the X, Y, Z, or W component, depending on the index.</value>
-        /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component, 2 for the Z component, and 3 for the W component.</param>
-        /// <returns>The value of the component at the specified index.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>
-        public float this[int index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case 0: return X;
-                    case 1: return Y;
-                    case 2: return Z;
-                    case 3: return W;
-                }
-
-                throw new ArgumentOutOfRangeException("index", "Indices for Quaternion run from 0 to 3, inclusive.");
-            }
-
-            set
-            {
-                switch (index)
-                {
-                    case 0: X = value; break;
-                    case 1: Y = value; break;
-                    case 2: Z = value; break;
-                    case 3: W = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for Quaternion run from 0 to 3, inclusive.");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Conjugates the quaternion.
-        /// </summary>
-        public void Abs()
-        {
-            X = Math.Abs(X);
-            Y = Math.Abs(Y);
-            Z = Math.Abs(Z);
-            W = Math.Abs(W); // ? is this needed?
-        }
-
-        /// <summary>
-        /// Conjugates the quaternion.
-        /// </summary>
-        public void Conjugate()
-        {
-            X = -X;
-            Y = -Y;
-            Z = -Z;
-        }
-
-        /// <summary>
         /// Conjugates and renormalizes the quaternion.
         /// </summary>
         public void Invert()
@@ -320,19 +148,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the squared length of the quaternion.
-        /// </summary>
-        /// <returns>The squared length of the quaternion.</returns>
-        /// <remarks>
-        /// This method may be preferred to <see cref="QuaternionF.Length"/> when only a relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public float LengthSquared()
-        {
-            return (X * X) + (Y * Y) + (Z * Z) + (W * W);
-        }
-
-        /// <summary>
         /// Converts the quaternion into a unit quaternion.
         /// </summary>
         public void Normalize()
@@ -346,53 +161,6 @@ namespace Molten
                 Z *= inverse;
                 W *= inverse;
             }
-        }
-
-        /// <summary>
-        /// Multiplies two quaternions together in opposite order.
-        /// </summary>
-        /// <param name="a">First quaternion to multiply.</param>
-        /// <param name="b">Second quaternion to multiply.</param>
-        /// <param name="result">Product of the multiplication.</param>
-        public static void Concatenate(ref QuaternionF a, ref QuaternionF b, out QuaternionF result)
-        {
-            float aX = a.X;
-            float aY = a.Y;
-            float aZ = a.Z;
-            float aW = a.W;
-            float bX = b.X;
-            float bY = b.Y;
-            float bZ = b.Z;
-            float bW = b.W;
-
-            result.X = aW * bX + aX * bW + aZ * bY - aY * bZ;
-            result.Y = aW * bY + aY * bW + aX * bZ - aZ * bX;
-            result.Z = aW * bZ + aZ * bW + aY * bX - aX * bY;
-            result.W = aW * bW - aX * bX - aY * bY - aZ * bZ;
-
-
-        }
-
-        /// <summary>
-        /// Multiplies two quaternions together in opposite order.
-        /// </summary>
-        /// <param name="a">First quaternion to multiply.</param>
-        /// <param name="b">Second quaternion to multiply.</param>
-        /// <returns>Product of the multiplication.</returns>
-        public static QuaternionF Concatenate(QuaternionF a, QuaternionF b)
-        {
-            QuaternionF result;
-            Concatenate(ref a, ref b, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Creates an array containing the elements of the quaternion.
-        /// </summary>
-        /// <returns>A four-element array containing the components of the quaternion.</returns>
-        public float[] ToArray()
-        {
-            return new float[] { X, Y, Z, W };
         }
 
         /// <summary>
@@ -461,73 +229,7 @@ namespace Molten
             QuaternionF result;
             Subtract(ref left, ref right, out result);
             return result;
-        }
-
-        /// <summary>
-        /// Scales a quaternion by the given value.
-        /// </summary>
-        /// <param name="value">The quaternion to scale.</param>
-        /// <param name="scale">The amount by which to scale the quaternion.</param>
-        /// <param name="result">When the method completes, contains the scaled quaternion.</param>
-        public static void Multiply(ref QuaternionF value, float scale, out QuaternionF result)
-        {
-            result.X = value.X * scale;
-            result.Y = value.Y * scale;
-            result.Z = value.Z * scale;
-            result.W = value.W * scale;
-        }
-
-        /// <summary>
-        /// Scales a quaternion by the given value.
-        /// </summary>
-        /// <param name="value">The quaternion to scale.</param>
-        /// <param name="scale">The amount by which to scale the quaternion.</param>
-        /// <returns>The scaled quaternion.</returns>
-        public static QuaternionF Multiply(QuaternionF value, float scale)
-        {
-            QuaternionF result;
-            Multiply(ref value, scale, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Multiplies a quaternion by another.
-        /// </summary>
-        /// <param name="left">The first quaternion to multiply.</param>
-        /// <param name="right">The second quaternion to multiply.</param>
-        /// <param name="result">When the method completes, contains the multiplied quaternion.</param>
-        public static void Multiply(ref QuaternionF left, ref QuaternionF right, out QuaternionF result)
-        {
-            float lx = left.X;
-            float ly = left.Y;
-            float lz = left.Z;
-            float lw = left.W;
-            float rx = right.X;
-            float ry = right.Y;
-            float rz = right.Z;
-            float rw = right.W;
-            float a = (ly * rz - lz * ry);
-            float b = (lz * rx - lx * rz);
-            float c = (lx * ry - ly * rx);
-            float d = (lx * rx + ly * ry + lz * rz);
-            result.X = (lx * rw + rx * lw) + a;
-            result.Y = (ly * rw + ry * lw) + b;
-            result.Z = (lz * rw + rz * lw) + c;
-            result.W = lw * rw - d;
-        }
-
-        /// <summary>
-        /// Multiplies a quaternion by another.
-        /// </summary>
-        /// <param name="left">The first quaternion to multiply.</param>
-        /// <param name="right">The second quaternion to multiply.</param>
-        /// <returns>The multiplied quaternion.</returns>
-        public static QuaternionF Multiply(QuaternionF left, QuaternionF right)
-        {
-            QuaternionF result;
-            Multiply(ref left, ref right, out result);
-            return result;
-        }
+        }      
 
         /// <summary>
         /// Reverses the direction of a given quaternion.
@@ -1548,24 +1250,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-        /// </returns>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = X.GetHashCode();
-                hashCode = (hashCode * 397) ^ Y.GetHashCode();
-                hashCode = (hashCode * 397) ^ Z.GetHashCode();
-                hashCode = (hashCode * 397) ^ W.GetHashCode();
-                return hashCode;
-            }
-        }
-
-        /// <summary>
         /// Determines whether the specified <see cref="QuaternionF"/> is equal to this instance.
         /// </summary>
         /// <param name="other">The <see cref="QuaternionF"/> to compare with this instance.</param>
@@ -1618,20 +1302,6 @@ namespace Molten
             if (qw > 1)
                 return 0;
             return 2 * (float)Math.Acos(qw);
-        }
-
-        /// <summary>
-        /// Conjugates the quaternion.
-        /// </summary>
-        public static QuaternionF Abs(ref QuaternionF q)
-        {
-            return new QuaternionF()
-            {
-                X = Math.Abs(q.X),
-                Y = Math.Abs(q.Y),
-                Z = Math.Abs(q.Z),
-                W = Math.Abs(q.W), // ? is this needed?
-            };
         }
     }
 }

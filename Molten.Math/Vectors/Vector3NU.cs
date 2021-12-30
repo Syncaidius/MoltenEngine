@@ -23,21 +23,16 @@ namespace Molten.Math
 
 		public static Vector3NU One = new Vector3NU(1U, 1U, 1U);
 
-		/// <summary>
-        /// The X unit <see cref="Vector3NU"/>.
-        /// </summary>
+		/// <summary>The X unit <see cref="Vector3NU"/>.</summary>
 		public static Vector3NU UnitX = new Vector3NU(1U, 0, 0);
 
-		/// <summary>
-        /// The Y unit <see cref="Vector3NU"/>.
-        /// </summary>
+		/// <summary>The Y unit <see cref="Vector3NU"/>.</summary>
 		public static Vector3NU UnitY = new Vector3NU(0, 1U, 0);
 
-		/// <summary>
-        /// The Z unit <see cref="Vector3NU"/>.
-        /// </summary>
+		/// <summary>The Z unit <see cref="Vector3NU"/>.</summary>
 		public static Vector3NU UnitZ = new Vector3NU(0, 0, 1U);
 
+		/// <summary>Represents a zero'd Vector3NU.</summary>
 		public static Vector3NU Zero = new Vector3NU(0, 0, 0);
 
 #region Constructors
@@ -67,6 +62,9 @@ namespace Molten.Math
 			Z = values[2];
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Vector3NU"/> struct from an unsafe pointer. The pointer should point to an array of three elements.
+        /// </summary>
 		public unsafe Vector3NU(nuint* ptr)
 		{
 			X = ptr[0];

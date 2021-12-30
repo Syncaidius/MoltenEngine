@@ -1,0 +1,38 @@
+[
+  {
+    "Name": "Quaternion",
+    "Postfix": "F",
+    "DT": "float",
+    "FP": "float",
+    "FPL": "F",
+    "Pack": "4",
+    "One": "1F",
+    "Zero": "0F",
+    "IsFPType": true,
+    "Unsigned": false
+  },
+  {
+    "Name": "Quaternion",
+    "Postfix": "D",
+    "DT": "double",
+    "FP": "double",
+    "FPL": "D",
+    "Pack": "8",
+    "One": "1D",
+    "Zero": "0D",
+    "IsFPType": true,
+    "Unsigned": false
+  },
+  {
+    "Name": "Quaternion",
+    "Postfix": "M",
+    "DT": "decimal",
+    "FP": "decimal",
+    "FPL": "M",
+    "Pack": "16",
+    "One": "1M",
+    "Zero": "0M",
+    "IsFPType": true,
+    "Unsigned": false
+  }
+]

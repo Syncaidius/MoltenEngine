@@ -20,16 +20,13 @@ namespace Molten.Math
 
 		public static Vector2M One = new Vector2M(1M, 1M);
 
-		/// <summary>
-        /// The X unit <see cref="Vector2M"/>.
-        /// </summary>
+		/// <summary>The X unit <see cref="Vector2M"/>.</summary>
 		public static Vector2M UnitX = new Vector2M(1M, 0M);
 
-		/// <summary>
-        /// The Y unit <see cref="Vector2M"/>.
-        /// </summary>
+		/// <summary>The Y unit <see cref="Vector2M"/>.</summary>
 		public static Vector2M UnitY = new Vector2M(0M, 1M);
 
+		/// <summary>Represents a zero'd Vector2M.</summary>
 		public static Vector2M Zero = new Vector2M(0M, 0M);
 
 #region Constructors
@@ -57,6 +54,9 @@ namespace Molten.Math
 			Y = values[1];
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Vector2M"/> struct from an unsafe pointer. The pointer should point to an array of two elements.
+        /// </summary>
 		public unsafe Vector2M(decimal* ptr)
 		{
 			X = ptr[0];

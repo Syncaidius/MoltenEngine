@@ -20,16 +20,13 @@ namespace Molten.Math
 
 		public static Byte2 One = new Byte2(1, 1);
 
-		/// <summary>
-        /// The X unit <see cref="Byte2"/>.
-        /// </summary>
+		/// <summary>The X unit <see cref="Byte2"/>.</summary>
 		public static Byte2 UnitX = new Byte2(1, 0);
 
-		/// <summary>
-        /// The Y unit <see cref="Byte2"/>.
-        /// </summary>
+		/// <summary>The Y unit <see cref="Byte2"/>.</summary>
 		public static Byte2 UnitY = new Byte2(0, 1);
 
+		/// <summary>Represents a zero'd Byte2.</summary>
 		public static Byte2 Zero = new Byte2(0, 0);
 
 #region Constructors
@@ -57,6 +54,9 @@ namespace Molten.Math
 			Y = values[1];
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Byte2"/> struct from an unsafe pointer. The pointer should point to an array of two elements.
+        /// </summary>
 		public unsafe Byte2(byte* ptr)
 		{
 			X = ptr[0];

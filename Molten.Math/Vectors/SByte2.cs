@@ -25,16 +25,13 @@ namespace Molten.Math
 
 		public static SByte2 One = new SByte2(1, 1);
 
-		/// <summary>
-        /// The X unit <see cref="SByte2"/>.
-        /// </summary>
+		/// <summary>The X unit <see cref="SByte2"/>.</summary>
 		public static SByte2 UnitX = new SByte2(1, 0);
 
-		/// <summary>
-        /// The Y unit <see cref="SByte2"/>.
-        /// </summary>
+		/// <summary>The Y unit <see cref="SByte2"/>.</summary>
 		public static SByte2 UnitY = new SByte2(0, 1);
 
+		/// <summary>Represents a zero'd SByte2.</summary>
 		public static SByte2 Zero = new SByte2(0, 0);
 
 #region Constructors
@@ -62,6 +59,9 @@ namespace Molten.Math
 			Y = values[1];
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="SByte2"/> struct from an unsafe pointer. The pointer should point to an array of two elements.
+        /// </summary>
 		public unsafe SByte2(sbyte* ptr)
 		{
 			X = ptr[0];

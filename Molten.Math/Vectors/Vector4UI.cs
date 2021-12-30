@@ -26,26 +26,19 @@ namespace Molten.Math
 
 		public static Vector4UI One = new Vector4UI(1U, 1U, 1U, 1U);
 
-		/// <summary>
-        /// The X unit <see cref="Vector4UI"/>.
-        /// </summary>
+		/// <summary>The X unit <see cref="Vector4UI"/>.</summary>
 		public static Vector4UI UnitX = new Vector4UI(1U, 0, 0, 0);
 
-		/// <summary>
-        /// The Y unit <see cref="Vector4UI"/>.
-        /// </summary>
+		/// <summary>The Y unit <see cref="Vector4UI"/>.</summary>
 		public static Vector4UI UnitY = new Vector4UI(0, 1U, 0, 0);
 
-		/// <summary>
-        /// The Z unit <see cref="Vector4UI"/>.
-        /// </summary>
+		/// <summary>The Z unit <see cref="Vector4UI"/>.</summary>
 		public static Vector4UI UnitZ = new Vector4UI(0, 0, 1U, 0);
 
-		/// <summary>
-        /// The W unit <see cref="Vector4UI"/>.
-        /// </summary>
+		/// <summary>The W unit <see cref="Vector4UI"/>.</summary>
 		public static Vector4UI UnitW = new Vector4UI(0, 0, 0, 1U);
 
+		/// <summary>Represents a zero'd Vector4UI.</summary>
 		public static Vector4UI Zero = new Vector4UI(0, 0, 0, 0);
 
 #region Constructors
@@ -77,6 +70,9 @@ namespace Molten.Math
 			W = values[3];
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Vector4UI"/> struct from an unsafe pointer. The pointer should point to an array of four elements.
+        /// </summary>
 		public unsafe Vector4UI(uint* ptr)
 		{
 			X = ptr[0];

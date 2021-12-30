@@ -26,26 +26,19 @@ namespace Molten.Math
 
 		public static SByte4 One = new SByte4(1, 1, 1, 1);
 
-		/// <summary>
-        /// The X unit <see cref="SByte4"/>.
-        /// </summary>
+		/// <summary>The X unit <see cref="SByte4"/>.</summary>
 		public static SByte4 UnitX = new SByte4(1, 0, 0, 0);
 
-		/// <summary>
-        /// The Y unit <see cref="SByte4"/>.
-        /// </summary>
+		/// <summary>The Y unit <see cref="SByte4"/>.</summary>
 		public static SByte4 UnitY = new SByte4(0, 1, 0, 0);
 
-		/// <summary>
-        /// The Z unit <see cref="SByte4"/>.
-        /// </summary>
+		/// <summary>The Z unit <see cref="SByte4"/>.</summary>
 		public static SByte4 UnitZ = new SByte4(0, 0, 1, 0);
 
-		/// <summary>
-        /// The W unit <see cref="SByte4"/>.
-        /// </summary>
+		/// <summary>The W unit <see cref="SByte4"/>.</summary>
 		public static SByte4 UnitW = new SByte4(0, 0, 0, 1);
 
+		/// <summary>Represents a zero'd SByte4.</summary>
 		public static SByte4 Zero = new SByte4(0, 0, 0, 0);
 
 #region Constructors
@@ -77,6 +70,9 @@ namespace Molten.Math
 			W = values[3];
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="SByte4"/> struct from an unsafe pointer. The pointer should point to an array of four elements.
+        /// </summary>
 		public unsafe SByte4(sbyte* ptr)
 		{
 			X = ptr[0];

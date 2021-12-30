@@ -1,6 +1,6 @@
 ﻿<#@ template debug="false" hostspecific="true" language="C#" #>
 
-<#@ include file="t4_header.tt" #>
+<#@ include file="../t4_header.tt" #>
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
@@ -52,14 +52,13 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-		/// <summary>
-        /// The <#=_pMapUpper[p]#> unit <see cref="<#=fullName#>"/>.
-        /// </summary>
+		/// <summary>The <#=_pMapUpper[p]#> unit <see cref="<#=fullName#>"/>.</summary>
 		public static <#=fullName#> Unit<#=_pMapUpper[p]#> = new <#=fullName#>(<#for(int u = 0; u < size; u++){#><#=(u == p ?_def[i].One : _def[i].Zero)#><#=(u < (size-1) ? ", " : "")#><#}#>);
 
 <#
 		}
 #>
+		/// <summary>Represents a zero'd <#=fullName#>.</summary>
 		public static <#=fullName#> Zero = new <#=fullName#>(<#for(int p = 0; p < size; p++){#><#=_def[i].Zero#><#=(p < (size-1) ? ", " : "")#><#}#>);
 
 #region Constructors
@@ -99,6 +98,9 @@ namespace Molten.Math
 #>
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="<#=fullName#>"/> struct from an unsafe pointer. The pointer should point to an array of <#=_strSize[size]#> elements.
+        /// </summary>
 		public unsafe <#=fullName#>(<#=_def[i].DT#>* ptr)
 		{
 <#

@@ -23,21 +23,16 @@ namespace Molten.Math
 
 		public static SByte3 One = new SByte3(1, 1, 1);
 
-		/// <summary>
-        /// The X unit <see cref="SByte3"/>.
-        /// </summary>
+		/// <summary>The X unit <see cref="SByte3"/>.</summary>
 		public static SByte3 UnitX = new SByte3(1, 0, 0);
 
-		/// <summary>
-        /// The Y unit <see cref="SByte3"/>.
-        /// </summary>
+		/// <summary>The Y unit <see cref="SByte3"/>.</summary>
 		public static SByte3 UnitY = new SByte3(0, 1, 0);
 
-		/// <summary>
-        /// The Z unit <see cref="SByte3"/>.
-        /// </summary>
+		/// <summary>The Z unit <see cref="SByte3"/>.</summary>
 		public static SByte3 UnitZ = new SByte3(0, 0, 1);
 
+		/// <summary>Represents a zero'd SByte3.</summary>
 		public static SByte3 Zero = new SByte3(0, 0, 0);
 
 #region Constructors
@@ -67,6 +62,9 @@ namespace Molten.Math
 			Z = values[2];
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="SByte3"/> struct from an unsafe pointer. The pointer should point to an array of three elements.
+        /// </summary>
 		public unsafe SByte3(sbyte* ptr)
 		{
 			X = ptr[0];

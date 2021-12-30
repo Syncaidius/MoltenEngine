@@ -23,21 +23,16 @@ namespace Molten.Math
 
 		public static Byte3 One = new Byte3(1, 1, 1);
 
-		/// <summary>
-        /// The X unit <see cref="Byte3"/>.
-        /// </summary>
+		/// <summary>The X unit <see cref="Byte3"/>.</summary>
 		public static Byte3 UnitX = new Byte3(1, 0, 0);
 
-		/// <summary>
-        /// The Y unit <see cref="Byte3"/>.
-        /// </summary>
+		/// <summary>The Y unit <see cref="Byte3"/>.</summary>
 		public static Byte3 UnitY = new Byte3(0, 1, 0);
 
-		/// <summary>
-        /// The Z unit <see cref="Byte3"/>.
-        /// </summary>
+		/// <summary>The Z unit <see cref="Byte3"/>.</summary>
 		public static Byte3 UnitZ = new Byte3(0, 0, 1);
 
+		/// <summary>Represents a zero'd Byte3.</summary>
 		public static Byte3 Zero = new Byte3(0, 0, 0);
 
 #region Constructors
@@ -67,6 +62,9 @@ namespace Molten.Math
 			Z = values[2];
         }
 
+		/// <summary>
+        /// Initializes a new instance of the <see cref="Byte3"/> struct from an unsafe pointer. The pointer should point to an array of three elements.
+        /// </summary>
 		public unsafe Byte3(byte* ptr)
 		{
 			X = ptr[0];
