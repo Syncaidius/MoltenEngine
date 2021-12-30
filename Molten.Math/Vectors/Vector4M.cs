@@ -157,18 +157,17 @@ namespace Molten.Math
         /// <param name="start">The start vector.</param>
         /// <param name="end">The end vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <param name="result">When the method completes, contains the linear interpolation of the two vectors.</param>
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static Vector4M Lerp(ref Vector4M start, ref Vector4M end, float amount)
+        public static Vector4M Lerp(ref Vector4M start, ref Vector4M end, decimal amount)
         {
 			return new Vector4M()
 			{
-				X = (decimal)((1f - amount) * start.X + amount * end.X),
-				Y = (decimal)((1f - amount) * start.Y + amount * end.Y),
-				Z = (decimal)((1f - amount) * start.Z + amount * end.Z),
-				W = (decimal)((1f - amount) * start.W + amount * end.W),
+				X = (decimal)((1M - amount) * start.X + amount * end.X),
+				Y = (decimal)((1M - amount) * start.Y + amount * end.Y),
+				Z = (decimal)((1M - amount) * start.Z + amount * end.Z),
+				W = (decimal)((1M - amount) * start.W + amount * end.W),
 			};
         }
 

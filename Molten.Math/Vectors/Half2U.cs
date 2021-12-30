@@ -131,7 +131,6 @@ namespace Molten.Math
         /// <param name="start">The start vector.</param>
         /// <param name="end">The end vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <param name="result">When the method completes, contains the linear interpolation of the two vectors.</param>
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
@@ -139,8 +138,8 @@ namespace Molten.Math
         {
 			return new Half2U()
 			{
-				X = (ushort)((1f - amount) * start.X + amount * end.X),
-				Y = (ushort)((1f - amount) * start.Y + amount * end.Y),
+				X = (ushort)((1F - amount) * start.X + amount * end.X),
+				Y = (ushort)((1F - amount) * start.Y + amount * end.Y),
 			};
         }
 

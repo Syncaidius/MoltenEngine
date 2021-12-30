@@ -195,11 +195,10 @@ namespace Molten.Math
         /// <param name="start">The start vector.</param>
         /// <param name="end">The end vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <param name="result">When the method completes, contains the linear interpolation of the two vectors.</param>
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static <#=fullName#> Lerp(ref <#=fullName#> start, ref <#=fullName#> end, float amount)
+        public static <#=fullName#> Lerp(ref <#=fullName#> start, ref <#=fullName#> end, <#=_def[i].FP#> amount)
         {
 			return new <#=fullName#>()
 			{
@@ -207,7 +206,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-				<#=_pMapUpper[p]#> = (<#=_def[i].DT#>)((1f - amount) * start.<#=_pMapUpper[p]#> + amount * end.<#=_pMapUpper[p]#>),
+				<#=_pMapUpper[p]#> = (<#=_def[i].DT#>)((1<#=_def[i].FPL#> - amount) * start.<#=_pMapUpper[p]#> + amount * end.<#=_pMapUpper[p]#>),
 <#
 		}
 #>
