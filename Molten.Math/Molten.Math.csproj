@@ -178,7 +178,6 @@
     <Compile Include="DoublePrecision\AngleD.cs" />
     <Compile Include="DoublePrecision\Matrix3D.cs" />
     <Compile Include="DoublePrecision\Matrix4D.cs" />
-    <Compile Include="DoublePrecision\QuaternionD.cs" />
     <Compile Include="MathHelperDP.cs" />
     <Compile Include="PlainIntersectionType.cs" />
     <Compile Include="ContainmentType.cs" />
