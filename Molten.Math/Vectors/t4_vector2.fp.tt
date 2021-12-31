@@ -1,0 +1,85 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+
+<#@ include file="../t4_header.tt" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".txt" #>
+
+<#
+string outputPath = this.Host.ResolvePath("");
+List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "vector_defs.json");
+string _pMap = "xyzw";
+string _pMapUpper = "XYZW";
+
+foreach(TypeData d in _def)
+{
+	if(!d.IsFPType)
+	{
+		continue;
+	}
+
+	int size = 2;
+	string fName = $"{d.Name}{size}{d.Postfix}";
+	string fn = $"{fName}.fp2";
+#>
+using System.Runtime.InteropServices;
+using System;
+
+namespace Molten.Math
+{
+	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
+	public partial struct <#=fName#>
+	{
+
+
+#region Static Methods
+		/// <summary>
+        /// Transforms an array of vectors by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
+        /// </summary>
+        /// <param name="source">The array of vectors to transform.</param>
+        /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
+        /// <param name="destination">The array for which the transformed vectors are stored.
+        /// This array may be the same array as <paramref name="source"/>.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
+        public static void Transform(<#=fName#>[] source, ref Quaternion<#=d.Postfix#> rotation, <#=fName#>[] destination)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+            if (destination.Length < source.Length)
+                throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+
+            <#=d.DT#> x = rotation.X + rotation.X;
+            <#=d.DT#> y = rotation.Y + rotation.Y;
+            <#=d.DT#> z = rotation.Z + rotation.Z;
+            <#=d.DT#> wz = rotation.W * z;
+            <#=d.DT#> xx = rotation.X * x;
+            <#=d.DT#> xy = rotation.X * y;
+            <#=d.DT#> yy = rotation.Y * y;
+            <#=d.DT#> zz = rotation.Z * z;
+
+            <#=d.DT#> num1 = (1.0f - yy - zz);
+            <#=d.DT#> num2 = (xy - wz);
+            <#=d.DT#> num3 = (xy + wz);
+            <#=d.DT#> num4 = (1.0f - xx - zz);
+
+            for (int i = 0; i < source.Length; ++i)
+            {
+                destination[i] = new <#=fName#>(
+                    (source[i].X * num1) + (source[i].Y * num2),
+                    (source[i].X * num3) + (source[i].Y * num4));
+            }
+        }
+#endregion
+	}
+}
+<#
+		SaveFile(outputPath, fn, this.GenerationEnvironment.ToString());
+		this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+}
+#>

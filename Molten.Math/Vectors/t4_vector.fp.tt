@@ -14,23 +14,23 @@ List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "vector_defs.json");
 string _pMap = "xyzw";
 string _pMapUpper = "XYZW";
 
-for(int i = 0; i < _def.Count; i++)
+foreach(TypeData d in _def)
 {
-	if(!_def[i].IsFPType)
+	if(!d.IsFPType)
 	{
 		continue;
 	}
 
 	foreach(int size in _vectorSizes)
 	{
-		string fullName = $"{_def[i].Name}{size}{_def[i].Postfix}";
-		string fn = $"{fullName}.common";
+		string fullName = $"{d.Name}{size}{d.Postfix}";
+		string fn = $"{fullName}.fp";
 #>
 using System.Runtime.InteropServices;
 
 namespace Molten.Math
 {
-	///<summary>A <see cref = "<#=_def[i].DT#>"/> vector comprised of <#=size#> components.</summary>
+	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
 	public partial struct <#=fullName#>
 	{
 		/// <summary>
@@ -42,7 +42,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=_pMapUpper[p]#> = <#=_pMapUpper[p]#> < <#=_def[i].Zero#> ? <#=_def[i].Zero#> : <#=_pMapUpper[p]#> > <#=_def[i].One#> ? <#=_def[i].One#> : <#=_pMapUpper[p]#>;
+			<#=_pMapUpper[p]#> = <#=_pMapUpper[p]#> < <#=d.Zero#> ? <#=d.Zero#> : <#=_pMapUpper[p]#> > <#=d.One#> ? <#=d.One#> : <#=_pMapUpper[p]#>;
 <#
 		}
 #>
@@ -55,7 +55,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=_pMapUpper[p]#> = <#=(_def[i].DT == "float" ? "(float)" : "")#>Math.Floor(<#=_pMapUpper[p]#>);
+			<#=_pMapUpper[p]#> = <#=(d.DT == "float" ? "(float)" : "")#>Math.Floor(<#=_pMapUpper[p]#>);
 <#
 		}
 #>
@@ -68,7 +68,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=_pMapUpper[p]#> = <#=(_def[i].DT == "float" ? "(float)" : "")#>Math.Ceiling(<#=_pMapUpper[p]#>);
+			<#=_pMapUpper[p]#> = <#=(d.DT == "float" ? "(float)" : "")#>Math.Ceiling(<#=_pMapUpper[p]#>);
 <#
 		}
 #>
@@ -81,7 +81,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-				<#=_pMapUpper[p]#> = (Math.Abs(<#=_pMapUpper[p]#>) - 0.0001<#=_def[i].FPL#> < 0) ? 0 : X;
+				<#=_pMapUpper[p]#> = (Math.Abs(<#=_pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : X;
 <#
 		}
 #>
@@ -99,7 +99,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-				<#=_pMapUpper[p]#> = (Math.Abs(value.<#=_pMapUpper[p]#>) - 0.0001<#=_def[i].FPL#> < 0) ? 0 : value.X,
+				<#=_pMapUpper[p]#> = (Math.Abs(value.<#=_pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : value.X,
 <#
 		}
 #>
