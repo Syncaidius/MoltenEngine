@@ -198,6 +198,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Quaternions\t4_quaternions1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>t4_quaternions.tt</DependentUpon>
+    </Compile>
     <Compile Include="RectangleUI.cs" />
     <Compile Include="Vector2I.cs" />
     <Compile Include="DoublePrecision\Vector3D.cs" />
@@ -285,7 +290,6 @@
     <Compile Include="Vectors\Vector4UL.cs" />
     <Compile Include="Winding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QuaternionF.cs" />
     <Compile Include="RandomNumber.cs" />
     <Compile Include="Ray.cs" />
     <Compile Include="RayHit.cs" />
@@ -310,7 +314,7 @@
   <ItemGroup>
     <Content Include="Quaternions\t4_quaternions.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>t4_quaternions.cs</LastGenOutput>
+      <LastGenOutput>t4_quaternions1.cs</LastGenOutput>
     </Content>
     <Content Include="t4_header.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
