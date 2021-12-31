@@ -696,9 +696,9 @@ namespace Molten.DoublePrecision
             scale.Z = (float)Math.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
 
             //If any of the scaling factors are zero, than the rotation MatrixDouble can not exist.
-            if (DoubleHelper.IsZero(scale.X) ||
-                DoubleHelper.IsZero(scale.Y) ||
-                DoubleHelper.IsZero(scale.Z))
+            if (MathHelperDP.IsZero(scale.X) ||
+                MathHelperDP.IsZero(scale.Y) ||
+                MathHelperDP.IsZero(scale.Z))
             {
                 rotation = QuaternionD.Identity;
                 return false;
@@ -746,7 +746,7 @@ namespace Molten.DoublePrecision
             var inv_scale = 1f / scale;
 
             //If any of the scaling factors are zero, then the rotation MatrixDouble can not exist.
-            if (Math.Abs(scale) < DoubleHelper.ZeroTolerance)
+            if (Math.Abs(scale) < MathHelperDP.ZeroTolerance)
             {
                 rotation = QuaternionD.Identity;
                 return false;
@@ -1198,22 +1198,22 @@ namespace Molten.DoublePrecision
         /// </remarks>
         public static void Lerp(ref Matrix4D start, ref Matrix4D end, double amount, out Matrix4D result)
         {
-            result.M11 = DoubleHelper.Lerp(start.M11, end.M11, amount);
-            result.M12 = DoubleHelper.Lerp(start.M12, end.M12, amount);
-            result.M13 = DoubleHelper.Lerp(start.M13, end.M13, amount);
-            result.M14 = DoubleHelper.Lerp(start.M14, end.M14, amount);
-            result.M21 = DoubleHelper.Lerp(start.M21, end.M21, amount);
-            result.M22 = DoubleHelper.Lerp(start.M22, end.M22, amount);
-            result.M23 = DoubleHelper.Lerp(start.M23, end.M23, amount);
-            result.M24 = DoubleHelper.Lerp(start.M24, end.M24, amount);
-            result.M31 = DoubleHelper.Lerp(start.M31, end.M31, amount);
-            result.M32 = DoubleHelper.Lerp(start.M32, end.M32, amount);
-            result.M33 = DoubleHelper.Lerp(start.M33, end.M33, amount);
-            result.M34 = DoubleHelper.Lerp(start.M34, end.M34, amount);
-            result.M41 = DoubleHelper.Lerp(start.M41, end.M41, amount);
-            result.M42 = DoubleHelper.Lerp(start.M42, end.M42, amount);
-            result.M43 = DoubleHelper.Lerp(start.M43, end.M43, amount);
-            result.M44 = DoubleHelper.Lerp(start.M44, end.M44, amount);
+            result.M11 = MathHelperDP.Lerp(start.M11, end.M11, amount);
+            result.M12 = MathHelperDP.Lerp(start.M12, end.M12, amount);
+            result.M13 = MathHelperDP.Lerp(start.M13, end.M13, amount);
+            result.M14 = MathHelperDP.Lerp(start.M14, end.M14, amount);
+            result.M21 = MathHelperDP.Lerp(start.M21, end.M21, amount);
+            result.M22 = MathHelperDP.Lerp(start.M22, end.M22, amount);
+            result.M23 = MathHelperDP.Lerp(start.M23, end.M23, amount);
+            result.M24 = MathHelperDP.Lerp(start.M24, end.M24, amount);
+            result.M31 = MathHelperDP.Lerp(start.M31, end.M31, amount);
+            result.M32 = MathHelperDP.Lerp(start.M32, end.M32, amount);
+            result.M33 = MathHelperDP.Lerp(start.M33, end.M33, amount);
+            result.M34 = MathHelperDP.Lerp(start.M34, end.M34, amount);
+            result.M41 = MathHelperDP.Lerp(start.M41, end.M41, amount);
+            result.M42 = MathHelperDP.Lerp(start.M42, end.M42, amount);
+            result.M43 = MathHelperDP.Lerp(start.M43, end.M43, amount);
+            result.M44 = MathHelperDP.Lerp(start.M44, end.M44, amount);
         }
 
         /// <summary>
@@ -1242,7 +1242,7 @@ namespace Molten.DoublePrecision
         /// <param name="result">When the method completes, contains the cubic interpolation of the two matrices.</param>
         public static void SmoothStep(ref Matrix4D start, ref Matrix4D end, double amount, out Matrix4D result)
         {
-            amount = DoubleHelper.SmoothStep(amount);
+            amount = MathHelperDP.SmoothStep(amount);
             Lerp(ref start, ref end, amount, out result);
         }
 
@@ -1549,7 +1549,7 @@ namespace Molten.DoublePrecision
 
                 int i = r;
 
-                while (DoubleHelper.IsZero(result[i, lead]))
+                while (MathHelperDP.IsZero(result[i, lead]))
                 {
                     i++;
 
@@ -1631,7 +1631,7 @@ namespace Molten.DoublePrecision
 
                 int i = r;
 
-                while (DoubleHelper.IsZero(result[i, lead]))
+                while (MathHelperDP.IsZero(result[i, lead]))
                 {
                     i++;
 
@@ -1709,7 +1709,7 @@ namespace Molten.DoublePrecision
 
                 int i = r;
 
-                while (DoubleHelper.IsZero(result[i, lead]))
+                while (MathHelperDP.IsZero(result[i, lead]))
                 {
                     i++;
 
@@ -1901,7 +1901,7 @@ namespace Molten.DoublePrecision
             Vector3D difference = cameraPosition - objectPosition;
 
             double lengthSq = difference.LengthSquared();
-            if (DoubleHelper.IsZero(lengthSq))
+            if (MathHelperDP.IsZero(lengthSq))
                 difference = -cameraForwardVector;
             else
                 difference *= (float)(1.0 / Math.Sqrt(lengthSq));
@@ -1958,7 +1958,7 @@ namespace Molten.DoublePrecision
             Vector3D difference = objectPosition - cameraPosition;
 
             double lengthSq = difference.LengthSquared();
-            if (DoubleHelper.IsZero(lengthSq))
+            if (MathHelperDP.IsZero(lengthSq))
                 difference = -cameraForwardVector;
             else
                 difference *= (float)(1.0 / Math.Sqrt(lengthSq));
@@ -3232,22 +3232,22 @@ namespace Molten.DoublePrecision
         /// </returns>
         public bool Equals(ref Matrix4D other)
         {
-            return (DoubleHelper.NearEqual(other.M11, M11) &&
-                DoubleHelper.NearEqual(other.M12, M12) &&
-                DoubleHelper.NearEqual(other.M13, M13) &&
-                DoubleHelper.NearEqual(other.M14, M14) &&
-                DoubleHelper.NearEqual(other.M21, M21) &&
-                DoubleHelper.NearEqual(other.M22, M22) &&
-                DoubleHelper.NearEqual(other.M23, M23) &&
-                DoubleHelper.NearEqual(other.M24, M24) &&
-                DoubleHelper.NearEqual(other.M31, M31) &&
-                DoubleHelper.NearEqual(other.M32, M32) &&
-                DoubleHelper.NearEqual(other.M33, M33) &&
-                DoubleHelper.NearEqual(other.M34, M34) &&
-                DoubleHelper.NearEqual(other.M41, M41) &&
-                DoubleHelper.NearEqual(other.M42, M42) &&
-                DoubleHelper.NearEqual(other.M43, M43) &&
-                DoubleHelper.NearEqual(other.M44, M44));
+            return (MathHelperDP.NearEqual(other.M11, M11) &&
+                MathHelperDP.NearEqual(other.M12, M12) &&
+                MathHelperDP.NearEqual(other.M13, M13) &&
+                MathHelperDP.NearEqual(other.M14, M14) &&
+                MathHelperDP.NearEqual(other.M21, M21) &&
+                MathHelperDP.NearEqual(other.M22, M22) &&
+                MathHelperDP.NearEqual(other.M23, M23) &&
+                MathHelperDP.NearEqual(other.M24, M24) &&
+                MathHelperDP.NearEqual(other.M31, M31) &&
+                MathHelperDP.NearEqual(other.M32, M32) &&
+                MathHelperDP.NearEqual(other.M33, M33) &&
+                MathHelperDP.NearEqual(other.M34, M34) &&
+                MathHelperDP.NearEqual(other.M41, M41) &&
+                MathHelperDP.NearEqual(other.M42, M42) &&
+                MathHelperDP.NearEqual(other.M43, M43) &&
+                MathHelperDP.NearEqual(other.M44, M44));
         }
 
         /// <summary>

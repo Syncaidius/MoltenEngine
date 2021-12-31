@@ -225,7 +225,7 @@ namespace Molten.DoublePrecision
         /// </summary>
         public bool IsNormalized
         {
-            get { return DoubleHelper.IsOne((X * X) + (Y * Y) + (Z * Z)); }
+            get { return MathHelperDP.IsOne((X * X) + (Y * Y) + (Z * Z)); }
         }
 
         /// <summary>
@@ -301,7 +301,7 @@ namespace Molten.DoublePrecision
         public void Normalize()
         {
             double length = Length();
-            if (!DoubleHelper.IsZero(length))
+            if (!MathHelperDP.IsZero(length))
             {
                 double inv = 1.0f / length;
                 X *= inv;
@@ -614,9 +614,9 @@ namespace Molten.DoublePrecision
         {
             return new Vector3D()
             {
-                X = DoubleHelper.Clamp(vec.X, min, max),
-                Y = DoubleHelper.Clamp(vec.Y, min, max),
-                Z = DoubleHelper.Clamp(vec.Z, min, max),
+                X = MathHelperDP.Clamp(vec.X, min, max),
+                Y = MathHelperDP.Clamp(vec.Y, min, max),
+                Z = MathHelperDP.Clamp(vec.Z, min, max),
             };
         }
 
@@ -750,9 +750,9 @@ namespace Molten.DoublePrecision
         /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
         public static bool NearEqual(ref Vector3D left, ref Vector3D right, ref Vector3D epsilon)
         {
-            return DoubleHelper.WithinEpsilon(left.X, right.X, epsilon.X) &&
-                    DoubleHelper.WithinEpsilon(left.Y, right.Y, epsilon.Y) &&
-                    DoubleHelper.WithinEpsilon(left.Z, right.Z, epsilon.Z);
+            return MathHelperDP.WithinEpsilon(left.X, right.X, epsilon.X) &&
+                    MathHelperDP.WithinEpsilon(left.Y, right.Y, epsilon.Y) &&
+                    MathHelperDP.WithinEpsilon(left.Z, right.Z, epsilon.Z);
         }
 
         /// <summary>
@@ -811,9 +811,9 @@ namespace Molten.DoublePrecision
         /// </remarks>
         public static void Lerp(ref Vector3D start, ref Vector3D end, double amount, out Vector3D result)
         {
-            result.X = DoubleHelper.Lerp(start.X, end.X, amount);
-            result.Y = DoubleHelper.Lerp(start.Y, end.Y, amount);
-            result.Z = DoubleHelper.Lerp(start.Z, end.Z, amount);
+            result.X = MathHelperDP.Lerp(start.X, end.X, amount);
+            result.Y = MathHelperDP.Lerp(start.Y, end.Y, amount);
+            result.Z = MathHelperDP.Lerp(start.Z, end.Z, amount);
         }
 
         /// <summary>
@@ -842,7 +842,7 @@ namespace Molten.DoublePrecision
         /// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
         public static void SmoothStep(ref Vector3D start, ref Vector3D end, double amount, out Vector3D result)
         {
-            amount = DoubleHelper.SmoothStep(amount);
+            amount = MathHelperDP.SmoothStep(amount);
             Lerp(ref start, ref end, amount, out result);
         }
 
@@ -1962,7 +1962,7 @@ namespace Molten.DoublePrecision
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Vector3D other)
         {
-            return DoubleHelper.NearEqual(other.X, X) && DoubleHelper.NearEqual(other.Y, Y) && DoubleHelper.NearEqual(other.Z, Z);
+            return MathHelperDP.NearEqual(other.X, X) && MathHelperDP.NearEqual(other.Y, Y) && MathHelperDP.NearEqual(other.Z, Z);
         }
         
         /// <summary>
@@ -2020,9 +2020,9 @@ namespace Molten.DoublePrecision
         /// <param name="max">The maximum value of each component.</param>
         public void Clamp(double min, double max)
         {
-            X = DoubleHelper.Clamp(X, min, max);
-            Y = DoubleHelper.Clamp(Y, min, max);
-            Z = DoubleHelper.Clamp(Z, min, max);
+            X = MathHelperDP.Clamp(X, min, max);
+            Y = MathHelperDP.Clamp(Y, min, max);
+            Z = MathHelperDP.Clamp(Z, min, max);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

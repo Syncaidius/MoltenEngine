@@ -176,10 +176,10 @@
     <Compile Include="Color4.cs" />
     <Compile Include="ColorBGRA.cs" />
     <Compile Include="DoublePrecision\AngleD.cs" />
-    <Compile Include="DoublePrecision\DoubleHelper.cs" />
     <Compile Include="DoublePrecision\Matrix3D.cs" />
     <Compile Include="DoublePrecision\Matrix4D.cs" />
     <Compile Include="DoublePrecision\QuaternionD.cs" />
+    <Compile Include="MathHelperDP.cs" />
     <Compile Include="PlainIntersectionType.cs" />
     <Compile Include="ContainmentType.cs" />
     <Compile Include="AngleType.cs" />
@@ -193,11 +193,6 @@
     <Compile Include="DoublePrecision\Vector2D.cs" />
     <Compile Include="Quaternions\QuaternionD.cs" />
     <Compile Include="Quaternions\QuaternionF.cs" />
-    <Compile Include="Quaternions\t4_quaternions.cs">
-      <DependentUpon>t4_quaternions.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Quaternions\t4_quaternions1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

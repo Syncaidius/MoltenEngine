@@ -478,10 +478,10 @@ namespace Molten.DoublePrecision
         /// </returns>
         public bool Equals(ref RectangleD other)
         {
-            return DoubleHelper.NearEqual(other.Left, Left) &&
-                   DoubleHelper.NearEqual(other.Right, Right) &&
-                   DoubleHelper.NearEqual(other.Top, Top) &&
-                   DoubleHelper.NearEqual(other.Bottom, Bottom);
+            return MathHelperDP.NearEqual(other.Left, Left) &&
+                   MathHelperDP.NearEqual(other.Right, Right) &&
+                   MathHelperDP.NearEqual(other.Top, Top) &&
+                   MathHelperDP.NearEqual(other.Bottom, Bottom);
         }
 
         /// <summary>
