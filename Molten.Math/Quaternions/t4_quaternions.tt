@@ -14,15 +14,15 @@ List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "quaternion_defs.json");
 string _pMap = "xyzw";
 string _pMapUpper = "XYZW";
 
-for(int i = 0; i < _def.Count; i++)
+foreach(TypeData d in _def)
 {
-	if(!_def[i].IsFPType)
+	if(!d.IsFPType)
 	{
 		continue;
 	}
 
-	string fullName = $"{_def[i].Name}{_def[i].Postfix}";
-    string vectorName = $"Vector3{_def[i].Postfix}";
+	string fullName = $"{d.Name}{d.Postfix}";
+    string vectorName = $"Vector3{d.Postfix}";
 	string fn = $"{fullName}";
 #>
 using System;
@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 namespace Molten.Math
 {
 	///<summary>Represents a four dimensional mathematical <#=fullName#>.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack = <#=_def[i].Pack#>)]
+	[StructLayout(LayoutKind.Sequential, Pack = <#=d.Pack#>)]
 	public partial struct <#=fullName#> : IFormattable, IEquatable<<#=fullName#>>
 	{
 		/// <summary>
@@ -49,24 +49,24 @@ namespace Molten.Math
         /// <summary>
         /// A <see cref="<#=fullName#>"/> with all of its components set to one.
         /// </summary>
-        public static readonly <#=fullName#> One = new <#=fullName#>(<#=_def[i].One#>, <#=_def[i].One#>, <#=_def[i].One#>, <#=_def[i].One#>);
+        public static readonly <#=fullName#> One = new <#=fullName#>(<#=d.One#>, <#=d.One#>, <#=d.One#>, <#=d.One#>);
 
         /// <summary>
         /// The identity <see cref="<#=fullName#>"/> (0, 0, 0, 1).
         /// </summary>
-        public static readonly <#=fullName#> Identity = new <#=fullName#>(<#=_def[i].Zero#>, <#=_def[i].Zero#>, <#=_def[i].Zero#>, <#=_def[i].Zero#>);
+        public static readonly <#=fullName#> Identity = new <#=fullName#>(<#=d.Zero#>, <#=d.Zero#>, <#=d.Zero#>, <#=d.Zero#>);
 
 		///<summary>The X component of the <#=fullName#>.</summary>
-		public <#=_def[i].DT#> X;
+		public <#=d.DT#> X;
 
         ///<summary>The Y component of the <#=fullName#>.</summary>
-		public <#=_def[i].DT#> Y;
+		public <#=d.DT#> Y;
 
         ///<summary>The Z component of the <#=fullName#>.</summary>
-		public <#=_def[i].DT#> Z;
+		public <#=d.DT#> Z;
 
         ///<summary>The W component of the <#=fullName#>.</summary>
-		public <#=_def[i].DT#> W;
+		public <#=d.DT#> W;
 
         /// <summary>
         /// Gets a value indicting whether this  <see cref="<#=fullName#>"/> is normalized.
@@ -86,9 +86,9 @@ namespace Molten.Math
             {
                 float length = (X * X) + (Y * Y) + (Z * Z);
                 if (MathHelper.IsZero(length))
-                    return 0.0<#=_def[i].FPL#>;
+                    return 0.0<#=d.FPL#>;
 
-                return <#=(_def[i].DT == "float" ? "(float)" : "")#>(2.0 * Math.Acos(MathHelper.Clamp(W, -1<#=_def[i].FPL#>, 1<#=_def[i].FPL#>)));
+                return <#=(d.DT == "float" ? "(float)" : "")#>(2.0 * Math.Acos(MathHelper.Clamp(W, -1<#=d.FPL#>, 1<#=d.FPL#>)));
             }
         }
 
@@ -96,16 +96,16 @@ namespace Molten.Math
         /// Gets the axis components of the <#=fullName#>.
         /// </summary>
         /// <value>The axis components of the <#=fullName#>.</value>
-        public Vector3<#=_def[i].Postfix#> Axis
+        public Vector3<#=d.Postfix#> Axis
         {
             get
             {
-                <#=_def[i].DT#> length = (X * X) + (Y * Y) + (Z * Z);
+                <#=d.DT#> length = (X * X) + (Y * Y) + (Z * Z);
                 if (MathHelper.IsZero(length))
                     return Vector3F.UnitX;
 
-                <#=_def[i].DT#> inv = 1.0<#=_def[i].FPL#>  / <#=(_def[i].DT == "float" ? "(float)" : "")#>Math.Sqrt(length);
-                return new Vector3<#=_def[i].Postfix#>(X * inv, Y * inv, Z * inv);
+                <#=d.DT#> inv = 1.0<#=d.FPL#>  / <#=(d.DT == "float" ? "(float)" : "")#>Math.Sqrt(length);
+                return new Vector3<#=d.Postfix#>(X * inv, Y * inv, Z * inv);
             }
         }
 
@@ -114,7 +114,7 @@ namespace Molten.Math
         /// Initializes a new instance of the <#=SeeRef(fullName)#> struct.
         /// </summary>
         /// <param name="value">A <#=fullName#> containing the values with which to initialize the components.</param>
-        public <#=fullName#>(Vector4<#=_def[i].Postfix#> value)
+        public <#=fullName#>(Vector4<#=d.Postfix#> value)
         {
             X = value.X;
             Y = value.Y;
@@ -127,7 +127,7 @@ namespace Molten.Math
         /// </summary>
         /// <param name="value">A vector containing the values with which to initialize the X, Y, and Z components.</param>
         /// <param name="w">Initial value for the W component of the <#=SeeRef(fullName)#>.</param>
-        public <#=fullName#>(<#=vectorName#> value, <#=_def[i].DT#> w)
+        public <#=fullName#>(<#=vectorName#> value, <#=d.DT#> w)
         {
             X = value.X;
             Y = value.Y;
@@ -141,7 +141,7 @@ namespace Molten.Math
         /// <param name="value">A vector containing the values with which to initialize the X and Y components.</param>
         /// <param name="z">Initial value for the Z component of the <#=SeeRef(fullName)#>.</param>
         /// <param name="w">Initial value for the W component of the <#=SeeRef(fullName)#>.</param>
-        public <#=fullName#>(Vector2<#=_def[i].Postfix#> value, <#=_def[i].DT#> z, <#=_def[i].DT#> w)
+        public <#=fullName#>(Vector2<#=d.Postfix#> value, <#=d.DT#> z, <#=d.DT#> w)
         {
             X = value.X;
             Y = value.Y;
@@ -156,7 +156,7 @@ namespace Molten.Math
         /// <param name="y">Initial value for the Y component of the <#=SeeRef(fullName)#>.</param>
         /// <param name="z">Initial value for the Z component of the <#=SeeRef(fullName)#>.</param>
         /// <param name="w">Initial value for the W component of the <#=SeeRef(fullName)#>.</param>
-        public <#=fullName#>(<#=_def[i].DT#> x, <#=_def[i].DT#> y, <#=_def[i].DT#> z, <#=_def[i].DT#> w)
+        public <#=fullName#>(<#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> z, <#=d.DT#> w)
         {
             X = x;
             Y = y;
@@ -171,7 +171,7 @@ namespace Molten.Math
         /// <param name="values">The values to assign to the X, Y, Z, and W components of the quaternion. This must be an array with four elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than four elements.</exception>
-        public <#=fullName#>(<#=_def[i].DT#>[] values)
+        public <#=fullName#>(<#=d.DT#>[] values)
         {
             if (values == null)
                 throw new ArgumentNullException("values");
@@ -187,7 +187,7 @@ namespace Molten.Math
         /// <summary>
         /// Initializes a new instance of the <see cref="<#=fullName#>"/> struct from an unsafe pointer. The pointer should point to an array of four elements.
         /// </summary>
-        public unsafe <#=fullName#>(<#=_def[i].DT#>* ptr)
+        public unsafe <#=fullName#>(<#=d.DT#>* ptr)
 		{
             X = ptr[0];
             Y = ptr[1];
@@ -237,7 +237,7 @@ namespace Molten.Math
         /// This method may be preferred to <see cref="<#=fullName#>.Length"/> when only a relative length is needed
         /// and speed is of the essence.
         /// </remarks>
-        public <#=_def[i].DT#> LengthSquared()
+        public <#=d.DT#> LengthSquared()
         {
             return (X * X) + (Y * Y) + (Z * Z) + (W * W);
         }
@@ -246,9 +246,9 @@ namespace Molten.Math
         /// Creates an array containing the elements of the <#=SeeRef(fullName)#>.
         /// </summary>
         /// <returns>A four-element array containing the components of the <#=SeeRef(fullName)#>.</returns>
-        public <#=_def[i].DT#>[] ToArray()
+        public <#=d.DT#>[] ToArray()
         {
-            return new <#=_def[i].DT#>[] { X, Y, Z, W };
+            return new <#=d.DT#>[] { X, Y, Z, W };
         }
 
         /// <summary>
@@ -277,21 +277,21 @@ namespace Molten.Math
         /// <param name="q">Quaternion representing the rotation from v1 to v2.</param>
         public static <#=fullName#> GetQuaternionBetweenNormalizedVectors(ref <#=vectorName#> v1, ref <#=vectorName#> v2)
         {
-            <#=_def[i].DT#> dot;
+            <#=d.DT#> dot;
             <#=fullName#> q;
             <#=vectorName#>.Dot(ref v1, ref v2, out dot);
             //For non-normal vectors, the multiplying the axes length squared would be necessary:
             //float w = dot + (float)Math.Sqrt(v1.LengthSquared() * v2.LengthSquared());
-            if (dot < -0.9999<#=_def[i].FPL#>) //parallel, opposing direction
+            if (dot < -0.9999<#=d.FPL#>) //parallel, opposing direction
             {
                 //If this occurs, the rotation required is ~180 degrees.
                 //The problem is that we could choose any perpendicular axis for the rotation. It's not uniquely defined.
                 //The solution is to pick an arbitrary perpendicular axis.
                 //Project onto the plane which has the lowest component magnitude.
                 //On that 2d plane, perform a 90 degree rotation.
-                <#=_def[i].DT#> absX = Math.Abs(v1.X);
-                <#=_def[i].DT#> absY = Math.Abs(v1.Y);
-                <#=_def[i].DT#> absZ = Math.Abs(v1.Z);
+                <#=d.DT#> absX = Math.Abs(v1.X);
+                <#=d.DT#> absY = Math.Abs(v1.Y);
+                <#=d.DT#> absZ = Math.Abs(v1.Z);
                 if (absX < absY && absX < absZ)
                     q = new <#=fullName#>(0, -v1.Z, v1.Y, 0);
                 else if (absY < absZ)
@@ -315,10 +315,10 @@ namespace Molten.Math
         /// </summary>
         public void Normalize()
         {
-            <#=_def[i].DT#> length = Length();
+            <#=d.DT#> length = Length();
             if (!MathHelper.IsZero(length))
             {
-                <#=_def[i].DT#> inverse = 1.0<#=_def[i].FPL#> / length;
+                <#=d.DT#> inverse = 1.0<#=d.FPL#> / length;
                 X *= inverse;
                 Y *= inverse;
                 Z *= inverse;
@@ -333,9 +333,9 @@ namespace Molten.Math
         /// <remarks>
         /// <see cref="<#=fullName#>.LengthSquared"/> may be preferred when only the relative length is needed and speed is of the essence.
         /// </remarks>
-        public <#=_def[i].DT#> Length()
+        public <#=d.DT#> Length()
         {
-            return <#=(_def[i].DT == "float" ? "(float)" : "")#>Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
+            return <#=(d.DT == "float" ? "(float)" : "")#>Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
@@ -343,10 +343,10 @@ namespace Molten.Math
         /// </summary>
         public void Invert()
         {
-            <#=_def[i].DT#> lengthSq = LengthSquared();
+            <#=d.DT#> lengthSq = LengthSquared();
             if (!MathHelper.IsZero(lengthSq))
             {
-                lengthSq = 1.0<#=_def[i].FPL#> / lengthSq;
+                lengthSq = 1.0<#=d.FPL#> / lengthSq;
 
                 X = -X * lengthSq;
                 Y = -Y * lengthSq;
@@ -402,12 +402,12 @@ namespace Molten.Math
         /// </summary>
         /// <param name="q">Quaternion to be converted.</param>
         /// <returns>Angle around the axis represented by the quaternion.</returns>
-        public static <#=_def[i].DT#> GetAngleFromQuaternion(ref <#=fullName#> q)
+        public static <#=d.DT#> GetAngleFromQuaternion(ref <#=fullName#> q)
         {
-            <#=_def[i].DT#> qw = Math.Abs(q.W);
+            <#=d.DT#> qw = Math.Abs(q.W);
             if (qw > 1)
                 return 0;
-            return 2 * (<#=_def[i].DT#>)Math.Acos(qw);
+            return 2 * (<#=d.DT#>)Math.Acos(qw);
         }
 #endregion
 
@@ -477,14 +477,14 @@ namespace Molten.Math
         /// <param name="b">Second <#=SeeRef(fullName)#> to multiply.</param>
         public static <#=fullName#> Concatenate(ref <#=fullName#> a, ref <#=fullName#> b)
         {
-            <#=_def[i].DT#> aX = a.X;
-            <#=_def[i].DT#> aY = a.Y;
-            <#=_def[i].DT#> aZ = a.Z;
-            <#=_def[i].DT#> aW = a.W;
-            <#=_def[i].DT#> bX = b.X;
-            <#=_def[i].DT#> bY = b.Y;
-            <#=_def[i].DT#> bZ = b.Z;
-            <#=_def[i].DT#> bW = b.W;
+            <#=d.DT#> aX = a.X;
+            <#=d.DT#> aY = a.Y;
+            <#=d.DT#> aZ = a.Z;
+            <#=d.DT#> aW = a.W;
+            <#=d.DT#> bX = b.X;
+            <#=d.DT#> bY = b.Y;
+            <#=d.DT#> bZ = b.Z;
+            <#=d.DT#> bW = b.W;
 
             return new <#=fullName#>()
             {
@@ -503,7 +503,7 @@ namespace Molten.Math
         /// <param name="value">The quaternion to scale.</param>
         /// <param name="scale">The amount by which to scale the quaternion.</param>
         /// <returns>The scaled quaternion.</returns>
-        public static <#=fullName#> operator *(<#=_def[i].DT#> scale, <#=fullName#> value)
+        public static <#=fullName#> operator *(<#=d.DT#> scale, <#=fullName#> value)
         {
             return new <#=fullName#>()
             {
@@ -520,7 +520,7 @@ namespace Molten.Math
         /// <param name="value">The quaternion to scale.</param>
         /// <param name="scale">The amount by which to scale the quaternion.</param>
         /// <returns>The scaled quaternion.</returns>
-        public static <#=fullName#> operator *(<#=fullName#> value, <#=_def[i].DT#> scale)
+        public static <#=fullName#> operator *(<#=fullName#> value, <#=d.DT#> scale)
         {
             return new <#=fullName#>()
             {
@@ -539,18 +539,18 @@ namespace Molten.Math
         /// <returns>The multiplied quaternion.</returns>
         public static <#=fullName#> operator *(<#=fullName#> left, <#=fullName#> right)
         {
-            <#=_def[i].DT#> lx = left.X;
-            <#=_def[i].DT#> ly = left.Y;
-            <#=_def[i].DT#> lz = left.Z;
-            <#=_def[i].DT#> lw = left.W;
-            <#=_def[i].DT#> rx = right.X;
-            <#=_def[i].DT#> ry = right.Y;
-            <#=_def[i].DT#> rz = right.Z;
-            <#=_def[i].DT#> rw = right.W;
-            <#=_def[i].DT#> a = (ly * rz - lz * ry);
-            <#=_def[i].DT#> b = (lz * rx - lx * rz);
-            <#=_def[i].DT#> c = (lx * ry - ly * rx);
-            <#=_def[i].DT#> d = (lx * rx + ly * ry + lz * rz);
+            <#=d.DT#> lx = left.X;
+            <#=d.DT#> ly = left.Y;
+            <#=d.DT#> lz = left.Z;
+            <#=d.DT#> lw = left.W;
+            <#=d.DT#> rx = right.X;
+            <#=d.DT#> ry = right.Y;
+            <#=d.DT#> rz = right.Z;
+            <#=d.DT#> rw = right.W;
+            <#=d.DT#> a = (ly * rz - lz * ry);
+            <#=d.DT#> b = (lz * rx - lx * rz);
+            <#=d.DT#> c = (lx * ry - ly * rx);
+            <#=d.DT#> d = (lx * rx + ly * ry + lz * rz);
 
             return new <#=fullName#>()
             {
@@ -605,7 +605,7 @@ namespace Molten.Math
         /// <param name="index">The index of the component to access. Use 0 for the X component, 1 for the Y component, 2 for the Z component, and 3 for the W component.</param>
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 3].</exception>
-        public <#=_def[i].DT#> this[int index]
+        public <#=d.DT#> this[int index]
         {
             get
             {

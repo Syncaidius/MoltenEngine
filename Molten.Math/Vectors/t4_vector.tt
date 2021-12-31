@@ -15,11 +15,11 @@ string _pMap = "xyzw";
 string _pMapUpper = "XYZW";
 string r = "";
 
-for(int i = 0; i < _def.Count; i++)
+foreach(TypeData d in _def)
 {
 	foreach(int size in _vectorSizes)
 	{
-		string fullName = $"{_def[i].Name}{size}{_def[i].Postfix}";
+		string fullName = $"{d.Name}{size}{d.Postfix}";
 		string fn = $"{fullName}";
 #>
 using System;
@@ -28,8 +28,8 @@ using System.Globalization;
 
 namespace Molten.Math
 {
-	///<summary>A <see cref = "<#=_def[i].DT#>"/> vector comprised of <#=_strSize[size]#> components.</summary>
-	[StructLayout(LayoutKind.Sequential, Pack=<#=_def[i].Pack#>)]
+	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=_strSize[size]#> components.</summary>
+	[StructLayout(LayoutKind.Sequential, Pack=<#=d.Pack#>)]
 	public partial struct <#=fullName#> : IFormattable
 	{
 <#
@@ -37,7 +37,7 @@ namespace Molten.Math
 		{
 #>
 		///<summary>The <#=_pMapUpper[p]#> component.</summary>
-		public <#=_def[i].DT#> <#=_pMapUpper[p]#>;
+		public <#=d.DT#> <#=_pMapUpper[p]#>;
 
 <#
 		}
@@ -46,24 +46,24 @@ namespace Molten.Math
 		///<summary>The size of <see cref="<#=fullName#>"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(<#=fullName#>));
 
-		public static <#=fullName#> One = new <#=fullName#>(<#for(int p = 0; p < size; p++){#><#=_def[i].One#><#=(p < (size-1) ? ", " : "")#><#}#>);
+		public static <#=fullName#> One = new <#=fullName#>(<#for(int p = 0; p < size; p++){#><#=d.One#><#=(p < (size-1) ? ", " : "")#><#}#>);
 
 <#
 		for(int p = 0; p < size; p++)
 		{
 #>
 		/// <summary>The <#=_pMapUpper[p]#> unit <see cref="<#=fullName#>"/>.</summary>
-		public static <#=fullName#> Unit<#=_pMapUpper[p]#> = new <#=fullName#>(<#for(int u = 0; u < size; u++){#><#=(u == p ?_def[i].One : _def[i].Zero)#><#=(u < (size-1) ? ", " : "")#><#}#>);
+		public static <#=fullName#> Unit<#=_pMapUpper[p]#> = new <#=fullName#>(<#for(int u = 0; u < size; u++){#><#=(u == p ?d.One : d.Zero)#><#=(u < (size-1) ? ", " : "")#><#}#>);
 
 <#
 		}
 #>
 		/// <summary>Represents a zero'd <#=fullName#>.</summary>
-		public static <#=fullName#> Zero = new <#=fullName#>(<#for(int p = 0; p < size; p++){#><#=_def[i].Zero#><#=(p < (size-1) ? ", " : "")#><#}#>);
+		public static <#=fullName#> Zero = new <#=fullName#>(<#for(int p = 0; p < size; p++){#><#=d.Zero#><#=(p < (size-1) ? ", " : "")#><#}#>);
 
 #region Constructors
 		///<summary>Creates a new instance of <see cref = "<#=fullName#>"/>.</summary>
-		public <#=fullName#>(<#=GetConstructorArgs(_def[i].DT, _pMap, size)#>)
+		public <#=fullName#>(<#=GetConstructorArgs(d.DT, _pMap, size)#>)
 		{
 <#
 		for(int p = 0; p < size; p++)
@@ -81,7 +81,7 @@ namespace Molten.Math
         /// <param name="values">The values to assign to the <#=GetParamSentence(_pMapUpper, size, ", ", " and ")#> components of the vector. This must be an array with <#=size#> elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="values"/> contains more or less than two elements.</exception>
-        public <#=fullName#>(<#=_def[i].DT#>[] values)
+        public <#=fullName#>(<#=d.DT#>[] values)
         {
             if (values == null)
                 throw new ArgumentNullException("values");
@@ -101,7 +101,7 @@ namespace Molten.Math
 		/// <summary>
         /// Initializes a new instance of the <see cref="<#=fullName#>"/> struct from an unsafe pointer. The pointer should point to an array of <#=_strSize[size]#> elements.
         /// </summary>
-		public unsafe <#=fullName#>(<#=_def[i].DT#>* ptr)
+		public unsafe <#=fullName#>(<#=d.DT#>* ptr)
 		{
 <#
 		for(int p = 0; p < size; p++)
@@ -128,15 +128,15 @@ namespace Molten.Math
         /// involves two square roots, which are computationally expensive. However, using distance squared 
         /// provides the same information and avoids calculating two square roots.
         /// </remarks>
-		public static void DistanceSquared(ref <#=fullName#> value1, ref <#=fullName#> value2, out <#=_def[i].DT#> result)
+		public static void DistanceSquared(ref <#=fullName#> value1, ref <#=fullName#> value2, out <#=d.DT#> result)
         {
 <#
 			r ="";
-			for(int d = 0; d < size; d++)
+			for(int p = 0; p < size; p++)
 			{
-				r+= $"({_pMap[d]} * {_pMap[d]}){(d < (size-1) ? " + " : "")}";
+				r+= $"({_pMap[p]} * {_pMap[p]}){(p < (size-1) ? " + " : "")}";
 #>
-            <#=_def[i].DT#> <#=_pMap[d]#> = value1.<#=_pMapUpper[d]#> - value2.<#=_pMapUpper[d]#>;
+            <#=d.DT#> <#=_pMap[p]#> = value1.<#=_pMapUpper[p]#> - value2.<#=_pMapUpper[p]#>;
 <#
 			}
 #>
@@ -157,15 +157,15 @@ namespace Molten.Math
         /// involves two square roots, which are computationally expensive. However, using distance squared 
         /// provides the same information and avoids calculating two square roots.
         /// </remarks>
-		public static <#=_def[i].DT#> DistanceSquared(ref <#=fullName#> value1, ref <#=fullName#> value2)
+		public static <#=d.DT#> DistanceSquared(ref <#=fullName#> value1, ref <#=fullName#> value2)
         {
 <#
 			r = "";
-			for(int d = 0; d < size; d++)
+			for(int p = 0; p < size; p++)
 			{
-				r+= $"({_pMap[d]} * {_pMap[d]}){(d < (size-1) ? " + " : "")}";
+				r+= $"({_pMap[p]} * {_pMap[p]}){(p < (size-1) ? " + " : "")}";
 #>
-            <#=_def[i].DT#> <#=_pMap[d]#> = value1.<#=_pMapUpper[d]#> - value2.<#=_pMapUpper[d]#>;
+            <#=d.DT#> <#=_pMap[p]#> = value1.<#=_pMapUpper[p]#> - value2.<#=_pMapUpper[p]#>;
 <#
 			}
 #>
@@ -177,9 +177,9 @@ namespace Molten.Math
         /// Creates an array containing the elements of the current <see cref="<#=fullName#>"/>.
         /// </summary>
         /// <returns>A <#=_strSize[size]#>-element array containing the components of the vector.</returns>
-        public <#=_def[i].DT#>[] ToArray()
+        public <#=d.DT#>[] ToArray()
         {
-            return new <#=_def[i].DT#>[] { <#=GetParamSentence(_pMapUpper, size, ", ", ", ")#>};
+            return new <#=d.DT#>[] { <#=GetParamSentence(_pMapUpper, size, ", ", ", ")#>};
         }
 
 		/// <summary>
@@ -200,7 +200,7 @@ namespace Molten.Math
         /// <remarks>
         /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
         /// </remarks>
-        public static <#=fullName#> Lerp(ref <#=fullName#> start, ref <#=fullName#> end, <#=_def[i].FP#> amount)
+        public static <#=fullName#> Lerp(ref <#=fullName#> start, ref <#=fullName#> end, <#=d.FP#> amount)
         {
 			return new <#=fullName#>()
 			{
@@ -208,7 +208,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-				<#=_pMapUpper[p]#> = (<#=_def[i].DT#>)((1<#=_def[i].FPL#> - amount) * start.<#=_pMapUpper[p]#> + amount * end.<#=_pMapUpper[p]#>),
+				<#=_pMapUpper[p]#> = (<#=d.DT#>)((1<#=d.FPL#> - amount) * start.<#=_pMapUpper[p]#> + amount * end.<#=_pMapUpper[p]#>),
 <#
 		}
 #>
@@ -260,7 +260,7 @@ namespace Molten.Math
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
-        public void Clamp(<#=_def[i].DT#> min, <#=_def[i].DT#> max)
+        public void Clamp(<#=d.DT#> min, <#=d.DT#> max)
         {
 <#
 		for(int p = 0; p < size; p++)
@@ -293,7 +293,7 @@ namespace Molten.Math
         /// <param name="left">First <#=SeeRef(fullName)#> source vector</param>
         /// <param name="right">Second <#=SeeRef(fullName)#> source vector.</param>
         /// <param name="result">When the method completes, contains the dot product of the two <#=SeeRef(fullName)#> vectors.</param>
-        public static <#=_def[i].DT#> Dot(<#=fullName#> left, <#=fullName#> right)
+        public static <#=d.DT#> Dot(<#=fullName#> left, <#=fullName#> right)
         {
 			return <#for(int p = 0; p < size; p++){#>(left.<#=_pMapUpper[p]#> * right.<#=_pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
         }
@@ -306,21 +306,21 @@ namespace Molten.Math
         /// <param name="value2">Second source position <#=SeeRef(fullName)#> vector.</param>
         /// <param name="tangent2">Second source tangent <#=SeeRef(fullName)#> vector.</param>
         /// <param name="amount">Weighting factor.</param>
-        public static <#=fullName#> Hermite(ref <#=fullName#> value1, ref <#=fullName#> tangent1, ref <#=fullName#> value2, ref <#=fullName#> tangent2, <#=_def[i].DT#> amount)
+        public static <#=fullName#> Hermite(ref <#=fullName#> value1, ref <#=fullName#> tangent1, ref <#=fullName#> value2, ref <#=fullName#> tangent2, <#=d.DT#> amount)
         {
-            <#=_def[i].FP#> squared = amount * amount;
-            <#=_def[i].FP#> cubed = amount * squared;
-            <#=_def[i].FP#> part1 = ((2.0<#=_def[i].FPL#> * cubed) - (3.0<#=_def[i].FPL#> * squared)) + 1.0<#=_def[i].FPL#>;
-            <#=_def[i].FP#> part2 = (-2.0<#=_def[i].FPL#> * cubed) + (3.0<#=_def[i].FPL#> * squared);
-            <#=_def[i].FP#> part3 = (cubed - (2.0<#=_def[i].FPL#> * squared)) + amount;
-            <#=_def[i].FP#> part4 = cubed - squared;
+            <#=d.FP#> squared = amount * amount;
+            <#=d.FP#> cubed = amount * squared;
+            <#=d.FP#> part1 = ((2.0<#=d.FPL#> * cubed) - (3.0<#=d.FPL#> * squared)) + 1.0<#=d.FPL#>;
+            <#=d.FP#> part2 = (-2.0<#=d.FPL#> * cubed) + (3.0<#=d.FPL#> * squared);
+            <#=d.FP#> part3 = (cubed - (2.0<#=d.FPL#> * squared)) + amount;
+            <#=d.FP#> part4 = cubed - squared;
 
 			return new <#=fullName#>()
 			{
 <#
 		for(int p = 0; p < size; p++)
 		{
-			if(_def[i].DT == _def[i].FP)
+			if(d.DT == d.FP)
 			{
 #>
 				<#=_pMapUpper[p]#> = (((value1.<#=_pMapUpper[p]#> * part1) + (value2.<#=_pMapUpper[p]#> * part2)) + (tangent1.<#=_pMapUpper[p]#> * part3)) + (tangent2.<#=_pMapUpper[p]#> * part4),
@@ -329,7 +329,7 @@ namespace Molten.Math
 			else
 			{
 #>
-				<#=_pMapUpper[p]#> = (<#=_def[i].DT#>)((((value1.<#=_pMapUpper[p]#> * part1) + (value2.<#=_pMapUpper[p]#> * part2)) + (tangent1.<#=_pMapUpper[p]#> * part3)) + (tangent2.<#=_pMapUpper[p]#> * part4)),
+				<#=_pMapUpper[p]#> = (<#=d.DT#>)((((value1.<#=_pMapUpper[p]#> * part1) + (value2.<#=_pMapUpper[p]#> * part2)) + (tangent1.<#=_pMapUpper[p]#> * part3)) + (tangent2.<#=_pMapUpper[p]#> * part4)),
 <#
 			}
 		}
@@ -345,7 +345,7 @@ namespace Molten.Math
         /// <param name="value3">A <#=SeeRef(fullName)#> containing the <#=size#>D Cartesian coordinates of vertex 3 of the triangle.</param>
         /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
         /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        public static <#=fullName#> Barycentric(ref <#=fullName#> value1, ref <#=fullName#> value2, ref <#=fullName#> value3, <#=_def[i].DT#> amount1, <#=_def[i].DT#> amount2)
+        public static <#=fullName#> Barycentric(ref <#=fullName#> value1, ref <#=fullName#> value2, ref <#=fullName#> value3, <#=d.DT#> amount1, <#=d.DT#> amount2)
         {
 			return new <#=fullName#>(
 <#
@@ -429,7 +429,7 @@ namespace Molten.Math
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_pMapUpper[p]#> + right.<#=_pMapUpper[p]#><#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
-		public static <#=fullName#> operator +(<#=fullName#> left, <#=_def[i].DT#> right)
+		public static <#=fullName#> operator +(<#=fullName#> left, <#=d.DT#> right)
 		{
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_pMapUpper[p]#> + right<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
@@ -451,7 +451,7 @@ namespace Molten.Math
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_pMapUpper[p]#> - right.<#=_pMapUpper[p]#><#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
-		public static <#=fullName#> operator -(<#=fullName#> left, <#=_def[i].DT#> right)
+		public static <#=fullName#> operator -(<#=fullName#> left, <#=d.DT#> right)
 		{
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_pMapUpper[p]#> - right<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
@@ -473,7 +473,7 @@ namespace Molten.Math
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_pMapUpper[p]#> / right.<#=_pMapUpper[p]#><#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
-		public static <#=fullName#> operator /(<#=fullName#> left, <#=_def[i].DT#> right)
+		public static <#=fullName#> operator /(<#=fullName#> left, <#=d.DT#> right)
 		{
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_pMapUpper[p]#> / right<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
@@ -485,7 +485,7 @@ namespace Molten.Math
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_pMapUpper[p]#> * right.<#=_pMapUpper[p]#><#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
-		public static <#=fullName#> operator *(<#=fullName#> left, <#=_def[i].DT#> right)
+		public static <#=fullName#> operator *(<#=fullName#> left, <#=d.DT#> right)
 		{
 			return new <#=fullName#>(<#for(int p = 0; p < size; p++){#>left.<#=_pMapUpper[p]#> * right<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
@@ -500,7 +500,7 @@ namespace Molten.Math
         /// <param name="value">The <#=SeeRef(fullName)#> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
-        public static <#=fullName#> Clamp(<#=fullName#> value, <#=_def[i].DT#> min, <#=_def[i].DT#> max)
+        public static <#=fullName#> Clamp(<#=fullName#> value, <#=d.DT#> min, <#=d.DT#> max)
         {
 			return new <#=fullName#>()
 			{
@@ -544,7 +544,7 @@ namespace Molten.Math
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, <#=(size-1)#>].</exception>
         
-		public <#=_def[i].DT#> this[int index]
+		public <#=d.DT#> this[int index]
 		{
 			get
 			{
