@@ -31,13 +31,21 @@ namespace Molten.Math
 		/// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
         public void Truncate()
         {
-				X = (Math.Abs(X) - 0.0001D < 0) ? 0 : X;
-				Y = (Math.Abs(Y) - 0.0001D < 0) ? 0 : X;
+			X = (Math.Abs(X) - 0.0001D < 0) ? 0 : X;
+			Y = (Math.Abs(Y) - 0.0001D < 0) ? 0 : Y;
+        }
+
+		/// <summary>Updates the component values to the power of the specified value.</summary>
+        /// <param name="power"></param>
+        public void Pow(double power)
+        {
+			X = Math.Pow(X, power);
+			Y = Math.Pow(Y, power);
         }
 
 #region Static Methods
 		/// <summary>Truncate each near-zero component of a vector towards zero.</summary>
-        /// <param name="vec">The Vector2D to be truncated.</param>
+        /// <param name="value">The Vector2D to be truncated.</param>
         /// <returns></returns>
         public static Vector2D Truncate(Vector2D value)
         {

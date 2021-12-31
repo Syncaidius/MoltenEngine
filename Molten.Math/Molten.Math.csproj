@@ -256,8 +256,10 @@
     </Compile>
     <Compile Include="Vectors\Vector2D.cs" />
     <Compile Include="Vectors\Vector2D.fp.cs" />
+    <Compile Include="Vectors\Vector2D.fp2.cs" />
     <Compile Include="Vectors\Vector2F.cs" />
     <Compile Include="Vectors\Vector2F.fp.cs" />
+    <Compile Include="Vectors\Vector2F.fp2.cs" />
     <Compile Include="Vectors\Vector2I.cs" />
     <Compile Include="Vectors\Vector2L.cs" />
     <Compile Include="Vectors\Vector2N.cs" />

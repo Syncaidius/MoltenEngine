@@ -21,6 +21,7 @@ foreach(TypeData d in _def)
 	{
 		string fName = $"{d.Name}{size}{d.Postfix}";
 		string fn = $"{fName}";
+		string fpCast = d.DT == "float" ? "(float)" : "";
 #>
 using System;
 using System.Runtime.InteropServices;

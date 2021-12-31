@@ -37,10 +37,20 @@ namespace Molten.Math
 		/// <summary>Truncate each near-zero component of the current vector towards zero.</summary>
         public void Truncate()
         {
-				X = (Math.Abs(X) - 0.0001F < 0) ? 0 : X;
-				Y = (Math.Abs(Y) - 0.0001F < 0) ? 0 : X;
-				Z = (Math.Abs(Z) - 0.0001F < 0) ? 0 : X;
-				W = (Math.Abs(W) - 0.0001F < 0) ? 0 : X;
+			X = (Math.Abs(X) - 0.0001F < 0) ? 0 : X;
+			Y = (Math.Abs(Y) - 0.0001F < 0) ? 0 : Y;
+			Z = (Math.Abs(Z) - 0.0001F < 0) ? 0 : Z;
+			W = (Math.Abs(W) - 0.0001F < 0) ? 0 : W;
+        }
+
+		/// <summary>Updates the component values to the power of the specified value.</summary>
+        /// <param name="power"></param>
+        public void Pow(float power)
+        {
+			X = (float)Math.Pow(X, power);
+			Y = (float)Math.Pow(Y, power);
+			Z = (float)Math.Pow(Z, power);
+			W = (float)Math.Pow(W, power);
         }
 
 #region Static Methods

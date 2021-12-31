@@ -24,6 +24,7 @@ foreach(TypeData d in _def)
 	int size = 2;
 	string fName = $"{d.Name}{size}{d.Postfix}";
 	string fn = $"{fName}.fp2";
+    string fpCast = d.DT == "float" ? "(float)" : "";
 #>
 using System.Runtime.InteropServices;
 using System;
@@ -33,7 +34,9 @@ namespace Molten.Math
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
 	public partial struct <#=fName#>
 	{
-
+#region Instance methods
+        
+#endregion
 
 #region Static Methods
 		/// <summary>

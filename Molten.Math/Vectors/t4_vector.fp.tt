@@ -25,6 +25,7 @@ foreach(TypeData d in _def)
 	{
 		string fullName = $"{d.Name}{size}{d.Postfix}";
 		string fn = $"{fullName}.fp";
+		string fpCast = d.DT == "float" ? "(float)" : "";
 #>
 using System.Runtime.InteropServices;
 
@@ -81,7 +82,21 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-				<#=_pMapUpper[p]#> = (Math.Abs(<#=_pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : X;
+			<#=_pMapUpper[p]#> = (Math.Abs(<#=_pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : <#=_pMapUpper[p]#>;
+<#
+		}
+#>
+        }
+
+		/// <summary>Updates the component values to the power of the specified value.</summary>
+        /// <param name="power"></param>
+        public void Pow(<#=d.DT#> power)
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=_pMapUpper[p]#> = <#=fpCast#>Math.Pow(<#=_pMapUpper[p]#>, power);
 <#
 		}
 #>

@@ -11,7 +11,9 @@ namespace Molten.Math
 	///<summary>A <see cref = "float"/> vector comprised of 2 components.</summary>
 	public partial struct Vector2F
 	{
-
+#region Instance methods
+        
+#endregion
 
 #region Static Methods
 		/// <summary>
