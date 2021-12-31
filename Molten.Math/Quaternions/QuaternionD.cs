@@ -7,7 +7,7 @@ namespace Molten.Math
 {
 	///<summary>Represents a four dimensional mathematical QuaternionD.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack = 8)]
-	public partial struct QuaternionD : IFormattable
+	public partial struct QuaternionD : IFormattable, IEquatable<QuaternionD>
 	{
 		/// <summary>
         /// The size of the <see cref="QuaternionD"/> type, in bytes.
@@ -326,6 +326,61 @@ namespace Molten.Math
                 Z = -Z * lengthSq;
                 W = W * lengthSq;
             }
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="QuaternionD"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="QuaternionD"/> to compare with this instance.</param>
+        /// <returns>
+        /// <c>true</c> if the specified <see cref="QuaternionD"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(ref QuaternionD other)
+        {
+            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z) && MathHelper.NearEqual(other.W, W);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="QuaternionD"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="QuaternionD"/> to compare with this instance.</param>
+        /// <returns>
+        /// <c>true</c> if the specified <see cref="QuaternionD"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(QuaternionD other)
+        {
+            return Equals(ref other);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+        /// </summary>
+        /// <param name="value">The <see cref="System.Object"/> to compare with this instance.</param>
+        /// <returns>
+        /// <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object value)
+        {
+            if (!(value is QuaternionD))
+                return false;
+
+            var strongValue = (QuaternionD)value;
+            return Equals(ref strongValue);
+        }
+
+        /// <summary>
+        /// Computes the angle change represented by a normalized quaternion.
+        /// </summary>
+        /// <param name="q">Quaternion to be converted.</param>
+        /// <returns>Angle around the axis represented by the quaternion.</returns>
+        public static double GetAngleFromQuaternion(ref QuaternionD q)
+        {
+            double qw = Math.Abs(q.W);
+            if (qw > 1)
+                return 0;
+            return 2 * (double)Math.Acos(qw);
         }
 #endregion
 
