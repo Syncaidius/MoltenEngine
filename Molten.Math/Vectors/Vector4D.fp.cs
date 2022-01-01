@@ -55,7 +55,7 @@ namespace Molten.Math
 
 #region Static Methods
 		/// <summary>Truncate each near-zero component of a vector towards zero.</summary>
-        /// <param name="vec">The Vector4D to be truncated.</param>
+        /// <param name="value">The Vector4D to be truncated.</param>
         /// <returns></returns>
         public static Vector4D Truncate(Vector4D value)
         {

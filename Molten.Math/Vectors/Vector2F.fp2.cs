@@ -47,9 +47,7 @@ namespace Molten.Math
             Vector2F result;
             Transform(ref vector, ref rotation, out result);
             return result;
-        }
-
-        
+        }      
 
         /// <summary>
         /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.

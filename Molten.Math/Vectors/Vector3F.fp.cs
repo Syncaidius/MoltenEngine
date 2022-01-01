@@ -50,7 +50,7 @@ namespace Molten.Math
 
 #region Static Methods
 		/// <summary>Truncate each near-zero component of a vector towards zero.</summary>
-        /// <param name="vec">The Vector3F to be truncated.</param>
+        /// <param name="value">The Vector3F to be truncated.</param>
         /// <returns></returns>
         public static Vector3F Truncate(Vector3F value)
         {

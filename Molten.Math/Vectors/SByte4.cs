@@ -333,6 +333,59 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+        /// <summary>
+        /// Takes the value of an indexed component and assigns it to the axis of a new <see cref="SByte4"/>. <para />
+        /// For example, a swizzle input of (1,1) on a <see cref="Vector2F"/> with the values, 20 and 10, will return a vector with values 10,10, because it took the value of component index 1, for both axis."
+        /// </summary>
+        /// <param name="val">The current vector.</param>
+		/// <param name="xIndex">The axis index to use for the new X value.</param>
+		/// <param name="yIndex">The axis index to use for the new Y value.</param>
+		/// <param name="zIndex">The axis index to use for the new Z value.</param>
+		/// <param name="wIndex">The axis index to use for the new W value.</param>
+        /// <returns></returns>
+        public static unsafe SByte4 Swizzle(SByte4 val, int xIndex, int yIndex, int zIndex, int wIndex)
+        {
+            return new SByte4()
+            {
+			   X = (&val.X)[xIndex],
+			   Y = (&val.X)[yIndex],
+			   Z = (&val.X)[zIndex],
+			   W = (&val.X)[wIndex],
+            };
+        }
+
+        /// <returns></returns>
+        public static unsafe SByte4 Swizzle(SByte4 val, uint xIndex, uint yIndex, uint zIndex, uint wIndex)
+        {
+            return new SByte4()
+            {
+			    X = (&val.X)[xIndex],
+			    Y = (&val.X)[yIndex],
+			    Z = (&val.X)[zIndex],
+			    W = (&val.X)[wIndex],
+            };
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector2F.DistanceSquared(Vector2F, Vector2F)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static sbyte Distance(SByte4 value1, SByte4 value2)
+        {
+			sbyte x = value1.X - value2.X;
+			sbyte y = value1.Y - value2.Y;
+			sbyte z = value1.Z - value2.Z;
+			sbyte w = value1.W - value2.W;
+
+            return (sbyte)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
+        }
+
         /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
         /// If so this method truncates that value to zero.</summary>
         /// <param name="power">The power.</param>
@@ -341,8 +394,10 @@ namespace Molten.Math
         {
             return new SByte4()
             {
-                X = (sbyte)Math.Pow(vec.X, power),
-                Y = (sbyte)Math.Pow(vec.Y, power),
+				X = (sbyte)Math.Pow(vec.X, power),
+				Y = (sbyte)Math.Pow(vec.Y, power),
+				Z = (sbyte)Math.Pow(vec.Z, power),
+				W = (sbyte)Math.Pow(vec.W, power),
             };
         }
 

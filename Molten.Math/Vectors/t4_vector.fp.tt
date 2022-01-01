@@ -11,8 +11,8 @@
 <#
 string outputPath = this.Host.ResolvePath("");
 List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "vector_defs.json");
-string _pMap = "xyzw";
-string _pMapUpper = "XYZW";
+string pMap = "xyzw";
+string pMapUpper = "XYZW";
 
 foreach(TypeData d in _def)
 {
@@ -43,7 +43,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=_pMapUpper[p]#> = <#=_pMapUpper[p]#> < <#=d.Zero#> ? <#=d.Zero#> : <#=_pMapUpper[p]#> > <#=d.One#> ? <#=d.One#> : <#=_pMapUpper[p]#>;
+			<#=pMapUpper[p]#> = <#=pMapUpper[p]#> < <#=d.Zero#> ? <#=d.Zero#> : <#=pMapUpper[p]#> > <#=d.One#> ? <#=d.One#> : <#=pMapUpper[p]#>;
 <#
 		}
 #>
@@ -56,7 +56,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=_pMapUpper[p]#> = <#=(d.DT == "float" ? "(float)" : "")#>Math.Floor(<#=_pMapUpper[p]#>);
+			<#=pMapUpper[p]#> = <#=(d.DT == "float" ? "(float)" : "")#>Math.Floor(<#=pMapUpper[p]#>);
 <#
 		}
 #>
@@ -69,7 +69,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=_pMapUpper[p]#> = <#=(d.DT == "float" ? "(float)" : "")#>Math.Ceiling(<#=_pMapUpper[p]#>);
+			<#=pMapUpper[p]#> = <#=(d.DT == "float" ? "(float)" : "")#>Math.Ceiling(<#=pMapUpper[p]#>);
 <#
 		}
 #>
@@ -82,7 +82,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=_pMapUpper[p]#> = (Math.Abs(<#=_pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : <#=_pMapUpper[p]#>;
+			<#=pMapUpper[p]#> = (Math.Abs(<#=pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : <#=pMapUpper[p]#>;
 <#
 		}
 #>
@@ -96,7 +96,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=_pMapUpper[p]#> = <#=fpCast#>Math.Pow(<#=_pMapUpper[p]#>, power);
+			<#=pMapUpper[p]#> = <#=fpCast#>Math.Pow(<#=pMapUpper[p]#>, power);
 <#
 		}
 #>
@@ -104,7 +104,7 @@ namespace Molten.Math
 
 #region Static Methods
 		/// <summary>Truncate each near-zero component of a vector towards zero.</summary>
-        /// <param name="vec">The <#=fullName#> to be truncated.</param>
+        /// <param name="value">The <#=fullName#> to be truncated.</param>
         /// <returns></returns>
         public static <#=fullName#> Truncate(<#=fullName#> value)
         {
@@ -114,7 +114,7 @@ namespace Molten.Math
 		for(int p = 0; p < size; p++)
 		{
 #>
-				<#=_pMapUpper[p]#> = (Math.Abs(value.<#=_pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : value.X,
+				<#=pMapUpper[p]#> = (Math.Abs(value.<#=pMapUpper[p]#>) - 0.0001<#=d.FPL#> < 0) ? 0 : value.X,
 <#
 		}
 #>

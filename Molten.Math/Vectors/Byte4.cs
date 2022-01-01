@@ -333,6 +333,59 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+        /// <summary>
+        /// Takes the value of an indexed component and assigns it to the axis of a new <see cref="Byte4"/>. <para />
+        /// For example, a swizzle input of (1,1) on a <see cref="Vector2F"/> with the values, 20 and 10, will return a vector with values 10,10, because it took the value of component index 1, for both axis."
+        /// </summary>
+        /// <param name="val">The current vector.</param>
+		/// <param name="xIndex">The axis index to use for the new X value.</param>
+		/// <param name="yIndex">The axis index to use for the new Y value.</param>
+		/// <param name="zIndex">The axis index to use for the new Z value.</param>
+		/// <param name="wIndex">The axis index to use for the new W value.</param>
+        /// <returns></returns>
+        public static unsafe Byte4 Swizzle(Byte4 val, int xIndex, int yIndex, int zIndex, int wIndex)
+        {
+            return new Byte4()
+            {
+			   X = (&val.X)[xIndex],
+			   Y = (&val.X)[yIndex],
+			   Z = (&val.X)[zIndex],
+			   W = (&val.X)[wIndex],
+            };
+        }
+
+        /// <returns></returns>
+        public static unsafe Byte4 Swizzle(Byte4 val, uint xIndex, uint yIndex, uint zIndex, uint wIndex)
+        {
+            return new Byte4()
+            {
+			    X = (&val.X)[xIndex],
+			    Y = (&val.X)[yIndex],
+			    Z = (&val.X)[zIndex],
+			    W = (&val.X)[wIndex],
+            };
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector2F.DistanceSquared(Vector2F, Vector2F)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static byte Distance(Byte4 value1, Byte4 value2)
+        {
+			byte x = value1.X - value2.X;
+			byte y = value1.Y - value2.Y;
+			byte z = value1.Z - value2.Z;
+			byte w = value1.W - value2.W;
+
+            return (byte)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
+        }
+
         /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
         /// If so this method truncates that value to zero.</summary>
         /// <param name="power">The power.</param>
@@ -341,8 +394,10 @@ namespace Molten.Math
         {
             return new Byte4()
             {
-                X = (byte)Math.Pow(vec.X, power),
-                Y = (byte)Math.Pow(vec.Y, power),
+				X = (byte)Math.Pow(vec.X, power),
+				Y = (byte)Math.Pow(vec.Y, power),
+				Z = (byte)Math.Pow(vec.Z, power),
+				W = (byte)Math.Pow(vec.W, power),
             };
         }
 

@@ -307,6 +307,51 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+        /// <summary>
+        /// Takes the value of an indexed component and assigns it to the axis of a new <see cref="Vector2UI"/>. <para />
+        /// For example, a swizzle input of (1,1) on a <see cref="Vector2F"/> with the values, 20 and 10, will return a vector with values 10,10, because it took the value of component index 1, for both axis."
+        /// </summary>
+        /// <param name="val">The current vector.</param>
+		/// <param name="xIndex">The axis index to use for the new X value.</param>
+		/// <param name="yIndex">The axis index to use for the new Y value.</param>
+        /// <returns></returns>
+        public static unsafe Vector2UI Swizzle(Vector2UI val, int xIndex, int yIndex)
+        {
+            return new Vector2UI()
+            {
+			   X = (&val.X)[xIndex],
+			   Y = (&val.X)[yIndex],
+            };
+        }
+
+        /// <returns></returns>
+        public static unsafe Vector2UI Swizzle(Vector2UI val, uint xIndex, uint yIndex)
+        {
+            return new Vector2UI()
+            {
+			    X = (&val.X)[xIndex],
+			    Y = (&val.X)[yIndex],
+            };
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector2F.DistanceSquared(Vector2F, Vector2F)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static uint Distance(Vector2UI value1, Vector2UI value2)
+        {
+			uint x = value1.X - value2.X;
+			uint y = value1.Y - value2.Y;
+
+            return (uint)Math.Sqrt((x * x) + (y * y));
+        }
+
         /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
         /// If so this method truncates that value to zero.</summary>
         /// <param name="power">The power.</param>
@@ -315,8 +360,8 @@ namespace Molten.Math
         {
             return new Vector2UI()
             {
-                X = (uint)Math.Pow(vec.X, power),
-                Y = (uint)Math.Pow(vec.Y, power),
+				X = (uint)Math.Pow(vec.X, power),
+				Y = (uint)Math.Pow(vec.Y, power),
             };
         }
 

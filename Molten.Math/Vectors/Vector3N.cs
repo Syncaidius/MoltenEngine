@@ -320,6 +320,55 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+        /// <summary>
+        /// Takes the value of an indexed component and assigns it to the axis of a new <see cref="Vector3N"/>. <para />
+        /// For example, a swizzle input of (1,1) on a <see cref="Vector2F"/> with the values, 20 and 10, will return a vector with values 10,10, because it took the value of component index 1, for both axis."
+        /// </summary>
+        /// <param name="val">The current vector.</param>
+		/// <param name="xIndex">The axis index to use for the new X value.</param>
+		/// <param name="yIndex">The axis index to use for the new Y value.</param>
+		/// <param name="zIndex">The axis index to use for the new Z value.</param>
+        /// <returns></returns>
+        public static unsafe Vector3N Swizzle(Vector3N val, int xIndex, int yIndex, int zIndex)
+        {
+            return new Vector3N()
+            {
+			   X = (&val.X)[xIndex],
+			   Y = (&val.X)[yIndex],
+			   Z = (&val.X)[zIndex],
+            };
+        }
+
+        /// <returns></returns>
+        public static unsafe Vector3N Swizzle(Vector3N val, uint xIndex, uint yIndex, uint zIndex)
+        {
+            return new Vector3N()
+            {
+			    X = (&val.X)[xIndex],
+			    Y = (&val.X)[yIndex],
+			    Z = (&val.X)[zIndex],
+            };
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector2F.DistanceSquared(Vector2F, Vector2F)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public static nint Distance(Vector3N value1, Vector3N value2)
+        {
+			nint x = value1.X - value2.X;
+			nint y = value1.Y - value2.Y;
+			nint z = value1.Z - value2.Z;
+
+            return (nint)Math.Sqrt((x * x) + (y * y) + (z * z));
+        }
+
         /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
         /// If so this method truncates that value to zero.</summary>
         /// <param name="power">The power.</param>
@@ -328,8 +377,9 @@ namespace Molten.Math
         {
             return new Vector3N()
             {
-                X = (nint)Math.Pow(vec.X, power),
-                Y = (nint)Math.Pow(vec.Y, power),
+				X = (nint)Math.Pow(vec.X, power),
+				Y = (nint)Math.Pow(vec.Y, power),
+				Z = (nint)Math.Pow(vec.Z, power),
             };
         }
 

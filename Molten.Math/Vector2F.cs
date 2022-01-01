@@ -32,73 +32,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <see cref="Vector2F"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
-        /// </summary>
-        /// <param name="value1">A <see cref="Vector2F"/> containing the 2D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <see cref="Vector2F"/> containing the 2D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <see cref="Vector2F"/> containing the 2D Cartesian coordinates of vertex 3 of the triangle.</param>
-        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
-        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        /// <param name="result">When the method completes, contains the 2D Cartesian coordinates of the specified point.</param>
-        public static void Barycentric(ref Vector2F value1, ref Vector2F value2, ref Vector2F value3, float amount1, float amount2, out Vector2F result)
-        {
-            result = new Vector2F((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)),
-                (value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)));
-        }
-
-        /// <summary>
-        /// Returns a <see cref="Vector2F"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
-        /// </summary>
-        /// <param name="value1">A <see cref="Vector2F"/> containing the 2D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <see cref="Vector2F"/> containing the 2D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <see cref="Vector2F"/> containing the 2D Cartesian coordinates of vertex 3 of the triangle.</param>
-        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
-        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        /// <returns>A new <see cref="Vector2F"/> containing the 2D Cartesian coordinates of the specified point.</returns>
-        public static Vector2F Barycentric(Vector2F value1, Vector2F value2, Vector2F value3, float amount1, float amount2)
-        {
-            Vector2F result;
-            Barycentric(ref value1, ref value2, ref value3, amount1, amount2, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <param name="result">When the method completes, contains the distance between the two vectors.</param>
-        /// <remarks>
-        /// <see cref="Vector2F.DistanceSquared(ref Vector2F, ref Vector2F, out float)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static void Distance(ref Vector2F value1, ref Vector2F value2, out float result)
-        {
-            float x = value1.X - value2.X;
-            float y = value1.Y - value2.Y;
-
-            result = (float)Math.Sqrt((x * x) + (y * y));
-        }
-
-        /// <summary>
-        /// Calculates the distance between two vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The distance between the two vectors.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.DistanceSquared(Vector2F, Vector2F)"/> may be preferred when only the relative distance is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public static float Distance(Vector2F value1, Vector2F value2)
-        {
-            float x = value1.X - value2.X;
-            float y = value1.Y - value2.Y;
-
-            return (float)Math.Sqrt((x * x) + (y * y));
-        }
-
-        /// <summary>
         /// Calculates the cross product of two vectors.
         /// </summary>
         /// <param name="left">First source vector.</param>
@@ -468,21 +401,6 @@ namespace Molten
             return Equals(ref strongValue);
         }
 
-        /// <summary>
-        /// Takes the value of an indexed component and assigns it to the axis of a new <see cref="Vector2F"/>. <para />
-        /// For example, a swizzle input of (1,1) on a <see cref="Vector2F"/> with the values, 20 and 10, will return a vector with values 10,10, because it took the value of component index 1, for both axis."
-        /// </summary>
-        /// <param name="val">The current vector.</param>
-        /// <param name="xIndex">The axis index to use for the new X value.</param>
-        /// <param name="yIndex">The axis index to use for the new Y value.</param>
-        /// <returns></returns>
-        public static unsafe Vector2F Swizzle(Vector2F val, int xIndex, int yIndex)
-        {
-            return new Vector2F()
-            {
-                X = *(&val.X + (xIndex * sizeof(float))),
-                Y = *(&val.X + (yIndex * sizeof(float))),
-            };
-        }
+        
     }
 }

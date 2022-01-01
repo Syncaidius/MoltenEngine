@@ -11,8 +11,8 @@
 <#
 string outputPath = this.Host.ResolvePath("");
 List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "vector_defs.json");
-string _pMap = "xyzw";
-string _pMapUpper = "XYZW";
+string pMap = "xyzw";
+string pMapUpper = "XYZW";
 
 foreach(TypeData d in _def)
 {
@@ -70,9 +70,7 @@ namespace Molten.Math
             <#=fName#> result;
             Transform(ref vector, ref rotation, out result);
             return result;
-        }
-
-        
+        }      
 
         /// <summary>
         /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.
