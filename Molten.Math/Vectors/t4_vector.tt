@@ -21,7 +21,8 @@ foreach(TypeData d in _def)
 	{
 		string fName = $"{d.Name}{size}{d.Postfix}";
 		string fn = $"{fName}";
-		string fpCast = d.DT == "float" ? "(float)" : "";
+		string fpCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
+		string mathHelper = d.DT == "double" ? "MathHelperDP" : "MathHelper";
 #>
 using System;
 using System.Runtime.InteropServices;
@@ -47,20 +48,37 @@ namespace Molten.Math
 		///<summary>The size of <see cref="<#=fName#>"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(<#=fName#>));
 
-		public static <#=fName#> One = new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=d.One#><#=(p < (size-1) ? ", " : "")#><#}#>);
+		///<summary>A <#=fName#> with every component set to <#=d.One#>.</summary>
+		public static readonly <#=fName#> One = new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=d.One#><#=(p < (size-1) ? ", " : "")#><#}#>);
 
 <#
 		for(int p = 0; p < size; p++)
 		{
 #>
 		/// <summary>The <#=_pMapUpper[p]#> unit <see cref="<#=fName#>"/>.</summary>
-		public static <#=fName#> Unit<#=_pMapUpper[p]#> = new <#=fName#>(<#for(int u = 0; u < size; u++){#><#=(u == p ?d.One : d.Zero)#><#=(u < (size-1) ? ", " : "")#><#}#>);
+		public static readonly <#=fName#> Unit<#=_pMapUpper[p]#> = new <#=fName#>(<#for(int u = 0; u < size; u++){#><#=(u == p ?d.One : d.Zero)#><#=(u < (size-1) ? ", " : "")#><#}#>);
 
 <#
 		}
 #>
 		/// <summary>Represents a zero'd <#=fName#>.</summary>
-		public static <#=fName#> Zero = new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=d.Zero#><#=(p < (size-1) ? ", " : "")#><#}#>);
+		public static readonly <#=fName#> Zero = new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=d.Zero#><#=(p < (size-1) ? ", " : "")#><#}#>);
+
+		 /// <summary>
+        /// Gets a value indicting whether this instance is normalized.
+        /// </summary>
+        public bool IsNormalized
+        {
+            get => <#=mathHelper#>.IsOne(<#for(int p = 0; p < size; p++){#>(<#=_pMapUpper[p]#> * <#=_pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
+        }
+
+        /// <summary>
+        /// Gets a value indicting whether this vector is zero
+        /// </summary>
+        public bool IsZero
+        {
+            get => <#for(int p = 0; p < size; p++){#><#=_pMapUpper[p]#> == <#=d.Zero#><#=(p < (size-1) ? " && " : "")#><#}#>;
+        }
 
 #region Constructors
 		///<summary>Creates a new instance of <see cref = "<#=fName#>"/>.</summary>
@@ -115,63 +133,68 @@ namespace Molten.Math
 		}
 #endregion
 
-#region Common Functions
-		/// <summary>
-        /// Calculates the squared distance between two <#=SeeRef(fName)#> vectors.
+#region Instance Functions
+        /// <summary>
+        /// Returns a hash code for this instance.
         /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector</param>
-        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
-        /// </remarks>
-		public static void DistanceSquared(ref <#=fName#> value1, ref <#=fName#> value2, out <#=d.DT#> result)
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
         {
+            unchecked
+            {
+                int hashCode = X.GetHashCode();
 <#
-			r ="";
-			for(int p = 0; p < size; p++)
-			{
-				r+= $"({_pMap[p]} * {_pMap[p]}){(p < (size-1) ? " + " : "")}";
+		for(int p = 1; p < size; p++)
+		{
 #>
-            <#=d.DT#> <#=_pMap[p]#> = value1.<#=_pMapUpper[p]#> - value2.<#=_pMapUpper[p]#>;
+                hashCode = (hashCode * 397) ^ <#=_pMapUpper[p]#>.GetHashCode();
 <#
-			}
+		}
 #>
-
-            result = <#=r#>;
+                return hashCode;
+            }
         }
 
-		/// <summary>
-        /// Calculates the squared distance between two <#=SeeRef(fName)#> vectors.
+        /// <summary>
+        /// Calculates the length of the vector.
         /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The squared distance between the two vectors.</returns>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
+        /// <returns>The length of the vector.</returns>
+        /// <remarks>
+        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
+        /// and speed is of the essence.
         /// </remarks>
-		public static <#=d.DT#> DistanceSquared(ref <#=fName#> value1, ref <#=fName#> value2)
+        public <#=d.DT#> Length()
         {
-<#
-			r = "";
-			for(int p = 0; p < size; p++)
-			{
-				r+= $"({_pMap[p]} * {_pMap[p]}){(p < (size-1) ? " + " : "")}";
-#>
-            <#=d.DT#> <#=_pMap[p]#> = value1.<#=_pMapUpper[p]#> - value2.<#=_pMapUpper[p]#>;
-<#
-			}
-#>
+            return <#=fpCast#>Math.Sqrt(<#for(int p = 0; p < size; p++){#>(<#=_pMapUpper[p]#> * <#=_pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
+        }
 
-            return <#=r#>;
+        /// <summary>
+        /// Calculates the squared length of the vector.
+        /// </summary>
+        /// <returns>The squared length of the vector.</returns>
+        /// <remarks>
+        /// This method may be preferred to <see cref="Vector2F.Length"/> when only a relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public <#=d.DT#> LengthSquared()
+        {
+            return <#for(int p = 0; p < size; p++){#>(<#=_pMapUpper[p]#> * <#=_pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
+        }
+
+        /// <summary>
+        /// Converts the vector into a unit vector.
+        /// </summary>
+        public void Normalize()
+        {
+            <#=d.DT#> length = Length();
+            if (!<#=mathHelper#>.IsZero(length))
+            {
+                <#=d.DT#> inv = 1.0f / length;
+                X *= inv;
+                Y *= inv;
+            }
         }
 
 		/// <summary>
@@ -191,72 +214,7 @@ namespace Molten.Math
 		{
 			return new <#=fName#>(<#=GetParamSentence(_pMapUpper, size, ", ", ", ", "-")#>);
 		}
-
-		/// <summary>
-        /// Performs a linear interpolation between two <#=SeeRef(fName)#>.
-        /// </summary>
-        /// <param name="start">The start vector.</param>
-        /// <param name="end">The end vector.</param>
-        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <remarks>
-        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
-        /// </remarks>
-        public static <#=fName#> Lerp(ref <#=fName#> start, ref <#=fName#> end, <#=d.FP#> amount)
-        {
-			return new <#=fName#>()
-			{
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
-				<#=_pMapUpper[p]#> = (<#=d.DT#>)((1<#=d.FPL#> - amount) * start.<#=_pMapUpper[p]#> + amount * end.<#=_pMapUpper[p]#>),
-<#
-		}
-#>
-			};
-        }
-
-		/// <summary>
-        /// Returns a <#=SeeRef(fName)#> containing the smallest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <#=SeeRef(fName)#>.</param>
-        /// <param name="right">The second source <#=SeeRef(fName)#>.</param>
-        /// <returns>A <#=SeeRef(fName)#> containing the smallest components of the source vectors.</returns>
-		public static <#=fName#> Min(<#=fName#> left, <#=fName#> right)
-		{
-			return new <#=fName#>()
-			{
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
-				<#=_pMapUpper[p]#> = (left.<#=_pMapUpper[p]#> < right.<#=_pMapUpper[p]#>) ? left.<#=_pMapUpper[p]#> : right.<#=_pMapUpper[p]#>,
-<#
-		}
-#>
-			};
-		}
-
-		/// <summary>
-        /// Returns a <#=SeeRef(fName)#> containing the largest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <#=SeeRef(fName)#>.</param>
-        /// <param name="right">The second source <#=SeeRef(fName)#>.</param>
-        /// <returns>A <#=SeeRef(fName)#> containing the largest components of the source vectors.</returns>
-		public static <#=fName#> Max(<#=fName#> left, <#=fName#> right)
-		{
-			return new <#=fName#>()
-			{
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
-				<#=_pMapUpper[p]#> = (left.<#=_pMapUpper[p]#> > right.<#=_pMapUpper[p]#>) ? left.<#=_pMapUpper[p]#> : right.<#=_pMapUpper[p]#>,
-<#
-		}
-#>
-			};
-		}
+		
 
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
@@ -286,78 +244,6 @@ namespace Molten.Math
 <#
 		}
 #>
-        }
-
-		/// <summary>
-        /// Calculates the dot product of two <#=SeeRef(fName)#> vectors.
-        /// </summary>
-        /// <param name="left">First <#=SeeRef(fName)#> source vector</param>
-        /// <param name="right">Second <#=SeeRef(fName)#> source vector.</param>
-        /// <param name="result">When the method completes, contains the dot product of the two <#=SeeRef(fName)#> vectors.</param>
-        public static <#=d.DT#> Dot(<#=fName#> left, <#=fName#> right)
-        {
-			return <#for(int p = 0; p < size; p++){#>(left.<#=_pMapUpper[p]#> * right.<#=_pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
-        }
-
-		/// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <#=SeeRef(fName)#> vector.</param>
-        /// <param name="tangent1">First source tangent <#=SeeRef(fName)#> vector.</param>
-        /// <param name="value2">Second source position <#=SeeRef(fName)#> vector.</param>
-        /// <param name="tangent2">Second source tangent <#=SeeRef(fName)#> vector.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static <#=fName#> Hermite(ref <#=fName#> value1, ref <#=fName#> tangent1, ref <#=fName#> value2, ref <#=fName#> tangent2, <#=d.DT#> amount)
-        {
-            <#=d.FP#> squared = amount * amount;
-            <#=d.FP#> cubed = amount * squared;
-            <#=d.FP#> part1 = ((2.0<#=d.FPL#> * cubed) - (3.0<#=d.FPL#> * squared)) + 1.0<#=d.FPL#>;
-            <#=d.FP#> part2 = (-2.0<#=d.FPL#> * cubed) + (3.0<#=d.FPL#> * squared);
-            <#=d.FP#> part3 = (cubed - (2.0<#=d.FPL#> * squared)) + amount;
-            <#=d.FP#> part4 = cubed - squared;
-
-			return new <#=fName#>()
-			{
-<#
-		for(int p = 0; p < size; p++)
-		{
-			if(d.DT == d.FP)
-			{
-#>
-				<#=_pMapUpper[p]#> = (((value1.<#=_pMapUpper[p]#> * part1) + (value2.<#=_pMapUpper[p]#> * part2)) + (tangent1.<#=_pMapUpper[p]#> * part3)) + (tangent2.<#=_pMapUpper[p]#> * part4),
-<#
-			}
-			else
-			{
-#>
-				<#=_pMapUpper[p]#> = (<#=d.DT#>)((((value1.<#=_pMapUpper[p]#> * part1) + (value2.<#=_pMapUpper[p]#> * part2)) + (tangent1.<#=_pMapUpper[p]#> * part3)) + (tangent2.<#=_pMapUpper[p]#> * part4)),
-<#
-			}
-		}
-#>
-			};
-        }
-
-		/// <summary>
-        /// Returns a <#=SeeRef(fName)#> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
-        /// </summary>
-        /// <param name="value1">A <#=SeeRef(fName)#> containing the <#=size#>D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <#=SeeRef(fName)#> containing the <#=size#>D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <#=SeeRef(fName)#> containing the <#=size#>D Cartesian coordinates of vertex 3 of the triangle.</param>
-        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
-        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        public static <#=fName#> Barycentric(ref <#=fName#> value1, ref <#=fName#> value2, ref <#=fName#> value3, <#=d.DT#> amount1, <#=d.DT#> amount2)
-        {
-			return new <#=fName#>(
-<#
-		for(int p = 0; p < size; p++)
-		{
-#>
-				(value1.<#=_pMapUpper[p]#> + (amount1 * (value2.<#=_pMapUpper[p]#> - value1.<#=_pMapUpper[p]#>))) + (amount2 * (value3.<#=_pMapUpper[p]#> - value1.<#=_pMapUpper[p]#>))<#=(p < (size -1) ? ", " : "")#>
-<#
-		}
-#>
-			);
         }
 #endregion
 
@@ -497,6 +383,214 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
+        /// If so this method truncates that value to zero.</summary>
+        /// <param name="power">The power.</param>
+        /// <param name="vec">The vector.</param>
+        public static <#=fName#> Pow(<#=fName#> vec, <#=d.DT#> power)
+        {
+            return new <#=fName#>()
+            {
+                X = <#=fpCast#>Math.Pow(vec.X, power),
+                Y = <#=fpCast#>Math.Pow(vec.Y, power),
+            };
+        }
+
+		/// <summary>
+        /// Calculates the dot product of two <#=SeeRef(fName)#> vectors.
+        /// </summary>
+        /// <param name="left">First <#=SeeRef(fName)#> source vector</param>
+        /// <param name="right">Second <#=SeeRef(fName)#> source vector.</param>
+        public static <#=d.DT#> Dot(<#=fName#> left, <#=fName#> right)
+        {
+			return <#for(int p = 0; p < size; p++){#>(left.<#=_pMapUpper[p]#> * right.<#=_pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
+        }
+
+		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <#=SeeRef(fName)#> vector.</param>
+        /// <param name="tangent1">First source tangent <#=SeeRef(fName)#> vector.</param>
+        /// <param name="value2">Second source position <#=SeeRef(fName)#> vector.</param>
+        /// <param name="tangent2">Second source tangent <#=SeeRef(fName)#> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static <#=fName#> Hermite(ref <#=fName#> value1, ref <#=fName#> tangent1, ref <#=fName#> value2, ref <#=fName#> tangent2, <#=d.DT#> amount)
+        {
+            <#=d.FP#> squared = amount * amount;
+            <#=d.FP#> cubed = amount * squared;
+            <#=d.FP#> part1 = ((2.0<#=d.FPL#> * cubed) - (3.0<#=d.FPL#> * squared)) + 1.0<#=d.FPL#>;
+            <#=d.FP#> part2 = (-2.0<#=d.FPL#> * cubed) + (3.0<#=d.FPL#> * squared);
+            <#=d.FP#> part3 = (cubed - (2.0<#=d.FPL#> * squared)) + amount;
+            <#=d.FP#> part4 = cubed - squared;
+
+			return new <#=fName#>()
+			{
+<#
+		for(int p = 0; p < size; p++)
+		{
+			if(d.DT == d.FP)
+			{
+#>
+				<#=_pMapUpper[p]#> = (((value1.<#=_pMapUpper[p]#> * part1) + (value2.<#=_pMapUpper[p]#> * part2)) + (tangent1.<#=_pMapUpper[p]#> * part3)) + (tangent2.<#=_pMapUpper[p]#> * part4),
+<#
+			}
+			else
+			{
+#>
+				<#=_pMapUpper[p]#> = (<#=d.DT#>)((((value1.<#=_pMapUpper[p]#> * part1) + (value2.<#=_pMapUpper[p]#> * part2)) + (tangent1.<#=_pMapUpper[p]#> * part3)) + (tangent2.<#=_pMapUpper[p]#> * part4)),
+<#
+			}
+		}
+#>
+			};
+        }
+
+		/// <summary>
+        /// Returns a <#=SeeRef(fName)#> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// </summary>
+        /// <param name="value1">A <#=SeeRef(fName)#> containing the <#=size#>D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <#=SeeRef(fName)#> containing the <#=size#>D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <#=SeeRef(fName)#> containing the <#=size#>D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
+        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
+        public static <#=fName#> Barycentric(ref <#=fName#> value1, ref <#=fName#> value2, ref <#=fName#> value3, <#=d.DT#> amount1, <#=d.DT#> amount2)
+        {
+			return new <#=fName#>(
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+				(value1.<#=_pMapUpper[p]#> + (amount1 * (value2.<#=_pMapUpper[p]#> - value1.<#=_pMapUpper[p]#>))) + (amount2 * (value3.<#=_pMapUpper[p]#> - value1.<#=_pMapUpper[p]#>))<#=(p < (size -1) ? ", " : "")#>
+<#
+		}
+#>
+			);
+        }
+
+		/// <summary>
+        /// Performs a linear interpolation between two <#=SeeRef(fName)#>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static <#=fName#> Lerp(ref <#=fName#> start, ref <#=fName#> end, <#=d.FP#> amount)
+        {
+			return new <#=fName#>()
+			{
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+				<#=_pMapUpper[p]#> = (<#=d.DT#>)((1<#=d.FPL#> - amount) * start.<#=_pMapUpper[p]#> + amount * end.<#=_pMapUpper[p]#>),
+<#
+		}
+#>
+			};
+        }
+
+		/// <summary>
+        /// Returns a <#=SeeRef(fName)#> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <#=SeeRef(fName)#>.</param>
+        /// <param name="right">The second source <#=SeeRef(fName)#>.</param>
+        /// <returns>A <#=SeeRef(fName)#> containing the smallest components of the source vectors.</returns>
+		public static <#=fName#> Min(<#=fName#> left, <#=fName#> right)
+		{
+			return new <#=fName#>()
+			{
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+				<#=_pMapUpper[p]#> = (left.<#=_pMapUpper[p]#> < right.<#=_pMapUpper[p]#>) ? left.<#=_pMapUpper[p]#> : right.<#=_pMapUpper[p]#>,
+<#
+		}
+#>
+			};
+		}
+
+		/// <summary>
+        /// Returns a <#=SeeRef(fName)#> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <#=SeeRef(fName)#>.</param>
+        /// <param name="right">The second source <#=SeeRef(fName)#>.</param>
+        /// <returns>A <#=SeeRef(fName)#> containing the largest components of the source vectors.</returns>
+		public static <#=fName#> Max(<#=fName#> left, <#=fName#> right)
+		{
+			return new <#=fName#>()
+			{
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+				<#=_pMapUpper[p]#> = (left.<#=_pMapUpper[p]#> > right.<#=_pMapUpper[p]#>) ? left.<#=_pMapUpper[p]#> : right.<#=_pMapUpper[p]#>,
+<#
+		}
+#>
+			};
+		}
+
+		/// <summary>
+        /// Calculates the squared distance between two <#=SeeRef(fName)#> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector</param>
+        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static void DistanceSquared(ref <#=fName#> value1, ref <#=fName#> value2, out <#=d.DT#> result)
+        {
+<#
+			r ="";
+			for(int p = 0; p < size; p++)
+			{
+				r+= $"({_pMap[p]} * {_pMap[p]}){(p < (size-1) ? " + " : "")}";
+#>
+            <#=d.DT#> <#=_pMap[p]#> = value1.<#=_pMapUpper[p]#> - value2.<#=_pMapUpper[p]#>;
+<#
+			}
+#>
+
+            result = <#=r#>;
+        }
+
+		/// <summary>
+        /// Calculates the squared distance between two <#=SeeRef(fName)#> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The squared distance between the two vectors.</returns>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static <#=d.DT#> DistanceSquared(ref <#=fName#> value1, ref <#=fName#> value2)
+        {
+<#
+			r = "";
+			for(int p = 0; p < size; p++)
+			{
+				r+= $"({_pMap[p]} * {_pMap[p]}){(p < (size-1) ? " + " : "")}";
+#>
+            <#=d.DT#> <#=_pMap[p]#> = value1.<#=_pMapUpper[p]#> - value2.<#=_pMapUpper[p]#>;
+<#
+			}
+#>
+
+            return <#=r#>;
+        }
+
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="value">The <#=SeeRef(fName)#> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>

@@ -24,22 +24,39 @@ namespace Molten.Math
 		///<summary>The size of <see cref="Vector4NU"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4NU));
 
-		public static Vector4NU One = new Vector4NU(1U, 1U, 1U, 1U);
+		///<summary>A Vector4NU with every component set to 1U.</summary>
+		public static readonly Vector4NU One = new Vector4NU(1U, 1U, 1U, 1U);
 
 		/// <summary>The X unit <see cref="Vector4NU"/>.</summary>
-		public static Vector4NU UnitX = new Vector4NU(1U, 0, 0, 0);
+		public static readonly Vector4NU UnitX = new Vector4NU(1U, 0, 0, 0);
 
 		/// <summary>The Y unit <see cref="Vector4NU"/>.</summary>
-		public static Vector4NU UnitY = new Vector4NU(0, 1U, 0, 0);
+		public static readonly Vector4NU UnitY = new Vector4NU(0, 1U, 0, 0);
 
 		/// <summary>The Z unit <see cref="Vector4NU"/>.</summary>
-		public static Vector4NU UnitZ = new Vector4NU(0, 0, 1U, 0);
+		public static readonly Vector4NU UnitZ = new Vector4NU(0, 0, 1U, 0);
 
 		/// <summary>The W unit <see cref="Vector4NU"/>.</summary>
-		public static Vector4NU UnitW = new Vector4NU(0, 0, 0, 1U);
+		public static readonly Vector4NU UnitW = new Vector4NU(0, 0, 0, 1U);
 
 		/// <summary>Represents a zero'd Vector4NU.</summary>
-		public static Vector4NU Zero = new Vector4NU(0, 0, 0, 0);
+		public static readonly Vector4NU Zero = new Vector4NU(0, 0, 0, 0);
+
+		 /// <summary>
+        /// Gets a value indicting whether this instance is normalized.
+        /// </summary>
+        public bool IsNormalized
+        {
+            get => MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W));
+        }
+
+        /// <summary>
+        /// Gets a value indicting whether this vector is zero
+        /// </summary>
+        public bool IsZero
+        {
+            get => X == 0 && Y == 0 && Z == 0 && W == 0;
+        }
 
 #region Constructors
 		///<summary>Creates a new instance of <see cref = "Vector4NU"/>.</summary>
@@ -82,51 +99,63 @@ namespace Molten.Math
 		}
 #endregion
 
-#region Common Functions
-		/// <summary>
-        /// Calculates the squared distance between two <see cref="Vector4NU"/> vectors.
+#region Instance Functions
+        /// <summary>
+        /// Returns a hash code for this instance.
         /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector</param>
-        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
-        /// </remarks>
-		public static void DistanceSquared(ref Vector4NU value1, ref Vector4NU value2, out nuint result)
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
         {
-            nuint x = value1.X - value2.X;
-            nuint y = value1.Y - value2.Y;
-            nuint z = value1.Z - value2.Z;
-            nuint w = value1.W - value2.W;
-
-            result = (x * x) + (y * y) + (z * z) + (w * w);
+            unchecked
+            {
+                int hashCode = X.GetHashCode();
+                hashCode = (hashCode * 397) ^ Y.GetHashCode();
+                hashCode = (hashCode * 397) ^ Z.GetHashCode();
+                hashCode = (hashCode * 397) ^ W.GetHashCode();
+                return hashCode;
+            }
         }
 
-		/// <summary>
-        /// Calculates the squared distance between two <see cref="Vector4NU"/> vectors.
+        /// <summary>
+        /// Calculates the length of the vector.
         /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The squared distance between the two vectors.</returns>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
+        /// <returns>The length of the vector.</returns>
+        /// <remarks>
+        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
+        /// and speed is of the essence.
         /// </remarks>
-		public static nuint DistanceSquared(ref Vector4NU value1, ref Vector4NU value2)
+        public nuint Length()
         {
-            nuint x = value1.X - value2.X;
-            nuint y = value1.Y - value2.Y;
-            nuint z = value1.Z - value2.Z;
-            nuint w = value1.W - value2.W;
+            return (nuint)Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
+        }
 
-            return (x * x) + (y * y) + (z * z) + (w * w);
+        /// <summary>
+        /// Calculates the squared length of the vector.
+        /// </summary>
+        /// <returns>The squared length of the vector.</returns>
+        /// <remarks>
+        /// This method may be preferred to <see cref="Vector2F.Length"/> when only a relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public nuint LengthSquared()
+        {
+            return (X * X) + (Y * Y) + (Z * Z) + (W * W);
+        }
+
+        /// <summary>
+        /// Converts the vector into a unit vector.
+        /// </summary>
+        public void Normalize()
+        {
+            nuint length = Length();
+            if (!MathHelper.IsZero(length))
+            {
+                nuint inv = 1.0f / length;
+                X *= inv;
+                Y *= inv;
+            }
         }
 
 		/// <summary>
@@ -146,60 +175,7 @@ namespace Molten.Math
 		{
 			return new Vector4NU(-X, -Y, -Z, -W);
 		}
-
-		/// <summary>
-        /// Performs a linear interpolation between two <see cref="Vector4NU"/>.
-        /// </summary>
-        /// <param name="start">The start vector.</param>
-        /// <param name="end">The end vector.</param>
-        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <remarks>
-        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
-        /// </remarks>
-        public static Vector4NU Lerp(ref Vector4NU start, ref Vector4NU end, float amount)
-        {
-			return new Vector4NU()
-			{
-				X = (nuint)((1F - amount) * start.X + amount * end.X),
-				Y = (nuint)((1F - amount) * start.Y + amount * end.Y),
-				Z = (nuint)((1F - amount) * start.Z + amount * end.Z),
-				W = (nuint)((1F - amount) * start.W + amount * end.W),
-			};
-        }
-
-		/// <summary>
-        /// Returns a <see cref="Vector4NU"/> containing the smallest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <see cref="Vector4NU"/>.</param>
-        /// <param name="right">The second source <see cref="Vector4NU"/>.</param>
-        /// <returns>A <see cref="Vector4NU"/> containing the smallest components of the source vectors.</returns>
-		public static Vector4NU Min(Vector4NU left, Vector4NU right)
-		{
-			return new Vector4NU()
-			{
-				X = (left.X < right.X) ? left.X : right.X,
-				Y = (left.Y < right.Y) ? left.Y : right.Y,
-				Z = (left.Z < right.Z) ? left.Z : right.Z,
-				W = (left.W < right.W) ? left.W : right.W,
-			};
-		}
-
-		/// <summary>
-        /// Returns a <see cref="Vector4NU"/> containing the largest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <see cref="Vector4NU"/>.</param>
-        /// <param name="right">The second source <see cref="Vector4NU"/>.</param>
-        /// <returns>A <see cref="Vector4NU"/> containing the largest components of the source vectors.</returns>
-		public static Vector4NU Max(Vector4NU left, Vector4NU right)
-		{
-			return new Vector4NU()
-			{
-				X = (left.X > right.X) ? left.X : right.X,
-				Y = (left.Y > right.Y) ? left.Y : right.Y,
-				Z = (left.Z > right.Z) ? left.Z : right.Z,
-				W = (left.W > right.W) ? left.W : right.W,
-			};
-		}
+		
 
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
@@ -221,61 +197,6 @@ namespace Molten.Math
 			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
 			Z = Z < min.Z ? min.Z : Z > max.Z ? max.Z : Z;
 			W = W < min.W ? min.W : W > max.W ? max.W : W;
-        }
-
-		/// <summary>
-        /// Calculates the dot product of two <see cref="Vector4NU"/> vectors.
-        /// </summary>
-        /// <param name="left">First <see cref="Vector4NU"/> source vector</param>
-        /// <param name="right">Second <see cref="Vector4NU"/> source vector.</param>
-        /// <param name="result">When the method completes, contains the dot product of the two <see cref="Vector4NU"/> vectors.</param>
-        public static nuint Dot(Vector4NU left, Vector4NU right)
-        {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
-        }
-
-		/// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="Vector4NU"/> vector.</param>
-        /// <param name="tangent1">First source tangent <see cref="Vector4NU"/> vector.</param>
-        /// <param name="value2">Second source position <see cref="Vector4NU"/> vector.</param>
-        /// <param name="tangent2">Second source tangent <see cref="Vector4NU"/> vector.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static Vector4NU Hermite(ref Vector4NU value1, ref Vector4NU tangent1, ref Vector4NU value2, ref Vector4NU tangent2, nuint amount)
-        {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
-            float part2 = (-2.0F * cubed) + (3.0F * squared);
-            float part3 = (cubed - (2.0F * squared)) + amount;
-            float part4 = cubed - squared;
-
-			return new Vector4NU()
-			{
-				X = (nuint)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
-				Y = (nuint)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
-				Z = (nuint)((((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4)),
-				W = (nuint)((((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4)),
-			};
-        }
-
-		/// <summary>
-        /// Returns a <see cref="Vector4NU"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
-        /// </summary>
-        /// <param name="value1">A <see cref="Vector4NU"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <see cref="Vector4NU"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <see cref="Vector4NU"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
-        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
-        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        public static Vector4NU Barycentric(ref Vector4NU value1, ref Vector4NU value2, ref Vector4NU value3, nuint amount1, nuint amount2)
-        {
-			return new Vector4NU(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)), 
-				(value1.W + (amount1 * (value2.W - value1.W))) + (amount2 * (value3.W - value1.W))
-			);
         }
 #endregion
 
@@ -410,6 +331,173 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
+        /// If so this method truncates that value to zero.</summary>
+        /// <param name="power">The power.</param>
+        /// <param name="vec">The vector.</param>
+        public static Vector4NU Pow(Vector4NU vec, nuint power)
+        {
+            return new Vector4NU()
+            {
+                X = (nuint)Math.Pow(vec.X, power),
+                Y = (nuint)Math.Pow(vec.Y, power),
+            };
+        }
+
+		/// <summary>
+        /// Calculates the dot product of two <see cref="Vector4NU"/> vectors.
+        /// </summary>
+        /// <param name="left">First <see cref="Vector4NU"/> source vector</param>
+        /// <param name="right">Second <see cref="Vector4NU"/> source vector.</param>
+        public static nuint Dot(Vector4NU left, Vector4NU right)
+        {
+			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+        }
+
+		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Vector4NU"/> vector.</param>
+        /// <param name="tangent1">First source tangent <see cref="Vector4NU"/> vector.</param>
+        /// <param name="value2">Second source position <see cref="Vector4NU"/> vector.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Vector4NU"/> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static Vector4NU Hermite(ref Vector4NU value1, ref Vector4NU tangent1, ref Vector4NU value2, ref Vector4NU tangent2, nuint amount)
+        {
+            float squared = amount * amount;
+            float cubed = amount * squared;
+            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
+            float part2 = (-2.0F * cubed) + (3.0F * squared);
+            float part3 = (cubed - (2.0F * squared)) + amount;
+            float part4 = cubed - squared;
+
+			return new Vector4NU()
+			{
+				X = (nuint)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
+				Y = (nuint)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
+				Z = (nuint)((((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4)),
+				W = (nuint)((((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4)),
+			};
+        }
+
+		/// <summary>
+        /// Returns a <see cref="Vector4NU"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// </summary>
+        /// <param name="value1">A <see cref="Vector4NU"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <see cref="Vector4NU"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <see cref="Vector4NU"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
+        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
+        public static Vector4NU Barycentric(ref Vector4NU value1, ref Vector4NU value2, ref Vector4NU value3, nuint amount1, nuint amount2)
+        {
+			return new Vector4NU(
+				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
+				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
+				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)), 
+				(value1.W + (amount1 * (value2.W - value1.W))) + (amount2 * (value3.W - value1.W))
+			);
+        }
+
+		/// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector4NU"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static Vector4NU Lerp(ref Vector4NU start, ref Vector4NU end, float amount)
+        {
+			return new Vector4NU()
+			{
+				X = (nuint)((1F - amount) * start.X + amount * end.X),
+				Y = (nuint)((1F - amount) * start.Y + amount * end.Y),
+				Z = (nuint)((1F - amount) * start.Z + amount * end.Z),
+				W = (nuint)((1F - amount) * start.W + amount * end.W),
+			};
+        }
+
+		/// <summary>
+        /// Returns a <see cref="Vector4NU"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector4NU"/>.</param>
+        /// <param name="right">The second source <see cref="Vector4NU"/>.</param>
+        /// <returns>A <see cref="Vector4NU"/> containing the smallest components of the source vectors.</returns>
+		public static Vector4NU Min(Vector4NU left, Vector4NU right)
+		{
+			return new Vector4NU()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+				Z = (left.Z < right.Z) ? left.Z : right.Z,
+				W = (left.W < right.W) ? left.W : right.W,
+			};
+		}
+
+		/// <summary>
+        /// Returns a <see cref="Vector4NU"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector4NU"/>.</param>
+        /// <param name="right">The second source <see cref="Vector4NU"/>.</param>
+        /// <returns>A <see cref="Vector4NU"/> containing the largest components of the source vectors.</returns>
+		public static Vector4NU Max(Vector4NU left, Vector4NU right)
+		{
+			return new Vector4NU()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+				Z = (left.Z > right.Z) ? left.Z : right.Z,
+				W = (left.W > right.W) ? left.W : right.W,
+			};
+		}
+
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="Vector4NU"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector</param>
+        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static void DistanceSquared(ref Vector4NU value1, ref Vector4NU value2, out nuint result)
+        {
+            nuint x = value1.X - value2.X;
+            nuint y = value1.Y - value2.Y;
+            nuint z = value1.Z - value2.Z;
+            nuint w = value1.W - value2.W;
+
+            result = (x * x) + (y * y) + (z * z) + (w * w);
+        }
+
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="Vector4NU"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The squared distance between the two vectors.</returns>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static nuint DistanceSquared(ref Vector4NU value1, ref Vector4NU value2)
+        {
+            nuint x = value1.X - value2.X;
+            nuint y = value1.Y - value2.Y;
+            nuint z = value1.Z - value2.Z;
+            nuint w = value1.W - value2.W;
+
+            return (x * x) + (y * y) + (z * z) + (w * w);
+        }
+
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="value">The <see cref="Vector4NU"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>

@@ -9,7 +9,7 @@ namespace Molten
     /// Represents a two dimensional mathematical vector.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Vector2F : IEquatable<Vector2F>, IFormattable
+    public struct Vector2F : IEquatable<Vector2F>
     {
         /// <summary>
         /// The X component of the vector.
@@ -29,62 +29,6 @@ namespace Molten
         {
             X = value;
             Y = value;
-        }
-
-        /// <summary>
-        /// Gets a value indicting whether this instance is normalized.
-        /// </summary>
-        public bool IsNormalized
-        {
-            get { return MathHelper.IsOne((X * X) + (Y * Y)); }
-        }
-
-        /// <summary>
-        /// Gets a value indicting whether this vector is zero
-        /// </summary>
-        public bool IsZero
-        {
-            get { return X == 0 && Y == 0; }
-        }
-
-        /// <summary>
-        /// Calculates the length of the vector.
-        /// </summary>
-        /// <returns>The length of the vector.</returns>
-        /// <remarks>
-        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public float Length()
-        {
-            return (float)Math.Sqrt((X * X) + (Y * Y));
-        }
-
-        /// <summary>
-        /// Calculates the squared length of the vector.
-        /// </summary>
-        /// <returns>The squared length of the vector.</returns>
-        /// <remarks>
-        /// This method may be preferred to <see cref="Vector2F.Length"/> when only a relative length is needed
-        /// and speed is of the essence.
-        /// </remarks>
-        public float LengthSquared()
-        {
-            return (X * X) + (Y * Y);
-        }
-
-        /// <summary>
-        /// Converts the vector into a unit vector.
-        /// </summary>
-        public void Normalize()
-        {
-            float length = Length();
-            if (!MathHelper.IsZero(length))
-            {
-                float inv = 1.0f / length;
-                X *= inv;
-                Y *= inv;
-            }
         }
 
         /// <summary>
@@ -427,92 +371,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="QuaternionF"/> rotation.
-        /// </summary>
-        /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
-        /// <param name="result">When the method completes, contains the transformed <see cref="Vector4F"/>.</param>
-        public static void Transform(ref Vector2F vector, ref QuaternionF rotation, out Vector2F result)
-        {
-            float x = rotation.X + rotation.X;
-            float y = rotation.Y + rotation.Y;
-            float z = rotation.Z + rotation.Z;
-            float wz = rotation.W * z;
-            float xx = rotation.X * x;
-            float xy = rotation.X * y;
-            float yy = rotation.Y * y;
-            float zz = rotation.Z * z;
-
-            result = new Vector2F((vector.X * (1.0f - yy - zz)) + (vector.Y * (xy - wz)), (vector.X * (xy + wz)) + (vector.Y * (1.0f - xx - zz)));
-        }
-
-        /// <summary>
-        /// Transforms a 2D vector by the given <see cref="QuaternionF"/> rotation.
-        /// </summary>
-        /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
-        /// <returns>The transformed <see cref="Vector4F"/>.</returns>
-        public static Vector2F Transform(Vector2F vector, QuaternionF rotation)
-        {
-            Vector2F result;
-            Transform(ref vector, ref rotation, out result);
-            return result;
-        }
-
-        
-
-        /// <summary>
-        /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.
-        /// </summary>
-        /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
-        /// <param name="result">When the method completes, contains the transformed <see cref="Vector4F"/>.</param>
-        public static void Transform(ref Vector2F vector, ref Matrix4F transform, out Vector4F result)
-        {
-            result = new Vector4F(
-                (vector.X * transform.M11) + (vector.Y * transform.M21) + transform.M41,
-                (vector.X * transform.M12) + (vector.Y * transform.M22) + transform.M42,
-                (vector.X * transform.M13) + (vector.Y * transform.M23) + transform.M43,
-                (vector.X * transform.M14) + (vector.Y * transform.M24) + transform.M44);
-        }
-
-        /// <summary>
-        /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.
-        /// </summary>
-        /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
-        /// <returns>The transformed <see cref="Vector4F"/>.</returns>
-        public static Vector4F Transform(Vector2F vector, Matrix4F transform)
-        {
-            Vector4F result;
-            Transform(ref vector, ref transform, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Transforms an array of 2D vectors by the given <see cref="Matrix4F"/>.
-        /// </summary>
-        /// <param name="source">The array of vectors to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
-        /// <param name="destination">The array for which the transformed vectors are stored.</param>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(Vector2F[] source, ref Matrix4F transform, Vector4F[] destination)
-        {
-            if (source == null)
-                throw new ArgumentNullException("source");
-            if (destination == null)
-                throw new ArgumentNullException("destination");
-            if (destination.Length < source.Length)
-                throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
-
-            for (int i = 0; i < source.Length; ++i)
-            {
-                Transform(ref source[i], ref transform, out destination[i]);
-            }
-        }
-
-        /// <summary>
         /// Performs a coordinate transformation using the given <see cref="Matrix4F"/>.
         /// </summary>
         /// <param name="coordinate">The coordinate vector to transform.</param>
@@ -729,19 +587,6 @@ namespace Molten
             return new Vector4F(value, 0.0f, 0.0f);
         }
 
-        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
-        /// If so this method truncates that value to zero.</summary>
-        /// <param name="power">The power.</param>
-        /// <param name="vec">The vector.</param>
-        public static Vector2F Pow(Vector2F vec, float power)
-        {
-            return new Vector2F()
-            {
-                X = (float)Math.Pow(vec.X, power),
-                Y = (float)Math.Pow(vec.Y, power),
-            };
-        }
-
         /// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
@@ -752,20 +597,6 @@ namespace Molten
                 X = MathHelper.Clamp(vec.X, min, max),
                 Y = MathHelper.Clamp(vec.Y, min, max),
             };
-        }
-
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-        /// </returns>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (X.GetHashCode() * 397) ^ Y.GetHashCode();
-            }
         }
 
         /// <summary>

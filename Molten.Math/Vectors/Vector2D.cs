@@ -18,16 +18,33 @@ namespace Molten.Math
 		///<summary>The size of <see cref="Vector2D"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector2D));
 
-		public static Vector2D One = new Vector2D(1D, 1D);
+		///<summary>A Vector2D with every component set to 1D.</summary>
+		public static readonly Vector2D One = new Vector2D(1D, 1D);
 
 		/// <summary>The X unit <see cref="Vector2D"/>.</summary>
-		public static Vector2D UnitX = new Vector2D(1D, 0D);
+		public static readonly Vector2D UnitX = new Vector2D(1D, 0D);
 
 		/// <summary>The Y unit <see cref="Vector2D"/>.</summary>
-		public static Vector2D UnitY = new Vector2D(0D, 1D);
+		public static readonly Vector2D UnitY = new Vector2D(0D, 1D);
 
 		/// <summary>Represents a zero'd Vector2D.</summary>
-		public static Vector2D Zero = new Vector2D(0D, 0D);
+		public static readonly Vector2D Zero = new Vector2D(0D, 0D);
+
+		 /// <summary>
+        /// Gets a value indicting whether this instance is normalized.
+        /// </summary>
+        public bool IsNormalized
+        {
+            get => MathHelperDP.IsOne((X * X) + (Y * Y));
+        }
+
+        /// <summary>
+        /// Gets a value indicting whether this vector is zero
+        /// </summary>
+        public bool IsZero
+        {
+            get => X == 0D && Y == 0D;
+        }
 
 #region Constructors
 		///<summary>Creates a new instance of <see cref = "Vector2D"/>.</summary>
@@ -64,47 +81,61 @@ namespace Molten.Math
 		}
 #endregion
 
-#region Common Functions
-		/// <summary>
-        /// Calculates the squared distance between two <see cref="Vector2D"/> vectors.
+#region Instance Functions
+        /// <summary>
+        /// Returns a hash code for this instance.
         /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector</param>
-        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
-        /// </remarks>
-		public static void DistanceSquared(ref Vector2D value1, ref Vector2D value2, out double result)
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
         {
-            double x = value1.X - value2.X;
-            double y = value1.Y - value2.Y;
-
-            result = (x * x) + (y * y);
+            unchecked
+            {
+                int hashCode = X.GetHashCode();
+                hashCode = (hashCode * 397) ^ Y.GetHashCode();
+                return hashCode;
+            }
         }
 
-		/// <summary>
-        /// Calculates the squared distance between two <see cref="Vector2D"/> vectors.
+        /// <summary>
+        /// Calculates the length of the vector.
         /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The squared distance between the two vectors.</returns>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
+        /// <returns>The length of the vector.</returns>
+        /// <remarks>
+        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
+        /// and speed is of the essence.
         /// </remarks>
-		public static double DistanceSquared(ref Vector2D value1, ref Vector2D value2)
+        public double Length()
         {
-            double x = value1.X - value2.X;
-            double y = value1.Y - value2.Y;
+            return Math.Sqrt((X * X) + (Y * Y));
+        }
 
-            return (x * x) + (y * y);
+        /// <summary>
+        /// Calculates the squared length of the vector.
+        /// </summary>
+        /// <returns>The squared length of the vector.</returns>
+        /// <remarks>
+        /// This method may be preferred to <see cref="Vector2F.Length"/> when only a relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public double LengthSquared()
+        {
+            return (X * X) + (Y * Y);
+        }
+
+        /// <summary>
+        /// Converts the vector into a unit vector.
+        /// </summary>
+        public void Normalize()
+        {
+            double length = Length();
+            if (!MathHelperDP.IsZero(length))
+            {
+                double inv = 1.0f / length;
+                X *= inv;
+                Y *= inv;
+            }
         }
 
 		/// <summary>
@@ -124,54 +155,7 @@ namespace Molten.Math
 		{
 			return new Vector2D(-X, -Y);
 		}
-
-		/// <summary>
-        /// Performs a linear interpolation between two <see cref="Vector2D"/>.
-        /// </summary>
-        /// <param name="start">The start vector.</param>
-        /// <param name="end">The end vector.</param>
-        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <remarks>
-        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
-        /// </remarks>
-        public static Vector2D Lerp(ref Vector2D start, ref Vector2D end, double amount)
-        {
-			return new Vector2D()
-			{
-				X = (double)((1D - amount) * start.X + amount * end.X),
-				Y = (double)((1D - amount) * start.Y + amount * end.Y),
-			};
-        }
-
-		/// <summary>
-        /// Returns a <see cref="Vector2D"/> containing the smallest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <see cref="Vector2D"/>.</param>
-        /// <param name="right">The second source <see cref="Vector2D"/>.</param>
-        /// <returns>A <see cref="Vector2D"/> containing the smallest components of the source vectors.</returns>
-		public static Vector2D Min(Vector2D left, Vector2D right)
-		{
-			return new Vector2D()
-			{
-				X = (left.X < right.X) ? left.X : right.X,
-				Y = (left.Y < right.Y) ? left.Y : right.Y,
-			};
-		}
-
-		/// <summary>
-        /// Returns a <see cref="Vector2D"/> containing the largest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <see cref="Vector2D"/>.</param>
-        /// <param name="right">The second source <see cref="Vector2D"/>.</param>
-        /// <returns>A <see cref="Vector2D"/> containing the largest components of the source vectors.</returns>
-		public static Vector2D Max(Vector2D left, Vector2D right)
-		{
-			return new Vector2D()
-			{
-				X = (left.X > right.X) ? left.X : right.X,
-				Y = (left.Y > right.Y) ? left.Y : right.Y,
-			};
-		}
+		
 
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
@@ -189,57 +173,6 @@ namespace Molten.Math
         {
 			X = X < min.X ? min.X : X > max.X ? max.X : X;
 			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
-        }
-
-		/// <summary>
-        /// Calculates the dot product of two <see cref="Vector2D"/> vectors.
-        /// </summary>
-        /// <param name="left">First <see cref="Vector2D"/> source vector</param>
-        /// <param name="right">Second <see cref="Vector2D"/> source vector.</param>
-        /// <param name="result">When the method completes, contains the dot product of the two <see cref="Vector2D"/> vectors.</param>
-        public static double Dot(Vector2D left, Vector2D right)
-        {
-			return (left.X * right.X) + (left.Y * right.Y);
-        }
-
-		/// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="Vector2D"/> vector.</param>
-        /// <param name="tangent1">First source tangent <see cref="Vector2D"/> vector.</param>
-        /// <param name="value2">Second source position <see cref="Vector2D"/> vector.</param>
-        /// <param name="tangent2">Second source tangent <see cref="Vector2D"/> vector.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static Vector2D Hermite(ref Vector2D value1, ref Vector2D tangent1, ref Vector2D value2, ref Vector2D tangent2, double amount)
-        {
-            double squared = amount * amount;
-            double cubed = amount * squared;
-            double part1 = ((2.0D * cubed) - (3.0D * squared)) + 1.0D;
-            double part2 = (-2.0D * cubed) + (3.0D * squared);
-            double part3 = (cubed - (2.0D * squared)) + amount;
-            double part4 = cubed - squared;
-
-			return new Vector2D()
-			{
-				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
-				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
-			};
-        }
-
-		/// <summary>
-        /// Returns a <see cref="Vector2D"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
-        /// </summary>
-        /// <param name="value1">A <see cref="Vector2D"/> containing the 2D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <see cref="Vector2D"/> containing the 2D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <see cref="Vector2D"/> containing the 2D Cartesian coordinates of vertex 3 of the triangle.</param>
-        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
-        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        public static Vector2D Barycentric(ref Vector2D value1, ref Vector2D value2, ref Vector2D value3, double amount1, double amount2)
-        {
-			return new Vector2D(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))
-			);
         }
 #endregion
 
@@ -374,6 +307,159 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
+        /// If so this method truncates that value to zero.</summary>
+        /// <param name="power">The power.</param>
+        /// <param name="vec">The vector.</param>
+        public static Vector2D Pow(Vector2D vec, double power)
+        {
+            return new Vector2D()
+            {
+                X = Math.Pow(vec.X, power),
+                Y = Math.Pow(vec.Y, power),
+            };
+        }
+
+		/// <summary>
+        /// Calculates the dot product of two <see cref="Vector2D"/> vectors.
+        /// </summary>
+        /// <param name="left">First <see cref="Vector2D"/> source vector</param>
+        /// <param name="right">Second <see cref="Vector2D"/> source vector.</param>
+        public static double Dot(Vector2D left, Vector2D right)
+        {
+			return (left.X * right.X) + (left.Y * right.Y);
+        }
+
+		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Vector2D"/> vector.</param>
+        /// <param name="tangent1">First source tangent <see cref="Vector2D"/> vector.</param>
+        /// <param name="value2">Second source position <see cref="Vector2D"/> vector.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Vector2D"/> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static Vector2D Hermite(ref Vector2D value1, ref Vector2D tangent1, ref Vector2D value2, ref Vector2D tangent2, double amount)
+        {
+            double squared = amount * amount;
+            double cubed = amount * squared;
+            double part1 = ((2.0D * cubed) - (3.0D * squared)) + 1.0D;
+            double part2 = (-2.0D * cubed) + (3.0D * squared);
+            double part3 = (cubed - (2.0D * squared)) + amount;
+            double part4 = cubed - squared;
+
+			return new Vector2D()
+			{
+				X = (((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4),
+				Y = (((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4),
+			};
+        }
+
+		/// <summary>
+        /// Returns a <see cref="Vector2D"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// </summary>
+        /// <param name="value1">A <see cref="Vector2D"/> containing the 2D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <see cref="Vector2D"/> containing the 2D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <see cref="Vector2D"/> containing the 2D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
+        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
+        public static Vector2D Barycentric(ref Vector2D value1, ref Vector2D value2, ref Vector2D value3, double amount1, double amount2)
+        {
+			return new Vector2D(
+				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
+				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))
+			);
+        }
+
+		/// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector2D"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static Vector2D Lerp(ref Vector2D start, ref Vector2D end, double amount)
+        {
+			return new Vector2D()
+			{
+				X = (double)((1D - amount) * start.X + amount * end.X),
+				Y = (double)((1D - amount) * start.Y + amount * end.Y),
+			};
+        }
+
+		/// <summary>
+        /// Returns a <see cref="Vector2D"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector2D"/>.</param>
+        /// <param name="right">The second source <see cref="Vector2D"/>.</param>
+        /// <returns>A <see cref="Vector2D"/> containing the smallest components of the source vectors.</returns>
+		public static Vector2D Min(Vector2D left, Vector2D right)
+		{
+			return new Vector2D()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+			};
+		}
+
+		/// <summary>
+        /// Returns a <see cref="Vector2D"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector2D"/>.</param>
+        /// <param name="right">The second source <see cref="Vector2D"/>.</param>
+        /// <returns>A <see cref="Vector2D"/> containing the largest components of the source vectors.</returns>
+		public static Vector2D Max(Vector2D left, Vector2D right)
+		{
+			return new Vector2D()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+			};
+		}
+
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="Vector2D"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector</param>
+        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static void DistanceSquared(ref Vector2D value1, ref Vector2D value2, out double result)
+        {
+            double x = value1.X - value2.X;
+            double y = value1.Y - value2.Y;
+
+            result = (x * x) + (y * y);
+        }
+
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="Vector2D"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The squared distance between the two vectors.</returns>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static double DistanceSquared(ref Vector2D value1, ref Vector2D value2)
+        {
+            double x = value1.X - value2.X;
+            double y = value1.Y - value2.Y;
+
+            return (x * x) + (y * y);
+        }
+
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="value">The <see cref="Vector2D"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>

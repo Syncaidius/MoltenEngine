@@ -21,19 +21,36 @@ namespace Molten.Math
 		///<summary>The size of <see cref="Vector3UI"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector3UI));
 
-		public static Vector3UI One = new Vector3UI(1U, 1U, 1U);
+		///<summary>A Vector3UI with every component set to 1U.</summary>
+		public static readonly Vector3UI One = new Vector3UI(1U, 1U, 1U);
 
 		/// <summary>The X unit <see cref="Vector3UI"/>.</summary>
-		public static Vector3UI UnitX = new Vector3UI(1U, 0, 0);
+		public static readonly Vector3UI UnitX = new Vector3UI(1U, 0, 0);
 
 		/// <summary>The Y unit <see cref="Vector3UI"/>.</summary>
-		public static Vector3UI UnitY = new Vector3UI(0, 1U, 0);
+		public static readonly Vector3UI UnitY = new Vector3UI(0, 1U, 0);
 
 		/// <summary>The Z unit <see cref="Vector3UI"/>.</summary>
-		public static Vector3UI UnitZ = new Vector3UI(0, 0, 1U);
+		public static readonly Vector3UI UnitZ = new Vector3UI(0, 0, 1U);
 
 		/// <summary>Represents a zero'd Vector3UI.</summary>
-		public static Vector3UI Zero = new Vector3UI(0, 0, 0);
+		public static readonly Vector3UI Zero = new Vector3UI(0, 0, 0);
+
+		 /// <summary>
+        /// Gets a value indicting whether this instance is normalized.
+        /// </summary>
+        public bool IsNormalized
+        {
+            get => MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z));
+        }
+
+        /// <summary>
+        /// Gets a value indicting whether this vector is zero
+        /// </summary>
+        public bool IsZero
+        {
+            get => X == 0 && Y == 0 && Z == 0;
+        }
 
 #region Constructors
 		///<summary>Creates a new instance of <see cref = "Vector3UI"/>.</summary>
@@ -73,49 +90,62 @@ namespace Molten.Math
 		}
 #endregion
 
-#region Common Functions
-		/// <summary>
-        /// Calculates the squared distance between two <see cref="Vector3UI"/> vectors.
+#region Instance Functions
+        /// <summary>
+        /// Returns a hash code for this instance.
         /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector</param>
-        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
-        /// </remarks>
-		public static void DistanceSquared(ref Vector3UI value1, ref Vector3UI value2, out uint result)
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
         {
-            uint x = value1.X - value2.X;
-            uint y = value1.Y - value2.Y;
-            uint z = value1.Z - value2.Z;
-
-            result = (x * x) + (y * y) + (z * z);
+            unchecked
+            {
+                int hashCode = X.GetHashCode();
+                hashCode = (hashCode * 397) ^ Y.GetHashCode();
+                hashCode = (hashCode * 397) ^ Z.GetHashCode();
+                return hashCode;
+            }
         }
 
-		/// <summary>
-        /// Calculates the squared distance between two <see cref="Vector3UI"/> vectors.
+        /// <summary>
+        /// Calculates the length of the vector.
         /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The squared distance between the two vectors.</returns>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
+        /// <returns>The length of the vector.</returns>
+        /// <remarks>
+        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
+        /// and speed is of the essence.
         /// </remarks>
-		public static uint DistanceSquared(ref Vector3UI value1, ref Vector3UI value2)
+        public uint Length()
         {
-            uint x = value1.X - value2.X;
-            uint y = value1.Y - value2.Y;
-            uint z = value1.Z - value2.Z;
+            return (uint)Math.Sqrt((X * X) + (Y * Y) + (Z * Z));
+        }
 
-            return (x * x) + (y * y) + (z * z);
+        /// <summary>
+        /// Calculates the squared length of the vector.
+        /// </summary>
+        /// <returns>The squared length of the vector.</returns>
+        /// <remarks>
+        /// This method may be preferred to <see cref="Vector2F.Length"/> when only a relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public uint LengthSquared()
+        {
+            return (X * X) + (Y * Y) + (Z * Z);
+        }
+
+        /// <summary>
+        /// Converts the vector into a unit vector.
+        /// </summary>
+        public void Normalize()
+        {
+            uint length = Length();
+            if (!MathHelper.IsZero(length))
+            {
+                uint inv = 1.0f / length;
+                X *= inv;
+                Y *= inv;
+            }
         }
 
 		/// <summary>
@@ -135,57 +165,7 @@ namespace Molten.Math
 		{
 			return new Vector3UI(-X, -Y, -Z);
 		}
-
-		/// <summary>
-        /// Performs a linear interpolation between two <see cref="Vector3UI"/>.
-        /// </summary>
-        /// <param name="start">The start vector.</param>
-        /// <param name="end">The end vector.</param>
-        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <remarks>
-        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
-        /// </remarks>
-        public static Vector3UI Lerp(ref Vector3UI start, ref Vector3UI end, float amount)
-        {
-			return new Vector3UI()
-			{
-				X = (uint)((1F - amount) * start.X + amount * end.X),
-				Y = (uint)((1F - amount) * start.Y + amount * end.Y),
-				Z = (uint)((1F - amount) * start.Z + amount * end.Z),
-			};
-        }
-
-		/// <summary>
-        /// Returns a <see cref="Vector3UI"/> containing the smallest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <see cref="Vector3UI"/>.</param>
-        /// <param name="right">The second source <see cref="Vector3UI"/>.</param>
-        /// <returns>A <see cref="Vector3UI"/> containing the smallest components of the source vectors.</returns>
-		public static Vector3UI Min(Vector3UI left, Vector3UI right)
-		{
-			return new Vector3UI()
-			{
-				X = (left.X < right.X) ? left.X : right.X,
-				Y = (left.Y < right.Y) ? left.Y : right.Y,
-				Z = (left.Z < right.Z) ? left.Z : right.Z,
-			};
-		}
-
-		/// <summary>
-        /// Returns a <see cref="Vector3UI"/> containing the largest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <see cref="Vector3UI"/>.</param>
-        /// <param name="right">The second source <see cref="Vector3UI"/>.</param>
-        /// <returns>A <see cref="Vector3UI"/> containing the largest components of the source vectors.</returns>
-		public static Vector3UI Max(Vector3UI left, Vector3UI right)
-		{
-			return new Vector3UI()
-			{
-				X = (left.X > right.X) ? left.X : right.X,
-				Y = (left.Y > right.Y) ? left.Y : right.Y,
-				Z = (left.Z > right.Z) ? left.Z : right.Z,
-			};
-		}
+		
 
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
@@ -205,59 +185,6 @@ namespace Molten.Math
 			X = X < min.X ? min.X : X > max.X ? max.X : X;
 			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
 			Z = Z < min.Z ? min.Z : Z > max.Z ? max.Z : Z;
-        }
-
-		/// <summary>
-        /// Calculates the dot product of two <see cref="Vector3UI"/> vectors.
-        /// </summary>
-        /// <param name="left">First <see cref="Vector3UI"/> source vector</param>
-        /// <param name="right">Second <see cref="Vector3UI"/> source vector.</param>
-        /// <param name="result">When the method completes, contains the dot product of the two <see cref="Vector3UI"/> vectors.</param>
-        public static uint Dot(Vector3UI left, Vector3UI right)
-        {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
-        }
-
-		/// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="Vector3UI"/> vector.</param>
-        /// <param name="tangent1">First source tangent <see cref="Vector3UI"/> vector.</param>
-        /// <param name="value2">Second source position <see cref="Vector3UI"/> vector.</param>
-        /// <param name="tangent2">Second source tangent <see cref="Vector3UI"/> vector.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static Vector3UI Hermite(ref Vector3UI value1, ref Vector3UI tangent1, ref Vector3UI value2, ref Vector3UI tangent2, uint amount)
-        {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
-            float part2 = (-2.0F * cubed) + (3.0F * squared);
-            float part3 = (cubed - (2.0F * squared)) + amount;
-            float part4 = cubed - squared;
-
-			return new Vector3UI()
-			{
-				X = (uint)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
-				Y = (uint)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
-				Z = (uint)((((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4)),
-			};
-        }
-
-		/// <summary>
-        /// Returns a <see cref="Vector3UI"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
-        /// </summary>
-        /// <param name="value1">A <see cref="Vector3UI"/> containing the 3D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <see cref="Vector3UI"/> containing the 3D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <see cref="Vector3UI"/> containing the 3D Cartesian coordinates of vertex 3 of the triangle.</param>
-        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
-        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        public static Vector3UI Barycentric(ref Vector3UI value1, ref Vector3UI value2, ref Vector3UI value3, uint amount1, uint amount2)
-        {
-			return new Vector3UI(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))
-			);
         }
 #endregion
 
@@ -392,6 +319,166 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
+        /// If so this method truncates that value to zero.</summary>
+        /// <param name="power">The power.</param>
+        /// <param name="vec">The vector.</param>
+        public static Vector3UI Pow(Vector3UI vec, uint power)
+        {
+            return new Vector3UI()
+            {
+                X = (uint)Math.Pow(vec.X, power),
+                Y = (uint)Math.Pow(vec.Y, power),
+            };
+        }
+
+		/// <summary>
+        /// Calculates the dot product of two <see cref="Vector3UI"/> vectors.
+        /// </summary>
+        /// <param name="left">First <see cref="Vector3UI"/> source vector</param>
+        /// <param name="right">Second <see cref="Vector3UI"/> source vector.</param>
+        public static uint Dot(Vector3UI left, Vector3UI right)
+        {
+			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+        }
+
+		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Vector3UI"/> vector.</param>
+        /// <param name="tangent1">First source tangent <see cref="Vector3UI"/> vector.</param>
+        /// <param name="value2">Second source position <see cref="Vector3UI"/> vector.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Vector3UI"/> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static Vector3UI Hermite(ref Vector3UI value1, ref Vector3UI tangent1, ref Vector3UI value2, ref Vector3UI tangent2, uint amount)
+        {
+            float squared = amount * amount;
+            float cubed = amount * squared;
+            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
+            float part2 = (-2.0F * cubed) + (3.0F * squared);
+            float part3 = (cubed - (2.0F * squared)) + amount;
+            float part4 = cubed - squared;
+
+			return new Vector3UI()
+			{
+				X = (uint)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
+				Y = (uint)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
+				Z = (uint)((((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4)),
+			};
+        }
+
+		/// <summary>
+        /// Returns a <see cref="Vector3UI"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// </summary>
+        /// <param name="value1">A <see cref="Vector3UI"/> containing the 3D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <see cref="Vector3UI"/> containing the 3D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <see cref="Vector3UI"/> containing the 3D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
+        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
+        public static Vector3UI Barycentric(ref Vector3UI value1, ref Vector3UI value2, ref Vector3UI value3, uint amount1, uint amount2)
+        {
+			return new Vector3UI(
+				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
+				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
+				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))
+			);
+        }
+
+		/// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector3UI"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static Vector3UI Lerp(ref Vector3UI start, ref Vector3UI end, float amount)
+        {
+			return new Vector3UI()
+			{
+				X = (uint)((1F - amount) * start.X + amount * end.X),
+				Y = (uint)((1F - amount) * start.Y + amount * end.Y),
+				Z = (uint)((1F - amount) * start.Z + amount * end.Z),
+			};
+        }
+
+		/// <summary>
+        /// Returns a <see cref="Vector3UI"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector3UI"/>.</param>
+        /// <param name="right">The second source <see cref="Vector3UI"/>.</param>
+        /// <returns>A <see cref="Vector3UI"/> containing the smallest components of the source vectors.</returns>
+		public static Vector3UI Min(Vector3UI left, Vector3UI right)
+		{
+			return new Vector3UI()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+				Z = (left.Z < right.Z) ? left.Z : right.Z,
+			};
+		}
+
+		/// <summary>
+        /// Returns a <see cref="Vector3UI"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector3UI"/>.</param>
+        /// <param name="right">The second source <see cref="Vector3UI"/>.</param>
+        /// <returns>A <see cref="Vector3UI"/> containing the largest components of the source vectors.</returns>
+		public static Vector3UI Max(Vector3UI left, Vector3UI right)
+		{
+			return new Vector3UI()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+				Z = (left.Z > right.Z) ? left.Z : right.Z,
+			};
+		}
+
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="Vector3UI"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector</param>
+        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static void DistanceSquared(ref Vector3UI value1, ref Vector3UI value2, out uint result)
+        {
+            uint x = value1.X - value2.X;
+            uint y = value1.Y - value2.Y;
+            uint z = value1.Z - value2.Z;
+
+            result = (x * x) + (y * y) + (z * z);
+        }
+
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="Vector3UI"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The squared distance between the two vectors.</returns>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static uint DistanceSquared(ref Vector3UI value1, ref Vector3UI value2)
+        {
+            uint x = value1.X - value2.X;
+            uint y = value1.Y - value2.Y;
+            uint z = value1.Z - value2.Z;
+
+            return (x * x) + (y * y) + (z * z);
+        }
+
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="value">The <see cref="Vector3UI"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>

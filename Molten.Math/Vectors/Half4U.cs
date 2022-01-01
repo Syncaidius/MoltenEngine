@@ -24,22 +24,39 @@ namespace Molten.Math
 		///<summary>The size of <see cref="Half4U"/>, in bytes.</summary>
 		public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Half4U));
 
-		public static Half4U One = new Half4U((ushort)1, (ushort)1, (ushort)1, (ushort)1);
+		///<summary>A Half4U with every component set to (ushort)1.</summary>
+		public static readonly Half4U One = new Half4U((ushort)1, (ushort)1, (ushort)1, (ushort)1);
 
 		/// <summary>The X unit <see cref="Half4U"/>.</summary>
-		public static Half4U UnitX = new Half4U((ushort)1, 0, 0, 0);
+		public static readonly Half4U UnitX = new Half4U((ushort)1, 0, 0, 0);
 
 		/// <summary>The Y unit <see cref="Half4U"/>.</summary>
-		public static Half4U UnitY = new Half4U(0, (ushort)1, 0, 0);
+		public static readonly Half4U UnitY = new Half4U(0, (ushort)1, 0, 0);
 
 		/// <summary>The Z unit <see cref="Half4U"/>.</summary>
-		public static Half4U UnitZ = new Half4U(0, 0, (ushort)1, 0);
+		public static readonly Half4U UnitZ = new Half4U(0, 0, (ushort)1, 0);
 
 		/// <summary>The W unit <see cref="Half4U"/>.</summary>
-		public static Half4U UnitW = new Half4U(0, 0, 0, (ushort)1);
+		public static readonly Half4U UnitW = new Half4U(0, 0, 0, (ushort)1);
 
 		/// <summary>Represents a zero'd Half4U.</summary>
-		public static Half4U Zero = new Half4U(0, 0, 0, 0);
+		public static readonly Half4U Zero = new Half4U(0, 0, 0, 0);
+
+		 /// <summary>
+        /// Gets a value indicting whether this instance is normalized.
+        /// </summary>
+        public bool IsNormalized
+        {
+            get => MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W));
+        }
+
+        /// <summary>
+        /// Gets a value indicting whether this vector is zero
+        /// </summary>
+        public bool IsZero
+        {
+            get => X == 0 && Y == 0 && Z == 0 && W == 0;
+        }
 
 #region Constructors
 		///<summary>Creates a new instance of <see cref = "Half4U"/>.</summary>
@@ -82,51 +99,63 @@ namespace Molten.Math
 		}
 #endregion
 
-#region Common Functions
-		/// <summary>
-        /// Calculates the squared distance between two <see cref="Half4U"/> vectors.
+#region Instance Functions
+        /// <summary>
+        /// Returns a hash code for this instance.
         /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector</param>
-        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
-        /// </remarks>
-		public static void DistanceSquared(ref Half4U value1, ref Half4U value2, out ushort result)
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
         {
-            ushort x = value1.X - value2.X;
-            ushort y = value1.Y - value2.Y;
-            ushort z = value1.Z - value2.Z;
-            ushort w = value1.W - value2.W;
-
-            result = (x * x) + (y * y) + (z * z) + (w * w);
+            unchecked
+            {
+                int hashCode = X.GetHashCode();
+                hashCode = (hashCode * 397) ^ Y.GetHashCode();
+                hashCode = (hashCode * 397) ^ Z.GetHashCode();
+                hashCode = (hashCode * 397) ^ W.GetHashCode();
+                return hashCode;
+            }
         }
 
-		/// <summary>
-        /// Calculates the squared distance between two <see cref="Half4U"/> vectors.
+        /// <summary>
+        /// Calculates the length of the vector.
         /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector.</param>
-        /// <returns>The squared distance between the two vectors.</returns>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
+        /// <returns>The length of the vector.</returns>
+        /// <remarks>
+        /// <see cref="Vector2F.LengthSquared"/> may be preferred when only the relative length is needed
+        /// and speed is of the essence.
         /// </remarks>
-		public static ushort DistanceSquared(ref Half4U value1, ref Half4U value2)
+        public ushort Length()
         {
-            ushort x = value1.X - value2.X;
-            ushort y = value1.Y - value2.Y;
-            ushort z = value1.Z - value2.Z;
-            ushort w = value1.W - value2.W;
+            return (ushort)Math.Sqrt((X * X) + (Y * Y) + (Z * Z) + (W * W));
+        }
 
-            return (x * x) + (y * y) + (z * z) + (w * w);
+        /// <summary>
+        /// Calculates the squared length of the vector.
+        /// </summary>
+        /// <returns>The squared length of the vector.</returns>
+        /// <remarks>
+        /// This method may be preferred to <see cref="Vector2F.Length"/> when only a relative length is needed
+        /// and speed is of the essence.
+        /// </remarks>
+        public ushort LengthSquared()
+        {
+            return (X * X) + (Y * Y) + (Z * Z) + (W * W);
+        }
+
+        /// <summary>
+        /// Converts the vector into a unit vector.
+        /// </summary>
+        public void Normalize()
+        {
+            ushort length = Length();
+            if (!MathHelper.IsZero(length))
+            {
+                ushort inv = 1.0f / length;
+                X *= inv;
+                Y *= inv;
+            }
         }
 
 		/// <summary>
@@ -146,60 +175,7 @@ namespace Molten.Math
 		{
 			return new Half4U(-X, -Y, -Z, -W);
 		}
-
-		/// <summary>
-        /// Performs a linear interpolation between two <see cref="Half4U"/>.
-        /// </summary>
-        /// <param name="start">The start vector.</param>
-        /// <param name="end">The end vector.</param>
-        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <remarks>
-        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
-        /// </remarks>
-        public static Half4U Lerp(ref Half4U start, ref Half4U end, float amount)
-        {
-			return new Half4U()
-			{
-				X = (ushort)((1F - amount) * start.X + amount * end.X),
-				Y = (ushort)((1F - amount) * start.Y + amount * end.Y),
-				Z = (ushort)((1F - amount) * start.Z + amount * end.Z),
-				W = (ushort)((1F - amount) * start.W + amount * end.W),
-			};
-        }
-
-		/// <summary>
-        /// Returns a <see cref="Half4U"/> containing the smallest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <see cref="Half4U"/>.</param>
-        /// <param name="right">The second source <see cref="Half4U"/>.</param>
-        /// <returns>A <see cref="Half4U"/> containing the smallest components of the source vectors.</returns>
-		public static Half4U Min(Half4U left, Half4U right)
-		{
-			return new Half4U()
-			{
-				X = (left.X < right.X) ? left.X : right.X,
-				Y = (left.Y < right.Y) ? left.Y : right.Y,
-				Z = (left.Z < right.Z) ? left.Z : right.Z,
-				W = (left.W < right.W) ? left.W : right.W,
-			};
-		}
-
-		/// <summary>
-        /// Returns a <see cref="Half4U"/> containing the largest components of the specified vectors.
-        /// </summary>
-        /// <param name="left">The first source <see cref="Half4U"/>.</param>
-        /// <param name="right">The second source <see cref="Half4U"/>.</param>
-        /// <returns>A <see cref="Half4U"/> containing the largest components of the source vectors.</returns>
-		public static Half4U Max(Half4U left, Half4U right)
-		{
-			return new Half4U()
-			{
-				X = (left.X > right.X) ? left.X : right.X,
-				Y = (left.Y > right.Y) ? left.Y : right.Y,
-				Z = (left.Z > right.Z) ? left.Z : right.Z,
-				W = (left.W > right.W) ? left.W : right.W,
-			};
-		}
+		
 
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
@@ -221,61 +197,6 @@ namespace Molten.Math
 			Y = Y < min.Y ? min.Y : Y > max.Y ? max.Y : Y;
 			Z = Z < min.Z ? min.Z : Z > max.Z ? max.Z : Z;
 			W = W < min.W ? min.W : W > max.W ? max.W : W;
-        }
-
-		/// <summary>
-        /// Calculates the dot product of two <see cref="Half4U"/> vectors.
-        /// </summary>
-        /// <param name="left">First <see cref="Half4U"/> source vector</param>
-        /// <param name="right">Second <see cref="Half4U"/> source vector.</param>
-        /// <param name="result">When the method completes, contains the dot product of the two <see cref="Half4U"/> vectors.</param>
-        public static ushort Dot(Half4U left, Half4U right)
-        {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
-        }
-
-		/// <summary>
-        /// Performs a Hermite spline interpolation.
-        /// </summary>
-        /// <param name="value1">First source position <see cref="Half4U"/> vector.</param>
-        /// <param name="tangent1">First source tangent <see cref="Half4U"/> vector.</param>
-        /// <param name="value2">Second source position <see cref="Half4U"/> vector.</param>
-        /// <param name="tangent2">Second source tangent <see cref="Half4U"/> vector.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static Half4U Hermite(ref Half4U value1, ref Half4U tangent1, ref Half4U value2, ref Half4U tangent2, ushort amount)
-        {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
-            float part2 = (-2.0F * cubed) + (3.0F * squared);
-            float part3 = (cubed - (2.0F * squared)) + amount;
-            float part4 = cubed - squared;
-
-			return new Half4U()
-			{
-				X = (ushort)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
-				Y = (ushort)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
-				Z = (ushort)((((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4)),
-				W = (ushort)((((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4)),
-			};
-        }
-
-		/// <summary>
-        /// Returns a <see cref="Half4U"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
-        /// </summary>
-        /// <param name="value1">A <see cref="Half4U"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <see cref="Half4U"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <see cref="Half4U"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
-        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
-        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        public static Half4U Barycentric(ref Half4U value1, ref Half4U value2, ref Half4U value3, ushort amount1, ushort amount2)
-        {
-			return new Half4U(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)), 
-				(value1.W + (amount1 * (value2.W - value1.W))) + (amount2 * (value3.W - value1.W))
-			);
         }
 #endregion
 
@@ -410,6 +331,173 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+        /// <summary>Checks to see if any value (x, y, z, w) are within 0.0001 of 0.
+        /// If so this method truncates that value to zero.</summary>
+        /// <param name="power">The power.</param>
+        /// <param name="vec">The vector.</param>
+        public static Half4U Pow(Half4U vec, ushort power)
+        {
+            return new Half4U()
+            {
+                X = (ushort)Math.Pow(vec.X, power),
+                Y = (ushort)Math.Pow(vec.Y, power),
+            };
+        }
+
+		/// <summary>
+        /// Calculates the dot product of two <see cref="Half4U"/> vectors.
+        /// </summary>
+        /// <param name="left">First <see cref="Half4U"/> source vector</param>
+        /// <param name="right">Second <see cref="Half4U"/> source vector.</param>
+        public static ushort Dot(Half4U left, Half4U right)
+        {
+			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+        }
+
+		/// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Half4U"/> vector.</param>
+        /// <param name="tangent1">First source tangent <see cref="Half4U"/> vector.</param>
+        /// <param name="value2">Second source position <see cref="Half4U"/> vector.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Half4U"/> vector.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static Half4U Hermite(ref Half4U value1, ref Half4U tangent1, ref Half4U value2, ref Half4U tangent2, ushort amount)
+        {
+            float squared = amount * amount;
+            float cubed = amount * squared;
+            float part1 = ((2.0F * cubed) - (3.0F * squared)) + 1.0F;
+            float part2 = (-2.0F * cubed) + (3.0F * squared);
+            float part3 = (cubed - (2.0F * squared)) + amount;
+            float part4 = cubed - squared;
+
+			return new Half4U()
+			{
+				X = (ushort)((((value1.X * part1) + (value2.X * part2)) + (tangent1.X * part3)) + (tangent2.X * part4)),
+				Y = (ushort)((((value1.Y * part1) + (value2.Y * part2)) + (tangent1.Y * part3)) + (tangent2.Y * part4)),
+				Z = (ushort)((((value1.Z * part1) + (value2.Z * part2)) + (tangent1.Z * part3)) + (tangent2.Z * part4)),
+				W = (ushort)((((value1.W * part1) + (value2.W * part2)) + (tangent1.W * part3)) + (tangent2.W * part4)),
+			};
+        }
+
+		/// <summary>
+        /// Returns a <see cref="Half4U"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// </summary>
+        /// <param name="value1">A <see cref="Half4U"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <see cref="Half4U"/> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <see cref="Half4U"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
+        /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
+        public static Half4U Barycentric(ref Half4U value1, ref Half4U value2, ref Half4U value3, ushort amount1, ushort amount2)
+        {
+			return new Half4U(
+				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
+				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
+				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)), 
+				(value1.W + (amount1 * (value2.W - value1.W))) + (amount2 * (value3.W - value1.W))
+			);
+        }
+
+		/// <summary>
+        /// Performs a linear interpolation between two <see cref="Half4U"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static Half4U Lerp(ref Half4U start, ref Half4U end, float amount)
+        {
+			return new Half4U()
+			{
+				X = (ushort)((1F - amount) * start.X + amount * end.X),
+				Y = (ushort)((1F - amount) * start.Y + amount * end.Y),
+				Z = (ushort)((1F - amount) * start.Z + amount * end.Z),
+				W = (ushort)((1F - amount) * start.W + amount * end.W),
+			};
+        }
+
+		/// <summary>
+        /// Returns a <see cref="Half4U"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Half4U"/>.</param>
+        /// <param name="right">The second source <see cref="Half4U"/>.</param>
+        /// <returns>A <see cref="Half4U"/> containing the smallest components of the source vectors.</returns>
+		public static Half4U Min(Half4U left, Half4U right)
+		{
+			return new Half4U()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+				Z = (left.Z < right.Z) ? left.Z : right.Z,
+				W = (left.W < right.W) ? left.W : right.W,
+			};
+		}
+
+		/// <summary>
+        /// Returns a <see cref="Half4U"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Half4U"/>.</param>
+        /// <param name="right">The second source <see cref="Half4U"/>.</param>
+        /// <returns>A <see cref="Half4U"/> containing the largest components of the source vectors.</returns>
+		public static Half4U Max(Half4U left, Half4U right)
+		{
+			return new Half4U()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+				Z = (left.Z > right.Z) ? left.Z : right.Z,
+				W = (left.W > right.W) ? left.W : right.W,
+			};
+		}
+
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="Half4U"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector</param>
+        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static void DistanceSquared(ref Half4U value1, ref Half4U value2, out ushort result)
+        {
+            ushort x = value1.X - value2.X;
+            ushort y = value1.Y - value2.Y;
+            ushort z = value1.Z - value2.Z;
+            ushort w = value1.W - value2.W;
+
+            result = (x * x) + (y * y) + (z * z) + (w * w);
+        }
+
+		/// <summary>
+        /// Calculates the squared distance between two <see cref="Half4U"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The squared distance between the two vectors.</returns>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static ushort DistanceSquared(ref Half4U value1, ref Half4U value2)
+        {
+            ushort x = value1.X - value2.X;
+            ushort y = value1.Y - value2.Y;
+            ushort z = value1.Z - value2.Z;
+            ushort w = value1.W - value2.W;
+
+            return (x * x) + (y * y) + (z * z) + (w * w);
+        }
+
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="value">The <see cref="Half4U"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
