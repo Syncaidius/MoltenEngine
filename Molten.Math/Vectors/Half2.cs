@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using System.Globalization;
 
 namespace Molten.Math
@@ -82,6 +83,48 @@ namespace Molten.Math
 #endregion
 
 #region Instance Functions
+        /// <summary>
+        /// Determines whether the specified <see cref="Half2"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="Half2"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified <see cref="Half2"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(ref Half2 other)
+        {
+            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="Half2"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="Half2"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified <see cref="Half2"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(Half2 other)
+        {
+            return Equals(ref other);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="Half2"/> is equal to this instance.
+        /// </summary>
+        /// <param name="value">The <see cref="Half2"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified <see cref="Half2"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object value)
+        {
+            if (!(value is Half2))
+                return false;
+
+            var strongValue = (Half2)value;
+            return Equals(ref strongValue);
+        }
+
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
@@ -302,7 +345,44 @@ namespace Molten.Math
 		}
 #endregion
 
-#region Properties
+#region Operators - Equality
+        /// <summary>
+        /// Tests for equality between two objects.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(Half2 left, Half2 right)
+        {
+            return left.Equals(ref right);
+        }
+
+        /// <summary>
+        /// Tests for inequality between two objects.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(Half2 left, Half2 right)
+        {
+            return !left.Equals(ref right);
+        }
+#endregion
+
+#region Operators - Cast
+        ///<summary>Casts a <see cref="Half2"/> to a <see cref="Vector3"/>.</summary>
+        public static explicit operator Vector3(Half2 value)
+        {
+            return new Vector3(value.X, value.Y, 0);
+        }
+
+        ///<summary>Casts a <see cref="Half2"/> to a <see cref="Vector4"/>.</summary>
+        public static explicit operator Vector4(Half2 value)
+        {
+            return new Vector4(value.X, value.Y, 0, 0);
+        }
 
 #endregion
 

@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using System.Globalization;
 
 namespace Molten.Math
@@ -100,6 +101,48 @@ namespace Molten.Math
 #endregion
 
 #region Instance Functions
+        /// <summary>
+        /// Determines whether the specified <see cref="Vector4UL"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="Vector4UL"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified <see cref="Vector4UL"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(ref Vector4UL other)
+        {
+            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z) && MathHelper.NearEqual(other.W, W);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="Vector4UL"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="Vector4UL"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified <see cref="Vector4UL"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(Vector4UL other)
+        {
+            return Equals(ref other);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="Vector4UL"/> is equal to this instance.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4UL"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified <see cref="Vector4UL"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object value)
+        {
+            if (!(value is Vector4UL))
+                return false;
+
+            var strongValue = (Vector4UL)value;
+            return Equals(ref strongValue);
+        }
+
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
@@ -328,7 +371,44 @@ namespace Molten.Math
 		}
 #endregion
 
-#region Properties
+#region Operators - Equality
+        /// <summary>
+        /// Tests for equality between two objects.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(Vector4UL left, Vector4UL right)
+        {
+            return left.Equals(ref right);
+        }
+
+        /// <summary>
+        /// Tests for inequality between two objects.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(Vector4UL left, Vector4UL right)
+        {
+            return !left.Equals(ref right);
+        }
+#endregion
+
+#region Operators - Cast
+        ///<summary>Casts a <see cref="Vector4UL"/> to a <see cref="Vector2UL"/>.</summary>
+        public static explicit operator Vector2UL(Vector4UL value)
+        {
+            return new Vector2UL(value.X, value.Y);
+        }
+
+        ///<summary>Casts a <see cref="Vector4UL"/> to a <see cref="Vector3UL"/>.</summary>
+        public static explicit operator Vector3UL(Vector4UL value)
+        {
+            return new Vector3UL(value.X, value.Y, value.Z);
+        }
 
 #endregion
 

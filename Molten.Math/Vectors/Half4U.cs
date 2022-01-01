@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using System.Globalization;
 
 namespace Molten.Math
@@ -100,6 +101,48 @@ namespace Molten.Math
 #endregion
 
 #region Instance Functions
+        /// <summary>
+        /// Determines whether the specified <see cref="Half4U"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="Half4U"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified <see cref="Half4U"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(ref Half4U other)
+        {
+            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z) && MathHelper.NearEqual(other.W, W);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="Half4U"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="Half4U"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified <see cref="Half4U"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(Half4U other)
+        {
+            return Equals(ref other);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="Half4U"/> is equal to this instance.
+        /// </summary>
+        /// <param name="value">The <see cref="Half4U"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified <see cref="Half4U"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object value)
+        {
+            if (!(value is Half4U))
+                return false;
+
+            var strongValue = (Half4U)value;
+            return Equals(ref strongValue);
+        }
+
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
@@ -328,7 +371,44 @@ namespace Molten.Math
 		}
 #endregion
 
-#region Properties
+#region Operators - Equality
+        /// <summary>
+        /// Tests for equality between two objects.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(Half4U left, Half4U right)
+        {
+            return left.Equals(ref right);
+        }
+
+        /// <summary>
+        /// Tests for inequality between two objects.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(Half4U left, Half4U right)
+        {
+            return !left.Equals(ref right);
+        }
+#endregion
+
+#region Operators - Cast
+        ///<summary>Casts a <see cref="Half4U"/> to a <see cref="Vector2U"/>.</summary>
+        public static explicit operator Vector2U(Half4U value)
+        {
+            return new Vector2U(value.X, value.Y);
+        }
+
+        ///<summary>Casts a <see cref="Half4U"/> to a <see cref="Vector3U"/>.</summary>
+        public static explicit operator Vector3U(Half4U value)
+        {
+            return new Vector3U(value.X, value.Y, value.Z);
+        }
 
 #endregion
 

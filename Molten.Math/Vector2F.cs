@@ -304,30 +304,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Tests for equality between two objects.
-        /// </summary>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Vector2F left, Vector2F right)
-        {
-            return left.Equals(ref right);
-        }
-
-        /// <summary>
-        /// Tests for inequality between two objects.
-        /// </summary>
-        /// <param name="left">The first value to compare.</param>
-        /// <param name="right">The second value to compare.</param>
-        /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Vector2F left, Vector2F right)
-        {
-            return !left.Equals(ref right);
-        }
-
-        /// <summary>
         /// Performs an explicit conversion from <see cref="Vector2F"/> to <see cref="Vector3F"/>.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -358,49 +334,5 @@ namespace Molten
                 Y = MathHelper.Clamp(vec.Y, min, max),
             };
         }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="Vector2F"/> is equal to this instance.
-        /// </summary>
-        /// <param name="other">The <see cref="Vector2F"/> to compare with this instance.</param>
-        /// <returns>
-        /// 	<c>true</c> if the specified <see cref="Vector2F"/> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref Vector2F other)
-        {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="Vector2F"/> is equal to this instance.
-        /// </summary>
-        /// <param name="other">The <see cref="Vector2F"/> to compare with this instance.</param>
-        /// <returns>
-        /// 	<c>true</c> if the specified <see cref="Vector2F"/> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Vector2F other)
-        {
-            return Equals(ref other);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
-        /// </summary>
-        /// <param name="value">The <see cref="System.Object"/> to compare with this instance.</param>
-        /// <returns>
-        /// 	<c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool Equals(object value)
-        {
-            if (!(value is Vector2F))
-                return false;
-
-            var strongValue = (Vector2F)value;
-            return Equals(ref strongValue);
-        }
-
-        
     }
 }

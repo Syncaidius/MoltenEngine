@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using System.Globalization;
 
 namespace Molten.Math
@@ -91,6 +92,48 @@ namespace Molten.Math
 #endregion
 
 #region Instance Functions
+        /// <summary>
+        /// Determines whether the specified <see cref="Vector3UI"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="Vector3UI"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified <see cref="Vector3UI"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(ref Vector3UI other)
+        {
+            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="Vector3UI"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="Vector3UI"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified <see cref="Vector3UI"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(Vector3UI other)
+        {
+            return Equals(ref other);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="Vector3UI"/> is equal to this instance.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector3UI"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified <see cref="Vector3UI"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object value)
+        {
+            if (!(value is Vector3UI))
+                return false;
+
+            var strongValue = (Vector3UI)value;
+            return Equals(ref strongValue);
+        }
+
         /// <summary>
         /// Returns a hash code for this instance.
         /// </summary>
@@ -315,7 +358,44 @@ namespace Molten.Math
 		}
 #endregion
 
-#region Properties
+#region Operators - Equality
+        /// <summary>
+        /// Tests for equality between two objects.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns><c>true</c> if <paramref name="left"/> has the same value as <paramref name="right"/>; otherwise, <c>false</c>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(Vector3UI left, Vector3UI right)
+        {
+            return left.Equals(ref right);
+        }
+
+        /// <summary>
+        /// Tests for inequality between two objects.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns><c>true</c> if <paramref name="left"/> has a different value than <paramref name="right"/>; otherwise, <c>false</c>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(Vector3UI left, Vector3UI right)
+        {
+            return !left.Equals(ref right);
+        }
+#endregion
+
+#region Operators - Cast
+        ///<summary>Casts a <see cref="Vector3UI"/> to a <see cref="Vector2UI"/>.</summary>
+        public static explicit operator Vector2UI(Vector3UI value)
+        {
+            return new Vector2UI(value.X, value.Y);
+        }
+
+        ///<summary>Casts a <see cref="Vector3UI"/> to a <see cref="Vector4UI"/>.</summary>
+        public static explicit operator Vector4UI(Vector3UI value)
+        {
+            return new Vector4UI(value.X, value.Y, value.Z, 0);
+        }
 
 #endregion
 
