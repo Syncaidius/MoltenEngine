@@ -191,9 +191,15 @@ namespace Molten.Math
             <#=d.DT#> length = Length();
             if (!<#=mathHelper#>.IsZero(length))
             {
-                <#=d.DT#> inv = 1.0f / length;
-                X *= inv;
-                Y *= inv;
+                <#=d.DT#> inverse = 1.0f / length;
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			    <#=_pMapUpper[p]#> *= inverse;
+<#
+		}
+#>
             }
         }
 

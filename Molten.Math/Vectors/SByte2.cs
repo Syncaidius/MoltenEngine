@@ -137,9 +137,9 @@ namespace Molten.Math
             sbyte length = Length();
             if (!MathHelper.IsZero(length))
             {
-                sbyte inv = 1.0f / length;
-                X *= inv;
-                Y *= inv;
+                sbyte inverse = 1.0f / length;
+			    X *= inverse;
+			    Y *= inverse;
             }
         }
 

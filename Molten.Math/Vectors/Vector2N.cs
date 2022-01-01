@@ -132,9 +132,9 @@ namespace Molten.Math
             nint length = Length();
             if (!MathHelper.IsZero(length))
             {
-                nint inv = 1.0f / length;
-                X *= inv;
-                Y *= inv;
+                nint inverse = 1.0f / length;
+			    X *= inverse;
+			    Y *= inverse;
             }
         }
 

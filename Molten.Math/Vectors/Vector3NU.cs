@@ -142,9 +142,10 @@ namespace Molten.Math
             nuint length = Length();
             if (!MathHelper.IsZero(length))
             {
-                nuint inv = 1.0f / length;
-                X *= inv;
-                Y *= inv;
+                nuint inverse = 1.0f / length;
+			    X *= inverse;
+			    Y *= inverse;
+			    Z *= inverse;
             }
         }
 

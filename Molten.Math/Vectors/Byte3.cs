@@ -142,9 +142,10 @@ namespace Molten.Math
             byte length = Length();
             if (!MathHelper.IsZero(length))
             {
-                byte inv = 1.0f / length;
-                X *= inv;
-                Y *= inv;
+                byte inverse = 1.0f / length;
+			    X *= inverse;
+			    Y *= inverse;
+			    Z *= inverse;
             }
         }
 

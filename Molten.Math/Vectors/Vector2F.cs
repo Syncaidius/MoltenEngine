@@ -132,9 +132,9 @@ namespace Molten.Math
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inv = 1.0f / length;
-                X *= inv;
-                Y *= inv;
+                float inverse = 1.0f / length;
+			    X *= inverse;
+			    Y *= inverse;
             }
         }
 

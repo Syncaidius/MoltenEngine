@@ -132,9 +132,9 @@ namespace Molten.Math
             ulong length = Length();
             if (!MathHelper.IsZero(length))
             {
-                ulong inv = 1.0f / length;
-                X *= inv;
-                Y *= inv;
+                ulong inverse = 1.0f / length;
+			    X *= inverse;
+			    Y *= inverse;
             }
         }
 

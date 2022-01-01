@@ -152,9 +152,11 @@ namespace Molten.Math
             double length = Length();
             if (!MathHelperDP.IsZero(length))
             {
-                double inv = 1.0f / length;
-                X *= inv;
-                Y *= inv;
+                double inverse = 1.0f / length;
+			    X *= inverse;
+			    Y *= inverse;
+			    Z *= inverse;
+			    W *= inverse;
             }
         }
 
