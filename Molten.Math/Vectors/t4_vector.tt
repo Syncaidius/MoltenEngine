@@ -95,6 +95,19 @@ namespace Molten.Math
 #>
 		}
 
+        ///<summary>Creates a new instance of <see cref = "<#=fName#>"/>.</summary>
+		public <#=fName#>(<#=d.DT#> value)
+		{
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=pMapUpper[p]#> = value;
+<#
+		}
+#>
+		}
+
 		/// <summary>
         /// Initializes a new instance of the <see cref="<#=fName#>"/> struct.
         /// </summary>
@@ -484,7 +497,6 @@ namespace Molten.Math
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
         public static <#=fName#> SmoothStep(ref <#=fName#> start, ref <#=fName#> end, <#=d.DT#> amount)
         {
             amount = <#=mathHelper#>.SmoothStep(amount);
@@ -834,35 +846,6 @@ namespace Molten.Math
 #>
 			};
 		}
-
-		/// <summary>
-        /// Calculates the squared distance between two <#=See(fName)#> vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector</param>
-        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
-        /// </remarks>
-		public static void DistanceSquared(ref <#=fName#> value1, ref <#=fName#> value2, out <#=d.DT#> result)
-        {
-<#
-			r ="";
-			for(int p = 0; p < size; p++)
-			{
-				r+= $"({pMap[p]} * {pMap[p]}){(p < (size-1) ? " + " : "")}";
-#>
-            <#=d.DT#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
-<#
-			}
-#>
-
-            result = <#=r#>;
-        }
 
 		/// <summary>
         /// Calculates the squared distance between two <#=See(fName)#> vectors.

@@ -62,6 +62,14 @@ namespace Molten.Math
 			Z = z;
 		}
 
+        ///<summary>Creates a new instance of <see cref = "Vector3F"/>.</summary>
+		public Vector3F(float value)
+		{
+			X = value;
+			Y = value;
+			Z = value;
+		}
+
 		/// <summary>
         /// Initializes a new instance of the <see cref="Vector3F"/> struct.
         /// </summary>
@@ -411,7 +419,6 @@ namespace Molten.Math
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
         public static Vector3F SmoothStep(ref Vector3F start, ref Vector3F end, float amount)
         {
             amount = MathHelper.SmoothStep(amount);
@@ -702,28 +709,6 @@ namespace Molten.Math
 				Z = (left.Z > right.Z) ? left.Z : right.Z,
 			};
 		}
-
-		/// <summary>
-        /// Calculates the squared distance between two <see cref="Vector3F"/> vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector</param>
-        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
-        /// </remarks>
-		public static void DistanceSquared(ref Vector3F value1, ref Vector3F value2, out float result)
-        {
-            float x = value1.X - value2.X;
-            float y = value1.Y - value2.Y;
-            float z = value1.Z - value2.Z;
-
-            result = (x * x) + (y * y) + (z * z);
-        }
 
 		/// <summary>
         /// Calculates the squared distance between two <see cref="Vector3F"/> vectors.

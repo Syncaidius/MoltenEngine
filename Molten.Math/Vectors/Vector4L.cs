@@ -69,6 +69,15 @@ namespace Molten.Math
 			W = w;
 		}
 
+        ///<summary>Creates a new instance of <see cref = "Vector4L"/>.</summary>
+		public Vector4L(long value)
+		{
+			X = value;
+			Y = value;
+			Z = value;
+			W = value;
+		}
+
 		/// <summary>
         /// Initializes a new instance of the <see cref="Vector4L"/> struct.
         /// </summary>
@@ -424,7 +433,6 @@ namespace Molten.Math
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
         public static Vector4L SmoothStep(ref Vector4L start, ref Vector4L end, long amount)
         {
             amount = MathHelper.SmoothStep(amount);
@@ -725,29 +733,6 @@ namespace Molten.Math
 				W = (left.W > right.W) ? left.W : right.W,
 			};
 		}
-
-		/// <summary>
-        /// Calculates the squared distance between two <see cref="Vector4L"/> vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector</param>
-        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
-        /// </remarks>
-		public static void DistanceSquared(ref Vector4L value1, ref Vector4L value2, out long result)
-        {
-            long x = value1.X - value2.X;
-            long y = value1.Y - value2.Y;
-            long z = value1.Z - value2.Z;
-            long w = value1.W - value2.W;
-
-            result = (x * x) + (y * y) + (z * z) + (w * w);
-        }
 
 		/// <summary>
         /// Calculates the squared distance between two <see cref="Vector4L"/> vectors.

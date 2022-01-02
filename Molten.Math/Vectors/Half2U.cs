@@ -55,6 +55,13 @@ namespace Molten.Math
 			Y = y;
 		}
 
+        ///<summary>Creates a new instance of <see cref = "Half2U"/>.</summary>
+		public Half2U(ushort value)
+		{
+			X = value;
+			Y = value;
+		}
+
 		/// <summary>
         /// Initializes a new instance of the <see cref="Half2U"/> struct.
         /// </summary>
@@ -398,7 +405,6 @@ namespace Molten.Math
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
         public static Half2U SmoothStep(ref Half2U start, ref Half2U end, ushort amount)
         {
             amount = MathHelper.SmoothStep(amount);
@@ -679,27 +685,6 @@ namespace Molten.Math
 				Y = (left.Y > right.Y) ? left.Y : right.Y,
 			};
 		}
-
-		/// <summary>
-        /// Calculates the squared distance between two <see cref="Half2U"/> vectors.
-        /// </summary>
-        /// <param name="value1">The first vector.</param>
-        /// <param name="value2">The second vector</param>
-        /// <param name="result">When the method completes, contains the squared distance between the two vectors.</param>
-        /// <remarks>Distance squared is the value before taking the square root. 
-        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
-        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
-        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
-        /// involves two square roots, which are computationally expensive. However, using distance squared 
-        /// provides the same information and avoids calculating two square roots.
-        /// </remarks>
-		public static void DistanceSquared(ref Half2U value1, ref Half2U value2, out ushort result)
-        {
-            ushort x = value1.X - value2.X;
-            ushort y = value1.Y - value2.Y;
-
-            result = (x * x) + (y * y);
-        }
 
 		/// <summary>
         /// Calculates the squared distance between two <see cref="Half2U"/> vectors.
