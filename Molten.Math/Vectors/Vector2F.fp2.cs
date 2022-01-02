@@ -54,7 +54,6 @@ namespace Molten.Math
         /// </summary>
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
-        /// <param name="result">When the method completes, contains the transformed <see cref="Vector4F"/>.</param>
         public static Vector4F Transform(ref Vector2F vector, ref Matrix4F transform)
         {
             return new Vector4F(
@@ -141,7 +140,6 @@ namespace Molten.Math
         /// </summary>
         /// <param name="coordinate">The coordinate vector to transform.</param>
         /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
-        /// <param name="result">When the method completes, contains the transformed coordinates.</param>
         /// <remarks>
         /// A coordinate transform performs the transformation with the assumption that the w component
         /// is one. The four dimensional vector obtained from the transformation operation has each

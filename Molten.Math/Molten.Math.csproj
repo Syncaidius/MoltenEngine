@@ -244,6 +244,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>t4_vector.tt</DependentUpon>
     </Compile>
+    <Compile Include="Vectors\t4_vector2.cs">
+      <DependentUpon>t4_vector2.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Vectors\t4_vector2.fp.cs">
       <DependentUpon>t4_vector2.fp.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -257,15 +262,23 @@
     <Compile Include="Vectors\Vector2D.cs" />
     <Compile Include="Vectors\Vector2D.fp.cs" />
     <Compile Include="Vectors\Vector2D.fp2.cs" />
+    <Compile Include="Vectors\Vector2D.v2.cs" />
     <Compile Include="Vectors\Vector2F.cs" />
     <Compile Include="Vectors\Vector2F.fp.cs" />
     <Compile Include="Vectors\Vector2F.fp2.cs" />
+    <Compile Include="Vectors\Vector2F.v2.cs" />
     <Compile Include="Vectors\Vector2I.cs" />
+    <Compile Include="Vectors\Vector2I.v2.cs" />
     <Compile Include="Vectors\Vector2L.cs" />
+    <Compile Include="Vectors\Vector2L.v2.cs" />
     <Compile Include="Vectors\Vector2N.cs" />
+    <Compile Include="Vectors\Vector2N.v2.cs" />
     <Compile Include="Vectors\Vector2NU.cs" />
+    <Compile Include="Vectors\Vector2NU.v2.cs" />
     <Compile Include="Vectors\Vector2UI.cs" />
+    <Compile Include="Vectors\Vector2UI.v2.cs" />
     <Compile Include="Vectors\Vector2UL.cs" />
+    <Compile Include="Vectors\Vector2UL.v2.cs" />
     <Compile Include="Vectors\Vector3D.cs" />
     <Compile Include="Vectors\Vector3D.fp.cs" />
     <Compile Include="Vectors\Vector3F.cs" />
@@ -317,6 +330,10 @@
     <Content Include="t4_header.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_header.cs</LastGenOutput>
+    </Content>
+    <Content Include="Vectors\t4_vector2.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_vector2.cs</LastGenOutput>
     </Content>
     <Content Include="Vectors\t4_vector2.fp.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

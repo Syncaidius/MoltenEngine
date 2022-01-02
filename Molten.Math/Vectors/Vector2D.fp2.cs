@@ -15,9 +15,9 @@ namespace Molten.Math
         /// Transforms a 2D vector by the given <see cref="QuaternionF"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionD"/> rotation to apply.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector2D"/>.</param>
-        public static void Transform(ref Vector2D vector, ref QuaternionF rotation, out Vector2D result)
+        public static void Transform(ref Vector2D vector, ref QuaternionD rotation, out Vector2D result)
         {
             double x = rotation.X + rotation.X;
             double y = rotation.Y + rotation.Y;
@@ -49,7 +49,6 @@ namespace Molten.Math
         /// </summary>
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
-        /// <param name="result">When the method completes, contains the transformed <see cref="Vector4F"/>.</param>
         public static Vector4D Transform(ref Vector2D vector, ref Matrix4F transform)
         {
             return new Vector4D(
@@ -136,7 +135,6 @@ namespace Molten.Math
         /// </summary>
         /// <param name="coordinate">The coordinate vector to transform.</param>
         /// <param name="transform">The transformation <see cref="Matrix4D"/>.</param>
-        /// <param name="result">When the method completes, contains the transformed coordinates.</param>
         /// <remarks>
         /// A coordinate transform performs the transformation with the assumption that the w component
         /// is one. The four dimensional vector obtained from the transformation operation has each

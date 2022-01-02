@@ -195,7 +195,7 @@ namespace Molten.Math
             long length = Length();
             if (!MathHelper.IsZero(length))
             {
-                long inverse = 1.0f / length;
+                long inverse = 1.0D / length;
 			    X *= inverse;
 			    Y *= inverse;
 			    Z *= inverse;
@@ -419,6 +419,31 @@ namespace Molten.Math
 
 #region Static Methods
         /// <summary>
+        /// Performs a cubic interpolation between two vectors.
+        /// </summary>
+        /// <param name="start">Start vector.</param>
+        /// <param name="end">End vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
+        public static Vector4L SmoothStep(ref Vector4L start, ref Vector4L end, long amount)
+        {
+            amount = MathHelper.SmoothStep(amount);
+            return Lerp(ref start, ref end, amount);
+        }
+
+        /// <summary>
+        /// Performs a cubic interpolation between two vectors.
+        /// </summary>
+        /// <param name="start">Start vector.</param>
+        /// <param name="end">End vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <returns>The cubic interpolation of the two vectors.</returns>
+        public static Vector4L SmoothStep(Vector4L start, Vector4L end, long amount)
+        {
+            return SmoothStep(ref start, ref end, amount);
+        }    
+
+        /// <summary>
         /// Orthogonalizes a list of <see cref="Vector4L"/>.
         /// </summary>
         /// <param name="destination">The list of orthogonalized <see cref="Vector4L"/>.</param>
@@ -615,6 +640,20 @@ namespace Molten.Math
 			};
         }
 
+        /// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Vector4L"/>.</param>
+        /// <param name="tangent1">First source tangent <see cref="Vector4L"/>.</param>
+        /// <param name="value2">Second source position <see cref="Vector4L"/>.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Vector4L"/>.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>The result of the Hermite spline interpolation.</returns>
+        public static Vector4L Hermite(Vector4L value1, Vector4L tangent1, Vector4L value2, Vector4L tangent2, long amount)
+        {
+            return Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount);
+        }
+
 		/// <summary>
         /// Returns a <see cref="Vector4L"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
@@ -761,6 +800,89 @@ namespace Molten.Math
 				Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z,
 				W = value.W < min.W ? min.W : value.W > max.W ? max.W : value.W,
 			};
+        }
+
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static Vector4L CatmullRom(ref Vector4L value1, ref Vector4L value2, ref Vector4L value3, ref Vector4L value4, long amount)
+        {
+            double squared = amount * amount;
+            double cubed = amount * squared;
+
+            return new Vector4L()
+            {
+				X = (long)(0.5D * ((((2D * value2.X) + 
+                ((-value1.X + value3.X) * amount)) + 
+                (((((2D * value1.X) - (5D * value2.X)) + (4D * value3.X)) - value4.X) * squared)) +
+                ((((-value1.X + (3D * value2.X)) - (3D * value3.X)) + value4.X) * cubed))),
+
+				Y = (long)(0.5D * ((((2D * value2.Y) + 
+                ((-value1.Y + value3.Y) * amount)) + 
+                (((((2D * value1.Y) - (5D * value2.Y)) + (4D * value3.Y)) - value4.Y) * squared)) +
+                ((((-value1.Y + (3D * value2.Y)) - (3D * value3.Y)) + value4.Y) * cubed))),
+
+				Z = (long)(0.5D * ((((2D * value2.Z) + 
+                ((-value1.Z + value3.Z) * amount)) + 
+                (((((2D * value1.Z) - (5D * value2.Z)) + (4D * value3.Z)) - value4.Z) * squared)) +
+                ((((-value1.Z + (3D * value2.Z)) - (3D * value3.Z)) + value4.Z) * cubed))),
+
+				W = (long)(0.5D * ((((2D * value2.W) + 
+                ((-value1.W + value3.W) * amount)) + 
+                (((((2D * value1.W) - (5D * value2.W)) + (4D * value3.W)) - value4.W) * squared)) +
+                ((((-value1.W + (3D * value2.W)) - (3D * value3.W)) + value4.W) * cubed))),
+
+            };
+        }
+
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>A vector that is the result of the Catmull-Rom interpolation.</returns>
+        public static Vector4L CatmullRom(Vector4L value1, Vector4L value2, Vector4L value3, Vector4L value4, long amount)
+        {
+            return CatmullRom(ref value1, ref value2, ref value3, ref value4, amount);
+        }
+
+        /// <summary>
+        /// Returns the reflection of a vector off a surface that has the specified normal. 
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="normal">Normal of the surface.</param>
+        /// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
+        /// whether the original vector was close enough to the surface to hit it.</remarks>
+        public static Vector4L Reflect(ref Vector4L vector, ref Vector4L normal)
+        {
+            long dot = (vector.X * normal.X) + (vector.Y * normal.Y) + (vector.Z * normal.Z) + (vector.W * normal.W);
+
+            return new Vector4L()
+            {
+				X = vector.X - ((2.0D * dot) * normal.X),
+				Y = vector.Y - ((2.0D * dot) * normal.Y),
+				Z = vector.Z - ((2.0D * dot) * normal.Z),
+				W = vector.W - ((2.0D * dot) * normal.W),
+            };
+        }
+
+        /// <summary>
+        /// Converts the <see cref="Vector4L"/> into a unit vector.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector4L"/> to normalize.</param>
+        /// <returns>The normalized <see cref="Vector4L"/>.</returns>
+        public static Vector4L Normalize(Vector4L value)
+        {
+            value.Normalize();
+            return value;
         }
 #endregion
 

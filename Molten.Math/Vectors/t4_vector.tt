@@ -234,7 +234,7 @@ namespace Molten.Math
             <#=d.DT#> length = Length();
             if (!<#=mathHelper#>.IsZero(length))
             {
-                <#=d.DT#> inverse = 1.0f / length;
+                <#=d.DT#> inverse = 1.0<#=d.FPL#> / length;
 <#
 		for(int p = 0; p < size; p++)
 		{
@@ -479,6 +479,31 @@ namespace Molten.Math
 
 #region Static Methods
         /// <summary>
+        /// Performs a cubic interpolation between two vectors.
+        /// </summary>
+        /// <param name="start">Start vector.</param>
+        /// <param name="end">End vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
+        public static <#=fName#> SmoothStep(ref <#=fName#> start, ref <#=fName#> end, <#=d.DT#> amount)
+        {
+            amount = <#=mathHelper#>.SmoothStep(amount);
+            return Lerp(ref start, ref end, amount);
+        }
+
+        /// <summary>
+        /// Performs a cubic interpolation between two vectors.
+        /// </summary>
+        /// <param name="start">Start vector.</param>
+        /// <param name="end">End vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <returns>The cubic interpolation of the two vectors.</returns>
+        public static <#=fName#> SmoothStep(<#=fName#> start, <#=fName#> end, <#=d.DT#> amount)
+        {
+            return SmoothStep(ref start, ref end, amount);
+        }    
+
+        /// <summary>
         /// Orthogonalizes a list of <#=See(fName)#>.
         /// </summary>
         /// <param name="destination">The list of orthogonalized <#=See(fName)#>.</param>
@@ -708,6 +733,20 @@ namespace Molten.Math
 			};
         }
 
+        /// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <#=See(fName)#>.</param>
+        /// <param name="tangent1">First source tangent <#=See(fName)#>.</param>
+        /// <param name="value2">Second source position <#=See(fName)#>.</param>
+        /// <param name="tangent2">Second source tangent <#=See(fName)#>.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>The result of the Hermite spline interpolation.</returns>
+        public static <#=fName#> Hermite(<#=fName#> value1, <#=fName#> tangent1, <#=fName#> value2, <#=fName#> tangent2, <#=d.DT#> amount)
+        {
+            return Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount);
+        }
+
 		/// <summary>
         /// Returns a <#=See(fName)#> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
@@ -890,6 +929,85 @@ namespace Molten.Math
 		}
 #>
 			};
+        }
+
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static <#=fName#> CatmullRom(ref <#=fName#> value1, ref <#=fName#> value2, ref <#=fName#> value3, ref <#=fName#> value4, <#=d.DT#> amount)
+        {
+            <#=d.FP#> squared = amount * amount;
+            <#=d.FP#> cubed = amount * squared;
+
+            return new <#=fName#>()
+            {
+<#
+				for(int p = 0; p < size; p++)
+				{
+#>
+				<#=pMapUpper[p]#> = <#=fpCast#>(0.5<#=d.FPL#> * ((((2<#=d.FPL#> * value2.<#=pMapUpper[p]#>) + 
+                ((-value1.<#=pMapUpper[p]#> + value3.<#=pMapUpper[p]#>) * amount)) + 
+                (((((2<#=d.FPL#> * value1.<#=pMapUpper[p]#>) - (5<#=d.FPL#> * value2.<#=pMapUpper[p]#>)) + (4<#=d.FPL#> * value3.<#=pMapUpper[p]#>)) - value4.<#=pMapUpper[p]#>) * squared)) +
+                ((((-value1.<#=pMapUpper[p]#> + (3<#=d.FPL#> * value2.<#=pMapUpper[p]#>)) - (3<#=d.FPL#> * value3.<#=pMapUpper[p]#>)) + value4.<#=pMapUpper[p]#>) * cubed))),
+
+<#
+			    }
+#>
+            };
+        }
+
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>A vector that is the result of the Catmull-Rom interpolation.</returns>
+        public static <#=fName#> CatmullRom(<#=fName#> value1, <#=fName#> value2, <#=fName#> value3, <#=fName#> value4, <#=d.DT#> amount)
+        {
+            return CatmullRom(ref value1, ref value2, ref value3, ref value4, amount);
+        }
+
+        /// <summary>
+        /// Returns the reflection of a vector off a surface that has the specified normal. 
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="normal">Normal of the surface.</param>
+        /// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
+        /// whether the original vector was close enough to the surface to hit it.</remarks>
+        public static <#=fName#> Reflect(ref <#=fName#> vector, ref <#=fName#> normal)
+        {
+            <#=d.DT#> dot = <#for(int p = 0; p < size; p++){#>(vector.<#=pMapUpper[p]#> * normal.<#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
+
+            return new <#=fName#>()
+            {
+<#
+				for(int p = 0; p < size; p++)
+				{
+#>
+				<#=pMapUpper[p]#> = vector.<#=pMapUpper[p]#> - ((2.0<#=d.FPL#> * dot) * normal.<#=pMapUpper[p]#>),
+<#
+			    }
+#>
+            };
+        }
+
+        /// <summary>
+        /// Converts the <#=See(fName)#> into a unit vector.
+        /// </summary>
+        /// <param name="value">The <#=See(fName)#> to normalize.</param>
+        /// <returns>The normalized <#=See(fName)#>.</returns>
+        public static <#=fName#> Normalize(<#=fName#> value)
+        {
+            value.Normalize();
+            return value;
         }
 #endregion
 

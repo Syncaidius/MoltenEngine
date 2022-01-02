@@ -175,7 +175,7 @@ namespace Molten.Math
             double length = Length();
             if (!MathHelperDP.IsZero(length))
             {
-                double inverse = 1.0f / length;
+                double inverse = 1.0D / length;
 			    X *= inverse;
 			    Y *= inverse;
             }
@@ -393,6 +393,31 @@ namespace Molten.Math
 
 #region Static Methods
         /// <summary>
+        /// Performs a cubic interpolation between two vectors.
+        /// </summary>
+        /// <param name="start">Start vector.</param>
+        /// <param name="end">End vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <param name="result">When the method completes, contains the cubic interpolation of the two vectors.</param>
+        public static Vector2D SmoothStep(ref Vector2D start, ref Vector2D end, double amount)
+        {
+            amount = MathHelperDP.SmoothStep(amount);
+            return Lerp(ref start, ref end, amount);
+        }
+
+        /// <summary>
+        /// Performs a cubic interpolation between two vectors.
+        /// </summary>
+        /// <param name="start">Start vector.</param>
+        /// <param name="end">End vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <returns>The cubic interpolation of the two vectors.</returns>
+        public static Vector2D SmoothStep(Vector2D start, Vector2D end, double amount)
+        {
+            return SmoothStep(ref start, ref end, amount);
+        }    
+
+        /// <summary>
         /// Orthogonalizes a list of <see cref="Vector2D"/>.
         /// </summary>
         /// <param name="destination">The list of orthogonalized <see cref="Vector2D"/>.</param>
@@ -577,6 +602,20 @@ namespace Molten.Math
 			};
         }
 
+        /// <summary>
+        /// Performs a Hermite spline interpolation.
+        /// </summary>
+        /// <param name="value1">First source position <see cref="Vector2D"/>.</param>
+        /// <param name="tangent1">First source tangent <see cref="Vector2D"/>.</param>
+        /// <param name="value2">Second source position <see cref="Vector2D"/>.</param>
+        /// <param name="tangent2">Second source tangent <see cref="Vector2D"/>.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>The result of the Hermite spline interpolation.</returns>
+        public static Vector2D Hermite(Vector2D value1, Vector2D tangent1, Vector2D value2, Vector2D tangent2, double amount)
+        {
+            return Hermite(ref value1, ref tangent1, ref value2, ref tangent2, amount);
+        }
+
 		/// <summary>
         /// Returns a <see cref="Vector2D"/> containing the 2D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
@@ -707,6 +746,77 @@ namespace Molten.Math
 				X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X,
 				Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y,
 			};
+        }
+
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        public static Vector2D CatmullRom(ref Vector2D value1, ref Vector2D value2, ref Vector2D value3, ref Vector2D value4, double amount)
+        {
+            double squared = amount * amount;
+            double cubed = amount * squared;
+
+            return new Vector2D()
+            {
+				X = (0.5D * ((((2D * value2.X) + 
+                ((-value1.X + value3.X) * amount)) + 
+                (((((2D * value1.X) - (5D * value2.X)) + (4D * value3.X)) - value4.X) * squared)) +
+                ((((-value1.X + (3D * value2.X)) - (3D * value3.X)) + value4.X) * cubed))),
+
+				Y = (0.5D * ((((2D * value2.Y) + 
+                ((-value1.Y + value3.Y) * amount)) + 
+                (((((2D * value1.Y) - (5D * value2.Y)) + (4D * value3.Y)) - value4.Y) * squared)) +
+                ((((-value1.Y + (3D * value2.Y)) - (3D * value3.Y)) + value4.Y) * cubed))),
+
+            };
+        }
+
+        /// <summary>
+        /// Performs a Catmull-Rom interpolation using the specified positions.
+        /// </summary>
+        /// <param name="value1">The first position in the interpolation.</param>
+        /// <param name="value2">The second position in the interpolation.</param>
+        /// <param name="value3">The third position in the interpolation.</param>
+        /// <param name="value4">The fourth position in the interpolation.</param>
+        /// <param name="amount">Weighting factor.</param>
+        /// <returns>A vector that is the result of the Catmull-Rom interpolation.</returns>
+        public static Vector2D CatmullRom(Vector2D value1, Vector2D value2, Vector2D value3, Vector2D value4, double amount)
+        {
+            return CatmullRom(ref value1, ref value2, ref value3, ref value4, amount);
+        }
+
+        /// <summary>
+        /// Returns the reflection of a vector off a surface that has the specified normal. 
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="normal">Normal of the surface.</param>
+        /// <remarks>Reflect only gives the direction of a reflection off a surface, it does not determine 
+        /// whether the original vector was close enough to the surface to hit it.</remarks>
+        public static Vector2D Reflect(ref Vector2D vector, ref Vector2D normal)
+        {
+            double dot = (vector.X * normal.X) + (vector.Y * normal.Y);
+
+            return new Vector2D()
+            {
+				X = vector.X - ((2.0D * dot) * normal.X),
+				Y = vector.Y - ((2.0D * dot) * normal.Y),
+            };
+        }
+
+        /// <summary>
+        /// Converts the <see cref="Vector2D"/> into a unit vector.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector2D"/> to normalize.</param>
+        /// <returns>The normalized <see cref="Vector2D"/>.</returns>
+        public static Vector2D Normalize(Vector2D value)
+        {
+            value.Normalize();
+            return value;
         }
 #endregion
 
