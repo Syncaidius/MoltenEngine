@@ -197,9 +197,6 @@
       <DependentUpon>t4_quaternions.tt</DependentUpon>
     </Compile>
     <Compile Include="RectangleUI.cs" />
-    <Compile Include="Vector2I.cs" />
-    <Compile Include="Vector3I.cs" />
-    <Compile Include="Vector4I.cs" />
     <Compile Include="MathHelper.cs" />
     <Compile Include="Matrix4F.cs" />
     <Compile Include="Matrix2F.cs" />
@@ -308,9 +305,6 @@
     <Compile Include="RectangleF.cs" />
     <Compile Include="RigidTransform.cs" />
     <Compile Include="TriangleSidedness.cs" />
-    <Compile Include="Vector2UI.cs" />
-    <Compile Include="Vector3UI.cs" />
-    <Compile Include="Vector4UI.cs" />
     <Compile Include="Vector3F.cs" />
     <Compile Include="Vector4F.cs" />
     <Compile Include="Viewport.cs" />
