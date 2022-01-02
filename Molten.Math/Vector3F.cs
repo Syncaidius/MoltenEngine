@@ -643,33 +643,6 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the cross product of two vectors.
-        /// </summary>
-        /// <param name="left">First source vector.</param>
-        /// <param name="right">Second source vector.</param>
-        /// <param name="result">When the method completes, contains he cross product of the two vectors.</param>
-        public static void Cross(ref Vector3F left, ref Vector3F right, out Vector3F result)
-        {
-            result = new Vector3F(
-                (left.Y * right.Z) - (left.Z * right.Y),
-                (left.Z * right.X) - (left.X * right.Z),
-                (left.X * right.Y) - (left.Y * right.X));
-        }
-
-        /// <summary>
-        /// Calculates the cross product of two vectors.
-        /// </summary>
-        /// <param name="left">First source vector.</param>
-        /// <param name="right">Second source vector.</param>
-        /// <returns>The cross product of the two vectors.</returns>
-        public static Vector3F Cross(Vector3F left, Vector3F right)
-        {
-            Vector3F result;
-            Cross(ref left, ref right, out result);
-            return result;
-        }
-
-        /// <summary>
         /// Calculates the distance between two vectors.
         /// </summary>
         /// <param name="value1">The first vector.</param>

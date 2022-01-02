@@ -159,22 +159,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AffineTransform.cs" />
+    <Compile Include="3D\AffineTransform.cs" />
     <Compile Include="AngleF.cs" />
-    <Compile Include="BezierCurve2D.cs" />
-    <Compile Include="BezierCurve3D.cs" />
+    <Compile Include="2D\BezierCurve2D.cs" />
+    <Compile Include="3D\BezierCurve3D.cs" />
     <Compile Include="BinPacker.cs" />
     <Compile Include="Bool4.cs" />
-    <Compile Include="BoundingBox.cs" />
-    <Compile Include="BoundingFrustum.cs" />
-    <Compile Include="BoundingSphere.cs" />
+    <Compile Include="3D\BoundingBox.cs" />
+    <Compile Include="3D\BoundingFrustum.cs" />
+    <Compile Include="3D\BoundingSphere.cs" />
     <Compile Include="ByteMath.cs" />
     <Compile Include="CollisionHelper.cs" />
-    <Compile Include="Color.cs" />
-    <Compile Include="Color.Palette.cs" />
-    <Compile Include="Color3.cs" />
-    <Compile Include="Color4.cs" />
-    <Compile Include="ColorBGRA.cs" />
+    <Compile Include="Colors\Color.cs" />
+    <Compile Include="Colors\Color.Palette.cs" />
+    <Compile Include="Colors\Color3.cs" />
+    <Compile Include="Colors\Color4.cs" />
+    <Compile Include="Colors\ColorBGRA.cs" />
     <Compile Include="DoublePrecision\AngleD.cs" />
     <Compile Include="DoublePrecision\Matrix3D.cs" />
     <Compile Include="DoublePrecision\Matrix4D.cs" />
@@ -182,7 +182,7 @@
     <Compile Include="PlainIntersectionType.cs" />
     <Compile Include="ContainmentType.cs" />
     <Compile Include="AngleType.cs" />
-    <Compile Include="FrustumCameraParams.cs" />
+    <Compile Include="3D\FrustumCameraParams.cs" />
     <Compile Include="Half.cs" />
     <Compile Include="Half2.cs" />
     <Compile Include="Half3.cs" />
@@ -196,7 +196,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>t4_quaternions.tt</DependentUpon>
     </Compile>
-    <Compile Include="RectangleUI.cs" />
+    <Compile Include="2D\RectangleUI.cs" />
     <Compile Include="MathHelper.cs" />
     <Compile Include="Matrix4F.cs" />
     <Compile Include="Matrix2F.cs" />
@@ -217,8 +217,8 @@
     <Compile Include="P2T\TriUtil.cs" />
     <Compile Include="Noise\PerlinNoise2D.cs" />
     <Compile Include="Noise\PerlinNoise.cs" />
-    <Compile Include="Plane.cs" />
-    <Compile Include="Shape.cs" />
+    <Compile Include="3D\Plane.cs" />
+    <Compile Include="2D\Shape.cs" />
     <Compile Include="Vectors\Byte2.cs" />
     <Compile Include="Vectors\Byte3.cs" />
     <Compile Include="Vectors\Byte4.cs" />
@@ -240,6 +240,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>t4_vector.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Vectors\t4_vector3.cs">
+      <DependentUpon>t4_vector3.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Vectors\t4_vector2.cs">
       <DependentUpon>t4_vector2.tt</DependentUpon>
@@ -278,14 +283,21 @@
     <Compile Include="Vectors\Vector2UL.v2.cs" />
     <Compile Include="Vectors\Vector3D.cs" />
     <Compile Include="Vectors\Vector3D.fp.cs" />
+    <Compile Include="Vectors\Vector3D.v3.cs" />
     <Compile Include="Vectors\Vector3F.cs" />
     <Compile Include="Vectors\Vector3F.fp.cs" />
+    <Compile Include="Vectors\Vector3F.v3.cs" />
     <Compile Include="Vectors\Vector3I.cs" />
+    <Compile Include="Vectors\Vector3I.v3.cs" />
     <Compile Include="Vectors\Vector3L.cs" />
+    <Compile Include="Vectors\Vector3L.v3.cs" />
     <Compile Include="Vectors\Vector3N.cs" />
     <Compile Include="Vectors\Vector3NU.cs" />
+    <Compile Include="Vectors\Vector3NU.v3.cs" />
     <Compile Include="Vectors\Vector3UI.cs" />
+    <Compile Include="Vectors\Vector3UI.v3.cs" />
     <Compile Include="Vectors\Vector3UL.cs" />
+    <Compile Include="Vectors\Vector3UL.v3.cs" />
     <Compile Include="Vectors\Vector4D.cs" />
     <Compile Include="Vectors\Vector4D.fp.cs" />
     <Compile Include="Vectors\Vector4F.cs" />
@@ -301,8 +313,8 @@
     <Compile Include="RandomNumber.cs" />
     <Compile Include="Ray.cs" />
     <Compile Include="RayHit.cs" />
-    <Compile Include="Rectangle.cs" />
-    <Compile Include="RectangleF.cs" />
+    <Compile Include="2D\Rectangle.cs" />
+    <Compile Include="2D\RectangleF.cs" />
     <Compile Include="RigidTransform.cs" />
     <Compile Include="TriangleSidedness.cs" />
     <Compile Include="Vector3F.cs" />
@@ -323,6 +335,10 @@
     <Content Include="t4_header.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_header.cs</LastGenOutput>
+    </Content>
+    <Content Include="Vectors\t4_vector3.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_vector3.cs</LastGenOutput>
     </Content>
     <Content Include="Vectors\t4_vector2.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -346,14 +362,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Matrices\" />
-    <Folder Include="Shapes\2D\Box\" />
-    <Folder Include="Shapes\2D\Circles\" />
-    <Folder Include="Shapes\2D\Lines\" />
-    <Folder Include="Shapes\2D\Rectangles\" />
-    <Folder Include="Shapes\3D\Frustums\" />
-    <Folder Include="Shapes\3D\Plains\" />
-    <Folder Include="Shapes\3D\Rays\" />
-    <Folder Include="Shapes\3D\Spheres\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
