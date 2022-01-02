@@ -44,7 +44,7 @@ namespace Molten.Math
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
-        /// <param name="result">When the method completes, contains the transformed <#=SeeRef(fName)#>.</param>
+        /// <param name="result">When the method completes, contains the transformed <#=See(fName)#>.</param>
         public static void Transform(ref <#=fName#> vector, ref QuaternionF rotation, out <#=fName#> result)
         {
             <#=d.DT#> x = rotation.X + rotation.X;

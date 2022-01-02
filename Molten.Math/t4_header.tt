@@ -72,7 +72,7 @@ public string GetParamSentence(string pMap, int size, string delimiter = ", ", s
     return r;
 }
 
-public string SeeRef(string typeName)
+public string See(string typeName)
 {
     return $"<see cref=\"{typeName}\"/>";
 }

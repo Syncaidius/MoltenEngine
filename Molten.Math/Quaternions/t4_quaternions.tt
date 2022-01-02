@@ -38,7 +38,7 @@ namespace Molten
 	public partial struct <#=fName#> : IFormattable, IEquatable<<#=fName#>>
 	{
 		/// <summary>
-        /// The size of the <#=SeeRef(fName)#> type, in bytes.
+        /// The size of the <#=See(fName)#> type, in bytes.
         /// </summary>
         public static readonly int SizeInBytes = Marshal.SizeOf(typeof(<#=fName#>));
 
@@ -112,7 +112,7 @@ namespace Molten
 
 #region Constructors
         /// <summary>
-        /// Initializes a new instance of the <#=SeeRef(fName)#> struct.
+        /// Initializes a new instance of the <#=See(fName)#> struct.
         /// </summary>
         /// <param name="value">A <#=fName#> containing the values with which to initialize the components.</param>
         public <#=fName#>(Vector4<#=d.Postfix#> value)
@@ -124,10 +124,10 @@ namespace Molten
         }
 
         /// <summary>
-        /// Initializes a new instance of the <#=SeeRef(fName)#> struct.
+        /// Initializes a new instance of the <#=See(fName)#> struct.
         /// </summary>
         /// <param name="value">A vector containing the values with which to initialize the X, Y, and Z components.</param>
-        /// <param name="w">Initial value for the W component of the <#=SeeRef(fName)#>.</param>
+        /// <param name="w">Initial value for the W component of the <#=See(fName)#>.</param>
         public <#=fName#>(<#=vectorName#> value, <#=d.DT#> w)
         {
             X = value.X;
@@ -137,11 +137,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Initializes a new instance of the <#=SeeRef(fName)#> struct.
+        /// Initializes a new instance of the <#=See(fName)#> struct.
         /// </summary>
         /// <param name="value">A vector containing the values with which to initialize the X and Y components.</param>
-        /// <param name="z">Initial value for the Z component of the <#=SeeRef(fName)#>.</param>
-        /// <param name="w">Initial value for the W component of the <#=SeeRef(fName)#>.</param>
+        /// <param name="z">Initial value for the Z component of the <#=See(fName)#>.</param>
+        /// <param name="w">Initial value for the W component of the <#=See(fName)#>.</param>
         public <#=fName#>(Vector2<#=d.Postfix#> value, <#=d.DT#> z, <#=d.DT#> w)
         {
             X = value.X;
@@ -151,12 +151,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Initializes a new instance of the <#=SeeRef(fName)#> struct.
+        /// Initializes a new instance of the <#=See(fName)#> struct.
         /// </summary>
-        /// <param name="x">Initial value for the X component of the <#=SeeRef(fName)#>.</param>
-        /// <param name="y">Initial value for the Y component of the <#=SeeRef(fName)#>.</param>
-        /// <param name="z">Initial value for the Z component of the <#=SeeRef(fName)#>.</param>
-        /// <param name="w">Initial value for the W component of the <#=SeeRef(fName)#>.</param>
+        /// <param name="x">Initial value for the X component of the <#=See(fName)#>.</param>
+        /// <param name="y">Initial value for the Y component of the <#=See(fName)#>.</param>
+        /// <param name="z">Initial value for the Z component of the <#=See(fName)#>.</param>
+        /// <param name="w">Initial value for the W component of the <#=See(fName)#>.</param>
         public <#=fName#>(<#=d.DT#> x, <#=d.DT#> y, <#=d.DT#> z, <#=d.DT#> w)
         {
             X = x;
@@ -167,7 +167,7 @@ namespace Molten
 
         
         /// <summary>
-        /// Initializes a new instance of the  <#=SeeRef(fName)#> struct.
+        /// Initializes a new instance of the  <#=See(fName)#> struct.
         /// </summary>
         /// <param name="values">The values to assign to the X, Y, Z, and W components of the quaternion. This must be an array with four elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
@@ -210,7 +210,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Conjugates the <#=SeeRef(fName)#> X,Y and Z components. W component is not changed.
+        /// Conjugates the <#=See(fName)#> X,Y and Z components. W component is not changed.
         /// </summary>
         public void Conjugate()
         {
@@ -220,7 +220,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Conjugates the <#=SeeRef(fName)#>.
+        /// Conjugates the <#=See(fName)#>.
         /// </summary>
         public void Abs()
         {
@@ -231,9 +231,9 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the squared length of the <#=SeeRef(fName)#>.
+        /// Calculates the squared length of the <#=See(fName)#>.
         /// </summary>
-        /// <returns>The squared length of the <#=SeeRef(fName)#>.</returns>
+        /// <returns>The squared length of the <#=See(fName)#>.</returns>
         /// <remarks>
         /// This method may be preferred to <see cref="<#=fName#>.Length"/> when only a relative length is needed
         /// and speed is of the essence.
@@ -244,9 +244,9 @@ namespace Molten
         }
 
         /// <summary>
-        /// Creates an array containing the elements of the <#=SeeRef(fName)#>.
+        /// Creates an array containing the elements of the <#=See(fName)#>.
         /// </summary>
-        /// <returns>A four-element array containing the components of the <#=SeeRef(fName)#>.</returns>
+        /// <returns>A four-element array containing the components of the <#=See(fName)#>.</returns>
         public <#=d.DT#>[] ToArray()
         {
             return new <#=d.DT#>[] { X, Y, Z, W };
@@ -312,7 +312,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Converts the <#=SeeRef(fName)#> into a unit quaternion.
+        /// Converts the <#=See(fName)#> into a unit quaternion.
         /// </summary>
         public void Normalize()
         {
@@ -357,11 +357,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Determines whether the specified <#=SeeRef(fName)#> is equal to this instance.
+        /// Determines whether the specified <#=See(fName)#> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <#=SeeRef(fName)#> to compare with this instance.</param>
+        /// <param name="other">The <#=See(fName)#> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <#=SeeRef(fName)#> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <#=See(fName)#> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref <#=fName#> other)
@@ -370,11 +370,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Determines whether the specified <#=SeeRef(fName)#> is equal to this instance.
+        /// Determines whether the specified <#=See(fName)#> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <#=SeeRef(fName)#> to compare with this instance.</param>
+        /// <param name="other">The <#=See(fName)#> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <#=SeeRef(fName)#> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <#=See(fName)#> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(<#=fName#> other)
@@ -459,10 +459,10 @@ namespace Molten
 
 #region Static Methods
         /// <summary>
-        /// Multiplies two <#=SeeRef(fName)#> together in opposite order.
+        /// Multiplies two <#=See(fName)#> together in opposite order.
         /// </summary>
-        /// <param name="a">First <#=SeeRef(fName)#> to multiply.</param>
-        /// <param name="b">Second <#=SeeRef(fName)#> to multiply.</param>
+        /// <param name="a">First <#=See(fName)#> to multiply.</param>
+        /// <param name="b">Second <#=See(fName)#> to multiply.</param>
         public static <#=fName#> Concatenate(ref <#=fName#> a, ref <#=fName#> b)
         {
             <#=d.DT#> aX = a.X;
@@ -532,11 +532,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Computes the axis angle representation of a normalized <#=SeeRef(fName)#>.
+        /// Computes the axis angle representation of a normalized <#=See(fName)#>.
         /// </summary>
-        /// <param name="q"><#=SeeRef(fName)#> to be converted.</param>
-        /// <param name="axis">Axis represented by the <#=SeeRef(fName)#>.</param>
-        /// <param name="angle">Angle around the axis represented by the <#=SeeRef(fName)#>.</param>
+        /// <param name="q"><#=See(fName)#> to be converted.</param>
+        /// <param name="axis">Axis represented by the <#=See(fName)#>.</param>
+        /// <param name="angle">Angle around the axis represented by the <#=See(fName)#>.</param>
         public static void GetAxisAngle(ref <#=fName#> q, out Vector3<#=d.Postfix#> axis, out <#=d.DT#> angle)
         {
             <#=d.DT#> qw = q.W;
@@ -570,11 +570,11 @@ namespace Molten
         /// <summary>
         /// Sets up control points for spherical quadrangle interpolation.
         /// </summary>
-        /// <param name="value1">First source <#=SeeRef(fName)#>.</param>
-        /// <param name="value2">Second source <#=SeeRef(fName)#>.</param>
-        /// <param name="value3">Third source <#=SeeRef(fName)#>.</param>
-        /// <param name="value4">Fourth source <#=SeeRef(fName)#>.</param>
-        /// <returns>An array of three <#=SeeRef(fName)#> that represent control points for spherical quadrangle interpolation.</returns>
+        /// <param name="value1">First source <#=See(fName)#>.</param>
+        /// <param name="value2">Second source <#=See(fName)#>.</param>
+        /// <param name="value3">Third source <#=See(fName)#>.</param>
+        /// <param name="value4">Fourth source <#=See(fName)#>.</param>
+        /// <returns>An array of three <#=See(fName)#> that represent control points for spherical quadrangle interpolation.</returns>
         public static <#=fName#>[] SquadSetup(ref <#=fName#> value1, ref <#=fName#> value2, ref <#=fName#> value3, ref <#=fName#> value4)
         {
             <#=fName#> q0 = (value1 + value2).LengthSquared() < (value1 - value2).LengthSquared() ? -value1 : value1;
@@ -595,14 +595,14 @@ namespace Molten
         }
 
         /// <summary>
-        /// Interpolates between <#=SeeRef(fName)#>, using spherical quadrangle interpolation.
+        /// Interpolates between <#=See(fName)#>, using spherical quadrangle interpolation.
         /// </summary>
-        /// <param name="value1">First source <#=SeeRef(fName)#>.</param>
-        /// <param name="value2">Second source <#=SeeRef(fName)#>.</param>
-        /// <param name="value3">Third source <#=SeeRef(fName)#>.</param>
-        /// <param name="value4">Fourth source <#=SeeRef(fName)#>.</param>
+        /// <param name="value1">First source <#=See(fName)#>.</param>
+        /// <param name="value2">Second source <#=See(fName)#>.</param>
+        /// <param name="value3">Third source <#=See(fName)#>.</param>
+        /// <param name="value4">Fourth source <#=See(fName)#>.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of interpolation.</param>
-        /// <param name="result">When the method completes, contains the spherical quadrangle interpolation of the <#=SeeRef(fName)#>.</param>
+        /// <param name="result">When the method completes, contains the spherical quadrangle interpolation of the <#=See(fName)#>.</param>
         public static <#=fName#> Squad(ref <#=fName#> value1, ref <#=fName#> value2, ref <#=fName#> value3, ref <#=fName#> value4, float amount)
         {
             <#=fName#> start = Slerp(ref value1, ref value4, amount);
@@ -611,12 +611,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Interpolates between two <#=SeeRef(fName)#>, using spherical linear interpolation.
+        /// Interpolates between two <#=See(fName)#>, using spherical linear interpolation.
         /// </summary>
-        /// <param name="start">Start <#=SeeRef(fName)#>.</param>
-        /// <param name="end">End <#=SeeRef(fName)#>.</param>
+        /// <param name="start">Start <#=See(fName)#>.</param>
+        /// <param name="end">End <#=See(fName)#>.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <param name="result">When the method completes, contains the spherical linear interpolation of the two <#=SeeRef(fName)#>.</param>
+        /// <param name="result">When the method completes, contains the spherical linear interpolation of the two <#=See(fName)#>.</param>
         public static <#=fName#> Slerp(ref <#=fName#> start, ref <#=fName#> end, <#=d.DT#> amount)
         {
             <#=d.DT#> opposite;
@@ -652,7 +652,7 @@ namespace Molten
         /// <param name="yaw">The yaw of rotation.</param>
         /// <param name="pitch">The pitch of rotation.</param>
         /// <param name="roll">The roll of rotation.</param>
-        /// <param name="result">When the method completes, contains the newly created <#=SeeRef(fName)#>.</param>
+        /// <param name="result">When the method completes, contains the newly created <#=See(fName)#>.</param>
         public static void RotationYawPitchRoll(<#=d.DT#> yaw, <#=d.DT#> pitch, <#=d.DT#> roll, out <#=fName#> result)
         {
             <#=d.DT#> halfRoll = roll * 0.5f;
@@ -673,7 +673,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Creates a <#=SeeRef(fName)#> given a rotation matrix.
+        /// Creates a <#=See(fName)#> given a rotation matrix.
         /// </summary>
         /// <param name="matrix">The rotation matrix.</param>
         public static <#=fName#> FromRotationMatrix(ref Matrix4<#=d.Postfix#> matrix)
@@ -795,20 +795,20 @@ namespace Molten
         }
 
         /// <summary>
-        /// Calculates the dot product of two <#=SeeRef(fName)#>.
+        /// Calculates the dot product of two <#=See(fName)#>.
         /// </summary>
-        /// <param name="left">First source <#=SeeRef(fName)#>.</param>
-        /// <param name="right">Second source <#=SeeRef(fName)#>.</param>
-        /// <returns>The dot product of the two <#=SeeRef(fName)#>.</returns>
+        /// <param name="left">First source <#=See(fName)#>.</param>
+        /// <param name="right">Second source <#=See(fName)#>.</param>
+        /// <returns>The dot product of the two <#=See(fName)#>.</returns>
         public static <#=d.DT#> Dot(<#=fName#> left, <#=fName#> right)
         {
             return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
         }
 
         /// <summary>
-        /// Exponentiates a <#=SeeRef(fName)#>.
+        /// Exponentiates a <#=See(fName)#>.
         /// </summary>
-        /// <param name="value">The <#=SeeRef(fName)#> to exponentiate.</param>
+        /// <param name="value">The <#=See(fName)#> to exponentiate.</param>
         public static <#=fName#> Exponential(ref <#=fName#> value)
         {
             <#=d.DT#> angle = <#=fpCast#>Math.Sqrt((value.X * value.X) + (value.Y * value.Y) + (value.Z * value.Z));
@@ -832,14 +832,14 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <#=SeeRef(fName)#> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// Returns a <#=See(fName)#> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
-        /// <param name="value1">A <#=SeeRef(fName)#> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <#=SeeRef(fName)#> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <#=SeeRef(fName)#> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="value1">A <#=See(fName)#> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <#=See(fName)#> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <#=See(fName)#> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
         /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
         /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        /// <param name="result">When the method completes, contains a new <#=SeeRef(fName)#> containing the 4D Cartesian coordinates of the specified point.</param>
+        /// <param name="result">When the method completes, contains a new <#=See(fName)#> containing the 4D Cartesian coordinates of the specified point.</param>
         public static <#=fName#> Barycentric(ref <#=fName#> value1, ref <#=fName#> value2, ref <#=fName#> value3, <#=d.DT#> amount1, <#=d.DT#> amount2)
         {
             <#=fName#> start = Slerp(ref value1, ref value2, amount1 + amount2);
@@ -848,23 +848,23 @@ namespace Molten
         }
 
         /// <summary>
-        /// Returns a <#=SeeRef(fName)#> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
+        /// Returns a <#=See(fName)#> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
-        /// <param name="value1">A <#=SeeRef(fName)#> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
-        /// <param name="value2">A <#=SeeRef(fName)#> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
-        /// <param name="value3">A <#=SeeRef(fName)#> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
+        /// <param name="value1">A <#=See(fName)#> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
+        /// <param name="value2">A <#=See(fName)#> containing the 4D Cartesian coordinates of vertex 2 of the triangle.</param>
+        /// <param name="value3">A <#=See(fName)#> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
         /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
         /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        /// <param name="result">When the method completes, contains a new <#=SeeRef(fName)#> containing the 4D Cartesian coordinates of the specified point.</param>
+        /// <param name="result">When the method completes, contains a new <#=See(fName)#> containing the 4D Cartesian coordinates of the specified point.</param>
         public static <#=fName#> Barycentric(<#=fName#> value1, <#=fName#> value2, <#=fName#> value3, <#=d.DT#> amount1, <#=d.DT#> amount2)
         {
             return Barycentric(ref value1, ref value2, ref value3, amount1, amount2);
         }
 
         /// <summary>
-        /// Computes the conjugate of the <#=SeeRef(fName)#> .
+        /// Computes the conjugate of the <#=See(fName)#> .
         /// </summary>
-        /// <param name="value"><#=SeeRef(fName)#> to conjugate.</param>
+        /// <param name="value"><#=See(fName)#> to conjugate.</param>
         public static <#=fName#> Conjugate(ref <#=fName#> value)
         {
             return new <#=fName#>()
@@ -877,9 +877,9 @@ namespace Molten
         }
 
         /// <summary>
-        /// Computes the conjugate of the <#=SeeRef(fName)#> .
+        /// Computes the conjugate of the <#=See(fName)#> .
         /// </summary>
-        /// <param name="value"><#=SeeRef(fName)#> to conjugate.</param>
+        /// <param name="value"><#=See(fName)#> to conjugate.</param>
         public static <#=fName#> Conjugate(<#=fName#> value)
         {
             return new <#=fName#>()
@@ -892,12 +892,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs a linear interpolation between two <#=SeeRef(fName)#>.
+        /// Performs a linear interpolation between two <#=See(fName)#>.
         /// </summary>
-        /// <param name="start">Start <#=SeeRef(fName)#>.</param>
-        /// <param name="end">End <#=SeeRef(fName)#>.</param>
+        /// <param name="start">Start <#=See(fName)#>.</param>
+        /// <param name="end">End <#=See(fName)#>.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <param name="result">When the method completes, contains the linear interpolation of the two <#=SeeRef(fName)#>.</param>
+        /// <param name="result">When the method completes, contains the linear interpolation of the two <#=See(fName)#>.</param>
         /// <remarks>
         /// This method performs the linear interpolation based on the following formula.
         /// <code>start + (end - start) * amount</code>
@@ -928,11 +928,11 @@ namespace Molten
         }
 
         /// <summary>
-        /// Creates a <#=SeeRef(fName)#> given a rotation and an axis.
+        /// Creates a <#=See(fName)#> given a rotation and an axis.
         /// </summary>
         /// <param name="axis">The axis of rotation.</param>
         /// <param name="angle">The angle of rotation.</param>
-        /// <param name="result">When the method completes, contains the newly created <#=SeeRef(fName)#>.</param>
+        /// <param name="result">When the method completes, contains the newly created <#=See(fName)#>.</param>
         public static <#=fName#> FromAxisAngle(ref <#=vectorName#> axis, float angle)
         {
             <#=vectorName#> normalized;
@@ -952,12 +952,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Creates a left-handed, look-at <#=SeeRef(fName)#>.
+        /// Creates a left-handed, look-at <#=See(fName)#>.
         /// </summary>
         /// <param name="eye">The position of the viewer's eye.</param>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
-        /// <param name="result">When the method completes, contains the created look-at <#=SeeRef(fName)#>.</param>
+        /// <param name="result">When the method completes, contains the created look-at <#=See(fName)#>.</param>
         public static <#=fName#> LookAtLH(ref <#=vectorName#> eye, ref <#=vectorName#> target, ref <#=vectorName#> up)
         {
             Matrix3<#=d.Postfix#> matrix = Matrix3<#=d.Postfix#>.LookAtLH(ref eye, ref target, ref up);
@@ -976,7 +976,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Creates a left-handed, look-at <#=SeeRef(fName)#>.
+        /// Creates a left-handed, look-at <#=See(fName)#>.
         /// </summary>
         /// <param name="forward">The camera's forward direction.</param>
         /// <param name="up">The camera's up vector.</param>
@@ -1143,9 +1143,9 @@ namespace Molten
         /// <summary>
         /// Divides two quaternions.
         /// </summary>
-        /// <param name="left">The first <#=SeeRef(fName)#> to divide.</param>
-        /// <param name="right">The second <#=SeeRef(fName)#> to divide.</param>
-        /// <returns>The sum of the two <#=SeeRef(fName)#>.</returns>
+        /// <param name="left">The first <#=See(fName)#> to divide.</param>
+        /// <param name="right">The second <#=See(fName)#> to divide.</param>
+        /// <returns>The sum of the two <#=See(fName)#>.</returns>
         public static <#=fName#> operator /(<#=fName#> left, <#=fName#> right)
         {
             return new <#=fName#>()
@@ -1160,9 +1160,9 @@ namespace Molten
         /// <summary>
         /// Adds two quaternions.
         /// </summary>
-        /// <param name="left">The first <#=SeeRef(fName)#> to add.</param>
-        /// <param name="right">The second <#=SeeRef(fName)#> to add.</param>
-        /// <returns>The sum of the two <#=SeeRef(fName)#>.</returns>
+        /// <param name="left">The first <#=See(fName)#> to add.</param>
+        /// <param name="right">The second <#=See(fName)#> to add.</param>
+        /// <returns>The sum of the two <#=See(fName)#>.</returns>
         public static <#=fName#> operator +(<#=fName#> left, <#=fName#> right)
         {
             return new <#=fName#>()
