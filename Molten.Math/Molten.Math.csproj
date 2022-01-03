@@ -177,16 +177,16 @@
     <Compile Include="Colors\ColorBGRA.cs" />
     <Compile Include="DoublePrecision\AngleD.cs" />
     <Compile Include="DoublePrecision\Matrix3D.cs" />
-    <Compile Include="DoublePrecision\Matrix4D.cs" />
+    <Compile Include="Matrices\Matrix4D.cs" />
     <Compile Include="MathHelperDP.cs" />
     <Compile Include="PlainIntersectionType.cs" />
     <Compile Include="ContainmentType.cs" />
     <Compile Include="AngleType.cs" />
     <Compile Include="3D\FrustumCameraParams.cs" />
     <Compile Include="Half.cs" />
-    <Compile Include="Half2.cs" />
-    <Compile Include="Half3.cs" />
-    <Compile Include="Half4.cs" />
+    <Compile Include="Vectors\Half2.cs" />
+    <Compile Include="Vectors\Half3.cs" />
+    <Compile Include="Vectors\Half4.cs" />
     <Compile Include="HalfUtils.cs" />
     <Compile Include="DoublePrecision\RectangleD.cs" />
     <Compile Include="Quaternions\QuaternionD.cs" />
@@ -198,12 +198,12 @@
     </Compile>
     <Compile Include="2D\RectangleUI.cs" />
     <Compile Include="MathHelper.cs" />
-    <Compile Include="Matrix4F.cs" />
-    <Compile Include="Matrix2F.cs" />
-    <Compile Include="Matrix2x3F.cs" />
-    <Compile Include="Matrix3x2F.cs" />
-    <Compile Include="Matrix3F.cs" />
-    <Compile Include="Matrix5x4.cs" />
+    <Compile Include="Matrices\Matrix4F.cs" />
+    <Compile Include="Matrices\Matrix2F.cs" />
+    <Compile Include="Matrices\Matrix2x3F.cs" />
+    <Compile Include="Matrices\Matrix3x2F.cs" />
+    <Compile Include="Matrices\Matrix3F.cs" />
+    <Compile Include="Matrices\Matrix5x4.cs" />
     <Compile Include="OrientedBoundingBox.cs" />
     <Compile Include="P2T\AdvancingFront.cs" />
     <Compile Include="P2T\Edge.cs" />
@@ -222,12 +222,6 @@
     <Compile Include="Vectors\Byte2.cs" />
     <Compile Include="Vectors\Byte3.cs" />
     <Compile Include="Vectors\Byte4.cs" />
-    <Compile Include="Vectors\Half2.cs" />
-    <Compile Include="Vectors\Half2U.cs" />
-    <Compile Include="Vectors\Half3.cs" />
-    <Compile Include="Vectors\Half3U.cs" />
-    <Compile Include="Vectors\Half4.cs" />
-    <Compile Include="Vectors\Half4U.cs" />
     <Compile Include="Vectors\SByte2.cs" />
     <Compile Include="Vectors\SByte3.cs" />
     <Compile Include="Vectors\SByte4.cs" />
@@ -287,10 +281,14 @@
     <Compile Include="Vectors\Vector2N.v2.cs" />
     <Compile Include="Vectors\Vector2NU.cs" />
     <Compile Include="Vectors\Vector2NU.v2.cs" />
+    <Compile Include="Vectors\Vector2S.cs" />
+    <Compile Include="Vectors\Vector2S.v2.cs" />
     <Compile Include="Vectors\Vector2UI.cs" />
     <Compile Include="Vectors\Vector2UI.v2.cs" />
     <Compile Include="Vectors\Vector2UL.cs" />
     <Compile Include="Vectors\Vector2UL.v2.cs" />
+    <Compile Include="Vectors\Vector2US.cs" />
+    <Compile Include="Vectors\Vector2US.v2.cs" />
     <Compile Include="Vectors\Vector3D.cs" />
     <Compile Include="Vectors\Vector3D.fp.cs" />
     <Compile Include="Vectors\Vector3D.fp3.cs" />
@@ -307,10 +305,14 @@
     <Compile Include="Vectors\Vector3N.v3.cs" />
     <Compile Include="Vectors\Vector3NU.cs" />
     <Compile Include="Vectors\Vector3NU.v3.cs" />
+    <Compile Include="Vectors\Vector3S.cs" />
+    <Compile Include="Vectors\Vector3S.v3.cs" />
     <Compile Include="Vectors\Vector3UI.cs" />
     <Compile Include="Vectors\Vector3UI.v3.cs" />
     <Compile Include="Vectors\Vector3UL.cs" />
     <Compile Include="Vectors\Vector3UL.v3.cs" />
+    <Compile Include="Vectors\Vector3US.cs" />
+    <Compile Include="Vectors\Vector3US.v3.cs" />
     <Compile Include="Vectors\Vector4D.cs" />
     <Compile Include="Vectors\Vector4D.fp.cs" />
     <Compile Include="Vectors\Vector4D.fp4.cs" />
@@ -321,8 +323,10 @@
     <Compile Include="Vectors\Vector4L.cs" />
     <Compile Include="Vectors\Vector4N.cs" />
     <Compile Include="Vectors\Vector4NU.cs" />
+    <Compile Include="Vectors\Vector4S.cs" />
     <Compile Include="Vectors\Vector4UI.cs" />
     <Compile Include="Vectors\Vector4UL.cs" />
+    <Compile Include="Vectors\Vector4US.cs" />
     <Compile Include="Winding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomNumber.cs" />
@@ -381,8 +385,6 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Matrices\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

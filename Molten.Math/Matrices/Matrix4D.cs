@@ -686,14 +686,14 @@ namespace Molten
             //References: http://www.gamedev.net/community/forums/topic.asp?topic_id=441695
 
             //Get the translation.
-            translation.X = this.M41;
-            translation.Y = this.M42;
-            translation.Z = this.M43;
+            translation.X = M41;
+            translation.Y = M42;
+            translation.Z = M43;
 
             //Scaling is the length of the rows.
-            scale.X = (float)Math.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
-            scale.Y = (float)Math.Sqrt((M21 * M21) + (M22 * M22) + (M23 * M23));
-            scale.Z = (float)Math.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
+            scale.X = Math.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
+            scale.Y = Math.Sqrt((M21 * M21) + (M22 * M22) + (M23 * M23));
+            scale.Z = Math.Sqrt((M31 * M31) + (M32 * M32) + (M33 * M33));
 
             //If any of the scaling factors are zero, than the rotation MatrixDouble can not exist.
             if (MathHelperDP.IsZero(scale.X) ||
@@ -742,7 +742,7 @@ namespace Molten
             translation.Z = this.M43;
 
             //Scaling is the length of the rows. ( just take one row since this is a uniform matrix)
-            scale = (float)Math.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
+            scale = Math.Sqrt((M11 * M11) + (M12 * M12) + (M13 * M13));
             var inv_scale = 1f / scale;
 
             //If any of the scaling factors are zero, then the rotation MatrixDouble can not exist.
@@ -1902,7 +1902,7 @@ namespace Molten
             if (MathHelperDP.IsZero(lengthSq))
                 difference = -cameraForwardVector;
             else
-                difference *= (float)(1.0 / Math.Sqrt(lengthSq));
+                difference *= (1.0 / Math.Sqrt(lengthSq));
 
             Vector3D crossed = Vector3D.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
@@ -1957,7 +1957,7 @@ namespace Molten
             if (MathHelperDP.IsZero(lengthSq))
                 difference = -cameraForwardVector;
             else
-                difference *= (float)(1.0 / Math.Sqrt(lengthSq));
+                difference *= (1.0 / Math.Sqrt(lengthSq));
 
             Vector3D crossed = Vector3D.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
@@ -2004,15 +2004,15 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created look-at matrix.</param>
         public static void LookAtLH(ref Vector3D eye, ref Vector3D target, ref Vector3D up, out Matrix4D result)
         {
-            Vector3D zaxis = Vector3D.Subtract(ref target, ref eye); 
+            Vector3D zaxis = target - eye; 
             zaxis.Normalize();
 
-            Vector3D xaxis = Vector3D.Cross(ref up, ref zaxis, out xaxis); 
+            Vector3D xaxis = Vector3D.Cross(ref up, ref zaxis); 
             xaxis.Normalize();
 
-            Vector3D yaxis = Vector3D.Cross(ref zaxis, ref xaxis, out yaxis);
+            Vector3D yaxis = Vector3D.Cross(ref zaxis, ref xaxis);
 
-            result = Matrix4D.Identity;
+            result = Identity;
             result.M11 = xaxis.X; result.M21 = xaxis.Y; result.M31 = xaxis.Z;
             result.M12 = yaxis.X; result.M22 = yaxis.Y; result.M32 = yaxis.Z;
             result.M13 = zaxis.X; result.M23 = zaxis.Y; result.M33 = zaxis.Z;
@@ -2049,19 +2049,22 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created look-at matrix.</param>
         public static void LookAtRH(ref Vector3D eye, ref Vector3D target, ref Vector3D up, out Matrix4D result)
         {
-            Vector3D xaxis, yaxis, zaxis;
-            Vector3D.Subtract(ref eye, ref target, out zaxis); zaxis.Normalize();
-            Vector3D.Cross(ref up, ref zaxis, out xaxis); xaxis.Normalize();
-            Vector3D.Cross(ref zaxis, ref xaxis, out yaxis);
+            Vector3D zaxis = eye - target;
+            zaxis.Normalize();
 
-            result = Matrix4D.Identity;
+            Vector3D xaxis = Vector3D.Cross(ref up, ref zaxis); 
+            xaxis.Normalize();
+
+            Vector3D yaxis = Vector3D.Cross(ref zaxis, ref xaxis);
+
+            result = Identity;
             result.M11 = xaxis.X; result.M21 = xaxis.Y; result.M31 = xaxis.Z;
             result.M12 = yaxis.X; result.M22 = yaxis.Y; result.M32 = yaxis.Z;
             result.M13 = zaxis.X; result.M23 = zaxis.Y; result.M33 = zaxis.Z;
 
-            Vector3D.Dot(ref xaxis, ref eye, out result.M41);
-            Vector3D.Dot(ref yaxis, ref eye, out result.M42);
-            Vector3D.Dot(ref zaxis, ref eye, out result.M43);
+            result.M41 = Vector3D.Dot(ref xaxis, ref eye);
+            result.M42 = Vector3D.Dot(ref yaxis, ref eye);
+            result.M43 = Vector3D.Dot(ref zaxis, ref eye);
 
             result.M41 = -result.M41;
             result.M42 = -result.M42;
@@ -2289,7 +2292,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created projection matrix.</param>
         public static void PerspectiveFovLH(double fov, double aspect, double znear, double zfar, out Matrix4D result)
         {
-            double yScale = (float)(1.0 / Math.Tan(fov * 0.5f));
+            double yScale = (1.0D / Math.Tan(fov * 0.5D));
             double xScale = yScale / aspect;
 
             double halfWidth = znear / xScale;
@@ -2323,7 +2326,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created projection matrix.</param>
         public static void PerspectiveFovRH(double fov, double aspect, double znear, double zfar, out Matrix4D result)
         {
-            double yScale = (float)(1.0 / Math.Tan(fov * 0.5f));
+            double yScale = (1D / Math.Tan(fov * 0.5D));
             double xScale = yScale / aspect;
 
             double halfWidth = znear / xScale;
@@ -2483,7 +2486,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created scaling matrix.</param>
         public static void Scaling(double scale, out Matrix4D result)
         {
-            result = Matrix4D.Identity;
+            result = Identity;
             result.M11 = result.M22 = result.M33 = scale;
         }
 
@@ -2506,8 +2509,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void RotationX(double angle, out Matrix4D result)
         {
-            double cos = (float)Math.Cos(angle);
-            double sin = (float)Math.Sin(angle);
+            double cos = Math.Cos(angle);
+            double sin = Math.Sin(angle);
 
             result = Matrix4D.Identity;
             result.M22 = cos;
@@ -2535,8 +2538,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void RotationY(double angle, out Matrix4D result)
         {
-            double cos = (float)Math.Cos(angle);
-            double sin = (float)Math.Sin(angle);
+            double cos = Math.Cos(angle);
+            double sin = Math.Sin(angle);
 
             result = Matrix4D.Identity;
             result.M11 = cos;
@@ -2564,8 +2567,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void RotationZ(double angle, out Matrix4D result)
         {
-            double cos = (float)Math.Cos(angle);
-            double sin = (float)Math.Sin(angle);
+            double cos = Math.Cos(angle);
+            double sin = Math.Sin(angle);
 
             result = Matrix4D.Identity;
             result.M11 = cos;
@@ -2597,8 +2600,8 @@ namespace Molten
             double x = axis.X;
             double y = axis.Y;
             double z = axis.Z;
-            double cos = (float)Math.Cos(angle);
-            double sin = (float)Math.Sin(angle);
+            double cos = Math.Cos(angle);
+            double sin = Math.Sin(angle);
             double xx = x * x;
             double yy = y * y;
             double zz = z * z;
@@ -2780,13 +2783,11 @@ namespace Molten
             Vector3D e0 = rotationVec;
             Vector3D e1 = Vector3D.Normalize(transVec);
 
-            double rv1;
-            Vector3D.Dot(ref rotationVec, ref  e1, out rv1);
+            double rv1 = Vector3D.Dot(ref rotationVec, ref  e1);
             e0 += rv1 * e1;
-            double rv0;
-            Vector3D.Dot(ref rotationVec, ref e0, out rv0);
-            double cosa = (float)Math.Cos(angle);
-            double sina = (float)Math.Sin(angle);
+            double rv0 = Vector3D.Dot(ref rotationVec, ref e0);
+            double cosa = Math.Cos(angle);
+            double sina = Math.Sin(angle);
             double rr0 = rv0 * cosa - rv1 * sina;
             double rr1 = rv0 * sina + rv1 * cosa;
 

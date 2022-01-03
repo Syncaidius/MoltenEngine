@@ -48,8 +48,8 @@
     "Unsigned": true
   },
   {
-    "Name": "Half",
-    "Postfix": "",
+    "Name": "Vector",
+    "Postfix": "S",
     "DT": "short",
     "FP": "float",
     "FPL": "F",
@@ -60,8 +60,8 @@
     "Unsigned": false
   },
   {
-    "Name": "Half",
-    "Postfix": "U",
+    "Name": "Vector",
+    "Postfix": "US",
     "DT": "ushort",
     "FP": "float",
     "FPL": "F",

@@ -720,7 +720,7 @@ namespace Molten
 
             rotationmatrix.M44 = 1f;
 
-            QuaternionF.FromRotationMatrix(ref rotationmatrix, out rotation);
+            rotation = QuaternionF.FromRotationMatrix(ref rotationmatrix);
             return true;
         }
 
@@ -768,7 +768,7 @@ namespace Molten
 
             rotationmatrix.M44 = 1f;
 
-            QuaternionF.FromRotationMatrix(ref rotationmatrix, out rotation);
+            rotation = QuaternionF.FromRotationMatrix(ref rotationmatrix);
             return true;
         }
 
@@ -1896,8 +1896,6 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created billboard matrix.</param>
         public static void BillboardLH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector, out Matrix4F result)
         {
-            Vector3F crossed;
-            Vector3F final;
             Vector3F difference = cameraPosition - objectPosition;
 
             float lengthSq = difference.LengthSquared();
@@ -1906,9 +1904,9 @@ namespace Molten
             else
                 difference *= (float)(1.0 / Math.Sqrt(lengthSq));
 
-            Vector3F.Cross(ref cameraUpVector, ref difference, out crossed);
+            Vector3F crossed = Vector3F.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
-            Vector3F.Cross(ref difference, ref crossed, out final);
+            Vector3F final = Vector3F.Cross(ref difference, ref crossed);
 
             result.M11 = crossed.X;
             result.M12 = crossed.Y;
@@ -1953,8 +1951,6 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created billboard matrix.</param>
         public static void BillboardRH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector, out Matrix4F result)
         {
-            Vector3F crossed;
-            Vector3F final;
             Vector3F difference = objectPosition - cameraPosition;
 
             float lengthSq = difference.LengthSquared();
@@ -1963,9 +1959,9 @@ namespace Molten
             else
                 difference *= (float)(1.0 / Math.Sqrt(lengthSq));
 
-            Vector3F.Cross(ref cameraUpVector, ref difference, out crossed);
+            Vector3F crossed = Vector3F.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
-            Vector3F.Cross(ref difference, ref crossed, out final);
+            Vector3F final = Vector3F.Cross(ref difference, ref crossed);
 
             result.M11 = crossed.X;
             result.M12 = crossed.Y;
@@ -2008,19 +2004,22 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created look-at matrix.</param>
         public static void LookAtLH(ref Vector3F eye, ref Vector3F target, ref Vector3F up, out Matrix4F result)
         {
-            Vector3F xaxis, yaxis, zaxis;
-            Vector3F.Subtract(ref target, ref eye, out zaxis); zaxis.Normalize();
-            Vector3F.Cross(ref up, ref zaxis, out xaxis); xaxis.Normalize();
-            Vector3F.Cross(ref zaxis, ref xaxis, out yaxis);
+            Vector3F zaxis = target - eye; 
+            zaxis.Normalize();
+
+            Vector3F xaxis = Vector3F.Cross(ref up, ref zaxis); 
+            xaxis.Normalize();
+
+            Vector3F yaxis = Vector3F.Cross(ref zaxis, ref xaxis);
 
             result = Matrix4F.Identity;
             result.M11 = xaxis.X; result.M21 = xaxis.Y; result.M31 = xaxis.Z;
             result.M12 = yaxis.X; result.M22 = yaxis.Y; result.M32 = yaxis.Z;
             result.M13 = zaxis.X; result.M23 = zaxis.Y; result.M33 = zaxis.Z;
 
-            Vector3F.Dot(ref xaxis, ref eye, out result.M41);
-            Vector3F.Dot(ref yaxis, ref eye, out result.M42);
-            Vector3F.Dot(ref zaxis, ref eye, out result.M43);
+            result.M41 = Vector3F.Dot(ref xaxis, ref eye);
+            result.M42 = Vector3F.Dot(ref yaxis, ref eye);
+            result.M43 = Vector3F.Dot(ref zaxis, ref eye);
 
             result.M41 = -result.M41;
             result.M42 = -result.M42;
@@ -2050,19 +2049,22 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created look-at matrix.</param>
         public static void LookAtRH(ref Vector3F eye, ref Vector3F target, ref Vector3F up, out Matrix4F result)
         {
-            Vector3F xaxis, yaxis, zaxis;
-            Vector3F.Subtract(ref eye, ref target, out zaxis); zaxis.Normalize();
-            Vector3F.Cross(ref up, ref zaxis, out xaxis); xaxis.Normalize();
-            Vector3F.Cross(ref zaxis, ref xaxis, out yaxis);
+            Vector3F zaxis = eye - target;
+            zaxis.Normalize();
 
-            result = Matrix4F.Identity;
+            Vector3F xaxis = Vector3F.Cross(ref up, ref zaxis);
+            xaxis.Normalize();
+
+            Vector3F yaxis = Vector3F.Cross(ref zaxis, ref xaxis);
+
+            result = Identity;
             result.M11 = xaxis.X; result.M21 = xaxis.Y; result.M31 = xaxis.Z;
             result.M12 = yaxis.X; result.M22 = yaxis.Y; result.M32 = yaxis.Z;
             result.M13 = zaxis.X; result.M23 = zaxis.Y; result.M33 = zaxis.Z;
 
-            Vector3F.Dot(ref xaxis, ref eye, out result.M41);
-            Vector3F.Dot(ref yaxis, ref eye, out result.M42);
-            Vector3F.Dot(ref zaxis, ref eye, out result.M43);
+            result.M41 = Vector3F.Dot(ref xaxis, ref eye);
+            result.M42 = Vector3F.Dot(ref yaxis, ref eye);
+            result.M43 = Vector3F.Dot(ref zaxis, ref eye);
 
             result.M41 = -result.M41;
             result.M42 = -result.M42;
@@ -2781,11 +2783,9 @@ namespace Molten
             Vector3F e0 = rotationVec;
             Vector3F e1 = Vector3F.Normalize(transVec);
 
-            float rv1;
-            Vector3F.Dot(ref rotationVec, ref  e1, out rv1);
+            float rv1 = Vector3F.Dot(ref rotationVec, ref  e1);
             e0 += rv1 * e1;
-            float rv0;
-            Vector3F.Dot(ref rotationVec, ref e0, out rv0);
+            float rv0 = Vector3F.Dot(ref rotationVec, ref e0);
             float cosa = (float)Math.Cos(angle);
             float sina = (float)Math.Sin(angle);
             float rr0 = rv0 * cosa - rv1 * sina;
