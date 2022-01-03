@@ -118,29 +118,5 @@
     "Zero": "0D",
     "IsFPType": true,
     "Unsigned": false
-  },
-  {
-    "Name": "Vector",
-    "Postfix": "N",
-    "DT": "nint",
-    "FP": "float",
-    "FPL": "F",
-    "Pack": "sizeof(nint)",
-    "One": "1",
-    "Zero": "0",
-    "IsFPType": false,
-    "Unsigned": false
-  },
-  {
-    "Name": "Vector",
-    "Postfix": "NU",
-    "DT": "nuint",
-    "FP": "float",
-    "FPL": "F",
-    "Pack": "sizeof(nuint)",
-    "One": "1U",
-    "Zero": "0",
-    "IsFPType": false,
-    "Unsigned": true
   }
 ]

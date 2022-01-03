@@ -419,16 +419,16 @@ namespace Molten
 #endregion
 
 #region Operators - Cast
-        ///<summary>Casts a <see cref="Byte3"/> to a <see cref="Vector2"/>.</summary>
-        public static explicit operator Vector2(Byte3 value)
+        ///<summary>Casts a <see cref="Byte3"/> to a <see cref="Byte2"/>.</summary>
+        public static explicit operator Byte2(Byte3 value)
         {
-            return new Vector2(value.X, value.Y);
+            return new Byte2(value.X, value.Y);
         }
 
-        ///<summary>Casts a <see cref="Byte3"/> to a <see cref="Vector4"/>.</summary>
-        public static explicit operator Vector4(Byte3 value)
+        ///<summary>Casts a <see cref="Byte3"/> to a <see cref="Byte4"/>.</summary>
+        public static explicit operator Byte4(Byte3 value)
         {
-            return new Vector4(value.X, value.Y, value.Z, 0);
+            return new Byte4(value.X, value.Y, value.Z, 0);
         }
 
 #endregion

@@ -37,7 +37,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;X64</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>latest</LangVersion>
@@ -49,7 +49,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;X64</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -61,7 +61,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;X86</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\x64\Debug\Molten.Math.xml</DocumentationFile>
     <DebugType>full</DebugType>
@@ -72,7 +72,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;X86</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -277,10 +277,6 @@
     <Compile Include="Vectors\Vector2I.v2.cs" />
     <Compile Include="Vectors\Vector2L.cs" />
     <Compile Include="Vectors\Vector2L.v2.cs" />
-    <Compile Include="Vectors\Vector2N.cs" />
-    <Compile Include="Vectors\Vector2N.v2.cs" />
-    <Compile Include="Vectors\Vector2NU.cs" />
-    <Compile Include="Vectors\Vector2NU.v2.cs" />
     <Compile Include="Vectors\Vector2S.cs" />
     <Compile Include="Vectors\Vector2S.v2.cs" />
     <Compile Include="Vectors\Vector2UI.cs" />
@@ -301,10 +297,6 @@
     <Compile Include="Vectors\Vector3I.v3.cs" />
     <Compile Include="Vectors\Vector3L.cs" />
     <Compile Include="Vectors\Vector3L.v3.cs" />
-    <Compile Include="Vectors\Vector3N.cs" />
-    <Compile Include="Vectors\Vector3N.v3.cs" />
-    <Compile Include="Vectors\Vector3NU.cs" />
-    <Compile Include="Vectors\Vector3NU.v3.cs" />
     <Compile Include="Vectors\Vector3S.cs" />
     <Compile Include="Vectors\Vector3S.v3.cs" />
     <Compile Include="Vectors\Vector3UI.cs" />
@@ -321,8 +313,6 @@
     <Compile Include="Vectors\Vector4F.fp4.cs" />
     <Compile Include="Vectors\Vector4I.cs" />
     <Compile Include="Vectors\Vector4L.cs" />
-    <Compile Include="Vectors\Vector4N.cs" />
-    <Compile Include="Vectors\Vector4NU.cs" />
     <Compile Include="Vectors\Vector4S.cs" />
     <Compile Include="Vectors\Vector4UI.cs" />
     <Compile Include="Vectors\Vector4UL.cs" />

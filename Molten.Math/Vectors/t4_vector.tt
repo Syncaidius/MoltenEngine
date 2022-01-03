@@ -496,7 +496,7 @@ namespace Molten
 <#
         foreach(int castSize in _vectorSizes)
         {
-            string castName = $"Vector{castSize}{d.Postfix}";
+            string castName = $"{d.Name}{castSize}{d.Postfix}";
             if(castSize == size)
                 continue;
 #>
