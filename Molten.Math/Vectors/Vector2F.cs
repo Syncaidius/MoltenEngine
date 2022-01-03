@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.Globalization;
 
-namespace Molten.Math
+namespace Molten
 {
 	///<summary>A <see cref = "float"/> vector comprised of two components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=4)]
@@ -89,7 +89,7 @@ namespace Molten.Math
 		}
 #endregion
 
-#region Instance Functions
+#region Instance Methods
         /// <summary>
         /// Determines whether the specified <see cref="Vector2F"/> is equal to this instance.
         /// </summary>
@@ -206,6 +206,27 @@ namespace Molten.Math
 			return new Vector2F(-X, -Y);
 		}
 		
+        /// <summary>
+        /// Returns a normalized unit vector of the original vector.
+        /// </summary>
+        public Vector2F Normalized()
+        {
+            float length = Length();
+            if (!MathHelper.IsZero(length))
+            {
+                float inv = 1.0F / length;
+                return new Vector2F()
+                {
+                    X = this.X * inv,
+                    Y = this.Y * inv,
+                    Z = this.Z * inv,
+                };
+            }
+            else
+            {
+                return new Vector2F();
+            }
+        }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
@@ -399,6 +420,30 @@ namespace Molten.Math
 #endregion
 
 #region Static Methods
+        /// <summary>
+        /// Tests whether one 3D vector is near another 3D vector.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <param name="epsilon">The epsilon.</param>
+        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
+        public static bool NearEqual(Vector2F left, Vector2F right, Vector2F epsilon)
+        {
+            return NearEqual(ref left, ref right, ref epsilon);
+        }
+
+        /// <summary>
+        /// Tests whether one 3D vector is near another 3D vector.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <param name="epsilon">The epsilon.</param>
+        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
+        public static bool NearEqual(ref Vector2F left, ref Vector2F right, ref Vector2F epsilon)
+        {
+            return MathHelper.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelper.WithinEpsilon(left.Y, right.Y, epsilon.Y);
+        }
+
         /// <summary>
         /// Performs a cubic interpolation between two vectors.
         /// </summary>
@@ -700,6 +745,27 @@ namespace Molten.Math
         /// provides the same information and avoids calculating two square roots.
         /// </remarks>
 		public static float DistanceSquared(ref Vector2F value1, ref Vector2F value2)
+        {
+            float x = value1.X - value2.X;
+            float y = value1.Y - value2.Y;
+
+            return (x * x) + (y * y);
+        }
+
+        /// <summary>
+        /// Calculates the squared distance between two <see cref="Vector2F"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The squared distance between the two vectors.</returns>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static float DistanceSquared(Vector2F value1, Vector2F value2)
         {
             float x = value1.X - value2.X;
             float y = value1.Y - value2.Y;

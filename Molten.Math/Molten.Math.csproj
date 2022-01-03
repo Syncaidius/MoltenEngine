@@ -241,6 +241,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>t4_vector.tt</DependentUpon>
     </Compile>
+    <Compile Include="Vectors\t4_vector4.fp.cs">
+      <DependentUpon>t4_vector4.fp.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Vectors\t4_vector3.fp.cs">
+      <DependentUpon>t4_vector3.fp.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Vectors\t4_vector3.cs">
       <DependentUpon>t4_vector3.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -283,15 +293,18 @@
     <Compile Include="Vectors\Vector2UL.v2.cs" />
     <Compile Include="Vectors\Vector3D.cs" />
     <Compile Include="Vectors\Vector3D.fp.cs" />
+    <Compile Include="Vectors\Vector3D.fp3.cs" />
     <Compile Include="Vectors\Vector3D.v3.cs" />
     <Compile Include="Vectors\Vector3F.cs" />
     <Compile Include="Vectors\Vector3F.fp.cs" />
+    <Compile Include="Vectors\Vector3F.fp3.cs" />
     <Compile Include="Vectors\Vector3F.v3.cs" />
     <Compile Include="Vectors\Vector3I.cs" />
     <Compile Include="Vectors\Vector3I.v3.cs" />
     <Compile Include="Vectors\Vector3L.cs" />
     <Compile Include="Vectors\Vector3L.v3.cs" />
     <Compile Include="Vectors\Vector3N.cs" />
+    <Compile Include="Vectors\Vector3N.v3.cs" />
     <Compile Include="Vectors\Vector3NU.cs" />
     <Compile Include="Vectors\Vector3NU.v3.cs" />
     <Compile Include="Vectors\Vector3UI.cs" />
@@ -300,8 +313,10 @@
     <Compile Include="Vectors\Vector3UL.v3.cs" />
     <Compile Include="Vectors\Vector4D.cs" />
     <Compile Include="Vectors\Vector4D.fp.cs" />
+    <Compile Include="Vectors\Vector4D.fp4.cs" />
     <Compile Include="Vectors\Vector4F.cs" />
     <Compile Include="Vectors\Vector4F.fp.cs" />
+    <Compile Include="Vectors\Vector4F.fp4.cs" />
     <Compile Include="Vectors\Vector4I.cs" />
     <Compile Include="Vectors\Vector4L.cs" />
     <Compile Include="Vectors\Vector4N.cs" />
@@ -317,8 +332,6 @@
     <Compile Include="2D\RectangleF.cs" />
     <Compile Include="RigidTransform.cs" />
     <Compile Include="TriangleSidedness.cs" />
-    <Compile Include="Vector3F.cs" />
-    <Compile Include="Vector4F.cs" />
     <Compile Include="Viewport.cs" />
     <Compile Include="ViewportF.cs" />
   </ItemGroup>
@@ -335,6 +348,14 @@
     <Content Include="t4_header.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>t4_header.cs</LastGenOutput>
+    </Content>
+    <Content Include="Vectors\t4_vector4.fp.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_vector4.fp.cs</LastGenOutput>
+    </Content>
+    <Content Include="Vectors\t4_vector3.fp.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>t4_vector3.fp.cs</LastGenOutput>
     </Content>
     <Content Include="Vectors\t4_vector3.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

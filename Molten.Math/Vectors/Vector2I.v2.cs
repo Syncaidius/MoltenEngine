@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace Molten.Math
+namespace Molten
 {
 	///<summary>A <see cref = "int"/> vector comprised of 2 components.</summary>
 	public partial struct Vector2I

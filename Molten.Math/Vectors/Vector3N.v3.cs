@@ -1,10 +1,50 @@
 using System.Runtime.InteropServices;
 
-namespace Molten.Math
+namespace Molten
 {
 	///<summary>A <see cref = "nint"/> vector comprised of 3 components.</summary>
 	public partial struct Vector3N
 	{
+           /// <summary>
+        /// A unit <see cref="Vector3N"/> designating up (0, 1, 0).
+        /// </summary>
+        public static readonly Vector3N Up = new Vector3N(0, 1, 0);
+
+        /// <summary>
+        /// A unit <see cref="Vector3N"/> designating down (0, -1, 0).
+        /// </summary>
+        public static readonly Vector3N Down = new Vector3N(0, -1, 0);
+
+        /// <summary>
+        /// A unit <see cref="Vector3N"/> designating left (-1, 0, 0).
+        /// </summary>
+        public static readonly Vector3N Left = new Vector3N(-1, 0, 0);
+
+        /// <summary>
+        /// A unit <see cref="Vector3N"/> designating right (1, 0, 0).
+        /// </summary>
+        public static readonly Vector3N Right = new Vector3N(1, 0, 0);
+
+        /// <summary>
+        /// A unit <see cref="Vector3N"/> designating forward in a right-handed coordinate system (0, 0, -1).
+        /// </summary>
+        public static readonly Vector3N ForwardRH = new Vector3N(0, 0, -1);
+
+        /// <summary>
+        /// A unit <see cref="Vector3N"/> designating forward in a left-handed coordinate system (0, 0, 1).
+        /// </summary>
+        public static readonly Vector3N ForwardLH = new Vector3N(0, 0, 1);
+
+        /// <summary>
+        /// A unit <see cref="Vector3N"/> designating backward in a right-handed coordinate system (0, 0, 1).
+        /// </summary>
+        public static readonly Vector3N BackwardRH = new Vector3N(0, 0, 1);
+
+        /// <summary>
+        /// A unit <see cref="Vector3N"/> designating backward in a left-handed coordinate system (0, 0, -1).
+        /// </summary>
+        public static readonly Vector3N BackwardLH = new Vector3N(0, 0, -1);
+
 #region Static Methods
         /// <summary>
         /// Calculates the cross product of two <see cref="Vector3N"/>.

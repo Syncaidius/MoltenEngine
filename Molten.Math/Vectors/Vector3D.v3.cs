@@ -1,10 +1,50 @@
 using System.Runtime.InteropServices;
 
-namespace Molten.Math
+namespace Molten
 {
 	///<summary>A <see cref = "double"/> vector comprised of 3 components.</summary>
 	public partial struct Vector3D
 	{
+           /// <summary>
+        /// A unit <see cref="Vector3D"/> designating up (0, 1, 0).
+        /// </summary>
+        public static readonly Vector3D Up = new Vector3D(0D, 1D, 0D);
+
+        /// <summary>
+        /// A unit <see cref="Vector3D"/> designating down (0, -1, 0).
+        /// </summary>
+        public static readonly Vector3D Down = new Vector3D(0D, -1D, 0D);
+
+        /// <summary>
+        /// A unit <see cref="Vector3D"/> designating left (-1, 0, 0).
+        /// </summary>
+        public static readonly Vector3D Left = new Vector3D(-1D, 0D, 0D);
+
+        /// <summary>
+        /// A unit <see cref="Vector3D"/> designating right (1, 0, 0).
+        /// </summary>
+        public static readonly Vector3D Right = new Vector3D(1D, 0D, 0D);
+
+        /// <summary>
+        /// A unit <see cref="Vector3D"/> designating forward in a right-handed coordinate system (0, 0, -1).
+        /// </summary>
+        public static readonly Vector3D ForwardRH = new Vector3D(0D, 0D, -1D);
+
+        /// <summary>
+        /// A unit <see cref="Vector3D"/> designating forward in a left-handed coordinate system (0, 0, 1).
+        /// </summary>
+        public static readonly Vector3D ForwardLH = new Vector3D(0D, 0D, 1D);
+
+        /// <summary>
+        /// A unit <see cref="Vector3D"/> designating backward in a right-handed coordinate system (0, 0, 1).
+        /// </summary>
+        public static readonly Vector3D BackwardRH = new Vector3D(0D, 0D, 1D);
+
+        /// <summary>
+        /// A unit <see cref="Vector3D"/> designating backward in a left-handed coordinate system (0, 0, -1).
+        /// </summary>
+        public static readonly Vector3D BackwardLH = new Vector3D(0D, 0D, -1D);
+
 #region Static Methods
         /// <summary>
         /// Calculates the cross product of two <see cref="Vector3D"/>.

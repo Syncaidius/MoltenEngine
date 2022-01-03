@@ -24,12 +24,13 @@ foreach(TypeData d in _def)
 	int size = 2;
 	string fName = $"{d.Name}{size}{d.Postfix}";
 	string fn = $"{fName}.fp2";
-    string fpCast = d.DT == "float" ? "(float)" : "";
+	string fpCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
+	string mathHelper = d.DT == "double" ? "MathHelperDP" : "MathHelper";
 #>
 using System.Runtime.InteropServices;
 using System;
 
-namespace Molten.Math
+namespace Molten
 {
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
 	public partial struct <#=fName#>

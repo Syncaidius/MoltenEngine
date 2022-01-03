@@ -1,10 +1,50 @@
 using System.Runtime.InteropServices;
 
-namespace Molten.Math
+namespace Molten
 {
 	///<summary>A <see cref = "short"/> vector comprised of 3 components.</summary>
 	public partial struct Half3
 	{
+           /// <summary>
+        /// A unit <see cref="Half3"/> designating up (0, 1, 0).
+        /// </summary>
+        public static readonly Half3 Up = new Half3(0, (short)1, 0);
+
+        /// <summary>
+        /// A unit <see cref="Half3"/> designating down (0, -1, 0).
+        /// </summary>
+        public static readonly Half3 Down = new Half3(0, -(short)1, 0);
+
+        /// <summary>
+        /// A unit <see cref="Half3"/> designating left (-1, 0, 0).
+        /// </summary>
+        public static readonly Half3 Left = new Half3(-(short)1, 0, 0);
+
+        /// <summary>
+        /// A unit <see cref="Half3"/> designating right (1, 0, 0).
+        /// </summary>
+        public static readonly Half3 Right = new Half3((short)1, 0, 0);
+
+        /// <summary>
+        /// A unit <see cref="Half3"/> designating forward in a right-handed coordinate system (0, 0, -1).
+        /// </summary>
+        public static readonly Half3 ForwardRH = new Half3(0, 0, -(short)1);
+
+        /// <summary>
+        /// A unit <see cref="Half3"/> designating forward in a left-handed coordinate system (0, 0, 1).
+        /// </summary>
+        public static readonly Half3 ForwardLH = new Half3(0, 0, (short)1);
+
+        /// <summary>
+        /// A unit <see cref="Half3"/> designating backward in a right-handed coordinate system (0, 0, 1).
+        /// </summary>
+        public static readonly Half3 BackwardRH = new Half3(0, 0, (short)1);
+
+        /// <summary>
+        /// A unit <see cref="Half3"/> designating backward in a left-handed coordinate system (0, 0, -1).
+        /// </summary>
+        public static readonly Half3 BackwardLH = new Half3(0, 0, -(short)1);
+
 #region Static Methods
         /// <summary>
         /// Calculates the cross product of two <see cref="Half3"/>.

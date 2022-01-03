@@ -1,0 +1,219 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+
+<#@ include file="../t4_header.tt" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".txt" #>
+
+<#
+string outputPath = this.Host.ResolvePath("");
+List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "vector_defs.json");
+string pMap = "xyzw";
+string pMapUpper = "XYZW";
+
+foreach(TypeData d in _def)
+{
+	if(!d.IsFPType)
+	{
+		continue;
+	}
+
+	int size = 4;
+	string fName = $"{d.Name}{size}{d.Postfix}";
+	string fn = $"{fName}.fp4";
+	string fpCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
+	string mathHelper = d.DT == "double" ? "MathHelperDP" : "MathHelper";
+#>
+using System.Runtime.InteropServices;
+using System;
+
+namespace Molten
+{
+	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
+	public partial struct <#=fName#>
+	{
+#region Instance methods
+        
+#endregion
+
+#region Static Methods
+        /// <summary>
+        /// Transforms a 4D vector by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
+        /// </summary>
+        /// <param name="vector">The vector to rotate.</param>
+        /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="<#=fName#>"/>.</param>
+        public static <#=fName#> Transform(ref <#=fName#> vector, ref Quaternion<#=d.Postfix#> rotation)
+        {
+            <#=d.DT#> x = rotation.X + rotation.X;
+            <#=d.DT#> y = rotation.Y + rotation.Y;
+            <#=d.DT#> z = rotation.Z + rotation.Z;
+            <#=d.DT#> wx = rotation.W * x;
+            <#=d.DT#> wy = rotation.W * y;
+            <#=d.DT#> wz = rotation.W * z;
+            <#=d.DT#> xx = rotation.X * x;
+            <#=d.DT#> xy = rotation.X * y;
+            <#=d.DT#> xz = rotation.X * z;
+            <#=d.DT#> yy = rotation.Y * y;
+            <#=d.DT#> yz = rotation.Y * z;
+            <#=d.DT#> zz = rotation.Z * z;
+
+            return new <#=fName#>(
+                ((vector.X * ((1.0f - yy) - zz)) + (vector.Y * (xy - wz))) + (vector.Z * (xz + wy)),
+                ((vector.X * (xy + wz)) + (vector.Y * ((1.0f - xx) - zz))) + (vector.Z * (yz - wx)),
+                ((vector.X * (xz - wy)) + (vector.Y * (yz + wx))) + (vector.Z * ((1.0f - xx) - yy)),
+                vector.W);
+        }
+
+        /// <summary>
+        /// Transforms a 4D vector by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
+        /// </summary>
+        /// <param name="vector">The vector to rotate.</param>
+        /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
+        /// <returns>The transformed <see cref="<#=fName#>"/>.</returns>
+        public static <#=fName#> Transform(<#=fName#> vector, Quaternion<#=d.Postfix#> rotation)
+        {
+            return Transform(ref vector, ref rotation);
+        }
+
+        /// <summary>
+        /// Transforms an array of vectors by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
+        /// </summary>
+        /// <param name="source">The array of vectors to transform.</param>
+        /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
+        /// <param name="destination">The array for which the transformed vectors are stored.
+        /// This array may be the same array as <paramref name="source"/>.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
+        public static void Transform(<#=fName#>[] source, ref Quaternion<#=d.Postfix#> rotation, <#=fName#>[] destination)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+            if (destination.Length < source.Length)
+                throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+
+            <#=d.DT#> x = rotation.X + rotation.X;
+            <#=d.DT#> y = rotation.Y + rotation.Y;
+            <#=d.DT#> z = rotation.Z + rotation.Z;
+            <#=d.DT#> wx = rotation.W * x;
+            <#=d.DT#> wy = rotation.W * y;
+            <#=d.DT#> wz = rotation.W * z;
+            <#=d.DT#> xx = rotation.X * x;
+            <#=d.DT#> xy = rotation.X * y;
+            <#=d.DT#> xz = rotation.X * z;
+            <#=d.DT#> yy = rotation.Y * y;
+            <#=d.DT#> yz = rotation.Y * z;
+            <#=d.DT#> zz = rotation.Z * z;
+
+            <#=d.DT#> num1 = ((1.0f - yy) - zz);
+            <#=d.DT#> num2 = (xy - wz);
+            <#=d.DT#> num3 = (xz + wy);
+            <#=d.DT#> num4 = (xy + wz);
+            <#=d.DT#> num5 = ((1.0f - xx) - zz);
+            <#=d.DT#> num6 = (yz - wx);
+            <#=d.DT#> num7 = (xz - wy);
+            <#=d.DT#> num8 = (yz + wx);
+            <#=d.DT#> num9 = ((1.0f - xx) - yy);
+
+            for (int i = 0; i < source.Length; ++i)
+            {
+                destination[i] = new <#=fName#>(
+                    ((source[i].X * num1) + (source[i].Y * num2)) + (source[i].Z * num3),
+                    ((source[i].X * num4) + (source[i].Y * num5)) + (source[i].Z * num6),
+                    ((source[i].X * num7) + (source[i].Y * num8)) + (source[i].Z * num9),
+                    source[i].W);
+            }
+        }
+
+        /// <summary>
+        /// Transforms a 4D vector by the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="<#=fName#>"/>.</param>
+        public static void Transform(ref <#=fName#> vector, ref Matrix4<#=d.Postfix#> transform, out <#=fName#> result)
+        {
+            result = new <#=fName#>(
+                (vector.X * transform.M11) + (vector.Y * transform.M21) + (vector.Z * transform.M31) + (vector.W * transform.M41),
+                (vector.X * transform.M12) + (vector.Y * transform.M22) + (vector.Z * transform.M32) + (vector.W * transform.M42),
+                (vector.X * transform.M13) + (vector.Y * transform.M23) + (vector.Z * transform.M33) + (vector.W * transform.M43),
+                (vector.X * transform.M14) + (vector.Y * transform.M24) + (vector.Z * transform.M34) + (vector.W * transform.M44));
+        }
+
+        /// <summary>
+        /// Transforms a 4D vector by the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <returns>The transformed <see cref="<#=fName#>"/>.</returns>
+        public static <#=fName#> Transform(<#=fName#> vector, Matrix4<#=d.Postfix#> transform)
+        {
+            <#=fName#> result;
+            Transform(ref vector, ref transform, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Transforms a 4D vector by the given <see cref="Matrix5x4"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix5x4"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="<#=fName#>"/>.</param>
+        public static void Transform(ref <#=fName#> vector, ref Matrix5x4 transform, out <#=fName#> result)
+        {
+            result = new <#=fName#>(
+                (vector.X * transform.M11) + (vector.Y * transform.M21) + (vector.Z * transform.M31) + (vector.W * transform.M41) + transform.M51,
+                (vector.X * transform.M12) + (vector.Y * transform.M22) + (vector.Z * transform.M32) + (vector.W * transform.M42) + transform.M52,
+                (vector.X * transform.M13) + (vector.Y * transform.M23) + (vector.Z * transform.M33) + (vector.W * transform.M43) + transform.M53,
+                (vector.X * transform.M14) + (vector.Y * transform.M24) + (vector.Z * transform.M34) + (vector.W * transform.M44) + transform.M54);
+        }
+
+        /// <summary>
+        /// Transforms a 4D vector by the given <see cref="Matrix5x4"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix5x4"/>.</param>
+        /// <returns>The transformed <see cref="<#=fName#>"/>.</returns>
+        public static <#=fName#> Transform(<#=fName#> vector, Matrix5x4 transform)
+        {
+            <#=fName#> result;
+            Transform(ref vector, ref transform, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Transforms an array of 4D vectors by the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="source">The array of vectors to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <param name="destination">The array for which the transformed vectors are stored.
+        /// This array may be the same array as <paramref name="source"/>.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
+        public static void Transform(<#=fName#>[] source, ref Matrix4<#=d.Postfix#> transform, <#=fName#>[] destination)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+            if (destination.Length < source.Length)
+                throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
+
+            for (int i = 0; i < source.Length; ++i)
+            {
+                Transform(ref source[i], ref transform, out destination[i]);
+            }
+        }
+#endregion
+	}
+}
+<#
+		SaveFile(outputPath, fn, this.GenerationEnvironment.ToString());
+		this.GenerationEnvironment.Remove(0, this.GenerationEnvironment.Length);
+}
+#>

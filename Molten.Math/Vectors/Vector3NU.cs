@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.Globalization;
 
-namespace Molten.Math
+namespace Molten
 {
 	///<summary>A <see cref = "nuint"/> vector comprised of three components.</summary>
 	[StructLayout(LayoutKind.Sequential, Pack=sizeof(nuint))]
@@ -99,7 +99,7 @@ namespace Molten.Math
 		}
 #endregion
 
-#region Instance Functions
+#region Instance Methods
         /// <summary>
         /// Determines whether the specified <see cref="Vector3NU"/> is equal to this instance.
         /// </summary>
@@ -218,6 +218,27 @@ namespace Molten.Math
 			return new Vector3NU(-X, -Y, -Z);
 		}
 		
+        /// <summary>
+        /// Returns a normalized unit vector of the original vector.
+        /// </summary>
+        public Vector3NU Normalized()
+        {
+            float length = Length();
+            if (!MathHelper.IsZero(length))
+            {
+                float inv = 1.0F / length;
+                return new Vector3NU()
+                {
+                    X = this.X * inv,
+                    Y = this.Y * inv,
+                    Z = this.Z * inv,
+                };
+            }
+            else
+            {
+                return new Vector3NU();
+            }
+        }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
         /// <param name="min">The minimum value of each component.</param>
@@ -414,6 +435,30 @@ namespace Molten.Math
 
 #region Static Methods
         /// <summary>
+        /// Tests whether one 3D vector is near another 3D vector.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <param name="epsilon">The epsilon.</param>
+        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
+        public static bool NearEqual(Vector3NU left, Vector3NU right, Vector3NU epsilon)
+        {
+            return NearEqual(ref left, ref right, ref epsilon);
+        }
+
+        /// <summary>
+        /// Tests whether one 3D vector is near another 3D vector.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <param name="epsilon">The epsilon.</param>
+        /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
+        public static bool NearEqual(ref Vector3NU left, ref Vector3NU right, ref Vector3NU epsilon)
+        {
+            return MathHelper.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelper.WithinEpsilon(left.Y, right.Y, epsilon.Y) && MathHelper.WithinEpsilon(left.Z, right.Z, epsilon.Z);
+        }
+
+        /// <summary>
         /// Performs a cubic interpolation between two vectors.
         /// </summary>
         /// <param name="start">Start vector.</param>
@@ -567,7 +612,7 @@ namespace Molten.Math
         /// <param name="value2">The second vector.</param>
         /// <returns>The distance between the two vectors.</returns>
         /// <remarks>
-        /// <see cref="Vector2F.DistanceSquared(Vector2F, Vector2F)"/> may be preferred when only the relative distance is needed
+        /// <see cref="Vector3NU.DistanceSquared(Vector3NU, Vector3NU)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
         public static nuint Distance(Vector3NU value1, Vector3NU value2)
@@ -724,6 +769,28 @@ namespace Molten.Math
         /// provides the same information and avoids calculating two square roots.
         /// </remarks>
 		public static nuint DistanceSquared(ref Vector3NU value1, ref Vector3NU value2)
+        {
+            nuint x = value1.X - value2.X;
+            nuint y = value1.Y - value2.Y;
+            nuint z = value1.Z - value2.Z;
+
+            return (x * x) + (y * y) + (z * z);
+        }
+
+        /// <summary>
+        /// Calculates the squared distance between two <see cref="Vector3NU"/> vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The squared distance between the two vectors.</returns>
+        /// <remarks>Distance squared is the value before taking the square root. 
+        /// Distance squared can often be used in place of distance if relative comparisons are being made. 
+        /// For example, consider three points A, B, and C. To determine whether B or C is further from A, 
+        /// compare the distance between A and B to the distance between A and C. Calculating the two distances 
+        /// involves two square roots, which are computationally expensive. However, using distance squared 
+        /// provides the same information and avoids calculating two square roots.
+        /// </remarks>
+		public static nuint DistanceSquared(Vector3NU value1, Vector3NU value2)
         {
             nuint x = value1.X - value2.X;
             nuint y = value1.Y - value2.Y;

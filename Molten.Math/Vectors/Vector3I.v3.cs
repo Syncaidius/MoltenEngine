@@ -1,10 +1,50 @@
 using System.Runtime.InteropServices;
 
-namespace Molten.Math
+namespace Molten
 {
 	///<summary>A <see cref = "int"/> vector comprised of 3 components.</summary>
 	public partial struct Vector3I
 	{
+           /// <summary>
+        /// A unit <see cref="Vector3I"/> designating up (0, 1, 0).
+        /// </summary>
+        public static readonly Vector3I Up = new Vector3I(0, 1, 0);
+
+        /// <summary>
+        /// A unit <see cref="Vector3I"/> designating down (0, -1, 0).
+        /// </summary>
+        public static readonly Vector3I Down = new Vector3I(0, -1, 0);
+
+        /// <summary>
+        /// A unit <see cref="Vector3I"/> designating left (-1, 0, 0).
+        /// </summary>
+        public static readonly Vector3I Left = new Vector3I(-1, 0, 0);
+
+        /// <summary>
+        /// A unit <see cref="Vector3I"/> designating right (1, 0, 0).
+        /// </summary>
+        public static readonly Vector3I Right = new Vector3I(1, 0, 0);
+
+        /// <summary>
+        /// A unit <see cref="Vector3I"/> designating forward in a right-handed coordinate system (0, 0, -1).
+        /// </summary>
+        public static readonly Vector3I ForwardRH = new Vector3I(0, 0, -1);
+
+        /// <summary>
+        /// A unit <see cref="Vector3I"/> designating forward in a left-handed coordinate system (0, 0, 1).
+        /// </summary>
+        public static readonly Vector3I ForwardLH = new Vector3I(0, 0, 1);
+
+        /// <summary>
+        /// A unit <see cref="Vector3I"/> designating backward in a right-handed coordinate system (0, 0, 1).
+        /// </summary>
+        public static readonly Vector3I BackwardRH = new Vector3I(0, 0, 1);
+
+        /// <summary>
+        /// A unit <see cref="Vector3I"/> designating backward in a left-handed coordinate system (0, 0, -1).
+        /// </summary>
+        public static readonly Vector3I BackwardLH = new Vector3I(0, 0, -1);
+
 #region Static Methods
         /// <summary>
         /// Calculates the cross product of two <see cref="Vector3I"/>.
