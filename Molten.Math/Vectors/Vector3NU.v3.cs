@@ -51,10 +51,10 @@ namespace Molten
         /// </summary>
         /// <param name="left">First source <see cref="Vector3NU"/>.</param>
         /// <param name="right">Second source <see cref="Vector3NU"/>.</param>
-        /// <param name="result">When the method completes, contains he cross product of the two <see cref="Vector3NU"/>.</param>
+
         public static Vector3NU Cross(ref Vector3NU left, ref Vector3NU right)
         {
-            return new Vector3F(
+            return new Vector3NU(
                 (left.Y * right.Z) - (left.Z * right.Y),
                 (left.Z * right.X) - (left.X * right.Z),
                 (left.X * right.Y) - (left.Y * right.X));

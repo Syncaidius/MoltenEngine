@@ -636,8 +636,7 @@ namespace Molten
         /// <param name="yaw">The yaw of rotation.</param>
         /// <param name="pitch">The pitch of rotation.</param>
         /// <param name="roll">The roll of rotation.</param>
-        /// <param name="result">When the method completes, contains the newly created <see cref="QuaternionF"/>.</param>
-        public static void RotationYawPitchRoll(float yaw, float pitch, float roll, out QuaternionF result)
+        public static QuaternionF RotationYawPitchRoll(float yaw, float pitch, float roll)
         {
             float halfRoll = roll * 0.5f;
             float halfPitch = pitch * 0.5f;
@@ -650,10 +649,13 @@ namespace Molten
             float sinYaw = (float)Math.Sin(halfYaw);
             float cosYaw = (float)Math.Cos(halfYaw);
 
-            result.X = (cosYaw * sinPitch * cosRoll) + (sinYaw * cosPitch * sinRoll);
-            result.Y = (sinYaw * cosPitch * cosRoll) - (cosYaw * sinPitch * sinRoll);
-            result.Z = (cosYaw * cosPitch * sinRoll) - (sinYaw * sinPitch * cosRoll);
-            result.W = (cosYaw * cosPitch * cosRoll) + (sinYaw * sinPitch * sinRoll);
+            return new QuaternionF()
+            {
+                X = (cosYaw * sinPitch * cosRoll) + (sinYaw * cosPitch * sinRoll),
+                Y = (sinYaw * cosPitch * cosRoll) - (cosYaw * sinPitch * sinRoll),
+                Z = (cosYaw * cosPitch * sinRoll) - (sinYaw * sinPitch * cosRoll),
+                W = (cosYaw * cosPitch * cosRoll) + (sinYaw * sinPitch * sinRoll)
+            };
         }
 
         /// <summary>
@@ -715,7 +717,6 @@ namespace Molten
         /// Creates a quaternion given a rotation matrix.
         /// </summary>
         /// <param name="matrix">The rotation matrix.</param>
-        /// <param name="result">When the method completes, contains the newly created quaternion.</param>
         public static QuaternionF FromRotationMatrix(ref Matrix3F matrix)
         {
             float sqrt;
@@ -772,10 +773,9 @@ namespace Molten
         /// </summary>
         /// <param name="left">First source quaternion.</param>
         /// <param name="right">Second source quaternion.</param>
-        /// <param name="result">When the method completes, contains the dot product of the two quaternions.</param>
-        public static void Dot(ref QuaternionF left, ref QuaternionF right, out float result)
+        public static float Dot(ref QuaternionF left, ref QuaternionF right)
         {
-            result = (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+            return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
         }
 
         /// <summary>
@@ -832,7 +832,6 @@ namespace Molten
         /// <param name="value3">A <see cref="QuaternionF"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
         /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
         /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        /// <param name="result">When the method completes, contains a new <see cref="QuaternionF"/> containing the 4D Cartesian coordinates of the specified point.</param>
         public static QuaternionF Barycentric(ref QuaternionF value1, ref QuaternionF value2, ref QuaternionF value3, float amount1, float amount2)
         {
             QuaternionF start = Slerp(ref value1, ref value2, amount1 + amount2);
@@ -848,7 +847,6 @@ namespace Molten
         /// <param name="value3">A <see cref="QuaternionF"/> containing the 4D Cartesian coordinates of vertex 3 of the triangle.</param>
         /// <param name="amount1">Barycentric coordinate b2, which expresses the weighting factor toward vertex 2 (specified in <paramref name="value2"/>).</param>
         /// <param name="amount2">Barycentric coordinate b3, which expresses the weighting factor toward vertex 3 (specified in <paramref name="value3"/>).</param>
-        /// <param name="result">When the method completes, contains a new <see cref="QuaternionF"/> containing the 4D Cartesian coordinates of the specified point.</param>
         public static QuaternionF Barycentric(QuaternionF value1, QuaternionF value2, QuaternionF value3, float amount1, float amount2)
         {
             return Barycentric(ref value1, ref value2, ref value3, amount1, amount2);
@@ -890,7 +888,6 @@ namespace Molten
         /// <param name="start">Start <see cref="QuaternionF"/>.</param>
         /// <param name="end">End <see cref="QuaternionF"/>.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        /// <param name="result">When the method completes, contains the linear interpolation of the two <see cref="QuaternionF"/>.</param>
         /// <remarks>
         /// This method performs the linear interpolation based on the following formula.
         /// <code>start + (end - start) * amount</code>
@@ -948,7 +945,6 @@ namespace Molten
         /// <param name="eye">The position of the viewer's eye.</param>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
-        /// <param name="result">When the method completes, contains the created look-at <see cref="QuaternionF"/>.</param>
         public static QuaternionF LookAtLH(ref Vector3F eye, ref Vector3F target, ref Vector3F up)
         {
             Matrix3F matrix = Matrix3F.LookAtLH(ref eye, ref target, ref up);
@@ -1007,7 +1003,6 @@ namespace Molten
         /// <param name="cameraPosition">The position of the camera.</param>
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
-        /// <param name="result">When the method completes, contains the created billboard quaternion.</param>
         public static QuaternionF BillboardLH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector)
         {
             Matrix3F matrix = Matrix3F.BillboardLH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector);
@@ -1021,8 +1016,7 @@ namespace Molten
         /// <param name="cameraPosition">The position of the camera.</param>
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
-        /// <param name="result">When the method completes, contains the created billboard quaternion.</param>
-        public static QuaternionF BillboardRH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector, out QuaternionF result)
+        public static QuaternionF BillboardRH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector)
         {
             Matrix3F matrix = Matrix3F.BillboardRH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector);
             return FromRotationMatrix(ref matrix);

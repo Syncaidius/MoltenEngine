@@ -74,10 +74,10 @@ namespace Molten
         /// </summary>
         /// <param name="left">First source <#=See(fName)#>.</param>
         /// <param name="right">Second source <#=See(fName)#>.</param>
-        /// <param name="result">When the method completes, contains he cross product of the two <#=See(fName)#>.</param>
+
         public static <#=fName#> Cross(ref <#=fName#> left, ref <#=fName#> right)
         {
-            return new Vector3F(
+            return new <#=fName#>(
                 (left.Y * right.Z) - (left.Z * right.Y),
                 (left.Z * right.X) - (left.X * right.Z),
                 (left.X * right.Y) - (left.Y * right.X));

@@ -175,8 +175,8 @@
     <Compile Include="Colors\Color3.cs" />
     <Compile Include="Colors\Color4.cs" />
     <Compile Include="Colors\ColorBGRA.cs" />
-    <Compile Include="DoublePrecision\AngleD.cs" />
-    <Compile Include="DoublePrecision\Matrix3D.cs" />
+    <Compile Include="AngleD.cs" />
+    <Compile Include="Matrices\Matrix3D.cs" />
     <Compile Include="Matrices\Matrix4D.cs" />
     <Compile Include="MathHelperDP.cs" />
     <Compile Include="PlainIntersectionType.cs" />
@@ -188,7 +188,7 @@
     <Compile Include="Vectors\Half3.cs" />
     <Compile Include="Vectors\Half4.cs" />
     <Compile Include="HalfUtils.cs" />
-    <Compile Include="DoublePrecision\RectangleD.cs" />
+    <Compile Include="2D\RectangleD.cs" />
     <Compile Include="Quaternions\QuaternionD.cs" />
     <Compile Include="Quaternions\QuaternionF.cs" />
     <Compile Include="Quaternions\t4_quaternions1.cs">

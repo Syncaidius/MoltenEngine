@@ -56,10 +56,10 @@ namespace Molten
         /// </summary>
         /// <param name="left">First source <see cref="SByte3"/>.</param>
         /// <param name="right">Second source <see cref="SByte3"/>.</param>
-        /// <param name="result">When the method completes, contains he cross product of the two <see cref="SByte3"/>.</param>
+
         public static SByte3 Cross(ref SByte3 left, ref SByte3 right)
         {
-            return new Vector3F(
+            return new SByte3(
                 (left.Y * right.Z) - (left.Z * right.Y),
                 (left.Z * right.X) - (left.X * right.Z),
                 (left.X * right.Y) - (left.Y * right.X));

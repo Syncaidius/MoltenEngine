@@ -1533,8 +1533,7 @@ namespace Molten
         /// <param name="cameraPosition">The position of the camera.</param>
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
-        /// <param name="result">When the method completes, contains the created billboard Matrix3x3.</param>
-        public static void BillboardLH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector, out Matrix3F result)
+        public static Matrix3F BillboardLH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector)
         {
             Vector3F difference = cameraPosition - objectPosition;
 
@@ -1548,15 +1547,18 @@ namespace Molten
             crossed.Normalize();
             Vector3F final = Vector3F.Cross(ref difference, ref crossed);
 
-            result.M11 = crossed.X;
-            result.M12 = crossed.Y;
-            result.M13 = crossed.Z;
-            result.M21 = final.X;
-            result.M22 = final.Y;
-            result.M23 = final.Z;
-            result.M31 = difference.X;
-            result.M32 = difference.Y;
-            result.M33 = difference.Z;
+            return new Matrix3F()
+            {
+                M11 = crossed.X,
+                M12 = crossed.Y,
+                M13 = crossed.Z,
+                M21 = final.X,
+                M22 = final.Y,
+                M23 = final.Z,
+                M31 = difference.X,
+                M32 = difference.Y,
+                M33 = difference.Z,
+            };
         }
 
         /// <summary>
@@ -1567,11 +1569,13 @@ namespace Molten
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <returns>The created billboard Matrix3x3.</returns>
-        public static Matrix3F BillboardLH(Vector3F objectPosition, Vector3F cameraPosition, Vector3F cameraUpVector, Vector3F cameraForwardVector)
+        public static Matrix3F BillboardLH(
+            Vector3F objectPosition, 
+            Vector3F cameraPosition, 
+            Vector3F cameraUpVector, 
+            Vector3F cameraForwardVector)
         {
-            Matrix3F result;
-            BillboardLH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector, out result);
-            return result;
+            return BillboardLH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector);
         }
 
         /// <summary>
@@ -1582,7 +1586,7 @@ namespace Molten
         /// <param name="cameraUpVector">The up vector of the camera.</param>
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <param name="result">When the method completes, contains the created billboard Matrix3x3.</param>
-        public static void BillboardRH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector, out Matrix3F result)
+        public static Matrix3F BillboardRH(ref Vector3F objectPosition, ref Vector3F cameraPosition, ref Vector3F cameraUpVector, ref Vector3F cameraForwardVector)
         {
             Vector3F difference = objectPosition - cameraPosition;
 
@@ -1596,15 +1600,18 @@ namespace Molten
             crossed.Normalize();
             Vector3F final = Vector3F.Cross(ref difference, ref crossed);
 
-            result.M11 = crossed.X;
-            result.M12 = crossed.Y;
-            result.M13 = crossed.Z;
-            result.M21 = final.X;
-            result.M22 = final.Y;
-            result.M23 = final.Z;
-            result.M31 = difference.X;
-            result.M32 = difference.Y;
-            result.M33 = difference.Z;
+            return new Matrix3F()
+            {
+                M11 = crossed.X,
+                M12 = crossed.Y,
+                M13 = crossed.Z,
+                M21 = final.X,
+                M22 = final.Y,
+                M23 = final.Z,
+                M31 = difference.X,
+                M32 = difference.Y,
+                M33 = difference.Z,
+            };
         }
 
         /// <summary>
@@ -1617,9 +1624,7 @@ namespace Molten
         /// <returns>The created billboard Matrix3x3.</returns>
         public static Matrix3F BillboardRH(Vector3F objectPosition, Vector3F cameraPosition, Vector3F cameraUpVector, Vector3F cameraForwardVector)
         {
-            Matrix3F result;
-            BillboardRH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector, out result);
-            return result;
+            return BillboardRH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector);
         }
 
         /// <summary>
@@ -1628,8 +1633,7 @@ namespace Molten
         /// <param name="eye">The position of the viewer's eye.</param>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
-        /// <param name="result">When the method completes, contains the created look-at Matrix3x3.</param>
-        public static void LookAtLH(ref Vector3F eye, ref Vector3F target, ref Vector3F up, out Matrix3F result)
+        public static Matrix3F LookAtLH(ref Vector3F eye, ref Vector3F target, ref Vector3F up)
         {
             Vector3F zaxis = target - eye;
             zaxis.Normalize();
@@ -1639,10 +1643,11 @@ namespace Molten
 
             Vector3F yaxis = Vector3F.Cross(ref zaxis, ref xaxis);
 
-            result = Matrix3F.Identity;
+            Matrix3F result = Identity;
             result.M11 = xaxis.X; result.M21 = xaxis.Y; result.M31 = xaxis.Z;
             result.M12 = yaxis.X; result.M22 = yaxis.Y; result.M32 = yaxis.Z;
             result.M13 = zaxis.X; result.M23 = zaxis.Y; result.M33 = zaxis.Z;
+            return result;
         }
 
         /// <summary>
@@ -1654,9 +1659,7 @@ namespace Molten
         /// <returns>The created look-at Matrix3x3.</returns>
         public static Matrix3F LookAtLH(Vector3F eye, Vector3F target, Vector3F up)
         {
-            Matrix3F result;
-            LookAtLH(ref eye, ref target, ref up, out result);
-            return result;
+            return LookAtLH(ref eye, ref target, ref up);
         }
 
         /// <summary>
@@ -1665,8 +1668,7 @@ namespace Molten
         /// <param name="eye">The position of the viewer's eye.</param>
         /// <param name="target">The camera look-at target.</param>
         /// <param name="up">The camera's up vector.</param>
-        /// <param name="result">When the method completes, contains the created look-at Matrix3x3.</param>
-        public static void LookAtRH(ref Vector3F eye, ref Vector3F target, ref Vector3F up, out Matrix3F result)
+        public static Matrix3F LookAtRH(ref Vector3F eye, ref Vector3F target, ref Vector3F up)
         {
             Vector3F zaxis = eye - target; 
             zaxis.Normalize();
@@ -1676,10 +1678,18 @@ namespace Molten
 
             Vector3F yaxis = Vector3F.Cross(ref zaxis, ref xaxis);
 
-            result = Matrix3F.Identity;
-            result.M11 = xaxis.X; result.M21 = xaxis.Y; result.M31 = xaxis.Z;
-            result.M12 = yaxis.X; result.M22 = yaxis.Y; result.M32 = yaxis.Z;
-            result.M13 = zaxis.X; result.M23 = zaxis.Y; result.M33 = zaxis.Z;
+            return new Matrix3F()
+            {
+                M11 = xaxis.X,
+                M21 = xaxis.Y,
+                M31 = xaxis.Z,
+                M12 = yaxis.X,
+                M22 = yaxis.Y,
+                M32 = yaxis.Z,
+                M13 = zaxis.X,
+                M23 = zaxis.Y,
+                M33 = zaxis.Z,
+            };
         }
 
         /// <summary>
@@ -1691,9 +1701,7 @@ namespace Molten
         /// <returns>The created look-at Matrix3x3.</returns>
         public static Matrix3F LookAtRH(Vector3F eye, Vector3F target, Vector3F up)
         {
-            Matrix3F result;
-            LookAtRH(ref eye, ref target, ref up, out result);
-            return result;
+            return LookAtRH(ref eye, ref target, ref up);
         }
 
         /// <summary>
@@ -1906,8 +1914,7 @@ namespace Molten
         /// Creates a rotation Matrix3x3 from a quaternion.
         /// </summary>
         /// <param name="rotation">The quaternion to use to build the Matrix3x3.</param>
-        /// <param name="result">The created rotation Matrix3x3.</param>
-        public static void FromQuaternion(ref QuaternionF rotation, out Matrix3F result)
+        public static Matrix3F FromQuaternion(ref QuaternionF rotation)
         {
             float xx = rotation.X * rotation.X;
             float yy = rotation.Y * rotation.Y;
@@ -1919,16 +1926,18 @@ namespace Molten
             float yz = rotation.Y * rotation.Z;
             float xw = rotation.X * rotation.W;
 
-            result = Matrix3F.Identity;
-            result.M11 = 1.0f - (2.0f * (yy + zz));
-            result.M12 = 2.0f * (xy + zw);
-            result.M13 = 2.0f * (zx - yw);
-            result.M21 = 2.0f * (xy - zw);
-            result.M22 = 1.0f - (2.0f * (zz + xx));
-            result.M23 = 2.0f * (yz + xw);
-            result.M31 = 2.0f * (zx + yw);
-            result.M32 = 2.0f * (yz - xw);
-            result.M33 = 1.0f - (2.0f * (yy + xx));
+            return new Matrix3F()
+            {
+                M11 = 1.0f - (2.0f * (yy + zz)),
+                M12 = 2.0f * (xy + zw),
+                M13 = 2.0f * (zx - yw),
+                M21 = 2.0f * (xy - zw),
+                M22 = 1.0f - (2.0f * (zz + xx)),
+                M23 = 2.0f * (yz + xw),
+                M31 = 2.0f * (zx + yw),
+                M32 = 2.0f * (yz - xw),
+                M33 = 1.0f - (2.0f * (yy + xx)),
+            };
         }
 
         /// <summary>
@@ -1938,9 +1947,7 @@ namespace Molten
         /// <returns>The created rotation Matrix3x3.</returns>
         public static Matrix3F FromQuaternion(QuaternionF rotation)
         {
-            Matrix3F result;
-            FromQuaternion(ref rotation, out result);
-            return result;
+            return FromQuaternion(ref rotation);
         }
 
         /// <summary>
@@ -1950,25 +1957,10 @@ namespace Molten
         /// <param name="pitch">Pitch around the x-axis, in radians.</param>
         /// <param name="roll">Roll around the z-axis, in radians.</param>
         /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
-        public static void RotationYawPitchRoll(float yaw, float pitch, float roll, out Matrix3F result)
-        {
-            QuaternionF quaternion = new QuaternionF();
-            QuaternionF.RotationYawPitchRoll(yaw, pitch, roll, out quaternion);
-            FromQuaternion(ref quaternion, out result);
-        }
-
-        /// <summary>
-        /// Creates a rotation Matrix3x3 with a specified yaw, pitch, and roll.
-        /// </summary>
-        /// <param name="yaw">Yaw around the y-axis, in radians.</param>
-        /// <param name="pitch">Pitch around the x-axis, in radians.</param>
-        /// <param name="roll">Roll around the z-axis, in radians.</param>
-        /// <returns>The created rotation Matrix3x3.</returns>
         public static Matrix3F RotationYawPitchRoll(float yaw, float pitch, float roll)
         {
-            Matrix3F result;
-            RotationYawPitchRoll(yaw, pitch, roll, out result);
-            return result;
+            QuaternionF quaternion = QuaternionF.RotationYawPitchRoll(yaw, pitch, roll);
+            return FromQuaternion(ref quaternion);
         }
 
         /// <summary>
