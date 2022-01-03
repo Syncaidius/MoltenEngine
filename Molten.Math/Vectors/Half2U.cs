@@ -619,6 +619,16 @@ namespace Molten
             };
         }
 
+        /// <summary>
+        /// Calculates the dot product of two <see cref="Half2U"/> vectors.
+        /// </summary>
+        /// <param name="left">First <see cref="Half2U"/> source vector</param>
+        /// <param name="right">Second <see cref="Half2U"/> source vector.</param>
+        public static ushort Dot(ref Half2U left, ref Half2U right)
+        {
+			return (left.X * right.X) + (left.Y * right.Y);
+        }
+
 		/// <summary>
         /// Calculates the dot product of two <see cref="Half2U"/> vectors.
         /// </summary>

@@ -741,6 +741,16 @@ namespace Molten
             };
         }
 
+        /// <summary>
+        /// Calculates the dot product of two <#=See(fName)#> vectors.
+        /// </summary>
+        /// <param name="left">First <#=See(fName)#> source vector</param>
+        /// <param name="right">Second <#=See(fName)#> source vector.</param>
+        public static <#=d.DT#> Dot(ref <#=fName#> left, ref <#=fName#> right)
+        {
+			return <#for(int p = 0; p < size; p++){#>(left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
+        }
+
 		/// <summary>
         /// Calculates the dot product of two <#=See(fName)#> vectors.
         /// </summary>

@@ -619,6 +619,16 @@ namespace Molten
             };
         }
 
+        /// <summary>
+        /// Calculates the dot product of two <see cref="Vector2UI"/> vectors.
+        /// </summary>
+        /// <param name="left">First <see cref="Vector2UI"/> source vector</param>
+        /// <param name="right">Second <see cref="Vector2UI"/> source vector.</param>
+        public static uint Dot(ref Vector2UI left, ref Vector2UI right)
+        {
+			return (left.X * right.X) + (left.Y * right.Y);
+        }
+
 		/// <summary>
         /// Calculates the dot product of two <see cref="Vector2UI"/> vectors.
         /// </summary>

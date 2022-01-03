@@ -638,6 +638,16 @@ namespace Molten
             };
         }
 
+        /// <summary>
+        /// Calculates the dot product of two <see cref="Half3"/> vectors.
+        /// </summary>
+        /// <param name="left">First <see cref="Half3"/> source vector</param>
+        /// <param name="right">Second <see cref="Half3"/> source vector.</param>
+        public static short Dot(ref Half3 left, ref Half3 right)
+        {
+			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+        }
+
 		/// <summary>
         /// Calculates the dot product of two <see cref="Half3"/> vectors.
         /// </summary>

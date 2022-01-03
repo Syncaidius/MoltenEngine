@@ -48,7 +48,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Molten.DoublePrecision
+namespace Molten
 {
     /// <summary>
     /// Represents a 4x4 mathematical matrix.
@@ -720,7 +720,7 @@ namespace Molten.DoublePrecision
 
             rotationmatrix.M44 = 1f;
 
-            QuaternionD.FromRotationMatrix(ref rotationmatrix, out rotation);
+            rotation = QuaternionD.FromRotationMatrix(ref rotationmatrix);
             return true;
         }
 
@@ -768,7 +768,7 @@ namespace Molten.DoublePrecision
 
             rotationmatrix.M44 = 1f;
 
-            QuaternionD.FromRotationMatrix(ref rotationmatrix, out rotation);
+            rotation = QuaternionD.FromRotationMatrix(ref rotationmatrix);
             return true;
         }
 
@@ -1896,8 +1896,6 @@ namespace Molten.DoublePrecision
         /// <param name="result">When the method completes, contains the created billboard matrix.</param>
         public static void BillboardLH(ref Vector3D objectPosition, ref Vector3D cameraPosition, ref Vector3D cameraUpVector, ref Vector3D cameraForwardVector, out Matrix4D result)
         {
-            Vector3D crossed;
-            Vector3D final;
             Vector3D difference = cameraPosition - objectPosition;
 
             double lengthSq = difference.LengthSquared();
@@ -1906,9 +1904,9 @@ namespace Molten.DoublePrecision
             else
                 difference *= (float)(1.0 / Math.Sqrt(lengthSq));
 
-            Vector3D.Cross(ref cameraUpVector, ref difference, out crossed);
+            Vector3D crossed = Vector3D.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
-            Vector3D.Cross(ref difference, ref crossed, out final);
+            Vector3D final = Vector3D.Cross(ref difference, ref crossed);
 
             result.M11 = crossed.X;
             result.M12 = crossed.Y;
@@ -1953,8 +1951,6 @@ namespace Molten.DoublePrecision
         /// <param name="result">When the method completes, contains the created billboard matrix.</param>
         public static void BillboardRH(ref Vector3D objectPosition, ref Vector3D cameraPosition, ref Vector3D cameraUpVector, ref Vector3D cameraForwardVector, out Matrix4D result)
         {
-            Vector3D crossed;
-            Vector3D final;
             Vector3D difference = objectPosition - cameraPosition;
 
             double lengthSq = difference.LengthSquared();
@@ -1963,9 +1959,9 @@ namespace Molten.DoublePrecision
             else
                 difference *= (float)(1.0 / Math.Sqrt(lengthSq));
 
-            Vector3D.Cross(ref cameraUpVector, ref difference, out crossed);
+            Vector3D crossed = Vector3D.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
-            Vector3D.Cross(ref difference, ref crossed, out final);
+            Vector3D final = Vector3D.Cross(ref difference, ref crossed);
 
             result.M11 = crossed.X;
             result.M12 = crossed.Y;
@@ -2008,19 +2004,22 @@ namespace Molten.DoublePrecision
         /// <param name="result">When the method completes, contains the created look-at matrix.</param>
         public static void LookAtLH(ref Vector3D eye, ref Vector3D target, ref Vector3D up, out Matrix4D result)
         {
-            Vector3D xaxis, yaxis, zaxis;
-            Vector3D.Subtract(ref target, ref eye, out zaxis); zaxis.Normalize();
-            Vector3D.Cross(ref up, ref zaxis, out xaxis); xaxis.Normalize();
-            Vector3D.Cross(ref zaxis, ref xaxis, out yaxis);
+            Vector3D zaxis = Vector3D.Subtract(ref target, ref eye); 
+            zaxis.Normalize();
+
+            Vector3D xaxis = Vector3D.Cross(ref up, ref zaxis, out xaxis); 
+            xaxis.Normalize();
+
+            Vector3D yaxis = Vector3D.Cross(ref zaxis, ref xaxis, out yaxis);
 
             result = Matrix4D.Identity;
             result.M11 = xaxis.X; result.M21 = xaxis.Y; result.M31 = xaxis.Z;
             result.M12 = yaxis.X; result.M22 = yaxis.Y; result.M32 = yaxis.Z;
             result.M13 = zaxis.X; result.M23 = zaxis.Y; result.M33 = zaxis.Z;
 
-            Vector3D.Dot(ref xaxis, ref eye, out result.M41);
-            Vector3D.Dot(ref yaxis, ref eye, out result.M42);
-            Vector3D.Dot(ref zaxis, ref eye, out result.M43);
+            result.M41 = Vector3D.Dot(ref xaxis, ref eye);
+            result.M42 = Vector3D.Dot(ref yaxis, ref eye);
+            result.M43 = Vector3D.Dot(ref zaxis, ref eye);
 
             result.M41 = -result.M41;
             result.M42 = -result.M42;

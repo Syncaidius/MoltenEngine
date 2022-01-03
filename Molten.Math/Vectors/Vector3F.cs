@@ -638,6 +638,16 @@ namespace Molten
             };
         }
 
+        /// <summary>
+        /// Calculates the dot product of two <see cref="Vector3F"/> vectors.
+        /// </summary>
+        /// <param name="left">First <see cref="Vector3F"/> source vector</param>
+        /// <param name="right">Second <see cref="Vector3F"/> source vector.</param>
+        public static float Dot(ref Vector3F left, ref Vector3F right)
+        {
+			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+        }
+
 		/// <summary>
         /// Calculates the dot product of two <see cref="Vector3F"/> vectors.
         /// </summary>

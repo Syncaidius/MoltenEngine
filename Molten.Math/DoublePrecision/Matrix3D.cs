@@ -50,7 +50,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Molten.DoublePrecision
+namespace Molten
 {
     /// <summary>
     /// Represents a double-precision 3x3 MatrixDouble ( contains only Scale and Rotation ).
@@ -531,7 +531,7 @@ namespace Molten.DoublePrecision
             rotation3x3.M32 = M32 / scale.Z;
             rotation3x3.M33 = M33 / scale.Z;
 
-            QuaternionD.FromRotationMatrix(ref rotation3x3, out rotation);
+            rotation = QuaternionD.FromRotationMatrix(ref rotation3x3);
             return true;
         }
 
@@ -571,7 +571,7 @@ namespace Molten.DoublePrecision
             rotationmatrix.M32 = M32 * inv_scale;
             rotationmatrix.M33 = M33 * inv_scale;
 
-            QuaternionD.FromRotationMatrix(ref rotationmatrix, out rotation);
+            rotation = QuaternionD.FromRotationMatrix(ref rotationmatrix);
             return true;
         }
 
