@@ -1538,8 +1538,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created billboard Matrix3x3.</param>
         public static void BillboardLH(ref Vector3D objectPosition, ref Vector3D cameraPosition, ref Vector3D cameraUpVector, ref Vector3D cameraForwardVector, out Matrix3D result)
         {
-            Vector3D crossed;
-            Vector3D final;
+            ;
+            ;
             Vector3D difference = cameraPosition - objectPosition;
 
             double lengthSq = difference.LengthSquared();
@@ -1548,9 +1548,9 @@ namespace Molten
             else
                 difference *= (1.0 / Math.Sqrt(lengthSq));
 
-            Vector3D.Cross(ref cameraUpVector, ref difference, out crossed);
+            Vector3D crossed = Vector3D.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
-            Vector3D.Cross(ref difference, ref crossed, out final);
+            Vector3D final = Vector3D.Cross(ref difference, ref crossed);
 
             result.M11 = crossed.X;
             result.M12 = crossed.Y;
@@ -1588,8 +1588,6 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created billboard Matrix3x3.</param>
         public static void BillboardRH(ref Vector3D objectPosition, ref Vector3D cameraPosition, ref Vector3D cameraUpVector, ref Vector3D cameraForwardVector, out Matrix3D result)
         {
-            Vector3D crossed;
-            Vector3D final;
             Vector3D difference = objectPosition - cameraPosition;
 
             double lengthSq = difference.LengthSquared();
@@ -1598,9 +1596,9 @@ namespace Molten
             else
                 difference *= (1.0 / Math.Sqrt(lengthSq));
 
-            Vector3D.Cross(ref cameraUpVector, ref difference, out crossed);
+            Vector3D crossed = Vector3D.Cross(ref cameraUpVector, ref difference);
             crossed.Normalize();
-            Vector3D.Cross(ref difference, ref crossed, out final);
+            Vector3D final = Vector3D.Cross(ref difference, ref crossed);
 
             result.M11 = crossed.X;
             result.M12 = crossed.Y;
@@ -1637,12 +1635,15 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created look-at Matrix3x3.</param>
         public static void LookAtLH(ref Vector3D eye, ref Vector3D target, ref Vector3D up, out Matrix3D result)
         {
-            Vector3D xaxis, yaxis, zaxis;
-            Vector3D.Subtract(ref target, ref eye, out zaxis); zaxis.Normalize();
-            Vector3D.Cross(ref up, ref zaxis, out xaxis); xaxis.Normalize();
-            Vector3D.Cross(ref zaxis, ref xaxis, out yaxis);
+            Vector3D zaxis = target - eye;
+            zaxis.Normalize();
 
-            result = Matrix3D.Identity;
+            Vector3D xaxis = Vector3D.Cross(ref up, ref zaxis); 
+            xaxis.Normalize();
+
+            Vector3D yaxis = Vector3D.Cross(ref zaxis, ref xaxis);
+
+            result = Identity;
             result.M11 = xaxis.X; result.M21 = xaxis.Y; result.M31 = xaxis.Z;
             result.M12 = yaxis.X; result.M22 = yaxis.Y; result.M32 = yaxis.Z;
             result.M13 = zaxis.X; result.M23 = zaxis.Y; result.M33 = zaxis.Z;
@@ -1671,12 +1672,15 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created look-at Matrix3x3.</param>
         public static void LookAtRH(ref Vector3D eye, ref Vector3D target, ref Vector3D up, out Matrix3D result)
         {
-            Vector3D xaxis, yaxis, zaxis;
-            Vector3D.Subtract(ref eye, ref target, out zaxis); zaxis.Normalize();
-            Vector3D.Cross(ref up, ref zaxis, out xaxis); xaxis.Normalize();
-            Vector3D.Cross(ref zaxis, ref xaxis, out yaxis);
+            Vector3D zaxis = eye - target; 
+            zaxis.Normalize();
 
-            result = Matrix3D.Identity;
+            Vector3D xaxis = Vector3D.Cross(ref up, ref zaxis); 
+            xaxis.Normalize();
+
+            Vector3D yaxis = Vector3D.Cross(ref zaxis, ref xaxis);
+
+            result = Identity;
             result.M11 = xaxis.X; result.M21 = xaxis.Y; result.M31 = xaxis.Z;
             result.M12 = yaxis.X; result.M22 = yaxis.Y; result.M32 = yaxis.Z;
             result.M13 = zaxis.X; result.M23 = zaxis.Y; result.M33 = zaxis.Z;

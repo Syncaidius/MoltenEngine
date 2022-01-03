@@ -24,7 +24,8 @@ foreach(TypeData d in _def)
 	string fName = $"{d.Name}{d.Postfix}";
     string vectorName = $"Vector3{d.Postfix}";
 	string fn = $"{fName}";
-    string fpCast = d.DT == "float" ? "(float)" : "";
+	string fpCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
+	string mathHelper = d.DT == "double" ? "MathHelperDP" : "MathHelper";
 #>
 using System;
 using System.Globalization;
@@ -74,7 +75,7 @@ namespace Molten
         /// </summary>
         public bool IsNormalized
         {
-            get { return MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W)); }
+            get { return <#=mathHelper#>.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W)); }
         }
 
         /// <summary>
@@ -86,10 +87,10 @@ namespace Molten
             get
             {
                 <#=d.DT#> length = (X * X) + (Y * Y) + (Z * Z);
-                if (MathHelper.IsZero(length))
+                if (<#=mathHelper#>.IsZero(length))
                     return 0.0<#=d.FPL#>;
 
-                return <#=fpCast#>(2.0 * Math.Acos(MathHelper.Clamp(W, -1<#=d.FPL#>, 1<#=d.FPL#>)));
+                return <#=fpCast#>(2.0 * Math.Acos(<#=mathHelper#>.Clamp(W, -1<#=d.FPL#>, 1<#=d.FPL#>)));
             }
         }
 
@@ -102,8 +103,8 @@ namespace Molten
             get
             {
                 <#=d.DT#> length = (X * X) + (Y * Y) + (Z * Z);
-                if (MathHelper.IsZero(length))
-                    return Vector3F.UnitX;
+                if (<#=mathHelper#>.IsZero(length))
+                    return Vector3<#=d.Postfix#>.UnitX;
 
                 <#=d.DT#> inv = 1.0<#=d.FPL#>  / <#=fpCast#>Math.Sqrt(length);
                 return new Vector3<#=d.Postfix#>(X * inv, Y * inv, Z * inv);
@@ -278,9 +279,8 @@ namespace Molten
         /// <param name="q">Quaternion representing the rotation from v1 to v2.</param>
         public static <#=fName#> GetQuaternionBetweenNormalizedVectors(ref <#=vectorName#> v1, ref <#=vectorName#> v2)
         {
-            <#=d.DT#> dot;
             <#=fName#> q;
-            <#=vectorName#>.Dot(ref v1, ref v2, out dot);
+            <#=d.DT#> dot = <#=vectorName#>.Dot(ref v1, ref v2);
             //For non-normal vectors, the multiplying the axes length squared would be necessary:
             //float w = dot + (float)Math.Sqrt(v1.LengthSquared() * v2.LengthSquared());
             if (dot < -0.9999<#=d.FPL#>) //parallel, opposing direction
@@ -302,8 +302,7 @@ namespace Molten
             }
             else
             {
-                <#=vectorName#> axis;
-                <#=vectorName#>.Cross(ref v1, ref v2, out axis);
+                <#=vectorName#> axis = <#=vectorName#>.Cross(ref v1, ref v2);
                 q = new <#=fName#>(axis.X, axis.Y, axis.Z, dot + 1);
             }
             q.Normalize();
@@ -317,7 +316,7 @@ namespace Molten
         public void Normalize()
         {
             <#=d.DT#> length = Length();
-            if (!MathHelper.IsZero(length))
+            if (!<#=mathHelper#>.IsZero(length))
             {
                 <#=d.DT#> inverse = 1.0<#=d.FPL#> / length;
                 X *= inverse;
@@ -345,7 +344,7 @@ namespace Molten
         public void Invert()
         {
             <#=d.DT#> lengthSq = LengthSquared();
-            if (!MathHelper.IsZero(lengthSq))
+            if (!<#=mathHelper#>.IsZero(lengthSq))
             {
                 lengthSq = 1.0<#=d.FPL#> / lengthSq;
 
@@ -366,7 +365,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref <#=fName#> other)
         {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z) && MathHelper.NearEqual(other.W, W);
+            return <#=mathHelper#>.NearEqual(other.X, X) && <#=mathHelper#>.NearEqual(other.Y, Y) && <#=mathHelper#>.NearEqual(other.Z, Z) && <#=mathHelper#>.NearEqual(other.W, W);
         }
 
         /// <summary>
@@ -510,7 +509,7 @@ namespace Molten
                 <#=d.DT#> angle = <#=fpCast#>Math.Acos(value.W);
                 <#=d.DT#> sin = <#=fpCast#>Math.Sin(angle);
 
-                if (!MathHelper.IsZero(sin))
+                if (!<#=mathHelper#>.IsZero(sin))
                 {
                     <#=d.DT#> coeff = angle / sin;
                     result.X = value.X * coeff;
@@ -529,6 +528,16 @@ namespace Molten
 
             result.W = 0.0<#=d.FPL#>;
             return result;
+        }
+
+        /// <summary>
+        /// Calculates the natural logarithm of the specified quaternion.
+        /// </summary>
+        /// <param name="value">The quaternion whose logarithm will be calculated.</param>
+        /// <param name="result">When the method completes, contains the natural logarithm of the quaternion.</param>
+        public static <#=fName#> Logarithm(<#=fName#> value)
+        {
+            return Logarithm(ref value);
         }
 
         /// <summary>
@@ -557,8 +566,8 @@ namespace Molten
             <#=d.DT#> lengthSquared = axis.LengthSquared();
             if (lengthSquared > 1e-14f)
             {
-                Vector3<#=d.Postfix#>.Divide(ref axis, <#=fpCast#>Math.Sqrt(lengthSquared), out axis);
-                angle = 2 * <#=fpCast#>Math.Acos(MathHelper.Clamp(qw, -1, 1));
+                axis = axis / <#=fpCast#>Math.Sqrt(lengthSquared);
+                angle = 2 * <#=fpCast#>Math.Acos(<#=mathHelper#>.Clamp(qw, -1, 1));
             }
             else
             {
@@ -582,11 +591,10 @@ namespace Molten
             <#=fName#> q3 = (value3 + value4).LengthSquared() < (value3 - value4).LengthSquared() ? -value4 : value4;
             <#=fName#> q1 = value2;
 
-            <#=fName#> q1Exp, q2Exp;
-            Exponential(ref q1, out q1Exp);
-            Exponential(ref q2, out q2Exp);
+            <#=fName#> q1Exp = Exponential(ref q1);
+            <#=fName#> q2Exp = Exponential(ref q2);
 
-            <#=fName#>[] results = new QuaternionF[3];
+            <#=fName#>[] results = new <#=fName#>[3];
             results[0] = q1 * Exponential(-0.25f * (Logarithm(q1Exp * q2) + Logarithm(q1Exp * q0)));
             results[1] = q2 * Exponential(-0.25f * (Logarithm(q2Exp * q3) + Logarithm(q2Exp * q1)));
             results[2] = q2;
@@ -623,7 +631,7 @@ namespace Molten
             <#=d.DT#> inverse;
             <#=d.DT#> dot = Dot(start, end);
 
-            if (Math.Abs(dot) > 1.0<#=d.FPL#> - MathHelper.ZeroTolerance)
+            if (Math.Abs(dot) > 1.0<#=d.FPL#> - <#=mathHelper#>.ZeroTolerance)
             {
                 inverse = 1.0<#=d.FPL#> - amount;
                 opposite = amount * Math.Sign(dot);
@@ -815,7 +823,7 @@ namespace Molten
             <#=d.DT#> sin = <#=fpCast#>Math.Sin(angle);
             <#=fName#> result;
 
-            if (!MathHelper.IsZero(sin))
+            if (!<#=mathHelper#>.IsZero(sin))
             {
                 <#=d.DT#> coeff = sin / angle;
                 result.X = coeff * value.X;
@@ -829,6 +837,15 @@ namespace Molten
 
             result.W = <#=fpCast#>Math.Cos(angle);
             return result;
+        }
+
+        /// <summary>
+        /// Exponentiates a <#=See(fName)#>.
+        /// </summary>
+        /// <param name="value">The <#=See(fName)#> to exponentiate.</param>
+        public static <#=fName#> Exponential(<#=fName#> value)
+        {
+            return Exponential(ref value);
         }
 
         /// <summary>
@@ -932,11 +949,9 @@ namespace Molten
         /// </summary>
         /// <param name="axis">The axis of rotation.</param>
         /// <param name="angle">The angle of rotation.</param>
-        /// <param name="result">When the method completes, contains the newly created <#=See(fName)#>.</param>
         public static <#=fName#> FromAxisAngle(ref <#=vectorName#> axis, float angle)
         {
-            <#=vectorName#> normalized;
-            <#=vectorName#>.Normalize(ref axis, out normalized);
+            <#=vectorName#> normalized = axis.Normalized();
 
             <#=d.DT#> half = angle * 0.5<#=d.FPL#>;
             <#=d.DT#> sin = <#=fpCast#>Math.Sin(half);

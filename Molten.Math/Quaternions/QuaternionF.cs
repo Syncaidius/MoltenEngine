@@ -255,9 +255,8 @@ namespace Molten
         /// <param name="q">Quaternion representing the rotation from v1 to v2.</param>
         public static QuaternionF GetQuaternionBetweenNormalizedVectors(ref Vector3F v1, ref Vector3F v2)
         {
-            float dot;
             QuaternionF q;
-            Vector3F.Dot(ref v1, ref v2, out dot);
+            float dot = Vector3F.Dot(ref v1, ref v2);
             //For non-normal vectors, the multiplying the axes length squared would be necessary:
             //float w = dot + (float)Math.Sqrt(v1.LengthSquared() * v2.LengthSquared());
             if (dot < -0.9999F) //parallel, opposing direction
@@ -279,8 +278,7 @@ namespace Molten
             }
             else
             {
-                Vector3F axis;
-                Vector3F.Cross(ref v1, ref v2, out axis);
+                Vector3F axis = Vector3F.Cross(ref v1, ref v2);
                 q = new QuaternionF(axis.X, axis.Y, axis.Z, dot + 1);
             }
             q.Normalize();
@@ -509,6 +507,16 @@ namespace Molten
         }
 
         /// <summary>
+        /// Calculates the natural logarithm of the specified quaternion.
+        /// </summary>
+        /// <param name="value">The quaternion whose logarithm will be calculated.</param>
+        /// <param name="result">When the method completes, contains the natural logarithm of the quaternion.</param>
+        public static QuaternionF Logarithm(QuaternionF value)
+        {
+            return Logarithm(ref value);
+        }
+
+        /// <summary>
         /// Computes the axis angle representation of a normalized <see cref="QuaternionF"/>.
         /// </summary>
         /// <param name="q"><see cref="QuaternionF"/> to be converted.</param>
@@ -534,7 +542,7 @@ namespace Molten
             float lengthSquared = axis.LengthSquared();
             if (lengthSquared > 1e-14f)
             {
-                Vector3F.Divide(ref axis, (float)Math.Sqrt(lengthSquared), out axis);
+                axis = axis / (float)Math.Sqrt(lengthSquared);
                 angle = 2 * (float)Math.Acos(MathHelper.Clamp(qw, -1, 1));
             }
             else
@@ -559,9 +567,8 @@ namespace Molten
             QuaternionF q3 = (value3 + value4).LengthSquared() < (value3 - value4).LengthSquared() ? -value4 : value4;
             QuaternionF q1 = value2;
 
-            QuaternionF q1Exp, q2Exp;
-            Exponential(ref q1, out q1Exp);
-            Exponential(ref q2, out q2Exp);
+            QuaternionF q1Exp = Exponential(ref q1);
+            QuaternionF q2Exp = Exponential(ref q2);
 
             QuaternionF[] results = new QuaternionF[3];
             results[0] = q1 * Exponential(-0.25f * (Logarithm(q1Exp * q2) + Logarithm(q1Exp * q0)));
@@ -809,6 +816,15 @@ namespace Molten
         }
 
         /// <summary>
+        /// Exponentiates a <see cref="QuaternionF"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="QuaternionF"/> to exponentiate.</param>
+        public static QuaternionF Exponential(QuaternionF value)
+        {
+            return Exponential(ref value);
+        }
+
+        /// <summary>
         /// Returns a <see cref="QuaternionF"/> containing the 4D Cartesian coordinates of a point specified in Barycentric coordinates relative to a 2D triangle.
         /// </summary>
         /// <param name="value1">A <see cref="QuaternionF"/> containing the 4D Cartesian coordinates of vertex 1 of the triangle.</param>
@@ -909,11 +925,9 @@ namespace Molten
         /// </summary>
         /// <param name="axis">The axis of rotation.</param>
         /// <param name="angle">The angle of rotation.</param>
-        /// <param name="result">When the method completes, contains the newly created <see cref="QuaternionF"/>.</param>
         public static QuaternionF FromAxisAngle(ref Vector3F axis, float angle)
         {
-            Vector3F normalized;
-            Vector3F.Normalize(ref axis, out normalized);
+            Vector3F normalized = axis.Normalized();
 
             float half = angle * 0.5F;
             float sin = (float)Math.Sin(half);

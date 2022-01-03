@@ -46,7 +46,7 @@ namespace Molten
         /// </summary>
         public bool IsNormalized
         {
-            get { return MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W)); }
+            get { return MathHelperDP.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W)); }
         }
 
         /// <summary>
@@ -58,10 +58,10 @@ namespace Molten
             get
             {
                 double length = (X * X) + (Y * Y) + (Z * Z);
-                if (MathHelper.IsZero(length))
+                if (MathHelperDP.IsZero(length))
                     return 0.0D;
 
-                return (2.0 * Math.Acos(MathHelper.Clamp(W, -1D, 1D)));
+                return (2.0 * Math.Acos(MathHelperDP.Clamp(W, -1D, 1D)));
             }
         }
 
@@ -74,8 +74,8 @@ namespace Molten
             get
             {
                 double length = (X * X) + (Y * Y) + (Z * Z);
-                if (MathHelper.IsZero(length))
-                    return Vector3F.UnitX;
+                if (MathHelperDP.IsZero(length))
+                    return Vector3D.UnitX;
 
                 double inv = 1.0D  / Math.Sqrt(length);
                 return new Vector3D(X * inv, Y * inv, Z * inv);
@@ -250,9 +250,8 @@ namespace Molten
         /// <param name="q">Quaternion representing the rotation from v1 to v2.</param>
         public static QuaternionD GetQuaternionBetweenNormalizedVectors(ref Vector3D v1, ref Vector3D v2)
         {
-            double dot;
             QuaternionD q;
-            Vector3D.Dot(ref v1, ref v2, out dot);
+            double dot = Vector3D.Dot(ref v1, ref v2);
             //For non-normal vectors, the multiplying the axes length squared would be necessary:
             //float w = dot + (float)Math.Sqrt(v1.LengthSquared() * v2.LengthSquared());
             if (dot < -0.9999D) //parallel, opposing direction
@@ -274,8 +273,7 @@ namespace Molten
             }
             else
             {
-                Vector3D axis;
-                Vector3D.Cross(ref v1, ref v2, out axis);
+                Vector3D axis = Vector3D.Cross(ref v1, ref v2);
                 q = new QuaternionD(axis.X, axis.Y, axis.Z, dot + 1);
             }
             q.Normalize();
@@ -289,7 +287,7 @@ namespace Molten
         public void Normalize()
         {
             double length = Length();
-            if (!MathHelper.IsZero(length))
+            if (!MathHelperDP.IsZero(length))
             {
                 double inverse = 1.0D / length;
                 X *= inverse;
@@ -317,7 +315,7 @@ namespace Molten
         public void Invert()
         {
             double lengthSq = LengthSquared();
-            if (!MathHelper.IsZero(lengthSq))
+            if (!MathHelperDP.IsZero(lengthSq))
             {
                 lengthSq = 1.0D / lengthSq;
 
@@ -338,7 +336,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref QuaternionD other)
         {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z) && MathHelper.NearEqual(other.W, W);
+            return MathHelperDP.NearEqual(other.X, X) && MathHelperDP.NearEqual(other.Y, Y) && MathHelperDP.NearEqual(other.Z, Z) && MathHelperDP.NearEqual(other.W, W);
         }
 
         /// <summary>
@@ -482,7 +480,7 @@ namespace Molten
                 double angle = Math.Acos(value.W);
                 double sin = Math.Sin(angle);
 
-                if (!MathHelper.IsZero(sin))
+                if (!MathHelperDP.IsZero(sin))
                 {
                     double coeff = angle / sin;
                     result.X = value.X * coeff;
@@ -501,6 +499,16 @@ namespace Molten
 
             result.W = 0.0D;
             return result;
+        }
+
+        /// <summary>
+        /// Calculates the natural logarithm of the specified quaternion.
+        /// </summary>
+        /// <param name="value">The quaternion whose logarithm will be calculated.</param>
+        /// <param name="result">When the method completes, contains the natural logarithm of the quaternion.</param>
+        public static QuaternionD Logarithm(QuaternionD value)
+        {
+            return Logarithm(ref value);
         }
 
         /// <summary>
@@ -529,8 +537,8 @@ namespace Molten
             double lengthSquared = axis.LengthSquared();
             if (lengthSquared > 1e-14f)
             {
-                Vector3D.Divide(ref axis, Math.Sqrt(lengthSquared), out axis);
-                angle = 2 * Math.Acos(MathHelper.Clamp(qw, -1, 1));
+                axis = axis / Math.Sqrt(lengthSquared);
+                angle = 2 * Math.Acos(MathHelperDP.Clamp(qw, -1, 1));
             }
             else
             {
@@ -554,11 +562,10 @@ namespace Molten
             QuaternionD q3 = (value3 + value4).LengthSquared() < (value3 - value4).LengthSquared() ? -value4 : value4;
             QuaternionD q1 = value2;
 
-            QuaternionD q1Exp, q2Exp;
-            Exponential(ref q1, out q1Exp);
-            Exponential(ref q2, out q2Exp);
+            QuaternionD q1Exp = Exponential(ref q1);
+            QuaternionD q2Exp = Exponential(ref q2);
 
-            QuaternionD[] results = new QuaternionF[3];
+            QuaternionD[] results = new QuaternionD[3];
             results[0] = q1 * Exponential(-0.25f * (Logarithm(q1Exp * q2) + Logarithm(q1Exp * q0)));
             results[1] = q2 * Exponential(-0.25f * (Logarithm(q2Exp * q3) + Logarithm(q2Exp * q1)));
             results[2] = q2;
@@ -595,7 +602,7 @@ namespace Molten
             double inverse;
             double dot = Dot(start, end);
 
-            if (Math.Abs(dot) > 1.0D - MathHelper.ZeroTolerance)
+            if (Math.Abs(dot) > 1.0D - MathHelperDP.ZeroTolerance)
             {
                 inverse = 1.0D - amount;
                 opposite = amount * Math.Sign(dot);
@@ -787,7 +794,7 @@ namespace Molten
             double sin = Math.Sin(angle);
             QuaternionD result;
 
-            if (!MathHelper.IsZero(sin))
+            if (!MathHelperDP.IsZero(sin))
             {
                 double coeff = sin / angle;
                 result.X = coeff * value.X;
@@ -801,6 +808,15 @@ namespace Molten
 
             result.W = Math.Cos(angle);
             return result;
+        }
+
+        /// <summary>
+        /// Exponentiates a <see cref="QuaternionD"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="QuaternionD"/> to exponentiate.</param>
+        public static QuaternionD Exponential(QuaternionD value)
+        {
+            return Exponential(ref value);
         }
 
         /// <summary>
@@ -904,11 +920,9 @@ namespace Molten
         /// </summary>
         /// <param name="axis">The axis of rotation.</param>
         /// <param name="angle">The angle of rotation.</param>
-        /// <param name="result">When the method completes, contains the newly created <see cref="QuaternionD"/>.</param>
         public static QuaternionD FromAxisAngle(ref Vector3D axis, float angle)
         {
-            Vector3D normalized;
-            Vector3D.Normalize(ref axis, out normalized);
+            Vector3D normalized = axis.Normalized();
 
             double half = angle * 0.5D;
             double sin = Math.Sin(half);
