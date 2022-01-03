@@ -182,7 +182,7 @@ namespace Molten
         /// </remarks>
         public double LengthSquared()
         {
-            return (X * X) + (Y * Y) + (Z * Z);
+            return ((X * X) + (Y * Y) + (Z * Z));
         }
 
         /// <summary>
@@ -194,9 +194,9 @@ namespace Molten
             if (!MathHelperDP.IsZero(length))
             {
                 double inverse = 1.0D / length;
-			    X *= inverse;
-			    Y *= inverse;
-			    Z *= inverse;
+			    X = (X * inverse);
+			    Y = (Y * inverse);
+			    Z = (Z * inverse);
             }
         }
 
@@ -221,17 +221,17 @@ namespace Molten
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Vector3D Normalized()
+        public Vector3D GetNormalized()
         {
             double length = Length();
             if (!MathHelperDP.IsZero(length))
             {
-                double inv = 1.0D / length;
+                double inverse = 1.0D / length;
                 return new Vector3D()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (this.X * inverse),
+			        Y = (this.Y * inverse),
+			        Z = (this.Z * inverse),
                 };
             }
             else
@@ -322,12 +322,12 @@ namespace Molten
 #region Add operators
 		public static Vector3D operator +(Vector3D left, Vector3D right)
 		{
-			return new Vector3D(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
+			return new Vector3D((left.X + right.X), (left.Y + right.Y), (left.Z + right.Z));
 		}
 
 		public static Vector3D operator +(Vector3D left, double right)
 		{
-			return new Vector3D(left.X + right, left.Y + right, left.Z + right);
+			return new Vector3D((left.X + right), (left.Y + right), (left.Z + right));
 		}
 
 		/// <summary>
@@ -344,12 +344,12 @@ namespace Molten
 #region Subtract operators
 		public static Vector3D operator -(Vector3D left, Vector3D right)
 		{
-			return new Vector3D(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
+			return new Vector3D((left.X - right.X), (left.Y - right.Y), (left.Z - right.Z));
 		}
 
 		public static Vector3D operator -(Vector3D left, double right)
 		{
-			return new Vector3D(left.X - right, left.Y - right, left.Z - right);
+			return new Vector3D((left.X - right), (left.Y - right), (left.Z - right));
 		}
 
 		/// <summary>
@@ -366,29 +366,29 @@ namespace Molten
 #region division operators
 		public static Vector3D operator /(Vector3D left, Vector3D right)
 		{
-			return new Vector3D(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
+			return new Vector3D((left.X / right.X), (left.Y / right.Y), (left.Z / right.Z));
 		}
 
 		public static Vector3D operator /(Vector3D left, double right)
 		{
-			return new Vector3D(left.X / right, left.Y / right, left.Z / right);
+			return new Vector3D((left.X / right), (left.Y / right), (left.Z / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static Vector3D operator *(Vector3D left, Vector3D right)
 		{
-			return new Vector3D(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+			return new Vector3D((left.X * right.X), (left.Y * right.Y), (left.Z * right.Z));
 		}
 
 		public static Vector3D operator *(Vector3D left, double right)
 		{
-			return new Vector3D(left.X * right, left.Y * right, left.Z * right);
+			return new Vector3D((left.X * right), (left.Y * right), (left.Z * right));
 		}
 
         public static Vector3D operator *(double left, Vector3D right)
 		{
-			return new Vector3D(left * right.X, left * right.Y, left * right.Z);
+			return new Vector3D((left * right.X), (left * right.Y), (left * right.Z));
 		}
 #endregion
 
@@ -519,9 +519,7 @@ namespace Molten
                 Vector3D newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
 
                 destination[i] = newvector;
             }
@@ -566,9 +564,7 @@ namespace Molten
                 Vector3D newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -617,9 +613,9 @@ namespace Molten
         /// </remarks>
         public static double Distance(Vector3D value1, Vector3D value2)
         {
-			double x = value1.X - value2.X;
-			double y = value1.Y - value2.Y;
-			double z = value1.Z - value2.Z;
+			double x = (value1.X - value2.X);
+			double y = (value1.Y - value2.Y);
+			double z = (value1.Z - value2.Z);
 
             return Math.Sqrt((x * x) + (y * y) + (z * z));
         }
@@ -645,7 +641,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector3D"/> source vector.</param>
         public static double Dot(ref Vector3D left, ref Vector3D right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
         }
 
 		/// <summary>
@@ -655,7 +651,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector3D"/> source vector.</param>
         public static double Dot(Vector3D left, Vector3D right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
         }
 
 		/// <summary>
@@ -708,9 +704,9 @@ namespace Molten
         public static Vector3D Barycentric(ref Vector3D value1, ref Vector3D value2, ref Vector3D value3, double amount1, double amount2)
         {
 			return new Vector3D(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))
+				((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))), 
+				((value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)))
 			);
         }
 
@@ -784,7 +780,7 @@ namespace Molten
             double y = value1.Y - value2.Y;
             double z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return ((x * x) + (y * y) + (z * z));
         }
 
         /// <summary>
@@ -806,7 +802,7 @@ namespace Molten
             double y = value1.Y - value2.Y;
             double z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return ((x * x) + (y * y) + (z * z));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -897,9 +893,9 @@ namespace Molten
 
             return new Vector3D()
             {
-				X = vector.X - ((2.0D * dot) * normal.X),
-				Y = vector.Y - ((2.0D * dot) * normal.Y),
-				Z = vector.Z - ((2.0D * dot) * normal.Z),
+				X = (vector.X - ((2.0D * dot) * normal.X)),
+				Y = (vector.Y - ((2.0D * dot) * normal.Y)),
+				Z = (vector.Z - ((2.0D * dot) * normal.Z)),
             };
         }
 

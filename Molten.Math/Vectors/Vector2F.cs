@@ -171,7 +171,7 @@ namespace Molten
         /// </remarks>
         public float LengthSquared()
         {
-            return (X * X) + (Y * Y);
+            return ((X * X) + (Y * Y));
         }
 
         /// <summary>
@@ -183,8 +183,8 @@ namespace Molten
             if (!MathHelper.IsZero(length))
             {
                 float inverse = 1.0F / length;
-			    X *= inverse;
-			    Y *= inverse;
+			    X = (float)(X * inverse);
+			    Y = (float)(Y * inverse);
             }
         }
 
@@ -209,17 +209,16 @@ namespace Molten
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Vector2F Normalized()
+        public Vector2F GetNormalized()
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inv = 1.0F / length;
+                float inverse = 1.0F / length;
                 return new Vector2F()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (this.X * inverse),
+			        Y = (this.Y * inverse),
                 };
             }
             else
@@ -308,12 +307,12 @@ namespace Molten
 #region Add operators
 		public static Vector2F operator +(Vector2F left, Vector2F right)
 		{
-			return new Vector2F(left.X + right.X, left.Y + right.Y);
+			return new Vector2F((left.X + right.X), (left.Y + right.Y));
 		}
 
 		public static Vector2F operator +(Vector2F left, float right)
 		{
-			return new Vector2F(left.X + right, left.Y + right);
+			return new Vector2F((left.X + right), (left.Y + right));
 		}
 
 		/// <summary>
@@ -330,12 +329,12 @@ namespace Molten
 #region Subtract operators
 		public static Vector2F operator -(Vector2F left, Vector2F right)
 		{
-			return new Vector2F(left.X - right.X, left.Y - right.Y);
+			return new Vector2F((left.X - right.X), (left.Y - right.Y));
 		}
 
 		public static Vector2F operator -(Vector2F left, float right)
 		{
-			return new Vector2F(left.X - right, left.Y - right);
+			return new Vector2F((left.X - right), (left.Y - right));
 		}
 
 		/// <summary>
@@ -352,29 +351,29 @@ namespace Molten
 #region division operators
 		public static Vector2F operator /(Vector2F left, Vector2F right)
 		{
-			return new Vector2F(left.X / right.X, left.Y / right.Y);
+			return new Vector2F((left.X / right.X), (left.Y / right.Y));
 		}
 
 		public static Vector2F operator /(Vector2F left, float right)
 		{
-			return new Vector2F(left.X / right, left.Y / right);
+			return new Vector2F((left.X / right), (left.Y / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static Vector2F operator *(Vector2F left, Vector2F right)
 		{
-			return new Vector2F(left.X * right.X, left.Y * right.Y);
+			return new Vector2F((left.X * right.X), (left.Y * right.Y));
 		}
 
 		public static Vector2F operator *(Vector2F left, float right)
 		{
-			return new Vector2F(left.X * right, left.Y * right);
+			return new Vector2F((left.X * right), (left.Y * right));
 		}
 
         public static Vector2F operator *(float left, Vector2F right)
 		{
-			return new Vector2F(left * right.X, left * right.Y);
+			return new Vector2F((left * right.X), (left * right.Y));
 		}
 #endregion
 
@@ -505,9 +504,7 @@ namespace Molten
                 Vector2F newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
 
                 destination[i] = newvector;
             }
@@ -552,9 +549,7 @@ namespace Molten
                 Vector2F newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -600,8 +595,8 @@ namespace Molten
         /// </remarks>
         public static float Distance(Vector2F value1, Vector2F value2)
         {
-			float x = value1.X - value2.X;
-			float y = value1.Y - value2.Y;
+			float x = (value1.X - value2.X);
+			float y = (value1.Y - value2.Y);
 
             return (float)Math.Sqrt((x * x) + (y * y));
         }
@@ -626,7 +621,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector2F"/> source vector.</param>
         public static float Dot(ref Vector2F left, ref Vector2F right)
         {
-			return (left.X * right.X) + (left.Y * right.Y);
+			return ((left.X * right.X) + (left.Y * right.Y));
         }
 
 		/// <summary>
@@ -636,7 +631,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector2F"/> source vector.</param>
         public static float Dot(Vector2F left, Vector2F right)
         {
-			return (left.X * right.X) + (left.Y * right.Y);
+			return ((left.X * right.X) + (left.Y * right.Y));
         }
 
 		/// <summary>
@@ -688,8 +683,8 @@ namespace Molten
         public static Vector2F Barycentric(ref Vector2F value1, ref Vector2F value2, ref Vector2F value3, float amount1, float amount2)
         {
 			return new Vector2F(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))
+				((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)))
 			);
         }
 
@@ -759,7 +754,7 @@ namespace Molten
             float x = value1.X - value2.X;
             float y = value1.Y - value2.Y;
 
-            return (x * x) + (y * y);
+            return ((x * x) + (y * y));
         }
 
         /// <summary>
@@ -780,7 +775,7 @@ namespace Molten
             float x = value1.X - value2.X;
             float y = value1.Y - value2.Y;
 
-            return (x * x) + (y * y);
+            return ((x * x) + (y * y));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -864,8 +859,8 @@ namespace Molten
 
             return new Vector2F()
             {
-				X = vector.X - ((2.0F * dot) * normal.X),
-				Y = vector.Y - ((2.0F * dot) * normal.Y),
+				X = (vector.X - ((2.0F * dot) * normal.X)),
+				Y = (vector.Y - ((2.0F * dot) * normal.Y)),
             };
         }
 

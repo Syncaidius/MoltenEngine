@@ -182,7 +182,7 @@ namespace Molten
         /// </remarks>
         public float LengthSquared()
         {
-            return (X * X) + (Y * Y) + (Z * Z);
+            return ((X * X) + (Y * Y) + (Z * Z));
         }
 
         /// <summary>
@@ -194,9 +194,9 @@ namespace Molten
             if (!MathHelper.IsZero(length))
             {
                 float inverse = 1.0F / length;
-			    X *= inverse;
-			    Y *= inverse;
-			    Z *= inverse;
+			    X = (float)(X * inverse);
+			    Y = (float)(Y * inverse);
+			    Z = (float)(Z * inverse);
             }
         }
 
@@ -221,17 +221,17 @@ namespace Molten
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Vector3F Normalized()
+        public Vector3F GetNormalized()
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inv = 1.0F / length;
+                float inverse = 1.0F / length;
                 return new Vector3F()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (this.X * inverse),
+			        Y = (this.Y * inverse),
+			        Z = (this.Z * inverse),
                 };
             }
             else
@@ -322,12 +322,12 @@ namespace Molten
 #region Add operators
 		public static Vector3F operator +(Vector3F left, Vector3F right)
 		{
-			return new Vector3F(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
+			return new Vector3F((left.X + right.X), (left.Y + right.Y), (left.Z + right.Z));
 		}
 
 		public static Vector3F operator +(Vector3F left, float right)
 		{
-			return new Vector3F(left.X + right, left.Y + right, left.Z + right);
+			return new Vector3F((left.X + right), (left.Y + right), (left.Z + right));
 		}
 
 		/// <summary>
@@ -344,12 +344,12 @@ namespace Molten
 #region Subtract operators
 		public static Vector3F operator -(Vector3F left, Vector3F right)
 		{
-			return new Vector3F(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
+			return new Vector3F((left.X - right.X), (left.Y - right.Y), (left.Z - right.Z));
 		}
 
 		public static Vector3F operator -(Vector3F left, float right)
 		{
-			return new Vector3F(left.X - right, left.Y - right, left.Z - right);
+			return new Vector3F((left.X - right), (left.Y - right), (left.Z - right));
 		}
 
 		/// <summary>
@@ -366,29 +366,29 @@ namespace Molten
 #region division operators
 		public static Vector3F operator /(Vector3F left, Vector3F right)
 		{
-			return new Vector3F(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
+			return new Vector3F((left.X / right.X), (left.Y / right.Y), (left.Z / right.Z));
 		}
 
 		public static Vector3F operator /(Vector3F left, float right)
 		{
-			return new Vector3F(left.X / right, left.Y / right, left.Z / right);
+			return new Vector3F((left.X / right), (left.Y / right), (left.Z / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static Vector3F operator *(Vector3F left, Vector3F right)
 		{
-			return new Vector3F(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+			return new Vector3F((left.X * right.X), (left.Y * right.Y), (left.Z * right.Z));
 		}
 
 		public static Vector3F operator *(Vector3F left, float right)
 		{
-			return new Vector3F(left.X * right, left.Y * right, left.Z * right);
+			return new Vector3F((left.X * right), (left.Y * right), (left.Z * right));
 		}
 
         public static Vector3F operator *(float left, Vector3F right)
 		{
-			return new Vector3F(left * right.X, left * right.Y, left * right.Z);
+			return new Vector3F((left * right.X), (left * right.Y), (left * right.Z));
 		}
 #endregion
 
@@ -519,9 +519,7 @@ namespace Molten
                 Vector3F newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
 
                 destination[i] = newvector;
             }
@@ -566,9 +564,7 @@ namespace Molten
                 Vector3F newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -617,9 +613,9 @@ namespace Molten
         /// </remarks>
         public static float Distance(Vector3F value1, Vector3F value2)
         {
-			float x = value1.X - value2.X;
-			float y = value1.Y - value2.Y;
-			float z = value1.Z - value2.Z;
+			float x = (value1.X - value2.X);
+			float y = (value1.Y - value2.Y);
+			float z = (value1.Z - value2.Z);
 
             return (float)Math.Sqrt((x * x) + (y * y) + (z * z));
         }
@@ -645,7 +641,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector3F"/> source vector.</param>
         public static float Dot(ref Vector3F left, ref Vector3F right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
         }
 
 		/// <summary>
@@ -655,7 +651,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector3F"/> source vector.</param>
         public static float Dot(Vector3F left, Vector3F right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
         }
 
 		/// <summary>
@@ -708,9 +704,9 @@ namespace Molten
         public static Vector3F Barycentric(ref Vector3F value1, ref Vector3F value2, ref Vector3F value3, float amount1, float amount2)
         {
 			return new Vector3F(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))
+				((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))), 
+				((value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)))
 			);
         }
 
@@ -784,7 +780,7 @@ namespace Molten
             float y = value1.Y - value2.Y;
             float z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return ((x * x) + (y * y) + (z * z));
         }
 
         /// <summary>
@@ -806,7 +802,7 @@ namespace Molten
             float y = value1.Y - value2.Y;
             float z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return ((x * x) + (y * y) + (z * z));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -897,9 +893,9 @@ namespace Molten
 
             return new Vector3F()
             {
-				X = vector.X - ((2.0F * dot) * normal.X),
-				Y = vector.Y - ((2.0F * dot) * normal.Y),
-				Z = vector.Z - ((2.0F * dot) * normal.Z),
+				X = (vector.X - ((2.0F * dot) * normal.X)),
+				Y = (vector.Y - ((2.0F * dot) * normal.Y)),
+				Z = (vector.Z - ((2.0F * dot) * normal.Z)),
             };
         }
 

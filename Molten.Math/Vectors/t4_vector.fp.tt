@@ -28,6 +28,7 @@ foreach(TypeData d in _def)
 		string fpCast = d.DT == "float" ? "(float)" : "";
 #>
 using System.Runtime.InteropServices;
+using System;
 
 namespace Molten
 {

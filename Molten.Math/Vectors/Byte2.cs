@@ -171,7 +171,7 @@ namespace Molten
         /// </remarks>
         public byte LengthSquared()
         {
-            return (X * X) + (Y * Y);
+            return (byte)((X * X) + (Y * Y));
         }
 
         /// <summary>
@@ -182,9 +182,9 @@ namespace Molten
             byte length = Length();
             if (!MathHelper.IsZero(length))
             {
-                byte inverse = 1.0F / length;
-			    X *= inverse;
-			    Y *= inverse;
+                float inverse = 1.0F / length;
+			    X = (byte)(X * inverse);
+			    Y = (byte)(Y * inverse);
             }
         }
 
@@ -203,23 +203,22 @@ namespace Molten
         /// <returns>A <see cref="Byte2"/> facing the opposite direction.</returns>
 		public Byte2 Negate()
 		{
-			return new Byte2(-X, -Y);
+			return new Byte2((byte)-X, (byte)-Y);
 		}
 		
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Byte2 Normalized()
+        public Byte2 GetNormalized()
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inv = 1.0F / length;
+                float inverse = 1.0F / length;
                 return new Byte2()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (byte)(this.X * inverse),
+			        Y = (byte)(this.Y * inverse),
                 };
             }
             else
@@ -308,12 +307,12 @@ namespace Molten
 #region Add operators
 		public static Byte2 operator +(Byte2 left, Byte2 right)
 		{
-			return new Byte2(left.X + right.X, left.Y + right.Y);
+			return new Byte2((byte)(left.X + right.X), (byte)(left.Y + right.Y));
 		}
 
 		public static Byte2 operator +(Byte2 left, byte right)
 		{
-			return new Byte2(left.X + right, left.Y + right);
+			return new Byte2((byte)(left.X + right), (byte)(left.Y + right));
 		}
 
 		/// <summary>
@@ -330,12 +329,12 @@ namespace Molten
 #region Subtract operators
 		public static Byte2 operator -(Byte2 left, Byte2 right)
 		{
-			return new Byte2(left.X - right.X, left.Y - right.Y);
+			return new Byte2((byte)(left.X - right.X), (byte)(left.Y - right.Y));
 		}
 
 		public static Byte2 operator -(Byte2 left, byte right)
 		{
-			return new Byte2(left.X - right, left.Y - right);
+			return new Byte2((byte)(left.X - right), (byte)(left.Y - right));
 		}
 
 		/// <summary>
@@ -345,36 +344,36 @@ namespace Molten
         /// <returns>The reversed <see cref="Byte2"/>.</returns>
         public static Byte2 operator -(Byte2 value)
         {
-            return new Byte2(-value.X, -value.Y);
+            return new Byte2((byte)-value.X, (byte)-value.Y);
         }
 #endregion
 
 #region division operators
 		public static Byte2 operator /(Byte2 left, Byte2 right)
 		{
-			return new Byte2(left.X / right.X, left.Y / right.Y);
+			return new Byte2((byte)(left.X / right.X), (byte)(left.Y / right.Y));
 		}
 
 		public static Byte2 operator /(Byte2 left, byte right)
 		{
-			return new Byte2(left.X / right, left.Y / right);
+			return new Byte2((byte)(left.X / right), (byte)(left.Y / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static Byte2 operator *(Byte2 left, Byte2 right)
 		{
-			return new Byte2(left.X * right.X, left.Y * right.Y);
+			return new Byte2((byte)(left.X * right.X), (byte)(left.Y * right.Y));
 		}
 
 		public static Byte2 operator *(Byte2 left, byte right)
 		{
-			return new Byte2(left.X * right, left.Y * right);
+			return new Byte2((byte)(left.X * right), (byte)(left.Y * right));
 		}
 
         public static Byte2 operator *(byte left, Byte2 right)
 		{
-			return new Byte2(left * right.X, left * right.Y);
+			return new Byte2((byte)(left * right.X), (byte)(left * right.Y));
 		}
 #endregion
 
@@ -450,7 +449,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        public static Byte2 SmoothStep(ref Byte2 start, ref Byte2 end, byte amount)
+        public static Byte2 SmoothStep(ref Byte2 start, ref Byte2 end, float amount)
         {
             amount = MathHelper.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
@@ -505,9 +504,7 @@ namespace Molten
                 Byte2 newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
-                    newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
+                    newvector -= (byte)(Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
 
                 destination[i] = newvector;
             }
@@ -552,9 +549,7 @@ namespace Molten
                 Byte2 newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -600,8 +595,8 @@ namespace Molten
         /// </remarks>
         public static byte Distance(Byte2 value1, Byte2 value2)
         {
-			byte x = value1.X - value2.X;
-			byte y = value1.Y - value2.Y;
+			byte x = (byte)(value1.X - value2.X);
+			byte y = (byte)(value1.Y - value2.Y);
 
             return (byte)Math.Sqrt((x * x) + (y * y));
         }
@@ -626,7 +621,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Byte2"/> source vector.</param>
         public static byte Dot(ref Byte2 left, ref Byte2 right)
         {
-			return (left.X * right.X) + (left.Y * right.Y);
+			return (byte)(((byte)left.X * right.X) + ((byte)left.Y * right.Y));
         }
 
 		/// <summary>
@@ -636,7 +631,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Byte2"/> source vector.</param>
         public static byte Dot(Byte2 left, Byte2 right)
         {
-			return (left.X * right.X) + (left.Y * right.Y);
+			return (byte)((left.X * right.X) + (left.Y * right.Y));
         }
 
 		/// <summary>
@@ -688,8 +683,8 @@ namespace Molten
         public static Byte2 Barycentric(ref Byte2 value1, ref Byte2 value2, ref Byte2 value3, byte amount1, byte amount2)
         {
 			return new Byte2(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))
+				(byte)((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				(byte)((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)))
 			);
         }
 
@@ -756,10 +751,10 @@ namespace Molten
         /// </remarks>
 		public static byte DistanceSquared(ref Byte2 value1, ref Byte2 value2)
         {
-            byte x = value1.X - value2.X;
-            byte y = value1.Y - value2.Y;
+            int x = value1.X - value2.X;
+            int y = value1.Y - value2.Y;
 
-            return (x * x) + (y * y);
+            return (byte)((x * x) + (y * y));
         }
 
         /// <summary>
@@ -777,10 +772,10 @@ namespace Molten
         /// </remarks>
 		public static byte DistanceSquared(Byte2 value1, Byte2 value2)
         {
-            byte x = value1.X - value2.X;
-            byte y = value1.Y - value2.Y;
+            int x = value1.X - value2.X;
+            int y = value1.Y - value2.Y;
 
-            return (x * x) + (y * y);
+            return (byte)((x * x) + (y * y));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -860,12 +855,12 @@ namespace Molten
         /// whether the original vector was close enough to the surface to hit it.</remarks>
         public static Byte2 Reflect(ref Byte2 vector, ref Byte2 normal)
         {
-            byte dot = (vector.X * normal.X) + (vector.Y * normal.Y);
+            int dot = (vector.X * normal.X) + (vector.Y * normal.Y);
 
             return new Byte2()
             {
-				X = vector.X - ((2.0F * dot) * normal.X),
-				Y = vector.Y - ((2.0F * dot) * normal.Y),
+				X = (byte)(vector.X - ((2.0F * dot) * normal.X)),
+				Y = (byte)(vector.Y - ((2.0F * dot) * normal.Y)),
             };
         }
 

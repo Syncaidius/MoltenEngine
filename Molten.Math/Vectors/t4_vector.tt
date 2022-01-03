@@ -23,6 +23,8 @@ foreach(TypeData d in _def)
 		string fn = $"{fName}";
 		string fpCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
 		string mathHelper = d.DT == "double" ? "MathHelperDP" : "MathHelper";
+        string typeCast = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"({d.DT})" : "";
+        string intType = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"int" : d.DT;
 #>
 using System;
 using System.Runtime.InteropServices;
@@ -236,7 +238,7 @@ namespace Molten
         /// </remarks>
         public <#=d.DT#> LengthSquared()
         {
-            return <#for(int p = 0; p < size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
+            return <#=typeCast#>(<#for(int p = 0; p < size; p++){#>(<#=pMapUpper[p]#> * <#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
         }
 
         /// <summary>
@@ -247,12 +249,12 @@ namespace Molten
             <#=d.DT#> length = Length();
             if (!<#=mathHelper#>.IsZero(length))
             {
-                <#=d.DT#> inverse = 1.0<#=d.FPL#> / length;
+                <#=d.FP#> inverse = 1.0<#=d.FPL#> / length;
 <#
 		for(int p = 0; p < size; p++)
 		{
 #>
-			    <#=pMapUpper[p]#> *= inverse;
+			    <#=pMapUpper[p]#> = <#=fpCast#>(<#=pMapUpper[p]#> * inverse);
 <#
 		}
 #>
@@ -274,23 +276,28 @@ namespace Molten
         /// <returns>A <#=See(fName)#> facing the opposite direction.</returns>
 		public <#=fName#> Negate()
 		{
-			return new <#=fName#>(<#=GetParamSentence(pMapUpper, size, ", ", ", ", "-")#>);
+			return new <#=fName#>(<#=GetParamSentence(pMapUpper, size, ", ", ", ", $"{typeCast}-")#>);
 		}
 		
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public <#=fName#> Normalized()
+        public <#=fName#> GetNormalized()
         {
             <#=d.FP#> length = Length();
             if (!<#=mathHelper#>.IsZero(length))
             {
-                <#=d.FP#> inv = 1.0<#=d.FPL#> / length;
+                <#=d.FP#> inverse = 1.0<#=d.FPL#> / length;
                 return new <#=fName#>()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+<#
+		    for(int p = 0; p < size; p++)
+		    {
+#>
+			        <#=pMapUpper[p]#> = <#=typeCast#>(this.<#=pMapUpper[p]#> * inverse),
+<#
+		    }
+#>
                 };
             }
             else
@@ -396,12 +403,12 @@ namespace Molten
 #region Add operators
 		public static <#=fName#> operator +(<#=fName#> left, <#=fName#> right)
 		{
-			return new <#=fName#>(<#for(int p = 0; p < size; p++){#>left.<#=pMapUpper[p]#> + right.<#=pMapUpper[p]#><#=(p < (size-1) ? ", " : "")#><#}#>);
+			return new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=typeCast#>(left.<#=pMapUpper[p]#> + right.<#=pMapUpper[p]#>)<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
 		public static <#=fName#> operator +(<#=fName#> left, <#=d.DT#> right)
 		{
-			return new <#=fName#>(<#for(int p = 0; p < size; p++){#>left.<#=pMapUpper[p]#> + right<#=(p < (size-1) ? ", " : "")#><#}#>);
+			return new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=typeCast#>(left.<#=pMapUpper[p]#> + right)<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
 		/// <summary>
@@ -418,12 +425,12 @@ namespace Molten
 #region Subtract operators
 		public static <#=fName#> operator -(<#=fName#> left, <#=fName#> right)
 		{
-			return new <#=fName#>(<#for(int p = 0; p < size; p++){#>left.<#=pMapUpper[p]#> - right.<#=pMapUpper[p]#><#=(p < (size-1) ? ", " : "")#><#}#>);
+			return new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=typeCast#>(left.<#=pMapUpper[p]#> - right.<#=pMapUpper[p]#>)<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
 		public static <#=fName#> operator -(<#=fName#> left, <#=d.DT#> right)
 		{
-			return new <#=fName#>(<#for(int p = 0; p < size; p++){#>left.<#=pMapUpper[p]#> - right<#=(p < (size-1) ? ", " : "")#><#}#>);
+			return new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=typeCast#>(left.<#=pMapUpper[p]#> - right)<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
 		/// <summary>
@@ -433,36 +440,36 @@ namespace Molten
         /// <returns>The reversed <#=See(fName)#>.</returns>
         public static <#=fName#> operator -(<#=fName#> value)
         {
-            return new <#=fName#>(<#=GetParamSentence(pMapUpper, size, ", ", ", ", "-value.")#>);
+            return new <#=fName#>(<#=GetParamSentence(pMapUpper, size, ", ", ", ", $"{typeCast}-value.")#>);
         }
 #endregion
 
 #region division operators
 		public static <#=fName#> operator /(<#=fName#> left, <#=fName#> right)
 		{
-			return new <#=fName#>(<#for(int p = 0; p < size; p++){#>left.<#=pMapUpper[p]#> / right.<#=pMapUpper[p]#><#=(p < (size-1) ? ", " : "")#><#}#>);
+			return new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=typeCast#>(left.<#=pMapUpper[p]#> / right.<#=pMapUpper[p]#>)<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
 		public static <#=fName#> operator /(<#=fName#> left, <#=d.DT#> right)
 		{
-			return new <#=fName#>(<#for(int p = 0; p < size; p++){#>left.<#=pMapUpper[p]#> / right<#=(p < (size-1) ? ", " : "")#><#}#>);
+			return new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=typeCast#>(left.<#=pMapUpper[p]#> / right)<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 #endregion
 
 #region Multiply operators
 		public static <#=fName#> operator *(<#=fName#> left, <#=fName#> right)
 		{
-			return new <#=fName#>(<#for(int p = 0; p < size; p++){#>left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#><#=(p < (size-1) ? ", " : "")#><#}#>);
+			return new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=typeCast#>(left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>)<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
 		public static <#=fName#> operator *(<#=fName#> left, <#=d.DT#> right)
 		{
-			return new <#=fName#>(<#for(int p = 0; p < size; p++){#>left.<#=pMapUpper[p]#> * right<#=(p < (size-1) ? ", " : "")#><#}#>);
+			return new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=typeCast#>(left.<#=pMapUpper[p]#> * right)<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 
         public static <#=fName#> operator *(<#=d.DT#> left, <#=fName#> right)
 		{
-			return new <#=fName#>(<#for(int p = 0; p < size; p++){#>left * right.<#=pMapUpper[p]#><#=(p < (size-1) ? ", " : "")#><#}#>);
+			return new <#=fName#>(<#for(int p = 0; p < size; p++){#><#=typeCast#>(left * right.<#=pMapUpper[p]#>)<#=(p < (size-1) ? ", " : "")#><#}#>);
 		}
 #endregion
 
@@ -542,7 +549,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        public static <#=fName#> SmoothStep(ref <#=fName#> start, ref <#=fName#> end, <#=d.DT#> amount)
+        public static <#=fName#> SmoothStep(ref <#=fName#> start, ref <#=fName#> end, <#=d.FP#> amount)
         {
             amount = <#=mathHelper#>.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
@@ -597,9 +604,7 @@ namespace Molten
                 <#=fName#> newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
-                    newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
+                    newvector -= <#=typeCast#>(Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
 
                 destination[i] = newvector;
             }
@@ -644,9 +649,7 @@ namespace Molten
                 <#=fName#> newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -714,7 +717,7 @@ namespace Molten
 		for(int p = 0; p < size; p++)
 		{
 #>
-			<#=d.DT#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
+			<#=d.DT#> <#=pMap[p]#> = <#=typeCast#>(value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>);
 <#
 		}
 #>
@@ -748,7 +751,7 @@ namespace Molten
         /// <param name="right">Second <#=See(fName)#> source vector.</param>
         public static <#=d.DT#> Dot(ref <#=fName#> left, ref <#=fName#> right)
         {
-			return <#for(int p = 0; p < size; p++){#>(left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
+			return <#=typeCast#>(<#for(int p = 0; p < size; p++){#>(<#=typeCast#>left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
         }
 
 		/// <summary>
@@ -758,7 +761,7 @@ namespace Molten
         /// <param name="right">Second <#=See(fName)#> source vector.</param>
         public static <#=d.DT#> Dot(<#=fName#> left, <#=fName#> right)
         {
-			return <#for(int p = 0; p < size; p++){#>(left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
+			return <#=typeCast#>(<#for(int p = 0; p < size; p++){#>(left.<#=pMapUpper[p]#> * right.<#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
         }
 
 		/// <summary>
@@ -829,7 +832,7 @@ namespace Molten
 		for(int p = 0; p < size; p++)
 		{
 #>
-				(value1.<#=pMapUpper[p]#> + (amount1 * (value2.<#=pMapUpper[p]#> - value1.<#=pMapUpper[p]#>))) + (amount2 * (value3.<#=pMapUpper[p]#> - value1.<#=pMapUpper[p]#>))<#=(p < (size -1) ? ", " : "")#>
+				<#=typeCast#>((value1.<#=pMapUpper[p]#> + (amount1 * (value2.<#=pMapUpper[p]#> - value1.<#=pMapUpper[p]#>))) + (amount2 * (value3.<#=pMapUpper[p]#> - value1.<#=pMapUpper[p]#>)))<#=(p < (size -1) ? ", " : "")#>
 <#
 		}
 #>
@@ -923,12 +926,12 @@ namespace Molten
 			{
 				r+= $"({pMap[p]} * {pMap[p]}){(p < (size-1) ? " + " : "")}";
 #>
-            <#=d.DT#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
+            <#=intType#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
 <#
 			}
 #>
 
-            return <#=r#>;
+            return <#=typeCast#>(<#=r#>);
         }
 
         /// <summary>
@@ -952,12 +955,12 @@ namespace Molten
 			{
 				r+= $"({pMap[p]} * {pMap[p]}){(p < (size-1) ? " + " : "")}";
 #>
-            <#=d.DT#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
+            <#=intType#> <#=pMap[p]#> = value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>;
 <#
 			}
 #>
 
-            return <#=r#>;
+            return <#=typeCast#>(<#=r#>);
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -1051,7 +1054,7 @@ namespace Molten
         /// whether the original vector was close enough to the surface to hit it.</remarks>
         public static <#=fName#> Reflect(ref <#=fName#> vector, ref <#=fName#> normal)
         {
-            <#=d.DT#> dot = <#for(int p = 0; p < size; p++){#>(vector.<#=pMapUpper[p]#> * normal.<#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
+            <#=intType#> dot = <#for(int p = 0; p < size; p++){#>(vector.<#=pMapUpper[p]#> * normal.<#=pMapUpper[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>;
 
             return new <#=fName#>()
             {
@@ -1059,7 +1062,7 @@ namespace Molten
 				for(int p = 0; p < size; p++)
 				{
 #>
-				<#=pMapUpper[p]#> = vector.<#=pMapUpper[p]#> - ((2.0<#=d.FPL#> * dot) * normal.<#=pMapUpper[p]#>),
+				<#=pMapUpper[p]#> = <#=typeCast#>(vector.<#=pMapUpper[p]#> - ((2.0<#=d.FPL#> * dot) * normal.<#=pMapUpper[p]#>)),
 <#
 			    }
 #>

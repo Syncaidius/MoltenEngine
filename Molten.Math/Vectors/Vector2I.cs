@@ -171,7 +171,7 @@ namespace Molten
         /// </remarks>
         public int LengthSquared()
         {
-            return (X * X) + (Y * Y);
+            return ((X * X) + (Y * Y));
         }
 
         /// <summary>
@@ -182,9 +182,9 @@ namespace Molten
             int length = Length();
             if (!MathHelper.IsZero(length))
             {
-                int inverse = 1.0F / length;
-			    X *= inverse;
-			    Y *= inverse;
+                float inverse = 1.0F / length;
+			    X = (int)(X * inverse);
+			    Y = (int)(Y * inverse);
             }
         }
 
@@ -209,17 +209,16 @@ namespace Molten
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Vector2I Normalized()
+        public Vector2I GetNormalized()
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inv = 1.0F / length;
+                float inverse = 1.0F / length;
                 return new Vector2I()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (this.X * inverse),
+			        Y = (this.Y * inverse),
                 };
             }
             else
@@ -308,12 +307,12 @@ namespace Molten
 #region Add operators
 		public static Vector2I operator +(Vector2I left, Vector2I right)
 		{
-			return new Vector2I(left.X + right.X, left.Y + right.Y);
+			return new Vector2I((left.X + right.X), (left.Y + right.Y));
 		}
 
 		public static Vector2I operator +(Vector2I left, int right)
 		{
-			return new Vector2I(left.X + right, left.Y + right);
+			return new Vector2I((left.X + right), (left.Y + right));
 		}
 
 		/// <summary>
@@ -330,12 +329,12 @@ namespace Molten
 #region Subtract operators
 		public static Vector2I operator -(Vector2I left, Vector2I right)
 		{
-			return new Vector2I(left.X - right.X, left.Y - right.Y);
+			return new Vector2I((left.X - right.X), (left.Y - right.Y));
 		}
 
 		public static Vector2I operator -(Vector2I left, int right)
 		{
-			return new Vector2I(left.X - right, left.Y - right);
+			return new Vector2I((left.X - right), (left.Y - right));
 		}
 
 		/// <summary>
@@ -352,29 +351,29 @@ namespace Molten
 #region division operators
 		public static Vector2I operator /(Vector2I left, Vector2I right)
 		{
-			return new Vector2I(left.X / right.X, left.Y / right.Y);
+			return new Vector2I((left.X / right.X), (left.Y / right.Y));
 		}
 
 		public static Vector2I operator /(Vector2I left, int right)
 		{
-			return new Vector2I(left.X / right, left.Y / right);
+			return new Vector2I((left.X / right), (left.Y / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static Vector2I operator *(Vector2I left, Vector2I right)
 		{
-			return new Vector2I(left.X * right.X, left.Y * right.Y);
+			return new Vector2I((left.X * right.X), (left.Y * right.Y));
 		}
 
 		public static Vector2I operator *(Vector2I left, int right)
 		{
-			return new Vector2I(left.X * right, left.Y * right);
+			return new Vector2I((left.X * right), (left.Y * right));
 		}
 
         public static Vector2I operator *(int left, Vector2I right)
 		{
-			return new Vector2I(left * right.X, left * right.Y);
+			return new Vector2I((left * right.X), (left * right.Y));
 		}
 #endregion
 
@@ -450,7 +449,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        public static Vector2I SmoothStep(ref Vector2I start, ref Vector2I end, int amount)
+        public static Vector2I SmoothStep(ref Vector2I start, ref Vector2I end, float amount)
         {
             amount = MathHelper.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
@@ -505,9 +504,7 @@ namespace Molten
                 Vector2I newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
 
                 destination[i] = newvector;
             }
@@ -552,9 +549,7 @@ namespace Molten
                 Vector2I newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -600,8 +595,8 @@ namespace Molten
         /// </remarks>
         public static int Distance(Vector2I value1, Vector2I value2)
         {
-			int x = value1.X - value2.X;
-			int y = value1.Y - value2.Y;
+			int x = (value1.X - value2.X);
+			int y = (value1.Y - value2.Y);
 
             return (int)Math.Sqrt((x * x) + (y * y));
         }
@@ -626,7 +621,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector2I"/> source vector.</param>
         public static int Dot(ref Vector2I left, ref Vector2I right)
         {
-			return (left.X * right.X) + (left.Y * right.Y);
+			return ((left.X * right.X) + (left.Y * right.Y));
         }
 
 		/// <summary>
@@ -636,7 +631,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector2I"/> source vector.</param>
         public static int Dot(Vector2I left, Vector2I right)
         {
-			return (left.X * right.X) + (left.Y * right.Y);
+			return ((left.X * right.X) + (left.Y * right.Y));
         }
 
 		/// <summary>
@@ -688,8 +683,8 @@ namespace Molten
         public static Vector2I Barycentric(ref Vector2I value1, ref Vector2I value2, ref Vector2I value3, int amount1, int amount2)
         {
 			return new Vector2I(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))
+				((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)))
 			);
         }
 
@@ -759,7 +754,7 @@ namespace Molten
             int x = value1.X - value2.X;
             int y = value1.Y - value2.Y;
 
-            return (x * x) + (y * y);
+            return ((x * x) + (y * y));
         }
 
         /// <summary>
@@ -780,7 +775,7 @@ namespace Molten
             int x = value1.X - value2.X;
             int y = value1.Y - value2.Y;
 
-            return (x * x) + (y * y);
+            return ((x * x) + (y * y));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -864,8 +859,8 @@ namespace Molten
 
             return new Vector2I()
             {
-				X = vector.X - ((2.0F * dot) * normal.X),
-				Y = vector.Y - ((2.0F * dot) * normal.Y),
+				X = (vector.X - ((2.0F * dot) * normal.X)),
+				Y = (vector.Y - ((2.0F * dot) * normal.Y)),
             };
         }
 

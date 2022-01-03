@@ -193,7 +193,7 @@ namespace Molten
         /// </remarks>
         public uint LengthSquared()
         {
-            return (X * X) + (Y * Y) + (Z * Z) + (W * W);
+            return ((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
@@ -204,11 +204,11 @@ namespace Molten
             uint length = Length();
             if (!MathHelper.IsZero(length))
             {
-                uint inverse = 1.0F / length;
-			    X *= inverse;
-			    Y *= inverse;
-			    Z *= inverse;
-			    W *= inverse;
+                float inverse = 1.0F / length;
+			    X = (uint)(X * inverse);
+			    Y = (uint)(Y * inverse);
+			    Z = (uint)(Z * inverse);
+			    W = (uint)(W * inverse);
             }
         }
 
@@ -233,17 +233,18 @@ namespace Molten
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Vector4UI Normalized()
+        public Vector4UI GetNormalized()
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inv = 1.0F / length;
+                float inverse = 1.0F / length;
                 return new Vector4UI()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (this.X * inverse),
+			        Y = (this.Y * inverse),
+			        Z = (this.Z * inverse),
+			        W = (this.W * inverse),
                 };
             }
             else
@@ -336,12 +337,12 @@ namespace Molten
 #region Add operators
 		public static Vector4UI operator +(Vector4UI left, Vector4UI right)
 		{
-			return new Vector4UI(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
+			return new Vector4UI((left.X + right.X), (left.Y + right.Y), (left.Z + right.Z), (left.W + right.W));
 		}
 
 		public static Vector4UI operator +(Vector4UI left, uint right)
 		{
-			return new Vector4UI(left.X + right, left.Y + right, left.Z + right, left.W + right);
+			return new Vector4UI((left.X + right), (left.Y + right), (left.Z + right), (left.W + right));
 		}
 
 		/// <summary>
@@ -358,12 +359,12 @@ namespace Molten
 #region Subtract operators
 		public static Vector4UI operator -(Vector4UI left, Vector4UI right)
 		{
-			return new Vector4UI(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
+			return new Vector4UI((left.X - right.X), (left.Y - right.Y), (left.Z - right.Z), (left.W - right.W));
 		}
 
 		public static Vector4UI operator -(Vector4UI left, uint right)
 		{
-			return new Vector4UI(left.X - right, left.Y - right, left.Z - right, left.W - right);
+			return new Vector4UI((left.X - right), (left.Y - right), (left.Z - right), (left.W - right));
 		}
 
 		/// <summary>
@@ -380,29 +381,29 @@ namespace Molten
 #region division operators
 		public static Vector4UI operator /(Vector4UI left, Vector4UI right)
 		{
-			return new Vector4UI(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
+			return new Vector4UI((left.X / right.X), (left.Y / right.Y), (left.Z / right.Z), (left.W / right.W));
 		}
 
 		public static Vector4UI operator /(Vector4UI left, uint right)
 		{
-			return new Vector4UI(left.X / right, left.Y / right, left.Z / right, left.W / right);
+			return new Vector4UI((left.X / right), (left.Y / right), (left.Z / right), (left.W / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static Vector4UI operator *(Vector4UI left, Vector4UI right)
 		{
-			return new Vector4UI(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
+			return new Vector4UI((left.X * right.X), (left.Y * right.Y), (left.Z * right.Z), (left.W * right.W));
 		}
 
 		public static Vector4UI operator *(Vector4UI left, uint right)
 		{
-			return new Vector4UI(left.X * right, left.Y * right, left.Z * right, left.W * right);
+			return new Vector4UI((left.X * right), (left.Y * right), (left.Z * right), (left.W * right));
 		}
 
         public static Vector4UI operator *(uint left, Vector4UI right)
 		{
-			return new Vector4UI(left * right.X, left * right.Y, left * right.Z, left * right.W);
+			return new Vector4UI((left * right.X), (left * right.Y), (left * right.Z), (left * right.W));
 		}
 #endregion
 
@@ -478,7 +479,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        public static Vector4UI SmoothStep(ref Vector4UI start, ref Vector4UI end, uint amount)
+        public static Vector4UI SmoothStep(ref Vector4UI start, ref Vector4UI end, float amount)
         {
             amount = MathHelper.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
@@ -533,9 +534,7 @@ namespace Molten
                 Vector4UI newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
 
                 destination[i] = newvector;
             }
@@ -580,9 +579,7 @@ namespace Molten
                 Vector4UI newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -634,10 +631,10 @@ namespace Molten
         /// </remarks>
         public static uint Distance(Vector4UI value1, Vector4UI value2)
         {
-			uint x = value1.X - value2.X;
-			uint y = value1.Y - value2.Y;
-			uint z = value1.Z - value2.Z;
-			uint w = value1.W - value2.W;
+			uint x = (value1.X - value2.X);
+			uint y = (value1.Y - value2.Y);
+			uint z = (value1.Z - value2.Z);
+			uint w = (value1.W - value2.W);
 
             return (uint)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
         }
@@ -664,7 +661,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector4UI"/> source vector.</param>
         public static uint Dot(ref Vector4UI left, ref Vector4UI right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W));
         }
 
 		/// <summary>
@@ -674,7 +671,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector4UI"/> source vector.</param>
         public static uint Dot(Vector4UI left, Vector4UI right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W));
         }
 
 		/// <summary>
@@ -728,10 +725,10 @@ namespace Molten
         public static Vector4UI Barycentric(ref Vector4UI value1, ref Vector4UI value2, ref Vector4UI value3, uint amount1, uint amount2)
         {
 			return new Vector4UI(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)), 
-				(value1.W + (amount1 * (value2.W - value1.W))) + (amount2 * (value3.W - value1.W))
+				((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))), 
+				((value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))), 
+				((value1.W + (amount1 * (value2.W - value1.W))) + (amount2 * (value3.W - value1.W)))
 			);
         }
 
@@ -809,7 +806,7 @@ namespace Molten
             uint z = value1.Z - value2.Z;
             uint w = value1.W - value2.W;
 
-            return (x * x) + (y * y) + (z * z) + (w * w);
+            return ((x * x) + (y * y) + (z * z) + (w * w));
         }
 
         /// <summary>
@@ -832,7 +829,7 @@ namespace Molten
             uint z = value1.Z - value2.Z;
             uint w = value1.W - value2.W;
 
-            return (x * x) + (y * y) + (z * z) + (w * w);
+            return ((x * x) + (y * y) + (z * z) + (w * w));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -930,10 +927,10 @@ namespace Molten
 
             return new Vector4UI()
             {
-				X = vector.X - ((2.0F * dot) * normal.X),
-				Y = vector.Y - ((2.0F * dot) * normal.Y),
-				Z = vector.Z - ((2.0F * dot) * normal.Z),
-				W = vector.W - ((2.0F * dot) * normal.W),
+				X = (vector.X - ((2.0F * dot) * normal.X)),
+				Y = (vector.Y - ((2.0F * dot) * normal.Y)),
+				Z = (vector.Z - ((2.0F * dot) * normal.Z)),
+				W = (vector.W - ((2.0F * dot) * normal.W)),
             };
         }
 

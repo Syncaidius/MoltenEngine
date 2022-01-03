@@ -182,7 +182,7 @@ namespace Molten
         /// </remarks>
         public byte LengthSquared()
         {
-            return (X * X) + (Y * Y) + (Z * Z);
+            return (byte)((X * X) + (Y * Y) + (Z * Z));
         }
 
         /// <summary>
@@ -193,10 +193,10 @@ namespace Molten
             byte length = Length();
             if (!MathHelper.IsZero(length))
             {
-                byte inverse = 1.0F / length;
-			    X *= inverse;
-			    Y *= inverse;
-			    Z *= inverse;
+                float inverse = 1.0F / length;
+			    X = (byte)(X * inverse);
+			    Y = (byte)(Y * inverse);
+			    Z = (byte)(Z * inverse);
             }
         }
 
@@ -215,23 +215,23 @@ namespace Molten
         /// <returns>A <see cref="Byte3"/> facing the opposite direction.</returns>
 		public Byte3 Negate()
 		{
-			return new Byte3(-X, -Y, -Z);
+			return new Byte3((byte)-X, (byte)-Y, (byte)-Z);
 		}
 		
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Byte3 Normalized()
+        public Byte3 GetNormalized()
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inv = 1.0F / length;
+                float inverse = 1.0F / length;
                 return new Byte3()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (byte)(this.X * inverse),
+			        Y = (byte)(this.Y * inverse),
+			        Z = (byte)(this.Z * inverse),
                 };
             }
             else
@@ -322,12 +322,12 @@ namespace Molten
 #region Add operators
 		public static Byte3 operator +(Byte3 left, Byte3 right)
 		{
-			return new Byte3(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
+			return new Byte3((byte)(left.X + right.X), (byte)(left.Y + right.Y), (byte)(left.Z + right.Z));
 		}
 
 		public static Byte3 operator +(Byte3 left, byte right)
 		{
-			return new Byte3(left.X + right, left.Y + right, left.Z + right);
+			return new Byte3((byte)(left.X + right), (byte)(left.Y + right), (byte)(left.Z + right));
 		}
 
 		/// <summary>
@@ -344,12 +344,12 @@ namespace Molten
 #region Subtract operators
 		public static Byte3 operator -(Byte3 left, Byte3 right)
 		{
-			return new Byte3(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
+			return new Byte3((byte)(left.X - right.X), (byte)(left.Y - right.Y), (byte)(left.Z - right.Z));
 		}
 
 		public static Byte3 operator -(Byte3 left, byte right)
 		{
-			return new Byte3(left.X - right, left.Y - right, left.Z - right);
+			return new Byte3((byte)(left.X - right), (byte)(left.Y - right), (byte)(left.Z - right));
 		}
 
 		/// <summary>
@@ -359,36 +359,36 @@ namespace Molten
         /// <returns>The reversed <see cref="Byte3"/>.</returns>
         public static Byte3 operator -(Byte3 value)
         {
-            return new Byte3(-value.X, -value.Y, -value.Z);
+            return new Byte3((byte)-value.X, (byte)-value.Y, (byte)-value.Z);
         }
 #endregion
 
 #region division operators
 		public static Byte3 operator /(Byte3 left, Byte3 right)
 		{
-			return new Byte3(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
+			return new Byte3((byte)(left.X / right.X), (byte)(left.Y / right.Y), (byte)(left.Z / right.Z));
 		}
 
 		public static Byte3 operator /(Byte3 left, byte right)
 		{
-			return new Byte3(left.X / right, left.Y / right, left.Z / right);
+			return new Byte3((byte)(left.X / right), (byte)(left.Y / right), (byte)(left.Z / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static Byte3 operator *(Byte3 left, Byte3 right)
 		{
-			return new Byte3(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+			return new Byte3((byte)(left.X * right.X), (byte)(left.Y * right.Y), (byte)(left.Z * right.Z));
 		}
 
 		public static Byte3 operator *(Byte3 left, byte right)
 		{
-			return new Byte3(left.X * right, left.Y * right, left.Z * right);
+			return new Byte3((byte)(left.X * right), (byte)(left.Y * right), (byte)(left.Z * right));
 		}
 
         public static Byte3 operator *(byte left, Byte3 right)
 		{
-			return new Byte3(left * right.X, left * right.Y, left * right.Z);
+			return new Byte3((byte)(left * right.X), (byte)(left * right.Y), (byte)(left * right.Z));
 		}
 #endregion
 
@@ -464,7 +464,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        public static Byte3 SmoothStep(ref Byte3 start, ref Byte3 end, byte amount)
+        public static Byte3 SmoothStep(ref Byte3 start, ref Byte3 end, float amount)
         {
             amount = MathHelper.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
@@ -519,9 +519,7 @@ namespace Molten
                 Byte3 newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
-                    newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
+                    newvector -= (byte)(Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
 
                 destination[i] = newvector;
             }
@@ -566,9 +564,7 @@ namespace Molten
                 Byte3 newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -617,9 +613,9 @@ namespace Molten
         /// </remarks>
         public static byte Distance(Byte3 value1, Byte3 value2)
         {
-			byte x = value1.X - value2.X;
-			byte y = value1.Y - value2.Y;
-			byte z = value1.Z - value2.Z;
+			byte x = (byte)(value1.X - value2.X);
+			byte y = (byte)(value1.Y - value2.Y);
+			byte z = (byte)(value1.Z - value2.Z);
 
             return (byte)Math.Sqrt((x * x) + (y * y) + (z * z));
         }
@@ -645,7 +641,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Byte3"/> source vector.</param>
         public static byte Dot(ref Byte3 left, ref Byte3 right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return (byte)(((byte)left.X * right.X) + ((byte)left.Y * right.Y) + ((byte)left.Z * right.Z));
         }
 
 		/// <summary>
@@ -655,7 +651,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Byte3"/> source vector.</param>
         public static byte Dot(Byte3 left, Byte3 right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return (byte)((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
         }
 
 		/// <summary>
@@ -708,9 +704,9 @@ namespace Molten
         public static Byte3 Barycentric(ref Byte3 value1, ref Byte3 value2, ref Byte3 value3, byte amount1, byte amount2)
         {
 			return new Byte3(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))
+				(byte)((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				(byte)((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))), 
+				(byte)((value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)))
 			);
         }
 
@@ -780,11 +776,11 @@ namespace Molten
         /// </remarks>
 		public static byte DistanceSquared(ref Byte3 value1, ref Byte3 value2)
         {
-            byte x = value1.X - value2.X;
-            byte y = value1.Y - value2.Y;
-            byte z = value1.Z - value2.Z;
+            int x = value1.X - value2.X;
+            int y = value1.Y - value2.Y;
+            int z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return (byte)((x * x) + (y * y) + (z * z));
         }
 
         /// <summary>
@@ -802,11 +798,11 @@ namespace Molten
         /// </remarks>
 		public static byte DistanceSquared(Byte3 value1, Byte3 value2)
         {
-            byte x = value1.X - value2.X;
-            byte y = value1.Y - value2.Y;
-            byte z = value1.Z - value2.Z;
+            int x = value1.X - value2.X;
+            int y = value1.Y - value2.Y;
+            int z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return (byte)((x * x) + (y * y) + (z * z));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -893,13 +889,13 @@ namespace Molten
         /// whether the original vector was close enough to the surface to hit it.</remarks>
         public static Byte3 Reflect(ref Byte3 vector, ref Byte3 normal)
         {
-            byte dot = (vector.X * normal.X) + (vector.Y * normal.Y) + (vector.Z * normal.Z);
+            int dot = (vector.X * normal.X) + (vector.Y * normal.Y) + (vector.Z * normal.Z);
 
             return new Byte3()
             {
-				X = vector.X - ((2.0F * dot) * normal.X),
-				Y = vector.Y - ((2.0F * dot) * normal.Y),
-				Z = vector.Z - ((2.0F * dot) * normal.Z),
+				X = (byte)(vector.X - ((2.0F * dot) * normal.X)),
+				Y = (byte)(vector.Y - ((2.0F * dot) * normal.Y)),
+				Z = (byte)(vector.Z - ((2.0F * dot) * normal.Z)),
             };
         }
 

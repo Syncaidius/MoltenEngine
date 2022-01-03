@@ -193,7 +193,7 @@ namespace Molten
         /// </remarks>
         public ushort LengthSquared()
         {
-            return (X * X) + (Y * Y) + (Z * Z) + (W * W);
+            return (ushort)((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
@@ -204,11 +204,11 @@ namespace Molten
             ushort length = Length();
             if (!MathHelper.IsZero(length))
             {
-                ushort inverse = 1.0F / length;
-			    X *= inverse;
-			    Y *= inverse;
-			    Z *= inverse;
-			    W *= inverse;
+                float inverse = 1.0F / length;
+			    X = (ushort)(X * inverse);
+			    Y = (ushort)(Y * inverse);
+			    Z = (ushort)(Z * inverse);
+			    W = (ushort)(W * inverse);
             }
         }
 
@@ -227,23 +227,24 @@ namespace Molten
         /// <returns>A <see cref="Vector4US"/> facing the opposite direction.</returns>
 		public Vector4US Negate()
 		{
-			return new Vector4US(-X, -Y, -Z, -W);
+			return new Vector4US((ushort)-X, (ushort)-Y, (ushort)-Z, (ushort)-W);
 		}
 		
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Vector4US Normalized()
+        public Vector4US GetNormalized()
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inv = 1.0F / length;
+                float inverse = 1.0F / length;
                 return new Vector4US()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (ushort)(this.X * inverse),
+			        Y = (ushort)(this.Y * inverse),
+			        Z = (ushort)(this.Z * inverse),
+			        W = (ushort)(this.W * inverse),
                 };
             }
             else
@@ -336,12 +337,12 @@ namespace Molten
 #region Add operators
 		public static Vector4US operator +(Vector4US left, Vector4US right)
 		{
-			return new Vector4US(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
+			return new Vector4US((ushort)(left.X + right.X), (ushort)(left.Y + right.Y), (ushort)(left.Z + right.Z), (ushort)(left.W + right.W));
 		}
 
 		public static Vector4US operator +(Vector4US left, ushort right)
 		{
-			return new Vector4US(left.X + right, left.Y + right, left.Z + right, left.W + right);
+			return new Vector4US((ushort)(left.X + right), (ushort)(left.Y + right), (ushort)(left.Z + right), (ushort)(left.W + right));
 		}
 
 		/// <summary>
@@ -358,12 +359,12 @@ namespace Molten
 #region Subtract operators
 		public static Vector4US operator -(Vector4US left, Vector4US right)
 		{
-			return new Vector4US(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
+			return new Vector4US((ushort)(left.X - right.X), (ushort)(left.Y - right.Y), (ushort)(left.Z - right.Z), (ushort)(left.W - right.W));
 		}
 
 		public static Vector4US operator -(Vector4US left, ushort right)
 		{
-			return new Vector4US(left.X - right, left.Y - right, left.Z - right, left.W - right);
+			return new Vector4US((ushort)(left.X - right), (ushort)(left.Y - right), (ushort)(left.Z - right), (ushort)(left.W - right));
 		}
 
 		/// <summary>
@@ -373,36 +374,36 @@ namespace Molten
         /// <returns>The reversed <see cref="Vector4US"/>.</returns>
         public static Vector4US operator -(Vector4US value)
         {
-            return new Vector4US(-value.X, -value.Y, -value.Z, -value.W);
+            return new Vector4US((ushort)-value.X, (ushort)-value.Y, (ushort)-value.Z, (ushort)-value.W);
         }
 #endregion
 
 #region division operators
 		public static Vector4US operator /(Vector4US left, Vector4US right)
 		{
-			return new Vector4US(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
+			return new Vector4US((ushort)(left.X / right.X), (ushort)(left.Y / right.Y), (ushort)(left.Z / right.Z), (ushort)(left.W / right.W));
 		}
 
 		public static Vector4US operator /(Vector4US left, ushort right)
 		{
-			return new Vector4US(left.X / right, left.Y / right, left.Z / right, left.W / right);
+			return new Vector4US((ushort)(left.X / right), (ushort)(left.Y / right), (ushort)(left.Z / right), (ushort)(left.W / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static Vector4US operator *(Vector4US left, Vector4US right)
 		{
-			return new Vector4US(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
+			return new Vector4US((ushort)(left.X * right.X), (ushort)(left.Y * right.Y), (ushort)(left.Z * right.Z), (ushort)(left.W * right.W));
 		}
 
 		public static Vector4US operator *(Vector4US left, ushort right)
 		{
-			return new Vector4US(left.X * right, left.Y * right, left.Z * right, left.W * right);
+			return new Vector4US((ushort)(left.X * right), (ushort)(left.Y * right), (ushort)(left.Z * right), (ushort)(left.W * right));
 		}
 
         public static Vector4US operator *(ushort left, Vector4US right)
 		{
-			return new Vector4US(left * right.X, left * right.Y, left * right.Z, left * right.W);
+			return new Vector4US((ushort)(left * right.X), (ushort)(left * right.Y), (ushort)(left * right.Z), (ushort)(left * right.W));
 		}
 #endregion
 
@@ -478,7 +479,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        public static Vector4US SmoothStep(ref Vector4US start, ref Vector4US end, ushort amount)
+        public static Vector4US SmoothStep(ref Vector4US start, ref Vector4US end, float amount)
         {
             amount = MathHelper.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
@@ -533,9 +534,7 @@ namespace Molten
                 Vector4US newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
-                    newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
+                    newvector -= (ushort)(Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
 
                 destination[i] = newvector;
             }
@@ -580,9 +579,7 @@ namespace Molten
                 Vector4US newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -634,10 +631,10 @@ namespace Molten
         /// </remarks>
         public static ushort Distance(Vector4US value1, Vector4US value2)
         {
-			ushort x = value1.X - value2.X;
-			ushort y = value1.Y - value2.Y;
-			ushort z = value1.Z - value2.Z;
-			ushort w = value1.W - value2.W;
+			ushort x = (ushort)(value1.X - value2.X);
+			ushort y = (ushort)(value1.Y - value2.Y);
+			ushort z = (ushort)(value1.Z - value2.Z);
+			ushort w = (ushort)(value1.W - value2.W);
 
             return (ushort)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
         }
@@ -664,7 +661,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector4US"/> source vector.</param>
         public static ushort Dot(ref Vector4US left, ref Vector4US right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+			return (ushort)(((ushort)left.X * right.X) + ((ushort)left.Y * right.Y) + ((ushort)left.Z * right.Z) + ((ushort)left.W * right.W));
         }
 
 		/// <summary>
@@ -674,7 +671,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector4US"/> source vector.</param>
         public static ushort Dot(Vector4US left, Vector4US right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+			return (ushort)((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W));
         }
 
 		/// <summary>
@@ -728,10 +725,10 @@ namespace Molten
         public static Vector4US Barycentric(ref Vector4US value1, ref Vector4US value2, ref Vector4US value3, ushort amount1, ushort amount2)
         {
 			return new Vector4US(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)), 
-				(value1.W + (amount1 * (value2.W - value1.W))) + (amount2 * (value3.W - value1.W))
+				(ushort)((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				(ushort)((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))), 
+				(ushort)((value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))), 
+				(ushort)((value1.W + (amount1 * (value2.W - value1.W))) + (amount2 * (value3.W - value1.W)))
 			);
         }
 
@@ -804,12 +801,12 @@ namespace Molten
         /// </remarks>
 		public static ushort DistanceSquared(ref Vector4US value1, ref Vector4US value2)
         {
-            ushort x = value1.X - value2.X;
-            ushort y = value1.Y - value2.Y;
-            ushort z = value1.Z - value2.Z;
-            ushort w = value1.W - value2.W;
+            int x = value1.X - value2.X;
+            int y = value1.Y - value2.Y;
+            int z = value1.Z - value2.Z;
+            int w = value1.W - value2.W;
 
-            return (x * x) + (y * y) + (z * z) + (w * w);
+            return (ushort)((x * x) + (y * y) + (z * z) + (w * w));
         }
 
         /// <summary>
@@ -827,12 +824,12 @@ namespace Molten
         /// </remarks>
 		public static ushort DistanceSquared(Vector4US value1, Vector4US value2)
         {
-            ushort x = value1.X - value2.X;
-            ushort y = value1.Y - value2.Y;
-            ushort z = value1.Z - value2.Z;
-            ushort w = value1.W - value2.W;
+            int x = value1.X - value2.X;
+            int y = value1.Y - value2.Y;
+            int z = value1.Z - value2.Z;
+            int w = value1.W - value2.W;
 
-            return (x * x) + (y * y) + (z * z) + (w * w);
+            return (ushort)((x * x) + (y * y) + (z * z) + (w * w));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -926,14 +923,14 @@ namespace Molten
         /// whether the original vector was close enough to the surface to hit it.</remarks>
         public static Vector4US Reflect(ref Vector4US vector, ref Vector4US normal)
         {
-            ushort dot = (vector.X * normal.X) + (vector.Y * normal.Y) + (vector.Z * normal.Z) + (vector.W * normal.W);
+            int dot = (vector.X * normal.X) + (vector.Y * normal.Y) + (vector.Z * normal.Z) + (vector.W * normal.W);
 
             return new Vector4US()
             {
-				X = vector.X - ((2.0F * dot) * normal.X),
-				Y = vector.Y - ((2.0F * dot) * normal.Y),
-				Z = vector.Z - ((2.0F * dot) * normal.Z),
-				W = vector.W - ((2.0F * dot) * normal.W),
+				X = (ushort)(vector.X - ((2.0F * dot) * normal.X)),
+				Y = (ushort)(vector.Y - ((2.0F * dot) * normal.Y)),
+				Z = (ushort)(vector.Z - ((2.0F * dot) * normal.Z)),
+				W = (ushort)(vector.W - ((2.0F * dot) * normal.W)),
             };
         }
 

@@ -182,7 +182,7 @@ namespace Molten
         /// </remarks>
         public sbyte LengthSquared()
         {
-            return (X * X) + (Y * Y) + (Z * Z);
+            return (sbyte)((X * X) + (Y * Y) + (Z * Z));
         }
 
         /// <summary>
@@ -193,10 +193,10 @@ namespace Molten
             sbyte length = Length();
             if (!MathHelper.IsZero(length))
             {
-                sbyte inverse = 1.0F / length;
-			    X *= inverse;
-			    Y *= inverse;
-			    Z *= inverse;
+                float inverse = 1.0F / length;
+			    X = (sbyte)(X * inverse);
+			    Y = (sbyte)(Y * inverse);
+			    Z = (sbyte)(Z * inverse);
             }
         }
 
@@ -215,23 +215,23 @@ namespace Molten
         /// <returns>A <see cref="SByte3"/> facing the opposite direction.</returns>
 		public SByte3 Negate()
 		{
-			return new SByte3(-X, -Y, -Z);
+			return new SByte3((sbyte)-X, (sbyte)-Y, (sbyte)-Z);
 		}
 		
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public SByte3 Normalized()
+        public SByte3 GetNormalized()
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inv = 1.0F / length;
+                float inverse = 1.0F / length;
                 return new SByte3()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (sbyte)(this.X * inverse),
+			        Y = (sbyte)(this.Y * inverse),
+			        Z = (sbyte)(this.Z * inverse),
                 };
             }
             else
@@ -322,12 +322,12 @@ namespace Molten
 #region Add operators
 		public static SByte3 operator +(SByte3 left, SByte3 right)
 		{
-			return new SByte3(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
+			return new SByte3((sbyte)(left.X + right.X), (sbyte)(left.Y + right.Y), (sbyte)(left.Z + right.Z));
 		}
 
 		public static SByte3 operator +(SByte3 left, sbyte right)
 		{
-			return new SByte3(left.X + right, left.Y + right, left.Z + right);
+			return new SByte3((sbyte)(left.X + right), (sbyte)(left.Y + right), (sbyte)(left.Z + right));
 		}
 
 		/// <summary>
@@ -344,12 +344,12 @@ namespace Molten
 #region Subtract operators
 		public static SByte3 operator -(SByte3 left, SByte3 right)
 		{
-			return new SByte3(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
+			return new SByte3((sbyte)(left.X - right.X), (sbyte)(left.Y - right.Y), (sbyte)(left.Z - right.Z));
 		}
 
 		public static SByte3 operator -(SByte3 left, sbyte right)
 		{
-			return new SByte3(left.X - right, left.Y - right, left.Z - right);
+			return new SByte3((sbyte)(left.X - right), (sbyte)(left.Y - right), (sbyte)(left.Z - right));
 		}
 
 		/// <summary>
@@ -359,36 +359,36 @@ namespace Molten
         /// <returns>The reversed <see cref="SByte3"/>.</returns>
         public static SByte3 operator -(SByte3 value)
         {
-            return new SByte3(-value.X, -value.Y, -value.Z);
+            return new SByte3((sbyte)-value.X, (sbyte)-value.Y, (sbyte)-value.Z);
         }
 #endregion
 
 #region division operators
 		public static SByte3 operator /(SByte3 left, SByte3 right)
 		{
-			return new SByte3(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
+			return new SByte3((sbyte)(left.X / right.X), (sbyte)(left.Y / right.Y), (sbyte)(left.Z / right.Z));
 		}
 
 		public static SByte3 operator /(SByte3 left, sbyte right)
 		{
-			return new SByte3(left.X / right, left.Y / right, left.Z / right);
+			return new SByte3((sbyte)(left.X / right), (sbyte)(left.Y / right), (sbyte)(left.Z / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static SByte3 operator *(SByte3 left, SByte3 right)
 		{
-			return new SByte3(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+			return new SByte3((sbyte)(left.X * right.X), (sbyte)(left.Y * right.Y), (sbyte)(left.Z * right.Z));
 		}
 
 		public static SByte3 operator *(SByte3 left, sbyte right)
 		{
-			return new SByte3(left.X * right, left.Y * right, left.Z * right);
+			return new SByte3((sbyte)(left.X * right), (sbyte)(left.Y * right), (sbyte)(left.Z * right));
 		}
 
         public static SByte3 operator *(sbyte left, SByte3 right)
 		{
-			return new SByte3(left * right.X, left * right.Y, left * right.Z);
+			return new SByte3((sbyte)(left * right.X), (sbyte)(left * right.Y), (sbyte)(left * right.Z));
 		}
 #endregion
 
@@ -464,7 +464,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        public static SByte3 SmoothStep(ref SByte3 start, ref SByte3 end, sbyte amount)
+        public static SByte3 SmoothStep(ref SByte3 start, ref SByte3 end, float amount)
         {
             amount = MathHelper.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
@@ -519,9 +519,7 @@ namespace Molten
                 SByte3 newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
-                    newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
+                    newvector -= (sbyte)(Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
 
                 destination[i] = newvector;
             }
@@ -566,9 +564,7 @@ namespace Molten
                 SByte3 newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -617,9 +613,9 @@ namespace Molten
         /// </remarks>
         public static sbyte Distance(SByte3 value1, SByte3 value2)
         {
-			sbyte x = value1.X - value2.X;
-			sbyte y = value1.Y - value2.Y;
-			sbyte z = value1.Z - value2.Z;
+			sbyte x = (sbyte)(value1.X - value2.X);
+			sbyte y = (sbyte)(value1.Y - value2.Y);
+			sbyte z = (sbyte)(value1.Z - value2.Z);
 
             return (sbyte)Math.Sqrt((x * x) + (y * y) + (z * z));
         }
@@ -645,7 +641,7 @@ namespace Molten
         /// <param name="right">Second <see cref="SByte3"/> source vector.</param>
         public static sbyte Dot(ref SByte3 left, ref SByte3 right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return (sbyte)(((sbyte)left.X * right.X) + ((sbyte)left.Y * right.Y) + ((sbyte)left.Z * right.Z));
         }
 
 		/// <summary>
@@ -655,7 +651,7 @@ namespace Molten
         /// <param name="right">Second <see cref="SByte3"/> source vector.</param>
         public static sbyte Dot(SByte3 left, SByte3 right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return (sbyte)((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
         }
 
 		/// <summary>
@@ -708,9 +704,9 @@ namespace Molten
         public static SByte3 Barycentric(ref SByte3 value1, ref SByte3 value2, ref SByte3 value3, sbyte amount1, sbyte amount2)
         {
 			return new SByte3(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))
+				(sbyte)((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				(sbyte)((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))), 
+				(sbyte)((value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)))
 			);
         }
 
@@ -780,11 +776,11 @@ namespace Molten
         /// </remarks>
 		public static sbyte DistanceSquared(ref SByte3 value1, ref SByte3 value2)
         {
-            sbyte x = value1.X - value2.X;
-            sbyte y = value1.Y - value2.Y;
-            sbyte z = value1.Z - value2.Z;
+            int x = value1.X - value2.X;
+            int y = value1.Y - value2.Y;
+            int z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return (sbyte)((x * x) + (y * y) + (z * z));
         }
 
         /// <summary>
@@ -802,11 +798,11 @@ namespace Molten
         /// </remarks>
 		public static sbyte DistanceSquared(SByte3 value1, SByte3 value2)
         {
-            sbyte x = value1.X - value2.X;
-            sbyte y = value1.Y - value2.Y;
-            sbyte z = value1.Z - value2.Z;
+            int x = value1.X - value2.X;
+            int y = value1.Y - value2.Y;
+            int z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return (sbyte)((x * x) + (y * y) + (z * z));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -893,13 +889,13 @@ namespace Molten
         /// whether the original vector was close enough to the surface to hit it.</remarks>
         public static SByte3 Reflect(ref SByte3 vector, ref SByte3 normal)
         {
-            sbyte dot = (vector.X * normal.X) + (vector.Y * normal.Y) + (vector.Z * normal.Z);
+            int dot = (vector.X * normal.X) + (vector.Y * normal.Y) + (vector.Z * normal.Z);
 
             return new SByte3()
             {
-				X = vector.X - ((2.0F * dot) * normal.X),
-				Y = vector.Y - ((2.0F * dot) * normal.Y),
-				Z = vector.Z - ((2.0F * dot) * normal.Z),
+				X = (sbyte)(vector.X - ((2.0F * dot) * normal.X)),
+				Y = (sbyte)(vector.Y - ((2.0F * dot) * normal.Y)),
+				Z = (sbyte)(vector.Z - ((2.0F * dot) * normal.Z)),
             };
         }
 

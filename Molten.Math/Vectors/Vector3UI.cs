@@ -182,7 +182,7 @@ namespace Molten
         /// </remarks>
         public uint LengthSquared()
         {
-            return (X * X) + (Y * Y) + (Z * Z);
+            return ((X * X) + (Y * Y) + (Z * Z));
         }
 
         /// <summary>
@@ -193,10 +193,10 @@ namespace Molten
             uint length = Length();
             if (!MathHelper.IsZero(length))
             {
-                uint inverse = 1.0F / length;
-			    X *= inverse;
-			    Y *= inverse;
-			    Z *= inverse;
+                float inverse = 1.0F / length;
+			    X = (uint)(X * inverse);
+			    Y = (uint)(Y * inverse);
+			    Z = (uint)(Z * inverse);
             }
         }
 
@@ -221,17 +221,17 @@ namespace Molten
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Vector3UI Normalized()
+        public Vector3UI GetNormalized()
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inv = 1.0F / length;
+                float inverse = 1.0F / length;
                 return new Vector3UI()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (this.X * inverse),
+			        Y = (this.Y * inverse),
+			        Z = (this.Z * inverse),
                 };
             }
             else
@@ -322,12 +322,12 @@ namespace Molten
 #region Add operators
 		public static Vector3UI operator +(Vector3UI left, Vector3UI right)
 		{
-			return new Vector3UI(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
+			return new Vector3UI((left.X + right.X), (left.Y + right.Y), (left.Z + right.Z));
 		}
 
 		public static Vector3UI operator +(Vector3UI left, uint right)
 		{
-			return new Vector3UI(left.X + right, left.Y + right, left.Z + right);
+			return new Vector3UI((left.X + right), (left.Y + right), (left.Z + right));
 		}
 
 		/// <summary>
@@ -344,12 +344,12 @@ namespace Molten
 #region Subtract operators
 		public static Vector3UI operator -(Vector3UI left, Vector3UI right)
 		{
-			return new Vector3UI(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
+			return new Vector3UI((left.X - right.X), (left.Y - right.Y), (left.Z - right.Z));
 		}
 
 		public static Vector3UI operator -(Vector3UI left, uint right)
 		{
-			return new Vector3UI(left.X - right, left.Y - right, left.Z - right);
+			return new Vector3UI((left.X - right), (left.Y - right), (left.Z - right));
 		}
 
 		/// <summary>
@@ -366,29 +366,29 @@ namespace Molten
 #region division operators
 		public static Vector3UI operator /(Vector3UI left, Vector3UI right)
 		{
-			return new Vector3UI(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
+			return new Vector3UI((left.X / right.X), (left.Y / right.Y), (left.Z / right.Z));
 		}
 
 		public static Vector3UI operator /(Vector3UI left, uint right)
 		{
-			return new Vector3UI(left.X / right, left.Y / right, left.Z / right);
+			return new Vector3UI((left.X / right), (left.Y / right), (left.Z / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static Vector3UI operator *(Vector3UI left, Vector3UI right)
 		{
-			return new Vector3UI(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+			return new Vector3UI((left.X * right.X), (left.Y * right.Y), (left.Z * right.Z));
 		}
 
 		public static Vector3UI operator *(Vector3UI left, uint right)
 		{
-			return new Vector3UI(left.X * right, left.Y * right, left.Z * right);
+			return new Vector3UI((left.X * right), (left.Y * right), (left.Z * right));
 		}
 
         public static Vector3UI operator *(uint left, Vector3UI right)
 		{
-			return new Vector3UI(left * right.X, left * right.Y, left * right.Z);
+			return new Vector3UI((left * right.X), (left * right.Y), (left * right.Z));
 		}
 #endregion
 
@@ -464,7 +464,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        public static Vector3UI SmoothStep(ref Vector3UI start, ref Vector3UI end, uint amount)
+        public static Vector3UI SmoothStep(ref Vector3UI start, ref Vector3UI end, float amount)
         {
             amount = MathHelper.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
@@ -519,9 +519,7 @@ namespace Molten
                 Vector3UI newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
 
                 destination[i] = newvector;
             }
@@ -566,9 +564,7 @@ namespace Molten
                 Vector3UI newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -617,9 +613,9 @@ namespace Molten
         /// </remarks>
         public static uint Distance(Vector3UI value1, Vector3UI value2)
         {
-			uint x = value1.X - value2.X;
-			uint y = value1.Y - value2.Y;
-			uint z = value1.Z - value2.Z;
+			uint x = (value1.X - value2.X);
+			uint y = (value1.Y - value2.Y);
+			uint z = (value1.Z - value2.Z);
 
             return (uint)Math.Sqrt((x * x) + (y * y) + (z * z));
         }
@@ -645,7 +641,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector3UI"/> source vector.</param>
         public static uint Dot(ref Vector3UI left, ref Vector3UI right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
         }
 
 		/// <summary>
@@ -655,7 +651,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector3UI"/> source vector.</param>
         public static uint Dot(Vector3UI left, Vector3UI right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
         }
 
 		/// <summary>
@@ -708,9 +704,9 @@ namespace Molten
         public static Vector3UI Barycentric(ref Vector3UI value1, ref Vector3UI value2, ref Vector3UI value3, uint amount1, uint amount2)
         {
 			return new Vector3UI(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))
+				((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))), 
+				((value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)))
 			);
         }
 
@@ -784,7 +780,7 @@ namespace Molten
             uint y = value1.Y - value2.Y;
             uint z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return ((x * x) + (y * y) + (z * z));
         }
 
         /// <summary>
@@ -806,7 +802,7 @@ namespace Molten
             uint y = value1.Y - value2.Y;
             uint z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return ((x * x) + (y * y) + (z * z));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -897,9 +893,9 @@ namespace Molten
 
             return new Vector3UI()
             {
-				X = vector.X - ((2.0F * dot) * normal.X),
-				Y = vector.Y - ((2.0F * dot) * normal.Y),
-				Z = vector.Z - ((2.0F * dot) * normal.Z),
+				X = (vector.X - ((2.0F * dot) * normal.X)),
+				Y = (vector.Y - ((2.0F * dot) * normal.Y)),
+				Z = (vector.Z - ((2.0F * dot) * normal.Z)),
             };
         }
 

@@ -182,7 +182,7 @@ namespace Molten
         /// </remarks>
         public short LengthSquared()
         {
-            return (X * X) + (Y * Y) + (Z * Z);
+            return (short)((X * X) + (Y * Y) + (Z * Z));
         }
 
         /// <summary>
@@ -193,10 +193,10 @@ namespace Molten
             short length = Length();
             if (!MathHelper.IsZero(length))
             {
-                short inverse = 1.0F / length;
-			    X *= inverse;
-			    Y *= inverse;
-			    Z *= inverse;
+                float inverse = 1.0F / length;
+			    X = (short)(X * inverse);
+			    Y = (short)(Y * inverse);
+			    Z = (short)(Z * inverse);
             }
         }
 
@@ -215,23 +215,23 @@ namespace Molten
         /// <returns>A <see cref="Vector3S"/> facing the opposite direction.</returns>
 		public Vector3S Negate()
 		{
-			return new Vector3S(-X, -Y, -Z);
+			return new Vector3S((short)-X, (short)-Y, (short)-Z);
 		}
 		
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Vector3S Normalized()
+        public Vector3S GetNormalized()
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inv = 1.0F / length;
+                float inverse = 1.0F / length;
                 return new Vector3S()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (short)(this.X * inverse),
+			        Y = (short)(this.Y * inverse),
+			        Z = (short)(this.Z * inverse),
                 };
             }
             else
@@ -322,12 +322,12 @@ namespace Molten
 #region Add operators
 		public static Vector3S operator +(Vector3S left, Vector3S right)
 		{
-			return new Vector3S(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
+			return new Vector3S((short)(left.X + right.X), (short)(left.Y + right.Y), (short)(left.Z + right.Z));
 		}
 
 		public static Vector3S operator +(Vector3S left, short right)
 		{
-			return new Vector3S(left.X + right, left.Y + right, left.Z + right);
+			return new Vector3S((short)(left.X + right), (short)(left.Y + right), (short)(left.Z + right));
 		}
 
 		/// <summary>
@@ -344,12 +344,12 @@ namespace Molten
 #region Subtract operators
 		public static Vector3S operator -(Vector3S left, Vector3S right)
 		{
-			return new Vector3S(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
+			return new Vector3S((short)(left.X - right.X), (short)(left.Y - right.Y), (short)(left.Z - right.Z));
 		}
 
 		public static Vector3S operator -(Vector3S left, short right)
 		{
-			return new Vector3S(left.X - right, left.Y - right, left.Z - right);
+			return new Vector3S((short)(left.X - right), (short)(left.Y - right), (short)(left.Z - right));
 		}
 
 		/// <summary>
@@ -359,36 +359,36 @@ namespace Molten
         /// <returns>The reversed <see cref="Vector3S"/>.</returns>
         public static Vector3S operator -(Vector3S value)
         {
-            return new Vector3S(-value.X, -value.Y, -value.Z);
+            return new Vector3S((short)-value.X, (short)-value.Y, (short)-value.Z);
         }
 #endregion
 
 #region division operators
 		public static Vector3S operator /(Vector3S left, Vector3S right)
 		{
-			return new Vector3S(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
+			return new Vector3S((short)(left.X / right.X), (short)(left.Y / right.Y), (short)(left.Z / right.Z));
 		}
 
 		public static Vector3S operator /(Vector3S left, short right)
 		{
-			return new Vector3S(left.X / right, left.Y / right, left.Z / right);
+			return new Vector3S((short)(left.X / right), (short)(left.Y / right), (short)(left.Z / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static Vector3S operator *(Vector3S left, Vector3S right)
 		{
-			return new Vector3S(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+			return new Vector3S((short)(left.X * right.X), (short)(left.Y * right.Y), (short)(left.Z * right.Z));
 		}
 
 		public static Vector3S operator *(Vector3S left, short right)
 		{
-			return new Vector3S(left.X * right, left.Y * right, left.Z * right);
+			return new Vector3S((short)(left.X * right), (short)(left.Y * right), (short)(left.Z * right));
 		}
 
         public static Vector3S operator *(short left, Vector3S right)
 		{
-			return new Vector3S(left * right.X, left * right.Y, left * right.Z);
+			return new Vector3S((short)(left * right.X), (short)(left * right.Y), (short)(left * right.Z));
 		}
 #endregion
 
@@ -464,7 +464,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        public static Vector3S SmoothStep(ref Vector3S start, ref Vector3S end, short amount)
+        public static Vector3S SmoothStep(ref Vector3S start, ref Vector3S end, float amount)
         {
             amount = MathHelper.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
@@ -519,9 +519,7 @@ namespace Molten
                 Vector3S newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
-                    newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
+                    newvector -= (short)(Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
 
                 destination[i] = newvector;
             }
@@ -566,9 +564,7 @@ namespace Molten
                 Vector3S newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -617,9 +613,9 @@ namespace Molten
         /// </remarks>
         public static short Distance(Vector3S value1, Vector3S value2)
         {
-			short x = value1.X - value2.X;
-			short y = value1.Y - value2.Y;
-			short z = value1.Z - value2.Z;
+			short x = (short)(value1.X - value2.X);
+			short y = (short)(value1.Y - value2.Y);
+			short z = (short)(value1.Z - value2.Z);
 
             return (short)Math.Sqrt((x * x) + (y * y) + (z * z));
         }
@@ -645,7 +641,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector3S"/> source vector.</param>
         public static short Dot(ref Vector3S left, ref Vector3S right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return (short)(((short)left.X * right.X) + ((short)left.Y * right.Y) + ((short)left.Z * right.Z));
         }
 
 		/// <summary>
@@ -655,7 +651,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector3S"/> source vector.</param>
         public static short Dot(Vector3S left, Vector3S right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return (short)((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
         }
 
 		/// <summary>
@@ -708,9 +704,9 @@ namespace Molten
         public static Vector3S Barycentric(ref Vector3S value1, ref Vector3S value2, ref Vector3S value3, short amount1, short amount2)
         {
 			return new Vector3S(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))
+				(short)((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				(short)((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))), 
+				(short)((value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)))
 			);
         }
 
@@ -780,11 +776,11 @@ namespace Molten
         /// </remarks>
 		public static short DistanceSquared(ref Vector3S value1, ref Vector3S value2)
         {
-            short x = value1.X - value2.X;
-            short y = value1.Y - value2.Y;
-            short z = value1.Z - value2.Z;
+            int x = value1.X - value2.X;
+            int y = value1.Y - value2.Y;
+            int z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return (short)((x * x) + (y * y) + (z * z));
         }
 
         /// <summary>
@@ -802,11 +798,11 @@ namespace Molten
         /// </remarks>
 		public static short DistanceSquared(Vector3S value1, Vector3S value2)
         {
-            short x = value1.X - value2.X;
-            short y = value1.Y - value2.Y;
-            short z = value1.Z - value2.Z;
+            int x = value1.X - value2.X;
+            int y = value1.Y - value2.Y;
+            int z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return (short)((x * x) + (y * y) + (z * z));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -893,13 +889,13 @@ namespace Molten
         /// whether the original vector was close enough to the surface to hit it.</remarks>
         public static Vector3S Reflect(ref Vector3S vector, ref Vector3S normal)
         {
-            short dot = (vector.X * normal.X) + (vector.Y * normal.Y) + (vector.Z * normal.Z);
+            int dot = (vector.X * normal.X) + (vector.Y * normal.Y) + (vector.Z * normal.Z);
 
             return new Vector3S()
             {
-				X = vector.X - ((2.0F * dot) * normal.X),
-				Y = vector.Y - ((2.0F * dot) * normal.Y),
-				Z = vector.Z - ((2.0F * dot) * normal.Z),
+				X = (short)(vector.X - ((2.0F * dot) * normal.X)),
+				Y = (short)(vector.Y - ((2.0F * dot) * normal.Y)),
+				Z = (short)(vector.Z - ((2.0F * dot) * normal.Z)),
             };
         }
 

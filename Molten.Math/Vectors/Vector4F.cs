@@ -193,7 +193,7 @@ namespace Molten
         /// </remarks>
         public float LengthSquared()
         {
-            return (X * X) + (Y * Y) + (Z * Z) + (W * W);
+            return ((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
@@ -205,10 +205,10 @@ namespace Molten
             if (!MathHelper.IsZero(length))
             {
                 float inverse = 1.0F / length;
-			    X *= inverse;
-			    Y *= inverse;
-			    Z *= inverse;
-			    W *= inverse;
+			    X = (float)(X * inverse);
+			    Y = (float)(Y * inverse);
+			    Z = (float)(Z * inverse);
+			    W = (float)(W * inverse);
             }
         }
 
@@ -233,17 +233,18 @@ namespace Molten
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Vector4F Normalized()
+        public Vector4F GetNormalized()
         {
             float length = Length();
             if (!MathHelper.IsZero(length))
             {
-                float inv = 1.0F / length;
+                float inverse = 1.0F / length;
                 return new Vector4F()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (this.X * inverse),
+			        Y = (this.Y * inverse),
+			        Z = (this.Z * inverse),
+			        W = (this.W * inverse),
                 };
             }
             else
@@ -336,12 +337,12 @@ namespace Molten
 #region Add operators
 		public static Vector4F operator +(Vector4F left, Vector4F right)
 		{
-			return new Vector4F(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
+			return new Vector4F((left.X + right.X), (left.Y + right.Y), (left.Z + right.Z), (left.W + right.W));
 		}
 
 		public static Vector4F operator +(Vector4F left, float right)
 		{
-			return new Vector4F(left.X + right, left.Y + right, left.Z + right, left.W + right);
+			return new Vector4F((left.X + right), (left.Y + right), (left.Z + right), (left.W + right));
 		}
 
 		/// <summary>
@@ -358,12 +359,12 @@ namespace Molten
 #region Subtract operators
 		public static Vector4F operator -(Vector4F left, Vector4F right)
 		{
-			return new Vector4F(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
+			return new Vector4F((left.X - right.X), (left.Y - right.Y), (left.Z - right.Z), (left.W - right.W));
 		}
 
 		public static Vector4F operator -(Vector4F left, float right)
 		{
-			return new Vector4F(left.X - right, left.Y - right, left.Z - right, left.W - right);
+			return new Vector4F((left.X - right), (left.Y - right), (left.Z - right), (left.W - right));
 		}
 
 		/// <summary>
@@ -380,29 +381,29 @@ namespace Molten
 #region division operators
 		public static Vector4F operator /(Vector4F left, Vector4F right)
 		{
-			return new Vector4F(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
+			return new Vector4F((left.X / right.X), (left.Y / right.Y), (left.Z / right.Z), (left.W / right.W));
 		}
 
 		public static Vector4F operator /(Vector4F left, float right)
 		{
-			return new Vector4F(left.X / right, left.Y / right, left.Z / right, left.W / right);
+			return new Vector4F((left.X / right), (left.Y / right), (left.Z / right), (left.W / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static Vector4F operator *(Vector4F left, Vector4F right)
 		{
-			return new Vector4F(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
+			return new Vector4F((left.X * right.X), (left.Y * right.Y), (left.Z * right.Z), (left.W * right.W));
 		}
 
 		public static Vector4F operator *(Vector4F left, float right)
 		{
-			return new Vector4F(left.X * right, left.Y * right, left.Z * right, left.W * right);
+			return new Vector4F((left.X * right), (left.Y * right), (left.Z * right), (left.W * right));
 		}
 
         public static Vector4F operator *(float left, Vector4F right)
 		{
-			return new Vector4F(left * right.X, left * right.Y, left * right.Z, left * right.W);
+			return new Vector4F((left * right.X), (left * right.Y), (left * right.Z), (left * right.W));
 		}
 #endregion
 
@@ -533,9 +534,7 @@ namespace Molten
                 Vector4F newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
 
                 destination[i] = newvector;
             }
@@ -580,9 +579,7 @@ namespace Molten
                 Vector4F newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -634,10 +631,10 @@ namespace Molten
         /// </remarks>
         public static float Distance(Vector4F value1, Vector4F value2)
         {
-			float x = value1.X - value2.X;
-			float y = value1.Y - value2.Y;
-			float z = value1.Z - value2.Z;
-			float w = value1.W - value2.W;
+			float x = (value1.X - value2.X);
+			float y = (value1.Y - value2.Y);
+			float z = (value1.Z - value2.Z);
+			float w = (value1.W - value2.W);
 
             return (float)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
         }
@@ -664,7 +661,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector4F"/> source vector.</param>
         public static float Dot(ref Vector4F left, ref Vector4F right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W));
         }
 
 		/// <summary>
@@ -674,7 +671,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector4F"/> source vector.</param>
         public static float Dot(Vector4F left, Vector4F right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W));
         }
 
 		/// <summary>
@@ -728,10 +725,10 @@ namespace Molten
         public static Vector4F Barycentric(ref Vector4F value1, ref Vector4F value2, ref Vector4F value3, float amount1, float amount2)
         {
 			return new Vector4F(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)), 
-				(value1.W + (amount1 * (value2.W - value1.W))) + (amount2 * (value3.W - value1.W))
+				((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))), 
+				((value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))), 
+				((value1.W + (amount1 * (value2.W - value1.W))) + (amount2 * (value3.W - value1.W)))
 			);
         }
 
@@ -809,7 +806,7 @@ namespace Molten
             float z = value1.Z - value2.Z;
             float w = value1.W - value2.W;
 
-            return (x * x) + (y * y) + (z * z) + (w * w);
+            return ((x * x) + (y * y) + (z * z) + (w * w));
         }
 
         /// <summary>
@@ -832,7 +829,7 @@ namespace Molten
             float z = value1.Z - value2.Z;
             float w = value1.W - value2.W;
 
-            return (x * x) + (y * y) + (z * z) + (w * w);
+            return ((x * x) + (y * y) + (z * z) + (w * w));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -930,10 +927,10 @@ namespace Molten
 
             return new Vector4F()
             {
-				X = vector.X - ((2.0F * dot) * normal.X),
-				Y = vector.Y - ((2.0F * dot) * normal.Y),
-				Z = vector.Z - ((2.0F * dot) * normal.Z),
-				W = vector.W - ((2.0F * dot) * normal.W),
+				X = (vector.X - ((2.0F * dot) * normal.X)),
+				Y = (vector.Y - ((2.0F * dot) * normal.Y)),
+				Z = (vector.Z - ((2.0F * dot) * normal.Z)),
+				W = (vector.W - ((2.0F * dot) * normal.W)),
             };
         }
 

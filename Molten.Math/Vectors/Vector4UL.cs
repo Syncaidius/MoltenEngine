@@ -193,7 +193,7 @@ namespace Molten
         /// </remarks>
         public ulong LengthSquared()
         {
-            return (X * X) + (Y * Y) + (Z * Z) + (W * W);
+            return ((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
@@ -204,11 +204,11 @@ namespace Molten
             ulong length = Length();
             if (!MathHelper.IsZero(length))
             {
-                ulong inverse = 1.0D / length;
-			    X *= inverse;
-			    Y *= inverse;
-			    Z *= inverse;
-			    W *= inverse;
+                double inverse = 1.0D / length;
+			    X = (ulong)(X * inverse);
+			    Y = (ulong)(Y * inverse);
+			    Z = (ulong)(Z * inverse);
+			    W = (ulong)(W * inverse);
             }
         }
 
@@ -233,17 +233,18 @@ namespace Molten
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Vector4UL Normalized()
+        public Vector4UL GetNormalized()
         {
             double length = Length();
             if (!MathHelper.IsZero(length))
             {
-                double inv = 1.0D / length;
+                double inverse = 1.0D / length;
                 return new Vector4UL()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (this.X * inverse),
+			        Y = (this.Y * inverse),
+			        Z = (this.Z * inverse),
+			        W = (this.W * inverse),
                 };
             }
             else
@@ -336,12 +337,12 @@ namespace Molten
 #region Add operators
 		public static Vector4UL operator +(Vector4UL left, Vector4UL right)
 		{
-			return new Vector4UL(left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W);
+			return new Vector4UL((left.X + right.X), (left.Y + right.Y), (left.Z + right.Z), (left.W + right.W));
 		}
 
 		public static Vector4UL operator +(Vector4UL left, ulong right)
 		{
-			return new Vector4UL(left.X + right, left.Y + right, left.Z + right, left.W + right);
+			return new Vector4UL((left.X + right), (left.Y + right), (left.Z + right), (left.W + right));
 		}
 
 		/// <summary>
@@ -358,12 +359,12 @@ namespace Molten
 #region Subtract operators
 		public static Vector4UL operator -(Vector4UL left, Vector4UL right)
 		{
-			return new Vector4UL(left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W);
+			return new Vector4UL((left.X - right.X), (left.Y - right.Y), (left.Z - right.Z), (left.W - right.W));
 		}
 
 		public static Vector4UL operator -(Vector4UL left, ulong right)
 		{
-			return new Vector4UL(left.X - right, left.Y - right, left.Z - right, left.W - right);
+			return new Vector4UL((left.X - right), (left.Y - right), (left.Z - right), (left.W - right));
 		}
 
 		/// <summary>
@@ -380,29 +381,29 @@ namespace Molten
 #region division operators
 		public static Vector4UL operator /(Vector4UL left, Vector4UL right)
 		{
-			return new Vector4UL(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
+			return new Vector4UL((left.X / right.X), (left.Y / right.Y), (left.Z / right.Z), (left.W / right.W));
 		}
 
 		public static Vector4UL operator /(Vector4UL left, ulong right)
 		{
-			return new Vector4UL(left.X / right, left.Y / right, left.Z / right, left.W / right);
+			return new Vector4UL((left.X / right), (left.Y / right), (left.Z / right), (left.W / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static Vector4UL operator *(Vector4UL left, Vector4UL right)
 		{
-			return new Vector4UL(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
+			return new Vector4UL((left.X * right.X), (left.Y * right.Y), (left.Z * right.Z), (left.W * right.W));
 		}
 
 		public static Vector4UL operator *(Vector4UL left, ulong right)
 		{
-			return new Vector4UL(left.X * right, left.Y * right, left.Z * right, left.W * right);
+			return new Vector4UL((left.X * right), (left.Y * right), (left.Z * right), (left.W * right));
 		}
 
         public static Vector4UL operator *(ulong left, Vector4UL right)
 		{
-			return new Vector4UL(left * right.X, left * right.Y, left * right.Z, left * right.W);
+			return new Vector4UL((left * right.X), (left * right.Y), (left * right.Z), (left * right.W));
 		}
 #endregion
 
@@ -478,7 +479,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        public static Vector4UL SmoothStep(ref Vector4UL start, ref Vector4UL end, ulong amount)
+        public static Vector4UL SmoothStep(ref Vector4UL start, ref Vector4UL end, double amount)
         {
             amount = MathHelper.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
@@ -533,9 +534,7 @@ namespace Molten
                 Vector4UL newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
 
                 destination[i] = newvector;
             }
@@ -580,9 +579,7 @@ namespace Molten
                 Vector4UL newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -634,10 +631,10 @@ namespace Molten
         /// </remarks>
         public static ulong Distance(Vector4UL value1, Vector4UL value2)
         {
-			ulong x = value1.X - value2.X;
-			ulong y = value1.Y - value2.Y;
-			ulong z = value1.Z - value2.Z;
-			ulong w = value1.W - value2.W;
+			ulong x = (value1.X - value2.X);
+			ulong y = (value1.Y - value2.Y);
+			ulong z = (value1.Z - value2.Z);
+			ulong w = (value1.W - value2.W);
 
             return (ulong)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
         }
@@ -664,7 +661,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector4UL"/> source vector.</param>
         public static ulong Dot(ref Vector4UL left, ref Vector4UL right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W));
         }
 
 		/// <summary>
@@ -674,7 +671,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector4UL"/> source vector.</param>
         public static ulong Dot(Vector4UL left, Vector4UL right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W));
         }
 
 		/// <summary>
@@ -728,10 +725,10 @@ namespace Molten
         public static Vector4UL Barycentric(ref Vector4UL value1, ref Vector4UL value2, ref Vector4UL value3, ulong amount1, ulong amount2)
         {
 			return new Vector4UL(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)), 
-				(value1.W + (amount1 * (value2.W - value1.W))) + (amount2 * (value3.W - value1.W))
+				((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))), 
+				((value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))), 
+				((value1.W + (amount1 * (value2.W - value1.W))) + (amount2 * (value3.W - value1.W)))
 			);
         }
 
@@ -809,7 +806,7 @@ namespace Molten
             ulong z = value1.Z - value2.Z;
             ulong w = value1.W - value2.W;
 
-            return (x * x) + (y * y) + (z * z) + (w * w);
+            return ((x * x) + (y * y) + (z * z) + (w * w));
         }
 
         /// <summary>
@@ -832,7 +829,7 @@ namespace Molten
             ulong z = value1.Z - value2.Z;
             ulong w = value1.W - value2.W;
 
-            return (x * x) + (y * y) + (z * z) + (w * w);
+            return ((x * x) + (y * y) + (z * z) + (w * w));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -930,10 +927,10 @@ namespace Molten
 
             return new Vector4UL()
             {
-				X = vector.X - ((2.0D * dot) * normal.X),
-				Y = vector.Y - ((2.0D * dot) * normal.Y),
-				Z = vector.Z - ((2.0D * dot) * normal.Z),
-				W = vector.W - ((2.0D * dot) * normal.W),
+				X = (vector.X - ((2.0D * dot) * normal.X)),
+				Y = (vector.Y - ((2.0D * dot) * normal.Y)),
+				Z = (vector.Z - ((2.0D * dot) * normal.Z)),
+				W = (vector.W - ((2.0D * dot) * normal.W)),
             };
         }
 

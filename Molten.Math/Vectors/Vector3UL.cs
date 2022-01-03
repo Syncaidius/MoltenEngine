@@ -182,7 +182,7 @@ namespace Molten
         /// </remarks>
         public ulong LengthSquared()
         {
-            return (X * X) + (Y * Y) + (Z * Z);
+            return ((X * X) + (Y * Y) + (Z * Z));
         }
 
         /// <summary>
@@ -193,10 +193,10 @@ namespace Molten
             ulong length = Length();
             if (!MathHelper.IsZero(length))
             {
-                ulong inverse = 1.0D / length;
-			    X *= inverse;
-			    Y *= inverse;
-			    Z *= inverse;
+                double inverse = 1.0D / length;
+			    X = (ulong)(X * inverse);
+			    Y = (ulong)(Y * inverse);
+			    Z = (ulong)(Z * inverse);
             }
         }
 
@@ -221,17 +221,17 @@ namespace Molten
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>
-        public Vector3UL Normalized()
+        public Vector3UL GetNormalized()
         {
             double length = Length();
             if (!MathHelper.IsZero(length))
             {
-                double inv = 1.0D / length;
+                double inverse = 1.0D / length;
                 return new Vector3UL()
                 {
-                    X = this.X * inv,
-                    Y = this.Y * inv,
-                    Z = this.Z * inv,
+			        X = (this.X * inverse),
+			        Y = (this.Y * inverse),
+			        Z = (this.Z * inverse),
                 };
             }
             else
@@ -322,12 +322,12 @@ namespace Molten
 #region Add operators
 		public static Vector3UL operator +(Vector3UL left, Vector3UL right)
 		{
-			return new Vector3UL(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
+			return new Vector3UL((left.X + right.X), (left.Y + right.Y), (left.Z + right.Z));
 		}
 
 		public static Vector3UL operator +(Vector3UL left, ulong right)
 		{
-			return new Vector3UL(left.X + right, left.Y + right, left.Z + right);
+			return new Vector3UL((left.X + right), (left.Y + right), (left.Z + right));
 		}
 
 		/// <summary>
@@ -344,12 +344,12 @@ namespace Molten
 #region Subtract operators
 		public static Vector3UL operator -(Vector3UL left, Vector3UL right)
 		{
-			return new Vector3UL(left.X - right.X, left.Y - right.Y, left.Z - right.Z);
+			return new Vector3UL((left.X - right.X), (left.Y - right.Y), (left.Z - right.Z));
 		}
 
 		public static Vector3UL operator -(Vector3UL left, ulong right)
 		{
-			return new Vector3UL(left.X - right, left.Y - right, left.Z - right);
+			return new Vector3UL((left.X - right), (left.Y - right), (left.Z - right));
 		}
 
 		/// <summary>
@@ -366,29 +366,29 @@ namespace Molten
 #region division operators
 		public static Vector3UL operator /(Vector3UL left, Vector3UL right)
 		{
-			return new Vector3UL(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
+			return new Vector3UL((left.X / right.X), (left.Y / right.Y), (left.Z / right.Z));
 		}
 
 		public static Vector3UL operator /(Vector3UL left, ulong right)
 		{
-			return new Vector3UL(left.X / right, left.Y / right, left.Z / right);
+			return new Vector3UL((left.X / right), (left.Y / right), (left.Z / right));
 		}
 #endregion
 
 #region Multiply operators
 		public static Vector3UL operator *(Vector3UL left, Vector3UL right)
 		{
-			return new Vector3UL(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
+			return new Vector3UL((left.X * right.X), (left.Y * right.Y), (left.Z * right.Z));
 		}
 
 		public static Vector3UL operator *(Vector3UL left, ulong right)
 		{
-			return new Vector3UL(left.X * right, left.Y * right, left.Z * right);
+			return new Vector3UL((left.X * right), (left.Y * right), (left.Z * right));
 		}
 
         public static Vector3UL operator *(ulong left, Vector3UL right)
 		{
-			return new Vector3UL(left * right.X, left * right.Y, left * right.Z);
+			return new Vector3UL((left * right.X), (left * right.Y), (left * right.Z));
 		}
 #endregion
 
@@ -464,7 +464,7 @@ namespace Molten
         /// <param name="start">Start vector.</param>
         /// <param name="end">End vector.</param>
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
-        public static Vector3UL SmoothStep(ref Vector3UL start, ref Vector3UL end, ulong amount)
+        public static Vector3UL SmoothStep(ref Vector3UL start, ref Vector3UL end, double amount)
         {
             amount = MathHelper.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
@@ -519,9 +519,7 @@ namespace Molten
                 Vector3UL newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= (Dot(destination[r], newvector) / Dot(destination[r], destination[r])) * destination[r];
-                }
 
                 destination[i] = newvector;
             }
@@ -566,9 +564,7 @@ namespace Molten
                 Vector3UL newvector = source[i];
 
                 for (int r = 0; r < i; ++r)
-                {
                     newvector -= Dot(destination[r], newvector) * destination[r];
-                }
 
                 newvector.Normalize();
                 destination[i] = newvector;
@@ -617,9 +613,9 @@ namespace Molten
         /// </remarks>
         public static ulong Distance(Vector3UL value1, Vector3UL value2)
         {
-			ulong x = value1.X - value2.X;
-			ulong y = value1.Y - value2.Y;
-			ulong z = value1.Z - value2.Z;
+			ulong x = (value1.X - value2.X);
+			ulong y = (value1.Y - value2.Y);
+			ulong z = (value1.Z - value2.Z);
 
             return (ulong)Math.Sqrt((x * x) + (y * y) + (z * z));
         }
@@ -645,7 +641,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector3UL"/> source vector.</param>
         public static ulong Dot(ref Vector3UL left, ref Vector3UL right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
         }
 
 		/// <summary>
@@ -655,7 +651,7 @@ namespace Molten
         /// <param name="right">Second <see cref="Vector3UL"/> source vector.</param>
         public static ulong Dot(Vector3UL left, Vector3UL right)
         {
-			return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
+			return ((left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z));
         }
 
 		/// <summary>
@@ -708,9 +704,9 @@ namespace Molten
         public static Vector3UL Barycentric(ref Vector3UL value1, ref Vector3UL value2, ref Vector3UL value3, ulong amount1, ulong amount2)
         {
 			return new Vector3UL(
-				(value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X)), 
-				(value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y)), 
-				(value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z))
+				((value1.X + (amount1 * (value2.X - value1.X))) + (amount2 * (value3.X - value1.X))), 
+				((value1.Y + (amount1 * (value2.Y - value1.Y))) + (amount2 * (value3.Y - value1.Y))), 
+				((value1.Z + (amount1 * (value2.Z - value1.Z))) + (amount2 * (value3.Z - value1.Z)))
 			);
         }
 
@@ -784,7 +780,7 @@ namespace Molten
             ulong y = value1.Y - value2.Y;
             ulong z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return ((x * x) + (y * y) + (z * z));
         }
 
         /// <summary>
@@ -806,7 +802,7 @@ namespace Molten
             ulong y = value1.Y - value2.Y;
             ulong z = value1.Z - value2.Z;
 
-            return (x * x) + (y * y) + (z * z);
+            return ((x * x) + (y * y) + (z * z));
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>
@@ -897,9 +893,9 @@ namespace Molten
 
             return new Vector3UL()
             {
-				X = vector.X - ((2.0D * dot) * normal.X),
-				Y = vector.Y - ((2.0D * dot) * normal.Y),
-				Z = vector.Z - ((2.0D * dot) * normal.Z),
+				X = (vector.X - ((2.0D * dot) * normal.X)),
+				Y = (vector.Y - ((2.0D * dot) * normal.Y)),
+				Z = (vector.Z - ((2.0D * dot) * normal.Z)),
             };
         }
 
