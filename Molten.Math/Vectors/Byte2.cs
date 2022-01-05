@@ -305,14 +305,34 @@ namespace Molten
 #endregion
 
 #region Add operators
+        public static void Add(ref Byte2 left, ref Byte2 right, out Byte2 result)
+        {
+			result.X = (byte)(left.X + right.X);
+			result.Y = (byte)(left.Y + right.Y);
+        }
+
+        public static void Add(ref Byte2 left, byte right, out Byte2 result)
+        {
+			result.X = (byte)(left.X + right);
+			result.Y = (byte)(left.Y + right);
+        }
+
 		public static Byte2 operator +(Byte2 left, Byte2 right)
 		{
-			return new Byte2((byte)(left.X + right.X), (byte)(left.Y + right.Y));
+			Add(ref left, ref right, out Byte2 result);
+            return result;
 		}
 
 		public static Byte2 operator +(Byte2 left, byte right)
 		{
-			return new Byte2((byte)(left.X + right), (byte)(left.Y + right));
+            Add(ref left, right, out Byte2 result);
+            return result;
+		}
+
+        public static Byte2 operator +(byte left, Byte2 right)
+		{
+            Add(ref right, left, out Byte2 result);
+            return result;
 		}
 
 		/// <summary>
@@ -327,53 +347,99 @@ namespace Molten
 #endregion
 
 #region Subtract operators
+		public static void Subtract(ref Byte2 left, ref Byte2 right, out Byte2 result)
+        {
+			result.X = (byte)(left.X - right.X);
+			result.Y = (byte)(left.Y - right.Y);
+        }
+
+        public static void Subtract(ref Byte2 left, byte right, out Byte2 result)
+        {
+			result.X = (byte)(left.X - right);
+			result.Y = (byte)(left.Y - right);
+        }
+
 		public static Byte2 operator -(Byte2 left, Byte2 right)
 		{
-			return new Byte2((byte)(left.X - right.X), (byte)(left.Y - right.Y));
+			Subtract(ref left, ref right, out Byte2 result);
+            return result;
 		}
 
 		public static Byte2 operator -(Byte2 left, byte right)
 		{
-			return new Byte2((byte)(left.X - right), (byte)(left.Y - right));
+            Subtract(ref left, right, out Byte2 result);
+            return result;
 		}
 
-		/// <summary>
-        /// Negate/reverse the direction of a <see cref="Byte2"/>.
-        /// </summary>
-        /// <param name="value">The <see cref="Byte2"/> to reverse.</param>
-        /// <returns>The reversed <see cref="Byte2"/>.</returns>
-        public static Byte2 operator -(Byte2 value)
-        {
-            return new Byte2((byte)-value.X, (byte)-value.Y);
-        }
+        public static Byte2 operator -(byte left, Byte2 right)
+		{
+            Subtract(ref right, left, out Byte2 result);
+            return result;
+		}
+
 #endregion
 
 #region division operators
+		public static void Divide(ref Byte2 left, ref Byte2 right, out Byte2 result)
+        {
+			result.X = (byte)(left.X / right.X);
+			result.Y = (byte)(left.Y / right.Y);
+        }
+
+        public static void Divide(ref Byte2 left, byte right, out Byte2 result)
+        {
+			result.X = (byte)(left.X / right);
+			result.Y = (byte)(left.Y / right);
+        }
+
 		public static Byte2 operator /(Byte2 left, Byte2 right)
 		{
-			return new Byte2((byte)(left.X / right.X), (byte)(left.Y / right.Y));
+			Divide(ref left, ref right, out Byte2 result);
+            return result;
 		}
 
 		public static Byte2 operator /(Byte2 left, byte right)
 		{
-			return new Byte2((byte)(left.X / right), (byte)(left.Y / right));
+            Divide(ref left, right, out Byte2 result);
+            return result;
+		}
+
+        public static Byte2 operator /(byte left, Byte2 right)
+		{
+            Divide(ref right, left, out Byte2 result);
+            return result;
 		}
 #endregion
 
 #region Multiply operators
+		public static void Multiply(ref Byte2 left, ref Byte2 right, out Byte2 result)
+        {
+			result.X = (byte)(left.X * right.X);
+			result.Y = (byte)(left.Y * right.Y);
+        }
+
+        public static void Multiply(ref Byte2 left, byte right, out Byte2 result)
+        {
+			result.X = (byte)(left.X * right);
+			result.Y = (byte)(left.Y * right);
+        }
+
 		public static Byte2 operator *(Byte2 left, Byte2 right)
 		{
-			return new Byte2((byte)(left.X * right.X), (byte)(left.Y * right.Y));
+			Multiply(ref left, ref right, out Byte2 result);
+            return result;
 		}
 
 		public static Byte2 operator *(Byte2 left, byte right)
 		{
-			return new Byte2((byte)(left.X * right), (byte)(left.Y * right));
+            Multiply(ref left, right, out Byte2 result);
+            return result;
 		}
 
         public static Byte2 operator *(byte left, Byte2 right)
 		{
-			return new Byte2((byte)(left * right.X), (byte)(left * right.Y));
+            Multiply(ref right, left, out Byte2 result);
+            return result;
 		}
 #endregion
 
@@ -688,6 +754,21 @@ namespace Molten
 			);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="Byte2"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref Byte2 start, ref Byte2 end, float amount, out Byte2 result)
+        {
+			result.X = (byte)((1F - amount) * start.X + amount * end.X);
+			result.Y = (byte)((1F - amount) * start.Y + amount * end.Y);
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="Byte2"/>.
         /// </summary>
@@ -706,6 +787,21 @@ namespace Molten
 			};
         }
 
+        /// <summary>
+        /// Returns a <see cref="Byte2"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Byte2"/>.</param>
+        /// <param name="right">The second source <see cref="Byte2"/>.</param>
+        /// <returns>A <see cref="Byte2"/> containing the smallest components of the source vectors.</returns>
+		public static Byte2 Min(ref Byte2 left, ref Byte2 right)
+		{
+			return new Byte2()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+			};
+		}
+
 		/// <summary>
         /// Returns a <see cref="Byte2"/> containing the smallest components of the specified vectors.
         /// </summary>
@@ -718,6 +814,21 @@ namespace Molten
 			{
 				X = (left.X < right.X) ? left.X : right.X,
 				Y = (left.Y < right.Y) ? left.Y : right.Y,
+			};
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Byte2"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Byte2"/>.</param>
+        /// <param name="right">The second source <see cref="Byte2"/>.</param>
+        /// <returns>A <see cref="Byte2"/> containing the largest components of the source vectors.</returns>
+		public static Byte2 Max(ref Byte2 left, ref Byte2 right)
+		{
+			return new Byte2()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
 			};
 		}
 

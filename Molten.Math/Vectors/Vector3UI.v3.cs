@@ -55,9 +55,9 @@ namespace Molten
         public static Vector3UI Cross(ref Vector3UI left, ref Vector3UI right)
         {
             return new Vector3UI(
-                (left.Y * right.Z) - (left.Z * right.Y),
-                (left.Z * right.X) - (left.X * right.Z),
-                (left.X * right.Y) - (left.Y * right.X));
+                ((left.Y * right.Z) - (left.Z * right.Y)),
+                ((left.Z * right.X) - (left.X * right.Z)),
+                ((left.X * right.Y) - (left.Y * right.X)));
         }
 
         /// <summary>

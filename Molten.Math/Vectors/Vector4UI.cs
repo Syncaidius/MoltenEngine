@@ -335,14 +335,38 @@ namespace Molten
 #endregion
 
 #region Add operators
+        public static void Add(ref Vector4UI left, ref Vector4UI right, out Vector4UI result)
+        {
+			result.X = (left.X + right.X);
+			result.Y = (left.Y + right.Y);
+			result.Z = (left.Z + right.Z);
+			result.W = (left.W + right.W);
+        }
+
+        public static void Add(ref Vector4UI left, uint right, out Vector4UI result)
+        {
+			result.X = (left.X + right);
+			result.Y = (left.Y + right);
+			result.Z = (left.Z + right);
+			result.W = (left.W + right);
+        }
+
 		public static Vector4UI operator +(Vector4UI left, Vector4UI right)
 		{
-			return new Vector4UI((left.X + right.X), (left.Y + right.Y), (left.Z + right.Z), (left.W + right.W));
+			Add(ref left, ref right, out Vector4UI result);
+            return result;
 		}
 
 		public static Vector4UI operator +(Vector4UI left, uint right)
 		{
-			return new Vector4UI((left.X + right), (left.Y + right), (left.Z + right), (left.W + right));
+            Add(ref left, right, out Vector4UI result);
+            return result;
+		}
+
+        public static Vector4UI operator +(uint left, Vector4UI right)
+		{
+            Add(ref right, left, out Vector4UI result);
+            return result;
 		}
 
 		/// <summary>
@@ -357,53 +381,111 @@ namespace Molten
 #endregion
 
 #region Subtract operators
+		public static void Subtract(ref Vector4UI left, ref Vector4UI right, out Vector4UI result)
+        {
+			result.X = (left.X - right.X);
+			result.Y = (left.Y - right.Y);
+			result.Z = (left.Z - right.Z);
+			result.W = (left.W - right.W);
+        }
+
+        public static void Subtract(ref Vector4UI left, uint right, out Vector4UI result)
+        {
+			result.X = (left.X - right);
+			result.Y = (left.Y - right);
+			result.Z = (left.Z - right);
+			result.W = (left.W - right);
+        }
+
 		public static Vector4UI operator -(Vector4UI left, Vector4UI right)
 		{
-			return new Vector4UI((left.X - right.X), (left.Y - right.Y), (left.Z - right.Z), (left.W - right.W));
+			Subtract(ref left, ref right, out Vector4UI result);
+            return result;
 		}
 
 		public static Vector4UI operator -(Vector4UI left, uint right)
 		{
-			return new Vector4UI((left.X - right), (left.Y - right), (left.Z - right), (left.W - right));
+            Subtract(ref left, right, out Vector4UI result);
+            return result;
 		}
 
-		/// <summary>
-        /// Negate/reverse the direction of a <see cref="Vector4UI"/>.
-        /// </summary>
-        /// <param name="value">The <see cref="Vector4UI"/> to reverse.</param>
-        /// <returns>The reversed <see cref="Vector4UI"/>.</returns>
-        public static Vector4UI operator -(Vector4UI value)
-        {
-            return new Vector4UI(-value.X, -value.Y, -value.Z, -value.W);
-        }
+        public static Vector4UI operator -(uint left, Vector4UI right)
+		{
+            Subtract(ref right, left, out Vector4UI result);
+            return result;
+		}
+
 #endregion
 
 #region division operators
+		public static void Divide(ref Vector4UI left, ref Vector4UI right, out Vector4UI result)
+        {
+			result.X = (left.X / right.X);
+			result.Y = (left.Y / right.Y);
+			result.Z = (left.Z / right.Z);
+			result.W = (left.W / right.W);
+        }
+
+        public static void Divide(ref Vector4UI left, uint right, out Vector4UI result)
+        {
+			result.X = (left.X / right);
+			result.Y = (left.Y / right);
+			result.Z = (left.Z / right);
+			result.W = (left.W / right);
+        }
+
 		public static Vector4UI operator /(Vector4UI left, Vector4UI right)
 		{
-			return new Vector4UI((left.X / right.X), (left.Y / right.Y), (left.Z / right.Z), (left.W / right.W));
+			Divide(ref left, ref right, out Vector4UI result);
+            return result;
 		}
 
 		public static Vector4UI operator /(Vector4UI left, uint right)
 		{
-			return new Vector4UI((left.X / right), (left.Y / right), (left.Z / right), (left.W / right));
+            Divide(ref left, right, out Vector4UI result);
+            return result;
+		}
+
+        public static Vector4UI operator /(uint left, Vector4UI right)
+		{
+            Divide(ref right, left, out Vector4UI result);
+            return result;
 		}
 #endregion
 
 #region Multiply operators
+		public static void Multiply(ref Vector4UI left, ref Vector4UI right, out Vector4UI result)
+        {
+			result.X = (left.X * right.X);
+			result.Y = (left.Y * right.Y);
+			result.Z = (left.Z * right.Z);
+			result.W = (left.W * right.W);
+        }
+
+        public static void Multiply(ref Vector4UI left, uint right, out Vector4UI result)
+        {
+			result.X = (left.X * right);
+			result.Y = (left.Y * right);
+			result.Z = (left.Z * right);
+			result.W = (left.W * right);
+        }
+
 		public static Vector4UI operator *(Vector4UI left, Vector4UI right)
 		{
-			return new Vector4UI((left.X * right.X), (left.Y * right.Y), (left.Z * right.Z), (left.W * right.W));
+			Multiply(ref left, ref right, out Vector4UI result);
+            return result;
 		}
 
 		public static Vector4UI operator *(Vector4UI left, uint right)
 		{
-			return new Vector4UI((left.X * right), (left.Y * right), (left.Z * right), (left.W * right));
+            Multiply(ref left, right, out Vector4UI result);
+            return result;
 		}
 
         public static Vector4UI operator *(uint left, Vector4UI right)
 		{
-			return new Vector4UI((left * right.X), (left * right.Y), (left * right.Z), (left * right.W));
+            Multiply(ref right, left, out Vector4UI result);
+            return result;
 		}
 #endregion
 
@@ -732,6 +814,23 @@ namespace Molten
 			);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector4UI"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref Vector4UI start, ref Vector4UI end, float amount, out Vector4UI result)
+        {
+			result.X = (uint)((1F - amount) * start.X + amount * end.X);
+			result.Y = (uint)((1F - amount) * start.Y + amount * end.Y);
+			result.Z = (uint)((1F - amount) * start.Z + amount * end.Z);
+			result.W = (uint)((1F - amount) * start.W + amount * end.W);
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="Vector4UI"/>.
         /// </summary>
@@ -752,6 +851,23 @@ namespace Molten
 			};
         }
 
+        /// <summary>
+        /// Returns a <see cref="Vector4UI"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector4UI"/>.</param>
+        /// <param name="right">The second source <see cref="Vector4UI"/>.</param>
+        /// <returns>A <see cref="Vector4UI"/> containing the smallest components of the source vectors.</returns>
+		public static Vector4UI Min(ref Vector4UI left, ref Vector4UI right)
+		{
+			return new Vector4UI()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+				Z = (left.Z < right.Z) ? left.Z : right.Z,
+				W = (left.W < right.W) ? left.W : right.W,
+			};
+		}
+
 		/// <summary>
         /// Returns a <see cref="Vector4UI"/> containing the smallest components of the specified vectors.
         /// </summary>
@@ -766,6 +882,23 @@ namespace Molten
 				Y = (left.Y < right.Y) ? left.Y : right.Y,
 				Z = (left.Z < right.Z) ? left.Z : right.Z,
 				W = (left.W < right.W) ? left.W : right.W,
+			};
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector4UI"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector4UI"/>.</param>
+        /// <param name="right">The second source <see cref="Vector4UI"/>.</param>
+        /// <returns>A <see cref="Vector4UI"/> containing the largest components of the source vectors.</returns>
+		public static Vector4UI Max(ref Vector4UI left, ref Vector4UI right)
+		{
+			return new Vector4UI()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+				Z = (left.Z > right.Z) ? left.Z : right.Z,
+				W = (left.W > right.W) ? left.W : right.W,
 			};
 		}
 

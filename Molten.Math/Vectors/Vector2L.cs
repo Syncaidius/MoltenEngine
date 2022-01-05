@@ -36,7 +36,7 @@ namespace Molten
         /// </summary>
         public bool IsNormalized
         {
-            get => MathHelper.IsOne((X * X) + (Y * Y));
+            get => MathHelperDP.IsOne((X * X) + (Y * Y));
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Vector2L other)
         {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y);
+            return MathHelperDP.NearEqual(other.X, X) && MathHelperDP.NearEqual(other.Y, Y);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace Molten
         public void Normalize()
         {
             long length = Length();
-            if (!MathHelper.IsZero(length))
+            if (!MathHelperDP.IsZero(length))
             {
                 double inverse = 1.0D / length;
 			    X = (long)(X * inverse);
@@ -212,7 +212,7 @@ namespace Molten
         public Vector2L GetNormalized()
         {
             double length = Length();
-            if (!MathHelper.IsZero(length))
+            if (!MathHelperDP.IsZero(length))
             {
                 double inverse = 1.0D / length;
                 return new Vector2L()
@@ -305,14 +305,34 @@ namespace Molten
 #endregion
 
 #region Add operators
+        public static void Add(ref Vector2L left, ref Vector2L right, out Vector2L result)
+        {
+			result.X = (left.X + right.X);
+			result.Y = (left.Y + right.Y);
+        }
+
+        public static void Add(ref Vector2L left, long right, out Vector2L result)
+        {
+			result.X = (left.X + right);
+			result.Y = (left.Y + right);
+        }
+
 		public static Vector2L operator +(Vector2L left, Vector2L right)
 		{
-			return new Vector2L((left.X + right.X), (left.Y + right.Y));
+			Add(ref left, ref right, out Vector2L result);
+            return result;
 		}
 
 		public static Vector2L operator +(Vector2L left, long right)
 		{
-			return new Vector2L((left.X + right), (left.Y + right));
+            Add(ref left, right, out Vector2L result);
+            return result;
+		}
+
+        public static Vector2L operator +(long left, Vector2L right)
+		{
+            Add(ref right, left, out Vector2L result);
+            return result;
 		}
 
 		/// <summary>
@@ -327,15 +347,47 @@ namespace Molten
 #endregion
 
 #region Subtract operators
+		public static void Subtract(ref Vector2L left, ref Vector2L right, out Vector2L result)
+        {
+			result.X = (left.X - right.X);
+			result.Y = (left.Y - right.Y);
+        }
+
+        public static void Subtract(ref Vector2L left, long right, out Vector2L result)
+        {
+			result.X = (left.X - right);
+			result.Y = (left.Y - right);
+        }
+
 		public static Vector2L operator -(Vector2L left, Vector2L right)
 		{
-			return new Vector2L((left.X - right.X), (left.Y - right.Y));
+			Subtract(ref left, ref right, out Vector2L result);
+            return result;
 		}
 
 		public static Vector2L operator -(Vector2L left, long right)
 		{
-			return new Vector2L((left.X - right), (left.Y - right));
+            Subtract(ref left, right, out Vector2L result);
+            return result;
 		}
+
+        public static Vector2L operator -(long left, Vector2L right)
+		{
+            Subtract(ref right, left, out Vector2L result);
+            return result;
+		}
+
+        /// <summary>
+        /// Negate/reverse the direction of a <see cref="Vector3D"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector2L"/> to reverse.</param>
+        /// <param name="result">The output for the reversed <see cref="Vector2L"/>.</param>
+        public static void Negate(ref Vector2L value, out Vector2L result)
+        {
+			result.X = -value.X;
+			result.Y = -value.Y;
+            
+        }
 
 		/// <summary>
         /// Negate/reverse the direction of a <see cref="Vector2L"/>.
@@ -344,36 +396,72 @@ namespace Molten
         /// <returns>The reversed <see cref="Vector2L"/>.</returns>
         public static Vector2L operator -(Vector2L value)
         {
-            return new Vector2L(-value.X, -value.Y);
+            Negate(ref value, out value);
+            return value;
         }
 #endregion
 
 #region division operators
+		public static void Divide(ref Vector2L left, ref Vector2L right, out Vector2L result)
+        {
+			result.X = (left.X / right.X);
+			result.Y = (left.Y / right.Y);
+        }
+
+        public static void Divide(ref Vector2L left, long right, out Vector2L result)
+        {
+			result.X = (left.X / right);
+			result.Y = (left.Y / right);
+        }
+
 		public static Vector2L operator /(Vector2L left, Vector2L right)
 		{
-			return new Vector2L((left.X / right.X), (left.Y / right.Y));
+			Divide(ref left, ref right, out Vector2L result);
+            return result;
 		}
 
 		public static Vector2L operator /(Vector2L left, long right)
 		{
-			return new Vector2L((left.X / right), (left.Y / right));
+            Divide(ref left, right, out Vector2L result);
+            return result;
+		}
+
+        public static Vector2L operator /(long left, Vector2L right)
+		{
+            Divide(ref right, left, out Vector2L result);
+            return result;
 		}
 #endregion
 
 #region Multiply operators
+		public static void Multiply(ref Vector2L left, ref Vector2L right, out Vector2L result)
+        {
+			result.X = (left.X * right.X);
+			result.Y = (left.Y * right.Y);
+        }
+
+        public static void Multiply(ref Vector2L left, long right, out Vector2L result)
+        {
+			result.X = (left.X * right);
+			result.Y = (left.Y * right);
+        }
+
 		public static Vector2L operator *(Vector2L left, Vector2L right)
 		{
-			return new Vector2L((left.X * right.X), (left.Y * right.Y));
+			Multiply(ref left, ref right, out Vector2L result);
+            return result;
 		}
 
 		public static Vector2L operator *(Vector2L left, long right)
 		{
-			return new Vector2L((left.X * right), (left.Y * right));
+            Multiply(ref left, right, out Vector2L result);
+            return result;
 		}
 
         public static Vector2L operator *(long left, Vector2L right)
 		{
-			return new Vector2L((left * right.X), (left * right.Y));
+            Multiply(ref right, left, out Vector2L result);
+            return result;
 		}
 #endregion
 
@@ -440,7 +528,7 @@ namespace Molten
         /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
         public static bool NearEqual(ref Vector2L left, ref Vector2L right, ref Vector2L epsilon)
         {
-            return MathHelper.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelper.WithinEpsilon(left.Y, right.Y, epsilon.Y);
+            return MathHelperDP.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelperDP.WithinEpsilon(left.Y, right.Y, epsilon.Y);
         }
 
         /// <summary>
@@ -451,7 +539,7 @@ namespace Molten
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         public static Vector2L SmoothStep(ref Vector2L start, ref Vector2L end, double amount)
         {
-            amount = MathHelper.SmoothStep(amount);
+            amount = MathHelperDP.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
         }
 
@@ -688,6 +776,21 @@ namespace Molten
 			);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector2L"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref Vector2L start, ref Vector2L end, double amount, out Vector2L result)
+        {
+			result.X = (long)((1D - amount) * start.X + amount * end.X);
+			result.Y = (long)((1D - amount) * start.Y + amount * end.Y);
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="Vector2L"/>.
         /// </summary>
@@ -706,6 +809,21 @@ namespace Molten
 			};
         }
 
+        /// <summary>
+        /// Returns a <see cref="Vector2L"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector2L"/>.</param>
+        /// <param name="right">The second source <see cref="Vector2L"/>.</param>
+        /// <returns>A <see cref="Vector2L"/> containing the smallest components of the source vectors.</returns>
+		public static Vector2L Min(ref Vector2L left, ref Vector2L right)
+		{
+			return new Vector2L()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+			};
+		}
+
 		/// <summary>
         /// Returns a <see cref="Vector2L"/> containing the smallest components of the specified vectors.
         /// </summary>
@@ -718,6 +836,21 @@ namespace Molten
 			{
 				X = (left.X < right.X) ? left.X : right.X,
 				Y = (left.Y < right.Y) ? left.Y : right.Y,
+			};
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector2L"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector2L"/>.</param>
+        /// <param name="right">The second source <see cref="Vector2L"/>.</param>
+        /// <returns>A <see cref="Vector2L"/> containing the largest components of the source vectors.</returns>
+		public static Vector2L Max(ref Vector2L left, ref Vector2L right)
+		{
+			return new Vector2L()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
 			};
 		}
 

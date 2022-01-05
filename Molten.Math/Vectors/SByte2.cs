@@ -310,14 +310,34 @@ namespace Molten
 #endregion
 
 #region Add operators
+        public static void Add(ref SByte2 left, ref SByte2 right, out SByte2 result)
+        {
+			result.X = (sbyte)(left.X + right.X);
+			result.Y = (sbyte)(left.Y + right.Y);
+        }
+
+        public static void Add(ref SByte2 left, sbyte right, out SByte2 result)
+        {
+			result.X = (sbyte)(left.X + right);
+			result.Y = (sbyte)(left.Y + right);
+        }
+
 		public static SByte2 operator +(SByte2 left, SByte2 right)
 		{
-			return new SByte2((sbyte)(left.X + right.X), (sbyte)(left.Y + right.Y));
+			Add(ref left, ref right, out SByte2 result);
+            return result;
 		}
 
 		public static SByte2 operator +(SByte2 left, sbyte right)
 		{
-			return new SByte2((sbyte)(left.X + right), (sbyte)(left.Y + right));
+            Add(ref left, right, out SByte2 result);
+            return result;
+		}
+
+        public static SByte2 operator +(sbyte left, SByte2 right)
+		{
+            Add(ref right, left, out SByte2 result);
+            return result;
 		}
 
 		/// <summary>
@@ -332,15 +352,47 @@ namespace Molten
 #endregion
 
 #region Subtract operators
+		public static void Subtract(ref SByte2 left, ref SByte2 right, out SByte2 result)
+        {
+			result.X = (sbyte)(left.X - right.X);
+			result.Y = (sbyte)(left.Y - right.Y);
+        }
+
+        public static void Subtract(ref SByte2 left, sbyte right, out SByte2 result)
+        {
+			result.X = (sbyte)(left.X - right);
+			result.Y = (sbyte)(left.Y - right);
+        }
+
 		public static SByte2 operator -(SByte2 left, SByte2 right)
 		{
-			return new SByte2((sbyte)(left.X - right.X), (sbyte)(left.Y - right.Y));
+			Subtract(ref left, ref right, out SByte2 result);
+            return result;
 		}
 
 		public static SByte2 operator -(SByte2 left, sbyte right)
 		{
-			return new SByte2((sbyte)(left.X - right), (sbyte)(left.Y - right));
+            Subtract(ref left, right, out SByte2 result);
+            return result;
 		}
+
+        public static SByte2 operator -(sbyte left, SByte2 right)
+		{
+            Subtract(ref right, left, out SByte2 result);
+            return result;
+		}
+
+        /// <summary>
+        /// Negate/reverse the direction of a <see cref="Vector3D"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="SByte2"/> to reverse.</param>
+        /// <param name="result">The output for the reversed <see cref="SByte2"/>.</param>
+        public static void Negate(ref SByte2 value, out SByte2 result)
+        {
+			result.X = (sbyte)-value.X;
+			result.Y = (sbyte)-value.Y;
+            
+        }
 
 		/// <summary>
         /// Negate/reverse the direction of a <see cref="SByte2"/>.
@@ -349,36 +401,72 @@ namespace Molten
         /// <returns>The reversed <see cref="SByte2"/>.</returns>
         public static SByte2 operator -(SByte2 value)
         {
-            return new SByte2((sbyte)-value.X, (sbyte)-value.Y);
+            Negate(ref value, out value);
+            return value;
         }
 #endregion
 
 #region division operators
+		public static void Divide(ref SByte2 left, ref SByte2 right, out SByte2 result)
+        {
+			result.X = (sbyte)(left.X / right.X);
+			result.Y = (sbyte)(left.Y / right.Y);
+        }
+
+        public static void Divide(ref SByte2 left, sbyte right, out SByte2 result)
+        {
+			result.X = (sbyte)(left.X / right);
+			result.Y = (sbyte)(left.Y / right);
+        }
+
 		public static SByte2 operator /(SByte2 left, SByte2 right)
 		{
-			return new SByte2((sbyte)(left.X / right.X), (sbyte)(left.Y / right.Y));
+			Divide(ref left, ref right, out SByte2 result);
+            return result;
 		}
 
 		public static SByte2 operator /(SByte2 left, sbyte right)
 		{
-			return new SByte2((sbyte)(left.X / right), (sbyte)(left.Y / right));
+            Divide(ref left, right, out SByte2 result);
+            return result;
+		}
+
+        public static SByte2 operator /(sbyte left, SByte2 right)
+		{
+            Divide(ref right, left, out SByte2 result);
+            return result;
 		}
 #endregion
 
 #region Multiply operators
+		public static void Multiply(ref SByte2 left, ref SByte2 right, out SByte2 result)
+        {
+			result.X = (sbyte)(left.X * right.X);
+			result.Y = (sbyte)(left.Y * right.Y);
+        }
+
+        public static void Multiply(ref SByte2 left, sbyte right, out SByte2 result)
+        {
+			result.X = (sbyte)(left.X * right);
+			result.Y = (sbyte)(left.Y * right);
+        }
+
 		public static SByte2 operator *(SByte2 left, SByte2 right)
 		{
-			return new SByte2((sbyte)(left.X * right.X), (sbyte)(left.Y * right.Y));
+			Multiply(ref left, ref right, out SByte2 result);
+            return result;
 		}
 
 		public static SByte2 operator *(SByte2 left, sbyte right)
 		{
-			return new SByte2((sbyte)(left.X * right), (sbyte)(left.Y * right));
+            Multiply(ref left, right, out SByte2 result);
+            return result;
 		}
 
         public static SByte2 operator *(sbyte left, SByte2 right)
 		{
-			return new SByte2((sbyte)(left * right.X), (sbyte)(left * right.Y));
+            Multiply(ref right, left, out SByte2 result);
+            return result;
 		}
 #endregion
 
@@ -693,6 +781,21 @@ namespace Molten
 			);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="SByte2"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref SByte2 start, ref SByte2 end, float amount, out SByte2 result)
+        {
+			result.X = (sbyte)((1F - amount) * start.X + amount * end.X);
+			result.Y = (sbyte)((1F - amount) * start.Y + amount * end.Y);
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="SByte2"/>.
         /// </summary>
@@ -711,6 +814,21 @@ namespace Molten
 			};
         }
 
+        /// <summary>
+        /// Returns a <see cref="SByte2"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="SByte2"/>.</param>
+        /// <param name="right">The second source <see cref="SByte2"/>.</param>
+        /// <returns>A <see cref="SByte2"/> containing the smallest components of the source vectors.</returns>
+		public static SByte2 Min(ref SByte2 left, ref SByte2 right)
+		{
+			return new SByte2()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+			};
+		}
+
 		/// <summary>
         /// Returns a <see cref="SByte2"/> containing the smallest components of the specified vectors.
         /// </summary>
@@ -723,6 +841,21 @@ namespace Molten
 			{
 				X = (left.X < right.X) ? left.X : right.X,
 				Y = (left.Y < right.Y) ? left.Y : right.Y,
+			};
+		}
+
+        /// <summary>
+        /// Returns a <see cref="SByte2"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="SByte2"/>.</param>
+        /// <param name="right">The second source <see cref="SByte2"/>.</param>
+        /// <returns>A <see cref="SByte2"/> containing the largest components of the source vectors.</returns>
+		public static SByte2 Max(ref SByte2 left, ref SByte2 right)
+		{
+			return new SByte2()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
 			};
 		}
 

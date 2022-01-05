@@ -48,7 +48,7 @@ namespace Molten
         /// </summary>
         public bool IsNormalized
         {
-            get => MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W));
+            get => MathHelperDP.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W));
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Vector4UL other)
         {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z) && MathHelper.NearEqual(other.W, W);
+            return MathHelperDP.NearEqual(other.X, X) && MathHelperDP.NearEqual(other.Y, Y) && MathHelperDP.NearEqual(other.Z, Z) && MathHelperDP.NearEqual(other.W, W);
         }
 
         /// <summary>
@@ -202,7 +202,7 @@ namespace Molten
         public void Normalize()
         {
             ulong length = Length();
-            if (!MathHelper.IsZero(length))
+            if (!MathHelperDP.IsZero(length))
             {
                 double inverse = 1.0D / length;
 			    X = (ulong)(X * inverse);
@@ -236,7 +236,7 @@ namespace Molten
         public Vector4UL GetNormalized()
         {
             double length = Length();
-            if (!MathHelper.IsZero(length))
+            if (!MathHelperDP.IsZero(length))
             {
                 double inverse = 1.0D / length;
                 return new Vector4UL()
@@ -335,14 +335,38 @@ namespace Molten
 #endregion
 
 #region Add operators
+        public static void Add(ref Vector4UL left, ref Vector4UL right, out Vector4UL result)
+        {
+			result.X = (left.X + right.X);
+			result.Y = (left.Y + right.Y);
+			result.Z = (left.Z + right.Z);
+			result.W = (left.W + right.W);
+        }
+
+        public static void Add(ref Vector4UL left, ulong right, out Vector4UL result)
+        {
+			result.X = (left.X + right);
+			result.Y = (left.Y + right);
+			result.Z = (left.Z + right);
+			result.W = (left.W + right);
+        }
+
 		public static Vector4UL operator +(Vector4UL left, Vector4UL right)
 		{
-			return new Vector4UL((left.X + right.X), (left.Y + right.Y), (left.Z + right.Z), (left.W + right.W));
+			Add(ref left, ref right, out Vector4UL result);
+            return result;
 		}
 
 		public static Vector4UL operator +(Vector4UL left, ulong right)
 		{
-			return new Vector4UL((left.X + right), (left.Y + right), (left.Z + right), (left.W + right));
+            Add(ref left, right, out Vector4UL result);
+            return result;
+		}
+
+        public static Vector4UL operator +(ulong left, Vector4UL right)
+		{
+            Add(ref right, left, out Vector4UL result);
+            return result;
 		}
 
 		/// <summary>
@@ -357,53 +381,111 @@ namespace Molten
 #endregion
 
 #region Subtract operators
+		public static void Subtract(ref Vector4UL left, ref Vector4UL right, out Vector4UL result)
+        {
+			result.X = (left.X - right.X);
+			result.Y = (left.Y - right.Y);
+			result.Z = (left.Z - right.Z);
+			result.W = (left.W - right.W);
+        }
+
+        public static void Subtract(ref Vector4UL left, ulong right, out Vector4UL result)
+        {
+			result.X = (left.X - right);
+			result.Y = (left.Y - right);
+			result.Z = (left.Z - right);
+			result.W = (left.W - right);
+        }
+
 		public static Vector4UL operator -(Vector4UL left, Vector4UL right)
 		{
-			return new Vector4UL((left.X - right.X), (left.Y - right.Y), (left.Z - right.Z), (left.W - right.W));
+			Subtract(ref left, ref right, out Vector4UL result);
+            return result;
 		}
 
 		public static Vector4UL operator -(Vector4UL left, ulong right)
 		{
-			return new Vector4UL((left.X - right), (left.Y - right), (left.Z - right), (left.W - right));
+            Subtract(ref left, right, out Vector4UL result);
+            return result;
 		}
 
-		/// <summary>
-        /// Negate/reverse the direction of a <see cref="Vector4UL"/>.
-        /// </summary>
-        /// <param name="value">The <see cref="Vector4UL"/> to reverse.</param>
-        /// <returns>The reversed <see cref="Vector4UL"/>.</returns>
-        public static Vector4UL operator -(Vector4UL value)
-        {
-            return new Vector4UL(-value.X, -value.Y, -value.Z, -value.W);
-        }
+        public static Vector4UL operator -(ulong left, Vector4UL right)
+		{
+            Subtract(ref right, left, out Vector4UL result);
+            return result;
+		}
+
 #endregion
 
 #region division operators
+		public static void Divide(ref Vector4UL left, ref Vector4UL right, out Vector4UL result)
+        {
+			result.X = (left.X / right.X);
+			result.Y = (left.Y / right.Y);
+			result.Z = (left.Z / right.Z);
+			result.W = (left.W / right.W);
+        }
+
+        public static void Divide(ref Vector4UL left, ulong right, out Vector4UL result)
+        {
+			result.X = (left.X / right);
+			result.Y = (left.Y / right);
+			result.Z = (left.Z / right);
+			result.W = (left.W / right);
+        }
+
 		public static Vector4UL operator /(Vector4UL left, Vector4UL right)
 		{
-			return new Vector4UL((left.X / right.X), (left.Y / right.Y), (left.Z / right.Z), (left.W / right.W));
+			Divide(ref left, ref right, out Vector4UL result);
+            return result;
 		}
 
 		public static Vector4UL operator /(Vector4UL left, ulong right)
 		{
-			return new Vector4UL((left.X / right), (left.Y / right), (left.Z / right), (left.W / right));
+            Divide(ref left, right, out Vector4UL result);
+            return result;
+		}
+
+        public static Vector4UL operator /(ulong left, Vector4UL right)
+		{
+            Divide(ref right, left, out Vector4UL result);
+            return result;
 		}
 #endregion
 
 #region Multiply operators
+		public static void Multiply(ref Vector4UL left, ref Vector4UL right, out Vector4UL result)
+        {
+			result.X = (left.X * right.X);
+			result.Y = (left.Y * right.Y);
+			result.Z = (left.Z * right.Z);
+			result.W = (left.W * right.W);
+        }
+
+        public static void Multiply(ref Vector4UL left, ulong right, out Vector4UL result)
+        {
+			result.X = (left.X * right);
+			result.Y = (left.Y * right);
+			result.Z = (left.Z * right);
+			result.W = (left.W * right);
+        }
+
 		public static Vector4UL operator *(Vector4UL left, Vector4UL right)
 		{
-			return new Vector4UL((left.X * right.X), (left.Y * right.Y), (left.Z * right.Z), (left.W * right.W));
+			Multiply(ref left, ref right, out Vector4UL result);
+            return result;
 		}
 
 		public static Vector4UL operator *(Vector4UL left, ulong right)
 		{
-			return new Vector4UL((left.X * right), (left.Y * right), (left.Z * right), (left.W * right));
+            Multiply(ref left, right, out Vector4UL result);
+            return result;
 		}
 
         public static Vector4UL operator *(ulong left, Vector4UL right)
 		{
-			return new Vector4UL((left * right.X), (left * right.Y), (left * right.Z), (left * right.W));
+            Multiply(ref right, left, out Vector4UL result);
+            return result;
 		}
 #endregion
 
@@ -470,7 +552,7 @@ namespace Molten
         /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
         public static bool NearEqual(ref Vector4UL left, ref Vector4UL right, ref Vector4UL epsilon)
         {
-            return MathHelper.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelper.WithinEpsilon(left.Y, right.Y, epsilon.Y) && MathHelper.WithinEpsilon(left.Z, right.Z, epsilon.Z) && MathHelper.WithinEpsilon(left.W, right.W, epsilon.W);
+            return MathHelperDP.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelperDP.WithinEpsilon(left.Y, right.Y, epsilon.Y) && MathHelperDP.WithinEpsilon(left.Z, right.Z, epsilon.Z) && MathHelperDP.WithinEpsilon(left.W, right.W, epsilon.W);
         }
 
         /// <summary>
@@ -481,7 +563,7 @@ namespace Molten
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         public static Vector4UL SmoothStep(ref Vector4UL start, ref Vector4UL end, double amount)
         {
-            amount = MathHelper.SmoothStep(amount);
+            amount = MathHelperDP.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
         }
 
@@ -732,6 +814,23 @@ namespace Molten
 			);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector4UL"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref Vector4UL start, ref Vector4UL end, double amount, out Vector4UL result)
+        {
+			result.X = (ulong)((1D - amount) * start.X + amount * end.X);
+			result.Y = (ulong)((1D - amount) * start.Y + amount * end.Y);
+			result.Z = (ulong)((1D - amount) * start.Z + amount * end.Z);
+			result.W = (ulong)((1D - amount) * start.W + amount * end.W);
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="Vector4UL"/>.
         /// </summary>
@@ -752,6 +851,23 @@ namespace Molten
 			};
         }
 
+        /// <summary>
+        /// Returns a <see cref="Vector4UL"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector4UL"/>.</param>
+        /// <param name="right">The second source <see cref="Vector4UL"/>.</param>
+        /// <returns>A <see cref="Vector4UL"/> containing the smallest components of the source vectors.</returns>
+		public static Vector4UL Min(ref Vector4UL left, ref Vector4UL right)
+		{
+			return new Vector4UL()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+				Z = (left.Z < right.Z) ? left.Z : right.Z,
+				W = (left.W < right.W) ? left.W : right.W,
+			};
+		}
+
 		/// <summary>
         /// Returns a <see cref="Vector4UL"/> containing the smallest components of the specified vectors.
         /// </summary>
@@ -766,6 +882,23 @@ namespace Molten
 				Y = (left.Y < right.Y) ? left.Y : right.Y,
 				Z = (left.Z < right.Z) ? left.Z : right.Z,
 				W = (left.W < right.W) ? left.W : right.W,
+			};
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector4UL"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector4UL"/>.</param>
+        /// <param name="right">The second source <see cref="Vector4UL"/>.</param>
+        /// <returns>A <see cref="Vector4UL"/> containing the largest components of the source vectors.</returns>
+		public static Vector4UL Max(ref Vector4UL left, ref Vector4UL right)
+		{
+			return new Vector4UL()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+				Z = (left.Z > right.Z) ? left.Z : right.Z,
+				W = (left.W > right.W) ? left.W : right.W,
 			};
 		}
 

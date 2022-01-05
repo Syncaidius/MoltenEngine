@@ -335,14 +335,38 @@ namespace Molten
 #endregion
 
 #region Add operators
+        public static void Add(ref Byte4 left, ref Byte4 right, out Byte4 result)
+        {
+			result.X = (byte)(left.X + right.X);
+			result.Y = (byte)(left.Y + right.Y);
+			result.Z = (byte)(left.Z + right.Z);
+			result.W = (byte)(left.W + right.W);
+        }
+
+        public static void Add(ref Byte4 left, byte right, out Byte4 result)
+        {
+			result.X = (byte)(left.X + right);
+			result.Y = (byte)(left.Y + right);
+			result.Z = (byte)(left.Z + right);
+			result.W = (byte)(left.W + right);
+        }
+
 		public static Byte4 operator +(Byte4 left, Byte4 right)
 		{
-			return new Byte4((byte)(left.X + right.X), (byte)(left.Y + right.Y), (byte)(left.Z + right.Z), (byte)(left.W + right.W));
+			Add(ref left, ref right, out Byte4 result);
+            return result;
 		}
 
 		public static Byte4 operator +(Byte4 left, byte right)
 		{
-			return new Byte4((byte)(left.X + right), (byte)(left.Y + right), (byte)(left.Z + right), (byte)(left.W + right));
+            Add(ref left, right, out Byte4 result);
+            return result;
+		}
+
+        public static Byte4 operator +(byte left, Byte4 right)
+		{
+            Add(ref right, left, out Byte4 result);
+            return result;
 		}
 
 		/// <summary>
@@ -357,53 +381,111 @@ namespace Molten
 #endregion
 
 #region Subtract operators
+		public static void Subtract(ref Byte4 left, ref Byte4 right, out Byte4 result)
+        {
+			result.X = (byte)(left.X - right.X);
+			result.Y = (byte)(left.Y - right.Y);
+			result.Z = (byte)(left.Z - right.Z);
+			result.W = (byte)(left.W - right.W);
+        }
+
+        public static void Subtract(ref Byte4 left, byte right, out Byte4 result)
+        {
+			result.X = (byte)(left.X - right);
+			result.Y = (byte)(left.Y - right);
+			result.Z = (byte)(left.Z - right);
+			result.W = (byte)(left.W - right);
+        }
+
 		public static Byte4 operator -(Byte4 left, Byte4 right)
 		{
-			return new Byte4((byte)(left.X - right.X), (byte)(left.Y - right.Y), (byte)(left.Z - right.Z), (byte)(left.W - right.W));
+			Subtract(ref left, ref right, out Byte4 result);
+            return result;
 		}
 
 		public static Byte4 operator -(Byte4 left, byte right)
 		{
-			return new Byte4((byte)(left.X - right), (byte)(left.Y - right), (byte)(left.Z - right), (byte)(left.W - right));
+            Subtract(ref left, right, out Byte4 result);
+            return result;
 		}
 
-		/// <summary>
-        /// Negate/reverse the direction of a <see cref="Byte4"/>.
-        /// </summary>
-        /// <param name="value">The <see cref="Byte4"/> to reverse.</param>
-        /// <returns>The reversed <see cref="Byte4"/>.</returns>
-        public static Byte4 operator -(Byte4 value)
-        {
-            return new Byte4((byte)-value.X, (byte)-value.Y, (byte)-value.Z, (byte)-value.W);
-        }
+        public static Byte4 operator -(byte left, Byte4 right)
+		{
+            Subtract(ref right, left, out Byte4 result);
+            return result;
+		}
+
 #endregion
 
 #region division operators
+		public static void Divide(ref Byte4 left, ref Byte4 right, out Byte4 result)
+        {
+			result.X = (byte)(left.X / right.X);
+			result.Y = (byte)(left.Y / right.Y);
+			result.Z = (byte)(left.Z / right.Z);
+			result.W = (byte)(left.W / right.W);
+        }
+
+        public static void Divide(ref Byte4 left, byte right, out Byte4 result)
+        {
+			result.X = (byte)(left.X / right);
+			result.Y = (byte)(left.Y / right);
+			result.Z = (byte)(left.Z / right);
+			result.W = (byte)(left.W / right);
+        }
+
 		public static Byte4 operator /(Byte4 left, Byte4 right)
 		{
-			return new Byte4((byte)(left.X / right.X), (byte)(left.Y / right.Y), (byte)(left.Z / right.Z), (byte)(left.W / right.W));
+			Divide(ref left, ref right, out Byte4 result);
+            return result;
 		}
 
 		public static Byte4 operator /(Byte4 left, byte right)
 		{
-			return new Byte4((byte)(left.X / right), (byte)(left.Y / right), (byte)(left.Z / right), (byte)(left.W / right));
+            Divide(ref left, right, out Byte4 result);
+            return result;
+		}
+
+        public static Byte4 operator /(byte left, Byte4 right)
+		{
+            Divide(ref right, left, out Byte4 result);
+            return result;
 		}
 #endregion
 
 #region Multiply operators
+		public static void Multiply(ref Byte4 left, ref Byte4 right, out Byte4 result)
+        {
+			result.X = (byte)(left.X * right.X);
+			result.Y = (byte)(left.Y * right.Y);
+			result.Z = (byte)(left.Z * right.Z);
+			result.W = (byte)(left.W * right.W);
+        }
+
+        public static void Multiply(ref Byte4 left, byte right, out Byte4 result)
+        {
+			result.X = (byte)(left.X * right);
+			result.Y = (byte)(left.Y * right);
+			result.Z = (byte)(left.Z * right);
+			result.W = (byte)(left.W * right);
+        }
+
 		public static Byte4 operator *(Byte4 left, Byte4 right)
 		{
-			return new Byte4((byte)(left.X * right.X), (byte)(left.Y * right.Y), (byte)(left.Z * right.Z), (byte)(left.W * right.W));
+			Multiply(ref left, ref right, out Byte4 result);
+            return result;
 		}
 
 		public static Byte4 operator *(Byte4 left, byte right)
 		{
-			return new Byte4((byte)(left.X * right), (byte)(left.Y * right), (byte)(left.Z * right), (byte)(left.W * right));
+            Multiply(ref left, right, out Byte4 result);
+            return result;
 		}
 
         public static Byte4 operator *(byte left, Byte4 right)
 		{
-			return new Byte4((byte)(left * right.X), (byte)(left * right.Y), (byte)(left * right.Z), (byte)(left * right.W));
+            Multiply(ref right, left, out Byte4 result);
+            return result;
 		}
 #endregion
 
@@ -732,6 +814,23 @@ namespace Molten
 			);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="Byte4"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref Byte4 start, ref Byte4 end, float amount, out Byte4 result)
+        {
+			result.X = (byte)((1F - amount) * start.X + amount * end.X);
+			result.Y = (byte)((1F - amount) * start.Y + amount * end.Y);
+			result.Z = (byte)((1F - amount) * start.Z + amount * end.Z);
+			result.W = (byte)((1F - amount) * start.W + amount * end.W);
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="Byte4"/>.
         /// </summary>
@@ -752,6 +851,23 @@ namespace Molten
 			};
         }
 
+        /// <summary>
+        /// Returns a <see cref="Byte4"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Byte4"/>.</param>
+        /// <param name="right">The second source <see cref="Byte4"/>.</param>
+        /// <returns>A <see cref="Byte4"/> containing the smallest components of the source vectors.</returns>
+		public static Byte4 Min(ref Byte4 left, ref Byte4 right)
+		{
+			return new Byte4()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+				Z = (left.Z < right.Z) ? left.Z : right.Z,
+				W = (left.W < right.W) ? left.W : right.W,
+			};
+		}
+
 		/// <summary>
         /// Returns a <see cref="Byte4"/> containing the smallest components of the specified vectors.
         /// </summary>
@@ -766,6 +882,23 @@ namespace Molten
 				Y = (left.Y < right.Y) ? left.Y : right.Y,
 				Z = (left.Z < right.Z) ? left.Z : right.Z,
 				W = (left.W < right.W) ? left.W : right.W,
+			};
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Byte4"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Byte4"/>.</param>
+        /// <param name="right">The second source <see cref="Byte4"/>.</param>
+        /// <returns>A <see cref="Byte4"/> containing the largest components of the source vectors.</returns>
+		public static Byte4 Max(ref Byte4 left, ref Byte4 right)
+		{
+			return new Byte4()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+				Z = (left.Z > right.Z) ? left.Z : right.Z,
+				W = (left.W > right.W) ? left.W : right.W,
 			};
 		}
 

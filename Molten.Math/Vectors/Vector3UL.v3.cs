@@ -55,9 +55,9 @@ namespace Molten
         public static Vector3UL Cross(ref Vector3UL left, ref Vector3UL right)
         {
             return new Vector3UL(
-                (left.Y * right.Z) - (left.Z * right.Y),
-                (left.Z * right.X) - (left.X * right.Z),
-                (left.X * right.Y) - (left.Y * right.X));
+                ((left.Y * right.Z) - (left.Z * right.Y)),
+                ((left.Z * right.X) - (left.X * right.Z)),
+                ((left.X * right.Y) - (left.Y * right.X)));
         }
 
         /// <summary>

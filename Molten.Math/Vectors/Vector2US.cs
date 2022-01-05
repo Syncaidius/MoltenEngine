@@ -305,14 +305,34 @@ namespace Molten
 #endregion
 
 #region Add operators
+        public static void Add(ref Vector2US left, ref Vector2US right, out Vector2US result)
+        {
+			result.X = (ushort)(left.X + right.X);
+			result.Y = (ushort)(left.Y + right.Y);
+        }
+
+        public static void Add(ref Vector2US left, ushort right, out Vector2US result)
+        {
+			result.X = (ushort)(left.X + right);
+			result.Y = (ushort)(left.Y + right);
+        }
+
 		public static Vector2US operator +(Vector2US left, Vector2US right)
 		{
-			return new Vector2US((ushort)(left.X + right.X), (ushort)(left.Y + right.Y));
+			Add(ref left, ref right, out Vector2US result);
+            return result;
 		}
 
 		public static Vector2US operator +(Vector2US left, ushort right)
 		{
-			return new Vector2US((ushort)(left.X + right), (ushort)(left.Y + right));
+            Add(ref left, right, out Vector2US result);
+            return result;
+		}
+
+        public static Vector2US operator +(ushort left, Vector2US right)
+		{
+            Add(ref right, left, out Vector2US result);
+            return result;
 		}
 
 		/// <summary>
@@ -327,53 +347,99 @@ namespace Molten
 #endregion
 
 #region Subtract operators
+		public static void Subtract(ref Vector2US left, ref Vector2US right, out Vector2US result)
+        {
+			result.X = (ushort)(left.X - right.X);
+			result.Y = (ushort)(left.Y - right.Y);
+        }
+
+        public static void Subtract(ref Vector2US left, ushort right, out Vector2US result)
+        {
+			result.X = (ushort)(left.X - right);
+			result.Y = (ushort)(left.Y - right);
+        }
+
 		public static Vector2US operator -(Vector2US left, Vector2US right)
 		{
-			return new Vector2US((ushort)(left.X - right.X), (ushort)(left.Y - right.Y));
+			Subtract(ref left, ref right, out Vector2US result);
+            return result;
 		}
 
 		public static Vector2US operator -(Vector2US left, ushort right)
 		{
-			return new Vector2US((ushort)(left.X - right), (ushort)(left.Y - right));
+            Subtract(ref left, right, out Vector2US result);
+            return result;
 		}
 
-		/// <summary>
-        /// Negate/reverse the direction of a <see cref="Vector2US"/>.
-        /// </summary>
-        /// <param name="value">The <see cref="Vector2US"/> to reverse.</param>
-        /// <returns>The reversed <see cref="Vector2US"/>.</returns>
-        public static Vector2US operator -(Vector2US value)
-        {
-            return new Vector2US((ushort)-value.X, (ushort)-value.Y);
-        }
+        public static Vector2US operator -(ushort left, Vector2US right)
+		{
+            Subtract(ref right, left, out Vector2US result);
+            return result;
+		}
+
 #endregion
 
 #region division operators
+		public static void Divide(ref Vector2US left, ref Vector2US right, out Vector2US result)
+        {
+			result.X = (ushort)(left.X / right.X);
+			result.Y = (ushort)(left.Y / right.Y);
+        }
+
+        public static void Divide(ref Vector2US left, ushort right, out Vector2US result)
+        {
+			result.X = (ushort)(left.X / right);
+			result.Y = (ushort)(left.Y / right);
+        }
+
 		public static Vector2US operator /(Vector2US left, Vector2US right)
 		{
-			return new Vector2US((ushort)(left.X / right.X), (ushort)(left.Y / right.Y));
+			Divide(ref left, ref right, out Vector2US result);
+            return result;
 		}
 
 		public static Vector2US operator /(Vector2US left, ushort right)
 		{
-			return new Vector2US((ushort)(left.X / right), (ushort)(left.Y / right));
+            Divide(ref left, right, out Vector2US result);
+            return result;
+		}
+
+        public static Vector2US operator /(ushort left, Vector2US right)
+		{
+            Divide(ref right, left, out Vector2US result);
+            return result;
 		}
 #endregion
 
 #region Multiply operators
+		public static void Multiply(ref Vector2US left, ref Vector2US right, out Vector2US result)
+        {
+			result.X = (ushort)(left.X * right.X);
+			result.Y = (ushort)(left.Y * right.Y);
+        }
+
+        public static void Multiply(ref Vector2US left, ushort right, out Vector2US result)
+        {
+			result.X = (ushort)(left.X * right);
+			result.Y = (ushort)(left.Y * right);
+        }
+
 		public static Vector2US operator *(Vector2US left, Vector2US right)
 		{
-			return new Vector2US((ushort)(left.X * right.X), (ushort)(left.Y * right.Y));
+			Multiply(ref left, ref right, out Vector2US result);
+            return result;
 		}
 
 		public static Vector2US operator *(Vector2US left, ushort right)
 		{
-			return new Vector2US((ushort)(left.X * right), (ushort)(left.Y * right));
+            Multiply(ref left, right, out Vector2US result);
+            return result;
 		}
 
         public static Vector2US operator *(ushort left, Vector2US right)
 		{
-			return new Vector2US((ushort)(left * right.X), (ushort)(left * right.Y));
+            Multiply(ref right, left, out Vector2US result);
+            return result;
 		}
 #endregion
 
@@ -688,6 +754,21 @@ namespace Molten
 			);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector2US"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref Vector2US start, ref Vector2US end, float amount, out Vector2US result)
+        {
+			result.X = (ushort)((1F - amount) * start.X + amount * end.X);
+			result.Y = (ushort)((1F - amount) * start.Y + amount * end.Y);
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="Vector2US"/>.
         /// </summary>
@@ -706,6 +787,21 @@ namespace Molten
 			};
         }
 
+        /// <summary>
+        /// Returns a <see cref="Vector2US"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector2US"/>.</param>
+        /// <param name="right">The second source <see cref="Vector2US"/>.</param>
+        /// <returns>A <see cref="Vector2US"/> containing the smallest components of the source vectors.</returns>
+		public static Vector2US Min(ref Vector2US left, ref Vector2US right)
+		{
+			return new Vector2US()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+			};
+		}
+
 		/// <summary>
         /// Returns a <see cref="Vector2US"/> containing the smallest components of the specified vectors.
         /// </summary>
@@ -718,6 +814,21 @@ namespace Molten
 			{
 				X = (left.X < right.X) ? left.X : right.X,
 				Y = (left.Y < right.Y) ? left.Y : right.Y,
+			};
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector2US"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector2US"/>.</param>
+        /// <param name="right">The second source <see cref="Vector2US"/>.</param>
+        /// <returns>A <see cref="Vector2US"/> containing the largest components of the source vectors.</returns>
+		public static Vector2US Max(ref Vector2US left, ref Vector2US right)
+		{
+			return new Vector2US()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
 			};
 		}
 

@@ -20,6 +20,9 @@ foreach(TypeData d in _def)
 	string fName = $"{d.Name}{size}{d.Postfix}";
 	string fn = $"{fName}.v3";
 	string fpCast = d.DT == "float" ? "(float)" : "";
+	string mathHelper = d.DT == "double" ? "MathHelperDP" : "MathHelper";
+    string typeCast = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"({d.DT})" : "";
+    string intType = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"int" : d.DT;
 #>
 using System.Runtime.InteropServices;
 
@@ -78,9 +81,9 @@ namespace Molten
         public static <#=fName#> Cross(ref <#=fName#> left, ref <#=fName#> right)
         {
             return new <#=fName#>(
-                (left.Y * right.Z) - (left.Z * right.Y),
-                (left.Z * right.X) - (left.X * right.Z),
-                (left.X * right.Y) - (left.Y * right.X));
+                <#=typeCast#>((left.Y * right.Z) - (left.Z * right.Y)),
+                <#=typeCast#>((left.Z * right.X) - (left.X * right.Z)),
+                <#=typeCast#>((left.X * right.Y) - (left.Y * right.X)));
         }
 
         /// <summary>

@@ -398,8 +398,8 @@ namespace Molten
 
             for (int i = 0; i < points.Length; ++i)
             {
-                Vector3F.Min(ref min, ref points[i], out min);
-                Vector3F.Max(ref max, ref points[i], out max);
+                min = Vector3F.Min(ref min, ref points[i]);
+                max = Vector3F.Max(ref max, ref points[i]);
             }
 
             result = new BoundingBox(min, max);
@@ -490,8 +490,8 @@ namespace Molten
 
             for (int i = 0; i < points.Length; ++i)
             {
-                Vector3F.Min(ref min, ref points[i], out min);
-                Vector3F.Max(ref max, ref points[i], out max);
+                min = Vector3F.Min(ref min, ref points[i]);
+                max = Vector3F.Max(ref max, ref points[i]);
             }
 
             return new BoundingBox(min, max);
@@ -530,8 +530,8 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Encapsulate(ref BoundingBox value1, ref BoundingBox value2, out BoundingBox result)
         {
-            Vector3F.Min(ref value1.Min, ref value2.Min, out result.Min);
-            Vector3F.Max(ref value1.Max, ref value2.Max, out result.Max);
+            result.Min = Vector3F.Min(ref value1.Min, ref value2.Min);
+            result.Max = Vector3F.Max(ref value1.Max, ref value2.Max);
         }
 
         /// <summary>
@@ -544,8 +544,8 @@ namespace Molten
         public static BoundingBox Merge(BoundingBox value1, BoundingBox value2)
         {
             BoundingBox box;
-            Vector3F.Min(ref value1.Min, ref value2.Min, out box.Min);
-            Vector3F.Max(ref value1.Max, ref value2.Max, out box.Max);
+            box.Min = Vector3F.Min(ref value1.Min, ref value2.Min);
+            box.Max = Vector3F.Max(ref value1.Max, ref value2.Max);
             return box;
         }
 
@@ -557,8 +557,8 @@ namespace Molten
         /// <param name="result">Smallest bounding box which contains the two input bounding boxes.</param>
         public static void Merge(ref BoundingBox a, ref BoundingBox b, out BoundingBox result)
         {
-            Vector3F.Min(ref a.Min, ref b.Min, out result.Min);
-            Vector3F.Max(ref a.Max, ref b.Max, out result.Max);
+            result.Min = Vector3F.Min(ref a.Min, ref b.Min);
+            result.Max = Vector3F.Max(ref a.Max, ref b.Max);
         }
 
         /// <summary>

@@ -55,9 +55,9 @@ namespace Molten
         public static Byte3 Cross(ref Byte3 left, ref Byte3 right)
         {
             return new Byte3(
-                (left.Y * right.Z) - (left.Z * right.Y),
-                (left.Z * right.X) - (left.X * right.Z),
-                (left.X * right.Y) - (left.Y * right.X));
+                (byte)((left.Y * right.Z) - (left.Z * right.Y)),
+                (byte)((left.Z * right.X) - (left.X * right.Z)),
+                (byte)((left.X * right.Y) - (left.Y * right.X)));
         }
 
         /// <summary>

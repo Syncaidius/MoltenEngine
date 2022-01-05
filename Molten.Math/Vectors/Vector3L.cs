@@ -42,7 +42,7 @@ namespace Molten
         /// </summary>
         public bool IsNormalized
         {
-            get => MathHelper.IsOne((X * X) + (Y * Y) + (Z * Z));
+            get => MathHelperDP.IsOne((X * X) + (Y * Y) + (Z * Z));
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace Molten
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ref Vector3L other)
         {
-            return MathHelper.NearEqual(other.X, X) && MathHelper.NearEqual(other.Y, Y) && MathHelper.NearEqual(other.Z, Z);
+            return MathHelperDP.NearEqual(other.X, X) && MathHelperDP.NearEqual(other.Y, Y) && MathHelperDP.NearEqual(other.Z, Z);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace Molten
         public void Normalize()
         {
             long length = Length();
-            if (!MathHelper.IsZero(length))
+            if (!MathHelperDP.IsZero(length))
             {
                 double inverse = 1.0D / length;
 			    X = (long)(X * inverse);
@@ -224,7 +224,7 @@ namespace Molten
         public Vector3L GetNormalized()
         {
             double length = Length();
-            if (!MathHelper.IsZero(length))
+            if (!MathHelperDP.IsZero(length))
             {
                 double inverse = 1.0D / length;
                 return new Vector3L()
@@ -320,14 +320,36 @@ namespace Molten
 #endregion
 
 #region Add operators
+        public static void Add(ref Vector3L left, ref Vector3L right, out Vector3L result)
+        {
+			result.X = (left.X + right.X);
+			result.Y = (left.Y + right.Y);
+			result.Z = (left.Z + right.Z);
+        }
+
+        public static void Add(ref Vector3L left, long right, out Vector3L result)
+        {
+			result.X = (left.X + right);
+			result.Y = (left.Y + right);
+			result.Z = (left.Z + right);
+        }
+
 		public static Vector3L operator +(Vector3L left, Vector3L right)
 		{
-			return new Vector3L((left.X + right.X), (left.Y + right.Y), (left.Z + right.Z));
+			Add(ref left, ref right, out Vector3L result);
+            return result;
 		}
 
 		public static Vector3L operator +(Vector3L left, long right)
 		{
-			return new Vector3L((left.X + right), (left.Y + right), (left.Z + right));
+            Add(ref left, right, out Vector3L result);
+            return result;
+		}
+
+        public static Vector3L operator +(long left, Vector3L right)
+		{
+            Add(ref right, left, out Vector3L result);
+            return result;
 		}
 
 		/// <summary>
@@ -342,15 +364,50 @@ namespace Molten
 #endregion
 
 #region Subtract operators
+		public static void Subtract(ref Vector3L left, ref Vector3L right, out Vector3L result)
+        {
+			result.X = (left.X - right.X);
+			result.Y = (left.Y - right.Y);
+			result.Z = (left.Z - right.Z);
+        }
+
+        public static void Subtract(ref Vector3L left, long right, out Vector3L result)
+        {
+			result.X = (left.X - right);
+			result.Y = (left.Y - right);
+			result.Z = (left.Z - right);
+        }
+
 		public static Vector3L operator -(Vector3L left, Vector3L right)
 		{
-			return new Vector3L((left.X - right.X), (left.Y - right.Y), (left.Z - right.Z));
+			Subtract(ref left, ref right, out Vector3L result);
+            return result;
 		}
 
 		public static Vector3L operator -(Vector3L left, long right)
 		{
-			return new Vector3L((left.X - right), (left.Y - right), (left.Z - right));
+            Subtract(ref left, right, out Vector3L result);
+            return result;
 		}
+
+        public static Vector3L operator -(long left, Vector3L right)
+		{
+            Subtract(ref right, left, out Vector3L result);
+            return result;
+		}
+
+        /// <summary>
+        /// Negate/reverse the direction of a <see cref="Vector3D"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="Vector3L"/> to reverse.</param>
+        /// <param name="result">The output for the reversed <see cref="Vector3L"/>.</param>
+        public static void Negate(ref Vector3L value, out Vector3L result)
+        {
+			result.X = -value.X;
+			result.Y = -value.Y;
+			result.Z = -value.Z;
+            
+        }
 
 		/// <summary>
         /// Negate/reverse the direction of a <see cref="Vector3L"/>.
@@ -359,36 +416,76 @@ namespace Molten
         /// <returns>The reversed <see cref="Vector3L"/>.</returns>
         public static Vector3L operator -(Vector3L value)
         {
-            return new Vector3L(-value.X, -value.Y, -value.Z);
+            Negate(ref value, out value);
+            return value;
         }
 #endregion
 
 #region division operators
+		public static void Divide(ref Vector3L left, ref Vector3L right, out Vector3L result)
+        {
+			result.X = (left.X / right.X);
+			result.Y = (left.Y / right.Y);
+			result.Z = (left.Z / right.Z);
+        }
+
+        public static void Divide(ref Vector3L left, long right, out Vector3L result)
+        {
+			result.X = (left.X / right);
+			result.Y = (left.Y / right);
+			result.Z = (left.Z / right);
+        }
+
 		public static Vector3L operator /(Vector3L left, Vector3L right)
 		{
-			return new Vector3L((left.X / right.X), (left.Y / right.Y), (left.Z / right.Z));
+			Divide(ref left, ref right, out Vector3L result);
+            return result;
 		}
 
 		public static Vector3L operator /(Vector3L left, long right)
 		{
-			return new Vector3L((left.X / right), (left.Y / right), (left.Z / right));
+            Divide(ref left, right, out Vector3L result);
+            return result;
+		}
+
+        public static Vector3L operator /(long left, Vector3L right)
+		{
+            Divide(ref right, left, out Vector3L result);
+            return result;
 		}
 #endregion
 
 #region Multiply operators
+		public static void Multiply(ref Vector3L left, ref Vector3L right, out Vector3L result)
+        {
+			result.X = (left.X * right.X);
+			result.Y = (left.Y * right.Y);
+			result.Z = (left.Z * right.Z);
+        }
+
+        public static void Multiply(ref Vector3L left, long right, out Vector3L result)
+        {
+			result.X = (left.X * right);
+			result.Y = (left.Y * right);
+			result.Z = (left.Z * right);
+        }
+
 		public static Vector3L operator *(Vector3L left, Vector3L right)
 		{
-			return new Vector3L((left.X * right.X), (left.Y * right.Y), (left.Z * right.Z));
+			Multiply(ref left, ref right, out Vector3L result);
+            return result;
 		}
 
 		public static Vector3L operator *(Vector3L left, long right)
 		{
-			return new Vector3L((left.X * right), (left.Y * right), (left.Z * right));
+            Multiply(ref left, right, out Vector3L result);
+            return result;
 		}
 
         public static Vector3L operator *(long left, Vector3L right)
 		{
-			return new Vector3L((left * right.X), (left * right.Y), (left * right.Z));
+            Multiply(ref right, left, out Vector3L result);
+            return result;
 		}
 #endregion
 
@@ -455,7 +552,7 @@ namespace Molten
         /// <returns><c>true</c> if left and right are near another 3D, <c>false</c> otherwise</returns>
         public static bool NearEqual(ref Vector3L left, ref Vector3L right, ref Vector3L epsilon)
         {
-            return MathHelper.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelper.WithinEpsilon(left.Y, right.Y, epsilon.Y) && MathHelper.WithinEpsilon(left.Z, right.Z, epsilon.Z);
+            return MathHelperDP.WithinEpsilon(left.X, right.X, epsilon.X) && MathHelperDP.WithinEpsilon(left.Y, right.Y, epsilon.Y) && MathHelperDP.WithinEpsilon(left.Z, right.Z, epsilon.Z);
         }
 
         /// <summary>
@@ -466,7 +563,7 @@ namespace Molten
         /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
         public static Vector3L SmoothStep(ref Vector3L start, ref Vector3L end, double amount)
         {
-            amount = MathHelper.SmoothStep(amount);
+            amount = MathHelperDP.SmoothStep(amount);
             return Lerp(ref start, ref end, amount);
         }
 
@@ -710,6 +807,22 @@ namespace Molten
 			);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector3L"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref Vector3L start, ref Vector3L end, double amount, out Vector3L result)
+        {
+			result.X = (long)((1D - amount) * start.X + amount * end.X);
+			result.Y = (long)((1D - amount) * start.Y + amount * end.Y);
+			result.Z = (long)((1D - amount) * start.Z + amount * end.Z);
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="Vector3L"/>.
         /// </summary>
@@ -729,6 +842,22 @@ namespace Molten
 			};
         }
 
+        /// <summary>
+        /// Returns a <see cref="Vector3L"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector3L"/>.</param>
+        /// <param name="right">The second source <see cref="Vector3L"/>.</param>
+        /// <returns>A <see cref="Vector3L"/> containing the smallest components of the source vectors.</returns>
+		public static Vector3L Min(ref Vector3L left, ref Vector3L right)
+		{
+			return new Vector3L()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+				Z = (left.Z < right.Z) ? left.Z : right.Z,
+			};
+		}
+
 		/// <summary>
         /// Returns a <see cref="Vector3L"/> containing the smallest components of the specified vectors.
         /// </summary>
@@ -742,6 +871,22 @@ namespace Molten
 				X = (left.X < right.X) ? left.X : right.X,
 				Y = (left.Y < right.Y) ? left.Y : right.Y,
 				Z = (left.Z < right.Z) ? left.Z : right.Z,
+			};
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector3L"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector3L"/>.</param>
+        /// <param name="right">The second source <see cref="Vector3L"/>.</param>
+        /// <returns>A <see cref="Vector3L"/> containing the largest components of the source vectors.</returns>
+		public static Vector3L Max(ref Vector3L left, ref Vector3L right)
+		{
+			return new Vector3L()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+				Z = (left.Z > right.Z) ? left.Z : right.Z,
 			};
 		}
 

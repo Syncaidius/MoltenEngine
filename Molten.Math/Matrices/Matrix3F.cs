@@ -1914,7 +1914,7 @@ namespace Molten
         /// Creates a rotation Matrix3x3 from a quaternion.
         /// </summary>
         /// <param name="rotation">The quaternion to use to build the Matrix3x3.</param>
-        public static Matrix3F FromQuaternion(ref QuaternionF rotation)
+        public static void FromQuaternion(ref QuaternionF rotation, out Matrix3F result)
         {
             float xx = rotation.X * rotation.X;
             float yy = rotation.Y * rotation.Y;
@@ -1926,18 +1926,15 @@ namespace Molten
             float yz = rotation.Y * rotation.Z;
             float xw = rotation.X * rotation.W;
 
-            return new Matrix3F()
-            {
-                M11 = 1.0f - (2.0f * (yy + zz)),
-                M12 = 2.0f * (xy + zw),
-                M13 = 2.0f * (zx - yw),
-                M21 = 2.0f * (xy - zw),
-                M22 = 1.0f - (2.0f * (zz + xx)),
-                M23 = 2.0f * (yz + xw),
-                M31 = 2.0f * (zx + yw),
-                M32 = 2.0f * (yz - xw),
-                M33 = 1.0f - (2.0f * (yy + xx)),
-            };
+            result.M11 = 1.0f - (2.0f * (yy + zz));
+            result.M12 = 2.0f * (xy + zw);
+            result.M13 = 2.0f * (zx - yw);
+            result.M21 = 2.0f * (xy - zw);
+            result.M22 = 1.0f - (2.0f * (zz + xx));
+            result.M23 = 2.0f * (yz + xw);
+            result.M31 = 2.0f * (zx + yw);
+            result.M32 = 2.0f * (yz - xw);
+            result.M33 = 1.0f - (2.0f * (yy + xx));
         }
 
         /// <summary>
@@ -1947,7 +1944,21 @@ namespace Molten
         /// <returns>The created rotation Matrix3x3.</returns>
         public static Matrix3F FromQuaternion(QuaternionF rotation)
         {
-            return FromQuaternion(ref rotation);
+            FromQuaternion(ref rotation, out Matrix3F result);
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a rotation Matrix3x3 with a specified yaw, pitch, and roll.
+        /// </summary>
+        /// <param name="yaw">Yaw around the y-axis, in radians.</param>
+        /// <param name="pitch">Pitch around the x-axis, in radians.</param>
+        /// <param name="roll">Roll around the z-axis, in radians.</param>
+        /// <param name="result">When the method completes, contains the created rotation Matrix3x3.</param>
+        public static void RotationYawPitchRoll(float yaw, float pitch, float roll, out Matrix3F result)
+        {
+            QuaternionF quaternion = QuaternionF.RotationYawPitchRoll(yaw, pitch, roll);
+            FromQuaternion(ref quaternion, out result);
         }
 
         /// <summary>
@@ -1960,7 +1971,8 @@ namespace Molten
         public static Matrix3F RotationYawPitchRoll(float yaw, float pitch, float roll)
         {
             QuaternionF quaternion = QuaternionF.RotationYawPitchRoll(yaw, pitch, roll);
-            return FromQuaternion(ref quaternion);
+            FromQuaternion(ref quaternion, out Matrix3F result);
+            return result;
         }
 
         /// <summary>

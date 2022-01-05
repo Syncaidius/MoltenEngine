@@ -60,9 +60,9 @@ namespace Molten
         public static SByte3 Cross(ref SByte3 left, ref SByte3 right)
         {
             return new SByte3(
-                (left.Y * right.Z) - (left.Z * right.Y),
-                (left.Z * right.X) - (left.X * right.Z),
-                (left.X * right.Y) - (left.Y * right.X));
+                (sbyte)((left.Y * right.Z) - (left.Z * right.Y)),
+                (sbyte)((left.Z * right.X) - (left.X * right.Z)),
+                (sbyte)((left.X * right.Y) - (left.Y * right.X)));
         }
 
         /// <summary>

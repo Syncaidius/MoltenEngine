@@ -55,9 +55,9 @@ namespace Molten
         public static Vector3S Cross(ref Vector3S left, ref Vector3S right)
         {
             return new Vector3S(
-                (left.Y * right.Z) - (left.Z * right.Y),
-                (left.Z * right.X) - (left.X * right.Z),
-                (left.X * right.Y) - (left.Y * right.X));
+                (short)((left.Y * right.Z) - (left.Z * right.Y)),
+                (short)((left.Z * right.X) - (left.X * right.Z)),
+                (short)((left.X * right.Y) - (left.Y * right.X)));
         }
 
         /// <summary>

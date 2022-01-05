@@ -320,14 +320,36 @@ namespace Molten
 #endregion
 
 #region Add operators
+        public static void Add(ref Vector3US left, ref Vector3US right, out Vector3US result)
+        {
+			result.X = (ushort)(left.X + right.X);
+			result.Y = (ushort)(left.Y + right.Y);
+			result.Z = (ushort)(left.Z + right.Z);
+        }
+
+        public static void Add(ref Vector3US left, ushort right, out Vector3US result)
+        {
+			result.X = (ushort)(left.X + right);
+			result.Y = (ushort)(left.Y + right);
+			result.Z = (ushort)(left.Z + right);
+        }
+
 		public static Vector3US operator +(Vector3US left, Vector3US right)
 		{
-			return new Vector3US((ushort)(left.X + right.X), (ushort)(left.Y + right.Y), (ushort)(left.Z + right.Z));
+			Add(ref left, ref right, out Vector3US result);
+            return result;
 		}
 
 		public static Vector3US operator +(Vector3US left, ushort right)
 		{
-			return new Vector3US((ushort)(left.X + right), (ushort)(left.Y + right), (ushort)(left.Z + right));
+            Add(ref left, right, out Vector3US result);
+            return result;
+		}
+
+        public static Vector3US operator +(ushort left, Vector3US right)
+		{
+            Add(ref right, left, out Vector3US result);
+            return result;
 		}
 
 		/// <summary>
@@ -342,53 +364,105 @@ namespace Molten
 #endregion
 
 #region Subtract operators
+		public static void Subtract(ref Vector3US left, ref Vector3US right, out Vector3US result)
+        {
+			result.X = (ushort)(left.X - right.X);
+			result.Y = (ushort)(left.Y - right.Y);
+			result.Z = (ushort)(left.Z - right.Z);
+        }
+
+        public static void Subtract(ref Vector3US left, ushort right, out Vector3US result)
+        {
+			result.X = (ushort)(left.X - right);
+			result.Y = (ushort)(left.Y - right);
+			result.Z = (ushort)(left.Z - right);
+        }
+
 		public static Vector3US operator -(Vector3US left, Vector3US right)
 		{
-			return new Vector3US((ushort)(left.X - right.X), (ushort)(left.Y - right.Y), (ushort)(left.Z - right.Z));
+			Subtract(ref left, ref right, out Vector3US result);
+            return result;
 		}
 
 		public static Vector3US operator -(Vector3US left, ushort right)
 		{
-			return new Vector3US((ushort)(left.X - right), (ushort)(left.Y - right), (ushort)(left.Z - right));
+            Subtract(ref left, right, out Vector3US result);
+            return result;
 		}
 
-		/// <summary>
-        /// Negate/reverse the direction of a <see cref="Vector3US"/>.
-        /// </summary>
-        /// <param name="value">The <see cref="Vector3US"/> to reverse.</param>
-        /// <returns>The reversed <see cref="Vector3US"/>.</returns>
-        public static Vector3US operator -(Vector3US value)
-        {
-            return new Vector3US((ushort)-value.X, (ushort)-value.Y, (ushort)-value.Z);
-        }
+        public static Vector3US operator -(ushort left, Vector3US right)
+		{
+            Subtract(ref right, left, out Vector3US result);
+            return result;
+		}
+
 #endregion
 
 #region division operators
+		public static void Divide(ref Vector3US left, ref Vector3US right, out Vector3US result)
+        {
+			result.X = (ushort)(left.X / right.X);
+			result.Y = (ushort)(left.Y / right.Y);
+			result.Z = (ushort)(left.Z / right.Z);
+        }
+
+        public static void Divide(ref Vector3US left, ushort right, out Vector3US result)
+        {
+			result.X = (ushort)(left.X / right);
+			result.Y = (ushort)(left.Y / right);
+			result.Z = (ushort)(left.Z / right);
+        }
+
 		public static Vector3US operator /(Vector3US left, Vector3US right)
 		{
-			return new Vector3US((ushort)(left.X / right.X), (ushort)(left.Y / right.Y), (ushort)(left.Z / right.Z));
+			Divide(ref left, ref right, out Vector3US result);
+            return result;
 		}
 
 		public static Vector3US operator /(Vector3US left, ushort right)
 		{
-			return new Vector3US((ushort)(left.X / right), (ushort)(left.Y / right), (ushort)(left.Z / right));
+            Divide(ref left, right, out Vector3US result);
+            return result;
+		}
+
+        public static Vector3US operator /(ushort left, Vector3US right)
+		{
+            Divide(ref right, left, out Vector3US result);
+            return result;
 		}
 #endregion
 
 #region Multiply operators
+		public static void Multiply(ref Vector3US left, ref Vector3US right, out Vector3US result)
+        {
+			result.X = (ushort)(left.X * right.X);
+			result.Y = (ushort)(left.Y * right.Y);
+			result.Z = (ushort)(left.Z * right.Z);
+        }
+
+        public static void Multiply(ref Vector3US left, ushort right, out Vector3US result)
+        {
+			result.X = (ushort)(left.X * right);
+			result.Y = (ushort)(left.Y * right);
+			result.Z = (ushort)(left.Z * right);
+        }
+
 		public static Vector3US operator *(Vector3US left, Vector3US right)
 		{
-			return new Vector3US((ushort)(left.X * right.X), (ushort)(left.Y * right.Y), (ushort)(left.Z * right.Z));
+			Multiply(ref left, ref right, out Vector3US result);
+            return result;
 		}
 
 		public static Vector3US operator *(Vector3US left, ushort right)
 		{
-			return new Vector3US((ushort)(left.X * right), (ushort)(left.Y * right), (ushort)(left.Z * right));
+            Multiply(ref left, right, out Vector3US result);
+            return result;
 		}
 
         public static Vector3US operator *(ushort left, Vector3US right)
 		{
-			return new Vector3US((ushort)(left * right.X), (ushort)(left * right.Y), (ushort)(left * right.Z));
+            Multiply(ref right, left, out Vector3US result);
+            return result;
 		}
 #endregion
 
@@ -710,6 +784,22 @@ namespace Molten
 			);
         }
 
+        /// <summary>
+        /// Performs a linear interpolation between two <see cref="Vector3US"/>.
+        /// </summary>
+        /// <param name="start">The start vector.</param>
+        /// <param name="end">The end vector.</param>
+        /// <param name="amount">Value between 0 and 1 indicating the weight of <paramref name="end"/>.</param>
+        /// <remarks>
+        /// Passing <paramref name="amount"/> a value of 0 will cause <paramref name="start"/> to be returned; a value of 1 will cause <paramref name="end"/> to be returned. 
+        /// </remarks>
+        public static void Lerp(ref Vector3US start, ref Vector3US end, float amount, out Vector3US result)
+        {
+			result.X = (ushort)((1F - amount) * start.X + amount * end.X);
+			result.Y = (ushort)((1F - amount) * start.Y + amount * end.Y);
+			result.Z = (ushort)((1F - amount) * start.Z + amount * end.Z);
+        }
+
 		/// <summary>
         /// Performs a linear interpolation between two <see cref="Vector3US"/>.
         /// </summary>
@@ -729,6 +819,22 @@ namespace Molten
 			};
         }
 
+        /// <summary>
+        /// Returns a <see cref="Vector3US"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector3US"/>.</param>
+        /// <param name="right">The second source <see cref="Vector3US"/>.</param>
+        /// <returns>A <see cref="Vector3US"/> containing the smallest components of the source vectors.</returns>
+		public static Vector3US Min(ref Vector3US left, ref Vector3US right)
+		{
+			return new Vector3US()
+			{
+				X = (left.X < right.X) ? left.X : right.X,
+				Y = (left.Y < right.Y) ? left.Y : right.Y,
+				Z = (left.Z < right.Z) ? left.Z : right.Z,
+			};
+		}
+
 		/// <summary>
         /// Returns a <see cref="Vector3US"/> containing the smallest components of the specified vectors.
         /// </summary>
@@ -742,6 +848,22 @@ namespace Molten
 				X = (left.X < right.X) ? left.X : right.X,
 				Y = (left.Y < right.Y) ? left.Y : right.Y,
 				Z = (left.Z < right.Z) ? left.Z : right.Z,
+			};
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector3US"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector3US"/>.</param>
+        /// <param name="right">The second source <see cref="Vector3US"/>.</param>
+        /// <returns>A <see cref="Vector3US"/> containing the largest components of the source vectors.</returns>
+		public static Vector3US Max(ref Vector3US left, ref Vector3US right)
+		{
+			return new Vector3US()
+			{
+				X = (left.X > right.X) ? left.X : right.X,
+				Y = (left.Y > right.Y) ? left.Y : right.Y,
+				Z = (left.Z > right.Z) ? left.Z : right.Z,
 			};
 		}
 
