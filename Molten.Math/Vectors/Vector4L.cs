@@ -241,10 +241,10 @@ namespace Molten
                 double inverse = 1.0D / length;
                 return new Vector4L()
                 {
-			        X = (this.X * inverse),
-			        Y = (this.Y * inverse),
-			        Z = (this.Z * inverse),
-			        W = (this.W * inverse),
+			        X = (long)(this.X * inverse),
+			        Y = (long)(this.Y * inverse),
+			        Z = (long)(this.Z * inverse),
+			        W = (long)(this.W * inverse),
                 };
             }
             else
@@ -1084,10 +1084,10 @@ namespace Molten
 
             return new Vector4L()
             {
-				X = (vector.X - ((2.0D * dot) * normal.X)),
-				Y = (vector.Y - ((2.0D * dot) * normal.Y)),
-				Z = (vector.Z - ((2.0D * dot) * normal.Z)),
-				W = (vector.W - ((2.0D * dot) * normal.W)),
+				X = (long)(vector.X - ((2.0D * dot) * normal.X)),
+				Y = (long)(vector.Y - ((2.0D * dot) * normal.Y)),
+				Z = (long)(vector.Z - ((2.0D * dot) * normal.Z)),
+				W = (long)(vector.W - ((2.0D * dot) * normal.W)),
             };
         }
 

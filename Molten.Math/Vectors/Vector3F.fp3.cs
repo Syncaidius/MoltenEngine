@@ -1,8 +1,6 @@
 
 
 
-
-
 using System.Runtime.InteropServices;
 using System;
 
@@ -105,7 +103,7 @@ namespace Molten
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector4F"/>.</param>
-        public static Vector3F Transform(ref Vector3F vector, ref QuaternionF rotation)
+        public static void Transform(ref Vector3F vector, ref QuaternionF rotation, out Vector3F result)
         {
             float x = rotation.X + rotation.X;
             float y = rotation.Y + rotation.Y;
@@ -120,10 +118,22 @@ namespace Molten
             float yz = rotation.Y * z;
             float zz = rotation.Z * z;
 
-            return new Vector3F(
-                ((vector.X * ((1.0f - yy) - zz)) + (vector.Y * (xy - wz))) + (vector.Z * (xz + wy)),
-                ((vector.X * (xy + wz)) + (vector.Y * ((1.0f - xx) - zz))) + (vector.Z * (yz - wx)),
-                ((vector.X * (xz - wy)) + (vector.Y * (yz + wx))) + (vector.Z * ((1.0f - xx) - yy)));
+            
+            result.X = ((vector.X * ((1.0f - yy) - zz)) + (vector.Y * (xy - wz))) + (vector.Z * (xz + wy));
+            result.Y = ((vector.X * (xy + wz)) + (vector.Y * ((1.0f - xx) - zz))) + (vector.Z * (yz - wx));
+            result.Z = ((vector.X * (xz - wy)) + (vector.Y * (yz + wx))) + (vector.Z * ((1.0f - xx) - yy));
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="QuaternionF"/> rotation.
+        /// </summary>
+        /// <param name="vector">The vector to rotate.</param>
+        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="Vector4F"/>.</param>
+        public static Vector3F Transform(ref Vector3F vector, ref QuaternionF rotation)
+        {
+            Transform(ref vector, ref rotation, out Vector3F result);
+            return result;
         }
 
         /// <summary>
@@ -227,7 +237,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector3F"/>.</param>
         public static Vector3F Transform(ref Vector3F vector, ref Matrix4F transform)
         {
-            return (Vector3F)Transform(ref vector, ref transform, out intermediate);
+            Transform(ref vector, ref transform, out Vector4F result);
+            return (Vector3F)result;
         }
 
         /// <summary>
@@ -387,7 +398,7 @@ namespace Molten
         /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
         /// with coordinates as the w component can safely be ignored.
         /// </remarks>
-        public static Vector3F TransformCoordinate(ref Vector3F coordinate, ref Matrix4F transform)
+        public static void TransformCoordinate(ref Vector3F coordinate, ref Matrix4F transform, out Vector3F result)
         {
             Vector4F vector = new Vector4F();
             vector.X = (coordinate.X * transform.M11) + (coordinate.Y * transform.M21) + (coordinate.Z * transform.M31) + transform.M41;
@@ -395,7 +406,25 @@ namespace Molten
             vector.Z = (coordinate.X * transform.M13) + (coordinate.Y * transform.M23) + (coordinate.Z * transform.M33) + transform.M43;
             vector.W = 1f / ((coordinate.X * transform.M14) + (coordinate.Y * transform.M24) + (coordinate.Z * transform.M34) + transform.M44);
 
-            return new Vector3F(vector.X * vector.W, vector.Y * vector.W, vector.Z * vector.W);
+            result = new Vector3F(vector.X * vector.W, vector.Y * vector.W, vector.Z * vector.W);
+        }
+
+        /// <summary>
+        /// Performs a coordinate transformation using the given <see cref="Matrix4F"/>.
+        /// </summary>
+        /// <param name="coordinate">The coordinate vector to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
+        /// <remarks>
+        /// A coordinate transform performs the transformation with the assumption that the w component
+        /// is one. The four dimensional vector obtained from the transformation operation has each
+        /// component in the vector divided by the w component. This forces the w component to be one and
+        /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
+        /// with coordinates as the w component can safely be ignored.
+        /// </remarks>
+        public static Vector3F TransformCoordinate(ref Vector3F coordinate, ref Matrix4F transform)
+        {
+            TransformCoordinate(ref coordinate, ref transform, out Vector3F result);
+            return result;
         }
 
         /// <summary>
@@ -413,7 +442,8 @@ namespace Molten
         /// </remarks>
         public static Vector3F TransformCoordinate(Vector3F coordinate, Matrix4F transform)
         {
-            return TransformCoordinate(ref coordinate, ref transform);
+             TransformCoordinate(ref coordinate, ref transform, out Vector3F result);
+             return result;
         }
 
         /// <summary>
@@ -442,7 +472,27 @@ namespace Molten
                 throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
 
             for (int i = 0; i < source.Length; ++i)
-                destination[i] = TransformCoordinate(ref source[i], ref transform);
+                TransformCoordinate(ref source[i], ref transform, out destination[i]);
+        }
+
+        /// <summary>
+        /// Performs a normal transformation using the given <see cref="Matrix4F"/>.
+        /// </summary>
+        /// <param name="normal">The normal vector to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed normal.</param>
+        /// <remarks>
+        /// A normal transform performs the transformation with the assumption that the w component
+        /// is zero. This causes the fourth row and fourth column of the matrix to be unused. The
+        /// end result is a vector that is not translated, but all other transformation properties
+        /// apply. This is often preferred for normal vectors as normals purely represent direction
+        /// rather than location because normal vectors should not be translated.
+        /// </remarks>
+        public static void TransformNormal(ref Vector3F normal, ref Matrix4F transform, out Vector3F result)
+        {
+            result.X = (normal.X * transform.M11) + (normal.Y * transform.M21) + (normal.Z * transform.M31);
+            result.Y = (normal.X * transform.M12) + (normal.Y * transform.M22) + (normal.Z * transform.M32);
+            result.Z = (normal.X * transform.M13) + (normal.Y * transform.M23) + (normal.Z * transform.M33);
         }
 
         /// <summary>
@@ -460,10 +510,8 @@ namespace Molten
         /// </remarks>
         public static Vector3F TransformNormal(ref Vector3F normal, ref Matrix4F transform)
         {
-            return new Vector3F(
-                (normal.X * transform.M11) + (normal.Y * transform.M21) + (normal.Z * transform.M31),
-                (normal.X * transform.M12) + (normal.Y * transform.M22) + (normal.Z * transform.M32),
-                (normal.X * transform.M13) + (normal.Y * transform.M23) + (normal.Z * transform.M33));
+            TransformNormal(ref normal, ref transform, out Vector3F result);
+            return result;
         }
 
         /// <summary>

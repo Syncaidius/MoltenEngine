@@ -217,8 +217,8 @@ namespace Molten
                 double inverse = 1.0D / length;
                 return new Vector2L()
                 {
-			        X = (this.X * inverse),
-			        Y = (this.Y * inverse),
+			        X = (long)(this.X * inverse),
+			        Y = (long)(this.Y * inverse),
                 };
             }
             else
@@ -992,8 +992,8 @@ namespace Molten
 
             return new Vector2L()
             {
-				X = (vector.X - ((2.0D * dot) * normal.X)),
-				Y = (vector.Y - ((2.0D * dot) * normal.Y)),
+				X = (long)(vector.X - ((2.0D * dot) * normal.X)),
+				Y = (long)(vector.Y - ((2.0D * dot) * normal.Y)),
             };
         }
 

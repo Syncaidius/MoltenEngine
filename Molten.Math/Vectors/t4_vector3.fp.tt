@@ -1,5 +1,4 @@
 ﻿<#@ template debug="false" hostspecific="true" language="C#" #>
-
 <#@ include file="../t4_header.tt" #>
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.Linq" #>
@@ -7,7 +6,6 @@
 <#@ import namespace="System.Text.RegularExpressions" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".txt" #>
-
 <#
 string outputPath = this.Host.ResolvePath("");
 List<TypeData> _def = ReadJsonDef<TypeData>(outputPath, "vector_defs.json");
@@ -129,7 +127,7 @@ namespace Molten
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector4<#=d.Postfix#>"/>.</param>
-        public static <#=fName#> Transform(ref <#=fName#> vector, ref QuaternionF rotation)
+        public static void Transform(ref <#=fName#> vector, ref QuaternionF rotation, out <#=fName#> result)
         {
             <#=d.DT#> x = rotation.X + rotation.X;
             <#=d.DT#> y = rotation.Y + rotation.Y;
@@ -144,10 +142,22 @@ namespace Molten
             <#=d.DT#> yz = rotation.Y * z;
             <#=d.DT#> zz = rotation.Z * z;
 
-            return new <#=fName#>(
-                ((vector.X * ((1.0f - yy) - zz)) + (vector.Y * (xy - wz))) + (vector.Z * (xz + wy)),
-                ((vector.X * (xy + wz)) + (vector.Y * ((1.0f - xx) - zz))) + (vector.Z * (yz - wx)),
-                ((vector.X * (xz - wy)) + (vector.Y * (yz + wx))) + (vector.Z * ((1.0f - xx) - yy)));
+            
+            result.X = ((vector.X * ((1.0f - yy) - zz)) + (vector.Y * (xy - wz))) + (vector.Z * (xz + wy));
+            result.Y = ((vector.X * (xy + wz)) + (vector.Y * ((1.0f - xx) - zz))) + (vector.Z * (yz - wx));
+            result.Z = ((vector.X * (xz - wy)) + (vector.Y * (yz + wx))) + (vector.Z * ((1.0f - xx) - yy));
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="QuaternionF"/> rotation.
+        /// </summary>
+        /// <param name="vector">The vector to rotate.</param>
+        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="Vector4<#=d.Postfix#>"/>.</param>
+        public static <#=fName#> Transform(ref <#=fName#> vector, ref QuaternionF rotation)
+        {
+            Transform(ref vector, ref rotation, out <#=fName#> result);
+            return result;
         }
 
         /// <summary>
@@ -251,7 +261,8 @@ namespace Molten
         /// <param name="result">When the method completes, contains the transformed <see cref="<#=fName#>"/>.</param>
         public static <#=fName#> Transform(ref <#=fName#> vector, ref Matrix4<#=d.Postfix#> transform)
         {
-            return (<#=fName#>)Transform(ref vector, ref transform, out intermediate);
+            Transform(ref vector, ref transform, out Vector4<#=d.Postfix#> result);
+            return (<#=fName#>)result;
         }
 
         /// <summary>
@@ -411,7 +422,7 @@ namespace Molten
         /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
         /// with coordinates as the w component can safely be ignored.
         /// </remarks>
-        public static <#=fName#> TransformCoordinate(ref <#=fName#> coordinate, ref Matrix4<#=d.Postfix#> transform)
+        public static void TransformCoordinate(ref <#=fName#> coordinate, ref Matrix4<#=d.Postfix#> transform, out <#=fName#> result)
         {
             Vector4<#=d.Postfix#> vector = new Vector4<#=d.Postfix#>();
             vector.X = (coordinate.X * transform.M11) + (coordinate.Y * transform.M21) + (coordinate.Z * transform.M31) + transform.M41;
@@ -419,7 +430,25 @@ namespace Molten
             vector.Z = (coordinate.X * transform.M13) + (coordinate.Y * transform.M23) + (coordinate.Z * transform.M33) + transform.M43;
             vector.W = 1f / ((coordinate.X * transform.M14) + (coordinate.Y * transform.M24) + (coordinate.Z * transform.M34) + transform.M44);
 
-            return new <#=fName#>(vector.X * vector.W, vector.Y * vector.W, vector.Z * vector.W);
+            result = new <#=fName#>(vector.X * vector.W, vector.Y * vector.W, vector.Z * vector.W);
+        }
+
+        /// <summary>
+        /// Performs a coordinate transformation using the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="coordinate">The coordinate vector to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <remarks>
+        /// A coordinate transform performs the transformation with the assumption that the w component
+        /// is one. The four dimensional vector obtained from the transformation operation has each
+        /// component in the vector divided by the w component. This forces the w component to be one and
+        /// therefore makes the vector homogeneous. The homogeneous vector is often preferred when working
+        /// with coordinates as the w component can safely be ignored.
+        /// </remarks>
+        public static <#=fName#> TransformCoordinate(ref <#=fName#> coordinate, ref Matrix4<#=d.Postfix#> transform)
+        {
+            TransformCoordinate(ref coordinate, ref transform, out <#=fName#> result);
+            return result;
         }
 
         /// <summary>
@@ -437,7 +466,8 @@ namespace Molten
         /// </remarks>
         public static <#=fName#> TransformCoordinate(<#=fName#> coordinate, Matrix4<#=d.Postfix#> transform)
         {
-            return TransformCoordinate(ref coordinate, ref transform);
+             TransformCoordinate(ref coordinate, ref transform, out <#=fName#> result);
+             return result;
         }
 
         /// <summary>
@@ -466,7 +496,27 @@ namespace Molten
                 throw new ArgumentOutOfRangeException("destination", "The destination array must be of same length or larger length than the source array.");
 
             for (int i = 0; i < source.Length; ++i)
-                destination[i] = TransformCoordinate(ref source[i], ref transform);
+                TransformCoordinate(ref source[i], ref transform, out destination[i]);
+        }
+
+        /// <summary>
+        /// Performs a normal transformation using the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="normal">The normal vector to transform.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed normal.</param>
+        /// <remarks>
+        /// A normal transform performs the transformation with the assumption that the w component
+        /// is zero. This causes the fourth row and fourth column of the matrix to be unused. The
+        /// end result is a vector that is not translated, but all other transformation properties
+        /// apply. This is often preferred for normal vectors as normals purely represent direction
+        /// rather than location because normal vectors should not be translated.
+        /// </remarks>
+        public static void TransformNormal(ref <#=fName#> normal, ref Matrix4<#=d.Postfix#> transform, out <#=fName#> result)
+        {
+            result.X = (normal.X * transform.M11) + (normal.Y * transform.M21) + (normal.Z * transform.M31);
+            result.Y = (normal.X * transform.M12) + (normal.Y * transform.M22) + (normal.Z * transform.M32);
+            result.Z = (normal.X * transform.M13) + (normal.Y * transform.M23) + (normal.Z * transform.M33);
         }
 
         /// <summary>
@@ -484,10 +534,8 @@ namespace Molten
         /// </remarks>
         public static <#=fName#> TransformNormal(ref <#=fName#> normal, ref Matrix4<#=d.Postfix#> transform)
         {
-            return new <#=fName#>(
-                (normal.X * transform.M11) + (normal.Y * transform.M21) + (normal.Z * transform.M31),
-                (normal.X * transform.M12) + (normal.Y * transform.M22) + (normal.Z * transform.M32),
-                (normal.X * transform.M13) + (normal.Y * transform.M23) + (normal.Z * transform.M33));
+            TransformNormal(ref normal, ref transform, out <#=fName#> result);
+            return result;
         }
 
         /// <summary>

@@ -217,8 +217,8 @@ namespace Molten
                 float inverse = 1.0F / length;
                 return new Vector2I()
                 {
-			        X = (this.X * inverse),
-			        Y = (this.Y * inverse),
+			        X = (int)(this.X * inverse),
+			        Y = (int)(this.Y * inverse),
                 };
             }
             else
@@ -992,8 +992,8 @@ namespace Molten
 
             return new Vector2I()
             {
-				X = (vector.X - ((2.0F * dot) * normal.X)),
-				Y = (vector.Y - ((2.0F * dot) * normal.Y)),
+				X = (int)(vector.X - ((2.0F * dot) * normal.X)),
+				Y = (int)(vector.Y - ((2.0F * dot) * normal.Y)),
             };
         }
 

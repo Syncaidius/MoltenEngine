@@ -24,6 +24,7 @@ foreach(TypeData d in _def)
 		string fpCast = d.DT == "float" ? "(float)" : (d.DT == "double" ? "" : $"({d.DT})");
 		string mathHelper = d.FP == "double" ? "MathHelperDP" : "MathHelper";
         string typeCast = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"({d.DT})" : "";
+        string fpToTypeCast = (typeCast.Length > 0) ? typeCast : (d.DT != d.FP ? $"({d.DT})" : "");
         string intType = (d.DT == "byte" || d.DT == "sbyte" || d.DT == "short" || d.DT == "ushort") ? $"int" : d.DT;
 #>
 using System;
@@ -294,7 +295,7 @@ namespace Molten
 		    for(int p = 0; p < size; p++)
 		    {
 #>
-			        <#=pMapUpper[p]#> = <#=typeCast#>(this.<#=pMapUpper[p]#> * inverse),
+			        <#=pMapUpper[p]#> = <#=fpToTypeCast#>(this.<#=pMapUpper[p]#> * inverse),
 <#
 		    }
 #>
@@ -1273,7 +1274,7 @@ namespace Molten
 				for(int p = 0; p < size; p++)
 				{
 #>
-				<#=pMapUpper[p]#> = <#=typeCast#>(vector.<#=pMapUpper[p]#> - ((2.0<#=d.FPL#> * dot) * normal.<#=pMapUpper[p]#>)),
+				<#=pMapUpper[p]#> = <#=fpToTypeCast#>(vector.<#=pMapUpper[p]#> - ((2.0<#=d.FPL#> * dot) * normal.<#=pMapUpper[p]#>)),
 <#
 			    }
 #>

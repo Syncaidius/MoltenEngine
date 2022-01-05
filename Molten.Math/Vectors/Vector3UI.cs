@@ -229,9 +229,9 @@ namespace Molten
                 float inverse = 1.0F / length;
                 return new Vector3UI()
                 {
-			        X = (this.X * inverse),
-			        Y = (this.Y * inverse),
-			        Z = (this.Z * inverse),
+			        X = (uint)(this.X * inverse),
+			        Y = (uint)(this.Y * inverse),
+			        Z = (uint)(this.Z * inverse),
                 };
             }
             else
@@ -1015,9 +1015,9 @@ namespace Molten
 
             return new Vector3UI()
             {
-				X = (vector.X - ((2.0F * dot) * normal.X)),
-				Y = (vector.Y - ((2.0F * dot) * normal.Y)),
-				Z = (vector.Z - ((2.0F * dot) * normal.Z)),
+				X = (uint)(vector.X - ((2.0F * dot) * normal.X)),
+				Y = (uint)(vector.Y - ((2.0F * dot) * normal.Y)),
+				Z = (uint)(vector.Z - ((2.0F * dot) * normal.Z)),
             };
         }
 

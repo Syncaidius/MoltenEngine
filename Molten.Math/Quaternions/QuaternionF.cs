@@ -871,6 +871,18 @@ namespace Molten
         /// Computes the conjugate of the <see cref="QuaternionF"/> .
         /// </summary>
         /// <param name="value"><see cref="QuaternionF"/> to conjugate.</param>
+        public static void Conjugate(ref QuaternionF value, out QuaternionF result)
+        {
+            result.X = -value.X;
+            result.Y = -value.Y;
+            result.Z = -value.Z;
+            result.W = value.W;
+        }
+
+        /// <summary>
+        /// Computes the conjugate of the <see cref="QuaternionF"/> .
+        /// </summary>
+        /// <param name="value"><see cref="QuaternionF"/> to conjugate.</param>
         public static QuaternionF Conjugate(QuaternionF value)
         {
             return new QuaternionF()

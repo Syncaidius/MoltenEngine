@@ -229,9 +229,9 @@ namespace Molten
                 double inverse = 1.0D / length;
                 return new Vector3UL()
                 {
-			        X = (this.X * inverse),
-			        Y = (this.Y * inverse),
-			        Z = (this.Z * inverse),
+			        X = (ulong)(this.X * inverse),
+			        Y = (ulong)(this.Y * inverse),
+			        Z = (ulong)(this.Z * inverse),
                 };
             }
             else
@@ -1015,9 +1015,9 @@ namespace Molten
 
             return new Vector3UL()
             {
-				X = (vector.X - ((2.0D * dot) * normal.X)),
-				Y = (vector.Y - ((2.0D * dot) * normal.Y)),
-				Z = (vector.Z - ((2.0D * dot) * normal.Z)),
+				X = (ulong)(vector.X - ((2.0D * dot) * normal.X)),
+				Y = (ulong)(vector.Y - ((2.0D * dot) * normal.Y)),
+				Z = (ulong)(vector.Z - ((2.0D * dot) * normal.Z)),
             };
         }
 

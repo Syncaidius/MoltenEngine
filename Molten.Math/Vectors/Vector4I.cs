@@ -241,10 +241,10 @@ namespace Molten
                 float inverse = 1.0F / length;
                 return new Vector4I()
                 {
-			        X = (this.X * inverse),
-			        Y = (this.Y * inverse),
-			        Z = (this.Z * inverse),
-			        W = (this.W * inverse),
+			        X = (int)(this.X * inverse),
+			        Y = (int)(this.Y * inverse),
+			        Z = (int)(this.Z * inverse),
+			        W = (int)(this.W * inverse),
                 };
             }
             else
@@ -1084,10 +1084,10 @@ namespace Molten
 
             return new Vector4I()
             {
-				X = (vector.X - ((2.0F * dot) * normal.X)),
-				Y = (vector.Y - ((2.0F * dot) * normal.Y)),
-				Z = (vector.Z - ((2.0F * dot) * normal.Z)),
-				W = (vector.W - ((2.0F * dot) * normal.W)),
+				X = (int)(vector.X - ((2.0F * dot) * normal.X)),
+				Y = (int)(vector.Y - ((2.0F * dot) * normal.Y)),
+				Z = (int)(vector.Z - ((2.0F * dot) * normal.Z)),
+				W = (int)(vector.W - ((2.0F * dot) * normal.W)),
             };
         }
 

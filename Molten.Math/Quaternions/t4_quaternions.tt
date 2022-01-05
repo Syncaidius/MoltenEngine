@@ -895,6 +895,18 @@ namespace Molten
         /// Computes the conjugate of the <#=See(fName)#> .
         /// </summary>
         /// <param name="value"><#=See(fName)#> to conjugate.</param>
+        public static void Conjugate(ref <#=fName#> value, out <#=fName#> result)
+        {
+            result.X = -value.X;
+            result.Y = -value.Y;
+            result.Z = -value.Z;
+            result.W = value.W;
+        }
+
+        /// <summary>
+        /// Computes the conjugate of the <#=See(fName)#> .
+        /// </summary>
+        /// <param name="value"><#=See(fName)#> to conjugate.</param>
         public static <#=fName#> Conjugate(<#=fName#> value)
         {
             return new <#=fName#>()
