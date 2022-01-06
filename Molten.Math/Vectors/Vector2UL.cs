@@ -915,47 +915,6 @@ namespace Molten
 			};
         }
 
-        /// <summary>
-        /// Performs a Catmull-Rom interpolation using the specified positions.
-        /// </summary>
-        /// <param name="value1">The first position in the interpolation.</param>
-        /// <param name="value2">The second position in the interpolation.</param>
-        /// <param name="value3">The third position in the interpolation.</param>
-        /// <param name="value4">The fourth position in the interpolation.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static Vector2UL CatmullRom(ref Vector2UL value1, ref Vector2UL value2, ref Vector2UL value3, ref Vector2UL value4, ulong amount)
-        {
-            double squared = amount * amount;
-            double cubed = amount * squared;
-
-            return new Vector2UL()
-            {
-				X = (ulong)(0.5D * ((((2D * value2.X) + 
-                ((-value1.X + value3.X) * amount)) + 
-                (((((2D * value1.X) - (5D * value2.X)) + (4D * value3.X)) - value4.X) * squared)) +
-                ((((-value1.X + (3D * value2.X)) - (3D * value3.X)) + value4.X) * cubed))),
-
-				Y = (ulong)(0.5D * ((((2D * value2.Y) + 
-                ((-value1.Y + value3.Y) * amount)) + 
-                (((((2D * value1.Y) - (5D * value2.Y)) + (4D * value3.Y)) - value4.Y) * squared)) +
-                ((((-value1.Y + (3D * value2.Y)) - (3D * value3.Y)) + value4.Y) * cubed))),
-
-            };
-        }
-
-        /// <summary>
-        /// Performs a Catmull-Rom interpolation using the specified positions.
-        /// </summary>
-        /// <param name="value1">The first position in the interpolation.</param>
-        /// <param name="value2">The second position in the interpolation.</param>
-        /// <param name="value3">The third position in the interpolation.</param>
-        /// <param name="value4">The fourth position in the interpolation.</param>
-        /// <param name="amount">Weighting factor.</param>
-        /// <returns>A vector that is the result of the Catmull-Rom interpolation.</returns>
-        public static Vector2UL CatmullRom(Vector2UL value1, Vector2UL value2, Vector2UL value3, Vector2UL value4, ulong amount)
-        {
-            return CatmullRom(ref value1, ref value2, ref value3, ref value4, amount);
-        }
 
         /// <summary>
         /// Returns the reflection of a vector off a surface that has the specified normal. 

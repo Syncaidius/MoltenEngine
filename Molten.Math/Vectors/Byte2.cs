@@ -915,47 +915,6 @@ namespace Molten
 			};
         }
 
-        /// <summary>
-        /// Performs a Catmull-Rom interpolation using the specified positions.
-        /// </summary>
-        /// <param name="value1">The first position in the interpolation.</param>
-        /// <param name="value2">The second position in the interpolation.</param>
-        /// <param name="value3">The third position in the interpolation.</param>
-        /// <param name="value4">The fourth position in the interpolation.</param>
-        /// <param name="amount">Weighting factor.</param>
-        public static Byte2 CatmullRom(ref Byte2 value1, ref Byte2 value2, ref Byte2 value3, ref Byte2 value4, byte amount)
-        {
-            float squared = amount * amount;
-            float cubed = amount * squared;
-
-            return new Byte2()
-            {
-				X = (byte)(0.5F * ((((2F * value2.X) + 
-                ((-value1.X + value3.X) * amount)) + 
-                (((((2F * value1.X) - (5F * value2.X)) + (4F * value3.X)) - value4.X) * squared)) +
-                ((((-value1.X + (3F * value2.X)) - (3F * value3.X)) + value4.X) * cubed))),
-
-				Y = (byte)(0.5F * ((((2F * value2.Y) + 
-                ((-value1.Y + value3.Y) * amount)) + 
-                (((((2F * value1.Y) - (5F * value2.Y)) + (4F * value3.Y)) - value4.Y) * squared)) +
-                ((((-value1.Y + (3F * value2.Y)) - (3F * value3.Y)) + value4.Y) * cubed))),
-
-            };
-        }
-
-        /// <summary>
-        /// Performs a Catmull-Rom interpolation using the specified positions.
-        /// </summary>
-        /// <param name="value1">The first position in the interpolation.</param>
-        /// <param name="value2">The second position in the interpolation.</param>
-        /// <param name="value3">The third position in the interpolation.</param>
-        /// <param name="value4">The fourth position in the interpolation.</param>
-        /// <param name="amount">Weighting factor.</param>
-        /// <returns>A vector that is the result of the Catmull-Rom interpolation.</returns>
-        public static Byte2 CatmullRom(Byte2 value1, Byte2 value2, Byte2 value3, Byte2 value4, byte amount)
-        {
-            return CatmullRom(ref value1, ref value2, ref value3, ref value4, amount);
-        }
 
         /// <summary>
         /// Returns the reflection of a vector off a surface that has the specified normal. 

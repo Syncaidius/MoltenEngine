@@ -1213,6 +1213,10 @@ namespace Molten
 			};
         }
 
+<#
+    if(!d.Unsigned)
+    {
+#>
         /// <summary>
         /// Performs a Catmull-Rom interpolation using the specified positions.
         /// </summary>
@@ -1256,6 +1260,9 @@ namespace Molten
         {
             return CatmullRom(ref value1, ref value2, ref value3, ref value4, amount);
         }
+<#
+    }
+#>
 
         /// <summary>
         /// Returns the reflection of a vector off a surface that has the specified normal. 
