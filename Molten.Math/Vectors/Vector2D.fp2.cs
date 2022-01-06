@@ -12,7 +12,7 @@ namespace Molten
 
 #region Static Methods
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="QuaternionF"/> rotation.
+        /// Transforms a 2D vector by the given <see cref="QuaternionD"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="rotation">The <see cref="QuaternionD"/> rotation to apply.</param>
@@ -32,24 +32,37 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="QuaternionF"/> rotation.
+        /// Transforms a 2D vector by the given <see cref="QuaternionD"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
-        /// <returns>The transformed <see cref="Vector4F"/>.</returns>
-        public static Vector2D Transform(Vector2D vector, QuaternionF rotation)
+        /// <param name="rotation">The <see cref="QuaternionD"/> rotation to apply.</param>
+        /// <returns>The transformed <see cref="Vector4D"/>.</returns>
+        public static Vector2D Transform(Vector2D vector, QuaternionD rotation)
         {
             Vector2D result;
             Transform(ref vector, ref rotation, out result);
             return result;
-        }      
-
+        }  
+        
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.
+        /// Transforms a 2D vector by the given <see cref="Matrix4D"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
-        public static Vector4D Transform(ref Vector2D vector, ref Matrix4F transform)
+        /// <param name="transform">The transformation <see cref="Matrix4D"/>.</param>
+        public static void Transform(ref Vector2D vector, ref Matrix4D transform, out Vector4D result)
+        {
+            result.X = (vector.X * transform.M11) + (vector.Y * transform.M21) + transform.M41;
+            result.Y = (vector.X * transform.M12) + (vector.Y * transform.M22) + transform.M42;
+            result.Z = (vector.X * transform.M13) + (vector.Y * transform.M23) + transform.M43;
+            result.W = (vector.X * transform.M14) + (vector.Y * transform.M24) + transform.M44;
+        }
+
+        /// <summary>
+        /// Transforms a 2D vector by the given <see cref="Matrix4D"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4D"/>.</param>
+        public static Vector4D Transform(ref Vector2D vector, ref Matrix4D transform)
         {
             return new Vector4D(
                 (vector.X * transform.M11) + (vector.Y * transform.M21) + transform.M41,
@@ -59,18 +72,19 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.
+        /// Transforms a 2D vector by the given <see cref="Matrix4D"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
-        /// <returns>The transformed <see cref="Vector4F"/>.</returns>
-        public static Vector4F Transform(Vector2D vector, Matrix4D transform)
+        /// <param name="transform">The transformation <see cref="Matrix4D"/>.</param>
+        /// <returns>The transformed <see cref="Vector4D"/>.</returns>
+        public static Vector4D Transform(Vector2D vector, Matrix4D transform)
         {
-            return Transform(ref vector, ref transform);
+            Transform(ref vector, ref transform, out Vector4D result);
+            return result;
         }
 
         /// <summary>
-        /// Transforms an array of 2D vectors by the given <see cref="Matrix4F"/>.
+        /// Transforms an array of 2D vectors by the given <see cref="Matrix4D"/>.
         /// </summary>
         /// <param name="source">The array of vectors to transform.</param>
         /// <param name="transform">The transformation <see cref="Matrix4D"/>.</param>
@@ -222,12 +236,12 @@ namespace Molten
 
 
         /// <summary>
-        /// Performs a normal transformation using the given <see cref="Matrix2F"/>.
+        /// Performs a normal transformation using the given <see cref="Matrix2D"/>.
         /// </summary>
         /// <param name="normal">The normal vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix2F"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix2D"/>.</param>
         /// <param name="result">When the method completes, contains the transformed normal.</param>
-        public static Vector2D TransformNormal(ref Vector2D normal, ref Matrix2F transform)
+        public static Vector2D TransformNormal(ref Vector2D normal, ref Matrix2D transform)
         {
             return new Vector2D(
                 (normal.X * transform.M11) + (normal.Y * transform.M21),
@@ -235,12 +249,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs a normal transformation using the given <see cref="Matrix2F"/>.
+        /// Performs a normal transformation using the given <see cref="Matrix2D"/>.
         /// </summary>
         /// <param name="normal">The normal vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix2F"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix2D"/>.</param>
         /// <returns>The transformed normal.</returns>
-        public static Vector2D TransformNormal(Vector2D normal, Matrix2F transform)
+        public static Vector2D TransformNormal(Vector2D normal, Matrix2D transform)
         {
             return TransformNormal(ref normal, ref transform);
         }

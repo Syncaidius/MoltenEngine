@@ -676,6 +676,25 @@ namespace Molten
         /// <see cref="Vector3US.DistanceSquared(Vector3US, Vector3US)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
+        public static ushort Distance(ref Vector3US value1, ref Vector3US value2)
+        {
+			ushort x = (ushort)(value1.X - value2.X);
+			ushort y = (ushort)(value1.Y - value2.Y);
+			ushort z = (ushort)(value1.Z - value2.Z);
+
+            return (ushort)Math.Sqrt((x * x) + (y * y) + (z * z));
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector3US.DistanceSquared(Vector3US, Vector3US)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
         public static ushort Distance(Vector3US value1, Vector3US value2)
         {
 			ushort x = (ushort)(value1.X - value2.X);
@@ -816,14 +835,23 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector3US"/>.</param>
         /// <param name="right">The second source <see cref="Vector3US"/>.</param>
         /// <returns>A <see cref="Vector3US"/> containing the smallest components of the source vectors.</returns>
+		public static void Min(ref Vector3US left, ref Vector3US right, out Vector3US result)
+		{
+				result.X = (left.X < right.X) ? left.X : right.X;
+				result.Y = (left.Y < right.Y) ? left.Y : right.Y;
+				result.Z = (left.Z < right.Z) ? left.Z : right.Z;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector3US"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector3US"/>.</param>
+        /// <param name="right">The second source <see cref="Vector3US"/>.</param>
+        /// <returns>A <see cref="Vector3US"/> containing the smallest components of the source vectors.</returns>
 		public static Vector3US Min(ref Vector3US left, ref Vector3US right)
 		{
-			return new Vector3US()
-			{
-				X = (left.X < right.X) ? left.X : right.X,
-				Y = (left.Y < right.Y) ? left.Y : right.Y,
-				Z = (left.Z < right.Z) ? left.Z : right.Z,
-			};
+			Min(ref left, ref right, out Vector3US result);
+            return result;
 		}
 
 		/// <summary>
@@ -848,14 +876,23 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector3US"/>.</param>
         /// <param name="right">The second source <see cref="Vector3US"/>.</param>
         /// <returns>A <see cref="Vector3US"/> containing the largest components of the source vectors.</returns>
+		public static void Max(ref Vector3US left, ref Vector3US right, out Vector3US result)
+		{
+				result.X = (left.X > right.X) ? left.X : right.X;
+				result.Y = (left.Y > right.Y) ? left.Y : right.Y;
+				result.Z = (left.Z > right.Z) ? left.Z : right.Z;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector3US"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector3US"/>.</param>
+        /// <param name="right">The second source <see cref="Vector3US"/>.</param>
+        /// <returns>A <see cref="Vector3US"/> containing the largest components of the source vectors.</returns>
 		public static Vector3US Max(ref Vector3US left, ref Vector3US right)
 		{
-			return new Vector3US()
-			{
-				X = (left.X > right.X) ? left.X : right.X,
-				Y = (left.Y > right.Y) ? left.Y : right.Y,
-				Z = (left.Z > right.Z) ? left.Z : right.Z,
-			};
+			Max(ref left, ref right, out Vector3US result);
+            return result;
 		}
 
 		/// <summary>
@@ -930,6 +967,17 @@ namespace Molten
 				Y = value.Y < min ? min : value.Y > max ? max : value.Y,
 				Z = value.Z < min ? min : value.Z > max ? max : value.Z,
 			};
+        }
+
+        /// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="Vector3US"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static Vector3US Clamp(ref Vector3US value, ref Vector3US min, ref Vector3US max, out Vector3US result)
+        {
+				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
+				result.Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y;
+				result.Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z;
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>

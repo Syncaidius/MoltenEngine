@@ -680,6 +680,24 @@ namespace Molten
         /// <see cref="Vector2S.DistanceSquared(Vector2S, Vector2S)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
+        public static short Distance(ref Vector2S value1, ref Vector2S value2)
+        {
+			short x = (short)(value1.X - value2.X);
+			short y = (short)(value1.Y - value2.Y);
+
+            return (short)Math.Sqrt((x * x) + (y * y));
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector2S.DistanceSquared(Vector2S, Vector2S)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
         public static short Distance(Vector2S value1, Vector2S value2)
         {
 			short x = (short)(value1.X - value2.X);
@@ -814,13 +832,22 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector2S"/>.</param>
         /// <param name="right">The second source <see cref="Vector2S"/>.</param>
         /// <returns>A <see cref="Vector2S"/> containing the smallest components of the source vectors.</returns>
+		public static void Min(ref Vector2S left, ref Vector2S right, out Vector2S result)
+		{
+				result.X = (left.X < right.X) ? left.X : right.X;
+				result.Y = (left.Y < right.Y) ? left.Y : right.Y;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector2S"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector2S"/>.</param>
+        /// <param name="right">The second source <see cref="Vector2S"/>.</param>
+        /// <returns>A <see cref="Vector2S"/> containing the smallest components of the source vectors.</returns>
 		public static Vector2S Min(ref Vector2S left, ref Vector2S right)
 		{
-			return new Vector2S()
-			{
-				X = (left.X < right.X) ? left.X : right.X,
-				Y = (left.Y < right.Y) ? left.Y : right.Y,
-			};
+			Min(ref left, ref right, out Vector2S result);
+            return result;
 		}
 
 		/// <summary>
@@ -844,13 +871,22 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector2S"/>.</param>
         /// <param name="right">The second source <see cref="Vector2S"/>.</param>
         /// <returns>A <see cref="Vector2S"/> containing the largest components of the source vectors.</returns>
+		public static void Max(ref Vector2S left, ref Vector2S right, out Vector2S result)
+		{
+				result.X = (left.X > right.X) ? left.X : right.X;
+				result.Y = (left.Y > right.Y) ? left.Y : right.Y;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector2S"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector2S"/>.</param>
+        /// <param name="right">The second source <see cref="Vector2S"/>.</param>
+        /// <returns>A <see cref="Vector2S"/> containing the largest components of the source vectors.</returns>
 		public static Vector2S Max(ref Vector2S left, ref Vector2S right)
 		{
-			return new Vector2S()
-			{
-				X = (left.X > right.X) ? left.X : right.X,
-				Y = (left.Y > right.Y) ? left.Y : right.Y,
-			};
+			Max(ref left, ref right, out Vector2S result);
+            return result;
 		}
 
 		/// <summary>
@@ -921,6 +957,16 @@ namespace Molten
 				X = value.X < min ? min : value.X > max ? max : value.X,
 				Y = value.Y < min ? min : value.Y > max ? max : value.Y,
 			};
+        }
+
+        /// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="Vector2S"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static Vector2S Clamp(ref Vector2S value, ref Vector2S min, ref Vector2S max, out Vector2S result)
+        {
+				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
+				result.Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y;
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>

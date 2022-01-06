@@ -122,12 +122,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 3D vector by the given <see cref="QuaternionF"/> rotation.
+        /// Transforms a 3D vector by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector4<#=d.Postfix#>"/>.</param>
-        public static void Transform(ref <#=fName#> vector, ref QuaternionF rotation, out <#=fName#> result)
+        public static void Transform(ref <#=fName#> vector, ref Quaternion<#=d.Postfix#> rotation, out <#=fName#> result)
         {
             <#=d.DT#> x = rotation.X + rotation.X;
             <#=d.DT#> y = rotation.Y + rotation.Y;
@@ -149,24 +149,24 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 3D vector by the given <see cref="QuaternionF"/> rotation.
+        /// Transforms a 3D vector by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector4<#=d.Postfix#>"/>.</param>
-        public static <#=fName#> Transform(ref <#=fName#> vector, ref QuaternionF rotation)
+        public static <#=fName#> Transform(ref <#=fName#> vector, ref Quaternion<#=d.Postfix#> rotation)
         {
             Transform(ref vector, ref rotation, out <#=fName#> result);
             return result;
         }
 
         /// <summary>
-        /// Transforms a 3D vector by the given <see cref="QuaternionF"/> rotation.
+        /// Transforms a 3D vector by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
         /// <returns>The transformed <see cref="Vector4<#=d.Postfix#>"/>.</returns>
-        public static <#=fName#> Transform(<#=fName#> vector, QuaternionF rotation)
+        public static <#=fName#> Transform(<#=fName#> vector, Quaternion<#=d.Postfix#> rotation)
         {
             <#=fName#> result;
             Transform(ref vector, ref rotation, out result);
@@ -174,15 +174,15 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms an array of vectors by the given <see cref="QuaternionF"/> rotation.
+        /// Transforms an array of vectors by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
         /// </summary>
         /// <param name="source">The array of vectors to transform.</param>
-        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
         /// <param name="destination">The array for which the transformed vectors are stored.
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(<#=fName#>[] source, ref QuaternionF rotation, <#=fName#>[] destination)
+        public static void Transform(<#=fName#>[] source, ref Quaternion<#=d.Postfix#> rotation, <#=fName#>[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -259,6 +259,18 @@ namespace Molten
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="<#=fName#>"/>.</param>
+        public static void Transform(ref <#=fName#> vector, ref Matrix4<#=d.Postfix#> transform, out <#=fName#> result)
+        {
+            Transform(ref vector, ref transform, out Vector4<#=d.Postfix#> v4Result);
+            result = (<#=fName#>)v4Result;
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="<#=fName#>"/>.</param>
         public static <#=fName#> Transform(ref <#=fName#> vector, ref Matrix4<#=d.Postfix#> transform)
         {
             Transform(ref vector, ref transform, out Vector4<#=d.Postfix#> result);
@@ -323,7 +335,7 @@ namespace Molten
         /// <param name="x">X component of the vector to transform.</param>
         /// <param name="rotation">Rotation to apply to the vector.</param>
         /// <param name="result">Transformed vector.</param>
-        public static void TransformX(<#=d.DT#> x, ref QuaternionF rotation, out <#=fName#> result)
+        public static void TransformX(<#=d.DT#> x, ref Quaternion<#=d.Postfix#> rotation, out <#=fName#> result)
         {
             //This operation is an optimized-down version of v' = q * v * q^-1.
             //The expanded form would be to treat v as an 'axis only' quaternion
@@ -353,7 +365,7 @@ namespace Molten
         /// <param name="y">Y component of the vector to transform.</param>
         /// <param name="rotation">Rotation to apply to the vector.</param>
         /// <param name="result">Transformed vector.</param>
-        public static void TransformY(<#=d.DT#> y, ref QuaternionF rotation, out <#=fName#> result)
+        public static void TransformY(<#=d.DT#> y, ref Quaternion<#=d.Postfix#> rotation, out <#=fName#> result)
         {
             //This operation is an optimized-down version of v' = q * v * q^-1.
             //The expanded form would be to treat v as an 'axis only' quaternion
@@ -384,7 +396,7 @@ namespace Molten
         /// <param name="z">Z component of the vector to transform.</param>
         /// <param name="rotation">Rotation to apply to the vector.</param>
         /// <param name="result">Transformed vector.</param>
-        public static void TransformZ(<#=d.DT#> z, ref QuaternionF rotation, out <#=fName#> result)
+        public static void TransformZ(<#=d.DT#> z, ref Quaternion<#=d.Postfix#> rotation, out <#=fName#> result)
         {
             //This operation is an optimized-down version of v' = q * v * q^-1.
             //The expanded form would be to treat v as an 'axis only' quaternion

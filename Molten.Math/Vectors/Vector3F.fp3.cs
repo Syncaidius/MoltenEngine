@@ -235,6 +235,18 @@ namespace Molten
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector3F"/>.</param>
+        public static void Transform(ref Vector3F vector, ref Matrix4F transform, out Vector3F result)
+        {
+            Transform(ref vector, ref transform, out Vector4F v4Result);
+            result = (Vector3F)v4Result;
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="Matrix4F"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="Vector3F"/>.</param>
         public static Vector3F Transform(ref Vector3F vector, ref Matrix4F transform)
         {
             Transform(ref vector, ref transform, out Vector4F result);

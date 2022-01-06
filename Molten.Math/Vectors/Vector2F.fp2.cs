@@ -47,7 +47,20 @@ namespace Molten
             Vector2F result;
             Transform(ref vector, ref rotation, out result);
             return result;
-        }      
+        }  
+        
+        /// <summary>
+        /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
+        public static void Transform(ref Vector2F vector, ref Matrix4F transform, out Vector4F result)
+        {
+            result.X = (vector.X * transform.M11) + (vector.Y * transform.M21) + transform.M41;
+            result.Y = (vector.X * transform.M12) + (vector.Y * transform.M22) + transform.M42;
+            result.Z = (vector.X * transform.M13) + (vector.Y * transform.M23) + transform.M43;
+            result.W = (vector.X * transform.M14) + (vector.Y * transform.M24) + transform.M44;
+        }
 
         /// <summary>
         /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.
@@ -71,7 +84,8 @@ namespace Molten
         /// <returns>The transformed <see cref="Vector4F"/>.</returns>
         public static Vector4F Transform(Vector2F vector, Matrix4F transform)
         {
-            return Transform(ref vector, ref transform);
+            Transform(ref vector, ref transform, out Vector4F result);
+            return result;
         }
 
         /// <summary>

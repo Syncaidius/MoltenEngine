@@ -41,7 +41,7 @@ namespace Molten
 
 #region Static Methods
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="QuaternionF"/> rotation.
+        /// Transforms a 2D vector by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
         /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
@@ -61,24 +61,37 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="QuaternionF"/> rotation.
+        /// Transforms a 2D vector by the given <see cref="Quaternion<#=d.Postfix#>"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
-        /// <returns>The transformed <see cref="Vector4F"/>.</returns>
-        public static <#=fName#> Transform(<#=fName#> vector, QuaternionF rotation)
+        /// <param name="rotation">The <see cref="Quaternion<#=d.Postfix#>"/> rotation to apply.</param>
+        /// <returns>The transformed <see cref="Vector4<#=d.Postfix#>"/>.</returns>
+        public static <#=fName#> Transform(<#=fName#> vector, Quaternion<#=d.Postfix#> rotation)
         {
             <#=fName#> result;
             Transform(ref vector, ref rotation, out result);
             return result;
-        }      
-
+        }  
+        
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.
+        /// Transforms a 2D vector by the given <see cref="Matrix4<#=d.Postfix#>"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
-        public static Vector4<#=d.Postfix#> Transform(ref <#=fName#> vector, ref Matrix4F transform)
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        public static void Transform(ref <#=fName#> vector, ref Matrix4<#=d.Postfix#> transform, out Vector4<#=d.Postfix#> result)
+        {
+            result.X = (vector.X * transform.M11) + (vector.Y * transform.M21) + transform.M41;
+            result.Y = (vector.X * transform.M12) + (vector.Y * transform.M22) + transform.M42;
+            result.Z = (vector.X * transform.M13) + (vector.Y * transform.M23) + transform.M43;
+            result.W = (vector.X * transform.M14) + (vector.Y * transform.M24) + transform.M44;
+        }
+
+        /// <summary>
+        /// Transforms a 2D vector by the given <see cref="Matrix4<#=d.Postfix#>"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        public static Vector4<#=d.Postfix#> Transform(ref <#=fName#> vector, ref Matrix4<#=d.Postfix#> transform)
         {
             return new Vector4<#=d.Postfix#>(
                 (vector.X * transform.M11) + (vector.Y * transform.M21) + transform.M41,
@@ -88,18 +101,19 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 2D vector by the given <see cref="Matrix4F"/>.
+        /// Transforms a 2D vector by the given <see cref="Matrix4<#=d.Postfix#>"/>.
         /// </summary>
         /// <param name="vector">The source vector.</param>
-        /// <param name="transform">The transformation <see cref="Matrix4F"/>.</param>
-        /// <returns>The transformed <see cref="Vector4F"/>.</returns>
-        public static Vector4F Transform(<#=fName#> vector, Matrix4<#=d.Postfix#> transform)
+        /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
+        /// <returns>The transformed <see cref="Vector4<#=d.Postfix#>"/>.</returns>
+        public static Vector4<#=d.Postfix#> Transform(<#=fName#> vector, Matrix4<#=d.Postfix#> transform)
         {
-            return Transform(ref vector, ref transform);
+            Transform(ref vector, ref transform, out Vector4<#=d.Postfix#> result);
+            return result;
         }
 
         /// <summary>
-        /// Transforms an array of 2D vectors by the given <see cref="Matrix4F"/>.
+        /// Transforms an array of 2D vectors by the given <see cref="Matrix4<#=d.Postfix#>"/>.
         /// </summary>
         /// <param name="source">The array of vectors to transform.</param>
         /// <param name="transform">The transformation <see cref="Matrix4<#=d.Postfix#>"/>.</param>
@@ -251,12 +265,12 @@ namespace Molten
 
 
         /// <summary>
-        /// Performs a normal transformation using the given <see cref="Matrix2F"/>.
+        /// Performs a normal transformation using the given <see cref="Matrix2<#=d.Postfix#>"/>.
         /// </summary>
         /// <param name="normal">The normal vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix2F"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix2<#=d.Postfix#>"/>.</param>
         /// <param name="result">When the method completes, contains the transformed normal.</param>
-        public static <#=fName#> TransformNormal(ref <#=fName#> normal, ref Matrix2F transform)
+        public static <#=fName#> TransformNormal(ref <#=fName#> normal, ref Matrix2<#=d.Postfix#> transform)
         {
             return new <#=fName#>(
                 (normal.X * transform.M11) + (normal.Y * transform.M21),
@@ -264,12 +278,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Performs a normal transformation using the given <see cref="Matrix2F"/>.
+        /// Performs a normal transformation using the given <see cref="Matrix2<#=d.Postfix#>"/>.
         /// </summary>
         /// <param name="normal">The normal vector to transform.</param>
-        /// <param name="transform">The transformation <see cref="Matrix2F"/>.</param>
+        /// <param name="transform">The transformation <see cref="Matrix2<#=d.Postfix#>"/>.</param>
         /// <returns>The transformed normal.</returns>
-        public static <#=fName#> TransformNormal(<#=fName#> normal, Matrix2F transform)
+        public static <#=fName#> TransformNormal(<#=fName#> normal, Matrix2<#=d.Postfix#> transform)
         {
             return TransformNormal(ref normal, ref transform);
         }

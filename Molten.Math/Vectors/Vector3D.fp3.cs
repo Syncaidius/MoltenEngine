@@ -95,12 +95,12 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 3D vector by the given <see cref="QuaternionF"/> rotation.
+        /// Transforms a 3D vector by the given <see cref="QuaternionD"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionD"/> rotation to apply.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector4D"/>.</param>
-        public static void Transform(ref Vector3D vector, ref QuaternionF rotation, out Vector3D result)
+        public static void Transform(ref Vector3D vector, ref QuaternionD rotation, out Vector3D result)
         {
             double x = rotation.X + rotation.X;
             double y = rotation.Y + rotation.Y;
@@ -122,24 +122,24 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms a 3D vector by the given <see cref="QuaternionF"/> rotation.
+        /// Transforms a 3D vector by the given <see cref="QuaternionD"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionD"/> rotation to apply.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector4D"/>.</param>
-        public static Vector3D Transform(ref Vector3D vector, ref QuaternionF rotation)
+        public static Vector3D Transform(ref Vector3D vector, ref QuaternionD rotation)
         {
             Transform(ref vector, ref rotation, out Vector3D result);
             return result;
         }
 
         /// <summary>
-        /// Transforms a 3D vector by the given <see cref="QuaternionF"/> rotation.
+        /// Transforms a 3D vector by the given <see cref="QuaternionD"/> rotation.
         /// </summary>
         /// <param name="vector">The vector to rotate.</param>
-        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionD"/> rotation to apply.</param>
         /// <returns>The transformed <see cref="Vector4D"/>.</returns>
-        public static Vector3D Transform(Vector3D vector, QuaternionF rotation)
+        public static Vector3D Transform(Vector3D vector, QuaternionD rotation)
         {
             Vector3D result;
             Transform(ref vector, ref rotation, out result);
@@ -147,15 +147,15 @@ namespace Molten
         }
 
         /// <summary>
-        /// Transforms an array of vectors by the given <see cref="QuaternionF"/> rotation.
+        /// Transforms an array of vectors by the given <see cref="QuaternionD"/> rotation.
         /// </summary>
         /// <param name="source">The array of vectors to transform.</param>
-        /// <param name="rotation">The <see cref="QuaternionF"/> rotation to apply.</param>
+        /// <param name="rotation">The <see cref="QuaternionD"/> rotation to apply.</param>
         /// <param name="destination">The array for which the transformed vectors are stored.
         /// This array may be the same array as <paramref name="source"/>.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="destination"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="destination"/> is shorter in length than <paramref name="source"/>.</exception>
-        public static void Transform(Vector3D[] source, ref QuaternionF rotation, Vector3D[] destination)
+        public static void Transform(Vector3D[] source, ref QuaternionD rotation, Vector3D[] destination)
         {
             if (source == null)
                 throw new ArgumentNullException("source");
@@ -232,6 +232,18 @@ namespace Molten
         /// <param name="vector">The source vector.</param>
         /// <param name="transform">The transformation <see cref="Matrix4D"/>.</param>
         /// <param name="result">When the method completes, contains the transformed <see cref="Vector3D"/>.</param>
+        public static void Transform(ref Vector3D vector, ref Matrix4D transform, out Vector3D result)
+        {
+            Transform(ref vector, ref transform, out Vector4D v4Result);
+            result = (Vector3D)v4Result;
+        }
+
+        /// <summary>
+        /// Transforms a 3D vector by the given <see cref="Matrix4D"/>.
+        /// </summary>
+        /// <param name="vector">The source vector.</param>
+        /// <param name="transform">The transformation <see cref="Matrix4D"/>.</param>
+        /// <param name="result">When the method completes, contains the transformed <see cref="Vector3D"/>.</param>
         public static Vector3D Transform(ref Vector3D vector, ref Matrix4D transform)
         {
             Transform(ref vector, ref transform, out Vector4D result);
@@ -296,7 +308,7 @@ namespace Molten
         /// <param name="x">X component of the vector to transform.</param>
         /// <param name="rotation">Rotation to apply to the vector.</param>
         /// <param name="result">Transformed vector.</param>
-        public static void TransformX(double x, ref QuaternionF rotation, out Vector3D result)
+        public static void TransformX(double x, ref QuaternionD rotation, out Vector3D result)
         {
             //This operation is an optimized-down version of v' = q * v * q^-1.
             //The expanded form would be to treat v as an 'axis only' quaternion
@@ -326,7 +338,7 @@ namespace Molten
         /// <param name="y">Y component of the vector to transform.</param>
         /// <param name="rotation">Rotation to apply to the vector.</param>
         /// <param name="result">Transformed vector.</param>
-        public static void TransformY(double y, ref QuaternionF rotation, out Vector3D result)
+        public static void TransformY(double y, ref QuaternionD rotation, out Vector3D result)
         {
             //This operation is an optimized-down version of v' = q * v * q^-1.
             //The expanded form would be to treat v as an 'axis only' quaternion
@@ -357,7 +369,7 @@ namespace Molten
         /// <param name="z">Z component of the vector to transform.</param>
         /// <param name="rotation">Rotation to apply to the vector.</param>
         /// <param name="result">Transformed vector.</param>
-        public static void TransformZ(double z, ref QuaternionF rotation, out Vector3D result)
+        public static void TransformZ(double z, ref QuaternionD rotation, out Vector3D result)
         {
             //This operation is an optimized-down version of v' = q * v * q^-1.
             //The expanded form would be to treat v as an 'axis only' quaternion

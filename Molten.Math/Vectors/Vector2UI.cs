@@ -650,6 +650,24 @@ namespace Molten
         /// <see cref="Vector2UI.DistanceSquared(Vector2UI, Vector2UI)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
+        public static uint Distance(ref Vector2UI value1, ref Vector2UI value2)
+        {
+			uint x = (value1.X - value2.X);
+			uint y = (value1.Y - value2.Y);
+
+            return (uint)Math.Sqrt((x * x) + (y * y));
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector2UI.DistanceSquared(Vector2UI, Vector2UI)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
         public static uint Distance(Vector2UI value1, Vector2UI value2)
         {
 			uint x = (value1.X - value2.X);
@@ -784,13 +802,22 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector2UI"/>.</param>
         /// <param name="right">The second source <see cref="Vector2UI"/>.</param>
         /// <returns>A <see cref="Vector2UI"/> containing the smallest components of the source vectors.</returns>
+		public static void Min(ref Vector2UI left, ref Vector2UI right, out Vector2UI result)
+		{
+				result.X = (left.X < right.X) ? left.X : right.X;
+				result.Y = (left.Y < right.Y) ? left.Y : right.Y;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector2UI"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector2UI"/>.</param>
+        /// <param name="right">The second source <see cref="Vector2UI"/>.</param>
+        /// <returns>A <see cref="Vector2UI"/> containing the smallest components of the source vectors.</returns>
 		public static Vector2UI Min(ref Vector2UI left, ref Vector2UI right)
 		{
-			return new Vector2UI()
-			{
-				X = (left.X < right.X) ? left.X : right.X,
-				Y = (left.Y < right.Y) ? left.Y : right.Y,
-			};
+			Min(ref left, ref right, out Vector2UI result);
+            return result;
 		}
 
 		/// <summary>
@@ -814,13 +841,22 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector2UI"/>.</param>
         /// <param name="right">The second source <see cref="Vector2UI"/>.</param>
         /// <returns>A <see cref="Vector2UI"/> containing the largest components of the source vectors.</returns>
+		public static void Max(ref Vector2UI left, ref Vector2UI right, out Vector2UI result)
+		{
+				result.X = (left.X > right.X) ? left.X : right.X;
+				result.Y = (left.Y > right.Y) ? left.Y : right.Y;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector2UI"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector2UI"/>.</param>
+        /// <param name="right">The second source <see cref="Vector2UI"/>.</param>
+        /// <returns>A <see cref="Vector2UI"/> containing the largest components of the source vectors.</returns>
 		public static Vector2UI Max(ref Vector2UI left, ref Vector2UI right)
 		{
-			return new Vector2UI()
-			{
-				X = (left.X > right.X) ? left.X : right.X,
-				Y = (left.Y > right.Y) ? left.Y : right.Y,
-			};
+			Max(ref left, ref right, out Vector2UI result);
+            return result;
 		}
 
 		/// <summary>
@@ -891,6 +927,16 @@ namespace Molten
 				X = value.X < min ? min : value.X > max ? max : value.X,
 				Y = value.Y < min ? min : value.Y > max ? max : value.Y,
 			};
+        }
+
+        /// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="Vector2UI"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static Vector2UI Clamp(ref Vector2UI value, ref Vector2UI min, ref Vector2UI max, out Vector2UI result)
+        {
+				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
+				result.Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y;
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>

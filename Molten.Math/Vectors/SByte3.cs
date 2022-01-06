@@ -707,6 +707,25 @@ namespace Molten
         /// <see cref="SByte3.DistanceSquared(SByte3, SByte3)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
+        public static sbyte Distance(ref SByte3 value1, ref SByte3 value2)
+        {
+			sbyte x = (sbyte)(value1.X - value2.X);
+			sbyte y = (sbyte)(value1.Y - value2.Y);
+			sbyte z = (sbyte)(value1.Z - value2.Z);
+
+            return (sbyte)Math.Sqrt((x * x) + (y * y) + (z * z));
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="SByte3.DistanceSquared(SByte3, SByte3)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
         public static sbyte Distance(SByte3 value1, SByte3 value2)
         {
 			sbyte x = (sbyte)(value1.X - value2.X);
@@ -847,14 +866,23 @@ namespace Molten
         /// <param name="left">The first source <see cref="SByte3"/>.</param>
         /// <param name="right">The second source <see cref="SByte3"/>.</param>
         /// <returns>A <see cref="SByte3"/> containing the smallest components of the source vectors.</returns>
+		public static void Min(ref SByte3 left, ref SByte3 right, out SByte3 result)
+		{
+				result.X = (left.X < right.X) ? left.X : right.X;
+				result.Y = (left.Y < right.Y) ? left.Y : right.Y;
+				result.Z = (left.Z < right.Z) ? left.Z : right.Z;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="SByte3"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="SByte3"/>.</param>
+        /// <param name="right">The second source <see cref="SByte3"/>.</param>
+        /// <returns>A <see cref="SByte3"/> containing the smallest components of the source vectors.</returns>
 		public static SByte3 Min(ref SByte3 left, ref SByte3 right)
 		{
-			return new SByte3()
-			{
-				X = (left.X < right.X) ? left.X : right.X,
-				Y = (left.Y < right.Y) ? left.Y : right.Y,
-				Z = (left.Z < right.Z) ? left.Z : right.Z,
-			};
+			Min(ref left, ref right, out SByte3 result);
+            return result;
 		}
 
 		/// <summary>
@@ -879,14 +907,23 @@ namespace Molten
         /// <param name="left">The first source <see cref="SByte3"/>.</param>
         /// <param name="right">The second source <see cref="SByte3"/>.</param>
         /// <returns>A <see cref="SByte3"/> containing the largest components of the source vectors.</returns>
+		public static void Max(ref SByte3 left, ref SByte3 right, out SByte3 result)
+		{
+				result.X = (left.X > right.X) ? left.X : right.X;
+				result.Y = (left.Y > right.Y) ? left.Y : right.Y;
+				result.Z = (left.Z > right.Z) ? left.Z : right.Z;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="SByte3"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="SByte3"/>.</param>
+        /// <param name="right">The second source <see cref="SByte3"/>.</param>
+        /// <returns>A <see cref="SByte3"/> containing the largest components of the source vectors.</returns>
 		public static SByte3 Max(ref SByte3 left, ref SByte3 right)
 		{
-			return new SByte3()
-			{
-				X = (left.X > right.X) ? left.X : right.X,
-				Y = (left.Y > right.Y) ? left.Y : right.Y,
-				Z = (left.Z > right.Z) ? left.Z : right.Z,
-			};
+			Max(ref left, ref right, out SByte3 result);
+            return result;
 		}
 
 		/// <summary>
@@ -961,6 +998,17 @@ namespace Molten
 				Y = value.Y < min ? min : value.Y > max ? max : value.Y,
 				Z = value.Z < min ? min : value.Z > max ? max : value.Z,
 			};
+        }
+
+        /// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="SByte3"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static SByte3 Clamp(ref SByte3 value, ref SByte3 min, ref SByte3 max, out SByte3 result)
+        {
+				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
+				result.Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y;
+				result.Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z;
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>

@@ -176,7 +176,10 @@
     <Compile Include="Colors\Color4.cs" />
     <Compile Include="Colors\ColorBGRA.cs" />
     <Compile Include="AngleD.cs" />
+    <Compile Include="Matrices\Matrix2F.cs" />
+    <Compile Include="Matrices\Matrix2x3D.cs" />
     <Compile Include="Matrices\Matrix3D.cs" />
+    <Compile Include="Matrices\Matrix3x2D.cs" />
     <Compile Include="Matrices\Matrix4D.cs" />
     <Compile Include="MathHelperDP.cs" />
     <Compile Include="PlainIntersectionType.cs" />
@@ -199,7 +202,7 @@
     <Compile Include="2D\RectangleUI.cs" />
     <Compile Include="MathHelper.cs" />
     <Compile Include="Matrices\Matrix4F.cs" />
-    <Compile Include="Matrices\Matrix2F.cs" />
+    <Compile Include="Matrices\Matrix2D.cs" />
     <Compile Include="Matrices\Matrix2x3F.cs" />
     <Compile Include="Matrices\Matrix3x2F.cs" />
     <Compile Include="Matrices\Matrix3F.cs" />

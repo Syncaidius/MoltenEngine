@@ -57,6 +57,19 @@ namespace Molten
         /// <param name="left">First source <see cref="SByte3"/>.</param>
         /// <param name="right">Second source <see cref="SByte3"/>.</param>
 
+        public static void Cross(ref SByte3 left, ref SByte3 right, out SByte3 result)
+        {
+                result.X = (sbyte)((left.Y * right.Z) - (left.Z * right.Y));
+                result.Y = (sbyte)((left.Z * right.X) - (left.X * right.Z));
+                result.Z = (sbyte)((left.X * right.Y) - (left.Y * right.X));
+        }
+
+        /// <summary>
+        /// Calculates the cross product of two <see cref="SByte3"/>.
+        /// </summary>
+        /// <param name="left">First source <see cref="SByte3"/>.</param>
+        /// <param name="right">Second source <see cref="SByte3"/>.</param>
+
         public static SByte3 Cross(ref SByte3 left, ref SByte3 right)
         {
             return new SByte3(

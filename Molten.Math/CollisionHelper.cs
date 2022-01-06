@@ -155,8 +155,7 @@ namespace Molten
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 126
 
-            float dot;
-            Vector3F.Dot(ref plane.Normal, ref point, out dot);
+            float dot = Vector3F.Dot(ref plane.Normal, ref point);
             float t = dot - plane.D;
 
             result = point - (t * plane.Normal);
@@ -242,8 +241,7 @@ namespace Molten
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 127
 
-            float dot;
-            Vector3F.Dot(ref plane.Normal, ref point, out dot);
+            float dot = Vector3F.Dot(ref plane.Normal, ref point);
             return dot - plane.D;
         }
 
@@ -341,8 +339,7 @@ namespace Molten
             //Source: Jorgy343
             //Reference: None
 
-            float distance;
-            Vector3F.Distance(ref sphere.Center, ref point, out distance);
+            float distance = Vector3F.Distance(ref sphere.Center, ref point);
             distance -= sphere.Radius;
 
             return Math.Max(distance, 0f);
@@ -359,8 +356,7 @@ namespace Molten
             //Source: Jorgy343
             //Reference: None
 
-            float distance;
-            Vector3F.Distance(ref sphere1.Center, ref sphere2.Center, out distance);
+            float distance = Vector3F.Distance(ref sphere1.Center, ref sphere2.Center);
             distance -= sphere1.Radius + sphere2.Radius;
 
             return Math.Max(distance, 0f);
@@ -419,9 +415,7 @@ namespace Molten
             //Source: Real-Time Rendering, Third Edition
             //Reference: Page 780
 
-            Vector3F cross;
-
-            Vector3F.Cross(ref ray1.Direction, ref ray2.Direction, out cross);
+            Vector3F.Cross(ref ray1.Direction, ref ray2.Direction, out Vector3F cross);
             float denominator = cross.Length();
 
             //Lines are parallel.
@@ -507,8 +501,7 @@ namespace Molten
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 175
 
-            float direction;
-            Vector3F.Dot(ref plane.Normal, ref ray.Direction, out direction);
+            float direction = Vector3F.Dot(ref plane.Normal, ref ray.Direction);
 
             if (MathHelper.IsZero(direction))
             {
@@ -516,8 +509,7 @@ namespace Molten
                 return false;
             }
 
-            float position;
-            Vector3F.Dot(ref plane.Normal, ref ray.Position, out position);
+            float position = Vector3F.Dot(ref plane.Normal, ref ray.Position);
             distance = (-plane.D - position) / direction;
 
             if (distance < 0f)
@@ -563,8 +555,7 @@ namespace Molten
         /// <returns>Whether or not the line intersects the plane.  If false, the line is parallel to the plane's surface.</returns>
         public static bool RayIntersectsPlane(ref Ray ray, ref Plane p, out float t, out Vector3F q)
         {
-            float denominator;
-            Vector3F.Dot(ref p.Normal, ref ray.Direction, out denominator);
+            float denominator = Vector3F.Dot(ref p.Normal, ref ray.Direction);
             if (denominator < MathHelper.Epsilon && denominator > -MathHelper.Epsilon)
             {
                 //Surface of plane and line are parallel (or very close to it).
@@ -572,8 +563,7 @@ namespace Molten
                 t = float.MaxValue;
                 return false;
             }
-            float numerator;
-            Vector3F.Dot(ref p.Normal, ref ray.Position, out numerator);
+            float numerator = Vector3F.Dot(ref p.Normal, ref ray.Position);
             t = (p.D - numerator) / denominator;
             //Compute the intersection position.
             Vector3F.Multiply(ref ray.Direction, t, out q);
@@ -734,8 +724,7 @@ namespace Molten
             if (hit.Normal.LengthSquared() < MathHelper.Epsilon)
                 return false; //Degenerate triangle!
 
-            float d;
-            Vector3F.Dot(ref ray.Direction, ref hit.Normal, out d);
+            float d = Vector3F.Dot(ref ray.Direction, ref hit.Normal);
             d = -d;
 
             hitClockwise = d >= 0;
@@ -743,8 +732,7 @@ namespace Molten
             Vector3F ap;
             Vector3F.Subtract(ref ray.Position, ref a, out ap);
 
-            Vector3F.Dot(ref ap, ref hit.Normal, out hit.T);
-            hit.T /= d;
+            hit.T = Vector3F.Dot(ref ap, ref hit.Normal) / d;
             if (hit.T < 0 || hit.T > maximumLength)
                 return false;//Hit is behind origin, or too far away.
 
@@ -753,13 +741,11 @@ namespace Molten
 
             // Compute barycentric coordinates
             Vector3F.Subtract(ref hit.Location, ref a, out ap);
-            float ABdotAB, ABdotAC, ABdotAP;
-            float ACdotAC, ACdotAP;
-            Vector3F.Dot(ref ab, ref ab, out ABdotAB);
-            Vector3F.Dot(ref ab, ref ac, out ABdotAC);
-            Vector3F.Dot(ref ab, ref ap, out ABdotAP);
-            Vector3F.Dot(ref ac, ref ac, out ACdotAC);
-            Vector3F.Dot(ref ac, ref ap, out ACdotAP);
+            float ABdotAB = Vector3F.Dot(ref ab, ref ab);
+            float ABdotAC = Vector3F.Dot(ref ab, ref ac);
+            float ABdotAP = Vector3F.Dot(ref ab, ref ap);
+            float ACdotAC = Vector3F.Dot(ref ac, ref ac);
+            float ACdotAP = Vector3F.Dot(ref ac, ref ap);
 
             float denom = 1 / (ABdotAB * ACdotAC - ABdotAC * ABdotAC);
             float u = (ACdotAC * ABdotAP - ABdotAC * ACdotAP) * denom;
@@ -791,9 +777,7 @@ namespace Molten
             if (hit.Normal.LengthSquared() < MathHelper.Epsilon)
                 return false; //Degenerate triangle!
 
-            float d;
-            Vector3F.Dot(ref ray.Direction, ref hit.Normal, out d);
-            d = -d;
+            float d = -Vector3F.Dot(ref ray.Direction, ref hit.Normal);
             switch (sidedness)
             {
                 case TriangleSidedness.DoubleSided:
@@ -820,8 +804,7 @@ namespace Molten
             Vector3F ap;
             Vector3F.Subtract(ref ray.Position, ref a, out ap);
 
-            Vector3F.Dot(ref ap, ref hit.Normal, out hit.T);
-            hit.T /= d;
+            hit.T = Vector3F.Dot(ref ap, ref hit.Normal) / d;
             if (hit.T < 0 || hit.T > maximumLength)
                 return false;//Hit is behind origin, or too far away.
 
@@ -830,13 +813,11 @@ namespace Molten
 
             // Compute barycentric coordinates
             Vector3F.Subtract(ref hit.Location, ref a, out ap);
-            float ABdotAB, ABdotAC, ABdotAP;
-            float ACdotAC, ACdotAP;
-            Vector3F.Dot(ref ab, ref ab, out ABdotAB);
-            Vector3F.Dot(ref ab, ref ac, out ABdotAC);
-            Vector3F.Dot(ref ab, ref ap, out ABdotAP);
-            Vector3F.Dot(ref ac, ref ac, out ACdotAC);
-            Vector3F.Dot(ref ac, ref ap, out ACdotAP);
+            float ABdotAB = Vector3F.Dot(ref ab, ref ab);
+            float ABdotAC = Vector3F.Dot(ref ab, ref ac);
+            float ABdotAP = Vector3F.Dot(ref ab, ref ap);
+            float ACdotAC = Vector3F.Dot(ref ac, ref ac);
+            float ACdotAP = Vector3F.Dot(ref ac, ref ap);
 
             float denom = 1 / (ABdotAB * ACdotAC - ABdotAC * ABdotAC);
             float u = (ACdotAC * ABdotAP - ABdotAC * ACdotAP) * denom;
@@ -1089,8 +1070,7 @@ namespace Molten
         /// <returns>Whether the two objects intersected.</returns>
         public static PlaneIntersectionType PlaneIntersectsPoint(ref Plane plane, ref Vector3F point)
         {
-            float distance;
-            Vector3F.Dot(ref plane.Normal, ref point, out distance);
+            float distance = Vector3F.Dot(ref plane.Normal, ref point);
             distance += plane.D;
 
             if (distance > 0f)
@@ -1115,8 +1095,7 @@ namespace Molten
 
             //If direction is the zero vector, the planes are parallel and possibly
             //coincident. It is not an intersection. The dot product will tell us.
-            float denominator;
-            Vector3F.Dot(ref direction, ref direction, out denominator);
+            float denominator = Vector3F.Dot(ref direction, ref direction);
 
             if (MathHelper.IsZero(denominator))
                 return false;
@@ -1147,8 +1126,7 @@ namespace Molten
 
             //If direction is the zero vector, the planes are parallel and possibly
             //coincident. It is not an intersection. The dot product will tell us.
-            float denominator;
-            Vector3F.Dot(ref direction, ref direction, out denominator);
+            float denominator = Vector3F.Dot(ref direction, ref direction);
 
             //We assume the planes are normalized, therefore the denominator
             //only serves as a parallel and coincident check. Otherwise we need
@@ -1217,8 +1195,7 @@ namespace Molten
             min.Y = (plane.Normal.Y >= 0.0f) ? box.Max.Y : box.Min.Y;
             min.Z = (plane.Normal.Z >= 0.0f) ? box.Max.Z : box.Min.Z;
 
-            float distance;
-            Vector3F.Dot(ref plane.Normal, ref max, out distance);
+            float distance = Vector3F.Dot(ref plane.Normal, ref max);
 
             if (distance + plane.D > 0.0f)
                 return PlaneIntersectionType.Front;
@@ -1242,8 +1219,7 @@ namespace Molten
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 160
 
-            float distance;
-            Vector3F.Dot(ref plane.Normal, ref sphere.Center, out distance);
+            float distance = Vector3F.Dot(ref plane.Normal, ref sphere.Center);
             distance += plane.D;
 
             if (distance > sphere.Radius)
@@ -1310,8 +1286,7 @@ namespace Molten
             //Source: Real-Time Collision Detection by Christer Ericson
             //Reference: Page 166
 
-            Vector3F vector;
-            Vector3F.Clamp(ref sphere.Center, ref box.Min, ref box.Max, out vector);
+            Vector3F.Clamp(ref sphere.Center, ref box.Min, ref box.Max, out Vector3F vector);
             float distance = Vector3F.DistanceSquared(sphere.Center, vector);
 
             return distance <= sphere.Radius * sphere.Radius;
@@ -1334,8 +1309,7 @@ namespace Molten
             ClosestPointPointTriangle(ref sphere.Center, ref vertex1, ref vertex2, ref vertex3, out point);
             Vector3F v = point - sphere.Center;
 
-            float dot;
-            Vector3F.Dot(ref v, ref v, out dot);
+            float dot = Vector3F.Dot(ref v, ref v);
 
             return dot <= sphere.Radius * sphere.Radius;
         }
@@ -1365,8 +1339,7 @@ namespace Molten
         {
             Vector3F ab;
             Vector3F.Subtract(ref b, ref a, out ab);
-            float denominator;
-            Vector3F.Dot(ref p.Normal, ref ab, out denominator);
+            float denominator = Vector3F.Dot(ref p.Normal, ref ab);
             if (denominator < MathHelper.Epsilon && denominator > -MathHelper.Epsilon)
             {
                 //Surface of plane and line are parallel (or very close to it).
@@ -1375,8 +1348,7 @@ namespace Molten
                 return false;
             }
 
-            float numerator;
-            Vector3F.Dot(ref p.Normal, ref a, out numerator);
+            float numerator = Vector3F.Dot(ref p.Normal, ref a);
             t = (p.D - numerator) / denominator;
 
             //Compute the intersection position.

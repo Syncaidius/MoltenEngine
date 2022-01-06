@@ -702,6 +702,26 @@ namespace Molten
         /// <see cref="Byte4.DistanceSquared(Byte4, Byte4)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
+        public static byte Distance(ref Byte4 value1, ref Byte4 value2)
+        {
+			byte x = (byte)(value1.X - value2.X);
+			byte y = (byte)(value1.Y - value2.Y);
+			byte z = (byte)(value1.Z - value2.Z);
+			byte w = (byte)(value1.W - value2.W);
+
+            return (byte)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Byte4.DistanceSquared(Byte4, Byte4)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
         public static byte Distance(Byte4 value1, Byte4 value2)
         {
 			byte x = (byte)(value1.X - value2.X);
@@ -848,15 +868,24 @@ namespace Molten
         /// <param name="left">The first source <see cref="Byte4"/>.</param>
         /// <param name="right">The second source <see cref="Byte4"/>.</param>
         /// <returns>A <see cref="Byte4"/> containing the smallest components of the source vectors.</returns>
+		public static void Min(ref Byte4 left, ref Byte4 right, out Byte4 result)
+		{
+				result.X = (left.X < right.X) ? left.X : right.X;
+				result.Y = (left.Y < right.Y) ? left.Y : right.Y;
+				result.Z = (left.Z < right.Z) ? left.Z : right.Z;
+				result.W = (left.W < right.W) ? left.W : right.W;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Byte4"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Byte4"/>.</param>
+        /// <param name="right">The second source <see cref="Byte4"/>.</param>
+        /// <returns>A <see cref="Byte4"/> containing the smallest components of the source vectors.</returns>
 		public static Byte4 Min(ref Byte4 left, ref Byte4 right)
 		{
-			return new Byte4()
-			{
-				X = (left.X < right.X) ? left.X : right.X,
-				Y = (left.Y < right.Y) ? left.Y : right.Y,
-				Z = (left.Z < right.Z) ? left.Z : right.Z,
-				W = (left.W < right.W) ? left.W : right.W,
-			};
+			Min(ref left, ref right, out Byte4 result);
+            return result;
 		}
 
 		/// <summary>
@@ -882,15 +911,24 @@ namespace Molten
         /// <param name="left">The first source <see cref="Byte4"/>.</param>
         /// <param name="right">The second source <see cref="Byte4"/>.</param>
         /// <returns>A <see cref="Byte4"/> containing the largest components of the source vectors.</returns>
+		public static void Max(ref Byte4 left, ref Byte4 right, out Byte4 result)
+		{
+				result.X = (left.X > right.X) ? left.X : right.X;
+				result.Y = (left.Y > right.Y) ? left.Y : right.Y;
+				result.Z = (left.Z > right.Z) ? left.Z : right.Z;
+				result.W = (left.W > right.W) ? left.W : right.W;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Byte4"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Byte4"/>.</param>
+        /// <param name="right">The second source <see cref="Byte4"/>.</param>
+        /// <returns>A <see cref="Byte4"/> containing the largest components of the source vectors.</returns>
 		public static Byte4 Max(ref Byte4 left, ref Byte4 right)
 		{
-			return new Byte4()
-			{
-				X = (left.X > right.X) ? left.X : right.X,
-				Y = (left.Y > right.Y) ? left.Y : right.Y,
-				Z = (left.Z > right.Z) ? left.Z : right.Z,
-				W = (left.W > right.W) ? left.W : right.W,
-			};
+			Max(ref left, ref right, out Byte4 result);
+            return result;
 		}
 
 		/// <summary>
@@ -969,6 +1007,18 @@ namespace Molten
 				Z = value.Z < min ? min : value.Z > max ? max : value.Z,
 				W = value.W < min ? min : value.W > max ? max : value.W,
 			};
+        }
+
+        /// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="Byte4"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static Byte4 Clamp(ref Byte4 value, ref Byte4 min, ref Byte4 max, out Byte4 result)
+        {
+				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
+				result.Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y;
+				result.Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z;
+				result.W = value.W < min.W ? min.W : value.W > max.W ? max.W : value.W;
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>

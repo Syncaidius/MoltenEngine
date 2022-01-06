@@ -865,6 +865,30 @@ namespace Molten
         /// <see cref="<#=fName#>.DistanceSquared(<#=fName#>, <#=fName#>)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
+        public static <#=d.DT#> Distance(ref <#=fName#> value1, ref <#=fName#> value2)
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+			<#=d.DT#> <#=pMap[p]#> = <#=typeCast#>(value1.<#=pMapUpper[p]#> - value2.<#=pMapUpper[p]#>);
+<#
+		}
+#>
+
+            return <#=fpCast#>Math.Sqrt(<#for(int p = 0; p < size; p++){#>(<#=pMap[p]#> * <#=pMap[p]#>)<#=(p < (size-1) ? " + " : "")#><#}#>);
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="<#=fName#>.DistanceSquared(<#=fName#>, <#=fName#>)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
         public static <#=d.DT#> Distance(<#=fName#> value1, <#=fName#> value2)
         {
 <#
@@ -1044,19 +1068,28 @@ namespace Molten
         /// <param name="left">The first source <#=See(fName)#>.</param>
         /// <param name="right">The second source <#=See(fName)#>.</param>
         /// <returns>A <#=See(fName)#> containing the smallest components of the source vectors.</returns>
-		public static <#=fName#> Min(ref <#=fName#> left, ref <#=fName#> right)
+		public static void Min(ref <#=fName#> left, ref <#=fName#> right, out <#=fName#> result)
 		{
-			return new <#=fName#>()
-			{
 <#
 		for(int p = 0; p < size; p++)
 		{
 #>
-				<#=pMapUpper[p]#> = (left.<#=pMapUpper[p]#> < right.<#=pMapUpper[p]#>) ? left.<#=pMapUpper[p]#> : right.<#=pMapUpper[p]#>,
+				result.<#=pMapUpper[p]#> = (left.<#=pMapUpper[p]#> < right.<#=pMapUpper[p]#>) ? left.<#=pMapUpper[p]#> : right.<#=pMapUpper[p]#>;
 <#
 		}
 #>
-			};
+		}
+
+        /// <summary>
+        /// Returns a <#=See(fName)#> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <#=See(fName)#>.</param>
+        /// <param name="right">The second source <#=See(fName)#>.</param>
+        /// <returns>A <#=See(fName)#> containing the smallest components of the source vectors.</returns>
+		public static <#=fName#> Min(ref <#=fName#> left, ref <#=fName#> right)
+		{
+			Min(ref left, ref right, out <#=fName#> result);
+            return result;
 		}
 
 		/// <summary>
@@ -1086,19 +1119,28 @@ namespace Molten
         /// <param name="left">The first source <#=See(fName)#>.</param>
         /// <param name="right">The second source <#=See(fName)#>.</param>
         /// <returns>A <#=See(fName)#> containing the largest components of the source vectors.</returns>
-		public static <#=fName#> Max(ref <#=fName#> left, ref <#=fName#> right)
+		public static void Max(ref <#=fName#> left, ref <#=fName#> right, out <#=fName#> result)
 		{
-			return new <#=fName#>()
-			{
 <#
 		for(int p = 0; p < size; p++)
 		{
 #>
-				<#=pMapUpper[p]#> = (left.<#=pMapUpper[p]#> > right.<#=pMapUpper[p]#>) ? left.<#=pMapUpper[p]#> : right.<#=pMapUpper[p]#>,
+				result.<#=pMapUpper[p]#> = (left.<#=pMapUpper[p]#> > right.<#=pMapUpper[p]#>) ? left.<#=pMapUpper[p]#> : right.<#=pMapUpper[p]#>;
 <#
 		}
 #>
-			};
+		}
+
+        /// <summary>
+        /// Returns a <#=See(fName)#> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <#=See(fName)#>.</param>
+        /// <param name="right">The second source <#=See(fName)#>.</param>
+        /// <returns>A <#=See(fName)#> containing the largest components of the source vectors.</returns>
+		public static <#=fName#> Max(ref <#=fName#> left, ref <#=fName#> right)
+		{
+			Max(ref left, ref right, out <#=fName#> result);
+            return result;
 		}
 
 		/// <summary>
@@ -1197,6 +1239,22 @@ namespace Molten
 		}
 #>
 			};
+        }
+
+        /// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <#=See(fName)#> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static <#=fName#> Clamp(ref <#=fName#> value, ref <#=fName#> min, ref <#=fName#> max, out <#=fName#> result)
+        {
+<#
+		for(int p = 0; p < size; p++)
+		{
+#>
+				result.<#=pMapUpper[p]#> = value.<#=pMapUpper[p]#> < min.<#=pMapUpper[p]#> ? min.<#=pMapUpper[p]#> : value.<#=pMapUpper[p]#> > max.<#=pMapUpper[p]#> ? max.<#=pMapUpper[p]#> : value.<#=pMapUpper[p]#>;
+<#
+		}
+#>
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>

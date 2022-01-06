@@ -734,6 +734,26 @@ namespace Molten
         /// <see cref="Vector4F.DistanceSquared(Vector4F, Vector4F)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
+        public static float Distance(ref Vector4F value1, ref Vector4F value2)
+        {
+			float x = (value1.X - value2.X);
+			float y = (value1.Y - value2.Y);
+			float z = (value1.Z - value2.Z);
+			float w = (value1.W - value2.W);
+
+            return (float)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector4F.DistanceSquared(Vector4F, Vector4F)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
         public static float Distance(Vector4F value1, Vector4F value2)
         {
 			float x = (value1.X - value2.X);
@@ -880,15 +900,24 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector4F"/>.</param>
         /// <param name="right">The second source <see cref="Vector4F"/>.</param>
         /// <returns>A <see cref="Vector4F"/> containing the smallest components of the source vectors.</returns>
+		public static void Min(ref Vector4F left, ref Vector4F right, out Vector4F result)
+		{
+				result.X = (left.X < right.X) ? left.X : right.X;
+				result.Y = (left.Y < right.Y) ? left.Y : right.Y;
+				result.Z = (left.Z < right.Z) ? left.Z : right.Z;
+				result.W = (left.W < right.W) ? left.W : right.W;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector4F"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector4F"/>.</param>
+        /// <param name="right">The second source <see cref="Vector4F"/>.</param>
+        /// <returns>A <see cref="Vector4F"/> containing the smallest components of the source vectors.</returns>
 		public static Vector4F Min(ref Vector4F left, ref Vector4F right)
 		{
-			return new Vector4F()
-			{
-				X = (left.X < right.X) ? left.X : right.X,
-				Y = (left.Y < right.Y) ? left.Y : right.Y,
-				Z = (left.Z < right.Z) ? left.Z : right.Z,
-				W = (left.W < right.W) ? left.W : right.W,
-			};
+			Min(ref left, ref right, out Vector4F result);
+            return result;
 		}
 
 		/// <summary>
@@ -914,15 +943,24 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector4F"/>.</param>
         /// <param name="right">The second source <see cref="Vector4F"/>.</param>
         /// <returns>A <see cref="Vector4F"/> containing the largest components of the source vectors.</returns>
+		public static void Max(ref Vector4F left, ref Vector4F right, out Vector4F result)
+		{
+				result.X = (left.X > right.X) ? left.X : right.X;
+				result.Y = (left.Y > right.Y) ? left.Y : right.Y;
+				result.Z = (left.Z > right.Z) ? left.Z : right.Z;
+				result.W = (left.W > right.W) ? left.W : right.W;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector4F"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector4F"/>.</param>
+        /// <param name="right">The second source <see cref="Vector4F"/>.</param>
+        /// <returns>A <see cref="Vector4F"/> containing the largest components of the source vectors.</returns>
 		public static Vector4F Max(ref Vector4F left, ref Vector4F right)
 		{
-			return new Vector4F()
-			{
-				X = (left.X > right.X) ? left.X : right.X,
-				Y = (left.Y > right.Y) ? left.Y : right.Y,
-				Z = (left.Z > right.Z) ? left.Z : right.Z,
-				W = (left.W > right.W) ? left.W : right.W,
-			};
+			Max(ref left, ref right, out Vector4F result);
+            return result;
 		}
 
 		/// <summary>
@@ -1001,6 +1039,18 @@ namespace Molten
 				Z = value.Z < min ? min : value.Z > max ? max : value.Z,
 				W = value.W < min ? min : value.W > max ? max : value.W,
 			};
+        }
+
+        /// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="Vector4F"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static Vector4F Clamp(ref Vector4F value, ref Vector4F min, ref Vector4F max, out Vector4F result)
+        {
+				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
+				result.Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y;
+				result.Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z;
+				result.W = value.W < min.W ? min.W : value.W > max.W ? max.W : value.W;
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>

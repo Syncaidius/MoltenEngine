@@ -52,6 +52,19 @@ namespace Molten
         /// <param name="left">First source <see cref="Vector3L"/>.</param>
         /// <param name="right">Second source <see cref="Vector3L"/>.</param>
 
+        public static void Cross(ref Vector3L left, ref Vector3L right, out Vector3L result)
+        {
+                result.X = ((left.Y * right.Z) - (left.Z * right.Y));
+                result.Y = ((left.Z * right.X) - (left.X * right.Z));
+                result.Z = ((left.X * right.Y) - (left.Y * right.X));
+        }
+
+        /// <summary>
+        /// Calculates the cross product of two <see cref="Vector3L"/>.
+        /// </summary>
+        /// <param name="left">First source <see cref="Vector3L"/>.</param>
+        /// <param name="right">Second source <see cref="Vector3L"/>.</param>
+
         public static Vector3L Cross(ref Vector3L left, ref Vector3L right)
         {
             return new Vector3L(

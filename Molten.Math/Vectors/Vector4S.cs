@@ -734,6 +734,26 @@ namespace Molten
         /// <see cref="Vector4S.DistanceSquared(Vector4S, Vector4S)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
+        public static short Distance(ref Vector4S value1, ref Vector4S value2)
+        {
+			short x = (short)(value1.X - value2.X);
+			short y = (short)(value1.Y - value2.Y);
+			short z = (short)(value1.Z - value2.Z);
+			short w = (short)(value1.W - value2.W);
+
+            return (short)Math.Sqrt((x * x) + (y * y) + (z * z) + (w * w));
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector4S.DistanceSquared(Vector4S, Vector4S)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
         public static short Distance(Vector4S value1, Vector4S value2)
         {
 			short x = (short)(value1.X - value2.X);
@@ -880,15 +900,24 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector4S"/>.</param>
         /// <param name="right">The second source <see cref="Vector4S"/>.</param>
         /// <returns>A <see cref="Vector4S"/> containing the smallest components of the source vectors.</returns>
+		public static void Min(ref Vector4S left, ref Vector4S right, out Vector4S result)
+		{
+				result.X = (left.X < right.X) ? left.X : right.X;
+				result.Y = (left.Y < right.Y) ? left.Y : right.Y;
+				result.Z = (left.Z < right.Z) ? left.Z : right.Z;
+				result.W = (left.W < right.W) ? left.W : right.W;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector4S"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector4S"/>.</param>
+        /// <param name="right">The second source <see cref="Vector4S"/>.</param>
+        /// <returns>A <see cref="Vector4S"/> containing the smallest components of the source vectors.</returns>
 		public static Vector4S Min(ref Vector4S left, ref Vector4S right)
 		{
-			return new Vector4S()
-			{
-				X = (left.X < right.X) ? left.X : right.X,
-				Y = (left.Y < right.Y) ? left.Y : right.Y,
-				Z = (left.Z < right.Z) ? left.Z : right.Z,
-				W = (left.W < right.W) ? left.W : right.W,
-			};
+			Min(ref left, ref right, out Vector4S result);
+            return result;
 		}
 
 		/// <summary>
@@ -914,15 +943,24 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector4S"/>.</param>
         /// <param name="right">The second source <see cref="Vector4S"/>.</param>
         /// <returns>A <see cref="Vector4S"/> containing the largest components of the source vectors.</returns>
+		public static void Max(ref Vector4S left, ref Vector4S right, out Vector4S result)
+		{
+				result.X = (left.X > right.X) ? left.X : right.X;
+				result.Y = (left.Y > right.Y) ? left.Y : right.Y;
+				result.Z = (left.Z > right.Z) ? left.Z : right.Z;
+				result.W = (left.W > right.W) ? left.W : right.W;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector4S"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector4S"/>.</param>
+        /// <param name="right">The second source <see cref="Vector4S"/>.</param>
+        /// <returns>A <see cref="Vector4S"/> containing the largest components of the source vectors.</returns>
 		public static Vector4S Max(ref Vector4S left, ref Vector4S right)
 		{
-			return new Vector4S()
-			{
-				X = (left.X > right.X) ? left.X : right.X,
-				Y = (left.Y > right.Y) ? left.Y : right.Y,
-				Z = (left.Z > right.Z) ? left.Z : right.Z,
-				W = (left.W > right.W) ? left.W : right.W,
-			};
+			Max(ref left, ref right, out Vector4S result);
+            return result;
 		}
 
 		/// <summary>
@@ -1001,6 +1039,18 @@ namespace Molten
 				Z = value.Z < min ? min : value.Z > max ? max : value.Z,
 				W = value.W < min ? min : value.W > max ? max : value.W,
 			};
+        }
+
+        /// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="Vector4S"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static Vector4S Clamp(ref Vector4S value, ref Vector4S min, ref Vector4S max, out Vector4S result)
+        {
+				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
+				result.Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y;
+				result.Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z;
+				result.W = value.W < min.W ? min.W : value.W > max.W ? max.W : value.W;
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>

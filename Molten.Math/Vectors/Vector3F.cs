@@ -707,6 +707,25 @@ namespace Molten
         /// <see cref="Vector3F.DistanceSquared(Vector3F, Vector3F)"/> may be preferred when only the relative distance is needed
         /// and speed is of the essence.
         /// </remarks>
+        public static float Distance(ref Vector3F value1, ref Vector3F value2)
+        {
+			float x = (value1.X - value2.X);
+			float y = (value1.Y - value2.Y);
+			float z = (value1.Z - value2.Z);
+
+            return (float)Math.Sqrt((x * x) + (y * y) + (z * z));
+        }
+
+        /// <summary>
+        /// Calculates the distance between two vectors.
+        /// </summary>
+        /// <param name="value1">The first vector.</param>
+        /// <param name="value2">The second vector.</param>
+        /// <returns>The distance between the two vectors.</returns>
+        /// <remarks>
+        /// <see cref="Vector3F.DistanceSquared(Vector3F, Vector3F)"/> may be preferred when only the relative distance is needed
+        /// and speed is of the essence.
+        /// </remarks>
         public static float Distance(Vector3F value1, Vector3F value2)
         {
 			float x = (value1.X - value2.X);
@@ -847,14 +866,23 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector3F"/>.</param>
         /// <param name="right">The second source <see cref="Vector3F"/>.</param>
         /// <returns>A <see cref="Vector3F"/> containing the smallest components of the source vectors.</returns>
+		public static void Min(ref Vector3F left, ref Vector3F right, out Vector3F result)
+		{
+				result.X = (left.X < right.X) ? left.X : right.X;
+				result.Y = (left.Y < right.Y) ? left.Y : right.Y;
+				result.Z = (left.Z < right.Z) ? left.Z : right.Z;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector3F"/> containing the smallest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector3F"/>.</param>
+        /// <param name="right">The second source <see cref="Vector3F"/>.</param>
+        /// <returns>A <see cref="Vector3F"/> containing the smallest components of the source vectors.</returns>
 		public static Vector3F Min(ref Vector3F left, ref Vector3F right)
 		{
-			return new Vector3F()
-			{
-				X = (left.X < right.X) ? left.X : right.X,
-				Y = (left.Y < right.Y) ? left.Y : right.Y,
-				Z = (left.Z < right.Z) ? left.Z : right.Z,
-			};
+			Min(ref left, ref right, out Vector3F result);
+            return result;
 		}
 
 		/// <summary>
@@ -879,14 +907,23 @@ namespace Molten
         /// <param name="left">The first source <see cref="Vector3F"/>.</param>
         /// <param name="right">The second source <see cref="Vector3F"/>.</param>
         /// <returns>A <see cref="Vector3F"/> containing the largest components of the source vectors.</returns>
+		public static void Max(ref Vector3F left, ref Vector3F right, out Vector3F result)
+		{
+				result.X = (left.X > right.X) ? left.X : right.X;
+				result.Y = (left.Y > right.Y) ? left.Y : right.Y;
+				result.Z = (left.Z > right.Z) ? left.Z : right.Z;
+		}
+
+        /// <summary>
+        /// Returns a <see cref="Vector3F"/> containing the largest components of the specified vectors.
+        /// </summary>
+        /// <param name="left">The first source <see cref="Vector3F"/>.</param>
+        /// <param name="right">The second source <see cref="Vector3F"/>.</param>
+        /// <returns>A <see cref="Vector3F"/> containing the largest components of the source vectors.</returns>
 		public static Vector3F Max(ref Vector3F left, ref Vector3F right)
 		{
-			return new Vector3F()
-			{
-				X = (left.X > right.X) ? left.X : right.X,
-				Y = (left.Y > right.Y) ? left.Y : right.Y,
-				Z = (left.Z > right.Z) ? left.Z : right.Z,
-			};
+			Max(ref left, ref right, out Vector3F result);
+            return result;
 		}
 
 		/// <summary>
@@ -961,6 +998,17 @@ namespace Molten
 				Y = value.Y < min ? min : value.Y > max ? max : value.Y,
 				Z = value.Z < min ? min : value.Z > max ? max : value.Z,
 			};
+        }
+
+        /// <summary>Clamps the component values to within the given range.</summary>
+        /// <param name="value">The <see cref="Vector3F"/> value to be clamped.</param>
+        /// <param name="min">The minimum value of each component.</param>
+        /// <param name="max">The maximum value of each component.</param>
+        public static Vector3F Clamp(ref Vector3F value, ref Vector3F min, ref Vector3F max, out Vector3F result)
+        {
+				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
+				result.Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y;
+				result.Z = value.Z < min.Z ? min.Z : value.Z > max.Z ? max.Z : value.Z;
         }
 
 		/// <summary>Clamps the component values to within the given range.</summary>

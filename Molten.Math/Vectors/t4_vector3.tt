@@ -85,6 +85,19 @@ namespace Molten
         /// <param name="left">First source <#=See(fName)#>.</param>
         /// <param name="right">Second source <#=See(fName)#>.</param>
 
+        public static void Cross(ref <#=fName#> left, ref <#=fName#> right, out <#=fName#> result)
+        {
+                result.X = <#=typeCast#>((left.Y * right.Z) - (left.Z * right.Y));
+                result.Y = <#=typeCast#>((left.Z * right.X) - (left.X * right.Z));
+                result.Z = <#=typeCast#>((left.X * right.Y) - (left.Y * right.X));
+        }
+
+        /// <summary>
+        /// Calculates the cross product of two <#=See(fName)#>.
+        /// </summary>
+        /// <param name="left">First source <#=See(fName)#>.</param>
+        /// <param name="right">Second source <#=See(fName)#>.</param>
+
         public static <#=fName#> Cross(ref <#=fName#> left, ref <#=fName#> right)
         {
             return new <#=fName#>(
