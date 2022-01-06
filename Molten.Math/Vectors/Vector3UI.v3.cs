@@ -5,45 +5,6 @@ namespace Molten
 	///<summary>A <see cref = "uint"/> vector comprised of 3 components.</summary>
 	public partial struct Vector3UI
 	{
-           /// <summary>
-        /// A unit <see cref="Vector3UI"/> designating up (0, 1, 0).
-        /// </summary>
-        public static readonly Vector3UI Up = new Vector3UI(0, 1U, 0);
-
-        /// <summary>
-        /// A unit <see cref="Vector3UI"/> designating down (0, -1, 0).
-        /// </summary>
-        public static readonly Vector3UI Down = new Vector3UI(0, -1U, 0);
-
-        /// <summary>
-        /// A unit <see cref="Vector3UI"/> designating left (-1, 0, 0).
-        /// </summary>
-        public static readonly Vector3UI Left = new Vector3UI(-1U, 0, 0);
-
-        /// <summary>
-        /// A unit <see cref="Vector3UI"/> designating right (1, 0, 0).
-        /// </summary>
-        public static readonly Vector3UI Right = new Vector3UI(1U, 0, 0);
-
-        /// <summary>
-        /// A unit <see cref="Vector3UI"/> designating forward in a right-handed coordinate system (0, 0, -1).
-        /// </summary>
-        public static readonly Vector3UI ForwardRH = new Vector3UI(0, 0, -1U);
-
-        /// <summary>
-        /// A unit <see cref="Vector3UI"/> designating forward in a left-handed coordinate system (0, 0, 1).
-        /// </summary>
-        public static readonly Vector3UI ForwardLH = new Vector3UI(0, 0, 1U);
-
-        /// <summary>
-        /// A unit <see cref="Vector3UI"/> designating backward in a right-handed coordinate system (0, 0, 1).
-        /// </summary>
-        public static readonly Vector3UI BackwardRH = new Vector3UI(0, 0, 1U);
-
-        /// <summary>
-        /// A unit <see cref="Vector3UI"/> designating backward in a left-handed coordinate system (0, 0, -1).
-        /// </summary>
-        public static readonly Vector3UI BackwardLH = new Vector3UI(0, 0, -1U);
 
 #region Static Methods
         /// <summary>

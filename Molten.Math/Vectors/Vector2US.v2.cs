@@ -16,7 +16,7 @@ namespace Molten
         /// <param name="right">Second source vector.</param>
         public static ushort Cross(ref Vector2US left, ref Vector2US right)
         {
-            return (left.X * right.Y) - (left.Y * right.X);
+            return (ushort)((left.X * right.Y) - (left.Y * right.X));
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Molten
         /// <param name="right">Second source vector.</param>
         public static ushort Cross(Vector2US left, Vector2US right)
         {
-            return (left.X * right.Y) - (left.Y * right.X);
+            return (ushort)((left.X * right.Y) - (left.Y * right.X));
         }
 #endregion
 	}

@@ -16,7 +16,7 @@ namespace Molten
         /// <param name="right">Second source vector.</param>
         public static ulong Cross(ref Vector2UL left, ref Vector2UL right)
         {
-            return (left.X * right.Y) - (left.Y * right.X);
+            return ((left.X * right.Y) - (left.Y * right.X));
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Molten
         /// <param name="right">Second source vector.</param>
         public static ulong Cross(Vector2UL left, Vector2UL right)
         {
-            return (left.X * right.Y) - (left.Y * right.X);
+            return ((left.X * right.Y) - (left.Y * right.X));
         }
 #endregion
 	}

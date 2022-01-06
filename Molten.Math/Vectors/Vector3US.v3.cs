@@ -5,45 +5,6 @@ namespace Molten
 	///<summary>A <see cref = "ushort"/> vector comprised of 3 components.</summary>
 	public partial struct Vector3US
 	{
-           /// <summary>
-        /// A unit <see cref="Vector3US"/> designating up (0, 1, 0).
-        /// </summary>
-        public static readonly Vector3US Up = new Vector3US(0, (ushort)1, 0);
-
-        /// <summary>
-        /// A unit <see cref="Vector3US"/> designating down (0, -1, 0).
-        /// </summary>
-        public static readonly Vector3US Down = new Vector3US(0, -(ushort)1, 0);
-
-        /// <summary>
-        /// A unit <see cref="Vector3US"/> designating left (-1, 0, 0).
-        /// </summary>
-        public static readonly Vector3US Left = new Vector3US(-(ushort)1, 0, 0);
-
-        /// <summary>
-        /// A unit <see cref="Vector3US"/> designating right (1, 0, 0).
-        /// </summary>
-        public static readonly Vector3US Right = new Vector3US((ushort)1, 0, 0);
-
-        /// <summary>
-        /// A unit <see cref="Vector3US"/> designating forward in a right-handed coordinate system (0, 0, -1).
-        /// </summary>
-        public static readonly Vector3US ForwardRH = new Vector3US(0, 0, -(ushort)1);
-
-        /// <summary>
-        /// A unit <see cref="Vector3US"/> designating forward in a left-handed coordinate system (0, 0, 1).
-        /// </summary>
-        public static readonly Vector3US ForwardLH = new Vector3US(0, 0, (ushort)1);
-
-        /// <summary>
-        /// A unit <see cref="Vector3US"/> designating backward in a right-handed coordinate system (0, 0, 1).
-        /// </summary>
-        public static readonly Vector3US BackwardRH = new Vector3US(0, 0, (ushort)1);
-
-        /// <summary>
-        /// A unit <see cref="Vector3US"/> designating backward in a left-handed coordinate system (0, 0, -1).
-        /// </summary>
-        public static readonly Vector3US BackwardLH = new Vector3US(0, 0, -(ushort)1);
 
 #region Static Methods
         /// <summary>

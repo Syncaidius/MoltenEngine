@@ -31,6 +31,10 @@ namespace Molten
 	///<summary>A <see cref = "<#=d.DT#>"/> vector comprised of <#=size#> components.</summary>
 	public partial struct <#=fName#>
 	{
+<#
+    if(!d.Unsigned)
+    {
+#>
            /// <summary>
         /// A unit <see cref="<#=fName#>"/> designating up (0, 1, 0).
         /// </summary>
@@ -70,6 +74,9 @@ namespace Molten
         /// A unit <see cref="<#=fName#>"/> designating backward in a left-handed coordinate system (0, 0, -1).
         /// </summary>
         public static readonly <#=fName#> BackwardLH = new <#=fName#>(<#=d.Zero#>, <#=d.Zero#>, -<#=d.One#>);
+<#
+    }
+#>
 
 #region Static Methods
         /// <summary>

@@ -16,7 +16,7 @@ namespace Molten
         /// <param name="right">Second source vector.</param>
         public static double Cross(ref Vector2D left, ref Vector2D right)
         {
-            return (left.X * right.Y) - (left.Y * right.X);
+            return ((left.X * right.Y) - (left.Y * right.X));
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Molten
         /// <param name="right">Second source vector.</param>
         public static double Cross(Vector2D left, Vector2D right)
         {
-            return (left.X * right.Y) - (left.Y * right.X);
+            return ((left.X * right.Y) - (left.Y * right.X));
         }
 #endregion
 	}

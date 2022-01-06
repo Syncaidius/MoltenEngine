@@ -5,45 +5,6 @@ namespace Molten
 	///<summary>A <see cref = "byte"/> vector comprised of 3 components.</summary>
 	public partial struct Byte3
 	{
-           /// <summary>
-        /// A unit <see cref="Byte3"/> designating up (0, 1, 0).
-        /// </summary>
-        public static readonly Byte3 Up = new Byte3(0, 1, 0);
-
-        /// <summary>
-        /// A unit <see cref="Byte3"/> designating down (0, -1, 0).
-        /// </summary>
-        public static readonly Byte3 Down = new Byte3(0, -1, 0);
-
-        /// <summary>
-        /// A unit <see cref="Byte3"/> designating left (-1, 0, 0).
-        /// </summary>
-        public static readonly Byte3 Left = new Byte3(-1, 0, 0);
-
-        /// <summary>
-        /// A unit <see cref="Byte3"/> designating right (1, 0, 0).
-        /// </summary>
-        public static readonly Byte3 Right = new Byte3(1, 0, 0);
-
-        /// <summary>
-        /// A unit <see cref="Byte3"/> designating forward in a right-handed coordinate system (0, 0, -1).
-        /// </summary>
-        public static readonly Byte3 ForwardRH = new Byte3(0, 0, -1);
-
-        /// <summary>
-        /// A unit <see cref="Byte3"/> designating forward in a left-handed coordinate system (0, 0, 1).
-        /// </summary>
-        public static readonly Byte3 ForwardLH = new Byte3(0, 0, 1);
-
-        /// <summary>
-        /// A unit <see cref="Byte3"/> designating backward in a right-handed coordinate system (0, 0, 1).
-        /// </summary>
-        public static readonly Byte3 BackwardRH = new Byte3(0, 0, 1);
-
-        /// <summary>
-        /// A unit <see cref="Byte3"/> designating backward in a left-handed coordinate system (0, 0, -1).
-        /// </summary>
-        public static readonly Byte3 BackwardLH = new Byte3(0, 0, -1);
 
 #region Static Methods
         /// <summary>

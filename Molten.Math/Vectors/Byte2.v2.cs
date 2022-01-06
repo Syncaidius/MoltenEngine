@@ -16,7 +16,7 @@ namespace Molten
         /// <param name="right">Second source vector.</param>
         public static byte Cross(ref Byte2 left, ref Byte2 right)
         {
-            return (left.X * right.Y) - (left.Y * right.X);
+            return (byte)((left.X * right.Y) - (left.Y * right.X));
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Molten
         /// <param name="right">Second source vector.</param>
         public static byte Cross(Byte2 left, Byte2 right)
         {
-            return (left.X * right.Y) - (left.Y * right.X);
+            return (byte)((left.X * right.Y) - (left.Y * right.X));
         }
 #endregion
 	}
