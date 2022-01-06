@@ -220,15 +220,6 @@ namespace Molten
         {
             return new byte[] { X, Y, Z, W};
         }
-
-		/// <summary>
-        /// Reverses the direction of the current <see cref="Byte4"/>.
-        /// </summary>
-        /// <returns>A <see cref="Byte4"/> facing the opposite direction.</returns>
-		public Byte4 Negate()
-		{
-			return new Byte4((byte)-X, (byte)-Y, (byte)-Z, (byte)-W);
-		}
 		
         /// <summary>
         /// Returns a normalized unit vector of the original vector.

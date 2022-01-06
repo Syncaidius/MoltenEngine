@@ -196,15 +196,6 @@ namespace Molten
         {
             return new uint[] { X, Y};
         }
-
-		/// <summary>
-        /// Reverses the direction of the current <see cref="Vector2UI"/>.
-        /// </summary>
-        /// <returns>A <see cref="Vector2UI"/> facing the opposite direction.</returns>
-		public Vector2UI Negate()
-		{
-			return new Vector2UI(-X, -Y);
-		}
 		
         /// <summary>
         /// Returns a normalized unit vector of the original vector.

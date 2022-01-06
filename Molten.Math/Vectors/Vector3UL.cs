@@ -208,15 +208,6 @@ namespace Molten
         {
             return new ulong[] { X, Y, Z};
         }
-
-		/// <summary>
-        /// Reverses the direction of the current <see cref="Vector3UL"/>.
-        /// </summary>
-        /// <returns>A <see cref="Vector3UL"/> facing the opposite direction.</returns>
-		public Vector3UL Negate()
-		{
-			return new Vector3UL(-X, -Y, -Z);
-		}
 		
         /// <summary>
         /// Returns a normalized unit vector of the original vector.

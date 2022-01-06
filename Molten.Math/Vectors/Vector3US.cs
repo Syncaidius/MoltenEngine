@@ -208,15 +208,6 @@ namespace Molten
         {
             return new ushort[] { X, Y, Z};
         }
-
-		/// <summary>
-        /// Reverses the direction of the current <see cref="Vector3US"/>.
-        /// </summary>
-        /// <returns>A <see cref="Vector3US"/> facing the opposite direction.</returns>
-		public Vector3US Negate()
-		{
-			return new Vector3US((ushort)-X, (ushort)-Y, (ushort)-Z);
-		}
 		
         /// <summary>
         /// Returns a normalized unit vector of the original vector.

@@ -220,15 +220,6 @@ namespace Molten
         {
             return new uint[] { X, Y, Z, W};
         }
-
-		/// <summary>
-        /// Reverses the direction of the current <see cref="Vector4UI"/>.
-        /// </summary>
-        /// <returns>A <see cref="Vector4UI"/> facing the opposite direction.</returns>
-		public Vector4UI Negate()
-		{
-			return new Vector4UI(-X, -Y, -Z, -W);
-		}
 		
         /// <summary>
         /// Returns a normalized unit vector of the original vector.

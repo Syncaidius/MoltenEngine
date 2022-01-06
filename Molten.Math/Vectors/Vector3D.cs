@@ -208,7 +208,6 @@ namespace Molten
         {
             return new double[] { X, Y, Z};
         }
-
 		/// <summary>
         /// Reverses the direction of the current <see cref="Vector3D"/>.
         /// </summary>

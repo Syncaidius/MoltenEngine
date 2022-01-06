@@ -220,7 +220,6 @@ namespace Molten
         {
             return new float[] { X, Y, Z, W};
         }
-
 		/// <summary>
         /// Reverses the direction of the current <see cref="Vector4F"/>.
         /// </summary>

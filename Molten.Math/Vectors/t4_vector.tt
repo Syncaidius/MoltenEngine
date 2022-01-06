@@ -270,7 +270,10 @@ namespace Molten
         {
             return new <#=d.DT#>[] { <#=GetParamSentence(pMapUpper, size, ", ", ", ")#>};
         }
-
+<#
+    if(!d.Unsigned)
+    {
+#>
 		/// <summary>
         /// Reverses the direction of the current <#=See(fName)#>.
         /// </summary>
@@ -279,7 +282,9 @@ namespace Molten
 		{
 			return new <#=fName#>(<#=GetParamSentence(pMapUpper, size, ", ", ", ", $"{typeCast}-")#>);
 		}
-		
+<#
+    }
+#>		
         /// <summary>
         /// Returns a normalized unit vector of the original vector.
         /// </summary>

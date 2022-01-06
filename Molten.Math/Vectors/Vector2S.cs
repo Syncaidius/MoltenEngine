@@ -196,7 +196,6 @@ namespace Molten
         {
             return new short[] { X, Y};
         }
-
 		/// <summary>
         /// Reverses the direction of the current <see cref="Vector2S"/>.
         /// </summary>

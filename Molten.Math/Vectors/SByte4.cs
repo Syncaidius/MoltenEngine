@@ -220,7 +220,6 @@ namespace Molten
         {
             return new sbyte[] { X, Y, Z, W};
         }
-
 		/// <summary>
         /// Reverses the direction of the current <see cref="SByte4"/>.
         /// </summary>

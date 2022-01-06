@@ -208,7 +208,6 @@ namespace Molten
         {
             return new int[] { X, Y, Z};
         }
-
 		/// <summary>
         /// Reverses the direction of the current <see cref="Vector3I"/>.
         /// </summary>
