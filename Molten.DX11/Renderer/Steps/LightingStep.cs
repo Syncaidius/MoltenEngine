@@ -1,6 +1,5 @@
-﻿using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
+﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +12,6 @@ namespace Molten.Graphics
 {
     internal class LightingStep : RenderStepBase
     {
-        internal 
         Material _matPoint;
         Material _matDebugPoint;
         StartStep _startStep;
@@ -32,10 +30,10 @@ namespace Molten.Graphics
             _surfaceNormals = renderer.GetSurface<RenderSurface>(MainSurfaceType.Normals);
             _surfaceLighting = renderer.GetSurface<RenderSurface>(MainSurfaceType.Lighting);
 
-            int stride = Marshal.SizeOf<LightData>();
-            int maxLights = 2000; // TODO move to graphics settings
-            int bufferByteSize = stride * maxLights;
-            _lightDataBuffer = new GraphicsBuffer(renderer.Device, BufferMode.DynamicRing, BindFlags.ShaderResource, bufferByteSize, ResourceOptionFlags.BufferStructured, structuredStride: stride);
+            uint stride = (uint)Marshal.SizeOf<LightData>();
+            uint maxLights = 2000; // TODO move to graphics settings
+            uint bufferByteSize = stride * maxLights;
+            _lightDataBuffer = new GraphicsBuffer(renderer.Device, BufferMode.DynamicRing, BindFlag.BindShaderResource, bufferByteSize, ResourceOptionFlags.BufferStructured, structuredStride: stride);
             _lightSegment = _lightDataBuffer.Allocate<LightData>(maxLights);
             LoadShaders(renderer);
         }
@@ -116,15 +114,15 @@ namespace Molten.Graphics
             //set correct buffers and shaders
             pipe.SetVertexSegment(null, 0);
             pipe.SetIndexSegment(null);
-            int pointCount = scene.PointLights.ElementCount * 2;
+            uint pointCount = scene.PointLights.ElementCount * 2;
 
             pipe.BeginDraw(StateConditions.None); // TODO expand use of conditions here
-            pipe.Draw(_matPoint, pointCount, PrimitiveTopology.PatchListWith1ControlPoints, 0);
+            pipe.Draw(_matPoint, pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
             pipe.EndDraw();
 
             // Draw debug light volumes
             pipe.BeginDraw(StateConditions.Debug);
-            pipe.Draw(_matDebugPoint, pointCount, PrimitiveTopology.PatchListWith1ControlPoints, 0);
+            pipe.Draw(_matDebugPoint, pointCount, VertexTopology.PatchListWith1ControlPoint, 0);
             pipe.EndDraw();
         }
     }

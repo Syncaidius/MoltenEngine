@@ -21,7 +21,7 @@ namespace Molten
 
             try
             {
-                IntPtr ptr = (IntPtr)(handle.AddrOfPinnedObject().ToInt64());
+                IntPtr ptr = handle.AddrOfPinnedObject();
                 callback(ptr);
             }
             finally
@@ -64,7 +64,7 @@ namespace Molten
         /// <param name="array">The array to be resized.</param>
         /// <param name="newSize">The new size of the array, must be at 
         /// least the same size as <paramref name="array"/></param>
-        public unsafe static void ArrayResize<T>(ref T[] array, uint newSize)
+        public unsafe static void ArrayResize<T>(ref T[] array, long newSize)
         {
             if (array.Length > newSize)
                 throw new Exception("New array size cannot be smaller than the provided array's length.");

@@ -9,17 +9,17 @@ namespace Molten.Graphics
     {
         public LightInstance[] Instances;
         public LightData[] Data;
-        int[] _free;
-        int _freeCount;
-        int _elementCount; // Number of elements initialized at least once.
-        int _itemCount; // Number of active items.
-        int _resizeIncrement;
+        uint[] _free;
+        uint _freeCount;
+        uint _elementCount; // Number of elements initialized at least once.
+        uint _itemCount; // Number of active items.
+        uint _resizeIncrement;
 
-        internal LightList(int initialCapacity, int resizeIncrement)
+        internal LightList(uint initialCapacity, uint resizeIncrement)
         {
             Data = new LightData[initialCapacity];
             Instances = new LightInstance[initialCapacity];
-            _free = new int[10];
+            _free = new uint[10];
             _resizeIncrement = resizeIncrement;
             _itemCount = 0;
         }
@@ -32,7 +32,7 @@ namespace Molten.Graphics
 
         public LightInstance New(LightData data)
         {
-            int id = 0;
+            uint id = 0;
             if (_freeCount > 0)
             {
                 id = _free[--_freeCount];
@@ -42,8 +42,8 @@ namespace Molten.Graphics
                 id = _elementCount++;
                 if (_elementCount == Data.Length)
                 {
-                    Array.Resize(ref Data, Data.Length + _resizeIncrement);
-                    Array.Resize(ref Instances, Data.Length);
+                    EngineInterop.ArrayResize(ref Data, Data.Length + _resizeIncrement);
+                    EngineInterop.ArrayResize(ref Instances, Data.Length);
                 }
             }
 
@@ -68,11 +68,11 @@ namespace Molten.Graphics
             _itemCount--;
         }
 
-        public int ItemCount => _itemCount;
+        public uint ItemCount => _itemCount;
 
-        public int ElementCount => _elementCount;
+        public uint ElementCount => _elementCount;
 
-        public int ResizeIncrement => _resizeIncrement;
+        public uint ResizeIncrement => _resizeIncrement;
     }
 
     /// <summary>
@@ -81,6 +81,6 @@ namespace Molten.Graphics
     public class LightInstance
     {
         public float Range;
-        public int ID;
+        public uint ID;
     }
 }
