@@ -1990,8 +1990,7 @@ namespace Molten
         /// <param name="cameraForwardVector">The forward vector of the camera.</param>
         /// <returns>The created billboard matrix.</returns>
         public static Matrix4D BillboardRH(Vector3D objectPosition, Vector3D cameraPosition, Vector3D cameraUpVector, Vector3D cameraForwardVector) {
-            Matrix4D result;
-            BillboardRH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector, out result);
+            BillboardRH(ref objectPosition, ref cameraPosition, ref cameraUpVector, ref cameraForwardVector, out Matrix4D result);
             return result;
         }
 
@@ -2035,8 +2034,7 @@ namespace Molten
         /// <returns>The created look-at matrix.</returns>
         public static Matrix4D LookAtLH(Vector3D eye, Vector3D target, Vector3D up)
         {
-            Matrix4D result;
-            LookAtLH(ref eye, ref target, ref up, out result);
+            LookAtLH(ref eye, ref target, ref up, out Matrix4D result);
             return result;
         }
 
@@ -2080,8 +2078,7 @@ namespace Molten
         /// <returns>The created look-at matrix.</returns>
         public static Matrix4D LookAtRH(Vector3D eye, Vector3D target, Vector3D up)
         {
-            Matrix4D result;
-            LookAtRH(ref eye, ref target, ref up, out result);
+            LookAtRH(ref eye, ref target, ref up, out Matrix4D result);
             return result;
         }
 
@@ -2111,8 +2108,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4D OrthoLH(double width, double height, double znear, double zfar)
         {
-            Matrix4D result;
-            OrthoLH(width, height, znear, zfar, out result);
+            OrthoLH(width, height, znear, zfar, out Matrix4D result);
             return result;
         }
 
@@ -2142,8 +2138,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4D OrthoRH(double width, double height, double znear, double zfar)
         {
-            Matrix4D result;
-            OrthoRH(width, height, znear, zfar, out result);
+            OrthoRH(width, height, znear, zfar, out Matrix4D result);
             return result;
         }
 
@@ -2182,8 +2177,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4D OrthoOffCenterLH(double left, double right, double bottom, double top, double znear, double zfar)
         {
-            Matrix4D result;
-            OrthoOffCenterLH(left, right, bottom, top, znear, zfar, out result);
+            OrthoOffCenterLH(left, right, bottom, top, znear, zfar, out Matrix4D result);
             return result;
         }
 
@@ -2215,8 +2209,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4D OrthoOffCenterRH(double left, double right, double bottom, double top, double znear, double zfar)
         {
-            Matrix4D result;
-            OrthoOffCenterRH(left, right, bottom, top, znear, zfar, out result);
+            OrthoOffCenterRH(left, right, bottom, top, znear, zfar, out Matrix4D result);
             return result;
         }
 
@@ -2246,8 +2239,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4D PerspectiveLH(double width, double height, double znear, double zfar)
         {
-            Matrix4D result;
-            PerspectiveLH(width, height, znear, zfar, out result);
+            PerspectiveLH(width, height, znear, zfar, out Matrix4D result);
             return result;
         }
 
@@ -2277,8 +2269,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4D PerspectiveRH(double width, double height, double znear, double zfar)
         {
-            Matrix4D result;
-            PerspectiveRH(width, height, znear, zfar, out result);
+            PerspectiveRH(width, height, znear, zfar, out Matrix4D result);
             return result;
         }
 
@@ -2345,8 +2336,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4D PerspectiveFovRH(double fov, double aspect, double znear, double zfar)
         {
-            Matrix4D result;
-            PerspectiveFovRH(fov, aspect, znear, zfar, out result);
+            PerspectiveFovRH(fov, aspect, znear, zfar, out Matrix4D result);
             return result;
         }
 
@@ -2386,8 +2376,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4D PerspectiveOffCenterLH(double left, double right, double bottom, double top, double znear, double zfar)
         {
-            Matrix4D result;
-            PerspectiveOffCenterLH(left, right, bottom, top, znear, zfar, out result);
+            PerspectiveOffCenterLH(left, right, bottom, top, znear, zfar, out Matrix4D result);
             return result;
         }
 
@@ -2422,8 +2411,7 @@ namespace Molten
         /// <returns>The created projection matrix.</returns>
         public static Matrix4D PerspectiveOffCenterRH(double left, double right, double bottom, double top, double znear, double zfar)
         {
-            Matrix4D result;
-            PerspectiveOffCenterRH(left, right, bottom, top, znear, zfar, out result);
+            PerspectiveOffCenterRH(left, right, bottom, top, znear, zfar, out Matrix4D result);
             return result;
         }
 
@@ -2445,8 +2433,7 @@ namespace Molten
         /// <returns>The created scaling matrix.</returns>
         public static Matrix4D Scaling(Vector3D scale)
         {
-            Matrix4D result;
-            Scaling(ref scale, out result);
+            Scaling(ref scale, out Matrix4D result);
             return result;
         }
 
@@ -2459,7 +2446,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created scaling matrix.</param>
         public static void Scaling(double x, double y, double z, out Matrix4D result)
         {
-            result = Matrix4D.Identity;
+            result = Identity;
             result.M11 = x;
             result.M22 = y;
             result.M33 = z;
@@ -2474,8 +2461,7 @@ namespace Molten
         /// <returns>The created scaling matrix.</returns>
         public static Matrix4D Scaling(double x, double y, double z)
         {
-            Matrix4D result;
-            Scaling(x, y, z, out result);
+            Scaling(x, y, z, out Matrix4D result);
             return result;
         }
 
@@ -2497,8 +2483,7 @@ namespace Molten
         /// <returns>The created scaling matrix.</returns>
         public static Matrix4D Scaling(double scale)
         {
-            Matrix4D result;
-            Scaling(scale, out result);
+            Scaling(scale, out Matrix4D result);
             return result;
         }
 
@@ -2512,7 +2497,7 @@ namespace Molten
             double cos = Math.Cos(angle);
             double sin = Math.Sin(angle);
 
-            result = Matrix4D.Identity;
+            result = Identity;
             result.M22 = cos;
             result.M23 = sin;
             result.M32 = -sin;
@@ -2526,8 +2511,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix4D RotationX(double angle)
         {
-            Matrix4D result;
-            RotationX(angle, out result);
+            RotationX(angle, out Matrix4D result);
             return result;
         }
 
@@ -2541,7 +2525,7 @@ namespace Molten
             double cos = Math.Cos(angle);
             double sin = Math.Sin(angle);
 
-            result = Matrix4D.Identity;
+            result = Identity;
             result.M11 = cos;
             result.M13 = -sin;
             result.M31 = sin;
@@ -2555,8 +2539,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix4D RotationY(double angle)
         {
-            Matrix4D result;
-            RotationY(angle, out result);
+            RotationY(angle, out Matrix4D result);
             return result;
         }
 
@@ -2570,7 +2553,7 @@ namespace Molten
             double cos = Math.Cos(angle);
             double sin = Math.Sin(angle);
 
-            result = Matrix4D.Identity;
+            result = Identity;
             result.M11 = cos;
             result.M12 = sin;
             result.M21 = -sin;
@@ -2584,8 +2567,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix4D RotationZ(double angle)
         {
-            Matrix4D result;
-            RotationZ(angle, out result);
+            RotationZ(angle, out Matrix4D result);
             return result;
         }
 
@@ -2629,8 +2611,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix4D RotationAxis(Vector3D axis, double angle)
         {
-            Matrix4D result;
-            RotationAxis(ref axis, angle, out result);
+            RotationAxis(ref axis, angle, out Matrix4D result);
             return result;
         }
 
@@ -2670,8 +2651,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix4D FromQuaternion(QuaternionD rotation)
         {
-            Matrix4D result;
-            FromQuaternion(ref rotation, out result);
+            FromQuaternion(ref rotation, out Matrix4D result);
             return result;
         }
 
@@ -2682,8 +2662,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix4D FromQuaternion(ref QuaternionD rotation)
         {
-            Matrix4D result;
-            FromQuaternion(ref rotation, out result);
+            FromQuaternion(ref rotation, out Matrix4D result);
             return result;
         }
 
@@ -2696,8 +2675,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void RotationYawPitchRoll(double yaw, double pitch, double roll, out Matrix4D result)
         {
-            QuaternionD quaternion = new QuaternionD();
-            QuaternionD.RotationYawPitchRoll(yaw, pitch, roll, out quaternion);
+            QuaternionD.RotationYawPitchRoll(yaw, pitch, roll, out QuaternionD quaternion);
             FromQuaternion(ref quaternion, out result);
         }
 
@@ -2710,8 +2688,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix4D RotationYawPitchRoll(double yaw, double pitch, double roll)
         {
-            Matrix4D result;
-            RotationYawPitchRoll(yaw, pitch, roll, out result);
+            RotationYawPitchRoll(yaw, pitch, roll, out Matrix4D result);
             return result;
         }
 
@@ -2732,8 +2709,7 @@ namespace Molten
         /// <returns>The created translation matrix.</returns>
         public static Matrix4D CreateTranslation(Vector3D value)
         {
-            Matrix4D result;
-            CreateTranslation(ref value, out result);
+            CreateTranslation(ref value, out Matrix4D result);
             return result;
         }
 
@@ -2746,7 +2722,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created translation matrix.</param>
         public static void CreateTranslation(double x, double y, double z, out Matrix4D result)
         {
-            result = Matrix4D.Identity;
+            result = Identity;
             result.M41 = x;
             result.M42 = y;
             result.M43 = z;
@@ -2761,8 +2737,7 @@ namespace Molten
         /// <returns>The created translation matrix.</returns>
         public static Matrix4D CreateTranslation(double x, double y, double z)
         {
-            Matrix4D result;
-            CreateTranslation(x, y, z, out result);
+            CreateTranslation(x, y, z, out Matrix4D result);
             return result;
         }
 
@@ -2829,8 +2804,7 @@ namespace Molten
         /// <returns>The created affine transformation matrix.</returns>
         public static Matrix4D AffineTransformation(double scaling, QuaternionD rotation, Vector3D translation)
         {
-            Matrix4D result;
-            AffineTransformation(scaling, ref rotation, ref translation, out result);
+            AffineTransformation(scaling, ref rotation, ref translation, out Matrix4D result);
             return result;
         }
 
@@ -2858,8 +2832,7 @@ namespace Molten
         /// <returns>The created affine transformation matrix.</returns>
         public static Matrix4D AffineTransformation(double scaling, Vector3D rotationCenter, QuaternionD rotation, Vector3D translation)
         {
-            Matrix4D result;
-            AffineTransformation(scaling, ref rotationCenter, ref rotation, ref translation, out result);
+            AffineTransformation(scaling, ref rotationCenter, ref rotation, ref translation, out Matrix4D result);
             return result;
         }
 
@@ -2884,8 +2857,7 @@ namespace Molten
         /// <returns>The created affine transformation matrix.</returns>
         public static Matrix4D AffineTransformation2D(double scaling, double rotation, Vector2D translation)
         {
-            Matrix4D result;
-            AffineTransformation2D(scaling, rotation, ref translation, out result);
+            AffineTransformation2D(scaling, rotation, ref translation, out Matrix4D result);
             return result;
         }
 
@@ -2913,8 +2885,7 @@ namespace Molten
         /// <returns>The created affine transformation matrix.</returns>
         public static Matrix4D AffineTransformation2D(double scaling, Vector2D rotationCenter, double rotation, Vector2D translation)
         {
-            Matrix4D result;
-            AffineTransformation2D(scaling, ref rotationCenter, rotation, ref translation, out result);
+            AffineTransformation2D(scaling, ref rotationCenter, rotation, ref translation, out Matrix4D result);
             return result;
         }
 
@@ -2930,10 +2901,17 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created transformation matrix.</param>
         public static void Transformation(ref Vector3D scalingCenter, ref QuaternionD scalingRotation, ref Vector3D scaling, ref Vector3D rotationCenter, ref QuaternionD rotation, ref Vector3D translation, out Matrix4D result)
         {
-            Matrix4D sr = FromQuaternion(scalingRotation);
+            FromQuaternion(ref scalingRotation, out Matrix4D sr);
 
-            result = CreateTranslation(-scalingCenter) * Transpose(sr) * Scaling(scaling) * sr * CreateTranslation(scalingCenter) * CreateTranslation(-rotationCenter) *
-                FromQuaternion(rotation) * CreateTranslation(rotationCenter) * CreateTranslation(translation);       
+            result = CreateTranslation(-scalingCenter) * 
+                Transpose(sr) * 
+                Scaling(scaling) * 
+                sr * 
+                CreateTranslation(scalingCenter) * 
+                CreateTranslation(-rotationCenter) *
+                FromQuaternion(rotation) * 
+                CreateTranslation(rotationCenter) * 
+                CreateTranslation(translation);       
         }
 
         /// <summary>
@@ -2948,8 +2926,8 @@ namespace Molten
         /// <returns>The created transformation matrix.</returns>
         public static Matrix4D Transformation(Vector3D scalingCenter, QuaternionD scalingRotation, Vector3D scaling, Vector3D rotationCenter, QuaternionD rotation, Vector3D translation)
         {
-            Matrix4D result;
-            Transformation(ref scalingCenter, ref scalingRotation, ref scaling, ref rotationCenter, ref rotation, ref translation, out result);
+            Transformation(ref scalingCenter, ref scalingRotation, ref scaling, 
+                ref rotationCenter, ref rotation, ref translation, out Matrix4D result);
             return result;
         }
 
@@ -2965,8 +2943,15 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created transformation matrix.</param>
         public static void Transformation2D(ref Vector2D scalingCenter, double scalingRotation, ref Vector2D scaling, ref Vector2D rotationCenter, double rotation, ref Vector2D translation, out Matrix4D result)
         {
-            result = CreateTranslation((Vector3D)(-scalingCenter)) * RotationZ(-scalingRotation) * Scaling((Vector3D)scaling) * RotationZ(scalingRotation) * CreateTranslation((Vector3D)scalingCenter) * 
-                CreateTranslation((Vector3D)(-rotationCenter)) * RotationZ(rotation) * CreateTranslation((Vector3D)rotationCenter) * CreateTranslation((Vector3D)translation);
+            result = CreateTranslation((Vector3D)(-scalingCenter)) * 
+                RotationZ(-scalingRotation) * 
+                Scaling((Vector3D)scaling) * 
+                RotationZ(scalingRotation) * 
+                CreateTranslation((Vector3D)scalingCenter) * 
+                CreateTranslation((Vector3D)(-rotationCenter)) * 
+                RotationZ(rotation) * 
+                CreateTranslation((Vector3D)rotationCenter) * 
+                CreateTranslation((Vector3D)translation);
 
             result.M33 = 1f;
             result.M44 = 1f;
@@ -2984,8 +2969,7 @@ namespace Molten
         /// <returns>The created transformation matrix.</returns>
         public static Matrix4D Transformation2D(Vector2D scalingCenter, double scalingRotation, Vector2D scaling, Vector2D rotationCenter, double rotation, Vector2D translation)
         {
-            Matrix4D result;
-            Transformation2D(ref scalingCenter, scalingRotation, ref scaling, ref rotationCenter, rotation, ref translation, out result);
+            Transformation2D(ref scalingCenter, scalingRotation, ref scaling, ref rotationCenter, rotation, ref translation, out Matrix4D result);
             return result;
         }
 
@@ -2997,8 +2981,7 @@ namespace Molten
         /// <returns>The sum of the two matrices.</returns>
         public static Matrix4D operator +(Matrix4D left, Matrix4D right)
         {
-            Matrix4D result;
-            Add(ref left, ref right, out result);
+            Add(ref left, ref right, out Matrix4D result);
             return result;
         }
 
@@ -3020,8 +3003,7 @@ namespace Molten
         /// <returns>The difference between the two matrices.</returns>
         public static Matrix4D operator -(Matrix4D left, Matrix4D right)
         {
-            Matrix4D result;
-            Subtract(ref left, ref right, out result);
+            Subtract(ref left, ref right, out Matrix4D result);
             return result;
         }
 
@@ -3032,8 +3014,7 @@ namespace Molten
         /// <returns>The negated matrix.</returns>
         public static Matrix4D operator -(Matrix4D value)
         {
-            Matrix4D result;
-            Negate(ref value, out result);
+            Negate(ref value, out Matrix4D result);
             return result;
         }
 
@@ -3045,8 +3026,7 @@ namespace Molten
         /// <returns>The scaled matrix.</returns>
         public static Matrix4D operator *(double left, Matrix4D right)
         {
-            Matrix4D result;
-            Multiply(ref right, left, out result);
+            Multiply(ref right, left, out Matrix4D result);
             return result;
         }
 
@@ -3058,8 +3038,7 @@ namespace Molten
         /// <returns>The scaled matrix.</returns>
         public static Matrix4D operator *(Matrix4D left, double right)
         {
-            Matrix4D result;
-            Multiply(ref left, right, out result);
+            Multiply(ref left, right, out Matrix4D result);
             return result;
         }
 
@@ -3071,8 +3050,7 @@ namespace Molten
         /// <returns>The product of the two matrices.</returns>
         public static Matrix4D operator *(Matrix4D left, Matrix4D right)
         {
-            Matrix4D result;
-            Multiply(ref left, ref right, out result);
+            Multiply(ref left, ref right, out Matrix4D result);
             return result;
         }
 
@@ -3084,8 +3062,7 @@ namespace Molten
         /// <returns>The scaled matrix.</returns>
         public static Matrix4D operator /(Matrix4D left, double right)
         {
-            Matrix4D result;
-            Divide(ref left, right, out result);
+            Divide(ref left, right, out Matrix4D result);
             return result;
         }
 
@@ -3097,8 +3074,7 @@ namespace Molten
         /// <returns>The quotient of the two matrices.</returns>
         public static Matrix4D operator /(Matrix4D left, Matrix4D right)
         {
-            Matrix4D result;
-            Divide(ref left, ref right, out result);
+            Divide(ref left, ref right, out Matrix4D result);
             return result;
         }
 

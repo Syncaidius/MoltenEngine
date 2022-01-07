@@ -1245,7 +1245,7 @@ namespace Molten
         /// <param name="value">The <#=See(fName)#> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
-        public static <#=fName#> Clamp(ref <#=fName#> value, ref <#=fName#> min, ref <#=fName#> max, out <#=fName#> result)
+        public static void Clamp(ref <#=fName#> value, ref <#=fName#> min, ref <#=fName#> max, out <#=fName#> result)
         {
 <#
 		for(int p = 0; p < size; p++)

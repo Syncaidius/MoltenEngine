@@ -973,7 +973,7 @@ namespace Molten
         /// <param name="value">The <see cref="Vector3UI"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
-        public static Vector3UI Clamp(ref Vector3UI value, ref Vector3UI min, ref Vector3UI max, out Vector3UI result)
+        public static void Clamp(ref Vector3UI value, ref Vector3UI min, ref Vector3UI max, out Vector3UI result)
         {
 				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
 				result.Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y;

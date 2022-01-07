@@ -438,7 +438,7 @@ namespace Molten
         /// </summary>
         /// <param name="a">First <see cref="QuaternionF"/> to multiply.</param>
         /// <param name="b">Second <see cref="QuaternionF"/> to multiply.</param>
-        public static QuaternionF Concatenate(ref QuaternionF a, ref QuaternionF b)
+        public static void Concatenate(ref QuaternionF a, ref QuaternionF b, out QuaternionF result)
         {
             float aX = a.X;
             float aY = a.Y;
@@ -449,13 +449,21 @@ namespace Molten
             float bZ = b.Z;
             float bW = b.W;
 
-            return new QuaternionF()
-            {
-                X = aW * bX + aX * bW + aZ * bY - aY * bZ,
-                Y = aW * bY + aY * bW + aX * bZ - aZ * bX,
-                Z = aW * bZ + aZ * bW + aY * bX - aX * bY,
-                W = aW * bW - aX * bX - aY * bY - aZ * bZ
-            };
+            result.X = aW * bX + aX * bW + aZ * bY - aY * bZ;
+            result.Y = aW * bY + aY * bW + aX * bZ - aZ * bX;
+            result.Z = aW * bZ + aZ * bW + aY * bX - aX * bY;
+            result.W = aW * bW - aX * bX - aY * bY - aZ * bZ;
+        }
+
+        /// <summary>
+        /// Multiplies two <see cref="QuaternionF"/> together in opposite order.
+        /// </summary>
+        /// <param name="a">First <see cref="QuaternionF"/> to multiply.</param>
+        /// <param name="b">Second <see cref="QuaternionF"/> to multiply.</param>
+        public static QuaternionF Concatenate(ref QuaternionF a, ref QuaternionF b)
+        {
+            Concatenate(ref a, ref b, out QuaternionF result);
+            return result;
         }
 
         /// <summary>
@@ -628,6 +636,31 @@ namespace Molten
                 Z = (inverse * start.Z) + (opposite * end.Z),
                 W = (inverse * start.W) + (opposite * end.W)
             };
+        }
+
+        /// <summary>
+        /// Creates a quaternion given a yaw, pitch, and roll value.
+        /// </summary>
+        /// <param name="yaw">The yaw of rotation.</param>
+        /// <param name="pitch">The pitch of rotation.</param>
+        /// <param name="roll">The roll of rotation.</param>
+        public static void RotationYawPitchRoll(float yaw, float pitch, float roll, out QuaternionF result)
+        {
+            float halfRoll = roll * 0.5f;
+            float halfPitch = pitch * 0.5f;
+            float halfYaw = yaw * 0.5f;
+
+            float sinRoll = (float)Math.Sin(halfRoll);
+            float cosRoll = (float)Math.Cos(halfRoll);
+            float sinPitch = (float)Math.Sin(halfPitch);
+            float cosPitch = (float)Math.Cos(halfPitch);
+            float sinYaw = (float)Math.Sin(halfYaw);
+            float cosYaw = (float)Math.Cos(halfYaw);
+
+            result.X = (cosYaw * sinPitch * cosRoll) + (sinYaw * cosPitch * sinRoll);
+            result.Y = (sinYaw * cosPitch * cosRoll) - (cosYaw * sinPitch * sinRoll);
+            result.Z = (cosYaw * cosPitch * sinRoll) - (sinYaw * sinPitch * cosRoll);
+            result.W = (cosYaw * cosPitch * cosRoll) + (sinYaw * sinPitch * sinRoll);
         }
 
         /// <summary>
@@ -936,7 +969,7 @@ namespace Molten
         /// <param name="angle">The angle of rotation.</param>
         public static QuaternionF FromAxisAngle(ref Vector3F axis, float angle)
         {
-            Vector3F normalized = axis.Normalized();
+            Vector3F normalized = axis.GetNormalized();
 
             float half = angle * 0.5F;
             float sin = (float)Math.Sin(half);

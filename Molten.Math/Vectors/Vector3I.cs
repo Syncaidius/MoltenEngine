@@ -1004,7 +1004,7 @@ namespace Molten
         /// <param name="value">The <see cref="Vector3I"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
-        public static Vector3I Clamp(ref Vector3I value, ref Vector3I min, ref Vector3I max, out Vector3I result)
+        public static void Clamp(ref Vector3I value, ref Vector3I min, ref Vector3I max, out Vector3I result)
         {
 				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
 				result.Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y;

@@ -462,7 +462,7 @@ namespace Molten
         /// </summary>
         /// <param name="a">First <#=See(fName)#> to multiply.</param>
         /// <param name="b">Second <#=See(fName)#> to multiply.</param>
-        public static <#=fName#> Concatenate(ref <#=fName#> a, ref <#=fName#> b)
+        public static void Concatenate(ref <#=fName#> a, ref <#=fName#> b, out <#=fName#> result)
         {
             <#=d.DT#> aX = a.X;
             <#=d.DT#> aY = a.Y;
@@ -473,13 +473,21 @@ namespace Molten
             <#=d.DT#> bZ = b.Z;
             <#=d.DT#> bW = b.W;
 
-            return new <#=fName#>()
-            {
-                X = aW * bX + aX * bW + aZ * bY - aY * bZ,
-                Y = aW * bY + aY * bW + aX * bZ - aZ * bX,
-                Z = aW * bZ + aZ * bW + aY * bX - aX * bY,
-                W = aW * bW - aX * bX - aY * bY - aZ * bZ
-            };
+            result.X = aW * bX + aX * bW + aZ * bY - aY * bZ;
+            result.Y = aW * bY + aY * bW + aX * bZ - aZ * bX;
+            result.Z = aW * bZ + aZ * bW + aY * bX - aX * bY;
+            result.W = aW * bW - aX * bX - aY * bY - aZ * bZ;
+        }
+
+        /// <summary>
+        /// Multiplies two <#=See(fName)#> together in opposite order.
+        /// </summary>
+        /// <param name="a">First <#=See(fName)#> to multiply.</param>
+        /// <param name="b">Second <#=See(fName)#> to multiply.</param>
+        public static <#=fName#> Concatenate(ref <#=fName#> a, ref <#=fName#> b)
+        {
+            Concatenate(ref a, ref b, out <#=fName#> result);
+            return result;
         }
 
         /// <summary>
@@ -652,6 +660,31 @@ namespace Molten
                 Z = (inverse * start.Z) + (opposite * end.Z),
                 W = (inverse * start.W) + (opposite * end.W)
             };
+        }
+
+        /// <summary>
+        /// Creates a quaternion given a yaw, pitch, and roll value.
+        /// </summary>
+        /// <param name="yaw">The yaw of rotation.</param>
+        /// <param name="pitch">The pitch of rotation.</param>
+        /// <param name="roll">The roll of rotation.</param>
+        public static void RotationYawPitchRoll(<#=d.DT#> yaw, <#=d.DT#> pitch, <#=d.DT#> roll, out <#=fName#> result)
+        {
+            <#=d.DT#> halfRoll = roll * 0.5f;
+            <#=d.DT#> halfPitch = pitch * 0.5f;
+            <#=d.DT#> halfYaw = yaw * 0.5f;
+
+            <#=d.DT#> sinRoll = <#=fpCast#>Math.Sin(halfRoll);
+            <#=d.DT#> cosRoll = <#=fpCast#>Math.Cos(halfRoll);
+            <#=d.DT#> sinPitch = <#=fpCast#>Math.Sin(halfPitch);
+            <#=d.DT#> cosPitch = <#=fpCast#>Math.Cos(halfPitch);
+            <#=d.DT#> sinYaw = <#=fpCast#>Math.Sin(halfYaw);
+            <#=d.DT#> cosYaw = <#=fpCast#>Math.Cos(halfYaw);
+
+            result.X = (cosYaw * sinPitch * cosRoll) + (sinYaw * cosPitch * sinRoll);
+            result.Y = (sinYaw * cosPitch * cosRoll) - (cosYaw * sinPitch * sinRoll);
+            result.Z = (cosYaw * cosPitch * sinRoll) - (sinYaw * sinPitch * cosRoll);
+            result.W = (cosYaw * cosPitch * cosRoll) + (sinYaw * sinPitch * sinRoll);
         }
 
         /// <summary>
@@ -960,7 +993,7 @@ namespace Molten
         /// <param name="angle">The angle of rotation.</param>
         public static <#=fName#> FromAxisAngle(ref <#=vectorName#> axis, float angle)
         {
-            <#=vectorName#> normalized = axis.Normalized();
+            <#=vectorName#> normalized = axis.GetNormalized();
 
             <#=d.DT#> half = angle * 0.5<#=d.FPL#>;
             <#=d.DT#> sin = <#=fpCast#>Math.Sin(half);

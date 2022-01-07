@@ -2696,8 +2696,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
         public static void RotationYawPitchRoll(float yaw, float pitch, float roll, out Matrix4F result)
         {
-            QuaternionF quaternion = new QuaternionF();
-            QuaternionF.RotationYawPitchRoll(yaw, pitch, roll, out quaternion);
+            QuaternionF.RotationYawPitchRoll(yaw, pitch, roll, out QuaternionF quaternion);
             FromQuaternion(ref quaternion, out result);
         }
 
@@ -2710,8 +2709,7 @@ namespace Molten
         /// <returns>The created rotation matrix.</returns>
         public static Matrix4F RotationYawPitchRoll(float yaw, float pitch, float roll)
         {
-            Matrix4F result;
-            RotationYawPitchRoll(yaw, pitch, roll, out result);
+            RotationYawPitchRoll(yaw, pitch, roll, out Matrix4F result);
             return result;
         }
 
@@ -2732,8 +2730,7 @@ namespace Molten
         /// <returns>The created translation matrix.</returns>
         public static Matrix4F CreateTranslation(Vector3F value)
         {
-            Matrix4F result;
-            CreateTranslation(ref value, out result);
+            CreateTranslation(ref value, out Matrix4F result);
             return result;
         }
 
@@ -2761,8 +2758,7 @@ namespace Molten
         /// <returns>The created translation matrix.</returns>
         public static Matrix4F CreateTranslation(float x, float y, float z)
         {
-            Matrix4F result;
-            CreateTranslation(x, y, z, out result);
+            CreateTranslation(x, y, z, out Matrix4F result);
             return result;
         }
 
@@ -2829,8 +2825,7 @@ namespace Molten
         /// <returns>The created affine transformation matrix.</returns>
         public static Matrix4F AffineTransformation(float scaling, QuaternionF rotation, Vector3F translation)
         {
-            Matrix4F result;
-            AffineTransformation(scaling, ref rotation, ref translation, out result);
+            AffineTransformation(scaling, ref rotation, ref translation, out Matrix4F result);
             return result;
         }
 
@@ -2858,8 +2853,7 @@ namespace Molten
         /// <returns>The created affine transformation matrix.</returns>
         public static Matrix4F AffineTransformation(float scaling, Vector3F rotationCenter, QuaternionF rotation, Vector3F translation)
         {
-            Matrix4F result;
-            AffineTransformation(scaling, ref rotationCenter, ref rotation, ref translation, out result);
+            AffineTransformation(scaling, ref rotationCenter, ref rotation, ref translation, out Matrix4F result);
             return result;
         }
 
@@ -2884,8 +2878,7 @@ namespace Molten
         /// <returns>The created affine transformation matrix.</returns>
         public static Matrix4F AffineTransformation2D(float scaling, float rotation, Vector2F translation)
         {
-            Matrix4F result;
-            AffineTransformation2D(scaling, rotation, ref translation, out result);
+            AffineTransformation2D(scaling, rotation, ref translation, out Matrix4F result);
             return result;
         }
 
@@ -2913,8 +2906,7 @@ namespace Molten
         /// <returns>The created affine transformation matrix.</returns>
         public static Matrix4F AffineTransformation2D(float scaling, Vector2F rotationCenter, float rotation, Vector2F translation)
         {
-            Matrix4F result;
-            AffineTransformation2D(scaling, ref rotationCenter, rotation, ref translation, out result);
+            AffineTransformation2D(scaling, ref rotationCenter, rotation, ref translation, out Matrix4F result);
             return result;
         }
 
@@ -2930,7 +2922,7 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created transformation matrix.</param>
         public static void Transformation(ref Vector3F scalingCenter, ref QuaternionF scalingRotation, ref Vector3F scaling, ref Vector3F rotationCenter, ref QuaternionF rotation, ref Vector3F translation, out Matrix4F result)
         {
-            Matrix4F sr = FromQuaternion(scalingRotation);
+            FromQuaternion(ref scalingRotation, out Matrix4F sr);
 
             result = CreateTranslation(-scalingCenter) * Transpose(sr) * Scaling(scaling) * sr * CreateTranslation(scalingCenter) * CreateTranslation(-rotationCenter) *
                 FromQuaternion(rotation) * CreateTranslation(rotationCenter) * CreateTranslation(translation);       
@@ -2948,8 +2940,13 @@ namespace Molten
         /// <returns>The created transformation matrix.</returns>
         public static Matrix4F Transformation(Vector3F scalingCenter, QuaternionF scalingRotation, Vector3F scaling, Vector3F rotationCenter, QuaternionF rotation, Vector3F translation)
         {
-            Matrix4F result;
-            Transformation(ref scalingCenter, ref scalingRotation, ref scaling, ref rotationCenter, ref rotation, ref translation, out result);
+            Transformation(ref scalingCenter, 
+                ref scalingRotation, 
+                ref scaling,
+                ref rotationCenter, 
+                ref rotation, 
+                ref translation, 
+                out Matrix4F result);
             return result;
         }
 
@@ -2965,8 +2962,15 @@ namespace Molten
         /// <param name="result">When the method completes, contains the created transformation matrix.</param>
         public static void Transformation2D(ref Vector2F scalingCenter, float scalingRotation, ref Vector2F scaling, ref Vector2F rotationCenter, float rotation, ref Vector2F translation, out Matrix4F result)
         {
-            result = CreateTranslation((Vector3F)(-scalingCenter)) * RotationZ(-scalingRotation) * Scaling((Vector3F)scaling) * RotationZ(scalingRotation) * CreateTranslation((Vector3F)scalingCenter) * 
-                CreateTranslation((Vector3F)(-rotationCenter)) * RotationZ(rotation) * CreateTranslation((Vector3F)rotationCenter) * CreateTranslation((Vector3F)translation);
+            result = CreateTranslation((Vector3F)(-scalingCenter)) * 
+                RotationZ(-scalingRotation) * 
+                Scaling((Vector3F)scaling) * 
+                RotationZ(scalingRotation) * 
+                CreateTranslation((Vector3F)scalingCenter) * 
+                CreateTranslation((Vector3F)(-rotationCenter)) * 
+                RotationZ(rotation) * 
+                CreateTranslation((Vector3F)rotationCenter) * 
+                CreateTranslation((Vector3F)translation);
 
             result.M33 = 1f;
             result.M44 = 1f;
@@ -2984,8 +2988,7 @@ namespace Molten
         /// <returns>The created transformation matrix.</returns>
         public static Matrix4F Transformation2D(Vector2F scalingCenter, float scalingRotation, Vector2F scaling, Vector2F rotationCenter, float rotation, Vector2F translation)
         {
-            Matrix4F result;
-            Transformation2D(ref scalingCenter, scalingRotation, ref scaling, ref rotationCenter, rotation, ref translation, out result);
+            Transformation2D(ref scalingCenter, scalingRotation, ref scaling, ref rotationCenter, rotation, ref translation, out Matrix4F result);
             return result;
         }
 
@@ -2997,8 +3000,7 @@ namespace Molten
         /// <returns>The sum of the two matrices.</returns>
         public static Matrix4F operator +(Matrix4F left, Matrix4F right)
         {
-            Matrix4F result;
-            Add(ref left, ref right, out result);
+            Add(ref left, ref right, out Matrix4F result);
             return result;
         }
 
@@ -3020,8 +3022,7 @@ namespace Molten
         /// <returns>The difference between the two matrices.</returns>
         public static Matrix4F operator -(Matrix4F left, Matrix4F right)
         {
-            Matrix4F result;
-            Subtract(ref left, ref right, out result);
+            Subtract(ref left, ref right, out Matrix4F result);
             return result;
         }
 
@@ -3032,8 +3033,7 @@ namespace Molten
         /// <returns>The negated matrix.</returns>
         public static Matrix4F operator -(Matrix4F value)
         {
-            Matrix4F result;
-            Negate(ref value, out result);
+            Negate(ref value, out Matrix4F result);
             return result;
         }
 
@@ -3045,8 +3045,7 @@ namespace Molten
         /// <returns>The scaled matrix.</returns>
         public static Matrix4F operator *(float left, Matrix4F right)
         {
-            Matrix4F result;
-            Multiply(ref right, left, out result);
+            Multiply(ref right, left, out Matrix4F result);
             return result;
         }
 
@@ -3058,8 +3057,7 @@ namespace Molten
         /// <returns>The scaled matrix.</returns>
         public static Matrix4F operator *(Matrix4F left, float right)
         {
-            Matrix4F result;
-            Multiply(ref left, right, out result);
+            Multiply(ref left, right, out Matrix4F result);
             return result;
         }
 
@@ -3071,8 +3069,7 @@ namespace Molten
         /// <returns>The product of the two matrices.</returns>
         public static Matrix4F operator *(Matrix4F left, Matrix4F right)
         {
-            Matrix4F result;
-            Multiply(ref left, ref right, out result);
+            Multiply(ref left, ref right, out Matrix4F result);
             return result;
         }
 
@@ -3084,8 +3081,7 @@ namespace Molten
         /// <returns>The scaled matrix.</returns>
         public static Matrix4F operator /(Matrix4F left, float right)
         {
-            Matrix4F result;
-            Divide(ref left, right, out result);
+            Divide(ref left, right, out Matrix4F result);
             return result;
         }
 
@@ -3097,8 +3093,7 @@ namespace Molten
         /// <returns>The quotient of the two matrices.</returns>
         public static Matrix4F operator /(Matrix4F left, Matrix4F right)
         {
-            Matrix4F result;
-            Divide(ref left, ref right, out result);
+            Divide(ref left, ref right, out Matrix4F result);
             return result;
         }
 

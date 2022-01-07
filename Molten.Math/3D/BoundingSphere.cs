@@ -266,8 +266,7 @@ namespace Molten
             {
                 //We are doing a relative distance comparison to find the maximum distance
                 //from the center of our sphere.
-                float distance;
-                Vector3F.DistanceSquared(ref center, ref points[i], out distance);
+                float distance = Vector3F.DistanceSquared(ref center, ref points[i]);
 
                 if (distance > radius)
                     radius = distance;

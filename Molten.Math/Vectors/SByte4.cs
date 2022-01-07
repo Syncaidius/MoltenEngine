@@ -1045,7 +1045,7 @@ namespace Molten
         /// <param name="value">The <see cref="SByte4"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
-        public static SByte4 Clamp(ref SByte4 value, ref SByte4 min, ref SByte4 max, out SByte4 result)
+        public static void Clamp(ref SByte4 value, ref SByte4 min, ref SByte4 max, out SByte4 result)
         {
 				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
 				result.Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y;

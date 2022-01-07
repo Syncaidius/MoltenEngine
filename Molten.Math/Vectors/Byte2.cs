@@ -933,7 +933,7 @@ namespace Molten
         /// <param name="value">The <see cref="Byte2"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
-        public static Byte2 Clamp(ref Byte2 value, ref Byte2 min, ref Byte2 max, out Byte2 result)
+        public static void Clamp(ref Byte2 value, ref Byte2 min, ref Byte2 max, out Byte2 result)
         {
 				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
 				result.Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y;

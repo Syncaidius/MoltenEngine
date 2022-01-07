@@ -963,7 +963,7 @@ namespace Molten
         /// <param name="value">The <see cref="Vector2S"/> value to be clamped.</param>
         /// <param name="min">The minimum value of each component.</param>
         /// <param name="max">The maximum value of each component.</param>
-        public static Vector2S Clamp(ref Vector2S value, ref Vector2S min, ref Vector2S max, out Vector2S result)
+        public static void Clamp(ref Vector2S value, ref Vector2S min, ref Vector2S max, out Vector2S result)
         {
 				result.X = value.X < min.X ? min.X : value.X > max.X ? max.X : value.X;
 				result.Y = value.Y < min.Y ? min.Y : value.Y > max.Y ? max.Y : value.Y;
