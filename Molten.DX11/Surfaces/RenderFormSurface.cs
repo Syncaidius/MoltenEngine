@@ -96,7 +96,7 @@ namespace Molten.Graphics
                 h = Control.ClientSize.Height;
             }
 
-            if (w != _width || h != _height)
+            if (w != Width || h != Height)
                 Resize(w, h);
         }
 

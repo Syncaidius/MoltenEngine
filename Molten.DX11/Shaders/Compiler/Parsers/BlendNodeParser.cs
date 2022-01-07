@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.Direct3D11;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -72,45 +73,45 @@ namespace Molten.Graphics
                         break;
 
                     case "source":
-                        if (Enum.TryParse(child.InnerText, true, out BlendOption sourceBlend))
+                        if (Enum.TryParse(child.InnerText, true, out Blend sourceBlend))
                             rtBlendDesc.SourceBlend = sourceBlend;
                         else
-                            InvalidEnumMessage<BlendOption>(context, child, "source blend option");
+                            InvalidEnumMessage<Blend>(context, child, "source blend option");
                         break;
 
                     case "destination":
-                        if (Enum.TryParse(child.InnerText, true, out BlendOption destBlend))
+                        if (Enum.TryParse(child.InnerText, true, out Blend destBlend))
                             rtBlendDesc.DestinationBlend = destBlend;
                         else
-                            InvalidEnumMessage<BlendOption>(context, child, "destination blend option");
+                            InvalidEnumMessage<Blend>(context, child, "destination blend option");
                         break;
 
                     case "operation":
-                        if (Enum.TryParse(child.InnerText, true, out BlendOperation blendOp))
+                        if (Enum.TryParse(child.InnerText, true, out BlendOp blendOp))
                             rtBlendDesc.BlendOperation = blendOp;
                         else
-                            InvalidEnumMessage<BlendOperation>(context, child, "blend operation");
+                            InvalidEnumMessage<BlendOp>(context, child, "blend operation");
                         break;
 
                     case "sourcealpha":
-                        if (Enum.TryParse(child.InnerText, true, out BlendOption sourceAlpha))
+                        if (Enum.TryParse(child.InnerText, true, out Blend sourceAlpha))
                             rtBlendDesc.SourceAlphaBlend = sourceAlpha;
                         else
-                            InvalidEnumMessage<BlendOption>(context, child, "source alpha option");
+                            InvalidEnumMessage<Blend>(context, child, "source alpha option");
                         break;
 
                     case "destinationalpha":
-                        if (Enum.TryParse(child.InnerText, true, out BlendOption destAlpha))
+                        if (Enum.TryParse(child.InnerText, true, out Blend destAlpha))
                             rtBlendDesc.DestinationAlphaBlend = destAlpha;
                         else
-                            InvalidEnumMessage<BlendOption>(context, child, "destination alpha option");
+                            InvalidEnumMessage<Blend>(context, child, "destination alpha option");
                         break;
 
                     case "alphaoperation":
-                        if (Enum.TryParse(child.InnerText, true, out BlendOperation alphaOperation))
-                            rtBlendDesc.AlphaBlendOperation = alphaOperation;
+                        if (Enum.TryParse(child.InnerText, true, out BlendOp alphaOperation))
+                            rtBlendDesc.AlphaBlendOp = alphaOperation;
                         else
-                            InvalidEnumMessage<BlendOperation>(context, child, "alpha-blend operation");
+                            InvalidEnumMessage<BlendOp>(context, child, "alpha-blend operation");
                         break;
 
                     case "writemask":

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Molten.Collections;
+using Silk.NET.DXGI;
 
 namespace Molten.Graphics
 {
@@ -17,8 +18,7 @@ namespace Molten.Graphics
         int _vsync;
 
         internal SwapChainSurface(RendererDX11 renderer, int mipCount, int sampleCount)
-            : base(renderer, 1,
-                  1, SharpDX.DXGI.Format.B8G8R8A8_UNorm, mipCount, 1, sampleCount, TextureFlags.NoShaderResource)
+            : base(renderer, 1, 1, Format.FormatB8G8R8A8Unorm, mipCount, 1, sampleCount, TextureFlags.NoShaderResource)
         {
             _dispatchQueue = new ThreadedQueue<Action>();
         }
@@ -46,7 +46,7 @@ namespace Molten.Graphics
             // Resize the swap chain if needed.
             if (resize && _swapChain != null)
             {
-                _swapChain.ResizeBuffers(_swapDesc.BufferCount, _width, _height, GraphicsFormat.Unknown.ToApi(), SwapChainFlags.None);
+                _swapChain.ResizeBuffers(_swapDesc.BufferCount, Width, Height, GraphicsFormat.Unknown.ToApi(), SwapChainFlags.None);
                 _swapDesc = _swapChain.Description;
             }
             else
@@ -61,7 +61,7 @@ namespace Molten.Graphics
             // Create new backbuffer from swap chain.
             _texture = Texture2D.FromSwapChain<Texture2D>(_swapChain, 0);
             _rtv = new RenderTargetView(Device.D3d, _texture);
-            VP = new Viewport(0, 0, _width, _height);
+            VP = new Viewport(0, 0, (int)Width, (int)Height);
 
             return _texture;
         }
@@ -79,7 +79,7 @@ namespace Molten.Graphics
             Apply(Device);
 
             if(OnPresent())
-                _swapChain?.Present(_vsync, PresentFlags.None);
+                _swapChain?.Present(_vsync, Present.None);
 
             if (!IsDisposed)
             {
