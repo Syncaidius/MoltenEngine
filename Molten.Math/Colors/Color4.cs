@@ -116,6 +116,18 @@ namespace Molten
         /// <summary>
         /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
+        /// <param name="values">A pointer to an array of <see cref="float"/> values. If there is less than 4 values, undefined behaviour should be expected.</param>
+        public unsafe Color4(float* values)
+        {
+            R = values[0];
+            G = values[1];
+            B = values[2];
+            A = values[3];
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
+        /// </summary>
         /// <param name="red">The red component of the color.</param>
         /// <param name="green">The green component of the color.</param>
         /// <param name="blue">The blue component of the color.</param>
@@ -205,11 +217,6 @@ namespace Molten
         public unsafe static Color4 FromFloatPtr(float* ptr)
         {
             return *(Color4*)ptr;
-        }
-
-        public unsafe static float* ToFloatPtr(Color4 color)
-        {
-            return (float*)&color;
         }
 
         /// <summary>

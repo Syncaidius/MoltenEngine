@@ -34,8 +34,12 @@ namespace Molten.Graphics
         {
             Apply(pipe);
 
-            if(RTV != null)
-                pipe.Context.ClearRenderTargetView(RTV, color.ToApi());
+            if (RTV != null)
+            {
+                Color4 c4 = color;
+                pipe.Context->ClearRenderTargetView(RTV, (float*)&c4);
+            }
+
         }
 
         protected override ID3D11Resource* CreateResource(bool resize)
@@ -46,8 +50,8 @@ namespace Molten.Graphics
             SetRTVDescription(ref _rtvDesc);
             if (_description.SampleDescription.Count > 1)
             {
-                _rtvDesc.Dimension = RenderTargetViewDimension.Texture2DMultisampledArray;
-                _rtvDesc.Texture2DMSArray = new RenderTargetViewDescription.Texture2DMultisampledArrayResource()
+                _rtvDesc.ViewDimension = RtvDimension.RtvDimensionTexture2Dmsarray;
+                _rtvDesc.Texture2DMSArray = new Tex2DmsArrayRtv
                 {
                     ArraySize = _description.ArraySize,
                     FirstArraySlice = 0,
@@ -55,8 +59,8 @@ namespace Molten.Graphics
             }
             else
             {
-                _rtvDesc.Dimension = RenderTargetViewDimension.Texture2DArray;
-                _rtvDesc.Texture2DArray = new RenderTargetViewDescription.Texture2DArrayResource()
+                _rtvDesc.ViewDimension = RtvDimension.RtvDimensionTexture2Darray;
+                _rtvDesc.Texture2DArray = new Tex2DArrayRtv()
                 {
                     ArraySize = _description.ArraySize,
                     MipSlice = 0,

@@ -12,6 +12,15 @@ namespace Molten.Graphics
     {
         static BlendDesc1 _defaultDesc;
 
+        /// <summary>
+        /// Gets or sets the blend sample mask.
+        /// </summary>
+        public uint BlendSampleMask { get; set; }
+
+        /// <summary>
+        /// Gets or sets the blend factor.
+        /// </summary>
+        public Color4 BlendFactor { get; set; }
         static GraphicsBlendState()
         {
             _defaultDesc = new BlendDesc1()
@@ -41,29 +50,27 @@ namespace Molten.Graphics
         BlendDesc1 _desc;
 
         bool _dirty;
-        Color4 _blendFactor;
-        uint _blendSampleMask;
 
         internal GraphicsBlendState(DeviceDX11 device, GraphicsBlendState source) : base(device)
         {
             _desc = source._desc;
-            _blendFactor = source._blendFactor;
-            _blendSampleMask = source._blendSampleMask;
+            BlendFactor = source.BlendFactor;
+            BlendSampleMask = source.BlendSampleMask;
         }
 
         internal GraphicsBlendState(DeviceDX11 device) : base(device)
         {
             _desc = _defaultDesc;
-            _blendFactor = new Color4(1, 1, 1, 1);
-            _blendSampleMask = 0xffffffff;
+            BlendFactor = new Color4(1, 1, 1, 1);
+            BlendSampleMask = 0xffffffff;
         }
 
         internal GraphicsBlendState(DeviceDX11 device, RenderTargetBlendDesc1 rtDesc) : base(device)
         {
             _desc = _defaultDesc;
             _desc.RenderTarget[0] = rtDesc;
-            _blendFactor = new Color4(1, 1, 1, 1);
-            _blendSampleMask = 0xffffffff;
+            BlendFactor = new Color4(1, 1, 1, 1);
+            BlendSampleMask = 0xffffffff;
         }
 
         internal RenderTargetBlendDesc1 GetSurfaceBlendState(int index)
@@ -148,24 +155,6 @@ namespace Molten.Graphics
                 _desc.IndependentBlendEnable = value ? 1 : 0;
                 _dirty = true;
             }
-        }
-
-        /// <summary>
-        /// Gets or sets the blend sample mask.
-        /// </summary>
-        public uint BlendSampleMask
-        {
-            get => _blendSampleMask;
-            set => _blendSampleMask = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the blend factor.
-        /// </summary>
-        public Color4 BlendFactor
-        {
-            get => _blendFactor;
-            set => _blendFactor = value;
         }
 
         /// <summary>

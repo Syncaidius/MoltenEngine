@@ -88,6 +88,8 @@ namespace Molten
             }
         }
 
+        protected override void OnDispose() { }
+
         /// <summary>
         /// Gets or sets whether the light is visible.
         /// </summary>

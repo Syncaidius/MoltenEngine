@@ -9,8 +9,8 @@ namespace Molten.Graphics
         protected override void BindState(GraphicsBlendState state)
         {
             state = state ?? Device.BlendBank.GetPreset(BlendPreset.Default);
-            float* pFactor = Color4.ToFloatPtr(state.BlendFactor);
-            Pipe.Context->OMSetBlendState(state, pFactor, state.BlendSampleMask);
+            Color4 tmp = state.BlendFactor;
+            Pipe.Context->OMSetBlendState(state, (float*)&tmp, state.BlendSampleMask);
         }
     }
 }
