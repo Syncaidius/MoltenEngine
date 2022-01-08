@@ -5,7 +5,7 @@
         /// <summary>Gets a pass at the specified index.</summary>
         /// <param name="index">The identifier.</param>
         /// <returns></returns>
-        IMaterialPass GetPass(int index);
+        IMaterialPass GetPass(uint index);
 
         /// <summary>Gets a pass with the specified name.</summary>
         /// <param name="name">The name.</param>

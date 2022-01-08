@@ -33,11 +33,11 @@ namespace Molten.Graphics.Textures.DDS
             TextureData data = new TextureData()
             {
                 Levels = _levelData,
-                Width = (int)_header.Width,
-                Height = (int)_header.Height,
+                Width = _header.Width,
+                Height = _header.Height,
                 Format = _headerDXT10.ImageFormat,
-                MipMapLevels = (int)_header.MipMapCount,
-                ArraySize = (int)_headerDXT10.ArraySize,
+                MipMapLevels = _header.MipMapCount,
+                ArraySize = _headerDXT10.ArraySize,
                 Flags = TextureFlags.None,
                 IsCompressed = true,
                 SampleCount = 1,
@@ -222,28 +222,28 @@ namespace Molten.Graphics.Textures.DDS
             }
 
             _levelData = new TextureData.Slice[_header.MipMapCount * _headerDXT10.ArraySize];
-            int blockSize = BCHelper.GetBlockSize(_headerDXT10.ImageFormat);
+            uint blockSize = BCHelper.GetBlockSize(_headerDXT10.ImageFormat);
 
             for (int a = 0; a < _headerDXT10.ArraySize; a++)
             {
-                int levelWidth = (int)_header.Width;
-                int levelHeight = (int)_header.Height;
+                uint levelWidth = _header.Width;
+                uint levelHeight = _header.Height;
 
                 for (int i = 0; i < _header.MipMapCount; i++)
                 {
-                    int blockPitch, levelByteSize;
+                    uint blockPitch, levelByteSize;
                     BCHelper.GetBCLevelSizeAndPitch(levelWidth, levelHeight, blockSize, out levelByteSize, out blockPitch);
 
                     TextureData.Slice level = new TextureData.Slice()
                     {
-                        Data = reader.ReadBytes(levelByteSize),
+                        Data = reader.ReadBytes((int)levelByteSize),
                         Pitch = blockPitch,
                         TotalBytes = levelByteSize,
                         Width = levelWidth,
                         Height = levelHeight,
                     };
 
-                    level.TotalBytes = level.Data.Length;
+                    level.TotalBytes = (uint)level.Data.LongLength;
 
                     int dataID = (a * (int)_header.MipMapCount) + i;
                     _levelData[dataID] = level;

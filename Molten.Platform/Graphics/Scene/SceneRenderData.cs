@@ -148,5 +148,7 @@ namespace Molten.Graphics
             change.LayerData = layer as LayerRenderData<R>;
             _pendingChanges.Enqueue(change);
         }
+
+        protected override void OnDispose() { }
     }
 }

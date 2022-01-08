@@ -3,7 +3,7 @@ using Molten.Input;
 
 namespace Molten
 {
-    /// <summary>An implementation of <see cref="Camera"/> which provides a left-handed projection matrix based on it's <see cref="Camera.OutputSurface"/>.</summary>
+    /// <summary>An implementation of <see cref="IInputCamera"/> which provides a left-handed projection matrix based on it's <see cref="IInputCamera.OutputSurface"/>.</summary>
     public class CameraComponent : SceneComponent, IInputCamera
     {
         RenderCamera _camera;
@@ -14,11 +14,16 @@ namespace Molten
         /// </summary>
         public event InputCameraSurfaceHandler OnSurfaceChanged;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="CameraComponent"/>
+        /// </summary>
         public CameraComponent()
         {
             _camera = new RenderCamera(RenderCameraMode.Perspective);
             _camera.OnOutputSurfaceChanged += _camera_OnOutputSurfaceChanged;
         }
+
+        protected override void OnDispose() { }
 
         private void _camera_OnOutputSurfaceChanged(RenderCamera camera, IRenderSurface oldSurface, IRenderSurface newSurface)
         {

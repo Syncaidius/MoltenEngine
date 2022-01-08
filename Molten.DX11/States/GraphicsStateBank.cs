@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     internal abstract class GraphicsStateBank<T, E> : IDisposable
-        where T : PipelineObject<DeviceDX11, PipeDX11>
+        where T : PipeObject
         where E: struct, IConvertible
     {
         protected T[] _presets;

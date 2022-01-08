@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.DXGI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Text;
 namespace Molten.Graphics
 {
     /// <summary>A special kind of render surface for use as a depth-stencil buffer.</summary>
-    public class DepthStencilSurface : Texture2DDX11, IDepthStencilSurface
+    public unsafe class DepthStencilSurface : Texture2DDX11, IDepthStencilSurface
     {
         DepthStencilView _depthView;
         DepthStencilView _readOnlyView;
@@ -40,7 +41,7 @@ namespace Molten.Graphics
             _depthDesc = new DepthStencilViewDescription();
             _depthDesc.Format = GetDSVFormat().ToApi();
 
-            if (_sampleCount > 1)
+            if (SampleCount > 1)
             {
                 _depthDesc.Dimension = DepthStencilViewDimension.Texture2DMultisampledArray;
                 _depthDesc.Flags = DepthStencilViewFlags.None;
@@ -73,11 +74,11 @@ namespace Molten.Graphics
             {
                 default:
                 case DepthFormat.R24G8_Typeless:
-                    desc.Format = SharpDX.DXGI.Format.R24_UNorm_X8_Typeless;
+                    desc.Format = Format.FormatR24UnormX8Typeless;
                     break;
 
                 case DepthFormat.R32_Typeless:
-                    desc.Format = SharpDX.DXGI.Format.R32_Float;
+                    desc.Format = Format.FormatR32Float;
                     break;
             }
         }
@@ -162,12 +163,12 @@ namespace Molten.Graphics
             Clear(Device, clearFlags, depth, stencil);
         }
 
-        private protected override void OnPipelineDispose()
+        internal override void PipelineDispose()
         {
             DisposeObject(ref _depthView);
             DisposeObject(ref _readOnlyView);
 
-            base.OnPipelineDispose();
+            base.PipelineDispose();
         }
 
         /// <summary>Gets the DepthStencilView instance associated with this surface.</summary>

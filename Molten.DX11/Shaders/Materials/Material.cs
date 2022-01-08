@@ -59,7 +59,7 @@ namespace Molten.Graphics
             Passes[id] = pass;
         }
 
-        public IMaterialPass GetPass(int index)
+        public IMaterialPass GetPass(uint index)
         {
             return Passes[index];
         }

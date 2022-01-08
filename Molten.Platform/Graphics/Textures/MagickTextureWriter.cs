@@ -21,7 +21,7 @@ namespace Molten.Graphics.Textures
             for (int i = 0; i < newData.Levels.Length; i++)
             {
                 slice = newData.Levels[i];
-                using (MagickImage image = new MagickImage(MagickColor.FromRgba(0, 0, 0, 0), slice.Width, slice.Height))
+                using (MagickImage image = new MagickImage(MagickColor.FromRgba(0, 0, 0, 0), (int)slice.Width, (int)slice.Height))
                 {
                     IPixelCollection<byte> p = image.GetPixels();
                     p.SetPixels(slice.Data);
@@ -33,6 +33,8 @@ namespace Molten.Graphics.Textures
                 }
             }
         }
+
+        protected override void OnDispose() { }
     }
 
     public class PNGWriter : MagickTextureWriter

@@ -196,5 +196,7 @@ namespace Molten.Graphics.Textures
             writer.Write(header.Caps4);
             writer.Write(header.Reserved2);
         }
+
+        protected override void OnDispose() { }
     }
 }
