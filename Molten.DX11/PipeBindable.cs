@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Silk.NET.Core.Native;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -75,6 +77,30 @@ namespace Molten.Graphics
         public static implicit operator T*(PipeBindable<T> bindable)
         {
             return bindable.NativePtr;
+        }
+
+
+        /// <summary>Queries the underlying texture's interface.</summary>
+        /// <typeparam name="T">The type of object to request in the query.</typeparam>
+        /// <returns></returns>
+        public Q* QueryInterface<Q>() where Q : unmanaged
+        {
+            if (NativePtr != null)
+            {
+                IUnknown* ptr = (IUnknown*)RawNative;
+                Type t = typeof(Q);
+                FieldInfo mInfo = t.GetField("Guid");
+
+                if (mInfo == null)
+                    throw new Exception("");
+
+                void* result = null;
+                Guid guid = (Guid)mInfo.GetValue(null);
+                ptr->QueryInterface(&guid, &result);
+                return (Q*)result;
+            }
+
+            return null;
         }
     }
 }

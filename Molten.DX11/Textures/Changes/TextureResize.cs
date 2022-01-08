@@ -9,15 +9,15 @@ namespace Molten.Graphics
 {
     internal struct TextureResize : ITextureChange
     {
-        public uint NewWidth;
+        public int NewWidth;
 
-        public uint NewHeight;
+        public int NewHeight;
 
-        public uint NewDepth;
+        public int NewDepth;
 
-        public uint NewMipMapCount;
+        public int NewMipMapCount;
 
-        public uint NewArraySize;
+        public int NewArraySize;
 
         public Format NewFormat;
 

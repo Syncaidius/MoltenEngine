@@ -34,13 +34,13 @@ namespace Molten.Graphics
         /// <param name="newWidth">The new width.</param>
         /// <param name="newMipMapCount">The new mip-map count.</param>
         /// <param name="format">The new format.</param>
-        void Resize(uint newWidth, uint newMipMapCount, GraphicsFormat format);
+        void Resize(int newWidth, int newMipMapCount, GraphicsFormat format);
 
         /// <summary>
         /// Resizes a texture to match the specified width.
         /// </summary>
         /// <param name="newWidth">The new width.</param>
-        void Resize(uint newWidth);
+        void Resize(int newWidth);
 
         /// <summary>Generates any missing mip-maps for a texture, so long as it's creation flags included <see cref="TextureFlags.AllowMipMapGeneration"/>.</summary>
         void GenerateMipMaps();
@@ -59,7 +59,7 @@ namespace Molten.Graphics
         /// <param name="destSlice">The destination array slice.</param>
         /// <param name="sourceLevel">The source mip-map level.</param>
         /// <param name="sourceSlice">The source array slice.</param>
-        void CopyTo(uint sourceLevel, uint sourceSlice, ITexture destination, uint destLevel, uint destSlice);
+        void CopyTo(int sourceLevel, int sourceSlice, ITexture destination, int destLevel, int destSlice);
 
         /// <summary>Copies data fom the provided <see cref="TextureData"/> instance into the current texture.</summary>
         /// <param name="data"></param>
@@ -69,7 +69,7 @@ namespace Molten.Graphics
         /// <param name="arrayCount">The number of array slices to copy from the provided <see cref="TextureData"/>.</param>
         /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
         /// <param name="destArraySlice">The array slice index within the current texture to start copying to.<</param>
-        void SetData(TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0);
+        void SetData(TextureData data, int srcMipIndex, int srcArraySlice, int mipCount, int arrayCount, int destMipIndex = 0, int destArraySlice = 0);
 
         /// <summary>Copies the provided data into the texture.</summary>
         /// <param name="data">The data to copy to the texture.</param>
@@ -77,16 +77,16 @@ namespace Molten.Graphics
         /// <param name="count">The number of elements to copy from the provided data array.</param>
         /// <param name="mipIndex">The index at which to start copying from the provided data array.</param>
         /// <param name="arraySlice">The position in the texture array to start copying the texture data to. For a non-array texture, this should be 0.</param>
-        void SetData<T>(uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0) where T : struct;
+        void SetData<T>(int level, T[] data, int startIndex, int count, int pitch, int arraySlice = 0) where T : struct;
 
         /// <summary>Copies the provided data into the texture.</summary>
         /// <param name="data">The slice data to copy to the texture.</param>
         /// <param name="mipCount">The number of mip maps to copy from the source data.</param>
         /// <param name="mipLevel">The mip-map level at which to start copying to within the texture.</param>
         /// <param name="arraySlice">The position in the texture array to start copying the texture data to. For a non-array texture, this should be 0.</param>
-        void SetData(TextureData.Slice data, uint mipLevel, uint arraySlice);
+        void SetData(TextureData.Slice data, int mipLevel, int arraySlice);
 
-        void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : struct;
+        void SetData<T>(Rectangle area, T[] data, int bytesPerPixel, int level, int arrayIndex = 0) where T : struct;
 
         /// <summary>Returns the data contained within a texture via a staging texture or directly from the texture itself if possible.</summary>
         /// <param name="stagingTexture">A staging texture to use when retrieving data from the GPU. Only textures
@@ -99,7 +99,7 @@ namespace Molten.Graphics
         /// <param name="level">The mip-map level to retrieve.</param>
         /// <param name="arrayIndex">The array slice/index to access.</param>
         /// <param name="callback">The callback for when the data retrieval is completed.</param>
-        void GetData(ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureData.Slice> callback);
+        void GetData(ITexture stagingTexture, int level, int arrayIndex, Action<TextureData.Slice> callback);
 
         /// <summary>
         /// Returns true if the texture was created with the specified flags.
@@ -118,18 +118,18 @@ namespace Molten.Graphics
         bool IsBlockCompressed { get; }
 
         /// <summary>Gets the width of the texture.</summary>
-        uint Width { get; }
+        int Width { get; }
 
         /// <summary>Gets the number of mip map levels in the texture.</summary>
-        uint MipMapCount { get; }
+        int MipMapCount { get; }
 
         /// <summary>Gets the number of array slices in the texture.</summary>
-        uint ArraySize { get; }
+        int ArraySize { get; }
 
         /// <summary>
         /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 
         /// </summary>
-        uint SampleCount { get; }
+        int SampleCount { get; }
 
         /// <summary>
         /// Gets whether or not the texture is multisampled. This is true if <see cref="SampleCount"/> is greater than 1.

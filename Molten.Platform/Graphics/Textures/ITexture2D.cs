@@ -28,6 +28,6 @@
         void Resize(int newWidth, int newHeight);
 
         /// <summary>Gets the height of the texture.</summary>
-        uint Height { get; }
+        int Height { get; }
     }
 }

@@ -10,19 +10,19 @@ namespace Molten.Graphics
     {
         public TextureBase Destination;
 
-        public uint SourceLevel;
-        public uint SourceSlice;
+        public int SourceLevel;
+        public int SourceSlice;
 
-        public uint DestinationLevel;
-        public uint DestinationSlice;
+        public int DestinationLevel;
+        public int DestinationSlice;
 
-        public void Process(PipeDX11 pipe, TextureBase texture)
+        public unsafe void Process(PipeDX11 pipe, TextureBase texture)
         {
 
-            uint srcSub = (SourceSlice * texture.MipMapCount) + SourceLevel;
-            uint destSub = (DestinationSlice * Destination.MipMapCount) + DestinationLevel;
+            int srcSub = (SourceSlice * texture.MipMapCount) + SourceLevel;
+            int destSub = (DestinationSlice * Destination.MipMapCount) + DestinationLevel;
 
-            pipe.CopyResourceRegion(texture.UnderlyingResource, srcSub, null, Destination.UnderlyingResource, destSub, Vector3UI.Zero);
+            pipe.CopyResourceRegion(texture.NativePtr, (uint)srcSub, null, Destination.NativePtr, (uint)destSub, Vector3UI.Zero);
             
         }
     }

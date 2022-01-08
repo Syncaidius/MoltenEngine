@@ -7,10 +7,10 @@ namespace Molten.Graphics
     /// </summary>
     public interface IResourceManager : IDisposable
     {
-        IRenderSurface CreateSurface(uint width, uint height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
-            uint mipCount = 1, uint arraySize = 1, uint sampleCount = 1, TextureFlags flags = TextureFlags.None);
+        IRenderSurface CreateSurface(int width, int height, GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
+            int mipCount = 1, int arraySize = 1, int sampleCount = 1, TextureFlags flags = TextureFlags.None);
 
-        IDepthStencilSurface CreateDepthSurface(uint width, uint height, DepthFormat format = DepthFormat.R24G8_Typeless, uint mipCount = 1, uint arraySize = 1, uint sampleCount = 1,
+        IDepthStencilSurface CreateDepthSurface(int width, int height, DepthFormat format = DepthFormat.R24G8_Typeless, int mipCount = 1, int arraySize = 1, int sampleCount = 1,
             TextureFlags flags = TextureFlags.None);
 
         /// <summary>Creates a form with a surface which can be rendered on to.</summary>
@@ -19,7 +19,7 @@ namespace Molten.Graphics
         /// <param name="mipCount">The number of mip map levels of the form surface.</param>
         /// <param name="sampleCount">The number of samples. Anything greater than 1 will return a multi-sampled surface.</param>
         /// <returns></returns>
-        INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1, uint sampleCount = 1);
+        INativeSurface CreateFormSurface(string formTitle, string formName, int mipCount = 1, int sampleCount = 1);
 
         /// <summary>Creates a GUI control with a surface which can be rendered on to.</summary>
         /// <param name="controlTitle">The title of the form.</param>
@@ -27,7 +27,7 @@ namespace Molten.Graphics
         /// <param name="mipCount">The number of mip map levels of the form surface.</param>
         /// <param name="sampleCount">The number of samples. Anything greater than 1 will return a multi-sampled surface.</param>
         /// <returns></returns>
-        INativeSurface CreateControlSurface(string controlTitle, string controlName, uint mipCount = 1, uint sampleCount = 1);
+        INativeSurface CreateControlSurface(string controlTitle, string controlName, int mipCount = 1, int sampleCount = 1);
 
         /// <summary>Creates a new 1D texture and returns it.</summary>
         /// <param name="properties">A set of 1D texture properties.</param>
@@ -69,7 +69,7 @@ namespace Molten.Graphics
         /// <param name="sourceArraySlice">The source array slice.</param>
         /// <param name="destMiplevel">The destination mip-map level.</param>
         /// <param name="destArraySlice">The destination array slice.</param>
-        void ResolveTexture(ITexture source, ITexture destination, uint sourceMipLevel, uint sourceArraySlice, uint destMiplevel, uint destArraySlice);
+        void ResolveTexture(ITexture source, ITexture destination, int sourceMipLevel, int sourceArraySlice, int destMiplevel, int destArraySlice);
 
         /// <summary>
         /// Creates a renderer for drawing sprites and primitives with a <see cref="SpriteBatcher"/> via the provided callback.
@@ -85,7 +85,7 @@ namespace Molten.Graphics
         /// <param name="topology"></param>
         /// <param name="dynamic"></param>
         /// <returns></returns>
-        IMesh<GBufferVertex> CreateMesh(uint maxVertices,
+        IMesh<GBufferVertex> CreateMesh(int maxVertices,
             VertexTopology topology = VertexTopology.TriangleList,
             bool dynamic = false);
 
@@ -95,7 +95,7 @@ namespace Molten.Graphics
         /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
         /// <param name="dedicatedResource">if set to <c>true</c> [dedicated resource].</param>
         /// <returns></returns>
-        IIndexedMesh<GBufferVertex> CreateIndexedMesh(uint maxVertices, uint maxIndices,
+        IIndexedMesh<GBufferVertex> CreateIndexedMesh(int maxVertices, int maxIndices,
             VertexTopology topology = VertexTopology.TriangleList,
             bool dynamic = false);
 
@@ -115,7 +115,7 @@ namespace Molten.Graphics
         /// <param name="dynamic">if set to <c>true</c> [dynamic].</param>
         /// <param name="dedicatedResource">if set to <c>true</c> [dedicated resource].</param>
         /// <returns></returns>
-        IIndexedMesh<T> CreateIndexedMesh<T>(uint maxVertices, uint maxIndices,
+        IIndexedMesh<T> CreateIndexedMesh<T>(int maxVertices, int maxIndices,
             VertexTopology topology = VertexTopology.TriangleList,
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit,
             bool dynamic = false)
