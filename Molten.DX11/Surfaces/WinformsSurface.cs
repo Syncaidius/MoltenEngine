@@ -146,8 +146,10 @@ namespace Molten.Graphics
             return true;
         }
 
-        private protected override void OnPipelineDispose()
+        internal override void PipelineDispose()
         {
+            base.PipelineDispose();
+
             _disposing = true;
         }
 
@@ -163,11 +165,12 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets or sets the form name.</summary>
-        public string Name
+        public new string Name
         {
             get => _ctrlName;
             set
             {
+                base.Name = $"Winforms surface - {value}";
                 _ctrlName = value;
                 _propertiesDirty = true;
             }

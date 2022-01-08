@@ -10,28 +10,13 @@ namespace Molten.Windows32
     /// <summary>A Win32 helper library.</summary>
     public static partial class Win32
     {
-        public static Win32CPU CPU { get; private set; } = new Win32CPU();
+        public static Win32CPU CPU { get; } = new Win32CPU();
 
-        public static Win32OS OS { get; private set; } = new Win32OS();
+        public static Win32OS OS { get; } = new Win32OS();
 
-        public static Win32IO IO { get; private set; } = new Win32IO();
+        public static Win32IO IO { get; } = new Win32IO();
 
-        /// <summary>Brings a window to the front and makes it the active/focused one.</summary>
-        /// <param name="hwnd">The handle/pointer to a window.</param>
-        /// <returns></returns>
-        [DllImport("User32")]
-        public static extern int SetForegroundWindow(IntPtr hwnd);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr GetForegroundWindow();
-
-        /// <summary>Gets the currently focused control.</summary>
-        /// <returns></returns>
-        [DllImport("user32.dll")]
-        public static extern IntPtr GetFocus();
-
-        [DllImport("user32.dll", SetLastError = false)]
-        public static extern IntPtr GetDesktopWindow();
+        public static Win32Window Window { get; } = new Win32Window();
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -72,10 +57,5 @@ namespace Molten.Windows32
 
             return result;
         }
-
-        //public static void SetForegroundWindow(WinformsOutput output)
-        //{
-        //    SetForegroundWindow(output.Form.Handle);
-        //}
     }
 }

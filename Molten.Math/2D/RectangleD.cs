@@ -28,7 +28,7 @@ namespace Molten.DoublePrecision
     /// <summary>
     /// Double-precision version of <see cref="RectangleD"/>.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public struct RectangleD : IEquatable<RectangleD>
     {
         /// <summary>

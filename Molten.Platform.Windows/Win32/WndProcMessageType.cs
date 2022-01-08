@@ -8,6 +8,15 @@ namespace Molten.Windows32
 {
     internal enum WndProcMessageType
     {
+        /// <summary>
+        /// Sent when a window is being destroyed. 
+        /// It is sent to the window procedure of the window being destroyed after the window is removed from the screen.
+        /// This message is sent first to the window being destroyed and then to the child windows (if any) as they are destroyed. 
+        /// During the processing of the message, it can be assumed that all child windows still exist.
+        /// </summary>
+        /// <remarks>See: https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-destroy</remarks>
+        WM_DESTROY = 0x0002,
+
         GWL_WNDPROC = -4,
         DLGC_WANTALLKEYS = 4,
 
@@ -19,13 +28,25 @@ namespace Molten.Windows32
         WM_INPUTLANGCHANGE = 0x0051,
 
         /// <summary>
+        /// Notifies a window that its nonclient area is being destroyed. 
+        /// The DestroyWindow function sends the WM_NCDESTROY message to the window following the WM_DESTROY message.
+        /// WM_DESTROY is used to free the allocated memory object associated with the window.
+        /// </summary>
+        /// <remarks>
+        /// See: https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-ncdestroy
+        /// </remarks>
+        WM_NCDESTROY = 0x0082,
+
+        /// <summary>
         /// Sent to a window in order to determine what part of the window corresponds to a particular screen coordinate. 
         /// This can happen, for example, when the cursor moves, when a mouse button is pressed or released, 
         /// or in response to a call to a function such as WindowFromPoint. If the mouse is not captured, 
         /// the message is sent to the window beneath the cursor. 
         /// Otherwise, the message is sent to the window that has captured the mouse.
-        /// Ref: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-nchittest
         /// </summary>
+        /// <remarks>
+        /// See: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-nchittest
+        /// </remarks>
         WM_NCHITTEST = 0x0084,
 
         WM_GETDLGCODE = 0x0087,

@@ -156,10 +156,12 @@
   <ItemGroup>
     <Compile Include="Input\WinMouseButtonFlags.cs" />
     <Compile Include="Input\WinWParamXButton.cs" />
+    <Compile Include="Win32\NativeMessage.cs" />
     <Compile Include="Win32\Win32.CPU.cs" />
     <Compile Include="Win32\Win32.cs" />
     <Compile Include="Win32\Win32.IO.cs" />
     <Compile Include="Win32\Win32.OS.cs" />
+    <Compile Include="Win32\Win32.Window.cs" />
     <Compile Include="Win32\Win32Helper.Structures.cs" />
     <Compile Include="Win32\WndProcMessageType.cs" />
     <Compile Include="WindowsClipboard.cs" />

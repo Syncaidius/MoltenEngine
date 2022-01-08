@@ -30,7 +30,7 @@ namespace Molten
     /// Define a Rectangle. This structure is slightly different from System.Drawing.Rectangle as it is
     /// internally storing Left,Top,Right,Bottom instead of Left,Top,Width,Height.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Rectangle : IEquatable<Rectangle>
     {
         /// <summary>
