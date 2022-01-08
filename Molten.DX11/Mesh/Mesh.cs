@@ -13,10 +13,10 @@ namespace Molten.Graphics
         private protected RendererDX11 _renderer;
         private protected BufferSegment _vb; 
         private protected Material _material;
-        private protected uint _vertexCount;
+        private protected int _vertexCount;
         private protected bool _isDynamic;
 
-        internal Mesh(RendererDX11 renderer, uint maxVertices, VertexTopology topology, bool dynamic) : base(renderer.Device)
+        internal Mesh(RendererDX11 renderer, int maxVertices, VertexTopology topology, bool dynamic) : base(renderer.Device)
         {
             _renderer = renderer;
             MaxVertices = maxVertices;
@@ -24,24 +24,24 @@ namespace Molten.Graphics
 
             GraphicsBuffer vBuffer = dynamic ? renderer.DynamicVertexBuffer : renderer.StaticVertexBuffer;
 
-            _vb = vBuffer.Allocate<T>(MaxVertices);
+            _vb = vBuffer.Allocate<T>((uint)MaxVertices);
             _vb.SetVertexFormat<T>();
         }
 
         public void SetVertices(T[] data)
         {
-            SetVertices(data, 0, (uint)data.Length);
+            SetVertices(data, 0, (int)data.Length);
         }
 
-        public void SetVertices(T[] data, uint count)
+        public void SetVertices(T[] data, int count)
         {
             SetVertices(data, 0, count);
         }
 
-        public void SetVertices(T[] data, uint startIndex, uint count)
+        public void SetVertices(T[] data, int startIndex, int count)
         {
             _vertexCount = count;
-            _vb.SetData(_renderer.Device, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _vb.SetData(_renderer.Device, data, (uint)startIndex, (uint)count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         internal virtual void ApplyBuffers(PipeDX11 pipe)
@@ -59,7 +59,7 @@ namespace Molten.Graphics
             _material.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
             _material.Object.World.Value = data.RenderTransform;
 
-            renderer.Device.Draw(_material, _vertexCount, Topology);
+            renderer.Device.Draw(_material, (uint)_vertexCount, Topology);
 
             /* TODO: According to: https://www.gamedev.net/forums/topic/667328-vertices-and-indices-in-the-same-buffer/
             *  - A buffer can be bound as both a vertex and index buffer
@@ -73,7 +73,7 @@ namespace Molten.Graphics
             _vb.Release();
         }
 
-        public uint MaxVertices { get; }
+        public int MaxVertices { get; }
 
         public VertexTopology Topology { get; }
 
@@ -89,7 +89,7 @@ namespace Molten.Graphics
             set => Material = value as Material;
         }
 
-        public uint VertexCount => _vertexCount;
+        public int VertexCount => _vertexCount;
 
         public bool IsDynamic => _isDynamic;
 

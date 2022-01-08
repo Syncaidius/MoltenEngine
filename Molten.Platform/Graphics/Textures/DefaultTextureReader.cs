@@ -26,8 +26,8 @@ namespace Molten.Graphics.Textures
             using (MagickImage image = new MagickImage(reader.BaseStream))
             {
                 image.Warning += Image_Warning;
-                data.Width = (uint)image.Width;
-                data.Height = (uint)image.Height;
+                data.Width = image.Width;
+                data.Height = image.Height;
                 IPixelCollection<byte> pixels = image.GetPixels();
                 TextureData.Slice slice = new TextureData.Slice()
                 {
@@ -37,7 +37,7 @@ namespace Molten.Graphics.Textures
                     Pitch = data.Width * 4 // We're using 4 bytes per pixel (RGBA)
                 };
 
-                slice.TotalBytes = (uint)slice.Data.LongLength;
+                slice.TotalBytes = slice.Data.Length;
                 data.Levels = new TextureData.Slice[] { slice };
 
                 image.Warning -= Image_Warning;

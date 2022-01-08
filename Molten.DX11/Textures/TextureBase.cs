@@ -167,13 +167,13 @@ namespace Molten.Graphics
                 if (!HasFlags(TextureFlags.NoShaderResource))
                 {
                     SetSRVDescription(ref _srvDescription);
-                    SRV = new ShaderResourceView(Device.D3d, _resource, _srvDescription);
+                    Device.Native->CreateShaderResourceView(_native, ref _srvDescription, ref SRV);
                 }
 
                 if (HasFlags(TextureFlags.AllowUAV))
                 {
                     SetUAVDescription(ref _srvDescription, ref _uavDescription);
-                    UAV = new UnorderedAccessView(Device.D3d, _resource, _uavDescription);
+                    Device.Native->CreateUnorderedAccessView(_native, ref _uavDescription, ref UAV);
                 }
 
                 OnCreate?.Invoke(this);
@@ -410,7 +410,6 @@ namespace Molten.Graphics
         /// <param name="staging">The staging texture to copy the data to.</param>
         /// <param name="level">The mip-map level.</param>
         /// <param name="arraySlice">The array slice.</param>
-        /// <param name="copySubresource">Copies the data via the provided staging texture. If this is true, the staging texture cannot be null.</param>
         /// <returns></returns>
         internal unsafe TextureData.Slice GetSliceData(PipeDX11 pipe, TextureBase staging, int level, int arraySlice)
         {
@@ -449,7 +448,7 @@ namespace Molten.Graphics
                 int p = 0;
                 while (p < databox.SlicePitch)
                 {
-                    System.Buffer.MemoryCopy(ptrDatabox, ptrSlice, expectedSlicePitch, expectedRowPitch);
+                    Buffer.MemoryCopy(ptrDatabox, ptrSlice, expectedSlicePitch, expectedRowPitch);
                     ptrDatabox += databox.RowPitch;
                     ptrSlice += expectedRowPitch;
                     p += databox.RowPitch;

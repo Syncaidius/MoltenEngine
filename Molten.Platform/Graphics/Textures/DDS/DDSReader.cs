@@ -33,11 +33,11 @@ namespace Molten.Graphics.Textures.DDS
             TextureData data = new TextureData()
             {
                 Levels = _levelData,
-                Width = _header.Width,
-                Height = _header.Height,
+                Width = (int)_header.Width,
+                Height = (int)_header.Height,
                 Format = _headerDXT10.ImageFormat,
-                MipMapLevels = _header.MipMapCount,
-                ArraySize = _headerDXT10.ArraySize,
+                MipMapLevels = (int)_header.MipMapCount,
+                ArraySize = (int)_headerDXT10.ArraySize,
                 Flags = TextureFlags.None,
                 IsCompressed = true,
                 SampleCount = 1,
@@ -222,16 +222,16 @@ namespace Molten.Graphics.Textures.DDS
             }
 
             _levelData = new TextureData.Slice[_header.MipMapCount * _headerDXT10.ArraySize];
-            uint blockSize = BCHelper.GetBlockSize(_headerDXT10.ImageFormat);
+            int blockSize = BCHelper.GetBlockSize(_headerDXT10.ImageFormat);
 
             for (int a = 0; a < _headerDXT10.ArraySize; a++)
             {
-                uint levelWidth = _header.Width;
-                uint levelHeight = _header.Height;
+                int levelWidth = (int)_header.Width;
+                int levelHeight = (int)_header.Height;
 
                 for (int i = 0; i < _header.MipMapCount; i++)
                 {
-                    uint blockPitch, levelByteSize;
+                    int blockPitch, levelByteSize;
                     BCHelper.GetBCLevelSizeAndPitch(levelWidth, levelHeight, blockSize, out levelByteSize, out blockPitch);
 
                     TextureData.Slice level = new TextureData.Slice()
@@ -243,7 +243,7 @@ namespace Molten.Graphics.Textures.DDS
                         Height = levelHeight,
                     };
 
-                    level.TotalBytes = (uint)level.Data.LongLength;
+                    level.TotalBytes = level.Data.Length;
 
                     int dataID = (a * (int)_header.MipMapCount) + i;
                     _levelData[dataID] = level;

@@ -65,8 +65,8 @@ namespace Molten.Graphics
 
         private static void CalcOrthographicProjection(IRenderSurface surface, float nearClip, float farClip, float fov, ref Matrix4F projection)
         {
-            uint width = 10;
-            uint height = 10;
+            int width = 10;
+            int height = 10;
             if (surface != null)
             {
                 width = surface.Width;
@@ -78,8 +78,8 @@ namespace Molten.Graphics
 
         private static void CalcPerspectiveProjection(IRenderSurface surface, float nearClip, float farClip, float fov, ref Matrix4F projection)
         {
-            uint width = 10;
-            uint height = 10;
+            int width = 10;
+            int height = 10;
             if (surface != null)
             {
                 width = surface.Width;

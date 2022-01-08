@@ -4,6 +4,7 @@ using System;
 using Silk.NET.DXGI;
 using System.IO;
 using System.Runtime.InteropServices;
+using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
@@ -72,7 +73,7 @@ namespace Molten.Graphics
             };
         }
 
-        protected override Resource CreateResource(bool resize)
+        protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
             _texture = new Texture2D(Device.D3d, _description);
             return _texture;
