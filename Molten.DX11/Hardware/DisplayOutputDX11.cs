@@ -38,7 +38,7 @@ namespace Molten.Graphics
             ModeDesc1[] m = new ModeDesc1[(int)modeCount];
             DisplayMode[] modes = new DisplayMode[m.Length];
 
-            //build a list of all valid display modes
+            // Build a list of all valid display modes
             for (int i = 0; i < m.Length; i++)
                 modes[i] = new DisplayMode(ref m[i]);
 

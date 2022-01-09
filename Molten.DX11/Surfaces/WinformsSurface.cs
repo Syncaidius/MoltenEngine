@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.DXGI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,8 +38,8 @@ namespace Molten.Graphics
         {
             if (_displayMode.Width != newWidth || _displayMode.Height != newHeight)
             {
-                _displayMode.Width = newWidth;
-                _displayMode.Height = newHeight;
+                _displayMode.Width = (uint)newWidth;
+                _displayMode.Height = (uint)newHeight;
 
                 // TODO validate display mode here. If invalid or unsupported by display, choose nearest supported.
 
@@ -68,17 +69,17 @@ namespace Molten.Graphics
             //set default bounds
             UpdateControlMode(_control, _requestedMode);
 
-            ModeDescription modeDesc = new ModeDescription()
+            ModeDesc1 modeDesc = new ModeDesc1()
             {
-                Width = _bounds.Width,
-                Height = _bounds.Height,
+                Width = (uint)_bounds.Width,
+                Height = (uint)_bounds.Height,
                 RefreshRate = new Rational(60, 1),
                 Format = DxgiFormat,
-                Scaling = DisplayModeScaling.Stretched,
-                ScanlineOrdering = DisplayModeScanlineOrder.Progressive,
+                Scaling = ModeScaling.ModeScalingStretched,
+                ScanlineOrdering = ModeScanlineOrder.ModeScanlineOrderProgressive,
             };
 
-            _displayMode = new DisplayMode(modeDesc);
+            _displayMode = new DisplayMode(ref modeDesc);
             CreateSwapChain(_displayMode, true, _control.Handle);
 
             SubscribeToControl(_control);

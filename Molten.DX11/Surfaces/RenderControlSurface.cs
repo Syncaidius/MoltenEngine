@@ -123,7 +123,7 @@ namespace Molten.Graphics
             int w = Control.ClientSize.Width;
             int h = Control.ClientSize.Height;
 
-            if (w != _width || h != _height)
+            if (w != Width || h != Height)
                 Resize(w, h);
         }
 
