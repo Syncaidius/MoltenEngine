@@ -5,17 +5,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Dxgi
 {
-    public unsafe class DisplayAdapterDX11 : EngineObject, IDisplayAdapter
+    public unsafe class DisplayAdapterDXGI : EngineObject, IDisplayAdapter
     {
         /// <summary>Gets the native DXGI adapter that this instance represents.</summary>
         public IDXGIAdapter1* Native;
 
         AdapterDesc1* _desc;
 
-        DisplayOutputDX11[] _connectedOutputs;
-        List<DisplayOutputDX11> _activeOutputs;
+        DisplayOutputDXGI[] _connectedOutputs;
+        List<DisplayOutputDXGI> _activeOutputs;
         IDisplayManager _manager;
         string _name;
 
@@ -26,11 +26,11 @@ namespace Molten.Graphics
         /// <summary>Occurs when an <see cref="T:Molten.IDisplayOutput" /> is disconnected from the current <see cref="T:Molten.IDisplayAdapter" />. </summary>
         public event DisplayOutputChanged OnOutputDeactivated;
 
-        public DisplayAdapterDX11(IDisplayManager manager, IDXGIAdapter1* adapter, AdapterDesc1* desc,            int id)
+        public DisplayAdapterDXGI(IDisplayManager manager, IDXGIAdapter1* adapter, AdapterDesc1* desc,            int id)
         {
             _manager = manager;
             Native = adapter;
-            _activeOutputs = new List<DisplayOutputDX11>();
+            _activeOutputs = new List<DisplayOutputDXGI>();
             ID = id;
             _desc = desc;
 
@@ -47,10 +47,10 @@ namespace Molten.Graphics
             SharedSystemMemory = ByteMath.ToMegabytes(sharedMemory);
 
             IDXGIOutput1*[] outputs = DXGIHelper.EnumArray<IDXGIOutput1, IDXGIOutput>(adapter->EnumOutputs);
-            _connectedOutputs = new DisplayOutputDX11[outputs.Length];
+            _connectedOutputs = new DisplayOutputDXGI[outputs.Length];
 
             for (int i = 0; i < _connectedOutputs.Length; i++)
-                _connectedOutputs[i] = new DisplayOutputDX11(this, outputs[i]);
+                _connectedOutputs[i] = new DisplayOutputDXGI(this, outputs[i]);
         }
 
         protected override void OnDispose()
@@ -108,7 +108,7 @@ namespace Molten.Graphics
 
             if (!_activeOutputs.Contains(output))
             {
-                _activeOutputs.Add(output as DisplayOutputDX11);
+                _activeOutputs.Add(output as DisplayOutputDXGI);
                 OnOutputActivated?.Invoke(output);
             }
         }
@@ -118,7 +118,7 @@ namespace Molten.Graphics
             if (output.Adapter != this)
                 throw new AdapterOutputException(output, "Cannot remove active output: Bound to another adapter.");
 
-            if (_activeOutputs.Remove(output as DisplayOutputDX11))
+            if (_activeOutputs.Remove(output as DisplayOutputDXGI))
                 OnOutputDeactivated?.Invoke(output);
         }
 

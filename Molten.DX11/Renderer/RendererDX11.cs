@@ -14,7 +14,7 @@ namespace Molten.Graphics
     public class RendererDX11 : RenderService
     {
         D3D11 _api;
-        DisplayManagerDX11 _displayManager;
+        DisplayManagerDXGI _displayManager;
         ResourceManager _resourceManager;
         ComputeManager _compute;
         HashSet<Texture2DDX11> _clearedSurfaces;
@@ -46,7 +46,7 @@ namespace Molten.Graphics
 
         protected override void OnInitializeAdapter(GraphicsSettings settings)
         {
-            _displayManager = new DisplayManagerDX11();
+            _displayManager = new DisplayManagerDXGI();
             _displayManager.Initialize(Log, settings);
         }
 

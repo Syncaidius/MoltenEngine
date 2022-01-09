@@ -1,19 +1,20 @@
-﻿using Molten.Graphics.Textures;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Molten.Collections;
 using Silk.NET.DXGI;
+using Silk.NET.Direct3D11;
+using Molten.Graphics.Dxgi;
+using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
     /// <summary>A render target that is created from, and outputs to, a device's swap chain.</summary>
-    public abstract class SwapChainSurface : RenderSurface, ISwapChainSurface
+    public unsafe abstract class SwapChainSurface : RenderSurface, ISwapChainSurface
     {
-        protected SwapChain _swapChain;
-        protected SwapChainDescription _swapDesc;
-
+        IDXGISwapChain1* _swapChain;
+        SwapChainDesc1 _swapDesc;
         ThreadedQueue<Action> _dispatchQueue;
         int _vsync;
 
@@ -25,23 +26,31 @@ namespace Molten.Graphics
 
         protected void CreateSwapChain(DisplayMode mode, bool windowed, IntPtr controlHandle)
         {
-            SwapChainDescription desc = new SwapChainDescription()
+            SwapChainDesc1 desc = new SwapChainDesc1()
             {
+                Width = mode.Width,
+                Height = mode.Height,
+                Format = mode.Format,
+                BufferUsage = (uint)DxgiUsage.RenderTargetOutput,
                 BufferCount = Device.Settings.BackBufferSize,
-                ModeDescription = mode.Description,
-                IsWindowed = true,
-                OutputHandle = controlHandle,
-                SampleDescription = new SampleDescription(1, 0),
-                SwapEffect = SwapEffect.Discard,
-                Usage = Usage.RenderTargetOutput,
-                Flags = SwapChainFlags.None,
+                SampleDesc = new SampleDesc(1, 0),
+                SwapEffect = SwapEffect.SwapEffectDiscard,
+                Flags = (uint)DxgiSwapChainFlags.None,
+                Stereo = 0,
+                Scaling = Scaling.ScalingNone,
+                AlphaMode = AlphaMode.AlphaModeIgnore // TODO implement this correctly
             };
 
-            _swapChain = new SwapChain(Device.DisplayManager.DxgiFactory, Device.D3d, desc);
+            IDXGISwapChain* ptrSwapChain = null;
+            SwapChainDesc* ptrDesc = (SwapChainDesc*)&desc;
+
+            Device.DisplayManager.DxgiFactory->CreateSwapChain((IUnknown*)Device.Native, ptrDesc, ref ptrSwapChain);
+
             _swapDesc = desc;
+            _swapChain = (IDXGISwapChain1*)ptrSwapChain;
         }
 
-        protected override SharpDX.Direct3D11.Resource CreateResource(bool resize)
+        protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
             // Resize the swap chain if needed.
             if (resize && _swapChain != null)
@@ -78,8 +87,8 @@ namespace Molten.Graphics
         {
             Apply(Device);
 
-            if(OnPresent())
-                _swapChain?.Present(_vsync, Present.None);
+            if(OnPresent() && _swapChain != null)
+                _swapChain->Present(_vsync, Present.None);
 
             if (!IsDisposed)
             {
@@ -92,12 +101,18 @@ namespace Molten.Graphics
         {
             // Avoid calling RenderFormSurface's OnPipelineDispose implementation by skipping it. Jump straight to base.
             // This prevents any swapchain render loops from being aborted due to disposal flags being set.
-            base.OnPipelineDispose();
+            base.PipelineDispose();
         }
 
         public void Dispatch(Action action)
         {
             _dispatchQueue.Enqueue(action);
+        }
+
+        internal override void PipelineDispose()
+        {
+            ReleaseSilkPtr(ref _swapChain);
+            base.PipelineDispose();
         }
 
         protected virtual bool OnPresent() { return true; }

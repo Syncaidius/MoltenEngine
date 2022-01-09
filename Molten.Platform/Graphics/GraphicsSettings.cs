@@ -23,7 +23,7 @@ namespace Molten.Graphics
             DisplayOutputIds = AddSettingList<int>("display_id");
             VSync = AddSetting<bool>("vsync", true);
             MSAA = AddSetting<AntiAliasMode>("msaa", 0);
-            BackBufferSize = AddSetting<int>("back_buffer_size", 1);
+            BackBufferSize = AddSetting<uint>("back_buffer_size", 1);
             EnableDebugLayer = AddSetting<bool>("renderer_debug");
         }
 
@@ -44,7 +44,7 @@ namespace Molten.Graphics
         public SettingValue<AntiAliasMode> MSAA { get; }
 
         /// <summary>Gets or sets the number of back-buffer surfaces. More tend to increase performance, but also consumes more video memory.</summary>
-        public SettingValue<int> BackBufferSize { get; }
+        public SettingValue<uint> BackBufferSize { get; }
 
         /// <summary>Gets or sets whether to enable a renderer's debug layer, if available.</summary>
         [DataMember]

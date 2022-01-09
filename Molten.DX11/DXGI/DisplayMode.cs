@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Dxgi
 {
     public class DisplayMode
     {

@@ -1,24 +1,23 @@
-﻿using Silk.NET.Core.Native;
-using Silk.NET.DXGI;
+﻿using Silk.NET.DXGI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Dxgi
 {
-    public unsafe class DisplayManagerDX11 : EngineObject, IDisplayManager
+    public unsafe class DisplayManagerDXGI : EngineObject, IDisplayManager
     {
         DXGI _api;
         IDXGIFactory1* _dxgiFactory;
         List<int> _usable;
-        List<DisplayAdapterDX11> _adapters;
+        List<DisplayAdapterDXGI> _adapters;
         Logger _log;
         int _defaultID = -1;
         int _selectedID = -1;
 
-        public DisplayManagerDX11()
+        public DisplayManagerDXGI()
         {
             _api = DXGI.GetApi();
         }
@@ -37,7 +36,7 @@ namespace Molten.Graphics
         public void Initialize(Logger logger, GraphicsSettings settings)
         {
             _usable = new List<int>();
-            _adapters = new List<DisplayAdapterDX11>();
+            _adapters = new List<DisplayAdapterDXGI>();
             _log = logger;
 
             // Create factory
@@ -51,7 +50,7 @@ namespace Molten.Graphics
             {
                 AdapterDesc1* desc = null;
                 detected[i]->GetDesc1(desc);
-                DisplayAdapterDX11 adapter = new DisplayAdapterDX11(this, detected[i], desc, i);
+                DisplayAdapterDXGI adapter = new DisplayAdapterDXGI(this, detected[i], desc, i);
                 _adapters.Add(adapter);
 
                 if (adapter.OutputCount > 0)

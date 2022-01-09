@@ -8,6 +8,7 @@ using System.Threading;
 using Silk.NET.Direct3D11;
 using Silk.NET.Core.Native;
 using Silk.NET.DXGI;
+using Molten.Graphics.Dxgi;
 
 namespace Molten.Graphics
 {
@@ -19,7 +20,7 @@ namespace Molten.Graphics
         internal ID3D11DeviceContext1* ImmediateContext;
 
         D3D11 _api;
-        DisplayAdapterDX11 _adapter;
+        DisplayAdapterDXGI _adapter;
 
         PipeDX11[] _pipes;
         int[] _freePipes;
@@ -27,7 +28,7 @@ namespace Molten.Graphics
         int _pipeCount;
 
         Logger _log;
-        DisplayManagerDX11 _displayManager;
+        DisplayManagerDXGI _displayManager;
         GraphicsSettings _settings;
         long _allocatedVRAM;
 
@@ -41,11 +42,11 @@ namespace Molten.Graphics
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
-        internal DeviceDX11(D3D11 api, Logger log, GraphicsSettings settings, DisplayManagerDX11 manager)
+        internal DeviceDX11(D3D11 api, Logger log, GraphicsSettings settings, DisplayManagerDXGI manager)
         {
             _log = log;
             _displayManager = manager;
-            _adapter = _displayManager.SelectedAdapter as DisplayAdapterDX11;
+            _adapter = _displayManager.SelectedAdapter as DisplayAdapterDXGI;
             _pipes = new PipeDX11[0];
             _freePipes = new int[0];
             VertexFormatCache = new TypedObjectCache<IVertexType, VertexFormat>(VertexFormat.FromType);
@@ -199,7 +200,7 @@ namespace Molten.Graphics
         /// <summary>Gets an instance of <see cref="DeviceFeaturesDX11"/> which provides access to feature support details for the current graphics device.</summary>
         internal DeviceFeaturesDX11 Features { get; private set; }
 
-        internal DisplayManagerDX11 DisplayManager => _displayManager;
+        internal DisplayManagerDXGI DisplayManager => _displayManager;
 
         internal GraphicsSettings Settings => _settings;
 

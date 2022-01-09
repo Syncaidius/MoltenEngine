@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Molten.Graphics
 {
-    public abstract class WinformsSurface<T> : SwapChainSurface
+    public unsafe abstract class WinformsSurface<T> : SwapChainSurface
         where T : Control
     {
         T _control;
@@ -91,7 +91,7 @@ namespace Molten.Graphics
             };
 
             // Ignore all windows events
-            Device.DisplayManager.DxgiFactory.MakeWindowAssociation(_control.Handle, WindowAssociationFlags.IgnoreAltEnter);
+            Device.DisplayManager.DxgiFactory->MakeWindowAssociation(_control.Handle, (uint)WindowAssociationFlags.NoAltEnter);
         }
 
         protected abstract void CreateControl(string title, ref T control, ref IntPtr handle);

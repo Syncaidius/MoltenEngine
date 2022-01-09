@@ -5,15 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics
+namespace Molten.Graphics.Dxgi
 {
-    public unsafe class DisplayOutputDX11 : EngineObject, IDisplayOutput
+    public unsafe class DisplayOutputDXGI : EngineObject, IDisplayOutput
     {
         internal IDXGIOutput1* Native;
         OutputDesc* _desc;
-        DisplayAdapterDX11 _adapter;
+        DisplayAdapterDXGI _adapter;
 
-        internal DisplayOutputDX11(DisplayAdapterDX11 adapter, IDXGIOutput1* output)
+        internal DisplayOutputDXGI(DisplayAdapterDXGI adapter, IDXGIOutput1* output)
         {
             _adapter = adapter;
             Native = output;
@@ -53,9 +53,6 @@ namespace Molten.Graphics
 
         /// <summary>Gets the orientation of the current <see cref="IDisplayOutput" />.</summary>
         public DisplayOrientation Orientation => (DisplayOrientation)_desc->Rotation;
-
-        /// <summary>Gets the name of the output.</summary>
-        public string Name { get; protected set; } = "";
 
         /// <summary>Gets the adapter that the display device is connected to.</summary>
         public IDisplayAdapter Adapter => _adapter;
