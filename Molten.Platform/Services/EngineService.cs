@@ -95,8 +95,6 @@ namespace Molten
 
         protected override void OnDispose()
         {
-            base.OnDispose();
-
             Thread?.DisposeAndJoin();
 
             State = EngineServiceState.Disposed;

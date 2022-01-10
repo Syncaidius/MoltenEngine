@@ -60,6 +60,23 @@ namespace Molten
         }
 
 #region Constructors
+        ///<summary>Creates a new instance of <see cref = "Byte4"/>, using a <see cref="Byte2"/> to populate the first two components.</summary>
+		public Byte4(Byte2 vector, byte z, byte w)
+		{
+			X = vector.X;
+			Y = vector.Y;
+			Z = z;
+			W = w;
+		}
+        ///<summary>Creates a new instance of <see cref = "Byte4"/>, using a <see cref="Byte3"/> to populate the first three components.</summary>
+		public Byte4(Byte3 vector, byte w)
+		{
+			X = vector.X;
+			Y = vector.Y;
+			Z = vector.Z;
+			W = w;
+		}
+
 		///<summary>Creates a new instance of <see cref = "Byte4"/>.</summary>
 		public Byte4(byte x, byte y, byte z, byte w)
 		{

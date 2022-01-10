@@ -60,6 +60,23 @@ namespace Molten
         }
 
 #region Constructors
+        ///<summary>Creates a new instance of <see cref = "Vector4UL"/>, using a <see cref="Vector2UL"/> to populate the first two components.</summary>
+		public Vector4UL(Vector2UL vector, ulong z, ulong w)
+		{
+			X = vector.X;
+			Y = vector.Y;
+			Z = z;
+			W = w;
+		}
+        ///<summary>Creates a new instance of <see cref = "Vector4UL"/>, using a <see cref="Vector3UL"/> to populate the first three components.</summary>
+		public Vector4UL(Vector3UL vector, ulong w)
+		{
+			X = vector.X;
+			Y = vector.Y;
+			Z = vector.Z;
+			W = w;
+		}
+
 		///<summary>Creates a new instance of <see cref = "Vector4UL"/>.</summary>
 		public Vector4UL(ulong x, ulong y, ulong z, ulong w)
 		{

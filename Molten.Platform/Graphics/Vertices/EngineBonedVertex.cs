@@ -57,9 +57,7 @@ namespace Molten.Graphics
 
         public override string ToString()
         {
-            return string.Format("{Position:{0} Normal: {1} Tan: {2} BiN: {3} UV: {4}}", new object[] { this.Position4,
-                this.Normal, this.Tangent,
-                this.BiNormal, this.UV });
+            return $"{{Position:{Position4} Normal: {Normal} Tan: {Tangent} BiN: {BiNormal} UV: {UV}}}";
         }
     }
 }

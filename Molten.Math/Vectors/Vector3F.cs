@@ -54,6 +54,14 @@ namespace Molten
         }
 
 #region Constructors
+        ///<summary>Creates a new instance of <see cref = "Vector3F"/>, using a <see cref="Vector2F"/> to populate the first two components.</summary>
+		public Vector3F(Vector2F vector, float z)
+		{
+			X = vector.X;
+			Y = vector.Y;
+			Z = z;
+		}
+
 		///<summary>Creates a new instance of <see cref = "Vector3F"/>.</summary>
 		public Vector3F(float x, float y, float z)
 		{

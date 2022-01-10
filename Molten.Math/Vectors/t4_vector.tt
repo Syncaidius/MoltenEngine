@@ -85,6 +85,38 @@ namespace Molten
         }
 
 #region Constructors
+<#
+        foreach(int vcSize in _vectorSizes)
+        {
+            if(vcSize < size)
+            {
+                string vcName = $"{d.Name}{vcSize}{d.Postfix}";
+#>
+        ///<summary>Creates a new instance of <see cref = "<#=fName#>"/>, using a <#=See(vcName)#> to populate the first <#=_strSize[vcSize]#> components.</summary>
+		public <#=fName#>(<#=vcName#> vector, <#for(int vp = vcSize; vp < size; vp++){#><#=$"{d.DT} {pMap[vp]}"#><#=(vp < (size-1) ? ", " : "")#><#}#>)
+		{
+<#
+		for(int p = 0; p < vcSize; p++)
+		{
+#>
+			<#=pMapUpper[p]#> = vector.<#=pMapUpper[p]#>;
+<#
+		}
+#>
+<#
+		for(int p = vcSize; p < size; p++)
+		{
+#>
+			<#=pMapUpper[p]#> = <#=pMap[p]#>;
+<#
+		}
+#>
+		}
+<#
+            }
+        }
+#>
+
 		///<summary>Creates a new instance of <see cref = "<#=fName#>"/>.</summary>
 		public <#=fName#>(<#=GetConstructorArgs(d.DT, pMap, size)#>)
 		{

@@ -53,6 +53,7 @@ namespace Molten
         }
 
 #region Constructors
+
 		///<summary>Creates a new instance of <see cref = "SByte2"/>.</summary>
 		public SByte2(sbyte x, sbyte y)
 		{

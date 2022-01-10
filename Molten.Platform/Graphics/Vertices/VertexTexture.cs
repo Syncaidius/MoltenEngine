@@ -28,13 +28,11 @@ namespace Molten.Graphics
         public override bool Equals(object obj)
         {
             if (obj == null)
-            {
                 return false;
-            }
+
             if (obj.GetType() != base.GetType())
-            {
                 return false;
-            }
+
             return (this == ((VertexTexture)obj));
         }
 
@@ -50,7 +48,7 @@ namespace Molten.Graphics
 
         public override string ToString()
         {
-            return string.Format("{Position:{0} Color:{1}}", new object[] { this.Position4, this.UV });
+            return $"{{Position:{Position4} UV:{UV}}}";
         }
     }
 }

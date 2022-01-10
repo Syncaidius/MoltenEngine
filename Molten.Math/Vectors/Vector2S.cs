@@ -48,6 +48,7 @@ namespace Molten
         }
 
 #region Constructors
+
 		///<summary>Creates a new instance of <see cref = "Vector2S"/>.</summary>
 		public Vector2S(short x, short y)
 		{
