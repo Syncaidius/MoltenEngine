@@ -31,6 +31,8 @@ namespace Molten
             base.OnInitialize(obj);
         }
 
+        protected override void OnDispose() { }
+
         private void AddToScene(SceneObject obj)
         {
             if (_instance != null)
