@@ -33,26 +33,26 @@ namespace Molten.Graphics
 
         public EngineBonedVertex(Vector4F position, Vector3F normal, Vector2F textureCoordinates)
         {
-            this.Position4 = position;
-            this.Normal = normal;
-            this.Tangent = new Vector3F();
-            this.BiNormal = new Vector3F();
-            this.UV = textureCoordinates;
-            this.BlendWeights = new Vector4F();
-            this.BlendIndices = new Vector4I();
-            this.BlendCount = 0;
+            Position4 = position;
+            Normal = normal;
+            Tangent = new Vector3F();
+            BiNormal = new Vector3F();
+            UV = textureCoordinates;
+            BlendWeights = new Vector4F();
+            BlendIndices = new Vector4I();
+            BlendCount = 0;
         }
 
         public EngineBonedVertex(Vector3F position, Vector3F normal, Vector2F textureCoordinates)
         {
-            this.Position4 = new Vector4F(position, 1);
-            this.Normal = normal;
-            this.Tangent = new Vector3F();
-            this.BiNormal = new Vector3F();
-            this.UV = textureCoordinates;
-            this.BlendWeights = new Vector4F();
-            this.BlendIndices = new Vector4I();
-            this.BlendCount = 0;
+            Position4 = new Vector4F(position, 1);
+            Normal = normal;
+            Tangent = new Vector3F();
+            BiNormal = new Vector3F();
+            UV = textureCoordinates;
+            BlendWeights = new Vector4F();
+            BlendIndices = new Vector4I();
+            BlendCount = 0;
         }
 
         public override string ToString()

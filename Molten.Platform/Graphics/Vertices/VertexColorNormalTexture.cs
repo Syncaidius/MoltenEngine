@@ -21,26 +21,26 @@ namespace Molten.Graphics
 
         public VertexColorNormalTexture(Vector4F position, Color color, Vector3F normal, Vector2F textureCoordinates)
         {
-            this.Position4 = position;
-            this.Color = color;
-            this.Normal = normal;
-            this.UV = textureCoordinates;
+            Position4 = position;
+            Color = color;
+            Normal = normal;
+            UV = textureCoordinates;
         }
 
         public VertexColorNormalTexture(Vector3F position, Color color, Vector3F normal, Vector2F textureCoordinates)
         {
-            this.Position4 = new Vector4F(position, 1);
-            this.Color = color;
-            this.Normal = normal;
-            this.UV = textureCoordinates;
+            Position4 = new Vector4F(position, 1);
+            Color = color;
+            Normal = normal;
+            UV = textureCoordinates;
         }
 
         public VertexColorNormalTexture(Vector3F position, Vector3F normal, Vector2F textureCoordinates)
         {
-            this.Position4 = new Vector4F(position, 1);
-            this.Color = new Color(255, 255, 255, 255);
-            this.Normal = normal;
-            this.UV = textureCoordinates;
+            Position4 = new Vector4F(position, 1);
+            Color = new Color(255, 255, 255, 255);
+            Normal = normal;
+            UV = textureCoordinates;
         }
 
         public override string ToString()

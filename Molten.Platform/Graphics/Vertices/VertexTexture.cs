@@ -15,14 +15,14 @@ namespace Molten.Graphics
 
         public VertexTexture(Vector4F position, Vector2F textureCoordinates)
         {
-            this.Position4 = position;
-            this.UV = textureCoordinates;
+            Position4 = position;
+            UV = textureCoordinates;
         }
 
         public VertexTexture(Vector3F position, Vector2F textureCoordinates)
         {
-            this.Position4 = new Vector4F(position, 1);
-            this.UV = textureCoordinates;
+            Position4 = new Vector4F(position, 1);
+            UV = textureCoordinates;
         }
 
         public override bool Equals(object obj)

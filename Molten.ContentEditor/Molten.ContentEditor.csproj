@@ -121,10 +121,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Molten.DX11\Molten.Renderer.DX11.csproj">
-      <Project>{8800afbc-8be4-4145-803e-ef8c1026a17b}</Project>
-      <Name>Molten.Renderer.DX11</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Molten.Engine\Molten.Engine.csproj">
       <Project>{8e14325b-28cc-44a8-83ed-4b5946240d88}</Project>
       <Name>Molten.Engine</Name>
@@ -140,10 +136,6 @@
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj">
       <Project>{e59938af-a9d4-4963-b4ac-61e53d05527e}</Project>
       <Name>Molten.Math</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Molten.OpenGL\Molten.Renderer.OpenGL.csproj">
-      <Project>{051563bb-29ac-4903-ae21-72184cd18955}</Project>
-      <Name>Molten.Renderer.OpenGL</Name>
     </ProjectReference>
     <ProjectReference Include="..\Molten.Platform.Windows\Molten.Platform.Windows.csproj">
       <Project>{bda0168b-68ff-4201-8812-9c4ffe1f6a86}</Project>

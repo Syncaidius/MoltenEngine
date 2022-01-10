@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Molten.Graphics</RootNamespace>
-    <AssemblyName>Molten.Renderer.DX11</AssemblyName>
+    <AssemblyName>Molten.Graphics.DX11</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -213,22 +213,13 @@
     <Compile Include="Buffers\ShaderConstantBuffer.cs" />
     <Compile Include="Buffers\StagingBuffer.cs" />
     <Compile Include="Buffers\TypedBuffer.cs" />
-    <Compile Include="DXGI\DxgiSwapChainFlags.cs" />
-    <Compile Include="DXGI\DxgiUsage.cs" />
     <Compile Include="Hardware\DX11CommandListSupport.cs" />
-    <Compile Include="DXGI\WindowAssociationFlags.cs" />
     <Compile Include="Interop\SilkEnumExtensions.cs" />
     <Compile Include="Data\ResourceStreamException.cs" />
-    <Compile Include="DXGI\DisplayAdapterDXGI.cs" />
-    <Compile Include="DXGI\DisplayManagerDXGI.cs" />
     <Compile Include="Exceptions\GraphicsContextException.cs" />
     <Compile Include="Exceptions\MappedBufferException.cs" />
     <Compile Include="Exceptions\UnsupportedFeatureException.cs" />
-    <Compile Include="DXGI\DisplayMode.cs" />
-    <Compile Include="DXGI\DisplayOutputDXGI.cs" />
     <Compile Include="Interop\DeviceCreationFlags.cs" />
-    <Compile Include="Interop\DxgiError.cs" />
-    <Compile Include="Interop\DXGIHelper.cs" />
     <Compile Include="Interop\SharpDXInterop.cs" />
     <Compile Include="Data\ResourceStream.cs" />
     <Compile Include="InputElementData.cs" />
@@ -405,6 +396,10 @@
     <EmbeddedResource Include="Assets\gbuffer_common.mfx" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Molten.Graphics.DXGI\Molten.Graphics.DXGI.csproj">
+      <Project>{35ddffea-17b3-41ad-b089-8550b7e270ad}</Project>
+      <Name>Molten.Graphics.DXGI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj">
       <Project>{8df4c894-b793-495e-bc14-53306f8b2972}</Project>
       <Name>Molten.IO</Name>
