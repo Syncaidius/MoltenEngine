@@ -185,8 +185,8 @@ namespace Molten.Graphics
             DepthBank.Dispose();
             SamplerBank.Dispose();
 
-            ReleaseSilkPtr(ref ImmediateContext);
-            ReleaseSilkPtr(ref Native);
+            SilkUtil.ReleasePtr(ref ImmediateContext);
+            SilkUtil.ReleasePtr(ref Native);
             _api.Dispose();
 
             _bufferSegmentPool.Dispose();

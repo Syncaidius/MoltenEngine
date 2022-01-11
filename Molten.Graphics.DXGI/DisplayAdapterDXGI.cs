@@ -27,15 +27,16 @@ namespace Molten.Graphics.Dxgi
         /// <summary>Occurs when an <see cref="T:Molten.IDisplayOutput" /> is disconnected from the current <see cref="T:Molten.IDisplayAdapter" />. </summary>
         public event DisplayOutputChanged OnOutputDeactivated;
 
-        public DisplayAdapterDXGI(IDisplayManager manager, IDXGIAdapter1* adapter, AdapterDesc1* desc,            int id)
+        public DisplayAdapterDXGI(IDisplayManager manager, IDXGIAdapter1* adapter, int id)
         {
             _manager = manager;
             Native = adapter;
             _activeOutputs = new List<DisplayOutputDXGI>();
             ID = id;
-            _desc = desc;
+            _desc = EngineUtil.Alloc<AdapterDesc1>();
+            adapter->GetDesc1(_desc);
 
-            _name = SilkMarshal.PtrToString((nint)desc->Description);
+            _name = SilkMarshal.PtrToString((nint)_desc->Description);
             _name.Replace("\0", string.Empty);
 
             PopulateVendor();
@@ -56,7 +57,7 @@ namespace Molten.Graphics.Dxgi
 
         protected override void OnDispose()
         {
-            ReleaseSilkPtr(ref Native);
+            SilkUtil.ReleasePtr(ref Native);
         }
 
         private void PopulateVendor()

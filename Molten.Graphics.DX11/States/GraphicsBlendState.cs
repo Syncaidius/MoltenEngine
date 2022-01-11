@@ -120,7 +120,7 @@ namespace Molten.Graphics
             if (_native == null || _dirty)
             {
                 _dirty = false;
-                ReleaseSilkPtr(ref _native);
+                SilkUtil.ReleasePtr(ref _native);
 
                 // Create new state
                 Device.Native->CreateBlendState1(ref _desc, ref _native);
@@ -134,7 +134,7 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            ReleaseSilkPtr(ref _native);
+            SilkUtil.ReleasePtr(ref _native);
         }
 
         public bool AlphaToCoverageEnable

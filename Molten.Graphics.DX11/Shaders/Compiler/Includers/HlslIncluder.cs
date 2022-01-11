@@ -18,15 +18,15 @@ namespace Molten.Graphics
             Utils->CreateDefaultIncludeHandler(ref _defaultHandler);
             Utils->CreateDefaultIncludeHandler(ref _handler);
 
-            SilkInterop.OverrideFunc(this.GetType(), "LoadSource", _handler->LpVtbl, 3);
+            SilkUtil.OverrideFunc(this.GetType(), "LoadSource", _handler->LpVtbl, 3);
         }
 
         public unsafe abstract int LoadSource(char* pFilename, IDxcBlob** ppIncludeSource);
 
         internal override void PipelineDispose()
         {
-            ReleaseSilkPtr(ref _handler);
-            ReleaseSilkPtr(ref _defaultHandler);
+            SilkUtil.ReleasePtr(ref _handler);
+            SilkUtil.ReleasePtr(ref _defaultHandler);
         }
 
         /// <summary>

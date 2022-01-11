@@ -378,7 +378,7 @@ namespace Molten.Graphics
 
             if (NativePtr != null)
             {
-                ReleaseSilkPtr(ref _native);
+                SilkUtil.ReleasePtr(ref _native);
                 Device.DeallocateVRAM(Description.ByteWidth);
             }
         }
@@ -388,7 +388,7 @@ namespace Molten.Graphics
         {
             if (HasFlags(BindFlag.BindShaderResource))
             {
-                ReleaseSilkPtr(ref srv);
+                SilkUtil.ReleasePtr(ref srv);
 
                 ShaderResourceViewDesc srvDesc = new ShaderResourceViewDesc()
                 {
@@ -406,7 +406,7 @@ namespace Molten.Graphics
 
             if (HasFlags(BindFlag.BindUnorderedAccess))
             {
-                ReleaseSilkPtr(ref uav);
+                SilkUtil.ReleasePtr(ref uav);
 
                 UnorderedAccessViewDesc uavDesc = new UnorderedAccessViewDesc()
                 {

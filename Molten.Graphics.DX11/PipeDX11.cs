@@ -462,7 +462,7 @@ namespace Molten.Graphics
             // Dispose context.
             if (Type != GraphicsContextType.Immediate)
             {
-                ReleaseSilkPtr(ref _context);
+                SilkUtil.ReleasePtr(ref _context);
                 _device.RemoveDeferredPipe(this);
             }
         }

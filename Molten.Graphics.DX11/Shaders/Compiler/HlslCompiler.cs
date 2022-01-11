@@ -51,8 +51,8 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            ReleaseSilkPtr(ref _compiler);
-            ReleaseSilkPtr(ref _utils);
+            SilkUtil.ReleasePtr(ref _compiler);
+            SilkUtil.ReleasePtr(ref _utils);
             Dxc.Dispose();
         }
 

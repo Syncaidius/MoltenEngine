@@ -65,8 +65,8 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             Reflection.Dispose();
-            ReleaseSilkPtr(ref _pdbData);
-            ReleaseSilkPtr(ref _byteCode);
+            SilkUtil.ReleasePtr(ref _pdbData);
+            SilkUtil.ReleasePtr(ref _byteCode);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Molten.Graphics
             nuint dataSize = _pdbData->GetBufferSize();
             _log.WriteDebugLine($"\t Loaded DXC PDB data -- Bytes: {dataSize} -- Path: {PdbPath}");
 
-            ReleaseSilkPtr(ref pPdbPath);
+            SilkUtil.ReleasePtr(ref pPdbPath);
         }
 
         private void LoadReflection()
@@ -128,7 +128,7 @@ namespace Molten.Graphics
 
             _log.WriteError(strErrors);
 
-            ReleaseSilkPtr(ref pErrorBlob);
+            SilkUtil.ReleasePtr(ref pErrorBlob);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            ReleaseSilkPtr(ref Ptr);
+            SilkUtil.ReleasePtr(ref Ptr);
         }
     }
 }

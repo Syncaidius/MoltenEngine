@@ -239,8 +239,8 @@ namespace Molten.Graphics
             VertexFormat = null;
             SetIndexFormat(IndexBufferFormat.Unsigned32Bit);
 
-            ReleaseSilkPtr(ref UAV);
-            ReleaseSilkPtr(ref SRV);
+            SilkUtil.ReleasePtr(ref UAV);
+            SilkUtil.ReleasePtr(ref SRV);
         }
 
         /// <summary>Sets the next segment to the one specified and also sets it's previous to the current segment.</summary>

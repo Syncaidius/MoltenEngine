@@ -45,7 +45,7 @@ namespace Molten.Graphics
         protected override ID3D11Resource* CreateResource(bool resize)
         {
             ID3D11Resource* resource =  base.CreateResource(resize);
-            ReleaseSilkPtr(ref RTV);
+            SilkUtil.ReleasePtr(ref RTV);
 
             SetRTVDescription(ref _rtvDesc);
             if (_description.SampleDescription.Count > 1)
@@ -97,7 +97,7 @@ namespace Molten.Graphics
         /// <summary>Called when the render target needs to be disposed.</summary>
         internal override void PipelineDispose()
         {
-            ReleaseSilkPtr(ref RTV);
+            SilkUtil.ReleasePtr(ref RTV);
             base.PipelineDispose();
         }
 

@@ -50,7 +50,7 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            ReleaseSilkPtr(ref RawShader);
+            SilkUtil.ReleasePtr(ref RawShader);
         }
     }
 }

@@ -63,7 +63,7 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            ReleaseSilkPtr(ref _native);
+            SilkUtil.ReleasePtr(ref _native);
         }
 
         /// <summary>Sets the entire sampler state description.</summary>

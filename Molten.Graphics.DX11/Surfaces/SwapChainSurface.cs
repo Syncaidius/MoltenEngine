@@ -111,7 +111,7 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            ReleaseSilkPtr(ref _swapChain);
+            SilkUtil.ReleasePtr(ref _swapChain);
             base.PipelineDispose();
         }
 

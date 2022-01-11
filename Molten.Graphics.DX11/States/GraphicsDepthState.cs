@@ -158,7 +158,7 @@ namespace Molten.Graphics
             if (_native == null || _dirty)
             {
                 _dirty = false;
-                ReleaseSilkPtr(ref _native);
+                SilkUtil.ReleasePtr(ref _native);
 
                 //copy the front and back-face settings into the main description
                 _desc.FrontFace = _frontFace._desc;
@@ -171,7 +171,7 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            ReleaseSilkPtr(ref _native);
+            SilkUtil.ReleasePtr(ref _native);
         }
 
         internal bool IsDepthEnabled

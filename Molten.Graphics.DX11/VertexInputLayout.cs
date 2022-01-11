@@ -132,7 +132,7 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            ReleaseSilkPtr(ref _native);
+            SilkUtil.ReleasePtr(ref _native);
         }
 
         /// <summary>Gets whether or not the input layout is valid.</summary>

@@ -159,8 +159,8 @@ namespace Molten.Graphics
 
             if (_native != null)
             {
-                ReleaseSilkPtr(ref UAV);
-                ReleaseSilkPtr(ref SRV);
+                SilkUtil.ReleasePtr(ref UAV);
+                SilkUtil.ReleasePtr(ref SRV);
 
                 //TrackAllocation();
 
@@ -201,7 +201,7 @@ namespace Molten.Graphics
             base.PipelineDispose();
 
             //TrackDeallocation();
-            ReleaseSilkPtr(ref _native);
+            SilkUtil.ReleasePtr(ref _native);
         }
 
         public bool HasFlags(TextureFlags flags)

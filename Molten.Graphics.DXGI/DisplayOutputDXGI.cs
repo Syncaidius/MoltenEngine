@@ -25,7 +25,7 @@ namespace Molten.Graphics.Dxgi
 
         protected override void OnDispose()
         {
-            ReleaseSilkPtr(ref Native);
+            SilkUtil.ReleasePtr(ref Native);
         }
 
         public DisplayMode[] GetSupportedModes(Format format)

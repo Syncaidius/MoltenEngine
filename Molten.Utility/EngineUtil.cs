@@ -11,33 +11,75 @@ namespace Molten
     /// </summary>
     public unsafe static class EngineUtil
     {
-        class AllocatedMemory
+        abstract class MemoryBase
         {
             internal void* Ptr;
             internal nuint NumBytes;
 
-            internal AllocatedMemory(nuint numBytes)
+            internal MemoryBase(nuint numBytes)
             {
-                Ptr = NativeMemory.Alloc(numBytes);
                 NumBytes = numBytes;
+                Alloc();
             }
 
-            internal void Free()
+            protected abstract void Alloc();
+
+            internal abstract void Free();
+        }
+
+        class Memory : MemoryBase
+        {
+            internal Memory(nuint numBytes) : base(numBytes) { }
+
+            protected override void Alloc()
+            {
+                Ptr = NativeMemory.Alloc(NumBytes);
+            }
+
+            internal override void Free()
             {
                 NativeMemory.Free(Ptr);
             }
         }
 
-        static ConcurrentDictionary<nuint, AllocatedMemory> _allocated;
+        class AlignedMemory : MemoryBase
+        {
+
+            internal nuint Alignment;
+
+            internal AlignedMemory(nuint numBytes, nuint alignment) : base(numBytes)
+            {
+                Alignment = alignment;
+            }
+
+            protected override void Alloc()
+            {
+                Ptr = NativeMemory.AlignedAlloc(NumBytes, Alignment);
+            }
+
+            internal override void Free()
+            {
+                NativeMemory.AlignedFree(Ptr);
+            }
+        }
+
+        static ConcurrentDictionary<nuint, MemoryBase> _allocated;
 
         static EngineUtil()
         {
-            _allocated = new ConcurrentDictionary<nuint, AllocatedMemory>();
+            _allocated = new ConcurrentDictionary<nuint, MemoryBase>();
         }
 
         public static void* Alloc(nuint numBytes)
         {
-            AllocatedMemory mem = new AllocatedMemory(numBytes);
+            Memory mem = new Memory(numBytes);
+            _allocated.TryAdd((nuint)mem.Ptr, mem);
+            return mem.Ptr;
+        }
+
+        public static void* AllocAligned(nuint numBytes, nuint alignment)
+        {
+            AlignedMemory mem = new AlignedMemory(numBytes, alignment);
             _allocated.TryAdd((nuint)mem.Ptr, mem);
             return mem.Ptr;
         }
@@ -45,13 +87,41 @@ namespace Molten
         public static T* Alloc<T>() where T : unmanaged
         {
             int sizeOf = Marshal.SizeOf<T>();
-            void* ptr = Alloc((nuint)sizeOf);
-            return (T*)ptr;
+            return (T*)Alloc((nuint)sizeOf);
+        }
+
+        public static T* AllocAligned<T>() where T : unmanaged
+        {
+            nuint sizeOf = (nuint)Marshal.SizeOf<T>();
+            return (T*)AllocAligned(sizeOf, sizeOf);
+        }
+
+        public static T* AllocAligned<T>(nuint alignment) where T : unmanaged
+        {
+            nuint sizeOf = (nuint)Marshal.SizeOf<T>();
+            return (T*)AllocAligned(sizeOf, alignment);
+        }
+
+        public static void* AllocArray(nuint elementSizeBytes, nuint numElements)
+        {
+            return Alloc(elementSizeBytes * numElements);
+        }
+
+        public static T* AllocArray<T>(nuint numElements) where T : unmanaged
+        {
+            nuint sizeOf = (nuint)Marshal.SizeOf<T>();
+            return (T*)Alloc(sizeOf * numElements);
+        }
+
+        public static T* AllocAlignedArray<T>(nuint numElements, nuint alignment) where T : unmanaged
+        {
+            nuint sizeOf = (nuint)Marshal.SizeOf<T>();
+            return (T*)AllocAligned(sizeOf * numElements, alignment);
         }
 
         public static void Free<T>(ref T* ptr) where T : unmanaged
         {
-            if (!_allocated.TryGetValue((nuint)ptr, out AllocatedMemory mem))
+            if (!_allocated.TryGetValue((nuint)ptr, out MemoryBase mem))
             {
                 throw new Exception($"The pointer {(nuint)ptr} was not allocated by Molten's memory manager.");
             }
@@ -64,7 +134,7 @@ namespace Molten
 
         public static nuint GetAllocSize(void* ptr)
         {
-            if (!_allocated.TryGetValue((nuint)ptr, out AllocatedMemory mem))
+            if (!_allocated.TryGetValue((nuint)ptr, out MemoryBase mem))
                 throw new Exception($"The pointer {(nuint)ptr} was not allocated by Molten's memory manager.");
             else
                 return mem.NumBytes;
@@ -72,7 +142,7 @@ namespace Molten
 
         public static void FreeAll()
         {
-            foreach (AllocatedMemory mem in _allocated.Values)
+            foreach (Memory mem in _allocated.Values)
                 mem.Free();
 
         }

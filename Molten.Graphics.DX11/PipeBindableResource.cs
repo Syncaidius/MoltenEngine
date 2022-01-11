@@ -23,8 +23,8 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            ReleaseSilkPtr(ref UAV);
-            ReleaseSilkPtr(ref SRV);
+            SilkUtil.ReleasePtr(ref UAV);
+            SilkUtil.ReleasePtr(ref SRV);
         }
 
         #region Implicit cast operators

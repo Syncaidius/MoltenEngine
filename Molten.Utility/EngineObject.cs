@@ -29,21 +29,6 @@ namespace Molten
             Name = $"EO {EOID}";
         }
 
-        /// <summary>Releases the specified pointer, sets it to null and returns the updated, unmanaged reference count.</summary>
-        /// <typeparam name="T">The type of pointer.</typeparam>
-        /// <param name="ptr">The pointer.</param>
-        /// <returns>The new pointer reference count.</returns>
-        protected unsafe uint ReleaseSilkPtr<T>(ref T* ptr)
-            where T :unmanaged
-        {
-            if (ptr == null)
-                return 0;
-
-            uint r = ((IUnknown*)ptr)->Release();
-            ptr = null;
-            return r;
-        }
-
         /// <summary>Disposes of the current <see cref="EngineObject"/> instance and 
         /// releases its ID to be reused by a new object.</summary>
         public void Dispose()
