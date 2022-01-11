@@ -42,8 +42,8 @@ namespace Molten.Graphics
                 id = _elementCount++;
                 if (_elementCount == Data.Length)
                 {
-                    EngineInterop.ArrayResize(ref Data, Data.Length + _resizeIncrement);
-                    EngineInterop.ArrayResize(ref Instances, Data.Length);
+                    EngineUtil.ArrayResize(ref Data, Data.Length + _resizeIncrement);
+                    EngineUtil.ArrayResize(ref Instances, Data.Length);
                 }
             }
 

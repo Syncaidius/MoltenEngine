@@ -40,7 +40,7 @@ namespace Molten.Graphics
                     _isDirty = false;
                 }
 
-                EngineInterop.PinObject(_value, (ptr) =>
+                EngineUtil.PinObject(_value, (ptr) =>
                 {
                     stream.Write(ptr, 0, SizeOf);
                 });

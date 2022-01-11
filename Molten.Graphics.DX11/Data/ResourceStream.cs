@@ -59,7 +59,7 @@ namespace Molten.Graphics
             long numBytes = sizeOf * count;
             int byteOffset = (int)startIndex * sizeOf;
 
-            EngineInterop.PinObject(values, (p) =>
+            EngineUtil.PinObject(values, (p) =>
             {
                 p += byteOffset;
                 void* ptr = p.ToPointer();
@@ -94,7 +94,7 @@ namespace Molten.Graphics
             long numBytes = sizeOf * count;
             int byteOffset = (int)startIndex * sizeOf;
 
-            EngineInterop.PinObject(destination, (p) =>
+            EngineUtil.PinObject(destination, (p) =>
             {
                 p += byteOffset;
                 void* ptr = p.ToPointer();

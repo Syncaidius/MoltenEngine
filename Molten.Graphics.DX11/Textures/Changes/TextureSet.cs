@@ -55,7 +55,7 @@ namespace Molten.Graphics
             }
 
             //======DATA TRANSFER===========
-            EngineInterop.PinObject(Data, (ptr) =>
+            EngineUtil.PinObject(Data, (ptr) =>
             {
                 int startBytes = StartIndex * Stride;
                 byte* ptrData = (byte*)ptr.ToPointer();

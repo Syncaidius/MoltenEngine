@@ -1,4 +1,5 @@
-﻿using Silk.NET.DXGI;
+﻿using Silk.NET.Core.Native;
+using Silk.NET.DXGI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace Molten.Graphics.Dxgi
             ID = id;
             _desc = desc;
 
-            _name = new string(_desc->Description);
+            _name = SilkMarshal.PtrToString((nint)desc->Description);
             _name.Replace("\0", string.Empty);
 
             PopulateVendor();

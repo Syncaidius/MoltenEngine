@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -8,8 +9,74 @@ namespace Molten
     /// <summary>
     /// Provides helper methods to aid interopability with native libraries or unsafe code.
     /// </summary>
-    public static class EngineInterop
+    public unsafe static class EngineUtil
     {
+        class AllocatedMemory
+        {
+            internal void* Ptr;
+            internal nuint NumBytes;
+
+            internal AllocatedMemory(nuint numBytes)
+            {
+                Ptr = NativeMemory.Alloc(numBytes);
+                NumBytes = numBytes;
+            }
+
+            internal void Free()
+            {
+                NativeMemory.Free(Ptr);
+            }
+        }
+
+        static ConcurrentDictionary<nuint, AllocatedMemory> _allocated;
+
+        static EngineUtil()
+        {
+            _allocated = new ConcurrentDictionary<nuint, AllocatedMemory>();
+        }
+
+        public static void* Alloc(nuint numBytes)
+        {
+            AllocatedMemory mem = new AllocatedMemory(numBytes);
+            _allocated.TryAdd((nuint)mem.Ptr, mem);
+            return mem.Ptr;
+        }
+
+        public static T* Alloc<T>() where T : unmanaged
+        {
+            int sizeOf = Marshal.SizeOf<T>();
+            void* ptr = Alloc((nuint)sizeOf);
+            return (T*)ptr;
+        }
+
+        public static void Free<T>(ref T* ptr) where T : unmanaged
+        {
+            if (!_allocated.TryGetValue((nuint)ptr, out AllocatedMemory mem))
+            {
+                throw new Exception($"The pointer {(nuint)ptr} was not allocated by Molten's memory manager.");
+            }
+            else
+            {
+                mem.Free();
+                ptr = null;
+            }
+        }
+
+        public static nuint GetAllocSize(void* ptr)
+        {
+            if (!_allocated.TryGetValue((nuint)ptr, out AllocatedMemory mem))
+                throw new Exception($"The pointer {(nuint)ptr} was not allocated by Molten's memory manager.");
+            else
+                return mem.NumBytes;
+        }
+
+        public static void FreeAll()
+        {
+            foreach (AllocatedMemory mem in _allocated.Values)
+                mem.Free();
+
+        }
+
         /// <summary>A helper method for pinning a managed/C# object and providing an <see cref="IntPtr"/> to it. 
         /// Releases the pinned handle once finished.</summary>
         /// <param name="obj">The object.</param>
@@ -31,40 +98,13 @@ namespace Molten
         }
 
         /// <summary>
-        /// Decodes a string from the provided byte array pointer, using the specified <see cref="Encoding"/>.
-        /// If no <see cref="Encoding"/> is specified, the default one will be used.
-        /// </summary>
-        /// <param name="bytes">A pointer to an array of bytes.</param>
-        /// <param name="encoding">An encoding to use. If null, the default <see cref="Encoding"/> will be used.</param>
-        /// <returns></returns>
-        public unsafe static string StringFromBytes(byte* bytes, Encoding encoding = null)
-        {
-            int len = 0;
-            byte* p = bytes;
-            byte c = *p;
-
-            while (c != 0)
-            {
-                p++;
-                len++;
-
-                c = *p;
-            }
-
-            if (len > 0)
-                return (encoding ?? Encoding.Default).GetString(bytes, len);
-            else
-                return string.Empty;
-        }
-
-        /// <summary>
         /// An implementation of <see cref="Array.Resize{T}(ref T[], int)"/> that is not constrained 
         /// to [<see cref="int.MaxValue"/>] number of elements.
         /// </summary>
         /// <param name="array">The array to be resized.</param>
         /// <param name="newSize">The new size of the array, must be at 
         /// least the same size as <paramref name="array"/></param>
-        public unsafe static void ArrayResize<T>(ref T[] array, long newSize)
+        public static void ArrayResize<T>(ref T[] array, long newSize)
         {
             if (array.Length > newSize)
                 throw new Exception("New array size cannot be smaller than the provided array's length.");

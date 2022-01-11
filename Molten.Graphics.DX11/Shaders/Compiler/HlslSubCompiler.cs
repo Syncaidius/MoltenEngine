@@ -121,7 +121,7 @@ namespace Molten.Graphics
                         if (bindPoint >= shader.SamplerVariables.Length)
                         {
                             int oldLength = shader.SamplerVariables.Length;
-                            EngineInterop.ArrayResize(ref shader.SamplerVariables, bindPoint + 1);
+                            EngineUtil.ArrayResize(ref shader.SamplerVariables, bindPoint + 1);
                             for (int i = oldLength; i < shader.SamplerVariables.Length; i++)
                                 shader.SamplerVariables[i] = (i ==  bindPoint ? sampler : new ShaderSamplerVariable(shader));
                         }
@@ -135,7 +135,7 @@ namespace Molten.Graphics
                     case D3DShaderInputType.D3DSitStructured:
                         BufferVariable bVar = GetVariableResource<BufferVariable>(context, shader, bindDesc);
                         if (bindPoint >= shader.Resources.Length)
-                            EngineInterop.ArrayResize(ref shader.Resources, bindPoint + 1);
+                            EngineUtil.ArrayResize(ref shader.Resources, bindPoint + 1);
 
                         shader.Resources[bindPoint] = bVar;
                         composition.ResourceIds.Add(bindPoint);
@@ -178,7 +178,7 @@ namespace Molten.Graphics
             }
 
             if (bindPoint >= shader.Resources.Length)
-                EngineInterop.ArrayResize(ref shader.Resources, bindPoint + 1);
+                EngineUtil.ArrayResize(ref shader.Resources, bindPoint + 1);
 
             //store the resource variable
             shader.Resources[bindPoint] = obj;

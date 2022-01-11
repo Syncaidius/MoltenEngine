@@ -128,7 +128,7 @@ namespace Molten.Graphics
             int end = start + (MipMapLevels * otherData.ArraySize);
             if (Levels == null || end >= Levels.Length)
             {
-                EngineInterop.ArrayResize(ref Levels, end);
+                EngineUtil.ArrayResize(ref Levels, end);
                 ArraySize = Math.Max(ArraySize, arraySlice + otherData.ArraySize);
             }
 

@@ -33,7 +33,7 @@ namespace Molten.Graphics
         {
             if (_value != null)
             {
-                EngineInterop.PinObject(_value, (ptr) =>
+                EngineUtil.PinObject(_value, (ptr) =>
                 {
                     stream.Write(ptr, 0, SizeOf);
                 });

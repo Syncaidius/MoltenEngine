@@ -48,8 +48,8 @@ namespace Molten.Graphics.Dxgi
             IDXGIAdapter1*[] detected = DXGIHelper.EnumArray<IDXGIAdapter1>(_dxgiFactory->EnumAdapters1);
             for (int i = 0; i < detected.Length; i++)
             {
-                AdapterDesc1* desc = null;
-                detected[i]->GetDesc1(desc);
+                AdapterDesc1* desc = new AdapterDesc1();
+                detected[i]->GetDesc1(ref desc);
                 DisplayAdapterDXGI adapter = new DisplayAdapterDXGI(this, detected[i], desc, i);
                 _adapters.Add(adapter);
 

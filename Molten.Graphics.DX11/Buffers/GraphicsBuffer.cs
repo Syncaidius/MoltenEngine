@@ -119,7 +119,7 @@ namespace Molten.Graphics
 
             SubresourceData ssd = new SubresourceData(null, byteCount, byteCount);
             if (initialData != null)
-                EngineInterop.PinObject(initialData, (ptr) => ssd.PSysMem = ptr.ToPointer());
+                EngineUtil.PinObject(initialData, (ptr) => ssd.PSysMem = ptr.ToPointer());
             else
                 ssd = new SubresourceData(null, byteCount, byteCount);
 

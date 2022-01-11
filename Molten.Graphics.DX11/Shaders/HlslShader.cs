@@ -44,7 +44,7 @@ namespace Molten.Graphics
             if (slot >= DefaultResources.Length)
                 throw new IndexOutOfRangeException($"The highest slot number must be less-or-equal to the highest slot number used in the shader source code ({DefaultResources.Length}).");
 
-            EngineInterop.ArrayResize(ref DefaultResources, slot + 1);
+            EngineUtil.ArrayResize(ref DefaultResources, slot + 1);
             DefaultResources[slot] = resource;
         }
 

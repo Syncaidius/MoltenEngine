@@ -68,7 +68,7 @@ namespace Molten.Graphics
             uint bindPoint = bind.Ptr->BindPoint;
 
             if (bindPoint >= shader.UAVs.Length)
-                EngineInterop.ArrayResize(ref shader.UAVs, bindPoint + 1);
+                EngineUtil.ArrayResize(ref shader.UAVs, bindPoint + 1);
 
             shader.UAVs[bindPoint] = rwBuffer;
         }
@@ -90,7 +90,7 @@ namespace Molten.Graphics
             }
 
             if (bindPoint >= shader.UAVs.Length)
-                EngineInterop.ArrayResize(ref shader.UAVs, bindPoint + 1);
+                EngineUtil.ArrayResize(ref shader.UAVs, bindPoint + 1);
 
             // Store the resource variable
             shader.UAVs[bindPoint] = resource;
