@@ -57,6 +57,7 @@ namespace Molten.Graphics.Dxgi
 
         protected override void OnDispose()
         {
+            EngineUtil.Free(ref _desc);
             SilkUtil.ReleasePtr(ref Native);
         }
 

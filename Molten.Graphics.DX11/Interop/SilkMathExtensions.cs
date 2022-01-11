@@ -40,10 +40,7 @@ namespace Molten.Graphics
             return (D3DPrimitiveTopology)type;
         }
 
-        public static Rectangle<int> ToApi(this Rectangle r)
-        {
-            return new Rectangle<int>(r.X, r.Y, r.Width, r.Height);
-        }
+
 
         public static Silk.NET.Direct3D11.Viewport ToApi(this ViewportF r)
         {
@@ -76,11 +73,6 @@ namespace Molten.Graphics
         public static VertexTopology FromApi(this D3DPrimitiveTopology topology)
         {
             return (VertexTopology)topology;
-        }
-
-        public static Rectangle FromApi(this Rectangle<int> rect)
-        {
-            return new Rectangle(rect.Origin.X, rect.Origin.Y, rect.Size.X, rect.Size.Y);
         }
 
         public static ViewportF ToApi(this Silk.NET.Direct3D11.Viewport r)

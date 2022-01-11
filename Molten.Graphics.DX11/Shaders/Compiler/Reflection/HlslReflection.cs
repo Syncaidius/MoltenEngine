@@ -22,6 +22,7 @@ namespace Molten.Graphics
         internal HlslReflection(ID3D11ShaderReflection* reflection)
         {
             Ptr = reflection;
+            Desc = EngineUtil.Alloc<ShaderDesc>();
             Ptr->GetDesc(Desc);
             BindDescs = new HlslInputBindDescription[Desc->BoundResources];
 
@@ -35,6 +36,9 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
+            GC.SuppressFinalize(this);
+
+            EngineUtil.Free(ref Desc);
             SilkUtil.ReleasePtr(ref Ptr);
         }
     }

@@ -19,18 +19,18 @@ namespace Molten.Graphics
         internal int Hash;
 
         internal ShaderConstantBuffer(DeviceDX11 device, BufferMode flags, 
-            ID3D11ShaderReflectionConstantBuffer* srConstBuffer, ShaderBufferDesc* desc)
-            : base(device, flags, BindFlag.BindConstantBuffer, desc->Size)
+            ID3D11ShaderReflectionConstantBuffer* srConstBuffer, ref ShaderBufferDesc desc)
+            : base(device, flags, BindFlag.BindConstantBuffer, desc.Size)
         {
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
 
             // Read sdescription data
-            BufferName = SilkMarshal.PtrToString((nint)desc->Name);
-            Flags = (D3DShaderCBufferFlags)desc->UFlags;
-            Type = desc->Type;
+            BufferName = SilkMarshal.PtrToString((nint)desc.Name);
+            Flags = (D3DShaderCBufferFlags)desc.UFlags;
+            Type = desc.Type;
 
             string hashString = BufferName;
-            uint variableCount = desc->Variables;
+            uint variableCount = desc.Variables;
             Variables = new ShaderConstantVariable[variableCount];
 
             // Read all variables from the constant buffer
@@ -44,8 +44,8 @@ namespace Molten.Graphics
                 if (sv == null) // TODO remove this exception!
                     throw new NotSupportedException("Shader pipeline does not support HLSL variables of type: " + info.TypeDesc->Type + " -- " + info.TypeDesc->Class);
 
-                sv.Name = SilkMarshal.PtrToString((nint)info.Description->Name);
-                sv.ByteOffset = info.Description->StartOffset;
+                sv.Name = SilkMarshal.PtrToString((nint)info.Desc->Name);
+                sv.ByteOffset = info.Desc->StartOffset;
 
                 _varLookup.Add(sv.Name, sv);
                 Variables[c] = sv;
@@ -57,7 +57,7 @@ namespace Molten.Graphics
             // Generate hash for comparing constant buffers.
             byte[] hashData = StringHelper.GetBytes(hashString, Encoding.Unicode);
             Hash = HashHelper.ComputeFNV(hashData);
-            Description.ByteWidth = desc->Size;
+            Description.ByteWidth = desc.Size;
         }
 
         protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)

@@ -13,21 +13,28 @@ namespace Molten.Graphics
 
         internal ShaderTypeDesc* TypeDesc;
 
-        internal ShaderVariableDesc* Description;
+        internal ShaderVariableDesc* Desc;
 
         internal ID3D11ShaderReflectionType* Type;
 
         internal ShaderVariableInfo(ID3D11ShaderReflectionVariable* variable)
         {
             Variable = variable;
-            Variable->GetDesc(Description);
+
+            Desc = EngineUtil.Alloc<ShaderVariableDesc>();
+            Variable->GetDesc(Desc);
+
             Type = Variable->GetType();
+            TypeDesc = EngineUtil.Alloc<ShaderTypeDesc>();
             Type->GetDesc(TypeDesc);
         }
 
         protected override void OnDispose()
         {
-            // TODO release pointers. They currently have no release method.
+            GC.SuppressFinalize(this);
+
+            EngineUtil.Free(ref TypeDesc);
+            EngineUtil.Free(ref Desc);
         }
     }
 }

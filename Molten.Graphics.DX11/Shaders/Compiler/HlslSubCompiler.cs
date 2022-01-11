@@ -89,11 +89,11 @@ namespace Molten.Graphics
                 {
                     case D3DShaderInputType.D3DSitCbuffer:
                         ID3D11ShaderReflectionConstantBuffer* buffer = result.Reflection.Ptr->GetConstantBufferByName(bindDesc.Ptr->Name);
-                        ShaderBufferDesc* bufferDesc = null;
-                        buffer->GetDesc(bufferDesc);
+                        ShaderBufferDesc bufferDesc = new ShaderBufferDesc();
+                        buffer->GetDesc(ref bufferDesc);
 
                         // Skip binding info buffers
-                        if (bufferDesc->Type != D3DCBufferType.D3DCTResourceBindInfo)
+                        if (bufferDesc.Type != D3DCBufferType.D3DCTResourceBindInfo)
                         {
                             if (bindPoint >= shader.ConstBuffers.Length)
                                 Array.Resize(ref shader.ConstBuffers, (int)bindPoint + 1);
@@ -187,10 +187,10 @@ namespace Molten.Graphics
         private unsafe ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext context, HlslShader shader,
             ID3D11ShaderReflectionConstantBuffer* buffer)
         {
-            ShaderBufferDesc* bufferDesc = null;
-            buffer->GetDesc(bufferDesc);
+            ShaderBufferDesc bufferDesc = new ShaderBufferDesc();
+            buffer->GetDesc(ref bufferDesc);
 
-            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.Device, BufferMode.DynamicDiscard, buffer, bufferDesc);
+            ShaderConstantBuffer cBuffer = new ShaderConstantBuffer(shader.Device, BufferMode.DynamicDiscard, buffer, ref bufferDesc);
             string localName = cBuffer.BufferName;
 
             if (cBuffer.BufferName == "$Globals")
