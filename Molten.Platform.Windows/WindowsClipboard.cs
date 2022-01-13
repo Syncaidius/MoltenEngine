@@ -56,5 +56,10 @@ namespace Molten.Input
             t.Start();
             resetter.WaitOne();
         }
+
+        public void Dispose()
+        {
+
+        }
     }
 }

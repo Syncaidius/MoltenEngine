@@ -1,6 +1,6 @@
 ﻿namespace Molten.Input
 {
-    public interface IClipboard
+    public interface IClipboard : IDisposable
     {
         /// <summary>Sets the current clipboard text value.</summary>
         /// <param name="txt">The text to be sent to the clipboard.</param>

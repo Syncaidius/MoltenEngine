@@ -13,12 +13,16 @@ namespace Molten.Threading
         ThreadManager _manager;
         string _name;
         int _nameCount;
-        internal WorkerGroup(ThreadManager manager, string name, int workerCount, ThreadedQueue<IWorkerTask> workQueue = null)
+        ApartmentState _apartment;
+
+        internal WorkerGroup(ThreadManager manager, string name, int workerCount, ThreadedQueue<IWorkerTask> workQueue = null, ApartmentState apartment = ApartmentState.MTA)
         {
             _queue = workQueue ?? new ThreadedQueue<IWorkerTask>();
             _threads = new List<WorkerThread>();
             _name = name;
             _manager = manager;
+            _apartment = apartment;
+
             SetWorkerCount(workerCount);
         }
 
@@ -79,7 +83,7 @@ namespace Molten.Threading
                 while (_threads.Count < count)
                 {
                     string tName = $"{_name}_{_nameCount}";
-                    WorkerThread t = new WorkerThread(tName, _queue);
+                    WorkerThread t = new WorkerThread(tName, _queue, _apartment);
                     _threads.Add(t);
                     t.Start();
                     _nameCount++;

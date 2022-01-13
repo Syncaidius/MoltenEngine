@@ -11,8 +11,9 @@ namespace Molten.Threading
         Thread _thread;
         bool _shouldExit;
 
-        internal WorkerThread(string name, ThreadedQueue<IWorkerTask> taskQueue)
+        internal WorkerThread(string name, ThreadedQueue<IWorkerTask> taskQueue, ApartmentState apartment)
         {
+            Apartment = apartment;
             _reset = new AutoResetEvent(false);
             _queue = taskQueue;
 
@@ -30,6 +31,11 @@ namespace Molten.Threading
             });
 
             _thread.Name = name;
+            try
+            {
+                _thread.TrySetApartmentState(apartment);
+            }
+            finally { }
         }
 
         internal void Wake()
@@ -54,6 +60,14 @@ namespace Molten.Threading
         }
 
 
+        /// <summary>
+        /// Gets the name of the thread.
+        /// </summary>
         public string Name => _thread.Name;
+
+        /// <summary>
+        /// Gets the <see cref="ApartmentState"/> of the current thread.
+        /// </summary>
+        public ApartmentState Apartment { get; }
     }
 }
