@@ -84,10 +84,10 @@ Blank - Not Started\
 
 # Third-Party Libraries
 A special thanks to each of these great libraries, without which Molten wouldn't exist in it's current form:
-  * [SharpDX](https://github.com/sharpdx/SharpDX) - DirectX bindings for C#
+  * [Silk.NET](https://github.com/dotnet/Silk.NET) - C# Bindings for DirectX 11/12, OpenGL, Vulkan, Assimp, OpenCL, OpenAL and OpenXR
+  * [SharpDX](https://github.com/sharpdx/SharpDX) - Source for some Molten.Math types
   * [Magick.NET](https://github.com/dlemstra/Magick.NET) - Extensive image library for .NET
   * [JSON.NET](https://www.newtonsoft.com/json) - JSON serialization
-  * [OpenTK](https://opentk.net/) - OpenGL, OpenAL and input bindings for C#
 
 # Licensing
 [MIT](LICENSE) - You can do what you want with Molten. Fork it, chop it up and consume it for dinner. You get the idea!
