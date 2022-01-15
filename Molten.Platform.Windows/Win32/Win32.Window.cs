@@ -7,19 +7,8 @@ using System.Threading.Tasks;
 
 namespace Molten.Windows32
 {
-    public class Win32Window
+    public static partial class Win32
     {
-        [DllImport("kernel32.dll", EntryPoint = "CreateFile", SetLastError = true, CharSet = CharSet.Unicode)]
-        internal static extern IntPtr Create(
-            string fileName,
-            NativeFileAccess desiredAccess,
-            NativeFileShare shareMode,
-            IntPtr securityAttributes,
-            NativeFileMode mode,
-            NativeFileOptions flagsAndOptions,
-            IntPtr templateFile);
-
-
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         public struct TextMetric
         {
@@ -71,7 +60,7 @@ namespace Molten.Windows32
             Id = (-12)
         }
 
-        public delegate IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+        public delegate IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
         public static IntPtr GetWindowLong(IntPtr hWnd, WindowLongType index)
         {
@@ -81,6 +70,13 @@ namespace Molten.Windows32
             }
             return GetWindowLong64(hWnd, index);
         }
+
+        //Win32 functions that will be used
+        [DllImport("Imm32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr ImmGetContext(IntPtr hWnd);
+
+        [DllImport("Imm32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr ImmAssociateContext(IntPtr hWnd, IntPtr hIMC);
 
         /// <summary>Brings a window to the front and makes it the active/focused one.</summary>
         /// <param name="hwnd">The handle/pointer to a window.</param>
@@ -133,7 +129,7 @@ namespace Molten.Windows32
         private static extern IntPtr SetWindowLongPtr64(IntPtr hwnd, WindowLongType index, IntPtr wndProc);
 
         [DllImport("user32.dll", EntryPoint = "CallWindowProc", CharSet = CharSet.Unicode)]
-        public static extern IntPtr CallWindowProc(IntPtr wndProc, IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
+        public static extern IntPtr CallWindowProc(IntPtr wndProc, IntPtr hwnd, uint msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll", EntryPoint = "GetClientRect")]
         public static extern bool GetClientRect(IntPtr hWnd, out Rectangle lpRect);

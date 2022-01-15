@@ -15,34 +15,15 @@ namespace Molten.Input
 
     public class WinInputService : InputService
     {
-        //Win32 functions that will be used
-        [DllImport("Imm32.dll", CharSet = CharSet.Unicode)]
-        static extern IntPtr ImmGetContext(IntPtr hWnd);
-
-        [DllImport("Imm32.dll", CharSet = CharSet.Unicode)]
-        static extern IntPtr ImmAssociateContext(IntPtr hWnd, IntPtr hIMC);
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        static extern long SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        static extern long SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
-        delegate IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
-
         internal event WndProcCallbackHandler OnWndProcMessage;
 
         // Various Win32 constants that are needed
-        const int GWL_WNDPROC = -4;
         const int DLGC_WANTALLKEYS = 4;
 
         List<WinGamepadDevice> _gamepads;
         INativeSurface _surface;
         WindowsClipboard _clipboard;
-        WndProc _hookProcDelegate;
+        Win32.WndProc _hookProcDelegate;
         IntPtr _windowHandle;
         IntPtr _wndProc;
         IntPtr _hIMC;
@@ -55,7 +36,7 @@ namespace Molten.Input
             base.OnInitialize(settings, log);
 
             _gamepads = new List<WinGamepadDevice>();
-            _clipboard = new WindowsClipboard();
+            _clipboard = new WindowsClipboard(Thread.Manager);
         }
 
         private void CreateHook()
@@ -64,26 +45,26 @@ namespace Molten.Input
                 return;
 
             _wndProc = IntPtr.Zero;
-            _hookProcDelegate = new WndProc(HookProc);
+            _hookProcDelegate = new Win32.WndProc(HookProc);
 
             SetWindowLongDelegate(_hookProcDelegate);
-            _hIMC = ImmGetContext(_windowHandle);
+            _hIMC = Win32.ImmGetContext(_windowHandle);
         }
 
-        private void SetWindowLongDelegate(WndProc hook)
+        private void SetWindowLongDelegate(Win32.WndProc hook)
         {
             if (hook != null)
             {
                 IntPtr ptrVal = Marshal.GetFunctionPointerForDelegate(hook);
 
                 if (_wndProc == IntPtr.Zero)
-                    _wndProc = (IntPtr)SetWindowLongPtr(_windowHandle, GWL_WNDPROC, ptrVal);
+                    _wndProc = (IntPtr)Win32.SetWindowLong(_windowHandle, Win32.WindowLongType.WndProc, ptrVal);
             }
         }
 
         private IntPtr HookProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
         {
-            IntPtr returnCode = CallWindowProc(_wndProc, hWnd, msg, wParam, lParam);
+            IntPtr returnCode = Win32.CallWindowProc(_wndProc, hWnd, msg, wParam, lParam);
             WndProcMessageType msgType = (WndProcMessageType)msg;
             int wp = (int)((long)wParam & int.MaxValue);
 
@@ -99,11 +80,11 @@ namespace Molten.Input
 
                 case WndProcMessageType.WM_IME_SETCONTEXT:
                     if (wp == 1)
-                        ImmAssociateContext(hWnd, _hIMC);
+                        Win32.ImmAssociateContext(hWnd, _hIMC);
                     break;
 
                 case WndProcMessageType.WM_INPUTLANGCHANGE:
-                    ImmAssociateContext(hWnd, _hIMC);
+                    Win32.ImmAssociateContext(hWnd, _hIMC);
                     returnCode = (IntPtr)1;
                     break;
             }
@@ -200,6 +181,7 @@ namespace Molten.Input
         {
             SetWindowLongDelegate(null);
 
+            _clipboard.Dispose();
             _gamepads.Clear();
         }
 

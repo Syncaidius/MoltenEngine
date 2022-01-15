@@ -16,8 +16,6 @@ namespace Molten.Windows32
 
         public static Win32IO IO { get; } = new Win32IO();
 
-        public static Win32Window Window { get; } = new Win32Window();
-
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GlobalMemoryStatusEx([In, Out] MemoryStatusEx result);
