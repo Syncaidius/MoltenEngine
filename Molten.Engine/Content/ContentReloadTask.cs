@@ -20,11 +20,12 @@ namespace Molten
             File = null;
         }
 
-        public void Run()
+        protected override bool OnRun()
         {
             Manager.ReloadFile(File);
             OnCompleted?.Invoke(this);
             _pool.Recycle(this);
+            return true;
         }
     }
 }

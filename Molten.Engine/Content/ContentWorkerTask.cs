@@ -19,11 +19,12 @@ namespace Molten
             Request = null;
         }
 
-        public void Run()
+        protected override bool OnRun()
         {
             Request.Manager.ProcessRequest(Request);
             OnCompleted?.Invoke(this);
             _pool.Recycle(this);
+            return true;
         }
     }
 }

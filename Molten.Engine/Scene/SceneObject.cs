@@ -11,7 +11,7 @@ namespace Molten
     public delegate void SceneObjectSceneHandler(SceneObject obj, Scene scene, SceneLayer layer);
     public delegate void SceneObjectLayerHandler(SceneObject obj, SceneLayer oldLayer, SceneLayer newLayer);
 
-    public sealed class SceneObject : IdentifiedObject
+    public sealed class SceneObject : EngineObject
     {
         Engine _engine;
         Scene _scene;
@@ -57,6 +57,8 @@ namespace Molten
             _updateFlags = updateFlags;
             IsVisible = visible;
         }
+
+        protected override void OnDispose() { }
 
         private void _children_OnItemRemoved(SceneChildCollection collection, SceneObject item)
         {

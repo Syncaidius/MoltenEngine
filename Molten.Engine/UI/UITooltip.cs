@@ -28,6 +28,8 @@ namespace Molten.UI
             _mainColor = new Color(20, 40, 60, 255);
         }
 
+        protected override void OnDispose() { }
+
         void _text_OnChanged(UILabel text)
         {
             _isValid = !string.IsNullOrWhiteSpace(text.Text);
