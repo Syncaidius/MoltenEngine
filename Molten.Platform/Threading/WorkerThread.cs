@@ -6,31 +6,41 @@ namespace Molten.Threading
 {
     internal class WorkerThread
     {
-        ThreadedQueue<IWorkerTask> _queue;
+        ThreadedQueue<WorkerTask> _queue;
         AutoResetEvent _reset;
         Thread _thread;
         bool _shouldExit;
 
-        internal WorkerThread(string name, ThreadedQueue<IWorkerTask> taskQueue, ApartmentState apartment)
+        internal WorkerThread(string name, WorkerGroup grp, ThreadedQueue<WorkerTask> taskQueue, ApartmentState apartment)
         {
+            Group = grp;
             Apartment = apartment;
             _reset = new AutoResetEvent(false);
             _queue = taskQueue;
 
             _thread = new Thread(() =>
             {
-                IWorkerTask task = null;
+                WorkerTask task = null;
 
                 while (!_shouldExit)
                 {
-                    if (_queue != null && _queue.TryDequeue(out task))
-                        task.Run();
+                    if (_queue.TryDequeue(out task))
+                    {
+                        // If the task did not complete, put it back on the queue.
+                        if (!task.Run())
+                            Group.QueueTask(task);
+
+                        task = null;
+                    }
                     else
+                    {
                         _reset.WaitOne();
+                    }
                 }
             });
 
             _thread.Name = name;
+
             try
             {
                 _thread.TrySetApartmentState(apartment);
@@ -48,15 +58,16 @@ namespace Molten.Threading
             _thread.Start();
         }
 
-        internal void Abort()
-        {
-            _thread.Abort();
-        }
-
         internal void Exit()
         {
             _shouldExit = true;
             Wake();
+        }
+
+        internal void ExitAndJoin()
+        {
+            Exit();
+            _thread.Join();
         }
 
 
@@ -69,5 +80,10 @@ namespace Molten.Threading
         /// Gets the <see cref="ApartmentState"/> of the current thread.
         /// </summary>
         public ApartmentState Apartment { get; }
+
+        /// <summary>
+        /// Gets the <see cref="WorkerGroup"/> that the current <see cref="WorkerThread"/> belongs to.
+        /// </summary>
+        public WorkerGroup Group { get; }
     }
 }

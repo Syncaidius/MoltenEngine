@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.Threading;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,56 +11,55 @@ namespace Molten.Input
 {
     public class WindowsClipboard : IClipboard
     {
+        WorkerGroup _workers;
+
+        internal WindowsClipboard(ThreadManager thread)
+        {
+            _workers = thread.CreateWorkerGroup("Clipboard", 1);
+        }
+
         public void SetText(string txt)
         {
-            RunAsSTAThread(() =>
+            WorkerCallbackTask task = _workers.QueueCallback(() =>
             {
                 if (!string.IsNullOrWhiteSpace(txt))
                     Clipboard.SetText(txt);
+
+                return true;
             });
+
+            task.Wait();
         }
 
         public bool ContainsText()
         {
             bool result = false;
-            RunAsSTAThread(() =>
+            WorkerCallbackTask task = _workers.QueueCallback(() =>
             {
                 result = Clipboard.ContainsText();
+                return true;
             });
 
+            task.Wait();
             return result;
         }
 
         public string GetText()
         {
             string result = null;
-
-            RunAsSTAThread(() =>
+            WorkerCallbackTask task = _workers.QueueCallback(() =>
             {
                 result = Clipboard.GetText();
+                return true;
             });
 
+            task.Wait();
             return result;
-        }
-
-        /// <summary>Run a callback inside a single-threaded apartment (STA) thread.</summary>
-        /// <param name="callback"></param>
-        private void RunAsSTAThread(Action callback)
-        {
-            AutoResetEvent resetter = new AutoResetEvent(false);
-            Thread t = new Thread(() =>
-            {
-                callback();
-                resetter.Set();
-            });
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
-            resetter.WaitOne();
         }
 
         public void Dispose()
         {
-
+            _workers.Dispose();
         }
     }
 }

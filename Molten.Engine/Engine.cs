@@ -153,7 +153,7 @@ namespace Molten
             foreach (EngineService service in _services)
                 service.Start(Threading, Log);
 
-            _mainThread = Threading.SpawnThread("engine", true, true, (timing) =>
+            _mainThread = Threading.CreateThread("engine", true, true, (timing) =>
             {
                 Update(timing);
                 updateCallback(timing);

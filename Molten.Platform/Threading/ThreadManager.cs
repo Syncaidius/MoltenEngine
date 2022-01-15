@@ -27,7 +27,7 @@ namespace Molten.Threading
         /// <param name="fixedTimeStep">If true, the new thread will be set to use a fixed time-step.</param>
         /// <param name="name">The name of the new thread.</param>
         /// <param name="startImmediately">If true, the new thread will be started immediately after spawning.</param>
-        public EngineThread SpawnThread(string name, bool startImmediately, bool fixedTimeStep, Action<Timing> callback, ApartmentState apartmentState = ApartmentState.MTA)
+        public EngineThread CreateThread(string name, bool startImmediately, bool fixedTimeStep, Action<Timing> callback, ApartmentState apartmentState = ApartmentState.MTA)
         {
             if (_threadsByName.ContainsKey(name))
                 throw new EngineThreadException(null, name, "An engine thread with the same name already exists!");
@@ -40,7 +40,15 @@ namespace Molten.Threading
             return thread;
         }
 
-        public WorkerGroup SpawnWorkerGroup(string name, int workerCount, ThreadedQueue<IWorkerTask> workerQueue = null)
+        /// <summary>
+        /// Creates a new instance of <see cref="WorkerGroup"/>.
+        /// </summary>
+        /// <param name="name">The name of the worker group.</param>
+        /// <param name="workerCount">The number of <see cref="WorkerThread"/> in the group.</param>
+        /// <param name="workerQueue">A queue from which the worker threads will acquire tasks. If null, a queue will be created internally.</param>
+        /// <returns></returns>
+        /// <exception cref="EngineThreadException">Thrown if another <see cref="WorkerGroup"/> has the same name.</exception>
+        public WorkerGroup CreateWorkerGroup(string name, int workerCount, ThreadedQueue<WorkerTask> workerQueue = null)
         {
             if (_groupsByName.ContainsKey(name))
                 throw new EngineThreadException(null, name, "A worker group with the same name already exists!");
@@ -56,6 +64,11 @@ namespace Molten.Threading
         public bool TryGetThread(string name, out EngineThread thread)
         {
             return _threadsByName.TryGetValue(name, out thread);
+        }
+
+        public bool TryGetGroup(string groupName, out WorkerGroup group)
+        {
+            return _groupsByName.TryGetValue(groupName, out group);
         }
 
         public void DestroyThread(EngineThread thread)

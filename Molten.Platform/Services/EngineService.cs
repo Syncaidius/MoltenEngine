@@ -68,7 +68,7 @@ namespace Molten
                 ThreadMode = OnStart();
                 if (ThreadMode == ThreadingMode.SeparateThread)
                 {
-                    Thread = threadManager.SpawnThread($"service_{this}", true, false, Update);
+                    Thread = threadManager.CreateThread($"service_{this}", true, false, Update);
                     log.WriteLine($"Started service thread: {Thread.Name}");
                 }
 

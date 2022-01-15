@@ -3,7 +3,7 @@ using Molten.Threading;
 
 namespace Molten
 {
-    internal class ContentWorkerTask : IWorkerTask, IPoolable
+    internal class ContentWorkerTask : WorkerTask, IPoolable
     {
         static ObjectPool<ContentWorkerTask> _pool = new ObjectPool<ContentWorkerTask>(() => new ContentWorkerTask());
         internal static ContentWorkerTask Get()
