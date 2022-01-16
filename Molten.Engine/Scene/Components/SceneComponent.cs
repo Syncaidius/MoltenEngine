@@ -1,6 +1,6 @@
 ﻿namespace Molten
 {
-    public abstract class SceneComponent : IdentifiedObject
+    public abstract class SceneComponent : EngineObject
     {
         internal void Initialize(SceneObject obj)
         {

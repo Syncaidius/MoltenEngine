@@ -131,17 +131,17 @@ namespace Molten.Graphics
             _description.Height = Math.Max(1, _description.Height);
 
             // Create render target texture
-            _texture = base.CreateResource(resize) as Texture2D;
+            NativeTexture = base.CreateResource(resize) as Texture2D;
 
             _depthDesc.Flags = DepthStencilViewFlags.None;
-            _depthView = new DepthStencilView(Device.D3d, _texture, _depthDesc);
+            _depthView = new DepthStencilView(Device.D3d, NativeTexture, _depthDesc);
 
             // Create read-only depth view for passing to shaders.
             _depthDesc.Flags = GetReadOnlyFlags();
-            _readOnlyView = new DepthStencilView(Device.D3d, _texture, _depthDesc);
+            _readOnlyView = new DepthStencilView(Device.D3d, NativeTexture, _depthDesc);
             _depthDesc.Flags = DepthStencilViewFlags.None;
 
-            return _texture;
+            return NativeTexture;
         }
 
         protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)

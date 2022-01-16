@@ -1,4 +1,5 @@
-﻿using Silk.NET.DXGI;
+﻿using Silk.NET.Core.Native;
+using Silk.NET.DXGI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -173,34 +174,34 @@ namespace Molten.Graphics
             return new SpriteRendererDX11(_renderer.Device, callback);
         }
 
-        IMesh<GBufferVertex> IResourceManager.CreateMesh(uint maxVertices, VertexTopology topology, bool dynamic)
+        IMesh<GBufferVertex> IResourceManager.CreateMesh(int maxVertices, VertexTopology topology, bool dynamic)
         {
-            return new StandardMesh(_renderer, maxVertices, topology, dynamic);
+            return new StandardMesh(_renderer, (uint)maxVertices, topology, dynamic);
         }
 
-        public IIndexedMesh<GBufferVertex> CreateIndexedMesh(uint maxVertices,
-            uint maxIndices, 
+        public IIndexedMesh<GBufferVertex> CreateIndexedMesh(int maxVertices,
+            int maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 
             bool dynamic = false)
         {
-            return new StandardIndexedMesh(_renderer, maxVertices, maxIndices, topology, IndexBufferFormat.Unsigned32Bit, dynamic);
+            return new StandardIndexedMesh(_renderer, (uint)maxVertices, (uint)maxIndices, topology, IndexBufferFormat.Unsigned32Bit, dynamic);
         }
 
-        public IMesh<T> CreateMesh<T>(uint maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
+        public IMesh<T> CreateMesh<T>(int maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
             where T : struct, IVertexType
         {
             return new Mesh<T>(_renderer, maxVertices, topology, dynamic);
         }
 
         public IIndexedMesh<T> CreateIndexedMesh<T>(
-            uint maxVertices, 
-            uint maxIndices, 
+            int maxVertices, 
+            int maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit, 
             bool dynamic = false)
             where T : struct, IVertexType
         {
-            return new IndexedMesh<T>(_renderer, maxVertices, maxIndices, topology, indexFormat, dynamic);
+            return new IndexedMesh<T>(_renderer, (uint)maxVertices, (uint)maxIndices, topology, indexFormat, dynamic);
         }
 
         /// <summary>Compiels a set of shaders from the provided source string.</summary>
@@ -209,13 +210,13 @@ namespace Molten.Graphics
         /// <returns></returns>
         public ShaderCompileResult CompileShaders(string source, string filename = null)
         {
-            Include includer = null;
+            HlslIncluder includer = null;
 
             if (!string.IsNullOrWhiteSpace(filename))
             {
                 FileInfo fInfo = new FileInfo(filename);
                 DirectoryInfo dir = fInfo.Directory;
-                includer = new HlslIncludeHandler(dir.ToString());
+                includer = new DefaultIncluder(_renderer.ShaderCompiler);
             }
 
             return _renderer.ShaderCompiler.Compile(source, filename, includer);

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>A render task which resolves a multisampled texture into a non-multisampled one.</summary>
-    internal class TextureResolve : RendererTask<TextureResolve>
+    internal unsafe class TextureResolve : RendererTask<TextureResolve>
     {
         public TextureBase Source;
 
@@ -21,7 +21,7 @@ namespace Molten.Graphics
 
         public int DestMipLevel;
 
-        public override void Clear()
+        public override void ClearForPool()
         {
             Source = null;
             Destination = null;
@@ -32,9 +32,8 @@ namespace Molten.Graphics
             int subSource = (Source.MipMapCount * SourceArraySlice) + SourceMipLevel;
             int subDest = (Destination.MipMapCount * DestArraySlice) + DestMipLevel;
 
-            (renderer as RendererDX11).Device.Context.ResolveSubresource(Source.UnderlyingResource, subSource, 
-                Destination.UnderlyingResource, subDest, 
-                Source.DxgiFormat);
+            (renderer as RendererDX11).Device.Context->ResolveSubresource(Destination.NativePtr, (uint)subDest,
+                Source.NativePtr, (uint)subSource, Source.DxgiFormat);
             Recycle(this);
         }
     }

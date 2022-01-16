@@ -1,17 +1,16 @@
-﻿using Molten.Graphics.Textures.DDS;
-using Molten.Graphics.Textures;
-using System;
+﻿using System;
 using Silk.NET.DXGI;
 using System.IO;
 using System.Runtime.InteropServices;
 using Silk.NET.Direct3D11;
+using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    public class Texture2DDX11 : TextureBase, ITexture2D
+    public unsafe class Texture2DDX11 : TextureBase, ITexture2D
     {
-        protected Texture2D _texture;
-        protected Texture2DDescription _description;
+        internal ID3D11Texture2D* NativeTexture;
+        protected Texture2DDesc _description;
 
         /// <summary>Creates a new instance of <see cref="Texture2DDX11"/> and uses a provided texture for its description. Note: This does not copy the contents 
         /// of the provided texture in to the new instance.</summary>
@@ -40,22 +39,22 @@ namespace Molten.Graphics
             int sampleCount = 1)
             : base(renderer, width, height, 1, mipCount, arraySize, sampleCount, format, flags)
         {
-            _description = new Texture2DDescription()
+            _description = new Texture2DDesc()
             {
-                Width = Math.Max(width, 1),
-                Height = Math.Max(height, 1),
-                MipLevels = mipCount,
-                ArraySize = Math.Max(arraySize, 1),
+                Width = (uint)Math.Max(width, 1),
+                Height = (uint)Math.Max(height, 1),
+                MipLevels = (uint)mipCount,
+                ArraySize = (uint)Math.Max(arraySize, 1),
                 Format = format,
-                BindFlags = GetBindFlags(),
-                CpuAccessFlags = GetAccessFlags(),
-                SampleDescription = new SampleDescription()
+                BindFlags = (uint)GetBindFlags(),
+                CPUAccessFlags = (uint)GetAccessFlags(),
+                SampleDesc = new SampleDesc()
                 {
-                    Count = Math.Max(sampleCount, 1),
+                    Count = (uint)Math.Max(sampleCount, 1),
                     Quality = 0,
                 },
                 Usage = GetUsageFlags(),
-                OptionFlags = GetResourceFlags(),
+                MiscFlags = (uint)GetResourceFlags(),
             };
         }
 
@@ -63,28 +62,29 @@ namespace Molten.Graphics
         {
             return new Texture2DProperties()
             {
-                Width = _width,
-                Height = _height,
-                ArraySize = _arraySize,
-                Flags = _flags,
+                Width = Width,
+                Height = Height,
+                ArraySize = ArraySize,
+                Flags = Flags,
                 Format = this.DataFormat,
-                MipMapLevels = _mipCount,
-                SampleCount = _sampleCount,
+                MipMapLevels = MipMapCount,
+                SampleCount = SampleCount,
             };
         }
 
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
-            _texture = new Texture2D(Device.D3d, _description);
-            return _texture;
+            SubresourceData* subData = null;
+            Device.Native->CreateTexture2D(ref _description, subData, ref NativeTexture);
+            return (ID3D11Resource*)NativeTexture;
         }
 
-        protected override void SetSRVDescription(ref ShaderResourceViewDescription desc)
+        protected override void SetSRVDescription(ref ShaderResourceViewDesc desc)
         {
-            if (_description.SampleDescription.Count > 1)
+            if (_description.SampleDesc.Count > 1)
             {
-                desc.Dimension = ShaderResourceViewDimension.Texture2DMultisampledArray;
-                desc.Texture2DMSArray = new ShaderResourceViewDescription.Texture2DMultisampledArrayResource()
+                desc.ViewDimension = D3DSrvDimension.D3D101SrvDimensionTexture2Dmsarray;
+                desc.Texture2DMSArray = new Tex2DmsArraySrv()
                 {
                     ArraySize = _description.ArraySize,
                     FirstArraySlice = 0,
@@ -92,8 +92,8 @@ namespace Molten.Graphics
             }
             else
             {
-                desc.Dimension = ShaderResourceViewDimension.Texture2DArray;
-                desc.Texture2DArray = new ShaderResourceViewDescription.Texture2DArrayResource()
+                desc.ViewDimension = D3DSrvDimension.D3DSrvDimensionTexture2Darray;
+                desc.Texture2DArray = new Tex2DArraySrv()
                 {
                     ArraySize = _description.ArraySize,
                     MipLevels = _description.MipLevels,
@@ -103,32 +103,32 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void SetUAVDescription(ShaderResourceViewDescription srvDesc, ref UnorderedAccessViewDescription desc)
+        protected override void SetUAVDescription(ref ShaderResourceViewDesc srvDesc, ref UnorderedAccessViewDesc desc)
         {
             desc.Format = SRV.Description.Format;
-            desc.Dimension = UnorderedAccessViewDimension.Texture2DArray;
-
-            desc.Texture2DArray = new UnorderedAccessViewDescription.Texture2DArrayResource()
+            desc.ViewDimension = UavDimension.UavDimensionTexture2Darray;
+            
+            desc.Texture2DArray = new Tex2DArrayUav()
             {
                 ArraySize = _description.ArraySize,
                 FirstArraySlice = srvDesc.Texture2DArray.FirstArraySlice,
                 MipSlice = 0,
             };
 
-            desc.Buffer = new UnorderedAccessViewDescription.BufferResource()
+            desc.Buffer = new BufferUav()
             {
                 FirstElement = 0,
-                ElementCount = _description.Width * _description.Height * _description.ArraySize,
+                NumElements = _description.Width * _description.Height * _description.ArraySize,
             };
         }
 
         protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, 
             int newMipMapCount, int newArraySize, Format newFormat)
         {
-            _description.ArraySize = newArraySize;
-            _description.Width = newWidth;
-            _description.Height = newHeight;
-            _description.MipLevels = newMipMapCount;
+            _description.ArraySize = (uint)newArraySize;
+            _description.Width = (uint)newWidth;
+            _description.Height = (uint)newHeight;
+            _description.MipLevels = (uint)newMipMapCount;
             _description.Format = newFormat;
         }
 
@@ -138,9 +138,9 @@ namespace Molten.Graphics
             {
                 NewWidth = newWidth,
                 NewHeight = newHeight,
-                NewMipMapCount = _mipCount,
-                NewArraySize = _description.ArraySize,
-                NewFormat = _format
+                NewMipMapCount = MipMapCount,
+                NewArraySize = (int)_description.ArraySize,
+                NewFormat = DxgiFormat
             });
         }
 
@@ -151,8 +151,8 @@ namespace Molten.Graphics
                 NewWidth = newWidth,
                 NewHeight = newHeight,
                 NewMipMapCount = newMipMapCount,
-                NewArraySize = _description.ArraySize,
-                NewFormat = _format
+                NewArraySize = (int)_description.ArraySize,
+                NewFormat = DxgiFormat
             });
         }
 
@@ -167,8 +167,5 @@ namespace Molten.Graphics
                 NewFormat = newFormat.ToApi(),
             });
         }
-
-        /// <summary>Gets the underlying DirectX Texture2D object.</summary>
-        internal Texture2D TextureResource => _texture;
     }
 }

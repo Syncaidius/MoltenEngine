@@ -11,7 +11,7 @@ namespace Molten.Graphics
     {
         public TextureBase Texture;
 
-        public override void Clear()
+        public override void ClearForPool()
         {
             Texture = null;
         }

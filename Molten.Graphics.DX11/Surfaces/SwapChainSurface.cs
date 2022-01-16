@@ -68,11 +68,11 @@ namespace Molten.Graphics
             }
 
             // Create new backbuffer from swap chain.
-            _texture = Texture2D.FromSwapChain<Texture2D>(_swapChain, 0);
-            _rtv = new RenderTargetView(Device.D3d, _texture);
+            NativeTexture = Texture2D.FromSwapChain<Texture2D>(_swapChain, 0);
+            _rtv = new RenderTargetView(Device.D3d, NativeTexture);
             VP = new Viewport(0, 0, (int)Width, (int)Height);
 
-            return _texture;
+            return NativeTexture;
         }
 
 

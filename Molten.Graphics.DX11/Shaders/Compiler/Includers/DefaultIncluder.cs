@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Molten.Graphics.Shaders
+namespace Molten.Graphics
 {
     internal class DefaultIncluder : HlslIncluder
     {
