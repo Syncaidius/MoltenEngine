@@ -1,10 +1,8 @@
-﻿using Molten.Graphics.Textures.DDS;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Silk.NET.DXGI;
 using Silk.NET.Direct3D11;
 using Silk.NET.Core.Native;

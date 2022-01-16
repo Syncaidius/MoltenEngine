@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Windows32
 {
-    internal enum WndProcMessageType
+    public enum WndProcMessageType
     {
         /// <summary>
         /// Sent when a window is being destroyed. 

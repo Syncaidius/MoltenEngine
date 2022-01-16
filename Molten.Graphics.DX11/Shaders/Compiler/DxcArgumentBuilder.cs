@@ -13,7 +13,7 @@ namespace Molten.Graphics
     /// See for important ones:
     /// https://simoncoenen.com/blog/programming/graphics/DxcCompiling
     /// </summary>
-    internal class DxcArgumentBuilder
+    internal unsafe class DxcArgumentBuilder
     {
         static Dictionary<HlslCompilerArg, string> _argLookup = new Dictionary<HlslCompilerArg, string>()
         {

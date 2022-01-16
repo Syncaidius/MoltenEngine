@@ -9,17 +9,10 @@ using System.Reflection;
 
 namespace Molten.Input
 {
-    internal delegate void WndProcCallbackHandler(IntPtr windowHandle, WndProcMessageType msgType, int wParam, int lParam);
-
     // TODO support app commands: https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-appcommand
 
     public class WinInputService : InputService
     {
-        internal event WndProcCallbackHandler OnWndProcMessage;
-
-        // Various Win32 constants that are needed
-        const int DLGC_WANTALLKEYS = 4;
-
         List<WinGamepadDevice> _gamepads;
         INativeSurface _surface;
         WindowsClipboard _clipboard;
@@ -39,61 +32,6 @@ namespace Molten.Input
             _clipboard = new WindowsClipboard(Thread.Manager);
         }
 
-        private void CreateHook()
-        {
-            if (_hookProcDelegate != null || _windowHandle == IntPtr.Zero)
-                return;
-
-            _wndProc = IntPtr.Zero;
-            _hookProcDelegate = new Win32.WndProc(HookProc);
-
-            SetWindowLongDelegate(_hookProcDelegate);
-            _hIMC = Win32.ImmGetContext(_windowHandle);
-        }
-
-        private void SetWindowLongDelegate(Win32.WndProc hook)
-        {
-            if (hook != null)
-            {
-                IntPtr ptrVal = Marshal.GetFunctionPointerForDelegate(hook);
-
-                if (_wndProc == IntPtr.Zero)
-                    _wndProc = (IntPtr)Win32.SetWindowLong(_windowHandle, Win32.WindowLongType.WndProc, ptrVal);
-            }
-        }
-
-        private IntPtr HookProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
-        {
-            IntPtr returnCode = Win32.CallWindowProc(_wndProc, hWnd, msg, wParam, lParam);
-            WndProcMessageType msgType = (WndProcMessageType)msg;
-            int wp = (int)((long)wParam & int.MaxValue);
-
-            int lp = IntPtr.Size == 8 ?
-                (int)(lParam.ToInt64() & int.MaxValue) :
-                lParam.ToInt32();
-
-            switch (msgType)
-            {
-                case WndProcMessageType.WM_GETDLGCODE:
-                    returnCode = (IntPtr)(returnCode.ToInt32() | DLGC_WANTALLKEYS);
-                    break;
-
-                case WndProcMessageType.WM_IME_SETCONTEXT:
-                    if (wp == 1)
-                        Win32.ImmAssociateContext(hWnd, _hIMC);
-                    break;
-
-                case WndProcMessageType.WM_INPUTLANGCHANGE:
-                    Win32.ImmAssociateContext(hWnd, _hIMC);
-                    returnCode = (IntPtr)1;
-                    break;
-            }
-
-            OnWndProcMessage?.Invoke(_windowHandle, msgType, wp, lp);
-
-            return returnCode;
-        }
-
         protected override T OnGetCustomDevice<T>()
         {
             BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
@@ -108,7 +46,7 @@ namespace Molten.Input
                 {
                     _surface.OnHandleChanged -= SurfaceHandleChanged;
                     _surface.OnParentChanged -= SurfaceHandleChanged;
-                    SetWindowLongDelegate(null);
+                    Win32.HookToWindow(IntPtr.Zero);
                 }
 
                 _surface = surface;
@@ -117,7 +55,7 @@ namespace Molten.Input
                     SurfaceHandleChanged(surface);
                     _surface.OnHandleChanged += SurfaceHandleChanged;
                     _surface.OnParentChanged += SurfaceHandleChanged;
-                    CreateHook();
+                    Win32.HookToWindow(_windowHandle);
                 }
             }
         }
@@ -127,7 +65,7 @@ namespace Molten.Input
             if (surface.WindowHandle != null)
             {
                 _windowHandle = surface.WindowHandle.Value;
-                CreateHook();
+                Win32.HookToWindow(_windowHandle);
             }
         }
 
@@ -179,7 +117,7 @@ namespace Molten.Input
 
         protected override void OnDispose()
         {
-            SetWindowLongDelegate(null);
+            Win32.HookToWindow(IntPtr.Zero);
 
             _clipboard.Dispose();
             _gamepads.Clear();

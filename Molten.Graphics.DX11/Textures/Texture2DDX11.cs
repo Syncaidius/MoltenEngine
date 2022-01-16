@@ -1,7 +1,6 @@
 ﻿using System;
 using Silk.NET.DXGI;
 using System.IO;
-using System.Runtime.InteropServices;
 using Silk.NET.Direct3D11;
 using Silk.NET.Core.Native;
 

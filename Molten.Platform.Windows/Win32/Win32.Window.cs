@@ -7,33 +7,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Windows32
 {
-    public static partial class Win32
-    {
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        public struct TextMetric
-        {
-            public int tmHeight;
-            public int tmAscent;
-            public int tmDescent;
-            public int tmInternalLeading;
-            public int tmExternalLeading;
-            public int tmAveCharWidth;
-            public int tmMaxCharWidth;
-            public int tmWeight;
-            public int tmOverhang;
-            public int tmDigitizedAspectX;
-            public int tmDigitizedAspectY;
-            public char tmFirstChar;
-            public char tmLastChar;
-            public char tmDefaultChar;
-            public char tmBreakChar;
-            public byte tmItalic;
-            public byte tmUnderlined;
-            public byte tmStruckOut;
-            public byte tmPitchAndFamily;
-            public byte tmCharSet;
-        }
+    public delegate void WndProcCallbackHandler(IntPtr windowHandle, WndProcMessageType msgType, int wParam, int lParam);
 
+    public static partial class Win32
+    {        
+        public const int DLGC_WANTALLKEYS = 4;
+
+        public static event WndProcCallbackHandler OnWndProcMessage;
 
         [DllImport("user32.dll", EntryPoint = "PeekMessage")]
         public static extern int PeekMessage(out NativeMessage lpMsg, IntPtr hWnd, int wMsgFilterMin,
@@ -65,9 +45,8 @@ namespace Molten.Windows32
         public static IntPtr GetWindowLong(IntPtr hWnd, WindowLongType index)
         {
             if (IntPtr.Size == 4)
-            {
                 return GetWindowLong32(hWnd, index);
-            }
+
             return GetWindowLong64(hWnd, index);
         }
 
@@ -104,10 +83,9 @@ namespace Molten.Windows32
         public static IntPtr SetWindowLong(IntPtr hwnd, WindowLongType index, IntPtr wndProcPtr)
         {
             if (IntPtr.Size == 4)
-            {
                 return SetWindowLong32(hwnd, index, wndProcPtr);
-            }
-            return SetWindowLongPtr64(hwnd, index, wndProcPtr);
+            else
+                return SetWindowLongPtr64(hwnd, index, wndProcPtr);
         }
 
         [DllImport("user32.dll", EntryPoint = "SetParent", CharSet = CharSet.Unicode)]
@@ -115,7 +93,6 @@ namespace Molten.Windows32
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLong32(IntPtr hwnd, WindowLongType index, IntPtr wndProc);
-
 
         public static bool ShowWindow(IntPtr hWnd, bool windowVisible)
         {
@@ -136,5 +113,68 @@ namespace Molten.Windows32
 
         [DllImport("kernel32.dll", EntryPoint = "GetModuleHandle", CharSet = CharSet.Unicode)]
         public static extern IntPtr GetModuleHandle(string lpModuleName);
+
+
+        #region Window Hook Management
+        private static WndProc _hookProcDelegate = new WndProc(HookProc);
+        private static IntPtr _windowHandle = IntPtr.Zero;
+        private static IntPtr _wndProc = IntPtr.Zero;
+        private static IntPtr _hIMC = IntPtr.Zero;
+
+        public static void HookToWindow(IntPtr winHandle)
+        {
+            if (winHandle == IntPtr.Zero || winHandle == _windowHandle)
+                return;
+
+            if (winHandle == IntPtr.Zero)
+            {
+                _windowHandle = IntPtr.Zero;
+            }
+            else
+            {
+                _windowHandle = winHandle;
+
+                // Update window long for new window
+                IntPtr ptrVal = Marshal.GetFunctionPointerForDelegate(_hookProcDelegate);
+                _wndProc = SetWindowLong(_windowHandle, WindowLongType.WndProc, ptrVal);
+                _hIMC = ImmGetContext(_windowHandle);
+            }
+        }
+
+        private static IntPtr HookProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
+        {
+            if (_wndProc == IntPtr.Zero)
+                return IntPtr.Zero;
+
+            IntPtr returnCode = CallWindowProc(_wndProc, hWnd, msg, wParam, lParam);
+            WndProcMessageType msgType = (WndProcMessageType)msg;
+            int wp = (int)((long)wParam & int.MaxValue);
+
+            int lp = IntPtr.Size == 8 ?
+                (int)(lParam.ToInt64() & int.MaxValue) :
+                lParam.ToInt32();
+
+            switch (msgType)
+            {
+                case WndProcMessageType.WM_GETDLGCODE:
+                    returnCode = (IntPtr)(returnCode.ToInt32() | DLGC_WANTALLKEYS);
+                    break;
+
+                case WndProcMessageType.WM_IME_SETCONTEXT:
+                    if (wp == 1)
+                        Win32.ImmAssociateContext(hWnd, _hIMC);
+                    break;
+
+                case WndProcMessageType.WM_INPUTLANGCHANGE:
+                    Win32.ImmAssociateContext(hWnd, _hIMC);
+                    returnCode = (IntPtr)1;
+                    break;
+            }
+
+            OnWndProcMessage?.Invoke(_windowHandle, msgType, wp, lp);
+
+            return returnCode;
+        }
+        #endregion
     }
 }
