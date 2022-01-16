@@ -1,4 +1,5 @@
-﻿using Silk.NET.DXGI;
+﻿using Molten.Graphics.Dxgi;
+using Silk.NET.DXGI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,6 @@ namespace Molten.Graphics
         IntPtr _handle;
         IntPtr? _parentHandle;
 
-        RenderLoop _loop;
         protected Rectangle _bounds;
         DisplayMode _displayMode;
         string _title;
@@ -59,12 +59,7 @@ namespace Molten.Graphics
 
         protected override void OnSwapChainMissing()
         {
-            CreateControl(_title, ref _control, ref _handle);
-
-            _loop = new RenderLoop(_control)
-            {
-                UseApplicationDoEvents = false,
-            };
+            CreateControl(_title, out _control, out _handle);
 
             //set default bounds
             UpdateControlMode(_control, _requestedMode);
@@ -94,7 +89,7 @@ namespace Molten.Graphics
             Device.DisplayManager.DxgiFactory->MakeWindowAssociation(_control.Handle, (uint)WindowAssociationFlags.NoAltEnter);
         }
 
-        protected abstract void CreateControl(string title, ref T control, ref IntPtr handle);
+        protected abstract void CreateControl(string title, out T control, out IntPtr handle);
 
         protected abstract void SubscribeToControl(T control);
 
@@ -106,7 +101,6 @@ namespace Molten.Graphics
         {
             if (_disposing)
             {
-                DisposeObject(ref _loop);
                 DisposeObject(ref _swapChain);
                 DisposeControl();
                 return false;
@@ -128,19 +122,16 @@ namespace Molten.Graphics
                 _propertiesDirty = false;
             }
 
-            if (_loop.NextFrame())
+            if (Visible != _control.Visible)
             {
-                if (Visible != _control.Visible)
+                if (Visible)
                 {
-                    if (Visible)
-                    {
-                        _control.Show();
-                    }
-                    else
-                    {
-                        _control.Hide();
-                        return false;
-                    }
+                    _control.Show();
+                }
+                else
+                {
+                    _control.Hide();
+                    return false;
                 }
             }
 

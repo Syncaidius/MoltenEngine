@@ -29,7 +29,7 @@ namespace Molten.Graphics
         internal RenderControlSurface(string controlTitle, string controlName, RendererDX11 renderer, int mipCount = 1, int sampleCount = 1)
             : base(controlTitle, controlName, renderer, mipCount, sampleCount) { }
 
-        protected override void CreateControl(string title, ref RenderControl control, ref IntPtr handle)
+        protected override void CreateControl(string title, out RenderControl control, out IntPtr handle)
         {
             control = new RenderControl()
             {

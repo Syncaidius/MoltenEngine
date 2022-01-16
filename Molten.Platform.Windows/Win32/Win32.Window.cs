@@ -162,11 +162,11 @@ namespace Molten.Windows32
 
                 case WndProcMessageType.WM_IME_SETCONTEXT:
                     if (wp == 1)
-                        Win32.ImmAssociateContext(hWnd, _hIMC);
+                        ImmAssociateContext(hWnd, _hIMC);
                     break;
 
                 case WndProcMessageType.WM_INPUTLANGCHANGE:
-                    Win32.ImmAssociateContext(hWnd, _hIMC);
+                    ImmAssociateContext(hWnd, _hIMC);
                     returnCode = (IntPtr)1;
                     break;
             }
