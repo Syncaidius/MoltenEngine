@@ -1,4 +1,6 @@
 ﻿using Silk.NET.DXGI;
+using Silk.NET.Core.Native;
+using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +11,9 @@ namespace Molten.Graphics
     /// <summary>A special kind of render surface for use as a depth-stencil buffer.</summary>
     public unsafe class DepthStencilSurface : Texture2DDX11, IDepthStencilSurface
     {
-        DepthStencilView _depthView;
-        DepthStencilView _readOnlyView;
-        DepthStencilViewDescription _depthDesc;
+        ID3D11DepthStencilView* _depthView;
+        ID3D11DepthStencilView* _readOnlyView;
+        DepthStencilViewDesc _depthDesc;
         DepthFormat _depthFormat;
         Viewport _vp;
 
@@ -33,19 +35,19 @@ namespace Molten.Graphics
             int arraySize = 1, 
             int sampleCount = 1,
             TextureFlags flags = TextureFlags.None)
-            : base(renderer, width, height, SharpDX.DXGI.Format.R24G8_Typeless, mipCount, arraySize, flags)
+            : base(renderer, width, height, Format.FormatR24G8Typeless, mipCount, arraySize, flags)
         {
             _depthFormat = format;
-            _description.ArraySize = arraySize;
+            _description.ArraySize = (uint)arraySize;
             _description.Format = GetFormat().ToApi();
-            _depthDesc = new DepthStencilViewDescription();
+            _depthDesc = new DepthStencilViewDesc();
             _depthDesc.Format = GetDSVFormat().ToApi();
 
             if (SampleCount > 1)
             {
-                _depthDesc.Dimension = DepthStencilViewDimension.Texture2DMultisampledArray;
-                _depthDesc.Flags = DepthStencilViewFlags.None;
-                _depthDesc.Texture2DMSArray = new DepthStencilViewDescription.Texture2DMultisampledArrayResource()
+                _depthDesc.ViewDimension = DsvDimension.DsvDimensionTexture2Dmsarray;
+                _depthDesc.Flags = 0U; // DsvFlag.None;
+                _depthDesc.Texture2DMSArray = new Tex2DmsArrayDsv()
                 {
                     ArraySize = _description.ArraySize,
                     FirstArraySlice = 0,
@@ -53,9 +55,9 @@ namespace Molten.Graphics
             }
             else
             {
-                _depthDesc.Dimension = DepthStencilViewDimension.Texture2DArray;
-                _depthDesc.Flags = DepthStencilViewFlags.None;
-                _depthDesc.Texture2DArray = new DepthStencilViewDescription.Texture2DArrayResource()
+                _depthDesc.ViewDimension = DsvDimension.DsvDimensionTexture2Darray;
+                _depthDesc.Flags = 0U; //DsvFlag.None;
+                _depthDesc.Texture2DArray = new Tex2DArrayDsv()
                 {
                     ArraySize = _description.ArraySize,
                     FirstArraySlice = 0,
@@ -66,7 +68,7 @@ namespace Molten.Graphics
             UpdateViewport();
         }
 
-        protected override void SetSRVDescription(ref ShaderResourceViewDescription desc)
+        protected override void SetSRVDescription(ref ShaderResourceViewDesc desc)
         {
             base.SetSRVDescription(ref desc);
 
@@ -85,7 +87,7 @@ namespace Molten.Graphics
 
         private void UpdateViewport()
         {
-            _vp = new Viewport(0, 0, _description.Width, _description.Height);
+            _vp = new Viewport(0, 0, (int)_description.Width, (int)_description.Height);
         }
 
         private GraphicsFormat GetFormat()
@@ -112,36 +114,40 @@ namespace Molten.Graphics
             }
         }
 
-        private DepthStencilViewFlags GetReadOnlyFlags()
+        private DsvFlag GetReadOnlyFlags()
         {
             switch (_depthFormat)
             {
                 default:
                 case DepthFormat.R24G8_Typeless:
-                    return DepthStencilViewFlags.ReadOnlyDepth | DepthStencilViewFlags.ReadOnlyStencil;
+                    return DsvFlag.DsvReadOnlyDepth | DsvFlag.DsvReadOnlyStencil;
                 case DepthFormat.R32_Typeless:
-                    return DepthStencilViewFlags.ReadOnlyDepth;
+                    return DsvFlag.DsvReadOnlyDepth;
             }
         }
 
-        protected override SharpDX.Direct3D11.Resource CreateResource(bool resize)
+        protected override ID3D11Resource* CreateResource(bool resize)
         {
-            _depthView?.Dispose();
+            SilkUtil.ReleasePtr(ref _depthView);
+            SilkUtil.ReleasePtr(ref _readOnlyView);
+
             _description.Width = Math.Max(1, _description.Width);
             _description.Height = Math.Max(1, _description.Height);
 
             // Create render target texture
-            NativeTexture = base.CreateResource(resize) as Texture2D;
+            NativeTexture = (ID3D11Texture2D*)base.CreateResource(resize);
 
-            _depthDesc.Flags = DepthStencilViewFlags.None;
-            _depthView = new DepthStencilView(Device.D3d, NativeTexture, _depthDesc);
+            _depthDesc.Flags = 0; // DsvFlag.None;
+            SubresourceData* subData = null;
+
+            Device.Native->CreateDepthStencilView(NativePtr, ref _depthDesc, ref _depthView);
 
             // Create read-only depth view for passing to shaders.
-            _depthDesc.Flags = GetReadOnlyFlags();
-            _readOnlyView = new DepthStencilView(Device.D3d, NativeTexture, _depthDesc);
-            _depthDesc.Flags = DepthStencilViewFlags.None;
+            _depthDesc.Flags = (uint)GetReadOnlyFlags();
+            Device.Native->CreateDepthStencilView(NativePtr, ref _depthDesc, ref _readOnlyView);
+            _depthDesc.Flags = 0U; // DsvFlag.None;
 
-            return NativeTexture;
+            return (ID3D11Resource*)NativeTexture;
         }
 
         protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
@@ -150,32 +156,32 @@ namespace Molten.Graphics
             UpdateViewport();
         }
 
-        internal void Clear(PipeDX11 pipe, DepthClearFlags clearFlags = DepthClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
+        internal void Clear(PipeDX11 pipe, ClearFlag clearFlags = ClearFlag.ClearDepth, float depth = 1.0f, byte stencil = 0)
         {
             if (_depthView == null)
                 CreateTexture(false);
 
-            pipe.Context->ClearDepthStencilView(_depthView, clearFlags, depth, stencil);
+            pipe.Context->ClearDepthStencilView(_depthView, (uint)clearFlags, depth, stencil);
         }
 
-        public void Clear(DepthClearFlags clearFlags = DepthClearFlags.Depth, float depth = 1.0f, byte stencil = 0)
+        public void Clear(DepthClearFlags flags, float depth = 1.0f, byte stencil = 0)
         {
-            Clear(Device, clearFlags, depth, stencil);
+            Clear(Device, (ClearFlag)flags, depth, stencil);
         }
 
         internal override void PipelineDispose()
         {
-            DisposeObject(ref _depthView);
-            DisposeObject(ref _readOnlyView);
+            SilkUtil.ReleasePtr(ref _depthView);
+            SilkUtil.ReleasePtr(ref _readOnlyView);
 
             base.PipelineDispose();
         }
 
         /// <summary>Gets the DepthStencilView instance associated with this surface.</summary>
-        internal DepthStencilView DepthView => _depthView;
+        internal ID3D11DepthStencilView* DepthView => _depthView;
 
         /// <summary>Gets the read-only DepthStencilView instance associated with this surface.</summary>
-        internal DepthStencilView ReadOnlyView => _readOnlyView;
+        internal ID3D11DepthStencilView* ReadOnlyView => _readOnlyView;
 
         /// <summary>Gets the depth-specific format of the surface.</summary>
         public DepthFormat DepthFormat => _depthFormat;

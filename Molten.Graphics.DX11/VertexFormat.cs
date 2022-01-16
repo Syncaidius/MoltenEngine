@@ -21,8 +21,7 @@ namespace Molten.Graphics
 
         static IntPtrComparer _ptrComparer = new IntPtrComparer();
 
-        internal InputElementData Data { get; }
- 
+        internal InputElementData Data { get; } 
 
         private unsafe VertexFormat(uint elementCount)
         {

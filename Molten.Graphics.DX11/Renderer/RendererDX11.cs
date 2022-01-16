@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
+using Molten.Graphics.Dxgi;
 
 namespace Molten.Graphics
 {
@@ -80,7 +81,7 @@ namespace Molten.Graphics
 
         public void DispatchCompute(IComputeTask task, int x, int y, int z)
         {
-            Device.Dispatch(task as ComputeTask, x, y, z);
+            Device.Dispatch(task as ComputeTask, (uint)x, (uint)y, (uint)z);
         }
 
         internal void InitializeMainSurfaces(int width, int height)
