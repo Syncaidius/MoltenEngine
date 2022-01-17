@@ -144,6 +144,12 @@ namespace Molten.Graphics
             return true;
         }
 
+        /// <summary>
+        /// Returns whether or not the next frame should be processed and handles native window event dispatching.
+        /// </summary>
+        /// <remarks>This code is taken from: https://github.com/sharpdx/SharpDX/blob/ab36f12303e24aa60fe804866617716b6ded95db/Source/SharpDX.Desktop/RenderLoop.cs#L114</remarks>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         private bool NextFrame()
         {
             bool controlAlive = true;
