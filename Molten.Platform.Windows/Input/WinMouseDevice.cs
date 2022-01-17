@@ -47,7 +47,7 @@ namespace Molten.Input
         {
 
             WinInputService manager = Manager as WinInputService;
-            manager.OnWndProcMessage += Manager_OnWndProcMessage;
+            Win32.OnWndProcMessage += Manager_OnWndProcMessage;
             ScrollWheel = new InputScrollWheel("Vertical");
             HScrollWheel = new InputScrollWheel("Horizontal");
 

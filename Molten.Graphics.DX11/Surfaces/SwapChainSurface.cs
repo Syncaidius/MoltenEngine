@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Molten.Collections;
+using Molten.Graphics.Dxgi;
 using Silk.NET.DXGI;
 using Silk.NET.Direct3D11;
-using Molten.Graphics.Dxgi;
 using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
@@ -13,15 +13,18 @@ namespace Molten.Graphics
     /// <summary>A render target that is created from, and outputs to, a device's swap chain.</summary>
     public unsafe abstract class SwapChainSurface : RenderSurface, ISwapChainSurface
     {
-        IDXGISwapChain1* _swapChain;
+        protected internal IDXGISwapChain1* NativeSwapChain;
+
+        PresentParameters* _presentParams;
         SwapChainDesc1 _swapDesc;
         ThreadedQueue<Action> _dispatchQueue;
-        int _vsync;
+        uint _vsync;
 
         internal SwapChainSurface(RendererDX11 renderer, int mipCount, int sampleCount)
             : base(renderer, 1, 1, Format.FormatB8G8R8A8Unorm, mipCount, 1, sampleCount, TextureFlags.NoShaderResource)
         {
             _dispatchQueue = new ThreadedQueue<Action>();
+            _presentParams = EngineUtil.Alloc<PresentParameters>();
         }
 
         protected void CreateSwapChain(DisplayMode mode, bool windowed, IntPtr controlHandle)
@@ -47,48 +50,59 @@ namespace Molten.Graphics
             Device.DisplayManager.DxgiFactory->CreateSwapChain((IUnknown*)Device.Native, ptrDesc, ref ptrSwapChain);
 
             _swapDesc = desc;
-            _swapChain = (IDXGISwapChain1*)ptrSwapChain;
+            NativeSwapChain = (IDXGISwapChain1*)ptrSwapChain;
         }
 
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
             // Resize the swap chain if needed.
-            if (resize && _swapChain != null)
+            if (resize && NativeSwapChain != null)
             {
-                _swapChain.ResizeBuffers(_swapDesc.BufferCount, Width, Height, GraphicsFormat.Unknown.ToApi(), SwapChainFlags.None);
-                _swapDesc = _swapChain.Description;
+                NativeSwapChain->ResizeBuffers(_swapDesc.BufferCount, (uint)Width, (uint)Height, GraphicsFormat.Unknown.ToApi(), 0U);
+                NativeSwapChain->GetDesc1(ref _swapDesc);
             }
             else
             {
-                _swapChain?.Dispose();
+                SilkUtil.ReleasePtr(ref NativeSwapChain);
                 OnSwapChainMissing();
 
-                _vsync = Device.Settings.VSync ? 1 : 0;
+                _vsync = Device.Settings.VSync ? 1U : 0;
                 Device.Settings.VSync.OnChanged += VSync_OnChanged;
             }
 
-            // Create new backbuffer from swap chain.
-            NativeTexture = Texture2D.FromSwapChain<Texture2D>(_swapChain, 0);
-            _rtv = new RenderTargetView(Device.D3d, NativeTexture);
-            VP = new Viewport(0, 0, (int)Width, (int)Height);
+            void* ppSurface = null;
+            Guid riid = ID3D11Texture2D.Guid;
+            NativeSwapChain->GetBuffer(0, &riid, &ppSurface);
 
-            return NativeTexture;
+            RenderTargetViewDesc rtvDesc = new RenderTargetViewDesc()
+            {
+                Format = _swapDesc.Format,
+                ViewDimension = RtvDimension.RtvDimensionTexture2D,
+            };
+
+            ID3D11Resource* res = (ID3D11Resource*)NativeTexture;
+            Device.Native->CreateRenderTargetView(res, &rtvDesc, ref RTV);
+            VP = new Viewport(0, 0, Width, Height);
+
+            return res;
         }
-
 
         protected abstract void OnSwapChainMissing();
 
         private void VSync_OnChanged(bool oldValue, bool newValue)
         {
-            _vsync = newValue ? 1 : 0;
+            _vsync = newValue ? 1U : 0;
         }
 
         public void Present()
         {
             Apply(Device);
 
-            if(OnPresent() && _swapChain != null)
-                _swapChain->Present(_vsync, Present.None);
+            if (OnPresent() && NativeSwapChain != null)
+            {
+                
+                NativeSwapChain->Present1(_vsync, 0U, _presentParams);
+            }
 
             if (!IsDisposed)
             {
@@ -111,10 +125,11 @@ namespace Molten.Graphics
 
         internal override void PipelineDispose()
         {
-            SilkUtil.ReleasePtr(ref _swapChain);
+            SilkUtil.ReleasePtr(ref NativeSwapChain);
+            EngineUtil.Free(ref _presentParams);
             base.PipelineDispose();
         }
 
-        protected virtual bool OnPresent() { return true; }
+        protected abstract bool OnPresent();
     }
 }

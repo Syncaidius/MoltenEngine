@@ -206,12 +206,6 @@ namespace Molten.Graphics
             return GraphicsValidationResult.Successful;
         }
 
-        protected override void OnDispose()
-        {
-            base.OnDispose();
-        }
-
-        internal override bool IsValid { get { return true; } }
 
         /// <summary>
         /// Gets whether or not a render target has been applied at slot 0.

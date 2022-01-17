@@ -48,7 +48,7 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref RTV);
 
             SetRTVDescription(ref _rtvDesc);
-            if (_description.SampleDescription.Count > 1)
+            if (_description.SampleDesc.Count > 1)
             {
                 _rtvDesc.ViewDimension = RtvDimension.RtvDimensionTexture2Dmsarray;
                 _rtvDesc.Texture2DMSArray = new Tex2DmsArrayRtv
@@ -76,8 +76,8 @@ namespace Molten.Graphics
 
         protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
         {
-            _description.Width = newWidth;
-            _description.Height = newHeight;
+            _description.Width = (uint)newWidth;
+            _description.Height = (uint)newHeight;
             _description.Format = newFormat;
             //_description.MipLevels = newMipMapCount; // NOTE: Do we set this on render targets?
 

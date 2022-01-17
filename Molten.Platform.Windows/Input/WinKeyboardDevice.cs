@@ -38,7 +38,7 @@ namespace Molten.Input
         protected override List<InputDeviceFeature> Initialize()
         {
             var manager = Manager as WinInputService;
-            manager.OnWndProcMessage += Manager_OnWndProcMessage;
+            Win32.OnWndProcMessage += Manager_OnWndProcMessage;
 
             // TODO get extra features
             List<InputDeviceFeature> features = new List<InputDeviceFeature>();

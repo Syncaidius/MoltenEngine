@@ -39,7 +39,7 @@ namespace Molten.Graphics
         internal RenderFormSurface(string formTitle, string formName, RendererDX11 renderer, int mipCount = 1, int sampleCount = 1)
             : base(formTitle, formName, renderer, mipCount, sampleCount) { }
 
-        protected override void CreateControl(string title, ref RenderForm control, ref IntPtr handle)
+        protected override void CreateControl(string title, out RenderForm control, out IntPtr handle)
         {
             control = new RenderForm(title);
             control.WindowState = FormWindowState.Maximized;

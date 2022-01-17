@@ -47,7 +47,10 @@ namespace Molten.Graphics
                 // TODO validate display mode here. If invalid or unsupported by display, choose nearest supported.
 
                 UpdateControlMode(_control, _mode);
-                _swapChain.ResizeTarget(ref _displayMode.Description);
+
+                fixed(ModeDesc1* ptrMode = &_displayMode.Description)
+                    NativeSwapChain->ResizeTarget((ModeDesc*)ptrMode);
+
                 Device.Log.WriteLine($"{typeof(T)} surface '{_ctrlName}' resized to {newWidth}x{newHeight}");
             }
             else
@@ -104,7 +107,7 @@ namespace Molten.Graphics
         {
             if (_disposing)
             {
-                DisposeObject(ref _swapChain);
+                SilkUtil.ReleasePtr(ref NativeSwapChain);
                 DisposeControl();
                 return false;
             }
@@ -152,6 +155,8 @@ namespace Molten.Graphics
         /// <exception cref="InvalidOperationException"></exception>
         private bool NextFrame()
         {
+            // TODO replace this method with better Win32 message loop
+
             bool controlAlive = true;
 
             if (_handle != IntPtr.Zero)
