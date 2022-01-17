@@ -99,7 +99,7 @@ namespace Molten.Graphics
             ResizeRedraw = true;
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
 
-            Icon = Desktop.Properties.Resources.logo;
+            //Icon = Desktop.Properties.Resources.logo;
 
             previousWindowState = FormWindowState.Normal;
             AllowUserResizing = true;

@@ -1,8 +1,11 @@
 ﻿using Molten.Graphics.Dxgi;
+using Molten.Windows32;
 using Silk.NET.DXGI;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -122,20 +125,56 @@ namespace Molten.Graphics
                 _propertiesDirty = false;
             }
 
-            if (Visible != _control.Visible)
+            if (NextFrame())
             {
-                if (Visible)
+                if (Visible != _control.Visible)
                 {
-                    _control.Show();
-                }
-                else
-                {
-                    _control.Hide();
-                    return false;
+                    if (Visible)
+                    {
+                        _control.Show();
+                    }
+                    else
+                    {
+                        _control.Hide();
+                        return false;
+                    }
                 }
             }
 
             return true;
+        }
+
+        private bool NextFrame()
+        {
+            bool controlAlive = true;
+
+            if (_handle != IntPtr.Zero)
+            {
+                // Previous code not compatible with Application.AddMessageFilter but faster then DoEvents
+                NativeMessage msg;
+                while (Win32.PeekMessage(out msg, IntPtr.Zero, 0, 0, 0) != 0)
+                {
+                    if (Win32.GetMessage(out msg, IntPtr.Zero, 0, 0) == -1)
+                        throw new InvalidOperationException($"An error happened in rendering loop while processing windows messages. Error: {Marshal.GetLastWin32Error()}");
+
+                    // NCDESTROY event?
+                    if (msg.msg == 130)
+                        controlAlive = false;
+
+                    var message = new Message() { HWnd = msg.handle, LParam = msg.lParam, Msg = (int)msg.msg, WParam = msg.wParam };
+                    if (!Application.FilterMessage(ref message))
+                    {
+                        Win32.TranslateMessage(ref msg);
+                        Win32.DispatchMessage(ref msg);
+                    }
+                }
+            }
+            else 
+            {
+                controlAlive = false;
+            }
+
+            return controlAlive;
         }
 
         internal override void PipelineDispose()
