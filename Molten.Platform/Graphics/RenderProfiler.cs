@@ -13,15 +13,20 @@ namespace Molten.Graphics
             public uint DrawCalls { get; set; }
 
             /// <summary>
+            /// The total number of pipeline slot bindings called during the frame. These are not GPU/API bindings.
+            /// </summary>
+            public uint SlotBindings { get; set; }
+
+            /// <summary>
             /// The number of total GPU/API resource/object bindings called during a frame.
             /// </summary>
-            public uint Bindings { get; set; }
+            public uint GpuBindings { get; set; }
 
-            public uint BufferSwaps { get; set; }
+            public uint BufferBindings { get; set; }
 
-            public uint ShaderSwaps { get; set; }
+            public uint ShaderBindings { get; set; }
 
-            public uint SurfaceSwaps { get; set; }
+            public uint SurfaceBindings { get; set; }
 
             /// <summary>The total number of triangles that were rendered in the previous frame.</summary>
             public uint PrimitiveCount { get; set; }
@@ -61,10 +66,10 @@ namespace Molten.Graphics
             public void Clear()
             {
                 DrawCalls = 0;
-                Bindings = 0;
-                BufferSwaps = 0;
-                ShaderSwaps = 0;
-                SurfaceSwaps = 0;
+                GpuBindings = 0;
+                BufferBindings = 0;
+                ShaderBindings = 0;
+                SurfaceBindings = 0;
                 PrimitiveCount = 0;
                 Time = 0;
                 TargetTime = 0;
@@ -82,11 +87,12 @@ namespace Molten.Graphics
             public void Accumulate(Snapshot other)
             {
                 DrawCalls += other.DrawCalls;
-                Bindings += other.Bindings;
-                SurfaceSwaps += other.SurfaceSwaps;
+                SlotBindings += other.SlotBindings;
+                GpuBindings += other.GpuBindings;
+                SurfaceBindings += other.SurfaceBindings;
                 PrimitiveCount += other.PrimitiveCount;
-                BufferSwaps += other.BufferSwaps;
-                ShaderSwaps += other.ShaderSwaps;
+                BufferBindings += other.BufferBindings;
+                ShaderBindings += other.ShaderBindings;
                 Time += other.Time;
                 MapDiscardCount += other.MapDiscardCount;
                 MapNoOverwriteCount += other.MapNoOverwriteCount;

@@ -86,20 +86,18 @@ namespace Molten
 
         public static T* Alloc<T>() where T : unmanaged
         {
-            int sizeOf = Marshal.SizeOf<T>();
-            return (T*)Alloc((nuint)sizeOf);
+            return (T*)Alloc((nuint)sizeof(T));
         }
 
         public static T* AllocAligned<T>() where T : unmanaged
         {
-            nuint sizeOf = (nuint)Marshal.SizeOf<T>();
+            nuint sizeOf = (nuint)sizeof(T);
             return (T*)AllocAligned(sizeOf, sizeOf);
         }
 
         public static T* AllocAligned<T>(nuint alignment) where T : unmanaged
         {
-            nuint sizeOf = (nuint)Marshal.SizeOf<T>();
-            return (T*)AllocAligned(sizeOf, alignment);
+            return (T*)AllocAligned((nuint)sizeof(T), alignment);
         }
 
         public static void* AllocArray(nuint elementSizeBytes, nuint numElements)
@@ -109,17 +107,38 @@ namespace Molten
 
         public static T* AllocArray<T>(nuint numElements) where T : unmanaged
         {
-            nuint sizeOf = (nuint)Marshal.SizeOf<T>();
-            return (T*)Alloc(sizeOf * numElements);
+            return (T*)Alloc((nuint)sizeof(T) * numElements);
         }
 
         public static T* AllocAlignedArray<T>(nuint numElements, nuint alignment) where T : unmanaged
         {
-            nuint sizeOf = (nuint)Marshal.SizeOf<T>();
-            return (T*)AllocAligned(sizeOf * numElements, alignment);
+            return (T*)AllocAligned((nuint)sizeof(T) * numElements, alignment);
+        }
+
+        public static T** AllocPtrArray<T>(nuint numElements) where T : unmanaged
+        {
+            return (T**)Alloc((uint)sizeof(T*) * numElements);
+        }
+
+        public static T** AllocAlignedPtrArray<T>(nuint numElements, nuint alignment) where T : unmanaged
+        {
+            return (T**)AllocAligned((uint)sizeof(T*) * numElements, alignment);
         }
 
         public static void Free<T>(ref T* ptr) where T : unmanaged
+        {
+            if (!_allocated.TryGetValue((nuint)ptr, out MemoryBase mem))
+            {
+                throw new Exception($"The pointer {(nuint)ptr} was not allocated by Molten's memory manager.");
+            }
+            else
+            {
+                mem.Free();
+                ptr = null;
+            }
+        }
+
+        public static void FreePtrArray<T>(ref T** ptr) where T : unmanaged
         {
             if (!_allocated.TryGetValue((nuint)ptr, out MemoryBase mem))
             {

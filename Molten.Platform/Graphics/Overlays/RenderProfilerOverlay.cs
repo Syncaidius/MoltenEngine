@@ -54,16 +54,16 @@
             textPos.Y += lineHeight; sb.DrawString(font, $"VRAM usage: {frame.AllocatedVRAM}", textPos, _col);
             textPos.Y += lineHeight; sb.DrawString(font, $"Draw calls: {frame.DrawCalls}", textPos, _col);
             textPos.Y += lineHeight; sb.DrawString(font, $"Primatives: {frame.PrimitiveCount}", textPos, _col);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Buffer swaps: {frame.BufferSwaps}", textPos, _col);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Shader swaps: {frame.ShaderSwaps}", textPos, _col);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Surface swaps: {frame.SurfaceSwaps}", textPos, _col);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Buffer swaps: {frame.BufferBindings}", textPos, _col);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Shader swaps: {frame.ShaderBindings}", textPos, _col);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Surface swaps: {frame.SurfaceBindings}", textPos, _col);
             textPos.Y += lineHeight; sb.DrawString(font, $"Sub-resource update: {frame.UpdateSubresourceCount}", textPos, _col);
             textPos.Y += lineHeight; sb.DrawString(font, $"Sub-resource copy: {frame.CopySubresourceCount}", textPos, _col);
             textPos.Y += lineHeight; sb.DrawString(font, $"Map discard: {frame.MapDiscardCount}", textPos, _col);
             textPos.Y += lineHeight; sb.DrawString(font, $"Map no-overwrite: {frame.MapNoOverwriteCount}", textPos, _col);
             textPos.Y += lineHeight; sb.DrawString(font, $"Map read: {frame.MapReadCount}", textPos, _col);
             textPos.Y += lineHeight; sb.DrawString(font, $"Map write: {frame.MapWriteCount}", textPos, _col);
-            textPos.Y += lineHeight; sb.DrawString(font, $"Resource bindings: {frame.Bindings}", textPos, _col);
+            textPos.Y += lineHeight; sb.DrawString(font, $"Resource bindings: {frame.GpuBindings}", textPos, _col);
         }
 
         public string Title => "Render Statistics";

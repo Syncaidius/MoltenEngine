@@ -48,12 +48,11 @@ namespace Molten.Graphics
         where T : PipeBindable
     {
         uint _boundVersion;
-        uint _bindIncrement;
 
         internal PipeSlot(PipeStage stage, uint slotID, PipeBindTypeFlags slotType, string namePrefix, bool grpMember) : 
             base(stage, slotID, slotType, $"{namePrefix}_{typeof(T).Name}", grpMember)
         {
-            _bindIncrement = grpMember ? 0 : 1U;
+            
         }
 
         protected override void OnDispose()
@@ -87,7 +86,8 @@ namespace Molten.Graphics
                     BoundValue = Value;
                 }
 
-                Stage.Pipe.Profiler.Current.Bindings += _bindIncrement;
+                Stage.Pipe.Profiler.Current.SlotBindings++;
+                bindCounter++;
                 return true;
             }
             else if (Value != null)
@@ -97,7 +97,8 @@ namespace Molten.Graphics
                     if (_boundVersion != Value.Version)
                     {
                         _boundVersion = Value.Version;
-                        Stage.Pipe.Profiler.Current.Bindings += _bindIncrement;
+                        Stage.Pipe.Profiler.Current.GpuBindings++;
+                        bindCounter++;
                         return true;
                     }
                 }

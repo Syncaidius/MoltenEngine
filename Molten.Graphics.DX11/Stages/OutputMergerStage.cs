@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.Direct3D11;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,62 +7,70 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class PipelineOutput : PipelineComponent<DeviceDX11, PipeDX11>
+    internal unsafe class OutputMergerStage : PipeStage   
     {
-        enum SlotType
-        {
-            RenderSurface = 0,
-            DepthBuffer = 1,
-        }
-
         PipeDX11 _pipe;
-        PipelineBindSlot<RenderSurface, DeviceDX11, PipeDX11>[] _slotSurfaces;
-        PipelineBindSlot<DepthStencilSurface, DeviceDX11, PipeDX11> _slotDepth;
-
-        RenderSurface[] _surfaces;
-        DepthStencilSurface _depthSurface = null;
-        RenderTargetView[] _rtViews;
-        DepthStencilView _depthView = null;
+        PipeSlotGroup<RenderSurface> _surfaces;
+        PipeSlot<DepthStencilSurface> _depthSurface;
 
         GraphicsDepthWritePermission _boundMode = GraphicsDepthWritePermission.Enabled;
         GraphicsDepthWritePermission _depthMode = GraphicsDepthWritePermission.Enabled;
 
-        public PipelineOutput(PipeDX11 pipe) : base(pipe.Device)
+        ID3D11RenderTargetView** _rtvs;
+        uint _numRTVs;
+        ID3D11DepthStencilView* _dsv;
+
+        public OutputMergerStage(PipeDX11 pipe) : base(pipe.Device)
         {
             _pipe = pipe;
 
-            int maxRTs = Device.Features.SimultaneousRenderSurfaces;
-            _slotSurfaces = new PipelineBindSlot<RenderSurface, DeviceDX11, PipeDX11>[maxRTs];
-            _surfaces = new RenderSurface[maxRTs];
-            _rtViews = new RenderTargetView[maxRTs];
+            uint maxRTs = Device.Features.SimultaneousRenderSurfaces;
+            _surfaces = DefineSlotGroup<RenderSurface>(maxRTs, PipeBindTypeFlags.Output, "RT Output");
+            _depthSurface = DefineSlot<DepthStencilSurface>(0, PipeBindTypeFlags.Output, "Depth-Stencil Output");
 
-            for (int i = 0; i < maxRTs; i++)
-            {
-                _slotSurfaces[i] = AddSlot<RenderSurface>(i);
-                _slotSurfaces[i].OnObjectForcedUnbind += SurfaceSlot_OnBoundObjectDisposed;
-            }
-
-            _slotDepth = AddSlot<DepthStencilSurface>(0);
-            _slotDepth.OnObjectForcedUnbind += _slotDepth_OnBoundObjectDisposed;
+            _rtvs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView>(maxRTs);
         }
 
-        private void SurfaceSlot_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
+        protected override void OnDispose()
         {
-            _rtViews[slot.SlotID] = null;
-            _pipe.Context.OutputMerger.SetTargets(_depthView, _rtViews);
-            Pipe.Profiler.Current.SurfaceSwaps++;
-        }
-
-        private void _slotDepth_OnBoundObjectDisposed(PipelineBindSlot<DeviceDX11, PipeDX11> slot, PipelineDisposableObject obj)
-        {
-            _depthView = null;
-            _pipe.Context.OutputMerger.SetTargets(_depthView, _rtViews);
-            Pipe.Profiler.Current.SurfaceSwaps++;
+            base.OnDispose();
+            EngineUtil.FreePtrArray(ref _rtvs);
         }
 
         internal void Refresh()
         {
-            bool rtChangeDetected = false;
+            bool rtChanged = _surfaces.BindAll();
+            bool dsChanged = _depthSurface.Bind();
+
+            if(rtChanged || dsChanged)
+            {
+                if (rtChanged)
+                {
+                    _numRTVs = 0;
+
+                    for (uint i = 0; i < _surfaces.SlotCount; i++)
+                    {
+                        if (_surfaces[i].BoundValue != null)
+                        {
+                            _numRTVs = i;
+                            _rtvs[i] = _surfaces[i].BoundValue.RTV;
+                        }
+                        else
+                        {
+                            _rtvs[i] = null;
+                        }
+                    }
+                }
+
+                if (dsChanged)
+                {
+                    // TODO implement
+                }
+
+                _pipe.Context->OMSetRenderTargets(_numRTVs, _dsv, _rtvs);
+                Pipe.Profiler.Current.SurfaceBindings++;
+            }
+
 
             // Check depth surface for changes
             bool depthChanged = _slotDepth.Bind(_pipe, _depthSurface, _depthMode == GraphicsDepthWritePermission.ReadOnly ? PipelineBindType.OutputReadOnly : PipelineBindType.Output);
@@ -113,8 +122,8 @@ namespace Molten.Graphics
             // Check if changes need to be forwarded to the GPU.
             if (rtChangeDetected || depthChanged)
             {
-                _pipe.Context.OutputMerger.SetTargets(_depthView, _rtViews);
-                Pipe.Profiler.Current.SurfaceSwaps++;
+                _pipe.Context->OMSetRenderTargets(_depthView, _rtViews);
+                Pipe.Profiler.Current.SurfaceBindings++;
             }
         }
 

@@ -32,7 +32,7 @@ namespace Molten.Graphics
 
         InputAssemblerStage _input;
         ShaderComputeStage _compute;
-        PipelineOutput _output;
+        OutputMergerStage _output;
 
         DeviceDX11 _device;
         ID3D11DeviceContext1* _context;
@@ -60,7 +60,7 @@ namespace Molten.Graphics
             _stateStack = new PipeStateStack(this);
             _compute = new ShaderComputeStage(this);
             _input = new InputAssemblerStage(this);
-            _output = new PipelineOutput(this);
+            _output = new OutputMergerStage(this);
 
             _depthStencil = new GraphicsDepthStage(this);
             _blendState = new GraphicsBlendStage(this);
@@ -504,7 +504,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets the pipeline output.</summary>
-        internal PipelineOutput Output { get { return _output; } }
+        internal OutputMergerStage Output { get { return _output; } }
 
         /// <summary>
         /// Gets or sets the output depth surface.

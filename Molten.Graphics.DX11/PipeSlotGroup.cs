@@ -46,7 +46,6 @@ namespace Molten.Graphics
             if(FirstChanged < LastChanged)
             {
                 NumSlotsChanged = LastChanged - FirstChanged;
-                Stage.Pipe.Profiler.Current.Bindings++;
                 return true;
             }
 
