@@ -162,9 +162,9 @@ namespace Molten.Graphics
         /// <summary>Resets a render surface slot.</summary>
         /// <param name="resetMode">The type of reset to perform.</param>
         /// <param name="slot">The ID of the slot to reset.</param>
-        public void UnsetRenderSurface(int slot)
+        public void UnsetRenderSurface(uint slot)
         {
-            _output.ResetRenderSurface(slot);
+            _output.SetRenderSurface(null, slot);
         }
 
         public void UnsetRenderSurfaces()
