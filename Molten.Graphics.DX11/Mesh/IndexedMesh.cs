@@ -76,8 +76,8 @@ namespace Molten.Graphics
             renderer.Device.DrawIndexed(_material, _indexCount, Topology);
         }
 
-        public int MaxIndices { get; }
+        public uint MaxIndices { get; }
 
-        public int IndexCount { get; }
+        public uint IndexCount { get; }
     }
 }

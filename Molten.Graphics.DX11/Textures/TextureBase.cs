@@ -37,8 +37,8 @@ namespace Molten.Graphics
         ID3D11Resource* _native;
         RendererDX11 _renderer;
 
-        internal TextureBase(RendererDX11 renderer, int width, int height, int depth, int mipCount, 
-            int arraySize, int sampleCount, Format format, TextureFlags flags) : base(renderer.Device)
+        internal TextureBase(RendererDX11 renderer, uint width, uint height, uint depth, uint mipCount, 
+            uint arraySize, uint sampleCount, Format format, TextureFlags flags) : base(renderer.Device)
         {
             _renderer = renderer;
             Flags = flags;
@@ -216,26 +216,26 @@ namespace Molten.Graphics
                 pipe.Context->GenerateMips(SRV);
         }
 
-        public void SetData<T>(Rectangle area, T[] data, int bytesPerPixel, int level, int arrayIndex = 0) where T : struct
+        public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : struct
         {
-            int count = data.Length;
-            int texturePitch = area.Width * bytesPerPixel;
-            int pixels = area.Width * area.Height;
+            uint count = (uint)data.Length;
+            uint texturePitch = area.Width * bytesPerPixel;
+            uint pixels = area.Width * area.Height;
 
-            int expectedBytes = pixels * bytesPerPixel;
-            int dataBytes = data.Length * Marshal.SizeOf(typeof(T));
+            uint expectedBytes = pixels * bytesPerPixel;
+            uint dataBytes = (uint)(data.Length * Marshal.SizeOf<T>());
 
             if (pixels != data.Length)
                 throw new Exception($"The provided data does not match the provided area of {area.Width}x{area.Height}. Expected {expectedBytes} bytes. {dataBytes} bytes were provided.");
 
             // Do a bounds check
-            Rectangle texBounds = new Rectangle(0, 0, Width, Height);
+            RectangleUI texBounds = new RectangleUI(0, 0, Width, Height);
             if (!texBounds.Contains(area))
                 throw new Exception("The provided area would go outside of the current texture's bounds.");
 
             TextureSet<T> change = new TextureSet<T>()
             {
-                Stride = Marshal.SizeOf(typeof(T)),
+                Stride = (uint)Marshal.SizeOf(typeof(T)),
                 Count = count,
                 Data = new T[count],
                 Pitch = texturePitch,
@@ -259,31 +259,31 @@ namespace Molten.Graphics
         /// <param name="arrayCount">The number of array slices to copy from the provided <see cref="TextureData"/>.</param>
         /// <param name="destMipIndex">The mip-map index within the current texture to start copying to.</param>
         /// <param name="destArraySlice">The array slice index within the current texture to start copying to.<</param>
-        public void SetData(TextureData data, int srcMipIndex, int srcArraySlice, int mipCount,
-            int arrayCount, int destMipIndex = 0, int destArraySlice = 0)
+        public void SetData(TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount,
+            uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0)
         {
             TextureData.Slice level = null;
 
-            for(int a = 0; a < arrayCount; a++)
+            for(uint a = 0; a < arrayCount; a++)
             {
-                for(int m = 0; m < mipCount; m++)
+                for(uint m = 0; m < mipCount; m++)
                 {
-                    int slice = srcArraySlice + a;
-                    int mip = srcMipIndex + m;
-                    int dataID = TextureData.GetLevelID(data.MipMapLevels, mip, slice);
+                    uint slice = srcArraySlice + a;
+                    uint mip = srcMipIndex + m;
+                    uint dataID = TextureData.GetLevelID(data.MipMapLevels, mip, slice);
                     level = data.Levels[dataID];
 
                     if (level.TotalBytes == 0)
                         continue;
 
-                    int destSlice = destArraySlice + a;
-                    int destMip = destMipIndex + m;
+                    uint destSlice = destArraySlice + a;
+                    uint destMip = destMipIndex + m;
                     SetData(destMip, level.Data, 0, level.TotalBytes, level.Pitch, destSlice);
                 }
             }
         }
 
-        public void SetData(TextureData.Slice data, int mipIndex, int arraySlice)
+        public void SetData(TextureData.Slice data, uint mipIndex, uint arraySlice)
         {
             TextureSet<byte> change = new TextureSet<byte>()
             {
@@ -300,11 +300,11 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        public void SetData<T>(int level, T[] data, int startIndex, int count, int pitch, int arrayIndex) where T : struct
+        public void SetData<T>(uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex) where T : struct
         {
             TextureSet<T> change = new TextureSet<T>()
             {
-                Stride = (int)Marshal.SizeOf(typeof(T)),
+                Stride = (uint)Marshal.SizeOf(typeof(T)),
                 Count = count,
                 Data = new T[count],
                 Pitch = pitch,
@@ -329,7 +329,7 @@ namespace Molten.Graphics
             });
         }
 
-        public void GetData(ITexture stagingTexture, int mipLevel, int arrayIndex, Action<TextureData.Slice> callback)
+        public void GetData(ITexture stagingTexture, uint mipLevel, uint arrayIndex, Action<TextureData.Slice> callback)
         {
             _pendingChanges.Enqueue(new TextureGetSlice()
             {
@@ -378,17 +378,17 @@ namespace Molten.Graphics
                 Width = Width,
             };
 
-            int blockSize = BCHelper.GetBlockSize(DataFormat);
-            int expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
-            int expectedSlicePitch = expectedRowPitch * Height;
+            uint blockSize = BCHelper.GetBlockSize(DataFormat);
+            uint expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
+            uint expectedSlicePitch = expectedRowPitch * Height;
 
             // Iterate over each array slice.
-            for (int a = 0; a < ArraySize; a++)
+            for (uint a = 0; a < ArraySize; a++)
             {
                 // Iterate over all mip-map levels of the array slice.
-                for (int i = 0; i < MipMapCount; i++)
+                for (uint i = 0; i < MipMapCount; i++)
                 {
-                    int subID = (a * MipMapCount) + i;
+                    uint subID = (a * MipMapCount) + i;
                     data.Levels[subID] = GetSliceData(pipe, staging, i, a);
                 }
             }
@@ -402,11 +402,11 @@ namespace Molten.Graphics
         /// <param name="level">The mip-map level.</param>
         /// <param name="arraySlice">The array slice.</param>
         /// <returns></returns>
-        internal unsafe TextureData.Slice GetSliceData(PipeDX11 pipe, TextureBase staging, int level, int arraySlice)
+        internal unsafe TextureData.Slice GetSliceData(PipeDX11 pipe, TextureBase staging, uint level, uint arraySlice)
         {
-            int subID = (arraySlice * MipMapCount) + level;
-            int subWidth = Width >> (int)level;
-            int subHeight = Height >> (int)level;
+            uint subID = (arraySlice * MipMapCount) + level;
+            uint subWidth = Width >> (int)level;
+            uint subHeight = Height >> (int)level;
 
             ID3D11Resource* resToMap = _native;
 
@@ -423,9 +423,9 @@ namespace Molten.Graphics
             // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347
 
 
-            int blockSize = BCHelper.GetBlockSize(DataFormat);
-            int expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
-            int expectedSlicePitch = expectedRowPitch * Height;
+            uint blockSize = BCHelper.GetBlockSize(DataFormat);
+            uint expectedRowPitch = 4 * Width; // 4-bytes per pixel * Width.
+            uint expectedSlicePitch = expectedRowPitch * Height;
 
             if (blockSize > 0)
                 BCHelper.GetBCLevelSizeAndPitch(subWidth, subHeight, blockSize, out expectedSlicePitch, out expectedRowPitch);
@@ -436,7 +436,7 @@ namespace Molten.Graphics
                 byte* ptrSlice = ptrFixedSlice;
                 byte* ptrDatabox = (byte*)databox.DataPointer.ToPointer();
 
-                int p = 0;
+                uint p = 0;
                 while (p < databox.SlicePitch)
                 {
                     Buffer.MemoryCopy(ptrDatabox, ptrSlice, expectedSlicePitch, expectedRowPitch);
@@ -459,7 +459,7 @@ namespace Molten.Graphics
             return slice;
         }
 
-        internal void SetSizeInternal(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
+        internal void SetSizeInternal(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {
             // Avoid resizing/recreation if nothing has actually changed.
             if (Width == newWidth && 
@@ -483,8 +483,8 @@ namespace Molten.Graphics
         }
 
 
-        protected virtual void UpdateDescription(int newWidth, int newHeight, 
-            int newDepth, int newMipMapCount, int newArraySize, Format newFormat) { }
+        protected virtual void UpdateDescription(uint newWidth, uint newHeight, 
+            uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat) { }
 
         protected abstract ID3D11Resource* CreateResource(bool resize);
 
@@ -493,12 +493,12 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        public void Resize(int newWidth)
+        public void Resize(uint newWidth)
         {
             Resize(newWidth, MipMapCount, DxgiFormat.FromApi());
         }
 
-        public void Resize(int newWidth, int newMipMapCount, GraphicsFormat newFormat)
+        public void Resize(uint newWidth, uint newMipMapCount, GraphicsFormat newFormat)
         {
             QueueChange(new TextureResize()
             {
@@ -533,7 +533,7 @@ namespace Molten.Graphics
             _renderer.PushTask(applyTask);
         }
 
-        public void CopyTo(int sourceLevel, int sourceSlice, ITexture destination, int destLevel, int destSlice)
+        public void CopyTo(uint sourceLevel, uint sourceSlice, ITexture destination, uint destLevel, uint destSlice)
         {
             TextureBase destTexture = destination as TextureBase;
 
@@ -612,24 +612,24 @@ namespace Molten.Graphics
         public bool IsBlockCompressed { get; protected set; }
 
         /// <summary>Gets the width of the texture.</summary>
-        public int Width { get; protected set; }
+        public uint Width { get; protected set; }
 
         /// <summary>Gets the height of the texture.</summary>
-        public int Height { get; protected set; }
+        public uint Height { get; protected set; }
 
         /// <summary>Gets the depth of the texture. For a 3D texture this is the number of slices.</summary>
-        public int Depth { get; protected set; }
+        public uint Depth { get; protected set; }
 
         /// <summary>Gets the number of mip map levels in the texture.</summary>
-        public int MipMapCount { get; protected set; }
+        public uint MipMapCount { get; protected set; }
 
         /// <summary>Gets the number of array slices in the texture. For a cube-map, this value will a multiple of 6. For example, a cube map with 2 array elements will have 12 array slices.</summary>
-        public int ArraySize { get; protected set; }
+        public uint ArraySize { get; protected set; }
 
         /// <summary>
         /// Gets the number of samples used when sampling the texture. Anything greater than 1 is considered as multi-sampled. 
         /// </summary>
-        public int SampleCount { get; protected set; }
+        public uint SampleCount { get; protected set; }
 
         /// <summary>
         /// Gets whether or not the texture is multisampled. This is true if <see cref="SampleCount"/> is greater than 1.

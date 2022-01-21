@@ -29,13 +29,13 @@ namespace Molten.Graphics
 
         internal Texture2DDX11(
             RendererDX11 renderer,
-            int width,
-            int height,
+            uint width,
+            uint height,
             Format format = Format.FormatR8G8B8A8Unorm,
-            int mipCount = 1,
-            int arraySize = 1,
+            uint mipCount = 1,
+            uint arraySize = 1,
             TextureFlags flags = TextureFlags.None,
-            int sampleCount = 1)
+            uint sampleCount = 1)
             : base(renderer, width, height, 1, mipCount, arraySize, sampleCount, format, flags)
         {
             _description = new Texture2DDesc()
@@ -121,8 +121,8 @@ namespace Molten.Graphics
             };
         }
 
-        protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, 
-            int newMipMapCount, int newArraySize, Format newFormat)
+        protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, 
+            uint newMipMapCount, uint newArraySize, Format newFormat)
         {
             _description.ArraySize = (uint)newArraySize;
             _description.Width = (uint)newWidth;
@@ -131,31 +131,31 @@ namespace Molten.Graphics
             _description.Format = newFormat;
         }
 
-        public void Resize(int newWidth, int newHeight)
+        public void Resize(uint newWidth, uint newHeight)
         {
             QueueChange(new TextureResize()
             {
                 NewWidth = newWidth,
                 NewHeight = newHeight,
                 NewMipMapCount = MipMapCount,
-                NewArraySize = (int)_description.ArraySize,
+                NewArraySize = _description.ArraySize,
                 NewFormat = DxgiFormat
             });
         }
 
-        public void Resize(int newWidth, int newHeight, int newMipMapCount)
+        public void Resize(uint newWidth, uint newHeight, uint newMipMapCount)
         {
             QueueChange(new TextureResize()
             {
                 NewWidth = newWidth,
                 NewHeight = newHeight,
                 NewMipMapCount = newMipMapCount,
-                NewArraySize = (int)_description.ArraySize,
+                NewArraySize = _description.ArraySize,
                 NewFormat = DxgiFormat
             });
         }
 
-        public void Resize(int newWidth, int newHeight, int newMipMapCount, int newArraySize, GraphicsFormat newFormat)
+        public void Resize(uint newWidth, uint newHeight, uint newMipMapCount, uint newArraySize, GraphicsFormat newFormat)
         {
             QueueChange(new TextureResize()
             {

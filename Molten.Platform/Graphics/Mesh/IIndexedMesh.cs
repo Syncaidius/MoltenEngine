@@ -24,9 +24,9 @@
         void SetIndices<I>(I[] data, uint startIndex, uint count) where I : struct;
 
         /// <summary>Gets the maximum number of indices the mesh can contain.</summary>
-        int MaxIndices { get; }
+        uint MaxIndices { get; }
 
         /// <summary>Gets the number of indices currently stored in the mesh.</summary>
-        int IndexCount { get; }
+        uint IndexCount { get; }
     }
 }

@@ -107,6 +107,7 @@ namespace Molten.Graphics
                 srv.Recreate(this);
             }
 
+            // See UAV notes: https://docs.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-resources-intro#raw-views-of-buffers
             if (HasFlags(BindFlag.BindUnorderedAccess))
             {
                 UnorderedAccessViewDesc uavDesc = new UnorderedAccessViewDesc()

@@ -4,9 +4,9 @@
     {
         void SetBones<T>(T[] data) where T : struct;
 
-        void SetBones<T>(T[] data, int count) where T : struct;
+        void SetBones<T>(T[] data, uint count) where T : struct;
 
-        void SetBones<T>(T[] data, int startIndex, int count) where T : struct;
+        void SetBones<T>(T[] data, uint startIndex, uint count) where T : struct;
 
         ///// <summary>Gets or sets a bone.<value>
         //IMeshBone this[string boneName] { get; set; }

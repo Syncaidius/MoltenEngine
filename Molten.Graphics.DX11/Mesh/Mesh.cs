@@ -11,12 +11,13 @@ namespace Molten.Graphics
     {
         // private protected is new in C# 7.2. See: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/private-protected
         private protected RendererDX11 _renderer;
-        private protected BufferSegment _vb; 
+        private protected BufferSegment _vb;
         private protected Material _material;
-        private protected int _vertexCount;
+        private protected uint _vertexCount;
         private protected bool _isDynamic;
 
-        internal Mesh(RendererDX11 renderer, int maxVertices, VertexTopology topology, bool dynamic) : base(renderer.Device)
+        internal Mesh(RendererDX11 renderer, uint maxVertices, VertexTopology topology, bool dynamic) :
+            base(renderer.Device)
         {
             _renderer = renderer;
             MaxVertices = maxVertices;
@@ -30,18 +31,18 @@ namespace Molten.Graphics
 
         public void SetVertices(T[] data)
         {
-            SetVertices(data, 0, (int)data.Length);
+            SetVertices(data, 0, (uint)data.Length);
         }
 
-        public void SetVertices(T[] data, int count)
+        public void SetVertices(T[] data, uint count)
         {
             SetVertices(data, 0, count);
         }
 
-        public void SetVertices(T[] data, int startIndex, int count)
+        public void SetVertices(T[] data, uint startIndex, uint count)
         {
             _vertexCount = count;
-            _vb.SetData(_renderer.Device, data, (uint)startIndex, (uint)count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
+            _vb.SetData(_renderer.Device, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
         }
 
         internal virtual void ApplyBuffers(PipeDX11 pipe)
@@ -73,7 +74,7 @@ namespace Molten.Graphics
             _vb.Release();
         }
 
-        public int MaxVertices { get; }
+        public uint MaxVertices { get; }
 
         public VertexTopology Topology { get; }
 
@@ -89,7 +90,7 @@ namespace Molten.Graphics
             set => Material = value as Material;
         }
 
-        public int VertexCount => _vertexCount;
+        public uint VertexCount => _vertexCount;
 
         public bool IsDynamic => _isDynamic;
 

@@ -17,18 +17,18 @@ namespace Molten.Graphics
             _resources = new IShaderResource[0];
         }
 
-        public void SetResource(IShaderResource resource, int slot)
+        public void SetResource(IShaderResource resource, uint slot)
         {
             if (slot >= Device.Features.MaxInputResourceSlots)
                 throw new IndexOutOfRangeException("The maximum slot number must be less than the maximum supported by the graphics device.");
 
             if (slot >= _resources.Length)
-                Array.Resize(ref _resources, slot + 1);
+                EngineUtil.ArrayResize(ref _resources, slot + 1U);
 
             _resources[slot] = resource;
         }
 
-        public IShaderResource GetResource(int slot)
+        public IShaderResource GetResource(uint slot)
         {
             if (slot >= _resources.Length)
                 return null;
@@ -38,13 +38,13 @@ namespace Molten.Graphics
 
         protected void ApplyResources(Material material)
         {
-            int resCount = Math.Min(_resources.Length, material.Resources.Length);
+            uint resCount = (uint)Math.Min(_resources.Length, material.Resources.Length);
 
             // Set as many custom resources from the renderable as possible, or use the material's default when needed.
-            for (int i = 0; i < _resources.Length; i++)
+            for (uint i = 0; i < _resources.Length; i++)
                 material.Resources[i].Value = _resources[i] ?? material.DefaultResources[i];
 
-            for (int i = _resources.Length; i < material.Resources.Length; i++)
+            for (uint i = (uint)_resources.Length; i < material.Resources.Length; i++)
                 material.Resources[i].Value = material.DefaultResources[i];
         }
 

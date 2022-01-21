@@ -20,10 +20,10 @@ namespace Molten.Graphics
 
         internal Texture1DDX11(
             RendererDX11 renderer, 
-            int width, 
+            uint width, 
             Format format = Format.FormatR8G8B8A8Unorm, 
-            int mipCount = 1, 
-            int arraySize = 1,
+            uint mipCount = 1, 
+            uint arraySize = 1,
             TextureFlags flags = TextureFlags.None)
             : base(renderer, width, 1, 1, mipCount, arraySize, 1, format, flags)
         {
@@ -74,7 +74,7 @@ namespace Molten.Graphics
             return (ID3D11Resource*)NativeTexture;
         }
 
-        protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
+        protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {
             _description.Width = (uint)newWidth;
             _description.ArraySize = (uint)newArraySize;

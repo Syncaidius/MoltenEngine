@@ -10,23 +10,23 @@ namespace Molten.Graphics
 {
     internal class TextureSet<T> : ITextureChange where T: struct
     {
-        public int MipLevel;
+        public uint MipLevel;
         public T[] Data;
-        public int StartIndex;
-        public int Pitch;
-        public int ArrayIndex;
+        public uint StartIndex;
+        public uint Pitch;
+        public uint ArrayIndex;
 
-        public int Count;
-        public int Stride;
-        public Rectangle? Area;
+        public uint Count;
+        public uint Stride;
+        public RectangleUI? Area;
 
         public unsafe void Process(PipeDX11 pipe, TextureBase texture)
         {
             //C alculate size of a single array slice
-            int arraySliceBytes = 0;
-            int blockSize = 8; // default block size
-            int levelWidth = texture.Width;
-            int levelHeight = texture.Height;
+            uint arraySliceBytes = 0;
+            uint blockSize = 8; // default block size
+            uint levelWidth = texture.Width;
+            uint levelHeight = texture.Height;
 
             if (texture.IsBlockCompressed)
             {
@@ -36,7 +36,7 @@ namespace Molten.Graphics
                 blockSize = BCHelper.GetBlockSize(texture.DataFormat);
 
                 // Collect total level size.
-                for (int i = 0; i < texture.MipMapCount; i++)
+                for (uint i = 0; i < texture.MipMapCount; i++)
                 {
                     arraySliceBytes += BCHelper.GetBCLevelSize(levelWidth, levelHeight, blockSize);
                     levelWidth /= 2;
@@ -46,7 +46,7 @@ namespace Molten.Graphics
             else
             {
                 // TODO: This is invalid if the format isn't 32bpp/4-bytes-per-pixel/RGBA.
-                for (int i = 0; i < texture.MipMapCount; i++)
+                for (uint i = 0; i < texture.MipMapCount; i++)
                 {
                     arraySliceBytes += levelWidth * levelHeight * 4; //4 color channels. 1 byte each. Width * height * colorByteSize.
                     levelWidth /= 2;
@@ -57,11 +57,11 @@ namespace Molten.Graphics
             //======DATA TRANSFER===========
             EngineUtil.PinObject(Data, (ptr) =>
             {
-                int startBytes = StartIndex * Stride;
+                uint startBytes = StartIndex * Stride;
                 byte* ptrData = (byte*)ptr.ToPointer();
                 ptrData += startBytes;
 
-                int subLevel = ((int)texture.MipMapCount * ArrayIndex) + MipLevel;
+                uint subLevel = (texture.MipMapCount * ArrayIndex) + MipLevel;
 
                 if (texture.HasFlags(TextureFlags.Dynamic))
                 {
@@ -77,12 +77,12 @@ namespace Molten.Graphics
                     // Are we constrained to an area of the texture?
                     if (Area != null)
                     {
-                        Rectangle rect = Area.Value;
-                        int areaPitch = Stride * rect.Width;
-                        int aX = rect.X;
-                        int aY = rect.Y;
+                        RectangleUI rect = Area.Value;
+                        uint areaPitch = Stride * rect.Width;
+                        uint aX = rect.X;
+                        uint aY = rect.Y;
 
-                        for (int y = aY, end = rect.Bottom; y < end; y++)
+                        for (uint y = aY, end = rect.Bottom; y < end; y++)
                         {
                             stream.Position = (Pitch * aY) + (aX * Stride);
                             stream.WriteRange(ptrData, areaPitch);
@@ -104,9 +104,9 @@ namespace Molten.Graphics
                     if (texture.IsBlockCompressed)
                     {
                         // Calculate mip-map level size.
-                        levelWidth = (int)texture.Width >> (int)MipLevel;
-                        levelHeight = (int)texture.Height >> (int)MipLevel;
-                        int bcPitch = BCHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
+                        levelWidth = texture.Width >> (int)MipLevel;
+                        levelHeight = texture.Height >> (int)MipLevel;
+                        uint bcPitch = BCHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
                         DataBox box = new DataBox(dataPtr, bcPitch, arraySliceBytes);
                         pipe.Context.UpdateSubresource1(box, texture.UnderlyingResource, subLevel);
                     }
@@ -114,8 +114,8 @@ namespace Molten.Graphics
                     {
                         if (Area != null)
                         {
-                            Rectangle rect = Area.Value;
-                            int areaPitch = Stride * rect.Width;
+                            RectangleUI rect = Area.Value;
+                            uint areaPitch = Stride * rect.Width;
                             DataBox box = new DataBox(dataPtr, areaPitch, Data.Length);
                             ResourceRegion region = new ResourceRegion();
                             region.Top = rect.Y;
@@ -128,10 +128,10 @@ namespace Molten.Graphics
                         }
                         else
                         {
-                            int x = 0;
-                            int y = 0;
-                            int w = Math.Max((int)texture.Width >> (int)MipLevel, 1);
-                            int h = Math.Max((int)texture.Height >> (int)MipLevel, 1);
+                            uint x = 0;
+                            uint y = 0;
+                            uint w = Math.Max(texture.Width >> (int)MipLevel, 1);
+                            uint h = Math.Max(texture.Height >> (int)MipLevel, 1);
                             DataBox box = new DataBox(dataPtr, Pitch, arraySliceBytes);
                             ResourceRegion region = new ResourceRegion();
                             region.Top = y;

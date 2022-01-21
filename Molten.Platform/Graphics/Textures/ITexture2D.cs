@@ -2,7 +2,7 @@
 {
     public interface ITexture2D : ITexture
     {
-        void Resize(int newWidth, int newHeight, int newMipMapCount);
+        void Resize(uint newWidth, uint newHeight, uint newMipMapCount);
 
         /// <summary>
         /// Gets a new instance of the texture's 2D properties.
@@ -18,16 +18,16 @@
         /// <param name="newMipMapCount">The new mip-map level count.</param>
         /// <param name="newArraySize">The new array size. Anything greater than 1 will convert the texture into a texture array. Texture arrays can be treated as standard 2D texture.</param>
         /// <param name="newFormat">The new graphics format.</param>
-        void Resize(int newWidth, int newHeight, int newMipMapCount, int newArraySize, GraphicsFormat newFormat);
+        void Resize(uint newWidth, uint newHeight, uint newMipMapCount, uint newArraySize, GraphicsFormat newFormat);
 
         /// <summary>
         /// Changes the current texture's width and height.
         /// </summary>
         /// <param name="newWidth">The new width.</param>
         /// <param name="newHeight">The new height.</param>
-        void Resize(int newWidth, int newHeight);
+        void Resize(uint newWidth, uint newHeight);
 
         /// <summary>Gets the height of the texture.</summary>
-        int Height { get; }
+        uint Height { get; }
     }
 }

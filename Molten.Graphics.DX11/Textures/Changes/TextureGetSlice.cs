@@ -12,9 +12,9 @@ namespace Molten.Graphics
 
         public Action<TextureData.Slice> Callback;
 
-        public int MipMapLevel;
+        public uint MipMapLevel;
 
-        public int ArrayIndex;
+        public uint ArrayIndex;
 
         public void Process(PipeDX11 pipe, TextureBase texture)
         {

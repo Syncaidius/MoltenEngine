@@ -92,7 +92,7 @@ namespace Molten.Graphics
                         break;
 
                     case "maxanisotropy": // Max anisotrophy
-                        if (int.TryParse(child.InnerText, out int maxAnisotrophy))
+                        if (uint.TryParse(child.InnerText, out uint maxAnisotrophy))
                             sampler.MaxAnisotropy = maxAnisotrophy;
                         else
                             InvalidValueMessage(context, child, "max anisotrophy", "integer");

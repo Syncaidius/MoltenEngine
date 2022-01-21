@@ -17,9 +17,9 @@ namespace Molten.Graphics
         public event TextureHandler OnPreResize;
         public event TextureHandler OnPostResize;
 
-        internal TextureCubeDX11(RendererDX11 renderer, int width,
-            int height, Format format = Format.FormatR8G8B8A8Unorm, int mipCount = 1, 
-            int cubeCount = 1, TextureFlags flags = TextureFlags.None)
+        internal TextureCubeDX11(RendererDX11 renderer, uint width,
+            uint height, Format format = Format.FormatR8G8B8A8Unorm, uint mipCount = 1, 
+            uint cubeCount = 1, TextureFlags flags = TextureFlags.None)
             : base(renderer, width, height, 1, mipCount, 6, 1, format, flags)
         {
             CubeCount = cubeCount;
@@ -81,7 +81,7 @@ namespace Molten.Graphics
             return (ID3D11Resource*)NativeTexture;
         }
 
-        protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
+        protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {
             _description.Width = (uint)newWidth;
             _description.Height = (uint)newHeight;
@@ -89,7 +89,7 @@ namespace Molten.Graphics
             _description.Format = newFormat;
         }
 
-        public void Resize(int newWidth, int newHeight, int newMipMapCount)
+        public void Resize(uint newWidth, uint newHeight, uint newMipMapCount)
         {
             QueueChange(new TextureResize()
             {
@@ -99,7 +99,7 @@ namespace Molten.Graphics
             });
         }
 
-        public void Resize(int newWidth, int newMipMapCount)
+        public void Resize(uint newWidth, uint newMipMapCount)
         {
             QueueChange(new TextureResize()
             {
@@ -113,6 +113,6 @@ namespace Molten.Graphics
         internal ref Texture2DDesc Description => ref _description;
 
         /// <summary>Gets the number of cube maps stored in the texture. This is greater than 1 if the texture is a cube-map array.</summary>
-        public int CubeCount { get; private set; }
+        public uint CubeCount { get; private set; }
     }
 }

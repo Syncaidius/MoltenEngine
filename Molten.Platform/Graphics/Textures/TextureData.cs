@@ -10,11 +10,11 @@ namespace Molten.Graphics
         {
             public byte[] Data;
 
-            public int Pitch;
-            public int TotalBytes;
+            public uint Pitch;
+            public uint TotalBytes;
 
-            public int Width;
-            public int Height;
+            public uint Width;
+            public uint Height;
 
             public Slice Clone()
             {
@@ -33,14 +33,14 @@ namespace Molten.Graphics
             }
         }
 
-        public int Width;
-        public int Height;
-        public int MipMapLevels;
-        public int ArraySize = 1;
-        public int SampleCount;
+        public uint Width;
+        public uint Height;
+        public uint MipMapLevels;
+        public uint ArraySize = 1;
+        public uint SampleCount;
 
         /// <summary>The most detailed mip map level. by default, this is 0.</summary>
-        public int HighestMipMap = 0;
+        public uint HighestMipMap = 0;
 
         public Slice[] Levels;
         public GraphicsFormat Format;
@@ -72,7 +72,7 @@ namespace Molten.Graphics
                 foreach (Slice s in Levels)
                 {
                     byte temp = 0;
-                    for (int i = 0; i < s.Data.Length; i += 4)
+                    for (uint i = 0; i < s.Data.Length; i += 4)
                     {
                         temp = s.Data[i];
                         s.Data[i] = s.Data[i + 2];
@@ -82,7 +82,7 @@ namespace Molten.Graphics
             }
         }
 
-        public static int GetLevelID(int mipMapCount, int targetMip, int targetArraySlice)
+        public static uint GetLevelID(uint mipMapCount, uint targetMip, uint targetArraySlice)
         {
             return (targetArraySlice * mipMapCount) + targetMip;
         }
@@ -111,7 +111,7 @@ namespace Molten.Graphics
             if (Levels.Length != otherData.Levels.Length)
                 Array.Resize(ref Levels, otherData.Levels.Length);
 
-            for (int i = 0; i < otherData.Levels.Length; i++)
+            for (uint i = 0; i < otherData.Levels.Length; i++)
                 Levels[i] = otherData.Levels[i].Clone();
         }
 
@@ -119,25 +119,25 @@ namespace Molten.Graphics
         /// This will automatically increase the <see cref="ArraySize"/> on the current <see cref="TextureData"/> instance if needed.</summary>
         /// <param name="otherData">The other data to be appended.</param>
         /// <param name="arraySlice">The array slice at which to start copying the other data to.</param>
-        public void Set(TextureData otherData, int arraySlice)
+        public void Set(TextureData otherData, uint arraySlice)
         {
             if (otherData.Width != Width || otherData.Height != Height || otherData.MipMapLevels != MipMapLevels)
                 throw new Exception("Texture data must match the dimensions (i.e. width, height, depth, mip-map levels) of the destination data.");
 
-            int start = MipMapLevels * arraySlice;
-            int end = start + (MipMapLevels * otherData.ArraySize);
+            uint start = MipMapLevels * arraySlice;
+            uint end = start + (MipMapLevels * otherData.ArraySize);
             if (Levels == null || end >= Levels.Length)
             {
                 EngineUtil.ArrayResize(ref Levels, end);
                 ArraySize = Math.Max(ArraySize, arraySlice + otherData.ArraySize);
             }
 
-            for (int i = 0; i < otherData.ArraySize; i++)
+            for (uint i = 0; i < otherData.ArraySize; i++)
             {
-                for (int j = 0; j < MipMapLevels; j++)
+                for (uint j = 0; j < MipMapLevels; j++)
                 {
-                    int sourceID = (MipMapLevels * i) + j;
-                    int destID = ((arraySlice + i) * MipMapLevels) + j;
+                    uint sourceID = (MipMapLevels * i) + j;
+                    uint destID = ((arraySlice + i) * MipMapLevels) + j;
                     Levels[destID] = otherData.Levels[sourceID].Clone();
                 }
             }
@@ -163,7 +163,7 @@ namespace Molten.Graphics
             };
 
             // Copy mip-map level data.
-            for (int i = 0; i < Levels.Length; i++)
+            for (uint i = 0; i < Levels.Length; i++)
                 result.Levels[i] = Levels[i].Clone();
 
             return result;

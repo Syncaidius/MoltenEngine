@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.Direct3D11;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -72,7 +73,7 @@ namespace Molten.Graphics
                         break;
 
                     case "comparison":
-                        if (Enum.TryParse(child.InnerText, true, out Comparison comparison))
+                        if (Enum.TryParse(child.InnerText, true, out ComparisonFunc comparison))
                             state.DepthComparison = comparison;
                         else
                             InvalidEnumMessage<DepthWriteMask>(context, child, "depth comparison");
@@ -130,31 +131,31 @@ namespace Molten.Graphics
                 string nodeName = child.Name.ToLower();
                 switch (nodeName) {
                     case "comparison":
-                        if (Enum.TryParse(child.InnerText, true, out Comparison comparison))
+                        if (Enum.TryParse(child.InnerText, true, out ComparisonFunc comparison))
                             face.Comparison = comparison;
                         else
-                            InvalidEnumMessage<Comparison>(context, child, $"{faceNode.Name}-face comparison");
+                            InvalidEnumMessage<ComparisonFunc>(context, child, $"{faceNode.Name}-face comparison");
                         break;
 
                     case "stencilpass":
-                        if (Enum.TryParse(child.InnerText, true, out StencilOperation stencilpassOp))
+                        if (Enum.TryParse(child.InnerText, true, out StencilOp stencilpassOp))
                             face.PassOperation = stencilpassOp;
                         else
-                            InvalidEnumMessage<StencilOperation>(context, child, $"{faceNode.Name}-face stencil pass operation");
+                            InvalidEnumMessage<StencilOp>(context, child, $"{faceNode.Name}-face stencil pass operation");
                         break;
 
                     case "stencilfail":
-                        if (Enum.TryParse(child.InnerText, true, out StencilOperation stencilFailOp))
+                        if (Enum.TryParse(child.InnerText, true, out StencilOp stencilFailOp))
                             face.FailOperation = stencilFailOp;
                         else
-                            InvalidEnumMessage<StencilOperation>(context, child, $"{faceNode.Name}-face stencil fail operation");
+                            InvalidEnumMessage<StencilOp>(context, child, $"{faceNode.Name}-face stencil fail operation");
                         break;
 
                     case "fail":
-                        if (Enum.TryParse(child.InnerText, true, out StencilOperation failOp))
+                        if (Enum.TryParse(child.InnerText, true, out StencilOp failOp))
                             face.DepthFailOperation = failOp;
                         else
-                            InvalidEnumMessage<StencilOperation>(context, child, $"{faceNode.Name}-face depth fail operation");
+                            InvalidEnumMessage<StencilOp>(context, child, $"{faceNode.Name}-face depth fail operation");
                         break;
 
                     default:

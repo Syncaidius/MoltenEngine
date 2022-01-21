@@ -33,10 +33,10 @@ namespace Molten.Graphics
         }
 
         protected SpriteItem[] Sprites;
-        protected int NextID;
+        protected uint NextID;
         Color[] _singleColorList;
 
-        public SpriteBatcher(int initialCapacity)
+        public SpriteBatcher(uint initialCapacity)
         {
             Sprites = new SpriteItem[initialCapacity];
             _singleColorList = new Color[1];
@@ -406,7 +406,7 @@ namespace Molten.Graphics
                 int next = 1;
                 Color lastCol = pointColors[pointColors.Count - 1];
                 Color4 lastCol4 = lastCol.ToColor4();
-                int spriteID = NextID;
+                uint spriteID = NextID;
 
                 for (int i = startIndex; i < last; i++)
                 {

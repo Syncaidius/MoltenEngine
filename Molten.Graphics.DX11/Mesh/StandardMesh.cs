@@ -35,7 +35,7 @@ namespace Molten.Graphics
             mat.Object.Wvp.Value = Matrix4F.Multiply(data.RenderTransform, camera.ViewProjection);
 
             ApplyResources(mat);
-            renderer.Device.Draw(mat, _vertexCount, Topology);
+            renderer.Device.Draw(mat, VertexCount, Topology);
         }
     }
 }

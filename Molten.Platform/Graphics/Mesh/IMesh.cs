@@ -10,10 +10,10 @@ namespace Molten.Graphics
         bool IsDynamic { get; }
 
         /// <summary>Gets the maximum number of vertices the mesh can contain.</summary>
-        int MaxVertices { get; }
+        uint MaxVertices { get; }
 
         /// <summary>Gets the number of vertices stored in the mesh.</summary>
-        int VertexCount { get; }
+        uint VertexCount { get; }
 
         /// <summary>Gets the topology/structure of the mesh's data (e.g. line, triangles list/strip, etc).</summary>
         VertexTopology Topology { get; }
@@ -24,12 +24,12 @@ namespace Molten.Graphics
         /// <summary>Applies a shader resource to the mesh at the specified slot.</summary>
         /// <param name="res">The resource.</param>
         /// <param name="slot">The slot ID.</param>
-        void SetResource(IShaderResource res, int slot);
+        void SetResource(IShaderResource res, uint slot);
 
         /// <summary>Gets the shader resource applied to the mesh at the specified slot.</summary>
         /// <param name="slot">The slot ID.</param>
         /// <returns>An <see cref="IShaderResource"/> that was applied at the specified slot.</returns>
-        IShaderResource GetResource(int slot);
+        IShaderResource GetResource(uint slot);
     }
 
     /// <summary>An mesh containing un-indexed vertex data.</summary>
@@ -45,13 +45,13 @@ namespace Molten.Graphics
         /// <typeparam name="{T}">The type of data to set.</typeparam>
         /// <param name="count">The number of elements in the dat array to copy.</param>
         /// <param name="data">The data to be copied.</param>
-        void SetVertices(T[] data, int count);
+        void SetVertices(T[] data, uint count);
 
         /// <summary>Copies the provided vertex data to the current mesh.</summary>
         /// <typeparam name="{T}">The type of data to set.</typeparam>
         /// <param name="count">The number of elements in the dat array to copy.</param>
         /// <param name="data">The data to be copied.</param>
-        void SetVertices(T[] data, int offset, int count);
+        void SetVertices(T[] data, uint offset, uint count);
 
         /// <summary>
         /// Gets or sets the emissive power of the mesh, if it uses emissive mapping.
