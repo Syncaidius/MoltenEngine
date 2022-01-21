@@ -54,12 +54,12 @@ namespace Molten.Graphics
 
         internal void SetVertexFormat<T>() where T: struct, IVertexType
         {
-            VertexFormat = Buffer.Device.VertexBuilder.GetFormat<T>();
+            VertexFormat = Buffer.Device.VertexFormatCache.Get<T>();
         }
 
         internal void SetVertexFormat(Type vertexType)
         {
-            VertexFormat = Buffer.Device.VertexBuilder.GetFormat(vertexType);
+            VertexFormat = Buffer.Device.VertexFormatCache.Get(vertexType);
         }
 
         internal void SetIndexFormat(IndexBufferFormat format)
@@ -222,6 +222,8 @@ namespace Molten.Graphics
         /// <summary>Releases the buffer space reserved by the segment.</summary>
         internal void Release()
         {
+            UAV.Release();
+            SRV.Release();
             Buffer.Deallocate(this);
         }
 
@@ -239,8 +241,8 @@ namespace Molten.Graphics
             VertexFormat = null;
             SetIndexFormat(IndexBufferFormat.Unsigned32Bit);
 
-            SilkUtil.ReleasePtr(ref UAV);
-            SilkUtil.ReleasePtr(ref SRV);
+            UAV.Release();
+            SRV.Release();
         }
 
         /// <summary>Sets the next segment to the one specified and also sets it's previous to the current segment.</summary>

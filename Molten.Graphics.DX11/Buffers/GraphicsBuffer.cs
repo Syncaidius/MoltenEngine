@@ -383,14 +383,12 @@ namespace Molten.Graphics
             }
         }
 
-        private void CreateResources(uint stride, uint byteOffset, uint elementCount,
-            ref ID3D11ShaderResourceView* srv, ref ID3D11UnorderedAccessView* uav)
+        protected virtual void CreateResources(uint stride, uint byteOffset, uint elementCount,
+            SRView srv, UAView uav)
         {
             if (HasFlags(BindFlag.BindShaderResource))
             {
-                SilkUtil.ReleasePtr(ref srv);
-
-                ShaderResourceViewDesc srvDesc = new ShaderResourceViewDesc()
+                srv.Desc = new ShaderResourceViewDesc()
                 {
                     Buffer = new BufferSrv()
                     {
@@ -401,13 +399,11 @@ namespace Molten.Graphics
                     Format = Format.FormatUnknown,
                 };
 
-                Device.Native->CreateShaderResourceView(this, ref srvDesc, ref srv);
+                srv.Recreate(this);
             }
 
             if (HasFlags(BindFlag.BindUnorderedAccess))
             {
-                SilkUtil.ReleasePtr(ref uav);
-
                 UnorderedAccessViewDesc uavDesc = new UnorderedAccessViewDesc()
                 {
                     Format = Format.FormatUnknown,
@@ -419,18 +415,18 @@ namespace Molten.Graphics
                         Flags = 0,
                     }
                 };
-                Device.Native->CreateUnorderedAccessView(this, ref uavDesc, ref uav);
+                UAV.Recreate(this);
             }
         }
 
-        internal virtual void CreateResources(uint stride, uint byteOffset, uint elementCount)
+        private void CreateResources(uint stride, uint byteOffset, uint elementCount)
         {
-            CreateResources(stride, byteOffset, elementCount, ref SRV, ref UAV);
+            CreateResources(stride, byteOffset, elementCount, SRV, UAV);
         }
 
         private void CreateResources(BufferSegment segment)
         {
-            CreateResources(segment.Stride, segment.ByteOffset, segment.ElementCount, ref segment.SRV, ref segment.UAV);
+            CreateResources(segment.Stride, segment.ByteOffset, segment.ElementCount, segment.SRV, segment.UAV);
         }
 
         internal BufferSegment Allocate<T>(uint count) where T : struct

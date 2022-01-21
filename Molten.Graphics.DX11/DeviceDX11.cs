@@ -22,10 +22,7 @@ namespace Molten.Graphics
         D3D11 _api;
         DisplayAdapterDXGI _adapter;
 
-        PipeDX11[] _pipes;
-        int[] _freePipes;
-        int _freePipeCount;
-        int _pipeCount;
+        List<PipeDX11> _pipes;
 
         Logger _log;
         DisplayManagerDXGI _displayManager;
@@ -47,8 +44,8 @@ namespace Molten.Graphics
             _log = log;
             _displayManager = manager;
             _adapter = _displayManager.SelectedAdapter as DisplayAdapterDXGI;
-            _pipes = new PipeDX11[0];
-            _freePipes = new int[0];
+            _pipes = new List<PipeDX11>();
+            Pipes = _pipes.AsReadOnly();
             VertexFormatCache = new TypedObjectCache<IVertexType, VertexFormat>(VertexFormat.FromType);
             _settings = settings;
             _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
@@ -84,7 +81,7 @@ namespace Molten.Graphics
             _depthBank = new DepthStateBank(this);
             _samplerBank = new SamplerBank(this);
 
-            Initialize(_log, this, ImmediateContext, 0);
+            Initialize(_log, this, ImmediateContext);
         }
 
         internal BufferSegment GetBufferSegment()
@@ -129,18 +126,9 @@ namespace Molten.Graphics
         /// <returns></returns>
         internal PipeDX11 GetDeferredPipe()
         {
-            int id = 0;
-            if (_freePipeCount > 0)
-                id = _freePipes[--_freePipeCount];
-            else
-            {
-                id = _pipeCount++;
-                Array.Resize(ref _pipes, _pipes.Length + 1);
-            }
-
             PipeDX11 pipe = new PipeDX11();
-            pipe.Initialize(_log, this, ImmediateContext, id);
-            _pipes[id] = pipe;
+            pipe.Initialize(_log, this, ImmediateContext);
+            _pipes.Add(pipe);
             return pipe;
         }
 
@@ -155,12 +143,7 @@ namespace Molten.Graphics
             if (!pipe.IsDisposed)
                 pipe.Dispose();
 
-            int freeID = _freePipeCount++;
-            if (_freePipeCount >= _freePipes.Length)
-                Array.Resize(ref _freePipes, _freePipes.Length + 1);
-
-            _freePipes[freeID] = pipe.ID;
-            _pipes[pipe.ID] = null;
+            _pipes.Remove(pipe);
         }
 
         internal void SubmitContext(PipeDX11 context)
@@ -175,8 +158,8 @@ namespace Molten.Graphics
         /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
-            for (int i = 0; i < _pipes.Length; i++)
-                _pipes[i]?.Dispose();
+            for (int i = _pipes.Count - 1; i >= 0; i--)
+                RemoveDeferredPipe(_pipes[i]);
 
             // TODO dispose of all bound IGraphicsResource
             VertexFormatCache.Dispose();
@@ -195,7 +178,7 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-        internal PipeDX11[] ActivePipes => _pipes;
+        internal IReadOnlyCollection<PipeDX11> Pipes { get; }
 
         /// <summary>Gets an instance of <see cref="DeviceFeaturesDX11"/> which provides access to feature support details for the current graphics device.</summary>
         internal DeviceFeaturesDX11 Features { get; private set; }

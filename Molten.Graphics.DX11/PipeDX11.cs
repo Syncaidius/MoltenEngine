@@ -26,13 +26,8 @@ namespace Molten.Graphics
             }
         }
 
-        GraphicsDepthStage _depthStencil;
-        GraphicsBlendStage _blendState;
-        GraphicsRasterizerStage _rasterizer;
-
         InputAssemblerStage _input;
         ShaderComputeStage _compute;
-        OutputMergerStage _output;
 
         DeviceDX11 _device;
         ID3D11DeviceContext1* _context;
@@ -41,9 +36,8 @@ namespace Molten.Graphics
         RenderProfiler _defaultProfiler;
         DrawInfo _drawInfo;
 
-        internal void Initialize(Logger log, DeviceDX11 device, ID3D11DeviceContext1* context, int id)
+        internal void Initialize(Logger log, DeviceDX11 device, ID3D11DeviceContext1* context)
         {
-            ID = id;
             _context = context;
             _device = device;
             _defaultProfiler = _profiler = new RenderProfiler();
@@ -60,15 +54,15 @@ namespace Molten.Graphics
             _stateStack = new PipeStateStack(this);
             _compute = new ShaderComputeStage(this);
             _input = new InputAssemblerStage(this);
-            _output = new OutputMergerStage(this);
+            Output = new OutputMergerStage(this);
 
-            _depthStencil = new GraphicsDepthStage(this);
-            _blendState = new GraphicsBlendStage(this);
-            _rasterizer = new GraphicsRasterizerStage(this);
+            DepthStencil = new GraphicsDepthStage(this);
+            BlendState = new GraphicsBlendStage(this);
+            Rasterizer = new GraphicsRasterizerStage(this);
 
             // Apply the surface of the graphics device's output initialally.
             SetRenderSurfaces(null);
-            _output.DepthWritePermission = GraphicsDepthWritePermission.Enabled;
+            Output.DepthWritePermission = GraphicsDepthWritePermission.Enabled;
         }
 
         internal MappedSubresource MapResource<T>(T* resource, uint subresource, Map mapType, MapFlag mapFlags, out ResourceStream stream)
@@ -114,16 +108,16 @@ namespace Molten.Graphics
 
             // TODO fix null UAV on depth texture (possibly issue with TextureBase).
 
-            _output.Refresh(); // Refresh any outputs that may be used by the compute task (Render targets!).
+            Output.Refresh(); // Refresh any outputs that may be used by the compute task (Render targets!).
             _compute.Dispatch(x, y, z);
         }
 
         /// <summary>Sets a list of render surfaces.</summary>
         /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
         /// <param name="count">The number of render surfaces to set.</param>
-        public void SetRenderSurfaces(RenderSurface[] surfaces, int count)
+        public void SetRenderSurfaces(RenderSurface[] surfaces, uint count)
         {
-            _output.SetRenderSurfaces(surfaces, count);
+            Output.SetRenderSurfaces(surfaces, count);
         }
 
         /// <summary>Sets a list of render surfaces.</summary>
@@ -131,32 +125,32 @@ namespace Molten.Graphics
         public void SetRenderSurfaces(params RenderSurface[] surfaces)
         {
             if (surfaces == null)
-                _output.SetRenderSurfaces(null, 0);
+                Output.SetRenderSurfaces(null, 0);
             else
-                _output.SetRenderSurfaces(surfaces, surfaces.Length);
+                Output.SetRenderSurfaces(surfaces, (uint)surfaces.Length);
         }
 
         /// <summary>Sets a render surface.</summary>
         /// <param name="surface">The surface to be set.</param>
         /// <param name="slot">The ID of the slot that the surface is to be bound to.</param>
-        public void SetRenderSurface(RenderSurface surface, int slot)
+        public void SetRenderSurface(RenderSurface surface, uint slot)
         {
-            _output.SetRenderSurface(surface, slot);
+            Output.SetRenderSurface(surface, slot);
         }
 
         /// <summary>Fills an array with the current configuration of render surfaces.</summary>
         /// <param name="destinationArray"></param>
         public void GetRenderSurfaces(RenderSurface[] destinationArray)
         {
-            _output.GetRenderSurfaces(destinationArray);
+            Output.GetRenderSurfaces(destinationArray);
         }
 
         /// <summary>Returns the render surface that is bound to the requested slot ID. Returns null if the slot is empty.</summary>
         /// <param name="slot">The ID of the slot to retrieve a surface from.</param>
         /// <returns></returns>
-        public RenderSurface GetRenderSurface(int slot)
+        public RenderSurface GetRenderSurface(uint slot)
         {
-            return _output.GetRenderSurface(slot);
+            return Output.GetRenderSurface(slot);
         }
 
         /// <summary>Resets a render surface slot.</summary>
@@ -164,12 +158,12 @@ namespace Molten.Graphics
         /// <param name="slot">The ID of the slot to reset.</param>
         public void UnsetRenderSurface(uint slot)
         {
-            _output.SetRenderSurface(null, slot);
+            Output.SetRenderSurface(null, slot);
         }
 
         public void UnsetRenderSurfaces()
         {
-            _output.ResetRenderSurfaces();
+            Output.ResetRenderSurfaces();
         }
 
         public int PushState()
@@ -193,18 +187,18 @@ namespace Molten.Graphics
 
             _input.Bind(pass, _drawInfo.Conditions, topology);
 
-            _output.DepthWritePermission = DepthWriteOverride != GraphicsDepthWritePermission.Enabled ? 
+            Output.DepthWritePermission = DepthWriteOverride != GraphicsDepthWritePermission.Enabled ? 
                 DepthWriteOverride : pass.DepthState[_drawInfo.Conditions].WritePermission;
-            _output.Refresh();
+            Output.Refresh();
 
-            _blendState.State.Value = pass.BlendState[_drawInfo.Conditions];
-            _rasterizer.State.Value = pass.RasterizerState[_drawInfo.Conditions];
-            _depthStencil.State.Value = pass.DepthState[_drawInfo.Conditions];
+            BlendState.State.Value = pass.BlendState[_drawInfo.Conditions];
+            Rasterizer.State.Value = pass.RasterizerState[_drawInfo.Conditions];
+            DepthStencil.State.Value = pass.DepthState[_drawInfo.Conditions];
 
             // Apply render targets and states.
-            _depthStencil.Bind();
-            _blendState.Bind();
-            _rasterizer.Bind();
+            DepthStencil.Bind();
+            BlendState.Bind();
+            Rasterizer.Bind();
 
             // Validate all pipeline components.
             result |= _input.Validate(mode);
@@ -443,21 +437,21 @@ namespace Molten.Graphics
         /// <summary>Clears the first render target that is set on the device.</summary>
         /// <param name="color"></param>
         /// <param name="slot"></param>
-        public void Clear(Color color, int slot = 0)
+        public void Clear(Color color, uint slot = 0)
         {
-            _output.Clear(color, slot);
+            Output.Clear(color, slot);
         }
 
         /// <summary>Dispoes of the current <see cref="PipeDX11"/> instance.</summary>
         protected override void OnDispose()
         {
-            _output.Dispose();
+            Output.Dispose();
             _input.Dispose();
             _compute.Dispose();
 
-            _depthStencil.Dispose();
-            _blendState.Dispose();
-            _rasterizer.Dispose();
+            DepthStencil.Dispose();
+            BlendState.Dispose();
+            Rasterizer.Dispose();
 
             // Dispose context.
             if (Type != GraphicsContextType.Immediate)
@@ -483,40 +477,20 @@ namespace Molten.Graphics
             set => _profiler = value ?? _defaultProfiler;
         }
 
-        internal int ID { get; private set; }
-
         /// <summary>Gets the depth stencil component of the graphics device.</summary>
-        internal GraphicsDepthStage DepthStencil
-        {
-            get { return _depthStencil; }
-        }
+        internal GraphicsDepthStage DepthStencil { get; private set; }
 
         /// <summary>Gets the blend state component of the graphics device.</summary>
-        internal GraphicsBlendStage BlendState
-        {
-            get { return _blendState; }
-        }
+        internal GraphicsBlendStage BlendState { get; private set; }
 
         /// <summary>Gets the rasterizer component of the graphics device.</summary>
-        internal GraphicsRasterizerStage Rasterizer
-        {
-            get { return _rasterizer; }
-        }
+        internal GraphicsRasterizerStage Rasterizer { get; private set; }
 
-        /// <summary>Gets the pipeline output.</summary>
-        internal OutputMergerStage Output { get { return _output; } }
-
-        /// <summary>
-        /// Gets or sets the output depth surface.
-        /// </summary>
-        internal DepthStencilSurface DepthSurface
-        {
-            get => _output.DepthSurface;
-            set => _output.DepthSurface = value;
-        }
+        /// <summary>Gets the output merger state of the current <see cref="PipeDX11"/>.</summary>
+        internal OutputMergerStage Output { get; private set; }
 
         internal GraphicsDepthWritePermission DepthWriteOverride { get; set; } = GraphicsDepthWritePermission.Enabled;
 
-        internal GraphicsDepthWritePermission DepthWritePermission => _output.DepthWritePermission;
+        internal GraphicsDepthWritePermission DepthWritePermission => Output.DepthWritePermission;
     }
 }

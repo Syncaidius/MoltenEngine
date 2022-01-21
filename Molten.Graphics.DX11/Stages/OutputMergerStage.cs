@@ -10,8 +10,6 @@ namespace Molten.Graphics
     internal unsafe class OutputMergerStage : PipeStage   
     {
         PipeDX11 _pipe;
-        PipeSlotGroup<RenderSurface> _surfaces;
-        PipeSlot<DepthStencilSurface> _depthSurface;
 
         GraphicsDepthWritePermission _boundDepthMode = GraphicsDepthWritePermission.Enabled;
         GraphicsDepthWritePermission _requestedDepthMode = GraphicsDepthWritePermission.Enabled;
@@ -25,8 +23,8 @@ namespace Molten.Graphics
             _pipe = pipe;
 
             uint maxRTs = Device.Features.SimultaneousRenderSurfaces;
-            _surfaces = DefineSlotGroup<RenderSurface>(maxRTs, PipeBindTypeFlags.Output, "RT Output");
-            _depthSurface = DefineSlot<DepthStencilSurface>(0, PipeBindTypeFlags.Output, "Depth-Stencil Output");
+            Surfaces = DefineSlotGroup<RenderSurface>(maxRTs, PipeBindTypeFlags.Output, "RT Output");
+            DepthSurface = DefineSlot<DepthStencilSurface>(0, PipeBindTypeFlags.Output, "Depth-Stencil Output");
 
             _rtvs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView>(maxRTs);
         }
@@ -39,8 +37,8 @@ namespace Molten.Graphics
 
         internal void Refresh()
         {
-            bool rtChanged = _surfaces.BindAll();
-            bool dsChanged = _depthSurface.Bind() || (_boundDepthMode != _requestedDepthMode);
+            bool rtChanged = Surfaces.BindAll();
+            bool dsChanged = DepthSurface.Bind() || (_boundDepthMode != _requestedDepthMode);
 
             if(rtChanged || dsChanged)
             {
@@ -48,12 +46,12 @@ namespace Molten.Graphics
                 {
                     _numRTVs = 0;
 
-                    for (uint i = 0; i < _surfaces.SlotCount; i++)
+                    for (uint i = 0; i < Surfaces.SlotCount; i++)
                     {
-                        if (_surfaces[i].BoundValue != null)
+                        if (Surfaces[i].BoundValue != null)
                         {
                             _numRTVs = i;
-                            _rtvs[i] = _surfaces[i].BoundValue.RTV;
+                            _rtvs[i] = Surfaces[i].BoundValue.RTV;
                         }
                         else
                         {
@@ -64,11 +62,11 @@ namespace Molten.Graphics
 
                 if (dsChanged)
                 {
-                    if (_depthSurface.BoundValue != null && _requestedDepthMode != GraphicsDepthWritePermission.Disabled) {
+                    if (DepthSurface.BoundValue != null && _requestedDepthMode != GraphicsDepthWritePermission.Disabled) {
                         if (_requestedDepthMode == GraphicsDepthWritePermission.ReadOnly)
-                            _dsv = _depthSurface.BoundValue.ReadOnlyView;
+                            _dsv = DepthSurface.BoundValue.ReadOnlyView;
                         else
-                            _dsv = _depthSurface.BoundValue.DepthView;
+                            _dsv = DepthSurface.BoundValue.DepthView;
                     }
                     else
                     {
@@ -96,7 +94,7 @@ namespace Molten.Graphics
             if (surfaces != null)
             {
                 for (uint i = 0; i < count; i++)
-                    _surfaces[i].Value = surfaces[i];
+                    Surfaces[i].Value = surfaces[i];
             }
             else
             {
@@ -104,8 +102,8 @@ namespace Molten.Graphics
             }
 
             // Set the remaining surfaces to null.
-            for (uint i = count; i < _surfaces.SlotCount; i++)
-                _surfaces[i].Value = null;
+            for (uint i = count; i < Surfaces.SlotCount; i++)
+                Surfaces[i].Value = null;
         }
 
         /// <summary>
@@ -115,7 +113,7 @@ namespace Molten.Graphics
         /// <param name="slot">The slot.</param>
         public void SetRenderSurface(RenderSurface surface, uint slot)
         {
-            _surfaces[slot].Value = surface;
+            Surfaces[slot].Value = surface;
         }
 
         /// <summary>
@@ -124,10 +122,10 @@ namespace Molten.Graphics
         /// <param name="destinationArray">The array to fill with applied render surfaces.</param>
         public void GetRenderSurfaces(RenderSurface[] destinationArray)
         {
-            if (destinationArray.Length < _surfaces.SlotCount)
-                throw new InvalidOperationException($"The destination array is too small ({destinationArray.Length}). A minimum size of {_surfaces.SlotCount} is needed.");
-            for (uint i = 0; i < _surfaces.SlotCount; i++)
-                destinationArray[i] = _surfaces[i].Value;
+            if (destinationArray.Length < Surfaces.SlotCount)
+                throw new InvalidOperationException($"The destination array is too small ({destinationArray.Length}). A minimum size of {Surfaces.SlotCount} is needed.");
+            for (uint i = 0; i < Surfaces.SlotCount; i++)
+                destinationArray[i] = Surfaces[i].Value;
         }
 
         /// <summary>Gets the render surface located in the specified output slot.</summary>
@@ -135,7 +133,7 @@ namespace Molten.Graphics
         /// <returns></returns>
         public RenderSurface GetRenderSurface(uint slot)
         {
-            return _surfaces[slot].Value;
+            return Surfaces[slot].Value;
         }
 
         /// <summary>
@@ -145,8 +143,8 @@ namespace Molten.Graphics
         /// <param name="outputOnFirst">If true and the reset mode is OutputSurface, it will only be applied to the first slot (0)..</param>
         public void ResetRenderSurfaces()
         {
-            for (uint i = 0; i < _surfaces.SlotCount; i++)
-                _surfaces[i].Value = null;
+            for (uint i = 0; i < Surfaces.SlotCount; i++)
+                Surfaces[i].Value = null;
         }
 
         /// <summary>Clears a render target that is set on the device.</summary>
@@ -154,8 +152,8 @@ namespace Molten.Graphics
         /// <param name="slot"></param>
         public void Clear(Color color, uint slot)
         {
-            if (_surfaces[slot].Value != null)
-                _surfaces[slot].Value.Clear(_pipe, color);
+            if (Surfaces[slot].Value != null)
+                Surfaces[slot].Value.Clear(_pipe, color);
         }
 
         internal GraphicsValidationResult Validate()
@@ -165,16 +163,7 @@ namespace Molten.Graphics
             return GraphicsValidationResult.Successful;
         }
 
-
-        /// <summary>
-        /// Gets whether or not a render target has been applied at slot 0.
-        /// </summary>
-        internal bool TargetZeroSet { get { return _rtViews[0] != null; } }
-
-        /// <summary>
-        /// Gets the <see cref="RenderSurface"/> at the specified slot.
-        /// </summary>
-        public RenderSurface this[uint slotIndex] => _surfaces[slotIndex].Value;
+        public PipeSlotGroup<RenderSurface> Surfaces { get; }
 
         /// <summary>
         /// Gets or sets the output's depth mode.
@@ -188,10 +177,6 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets or sets the output depth surface.
         /// </summary>
-        public DepthStencilSurface DepthSurface
-        {
-            get => _depthSurface.Value;
-            set => _depthSurface.Value = value;
-        }
+        public PipeSlot<DepthStencilSurface> DepthSurface { get; }
     }
 }

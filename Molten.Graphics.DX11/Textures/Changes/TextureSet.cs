@@ -143,7 +143,6 @@ namespace Molten.Graphics
                             pipe.Context.UpdateSubresource1(box, texture.UnderlyingResource, subLevel, region);
                         }
 
-
                         pipe.Profiler.Current.UpdateSubresourceCount++;
                     }
                 }

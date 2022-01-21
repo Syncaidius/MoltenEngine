@@ -27,7 +27,7 @@ namespace Molten.Graphics
         public GraphicsPipeState(PipeDX11 pipe)
         {
             _pipe = pipe;
-            int maxSurfaces = _pipe.Device.Features.SimultaneousRenderSurfaces;
+            uint maxSurfaces = _pipe.Device.Features.SimultaneousRenderSurfaces;
 
             _surfaces = new RenderSurface[maxSurfaces];
             _viewports = new ViewportF[maxSurfaces];
@@ -36,9 +36,9 @@ namespace Molten.Graphics
 
         public void Capture()
         {
-            _blendState = _pipe.BlendState.Current;
-            _depthState = _pipe.DepthStencil.State;
-            _rasterState = _pipe.Rasterizer.Current;
+            _blendState = _pipe.BlendState.State.Value;
+            _depthState = _pipe.DepthStencil.State.Value;
+            _rasterState = _pipe.Rasterizer.State.Value;
 
             _pipe.GetVertexSegments(_vSegments);
             _iSegment = _pipe.GetIndexSegment();
@@ -52,16 +52,16 @@ namespace Molten.Graphics
             // Store surfaces
             _pipe.GetRenderSurfaces(_surfaces);
 
-            _depthSurface = _pipe.DepthSurface;
+            _depthSurface = _pipe.Output.DepthSurface.Value;
             _depthWriteOverride = _pipe.DepthWriteOverride;
         }
 
         public void Restore()
         {
             //states
-            _pipe.BlendState.Current = _blendState;
-            _pipe.DepthStencil.Current = _depthState;
-            _pipe.Rasterizer.Current = _rasterState;
+            _pipe.BlendState.State.Value = _blendState;
+            _pipe.DepthStencil.State.Value = _depthState;
+            _pipe.Rasterizer.State.Value = _rasterState;
 
             //buffers
             _pipe.SetVertexSegments(_vSegments);
@@ -76,7 +76,7 @@ namespace Molten.Graphics
                 _pipe.UnsetRenderSurface(0);
 
 
-            _pipe.DepthSurface = _depthSurface;
+            _pipe.Output.DepthSurface.Value = _depthSurface;
             _pipe.DepthWriteOverride = _depthWriteOverride;
         }
 

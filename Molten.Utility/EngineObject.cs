@@ -29,8 +29,7 @@ namespace Molten
             Name = $"EO {EOID}";
         }
 
-        /// <summary>Disposes of the current <see cref="EngineObject"/> instance and 
-        /// releases its ID to be reused by a new object.</summary>
+        /// <summary>Disposes of the current <see cref="EngineObject"/> instance.</summary>
         public void Dispose()
         {
             if (IsDisposed)

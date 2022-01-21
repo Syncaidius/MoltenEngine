@@ -27,7 +27,7 @@ namespace Molten.Graphics
     /// </summary>
     public class RenderControl : UserControl
     {
-        private Font fontForDesignMode;
+        private System.Drawing.Font fontForDesignMode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderForm"/> class.
@@ -58,7 +58,7 @@ namespace Molten.Graphics
             if (DesignMode)
             {
                 if (fontForDesignMode == null)
-                    fontForDesignMode = new Font("Calibri", 24, FontStyle.Regular);
+                    fontForDesignMode = new System.Drawing.Font("Calibri", 24, FontStyle.Regular);
 
                 e.Graphics.Clear(System.Drawing.Color.WhiteSmoke);
                 string text = "SharpDX RenderControl";

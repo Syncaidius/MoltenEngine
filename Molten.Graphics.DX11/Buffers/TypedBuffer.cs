@@ -84,31 +84,44 @@ namespace Molten.Graphics
             throw new InvalidOperationException("Typed buffers only accept scalar, vector and Matrix2x2 value types.");
         }
 
-        internal override void CreateResources(uint stride, uint byteoffset, uint elementCount)
+        protected override void CreateResources(uint stride, uint byteOffset, uint elementCount, SRView srv, UAView uav)
         {
             Type allocatedType = typeof(T);
             if (allocatedType != _bufferType)
                 throw new InvalidOperationException("Typed buffers can only accept the data type they were initialized with.");
-            
-            // No SRV if the shader resource flag isn't present.
-            if (((BindFlag)Description.BindFlags & BindFlag.BindShaderResource) != BindFlag.BindShaderResource)
-                return;
 
-            SilkUtil.ReleasePtr(ref SRV);
-
-            ShaderResourceViewDesc srvDesc = new ShaderResourceViewDesc()
+            if (HasFlags(BindFlag.BindShaderResource))
             {
-                BufferEx = new BufferexSrv()
+                srv.Desc = new ShaderResourceViewDesc()
                 {
-                    NumElements = elementCount,
-                    FirstElement = 0,
-                    Flags = 0 // See: https://docs.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_bufferex_srv_flag
-                },
-                ViewDimension = D3DSrvDimension.D3D11SrvDimensionBuffer,
-                Format = Format.FormatUnknown,
-            };
+                    BufferEx = new BufferexSrv()
+                    {
+                        NumElements = elementCount,
+                        FirstElement = 0,
+                        Flags = 0 // See: https://docs.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_bufferex_srv_flag
+                    },
+                    ViewDimension = D3DSrvDimension.D3D11SrvDimensionBuffer,
+                    Format = Format.FormatUnknown,
+                };
 
-            Device.Native->CreateShaderResourceView(this, ref srvDesc, ref SRV);
+                srv.Recreate(this);
+            }
+
+            if (HasFlags(BindFlag.BindUnorderedAccess))
+            {
+                UnorderedAccessViewDesc uavDesc = new UnorderedAccessViewDesc()
+                {
+                    Format = Format.FormatUnknown,
+                    ViewDimension = UavDimension.UavDimensionBuffer,
+                    Buffer = new BufferUav()
+                    {
+                        NumElements = elementCount,
+                        FirstElement = byteOffset / Description.StructureByteStride,
+                        Flags = (uint)BufferUavFlag.BufferUavFlagRaw,
+                    }
+                };
+                UAV.Recreate(this);
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Molten.Graphics
 
         ID3D11SamplerState* _native;
         SamplerDesc _desc;
+        Color4 _borderColor;
         bool _isDirty;
 
         internal ShaderSampler(DeviceDX11 device, ShaderSampler source) : base(device)
@@ -32,9 +33,10 @@ namespace Molten.Graphics
                 MaxLOD = float.MaxValue,
                 MipLODBias = 0f,
                 MaxAnisotropy = 1,
-                ComparisonFunc = Silk.NET.Direct3D11.ComparisonFunc.ComparisonNever,
-                BorderColor = new Color4(1f),
+                ComparisonFunc = Silk.NET.Direct3D11.ComparisonFunc.ComparisonNever
             };
+
+            BorderColor = Color4.White;
 
             CheckIfComparisonSampler();
             _isDirty = true;
@@ -112,10 +114,14 @@ namespace Molten.Graphics
         /// for AddressU, AddressV, or AddressW. Range must be between 0.0 and 1.0 inclusive.</summary>
         public Color4 BorderColor
         {
-            get { return _desc.BorderColor.FromRawApi(); }
+            get => _borderColor;
             set
             {
-                _desc.BorderColor = value.ToApi();
+                _borderColor = value;
+                _desc.BorderColor[0] = _borderColor.R;
+                _desc.BorderColor[1] = _borderColor.G;
+                _desc.BorderColor[2] = _borderColor.B;
+                _desc.BorderColor[3] = _borderColor.A;
                 _isDirty = true;
             }
         }

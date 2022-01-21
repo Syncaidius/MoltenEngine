@@ -37,9 +37,6 @@ namespace Molten.Graphics
         ID3D11Resource* _native;
         RendererDX11 _renderer;
 
-        ShaderResourceViewDesc _srvDescription;
-        UnorderedAccessViewDesc _uavDescription;
-
         internal TextureBase(RendererDX11 renderer, int width, int height, int depth, int mipCount, 
             int arraySize, int sampleCount, Format format, TextureFlags flags) : base(renderer.Device)
         {
@@ -58,7 +55,6 @@ namespace Molten.Graphics
             DxgiFormat = format;
             IsValid = false;
 
-            _srvDescription = new ShaderResourceViewDesc();
             IsBlockCompressed = BCHelper.GetBlockCompressed(DxgiFormat.FromApi());
         }
 
@@ -159,21 +155,16 @@ namespace Molten.Graphics
 
             if (_native != null)
             {
-                SilkUtil.ReleasePtr(ref UAV);
-                SilkUtil.ReleasePtr(ref SRV);
-
-                //TrackAllocation();
-
                 if (!HasFlags(TextureFlags.NoShaderResource))
                 {
-                    SetSRVDescription(ref _srvDescription);
-                    Device.Native->CreateShaderResourceView(_native, ref _srvDescription, ref SRV);
+                    SetSRVDescription(ref SRV.Desc);
+                    SRV.Recreate(this);
                 }
 
                 if (HasFlags(TextureFlags.AllowUAV))
                 {
-                    SetUAVDescription(ref _srvDescription, ref _uavDescription);
-                    Device.Native->CreateUnorderedAccessView(_native, ref _uavDescription, ref UAV);
+                    SetUAVDescription(ref SRV.Desc, ref UAV.Desc);
+                    UAV.Recreate(this);
                 }
 
                 OnCreate?.Invoke(this);

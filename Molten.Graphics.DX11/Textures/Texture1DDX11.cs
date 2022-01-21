@@ -58,7 +58,7 @@ namespace Molten.Graphics
 
         protected override void SetUAVDescription(ref ShaderResourceViewDesc srvDesc, ref UnorderedAccessViewDesc desc)
         {
-            desc.Format = SRV.Description.Format;
+            desc.Format = srvDesc.Format;
             desc.ViewDimension = UavDimension.UavDimensionTexture1Darray;
             desc.Buffer = new BufferUav()
             {

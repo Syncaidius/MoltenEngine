@@ -220,6 +220,19 @@ namespace Molten
         }
 
         /// <summary>
+        /// Copies the component color values of the current <see cref="Color4"/> to the provided pointer.
+        /// </summary>
+        /// <param name="col"></param>
+        /// <returns></returns>
+        public unsafe void CopyToPtr(float* ptr)
+        {
+            ptr[0] = R;
+            ptr[1] = G;
+            ptr[2] = B;
+            ptr[3] = A;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
         /// <param name="color"><see cref="Color3"/> used to initialize the color.</param>

@@ -87,7 +87,6 @@ namespace Molten.Graphics
                 }
 
                 Stage.Pipe.Profiler.Current.SlotBindings++;
-                bindCounter++;
                 return true;
             }
             else if (Value != null)
@@ -98,7 +97,6 @@ namespace Molten.Graphics
                     {
                         _boundVersion = Value.Version;
                         Stage.Pipe.Profiler.Current.GpuBindings++;
-                        bindCounter++;
                         return true;
                     }
                 }
