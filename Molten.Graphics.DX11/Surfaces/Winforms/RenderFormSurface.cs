@@ -36,7 +36,7 @@ namespace Molten.Graphics
         /// <param name="renderer"></param>
         /// <param name="mipCount"></param>
         /// <param name="sampleCount"></param>
-        internal RenderFormSurface(string formTitle, string formName, RendererDX11 renderer, int mipCount = 1, int sampleCount = 1)
+        internal RenderFormSurface(string formTitle, string formName, RendererDX11 renderer, uint mipCount = 1, uint sampleCount = 1)
             : base(formTitle, formName, renderer, mipCount, sampleCount) { }
 
         protected override void CreateControl(string title, out RenderForm control, out IntPtr handle)
@@ -83,17 +83,17 @@ namespace Molten.Graphics
 
         void Control_Resized(object sender, EventArgs e)
         {
-            int w, h;
+            uint w, h;
 
             if (Mode == WindowMode.Borderless)
             {
-                w = Control.Bounds.Width;
-                h = Control.Bounds.Height;
+                w = (uint)Control.Bounds.Width;
+                h = (uint)Control.Bounds.Height;
             }
             else
             {
-                w = Control.ClientSize.Width;
-                h = Control.ClientSize.Height;
+                w = (uint)Control.ClientSize.Width;
+                h = (uint)Control.ClientSize.Height;
             }
 
             if (w != Width || h != Height)

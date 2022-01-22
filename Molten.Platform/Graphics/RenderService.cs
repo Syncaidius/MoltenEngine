@@ -296,7 +296,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="requiredWidth">The new width required by the render engine.</param>
         /// <param name="requiredHeight">The new height required by the render engine.</param>
-        protected abstract void OnRebuildSurfaces(int requiredWidth, int requiredHeight);
+        protected abstract void OnRebuildSurfaces(uint requiredWidth, uint requiredHeight);
 
         /// <summary>
         /// Occurs before the render engine begins rendering all of the active scenes to be output to the user.
@@ -383,12 +383,12 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the width of the biggest render surface used so far.
         /// </summary>
-        protected int BiggestWidth { get; private set; } = 1;
+        protected uint BiggestWidth { get; private set; } = 1;
 
         /// <summary>
         /// Gets the height of the biggest render surface used so far.
         /// </summary>
-        protected int BiggestHeight { get; private set; } = 1;
+        protected uint BiggestHeight { get; private set; } = 1;
 
         /// <summary>
         /// Gets the <see cref="Logger"/> bound and dedicated to the current renderer.

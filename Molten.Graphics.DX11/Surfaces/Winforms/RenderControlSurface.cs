@@ -26,7 +26,7 @@ namespace Molten.Graphics
         IntPtr? _windowHandle;
         Control _parentWindow;
 
-        internal RenderControlSurface(string controlTitle, string controlName, RendererDX11 renderer, int mipCount = 1, int sampleCount = 1)
+        internal RenderControlSurface(string controlTitle, string controlName, RendererDX11 renderer, uint mipCount = 1, uint sampleCount = 1)
             : base(controlTitle, controlName, renderer, mipCount, sampleCount) { }
 
         protected override void CreateControl(string title, out RenderControl control, out IntPtr handle)
@@ -120,8 +120,8 @@ namespace Molten.Graphics
 
         void _control_Resized(object sender, EventArgs e)
         {
-            int w = Control.ClientSize.Width;
-            int h = Control.ClientSize.Height;
+            uint w = (uint)Control.ClientSize.Width;
+            uint h = (uint)Control.ClientSize.Height;
 
             if (w != Width || h != Height)
                 Resize(w, h);

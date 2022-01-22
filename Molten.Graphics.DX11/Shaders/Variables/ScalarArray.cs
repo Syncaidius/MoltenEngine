@@ -23,7 +23,7 @@ namespace Molten.Graphics
             SizeOf = expectedElements * _byteSize;
         }
 
-        internal override void Write(ResourceStream stream)
+        internal override void Write(RawStream stream)
         {
             if (_value != null)
             {

@@ -69,7 +69,7 @@ namespace Molten.Graphics
                 DirtyVariables = false;
 
                 //write updated data into constant buffer
-                ResourceStream bufferData;
+                RawStream bufferData;
                 MappedSubresource data = pipe.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out bufferData);
                 {
                     // Re-write all data to the variable buffer to maintain byte-ordering.

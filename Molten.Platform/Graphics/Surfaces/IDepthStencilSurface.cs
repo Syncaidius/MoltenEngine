@@ -13,7 +13,7 @@
         /// <param name="surface">The surface.</param>
         /// <param name="newWidth">The new width.</param>
         /// <param name="newHeight">The new height.</param>
-        void Resize(int newWidth, int newHeight);
+        void Resize(uint newWidth, uint newHeight);
 
         /// <summary>Gets the depth-specific format of the surface.</summary>
         DepthFormat DepthFormat { get; }

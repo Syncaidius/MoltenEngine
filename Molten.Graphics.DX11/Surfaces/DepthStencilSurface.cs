@@ -28,12 +28,12 @@ namespace Molten.Graphics
         /// <param name="depthBuffer">If true, a depth buffer will be created.</param>
         /// <param name="flags">Texture flags</param>
         internal DepthStencilSurface(RendererDX11 renderer,
-            int width, 
-            int height,
+            uint width, 
+            uint height,
             DepthFormat format = DepthFormat.R24G8_Typeless,
-            int mipCount = 1, 
-            int arraySize = 1, 
-            int sampleCount = 1,
+            uint mipCount = 1, 
+            uint arraySize = 1, 
+            uint sampleCount = 1,
             TextureFlags flags = TextureFlags.None)
             : base(renderer, width, height, Format.FormatR24G8Typeless, mipCount, arraySize, flags)
         {
@@ -150,7 +150,7 @@ namespace Molten.Graphics
             return (ID3D11Resource*)NativeTexture;
         }
 
-        protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
+        protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {
             base.UpdateDescription(newWidth, newHeight, newDepth, newMipMapCount, newArraySize, newFormat);
             UpdateViewport();

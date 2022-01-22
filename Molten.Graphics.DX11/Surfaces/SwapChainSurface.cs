@@ -20,7 +20,7 @@ namespace Molten.Graphics
         ThreadedQueue<Action> _dispatchQueue;
         uint _vsync;
 
-        internal SwapChainSurface(RendererDX11 renderer, int mipCount, int sampleCount)
+        internal SwapChainSurface(RendererDX11 renderer, uint mipCount, uint sampleCount)
             : base(renderer, 1, 1, Format.FormatB8G8R8A8Unorm, mipCount, 1, sampleCount, TextureFlags.NoShaderResource)
         {
             _dispatchQueue = new ThreadedQueue<Action>();
@@ -58,7 +58,7 @@ namespace Molten.Graphics
             // Resize the swap chain if needed.
             if (resize && NativeSwapChain != null)
             {
-                NativeSwapChain->ResizeBuffers(_swapDesc.BufferCount, (uint)Width, (uint)Height, GraphicsFormat.Unknown.ToApi(), 0U);
+                NativeSwapChain->ResizeBuffers(_swapDesc.BufferCount, Width, Height, GraphicsFormat.Unknown.ToApi(), 0U);
                 NativeSwapChain->GetDesc1(ref _swapDesc);
             }
             else
@@ -82,7 +82,7 @@ namespace Molten.Graphics
 
             ID3D11Resource* res = (ID3D11Resource*)NativeTexture;
             Device.Native->CreateRenderTargetView(res, &rtvDesc, ref RTV);
-            VP = new Viewport(0, 0, Width, Height);
+            VP = new ViewportUI(0, 0, Width, Height);
 
             return res;
         }

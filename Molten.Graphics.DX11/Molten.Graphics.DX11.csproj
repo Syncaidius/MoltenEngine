@@ -23,4 +23,8 @@
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+
 </Project>

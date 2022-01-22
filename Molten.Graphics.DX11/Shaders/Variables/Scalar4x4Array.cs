@@ -29,7 +29,7 @@ namespace Molten.Graphics
             _isDirty = true;
         }
 
-        internal override void Write(ResourceStream stream)
+        internal override void Write(RawStream stream)
         {
             if (_value != null)
             {
@@ -48,7 +48,7 @@ namespace Molten.Graphics
             }
             else
             {
-                stream.Seek(SizeOf, System.IO.SeekOrigin.Current);
+                stream.Seek(SizeOf, SeekOrigin.Current);
             }
         }
 

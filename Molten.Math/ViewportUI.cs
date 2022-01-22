@@ -26,30 +26,30 @@ using System.Runtime.InteropServices;
 namespace Molten
 {
     /// <summary>
-    /// Defines viewport dimensions using signed integer dimensions.
+    /// Defines viewport dimensions using insigned integer values.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Viewport : IEquatable<Viewport>
+    public struct ViewportUI : IEquatable<ViewportUI>
     {
         /// <summary>
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>
-        public int X;
+        public uint X;
 
         /// <summary>
         /// Position of the pixel coordinate of the upper-left corner of the viewport.
         /// </summary>
-        public int Y;
+        public uint Y;
 
         /// <summary>
         /// Width dimension of the viewport.
         /// </summary>
-        public int Width;
+        public uint Width;
 
         /// <summary>
         /// Height dimension of the viewport.
         /// </summary>
-        public int Height;
+        public uint Height;
 
         /// <summary>
         /// Gets or sets the minimum depth of the clip volume.
@@ -68,7 +68,7 @@ namespace Molten
         /// <param name="y">The y coordinate of the upper-left corner of the viewport in pixels.</param>
         /// <param name="width">The width of the viewport in pixels.</param>
         /// <param name="height">The height of the viewport in pixels.</param>
-        public Viewport(int x, int y, int width, int height)
+        public ViewportUI(uint x, uint y, uint width, uint height)
         {
             X = x;
             Y = y;
@@ -87,7 +87,7 @@ namespace Molten
         /// <param name="height">The height of the viewport in pixels.</param>
         /// <param name="minDepth">The minimum depth of the clip volume.</param>
         /// <param name="maxDepth">The maximum depth of the clip volume.</param>
-        public Viewport(int x, int y, int width, int height, float minDepth, float maxDepth)
+        public ViewportUI(uint x, uint y, uint width, uint height, float minDepth, float maxDepth)
         {
             X = x;
             Y = y;
@@ -101,7 +101,7 @@ namespace Molten
         /// Initializes a new instance of the <see cref="Viewport"/> struct.
         /// </summary>
         /// <param name="bounds">A bounding box that defines the location and size of the viewport in a render target.</param>
-        public Viewport(Rectangle bounds)
+        public ViewportUI(RectangleUI bounds)
         {
             X = bounds.X;
             Y = bounds.Y;
@@ -115,11 +115,11 @@ namespace Molten
         /// Gets the size of this resource.
         /// </summary>
         /// <value>The bounds.</value>
-        public Rectangle Bounds
+        public RectangleUI Bounds
         {
             get
             {
-                return new Rectangle(X, Y, Width, Height);
+                return new RectangleUI(X, Y, Width, Height);
             }
 
             set
@@ -139,7 +139,7 @@ namespace Molten
         /// <c>true</c> if the specified <see cref="Viewport"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ref Viewport other)
+        public bool Equals(ref ViewportUI other)
         {
             return X == other.X && Y == other.Y && Width == other.Width && Height == other.Height && MathHelper.NearEqual(MinDepth, other.MinDepth) && MathHelper.NearEqual(MaxDepth, other.MaxDepth);
         }
@@ -152,7 +152,7 @@ namespace Molten
         /// <c>true</c> if the specified <see cref="Viewport"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(Viewport other)
+        public bool Equals(ViewportUI other)
         {
             return Equals(ref other);
         }
@@ -169,7 +169,7 @@ namespace Molten
             if(!(obj is Viewport))
                 return false;
 
-            var strongValue = (Viewport)obj;
+            var strongValue = (ViewportUI)obj;
             return Equals(ref strongValue);
         }
 
@@ -183,13 +183,13 @@ namespace Molten
         {
             unchecked
             {
-                int hashCode = X;
+                uint hashCode = X;
                 hashCode = (hashCode * 397) ^ Y;
                 hashCode = (hashCode * 397) ^ Width;
                 hashCode = (hashCode * 397) ^ Height;
-                hashCode = (hashCode * 397) ^ MinDepth.GetHashCode();
-                hashCode = (hashCode * 397) ^ MaxDepth.GetHashCode();
-                return hashCode;
+                hashCode = (hashCode * 397) ^ (uint)MinDepth.GetHashCode();
+                hashCode = (hashCode * 397) ^ (uint)MaxDepth.GetHashCode();
+                return (int)hashCode;
             }
         }
         
@@ -200,7 +200,7 @@ namespace Molten
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(Viewport left, Viewport right)
+        public static bool operator ==(ViewportUI left, ViewportUI right)
         {
             return left.Equals(ref right);
         }
@@ -212,7 +212,7 @@ namespace Molten
         /// <param name="right">The right.</param>
         /// <returns>The result of the operator.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(Viewport left, Viewport right)
+        public static bool operator !=(ViewportUI left, ViewportUI right)
         {
             return !left.Equals(ref right);
         }
@@ -267,7 +267,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Converts a screen space point into a corresponding point in world space.
+        /// Converts a screen space pouint into a corresponding pouint in world space.
         /// </summary>
         /// <param name="source">The vector to project.</param>
         /// <param name="projection">The projection matrix.</param>
@@ -287,7 +287,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Converts a screen space point into a corresponding point in world space.
+        /// Converts a screen space pouint into a corresponding pouint in world space.
         /// </summary>
         /// <param name="source">The vector to project.</param>
         /// <param name="matrix">An inverted combined WorldViewProjection matrix.</param>

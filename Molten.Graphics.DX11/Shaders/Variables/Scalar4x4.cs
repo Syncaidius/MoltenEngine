@@ -16,7 +16,7 @@ namespace Molten.Graphics
             SizeOf = sizeof(float) * (4 * 4);
         }
 
-        internal override void Write(ResourceStream stream)
+        internal override void Write(RawStream stream)
         {
             stream.Write(_value);
         }

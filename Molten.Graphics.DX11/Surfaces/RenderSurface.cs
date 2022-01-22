@@ -10,22 +10,22 @@ namespace Molten.Graphics
     public unsafe class RenderSurface : Texture2DDX11, IRenderSurface
     {
         /// <summary>The viewport which represents the current render surface.</summary>
-        internal Viewport VP;
+        internal ViewportUI VP;
 
         RenderTargetViewDesc _rtvDesc;
 
         internal RenderSurface(
             RendererDX11 renderer,
-            int width,
-            int height,
+            uint width,
+            uint height,
             Format format = Format.FormatR8G8B8A8SNorm,
-            int mipCount = 1,
-            int arraySize = 1,
-            int sampleCount = 1,
+            uint mipCount = 1,
+            uint arraySize = 1,
+            uint sampleCount = 1,
             TextureFlags flags = TextureFlags.None)
             : base(renderer, width, height, format, mipCount, arraySize, flags, sampleCount)
         {
-            VP = new Viewport(0, 0, width, height);
+            VP = new ViewportUI(0, 0, width, height);
             _rtvDesc = new RenderTargetViewDesc();
             _rtvDesc.Format = DxgiFormat;
         }
@@ -74,7 +74,7 @@ namespace Molten.Graphics
 
         protected virtual void SetRTVDescription(ref RenderTargetViewDesc desc) { }
 
-        protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
+        protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {
             _description.Width = (uint)newWidth;
             _description.Height = (uint)newHeight;
@@ -102,7 +102,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>Gets the viewport that defines the default renderable area of the render target.</summary>
-        public Viewport Viewport => VP;
+        public ViewportUI Viewport => VP;
 
         /// <summary>
         /// Gets the DX11 render target view (RTV) for the current render surface.

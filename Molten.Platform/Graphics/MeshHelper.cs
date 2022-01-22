@@ -61,7 +61,7 @@ namespace Molten.Graphics
                new GBufferVertex(new Vector3F(0.5f,0.5f,-0.5f),nRight,  new Vector2F(0, 0)),
             };
 
-            int[] indices = new int[]{
+            uint[] indices = new uint[]{
                 0, 1, 2, 0, 2, 3,
                 4, 5, 6, 4, 7, 5,
                 8, 9, 10, 8, 10, 11,
@@ -72,7 +72,7 @@ namespace Molten.Graphics
 
             CalculateTangents(vertices, indices);
 
-            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh(vertices.Length, indices.Length);
+            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh((uint)vertices.Length, (uint)indices.Length);
             mesh.SetVertices(vertices);
             mesh.SetIndices(indices);
             return mesh;
@@ -88,7 +88,7 @@ namespace Molten.Graphics
             vertices[2] = new GBufferVertex(new Vector3F(0.5f, 0, 0.5f), normal, new Vector2F(uvTiling, 0));
             vertices[3] = new GBufferVertex(new Vector3F(0.5f, 0, -0.5f), normal, new Vector2F(uvTiling, uvTiling));
 
-            int[] indices = new int[6];
+            uint[] indices = new uint[6];
             indices[0] = 0;
             indices[1] = 1;
             indices[2] = 2;
@@ -98,7 +98,7 @@ namespace Molten.Graphics
 
             CalculateTangents(vertices, indices);
 
-            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh(vertices.Length, indices.Length);
+            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh((uint)vertices.Length, (uint)indices.Length);
             mesh.SetVertices(vertices);
             mesh.SetIndices(indices);
             return mesh;
@@ -114,7 +114,7 @@ namespace Molten.Graphics
             vertices[2] = new GBufferVertex(new Vector3F(1f, 0, 1f), normal, new Vector2F(uvTiling, 0));
             vertices[3] = new GBufferVertex(new Vector3F(1f, 0, 0f), normal, new Vector2F(uvTiling, uvTiling));
 
-            int[] indices = new int[6];
+            uint[] indices = new uint[6];
             indices[0] = 0;
             indices[1] = 1;
             indices[2] = 2;
@@ -124,7 +124,7 @@ namespace Molten.Graphics
 
             CalculateTangents(vertices, indices);
 
-            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh<GBufferVertex>(vertices.Length, indices.Length);
+            IIndexedMesh<GBufferVertex> mesh = renderer.Resources.CreateIndexedMesh<GBufferVertex>((uint)vertices.Length, (uint)indices.Length);
             mesh.SetVertices(vertices);
             mesh.SetIndices(indices);
             return mesh;
@@ -133,9 +133,9 @@ namespace Molten.Graphics
         /// <summary>Calculates the normals for a list of vertices and the provided index list.</summary>
         /// <param name="vertices"></param>
         /// <param name="indices"></param>
-        public static void CalculateNormals(GBufferVertex[] vertices, int[] indices)
+        public static void CalculateNormals(GBufferVertex[] vertices, uint[] indices)
         {
-            CalculateNormals(vertices, indices, vertices.Length, indices.Length);
+            CalculateNormals(vertices, indices, (uint)vertices.Length, (uint)indices.Length);
         }
 
         /// <summary>Calculates the normals for a list of vertices and the provided index list.</summary>
@@ -143,14 +143,14 @@ namespace Molten.Graphics
         /// <param name="indices"></param>
         /// <param name="vertexCount"></param>
         /// <param name="indexCount"></param>
-        public static void CalculateNormals(GBufferVertex[] vertices, int[] indices, int vertexCount, int indexCount)
+        public static void CalculateNormals(GBufferVertex[] vertices, uint[] indices, uint vertexCount, uint indexCount)
         {
-            for (var index = 0; index < indexCount; index += 3)
+            for (int index = 0; index < indexCount; index += 3)
             {
                 // Get triangle indices
-                int i1 = indices[index + 0];
-                int i2 = indices[index + 1];
-                int i3 = indices[index + 2];
+                uint i1 = indices[index + 0];
+                uint i2 = indices[index + 1];
+                uint i3 = indices[index + 2];
 
                 Vector3F vec1 = vertices[i2].Position - vertices[i1].Position;
                 Vector3F vec2 = vertices[i1].Position - vertices[i1].Position;
@@ -174,9 +174,9 @@ namespace Molten.Graphics
         /// <summary>Calculates the bi-normals and tangents for a list of vertices and indices.</summary>
         /// <param name="vertices"></param>
         /// <param name="indices"></param>
-        public static void CalculateTangents(GBufferVertex[] vertices, int[] indices)
+        public static void CalculateTangents(GBufferVertex[] vertices, uint[] indices)
         {
-            CalculateTangents(vertices, indices, vertices.Length, indices.Length);
+            CalculateTangents(vertices, indices, (uint)vertices.Length, (uint)indices.Length);
         }
 
         /// <summary>Calculates the bi-normals and tangents for a list of vertices and indices.</summary>
@@ -184,7 +184,7 @@ namespace Molten.Graphics
         /// <param name="indices"></param>
         /// <param name="vertexCount"></param>
         /// <param name="indexCount"></param>
-        public static void CalculateTangents(GBufferVertex[] vertices, int[] indices, int vertexCount, int indexCount)
+        public static void CalculateTangents(GBufferVertex[] vertices, uint[] indices, uint vertexCount, uint indexCount)
         {
             // Lengyel, Eric. “Computing Tangent Space Basis Vectors for an Arbitrary Mesh”.
             // Terathon Software 3D Graphics Library, 2001.
@@ -197,9 +197,9 @@ namespace Molten.Graphics
             for (var index = 0; index < indexCount; index += 3)
             {
                 // Get triangle indices
-                int i1 = indices[index + 0];
-                int i2 = indices[index + 1];
-                int i3 = indices[index + 2];
+                uint i1 = indices[index + 0];
+                uint i2 = indices[index + 1];
+                uint i3 = indices[index + 2];
 
                 // Get UVs for calculating the denominator value
                 Vector2F w1 = vertices[i1].UV;
@@ -256,7 +256,7 @@ namespace Molten.Graphics
                 tan2[i3] += tdir;
             }
 
-            // At this point we have all the vectors accumulated, but we need to average
+            // At this pouint we have all the vectors accumulated, but we need to average
             // them all out. So we loop through all the final verts and do a Gram-Schmidt
             // orthonormalize, then make sure they're all unit length.
             for (var i = 0; i < vertexCount; i++)

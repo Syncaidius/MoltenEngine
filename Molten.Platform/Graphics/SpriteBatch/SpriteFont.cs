@@ -121,12 +121,12 @@ namespace Molten.Graphics
             _charPadding = charPadding;
 
             _lineSpace = ToPixels(_font.HorizonalHeader.LineSpace);
-            _rt = renderer.Resources.CreateSurface(_pageSize, _pageSize, arraySize: initialPages, sampleCount: 8);
+            _rt = renderer.Resources.CreateSurface((uint)_pageSize, (uint)_pageSize, arraySize: (uint)initialPages, sampleCount: 8);
             _tex = renderer.Resources.CreateTexture2D(new Texture2DProperties()
             {
-                Width = _pageSize,
-                Height = _pageSize,
-                ArraySize = initialPages,
+                Width = (uint)_pageSize,
+                Height = (uint)_pageSize,
+                ArraySize = (uint)initialPages,
                 Format = _rt.DataFormat,
             });
 

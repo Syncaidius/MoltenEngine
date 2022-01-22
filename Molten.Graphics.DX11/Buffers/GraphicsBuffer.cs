@@ -186,7 +186,7 @@ namespace Molten.Graphics
         internal void GetStream(PipeDX11 pipe, 
             uint byteOffset, 
             uint dataSize, 
-            Action<GraphicsBuffer, ResourceStream> callback, 
+            Action<GraphicsBuffer, RawStream> callback, 
             GraphicsBuffer staging = null)
         {
             // Check buffer type.
@@ -194,7 +194,7 @@ namespace Molten.Graphics
             bool isStaged = Description.Usage == Usage.UsageStaging &&
                 (Description.CPUAccessFlags & (uint)CpuAccessFlag.CpuAccessWrite) == (uint)CpuAccessFlag.CpuAccessWrite;
 
-            ResourceStream stream;
+            RawStream stream;
 
             // Check if the buffer is a dynamic-writable
             if (isDynamic || isStaged)
@@ -329,7 +329,7 @@ namespace Molten.Graphics
                 throw new ArgumentException("The provided destination array is not large enough.");
 
             //now set the structured variable's data
-            ResourceStream stream = null;
+            RawStream stream = null;
             MappedSubresource dataBox = pipe.MapResource(NativePtr, 0, Map.MapRead, 0, out stream);
             pipe.Profiler.Current.MapReadCount++;
             stream.Position = byteOffset;

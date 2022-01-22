@@ -144,7 +144,7 @@ namespace Molten.Graphics
             Buffer.Set<T>(pipe, data, startIndex, count, tStride, ByteOffset + writeOffset, staging);
         }
 
-        internal void Map(PipeDX11 pipe, Action<GraphicsBuffer, ResourceStream> callback, GraphicsBuffer staging = null)
+        internal void Map(PipeDX11 pipe, Action<GraphicsBuffer, RawStream> callback, GraphicsBuffer staging = null)
         {
             Buffer.GetStream(pipe, ByteOffset, Stride * ElementCount, (buffer, stream) =>
             {

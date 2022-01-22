@@ -84,7 +84,7 @@ namespace Molten.Graphics
             Device.Dispatch(task as ComputeTask, (uint)x, (uint)y, (uint)z);
         }
 
-        internal void InitializeMainSurfaces(int width, int height)
+        internal void InitializeMainSurfaces(uint width, uint height)
         {
             CreateMainSurface("scene", MainSurfaceType.Scene, width, height, GraphicsFormat.R8G8B8A8_UNorm);
             CreateMainSurface("normals", MainSurfaceType.Normals, width, height, GraphicsFormat.R11G11B10_Float);
@@ -111,8 +111,8 @@ namespace Molten.Graphics
         internal void CreateMainSurface(
             string key,
             MainSurfaceType mainType, 
-            int width, 
-            int height, 
+            uint width, 
+            uint height, 
             GraphicsFormat format, 
             SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
         {
@@ -193,7 +193,7 @@ namespace Molten.Graphics
 
         }
 
-        protected override void OnRebuildSurfaces(int requiredWidth, int requiredHeight)
+        protected override void OnRebuildSurfaces(uint requiredWidth, uint requiredHeight)
         {
             _surfaces.For(0, 1, (index, config) => config.RefreshSize(requiredWidth, requiredHeight));
             _depthSurface.Resize(requiredWidth, requiredHeight);
@@ -230,7 +230,7 @@ namespace Molten.Graphics
         }
 
         internal bool ClearIfFirstUse(PipeDX11 pipe, DepthStencilSurface surface,
-            DepthClearFlags flags = DepthClearFlags.Depth, 
+            ClearFlag flags = ClearFlag.ClearDepth, 
             float depth = 1.0f, byte stencil = 0)
         {
             if (!_clearedSurfaces.Contains(surface))

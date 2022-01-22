@@ -25,7 +25,7 @@ namespace Molten.Graphics
             _value = tempVal;
         }
 
-        internal override void Write(ResourceStream stream)
+        internal override void Write(RawStream stream)
         {
             // Pin array so a pointer can be retrieved safely.
             GCHandle handle = GCHandle.Alloc(_value, GCHandleType.Pinned);

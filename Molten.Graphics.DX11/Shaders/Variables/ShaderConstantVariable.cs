@@ -29,7 +29,7 @@ namespace Molten.Graphics
 
         /// <summary>Called when the variable's value needs to be written to a buffer.</summary>
         /// <param name="stream">The data stream to write the value(s) into.</param>
-        internal abstract void Write(ResourceStream stream);
+        internal abstract void Write(RawStream stream);
 
         /// <summary>Gets the shader buffer which owns the variable.</summary>
         internal ShaderConstantBuffer ParentBuffer { get; private set; }

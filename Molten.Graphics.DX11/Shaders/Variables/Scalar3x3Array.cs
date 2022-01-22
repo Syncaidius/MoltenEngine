@@ -28,7 +28,7 @@ namespace Molten.Graphics
             _isDirty = true;
         }
 
-        internal override void Write(ResourceStream stream)
+        internal override void Write(RawStream stream)
         {
             if (_value != null)
             {

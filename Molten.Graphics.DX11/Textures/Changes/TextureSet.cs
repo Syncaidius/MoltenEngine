@@ -65,7 +65,7 @@ namespace Molten.Graphics
 
                 if (texture.HasFlags(TextureFlags.Dynamic))
                 {
-                    ResourceStream stream = null;
+                    RawStream stream = null;
 
                     MappedSubresource destBox = pipe.MapResource(
                         texture.NativePtr, 

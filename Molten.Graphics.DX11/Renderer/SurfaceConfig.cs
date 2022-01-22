@@ -16,7 +16,7 @@ namespace Molten.Graphics
             _mode = mode;
         }
 
-        internal void RefreshSize(int minWidth, int minHeight)
+        internal void RefreshSize(uint minWidth, uint minHeight)
         {
             switch (_mode)
             {

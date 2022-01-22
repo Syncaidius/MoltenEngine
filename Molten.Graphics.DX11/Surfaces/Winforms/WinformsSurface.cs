@@ -31,13 +31,13 @@ namespace Molten.Graphics
         protected WindowMode _mode = WindowMode.Windowed;
         WindowMode _requestedMode = WindowMode.Windowed;
 
-        internal WinformsSurface(string controlTitle, string controlName, RendererDX11 renderer, int mipCount, int sampleCount) : base(renderer, mipCount, sampleCount)
+        internal WinformsSurface(string controlTitle, string controlName, RendererDX11 renderer, uint mipCount, uint sampleCount) : base(renderer, mipCount, sampleCount)
         {
             _title = controlTitle;
             _ctrlName = controlName;
         }
 
-        protected override void UpdateDescription(int newWidth, int newHeight, int newDepth, int newMipMapCount, int newArraySize, Format newFormat)
+        protected override void UpdateDescription(uint newWidth, uint newHeight, uint newDepth, uint newMipMapCount, uint newArraySize, Format newFormat)
         {
             if (_displayMode.Width != newWidth || _displayMode.Height != newHeight)
             {

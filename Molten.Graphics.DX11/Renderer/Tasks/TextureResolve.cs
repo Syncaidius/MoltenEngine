@@ -11,15 +11,15 @@ namespace Molten.Graphics
     {
         public TextureBase Source;
 
-        public int SourceArraySlice;
+        public uint SourceArraySlice;
 
-        public int SourceMipLevel;
+        public uint SourceMipLevel;
 
         public TextureBase Destination;
 
-        public int DestArraySlice;
+        public uint DestArraySlice;
 
-        public int DestMipLevel;
+        public uint DestMipLevel;
 
         public override void ClearForPool()
         {
@@ -29,8 +29,8 @@ namespace Molten.Graphics
 
         public override void Process(RenderService renderer)
         {
-            int subSource = (Source.MipMapCount * SourceArraySlice) + SourceMipLevel;
-            int subDest = (Destination.MipMapCount * DestArraySlice) + DestMipLevel;
+            uint subSource = (Source.MipMapCount * SourceArraySlice) + SourceMipLevel;
+            uint subDest = (Destination.MipMapCount * DestArraySlice) + DestMipLevel;
 
             (renderer as RendererDX11).Device.Context->ResolveSubresource(Destination.NativePtr, (uint)subDest,
                 Source.NativePtr, (uint)subSource, Source.DxgiFormat);
