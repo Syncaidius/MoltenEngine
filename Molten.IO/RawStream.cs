@@ -57,6 +57,21 @@ namespace Molten.IO
             Write(ptrValue, sizeof(T) * numElements);
         }
 
+        public void Write<T>(T value) where T : unmanaged
+        {
+            Write(&value, sizeof(T));
+        }
+
+        public void Write<T>(T[] values, uint offset, uint numElements) where T : unmanaged
+        {
+            fixed (T* ptrValues = values)
+            {
+                T* p = ptrValues;
+                p += offset;
+                Write(p, numElements);
+            }
+        }
+
         public override void Write(byte[] buffer, int offset, int count)
         {
             fixed (byte* ptr = buffer)
@@ -145,13 +160,32 @@ namespace Molten.IO
             return tmp[0];
         }
 
-        public void Read<T>(T[] destination, uint numElements) where T : unmanaged
+        public void Read<T>(ref T dest) where T : unmanaged
+        {
+            T* tmp = stackalloc T[1];
+            Buffer.MemoryCopy(_ptrData, tmp, sizeof(T), sizeof(T));
+            Position += sizeof(T);
+            dest = tmp[0];
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="destination"></param>
+        /// <param name="offset">Offset in destination array to copy to.</param>
+        /// <param name="numElements"></param>
+        public void Read<T>(T[] destination, uint offset, uint numElements) where T : unmanaged
         {
             long numBytes = sizeof(T) * numElements;
-            fixed(T* ptrDest = destination)
-                Buffer.MemoryCopy(_ptrData, ptrDest, numBytes, numBytes);
+            fixed (T* ptrDest = destination)
+            {
+                T* p = ptrDest;
+                p += offset;
+                Buffer.MemoryCopy(_ptrData, p, numBytes, numBytes);
+            }
 
-            Position += sizeof(T);
+            Position += sizeof(T) * numElements;
         }
 
         public override int Read(byte[] buffer, int offset, int count)
