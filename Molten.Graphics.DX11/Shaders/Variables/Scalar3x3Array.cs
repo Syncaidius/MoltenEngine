@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Runtime.InteropServices;
+using Molten.IO;
 
 namespace Molten.Graphics
 {
@@ -47,7 +47,7 @@ namespace Molten.Graphics
             }
             else
             {
-                stream.Seek(SizeOf, System.IO.SeekOrigin.Current);
+                stream.Seek(SizeOf, SeekOrigin.Current);
             }
         }
 

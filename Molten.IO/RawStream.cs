@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,13 +12,12 @@ namespace Molten.IO
     {
         long _pos;
         long _length;
-        byte* _pData;
-        uint _rowPitch;
-        uint _depthPitch;
+        byte* _ptrDataStart;
+        byte* _ptrData;
 
         internal RawStream(void* ptrData, bool canRead, bool canWrite)
         {
-            _pData = (byte*)ptrData;
+            _ptrDataStart = (byte*)ptrData;
             CanRead = canRead;
             CanWrite = canWrite;
             _length = 0;
@@ -55,11 +55,8 @@ namespace Molten.IO
             if (!CanWrite)
                 throw new RawStreamException(this, $"Map mode does not allow writing.");
 
-            Buffer.MemoryCopy(bytes, _pData, numBytes, numBytes);
-
-            _pos += numBytes;
-            if (_pos > _length)
-                _length = _pos;
+            Buffer.MemoryCopy(bytes, _ptrDataStart, numBytes, numBytes);
+            Position += numBytes;
         }
 
         /// <summary>
@@ -88,11 +85,8 @@ namespace Molten.IO
             if (!CanWrite)
                 throw new RawStreamException(this, $"Map mode does not allow writing.");
 
-            Buffer.MemoryCopy(ptrData, _pData, numBytes, numBytes);
-
-            _pos += numBytes;
-            if (_pos > _length)
-                _length = _pos;
+            Buffer.MemoryCopy(ptrData, _ptrData, numBytes, numBytes);
+            Position += numBytes;
         }
 
         /// <summary>
@@ -106,9 +100,6 @@ namespace Molten.IO
         public void ReadRange<T>(T[] destination, uint startIndex, uint count)
             where T : unmanaged
         {
-            byte* pd = _pData;
-            pd += _pos;
-
             if (!CanRead)
                 throw new RawStreamException(this, $"Map mode does not allow reading.");
 
@@ -118,38 +109,39 @@ namespace Molten.IO
                 T* p = ptr;
                 p += startIndex;
 
-                Buffer.MemoryCopy(pd, p, numBytes, numBytes);
+                Buffer.MemoryCopy(_ptrData, p, numBytes, numBytes);
             }
 
-            _pos += numBytes;
             Position += numBytes;
         }
 
         public T Read<T>() where T : unmanaged
         {
             T* tmp = stackalloc T[1];
-            byte* pd = _pData;
-            pd += _pos;
-
-            Buffer.MemoryCopy(pd, tmp, sizeof(T), sizeof(T));
-
-            _pos += sizeof(T);
+            Buffer.MemoryCopy(_ptrData, tmp, sizeof(T), sizeof(T));
+            Position += sizeof(T);
             return tmp[0];
+        }
+
+        public void Read<T>(T[] destination, uint numElements) where T : unmanaged
+        {
+            long numBytes = sizeof(T) * numElements;
+            fixed(T* ptrDest = destination)
+                Buffer.MemoryCopy(_ptrData, ptrDest, numBytes, numBytes);
+
+            Position += sizeof(T);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            byte* pd = _pData;
-            pd += _pos;
-
             fixed(byte* ptrBuffer = buffer)
             {
                 byte* pBuffer = ptrBuffer;
                 pBuffer += offset;
-                Buffer.MemoryCopy(pd, pBuffer, count, count);
+                Buffer.MemoryCopy(_ptrData, pBuffer, count, count);
             }
 
-            _pos += count;
+            Position += count;
             return count;
         }
 
@@ -184,6 +176,7 @@ namespace Molten.IO
                     break;
             }
 
+            _ptrData = _ptrDataStart + _pos;
             return _pos;
         }
 
@@ -210,6 +203,8 @@ namespace Molten.IO
                     else
                         _pos = value;
                 }
+
+                _ptrData = _ptrDataStart + _pos;
             }
         }
 
