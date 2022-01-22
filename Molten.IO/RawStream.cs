@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Molten.IO
 {
+    /// <summary>
+    /// A <see cref="Stream"/> implementation for writing to a block of unsafe, fixed-size memory.
+    /// </summary>
     public unsafe class RawStream : Stream
     {
         long _pos;
@@ -15,12 +18,27 @@ namespace Molten.IO
         byte* _ptrDataStart;
         byte* _ptrData;
 
-        internal RawStream(void* ptrData, bool canRead, bool canWrite)
+        internal RawStream(void* ptrData, uint numBytes, bool canRead, bool canWrite)
         {
-            _ptrDataStart = (byte*)ptrData;
+            _ptrData = (byte*)ptrData;
+            _ptrDataStart = _ptrData;
             CanRead = canRead;
             CanWrite = canWrite;
-            _length = 0;
+            _length = numBytes;
+        }
+
+        /// <summary>
+        /// Sets the data source of the current <see cref="RawStream"/>.
+        /// </summary>
+        /// <remarks>Resets <see cref="Position"/> to zero and updates <see cref="Length"/>.</remarks>
+        /// <param name="ptrData">A pointer to the source data.</param>
+        /// <param name="numBytes">The number of bytes that <paramref name="ptrData"/> represents</param>.
+        public void SetSource(void* ptrData, uint numBytes)
+        {
+            _ptrDataStart = (byte*)ptrData;
+            _ptrDataStart = _ptrData;
+            _length = numBytes;
+            _pos = 0;
         }
 
         public override void SetLength(long value)
@@ -28,10 +46,15 @@ namespace Molten.IO
             if (_length <= 0)
                 throw new RawStreamException(this, "Length must be greater than zero.");
 
-            if (_pos > _length)
-                _pos = _length;
+            if (_length < _pos)
+                throw new RawStreamException(this, "Length cannot be less than the current position.");
 
             _length = value;
+        }
+
+        public void Write<T>(T* ptrValue, uint numElements = 1) where T : unmanaged
+        {
+            Write(ptrValue, sizeof(T) * numElements);
         }
 
         public override void Write(byte[] buffer, int offset, int count)
@@ -47,15 +70,15 @@ namespace Molten.IO
         public void Write(byte[] bytes)
         {
             fixed (byte* ptr = bytes)
-                Write(ptr, (uint)bytes.Length);
+                Write(ptr, bytes.LongLength);
         }
 
-        public void Write(byte* bytes, uint numBytes)
+        public void Write(void* pData, long numBytes)
         {
             if (!CanWrite)
                 throw new RawStreamException(this, $"Map mode does not allow writing.");
 
-            Buffer.MemoryCopy(bytes, _ptrDataStart, numBytes, numBytes);
+            Buffer.MemoryCopy(pData, _ptrData, numBytes, numBytes);
             Position += numBytes;
         }
 
@@ -108,7 +131,6 @@ namespace Molten.IO
             {
                 T* p = ptr;
                 p += startIndex;
-
                 Buffer.MemoryCopy(_ptrData, p, numBytes, numBytes);
             }
 
@@ -150,29 +172,15 @@ namespace Molten.IO
             switch (origin)
             {
                 case SeekOrigin.Begin:
-                    _pos += offset;
-                    if (_pos > _length)
-                        _length = _pos;
+                    Position += offset;
                     break;
 
                 case SeekOrigin.End:
-                    long ePos = _length - offset;
-                    if (ePos < 0)
-                        throw new RawStreamException(this, $"The position ({ePos}) would seek below zero.");
-
-                    _pos = ePos;
-                    if (_pos > _length)
-                        _length = _pos;
+                    Position = _length - offset;
                     break;
 
                 case SeekOrigin.Current:
-                    long cPos = _pos + offset;
-                    if(cPos < 0)
-                        throw new RawStreamException(this, $"The position ({cPos}) would seek below zero.");
-
-                    _pos = cPos;
-                    if (_pos > _length)
-                        _length = _pos;
+                    Position = _pos + offset;
                     break;
             }
 
@@ -185,37 +193,45 @@ namespace Molten.IO
             // TODO implement optional buffering? (which would need flushing)
         }
 
+        /// <summary>
+        /// Gets or sets the stream position.
+        /// </summary>
         public override long Position
         {
             get => _pos;
             set
             {
-                if (CanWrite)
-                {
-                    _pos = value;
-                    if (_pos > _length)
-                        _length = _pos;
-                }
-                else
-                {
-                    if (value > _length)
-                        throw new RawStreamException(this, $"Position cannot be outside stream length ({_length}).");
-                    else
-                        _pos = value;
-                }
+                if (value > _length && _pos > 0)
+                    throw new RawStreamException(this, $"Position cannot be less than zero or greater than the stream length.");
 
+                _pos = value;
                 _ptrData = _ptrDataStart + _pos;
             }
         }
 
+        /// <summary>
+        /// Gets whether or not the stream can seek using <see cref="Seek(long, SeekOrigin)"/>.
+        /// </summary>
         public override bool CanSeek => true;
 
+        /// <summary>
+        /// Gets whether or not the stream can perform read operations.
+        /// </summary>
         public override bool CanRead { get; }
 
+        /// <summary>
+        /// Gets whether or not the stream can perform write operations.
+        /// </summary>
         public override bool CanWrite { get; }
 
+        /// <summary>
+        /// Gets whether or not the stream will timeout.
+        /// </summary>
         public override bool CanTimeout => false;
 
+        /// <summary>
+        /// Gets the length of the stream's source/target data.
+        /// </summary>
         public override long Length => _length;
     }
 }
