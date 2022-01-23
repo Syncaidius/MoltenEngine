@@ -66,6 +66,34 @@ namespace Molten.Graphics
             Output.DepthWritePermission = GraphicsDepthWritePermission.Enabled;
         }
 
+        /// <summary>
+        /// Maps a resource on the current <see cref="PipeDX11"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="resource"></param>
+        /// <param name="subresource"></param>
+        /// <param name="mapType"></param>
+        /// <param name="mapFlags"></param>
+        /// <returns></returns>
+        internal MappedSubresource MapResource<T>(T* resource, uint subresource, Map mapType, MapFlag mapFlags)
+            where T : unmanaged
+        {
+            MappedSubresource mapping = new MappedSubresource();
+            Context->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
+
+            return mapping;
+        }
+
+        /// <summary>
+        /// Maps a resource on the current <see cref="PipeDX11"/> and provides a <see cref="RawStream"/> to aid read-write operations.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="resource"></param>
+        /// <param name="subresource"></param>
+        /// <param name="mapType"></param>
+        /// <param name="mapFlags"></param>
+        /// <param name="stream"></param>
+        /// <returns></returns>
         internal MappedSubresource MapResource<T>(T* resource, uint subresource, Map mapType, MapFlag mapFlags, out RawStream stream)
             where T: unmanaged
         {

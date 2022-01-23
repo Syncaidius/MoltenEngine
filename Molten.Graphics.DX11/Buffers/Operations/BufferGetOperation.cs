@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal struct BufferGetOperation<T> : IBufferOperation where T : struct
+    internal struct BufferGetOperation<T> : IBufferOperation where T : unmanaged
     {
         /// <summary>The number of bytes to offset the change, from the start of the provided <see cref="SourceSegment"/>.</summary>
         internal uint ByteOffset;
