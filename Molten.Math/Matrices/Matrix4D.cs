@@ -54,7 +54,7 @@ namespace Molten
     /// Represents a 4x4 mathematical matrix.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Matrix4D : IEquatable<Matrix4D>, IFormattable
+    public struct Matrix4D : IEquatable<Matrix4D>, IFormattable, ITransposedMatrix<Matrix4D>
     {
         /// <summary>
         /// The size of the <see cref="Matrix4F"/> type, in bytes.
@@ -568,14 +568,6 @@ namespace Molten
         public void Invert()
         {
             Invert(ref this, out this);
-        }
-
-        /// <summary>
-        /// Transposes the matrix.
-        /// </summary>
-        public void Transpose()
-        {
-            Transpose(ref this, out this);
         }
 
         /// <summary>
@@ -1258,6 +1250,23 @@ namespace Molten
             Matrix4D result;
             SmoothStep(ref start, ref end, amount, out result);
             return result;
+        }
+
+        /// <summary>
+        /// Transposes the matrix in-place.
+        /// </summary>
+        public void Transpose()
+        {
+            Transpose(ref this, out this);
+        }
+
+        /// <summary>
+        /// Transposes the matrix and outputs it to <paramref name="result"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        public void Transpose(out Matrix4D result)
+        {
+            Transpose(ref this, out result);
         }
 
         /// <summary>

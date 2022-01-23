@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 namespace Molten
 {
     /// <summary>
-    /// Represents a 4x4 mathematical Matrix5x4.
+    /// Represents a 5x4 matrix.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Matrix5x4 : IEquatable<Matrix5x4>, IFormattable

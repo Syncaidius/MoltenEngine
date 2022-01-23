@@ -8,6 +8,7 @@ using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 using Molten.Collections;
 using Silk.NET.Core.Native;
+using Molten.IO;
 
 namespace Molten.Graphics
 {
@@ -289,14 +290,14 @@ namespace Molten.Graphics
 
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
         internal void Set<T>(
-            PipeDX11 pipe, 
-            T[] data, 
-            uint startIndex, 
+            PipeDX11 pipe,
+            T[] data,
+            uint startIndex,
             uint count,
-            uint dataStride = 0, 
-            uint byteOffset = 0, 
-            StagingBuffer staging = null) 
-            where T : struct
+            uint dataStride = 0,
+            uint byteOffset = 0,
+            StagingBuffer staging = null)
+            where T : unmanaged
         {
             if (dataStride == 0)
                 dataStride = (uint)Marshal.SizeOf<T>();
@@ -305,7 +306,7 @@ namespace Molten.Graphics
 
             GetStream(pipe, byteOffset, dataSize, (buffer, stream) =>
             {
-                stream.WriteRange(data, startIndex, count);
+                stream.WriteRange<T>(data, startIndex, count);
             }, staging);
         }
 
@@ -318,7 +319,7 @@ namespace Molten.Graphics
         /// A value of 0 will force the stride of <see cref="{T}"/> to be automatically calculated, which may cause a tiny performance hit.</param>
         /// <param name="byteOffset">The start location within the buffer to start copying from, in bytes.</param>
         internal void Get<T>(PipeDX11 pipe, T[] destination, uint startIndex, uint count, uint dataStride, uint byteOffset = 0)
-            where T : struct
+            where T : unmanaged
         {
             uint readOffset = startIndex * dataStride;
 

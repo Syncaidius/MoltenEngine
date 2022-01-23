@@ -3,7 +3,7 @@
     /// <summary>
     /// 2 row, 3 column matrix.
     /// </summary>
-    public struct Matrix2x3F
+    public struct Matrix2x3F : ITransposedMatrix<Matrix3x2F>
     {
         /// <summary>
         /// Value at row 1, column 1 of the matrix.
@@ -53,6 +53,40 @@
             M21 = m21;
             M22 = m22;
             M23 = m23;
+        }
+
+        /// <summary>
+        /// Creates an array containing the elements of the matrix.
+        /// </summary>
+        /// <returns>A sixteen-element array containing the components of the matrix.</returns>
+        public float[] ToArray()
+        {
+            return new[] { M11, M12, M13, M21, M22, M23 };
+        }
+
+        public void Transpose(out Matrix3x2F result)
+        {
+            result.M11 = M11;
+            result.M12 = M21;
+            result.M31 = M13;
+            result.M21 = M12;
+            result.M22 = M22;
+            result.M32 = M23;
+        }
+
+        /// <summary>
+        /// Computes the transposed matrix of a matrix.
+        /// </summary>
+        /// <param name="matrix">Matrix to transpose.</param>
+        /// <param name="result">Transposed matrix.</param>
+        public static void Transpose(ref Matrix2x3F matrix, out Matrix3x2F result)
+        {
+            result.M11 = matrix.M11;
+            result.M12 = matrix.M21;
+            result.M21 = matrix.M12;
+            result.M22 = matrix.M22;
+            result.M31 = matrix.M13;
+            result.M32 = matrix.M23;
         }
 
         /// <summary>
@@ -210,24 +244,6 @@
 #endif
             result.X = matrix.M11 * v.X + matrix.M12 * v.Y + matrix.M13 * v.Z;
             result.Y = matrix.M21 * v.X + matrix.M22 * v.Y + matrix.M23 * v.Z;
-        }
-
-
-        /// <summary>
-        /// Computes the transposed matrix of a matrix.
-        /// </summary>
-        /// <param name="matrix">Matrix to transpose.</param>
-        /// <param name="result">Transposed matrix.</param>
-        public static void Transpose(ref Matrix2x3F matrix, out Matrix3x2F result)
-        {
-            result.M11 = matrix.M11;
-            result.M12 = matrix.M21;
-
-            result.M21 = matrix.M12;
-            result.M22 = matrix.M22;
-
-            result.M31 = matrix.M13;
-            result.M32 = matrix.M23;
         }
 
 

@@ -29,7 +29,7 @@ namespace Molten
     /// Direct2D Matrix3x2. Supports implicit cast from <see cref="Matrix4F"/>.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Matrix3x2F
+    public struct Matrix3x2F : ITransposedMatrix<Matrix2x3F>
     {
         /// <summary>
         /// Gets the identity matrix.
@@ -268,6 +268,26 @@ namespace Molten
         public float[] ToArray()
         {
             return new[] { M11, M12, M21, M22, M31, M32 };
+        }
+
+        public void Transpose(out Matrix2x3F result)
+        {
+            result.M11 = M11;
+            result.M12 = M21;
+            result.M13 = M31;
+            result.M21 = M12;
+            result.M22 = M22;
+            result.M23 = M32;
+        }
+
+        /// <summary>
+        /// Calculates the transpose of the specified Matrix3x3.
+        /// </summary>
+        /// <param name="value">The Matrix3x3 whose transpose is to be calculated.</param>
+        /// <param name="result">When the method completes, contains the transpose of the specified Matrix3x3.</param>
+        public static void Transpose(ref Matrix3x2F value, out Matrix2x3F result)
+        {
+            value.Transpose(out result);
         }
 
         /// <summary>

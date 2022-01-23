@@ -54,7 +54,7 @@ namespace Molten
     /// Represents a single-precision 4x4 mathematical matrix.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Matrix4F : IEquatable<Matrix4F>, IFormattable
+    public struct Matrix4F : IEquatable<Matrix4F>, IFormattable, ITransposedMatrix<Matrix4F>
     {
         /// <summary>
         /// The size of the <see cref="Matrix4F"/> type, in bytes.
@@ -568,14 +568,6 @@ namespace Molten
         public void Invert()
         {
             Invert(ref this, out this);
-        }
-
-        /// <summary>
-        /// Transposes the matrix.
-        /// </summary>
-        public void Transpose()
-        {
-            Transpose(ref this, out this);
         }
 
         /// <summary>
@@ -1261,9 +1253,26 @@ namespace Molten
         }
 
         /// <summary>
+        /// Transposes the matrix in-place.
+        /// </summary>
+        public void Transpose()
+        {
+            Transpose(ref this, out this);
+        }
+
+        /// <summary>
+        /// Transposes the matrix and outputs it to <paramref name="result"/>.
+        /// </summary>
+        /// <param name="result"></param>
+        public void Transpose(out Matrix4F result)
+        {
+            Transpose(ref this, out result);
+        }
+
+        /// <summary>
         /// Calculates the transpose of the specified matrix.
         /// </summary>
-        /// <param name="value">The matrix whose transpose is to be calculated.</param>
+        /// <param name="value">The MatrixDouble whose transpose is to be calculated.</param>
         /// <param name="result">When the method completes, contains the transpose of the specified matrix.</param>
         public static void Transpose(ref Matrix4F value, out Matrix4F result)
         {

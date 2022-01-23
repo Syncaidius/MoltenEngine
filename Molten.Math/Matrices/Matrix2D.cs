@@ -4,7 +4,7 @@ namespace Molten
     /// <summary>
     /// 2 row, 2 column matrix.
     /// </summary>
-    public struct Matrix2D
+    public struct Matrix2D : ITransposedMatrix<Matrix2D>
     {
         /// <summary>
         /// A single-precision Matrix2x2 with values intialized to the identity of a 2 x 2 matrix
@@ -233,6 +233,19 @@ namespace Molten
             result.Y = vX * matrix.M12 + vY * matrix.M22;
         }
 
+        public double[] ToArray()
+        {
+            return new[] { M11, M12, M21, M22 };
+        }
+
+        public void Transpose(out Matrix2D result)
+        {
+            result.M21 = M12;
+            result.M12 = M21;
+            result.M11 = M11;
+            result.M22 = M22;
+        }
+
         /// <summary>
         /// Computes the transposed matrix of a matrix.
         /// </summary>
@@ -240,13 +253,7 @@ namespace Molten
         /// <param name="result">Transposed matrix.</param>
         public static void Transpose(ref Matrix2D matrix, out Matrix2D result)
         {
-            double m21 = matrix.M12;
-
-            result.M11 = matrix.M11;
-            result.M12 = matrix.M21;
-
-            result.M21 = m21;
-            result.M22 = matrix.M22;
+            matrix.Transpose(out result);
         }
         
         /// <summary>

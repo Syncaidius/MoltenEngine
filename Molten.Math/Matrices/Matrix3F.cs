@@ -54,7 +54,7 @@ namespace Molten
     /// Represents a single-precision 3x3 Matrix ( contains only Scale and Rotation ).
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Matrix3F : IEquatable<Matrix3F>, IFormattable
+    public struct Matrix3F : IEquatable<Matrix3F>, IFormattable, ITransposedMatrix<Matrix3F>
     {
         /// <summary>
         /// The size of the <see cref="Matrix3F"/> type, in bytes.
@@ -395,14 +395,6 @@ namespace Molten
         public void Invert()
         {
             Invert(ref this, out this);
-        }
-
-        /// <summary>
-        /// Transposes the Matrix3x3.
-        /// </summary>
-        public void Transpose()
-        {
-            Transpose(ref this, out this);
         }
 
         /// <summary>
@@ -1039,24 +1031,41 @@ namespace Molten
         }
 
         /// <summary>
+        /// Transposes the Matrix3x3.
+        /// </summary>
+        public void Transpose()
+        {
+            Transpose(ref this, out this);
+        }
+
+        /// <summary>
         /// Calculates the transpose of the specified Matrix3x3.
         /// </summary>
-        /// <param name="value">The Matrix3x3 whose transpose is to be calculated.</param>
+        /// <param name="value">The Matrix3x3Double whose transpose is to be calculated.</param>
+        /// <param name="result">When the method completes, contains the transpose of the specified Matrix3x3.</param>
+        public void Transpose(out Matrix3F result)
+        {
+            Transpose(ref this, out result);
+        }
+
+        /// <summary>
+        /// Calculates the transpose of the specified Matrix3x3.
+        /// </summary>
+        /// <param name="value">The Matrix3x3Double whose transpose is to be calculated.</param>
         /// <param name="result">When the method completes, contains the transpose of the specified Matrix3x3.</param>
         public static void Transpose(ref Matrix3F value, out Matrix3F result)
         {
-            Matrix3F temp = new Matrix3F();
-            temp.M11 = value.M11;
-            temp.M12 = value.M21;
-            temp.M13 = value.M31;
-            temp.M21 = value.M12;
-            temp.M22 = value.M22;
-            temp.M23 = value.M32;
-            temp.M31 = value.M13;
-            temp.M32 = value.M23;
-            temp.M33 = value.M33;
-
-            result = temp;
+            Matrix3F tmp;
+            tmp.M11 = value.M11;
+            tmp.M12 = value.M21;
+            tmp.M13 = value.M31;
+            tmp.M21 = value.M12;
+            tmp.M22 = value.M22;
+            tmp.M23 = value.M32;
+            tmp.M31 = value.M13;
+            tmp.M32 = value.M23;
+            tmp.M33 = value.M33;
+            result = tmp;
         }
 
         /// <summary>
