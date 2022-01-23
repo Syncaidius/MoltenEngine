@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -170,7 +171,8 @@ namespace Molten
         /// Releases the pinned handle once finished.</summary>
         /// <param name="obj">The object.</param>
         /// <param name="callback">The callback.</param>
-        public static void PinObject(object obj, Action<IntPtr> callback)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void PinObject(in object obj, Action<IntPtr> callback)
         {
             // Pin array so a pointer can be retrieved safely.
             GCHandle handle = GCHandle.Alloc(obj, GCHandleType.Pinned);

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    public abstract class ShaderConstantVariable : IShaderValue
+    public abstract class ShaderConstantVariable : IShaderValue, IDisposable
     {
         /// <summary>Gets the byte offset of the variable.</summary>
         internal uint ByteOffset;
@@ -18,6 +18,8 @@ namespace Molten.Graphics
         {
             ParentBuffer = parent;
         }
+
+        public abstract void Dispose();
 
         /// <summary>Marks the parent buffer as dirty.</summary>
         protected void DirtyParent()

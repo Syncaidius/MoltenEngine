@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.IO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,8 +14,10 @@ namespace Molten.Graphics
         public ScalarFloat3x3Variable(ShaderConstantBuffer parent)
             : base(parent)
         {
-            SizeOf = sizeof(float) * (3 * 3);
+            SizeOf = Matrix3F.SizeInBytes;
         }
+
+        public override void Dispose() { }
 
         internal override void Write(RawStream stream)
         {

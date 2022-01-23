@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <None Remove="Data\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Silk.NET.Direct3D.Compilers" Version="2.12.0" />
     <PackageReference Include="Silk.NET.Direct3D11" Version="2.12.0" />
   </ItemGroup>
@@ -21,10 +27,6 @@
     <ProjectReference Include="..\Molten.Platform.Windows\Molten.Platform.Windows.csproj" />
     <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\" />
   </ItemGroup>
 
 </Project>

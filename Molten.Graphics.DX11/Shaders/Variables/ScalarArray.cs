@@ -3,25 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
+using Molten.IO;
 
 namespace Molten.Graphics
 {
     /// <summary>A shader matrix variable.</summary>
-    internal class ScalarArray<T> : ShaderConstantVariable where T : struct
+    internal unsafe class ScalarArray<T> : ShaderConstantVariable where T : unmanaged
     {
-        Type _elementType;
+        static Type _elementType = typeof(T);
+        static int _stride = sizeof(T);
+
         Array _value;
-        int _byteSize;
         internal int ExpectedElements;
 
         public ScalarArray(ShaderConstantBuffer parent, uint expectedElements)
             : base(parent)
         {
-            _elementType = typeof(T);
-            _byteSize = Marshal.SizeOf(_elementType);
-
-            SizeOf = expectedElements * _byteSize;
+            SizeOf = expectedElements * _stride;
         }
+
+        public override void Dispose() { }
 
         internal override void Write(RawStream stream)
         {
@@ -29,12 +30,12 @@ namespace Molten.Graphics
             {
                 EngineUtil.PinObject(_value, (ptr) =>
                 {
-                    stream.Write(ptr, 0, SizeOf);
+                    stream.Write(ptr.ToPointer(), SizeOf);
                 });
             }
             else
             {
-                stream.Seek(SizeOf, System.IO.SeekOrigin.Current);
+                stream.Seek(SizeOf, SeekOrigin.Current);
             }
         }
 
@@ -56,10 +57,10 @@ namespace Molten.Graphics
                     {
                         _value = (Array)value;
 
-                        int valueBytes = _value.Length * _byteSize;
+                        int valueBytes = _value.Length * _stride;
 
                         if (valueBytes != SizeOf)
-                            throw new InvalidOperationException("Value that was set is not of the expected size (" + SizeOf + " bytes)");
+                            throw new InvalidOperationException($"Value that was set is not of the expected size ({SizeOf}bytes)");
                     }
                     DirtyParent();
                 }

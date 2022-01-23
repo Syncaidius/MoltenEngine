@@ -1,63 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices;
+using Molten.IO;
 
 namespace Molten.Graphics
 {
-    internal class ScalarVariable<T> : ShaderConstantVariable where T : struct 
+    internal unsafe class ScalarVariable<T> : ShaderConstantVariable where T : unmanaged 
     {
+        static uint _stride = (uint)sizeof(T);
         uint _expectedElements;
-        uint _stride;
-
-        uint _valueBytes;
-        unsafe object _value;
+        T* _value;
 
         internal ScalarVariable(ShaderConstantBuffer parent, uint rows, uint columns) : base(parent)
         {
-            _stride = Marshal.SizeOf<T>();
             _expectedElements = columns * rows;
             SizeOf = _stride * _expectedElements;
-
-            T[] tempVal = new T[_expectedElements];
-            _value = tempVal;
+            _value = EngineUtil.AllocArray<T>(_expectedElements);
         }
 
         internal override void Write(RawStream stream)
         {
-            // Pin array so a pointer can be retrieved safely.
-            GCHandle handle = GCHandle.Alloc(_value, GCHandleType.Pinned);
-            IntPtr ptr = (IntPtr)(handle.AddrOfPinnedObject().ToInt64());
-            stream.Write(ptr, 0, SizeOf);
+            stream.Write(_value, SizeOf);
+        }
 
-            // Free GC handle
-            handle.Free();
+        public override void Dispose()
+        {
+            EngineUtil.Free(ref _value);
         }
 
         public override object Value
         {
-            get
-            {                
-                return _value;
-            }
+            get => *_value;
 
             set
             {
                 Type t = value.GetType();
-                uint valBytes = (uint)Marshal.SizeOf(t);
-
-                if (valBytes != SizeOf)
+                if (!t.IsValueType)
                 {
-                    throw new InvalidOperationException("Value is not of the expected byte size.");
+                    throw new InvalidOperationException("The value is not a Value-Type");
                 }
                 else
                 {
-                    _value = value;
-                    _valueBytes = valBytes;
-                    DirtyParent();
+                    uint valBytes = (uint)Marshal.SizeOf(t);
+                    if(valBytes != SizeOf)
+                        throw new InvalidOperationException("Value is not of the expected byte size.");
                 }
+
+                EngineUtil.PinObject(in value, (ptr) =>
+                {
+                    void * p = ptr.ToPointer();
+                    Buffer.MemoryCopy(p, _value, SizeOf, SizeOf);
+                });
+
+                DirtyParent();
             }
         }
     }

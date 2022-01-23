@@ -3,31 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
+using Molten.IO;
 
 namespace Molten.Graphics
 {
     /// <summary>A shader matrix variable.</summary>
-    internal class ScalarFloat4x4ArrayVariable : ShaderConstantVariable
+    internal unsafe class ScalarFloat4x4ArrayVariable : ShaderConstantVariable
     {
-        Type _elementType = typeof(Matrix4F);
+        static uint _stride = (uint)Matrix4F.SizeInBytes;
+        static Type _elementType = typeof(Matrix4F);
+
         Matrix4F[] _value;
-        uint _byteSize;
         uint _expectedElements;
         bool _isDirty;
 
         public ScalarFloat4x4ArrayVariable(ShaderConstantBuffer parent, uint expectedElements)
             : base(parent)
         {
-            _byteSize = (uint)Matrix4F.SizeInBytes;
             _expectedElements = expectedElements;
             _value = new Matrix4F[_expectedElements];
-            SizeOf = _expectedElements * _byteSize;
+            SizeOf = _expectedElements * _stride;
 
             for (int i = 0; i < _value.Length; i++)
                 _value[i] = Matrix4F.Identity;
 
             _isDirty = true;
         }
+
+        public override void Dispose() { }
 
         internal override void Write(RawStream stream)
         {
@@ -41,10 +44,8 @@ namespace Molten.Graphics
                     _isDirty = false;
                 }
 
-                EngineUtil.PinObject(_value, (ptr) =>
-                {
-                    stream.Write(ptr, 0, SizeOf);
-                });
+                fixed (Matrix4F* ptrValue = _value)
+                    stream.Write(ptrValue, SizeOf);
             }
             else
             {
@@ -71,14 +72,10 @@ namespace Molten.Graphics
                         Matrix4F[] val = (Matrix4F[])value;
 
                         if (_value.Length != val.Length)
-                            throw new InvalidOperationException("Value that was set is not of the expected size (" + _value.Length + " elements).");
+                            throw new InvalidOperationException($"Value that was set is not of the expected size ({_value.Length} elements).");
 
-                        // Transpose matrix values in the matrix.
-                        for (int i = 0; i < val.Length; i++)
-                            _value[i] = val[i];
-
+                        Buffer.BlockCopy(val, 0, _value, 0, val.Length);
                         _isDirty = true;
-
                         DirtyParent();
                     }
                     else

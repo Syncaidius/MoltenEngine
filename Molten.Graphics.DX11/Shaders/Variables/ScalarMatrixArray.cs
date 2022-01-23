@@ -4,23 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using Molten.IO;
 
 namespace Molten.Graphics
 {
-    internal class ScalarMatrixArray<T> : ShaderConstantVariable where T : struct
+    internal unsafe class ScalarMatrixArray<T> : ShaderConstantVariable where T : unmanaged
     {
-        Type _elementType;
-        uint _components;
-        uint _stride;
+        static Type _elementType = typeof(T);
+        static uint _stride = (uint)sizeof(T);
 
+        uint _components;
         uint _valueBytes;
         uint _expectedElements;
         Array _value;
 
         internal ScalarMatrixArray(ShaderConstantBuffer parent, uint rows, uint columns, uint expectedElements) : base(parent)
         {
-            _elementType = typeof(T);
-            _stride = (uint)Marshal.SizeOf(_elementType);
             _components = columns * rows;
             _expectedElements = expectedElements;
             SizeOf = (_stride * _components) * _expectedElements;
@@ -29,18 +28,20 @@ namespace Molten.Graphics
             _value = tempVal;
         }
 
+        public override void Dispose() { }
+
         internal override void Write(RawStream stream)
         {
             if (_value != null)
             {
                 EngineUtil.PinObject(_value, (ptr) =>
                 {
-                    stream.Write(ptr, 0, SizeOf);
+                    stream.Write(ptr.ToPointer(), SizeOf);
                 });
             }
             else
             {
-                stream.Seek(SizeOf, System.IO.SeekOrigin.Current);
+                stream.Seek(SizeOf, SeekOrigin.Current);
             }
         }
 

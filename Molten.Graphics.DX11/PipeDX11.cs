@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Silk.NET.Direct3D11;
+using Molten.IO;
 
 namespace Molten.Graphics
 {
@@ -74,7 +75,7 @@ namespace Molten.Graphics
             bool canWrite = !((mapType & Map.MapRead) == Map.MapRead);
             bool canRead = !((mapType & Map.MapRead) == Map.MapRead ||
                 (mapType & Map.MapReadWrite) == Map.MapReadWrite);
-            stream = new RawStream(mapping.PData, canRead, canWrite);
+            stream = new RawStream(mapping.PData, uint.MaxValue, canRead, canWrite);
 
             return mapping;
         }

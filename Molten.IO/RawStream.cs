@@ -18,7 +18,7 @@ namespace Molten.IO
         byte* _ptrDataStart;
         byte* _ptrData;
 
-        internal RawStream(void* ptrData, uint numBytes, bool canRead, bool canWrite)
+        public RawStream(void* ptrData, uint numBytes, bool canRead, bool canWrite)
         {
             _ptrData = (byte*)ptrData;
             _ptrDataStart = _ptrData;
@@ -60,6 +60,12 @@ namespace Molten.IO
         public void Write<T>(T value) where T : unmanaged
         {
             Write(&value, sizeof(T));
+        }
+
+        public void Write<T>(ref T value) where T : unmanaged
+        {
+            fixed (T* p = &value)
+                Write(p, sizeof(T));
         }
 
         public void Write<T>(T[] values, uint offset, uint numElements) where T : unmanaged

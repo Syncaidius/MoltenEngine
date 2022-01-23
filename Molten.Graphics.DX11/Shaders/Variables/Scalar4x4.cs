@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.IO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,12 +14,14 @@ namespace Molten.Graphics
         public ScalarFloat4x4Variable(ShaderConstantBuffer parent)
             : base(parent)
         {
-            SizeOf = sizeof(float) * (4 * 4);
+            SizeOf = Matrix4F.SizeInBytes;
         }
+
+        public override void Dispose() { }
 
         internal override void Write(RawStream stream)
         {
-            stream.Write(_value);
+            stream.Write(ref _value);
         }
 
         public override object Value

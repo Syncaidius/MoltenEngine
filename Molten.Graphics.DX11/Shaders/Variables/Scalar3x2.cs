@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.IO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,8 @@ namespace Molten.Graphics
         {
             SizeOf = sizeof(float) * (3 * 2);
         }
+
+        public override void Dispose() { }
 
         internal override void Write(RawStream stream)
         {
