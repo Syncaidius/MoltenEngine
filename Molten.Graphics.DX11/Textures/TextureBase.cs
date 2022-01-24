@@ -13,7 +13,7 @@ namespace Molten.Graphics
 
     public unsafe abstract partial class TextureBase : PipeBindableResource, ITexture
     {
-        ThreadedQueue<ITextureChange> _pendingChanges;
+        ThreadedQueue<ITextureTask> _pendingChanges;
 
         /// <summary>Triggered right before the internal texture resource is created.</summary>
         public event TextureEvent OnPreCreate;
@@ -44,7 +44,7 @@ namespace Molten.Graphics
             Flags = flags;
             ValidateFlagCombination();
 
-            _pendingChanges = new ThreadedQueue<ITextureChange>();
+            _pendingChanges = new ThreadedQueue<ITextureTask>();
 
             Width = width;
             Height = height;
@@ -488,7 +488,7 @@ namespace Molten.Graphics
 
         protected abstract ID3D11Resource* CreateResource(bool resize);
 
-        private protected void QueueChange(ITextureChange change)
+        private protected void QueueChange(ITextureTask change)
         {
             _pendingChanges.Enqueue(change);
         }
@@ -587,12 +587,20 @@ namespace Molten.Graphics
             if(_native == null)
                 CreateTexture(false);
 
+            bool altered = false;
+
             // process all changes for the current pipe.
             while (_pendingChanges.Count > 0)
             {
-                if (_pendingChanges.TryDequeue(out ITextureChange change))
+                if (_pendingChanges.TryDequeue(out ITextureTask change))
+                {
                     change.Process(pipe, this);
+                    altered = altered || change.UpdatesTexture;
+                }
             }
+
+            if (altered)
+                Version++;
         }
 
         protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)

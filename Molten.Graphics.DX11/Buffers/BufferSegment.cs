@@ -171,7 +171,7 @@ namespace Molten.Graphics
             uint count, 
             uint elementOffset = 0, 
             Action<T[]> completionCallback = null) 
-            where T : struct
+            where T : unmanaged
         {
             BufferGetOperation<T> op = new BufferGetOperation<T>()
             {

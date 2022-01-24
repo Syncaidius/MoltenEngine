@@ -134,6 +134,13 @@ namespace Molten.Graphics
             Profiler.Current.CopySubresourceCount++;
         }
 
+        internal void UpdateResource(ID3D11Resource* resource, uint subresource, 
+            Box* region, void* ptrData, uint rowPitch, uint slicePitch, CopyFlags flags = 0)
+        {
+            Context->UpdateSubresource1(resource, subresource, region, ptrData, rowPitch, slicePitch, (uint)flags);
+            Profiler.Current.UpdateSubresourceCount++;
+        }
+
         /// <summary>Dispatches a compute effect to the GPU.</summary>
         public void Dispatch(ComputeTask task, uint x, uint y, uint z)
         {

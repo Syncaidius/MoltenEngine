@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal struct TextureCopyLevel : ITextureChange
+    internal struct TextureCopyLevel : ITextureTask
     {
         public TextureBase Destination;
 

@@ -1,4 +1,5 @@
 ﻿using Molten.Graphics.Textures;
+using Molten.IO;
 using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class TextureSet<T> : ITextureChange where T: struct
+    internal class TextureSet<T> : ITextureTask where T: struct
     {
         public uint MipLevel;
         public T[] Data;
@@ -107,8 +108,9 @@ namespace Molten.Graphics
                         levelWidth = texture.Width >> (int)MipLevel;
                         levelHeight = texture.Height >> (int)MipLevel;
                         uint bcPitch = BCHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
-                        DataBox box = new DataBox(dataPtr, bcPitch, arraySliceBytes);
-                        pipe.Context.UpdateSubresource1(box, texture.UnderlyingResource, subLevel);
+
+                        // TODO support copy flags (DX11.1 feature)
+                        pipe.UpdateResource(texture, subLevel, null, ptrData, bcPitch, arraySliceBytes, 0);
                     }
                     else
                     {
@@ -116,15 +118,14 @@ namespace Molten.Graphics
                         {
                             RectangleUI rect = Area.Value;
                             uint areaPitch = Stride * rect.Width;
-                            DataBox box = new DataBox(dataPtr, areaPitch, Data.Length);
-                            ResourceRegion region = new ResourceRegion();
+                            Box region = new Box();
                             region.Top = rect.Y;
                             region.Front = 0;
                             region.Back = 1;
                             region.Bottom = rect.Bottom;
                             region.Left = rect.X;
                             region.Right = rect.Right;
-                            pipe.Context.UpdateSubresource1(box, texture.UnderlyingResource, subLevel, region);
+                            pipe.UpdateResource(texture, subLevel, &region, ptrData, areaPitch, (uint)Data.Length, 0);
                         }
                         else
                         {
@@ -132,18 +133,8 @@ namespace Molten.Graphics
                             uint y = 0;
                             uint w = Math.Max(texture.Width >> (int)MipLevel, 1);
                             uint h = Math.Max(texture.Height >> (int)MipLevel, 1);
-                            DataBox box = new DataBox(dataPtr, Pitch, arraySliceBytes);
-                            ResourceRegion region = new ResourceRegion();
-                            region.Top = y;
-                            region.Front = 0;
-                            region.Back = 1;
-                            region.Bottom = y + h;
-                            region.Left = x;
-                            region.Right = x + w;
-                            pipe.Context.UpdateSubresource1(box, texture.UnderlyingResource, subLevel, region);
+                            pipe.UpdateResource(texture, subLevel, null, ptrData, Pitch, arraySliceBytes, 0);
                         }
-
-                        pipe.Profiler.Current.UpdateSubresourceCount++;
                     }
                 }
             });

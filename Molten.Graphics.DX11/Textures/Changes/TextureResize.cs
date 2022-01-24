@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal struct TextureResize : ITextureChange
+    internal struct TextureResize : ITextureTask
     {
         public uint NewWidth;
 

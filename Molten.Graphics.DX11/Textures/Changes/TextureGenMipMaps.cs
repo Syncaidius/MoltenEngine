@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal struct TexturegenMipMaps : ITextureChange
+    internal struct TexturegenMipMaps : ITextureTask
     {
         public void Process(PipeDX11 pipe, TextureBase texture)
         {

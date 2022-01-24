@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal struct TextureGet : ITextureChange
+    internal struct TextureGet : ITextureTask
     {
         public TextureBase StagingTexture;
 
