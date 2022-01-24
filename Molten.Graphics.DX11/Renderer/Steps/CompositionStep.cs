@@ -45,16 +45,16 @@ namespace Molten.Graphics
         {
             _orthoCamera.OutputSurface = camera.OutputSurface;
 
-            Rectangle bounds = camera.OutputSurface.Viewport.Bounds;
+            RectangleF vpBounds = camera.OutputSurface.Viewport.Bounds;
             DeviceDX11 device = renderer.Device;
 
             context.CompositionSurface.Clear(context.Scene.BackgroundColor);
             device.UnsetRenderSurfaces();
             device.SetRenderSurface(context.CompositionSurface, 0);
-            device.DepthSurface = null;
+            device.Output.DepthSurface.Value = null;
             device.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
             device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
-            device.Rasterizer.SetScissorRectangle(bounds);
+            device.Rasterizer.SetScissorRectangle((Rectangle)vpBounds);
 
             StateConditions conditions = StateConditions.ScissorTest;
             conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
@@ -65,7 +65,7 @@ namespace Molten.Graphics
             ITexture2D sourceSurface = context.HasComposed ? context.PreviousComposition : _surfaceScene;
 
             renderer.Device.BeginDraw(conditions); // TODO correctly use pipe + conditions here.
-            renderer.SpriteBatcher.Draw(sourceSurface, bounds, Vector2F.Zero, bounds.Size, Color.White, 0, Vector2F.Zero, _matCompose, 0);
+            renderer.SpriteBatcher.Draw(sourceSurface, vpBounds, Vector2F.Zero, vpBounds.Size, Color.White, 0, Vector2F.Zero, _matCompose, 0);
             renderer.SpriteBatcher.Flush(device, _orthoCamera, _dummyData);
             renderer.Device.EndDraw();
 

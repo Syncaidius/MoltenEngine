@@ -11,10 +11,11 @@ namespace Molten.Graphics
         public RenderSurface Surface;
 
         public Color Color;
-         
-        public void Process(PipeDX11 pipe, TextureBase texture)
+
+        public bool Process(PipeDX11 pipe, TextureBase texture)
         {
             Surface.Clear(pipe, Color);
+            return false;
         }
     }
 }

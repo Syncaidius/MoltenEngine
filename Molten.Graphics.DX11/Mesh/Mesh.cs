@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class Mesh<T> : Renderable, IMesh<T> where T : struct, IVertexType
+    public class Mesh<T> : Renderable, IMesh<T> where T : unmanaged, IVertexType
     {
         // private protected is new in C# 7.2. See: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/private-protected
         private protected RendererDX11 _renderer;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Silk.NET.Direct3D11;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace Molten.Graphics
             // Always clear the depth surface at the start of each scene unless otherwise instructed.
             // Will also be cleared if we've just switched to a previously un-rendered surface during this frame.
             if(!camera.Flags.HasFlag(RenderCameraFlags.DoNotClearDepth) || newSurface)
-                _surfaceDepth.Clear(device, DepthClearFlags.Depth | DepthClearFlags.Stencil);
+                _surfaceDepth.Clear(device, ClearFlag.ClearDepth | ClearFlag.ClearStencil);
         }
     }
 }

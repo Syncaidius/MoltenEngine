@@ -8,9 +8,10 @@ namespace Molten.Graphics
 {
     internal struct TexturegenMipMaps : ITextureTask
     {
-        public void Process(PipeDX11 pipe, TextureBase texture)
+        public bool Process(PipeDX11 pipe, TextureBase texture)
         {
             texture.GenerateMipMaps(pipe);
+            return true;
         }
     }
 }

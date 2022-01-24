@@ -118,7 +118,7 @@ namespace Molten.Graphics
             uint maxVertices,
             VertexTopology topology = VertexTopology.TriangleList,
             bool dynamic = false)
-            where T : struct, IVertexType;
+            where T : unmanaged, IVertexType;
 
         /// <summary>
         /// Creates the indexed mesh.
@@ -130,7 +130,7 @@ namespace Molten.Graphics
             VertexTopology topology = VertexTopology.TriangleList,
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit,
             bool dynamic = false)
-            where T : struct, IVertexType;
+            where T : unmanaged, IVertexType;
 
         /// <summary>Compiles a set of shaders from the provided source string.</summary>
         /// <param name="source">The source code to be parsed and compiled.</param>

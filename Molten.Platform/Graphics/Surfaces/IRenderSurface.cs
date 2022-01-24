@@ -8,6 +8,6 @@
         void Clear(Color color);
 
         /// <summary>Gets the viewport that defines the renderable area of the render target.</summary>
-        ViewportUI Viewport { get; }
+        ViewportF Viewport { get; }
     }
 }

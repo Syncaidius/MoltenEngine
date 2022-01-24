@@ -14,11 +14,6 @@ namespace Molten.Graphics
         /// <param name="pipe"></param>
         /// <param name="texture"></param>
         /// <returns></returns>
-        void Process(PipeDX11 pipe, TextureBase texture);
-
-        /// <summary>
-        /// Gets whether or not the change alters the texture in any way.
-        /// </summary>
-        bool UpdatesTexture { get; }
+        bool Process(PipeDX11 pipe, TextureBase texture);
     }
 }

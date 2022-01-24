@@ -77,7 +77,7 @@ namespace Molten.Graphics
         /// <param name="count">The number of elements to copy from the provided data array.</param>
         /// <param name="mipIndex">The index at which to start copying from the provided data array.</param>
         /// <param name="arraySlice">The position in the texture array to start copying the texture data to. For a non-array texture, this should be 0.</param>
-        void SetData<T>(uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0) where T : struct;
+        void SetData<T>(uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0) where T : unmanaged;
 
         /// <summary>Copies the provided data into the texture.</summary>
         /// <param name="data">The slice data to copy to the texture.</param>
@@ -86,7 +86,7 @@ namespace Molten.Graphics
         /// <param name="arraySlice">The position in the texture array to start copying the texture data to. For a non-array texture, this should be 0.</param>
         void SetData(TextureData.Slice data, uint mipLevel, uint arraySlice);
 
-        void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : struct;
+        void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : unmanaged;
 
         /// <summary>Returns the data contained within a texture via a staging texture or directly from the texture itself if possible.</summary>
         /// <param name="stagingTexture">A staging texture to use when retrieving data from the GPU. Only textures

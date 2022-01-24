@@ -21,7 +21,7 @@ namespace Molten.Graphics
         {
             _nullViewport = new ViewportF[1];
 
-            int maxRTs = pipe.Device.Features.SimultaneousRenderSurfaces;
+            uint maxRTs = pipe.Device.Features.SimultaneousRenderSurfaces;
             _scissorRects = new Rectangle[maxRTs];
             _viewports = new ViewportF[maxRTs];
             _apiScissorRects = new Silk.NET.Maths.Rectangle<int>[maxRTs];
@@ -80,7 +80,7 @@ namespace Molten.Graphics
                 RenderSurface surface = null;
                 RenderSurface surfaceZero = Pipe.Output.GetRenderSurface(0);
 
-                for (int i = 0; i < _viewports.Length; i++)
+                for (uint i = 0; i < _viewports.Length; i++)
                 {
                     surface = Pipe.Output.GetRenderSurface(i);
                     _viewports[i] = surface != null ? surface.Viewport : surfaceZero.Viewport;

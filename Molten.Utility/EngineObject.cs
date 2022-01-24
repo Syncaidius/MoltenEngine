@@ -59,6 +59,6 @@ namespace Molten
         /// <summary>
         /// Gets the name of the object. Multiple <see cref="EngineObject"/> can have the same name.
         /// </summary>
-        public string Name { get; protected set; }
+        public string Name { get; set; }
     }
 }

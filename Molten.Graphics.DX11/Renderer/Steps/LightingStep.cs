@@ -33,7 +33,8 @@ namespace Molten.Graphics
             uint stride = (uint)Marshal.SizeOf<LightData>();
             uint maxLights = 2000; // TODO move to graphics settings
             uint bufferByteSize = stride * maxLights;
-            _lightDataBuffer = new GraphicsBuffer(renderer.Device, BufferMode.DynamicRing, BindFlag.BindShaderResource, bufferByteSize, ResourceOptionFlags.BufferStructured, structuredStride: stride);
+            _lightDataBuffer = new GraphicsBuffer(renderer.Device, BufferMode.DynamicRing, 
+                BindFlag.BindShaderResource, bufferByteSize, ResourceMiscFlag.ResourceMiscBufferStructured, structuredStride: stride);
             _lightSegment = _lightDataBuffer.Allocate<LightData>(maxLights);
             LoadShaders(renderer);
         }
@@ -71,7 +72,7 @@ namespace Molten.Graphics
             _surfaceLighting.Clear(renderer.Device, context.Scene.AmbientLightColor);
             device.UnsetRenderSurfaces();
             device.SetRenderSurface(_surfaceLighting, 0);
-            device.DepthSurface = _surfaceDepth;
+            device.Output.DepthSurface.Value = _surfaceDepth;
             device.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
             RenderPointLights(device, camera, context.Scene);
         }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class TextureSet<T> : ITextureTask where T: struct
+    internal class TextureSet<T> : ITextureTask where T: unmanaged
     {
         public uint MipLevel;
         public T[] Data;
@@ -21,7 +21,9 @@ namespace Molten.Graphics
         public uint Stride;
         public RectangleUI? Area;
 
-        public unsafe void Process(PipeDX11 pipe, TextureBase texture)
+        public bool UpdatesTexture => true;
+
+        public unsafe bool Process(PipeDX11 pipe, TextureBase texture)
         {
             //C alculate size of a single array slice
             uint arraySliceBytes = 0;
@@ -138,6 +140,8 @@ namespace Molten.Graphics
                     }
                 }
             });
+
+            return true;
         }
     }
 }

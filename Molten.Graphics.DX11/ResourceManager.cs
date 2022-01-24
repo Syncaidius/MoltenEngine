@@ -188,7 +188,7 @@ namespace Molten.Graphics
         }
 
         public IMesh<T> CreateMesh<T>(uint maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
-            where T : struct, IVertexType
+            where T : unmanaged, IVertexType
         {
             return new Mesh<T>(_renderer, maxVertices, topology, dynamic);
         }
@@ -199,7 +199,7 @@ namespace Molten.Graphics
             VertexTopology topology = VertexTopology.TriangleList, 
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit, 
             bool dynamic = false)
-            where T : struct, IVertexType
+            where T : unmanaged, IVertexType
         {
             return new IndexedMesh<T>(_renderer, (uint)maxVertices, (uint)maxIndices, topology, indexFormat, dynamic);
         }

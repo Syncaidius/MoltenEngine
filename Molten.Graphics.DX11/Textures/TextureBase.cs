@@ -216,7 +216,8 @@ namespace Molten.Graphics
                 pipe.Context->GenerateMips(SRV);
         }
 
-        public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : struct
+        public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0)
+            where T : unmanaged
         {
             uint count = (uint)data.Length;
             uint texturePitch = area.Width * bytesPerPixel;
@@ -300,7 +301,8 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        public void SetData<T>(uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex) where T : struct
+        public void SetData<T>(uint level, T[] data, uint startIndex, uint count, uint pitch, uint arrayIndex) 
+            where T : unmanaged
         {
             TextureSet<T> change = new TextureSet<T>()
             {
@@ -593,10 +595,7 @@ namespace Molten.Graphics
             while (_pendingChanges.Count > 0)
             {
                 if (_pendingChanges.TryDequeue(out ITextureTask change))
-                {
-                    change.Process(pipe, this);
-                    altered = altered || change.UpdatesTexture;
-                }
+                    altered = change.Process(pipe, this) || altered;
             }
 
             if (altered)

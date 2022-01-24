@@ -30,7 +30,7 @@ namespace Molten.Graphics
         {
             _orthoCamera.OutputSurface = camera.OutputSurface;
 
-            Rectangle bounds = new Rectangle(0, 0, camera.OutputSurface.Width, camera.OutputSurface.Height);
+            RectangleUI bounds = new RectangleUI(0, 0, camera.OutputSurface.Width, camera.OutputSurface.Height);
             DeviceDX11 device = renderer.Device;
             RenderSurface finalSurface = camera.OutputSurface as RenderSurface;
             if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
@@ -38,10 +38,10 @@ namespace Molten.Graphics
 
             device.SetRenderSurfaces(null);
             device.SetRenderSurface(finalSurface, 0);
-            device.DepthSurface = null;
+            device.Output.DepthSurface.Value = null;
             device.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
             device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
-            device.Rasterizer.SetScissorRectangle(camera.OutputSurface.Viewport.Bounds);
+            device.Rasterizer.SetScissorRectangle((Rectangle)camera.OutputSurface.Viewport.Bounds);
 
             StateConditions conditions = StateConditions.ScissorTest;
             conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;

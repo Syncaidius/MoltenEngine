@@ -29,7 +29,8 @@ namespace Molten.Graphics
             Vertex[] vertices;
             int[] indices;
             MakeSphere(4, 4, out vertices, out indices);
-            _sphereMesh = new IndexedMesh<Vertex>(renderer, vertices.Length, indices.Length, VertexTopology.TriangleList, IndexBufferFormat.Unsigned32Bit, false);
+            _sphereMesh = new IndexedMesh<Vertex>(renderer, (uint)vertices.Length, (uint)indices.Length, 
+                VertexTopology.TriangleList, IndexBufferFormat.Unsigned32Bit, false);
             _sphereMesh.SetVertices(vertices);
             _sphereMesh.SetIndices(indices);
             _sphereMesh.Material = _matSky;
@@ -47,7 +48,7 @@ namespace Molten.Graphics
             if (context.Scene.SkyboxTexture == null || context.Scene.Layers.First() != context.Layer)
                 return;
 
-            Rectangle bounds = camera.OutputSurface.Viewport.Bounds;
+            Rectangle bounds = (Rectangle)camera.OutputSurface.Viewport.Bounds;
             DeviceDX11 device = renderer.Device;
 
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
@@ -57,7 +58,7 @@ namespace Molten.Graphics
 
             device.UnsetRenderSurfaces();
             device.SetRenderSurface(destSurface, 0);
-            device.DepthSurface = _surfaceDepth;
+            device.Output.DepthSurface.Value = _surfaceDepth;
             device.DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
             device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
             device.Rasterizer.SetScissorRectangle(bounds);

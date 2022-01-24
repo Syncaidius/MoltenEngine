@@ -82,7 +82,7 @@ namespace Molten.Graphics
 
             ID3D11Resource* res = (ID3D11Resource*)NativeTexture;
             Device.Native->CreateRenderTargetView(res, &rtvDesc, ref RTV);
-            VP = new ViewportUI(0, 0, Width, Height);
+            VP = new ViewportF(0, 0, Width, Height);
 
             return res;
         }

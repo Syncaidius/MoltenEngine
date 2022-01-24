@@ -12,7 +12,7 @@ namespace Molten.Graphics
 
         public Action<TextureData> Callback;
 
-        public void Process(PipeDX11 pipe, TextureBase texture)
+        public bool Process(PipeDX11 pipe, TextureBase texture)
         {
             if (!StagingTexture.HasFlags(TextureFlags.Staging))
                 throw new TextureFlagException(StagingTexture.Flags, "Provided staging texture does not have the staging flag set.");
@@ -25,6 +25,8 @@ namespace Molten.Graphics
 
             TextureData data = texture.GetAllData(pipe, StagingTexture);
             Callback(data);
+
+            return false;
         }
     }
 }

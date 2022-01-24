@@ -31,7 +31,7 @@ namespace Molten.Graphics
             device.SetRenderSurface(_surfaceScene, 0);
             device.SetRenderSurface(_surfaceNormals, 1);
             device.SetRenderSurface(_surfaceEmissive, 2);
-            device.DepthSurface = _surfaceDepth;
+            device.Output.DepthSurface.Value = _surfaceDepth;
 
             SetMaterialCommon(renderer.StandardMeshMaterial, camera, _surfaceScene);
             SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, _surfaceScene);

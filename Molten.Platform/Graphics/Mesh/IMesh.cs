@@ -34,7 +34,7 @@ namespace Molten.Graphics
 
     /// <summary>An mesh containing un-indexed vertex data.</summary>
     /// <typeparam name="T">The type of vertex data that the mesh is to expect.</typeparam>
-    public interface IMesh<T> : IMesh where T : struct, IVertexType
+    public interface IMesh<T> : IMesh where T : unmanaged, IVertexType
     {
         /// <summary>Copies the provided vertex data to the current mesh.</summary>
         /// <typeparam name="{T}">The type of data to set.</typeparam>

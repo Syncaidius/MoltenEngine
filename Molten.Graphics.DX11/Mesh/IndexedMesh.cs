@@ -11,7 +11,7 @@ namespace Molten.Graphics
     /// <typeparam name="T">The vertex type in the form of a <see cref="IVertexType"/> type.</typeparam>
     /// <seealso cref="Molten.Graphics.Mesh{T}" />
     /// <seealso cref="Molten.Graphics.IIndexedMesh" />
-    public class IndexedMesh<T> : Mesh<T>, IIndexedMesh<T> where T : struct, IVertexType
+    public class IndexedMesh<T> : Mesh<T>, IIndexedMesh<T> where T : unmanaged, IVertexType
     {
         private protected BufferSegment _ib;
         private protected IndexBufferFormat _iFormat;
@@ -42,17 +42,17 @@ namespace Molten.Graphics
             _ib.SetIndexFormat(indexFormat);
         }
 
-        public void SetIndices<I>(I[] data) where I : struct
+        public void SetIndices<I>(I[] data) where I : unmanaged
         {
             SetIndices<I>(data, 0, (uint)data.Length);
         }
 
-        public void SetIndices<I>(I[] data, uint count) where I : struct
+        public void SetIndices<I>(I[] data, uint count) where I : unmanaged
         {
             SetIndices<I>(data, 0, count);
         }
 
-        public void SetIndices<I>(I[] data, uint startIndex, uint count) where I : struct
+        public void SetIndices<I>(I[] data, uint startIndex, uint count) where I : unmanaged
         {
             _indexCount = count;
             _ib.SetData(_renderer.Device, data, startIndex, count, 0, _renderer.StagingBuffer); // Staging buffer will be ignored if the mesh is dynamic.
