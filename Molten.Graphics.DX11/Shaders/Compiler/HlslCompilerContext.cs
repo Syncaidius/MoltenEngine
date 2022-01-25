@@ -38,7 +38,9 @@ namespace Molten.Graphics
 
         internal IReadOnlyList<Message> Messages { get; }
 
-        internal HlslCompiler Compiler { get; set; }
+        internal HlslCompiler Compiler { get; }
+
+        internal HlslIncluder Includer { get; }
 
         internal string Filename { get; set; }
 
@@ -46,27 +48,17 @@ namespace Molten.Graphics
 
         internal bool HasErrors { get; private set; }
 
+        internal DxcArgumentBuilder Args { get; }
+
         List<Message> _messages;
 
-        internal HlslCompilerContext()
+        internal HlslCompilerContext(HlslCompiler compiler, HlslIncluder includer)
         {
+            Compiler = compiler;
+            Includer = includer;
+            Args = new DxcArgumentBuilder(this);
             _messages = new List<Message>();
             Messages = _messages.AsReadOnly();
-        }
-
-        internal void AddMessages(IEnumerable<Message> messages)
-        {
-            _messages.AddRange(messages);
-
-            // Check if any errors were added.
-            foreach(Message m in messages)
-            {
-                if(m.MessageType == Message.Kind.Error)
-                {
-                    HasErrors = true;
-                    break;
-                }
-            }
         }
 
         internal void AddMessage(string text, Message.Kind type = Message.Kind.Message)

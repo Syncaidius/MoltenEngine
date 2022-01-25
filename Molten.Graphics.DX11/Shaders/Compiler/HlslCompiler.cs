@@ -38,7 +38,6 @@ namespace Molten.Graphics
             }
 
             Dxc = DXC.GetApi();
-            ArgBuilder = new DxcArgumentBuilder(_log);
             _utils = CreateInstance<IDxcUtils>();
             _compiler = CreateInstance<IDxcCompiler3>();
 
@@ -141,7 +140,7 @@ namespace Molten.Graphics
 
         internal ShaderCompileResult Compile(string source, string filename = null, HlslIncluder includer = null)
         {
-            HlslCompilerContext context = new HlslCompilerContext() { Compiler = this };
+            HlslCompilerContext context = new HlslCompilerContext(this, includer);
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>();
             string finalSource = source;
 
@@ -246,8 +245,6 @@ namespace Molten.Graphics
         internal RendererDX11 Renderer => _renderer;
 
         internal IDxcCompiler3* Native => _compiler;
-
-        internal DxcArgumentBuilder ArgBuilder { get; }
 
         internal IDxcUtils* Utils => _utils;
     }

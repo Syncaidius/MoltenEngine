@@ -45,13 +45,14 @@ namespace Molten.Graphics
         };
 
         Dictionary<HlslCompilerArg, string> _args;
-        int _argCount;
-        Logger _log;
+        HlslCompilerContext _context;
+        IDxcCompilerArgs* _dxcArgs;
 
-        internal DxcArgumentBuilder(Logger log)
+        internal DxcArgumentBuilder(HlslCompilerContext context)
         {
             _args = new Dictionary<HlslCompilerArg, string>();
-            _log = log;
+            _context = context;
+            _dxcArgs = context.Compiler.Utils->ar
         }
 
         internal bool Add(HlslCompilerArg arg)
@@ -66,16 +67,16 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    _log.WriteError($"HLSL compiler argument '{arg}' has already been added. Arguments cannot be added twice.");
+                    _context.AddError($"HLSL compiler argument '{arg}' has already been added. Arguments cannot be added twice.");
                 }
             }
             else if (_parameterArgLookup.ContainsKey(arg))
             {
-                _log.WriteError($"HLSL parameterized compiler argument '{arg}' cannot be added as a non-parameterized argument.");
+                _context.AddError($"HLSL parameterized compiler argument '{arg}' cannot be added as a non-parameterized argument.");
             }
             else
             {
-                _log.WriteError($"Invalid compiler argument of value '{arg}'");
+                _context.AddError($"Invalid compiler argument of value '{arg}'");
             }
 
             return false;
@@ -92,39 +93,34 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    _log.WriteError($"HLSL compiler argument '{arg}' has already been added. Arguments cannot be added twice.");
+                    _context.AddError($"HLSL compiler argument '{arg}' has already been added. Arguments cannot be added twice.");
                 }
             }
             else if (_argLookup.ContainsKey(arg))
             {
-                _log.WriteError($"HLSL non-parameterized argument '{arg}' cannot be added as parameterized argument.");
+                _context.AddError($"HLSL non-parameterized argument '{arg}' cannot be added as parameterized argument.");
             }
             else
             {
-                _log.WriteError($"Invalid compiler argument of value '{arg}'");
+                _context.AddError($"Invalid compiler argument of value '{arg}'");
             }
 
             return false;
         }
 
-        internal IDxcCompilerArgs* BuildArgs()
+        public override string ToString()
         {
             string s = "";
             bool first = true;
             foreach (KeyValuePair<HlslCompilerArg, string> p in _args)
             {
-                if (!first)
-                {
-                    s += $" {p.Value}";
-                }
-                else
-                {
-                    s += p.Value;
-                    first = false;
-                }
+                s += first ? p.Value : $" {p.Value}";
+                first = false;
             }
 
             return s;
         }
+
+        internal uint Count => (uint)_args.Count;
     }
 }

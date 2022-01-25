@@ -115,10 +115,10 @@ namespace Molten.Graphics
                         break;
 
                     case "writemask":
-                        if (Enum.TryParse(child.InnerText, true, out ColorWriteMaskFlags rtWriteMask))
-                            rtBlendDesc.RenderTargetWriteMask = rtWriteMask;
+                        if (Enum.TryParse(child.InnerText, true, out ColorWriteEnable rtWriteMask))
+                            rtBlendDesc.RenderTargetWriteMask = (byte)rtWriteMask;
                         else
-                            InvalidEnumMessage<ColorWriteMaskFlags>(context, child, "render surface/target write mask");
+                            InvalidEnumMessage<ColorWriteEnable>(context, child, "render surface/target write mask");
                         break;
 
                     case "samplemask":

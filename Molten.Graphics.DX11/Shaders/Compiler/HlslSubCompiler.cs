@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Buffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics
 {
@@ -292,12 +293,34 @@ namespace Molten.Graphics
             {
                 string strProfile = ShaderModel.Model5_0.ToProfile(type);
 
+                // TODO replace with IDxcCompilerArgs which will return a char** for use with Compiler.Compile().
                 string argString = context.Args.ToString();
                 uint argCount = context.Args.Count;
-                void* dxcResult;
+                void* ptrArgString = (void*)SilkMarshal.StringToPtr(context.Source, NativeStringEncoding.LPWStr);
 
-                context.Compiler.Native->Compile(in context.Source, argString, argCount, context.Includer, IDxcResult.Guid, &dxcResult);
+                Guid dxcResultGuid = IDxcResult.Guid;
+                void* dxcResult;
+                uint numBytes = (uint)(sizeof(char) * context.Source.Length);
+
+                IDxcBlobEncoding* srcEncoding;
+                void* ptrSource = (void*)SilkMarshal.StringToPtr(context.Source, NativeStringEncoding.LPWStr);
+                context.Compiler.Utils->CreateBlob(ptrSource, numBytes, DXC.CPUtf16, &srcEncoding);
+
+                Buffer srcBuffer = new Buffer()
+                {
+                    Ptr = srcEncoding->GetBufferPointer(),
+                    Size = srcEncoding->GetBufferSize(),
+                    Encoding = 0
+                };
+
+     
+                context.Compiler.Native->Compile(&srcBuffer, ptrArgString, argCount, context.Includer, &dxcResultGuid, &dxcResult);
                 result = new HlslCompileResult(context, (IDxcResult*)dxcResult);
+
+                // Free allocated resource.
+                srcEncoding->Release();
+                SilkMarshal.Free((nint)ptrArgString);
+                SilkMarshal.Free((nint)ptrSource);
 
                 if(context.HasErrors)
                     return false;

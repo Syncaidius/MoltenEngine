@@ -32,7 +32,5 @@ namespace Molten.Graphics
         internal HlslCompileResult GeometryResult => Results[3];
 
         internal HlslCompileResult PixelResult => Results[4];
-
-        internal List<HlslCompilerContext.Message> Messages = new List<HlslCompilerContext.Message>();
     }
 }

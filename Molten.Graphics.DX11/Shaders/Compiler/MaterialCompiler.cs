@@ -41,7 +41,6 @@ namespace Molten.Graphics
             {
                 MaterialPassCompileResult passResult = CompilePass(context, pass);
                 firstPassResult = firstPassResult ?? passResult;
-                context.AddMessages(passResult.Messages);
 
                 if (context.HasErrors)
                     return result;
