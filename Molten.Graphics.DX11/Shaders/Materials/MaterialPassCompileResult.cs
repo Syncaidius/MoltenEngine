@@ -33,8 +33,6 @@ namespace Molten.Graphics
 
         internal HlslCompileResult PixelResult => Results[4];
 
-        internal List<string> Errors = new List<string>();
-
-        internal List<string> Messages = new List<string>();
+        internal List<HlslCompilerContext.Message> Messages = new List<HlslCompilerContext.Message>();
     }
 }

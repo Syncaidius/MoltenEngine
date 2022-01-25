@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal class MaterialLayoutValidator
     {
-        internal bool Validate(MaterialPassCompileResult pResult)
+        internal bool Validate(HlslCompilerContext context, MaterialPassCompileResult pResult)
         {
             bool valid = true;
             MaterialPass pass = pResult.Pass;
@@ -41,24 +41,24 @@ namespace Molten.Graphics
                     Type currentCompositionType = stages[i].GetType().GenericTypeArguments[0];
                     Type previousCompositionType = previous.GetType().GenericTypeArguments[0];
 
-                    pResult.Errors.Add("Incompatible material I/O structure.");
-                    pResult.Errors.Add("====================================");
-                    pResult.Errors.Add($"\tFilename: {pass.Material.Filename ?? "N/A"}");
-                    pResult.Errors.Add($"\tOutput -- {previousCompositionType.Name}:");
+                    context.AddError("Incompatible material I/O structure.");
+                    context.AddError("====================================");
+                    context.AddError($"\tFilename: {pass.Material.Filename ?? "N/A"}");
+                    context.AddError($"\tOutput -- {previousCompositionType.Name}:");
 
                     if (output.Data.Elements.Length > 0)
                     {
                         for (int o = 0; o < output.Data.Elements.Length; o++)
-                            pResult.Errors.Add($"\t\t[{o}] {output.Data.Names[o]} -- index: {output.Data.Elements[o].SemanticIndex}");
+                            context.AddError($"\t\t[{o}] {output.Data.Names[o]} -- index: {output.Data.Elements[o].SemanticIndex}");
                     }
                     else
                     {
-                        pResult.Errors.Add("No output elements expected.");
+                        context.AddError("No output elements expected.");
                     }
 
-                    pResult.Errors.Add($"\tInput: {currentCompositionType.Name}:");
+                    context.AddError($"\tInput: {currentCompositionType.Name}:");
                     for (int o = 0; o < input.Data.Elements.Length; o++)
-                        pResult.Errors.Add($"\t\t[{o}] {input.Data.Names[o]} -- index: {input.Data.Elements[o].SemanticIndex}");
+                        context.AddError($"\t\t[{o}] {input.Data.Names[o]} -- index: {input.Data.Elements[o].SemanticIndex}");
 
                     valid = false;
                 }
@@ -67,11 +67,11 @@ namespace Molten.Graphics
             }
 
             return valid && 
-                CheckTessellationShaders(pResult) && 
+                CheckTessellationShaders(context, pResult) && 
                 CheckGeometryTessellationAdjacency(pResult);
         }
 
-        private bool CheckTessellationShaders(MaterialPassCompileResult pResult)
+        private bool CheckTessellationShaders(HlslCompilerContext context, MaterialPassCompileResult pResult)
         {
             bool valid = true;
             HlslCompileResult hs = pResult.Results[MaterialPass.ID_HULL];
@@ -79,11 +79,11 @@ namespace Molten.Graphics
 
             if(hs != null && ds == null)
             {
-                pResult.Errors.Add($"Material pass '{pResult.Pass.Name}' Has a hull shader but no domain shader. Both or neither must be present.");
+                context.AddError($"Material pass '{pResult.Pass.Name}' Has a hull shader but no domain shader. Both or neither must be present.");
                 valid = false;
             }else if(hs == null && ds != null)
             {
-                pResult.Errors.Add($"Material pass '{pResult.Pass.Name}' Has a domain shader but no hull shader. Both or neither must be present.");
+                context.AddError($"Material pass '{pResult.Pass.Name}' Has a domain shader but no hull shader. Both or neither must be present.");
                 valid = false;
             }
 

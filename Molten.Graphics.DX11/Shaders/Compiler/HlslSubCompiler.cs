@@ -20,7 +20,7 @@ namespace Molten.Graphics
         HlslCompilerArg _compileFlags = HlslCompilerArg.WarningsAreErrors;
 #endif
 
-        internal abstract List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header);
+        internal abstract List<IShader> Parse(HlslCompilerContext context, RendererDX11 renderer, string header);
 
         protected bool HasResource(HlslShader shader, string resourceName)
         {
@@ -36,7 +36,7 @@ namespace Molten.Graphics
             return false;
         }
 
-        protected bool HasConstantBuffer(ShaderCompilerContext context, HlslShader shader, string bufferName, string[] varNames)
+        protected bool HasConstantBuffer(HlslCompilerContext context, HlslShader shader, string bufferName, string[] varNames)
         {
             foreach (ShaderConstantBuffer buffer in shader.ConstBuffers)
             {
@@ -47,7 +47,8 @@ namespace Molten.Graphics
                 {
                     if (buffer.Variables.Length != varNames.Length)
                     {
-                        context.Errors.Add($"Material '{bufferName}' constant buffer does not have the correct number of variables ({varNames.Length})");
+                        context.AddMessage($"Material '{bufferName}' constant buffer does not have the correct number of variables ({varNames.Length})", 
+                            HlslCompilerContext.Message.Kind.Error);
                         return false;
                     }
 
@@ -58,7 +59,8 @@ namespace Molten.Graphics
 
                         if (variable.Name != expectedName)
                         {
-                            context.Errors.Add($"Material '{bufferName}' constant variable #{i + 1} is incorrect: Named '{variable.Name}' instead of '{expectedName}'");
+                            context.AddMessage($"Material '{bufferName}' constant variable #{i + 1} is incorrect: Named '{variable.Name}' instead of '{expectedName}'",
+                                HlslCompilerContext.Message.Kind.Error);
                             return false;
                         }
                     }
@@ -76,7 +78,7 @@ namespace Molten.Graphics
             composition.OutputStructure = new ShaderIOStructure(result, ShaderIOStructureType.Output);
         }
 
-        protected bool BuildStructure<T>(ShaderCompilerContext context, HlslShader shader, 
+        protected bool BuildStructure<T>(HlslCompilerContext context, HlslShader shader, 
             HlslCompileResult result, ShaderComposition<T> composition) 
             where T : unmanaged
         {
@@ -99,7 +101,8 @@ namespace Molten.Graphics
                                 Array.Resize(ref shader.ConstBuffers, (int)bindPoint + 1);
 
                             if(shader.ConstBuffers[bindPoint] != null && shader.ConstBuffers[bindPoint].BufferName != bindDesc.Name)
-                                context.Messages.Add($"Material constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindDesc.Name}' at the same register (b{bindPoint}).");
+                                context.AddMessage($"Material constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindDesc.Name}' at the same register (b{bindPoint}).", 
+                                    HlslCompilerContext.Message.Kind.Warning);
 
                             shader.ConstBuffers[bindPoint] = GetConstantBuffer(context, shader, buffer);
                             composition.ConstBufferIds.Add(bindPoint);
@@ -150,12 +153,12 @@ namespace Molten.Graphics
             return true;
         }
 
-        protected abstract void OnBuildVariableStructure(ShaderCompilerContext context, 
+        protected abstract void OnBuildVariableStructure(HlslCompilerContext context, 
             HlslShader shader, HlslCompileResult result, 
             HlslInputBindDescription bind);
 
 
-        private void OnBuildTextureVariable(ShaderCompilerContext context, HlslShader shader, HlslInputBindDescription bind)
+        private void OnBuildTextureVariable(HlslCompilerContext context, HlslShader shader, HlslInputBindDescription bind)
         {
             ShaderResourceVariable obj = null;
             uint bindPoint = bind.Ptr->BindPoint;
@@ -184,7 +187,7 @@ namespace Molten.Graphics
             shader.Resources[bindPoint] = obj;
         }
 
-        private unsafe ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext context, HlslShader shader,
+        private unsafe ShaderConstantBuffer GetConstantBuffer(HlslCompilerContext context, HlslShader shader,
             ID3D11ShaderReflectionConstantBuffer* buffer)
         {
             ShaderBufferDesc bufferDesc = new ShaderBufferDesc();
@@ -211,12 +214,12 @@ namespace Molten.Graphics
                     }
                     else
                     {
-                        LogHlslMessage(context, string.Format("Constant buffers with the same name ('{0}') do not match. Differing layouts.", localName));
+                        context.AddMessage($"Constant buffers with the same name ('{localName}') do not match. Differing layouts.");
                     }
                 }
                 else
                 {
-                    LogHlslMessage(context, string.Format("Constant buffer creation failed. A resource with the name '{0}' already exists!", localName));
+                    context.AddMessage($"Constant buffer creation failed. A resource with the name '{localName}' already exists!");
                 }
             }
             else
@@ -227,7 +230,7 @@ namespace Molten.Graphics
                     // Check for duplicate variables
                     if (shader.Variables.ContainsKey(v.Name))
                     {
-                        LogHlslMessage(context, "Duplicate variable detected: " + v.Name);
+                        context.AddMessage($"Duplicate variable detected: {v.Name}");
                         continue;
                     }
 
@@ -241,7 +244,7 @@ namespace Molten.Graphics
             return cBuffer;
         }
 
-        protected T GetVariableResource<T>(ShaderCompilerContext context, HlslShader shader, HlslInputBindDescription desc) where T : class, IShaderValue
+        protected T GetVariableResource<T>(HlslCompilerContext context, HlslShader shader, HlslInputBindDescription desc) where T : class, IShaderValue
         {
             IShaderValue existing = null;
             T bVar = null;
@@ -259,7 +262,7 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    LogHlslMessage(context, string.Format("Resource '{0}' creation failed. A resource with the name '{1}' already exists!", t.Name, desc.Name));
+                    context.AddMessage($"Resource '{t.Name}' creation failed. A resource with the name '{desc.Name}' already exists!");
                 }
             }
             else
@@ -281,43 +284,34 @@ namespace Molten.Graphics
         /// <param name="filename"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        protected bool Compile(string entryPoint, ShaderType type, ShaderCompilerContext context, out HlslCompileResult result)
+        protected bool Compile(string entryPoint, ShaderType type, HlslCompilerContext context, out HlslCompileResult result)
         {
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.
             if (!context.HlslShaders.TryGetValue(entryPoint, out result))
             {
                 string strProfile = ShaderModel.Model5_0.ToProfile(type);
-                result = ShaderBytecode.Compile(context.Source, entryPoint, strProfile, _compileFlags, EffectFlags.None, context.Filename);
 
-                if (result.Message != null)
+                string argString = context.Args.ToString();
+                uint argCount = context.Args.Count;
+                void* dxcResult;
+
+                context.Compiler.Native->Compile(in context.Source, argString, argCount, context.Includer, IDxcResult.Guid, &dxcResult);
+                result = new HlslCompileResult(context.Compiler.Utils, (IDxcResult*)dxcResult);
+
+                if (result.Messages.Count > 0)
                 {
-                    LogHlslMessage(context, $"Material Pass ({entryPoint}) -- {result.Message}");
-                    if (result.Message.Contains("error")) // NOTE: Workaround for SharpDX 4.0.1 where .HasErrors appears broken.
-                        return false;
+                    context.AddMessage($"Material Pass ({entryPoint}) has {result.Messages.Count} messages:");
+                    for (int i = 0; i < result.Messages.Count; i++)
+                        context.AddMessages(result.Messages);
+
+                    return false;
                 }
 
                 context.HlslShaders.Add(entryPoint, result);
             }
 
-            return !result.HasErrors;
-        }
-
-        protected void LogHlslMessage(ShaderCompilerContext context, string txt)
-        {
-            string[] lines = txt.Split(HlslCompiler.NewLineSeparators, StringSplitOptions.RemoveEmptyEntries);
-
-            for (int i = 0; i < lines.Length; i++)
-            {
-                if (string.IsNullOrWhiteSpace(lines[i]))
-                    continue;
-
-                string msg = string.IsNullOrWhiteSpace(context.Filename) ? lines[i] : (context.Filename + ": " + lines[i]);
-                if (lines[i].Contains("error"))
-                    context.Errors.Add(msg);
-                else
-                    context.Messages.Add(msg);
-            }
+            return true;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Molten.Graphics
     {
         internal override string[] SupportedNodes => new string[] { "blend" };
 
-        internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
+        internal override NodeParseResult Parse(HlslFoundation foundation, HlslCompilerContext context, XmlNode node)
         {
             if (foundation is ComputeTask)
                 return new NodeParseResult(NodeParseResultType.Ignored);
@@ -21,7 +21,7 @@ namespace Molten.Graphics
             int rtIndex = 0;
 
             GraphicsBlendState template = foundation.Device.BlendBank.GetPreset(BlendPreset.Default);
-            RenderTargetBlendDescription rtBlendDesc = template.GetSurfaceBlendState(0); // Use the default preset's first (0) RT blend description.
+            RenderTargetBlendDesc1 rtBlendDesc = template.GetSurfaceBlendState(0); // Use the default preset's first (0) RT blend description.
 
             // Prerequisit attributes
             foreach (XmlAttribute attribute in node.Attributes)
@@ -60,7 +60,7 @@ namespace Molten.Graphics
                 {
                     case "enabled":
                         if (bool.TryParse(child.InnerText, out bool blendEnabled))
-                            rtBlendDesc.IsBlendEnabled = blendEnabled;
+                            rtBlendDesc.BlendEnable = blendEnabled ? 1 : 0;
                         else
                             InvalidValueMessage(context, child, "blend enabled", "boolean");
                         break;
@@ -74,42 +74,42 @@ namespace Molten.Graphics
 
                     case "source":
                         if (Enum.TryParse(child.InnerText, true, out Blend sourceBlend))
-                            rtBlendDesc.SourceBlend = sourceBlend;
+                            rtBlendDesc.SrcBlend = sourceBlend;
                         else
                             InvalidEnumMessage<Blend>(context, child, "source blend option");
                         break;
 
                     case "destination":
                         if (Enum.TryParse(child.InnerText, true, out Blend destBlend))
-                            rtBlendDesc.DestinationBlend = destBlend;
+                            rtBlendDesc.DestBlend = destBlend;
                         else
                             InvalidEnumMessage<Blend>(context, child, "destination blend option");
                         break;
 
                     case "operation":
                         if (Enum.TryParse(child.InnerText, true, out BlendOp blendOp))
-                            rtBlendDesc.BlendOperation = blendOp;
+                            rtBlendDesc.BlendOp = blendOp;
                         else
                             InvalidEnumMessage<BlendOp>(context, child, "blend operation");
                         break;
 
                     case "sourcealpha":
                         if (Enum.TryParse(child.InnerText, true, out Blend sourceAlpha))
-                            rtBlendDesc.SourceAlphaBlend = sourceAlpha;
+                            rtBlendDesc.SrcBlendAlpha = sourceAlpha;
                         else
                             InvalidEnumMessage<Blend>(context, child, "source alpha option");
                         break;
 
                     case "destinationalpha":
                         if (Enum.TryParse(child.InnerText, true, out Blend destAlpha))
-                            rtBlendDesc.DestinationAlphaBlend = destAlpha;
+                            rtBlendDesc.DestBlendAlpha = destAlpha;
                         else
                             InvalidEnumMessage<Blend>(context, child, "destination alpha option");
                         break;
 
                     case "alphaoperation":
                         if (Enum.TryParse(child.InnerText, true, out BlendOp alphaOperation))
-                            rtBlendDesc.AlphaBlendOp = alphaOperation;
+                            rtBlendDesc.BlendOpAlpha = alphaOperation;
                         else
                             InvalidEnumMessage<BlendOp>(context, child, "alpha-blend operation");
                         break;

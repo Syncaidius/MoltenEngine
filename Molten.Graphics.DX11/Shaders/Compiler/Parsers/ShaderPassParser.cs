@@ -11,11 +11,11 @@ namespace Molten.Graphics
     {
         internal override string[] SupportedNodes => new string[] { "pass" };
 
-        internal override NodeParseResult Parse(HlslFoundation shader, ShaderCompilerContext context, XmlNode node)
+        internal override NodeParseResult Parse(HlslFoundation shader, HlslCompilerContext context, XmlNode node)
         {
             if (shader is Material material)
             {
-                MaterialPass pass = new MaterialPass(material);
+                MaterialPass pass = new MaterialPass(material, "<Unnamed Material Pass>");
 
                 for (int i = 0; i < material.Samplers.Length; i++)
                     pass.Samplers[i] = material.Samplers[i];

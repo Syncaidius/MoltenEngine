@@ -141,7 +141,7 @@ namespace Molten.Graphics
 
         internal ShaderCompileResult Compile(string source, string filename = null, HlslIncluder includer = null)
         {
-            ShaderCompilerContext context = new ShaderCompilerContext() { Compiler = this };
+            HlslCompilerContext context = new HlslCompilerContext() { Compiler = this };
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>();
             string finalSource = source;
 
@@ -189,22 +189,9 @@ namespace Molten.Graphics
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(filename))
-            {
-                foreach (string error in context.Errors)
-                    _log.WriteError(error);
-
-                foreach (string msg in context.Messages)
-                    _log.WriteLine(msg);
-            }
-            else
-            {
-                foreach (string error in context.Errors)
-                    _log.WriteError($"{filename}: {error}");
-
-                foreach (string msg in context.Messages)
-                    _log.WriteLine($"{filename}: {msg}");
-            }
+            string msgPrefix = string.IsNullOrWhiteSpace(filename) ? "" : $"{filename}: ";
+            foreach (HlslCompilerContext.Message msg in context.Messages)
+                _log.WriteLine($"{msgPrefix}{msg}");
 
             return context.Result;
         }
@@ -223,7 +210,7 @@ namespace Molten.Graphics
             return headers;
         }
 
-        internal void ParserHeader(HlslFoundation foundation, ref string header, ShaderCompilerContext context)
+        internal void ParserHeader(HlslFoundation foundation, ref string header, HlslCompilerContext context)
         {
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(header);
@@ -232,7 +219,7 @@ namespace Molten.Graphics
             ParseNode(foundation, rootNode, context);
         }
 
-        internal void ParseNode(HlslFoundation foundation, XmlNode parentNode, ShaderCompilerContext context)
+        internal void ParseNode(HlslFoundation foundation, XmlNode parentNode, HlslCompilerContext context)
         {
             foreach (XmlNode node in parentNode.ChildNodes)
             {
@@ -245,9 +232,9 @@ namespace Molten.Graphics
                 else
                 {
                     if (parentNode.ParentNode != null)
-                        context.Messages.Add($"Ignoring unsupported {parentNode.ParentNode.Name} tag '{parentNode.Name}'");
+                        context.AddWarning($"Ignoring unsupported {parentNode.ParentNode.Name} tag '{parentNode.Name}'");
                     else
-                        context.Messages.Add($"Ignoring unsupported root tag '{parentNode.Name}'");
+                        context.AddWarning($"Ignoring unsupported root tag '{parentNode.Name}'");
                 }
             }
         }

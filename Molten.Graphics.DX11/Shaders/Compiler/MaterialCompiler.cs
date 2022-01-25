@@ -11,7 +11,7 @@ namespace Molten.Graphics
     {
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
 
-        internal override List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header)
+        internal override List<IShader> Parse(HlslCompilerContext context, RendererDX11 renderer, string header)
         {
             List<IShader> result = new List<IShader>();
             Material material = new Material(renderer.Device, context.Filename);
@@ -23,14 +23,14 @@ namespace Molten.Graphics
                     material.AddDefaultPass();
                     if (string.IsNullOrWhiteSpace(material.Passes[0].VertexShader.EntryPoint))
                     {
-                        context.Errors.Add($"Material '{material.Name}' does not have a defined vertex shader entry point. Must be defined in the material or it's first pass.");
+                        context.AddError($"Material '{material.Name}' does not have a defined vertex shader entry point. Must be defined in the material or it's first pass.");
                         return result;
                     }
                 }
             }
             catch (Exception e)
             {
-                context.Errors.Add($"{context.Filename ?? "Material header error"}: {e.Message}");
+                context.AddError($"{context.Filename ?? "Material header error"}: {e.Message}");
                 renderer.Device.Log.WriteError(e);
                 return result;
             }
@@ -41,13 +41,10 @@ namespace Molten.Graphics
             {
                 MaterialPassCompileResult passResult = CompilePass(context, pass);
                 firstPassResult = firstPassResult ?? passResult;
-                context.Messages.AddRange(passResult.Messages);
+                context.AddMessages(passResult.Messages);
 
-                if (passResult.Errors.Count > 0)
-                {
-                    context.Errors.AddRange(passResult.Errors);
+                if (context.HasErrors)
                     return result;
-                }
             }
 
             // Validate the vertex input structure of all passes. Should match structure of first pass.
@@ -58,12 +55,12 @@ namespace Molten.Graphics
                 for (int i = 1; i < material.PassCount; i++)
                 {
                     if (!material.Passes[i].VertexShader.InputStructure.IsCompatible(iStructure))
-                        context.Errors.Add($"Vertex input structure in Pass #{i + 1} in material '{material.Name}' does not match structure of pass #1");
+                        context.AddError($"Vertex input structure in Pass #{i + 1} in material '{material.Name}' does not match structure of pass #1");
                 }
             }
 
             // No issues arose, lets add it to the material manager
-            if (context.Errors.Count == 0)
+            if (context.HasErrors)
             {
                 // Populate missing material states with default.
                 material.DepthState.FillMissingWith(renderer.Device.DepthBank.GetPreset(DepthStencilPreset.Default));
@@ -121,7 +118,7 @@ namespace Molten.Graphics
             return result;
         }
 
-        private MaterialPassCompileResult CompilePass(ShaderCompilerContext context, MaterialPass pass)
+        private MaterialPassCompileResult CompilePass(HlslCompilerContext context, MaterialPass pass)
         {
             MaterialPassCompileResult result = new MaterialPassCompileResult(pass);
 
@@ -137,7 +134,7 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    result.Errors.Add($"{context.Filename}: Failed to compile {MaterialPass.ShaderTypes[i]} stage of material pass.");
+                    context.AddError($"{context.Filename}: Failed to compile {MaterialPass.ShaderTypes[i]} stage of material pass.");
                     return result;
                 }
             }
@@ -147,13 +144,13 @@ namespace Molten.Graphics
                 pass.GeometryPrimitive = result.GeometryResult.Reflection.Ptr->GetGSInputPrimitive();
 
             // Validate I/O structure of each shader stage.
-            if (_layoutValidator.Validate(result))
+            if (_layoutValidator.Validate(context, result))
                 BuildPassStructure(context, result);
 
             return result;
         }
 
-        private void BuildPassStructure(ShaderCompilerContext context, MaterialPassCompileResult pResult)
+        private void BuildPassStructure(HlslCompilerContext context, MaterialPassCompileResult pResult)
         {
             MaterialPass pass = pResult.Pass;
             Material material = pass.Material as Material;
@@ -163,38 +160,38 @@ namespace Molten.Graphics
             if (pResult.VertexResult != null)
             {
                 if (!BuildStructure(context, material, pResult.VertexResult, pass.VertexShader))
-                    pResult.Errors.Add($"Invalid vertex shader structure for '{pResult.Pass.VertexShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
+                    context.AddError($"Invalid vertex shader structure for '{pResult.Pass.VertexShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // Hull Shader
             if (pResult.HullResult != null)
             {
                 if (!BuildStructure(context, material, pResult.HullResult, pass.HullShader))
-                    pResult.Errors.Add($"Invalid hull shader structure for '{pResult.Pass.HullShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
+                    context.AddError($"Invalid hull shader structure for '{pResult.Pass.HullShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // Domain Shader
             if (pResult.DomainResult != null)
             {
                 if (!BuildStructure(context, material, pResult.DomainResult, pass.DomainShader))
-                    pResult.Errors.Add($"Invalid domain shader structure for '{pResult.Pass.DomainShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
+                    context.AddError($"Invalid domain shader structure for '{pResult.Pass.DomainShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // Geometry Shader
             if (pResult.GeometryResult != null)
             {
                 if (!BuildStructure(context, material, pResult.GeometryResult, pass.GeometryShader))
-                    pResult.Errors.Add($"Invalid geometry shader structure for '{pResult.Pass.GeometryShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
+                    context.AddError($"Invalid geometry shader structure for '{pResult.Pass.GeometryShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
 
             // PixelShader Shader
             if (pResult.PixelResult != null)
             {
                 if (!BuildStructure(context, material, pResult.PixelResult, pass.PixelShader))
-                    pResult.Errors.Add($"Invalid pixel shader structure for '{pResult.Pass.PixelShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
+                    context.AddError($"Invalid pixel shader structure for '{pResult.Pass.PixelShader.EntryPoint}' in pass '{pResult.Pass.Name}'.");
             }
         }
 
-        protected override void OnBuildVariableStructure(ShaderCompilerContext context, HlslShader shader, HlslCompileResult result, HlslInputBindDescription bind) { }
+        protected override void OnBuildVariableStructure(HlslCompilerContext context, HlslShader shader, HlslCompileResult result, HlslInputBindDescription bind) { }
     }
 }

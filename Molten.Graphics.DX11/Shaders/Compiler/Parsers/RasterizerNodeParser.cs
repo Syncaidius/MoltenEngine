@@ -12,7 +12,7 @@ namespace Molten.Graphics
     {
         internal override string[] SupportedNodes => new string[] { "rasterizer" };
 
-        internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
+        internal override NodeParseResult Parse(HlslFoundation foundation, HlslCompilerContext context, XmlNode node)
         {
             if (foundation is ComputeTask)
                 return new NodeParseResult(NodeParseResultType.Ignored);

@@ -16,13 +16,12 @@ namespace Molten.Graphics
     /// </summary>
     internal unsafe class HlslCompileResult : EngineObject
     {
+        
         internal IDxcResult* Result;
         IDxcBlob* _byteCode;
-
         IDxcUtils* _utils;
-        Logger _log;
-
         IDxcBlob* _pdbData;
+        List<HlslCompilerContext.Message> _messages;
 
         internal HlslReflection Reflection { get; private set; }
 
@@ -32,16 +31,19 @@ namespace Molten.Graphics
 
         internal IDxcBlob* ByteCode => _byteCode;
 
-        internal HlslCompileResult(IDxcUtils* utils, IDxcResult* result, Logger log)
+        internal bool HasErrors { get; private set; }
+
+        internal HlslCompileResult(IDxcUtils* utils, IDxcResult* result)
         {
             _utils = utils;
-            _log = log;
+            _messages = new List<HlslCompilerContext.Message>();
+            Messages = _messages.AsReadOnly();
             Result = result;
 
             LoadByteCode();
 
             uint numOutputs = Result->GetNumOutputs();
-            log.WriteDebugLine($"{numOutputs} DXC outputs found: ");
+            AddMessage($"{numOutputs} DXC outputs found: ", HlslCompilerContext.Message.Kind.Debug);
 
             for (uint i = 0; i < numOutputs; i++)
             {
@@ -51,7 +53,7 @@ namespace Molten.Graphics
                 {
                     default:
                     case OutKind.OutNone:
-                        _log.WriteWarning($"\t Unsupported output-kind in DXC result: {o}");
+                        AddMessage($"\t Unsupported output-kind in DXC result: {o}", HlslCompilerContext.Message.Kind.Warning);
                         break;
 
                     case OutKind.OutPdb: LoadPdbData(); break;
@@ -60,6 +62,18 @@ namespace Molten.Graphics
                     case OutKind.OutErrors: WriteErrors(); break;
                 }
             }
+        }
+
+        private void AddMessage(string text, HlslCompilerContext.Message.Kind type)
+        {
+            _messages.Add(new HlslCompilerContext.Message()
+            {
+                Text = $"[{type}] {text}",
+                MessageType = type
+            });
+
+            if (type == HlslCompilerContext.Message.Kind.Error)
+                HasErrors = true;
         }
 
         protected override void OnDispose()
@@ -92,7 +106,7 @@ namespace Molten.Graphics
 
             PdbPath = pPdbPath->GetStringPointerS();
             nuint dataSize = _pdbData->GetBufferSize();
-            _log.WriteDebugLine($"\t Loaded DXC PDB data -- Bytes: {dataSize} -- Path: {PdbPath}");
+            AddMessage($"\t Loaded DXC PDB data -- Bytes: {dataSize} -- Path: {PdbPath}", HlslCompilerContext.Message.Kind.Debug);
 
             SilkUtil.ReleasePtr(ref pPdbPath);
         }
@@ -109,7 +123,7 @@ namespace Molten.Graphics
             Reflection = new HlslReflection((ID3D11ShaderReflection*)pReflection);
 
             nuint dataSize = outData->GetBufferSize();
-            _log.WriteDebugLine($"\t Loaded DXC Reflection data -- Bytes: {dataSize}");
+            AddMessage($"\t Loaded DXC Reflection data -- Bytes: {dataSize}", HlslCompilerContext.Message.Kind.Debug);
         }
 
         private void LoadByteCode()
@@ -126,9 +140,13 @@ namespace Molten.Graphics
             nuint numBytes = pErrorBlob->GetBufferSize();
             string strErrors = SilkMarshal.PtrToString((nint)ptrErrors);
 
-            _log.WriteError(strErrors);
+            string[] errors = strErrors.Split('\r', '\n');
+            for (int i = 0; i < errors.Length; i++)
+                AddMessage(errors[i], HlslCompilerContext.Message.Kind.Error);
 
             SilkUtil.ReleasePtr(ref pErrorBlob);
         }
+
+        public IReadOnlyList<HlslCompilerContext.Message> Messages { get; private set; }
     }
 }

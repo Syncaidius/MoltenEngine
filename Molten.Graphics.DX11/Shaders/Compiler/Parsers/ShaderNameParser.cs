@@ -11,7 +11,7 @@ namespace Molten.Graphics
     {
         internal override string[] SupportedNodes => new string[] {"name"};
 
-        internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
+        internal override NodeParseResult Parse(HlslFoundation foundation, HlslCompilerContext context, XmlNode node)
         {
             if (string.IsNullOrWhiteSpace(node.InnerText))
                 foundation.Name = "Unnamed Material";

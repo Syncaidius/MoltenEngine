@@ -12,7 +12,7 @@ namespace Molten.Graphics
     {
         internal override string[] SupportedNodes => new string[] { "depth" };
 
-        internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
+        internal override NodeParseResult Parse(HlslFoundation foundation, HlslCompilerContext context, XmlNode node)
         {
             if (foundation is ComputeTask)
                 return new NodeParseResult(NodeParseResultType.Ignored);
@@ -124,7 +124,7 @@ namespace Molten.Graphics
             return new NodeParseResult(NodeParseResultType.Success);
         }
 
-        private void ParseFaceNode(ShaderCompilerContext context, XmlNode faceNode, GraphicsDepthState.Face face)
+        private void ParseFaceNode(HlslCompilerContext context, XmlNode faceNode, GraphicsDepthState.Face face)
         {
             foreach(XmlNode child in faceNode.ChildNodes)
             {

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Runtime.InteropServices;
-using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {

@@ -11,13 +11,13 @@ namespace Molten.Graphics
     {
         internal override string[] SupportedNodes => new string[] { "iterations" };
 
-        internal override NodeParseResult Parse(HlslFoundation foundation, ShaderCompilerContext context, XmlNode node)
+        internal override NodeParseResult Parse(HlslFoundation foundation, HlslCompilerContext context, XmlNode node)
         {
             int val = 1;
             if (int.TryParse(node.InnerText, out val))
                 foundation.Iterations = val;
             else
-                context.Messages.Add($"Invalid iteration number format for {foundation.GetType().Name}. Should be an integer value.");
+                context.AddWarning($"Invalid iteration number format for {foundation.GetType().Name}. Should be an integer value.");
 
             if (string.IsNullOrWhiteSpace(node.InnerText))
                 foundation.Name = "Unnamed Material";

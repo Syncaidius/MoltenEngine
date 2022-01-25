@@ -10,7 +10,7 @@ namespace Molten.Graphics
 {
     internal unsafe class ComputeCompiler : HlslSubCompiler
     {
-        internal override List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header)
+        internal override List<IShader> Parse(HlslCompilerContext context, RendererDX11 renderer, string header)
         {
             List<IShader> shaders = new List<IShader>();
             ComputeTask compute = new ComputeTask(renderer.Device, context.Filename);
@@ -31,10 +31,10 @@ namespace Molten.Graphics
             }
             catch (Exception e)
             {
-                context.Errors.Add($"{context.Filename ?? "Material header error"}: {e.Message}");
+                context.AddError($"{context.Filename ?? "Material header error"}: {e.Message}");
             }
 
-            if(context.Errors.Count == 0)
+            if(context.HasErrors)
             {
                 shaders.Add(compute);
                 (renderer.Compute as ComputeManager).AddTask(compute);
@@ -43,7 +43,7 @@ namespace Molten.Graphics
             return shaders;
         }
 
-        protected override void OnBuildVariableStructure(ShaderCompilerContext context, HlslShader shader,
+        protected override void OnBuildVariableStructure(HlslCompilerContext context, HlslShader shader,
             HlslCompileResult result, HlslInputBindDescription bind)
         {
             ComputeTask ct = shader as ComputeTask;
@@ -62,7 +62,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected void OnBuildRWStructuredVariable(ShaderCompilerContext context, ComputeTask shader, HlslInputBindDescription bind)
+        protected void OnBuildRWStructuredVariable(HlslCompilerContext context, ComputeTask shader, HlslInputBindDescription bind)
         {
             RWBufferVariable rwBuffer = GetVariableResource<RWBufferVariable>(context, shader, bind);
             uint bindPoint = bind.Ptr->BindPoint;
@@ -73,7 +73,7 @@ namespace Molten.Graphics
             shader.UAVs[bindPoint] = rwBuffer;
         }
 
-        protected void OnBuildRWTypedVariable(ShaderCompilerContext context, ComputeTask shader, HlslInputBindDescription bind)
+        protected void OnBuildRWTypedVariable(HlslCompilerContext context, ComputeTask shader, HlslInputBindDescription bind)
         {
             RWVariable resource = null;
             uint bindPoint = bind.Ptr->BindPoint;
