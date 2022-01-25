@@ -21,7 +21,6 @@ namespace Molten.Graphics
         IDxcBlob* _byteCode;
         IDxcUtils* _utils;
         IDxcBlob* _pdbData;
-        List<HlslCompilerContext.Message> _messages;
 
         internal HlslReflection Reflection { get; private set; }
 
@@ -31,19 +30,15 @@ namespace Molten.Graphics
 
         internal IDxcBlob* ByteCode => _byteCode;
 
-        internal bool HasErrors { get; private set; }
-
-        internal HlslCompileResult(IDxcUtils* utils, IDxcResult* result)
+        internal HlslCompileResult(HlslCompilerContext context, IDxcResult* result)
         {
-            _utils = utils;
-            _messages = new List<HlslCompilerContext.Message>();
-            Messages = _messages.AsReadOnly();
+            _utils = context.Compiler.Utils;
             Result = result;
 
             LoadByteCode();
 
             uint numOutputs = Result->GetNumOutputs();
-            AddMessage($"{numOutputs} DXC outputs found: ", HlslCompilerContext.Message.Kind.Debug);
+            context.AddDebug($"{numOutputs} DXC outputs found: ");
 
             for (uint i = 0; i < numOutputs; i++)
             {
@@ -53,27 +48,15 @@ namespace Molten.Graphics
                 {
                     default:
                     case OutKind.OutNone:
-                        AddMessage($"\t Unsupported output-kind in DXC result: {o}", HlslCompilerContext.Message.Kind.Warning);
+                        context.AddWarning($"\t Unsupported output-kind in DXC result: {o}");
                         break;
 
-                    case OutKind.OutPdb: LoadPdbData(); break;
-                    case OutKind.OutReflection: LoadReflection(); break;
+                    case OutKind.OutPdb: LoadPdbData(context); break;
+                    case OutKind.OutReflection: LoadReflection(context); break;
 
-                    case OutKind.OutErrors: WriteErrors(); break;
+                    case OutKind.OutErrors: LoadErrors(context); break;
                 }
             }
-        }
-
-        private void AddMessage(string text, HlslCompilerContext.Message.Kind type)
-        {
-            _messages.Add(new HlslCompilerContext.Message()
-            {
-                Text = $"[{type}] {text}",
-                MessageType = type
-            });
-
-            if (type == HlslCompilerContext.Message.Kind.Error)
-                HasErrors = true;
         }
 
         protected override void OnDispose()
@@ -99,19 +82,19 @@ namespace Molten.Graphics
             outData = (IDxcBlob*)pData;
         }
 
-        private void LoadPdbData()
+        private void LoadPdbData(HlslCompilerContext context)
         {
             IDxcBlobUtf16* pPdbPath = null;
             GetDxcOutput(OutKind.OutPdb, ref _pdbData, &pPdbPath);
 
             PdbPath = pPdbPath->GetStringPointerS();
             nuint dataSize = _pdbData->GetBufferSize();
-            AddMessage($"\t Loaded DXC PDB data -- Bytes: {dataSize} -- Path: {PdbPath}", HlslCompilerContext.Message.Kind.Debug);
+            context.AddDebug($"\t Loaded DXC PDB data -- Bytes: {dataSize} -- Path: {PdbPath}");
 
             SilkUtil.ReleasePtr(ref pPdbPath);
         }
 
-        private void LoadReflection()
+        private void LoadReflection(HlslCompilerContext context)
         {
             IDxcBlob* outData = null;
             DxcBuffer* reflectionBuffer = null;
@@ -123,7 +106,7 @@ namespace Molten.Graphics
             Reflection = new HlslReflection((ID3D11ShaderReflection*)pReflection);
 
             nuint dataSize = outData->GetBufferSize();
-            AddMessage($"\t Loaded DXC Reflection data -- Bytes: {dataSize}", HlslCompilerContext.Message.Kind.Debug);
+            context.AddDebug($"\t Loaded DXC Reflection data -- Bytes: {dataSize}");
         }
 
         private void LoadByteCode()
@@ -131,7 +114,7 @@ namespace Molten.Graphics
             Result->GetResult(ref _byteCode);
         }
 
-        private void WriteErrors()
+        private void LoadErrors(HlslCompilerContext context)
         {
             IDxcBlobEncoding* pErrorBlob = null;
             Result->GetErrorBuffer(&pErrorBlob);
@@ -142,11 +125,9 @@ namespace Molten.Graphics
 
             string[] errors = strErrors.Split('\r', '\n');
             for (int i = 0; i < errors.Length; i++)
-                AddMessage(errors[i], HlslCompilerContext.Message.Kind.Error);
+                context.AddError(errors[i]);
 
             SilkUtil.ReleasePtr(ref pErrorBlob);
         }
-
-        public IReadOnlyList<HlslCompilerContext.Message> Messages { get; private set; }
     }
 }

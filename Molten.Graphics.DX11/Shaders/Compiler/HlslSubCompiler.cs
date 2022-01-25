@@ -297,16 +297,10 @@ namespace Molten.Graphics
                 void* dxcResult;
 
                 context.Compiler.Native->Compile(in context.Source, argString, argCount, context.Includer, IDxcResult.Guid, &dxcResult);
-                result = new HlslCompileResult(context.Compiler.Utils, (IDxcResult*)dxcResult);
+                result = new HlslCompileResult(context, (IDxcResult*)dxcResult);
 
-                if (result.Messages.Count > 0)
-                {
-                    context.AddMessage($"Material Pass ({entryPoint}) has {result.Messages.Count} messages:");
-                    for (int i = 0; i < result.Messages.Count; i++)
-                        context.AddMessages(result.Messages);
-
+                if(context.HasErrors)
                     return false;
-                }
 
                 context.HlslShaders.Add(entryPoint, result);
             }
