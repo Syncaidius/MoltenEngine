@@ -1,4 +1,5 @@
-﻿using Silk.NET.Direct3D.Compilers;
+﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D.Compilers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,13 +47,11 @@ namespace Molten.Graphics
 
         Dictionary<HlslCompilerArg, string> _args;
         HlslCompilerContext _context;
-        IDxcCompilerArgs* _dxcArgs;
 
         internal DxcArgumentBuilder(HlslCompilerContext context)
         {
             _args = new Dictionary<HlslCompilerArg, string>();
             _context = context;
-            _dxcArgs = context.Compiler.Utils->ar
         }
 
         internal bool Add(HlslCompilerArg arg)
@@ -119,6 +118,12 @@ namespace Molten.Graphics
             }
 
             return s;
+        }
+
+        public char** GetArgsPtr()
+        {
+            IReadOnlyList<string> args = _args.Values.ToList().AsReadOnly();
+            return (char**)SilkMarshal.StringArrayToPtr(args, NativeStringEncoding.LPWStr);
         }
 
         internal uint Count => (uint)_args.Count;

@@ -296,7 +296,7 @@ namespace Molten.Graphics
                 // TODO replace with IDxcCompilerArgs which will return a char** for use with Compiler.Compile().
                 string argString = context.Args.ToString();
                 uint argCount = context.Args.Count;
-                void* ptrArgString = (void*)SilkMarshal.StringToPtr(context.Source, NativeStringEncoding.LPWStr);
+                char** ptrArgString = context.Args.GetArgsPtr();
 
                 Guid dxcResultGuid = IDxcResult.Guid;
                 void* dxcResult;
