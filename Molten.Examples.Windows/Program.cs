@@ -1,2 +1,12 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Molten.Samples;
+using System;
+
+static class Program
+{
+    [STAThread]
+    static void Main(string[] args)
+    {
+        MainWindow mainWindow = new MainWindow();
+        mainWindow.Show();
+    }
+}

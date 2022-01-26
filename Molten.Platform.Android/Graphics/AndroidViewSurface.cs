@@ -30,7 +30,7 @@ namespace Molten.Graphics
 
         public IMoltenAndroidActivity TargetActivity { get; private set; }
 
-        Viewport _vp;
+        ViewportF _vp;
 
         public AndroidViewSurface(IMoltenAndroidActivity activity)
         {
@@ -46,7 +46,7 @@ namespace Molten.Graphics
             if(TargetView != null && TargetView.Width > 0 && TargetView.Height > 0)
             {
                 // TODO correctly calculate this. The View may not be located at 0,0 within it's parent.
-                _vp = new Viewport()
+                _vp = new ViewportF()
                 {
                     X = 0,
                     Y = 0,
@@ -56,7 +56,7 @@ namespace Molten.Graphics
             }
             else
             {
-                _vp = new Viewport();
+                _vp = new ViewportF();
 
                 // GetRealSize() was defined in JellyBeanMr1 / API 17 / Android 4.2
                 if (Build.VERSION.SdkInt < BuildVersionCodes.JellyBeanMr1)
@@ -79,6 +79,111 @@ namespace Molten.Graphics
             TargetView = o;
             CalculateViewport();
             OnHandleChanged?.Invoke(this);
+        }
+
+        public void Present()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispatch(Action callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear(Color color)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Resize(uint newWidth, uint newHeight, uint newMipMapCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Texture2DProperties Get2DProperties()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Resize(uint newWidth, uint newHeight, uint newMipMapCount, uint newArraySize, GraphicsFormat newFormat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Resize(uint newWidth, uint newHeight)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Texture1DProperties Get1DProperties()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Resize(uint newWidth, uint newMipMapCount, GraphicsFormat format)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Resize(uint newWidth)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GenerateMipMaps()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyTo(ITexture destination)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyTo(uint sourceLevel, uint sourceSlice, ITexture destination, uint destLevel, uint destSlice)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetData(TextureData data, uint srcMipIndex, uint srcArraySlice, uint mipCount, uint arrayCount, uint destMipIndex = 0, uint destArraySlice = 0)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetData<T>(uint level, T[] data, uint startIndex, uint count, uint pitch, uint arraySlice = 0) where T : unmanaged
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetData(TextureData.Slice data, uint mipLevel, uint arraySlice)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0) where T : unmanaged
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetData(ITexture stagingTexture, Action<TextureData> callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetData(ITexture stagingTexture, uint level, uint arrayIndex, Action<TextureData.Slice> callback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool HasFlags(TextureFlags flags)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
 
         public string Title
@@ -122,131 +227,24 @@ namespace Molten.Graphics
 
         public bool IsBlockCompressed => throw new NotImplementedException();
 
-        public Viewport Viewport => _vp;
+        public uint Width => (uint)_vp.Width;
 
-        public int Width => _vp.Width;
+        public uint Height => (uint)_vp.Height;
 
-        public int Height => _vp.Height;
+        public uint MipMapCount => throw new NotImplementedException();
 
-        public int MipMapCount => throw new NotImplementedException();
+        public uint ArraySize => throw new NotImplementedException();
 
-        public int ArraySize => throw new NotImplementedException();
-
-        public int SampleCount => throw new NotImplementedException();
+        public uint SampleCount => throw new NotImplementedException();
 
         public bool IsMultisampled => throw new NotImplementedException();
 
         public object Tag { get; set; }
 
-        public int SortKey => throw new NotImplementedException();
-
-        public MoltenRenderer Renderer => throw new NotImplementedException();
+        public RenderService Renderer => throw new NotImplementedException();
 
         public IntPtr Handle => throw new NotImplementedException();
 
-        public void Clear(Color color)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CopyTo(ITexture destination)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CopyTo(int sourceLevel, int sourceSlice, ITexture destination, int destLevel, int destSlice)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Dispatch(Action callback)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void GenerateMipMaps()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Texture1DProperties Get1DProperties()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Texture2DProperties Get2DProperties()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void GetData(ITexture stagingTexture, Action<TextureData> callback)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void GetData(ITexture stagingTexture, int level, int arrayIndex, Action<TextureData.Slice> callback)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool HasFlags(TextureFlags flags)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Present()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Resize(int newWidth, int newHeight, int newMipMapCount)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Resize(int newWidth, int newHeight, int newMipMapCount, int newArraySize, GraphicsFormat newFormat)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Resize(int newWidth, int newHeight)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Resize(int newWidth, int newMipMapCount, GraphicsFormat format)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Resize(int newWidth)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetData(TextureData data, int srcMipIndex, int srcArraySlice, int mipCount, int arrayCount, int destMipIndex = 0, int destArraySlice = 0)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetData<T>(int level, T[] data, int startIndex, int count, int pitch, int arraySlice = 0) where T : struct
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetData(TextureData.Slice data, int mipLevel, int arraySlice)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetData<T>(Rectangle area, T[] data, int bytesPerPixel, int level, int arrayIndex = 0) where T : struct
-        {
-            throw new NotImplementedException();
-        }
+        public ViewportF Viewport => _vp;
     }
 }

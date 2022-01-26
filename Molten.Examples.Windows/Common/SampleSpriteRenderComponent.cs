@@ -14,6 +14,8 @@ namespace Molten.Samples
     {
         public SampleSpriteRenderComponent() { }
 
+        protected override void OnDispose() { }
+
         protected override void OnRender(SpriteBatcher sb)
         {
             RenderCallback?.Invoke(sb);

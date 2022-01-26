@@ -13,7 +13,7 @@ namespace Molten.Input
 
         public override IInputNavigation Navigation => _navigation;
 
-        protected override void OnInitialize(InputSettings settings, Logger log)
+        protected override void OnInitialize(EngineSettings settings, Logger log)
         {
             base.OnInitialize(settings, log);
 

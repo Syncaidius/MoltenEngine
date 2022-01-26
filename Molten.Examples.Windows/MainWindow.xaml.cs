@@ -49,7 +49,7 @@ namespace Molten.Samples
             //a hack for maximizing the console window
             Process p = Process.GetCurrentProcess();
             ShowWindow(p.MainWindowHandle, 3); //SW_MAXIMIZE = 3
-            Console.WriteLine("Stone Bolt Engine Test Framework.");
+            Console.WriteLine("Molten Engine Test Framework.");
 
             GetTests();
 
