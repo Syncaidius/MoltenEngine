@@ -18,8 +18,8 @@ namespace Molten
 
         internal void Update(SceneManager handler, MouseDevice mouse, Timing time)
         {
-            Vector2F mousePos = mouse.Position;
-            Vector2F mouseMove = mouse.Delta;
+            Vector2F mousePos = (Vector2F)mouse.Position;
+            Vector2F mouseMove = (Vector2F)mouse.Delta;
 
             //handle clicking and dragging.
             if (mouse.IsDown(Button))

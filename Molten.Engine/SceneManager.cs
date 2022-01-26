@@ -75,8 +75,8 @@ namespace Molten
 
         internal void HandleInput(MouseDevice mouse, Timing time)
         {
-            Vector2F cursorPos = mouse.Position;
-            Vector2F cursorDelta = mouse.Delta;
+            Vector2F cursorPos = (Vector2F)mouse.Position;
+            Vector2F cursorDelta = (Vector2F)mouse.Delta;
             for (int i = _scenes.Count - 1; i >= 0; i--)
             {
                 ICursorAcceptor newHover = _scenes[i].PickObject(cursorPos);
