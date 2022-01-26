@@ -26,6 +26,8 @@ foreach(TypeData d in _def)
 		string fullName = $"{d.Name}{size}{d.Postfix}";
 		string fn = $"{fullName}.fp";
 		string fpCast = d.DT == "float" ? "(float)" : "";
+		string intCast = d.DT == "float" ? "(int)" : (d.DT == "double" ? "(long)" : "$(${d.DT}");
+		string intCastPostfix = d.DT == "float" ? "I" : "L";
 #>
 using System.Runtime.InteropServices;
 using System;
@@ -121,6 +123,23 @@ namespace Molten
 #>
             };
         }
+#endregion
+
+#region Operators - Cast
+        public static explicit operator Vector<#=size#><#=intCastPostfix#>(<#=fullName#> value)
+		{
+			return new Vector<#=size#><#=intCastPostfix#>()
+			{
+<#
+			for(int p = 0; p < size; p++)
+			{
+#>
+				<#=pMapUpper[p]#> = <#=intCast#>value.<#=pMapUpper[p]#>,
+<#
+			}
+#>
+			};
+		}
 #endregion
 	}
 }

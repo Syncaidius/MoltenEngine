@@ -69,6 +69,19 @@ namespace Molten
             };
         }
 #endregion
+
+#region Operators - Cast
+        public static explicit operator Vector4I(Vector4F value)
+		{
+			return new Vector4I()
+			{
+				X = (int)value.X,
+				Y = (int)value.Y,
+				Z = (int)value.Z,
+				W = (int)value.W,
+			};
+		}
+#endregion
 	}
 }
 

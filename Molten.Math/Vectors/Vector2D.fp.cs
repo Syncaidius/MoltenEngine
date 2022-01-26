@@ -57,6 +57,17 @@ namespace Molten
             };
         }
 #endregion
+
+#region Operators - Cast
+        public static explicit operator Vector2L(Vector2D value)
+		{
+			return new Vector2L()
+			{
+				X = (long)value.X,
+				Y = (long)value.Y,
+			};
+		}
+#endregion
 	}
 }
 
