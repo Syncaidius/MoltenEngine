@@ -1,4 +1,5 @@
-﻿using Silk.NET.Direct3D.Compilers;
+﻿using Silk.NET.Core.Native;
+using Silk.NET.Direct3D.Compilers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,6 +26,11 @@ namespace Molten.Graphics
             _renderer = renderer;
             _log = log;
             _subCompilers = new Dictionary<string, HlslSubCompiler>();
+
+            Dxc = DXC.GetApi();
+            _utils = CreateInstance<IDxcUtils>(IDxcUtils.Guid);
+            _compiler = CreateInstance<IDxcCompiler3>(IDxcCompiler3.Guid);
+
             _defaultIncluder = new EmbeddedIncluder(this, typeof(EmbeddedIncluder).Assembly);
 
             // Detect and instantiate node parsers
@@ -37,10 +43,6 @@ namespace Molten.Graphics
                     _parsers.Add(nodeName, parser);
             }
 
-            Dxc = DXC.GetApi();
-            _utils = CreateInstance<IDxcUtils>();
-            _compiler = CreateInstance<IDxcCompiler3>();
-
             AddSubCompiler<MaterialCompiler>("material");
             AddSubCompiler<ComputeCompiler>("compute");
         }
@@ -52,11 +54,11 @@ namespace Molten.Graphics
             Dxc.Dispose();
         }
 
-        private T* CreateInstance<T>() where T: unmanaged
+        private T* CreateInstance<T>(Guid targetRiid) where T : unmanaged
         {
             void* ppv = null;
-            fixed (Guid* riid = &IDxcUtils.Guid)
-                Dxc.CreateInstance(riid, riid, ref ppv); // TODO should rclsid or riid be Type.Guid (e.g. IDcUtils.Guid)?
+            Guid utilGuid = IDxcUtils.Guid;
+            HResult result = Dxc.CreateInstance(&utilGuid, &targetRiid, ref ppv);
 
             return (T*)ppv;
         }

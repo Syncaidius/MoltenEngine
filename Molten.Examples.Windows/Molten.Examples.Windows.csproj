@@ -38,6 +38,9 @@
     <None Update="App.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+    <None Update="dxcompiler.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>

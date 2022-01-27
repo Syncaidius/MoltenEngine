@@ -42,9 +42,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Graphics.DX11", "Mol
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Platform.Windows", "Molten.Platform.Windows\Molten.Platform.Windows.csproj", "{45BEAE41-A652-43E2-BC48-8B8224B87487}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Examples.Windows", "Molten.Examples.Windows\Molten.Examples.Windows.csproj", "{43998435-5C15-4269-92C3-D68A948B26C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Examples.Windows", "Molten.Examples.Windows\Molten.Examples.Windows.csproj", "{43998435-5C15-4269-92C3-D68A948B26C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Platform.Android", "Molten.Platform.Android\Molten.Platform.Android.csproj", "{F221C1EE-8390-4B50-AD06-3370F35D8D40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Platform.Android", "Molten.Platform.Android\Molten.Platform.Android.csproj", "{F221C1EE-8390-4B50-AD06-3370F35D8D40}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{F1558767-164F-4FAF-A49A-F3E7E28D267C}"
+	ProjectSection(SolutionItems) = preProject
+		Libraries\Windows\dxcompiler.dll = Libraries\Windows\dxcompiler.dll
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -364,6 +369,7 @@ Global
 		{45BEAE41-A652-43E2-BC48-8B8224B87487} = {940AA3BE-1CDB-4EFC-B811-6FA4D0562AB3}
 		{43998435-5C15-4269-92C3-D68A948B26C7} = {940AA3BE-1CDB-4EFC-B811-6FA4D0562AB3}
 		{F221C1EE-8390-4B50-AD06-3370F35D8D40} = {7BD8F3B9-15EB-4FEF-B51E-083E34D62675}
+		{F1558767-164F-4FAF-A49A-F3E7E28D267C} = {940AA3BE-1CDB-4EFC-B811-6FA4D0562AB3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC16AE48-8B66-43B4-9033-C95D608AA215}

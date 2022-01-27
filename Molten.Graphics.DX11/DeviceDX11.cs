@@ -60,23 +60,27 @@ namespace Molten.Graphics
                 flags |= DeviceCreationFlags.Debug;
             }
 
-            D3DFeatureLevel requestedFeatureLevel = D3DFeatureLevel.D3DFeatureLevel111;
+            D3DFeatureLevel* featureLevels = stackalloc D3DFeatureLevel[1];
+            featureLevels[0] = D3DFeatureLevel.D3DFeatureLevel111;
+
             D3DFeatureLevel highestFeatureLevel = D3DFeatureLevel.D3DFeatureLevel111;
             IDXGIAdapter* adapter = (IDXGIAdapter*)_adapter.Native;
-            ID3D11Device* ptrDevice = (ID3D11Device*)Native;
-            ID3D11DeviceContext* ptrContext = (ID3D11DeviceContext*)ImmediateContext;
+            ID3D11Device* ptrDevice = null;
+            ID3D11DeviceContext* ptrContext = null;
 
-            HResult r = _api.CreateDevice(adapter, 
-                D3DDriverType.D3DDriverTypeHardware,
+            HResult r = _api.CreateDevice(adapter,
+                D3DDriverType.D3DDriverTypeUnknown,
                 0,
-                (uint)flags, 
-                &requestedFeatureLevel, 1,
+                (uint)flags,
+                featureLevels, 1,
                 D3D11.SdkVersion,
                 &ptrDevice,
-                &highestFeatureLevel,
+                null,
                 &ptrContext);
 
-            r.Throw();
+            Native = (ID3D11Device1*)ptrDevice;
+            ImmediateContext = (ID3D11DeviceContext1*)ptrContext;
+
             Features = new DeviceFeaturesDX11(Native);
             _rasterizerBank = new RasterizerStateBank(this);
             _blendBank = new BlendStateBank(this);
