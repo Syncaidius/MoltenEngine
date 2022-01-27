@@ -250,7 +250,8 @@ namespace Molten.Graphics
             {
                 OnInitializeAdapter(settings.Graphics);
                 Log.WriteLine($"Initialized adapter");
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Log.WriteLine("Failed to initialize renderer");
                 Log.WriteError(ex, true);

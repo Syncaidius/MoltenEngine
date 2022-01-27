@@ -29,6 +29,11 @@ namespace Molten
             Name = $"EO {EOID}";
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         /// <summary>Disposes of the current <see cref="EngineObject"/> instance.</summary>
         public void Dispose()
         {

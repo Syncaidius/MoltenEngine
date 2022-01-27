@@ -7,6 +7,6 @@ static class Program
     static void Main(string[] args)
     {
         MainWindow mainWindow = new MainWindow();
-        mainWindow.Show();
+        mainWindow.ShowDialog();
     }
 }

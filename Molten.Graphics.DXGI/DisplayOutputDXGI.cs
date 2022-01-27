@@ -21,7 +21,7 @@ namespace Molten.Graphics.Dxgi
             _desc = EngineUtil.Alloc<OutputDesc>();
             Native->GetDesc(_desc);
 
-            Name = SilkMarshal.PtrToString((nint)_desc->DeviceName);
+            Name = SilkMarshal.PtrToString((nint)_desc->DeviceName, NativeStringEncoding.LPWStr);
             Name = Name.Replace("\0", string.Empty);
         }
 

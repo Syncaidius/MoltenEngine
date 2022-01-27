@@ -40,12 +40,17 @@ namespace Molten.Graphics.Dxgi
             _log = logger;
 
             // Create factory
-            Guid factoryGuid = Guid.NewGuid();
-            void* ptrFactory = (void*)_dxgiFactory;
-            _api.CreateDXGIFactory1(ref factoryGuid, &ptrFactory);
+            Guid factoryGuid = IDXGIFactory1.Guid;
+            void* ptrFactory = null;
+            _api.CreateDXGIFactory1(&factoryGuid, &ptrFactory);
+            _dxgiFactory = (IDXGIFactory1*)ptrFactory;
 
             // Detect adapters.
-            IDXGIAdapter1*[] detected = DXGIHelper.EnumArray<IDXGIAdapter1>(_dxgiFactory->EnumAdapters1);
+            IDXGIAdapter1*[] detected = DXGIHelper.EnumArray((uint index, ref IDXGIAdapter1* ptrOutput) =>
+            {
+                return _dxgiFactory->EnumAdapters1(index, ref ptrOutput);
+            });
+
             for (int i = 0; i < detected.Length; i++)
             {
                 DisplayAdapterDXGI adapter = new DisplayAdapterDXGI(this, detected[i], i);

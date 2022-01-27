@@ -37,9 +37,7 @@ namespace Molten.Graphics
             // Now build the array
             T*[] result = new T*[count];
             for (uint i = 0; i < count; i++)
-            {
                 enumFunc(i, ref result[i]);
-            }
 
             return result;
         }
@@ -56,7 +54,7 @@ namespace Molten.Graphics
             where RETURN_TYPE : unmanaged
             where ENUM_TYPE: unmanaged
         {
-            uint count = GetEnumCount<ENUM_TYPE>(enumFunc);
+            uint count = GetEnumCount(enumFunc);
 
             // Now build the array
             RETURN_TYPE*[] result = new RETURN_TYPE*[count];
@@ -84,12 +82,12 @@ namespace Molten.Graphics
             uint count = 0;
 
             // Find out how many items there are.
-            while (err != DxgiError.Ok)
+            while (err == DxgiError.Ok)
             {
                 int r = enumFunc(count, ref temp);
                 err = ErrorFromResult(r);
 
-                if (err != DxgiError.Ok)
+                if (err == DxgiError.Ok)
                     count++;
             }
 

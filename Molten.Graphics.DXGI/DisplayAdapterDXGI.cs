@@ -18,7 +18,6 @@ namespace Molten.Graphics.Dxgi
         DisplayOutputDXGI[] _connectedOutputs;
         List<DisplayOutputDXGI> _activeOutputs;
         IDisplayManager _manager;
-        string _name;
 
 
         /// <summary> Occurs when an <see cref="T:Molten.IDisplayOutput" /> is connected to the current <see cref="T:Molten.IDisplayAdapter" />.</summary>
@@ -36,8 +35,7 @@ namespace Molten.Graphics.Dxgi
             _desc = EngineUtil.Alloc<AdapterDesc1>();
             adapter->GetDesc1(_desc);
 
-            _name = SilkMarshal.PtrToString((nint)_desc->Description);
-            _name.Replace("\0", string.Empty);
+            Name = SilkMarshal.PtrToString((nint)_desc->Description, NativeStringEncoding.LPWStr);
 
             PopulateVendor();
 
@@ -48,7 +46,11 @@ namespace Molten.Graphics.Dxgi
             sharedMemory = sharedMemory < 0 ? 0 : sharedMemory;
             SharedSystemMemory = ByteMath.ToMegabytes(sharedMemory);
 
-            IDXGIOutput1*[] outputs = DXGIHelper.EnumArray<IDXGIOutput1, IDXGIOutput>(adapter->EnumOutputs);
+            IDXGIOutput1*[] outputs = DXGIHelper.EnumArray<IDXGIOutput1, IDXGIOutput>((uint index, ref IDXGIOutput* ptrOutput) =>
+            {
+                return adapter->EnumOutputs(index, ref ptrOutput);
+            });
+
             _connectedOutputs = new DisplayOutputDXGI[outputs.Length];
 
             for (int i = 0; i < _connectedOutputs.Length; i++)
@@ -142,14 +144,6 @@ namespace Molten.Graphics.Dxgi
         {
             outputList.AddRange(_connectedOutputs);
         }
-
-        public override string ToString()
-        {
-            return _name;
-        }
-
-        /// <summary>Gets the vendor's name of the adapter.</summary>
-        public string Name => _name;
 
         /// <summary>Gets the amount of dedicated video memory, in megabytes.</summary>
         public double DedicatedVideoMemory { get; }

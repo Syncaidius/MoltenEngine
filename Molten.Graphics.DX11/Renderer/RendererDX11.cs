@@ -55,6 +55,7 @@ namespace Molten.Graphics
         {
             base.OnInitialize(settings, mainLog);
 
+            _api = D3D11.GetApi();
             Device = new DeviceDX11(_api, Log, settings.Graphics, _displayManager);
             _resourceManager = new ResourceManager(this);
             _compute = new ComputeManager(this.Device);
@@ -260,7 +261,8 @@ namespace Molten.Graphics
 
             StaticVertexBuffer.Dispose();
             DynamicVertexBuffer.Dispose();
-            Device?.Dispose();            
+            Device?.Dispose();
+            _api.Dispose();
         }
 
         /// <summary>

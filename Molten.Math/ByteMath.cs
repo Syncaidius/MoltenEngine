@@ -10,7 +10,7 @@ namespace Molten
     {
         public const ulong BITS_IN_BYTE = 8;
 
-#if X64 || X86 || WIN32 || WINDOWS
+#if X64 || X86 || WIN32 || WINDOWS || WIN || WIN64 || WINDOWS
         public const ulong B_BASE = 1024;
 #else
         public const ulong B_BASE = 1000;
@@ -24,10 +24,10 @@ namespace Molten
 
         public const ulong IB_BASE = 1024;
         public const ulong BYTES_IN_KIB = IB_BASE;
-        public const ulong BYTES_IN_MIB = BYTES_IN_KB * B_BASE;
-        public const ulong BYTES_IN_GIB = BYTES_IN_MB * B_BASE;
-        public const ulong BYTES_IN_TIB = BYTES_IN_GB * B_BASE;
-        public const ulong BYTES_IN_PIB = BYTES_IN_TB * B_BASE;
+        public const ulong BYTES_IN_MIB = BYTES_IN_KB * IB_BASE;
+        public const ulong BYTES_IN_GIB = BYTES_IN_MB * IB_BASE;
+        public const ulong BYTES_IN_TIB = BYTES_IN_GB * IB_BASE;
+        public const ulong BYTES_IN_PIB = BYTES_IN_TB * IB_BASE;
 
         /// <summary>Converts bytes into kilobytes (KB).</summary>
         /// <param name="bytes"></param>

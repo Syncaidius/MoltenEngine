@@ -41,6 +41,7 @@ namespace Molten.Graphics
         /// <param name="adapter">The adapter.</param>
         internal DeviceDX11(D3D11 api, Logger log, GraphicsSettings settings, DisplayManagerDXGI manager)
         {
+            _api = api;
             _log = log;
             _displayManager = manager;
             _adapter = _displayManager.SelectedAdapter as DisplayAdapterDXGI;
@@ -59,8 +60,8 @@ namespace Molten.Graphics
                 flags |= DeviceCreationFlags.Debug;
             }
 
-            D3DFeatureLevel requestedFeatureLevel = D3DFeatureLevel.D3DFeatureLevel110;
-            D3DFeatureLevel highestFeatureLevel = D3DFeatureLevel.D3DFeatureLevel110;
+            D3DFeatureLevel requestedFeatureLevel = D3DFeatureLevel.D3DFeatureLevel111;
+            D3DFeatureLevel highestFeatureLevel = D3DFeatureLevel.D3DFeatureLevel111;
             IDXGIAdapter* adapter = (IDXGIAdapter*)_adapter.Native;
             ID3D11Device* ptrDevice = (ID3D11Device*)Native;
             ID3D11DeviceContext* ptrContext = (ID3D11DeviceContext*)ImmediateContext;
@@ -75,6 +76,7 @@ namespace Molten.Graphics
                 &highestFeatureLevel,
                 &ptrContext);
 
+            r.Throw();
             Features = new DeviceFeaturesDX11(Native);
             _rasterizerBank = new RasterizerStateBank(this);
             _blendBank = new BlendStateBank(this);
