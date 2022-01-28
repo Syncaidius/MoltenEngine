@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    /// <summary>Stores a rasterizer state for use with a <see cref="PipeDX11"/>.</summary>
+    /// <summary>Stores a rasterizer state for use with a <see cref="DeviceContext"/>.</summary>
     internal unsafe class GraphicsRasterizerState : PipeBindable<ID3D11RasterizerState1>
     {
         static RasterizerDesc1 _defaultDesc;
@@ -40,13 +40,13 @@ namespace Molten.Graphics
         /// 
         /// </summary>
         /// <param name="source">An existing <see cref="GraphicsRasterizerState"/> instance from which to copy settings."/></param>
-        internal GraphicsRasterizerState(DeviceDX11 device, GraphicsRasterizerState source) : base(device)
+        internal GraphicsRasterizerState(Device device, GraphicsRasterizerState source) : base(device)
         {
             _desc = source._desc;
             _dirty = true;
         }
 
-        internal GraphicsRasterizerState(DeviceDX11 device) : base(device)
+        internal GraphicsRasterizerState(Device device) : base(device)
         {
             _desc = _defaultDesc;
             _dirty = true;
@@ -74,7 +74,7 @@ namespace Molten.Graphics
                 _desc.SlopeScaledDepthBias == other._desc.SlopeScaledDepthBias;
         }
 
-        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
+        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
         {
             if (_native == null || _dirty)
             {
@@ -82,7 +82,7 @@ namespace Molten.Graphics
                 SilkUtil.ReleasePtr(ref _native);
 
                 //create new state
-                Device.Native->CreateRasterizerState1(ref _desc, ref _native);
+                Device.NativeDevice->CreateRasterizerState1(ref _desc, ref _native);
             }
         }
 

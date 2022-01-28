@@ -14,7 +14,7 @@ namespace Molten.Graphics
         ID3D11UnorderedAccessView* _native;
         UnorderedAccessViewDesc _desc;
 
-        internal UAView(DeviceDX11 device) : base(device)
+        internal UAView(Device device) : base(device)
         {
         }
 
@@ -25,7 +25,7 @@ namespace Molten.Graphics
         internal void Recreate(ID3D11Resource* resource)
         {
             SilkUtil.ReleasePtr(ref _native);
-            Device.Native->CreateUnorderedAccessView(resource, ref _desc, ref _native);
+            Device.NativeDevice->CreateUnorderedAccessView(resource, ref _desc, ref _native);
         }
 
         internal void Release()
@@ -33,7 +33,7 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _native);
         }
 
-        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
+        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
         {
             throw new NotSupportedException("UAView does not support Refresh()");
         }

@@ -15,13 +15,13 @@ namespace Molten.Graphics
         Color4 _borderColor;
         bool _isDirty;
 
-        internal ShaderSampler(DeviceDX11 device, ShaderSampler source) : base(device)
+        internal ShaderSampler(Device device, ShaderSampler source) : base(device)
         {
             _desc = source._desc;
             _isDirty = true;
         }
 
-        internal ShaderSampler(DeviceDX11 device) : base(device)
+        internal ShaderSampler(Device device) : base(device)
         {
             _desc = new SamplerDesc()
             {
@@ -49,7 +49,7 @@ namespace Molten.Graphics
 
         }
 
-        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
+        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
         {
             // If the sampler was actually dirty, recreate it.
             if (_isDirty)
@@ -57,7 +57,7 @@ namespace Molten.Graphics
                 int fVal = (int)_desc.Filter;
                 PipelineDispose();
 
-                pipe.Device.Native->CreateSamplerState(ref _desc, ref _native);
+                pipe.Device.NativeDevice->CreateSamplerState(ref _desc, ref _native);
                 _isDirty = false;
                 Version++;
             }

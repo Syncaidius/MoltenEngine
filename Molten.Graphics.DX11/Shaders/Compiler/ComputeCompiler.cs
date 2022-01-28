@@ -25,7 +25,7 @@ namespace Molten.Graphics
                         void* byteCode = result.ByteCode->GetBufferPointer();
                         nuint numBytes = result.ByteCode->GetBufferSize();
                         ID3D11ClassLinkage* linkage = null;
-                        renderer.Device.Native->CreateComputeShader(result.ByteCode, numBytes, linkage, ref compute.Composition.RawShader);
+                        renderer.Device.NativeDevice->CreateComputeShader(result.ByteCode, numBytes, linkage, ref compute.Composition.RawShader);
                     }
                 }
             }

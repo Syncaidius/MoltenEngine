@@ -10,7 +10,7 @@ namespace Molten.Graphics
     {
         public TextureBase Destination;
 
-        public bool Process(PipeDX11 pipe, TextureBase texture)
+        public bool Process(DeviceContext pipe, TextureBase texture)
         {
             if (Destination.HasFlags(TextureFlags.Dynamic))
                 throw new TextureCopyException(texture, Destination, "Cannot copy to a dynamic texture via GPU. GPU cannot write to dynamic textures.");
@@ -21,7 +21,7 @@ namespace Molten.Graphics
                 Destination.Depth != texture.Depth)
                 throw new TextureCopyException(texture, Destination, "The source and destination textures must have the same dimensions.");
 
-            pipe.Context->CopyResource(Destination.NativePtr, texture.NativePtr);
+            pipe.NativeContext->CopyResource(Destination.NativePtr, texture.NativePtr);
 
             return Destination == texture;
         }

@@ -30,14 +30,14 @@ namespace Molten.Graphics
             _rtvDesc.Format = DxgiFormat;
         }
 
-        internal virtual void Clear(PipeDX11 pipe, Color color)
+        internal virtual void Clear(DeviceContext pipe, Color color)
         {
             Apply(pipe);
 
             if (RTV != null)
             {
                 Color4 c4 = color;
-                pipe.Context->ClearRenderTargetView(RTV, (float*)&c4);
+                pipe.NativeContext->ClearRenderTargetView(RTV, (float*)&c4);
             }
 
         }
@@ -68,7 +68,7 @@ namespace Molten.Graphics
                 };
             }
 
-            Device.Native->CreateRenderTargetView(NativePtr, ref _rtvDesc, ref RTV);
+            Device.NativeDevice->CreateRenderTargetView(NativePtr, ref _rtvDesc, ref RTV);
             return resource;
         }
 

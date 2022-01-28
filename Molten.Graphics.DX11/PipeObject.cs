@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     public abstract class PipeObject : EngineObject
     {
-        internal PipeObject(DeviceDX11 device)
+        internal PipeObject(Device device)
         {
             Device = device; 
         }
@@ -21,8 +21,8 @@ namespace Molten.Graphics
         internal abstract void PipelineDispose();
 
         /// <summary>
-        /// Gets the <see cref="DeviceDX11"/> that the current <see cref="PipeObject"/> is bound to.
+        /// Gets the <see cref="Graphics.Device"/> that the current <see cref="PipeObject"/> is bound to.
         /// </summary>
-        public DeviceDX11 Device { get; }
+        public Device Device { get; }
     }
 }

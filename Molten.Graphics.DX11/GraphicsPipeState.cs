@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    /// <summary>Stores the current state of a <see cref="PipeDX11"/>.</summary>
+    /// <summary>Stores the current state of a <see cref="DeviceContext"/>.</summary>
     internal class GraphicsPipeState
     {
-        PipeDX11 _pipe;
+        DeviceContext _pipe;
         GraphicsBlendState _blendState;
         GraphicsDepthState _depthState;
         GraphicsRasterizerState _rasterState;
@@ -24,7 +24,7 @@ namespace Molten.Graphics
 
         ViewportF[] _viewports;
 
-        public GraphicsPipeState(PipeDX11 pipe)
+        public GraphicsPipeState(DeviceContext pipe)
         {
             _pipe = pipe;
             uint maxSurfaces = _pipe.Device.Features.SimultaneousRenderSurfaces;

@@ -11,9 +11,9 @@ namespace Molten.Graphics
         const int STACK_INCREMENT = 5;
         GraphicsPipeState[] _stack;
         int _stackSize = 0;
-        PipeDX11 _pipe;
+        DeviceContext _pipe;
 
-        internal PipeStateStack(PipeDX11 pipe)
+        internal PipeStateStack(DeviceContext pipe)
         {
             _stack = new GraphicsPipeState[STACK_INCREMENT];
             for (int i = 0; i < _stack.Length; i++)

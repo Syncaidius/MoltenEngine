@@ -12,7 +12,7 @@ namespace Molten.Graphics
 
         public Color Color;
 
-        public bool Process(PipeDX11 pipe, TextureBase texture)
+        public bool Process(DeviceContext pipe, TextureBase texture)
         {
             Surface.Clear(pipe, Color);
             return false;

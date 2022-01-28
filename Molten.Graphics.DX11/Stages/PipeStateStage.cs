@@ -10,7 +10,7 @@ namespace Molten.Graphics
         where N : unmanaged
         where T : PipeBindable<N>
     {
-        internal PipeStateStage(PipeDX11 pipe) : base(pipe)
+        internal PipeStateStage(DeviceContext pipe) : base(pipe)
         {
             State = DefineSlot<T>(0, PipeBindTypeFlags.Input, $"{typeof(N).Name}");
         }

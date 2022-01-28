@@ -15,7 +15,7 @@ namespace Molten.Graphics
             base(renderer, maxVertices, maxIndices, topology, indexFormat, dynamic)
         { }
 
-        private protected override void OnRender(PipeDX11 pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
+        private protected override void OnRender(DeviceContext pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
             ApplyBuffers(pipe);
             IShaderResource normal = GetResource(1);

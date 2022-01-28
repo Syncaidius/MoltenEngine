@@ -32,7 +32,7 @@ namespace Molten.Graphics
             uint subSource = (Source.MipMapCount * SourceArraySlice) + SourceMipLevel;
             uint subDest = (Destination.MipMapCount * DestArraySlice) + DestMipLevel;
 
-            (renderer as RendererDX11).Device.Context->ResolveSubresource(Destination.NativePtr, (uint)subDest,
+            (renderer as RendererDX11).Device.NativeContext->ResolveSubresource(Destination.NativePtr, (uint)subDest,
                 Source.NativePtr, (uint)subSource, Source.DxgiFormat);
             Recycle(this);
         }

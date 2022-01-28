@@ -17,7 +17,7 @@ namespace Molten.Graphics
         bool _viewportsDirty;
         ViewportF[] _nullViewport;
 
-        internal GraphicsRasterizerStage(PipeDX11 pipe) : base(pipe)
+        internal GraphicsRasterizerStage(DeviceContext pipe) : base(pipe)
         {
             _nullViewport = new ViewportF[1];
 
@@ -112,7 +112,7 @@ namespace Molten.Graphics
         protected override void BindState(GraphicsRasterizerState state)
         {
             state = state ?? Device.RasterizerBank.GetPreset(RasterizerPreset.Default);
-            Pipe.Context->RSSetState(state);
+            Pipe.NativeContext->RSSetState(state);
         }
 
         public new void Bind()
@@ -125,7 +125,7 @@ namespace Molten.Graphics
                 for (int i = 0; i < _scissorRects.Length; i++)
                     _apiScissorRects[i] = _scissorRects[i].ToApi();
 
-                Pipe.Context->RSSetScissorRects((uint)_apiScissorRects.Length, ref _apiScissorRects[0]);
+                Pipe.NativeContext->RSSetScissorRects((uint)_apiScissorRects.Length, ref _apiScissorRects[0]);
                 _scissorRectsDirty = false;
             }
 
@@ -135,7 +135,7 @@ namespace Molten.Graphics
                 for (int i = 0; i < _viewports.Length; i++)
                     _apiViewports[i] = _viewports[i].ToApi();
 
-                Pipe.Context->RSSetViewports((uint)_viewports.Length, ref _apiViewports[0]);
+                Pipe.NativeContext->RSSetViewports((uint)_viewports.Length, ref _apiViewports[0]);
                 _viewportsDirty = false;
             }
         }

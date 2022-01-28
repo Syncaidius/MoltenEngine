@@ -16,7 +16,7 @@ namespace Molten.Graphics
         public uint DestinationLevel;
         public uint DestinationSlice;
 
-        public unsafe bool Process(PipeDX11 pipe, TextureBase texture)
+        public unsafe bool Process(DeviceContext pipe, TextureBase texture)
         {
 
             uint srcSub = (SourceSlice * texture.MipMapCount) + SourceLevel;

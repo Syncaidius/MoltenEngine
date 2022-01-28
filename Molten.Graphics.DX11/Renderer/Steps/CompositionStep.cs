@@ -46,7 +46,7 @@ namespace Molten.Graphics
             _orthoCamera.OutputSurface = camera.OutputSurface;
 
             RectangleF vpBounds = camera.OutputSurface.Viewport.Bounds;
-            DeviceDX11 device = renderer.Device;
+            Device device = renderer.Device;
 
             context.CompositionSurface.Clear(context.Scene.BackgroundColor);
             device.UnsetRenderSurfaces();

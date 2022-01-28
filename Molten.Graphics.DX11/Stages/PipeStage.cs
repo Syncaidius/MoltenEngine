@@ -12,7 +12,7 @@ namespace Molten.Graphics
     /// </summary>
     internal unsafe abstract class PipeStage : EngineObject
     {
-        internal PipeStage(PipeDX11 pipe)
+        internal PipeStage(DeviceContext pipe)
         {
             Pipe = pipe;
             AllSlots = new List<PipeSlot>();
@@ -38,9 +38,9 @@ namespace Molten.Graphics
                 slot.Dispose();
         }
 
-        internal PipeDX11 Pipe { get; }
+        internal DeviceContext Pipe { get; }
 
-        internal DeviceDX11 Device => Pipe.Device;
+        internal Device Device => Pipe.Device;
 
         internal List<PipeSlot> AllSlots { get; }
     }

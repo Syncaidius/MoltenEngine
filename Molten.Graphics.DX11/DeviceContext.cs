@@ -13,7 +13,7 @@ namespace Molten.Graphics
     internal delegate void PipeDrawFailCallback(MaterialPass pass, uint iteration, uint passNumber, GraphicsValidationResult result);
 
     /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="DeviceContext"/>.</summary>
-    public unsafe class PipeDX11 : EngineObject
+    public unsafe class DeviceContext : EngineObject
     {
         class DrawInfo
         {
@@ -30,14 +30,14 @@ namespace Molten.Graphics
         InputAssemblerStage _input;
         ShaderComputeStage _compute;
 
-        DeviceDX11 _device;
+        Device _device;
         ID3D11DeviceContext1* _context;
         PipeStateStack _stateStack;
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
         DrawInfo _drawInfo;
 
-        internal void Initialize(Logger log, DeviceDX11 device, ID3D11DeviceContext1* context)
+        internal void Initialize(Logger log, Device device, ID3D11DeviceContext1* context)
         {
             _context = context;
             _device = device;
@@ -67,7 +67,7 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Maps a resource on the current <see cref="PipeDX11"/>.
+        /// Maps a resource on the current <see cref="Graphics.DeviceContext"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="resource"></param>
@@ -79,13 +79,13 @@ namespace Molten.Graphics
             where T : unmanaged
         {
             MappedSubresource mapping = new MappedSubresource();
-            Context->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
+            NativeContext->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
 
             return mapping;
         }
 
         /// <summary>
-        /// Maps a resource on the current <see cref="PipeDX11"/> and provides a <see cref="RawStream"/> to aid read-write operations.
+        /// Maps a resource on the current <see cref="Graphics.DeviceContext"/> and provides a <see cref="RawStream"/> to aid read-write operations.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="resource"></param>
@@ -98,7 +98,7 @@ namespace Molten.Graphics
             where T: unmanaged
         {
             MappedSubresource mapping = new MappedSubresource();
-            Context->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
+            NativeContext->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
 
             bool canWrite = !((mapType & Map.MapRead) == Map.MapRead);
             bool canRead = !((mapType & Map.MapRead) == Map.MapRead ||
@@ -111,14 +111,14 @@ namespace Molten.Graphics
         internal void UnmapResource<T>(T* resource, uint subresource)
             where T : unmanaged
         {
-            Context->Unmap((ID3D11Resource*)resource, subresource);
+            NativeContext->Unmap((ID3D11Resource*)resource, subresource);
         }
 
         internal void CopyResourceRegion(
             ID3D11Resource* source, uint srcSubresource, ref Box sourceRegion, 
             ID3D11Resource* dest, uint destSubresource, Vector3UI destStart)
         {
-            Context->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
+            NativeContext->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
                 source, srcSubresource, ref sourceRegion);
 
             Profiler.Current.CopySubresourceCount++;
@@ -128,7 +128,7 @@ namespace Molten.Graphics
     ID3D11Resource* source, uint srcSubresource, Box* sourceRegion,
     ID3D11Resource* dest, uint destSubresource, Vector3UI destStart)
         {
-            Context->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
+            NativeContext->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
                 source, srcSubresource, sourceRegion);
 
             Profiler.Current.CopySubresourceCount++;
@@ -137,7 +137,7 @@ namespace Molten.Graphics
         internal void UpdateResource(ID3D11Resource* resource, uint subresource, 
             Box* region, void* ptrData, uint rowPitch, uint slicePitch, CopyFlags flags = 0)
         {
-            Context->UpdateSubresource1(resource, subresource, region, ptrData, rowPitch, slicePitch, (uint)flags);
+            NativeContext->UpdateSubresource1(resource, subresource, region, ptrData, rowPitch, slicePitch, (uint)flags);
             Profiler.Current.UpdateSubresourceCount++;
         }
 
@@ -455,7 +455,7 @@ namespace Molten.Graphics
             _input.IndexBuffer.Value = segment;
         }
 
-        /// <summary>Copyies a list of vertex <see cref="BufferSegment"/> that are set on the current <see cref="PipeDX11"/>. Any empty slots will be null.</summary>
+        /// <summary>Copyies a list of vertex <see cref="BufferSegment"/> that are set on the current <see cref="Graphics.DeviceContext"/>. Any empty slots will be null.</summary>
         /// <param name="destination"></param>
         internal void GetVertexSegments(BufferSegment[] destination)
         {
@@ -482,7 +482,7 @@ namespace Molten.Graphics
             Output.Clear(color, slot);
         }
 
-        /// <summary>Dispoes of the current <see cref="PipeDX11"/> instance.</summary>
+        /// <summary>Dispoes of the current <see cref="Graphics.DeviceContext"/> instance.</summary>
         protected override void OnDispose()
         {
             Output.Dispose();
@@ -501,16 +501,16 @@ namespace Molten.Graphics
             }
         }
 
-        /// <summary>Gets the current <see cref="PipeDX11"/> type. This value will not change during the context's life.</summary>
+        /// <summary>Gets the current <see cref="Graphics.DeviceContext"/> type. This value will not change during the context's life.</summary>
         public GraphicsContextType Type { get; private set; }
 
-        internal DeviceDX11 Device => _device;
+        internal Device Device => _device;
 
-        internal ID3D11DeviceContext1* Context => _context;
+        internal ID3D11DeviceContext1* NativeContext => _context;
 
         internal Logger Log { get; private set; }
 
-        /// <summary>Gets the profiler bound to the current <see cref="PipeDX11"/>. Contains statistics for this pipe alone.</summary>
+        /// <summary>Gets the profiler bound to the current <see cref="Graphics.DeviceContext"/>. Contains statistics for this pipe alone.</summary>
         public RenderProfiler Profiler
         {
             get => _profiler;
@@ -526,7 +526,7 @@ namespace Molten.Graphics
         /// <summary>Gets the rasterizer component of the graphics device.</summary>
         internal GraphicsRasterizerStage Rasterizer { get; private set; }
 
-        /// <summary>Gets the output merger state of the current <see cref="PipeDX11"/>.</summary>
+        /// <summary>Gets the output merger state of the current <see cref="Graphics.DeviceContext"/>.</summary>
         internal OutputMergerStage Output { get; private set; }
 
         internal GraphicsDepthWritePermission DepthWriteOverride { get; set; } = GraphicsDepthWritePermission.Enabled;

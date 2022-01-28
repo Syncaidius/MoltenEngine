@@ -49,7 +49,7 @@ namespace Molten.Graphics
                 return;
 
             Rectangle bounds = (Rectangle)camera.OutputSurface.Viewport.Bounds;
-            DeviceDX11 device = renderer.Device;
+            Device device = renderer.Device;
 
             _sphereMesh.SetResource(context.Scene.SkyboxTexture, 0);
 

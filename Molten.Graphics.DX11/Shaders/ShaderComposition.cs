@@ -36,7 +36,7 @@ namespace Molten.Graphics
             Optional = optional;
         }
 
-        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe) { }
+        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe) { }
     }
 
     internal unsafe class ShaderComposition<T> : ShaderComposition 

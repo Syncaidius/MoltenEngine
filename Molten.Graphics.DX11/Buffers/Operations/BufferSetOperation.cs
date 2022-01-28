@@ -29,7 +29,7 @@ namespace Molten.Graphics
 
         internal StagingBuffer Staging;
 
-        public void Process(PipeDX11 pipe)
+        public void Process(DeviceContext pipe)
         {
             DestinationSegment.Buffer.Set<T>(pipe, Data, StartIndex, Count, DataStride, ByteOffset, Staging);
             CompletionCallback?.Invoke();

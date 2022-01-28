@@ -200,7 +200,7 @@ namespace Molten.Graphics
             return (Flags & flags) == flags;
         }
 
-        /// <summary>Generates mip maps for the texture via the provided <see cref="PipeDX11"/>.</summary>
+        /// <summary>Generates mip maps for the texture via the provided <see cref="DeviceContext"/>.</summary>
         public void GenerateMipMaps()
         {
             if (!((Flags & TextureFlags.AllowMipMapGeneration) == TextureFlags.AllowMipMapGeneration))
@@ -210,10 +210,10 @@ namespace Molten.Graphics
             _pendingChanges.Enqueue(change);
         }
 
-        internal void GenerateMipMaps(PipeDX11 pipe)
+        internal void GenerateMipMaps(DeviceContext pipe)
         {
             if (SRV != null)
-                pipe.Context->GenerateMips(SRV);
+                pipe.NativeContext->GenerateMips(SRV);
         }
 
         public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0)
@@ -342,7 +342,7 @@ namespace Molten.Graphics
             });
         }
 
-        internal TextureData GetAllData(PipeDX11 pipe, TextureBase staging)
+        internal TextureData GetAllData(DeviceContext pipe, TextureBase staging)
         {
             if (staging == null && !HasFlags(TextureFlags.Staging))
                 throw new TextureCopyException(this, null, "A null staging texture was provided, but this is only valid if the current texture is a staging texture. A staging texture is required to retrieve data from non-staged textures.");
@@ -362,7 +362,7 @@ namespace Molten.Graphics
 
             if (staging != null)
             {
-                pipe.Context->CopyResource(staging.NativePtr, _native);
+                pipe.NativeContext->CopyResource(staging.NativePtr, _native);
                 pipe.Profiler.Current.CopyResourceCount++;
                 resToMap = staging._native;
             }
@@ -404,7 +404,7 @@ namespace Molten.Graphics
         /// <param name="level">The mip-map level.</param>
         /// <param name="arraySlice">The array slice.</param>
         /// <returns></returns>
-        internal unsafe TextureData.Slice GetSliceData(PipeDX11 pipe, TextureBase staging, uint level, uint arraySlice)
+        internal unsafe TextureData.Slice GetSliceData(DeviceContext pipe, TextureBase staging, uint level, uint arraySlice)
         {
             uint subID = (arraySlice * MipMapCount) + level;
             uint subWidth = Width >> (int)level;
@@ -581,7 +581,7 @@ namespace Molten.Graphics
         /// <summary>Applies all pending changes to the texture. Take care when calling this method in multi-threaded code. Calling while the
         /// GPU may be using the texture will cause unexpected behaviour.</summary>
         /// <param name="pipe"></param>
-        internal void Apply(PipeDX11 pipe)
+        internal void Apply(DeviceContext pipe)
         {
             if (IsDisposed)
                 return;
@@ -602,7 +602,7 @@ namespace Molten.Graphics
                 Version++;
         }
 
-        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
+        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
         {
             Apply(pipe);
         }

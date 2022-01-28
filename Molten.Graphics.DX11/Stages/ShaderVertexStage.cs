@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal class ShaderVertexStage : PipeShaderStage<ID3D11VertexShader>
     {
-        public ShaderVertexStage(PipeDX11 pipe) :
+        public ShaderVertexStage(DeviceContext pipe) :
             base(pipe, ShaderType.VertexShader)
         {
         }
@@ -17,26 +17,26 @@ namespace Molten.Graphics
         protected override unsafe void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,
             ID3D11Buffer** buffers, uint* firstConstants, uint* numConstants)
         {
-            Pipe.Context->VSSetConstantBuffers1(grp.FirstChanged, grp.NumSlotsChanged, buffers, firstConstants, numConstants);
+            Pipe.NativeContext->VSSetConstantBuffers1(grp.FirstChanged, grp.NumSlotsChanged, buffers, firstConstants, numConstants);
         }
 
         protected override unsafe void OnBindResources(PipeSlotGroup<PipeBindableResource> grp,
             ID3D11ShaderResourceView** srvs)
         {
-            Pipe.Context->VSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
+            Pipe.NativeContext->VSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
         }
 
         protected override unsafe void OnBindSamplers(PipeSlotGroup<ShaderSampler> grp, ID3D11SamplerState** resources)
         {
-            Pipe.Context->VSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
+            Pipe.NativeContext->VSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
         }
 
         protected override unsafe void OnBindShader(PipeSlot<ShaderComposition<ID3D11VertexShader>> slot)
         {
             if (slot.BoundValue != null)
-                Pipe.Context->VSSetShader(slot.BoundValue.RawShader, null, 0);
+                Pipe.NativeContext->VSSetShader(slot.BoundValue.RawShader, null, 0);
             else
-                Pipe.Context->VSSetShader(null, null, 0);
+                Pipe.NativeContext->VSSetShader(null, null, 0);
         }
     }
 }

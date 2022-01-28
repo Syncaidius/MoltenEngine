@@ -14,7 +14,7 @@ namespace Molten.Graphics
     internal unsafe abstract class PipeShaderStage<T> : PipeStage
         where T : unmanaged
     {
-        internal PipeShaderStage(PipeDX11 pipe, ShaderType shaderType) : base(pipe)
+        internal PipeShaderStage(DeviceContext pipe, ShaderType shaderType) : base(pipe)
         {
             ShaderStageType = shaderType;
             Name = $"Pipe{pipe.EOID} {shaderType} stage";

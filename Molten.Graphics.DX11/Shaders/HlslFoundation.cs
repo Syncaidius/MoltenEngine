@@ -31,12 +31,12 @@ namespace Molten.Graphics
         /// </summary>
         internal ShaderStateBank<GraphicsDepthState> DepthState = new ShaderStateBank<GraphicsDepthState>();
 
-        internal HlslFoundation(DeviceDX11 device) : base(device)
+        internal HlslFoundation(Device device) : base(device)
         {
             Samplers = new ShaderStateBank<ShaderSampler>[0];
         }
 
-        protected internal override sealed void Refresh(PipeSlot slot, PipeDX11 pipe) { }
+        protected internal override sealed void Refresh(PipeSlot slot, DeviceContext pipe) { }
 
         /// <summary>
         /// Gets or sets the number of iterations the shader/component should be run.

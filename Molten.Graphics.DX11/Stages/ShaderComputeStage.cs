@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal unsafe class ShaderComputeStage : PipeShaderStage<ID3D11ComputeShader>
     {
-        public ShaderComputeStage(PipeDX11 pipe) :
+        public ShaderComputeStage(DeviceContext pipe) :
             base(pipe, ShaderType.DomainShader)
         {
             uint uavSlots = pipe.Device.Features.MaxUnorderedAccessViews;
@@ -20,13 +20,13 @@ namespace Molten.Graphics
         protected override unsafe void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,
             ID3D11Buffer** buffers, uint* firstConstants, uint* numConstants)
         {
-            Pipe.Context->CSSetConstantBuffers1(grp.FirstChanged, grp.NumSlotsChanged, buffers, firstConstants, numConstants);
+            Pipe.NativeContext->CSSetConstantBuffers1(grp.FirstChanged, grp.NumSlotsChanged, buffers, firstConstants, numConstants);
         }
 
         protected override unsafe void OnBindResources(PipeSlotGroup<PipeBindableResource> grp,
             ID3D11ShaderResourceView** srvs)
         {
-            Pipe.Context->CSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
+            Pipe.NativeContext->CSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
 
             // Set unordered access resources
             if (UAResources.BindAll())
@@ -42,21 +42,21 @@ namespace Molten.Graphics
                     pUAVInitialCounts[i] = 0; // TODO set initial counts. Research this more.
                 }
 
-                Pipe.Context->CSSetUnorderedAccessViews(UAResources.FirstChanged, UAResources.NumSlotsChanged, uavs, pUAVInitialCounts);
+                Pipe.NativeContext->CSSetUnorderedAccessViews(UAResources.FirstChanged, UAResources.NumSlotsChanged, uavs, pUAVInitialCounts);
             }
         }
 
         protected override unsafe void OnBindSamplers(PipeSlotGroup<ShaderSampler> grp, ID3D11SamplerState** resources)
         {
-            Pipe.Context->CSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
+            Pipe.NativeContext->CSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
         }
 
         protected override unsafe void OnBindShader(PipeSlot<ShaderComposition<ID3D11ComputeShader>> slot)
         {
             if (slot.BoundValue != null)
-                Pipe.Context->CSSetShader(slot.BoundValue.RawShader, null, 0);
+                Pipe.NativeContext->CSSetShader(slot.BoundValue.RawShader, null, 0);
             else
-                Pipe.Context->CSSetShader(null, null, 0);
+                Pipe.NativeContext->CSSetShader(null, null, 0);
         }
 
         internal new void Bind()
@@ -115,7 +115,7 @@ namespace Molten.Graphics
 
                 // TODO have this processed during the presentation call of each graphics pipe.
 
-                Pipe.Context->Dispatch(groupsX, groupsY, groupsZ);
+                Pipe.NativeContext->Dispatch(groupsX, groupsY, groupsZ);
             }
         }
 

@@ -14,7 +14,7 @@ namespace Molten.Graphics
 
         internal Action CompletionCallback;
 
-        public void Process(PipeDX11 pipe)
+        public void Process(DeviceContext pipe)
         {
             SourceBuffer.CopyTo(pipe, DestinationBuffer);
             CompletionCallback?.Invoke();

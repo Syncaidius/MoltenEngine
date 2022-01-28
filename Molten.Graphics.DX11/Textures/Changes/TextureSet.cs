@@ -23,7 +23,7 @@ namespace Molten.Graphics
 
         public bool UpdatesTexture => true;
 
-        public unsafe bool Process(PipeDX11 pipe, TextureBase texture)
+        public unsafe bool Process(DeviceContext pipe, TextureBase texture)
         {
             //C alculate size of a single array slice
             uint arraySliceBytes = 0;

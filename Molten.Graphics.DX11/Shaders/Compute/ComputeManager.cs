@@ -12,9 +12,9 @@ namespace Molten.Graphics
         ThreadedList<ComputeTask> _computeTasks = new ThreadedList<ComputeTask>();
         ThreadedDictionary<string, ComputeTask> _computeByName = new ThreadedDictionary<string, ComputeTask>();
 
-        DeviceDX11 _device;
+        Device _device;
 
-        internal ComputeManager(DeviceDX11 device)
+        internal ComputeManager(Device device)
         {
             _device = device;
         }

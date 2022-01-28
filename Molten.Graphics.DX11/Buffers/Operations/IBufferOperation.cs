@@ -8,6 +8,6 @@ namespace Molten.Graphics
 {
     internal interface IBufferOperation
     {
-        void Process(PipeDX11 pipe);
+        void Process(DeviceContext pipe);
     }
 }

@@ -21,7 +21,7 @@ namespace Molten.Graphics
 
         public Format NewFormat;
 
-        public bool Process(PipeDX11 pipe, TextureBase texture)
+        public bool Process(DeviceContext pipe, TextureBase texture)
         {
             texture.SetSizeInternal(NewWidth, NewHeight, NewDepth, NewMipMapCount, NewArraySize, NewFormat);
             return true;

@@ -7,7 +7,7 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    /// <summary>Stores a blend state for use with a <see cref="PipeDX11"/>.</summary>
+    /// <summary>Stores a blend state for use with a <see cref="DeviceContext"/>.</summary>
     internal unsafe class GraphicsBlendState : PipeBindable<ID3D11BlendState1>, IEquatable<GraphicsBlendState>
     {
         static BlendDesc1 _defaultDesc;
@@ -51,21 +51,21 @@ namespace Molten.Graphics
 
         bool _dirty;
 
-        internal GraphicsBlendState(DeviceDX11 device, GraphicsBlendState source) : base(device)
+        internal GraphicsBlendState(Device device, GraphicsBlendState source) : base(device)
         {
             _desc = source._desc;
             BlendFactor = source.BlendFactor;
             BlendSampleMask = source.BlendSampleMask;
         }
 
-        internal GraphicsBlendState(DeviceDX11 device) : base(device)
+        internal GraphicsBlendState(Device device) : base(device)
         {
             _desc = _defaultDesc;
             BlendFactor = new Color4(1, 1, 1, 1);
             BlendSampleMask = 0xffffffff;
         }
 
-        internal GraphicsBlendState(DeviceDX11 device, RenderTargetBlendDesc1 rtDesc) : base(device)
+        internal GraphicsBlendState(Device device, RenderTargetBlendDesc1 rtDesc) : base(device)
         {
             _desc = _defaultDesc;
             _desc.RenderTarget[0] = rtDesc;
@@ -115,7 +115,7 @@ namespace Molten.Graphics
             return true;
         }
 
-        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
+        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
         {
             if (_native == null || _dirty)
             {
@@ -123,7 +123,7 @@ namespace Molten.Graphics
                 SilkUtil.ReleasePtr(ref _native);
 
                 // Create new state
-                Device.Native->CreateBlendState1(ref _desc, ref _native);
+                Device.NativeDevice->CreateBlendState1(ref _desc, ref _native);
             }
         }
 

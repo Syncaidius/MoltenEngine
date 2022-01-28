@@ -242,7 +242,7 @@ namespace Molten.Graphics
 
         internal DXC Dxc { get; }
 
-        internal DeviceDX11 Device => _renderer.Device;
+        internal Device Device => _renderer.Device;
 
         internal RendererDX11 Renderer => _renderer;
 

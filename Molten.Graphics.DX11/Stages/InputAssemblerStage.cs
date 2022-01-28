@@ -20,7 +20,7 @@ namespace Molten.Graphics
         ShaderDomainStage _ds;
         ShaderPixelStage _ps;
 
-        public InputAssemblerStage(PipeDX11 pipe) : base(pipe)
+        public InputAssemblerStage(DeviceContext pipe) : base(pipe)
         {
             _vs = new ShaderVertexStage(pipe);
             _gs = new ShaderGeometryStage(pipe);
@@ -43,7 +43,7 @@ namespace Molten.Graphics
             if (_boundTopology != topology)
             {
                 _boundTopology = topology;
-                Pipe.Context->IASetPrimitiveTopology(_boundTopology.ToApi());
+                Pipe.NativeContext->IASetPrimitiveTopology(_boundTopology.ToApi());
             }
 
             _vs.Shader.Value = pass.VertexShader;
@@ -66,9 +66,9 @@ namespace Molten.Graphics
             {
                 BufferSegment ib = IndexBuffer.BoundValue;
                 if (ib != null)
-                    Pipe.Context->IASetIndexBuffer(ib.Buffer, ib.DataFormat, ib.ByteOffset);
+                    Pipe.NativeContext->IASetIndexBuffer(ib.Buffer, ib.DataFormat, ib.ByteOffset);
                 else
-                    Pipe.Context->IASetIndexBuffer(null, Format.FormatUnknown, 0);
+                    Pipe.NativeContext->IASetIndexBuffer(null, Format.FormatUnknown, 0);
             }
 
             // Does the vertex input layout need updating?
@@ -77,7 +77,7 @@ namespace Molten.Graphics
                 BindVertexBuffers(VertexBuffers);
                 _vertexLayout.Value = GetInputLayout();
                 _vertexLayout.Bind();
-                Pipe.Context->IASetInputLayout(_vertexLayout.BoundValue);
+                Pipe.NativeContext->IASetInputLayout(_vertexLayout.BoundValue);
             }
 
             return matChanged || vsChanged || gsChanged || hsChanged || 
@@ -114,7 +114,7 @@ namespace Molten.Graphics
                 p++;
             }
 
-            Pipe.Context->IASetVertexBuffers(grp.FirstChanged, grp.NumSlotsChanged, pBuffers, pStrides, pOffsets);
+            Pipe.NativeContext->IASetVertexBuffers(grp.FirstChanged, grp.NumSlotsChanged, pBuffers, pStrides, pOffsets);
         }
 
 

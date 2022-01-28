@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal class ShaderGeometryStage : PipeShaderStage<ID3D11GeometryShader>
     {
-        public ShaderGeometryStage(PipeDX11 pipe) :
+        public ShaderGeometryStage(DeviceContext pipe) :
             base(pipe, ShaderType.GeometryShader)
         {
 
@@ -18,26 +18,26 @@ namespace Molten.Graphics
         protected override unsafe void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,
             ID3D11Buffer** buffers, uint* firstConstants, uint* numConstants)
         {
-            Pipe.Context->GSSetConstantBuffers1(grp.FirstChanged, grp.NumSlotsChanged, buffers, firstConstants, numConstants);
+            Pipe.NativeContext->GSSetConstantBuffers1(grp.FirstChanged, grp.NumSlotsChanged, buffers, firstConstants, numConstants);
         }
 
         protected override unsafe void OnBindResources(PipeSlotGroup<PipeBindableResource> grp,
             ID3D11ShaderResourceView** srvs)
         {
-            Pipe.Context->GSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
+            Pipe.NativeContext->GSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
         }
 
         protected override unsafe void OnBindSamplers(PipeSlotGroup<ShaderSampler> grp, ID3D11SamplerState** resources)
         {
-            Pipe.Context->GSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
+            Pipe.NativeContext->GSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
         }
 
         protected override unsafe void OnBindShader(PipeSlot<ShaderComposition<ID3D11GeometryShader>> slot)
         {
             if (slot.BoundValue != null)
-                Pipe.Context->GSSetShader(slot.BoundValue.RawShader, null, 0);
+                Pipe.NativeContext->GSSetShader(slot.BoundValue.RawShader, null, 0);
             else
-                Pipe.Context->GSSetShader(null, null, 0);
+                Pipe.NativeContext->GSSetShader(null, null, 0);
         }
     }
 }

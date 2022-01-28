@@ -13,7 +13,7 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class PipeBindable : PipeObject
     {
-        internal PipeBindable(DeviceDX11 device) : base(device)
+        internal PipeBindable(Device device) : base(device)
         {
             BoundTo = new HashSet<PipeSlot>();
         }
@@ -38,11 +38,11 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Invoked right before the current <see cref="PipeBindable"/> is due to be bound to a <see cref="PipeDX11"/>.
+        /// Invoked right before the current <see cref="PipeBindable"/> is due to be bound to a <see cref="DeviceContext"/>.
         /// </summary>
         /// <param name="slot">The <see cref="PipeSlot"/> which contains the current <see cref="PipeBindable"/>.</param>
-        /// <param name="pipe">The <see cref="PipeDX11"/> that the current <see cref="PipeBindable"/> is to be bound to.</param>
-        protected internal abstract void Refresh(PipeSlot slot, PipeDX11 pipe);
+        /// <param name="pipe">The <see cref="DeviceContext"/> that the current <see cref="PipeBindable"/> is to be bound to.</param>
+        protected internal abstract void Refresh(PipeSlot slot, DeviceContext pipe);
 
         /// <summary>
         /// Gets the instance-specific version of the current <see cref="PipeBindable"/>. Any change which will require a device
@@ -59,7 +59,7 @@ namespace Molten.Graphics
     public unsafe abstract class PipeBindable<T> : PipeBindable
         where T : unmanaged
     {
-        internal PipeBindable(DeviceDX11 device) : base(device)
+        internal PipeBindable(Device device) : base(device)
         {
 
         }

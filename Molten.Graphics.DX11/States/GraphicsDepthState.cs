@@ -7,7 +7,7 @@ using Silk.NET.Direct3D11;
 
 namespace Molten.Graphics
 {
-    /// <summary>Stores a depth-stencil state for use with a <see cref="PipeDX11"/>.</summary>
+    /// <summary>Stores a depth-stencil state for use with a <see cref="DeviceContext"/>.</summary>
     internal unsafe class GraphicsDepthState : PipeBindable<ID3D11DepthStencilState>, IEquatable<GraphicsDepthState>
     {
         public class Face
@@ -99,14 +99,14 @@ namespace Molten.Graphics
             };
         }
 
-        internal GraphicsDepthState(DeviceDX11 device, GraphicsDepthState source) : base(device)
+        internal GraphicsDepthState(Device device, GraphicsDepthState source) : base(device)
         {
             _desc = source._desc;
             _frontFace = new Face(this, ref _desc.FrontFace);
             _backFace = new Face(this, ref _desc.BackFace);
         }
 
-        internal GraphicsDepthState(DeviceDX11 device) : base(device)
+        internal GraphicsDepthState(Device device) : base(device)
         {
             _desc = _defaultDesc;
             _frontFace = new Face(this, ref _desc.FrontFace);
@@ -153,7 +153,7 @@ namespace Molten.Graphics
             _dirty = true;
         }
 
-        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
+        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
         {
             if (_native == null || _dirty)
             {
@@ -165,7 +165,7 @@ namespace Molten.Graphics
                 _desc.BackFace = _backFace._desc;
 
                 //create new state
-                Device.Native->CreateDepthStencilState(ref _desc, ref _native);
+                Device.NativeDevice->CreateDepthStencilState(ref _desc, ref _native);
             }
         }
 

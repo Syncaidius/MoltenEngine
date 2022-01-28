@@ -15,7 +15,7 @@ namespace Molten.Graphics
         bool _isInstanced = false;
         ulong[] _expectedFormatIDs;
 
-        internal VertexInputLayout(DeviceDX11 device, 
+        internal VertexInputLayout(Device device, 
             PipeSlotGroup<BufferSegment> vbSlots, 
             IDxcBlob* vertexBytecode,
             ShaderIOStructure io) : base(device)
@@ -70,7 +70,7 @@ namespace Molten.Graphics
             {
                 void* ptrByteCode = vertexBytecode->GetBufferPointer();
                 nuint numBytes = vertexBytecode->GetBufferSize();
-                device.Native->CreateInputLayout(ref finalElements[0], (uint)finalElements.Length,
+                device.NativeDevice->CreateInputLayout(ref finalElements[0], (uint)finalElements.Length,
                     ptrByteCode, numBytes, ref _native);
             }
             else
@@ -95,7 +95,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected internal override void Refresh(PipeSlot slot, PipeDX11 pipe)
+        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
         {
             // Do nothing. Vertex input layouts build everything they need in the constructor.
         }

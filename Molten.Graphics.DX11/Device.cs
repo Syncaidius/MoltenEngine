@@ -13,16 +13,16 @@ using Molten.Graphics.Dxgi;
 namespace Molten.Graphics
 {
     /// <summary>A Direct3D 11 graphics device.</summary>
-    /// <seealso cref="PipeDX11" />
-    public unsafe class DeviceDX11 : PipeDX11
+    /// <seealso cref="DeviceContext" />
+    public unsafe class Device : DeviceContext
     {
-        internal ID3D11Device1* Native;
+        internal ID3D11Device1* NativeDevice;
         internal ID3D11DeviceContext1* ImmediateContext;
 
         D3D11 _api;
         DisplayAdapterDXGI _adapter;
 
-        List<PipeDX11> _pipes;
+        List<DeviceContext> _pipes;
 
         Logger _log;
         DisplayManagerDXGI _displayManager;
@@ -39,13 +39,13 @@ namespace Molten.Graphics
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
-        internal DeviceDX11(D3D11 api, Logger log, GraphicsSettings settings, DisplayManagerDXGI manager)
+        internal Device(D3D11 api, Logger log, GraphicsSettings settings, DisplayManagerDXGI manager)
         {
             _api = api;
             _log = log;
             _displayManager = manager;
             _adapter = _displayManager.SelectedAdapter as DisplayAdapterDXGI;
-            _pipes = new List<PipeDX11>();
+            _pipes = new List<DeviceContext>();
             Pipes = _pipes.AsReadOnly();
             VertexFormatCache = new TypedObjectCache<IVertexType, VertexFormat>(VertexFormat.FromType);
             _settings = settings;
@@ -78,10 +78,10 @@ namespace Molten.Graphics
                 null,
                 &ptrContext);
 
-            Native = (ID3D11Device1*)ptrDevice;
+            NativeDevice = (ID3D11Device1*)ptrDevice;
             ImmediateContext = (ID3D11DeviceContext1*)ptrContext;
 
-            Features = new DeviceFeaturesDX11(Native);
+            Features = new DeviceFeaturesDX11(NativeDevice);
             _rasterizerBank = new RasterizerStateBank(this);
             _blendBank = new BlendStateBank(this);
             _depthBank = new DepthStateBank(this);
@@ -128,17 +128,17 @@ namespace Molten.Graphics
             Interlocked.Add(ref _allocatedVRAM, -bytes);
         }
 
-        /// <summary>Gets a new deferred <see cref="PipeDX11"/>.</summary>
+        /// <summary>Gets a new deferred <see cref="DeviceContext"/>.</summary>
         /// <returns></returns>
-        internal PipeDX11 GetDeferredPipe()
+        internal DeviceContext GetDeferredPipe()
         {
-            PipeDX11 pipe = new PipeDX11();
+            DeviceContext pipe = new DeviceContext();
             pipe.Initialize(_log, this, ImmediateContext);
             _pipes.Add(pipe);
             return pipe;
         }
 
-        internal void RemoveDeferredPipe(PipeDX11 pipe)
+        internal void RemoveDeferredPipe(DeviceContext pipe)
         {
             if(pipe == this)
                 throw new GraphicsContextException("Cannot remove the graphics device from itself.");
@@ -152,7 +152,7 @@ namespace Molten.Graphics
             _pipes.Remove(pipe);
         }
 
-        internal void SubmitContext(PipeDX11 context)
+        internal void SubmitContext(DeviceContext context)
         {
             if (context.Type != GraphicsContextType.Deferred)
                 throw new Exception("Cannot submit immediate graphics contexts, only deferred.");
@@ -161,7 +161,7 @@ namespace Molten.Graphics
             // TODO add the context's profiler stats to the device's main profiler.
         }
 
-        /// <summary>Disposes of the <see cref="DeviceDX11"/> and any deferred contexts and resources bound to it.</summary>
+        /// <summary>Disposes of the <see cref="Device"/> and any deferred contexts and resources bound to it.</summary>
         protected override void OnDispose()
         {
             for (int i = _pipes.Count - 1; i >= 0; i--)
@@ -175,7 +175,7 @@ namespace Molten.Graphics
             SamplerBank.Dispose();
 
             SilkUtil.ReleasePtr(ref ImmediateContext);
-            SilkUtil.ReleasePtr(ref Native);
+            SilkUtil.ReleasePtr(ref NativeDevice);
             _api.Dispose();
 
             _bufferSegmentPool.Dispose();
@@ -184,7 +184,7 @@ namespace Molten.Graphics
             base.OnDispose();
         }
 
-        internal IReadOnlyCollection<PipeDX11> Pipes { get; }
+        internal IReadOnlyCollection<DeviceContext> Pipes { get; }
 
         /// <summary>Gets an instance of <see cref="DeviceFeaturesDX11"/> which provides access to feature support details for the current graphics device.</summary>
         internal DeviceFeaturesDX11 Features { get; private set; }

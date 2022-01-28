@@ -25,7 +25,7 @@ namespace Molten.Graphics
 
         internal override void Render(RendererDX11 renderer, RenderCamera camera, RenderChain.Context context, Timing time)
         {
-            DeviceDX11 device = renderer.Device;
+            Device device = renderer.Device;
             _surfaceScene.Clear(Color.Transparent);
 
             device.SetRenderSurface(_surfaceScene, 0);

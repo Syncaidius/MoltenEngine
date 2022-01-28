@@ -153,7 +153,7 @@ namespace Molten.Graphics
         {
             MaterialPass pass = pResult.Pass;
             Material material = pass.Material as Material;
-            DeviceDX11 device = material.Device;
+            Device device = material.Device;
 
             // Vertex Shader
             if (pResult.VertexResult != null)

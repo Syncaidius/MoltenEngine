@@ -56,7 +56,7 @@ namespace Molten.Graphics
             base.OnInitialize(settings, mainLog);
 
             _api = D3D11.GetApi();
-            Device = new DeviceDX11(_api, Log, settings.Graphics, _displayManager);
+            Device = new Device(_api, Log, settings.Graphics, _displayManager);
             _resourceManager = new ResourceManager(this);
             _compute = new ComputeManager(this.Device);
             ShaderCompiler = new HlslCompiler(this, Log);
@@ -200,7 +200,7 @@ namespace Molten.Graphics
             _depthSurface.Resize(requiredWidth, requiredHeight);
         }
 
-        internal void RenderSceneLayer(PipeDX11 pipe, LayerRenderData layerData, RenderCamera camera)
+        internal void RenderSceneLayer(DeviceContext pipe, LayerRenderData layerData, RenderCamera camera)
         {
             // TODO To start with we're just going to draw ALL objects in the render tree.
             // Sorting and culling will come later
@@ -218,7 +218,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal bool ClearIfFirstUse(PipeDX11 pipe, RenderSurface surface, Color color)
+        internal bool ClearIfFirstUse(DeviceContext pipe, RenderSurface surface, Color color)
         {
             if (!_clearedSurfaces.Contains(surface))
             {
@@ -230,7 +230,7 @@ namespace Molten.Graphics
             return false;
         }
 
-        internal bool ClearIfFirstUse(PipeDX11 pipe, DepthStencilSurface surface,
+        internal bool ClearIfFirstUse(DeviceContext pipe, DepthStencilSurface surface,
             ClearFlag flags = ClearFlag.ClearDepth, 
             float depth = 1.0f, byte stencil = 0)
         {
@@ -275,7 +275,7 @@ namespace Molten.Graphics
         /// </summary>
         public override IDisplayManager DisplayManager => _displayManager;
 
-        internal DeviceDX11 Device { get; private set; }
+        internal Device Device { get; private set; }
 
         public override IComputeManager Compute => _compute;
 

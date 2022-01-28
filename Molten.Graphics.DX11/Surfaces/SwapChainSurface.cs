@@ -47,7 +47,7 @@ namespace Molten.Graphics
             IDXGISwapChain* ptrSwapChain = null;
             SwapChainDesc* ptrDesc = (SwapChainDesc*)&desc;
 
-            Device.DisplayManager.DxgiFactory->CreateSwapChain((IUnknown*)Device.Native, ptrDesc, ref ptrSwapChain);
+            Device.DisplayManager.DxgiFactory->CreateSwapChain((IUnknown*)Device.NativeDevice, ptrDesc, ref ptrSwapChain);
 
             _swapDesc = desc;
             NativeSwapChain = (IDXGISwapChain1*)ptrSwapChain;
@@ -81,7 +81,7 @@ namespace Molten.Graphics
             };
 
             ID3D11Resource* res = (ID3D11Resource*)NativeTexture;
-            Device.Native->CreateRenderTargetView(res, &rtvDesc, ref RTV);
+            Device.NativeDevice->CreateRenderTargetView(res, &rtvDesc, ref RTV);
             VP = new ViewportF(0, 0, Width, Height);
 
             return res;

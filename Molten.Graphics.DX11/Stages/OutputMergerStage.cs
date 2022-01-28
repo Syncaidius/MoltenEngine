@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal unsafe class OutputMergerStage : PipeStage   
     {
-        PipeDX11 _pipe;
+        DeviceContext _pipe;
 
         GraphicsDepthWritePermission _boundDepthMode = GraphicsDepthWritePermission.Enabled;
         GraphicsDepthWritePermission _requestedDepthMode = GraphicsDepthWritePermission.Enabled;
@@ -18,7 +18,7 @@ namespace Molten.Graphics
         uint _numRTVs;
         ID3D11DepthStencilView* _dsv;
 
-        public OutputMergerStage(PipeDX11 pipe) : base(pipe.Device)
+        public OutputMergerStage(DeviceContext pipe) : base(pipe.Device)
         {
             _pipe = pipe;
 
@@ -76,7 +76,7 @@ namespace Molten.Graphics
                     _boundDepthMode = _requestedDepthMode;
                 }
 
-                _pipe.Context->OMSetRenderTargets(_numRTVs, _rtvs, _dsv);
+                _pipe.NativeContext->OMSetRenderTargets(_numRTVs, _rtvs, _dsv);
                 Pipe.Profiler.Current.SurfaceBindings++;
             }
         }

@@ -14,6 +14,6 @@ namespace Molten.Graphics
         /// <param name="pipe"></param>
         /// <param name="texture"></param>
         /// <returns></returns>
-        bool Process(PipeDX11 pipe, TextureBase texture);
+        bool Process(DeviceContext pipe, TextureBase texture);
     }
 }
