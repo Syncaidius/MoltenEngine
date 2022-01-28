@@ -12,6 +12,18 @@ namespace Molten.Graphics
 {
     internal unsafe class HlslCompiler : EngineObject
     {
+        // See: https://github.com/microsoft/DirectXShaderCompiler/blob/master/include/dxc/dxcapi.h
+        static readonly Guid CLSID_DxcLibrary= new Guid(0x6245d6af, 0x66e0, 0x48fd, 
+            new byte[] {0x80, 0xb4, 0x4d, 0x27, 0x17, 0x96, 0x74, 0x8c});
+
+        static readonly Guid CLSID_DxcUtils = CLSID_DxcLibrary;
+
+        static readonly Guid CLSID_DxcCompilerArgs = new Guid(0x3e56ae82, 0x224d, 0x470f,
+            new byte[] { 0xa1, 0xa1, 0xfe, 0x30, 0x16, 0xee, 0x9f, 0x9d });
+
+        static readonly Guid CLSID_DxcCompiler = new Guid(0x73e22d93U, (ushort)0xe6ceU, (ushort)0x47f3U, 
+            0xb5, 0xbf, 0xf0, 0x66, 0x4f, 0x39, 0xc1, 0xb0 );
+
         internal static readonly string[] NewLineSeparators = new string[] { "\n", Environment.NewLine };
         Dictionary<string, HlslSubCompiler> _subCompilers;
         Logger _log;
@@ -28,8 +40,8 @@ namespace Molten.Graphics
             _subCompilers = new Dictionary<string, HlslSubCompiler>();
 
             Dxc = DXC.GetApi();
-            _utils = CreateInstance<IDxcUtils>(IDxcUtils.Guid);
-            _compiler = CreateInstance<IDxcCompiler3>(IDxcCompiler3.Guid);
+            _utils = CreateInstance<IDxcUtils>(CLSID_DxcUtils, IDxcUtils.Guid);
+            _compiler = CreateInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
 
             _defaultIncluder = new EmbeddedIncluder(this, typeof(EmbeddedIncluder).Assembly);
 
@@ -54,11 +66,10 @@ namespace Molten.Graphics
             Dxc.Dispose();
         }
 
-        private T* CreateInstance<T>(Guid targetRiid) where T : unmanaged
+        private T* CreateInstance<T>(Guid clsid, Guid iid) where T : unmanaged
         {
             void* ppv = null;
-            Guid utilGuid = IDxcUtils.Guid;
-            HResult result = Dxc.CreateInstance(&utilGuid, &targetRiid, ref ppv);
+            HResult result = Dxc.CreateInstance(&clsid, &iid, ref ppv);
 
             return (T*)ppv;
         }
