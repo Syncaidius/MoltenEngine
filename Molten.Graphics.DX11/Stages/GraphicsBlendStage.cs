@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    internal unsafe class GraphicsBlendStage : PipeStateStage<GraphicsBlendState, ID3D11BlendState1>
+    internal unsafe class GraphicsBlendStage : PipeStateStage<GraphicsBlendState, ID3D11BlendState>
     {
         internal GraphicsBlendStage(DeviceContext pipe) : base(pipe) { }
 

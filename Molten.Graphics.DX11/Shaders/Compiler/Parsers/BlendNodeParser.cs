@@ -21,7 +21,7 @@ namespace Molten.Graphics
             int rtIndex = 0;
 
             GraphicsBlendState template = foundation.Device.BlendBank.GetPreset(BlendPreset.Default);
-            RenderTargetBlendDesc1 rtBlendDesc = template.GetSurfaceBlendState(0); // Use the default preset's first (0) RT blend description.
+            RenderTargetBlendDesc rtBlendDesc = template.GetSurfaceBlendState(0); // Use the default preset's first (0) RT blend description.
 
             // Prerequisit attributes
             foreach (XmlAttribute attribute in node.Attributes)

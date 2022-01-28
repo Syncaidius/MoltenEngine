@@ -102,7 +102,7 @@ namespace Molten.Graphics
                     sid++;
                 }
 
-                OnBindConstants(ConstantBuffers, cBuffers, cFirstConstants, cNumConstants);
+                OnBindConstants(ConstantBuffers, cBuffers);
             }
 
             // Set resources
@@ -135,7 +135,7 @@ namespace Molten.Graphics
         }
 
         protected abstract void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,
-            ID3D11Buffer** buffers, uint* firsConstants, uint* numConstants);
+            ID3D11Buffer** buffers);
 
         protected abstract void OnBindResources(PipeSlotGroup<PipeBindableResource> grp,
             ID3D11ShaderResourceView** resources);

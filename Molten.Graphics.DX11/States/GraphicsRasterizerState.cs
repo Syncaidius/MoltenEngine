@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     /// <summary>Stores a rasterizer state for use with a <see cref="DeviceContext"/>.</summary>
-    internal unsafe class GraphicsRasterizerState : PipeBindable<ID3D11RasterizerState1>
+    internal unsafe class GraphicsRasterizerState : PipeBindable<ID3D11RasterizerState>
     {
-        static RasterizerDesc1 _defaultDesc;
+        static RasterizerDesc _defaultDesc;
 
-        internal override unsafe ID3D11RasterizerState1* NativePtr => _native;
+        internal override unsafe ID3D11RasterizerState* NativePtr => _native;
 
-        ID3D11RasterizerState1* _native;
-        RasterizerDesc1 _desc;
+        ID3D11RasterizerState* _native;
+        RasterizerDesc _desc;
         bool _dirty;
 
         static GraphicsRasterizerState()
         {
-            _defaultDesc = new RasterizerDesc1()
+            _defaultDesc = new RasterizerDesc()
             {
                 FillMode = FillMode.FillSolid,
                 CullMode = CullMode.CullBack,
@@ -31,8 +31,7 @@ namespace Molten.Graphics
                 DepthClipEnable = 1,
                 ScissorEnable = 0,
                 MultisampleEnable = 0,
-                AntialiasedLineEnable = 0,
-                ForcedSampleCount = 0,
+                AntialiasedLineEnable = 0
             };
         }
 
@@ -82,7 +81,7 @@ namespace Molten.Graphics
                 SilkUtil.ReleasePtr(ref _native);
 
                 //create new state
-                Device.NativeDevice->CreateRasterizerState1(ref _desc, ref _native);
+                Device.NativeDevice->CreateRasterizerState(ref _desc, ref _native);
             }
         }
 

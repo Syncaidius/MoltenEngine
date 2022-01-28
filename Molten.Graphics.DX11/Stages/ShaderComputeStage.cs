@@ -18,9 +18,9 @@ namespace Molten.Graphics
         }
 
         protected override unsafe void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,
-            ID3D11Buffer** buffers, uint* firstConstants, uint* numConstants)
+            ID3D11Buffer** buffers)
         {
-            Pipe.NativeContext->CSSetConstantBuffers1(grp.FirstChanged, grp.NumSlotsChanged, buffers, firstConstants, numConstants);
+            Pipe.NativeContext->CSSetConstantBuffers(grp.FirstChanged, grp.NumSlotsChanged, buffers);
         }
 
         protected override unsafe void OnBindResources(PipeSlotGroup<PipeBindableResource> grp,

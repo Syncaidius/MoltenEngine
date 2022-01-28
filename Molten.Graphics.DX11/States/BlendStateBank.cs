@@ -14,7 +14,7 @@ namespace Molten.Graphics
             AddPreset(BlendPreset.Default, new GraphicsBlendState(device));
 
             // Additive blending preset.
-            GraphicsBlendState state = new GraphicsBlendState(device, new RenderTargetBlendDesc1()
+            GraphicsBlendState state = new GraphicsBlendState(device, new RenderTargetBlendDesc()
             {
                 SrcBlend = Blend.BlendOne,
                 DestBlend = Blend.BlendOne,
@@ -33,7 +33,7 @@ namespace Molten.Graphics
             AddPreset(BlendPreset.Additive, state);
 
             // Pre-multiplied alpha
-            state = new GraphicsBlendState(device, new RenderTargetBlendDesc1()
+            state = new GraphicsBlendState(device, new RenderTargetBlendDesc()
             {
                 SrcBlend = Blend.BlendSrcAlpha,
                 DestBlend = Blend.BlendInvSrcAlpha,

@@ -16,8 +16,8 @@ namespace Molten.Graphics
     /// <seealso cref="DeviceContext" />
     public unsafe class Device : DeviceContext
     {
-        internal ID3D11Device1* NativeDevice;
-        internal ID3D11DeviceContext1* ImmediateContext;
+        internal ID3D11Device* NativeDevice;
+        internal ID3D11DeviceContext* ImmediateContext;
 
         D3D11 _api;
         DisplayAdapterDXGI _adapter;
@@ -61,9 +61,9 @@ namespace Molten.Graphics
             }
 
             D3DFeatureLevel* featureLevels = stackalloc D3DFeatureLevel[1];
-            featureLevels[0] = D3DFeatureLevel.D3DFeatureLevel111;
+            featureLevels[0] = D3DFeatureLevel.D3DFeatureLevel110;
 
-            D3DFeatureLevel highestFeatureLevel = D3DFeatureLevel.D3DFeatureLevel111;
+            D3DFeatureLevel highestFeatureLevel = D3DFeatureLevel.D3DFeatureLevel110;
             IDXGIAdapter* adapter = (IDXGIAdapter*)_adapter.Native;
             ID3D11Device* ptrDevice = null;
             ID3D11DeviceContext* ptrContext = null;
@@ -78,8 +78,8 @@ namespace Molten.Graphics
                 null,
                 &ptrContext);
 
-            NativeDevice = (ID3D11Device1*)ptrDevice;
-            ImmediateContext = (ID3D11DeviceContext1*)ptrContext;
+            NativeDevice = ptrDevice;
+            ImmediateContext = ptrContext;
 
             Features = new DeviceFeaturesDX11(NativeDevice);
             _rasterizerBank = new RasterizerStateBank(this);
@@ -130,10 +130,13 @@ namespace Molten.Graphics
 
         /// <summary>Gets a new deferred <see cref="DeviceContext"/>.</summary>
         /// <returns></returns>
-        internal DeviceContext GetDeferredPipe()
+        internal DeviceContext GetDeferredContext()
         {
+            ID3D11DeviceContext* dc = null;
+            NativeDevice->CreateDeferredContext(0, &dc);
+
             DeviceContext pipe = new DeviceContext();
-            pipe.Initialize(_log, this, ImmediateContext);
+            pipe.Initialize(_log, this, dc);
             _pipes.Add(pipe);
             return pipe;
         }

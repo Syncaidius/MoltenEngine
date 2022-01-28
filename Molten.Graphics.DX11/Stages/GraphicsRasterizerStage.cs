@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    internal unsafe class GraphicsRasterizerStage : PipeStateStage<GraphicsRasterizerState, ID3D11RasterizerState1>
+    internal unsafe class GraphicsRasterizerStage : PipeStateStage<GraphicsRasterizerState, ID3D11RasterizerState>
     {
         Silk.NET.Maths.Rectangle<int>[] _apiScissorRects;
         Rectangle[] _scissorRects;

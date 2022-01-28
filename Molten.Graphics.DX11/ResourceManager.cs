@@ -13,11 +13,13 @@ namespace Molten.Graphics
     public class ResourceManager : IResourceManager
     {
         RendererDX11 _renderer;
+        Device _device;
         List<SpriteFont> _fontTable;
 
         internal ResourceManager(RendererDX11 renderer)
         {
             _renderer = renderer;
+            _device = _renderer.Device;
             _fontTable = new List<SpriteFont>();
         }
 

@@ -13,11 +13,11 @@ namespace Molten.Graphics
 
     internal unsafe class DeviceFeaturesDX11
     {
-        ID3D11Device1* _device;
+        ID3D11Device* _device;
 
         // DX11 resource limits: https://msdn.microsoft.com/en-us/library/windows/desktop/ff819065%28v=vs.85%29.aspx
 
-        internal DeviceFeaturesDX11(ID3D11Device1* d3dDevice)
+        internal DeviceFeaturesDX11(ID3D11Device* d3dDevice)
         {
             _device = d3dDevice;
             FeatureLevel = _device->GetFeatureLevel();

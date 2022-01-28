@@ -13,7 +13,7 @@ namespace Molten.Graphics
     internal delegate void PipeDrawFailCallback(MaterialPass pass, uint iteration, uint passNumber, GraphicsValidationResult result);
 
     /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="DeviceContext"/>.</summary>
-    public unsafe class DeviceContext : EngineObject
+    public unsafe partial class DeviceContext : EngineObject
     {
         class DrawInfo
         {
@@ -31,13 +31,13 @@ namespace Molten.Graphics
         ShaderComputeStage _compute;
 
         Device _device;
-        ID3D11DeviceContext1* _context;
+        ID3D11DeviceContext* _context;
         PipeStateStack _stateStack;
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
         DrawInfo _drawInfo;
 
-        internal void Initialize(Logger log, Device device, ID3D11DeviceContext1* context)
+        internal void Initialize(Logger log, Device device, ID3D11DeviceContext* context)
         {
             _context = context;
             _device = device;
@@ -135,9 +135,9 @@ namespace Molten.Graphics
         }
 
         internal void UpdateResource(ID3D11Resource* resource, uint subresource, 
-            Box* region, void* ptrData, uint rowPitch, uint slicePitch, CopyFlags flags = 0)
+            Box* region, void* ptrData, uint rowPitch, uint slicePitch)
         {
-            NativeContext->UpdateSubresource1(resource, subresource, region, ptrData, rowPitch, slicePitch, (uint)flags);
+            NativeContext->UpdateSubresource(resource, subresource, region, ptrData, rowPitch, slicePitch);
             Profiler.Current.UpdateSubresourceCount++;
         }
 
@@ -506,7 +506,7 @@ namespace Molten.Graphics
 
         internal Device Device => _device;
 
-        internal ID3D11DeviceContext1* NativeContext => _context;
+        internal ID3D11DeviceContext* NativeContext => _context;
 
         internal Logger Log { get; private set; }
 

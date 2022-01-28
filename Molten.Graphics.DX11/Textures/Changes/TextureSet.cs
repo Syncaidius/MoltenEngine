@@ -112,7 +112,7 @@ namespace Molten.Graphics
                         uint bcPitch = BCHelper.GetBCPitch(levelWidth, levelHeight, blockSize);
 
                         // TODO support copy flags (DX11.1 feature)
-                        pipe.UpdateResource(texture, subLevel, null, ptrData, bcPitch, arraySliceBytes, 0);
+                        pipe.UpdateResource(texture, subLevel, null, ptrData, bcPitch, arraySliceBytes);
                     }
                     else
                     {
@@ -127,7 +127,7 @@ namespace Molten.Graphics
                             region.Bottom = rect.Bottom;
                             region.Left = rect.X;
                             region.Right = rect.Right;
-                            pipe.UpdateResource(texture, subLevel, &region, ptrData, areaPitch, (uint)Data.Length, 0);
+                            pipe.UpdateResource(texture, subLevel, &region, ptrData, areaPitch, (uint)Data.Length);
                         }
                         else
                         {
@@ -135,7 +135,7 @@ namespace Molten.Graphics
                             uint y = 0;
                             uint w = Math.Max(texture.Width >> (int)MipLevel, 1);
                             uint h = Math.Max(texture.Height >> (int)MipLevel, 1);
-                            pipe.UpdateResource(texture, subLevel, null, ptrData, Pitch, arraySliceBytes, 0);
+                            pipe.UpdateResource(texture, subLevel, null, ptrData, Pitch, arraySliceBytes);
                         }
                     }
                 }
