@@ -12,7 +12,11 @@ namespace Molten.Graphics
 {
     internal unsafe class HlslCompiler : EngineObject
     {
+        // For reference or help see the following:
         // See: https://github.com/microsoft/DirectXShaderCompiler/blob/master/include/dxc/dxcapi.h
+        // See: https://posts.tanki.ninja/2019/07/11/Using-DXC-In-Practice/
+        // See: https://simoncoenen.com/blog/programming/graphics/DxcCompiling
+
         static readonly Guid CLSID_DxcLibrary= new Guid(0x6245d6af, 0x66e0, 0x48fd, 
             new byte[] {0x80, 0xb4, 0x4d, 0x27, 0x17, 0x96, 0x74, 0x8c});
 

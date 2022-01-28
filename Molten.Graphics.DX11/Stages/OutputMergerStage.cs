@@ -62,7 +62,8 @@ namespace Molten.Graphics
 
                 if (dsChanged)
                 {
-                    if (DepthSurface.BoundValue != null && _requestedDepthMode != GraphicsDepthWritePermission.Disabled) {
+                    if (DepthSurface.BoundValue != null && _requestedDepthMode != GraphicsDepthWritePermission.Disabled)
+                    {
                         if (_requestedDepthMode == GraphicsDepthWritePermission.ReadOnly)
                             _dsv = DepthSurface.BoundValue.ReadOnlyView;
                         else
@@ -79,11 +80,6 @@ namespace Molten.Graphics
                 _pipe.NativeContext->OMSetRenderTargets(_numRTVs, _rtvs, _dsv);
                 Pipe.Profiler.Current.SurfaceBindings++;
             }
-        }
-
-        public GraphicsDepthWritePermission GetDepthMode()
-        {
-            return _requestedDepthMode;
         }
 
         /// <summary>Sets a list of render surfaces.</summary>
