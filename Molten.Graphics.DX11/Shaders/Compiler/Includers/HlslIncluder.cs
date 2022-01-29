@@ -17,8 +17,6 @@ namespace Molten.Graphics
             Utils = compiler.Utils;
             Utils->CreateDefaultIncludeHandler(ref _defaultHandler);
             Utils->CreateDefaultIncludeHandler(ref _handler);
-
-            SilkUtil.OverrideFunc(this.GetType(), "LoadSource", _handler->LpVtbl, 3);
         }
 
         public unsafe abstract int LoadSource(char* pFilename, IDxcBlob** ppIncludeSource);
