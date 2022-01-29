@@ -292,8 +292,6 @@ namespace Molten.Graphics
             if (!context.HlslShaders.TryGetValue(entryPoint, out result))
             {
                 string strProfile = ShaderModel.Model5_0.ToProfile(type);
-
-                // TODO replace with IDxcCompilerArgs which will return a char** for use with Compiler.Compile().
                 string argString = context.Args.ToString();
                 uint argCount = context.Args.Count;
                 char** ptrArgString = context.Args.GetArgsPtr();

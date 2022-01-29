@@ -93,18 +93,18 @@ PS_OUT PS(VS_OUT input)
 }
 
 PS_OUT PS_Basic(VS_OUT input)
-	{
-		PS_OUT o;
-		o.diffuse = mapDiffuse.Sample(texSampler, input.uv);
-		o.emissive = mapGlow.Sample(texSampler, input.uv);
-		o.normal.rgb = 0.5 * (input.normal + 1.0);
+{
+	PS_OUT o;
+	o.diffuse = mapDiffuse.Sample(texSampler, input.uv);
+	o.emissive = mapGlow.Sample(texSampler, input.uv);
+	o.normal.rgb = 0.5 * (input.normal + 1.0);
 
-		// UNUSED
-		// colorData.a
-		// emissive.a
-		// there is no normal.a because of 11,11,10 bit channels.
-		o.emissive.a = 1;
-		o.diffuse.a = 1;
+	// UNUSED
+	// colorData.a
+	// emissive.a
+	// there is no normal.a because of 11,11,10 bit channels.
+	o.emissive.a = 1;
+	o.diffuse.a = 1;
 
-		return o;
-	}
+	return o;
+}

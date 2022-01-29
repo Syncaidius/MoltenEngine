@@ -25,6 +25,12 @@ namespace Molten
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">The name of the asset/resource to be loaded.</param>
+        /// <param name="assembly">The assembly from which to retrieve a stream. If null, <see cref="Assembly.GetExecutingAssembly()"/> will be used.</param>
+        /// <returns></returns>
         public static Stream GetStream(string name, Assembly assembly = null)
         {
             if (assembly == null)

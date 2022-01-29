@@ -30,9 +30,10 @@ namespace Molten.Graphics
 
         internal static readonly string[] NewLineSeparators = new string[] { "\n", Environment.NewLine };
         Dictionary<string, HlslSubCompiler> _subCompilers;
+        Dictionary<string, HlslSource> _sources;
+
         Logger _log;
         RendererDX11 _renderer;
-        HlslIncluder _defaultIncluder;
         Dictionary<string, ShaderNodeParser> _parsers;
         IDxcCompiler3* _compiler;
         IDxcUtils* _utils;
@@ -42,12 +43,11 @@ namespace Molten.Graphics
             _renderer = renderer;
             _log = log;
             _subCompilers = new Dictionary<string, HlslSubCompiler>();
+            _sources = new Dictionary<string, HlslSource>();
 
             Dxc = DXC.GetApi();
-            _utils = CreateInstance<IDxcUtils>(CLSID_DxcUtils, IDxcUtils.Guid);
-            _compiler = CreateInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
-
-            _defaultIncluder = new EmbeddedIncluder(this, typeof(EmbeddedIncluder).Assembly);
+            _utils = CreateDxcInstance<IDxcUtils>(CLSID_DxcUtils, IDxcUtils.Guid);
+            _compiler = CreateDxcInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
 
             // Detect and instantiate node parsers
             _parsers = new Dictionary<string, ShaderNodeParser>();
@@ -70,12 +70,73 @@ namespace Molten.Graphics
             Dxc.Dispose();
         }
 
-        private T* CreateInstance<T>(Guid clsid, Guid iid) where T : unmanaged
+        private T* CreateDxcInstance<T>(Guid clsid, Guid iid) where T : unmanaged
         {
             void* ppv = null;
             HResult result = Dxc.CreateInstance(&clsid, &iid, ref ppv);
-
             return (T*)ppv;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path">The path to the source file. If <paramref name="embedded"/> is true, path should be a namespace.</param>
+        /// <returns></returns>
+        internal HlslSource LoadSource(string path)
+        {
+            HlslSource src;
+
+            if (_sources.TryGetValue(path, out src))
+                return src;
+
+            string hlslSrc = "";
+
+            try
+            {
+                using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    using (StreamReader reader = new StreamReader(stream))
+                        hlslSrc = reader.ReadToEnd();
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.WriteError($"An error occurred while reading HLSL source file '{path}': {ex.Message}");
+                _log.WriteError(ex, true);
+            }
+
+            src = new HlslSource(this, path, ref hlslSrc);
+            _sources.Add(path, src);
+            return src;
+        }
+
+        internal HlslSource LoadEmbeddedSource(string nameSpace, string filename, Assembly assembly)
+        {
+            string embeddedName = $"{nameSpace}.{filename}";
+            HlslSource src;
+
+            if (_sources.TryGetValue(embeddedName, out src))
+                return src;
+
+            Stream stream = EmbeddedResource.GetStream(embeddedName, assembly);
+
+            if (stream != null)
+            {
+                string hlslSrc = "";
+
+                using (StreamReader reader = new StreamReader(stream))
+                    hlslSrc = reader.ReadToEnd();
+
+                stream.Dispose();
+                src = new HlslSource(this, embeddedName, ref hlslSrc);
+                _sources.Add(embeddedName, src);
+            }
+            else
+            {
+                _log.WriteError($"Embedded HLSL source file '{embeddedName}' not found");
+            }
+
+            return src;
         }
 
         /*
