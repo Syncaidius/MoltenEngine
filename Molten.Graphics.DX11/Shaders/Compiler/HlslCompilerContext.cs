@@ -40,11 +40,9 @@ namespace Molten.Graphics
 
         internal HlslCompiler Compiler { get; }
 
-        internal HlslIncluder Includer { get; }
-
         internal string Filename { get; set; }
 
-        internal string Source { get; set; }
+        internal HlslSource Source { get; set; }
 
         internal bool HasErrors { get; private set; }
 
@@ -52,10 +50,9 @@ namespace Molten.Graphics
 
         List<Message> _messages;
 
-        internal HlslCompilerContext(HlslCompiler compiler, HlslIncluder includer)
+        internal HlslCompilerContext(HlslCompiler compiler)
         {
             Compiler = compiler;
-            Includer = includer;
             Args = new DxcArgumentBuilder(this);
             _messages = new List<Message>();
             Messages = _messages.AsReadOnly();

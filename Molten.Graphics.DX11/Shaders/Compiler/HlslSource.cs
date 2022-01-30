@@ -12,8 +12,8 @@ namespace Molten.Graphics
 {
     internal unsafe class HlslSource : EngineObject
     {
-        static Regex _includeCommas = new Regex("(?:#include) \"([.+])\"");
-        static Regex _includeBrackets = new Regex("(?:#include) <([.+])>");
+        static Regex _includeCommas = new Regex("(?:#include) (?:\")([.+])(?:\")");
+        static Regex _includeBrackets = new Regex("(?:#include) (?:<)([.+])(?:>)");
 
         string _src;
         IDxcBlobEncoding* _blob;
@@ -26,24 +26,29 @@ namespace Molten.Graphics
             _src = src;
 
             ParseDependencies(compiler);
-            ParseDependencies(compiler);
         }
 
         private void ParseDependencies(HlslCompiler compiler)
         {
             // See for info: https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-appendix-pre-include
 
-            // Parse #include <file>
+            // Parse #include <file> - Only checks INCLUDE path and "in paths specified by the /I compiler option, in the order in which they are listed."
             Match m = _includeBrackets.Match(_src);
             while (m.Success)
             {
-                string fn = m.Value.Replace("\"", "");
-
+                string fn = m.Value.Trim().Replace("<", "").Replace(">", "");
 
                 m = m.NextMatch();
             }
 
-            // Parse #Include "file"
+            // Parse #Include "file" - Above + local source file directory
+            m = _includeCommas.Match(_src);
+            while (m.Success)
+            {
+                string fn = m.Value.Trim().Replace("\"", "");
+
+                m = m.NextMatch();
+            }
         }
 
         public override string ToString()
@@ -56,7 +61,7 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _blob);
         }
 
-        internal Buffer BuildFinalSource(IDxcUtils* utils)
+        internal Buffer BuildFinalSource(HlslCompiler compiler)
         {
             if (_blob != null)
                 return _buffer;
@@ -69,7 +74,7 @@ namespace Molten.Graphics
 
             NumBytes = (uint)(sizeof(char) * finalSrc.Length);
             void* ptrSource = (void*)SilkMarshal.StringToPtr(_src, NativeStringEncoding.LPWStr);
-            utils->CreateBlob(ptrSource, NumBytes, DXC.CPUtf16, ref _blob);
+            compiler.Utils->CreateBlob(ptrSource, NumBytes, DXC.CPUtf16, ref _blob);
 
             _buffer = new Buffer()
             {

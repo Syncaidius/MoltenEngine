@@ -298,27 +298,12 @@ namespace Molten.Graphics
 
                 Guid dxcResultGuid = IDxcResult.Guid;
                 void* dxcResult;
-                uint numBytes = (uint)(sizeof(char) * context.Source.Length);
-
-                IDxcBlobEncoding* srcEncoding;
-                void* ptrSource = (void*)SilkMarshal.StringToPtr(context.Source, NativeStringEncoding.LPWStr);
-                context.Compiler.Utils->CreateBlob(ptrSource, numBytes, DXC.CPUtf16, &srcEncoding);
-
-                Buffer srcBuffer = new Buffer()
-                {
-                    Ptr = srcEncoding->GetBufferPointer(),
-                    Size = srcEncoding->GetBufferSize(),
-                    Encoding = 0
-                };
-
+                Buffer srcBuffer = context.Source.BuildFinalSource(context.Compiler);
      
-                context.Compiler.Native->Compile(&srcBuffer, ptrArgString, argCount, context.Includer, &dxcResultGuid, &dxcResult);
+                context.Compiler.Native->Compile(&srcBuffer, ptrArgString, argCount, null, &dxcResultGuid, &dxcResult);
                 result = new HlslCompileResult(context, (IDxcResult*)dxcResult);
 
-                // Free allocated resource.
-                srcEncoding->Release();
                 SilkMarshal.Free((nint)ptrArgString);
-                SilkMarshal.Free((nint)ptrSource);
 
                 if(context.HasErrors)
                     return false;

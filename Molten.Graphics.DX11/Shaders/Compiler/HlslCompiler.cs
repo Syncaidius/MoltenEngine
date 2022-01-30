@@ -200,7 +200,8 @@ namespace Molten.Graphics
         private void AddSubCompiler<T>(string nodeName) where T : HlslSubCompiler
         {
             Type t = typeof(T);
-            HlslSubCompiler sub = Activator.CreateInstance(t, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,  null, null, null) as HlslSubCompiler;
+            BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+            HlslSubCompiler sub = Activator.CreateInstance(t, bindFlags,  null, null, null) as HlslSubCompiler;
             _subCompilers.Add(nodeName, sub);
         }
 
@@ -216,9 +217,9 @@ namespace Molten.Graphics
             return Compile(source, filename);
         }
 
-        internal ShaderCompileResult Compile(string source, string filename = null, HlslIncluder includer = null)
+        internal ShaderCompileResult Compile(string source, string filename)
         {
-            HlslCompilerContext context = new HlslCompilerContext(this, includer);
+            HlslCompilerContext context = new HlslCompilerContext(this);
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>();
             string finalSource = source;
 
@@ -238,7 +239,7 @@ namespace Molten.Graphics
                         string[] hLines = h.Split(NewLineSeparators, StringSplitOptions.None);
                         int endLine = lines.Length + (hLines.Length - 1);
 
-                        if (filename == null)
+                        if (string.IsNullOrWhiteSpace(filename))
                             finalSource = finalSource.Replace(h, $"#line {endLine}");
                         else
                             finalSource = finalSource.Replace(h, $"#line {endLine} \"{filename}\"");
@@ -246,7 +247,8 @@ namespace Molten.Graphics
                 }
             }
 
-            context.Source = finalSource;
+
+            context.Source = new HlslSource(this, filename, ref source);
             context.Filename = filename;
 
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
