@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe class ComputeCompiler : HlslSubCompiler
+    internal unsafe class ComputeParser : HlslParser
     {
         internal override List<IShader> Parse(HlslCompilerContext context, RendererDX11 renderer, string header)
         {
             List<IShader> shaders = new List<IShader>();
-            ComputeTask compute = new ComputeTask(renderer.Device, context.Filename);
+            ComputeTask compute = new ComputeTask(renderer.Device, context.Source.Filename);
             try
             {
-                context.Compiler.ParserHeader(compute, ref header, context);
+                ParserHeader(compute, ref header, context);
                 HlslCompileResult result = null;
-                if (Compile(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out result))
+                if (context.Compiler.CompileHlsl(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out result))
                 {
                     if(BuildStructure(context, compute, result, compute.Composition))
                     {
@@ -31,7 +31,7 @@ namespace Molten.Graphics
             }
             catch (Exception e)
             {
-                context.AddError($"{context.Filename ?? "Material header error"}: {e.Message}");
+                context.AddError($"{context.Source.Filename ?? "Material header error"}: {e.Message}");
             }
 
             if(context.HasErrors)

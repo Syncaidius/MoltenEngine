@@ -212,16 +212,16 @@ namespace Molten.Graphics
         /// <returns></returns>
         public ShaderCompileResult CompileShaders(string source, string filename = null)
         {
-            HlslIncluder includer = null;
+            HlslSourceType type = HlslSourceType.EmbeddedFile;
 
             if (!string.IsNullOrWhiteSpace(filename))
             {
                 FileInfo fInfo = new FileInfo(filename);
                 DirectoryInfo dir = fInfo.Directory;
-                includer = new DefaultIncluder(_renderer.ShaderCompiler);
+                type = HlslSourceType.StandardFile;
             }
 
-            return _renderer.ShaderCompiler.Compile(source, filename, includer);
+            return _renderer.ShaderCompiler.CompileHlsl(source, filename);
         }
     }
 }

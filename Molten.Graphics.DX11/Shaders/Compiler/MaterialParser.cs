@@ -7,17 +7,17 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal unsafe class MaterialCompiler : HlslSubCompiler
+    internal unsafe class MaterialParser : HlslParser
     {
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
 
         internal override List<IShader> Parse(HlslCompilerContext context, RendererDX11 renderer, string header)
         {
             List<IShader> result = new List<IShader>();
-            Material material = new Material(renderer.Device, context.Filename);
+            Material material = new Material(renderer.Device, context.Source.Filename);
             try
             {
-                context.Compiler.ParserHeader(material, ref header, context);
+                ParserHeader(material, ref header, context);
                 if (material.Passes == null || material.Passes.Length == 0)
                 {
                     material.AddDefaultPass();
@@ -30,7 +30,7 @@ namespace Molten.Graphics
             }
             catch (Exception e)
             {
-                context.AddError($"{context.Filename ?? "Material header error"}: {e.Message}");
+                context.AddError($"{context.Source.Filename ?? "Material header error"}: {e.Message}");
                 renderer.Device.Log.WriteError(e);
                 return result;
             }
@@ -127,13 +127,14 @@ namespace Molten.Graphics
                 if (pass.Compositions[i].Optional && string.IsNullOrWhiteSpace(pass.Compositions[i].EntryPoint))
                     continue;
 
-                if (Compile(pass.Compositions[i].EntryPoint, MaterialPass.ShaderTypes[i], context, out result.Results[i]))
+                if (context.Compiler.CompileHlsl(pass.Compositions[i].EntryPoint, 
+                    MaterialPass.ShaderTypes[i], context, out result.Results[i]))
                 {
                     BuildIO(result.Results[i], pass.Compositions[i]);
                 }
                 else
                 {
-                    context.AddError($"{context.Filename}: Failed to compile {MaterialPass.ShaderTypes[i]} stage of material pass.");
+                    context.AddError($"{context.Source.Filename}: Failed to compile {MaterialPass.ShaderTypes[i]} stage of material pass.");
                     return result;
                 }
             }

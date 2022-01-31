@@ -6,21 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Xml;
 using Buffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class HlslSubCompiler
+    internal unsafe abstract class HlslParser
     {
-
-#if RELEASE
-         HlslCompilerArg _compileFlags = HlslCompilerArg.OptimizationLevel3;
-#else
-        HlslCompilerArg _compileFlags = HlslCompilerArg.WarningsAreErrors;
-#endif
-
         internal abstract List<IShader> Parse(HlslCompilerContext context, RendererDX11 renderer, string header);
 
         protected bool HasResource(HlslShader shader, string resourceName)
@@ -48,7 +40,7 @@ namespace Molten.Graphics
                 {
                     if (buffer.Variables.Length != varNames.Length)
                     {
-                        context.AddMessage($"Material '{bufferName}' constant buffer does not have the correct number of variables ({varNames.Length})", 
+                        context.AddMessage($"Shader '{bufferName}' constant buffer does not have the correct number of variables ({varNames.Length})", 
                             HlslCompilerContext.Message.Kind.Error);
                         return false;
                     }
@@ -60,7 +52,7 @@ namespace Molten.Graphics
 
                         if (variable.Name != expectedName)
                         {
-                            context.AddMessage($"Material '{bufferName}' constant variable #{i + 1} is incorrect: Named '{variable.Name}' instead of '{expectedName}'",
+                            context.AddMessage($"Shader '{bufferName}' constant variable #{i + 1} is incorrect: Named '{variable.Name}' instead of '{expectedName}'",
                                 HlslCompilerContext.Message.Kind.Error);
                             return false;
                         }
@@ -102,7 +94,7 @@ namespace Molten.Graphics
                                 Array.Resize(ref shader.ConstBuffers, (int)bindPoint + 1);
 
                             if(shader.ConstBuffers[bindPoint] != null && shader.ConstBuffers[bindPoint].BufferName != bindDesc.Name)
-                                context.AddMessage($"Material constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindDesc.Name}' at the same register (b{bindPoint}).", 
+                                context.AddMessage($"Shader constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindDesc.Name}' at the same register (b{bindPoint}).", 
                                     HlslCompilerContext.Message.Kind.Warning);
 
                             shader.ConstBuffers[bindPoint] = GetConstantBuffer(context, shader, buffer);
@@ -268,7 +260,8 @@ namespace Molten.Graphics
             }
             else
             {
-                bVar = Activator.CreateInstance(typeof(T), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { shader }, null) as T;
+                BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+                bVar = Activator.CreateInstance(typeof(T), bindFlags, null, new object[] { shader }, null) as T;
                 bVar.Name = desc.Name;
 
                 shader.Variables.Add(bVar.Name, bVar);
@@ -277,41 +270,33 @@ namespace Molten.Graphics
             return bVar;
         }
 
-        /// <summary>Compiles HLSL source code and outputs the result. Returns true if successful, or false if there were errors.</summary>
-        /// <param name="log"></param>
-        /// <param name="entryPoint"></param>
-        /// <param name="type"></param>
-        /// <param name="source"></param>
-        /// <param name="filename"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        protected bool Compile(string entryPoint, ShaderType type, HlslCompilerContext context, out HlslCompileResult result)
+        internal void ParserHeader(HlslFoundation foundation, ref string header, HlslCompilerContext context)
         {
-            // Since it's not possible to have two functions in the same file with the same name, we'll just check if
-            // a shader with the same entry-point name is already loaded in the context.
-            if (!context.HlslShaders.TryGetValue(entryPoint, out result))
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(header);
+
+            XmlNode rootNode = doc.ChildNodes[0];
+            ParseNode(foundation, rootNode, context);
+        }
+
+        internal void ParseNode(HlslFoundation foundation, XmlNode parentNode, HlslCompilerContext context)
+        {
+            foreach (XmlNode node in parentNode.ChildNodes)
             {
-                string strProfile = ShaderModel.Model5_0.ToProfile(type);
-                string argString = context.Args.ToString();
-                uint argCount = context.Args.Count;
-                char** ptrArgString = context.Args.GetArgsPtr();
-
-                Guid dxcResultGuid = IDxcResult.Guid;
-                void* dxcResult;
-                Buffer srcBuffer = context.Source.BuildFinalSource(context.Compiler);
-     
-                context.Compiler.Native->Compile(&srcBuffer, ptrArgString, argCount, null, &dxcResultGuid, &dxcResult);
-                result = new HlslCompileResult(context, (IDxcResult*)dxcResult);
-
-                SilkMarshal.Free((nint)ptrArgString);
-
-                if(context.HasErrors)
-                    return false;
-
-                context.HlslShaders.Add(entryPoint, result);
+                string nodeName = node.Name.ToLower();
+                ShaderNodeParser parser = null;
+                if (context.Compiler.Parsers.TryGetValue(nodeName, out parser))
+                {
+                    parser.Parse(foundation, context, node);
+                }
+                else
+                {
+                    if (parentNode.ParentNode != null)
+                        context.AddWarning($"Ignoring unsupported {parentNode.ParentNode.Name} tag '{parentNode.Name}'");
+                    else
+                        context.AddWarning($"Ignoring unsupported root tag '{parentNode.Name}'");
+                }
             }
-
-            return true;
         }
     }
 }

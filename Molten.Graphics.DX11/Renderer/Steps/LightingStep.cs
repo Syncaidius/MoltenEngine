@@ -41,20 +41,9 @@ namespace Molten.Graphics
 
         private void LoadShaders(RendererDX11 renderer)
         {
-            string source = null;
-            string namepace = "Molten.Graphics.Assets.light_point.mfx";
-            using (Stream stream = EmbeddedResource.GetStream(namepace, typeof(RendererDX11).Assembly))
-            {
-                using (StreamReader reader = new StreamReader(stream))
-                    source = reader.ReadToEnd();
-            }
-
-            if (!string.IsNullOrWhiteSpace(source))
-            {
-                ShaderCompileResult result = renderer.ShaderCompiler.Compile(source, namepace);
-                _matPoint = result["material", "light-point"] as Material;
-                _matDebugPoint = result["material", "light-point-debug"] as Material;
-            }
+            ShaderCompileResult result = renderer.LoadEmbeddedShader("Molten.Graphics.Assets.light_point.mfx");
+            _matPoint = result["material", "light-point"] as Material;
+            _matDebugPoint = result["material", "light-point-debug"] as Material;
         }
 
         public override void Dispose()

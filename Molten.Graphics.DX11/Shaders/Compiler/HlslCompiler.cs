@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Buffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics
 {
@@ -28,21 +29,37 @@ namespace Molten.Graphics
         static readonly Guid CLSID_DxcCompiler = new Guid(0x73e22d93U, (ushort)0xe6ceU, (ushort)0x47f3U, 
             0xb5, 0xbf, 0xf0, 0x66, 0x4f, 0x39, 0xc1, 0xb0 );
 
-        internal static readonly string[] NewLineSeparators = new string[] { "\n", Environment.NewLine };
-        Dictionary<string, HlslSubCompiler> _subCompilers;
+        string[] _newLineSeparator = { "\n", Environment.NewLine };
+        string[] _includeReplacements = { "#include", "<", ">", "\"" };
+        static Regex _includeCommas = new Regex("(#include) \"([.+])\"");
+        static Regex _includeBrackets = new Regex("(#include) <([.+])>");
+
+
+        Dictionary<string, HlslParser> _subCompilers;
         Dictionary<string, HlslSource> _sources;
 
         Logger _log;
         RendererDX11 _renderer;
-        Dictionary<string, ShaderNodeParser> _parsers;
         IDxcCompiler3* _compiler;
         IDxcUtils* _utils;
+        string _defaultIncludePath;
+        Assembly _defaultIncludeAssembly;
 
-        internal HlslCompiler(RendererDX11 renderer, Logger log)
+        /// <summary>
+        /// Creates a new instance of <see cref="HlslCompiler"/>.
+        /// </summary>
+        /// <param name="renderer">The renderer which owns the compiler.</param>
+        /// <param name="log"></param>
+        /// <param name="includePath">The default path for engine/game HLSL include files.</param>
+        /// <param name="includeAssembly"></param>
+        internal HlslCompiler(RendererDX11 renderer, Logger log, string includePath, Assembly includeAssembly)
         {
+            _defaultIncludePath = includePath;
+            _defaultIncludeAssembly = includeAssembly;
+
             _renderer = renderer;
             _log = log;
-            _subCompilers = new Dictionary<string, HlslSubCompiler>();
+            _subCompilers = new Dictionary<string, HlslParser>();
             _sources = new Dictionary<string, HlslSource>();
 
             Dxc = DXC.GetApi();
@@ -50,17 +67,17 @@ namespace Molten.Graphics
             _compiler = CreateDxcInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
 
             // Detect and instantiate node parsers
-            _parsers = new Dictionary<string, ShaderNodeParser>();
+            Parsers = new Dictionary<string, ShaderNodeParser>();
             IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser>();
             foreach (Type t in parserTypes)
             {
                 ShaderNodeParser parser = Activator.CreateInstance(t, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, null, null) as ShaderNodeParser;
                 foreach (string nodeName in parser.SupportedNodes)
-                    _parsers.Add(nodeName, parser);
+                    Parsers.Add(nodeName, parser);
             }
 
-            AddSubCompiler<MaterialCompiler>("material");
-            AddSubCompiler<ComputeCompiler>("compute");
+            AddSubCompiler<MaterialParser>("material");
+            AddSubCompiler<ComputeParser>("compute");
         }
 
         protected override void OnDispose()
@@ -75,68 +92,6 @@ namespace Molten.Graphics
             void* ppv = null;
             HResult result = Dxc.CreateInstance(&clsid, &iid, ref ppv);
             return (T*)ppv;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="path">The path to the source file. If <paramref name="embedded"/> is true, path should be a namespace.</param>
-        /// <returns></returns>
-        internal HlslSource LoadSource(string path)
-        {
-            HlslSource src;
-
-            if (_sources.TryGetValue(path, out src))
-                return src;
-
-            string hlslSrc = "";
-
-            try
-            {
-                using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    using (StreamReader reader = new StreamReader(stream))
-                        hlslSrc = reader.ReadToEnd();
-                }
-            }
-            catch (Exception ex)
-            {
-                _log.WriteError($"An error occurred while reading HLSL source file '{path}': {ex.Message}");
-                _log.WriteError(ex, true);
-            }
-
-            src = new HlslSource(this, path, ref hlslSrc);
-            _sources.Add(path, src);
-            return src;
-        }
-
-        internal HlslSource LoadEmbeddedSource(string nameSpace, string filename, Assembly assembly)
-        {
-            string embeddedName = $"{nameSpace}.{filename}";
-            HlslSource src;
-
-            if (_sources.TryGetValue(embeddedName, out src))
-                return src;
-
-            Stream stream = EmbeddedResource.GetStream(embeddedName, assembly);
-
-            if (stream != null)
-            {
-                string hlslSrc = "";
-
-                using (StreamReader reader = new StreamReader(stream))
-                    hlslSrc = reader.ReadToEnd();
-
-                stream.Dispose();
-                src = new HlslSource(this, embeddedName, ref hlslSrc);
-                _sources.Add(embeddedName, src);
-            }
-            else
-            {
-                _log.WriteError($"Embedded HLSL source file '{embeddedName}' not found");
-            }
-
-            return src;
         }
 
         /*
@@ -197,27 +152,15 @@ namespace Molten.Graphics
          *  HLSL code from here and onwards.
          */
 
-        private void AddSubCompiler<T>(string nodeName) where T : HlslSubCompiler
+        private void AddSubCompiler<T>(string nodeName) where T : HlslParser
         {
             Type t = typeof(T);
             BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-            HlslSubCompiler sub = Activator.CreateInstance(t, bindFlags,  null, null, null) as HlslSubCompiler;
+            HlslParser sub = Activator.CreateInstance(t, bindFlags,  null, null, null) as HlslParser;
             _subCompilers.Add(nodeName, sub);
         }
 
-        internal ShaderCompileResult CompileEmbedded(string filename)
-        {
-            string source = null;
-            using (Stream stream = EmbeddedResource.GetStream(filename, typeof(RendererDX11).Assembly))
-            {
-                using (StreamReader reader = new StreamReader(stream))
-                    source = reader.ReadToEnd();
-            }
-
-            return Compile(source, filename);
-        }
-
-        internal ShaderCompileResult Compile(string source, string filename)
+        internal ShaderCompileResult BuildShader(ref string source, string filename, HlslSourceType type, Assembly assembly)
         {
             HlslCompilerContext context = new HlslCompilerContext(this);
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>();
@@ -235,8 +178,8 @@ namespace Molten.Graphics
                     foreach (string h in nodeHeaders)
                     {
                         int index = source.IndexOf(h);
-                        string[] lines = source.Substring(0, index).Split(NewLineSeparators, StringSplitOptions.None);
-                        string[] hLines = h.Split(NewLineSeparators, StringSplitOptions.None);
+                        string[] lines = source.Substring(0, index).Split(_newLineSeparator, StringSplitOptions.None);
+                        string[] hLines = h.Split(_newLineSeparator, StringSplitOptions.None);
                         int endLine = lines.Length + (hLines.Length - 1);
 
                         if (string.IsNullOrWhiteSpace(filename))
@@ -248,13 +191,19 @@ namespace Molten.Graphics
             }
 
 
-            context.Source = new HlslSource(this, filename, ref source);
-            context.Filename = filename;
+            context.Source = new HlslSource(filename, ref source, type);
+
+            // See for info: https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-appendix-pre-include
+            // Parse #include <file> - Only checks INCLUDE path and "in paths specified by the /I compiler option,
+            // in the order in which they are listed."
+            // Parse #Include "file" - Above + local source file directory
+            ParseSourceDependencies(context, _includeBrackets, false, assembly);
+            ParseSourceDependencies(context, _includeCommas, true, assembly); 
 
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
             foreach (string nodeName in headers.Keys)
             {
-                HlslSubCompiler com = _subCompilers[nodeName];
+                HlslParser com = _subCompilers[nodeName];
                 List<string> nodeHeaders = headers[nodeName];
                 foreach (string header in nodeHeaders)
                 {
@@ -287,35 +236,146 @@ namespace Molten.Graphics
             }
 
             return headers;
-        }
+        }        
 
-        internal void ParserHeader(HlslFoundation foundation, ref string header, HlslCompilerContext context)
+        private void ParseSourceDependencies(HlslCompilerContext context, Regex regex, bool allowRelativePath, Assembly assembly)
         {
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(header);
+            HashSet<string> dependencies = new HashSet<string>();
+            Match m = regex.Match(context.Source.SourceCode);
+            assembly = assembly ?? _defaultIncludeAssembly;
 
-            XmlNode rootNode = doc.ChildNodes[0];
-            ParseNode(foundation, rootNode, context);
-        }
-
-        internal void ParseNode(HlslFoundation foundation, XmlNode parentNode, HlslCompilerContext context)
-        {
-            foreach (XmlNode node in parentNode.ChildNodes)
+            while (m.Success)
             {
-                string nodeName = node.Name.ToLower();
-                ShaderNodeParser parser = null;
-                if (_parsers.TryGetValue(nodeName, out parser))
+                string depFn = m.Value.ToLower();
+                foreach (string rp in _includeReplacements)
+                    depFn = depFn.Replace(rp, "");
+
+                depFn = depFn.Trim();
+
+                HlslSource dependency = null;
+                string depSource = "";
+                Stream fStream = null;
+                Assembly depAssembly = null;
+                string parsedFilename = null;
+                HlslSourceType depType = HlslSourceType.StandardFile;
+
+                if (allowRelativePath)
                 {
-                    parser.Parse(foundation, context, node);
+                    if (context.Source.SourceType == HlslSourceType.StandardFile)
+                    {
+                        // If the source came from a standard file, check it's local directory for the include.
+                        parsedFilename = $"{context.Source.Filename}/{depFn}";
+                        if (TryAddDependency(ref parsedFilename, context))
+                            continue;
+
+                        if (File.Exists(parsedFilename))
+                            fStream = new FileStream(parsedFilename, FileMode.Open, FileAccess.Read);
+                    }
+                    else if (context.Source.SourceType == HlslSourceType.EmbeddedFile)
+                    {
+                        // Check parent assembly instead, if set.
+                        Assembly parentAssembly = context.Source.ParentAssembly;
+                        if (parentAssembly != null)
+                        {
+                            parsedFilename = $"{depFn},{parentAssembly.FullName}";
+                            fStream = EmbeddedResource.TryGetStream(depFn, parentAssembly);
+                        }
+                    }
+                }
+
+                // Check embedded files or the default include path
+                if (fStream == null)
+                {
+                    parsedFilename = $"{depFn},{assembly.FullName}";
+                    if (TryAddDependency(ref parsedFilename, context))
+                        continue;
+
+                    fStream = EmbeddedResource.TryGetStream(depFn, assembly);
+
+                    if (fStream == null)
+                    {
+                        parsedFilename = $"{_defaultIncludePath}/{depFn}";
+                        if (TryAddDependency(ref parsedFilename, context))
+                            continue;
+
+                        if (File.Exists(parsedFilename))
+                            fStream = new FileStream(parsedFilename, FileMode.Open, FileAccess.Read);
+                    }
+                    else
+                    {
+                        depAssembly = assembly;
+                    }
+                }
+
+                // Now try to load the dependency
+                if (fStream != null)
+                {
+                    using (StreamReader reader = new StreamReader(fStream))
+                        depSource = reader.ReadToEnd();
+
+                    fStream.Dispose();
+
+                    dependency = new HlslSource(parsedFilename, ref depSource, depType, depAssembly);
+                    context.Source.Dependencies.Add(dependency);
+                    _sources.Add(parsedFilename, dependency);
+
+                    dependencies.Add(parsedFilename);
                 }
                 else
                 {
-                    if (parentNode.ParentNode != null)
-                        context.AddWarning($"Ignoring unsupported {parentNode.ParentNode.Name} tag '{parentNode.Name}'");
-                    else
-                        context.AddWarning($"Ignoring unsupported root tag '{parentNode.Name}'");
+                    context.AddError($"{context.Source.Filename}: The include '{depFn}' was not found");
                 }
+
+                m = m.NextMatch();
             }
+        }
+
+        private bool TryAddDependency(ref string path, HlslCompilerContext context)
+        {
+            if (_sources.TryGetValue(path, out HlslSource dependency))
+            {
+                context.Source.Dependencies.Add(dependency);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Compiles HLSL source code and outputs the result. Returns true if successful, or false if there were errors.</summary>
+        /// <param name="log"></param>
+        /// <param name="entryPoint"></param>
+        /// <param name="type"></param>
+        /// <param name="source"></param>
+        /// <param name="filename"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        internal bool CompileHlsl(string entryPoint, ShaderType type, HlslCompilerContext context, out HlslCompileResult result)
+        {
+            // Since it's not possible to have two functions in the same file with the same name, we'll just check if
+            // a shader with the same entry-point name is already loaded in the context.
+            if (!context.HlslShaders.TryGetValue(entryPoint, out result))
+            {
+                string strProfile = ShaderModel.Model5_0.ToProfile(type);
+                string argString = context.Args.ToString();
+                uint argCount = context.Args.Count;
+                char** ptrArgString = context.Args.GetArgsPtr();
+
+                Guid dxcResultGuid = IDxcResult.Guid;
+                void* dxcResult;
+                Buffer srcBuffer = context.Source.BuildFinalSource(context.Compiler);
+
+                Native->Compile(&srcBuffer, ptrArgString, argCount, null, &dxcResultGuid, &dxcResult);
+                result = new HlslCompileResult(context, (IDxcResult*)dxcResult);
+
+                SilkMarshal.Free((nint)ptrArgString);
+
+                if (context.HasErrors)
+                    return false;
+
+                context.HlslShaders.Add(entryPoint, result);
+            }
+
+            return true;
         }
 
         internal DXC Dxc { get; }
@@ -327,5 +387,7 @@ namespace Molten.Graphics
         internal IDxcCompiler3* Native => _compiler;
 
         internal IDxcUtils* Utils => _utils;
+
+        internal Dictionary<string, ShaderNodeParser> Parsers;
     }
 }

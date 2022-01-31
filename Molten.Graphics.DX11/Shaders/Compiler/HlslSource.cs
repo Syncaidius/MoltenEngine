@@ -3,6 +3,7 @@ using Silk.NET.Direct3D.Compilers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -12,43 +13,20 @@ namespace Molten.Graphics
 {
     internal unsafe class HlslSource : EngineObject
     {
-        static Regex _includeCommas = new Regex("(?:#include) (?:\")([.+])(?:\")");
-        static Regex _includeBrackets = new Regex("(?:#include) (?:<)([.+])(?:>)");
-
         string _src;
         IDxcBlobEncoding* _blob;
         Buffer _buffer;
 
-        internal HlslSource(HlslCompiler compiler, string filename, ref string src)
+        internal HlslSource(string filename, ref string src, HlslSourceType type, Assembly assembly = null)
         {
             Filename = filename;
             Dependencies = new List<HlslSource>();
-            _src = src;
+            SourceType = type;
+            ParentAssembly = type == HlslSourceType.EmbeddedFile ? assembly : null; 
 
-            ParseDependencies(compiler);
-        }
-
-        private void ParseDependencies(HlslCompiler compiler)
-        {
-            // See for info: https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-appendix-pre-include
-
-            // Parse #include <file> - Only checks INCLUDE path and "in paths specified by the /I compiler option, in the order in which they are listed."
-            Match m = _includeBrackets.Match(_src);
-            while (m.Success)
-            {
-                string fn = m.Value.Trim().Replace("<", "").Replace(">", "");
-
-                m = m.NextMatch();
-            }
-
-            // Parse #Include "file" - Above + local source file directory
-            m = _includeCommas.Match(_src);
-            while (m.Success)
-            {
-                string fn = m.Value.Trim().Replace("\"", "");
-
-                m = m.NextMatch();
-            }
+            string[] lines = src.Split('\n');
+            LineCount = lines.Length;
+            _src = $"#line 1 {filename}\n{src}\n#line {LineCount + 1} {filename}";
         }
 
         public override string ToString()
@@ -68,7 +46,7 @@ namespace Molten.Graphics
 
             string finalSrc = "";
             foreach (HlslSource src in Dependencies)
-                finalSrc += src.Source;
+                finalSrc += src.SourceCode;
 
             finalSrc += _src;
 
@@ -96,8 +74,17 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets a reference to the HLSL source code string
         /// </summary>
-        public ref string Source => ref _src;
+        public ref string SourceCode => ref _src;
 
         internal List<HlslSource> Dependencies { get; }
+
+        /// <summary>
+        /// Gets the type of the current <see cref="HlslSource"/>.
+        /// </summary>
+        internal HlslSourceType SourceType { get; }
+
+        internal Assembly ParentAssembly { get; }
+
+        public int LineCount { get; }
     }
 }

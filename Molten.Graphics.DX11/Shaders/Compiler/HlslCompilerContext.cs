@@ -40,8 +40,6 @@ namespace Molten.Graphics
 
         internal HlslCompiler Compiler { get; }
 
-        internal string Filename { get; set; }
-
         internal HlslSource Source { get; set; }
 
         internal bool HasErrors { get; private set; }

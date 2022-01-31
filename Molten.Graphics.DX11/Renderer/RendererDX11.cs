@@ -9,6 +9,7 @@ using System.IO;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 using Molten.Graphics.Dxgi;
+using System.Reflection;
 
 namespace Molten.Graphics
 {
@@ -55,11 +56,13 @@ namespace Molten.Graphics
         {
             base.OnInitialize(settings, mainLog);
 
+            Assembly includeAssembly = this.GetType().Assembly;
+
             _api = D3D11.GetApi();
             Device = new Device(_api, Log, settings.Graphics, _displayManager);
             _resourceManager = new ResourceManager(this);
             _compute = new ComputeManager(this.Device);
-            ShaderCompiler = new HlslCompiler(this, Log);
+            ShaderCompiler = new HlslCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _clearedSurfaces = new HashSet<Texture2DDX11>();
 
             uint maxBufferSize = (uint)ByteMath.FromMegabytes(3.5);
@@ -70,14 +73,27 @@ namespace Molten.Graphics
             SpriteBatcher = new SpriteBatcherDX11(this, 3000);
 
             InitializeMainSurfaces(BiggestWidth, BiggestHeight);
-            LoadDefaultShaders();
+            LoadDefaultShaders(includeAssembly);
         }
 
-        private void LoadDefaultShaders()
+        private void LoadDefaultShaders(Assembly includeAssembly)
         {
-            ShaderCompileResult result = ShaderCompiler.CompileEmbedded("Molten.Graphics.Assets.gbuffer.mfx");
+            ShaderCompileResult result = LoadEmbeddedShader("Molten.Graphics.Assets.gbuffer.mfx", includeAssembly);
             StandardMeshMaterial = result["material", "gbuffer"] as Material;
             StandardMeshMaterial_NoNormalMap = result["material", "gbuffer-sans-nmap"] as Material;
+        }
+
+        internal ShaderCompileResult LoadEmbeddedShader(string namespaceFilePath, Assembly assembly = null)
+        {
+            string src = "";
+            assembly = assembly ?? this.GetType().Assembly;
+            using (Stream stream = EmbeddedResource.TryGetStream(namespaceFilePath))
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                    src = reader.ReadToEnd();
+            }
+
+            return ShaderCompiler.BuildShader(ref src, namespaceFilePath, HlslSourceType.EmbeddedFile, assembly);
         }
 
         public void DispatchCompute(IComputeTask task, int x, int y, int z)
