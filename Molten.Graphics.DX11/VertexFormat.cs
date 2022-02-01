@@ -88,6 +88,8 @@ namespace Molten.Graphics
 
                     vf.SizeOf += CalculateElement(att.Type, ref el);
                 }
+
+                eCount++;
             }
 
             return vf;

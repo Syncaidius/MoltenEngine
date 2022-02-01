@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml;
-using Buffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics
 {
@@ -285,7 +284,7 @@ namespace Molten.Graphics
             {
                 string nodeName = node.Name.ToLower();
                 ShaderNodeParser parser = null;
-                if (context.Compiler.Parsers.TryGetValue(nodeName, out parser))
+                if (context.Compiler.NodeParsers.TryGetValue(nodeName, out parser))
                 {
                     parser.Parse(foundation, context, node);
                 }

@@ -20,7 +20,7 @@ namespace Molten.Graphics
                 for (int i = 0; i < material.Samplers.Length; i++)
                     pass.Samplers[i] = material.Samplers[i];
 
-                context.Compiler.ParseNode(pass, node, context);
+                context.Parser.ParseNode(pass, node, context);
                 material.AddPass(pass);
 
                 return new NodeParseResult(NodeParseResultType.Success);

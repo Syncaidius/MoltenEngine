@@ -75,7 +75,7 @@ namespace Molten
                 CacheByID.Add(value.EOID, value);
             }
 
-            return default(V);
+            return value;
         }
     }
 }

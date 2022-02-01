@@ -87,7 +87,7 @@ namespace Molten.Graphics
         {
             string src = "";
             assembly = assembly ?? this.GetType().Assembly;
-            using (Stream stream = EmbeddedResource.TryGetStream(namespaceFilePath))
+            using (Stream stream = EmbeddedResource.TryGetStream(namespaceFilePath, assembly))
             {
                 using (StreamReader reader = new StreamReader(stream))
                     src = reader.ReadToEnd();

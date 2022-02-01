@@ -26,12 +26,7 @@ namespace Molten.Graphics
 
             string[] lines = src.Split('\n');
             LineCount = lines.Length;
-            _src = $"#line 1 {filename}\n{src}\n#line {LineCount + 1} {filename}";
-        }
-
-        public override string ToString()
-        {
-            return _src;
+            _src = $"#line 1 \"{filename}\"\n{src}\n#line {LineCount + 1} \"{filename}\"";
         }
 
         protected override void OnDispose()

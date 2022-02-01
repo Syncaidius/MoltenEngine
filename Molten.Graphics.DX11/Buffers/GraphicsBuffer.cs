@@ -15,7 +15,6 @@ namespace Molten.Graphics
     internal unsafe partial class GraphicsBuffer : PipeBindableResource<ID3D11Buffer>
     {
         ID3D11Buffer* _native;
-        BufferDesc _desc;
         uint _ringPos;
 
         internal BufferDesc Description;
@@ -64,6 +63,7 @@ namespace Molten.Graphics
             Description.Usage = Usage.UsageDefault;
             Description.BindFlags = (uint)flags;
             Description.MiscFlags = (uint)opFlags;
+            Description.ByteWidth = byteCapacity;
 
             // Buffer mode.
             switch (Mode)
@@ -116,23 +116,23 @@ namespace Molten.Graphics
             if (Mode == BufferMode.Immutable && initialData == null)
                 throw new ArgumentNullException("Initial data cannot be null when buffer mode is Immutable.");
 
-            uint byteCount = _desc.ByteWidth;
+            uint numBytes = Description.ByteWidth;
 
-            SubresourceData ssd = new SubresourceData(null, byteCount, byteCount);
+            SubresourceData ssd = new SubresourceData(null, numBytes, numBytes);
             if (initialData != null)
                 EngineUtil.PinObject(initialData, (ptr) => ssd.PSysMem = ptr.ToPointer());
             else
-                ssd = new SubresourceData(null, byteCount, byteCount);
+                ssd = new SubresourceData(null, numBytes, numBytes);
 
-            Device.NativeDevice->CreateBuffer(ref _desc, ref ssd, ref _native);
+            Device.NativeDevice->CreateBuffer(ref Description, ref ssd, ref _native);
 
-            Device.AllocateVRAM(byteCount);
+            Device.AllocateVRAM(numBytes);
 
             // Allocate the first segment.
             _firstSegment = Device.GetBufferSegment();
             _firstSegment.Buffer = this;
             _firstSegment.ByteOffset = 0;
-            _firstSegment.ByteCount = byteCount;
+            _firstSegment.ByteCount = numBytes;
             _firstSegment.IsFree = true;
 
             _freeSegments.Add(_firstSegment);
@@ -430,10 +430,9 @@ namespace Molten.Graphics
             CreateResources(segment.Stride, segment.ByteOffset, segment.ElementCount, segment.SRV, segment.UAV);
         }
 
-        internal BufferSegment Allocate<T>(uint count) where T : struct
+        internal BufferSegment Allocate<T>(uint count) where T : unmanaged
         {
-            Type allocatedType = typeof(T);
-            uint stride = (uint)Marshal.SizeOf(allocatedType);
+            uint stride = (uint)sizeof(T);
             OnValidateAllocationStride(stride);
 
             BufferSegment seg;
@@ -514,7 +513,7 @@ namespace Molten.Graphics
         /// <param name="existing">The existing segment to be updated or reallocated if neccessary.</param>
         /// <param name="count">The new element count.</param>
         /// <returns></returns>
-        internal BufferSegment UpdateAllocation<T>(BufferSegment existing, uint count) where T : struct
+        internal BufferSegment UpdateAllocation<T>(BufferSegment existing, uint count) where T : unmanaged
         {
             uint newStride = (uint)Marshal.SizeOf(typeof(T));
             OnValidateAllocationStride(newStride);

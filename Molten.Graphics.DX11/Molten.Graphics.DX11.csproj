@@ -15,6 +15,28 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\gbuffer.mfx" />
+    <None Remove="Assets\gbuffer_common.mfx" />
+    <None Remove="Assets\gbuffer_compose.mfx" />
+    <None Remove="Assets\light_common.mfx" />
+    <None Remove="Assets\light_point.mfx" />
+    <None Remove="Assets\skybox.mfx" />
+    <None Remove="Assets\sprite.mfx" />
+    <None Remove="Assets\sprite_common.mfx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\gbuffer.mfx" />
+    <EmbeddedResource Include="Assets\gbuffer_common.mfx" />
+    <EmbeddedResource Include="Assets\gbuffer_compose.mfx" />
+    <EmbeddedResource Include="Assets\light_common.mfx" />
+    <EmbeddedResource Include="Assets\light_point.mfx" />
+    <EmbeddedResource Include="Assets\skybox.mfx" />
+    <EmbeddedResource Include="Assets\sprite.mfx" />
+    <EmbeddedResource Include="Assets\sprite_common.mfx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Silk.NET.Direct3D.Compilers" Version="2.12.0" />
     <PackageReference Include="Silk.NET.Direct3D11" Version="2.12.0" />
   </ItemGroup>

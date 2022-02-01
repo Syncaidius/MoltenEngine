@@ -31,11 +31,11 @@ namespace Molten.Graphics
 
         string[] _newLineSeparator = { "\n", Environment.NewLine };
         string[] _includeReplacements = { "#include", "<", ">", "\"" };
-        static Regex _includeCommas = new Regex("(#include) \"([.+])\"");
+        static Regex _includeCommas = new Regex("(#include) \"([^\"]*)");
         static Regex _includeBrackets = new Regex("(#include) <([.+])>");
 
 
-        Dictionary<string, HlslParser> _subCompilers;
+        Dictionary<string, HlslParser> _shaderParsers;
         Dictionary<string, HlslSource> _sources;
 
         Logger _log;
@@ -59,7 +59,7 @@ namespace Molten.Graphics
 
             _renderer = renderer;
             _log = log;
-            _subCompilers = new Dictionary<string, HlslParser>();
+            _shaderParsers = new Dictionary<string, HlslParser>();
             _sources = new Dictionary<string, HlslSource>();
 
             Dxc = DXC.GetApi();
@@ -67,13 +67,13 @@ namespace Molten.Graphics
             _compiler = CreateDxcInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
 
             // Detect and instantiate node parsers
-            Parsers = new Dictionary<string, ShaderNodeParser>();
+            NodeParsers = new Dictionary<string, ShaderNodeParser>();
             IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser>();
             foreach (Type t in parserTypes)
             {
                 ShaderNodeParser parser = Activator.CreateInstance(t, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, null, null) as ShaderNodeParser;
                 foreach (string nodeName in parser.SupportedNodes)
-                    Parsers.Add(nodeName, parser);
+                    NodeParsers.Add(nodeName, parser);
             }
 
             AddSubCompiler<MaterialParser>("material");
@@ -157,7 +157,7 @@ namespace Molten.Graphics
             Type t = typeof(T);
             BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
             HlslParser sub = Activator.CreateInstance(t, bindFlags,  null, null, null) as HlslParser;
-            _subCompilers.Add(nodeName, sub);
+            _shaderParsers.Add(nodeName, sub);
         }
 
         internal ShaderCompileResult BuildShader(ref string source, string filename, HlslSourceType type, Assembly assembly)
@@ -166,7 +166,7 @@ namespace Molten.Graphics
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>();
             string finalSource = source;
 
-            foreach (string nodeName in _subCompilers.Keys)
+            foreach (string nodeName in _shaderParsers.Keys)
             {
                 List<string> nodeHeaders = GetHeaders(nodeName, source);
                 if (nodeHeaders.Count > 0)
@@ -191,7 +191,7 @@ namespace Molten.Graphics
             }
 
 
-            context.Source = new HlslSource(filename, ref source, type);
+            context.Source = new HlslSource(filename, ref finalSource, type, assembly);
 
             // See for info: https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-appendix-pre-include
             // Parse #include <file> - Only checks INCLUDE path and "in paths specified by the /I compiler option,
@@ -203,11 +203,12 @@ namespace Molten.Graphics
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
             foreach (string nodeName in headers.Keys)
             {
-                HlslParser com = _subCompilers[nodeName];
+                HlslParser parser = _shaderParsers[nodeName];
                 List<string> nodeHeaders = headers[nodeName];
                 foreach (string header in nodeHeaders)
                 {
-                    List<IShader> parseResult = com.Parse(context, _renderer, header);
+                    context.Parser = parser;
+                    List<IShader> parseResult = parser.Parse(context, _renderer, header);
 
                     // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
                     foreach (HlslShader shader in parseResult)
@@ -219,7 +220,7 @@ namespace Molten.Graphics
 
             string msgPrefix = string.IsNullOrWhiteSpace(filename) ? "" : $"{filename}: ";
             foreach (HlslCompilerContext.Message msg in context.Messages)
-                _log.WriteLine($"{msgPrefix}{msg}");
+                _log.WriteLine($"{msgPrefix}{msg.Text}");
 
             return context.Result;
         }
@@ -388,6 +389,6 @@ namespace Molten.Graphics
 
         internal IDxcUtils* Utils => _utils;
 
-        internal Dictionary<string, ShaderNodeParser> Parsers;
+        internal Dictionary<string, ShaderNodeParser> NodeParsers;
     }
 }

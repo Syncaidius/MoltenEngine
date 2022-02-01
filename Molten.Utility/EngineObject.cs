@@ -26,7 +26,7 @@ namespace Molten
         public EngineObject()
         {
             EOID = ((ulong)Thread.CurrentThread.ManagedThreadId << 32) | _idCounter++;
-            Name = $"EO {EOID}";
+            Name = $"EO {EOID} - {this.GetType().Name}";
         }
 
         public override string ToString()
