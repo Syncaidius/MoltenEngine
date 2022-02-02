@@ -23,11 +23,23 @@ namespace Molten.Graphics
             ParentNamespace = nameSpace;
             Dependencies = new List<HlslSource>();
             SourceType = type;
-            ParentAssembly = type == HlslSourceType.EmbeddedFile ? assembly : null; 
+            ParentAssembly = assembly;
+            FullFilename = filename;
 
             string[] lines = src.Split('\n');
             LineCount = lines.Length;
             _src = $"#line 1 \"{filename}\"\n{src}\n#line {LineCount + 1} \"{filename}\"";
+
+            if (type == HlslSourceType.EmbeddedFile)
+            {
+                if (assembly != null)
+                {
+                    if (string.IsNullOrWhiteSpace(nameSpace))
+                        FullFilename = $"{filename}, {assembly}";
+                    else
+                        FullFilename = $"{nameSpace}.{filename}, {assembly}";
+                }
+            }
         }
 
         protected override void OnDispose()
@@ -82,6 +94,8 @@ namespace Molten.Graphics
         internal Assembly ParentAssembly { get; }
 
         internal string ParentNamespace { get; }
+
+        internal string FullFilename { get; }
         
         public int LineCount { get; }
     }

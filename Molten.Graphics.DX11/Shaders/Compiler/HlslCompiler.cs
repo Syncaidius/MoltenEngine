@@ -1,6 +1,8 @@
-﻿using Silk.NET.Core.Native;
+﻿using Molten.Collections;
+using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,7 +38,7 @@ namespace Molten.Graphics
 
 
         Dictionary<string, HlslParser> _shaderParsers;
-        Dictionary<string, HlslSource> _sources;
+        ConcurrentDictionary<string, HlslSource> _sources;
 
         Logger _log;
         RendererDX11 _renderer;
@@ -60,7 +62,7 @@ namespace Molten.Graphics
             _renderer = renderer;
             _log = log;
             _shaderParsers = new Dictionary<string, HlslParser>();
-            _sources = new Dictionary<string, HlslSource>();
+            _sources = new ConcurrentDictionary<string, HlslSource>();
 
             Dxc = DXC.GetApi();
             _utils = CreateDxcInstance<IDxcUtils>(CLSID_DxcUtils, IDxcUtils.Guid);
@@ -194,14 +196,7 @@ namespace Molten.Graphics
             }
 
 
-            context.Source = new HlslSource(filename, ref finalSource, type, assembly, nameSpace);
-
-            // See for info: https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-appendix-pre-include
-            // Parse #include <file> - Only checks INCLUDE path and "in paths specified by the /I compiler option,
-            // in the order in which they are listed."
-            // Parse #Include "file" - Above + local source file directory
-            ParseSource(context, context.Source, _includeBrackets, false, assembly);
-            ParseSource(context, context.Source, _includeCommas, true, assembly); 
+            context.Source = ParseSource(context, filename, ref finalSource, type, assembly, nameSpace);
 
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
             foreach (string nodeName in headers.Keys)
@@ -253,7 +248,22 @@ namespace Molten.Graphics
             return false;
         }
 
-        private void ParseSource(HlslCompilerContext context, HlslSource source, Regex regex, bool allowRelativePath, Assembly assembly)
+        private HlslSource ParseSource(HlslCompilerContext context, string filename, ref string hlsl, HlslSourceType type, Assembly assembly, string nameSpace)
+        {
+            HlslSource source = new HlslSource(filename, ref hlsl, type, assembly, nameSpace);
+
+            // See for info: https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-appendix-pre-include
+            // Parse #include <file> - Only checks INCLUDE path and "in paths specified by the /I compiler option,
+            // in the order in which they are listed."
+            // Parse #Include "file" - Above + local source file directory
+            ParseDependencies(context, source, _includeCommas, true, assembly);
+            ParseDependencies(context, source, _includeBrackets, false, assembly);
+
+            _sources.TryAdd(source.FullFilename, source);
+            return source;
+        }
+
+        private void ParseDependencies(HlslCompilerContext context, HlslSource source, Regex regex, bool allowRelativePath, Assembly assembly)
         {
             HashSet<string> dependencies = new HashSet<string>();
             Match m = regex.Match(source.SourceCode);
@@ -274,7 +284,7 @@ namespace Molten.Graphics
                 string depSource = "";
                 Stream fStream = null;
                 string parsedFilename = null;
-                HlslSourceType depType = HlslSourceType.StandardFile;
+                HlslSourceType depType = source.SourceType;
 
                 if (allowRelativePath)
                 {
@@ -333,13 +343,8 @@ namespace Molten.Graphics
 
                     fStream.Dispose();
 
-                    HlslSource dependency = new HlslSource(depFilename, ref depSource, depType, assembly, source.ParentNamespace);
-                    ParseSource(context, dependency, _includeBrackets, false, assembly);
-                    ParseSource(context, dependency, _includeCommas, true, assembly);
-
+                    HlslSource dependency = ParseSource(context, depFilename, ref depSource, depType, assembly, source.ParentNamespace);
                     source.Dependencies.Add(dependency);
-                    _sources.Add(parsedFilename, dependency);
-
                     dependencies.Add(depFilename);
                 }
                 else
@@ -347,6 +352,8 @@ namespace Molten.Graphics
                     context.AddError($"{source.Filename}: The include '{depFilename}' was not found");
                 }
 
+                // Remove the current #include delcaration
+                source.SourceCode = source.SourceCode.Replace(m.Value, "");
                 m = m.NextMatch();
             }
         }
