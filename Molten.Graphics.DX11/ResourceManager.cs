@@ -221,7 +221,7 @@ namespace Molten.Graphics
                 type = HlslSourceType.StandardFile;
             }
 
-            return _renderer.ShaderCompiler.BuildShader(ref source, filename, HlslSourceType.StandardFile, null);
+            return _renderer.ShaderCompiler.BuildShader(ref source, filename, HlslSourceType.StandardFile, null, null);
         }
     }
 }

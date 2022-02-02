@@ -31,7 +31,7 @@ namespace Molten.Graphics
 
         string[] _newLineSeparator = { "\n", Environment.NewLine };
         string[] _includeReplacements = { "#include", "<", ">", "\"" };
-        static Regex _includeCommas = new Regex("(#include) \"([^\"]*)");
+        static Regex _includeCommas = new Regex("(#include) \"([^\"]*)\"");
         static Regex _includeBrackets = new Regex("(#include) <([.+])>");
 
 
@@ -160,11 +160,14 @@ namespace Molten.Graphics
             _shaderParsers.Add(nodeName, sub);
         }
 
-        internal ShaderCompileResult BuildShader(ref string source, string filename, HlslSourceType type, Assembly assembly)
+        internal ShaderCompileResult BuildShader(ref string source, string filename, HlslSourceType type, Assembly assembly, string nameSpace)
         {
             HlslCompilerContext context = new HlslCompilerContext(this);
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>();
             string finalSource = source;
+
+            if (assembly != null && string.IsNullOrWhiteSpace(nameSpace))
+                throw new InvalidOperationException("nameSpace parameter cannot be null or empty when assembly parameter is set");
 
             foreach (string nodeName in _shaderParsers.Keys)
             {
@@ -191,14 +194,14 @@ namespace Molten.Graphics
             }
 
 
-            context.Source = new HlslSource(filename, ref finalSource, type, assembly);
+            context.Source = new HlslSource(filename, ref finalSource, type, assembly, nameSpace);
 
             // See for info: https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-appendix-pre-include
             // Parse #include <file> - Only checks INCLUDE path and "in paths specified by the /I compiler option,
             // in the order in which they are listed."
             // Parse #Include "file" - Above + local source file directory
-            ParseSourceDependencies(context, _includeBrackets, false, assembly);
-            ParseSourceDependencies(context, _includeCommas, true, assembly); 
+            ParseSource(context, context.Source, _includeBrackets, false, assembly);
+            ParseSource(context, context.Source, _includeCommas, true, assembly); 
 
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
             foreach (string nodeName in headers.Keys)
@@ -239,47 +242,64 @@ namespace Molten.Graphics
             return headers;
         }        
 
-        private void ParseSourceDependencies(HlslCompilerContext context, Regex regex, bool allowRelativePath, Assembly assembly)
+        private bool TryGetDependency(ref string path, HlslCompilerContext context)
+        {
+            if (_sources.TryGetValue(path, out HlslSource dependency))
+            {
+                context.Source.Dependencies.Add(dependency);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void ParseSource(HlslCompilerContext context, HlslSource source, Regex regex, bool allowRelativePath, Assembly assembly)
         {
             HashSet<string> dependencies = new HashSet<string>();
-            Match m = regex.Match(context.Source.SourceCode);
+            Match m = regex.Match(source.SourceCode);
             assembly = assembly ?? _defaultIncludeAssembly;
 
             while (m.Success)
             {
-                string depFn = m.Value.ToLower();
+                string depFilename = m.Value.ToLower();
                 foreach (string rp in _includeReplacements)
-                    depFn = depFn.Replace(rp, "");
+                    depFilename = depFilename.Replace(rp, "");
 
-                depFn = depFn.Trim();
+                depFilename = depFilename.Trim();
 
-                HlslSource dependency = null;
+                // Don't parse the same include twice. TODO improve this to prevent circular includes with more than 2 files involved.
+                if (dependencies.Contains(depFilename))
+                    continue;
+
                 string depSource = "";
                 Stream fStream = null;
-                Assembly depAssembly = null;
                 string parsedFilename = null;
                 HlslSourceType depType = HlslSourceType.StandardFile;
 
                 if (allowRelativePath)
                 {
-                    if (context.Source.SourceType == HlslSourceType.StandardFile)
+                    if (source.SourceType == HlslSourceType.StandardFile)
                     {
                         // If the source came from a standard file, check it's local directory for the include.
-                        parsedFilename = $"{context.Source.Filename}/{depFn}";
-                        if (TryAddDependency(ref parsedFilename, context))
+                        parsedFilename = $"{source.Filename}/{depFilename}";
+                        if (TryGetDependency(ref parsedFilename, context))
                             continue;
 
                         if (File.Exists(parsedFilename))
                             fStream = new FileStream(parsedFilename, FileMode.Open, FileAccess.Read);
                     }
-                    else if (context.Source.SourceType == HlslSourceType.EmbeddedFile)
+                    else if (source.SourceType == HlslSourceType.EmbeddedFile)
                     {
                         // Check parent assembly instead, if set.
-                        Assembly parentAssembly = context.Source.ParentAssembly;
+                        Assembly parentAssembly = source.ParentAssembly;
                         if (parentAssembly != null)
                         {
-                            parsedFilename = $"{depFn},{parentAssembly.FullName}";
-                            fStream = EmbeddedResource.TryGetStream(depFn, parentAssembly);
+                            string embeddedName = $"{source.ParentNamespace}.{depFilename}";
+                            parsedFilename = $"{embeddedName}, {parentAssembly.FullName}";
+                            if (TryGetDependency(ref parsedFilename, context))
+                                continue;
+
+                            fStream = EmbeddedResource.TryGetStream(embeddedName, parentAssembly);
                         }
                     }
                 }
@@ -287,24 +307,21 @@ namespace Molten.Graphics
                 // Check embedded files or the default include path
                 if (fStream == null)
                 {
-                    parsedFilename = $"{depFn},{assembly.FullName}";
-                    if (TryAddDependency(ref parsedFilename, context))
+                    parsedFilename = $"{source.ParentNamespace}.{depFilename},{assembly.FullName}";
+                    if (TryGetDependency(ref parsedFilename, context))
                         continue;
 
-                    fStream = EmbeddedResource.TryGetStream(depFn, assembly);
+                    fStream = EmbeddedResource.TryGetStream(depFilename, assembly);
 
+                    // Try default include path instead.
                     if (fStream == null)
                     {
-                        parsedFilename = $"{_defaultIncludePath}/{depFn}";
-                        if (TryAddDependency(ref parsedFilename, context))
+                        parsedFilename = $"{_defaultIncludePath}/{depFilename}";
+                        if (TryGetDependency(ref parsedFilename, context))
                             continue;
 
                         if (File.Exists(parsedFilename))
                             fStream = new FileStream(parsedFilename, FileMode.Open, FileAccess.Read);
-                    }
-                    else
-                    {
-                        depAssembly = assembly;
                     }
                 }
 
@@ -316,30 +333,22 @@ namespace Molten.Graphics
 
                     fStream.Dispose();
 
-                    dependency = new HlslSource(parsedFilename, ref depSource, depType, depAssembly);
-                    context.Source.Dependencies.Add(dependency);
+                    HlslSource dependency = new HlslSource(depFilename, ref depSource, depType, assembly, source.ParentNamespace);
+                    ParseSource(context, dependency, _includeBrackets, false, assembly);
+                    ParseSource(context, dependency, _includeCommas, true, assembly);
+
+                    source.Dependencies.Add(dependency);
                     _sources.Add(parsedFilename, dependency);
 
-                    dependencies.Add(parsedFilename);
+                    dependencies.Add(depFilename);
                 }
                 else
                 {
-                    context.AddError($"{context.Source.Filename}: The include '{depFn}' was not found");
+                    context.AddError($"{source.Filename}: The include '{depFilename}' was not found");
                 }
 
                 m = m.NextMatch();
             }
-        }
-
-        private bool TryAddDependency(ref string path, HlslCompilerContext context)
-        {
-            if (_sources.TryGetValue(path, out HlslSource dependency))
-            {
-                context.Source.Dependencies.Add(dependency);
-                return true;
-            }
-
-            return false;
         }
 
         /// <summary>Compiles HLSL source code and outputs the result. Returns true if successful, or false if there were errors.</summary>

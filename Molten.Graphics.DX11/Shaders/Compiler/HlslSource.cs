@@ -17,9 +17,10 @@ namespace Molten.Graphics
         IDxcBlobEncoding* _blob;
         Buffer _buffer;
 
-        internal HlslSource(string filename, ref string src, HlslSourceType type, Assembly assembly = null)
+        internal HlslSource(string filename, ref string src, HlslSourceType type, Assembly assembly = null, string nameSpace = null)
         {
             Filename = filename;
+            ParentNamespace = nameSpace;
             Dependencies = new List<HlslSource>();
             SourceType = type;
             ParentAssembly = type == HlslSourceType.EmbeddedFile ? assembly : null; 
@@ -80,6 +81,8 @@ namespace Molten.Graphics
 
         internal Assembly ParentAssembly { get; }
 
+        internal string ParentNamespace { get; }
+        
         public int LineCount { get; }
     }
 }

@@ -78,22 +78,22 @@ namespace Molten.Graphics
 
         private void LoadDefaultShaders(Assembly includeAssembly)
         {
-            ShaderCompileResult result = LoadEmbeddedShader("Molten.Graphics.Assets.gbuffer.mfx", includeAssembly);
+            ShaderCompileResult result = LoadEmbeddedShader("Molten.Graphics.Assets", "gbuffer.mfx", includeAssembly);
             StandardMeshMaterial = result["material", "gbuffer"] as Material;
             StandardMeshMaterial_NoNormalMap = result["material", "gbuffer-sans-nmap"] as Material;
         }
 
-        internal ShaderCompileResult LoadEmbeddedShader(string namespaceFilePath, Assembly assembly = null)
+        internal ShaderCompileResult LoadEmbeddedShader(string nameSpace, string filename, Assembly assembly = null)
         {
             string src = "";
             assembly = assembly ?? this.GetType().Assembly;
-            using (Stream stream = EmbeddedResource.TryGetStream(namespaceFilePath, assembly))
+            using (Stream stream = EmbeddedResource.TryGetStream($"{nameSpace}.{filename}", assembly))
             {
                 using (StreamReader reader = new StreamReader(stream))
                     src = reader.ReadToEnd();
             }
 
-            return ShaderCompiler.BuildShader(ref src, namespaceFilePath, HlslSourceType.EmbeddedFile, assembly);
+            return ShaderCompiler.BuildShader(ref src, filename, HlslSourceType.EmbeddedFile, assembly, nameSpace);
         }
 
         public void DispatchCompute(IComputeTask task, int x, int y, int z)
