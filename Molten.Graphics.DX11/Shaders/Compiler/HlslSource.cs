@@ -48,18 +48,18 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _blob);
         }
 
-        internal Buffer BuildFinalSource(HlslCompiler compiler)
+        /// <summary>
+        /// (Re)builds the HLSL source code in the current <see cref="HlslSource"/> instance. 
+        /// This generates a (new) <see cref="Buffer"/> object.
+        /// </summary>
+        /// <param name="compiler"></param>
+        /// <returns></returns>
+        internal Buffer BuildSource(HlslCompiler compiler)
         {
             if (_blob != null)
-                return _buffer;
+                SilkUtil.ReleasePtr(ref _blob);
 
-            string finalSrc = "";
-            foreach (HlslSource src in Dependencies)
-                finalSrc += src.SourceCode;
-
-            finalSrc += _src;
-
-            NumBytes = (uint)(sizeof(char) * finalSrc.Length);
+            NumBytes = (uint)(sizeof(char) * SourceCode.Length);
             void* ptrSource = (void*)SilkMarshal.StringToPtr(_src, NativeStringEncoding.LPWStr);
             compiler.Utils->CreateBlob(ptrSource, NumBytes, DXC.CPUtf16, ref _blob);
 

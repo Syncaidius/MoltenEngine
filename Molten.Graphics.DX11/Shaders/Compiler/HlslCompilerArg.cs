@@ -50,5 +50,56 @@ namespace Molten.Graphics
         SkipValidation = 18,
 
         SkipOptimizations = 19,
+
+        EntryPoint = 20,
+
+        TargetProfile = 21,
+
+        NoLogo = 22,
+
+        /// <summary>
+        /// Don't emit warnings for unused driver arguments
+        /// </summary>
+        IgnoreUnusedArgs = 23,
+
+        OutputAssemblyFile = 24,
+
+        OutputDebugFile = 25,
+
+        OutputErrorFile = 26,
+
+        OutputHeaderFile = 27,
+
+        OutputObjectFile = 28,
+
+        /// <summary>
+        /// Output hexadecimal literals
+        /// </summary>
+        OutputHexLiterals = 29,
+
+        /// <summary>
+        /// Output instruction numbers in assembly listings
+        /// </summary>
+        OutputInstructionNumbers = 30,
+
+        NoWarnings = 31,
+
+        /// <summary>
+        /// Output instruction byte offsets in assembly listings
+        /// </summary>
+        OutputInstructionOffsets = 32,
+
+        StripDebug = 33,
+
+        StripPrivate = 34,
+
+        StripReflection = 35,
+
+        StripRootSignature = 36,
+
+        /// <summary>
+        /// Send pre-processing results to file. This argument must be used alone.
+        /// </summary>
+        PreProcessToFile = 37,
     }
 }

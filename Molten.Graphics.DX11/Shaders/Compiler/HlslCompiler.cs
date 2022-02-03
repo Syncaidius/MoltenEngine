@@ -168,6 +168,16 @@ namespace Molten.Graphics
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>();
             string finalSource = source;
 
+            // Set default flags
+#if RELEASE
+            context.Args.Add(HlslCompilerArg.OptimizationLevel3);
+            context.Args.Add(HlslCompilerArg.StripDebug);
+            context.Args.Add(HlslCompilerArg.StripReflection);
+#else
+            context.Args.Set(HlslCompilerArg.WarningsAreErrors);
+            context.Args.Set(HlslCompilerArg.OptimizationLevel0);
+#endif
+
             if (assembly != null && string.IsNullOrWhiteSpace(nameSpace))
                 throw new InvalidOperationException("nameSpace parameter cannot be null or empty when assembly parameter is set");
 
@@ -381,14 +391,16 @@ namespace Molten.Graphics
             // a shader with the same entry-point name is already loaded in the context.
             if (!context.HlslShaders.TryGetValue(entryPoint, out result))
             {
-                string strProfile = ShaderModel.Model5_0.ToProfile(type);
+                context.Args.SetEntryPoint(entryPoint);
+                context.Args.SetShaderProfile(ShaderModel.Model5_0, type);
+
                 string argString = context.Args.ToString();
                 uint argCount = context.Args.Count;
                 char** ptrArgString = context.Args.GetArgsPtr();
 
                 Guid dxcResultGuid = IDxcResult.Guid;
                 void* dxcResult;
-                Buffer srcBuffer = context.Source.BuildFinalSource(context.Compiler);
+                Buffer srcBuffer = context.Source.BuildSource(context.Compiler);
 
                 Native->Compile(&srcBuffer, ptrArgString, argCount, null, &dxcResultGuid, &dxcResult);
                 result = new HlslCompileResult(context, (IDxcResult*)dxcResult);

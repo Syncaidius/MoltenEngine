@@ -12,7 +12,8 @@ namespace Molten.Graphics
     /// See for argument details:
     /// https://github.com/microsoft/DirectXShaderCompiler/blob/master/include/dxc/Support/HLSLOptions.td
     /// See for important ones:
-    /// https://simoncoenen.com/blog/programming/graphics/DxcCompiling
+    /// <para>https://strontic.github.io/xcyclopedia/library/dxc.exe-0C1709D4E1787E3EB3E6A35C85714824.html</para>
+    /// <para>https://simoncoenen.com/blog/programming/graphics/DxcCompiling</para>
     /// </summary>
     internal unsafe class DxcArgumentBuilder
     {
@@ -38,11 +39,28 @@ namespace Molten.Graphics
             [HlslCompilerArg.SkipOptimizations] = DXC.ArgSkipOptimizations,
             [HlslCompilerArg.SkipValidation] = DXC.ArgSkipValidation,
             [HlslCompilerArg.WarningsAreErrors] = DXC.ArgWarningsAreErrors,
+            [HlslCompilerArg.IgnoreUnusedArgs] = "-Qunused-arguments",
+            [HlslCompilerArg.NoLogo] = "-nologo",
+            [HlslCompilerArg.OutputHexLiterals] = "-Lx",
+            [HlslCompilerArg.OutputInstructionNumbers] = "-Ni",
+            [HlslCompilerArg.NoWarnings] = "-no-warnings",
+            [HlslCompilerArg.OutputInstructionOffsets] = "-No",
+            [HlslCompilerArg.StripDebug] = "_Qstrip_debug",
+            [HlslCompilerArg.StripPrivate] = "-Qstrip_priv",
+            [HlslCompilerArg.StripReflection] = "-Qstrip_reflect",
+            [HlslCompilerArg.StripRootSignature] = "Qstrip_rootsignature"
         };
 
         static Dictionary<HlslCompilerArg, string> _parameterArgLookup = new Dictionary<HlslCompilerArg, string>()
         {
-
+            [HlslCompilerArg.EntryPoint] = "-E",
+            [HlslCompilerArg.TargetProfile] = "-T",
+            [HlslCompilerArg.OutputAssemblyFile] = "-Fc",
+            [HlslCompilerArg.OutputDebugFile] = "-Fd",
+            [HlslCompilerArg.OutputErrorFile] = "-Fe",
+            [HlslCompilerArg.OutputHeaderFile] = "-Fh",
+            [HlslCompilerArg.OutputObjectFile] = "-Fo",
+            [HlslCompilerArg.PreProcessToFile] = "-P",
         };
 
         Dictionary<HlslCompilerArg, string> _args;
@@ -54,20 +72,13 @@ namespace Molten.Graphics
             _context = context;
         }
 
-        internal bool Add(HlslCompilerArg arg)
+        internal bool Set(HlslCompilerArg arg)
         {
             // Ensure we're using a valid argument
             if (_argLookup.TryGetValue(arg, out string argString))
             {
-                if (!_args.ContainsKey(arg))
-                {
-                    _args[arg] = argString;
-                    return true;
-                }
-                else
-                {
-                    _context.AddError($"HLSL compiler argument '{arg}' has already been added. Arguments cannot be added twice.");
-                }
+                _args[arg] = argString;
+                return true;
             }
             else if (_parameterArgLookup.ContainsKey(arg))
             {
@@ -81,19 +92,12 @@ namespace Molten.Graphics
             return false;
         }
 
-        internal bool Add(HlslCompilerArg arg, string parameterValue)
+        internal bool Set(HlslCompilerArg arg, string parameterValue)
         {
             if (_parameterArgLookup.TryGetValue(arg, out string argString))
             {
-                if (!_args.ContainsKey(arg))
-                {
-                    _args[arg] = $"{argString} {parameterValue}";
-                    return true;
-                }
-                else
-                {
-                    _context.AddError($"HLSL compiler argument '{arg}' has already been added. Arguments cannot be added twice.");
-                }
+                _args[arg] = $"{argString} {parameterValue}";
+                return true;
             }
             else if (_argLookup.ContainsKey(arg))
             {
@@ -105,6 +109,17 @@ namespace Molten.Graphics
             }
 
             return false;
+        }
+
+        internal void SetEntryPoint(string entryPoint)
+        {
+            Set(HlslCompilerArg.EntryPoint, entryPoint);
+        }
+
+        internal void SetShaderProfile(ShaderModel model, ShaderType type)
+        {
+            string profile = model.ToProfile(type);
+            Set(HlslCompilerArg.TargetProfile, profile);
         }
 
         public override string ToString()

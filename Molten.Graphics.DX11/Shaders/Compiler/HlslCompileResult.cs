@@ -121,7 +121,7 @@ namespace Molten.Graphics
 
             void* ptrErrors = pErrorBlob->GetBufferPointer();
             nuint numBytes = pErrorBlob->GetBufferSize();
-            string strErrors = SilkMarshal.PtrToString((nint)ptrErrors);
+            string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, NativeStringEncoding.LPWStr);
 
             string[] errors = strErrors.Split('\r', '\n');
             for (int i = 0; i < errors.Length; i++)
