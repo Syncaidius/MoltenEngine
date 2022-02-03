@@ -17,7 +17,8 @@ namespace Molten.Graphics
         IDxcBlobEncoding* _blob;
         Buffer _buffer;
 
-        internal HlslSource(string filename, ref string src, HlslSourceType type, Assembly assembly = null, string nameSpace = null)
+        internal HlslSource(string filename, ref string src, HlslSourceType type, int originalLineCount,
+            Assembly assembly = null, string nameSpace = null)
         {
             Filename = filename;
             ParentNamespace = nameSpace;
@@ -28,7 +29,7 @@ namespace Molten.Graphics
 
             string[] lines = src.Split('\n');
             LineCount = lines.Length;
-            _src = $"#line 1 \"{filename}\"\n{src}\n#line {LineCount + 1} \"{filename}\"";
+            _src = $"#line 1 \"{filename}\"\n{src}\n#line {originalLineCount} \"{filename}\"";
 
             if (type == HlslSourceType.EmbeddedFile)
             {

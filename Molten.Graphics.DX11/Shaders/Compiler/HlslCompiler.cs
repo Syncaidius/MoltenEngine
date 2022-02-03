@@ -171,6 +171,8 @@ namespace Molten.Graphics
             if (assembly != null && string.IsNullOrWhiteSpace(nameSpace))
                 throw new InvalidOperationException("nameSpace parameter cannot be null or empty when assembly parameter is set");
 
+            int originalLineCount = source.Split(_newLineSeparator, StringSplitOptions.None).Length;
+
             foreach (string nodeName in _shaderParsers.Keys)
             {
                 List<string> nodeHeaders = GetHeaders(nodeName, source);
@@ -196,7 +198,7 @@ namespace Molten.Graphics
             }
 
 
-            context.Source = ParseSource(context, filename, ref finalSource, type, assembly, nameSpace);
+            context.Source = ParseSource(context, filename, ref finalSource, type, assembly, nameSpace, originalLineCount);
 
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
             foreach (string nodeName in headers.Keys)
@@ -248,9 +250,10 @@ namespace Molten.Graphics
             return false;
         }
 
-        private HlslSource ParseSource(HlslCompilerContext context, string filename, ref string hlsl, HlslSourceType type, Assembly assembly, string nameSpace)
+        private HlslSource ParseSource(HlslCompilerContext context, string filename, ref string hlsl, 
+            HlslSourceType type, Assembly assembly, string nameSpace, int originalLineCount)
         {
-            HlslSource source = new HlslSource(filename, ref hlsl, type, assembly, nameSpace);
+            HlslSource source = new HlslSource(filename, ref hlsl, type, originalLineCount, assembly, nameSpace);
 
             // See for info: https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-appendix-pre-include
             // Parse #include <file> - Only checks INCLUDE path and "in paths specified by the /I compiler option,
@@ -260,6 +263,8 @@ namespace Molten.Graphics
             ParseDependencies(context, source, _includeBrackets, false, assembly);
 
             _sources.TryAdd(source.FullFilename, source);
+            string test = source.SourceCode;
+            int len = source.SourceCode.Length;
             return source;
         }
 
@@ -343,17 +348,21 @@ namespace Molten.Graphics
 
                     fStream.Dispose();
 
-                    HlslSource dependency = ParseSource(context, depFilename, ref depSource, depType, assembly, source.ParentNamespace);
+                    int depLineCount = depSource.Split(_newLineSeparator, StringSplitOptions.None).Length;
+                    HlslSource dependency = ParseSource(context, depFilename, ref depSource, depType, 
+                        assembly, source.ParentNamespace, depLineCount);
                     source.Dependencies.Add(dependency);
                     dependencies.Add(depFilename);
+
+                    // Remove the current #include delcaration
+                    source.SourceCode = source.SourceCode.Replace($"{m.Value};", dependency.SourceCode);
+                    source.SourceCode = source.SourceCode.Replace(m.Value, dependency.SourceCode);
                 }
                 else
                 {
                     context.AddError($"{source.Filename}: The include '{depFilename}' was not found");
                 }
 
-                // Remove the current #include delcaration
-                source.SourceCode = source.SourceCode.Replace(m.Value, "");
                 m = m.NextMatch();
             }
         }
