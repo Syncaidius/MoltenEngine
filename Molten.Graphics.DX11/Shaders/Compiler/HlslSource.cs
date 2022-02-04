@@ -60,7 +60,7 @@ namespace Molten.Graphics
                 SilkUtil.ReleasePtr(ref _blob);
 
             NumBytes = (uint)(sizeof(char) * SourceCode.Length);
-            void* ptrSource = (void*)SilkMarshal.StringToPtr(_src, NativeStringEncoding.LPWStr);
+            void* ptrSource = (void*)SilkMarshal.StringToPtr(_src, NativeStringEncoding.UTF8);
             compiler.Utils->CreateBlob(ptrSource, NumBytes, DXC.CPUtf16, ref _blob);
 
             _buffer = new Buffer()

@@ -21,6 +21,9 @@ namespace Molten.Graphics
         IDxcBlob* _byteCode;
         IDxcUtils* _utils;
         IDxcBlob* _pdbData;
+        List<OutKind> _availableOutputs;
+
+        internal IReadOnlyCollection<OutKind> AvailableOutputs { get; }
 
         internal HlslReflection Reflection { get; private set; }
 
@@ -33,6 +36,8 @@ namespace Molten.Graphics
         internal HlslCompileResult(HlslCompilerContext context, IDxcResult* result)
         {
             _utils = context.Compiler.Utils;
+            _availableOutputs = new List<OutKind>();
+            AvailableOutputs = _availableOutputs.AsReadOnly();
             Result = result;
 
             LoadByteCode();
@@ -40,15 +45,24 @@ namespace Molten.Graphics
             uint numOutputs = Result->GetNumOutputs();
             context.AddDebug($"{numOutputs} DXC outputs found: ");
 
-            for (uint i = 0; i < numOutputs; i++)
+            OutKind[] outTypes = Enum.GetValues<OutKind>();
+            foreach(OutKind kind in outTypes)
             {
-                OutKind o = Result->GetOutputByIndex(i);
+                if (kind == OutKind.OutNone)
+                    continue;
 
-                switch (o)
+                bool hasOutput = Result->HasOutput(kind) > 0;
+                if (!hasOutput)
+                    continue;
+
+                context.AddDebug($"\t{kind}");
+                _availableOutputs.Add(kind);
+
+                switch (kind)
                 {
                     default:
                     case OutKind.OutNone:
-                        context.AddWarning($"\t Unsupported output-kind in DXC result: {o}");
+                        context.AddWarning($"\t Unsupported output-kind in DXC result: {kind}");
                         break;
 
                     case OutKind.OutPdb: LoadPdbData(context); break;
@@ -58,7 +72,7 @@ namespace Molten.Graphics
                 }
             }
         }
-
+ 
         protected override void OnDispose()
         {
             Reflection.Dispose();
@@ -121,7 +135,7 @@ namespace Molten.Graphics
 
             void* ptrErrors = pErrorBlob->GetBufferPointer();
             nuint numBytes = pErrorBlob->GetBufferSize();
-            string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, NativeStringEncoding.LPWStr);
+            string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, NativeStringEncoding.UTF8);
 
             string[] errors = strErrors.Split('\r', '\n');
             for (int i = 0; i < errors.Length; i++)

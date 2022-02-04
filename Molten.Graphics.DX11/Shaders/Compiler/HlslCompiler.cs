@@ -175,7 +175,8 @@ namespace Molten.Graphics
             context.Args.Add(HlslCompilerArg.StripReflection);
 #else
             context.Args.Set(HlslCompilerArg.WarningsAreErrors);
-            context.Args.Set(HlslCompilerArg.OptimizationLevel0);
+            //context.Args.Set(HlslCompilerArg.OptimizationLevel0);
+            context.Args.Set(HlslCompilerArg.Debug);
 #endif
 
             if (assembly != null && string.IsNullOrWhiteSpace(nameSpace))
@@ -273,8 +274,6 @@ namespace Molten.Graphics
             ParseDependencies(context, source, _includeBrackets, false, assembly);
 
             _sources.TryAdd(source.FullFilename, source);
-            string test = source.SourceCode;
-            int len = source.SourceCode.Length;
             return source;
         }
 

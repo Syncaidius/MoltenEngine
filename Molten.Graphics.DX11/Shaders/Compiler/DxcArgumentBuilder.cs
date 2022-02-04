@@ -138,7 +138,7 @@ namespace Molten.Graphics
         public char** GetArgsPtr()
         {
             IReadOnlyList<string> args = _args.Values.ToList().AsReadOnly();
-            return (char**)SilkMarshal.StringArrayToPtr(args, NativeStringEncoding.LPWStr);
+            return (char**)SilkMarshal.StringArrayToPtr(args, NativeStringEncoding.UTF8);
         }
 
         internal uint Count => (uint)_args.Count;
