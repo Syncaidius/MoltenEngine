@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Molten.Font\Molten.Font.csproj" />
-    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
     <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />

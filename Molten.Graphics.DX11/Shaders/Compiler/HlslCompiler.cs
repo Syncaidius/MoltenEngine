@@ -170,13 +170,13 @@ namespace Molten.Graphics
 
             // Set default flags
 #if RELEASE
-            context.Args.Add(HlslCompilerArg.OptimizationLevel3);
-            context.Args.Add(HlslCompilerArg.StripDebug);
-            context.Args.Add(HlslCompilerArg.StripReflection);
+            context.Args.Add(ShaderCompilerArg.OptimizationLevel3);
+            context.Args.Add(ShaderCompilerArg.StripDebug);
+            context.Args.Add(ShaderCompilerArg.StripReflection);
 #else
-            context.Args.Set(HlslCompilerArg.WarningsAreErrors);
-            //context.Args.Set(HlslCompilerArg.OptimizationLevel0);
-            context.Args.Set(HlslCompilerArg.Debug);
+            context.Args.Set(ShaderCompilerArg.WarningsAreErrors);
+            //context.Args.Set(ShaderCompilerArg.OptimizationLevel0);
+            context.Args.Set(ShaderCompilerArg.Debug);
 #endif
 
             if (assembly != null && string.IsNullOrWhiteSpace(nameSpace))

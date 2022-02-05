@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 
-namespace Molten
+namespace Molten.IO
 {
     public static class EmbeddedResource
     {

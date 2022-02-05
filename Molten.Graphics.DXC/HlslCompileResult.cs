@@ -1,6 +1,5 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
-using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -110,6 +109,7 @@ namespace Molten.Graphics
 
         private void LoadReflection(HlslCompilerContext context)
         {
+            // TODO Re-implement this: https://posts.tanki.ninja/
             IDxcBlob* outData = null;
             DxcBuffer* reflectionBuffer = null;
             Guid iid = ID3D11ShaderReflection.Guid;

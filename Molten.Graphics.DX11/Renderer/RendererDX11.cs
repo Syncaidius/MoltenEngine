@@ -96,11 +96,6 @@ namespace Molten.Graphics
             return ShaderCompiler.BuildShader(ref src, filename, HlslSourceType.EmbeddedFile, assembly, nameSpace);
         }
 
-        public void DispatchCompute(IComputeTask task, int x, int y, int z)
-        {
-            Device.Dispatch(task as ComputeTask, (uint)x, (uint)y, (uint)z);
-        }
-
         internal void InitializeMainSurfaces(uint width, uint height)
         {
             CreateMainSurface("scene", MainSurfaceType.Scene, width, height, GraphicsFormat.R8G8B8A8_UNorm);

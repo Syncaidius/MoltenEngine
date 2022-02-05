@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Molten
+namespace Molten.IO
 {
     /// <summary>A reader which automatically flips the bytes of read types if the current system's endian architecture does not match the stream's endian format.</summary>
     public class EnhancedBinaryReader : BinaryReader

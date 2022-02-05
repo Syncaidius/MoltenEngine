@@ -43,8 +43,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Molten.Font\Molten.Font.csproj" />
+    <ProjectReference Include="..\Molten.Graphics.Common\Molten.Graphics.Common.csproj" />
+    <ProjectReference Include="..\Molten.Graphics.DXC\Molten.Graphics.DXC.csproj" />
     <ProjectReference Include="..\Molten.Graphics.DXGI\Molten.Graphics.DXGI.csproj" />
-    <ProjectReference Include="..\Molten.IO\Molten.IO.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
     <ProjectReference Include="..\Molten.Platform.Windows\Molten.Platform.Windows.csproj" />
     <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj" />

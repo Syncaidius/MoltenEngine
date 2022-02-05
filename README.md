@@ -20,28 +20,29 @@ See the following table for the per-platform support and status of each feature.
 Blank - Not Started\
 🚫 Not-applicable
 
-| Feature                | Windows    | Android  | Linux  | Mac  |
-| :---                   | :-------:  | :-----:  | :---:  | :-:  |
-| Renderer - OpenGL      | 🚧         | 🚫      | 🚧     | 🚧  |
-| Renderer - OpenES      |            |         | 🚫     | 🚫  |
-| Renderer - Vulkan      |            |          |        |      |
-| Renderer - DirectX 11  | 🚧        | 🚫       | 🚫    | 🚫   |
-| Renderer - DirectX 12  |            | 🚫       | 🚫    | 🚫   |
-| Audio - OpenAL         |            |          |        |      |
-| Audio - XAudio 2       |            | 🚫       | 🚫    | 🚫   |
-| Keyboard support       | ✔️          |          |        |      |
-| Mouse support          | ✔️          |          |        |      |
-| Touch support          |            | ✔️       |        |      |
-| Game pad support       | ✔️         |          |        |      |
-| Entity component system| ✔️         | ✔️       | ✔️     | ✔️    |
-| Example projects       | ✔️         |          |        |      |
-| Networking             | 🚧         |          |        |      |
-| 2D Physics engine      |            |          |        |      |
-| 3D Physics engine      |            |          |        |      |
-| Google Analytics       |            |          |        |      |
-| Google AdMob           |            |          |        |      |
-| Google Firebase        |            |          |        |      |
-| Tool - Content editor  |            |          |        |      |
+| Feature                    | Windows    | Android  | Linux  | Mac  |
+| :---                       | :-------:  | :-----:  | :---:  | :-:  |
+| Renderer - OpenGL          |            | 🚫       | 🚧     | 🚧   |
+| Renderer - OpenES          |            |          | 🚫     | 🚫   |
+| Renderer - Vulkan          |            |          |        |      |
+| Renderer - DirectX 11      | 🚧         | 🚫       | 🚫    | 🚫   |
+| Renderer - DirectX 12      |            | 🚫       | 🚫    | 🚫   |
+| Audio - OpenAL             |            |          |        |      |
+| Audio - XAudio 2           |            | 🚫       | 🚫    | 🚫   |
+| Keyboard support           | ✔️          |          |        |      |
+| Mouse support              | ✔️          |          |        |      |
+| Touch support              |            | ✔️       |        |      |
+| Game pad support           | ✔️         |          |        |      |
+| Entity component system    | ✔️         | ✔️       | ✔️     | ✔️    |
+| Example projects           | 🚧         |          |        |      |
+| Networking                 | 🚧         |          |        |      |
+| 2D Physics engine          |            |          |        |      |
+| 3D Physics engine          |            |          |        |      |
+| Google Analytics           |            |          |        |      |
+| Google AdMob               |            |          |        |      |
+| Google Firebase            |            |          |        |      |
+| Tool - Content editor      |            |          |        |      |
+| Tool - Scene editor        |            |          |        |      |
 
 
 # Renderer Feature Support
@@ -77,9 +78,12 @@ Blank - Not Started\
 | Render into WinForms   | ✔️         |         |        | 🚫          | 🚫    |
 | Render into WPF        |            |         |        | 🚫          | 🚫    |
 | Render into UWP        |            |         | 🚫    | 🚫          | 🚫    |
-|[Render into MAUI](https://docs.microsoft.com/en-us/dotnet/maui/what-is-maui)|            |         |       |             |       |
+|[Render into MAUI](https://docs.microsoft.com/en-us/dotnet/maui/what-is-maui) |            |         |       |             |       |
 | Render into Android UI | 🚫         | 🚫      |       | 🚫          | 🚫   |
 | Raytracing             | 🚫         |         | 🚫    | 🚫          |       |
+| HLSL Shader Compiler   | 🚧		  | 🚫      | 🚫    | 🚫          | 🚫   |
+| GLSL Shader Compiler   | 🚧		  |         |        |             |      |
+| SPIR-V Shader Compiler | 🚧		  |         |        |             |      |
 
 
 # Third-Party Libraries
