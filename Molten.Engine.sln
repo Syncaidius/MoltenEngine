@@ -49,9 +49,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{
 		Libraries\Windows\dxcompiler.dll = Libraries\Windows\dxcompiler.dll
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Graphics.DXC", "Molten.Graphics.DXC\Molten.Graphics.DXC.csproj", "{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Molten.Graphics.Common", "Molten.Graphics.Common\Molten.Graphics.Common.csproj", "{869485A0-B720-41EB-B441-CC24B1B22CA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Molten.Graphics.DXC", "Molten.Graphics.DXC\Molten.Graphics.DXC.csproj", "{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -353,30 +351,6 @@ Global
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Release|x64.Build.0 = Release|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Release|x86.ActiveCfg = Release|Any CPU
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD}.Release|x86.Build.0 = Release|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Android_Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Android_Debug|Any CPU.Build.0 = Debug|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Android_Debug|x64.ActiveCfg = Debug|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Android_Debug|x64.Build.0 = Debug|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Android_Debug|x86.ActiveCfg = Debug|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Android_Debug|x86.Build.0 = Debug|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Android_Release|Any CPU.ActiveCfg = Release|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Android_Release|Any CPU.Build.0 = Release|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Android_Release|x64.ActiveCfg = Release|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Android_Release|x64.Build.0 = Release|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Android_Release|x86.ActiveCfg = Release|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Android_Release|x86.Build.0 = Release|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Debug|x64.Build.0 = Debug|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Debug|x86.Build.0 = Debug|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Release|x64.ActiveCfg = Release|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Release|x64.Build.0 = Release|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Release|x86.ActiveCfg = Release|Any CPU
-		{869485A0-B720-41EB-B441-CC24B1B22CA6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -396,7 +370,6 @@ Global
 		{F221C1EE-8390-4B50-AD06-3370F35D8D40} = {7BD8F3B9-15EB-4FEF-B51E-083E34D62675}
 		{F1558767-164F-4FAF-A49A-F3E7E28D267C} = {940AA3BE-1CDB-4EFC-B811-6FA4D0562AB3}
 		{834B9685-B0BD-4CD9-A60C-7A4217CD85AD} = {0DBE30A6-8BCF-4916-AB5B-335ED3A3CD2B}
-		{869485A0-B720-41EB-B441-CC24B1B22CA6} = {0DBE30A6-8BCF-4916-AB5B-335ED3A3CD2B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC16AE48-8B66-43B4-9033-C95D608AA215}

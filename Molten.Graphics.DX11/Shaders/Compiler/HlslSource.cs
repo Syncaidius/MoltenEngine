@@ -11,36 +11,16 @@ using Buffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics
 {
-    internal unsafe class HlslSource : EngineObject
+    internal unsafe class HlslSource : ShaderSource<Buffer>
     {
-        string _src;
         IDxcBlobEncoding* _blob;
         Buffer _buffer;
 
-        internal HlslSource(string filename, ref string src, HlslSourceType type, int originalLineCount,
-            Assembly assembly = null, string nameSpace = null)
+        internal HlslSource(string filename, ref string src, ShaderCompileFlags type, int originalLineCount,
+            Assembly assembly = null, string nameSpace = null) :
+            base(filename, ref src, type, originalLineCount, assembly, nameSpace)
         {
-            Filename = filename;
-            ParentNamespace = nameSpace;
-            Dependencies = new List<HlslSource>();
-            SourceType = type;
-            ParentAssembly = assembly;
-            FullFilename = filename;
-
-            string[] lines = src.Split('\n');
-            LineCount = lines.Length;
-            _src = $"#line 1 \"{filename}\"\n{src}\n#line {originalLineCount} \"{filename}\"";
-
-            if (type == HlslSourceType.EmbeddedFile)
-            {
-                if (assembly != null)
-                {
-                    if (string.IsNullOrWhiteSpace(nameSpace))
-                        FullFilename = $"{filename}, {assembly}";
-                    else
-                        FullFilename = $"{nameSpace}.{filename}, {assembly}";
-                }
-            }
+            
         }
 
         protected override void OnDispose()
@@ -57,10 +37,10 @@ namespace Molten.Graphics
         internal Buffer BuildSource(HlslCompiler compiler)
         {
             if (_blob != null)
-                SilkUtil.ReleasePtr(ref _blob);
+                return _buffer;
 
             NumBytes = (uint)(sizeof(char) * SourceCode.Length);
-            void* ptrSource = (void*)SilkMarshal.StringToPtr(_src, NativeStringEncoding.UTF8);
+            void* ptrSource = (void*)SilkMarshal.StringToPtr(SourceCode, NativeStringEncoding.UTF8);
             compiler.Utils->CreateBlob(ptrSource, NumBytes, DXC.CPUtf16, ref _blob);
 
             _buffer = new Buffer()
@@ -71,33 +51,6 @@ namespace Molten.Graphics
             };
 
             return _buffer;
-        }
-
-        /// <summary>
-        /// Gets the filename that the current <see cref="HlslSource"/> represents.
-        /// </summary>
-        public string Filename { get; private set; }
-
-        public uint NumBytes { get; private set; }
-
-        /// <summary>
-        /// Gets a reference to the HLSL source code string
-        /// </summary>
-        public ref string SourceCode => ref _src;
-
-        internal List<HlslSource> Dependencies { get; }
-
-        /// <summary>
-        /// Gets the type of the current <see cref="HlslSource"/>.
-        /// </summary>
-        internal HlslSourceType SourceType { get; }
-
-        internal Assembly ParentAssembly { get; }
-
-        internal string ParentNamespace { get; }
-
-        internal string FullFilename { get; }
-        
-        public int LineCount { get; }
+        }        
     }
 }

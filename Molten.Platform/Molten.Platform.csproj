@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <RootNamespace>Molten</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +17,10 @@
     <ProjectReference Include="..\Molten.Font\Molten.Font.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Graphics\Shaders\Compiler\NodeParsers\" />
   </ItemGroup>
 
 </Project>

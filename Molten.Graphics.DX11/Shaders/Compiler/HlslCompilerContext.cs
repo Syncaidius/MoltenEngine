@@ -25,8 +25,6 @@ namespace Molten.Graphics
 
         internal HlslParser Parser { get; set; }
 
-        internal HlslSource Source { get; set; }
-
         internal DxcArgumentBuilder Args { get; }
 
         internal HlslCompilerContext(HlslCompiler compiler)
