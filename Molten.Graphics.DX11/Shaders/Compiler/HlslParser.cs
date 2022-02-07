@@ -269,33 +269,6 @@ namespace Molten.Graphics
             return bVar;
         }
 
-        internal void ParserHeader(HlslFoundation foundation, ref string header, HlslCompilerContext context)
-        {
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(header);
-
-            XmlNode rootNode = doc.ChildNodes[0];
-            ParseNode(foundation, rootNode, context);
-        }
-
-        internal void ParseNode(HlslFoundation foundation, XmlNode parentNode, HlslCompilerContext context)
-        {
-            foreach (XmlNode node in parentNode.ChildNodes)
-            {
-                string nodeName = node.Name.ToLower();
-                ShaderNodeParser parser = null;
-                if (context.Compiler.NodeParsers.TryGetValue(nodeName, out parser))
-                {
-                    parser.Parse(foundation, context, node);
-                }
-                else
-                {
-                    if (parentNode.ParentNode != null)
-                        context.AddWarning($"Ignoring unsupported {parentNode.ParentNode.Name} tag '{parentNode.Name}'");
-                    else
-                        context.AddWarning($"Ignoring unsupported root tag '{parentNode.Name}'");
-                }
-            }
-        }
+        
     }
 }

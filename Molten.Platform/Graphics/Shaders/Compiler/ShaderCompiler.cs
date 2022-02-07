@@ -10,14 +10,44 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-
-    public abstract class ShaderCompiler : EngineObject
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="CXT">Shader compiler context type</typeparam>
+    /// <typeparam name="SB">Source build result</typeparam>
+    public abstract class ShaderCompiler<CXT, R, S> : EngineObject
+        where CXT: ShaderCompilerContext
+        where R : RenderService
+        where S : IShader
     {
+        string[] _newLineSeparator = { "\n", Environment.NewLine };
+        string[] _includeReplacements = { "#include", "<", ">", "\"" };
+        static Regex _includeCommas = new Regex("(#include) \"([^\"]*)\"");
+        static Regex _includeBrackets = new Regex("(#include) <([.+])>");
+
+        public R Renderer { get; }
+
         public Logger Log { get; }
 
-        public ShaderCompiler(Logger log)
+        ConcurrentDictionary<string, ShaderSource> _sources;
+        Dictionary<string, ShaderNodeParser<CXT>> _nodeParsers;
+        Dictionary<string, ShaderHeaderParser<CXT, S>> _headerParsers;
+
+        Assembly _defaultIncludeAssembly;
+        string _defaultIncludePath;
+
+        protected abstract CXT GetContext();
+
+        protected ShaderCompiler(R renderer, string includePath, Assembly includeAssembly)
         {
-            Log = log;
+            Log = renderer.Log;
+            _defaultIncludePath = includePath;
+            _defaultIncludeAssembly = includeAssembly;
+
+            _nodeParsers = new Dictionary<string, ShaderNodeParser<CXT>>();
+            _headerParsers = new Dictionary<string, ShaderHeaderParser<CXT, S>>();
+            _sources = new ConcurrentDictionary<string, ShaderSource>();
+            Renderer = renderer;
         }
 
         protected List<string> GetHeaders(string headerTagName, string source)
@@ -33,41 +63,23 @@ namespace Molten.Graphics
 
             return headers;
         }
-    }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <typeparam name="CXT">Shader compiler context type</typeparam>
-    /// <typeparam name="SB">Source build result</typeparam>
-    public abstract class ShaderCompiler<CXT, R> : ShaderCompiler
-        where CXT: ShaderCompilerContext
-        where R : RenderService
-    {
-        string[] _newLineSeparator = { "\n", Environment.NewLine };
-        string[] _includeReplacements = { "#include", "<", ">", "\"" };
-        static Regex _includeCommas = new Regex("(#include) \"([^\"]*)\"");
-        static Regex _includeBrackets = new Regex("(#include) <([.+])>");
-
-        public R Renderer { get; }
-
-        ConcurrentDictionary<string, ShaderSource> _sources;
-        internal Dictionary<string, ShaderNodeParser<CXT>> _nodeParsers;
-
-        Assembly _defaultIncludeAssembly;
-        string _defaultIncludePath;
-
-        protected abstract CXT GetContext();
-
-        protected ShaderCompiler(R renderer, string includePath, Assembly includeAssembly) : 
-            base(renderer.Log)
+        /// <summary>
+        /// Registers all <see cref="ShaderNodeParser{CXT}"/> types in the assembly of type <typeparamref name="T"/> and inherit
+        /// from type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        protected void RegisterNodeParsers<T>()
+            where T : ShaderNodeParser<CXT>
         {
-            _defaultIncludePath = includePath;
-            _defaultIncludeAssembly = includeAssembly;
-
-            _nodeParsers = new Dictionary<string, ShaderNodeParser<CXT>>();
-            _sources = new ConcurrentDictionary<string, ShaderSource>();
-            Renderer = renderer;
+            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<CXT>>();
+            foreach (Type t in parserTypes)
+            {
+                BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+                ShaderNodeParser<CXT> nParser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<CXT>;
+                foreach (string nodeName in nParser.SupportedNodes)
+                    _nodeParsers[nodeName] = nParser;
+            }
         }
 
         public ShaderCompileResult CompileShader(ref string source, string filename, ShaderCompileFlags type, Assembly assembly, string nameSpace)
@@ -82,7 +94,7 @@ namespace Molten.Graphics
 
             int originalLineCount = source.Split(_newLineSeparator, StringSplitOptions.None).Length;
 
-            foreach (string nodeName in _shaderParsers.Keys)
+            foreach (string nodeName in _headerParsers.Keys)
             {
                 List<string> nodeHeaders = GetHeaders(nodeName, source);
                 if (nodeHeaders.Count > 0)
@@ -111,15 +123,14 @@ namespace Molten.Graphics
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
             foreach (string nodeName in headers.Keys)
             {
-                HlslParser parser = _shaderParsers[nodeName];
+                ShaderHeaderParser<CXT,S> parser = _headerParsers[nodeName];
                 List<string> nodeHeaders = headers[nodeName];
                 foreach (string header in nodeHeaders)
                 {
-                    context.Parser = parser;
                     List<IShader> parseResult = parser.Parse(context, _renderer, header);
 
                     // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
-                    foreach (HlslShader shader in parseResult)
+                    foreach (IShader shader in parseResult)
                         shader.DefaultResources = new IShaderResource[shader.Resources.Length];
 
                     context.Result.AddResult(nodeName, parseResult);

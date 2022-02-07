@@ -2,13 +2,9 @@
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Xml;
 using Buffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics

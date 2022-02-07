@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal abstract class ShaderNodeParser<CXT> where CXT : ShaderCompilerContext
+    public abstract class ShaderNodeParser<CXT> where CXT : ShaderCompilerContext
     {
         static string[] _colorDelimiters = new string[] { ",", " " };
 
