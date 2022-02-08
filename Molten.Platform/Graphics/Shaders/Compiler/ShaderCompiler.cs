@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Molten.Graphics
 {
@@ -15,8 +16,7 @@ namespace Molten.Graphics
     /// </summary>
     /// <typeparam name="CXT">Shader compiler context type</typeparam>
     /// <typeparam name="SB">Source build result</typeparam>
-    public abstract class ShaderCompiler<CXT, R, S> : EngineObject
-        where CXT: ShaderCompilerContext
+    public abstract class ShaderCompiler<R, S> : EngineObject
         where R : RenderService
         where S : IShader
     {
@@ -30,8 +30,8 @@ namespace Molten.Graphics
         public Logger Log { get; }
 
         ConcurrentDictionary<string, ShaderSource> _sources;
-        Dictionary<string, ShaderNodeParser<CXT>> _nodeParsers;
-        Dictionary<string, ShaderHeaderParser<CXT, S>> _headerParsers;
+        Dictionary<string, ShaderNodeParser<S>> _nodeParsers;
+        Dictionary<string, ShaderSubCompiler<S>> _headerParsers;
 
         Assembly _defaultIncludeAssembly;
         string _defaultIncludePath;
@@ -44,8 +44,8 @@ namespace Molten.Graphics
             _defaultIncludePath = includePath;
             _defaultIncludeAssembly = includeAssembly;
 
-            _nodeParsers = new Dictionary<string, ShaderNodeParser<CXT>>();
-            _headerParsers = new Dictionary<string, ShaderHeaderParser<CXT, S>>();
+            _nodeParsers = new Dictionary<string, ShaderNodeParser<S>>();
+            _headerParsers = new Dictionary<string, ShaderSubCompiler<S>>();
             _sources = new ConcurrentDictionary<string, ShaderSource>();
             Renderer = renderer;
         }
@@ -70,13 +70,13 @@ namespace Molten.Graphics
         /// </summary>
         /// <typeparam name="T"></typeparam>
         protected void RegisterNodeParsers<T>()
-            where T : ShaderNodeParser<CXT>
+            where T : ShaderNodeParser<S>
         {
-            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<CXT>>();
+            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<S>>();
             foreach (Type t in parserTypes)
             {
                 BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-                ShaderNodeParser<CXT> nParser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<CXT>;
+                ShaderNodeParser<S> nParser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<S>;
                 foreach (string nodeName in nParser.SupportedNodes)
                     _nodeParsers[nodeName] = nParser;
             }
@@ -123,7 +123,7 @@ namespace Molten.Graphics
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
             foreach (string nodeName in headers.Keys)
             {
-                ShaderHeaderParser<CXT,S> parser = _headerParsers[nodeName];
+                ShaderSubCompiler<S> parser = _headerParsers[nodeName];
                 List<string> nodeHeaders = headers[nodeName];
                 foreach (string header in nodeHeaders)
                 {
@@ -169,6 +169,35 @@ namespace Molten.Graphics
             }
 
             return false;
+        }
+
+        public void ParserHeader(S foundation, ref string header, ShaderCompilerContext context)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(header);
+
+            XmlNode rootNode = doc.ChildNodes[0];
+            ParseNode(foundation, rootNode, context);
+        }
+
+        public void ParseNode(S foundation, XmlNode parentNode, ShaderCompilerContext context)
+        {
+            foreach (XmlNode node in parentNode.ChildNodes)
+            {
+                string nodeName = node.Name.ToLower();
+                ShaderNodeParser<S> parser = null;
+                if (_nodeParsers.TryGetValue(nodeName, out parser))
+                {
+                    parser.Parse(foundation, context, node);
+                }
+                else
+                {
+                    if (parentNode.ParentNode != null)
+                        context.AddWarning($"Ignoring unsupported {parentNode.ParentNode.Name} tag '{parentNode.Name}'");
+                    else
+                        context.AddWarning($"Ignoring unsupported root tag '{parentNode.Name}'");
+                }
+            }
         }
 
         private void ParseDependencies(CXT context, ShaderSource source, Regex regex, bool allowRelativePath, Assembly assembly)

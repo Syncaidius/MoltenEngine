@@ -16,6 +16,8 @@ namespace Molten.Graphics
 
         string Filename { get; }
 
+        string Name { get; }
+
         Dictionary<string, string> Metadata { get; }
 
         /// <summary>Gets or sets a material value.</summary>

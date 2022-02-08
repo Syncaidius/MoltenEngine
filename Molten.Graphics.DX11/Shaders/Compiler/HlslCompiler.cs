@@ -1,5 +1,4 @@
-﻿using Molten.Collections;
-using Silk.NET.Core.Native;
+﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using Buffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics
 {
-    internal unsafe class HlslCompiler : EngineObject
+    internal unsafe class HlslCompiler : ShaderCompiler<RendererDX11, HlslFoundation>
     {
         // For reference or help see the following:
         // See: https://github.com/microsoft/DirectXShaderCompiler/blob/master/include/dxc/dxcapi.h
@@ -52,7 +51,8 @@ namespace Molten.Graphics
             IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser>();
             foreach (Type t in parserTypes)
             {
-                ShaderNodeParser parser = Activator.CreateInstance(t, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, null, null) as ShaderNodeParser;
+                BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+                ShaderNodeParser<HlslFoundation> parser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser;
                 foreach (string nodeName in parser.SupportedNodes)
                     NodeParsers.Add(nodeName, parser);
             }
@@ -91,11 +91,11 @@ namespace Molten.Graphics
         /// <param name="filename"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        internal bool CompileHlsl(string entryPoint, ShaderType type, HlslCompilerContext context, out HlslCompileResult result)
+        internal bool CompileHlsl(string entryPoint, ShaderType type, ShaderCompilerContext context, out ShaderCompileResult result)
         {
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.
-            if (!context.HlslShaders.TryGetValue(entryPoint, out result))
+            if (!context.Shaders.TryGetValue(entryPoint, out result))
             {
                 context.Args.SetEntryPoint(entryPoint);
                 context.Args.SetShaderProfile(ShaderModel.Model5_0, type);
@@ -109,14 +109,14 @@ namespace Molten.Graphics
                 Buffer srcBuffer = context.Source.BuildSource(context.Compiler);
 
                 Native->Compile(&srcBuffer, ptrArgString, argCount, null, &dxcResultGuid, &dxcResult);
-                result = new HlslCompileResult(context, (IDxcResult*)dxcResult);
+                result = new ShaderC(context, (IDxcResult*)dxcResult);
 
                 SilkMarshal.Free((nint)ptrArgString);
 
                 if (context.HasErrors)
                     return false;
 
-                context.HlslShaders.Add(entryPoint, result);
+                context.Shaders.Add(entryPoint, result);
             }
 
             return true;
@@ -125,8 +125,6 @@ namespace Molten.Graphics
         internal DXC Dxc { get; }
 
         internal Device Device => _renderer.Device;
-
-        internal RendererDX11 Renderer => _renderer;
 
         internal IDxcCompiler3* Native => _compiler;
 
