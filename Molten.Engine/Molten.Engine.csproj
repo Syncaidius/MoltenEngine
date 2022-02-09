@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>Molten</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Molten.Font\Molten.Font.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
-    <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
   </ItemGroup>
 

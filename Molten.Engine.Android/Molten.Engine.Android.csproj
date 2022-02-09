@@ -9,7 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Molten.Engine\Molten.Engine.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
-    <ProjectReference Include="..\Molten.Platform\Molten.Platform.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
   </ItemGroup>
 
