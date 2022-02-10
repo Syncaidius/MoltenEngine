@@ -1,4 +1,6 @@
-﻿namespace Molten.Font
+﻿using Molten.IO;
+
+namespace Molten.Font
 {
     /// <summary>LTSH - Linear Threshold Table. <para/>
     /// The LTSH table relates to OpenType™ fonts containing TrueType outlines. <para/>

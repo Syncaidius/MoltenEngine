@@ -1,4 +1,6 @@
-﻿namespace Molten.Font
+﻿using Molten.IO;
+
+namespace Molten.Font
 {
     /// <summary>VDMX - Vertical Device Metrics table; Relates to OpenType™ fonts with TrueType outlines ines. <para/>
     /// Under Windows, the usWinAscent and usWinDescent values from the 'OS/2' table will be used to determine the maximum black height for a font at any given size. <para/>

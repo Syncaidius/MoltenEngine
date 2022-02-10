@@ -1,4 +1,6 @@
-﻿namespace Molten.Font
+﻿using Molten.IO;
+
+namespace Molten.Font
 {
     /// <summary>
     /// A feature list table.<para/>

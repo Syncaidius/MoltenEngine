@@ -1,4 +1,6 @@
-﻿namespace Molten.Font
+﻿using Molten.IO;
+
+namespace Molten.Font
 {
     /// <summary>
     /// A table which always returns the default character. Intended as a placeholder for unsupported cmap sub-table formats.

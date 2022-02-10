@@ -1,4 +1,6 @@
-﻿namespace Molten.Font
+﻿using Molten.IO;
+
+namespace Molten.Font
 {
     public abstract class CmapSubTable : FontSubTable
     {

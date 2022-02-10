@@ -1,4 +1,6 @@
-﻿namespace Molten.Font
+﻿using Molten.IO;
+
+namespace Molten.Font
 {
     /// <summary>Kerning table (maxp).<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/kern </summary>

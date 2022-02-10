@@ -1,4 +1,6 @@
-﻿namespace Molten.Font
+﻿using Molten.IO;
+
+namespace Molten.Font
 {
     /// <summary>Font header table .<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/head </summary>

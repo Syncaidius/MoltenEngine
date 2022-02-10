@@ -16,7 +16,7 @@ namespace Molten
     public class EngineSettings : SettingBank
     {
         List<EngineService> _startupServices;
-        public EngineSettings()
+        internal EngineSettings()
         {
             _startupServices = new List<EngineService>();
             StartupServices = _startupServices.AsReadOnly();

@@ -1,4 +1,6 @@
-﻿namespace Molten.Font
+﻿using Molten.IO;
+
+namespace Molten.Font
 {
     /// <summary>A sub-table for the <see cref="Kern"/> font table.</summary>
     public class KerningTable : FontSubTable

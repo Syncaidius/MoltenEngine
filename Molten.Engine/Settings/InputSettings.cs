@@ -5,7 +5,7 @@ namespace Molten.Input
     [DataContract]
     public class InputSettings : SettingBank
     {
-        public InputSettings()
+        internal InputSettings()
         {
             TouchBufferSize = AddSetting<int>("touch_buffer_size", 256);
             MouseBufferSize = AddSetting<int>("mouse_buffer_size", 300);

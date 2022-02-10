@@ -1,4 +1,6 @@
-﻿namespace Molten.Font
+﻿using Molten.IO;
+
+namespace Molten.Font
 {
     /// <summary>Index-to-location table.<para/>
     /// The metadata table contains various metadata values for the font. Different categories of metadata are identified by four-character tags. <para/>

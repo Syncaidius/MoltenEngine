@@ -1,4 +1,6 @@
-﻿namespace Molten.Font
+﻿using Molten.IO;
+
+namespace Molten.Font
 {
     /// <summary>
     /// A base class for font sub-tables. Automatically positions the binary reader at the correct byte offset based on the parent table.

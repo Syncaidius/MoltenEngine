@@ -1,4 +1,6 @@
-﻿namespace Molten.Font
+﻿using Molten.IO;
+
+namespace Molten.Font
 {
     /// <summary>The font program table (fpgm).<para/>
     /// See: https://docs.microsoft.com/en-us/typography/opentype/spec/fpgm </summary>

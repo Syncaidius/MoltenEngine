@@ -9,7 +9,7 @@ namespace Molten
         ThreadedList<SettingValue> _settings;
         ThreadedDictionary<string, SettingValue> _byKey;
 
-        public SettingBank()
+        internal SettingBank()
         {
             _settings = new ThreadedList<SettingValue>();
             _byKey = new ThreadedDictionary<string, SettingValue>();

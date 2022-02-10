@@ -1,4 +1,6 @@
-﻿namespace Molten.Font
+﻿using Molten.IO;
+
+namespace Molten.Font
 {
     /// <summary>Glyph definition table. <para/>
     /// See: https://www.microsoft.com/typography/otspec/gdef.htm </summary>
