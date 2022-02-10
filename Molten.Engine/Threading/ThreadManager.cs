@@ -12,7 +12,7 @@ namespace Molten.Threading
         ThreadedList<EngineThread> _threads;
         ThreadedList<WorkerGroup> _groups;
 
-        public ThreadManager(Logger log)
+        internal ThreadManager(Logger log)
         {
             _log = log;
             _threads = new ThreadedList<EngineThread>();
