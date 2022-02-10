@@ -16,9 +16,10 @@ namespace Molten.Graphics
     /// </summary>
     /// <typeparam name="CXT">Shader compiler context type</typeparam>
     /// <typeparam name="SB">Source build result</typeparam>
-    public abstract class ShaderCompiler<R, S> : EngineObject
+    public abstract class ShaderCompiler<R, S, CR> : EngineObject
         where R : RenderService
         where S : IShader
+        where CR : ShaderCompileResult<S>
     {
         string[] _newLineSeparator = { "\n", Environment.NewLine };
         string[] _includeReplacements = { "#include", "<", ">", "\"" };
@@ -31,12 +32,10 @@ namespace Molten.Graphics
 
         ConcurrentDictionary<string, ShaderSource> _sources;
         Dictionary<string, ShaderNodeParser<S>> _nodeParsers;
-        Dictionary<string, ShaderSubCompiler<S>> _headerParsers;
+        Dictionary<string, ShaderSubCompiler<S, CR>> _subCompilers;
 
         Assembly _defaultIncludeAssembly;
         string _defaultIncludePath;
-
-        protected abstract CXT GetContext();
 
         protected ShaderCompiler(R renderer, string includePath, Assembly includeAssembly)
         {
@@ -45,7 +44,7 @@ namespace Molten.Graphics
             _defaultIncludeAssembly = includeAssembly;
 
             _nodeParsers = new Dictionary<string, ShaderNodeParser<S>>();
-            _headerParsers = new Dictionary<string, ShaderSubCompiler<S>>();
+            _subCompilers = new Dictionary<string, ShaderSubCompiler<S, CR>>();
             _sources = new ConcurrentDictionary<string, ShaderSource>();
             Renderer = renderer;
         }
@@ -82,9 +81,9 @@ namespace Molten.Graphics
             }
         }
 
-        public ShaderCompileResult CompileShader(ref string source, string filename, ShaderCompileFlags type, Assembly assembly, string nameSpace)
+        public ShaderCompileResult<S> CompileShader(ref string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
         {
-            CXT context = GetContext();
+            ShaderCompilerContext context = new ShaderCompilerContext();
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>();
             string finalSource = source;
 
@@ -94,7 +93,7 @@ namespace Molten.Graphics
 
             int originalLineCount = source.Split(_newLineSeparator, StringSplitOptions.None).Length;
 
-            foreach (string nodeName in _headerParsers.Keys)
+            foreach (string nodeName in _subCompilers.Keys)
             {
                 List<string> nodeHeaders = GetHeaders(nodeName, source);
                 if (nodeHeaders.Count > 0)
@@ -118,21 +117,17 @@ namespace Molten.Graphics
                 }
             }
 
-            context.Source = ParseSource(context, filename, ref finalSource, type, assembly, nameSpace, originalLineCount);
+            bool isEmbedded = (flags & ShaderCompileFlags.EmbeddedFile) == ShaderCompileFlags.EmbeddedFile;
+            context.Source = ParseSource(context, filename, ref finalSource, isEmbedded, assembly, nameSpace, originalLineCount);
 
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
             foreach (string nodeName in headers.Keys)
             {
-                ShaderSubCompiler<S> parser = _headerParsers[nodeName];
+                ShaderSubCompiler<S, CR> parser = _subCompilers[nodeName];
                 List<string> nodeHeaders = headers[nodeName];
                 foreach (string header in nodeHeaders)
                 {
-                    List<IShader> parseResult = parser.Parse(context, _renderer, header);
-
-                    // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
-                    foreach (IShader shader in parseResult)
-                        shader.DefaultResources = new IShaderResource[shader.Resources.Length];
-
+                    List<S> parseResult = parser.Parse(context, _renderer, header);
                     context.Result.AddResult(nodeName, parseResult);
                 }
             }
@@ -144,7 +139,7 @@ namespace Molten.Graphics
             return context.Result;
         }
 
-        private ShaderSource ParseSource(CXT context, string filename, ref string hlsl,
+        private ShaderSource ParseSource(ShaderCompilerContext context, string filename, ref string hlsl,
             bool isEmbedded, Assembly assembly, string nameSpace, int originalLineCount)
         {
             ShaderSource source = new ShaderSource(filename, ref hlsl, isEmbedded, originalLineCount, assembly, nameSpace);
@@ -160,7 +155,7 @@ namespace Molten.Graphics
             return source;
         }
 
-        private bool TryGetDependency(ref string path, CXT context)
+        private bool TryGetDependency(ref string path, ShaderCompilerContext context)
         {
             if (_sources.TryGetValue(path, out ShaderSource dependency))
             {
@@ -200,7 +195,7 @@ namespace Molten.Graphics
             }
         }
 
-        private void ParseDependencies(CXT context, ShaderSource source, Regex regex, bool allowRelativePath, Assembly assembly)
+        private void ParseDependencies(ShaderCompilerContext context, ShaderSource source, Regex regex, bool allowRelativePath, Assembly assembly)
         {
             HashSet<string> dependencies = new HashSet<string>();
             Match m = regex.Match(source.SourceCode);

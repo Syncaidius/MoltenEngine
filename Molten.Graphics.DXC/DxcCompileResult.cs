@@ -13,7 +13,7 @@ namespace Molten.Graphics
     /// <summary>
     /// Provides an abstraction over the top of <see cref="IDxcResult"/> for retrieving various output elements.
     /// </summary>
-    internal unsafe class HlslCompileResult : EngineObject
+    internal unsafe class DxcCompileResult : EngineObject
     {
         
         internal IDxcResult* Result;
@@ -32,7 +32,7 @@ namespace Molten.Graphics
 
         internal IDxcBlob* ByteCode => _byteCode;
 
-        internal HlslCompileResult(HlslCompilerContext context, IDxcResult* result)
+        internal DxcCompileResult(ShaderCompilerContext context, IDxcResult* result)
         {
             _utils = context.Compiler.Utils;
             _availableOutputs = new List<OutKind>();
@@ -95,7 +95,7 @@ namespace Molten.Graphics
             outData = (IDxcBlob*)pData;
         }
 
-        private void LoadPdbData(HlslCompilerContext context)
+        private void LoadPdbData(ShaderCompilerContext context)
         {
             IDxcBlobUtf16* pPdbPath = null;
             GetDxcOutput(OutKind.OutPdb, ref _pdbData, &pPdbPath);
@@ -107,7 +107,7 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref pPdbPath);
         }
 
-        private void LoadReflection(HlslCompilerContext context)
+        private void LoadReflection(ShaderCompilerContext context)
         {
             // TODO Re-implement this: https://posts.tanki.ninja/
             IDxcBlob* outData = null;
@@ -128,7 +128,7 @@ namespace Molten.Graphics
             Result->GetResult(ref _byteCode);
         }
 
-        private void LoadErrors(HlslCompilerContext context)
+        private void LoadErrors(ShaderCompilerContext context)
         {
             IDxcBlobEncoding* pErrorBlob = null;
             Result->GetErrorBuffer(&pErrorBlob);

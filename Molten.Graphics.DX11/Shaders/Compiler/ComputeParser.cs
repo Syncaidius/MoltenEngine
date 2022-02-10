@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe class ComputeParser : HlslParser
+    internal unsafe class ComputeParser : HlslSubCompiler
     {
         internal override List<IShader> Parse(HlslCompilerContext context, RendererDX11 renderer, string header)
         {
@@ -39,6 +39,10 @@ namespace Molten.Graphics
                 shaders.Add(compute);
                 (renderer.Compute as ComputeManager).AddTask(compute);
             }
+
+            // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
+            foreach (HlslShader shader in result)
+                shader.DefaultResources = new IShaderResource[shader.Resources.Length];
 
             return shaders;
         }

@@ -27,7 +27,7 @@ namespace Molten.Graphics
             0xb5, 0xbf, 0xf0, 0x66, 0x4f, 0x39, 0xc1, 0xb0 );
 
 
-        Dictionary<string, HlslParser> _shaderParsers;
+        Dictionary<string, HlslSubCompiler> _shaderParsers;
        
         IDxcCompiler3* _compiler;
         IDxcUtils* _utils;
@@ -41,7 +41,7 @@ namespace Molten.Graphics
         /// <param name="includeAssembly"></param>
         internal HlslCompiler(RendererDX11 renderer, Logger log, string includePath, Assembly includeAssembly)
         {
-            _shaderParsers = new Dictionary<string, HlslParser>();
+            _shaderParsers = new Dictionary<string, HlslSubCompiler>();
 
             Dxc = DXC.GetApi();
             _utils = CreateDxcInstance<IDxcUtils>(CLSID_DxcUtils, IDxcUtils.Guid);
@@ -75,11 +75,11 @@ namespace Molten.Graphics
             return (T*)ppv;
         }
 
-        private void AddSubCompiler<T>(string nodeName) where T : HlslParser
+        private void AddSubCompiler<T>(string nodeName) where T : HlslSubCompiler
         {
             Type t = typeof(T);
             BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-            HlslParser sub = Activator.CreateInstance(t, bindFlags,  null, null, null) as HlslParser;
+            HlslSubCompiler sub = Activator.CreateInstance(t, bindFlags,  null, null, null) as HlslSubCompiler;
             _shaderParsers.Add(nodeName, sub);
         }
 

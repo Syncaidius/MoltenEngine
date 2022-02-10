@@ -1,18 +1,15 @@
 ﻿using Silk.NET.Core.Native;
-using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class HlslParser
+    internal unsafe abstract class HlslSubCompiler : ShaderSubCompiler<HlslShader, FxcCompileResult>
     {
-        internal abstract List<IShader> Parse(HlslCompilerContext context, RendererDX11 renderer, string header);
+        internal abstract List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header);
 
         protected bool HasResource(HlslShader shader, string resourceName)
         {
@@ -28,7 +25,7 @@ namespace Molten.Graphics
             return false;
         }
 
-        protected bool HasConstantBuffer(HlslCompilerContext context, HlslShader shader, string bufferName, string[] varNames)
+        protected bool HasConstantBuffer(ShaderCompilerContext context, HlslShader shader, string bufferName, string[] varNames)
         {
             foreach (ShaderConstantBuffer buffer in shader.ConstBuffers)
             {
@@ -40,7 +37,7 @@ namespace Molten.Graphics
                     if (buffer.Variables.Length != varNames.Length)
                     {
                         context.AddMessage($"Shader '{bufferName}' constant buffer does not have the correct number of variables ({varNames.Length})", 
-                            HlslCompilerContext.Message.Kind.Error);
+                            ShaderCompilerMessage.Kind.Error);
                         return false;
                     }
 
@@ -52,7 +49,7 @@ namespace Molten.Graphics
                         if (variable.Name != expectedName)
                         {
                             context.AddMessage($"Shader '{bufferName}' constant variable #{i + 1} is incorrect: Named '{variable.Name}' instead of '{expectedName}'",
-                                HlslCompilerContext.Message.Kind.Error);
+                                ShaderCompilerMessage.Kind.Error);
                             return false;
                         }
                     }
@@ -64,14 +61,14 @@ namespace Molten.Graphics
             return false;
         }
 
-        protected void BuildIO(HlslCompileResult result, ShaderComposition composition)
+        protected void BuildIO(FxcCompileResult result, ShaderComposition composition)
         {
             composition.InputStructure = new ShaderIOStructure(result, ShaderIOStructureType.Input);
             composition.OutputStructure = new ShaderIOStructure(result, ShaderIOStructureType.Output);
         }
 
-        protected bool BuildStructure<T>(HlslCompilerContext context, HlslShader shader, 
-            HlslCompileResult result, ShaderComposition<T> composition) 
+        protected bool BuildStructure<T>(ShaderCompilerContext context, HlslShader shader, 
+            FxcCompileResult result, ShaderComposition<T> composition) 
             where T : unmanaged
         {
             for (uint r = 0; r < result.Reflection.Desc->BoundResources; r++)
@@ -94,7 +91,7 @@ namespace Molten.Graphics
 
                             if(shader.ConstBuffers[bindPoint] != null && shader.ConstBuffers[bindPoint].BufferName != bindDesc.Name)
                                 context.AddMessage($"Shader constant buffer '{shader.ConstBuffers[bindPoint].BufferName}' was overwritten by buffer '{bindDesc.Name}' at the same register (b{bindPoint}).", 
-                                    HlslCompilerContext.Message.Kind.Warning);
+                                    FxcCompilerContext.Message.Kind.Warning);
 
                             shader.ConstBuffers[bindPoint] = GetConstantBuffer(context, shader, buffer);
                             composition.ConstBufferIds.Add(bindPoint);
@@ -145,12 +142,12 @@ namespace Molten.Graphics
             return true;
         }
 
-        protected abstract void OnBuildVariableStructure(HlslCompilerContext context, 
-            HlslShader shader, HlslCompileResult result, 
+        protected abstract void OnBuildVariableStructure(ShaderCompilerContext context, 
+            HlslShader shader, FxcCompileResult result, 
             HlslInputBindDescription bind);
 
 
-        private void OnBuildTextureVariable(HlslCompilerContext context, HlslShader shader, HlslInputBindDescription bind)
+        private void OnBuildTextureVariable(ShaderCompilerContext context, HlslShader shader, HlslInputBindDescription bind)
         {
             ShaderResourceVariable obj = null;
             uint bindPoint = bind.Ptr->BindPoint;
@@ -179,7 +176,7 @@ namespace Molten.Graphics
             shader.Resources[bindPoint] = obj;
         }
 
-        private unsafe ShaderConstantBuffer GetConstantBuffer(HlslCompilerContext context, HlslShader shader,
+        private unsafe ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext context, HlslShader shader,
             ID3D11ShaderReflectionConstantBuffer* buffer)
         {
             ShaderBufferDesc bufferDesc = new ShaderBufferDesc();
@@ -236,7 +233,7 @@ namespace Molten.Graphics
             return cBuffer;
         }
 
-        protected T GetVariableResource<T>(HlslCompilerContext context, HlslShader shader, HlslInputBindDescription desc) where T : class, IShaderValue
+        protected T GetVariableResource<T>(ShaderCompilerContext context, HlslShader shader, HlslInputBindDescription desc) where T : class, IShaderValue
         {
             IShaderValue existing = null;
             T bVar = null;
@@ -267,8 +264,6 @@ namespace Molten.Graphics
             }
 
             return bVar;
-        }
-
-        
+        }        
     }
 }

@@ -7,17 +7,17 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal unsafe class MaterialParser : HlslParser
+    internal unsafe class MaterialParser : HlslSubCompiler
     {
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
 
-        internal override List<IShader> Parse(HlslCompilerContext context, RendererDX11 renderer, string header)
+        internal override List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header)
         {
             List<IShader> result = new List<IShader>();
             Material material = new Material(renderer.Device, context.Source.Filename);
             try
             {
-                ParserHeader(material, ref header, context);
+                context.Compiler.ParserHeader(material, ref header, context);
                 if (material.Passes == null || material.Passes.Length == 0)
                 {
                     material.AddDefaultPass();
@@ -114,10 +114,14 @@ namespace Molten.Graphics
                 material.Light = new LightMaterialProperties(material);
             }
 
+            // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
+            foreach (HlslShader shader in result)
+                shader.DefaultResources = new IShaderResource[shader.Resources.Length];
+
             return result;
         }
 
-        private MaterialPassCompileResult CompilePass(HlslCompilerContext context, MaterialPass pass)
+        private MaterialPassCompileResult CompilePass(ShaderCompilerContext context, MaterialPass pass)
         {
             MaterialPassCompileResult result = new MaterialPassCompileResult(pass);
 
@@ -150,7 +154,7 @@ namespace Molten.Graphics
             return result;
         }
 
-        private void BuildPassStructure(HlslCompilerContext context, MaterialPassCompileResult pResult)
+        private void BuildPassStructure(ShaderCompilerContext context, MaterialPassCompileResult pResult)
         {
             MaterialPass pass = pResult.Pass;
             Material material = pass.Material as Material;
@@ -192,6 +196,6 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnBuildVariableStructure(HlslCompilerContext context, HlslShader shader, HlslCompileResult result, HlslInputBindDescription bind) { }
+        protected override void OnBuildVariableStructure(ShaderCompilerContext context, HlslShader shader, ShaderCompileResult result, HlslInputBindDescription bind) { }
     }
 }

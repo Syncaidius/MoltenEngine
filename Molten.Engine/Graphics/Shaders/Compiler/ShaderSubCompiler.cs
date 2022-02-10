@@ -7,8 +7,9 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    public abstract class ShaderSubCompiler<S>
+    public abstract class ShaderSubCompiler<S, CR>
         where S : IShader
+        where CR : ShaderCompileResult<S>
     {
         
     }

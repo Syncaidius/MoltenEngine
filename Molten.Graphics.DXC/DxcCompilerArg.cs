@@ -9,7 +9,7 @@ namespace Molten.Graphics
     /// <summary>
     /// See for info: https://github.com/microsoft/DirectXShaderCompiler/blob/dc7789738c51994559424c67629acc90f4ba69ad/include/dxc/dxcapi.h#L135
     /// </summary>
-    public enum ShaderCompilerArg
+    public enum DxcCompilerArg
     {
         None = 0,
 

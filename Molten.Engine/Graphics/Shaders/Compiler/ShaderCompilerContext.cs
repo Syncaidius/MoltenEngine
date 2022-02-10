@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public abstract class ShaderCompilerContext
+    public class ShaderCompilerContext
     {
         /// <summary>
         /// HLSL shader objects stored by entry-point name
@@ -87,7 +87,5 @@ namespace Molten.Graphics
         {
             AddMessage(text, ShaderCompilerMessage.Kind.Warning);
         }
-
-        public abstract void ParseFlags(ShaderCompileFlags flags);
     }
 }

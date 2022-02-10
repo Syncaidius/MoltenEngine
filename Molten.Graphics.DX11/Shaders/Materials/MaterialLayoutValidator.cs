@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal class MaterialLayoutValidator
     {
-        internal bool Validate(HlslCompilerContext context, MaterialPassCompileResult pResult)
+        internal bool Validate(ShaderCompilerContext context, MaterialPassCompileResult pResult)
         {
             bool valid = true;
             MaterialPass pass = pResult.Pass;
@@ -71,11 +71,11 @@ namespace Molten.Graphics
                 CheckGeometryTessellationAdjacency(pResult);
         }
 
-        private bool CheckTessellationShaders(HlslCompilerContext context, MaterialPassCompileResult pResult)
+        private bool CheckTessellationShaders(ShaderCompilerContext context, MaterialPassCompileResult pResult)
         {
             bool valid = true;
-            HlslCompileResult hs = pResult.Results[MaterialPass.ID_HULL];
-            HlslCompileResult ds = pResult.Results[MaterialPass.ID_DOMAIN];
+            FxcCompileResult hs = pResult.Results[MaterialPass.ID_HULL];
+            FxcCompileResult ds = pResult.Results[MaterialPass.ID_DOMAIN];
 
             if(hs != null && ds == null)
             {
@@ -93,9 +93,9 @@ namespace Molten.Graphics
         private bool CheckGeometryTessellationAdjacency(MaterialPassCompileResult pResult)
         {
             bool valid = true;
-            HlslCompileResult geometryRef = pResult.Results[MaterialPass.ID_GEOMETRY];
-            HlslCompileResult hullRef = pResult.Results[MaterialPass.ID_HULL];
-            HlslCompileResult domainRef = pResult.Results[MaterialPass.ID_DOMAIN];
+            FxcCompileResult geometryRef = pResult.Results[MaterialPass.ID_GEOMETRY];
+            FxcCompileResult hullRef = pResult.Results[MaterialPass.ID_HULL];
+            FxcCompileResult domainRef = pResult.Results[MaterialPass.ID_DOMAIN];
 
             if (geometryRef == null || hullRef == null || domainRef == null)
                 return valid;
