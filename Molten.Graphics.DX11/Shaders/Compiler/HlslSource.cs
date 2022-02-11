@@ -34,7 +34,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="compiler"></param>
         /// <returns></returns>
-        internal Buffer BuildSource(HlslCompiler compiler)
+        internal Buffer BuildSource(FxcCompiler compiler)
         {
             if (_blob != null)
                 return _buffer;

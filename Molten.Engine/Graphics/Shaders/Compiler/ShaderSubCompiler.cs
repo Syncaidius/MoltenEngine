@@ -7,10 +7,11 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    public abstract class ShaderSubCompiler<S, CR>
+    public abstract class ShaderSubCompiler<R, S, CR>
+        where R : RenderService
         where S : IShader
         where CR : ShaderCompileResult<S>
     {
-        
+        public abstract List<S> Parse(ShaderCompilerContext<R, S, CR> context, R renderer, string header);
     }
 }

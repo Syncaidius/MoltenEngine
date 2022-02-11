@@ -11,9 +11,13 @@ namespace Molten.Graphics
     {
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
 
-        internal override List<IShader> Parse(ShaderCompilerContext context, RendererDX11 renderer, string header)
+        public override List<HlslShader> Parse(ShaderCompiler<RendererDX11, HlslShader, 
+            FxcCompileResult> compiler, 
+            ShaderCompilerContext context, 
+            RendererDX11 renderer, 
+            ref string header)
         {
-            List<IShader> result = new List<IShader>();
+            List<HlslShader> result = new List<HlslShader>();
             Material material = new Material(renderer.Device, context.Source.Filename);
             try
             {
@@ -131,7 +135,7 @@ namespace Molten.Graphics
                 if (pass.Compositions[i].Optional && string.IsNullOrWhiteSpace(pass.Compositions[i].EntryPoint))
                     continue;
 
-                if (context.Compiler.CompileHlsl(pass.Compositions[i].EntryPoint, 
+                if (compiler.CompileHlsl(pass.Compositions[i].EntryPoint, 
                     MaterialPass.ShaderTypes[i], context, out result.Results[i]))
                 {
                     BuildIO(result.Results[i], pass.Compositions[i]);
@@ -196,6 +200,6 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnBuildVariableStructure(ShaderCompilerContext context, HlslShader shader, ShaderCompileResult result, HlslInputBindDescription bind) { }
+        protected override void OnBuildVariableStructure(ShaderCompilerContext context, HlslShader shader, FxcCompileResult result, HlslInputBindDescription bind) { }
     }
 }

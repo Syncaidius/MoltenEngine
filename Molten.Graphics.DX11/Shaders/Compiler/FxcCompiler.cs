@@ -8,7 +8,7 @@ using Buffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics
 {
-    internal unsafe class HlslCompiler : ShaderCompiler<RendererDX11, HlslFoundation>
+    internal unsafe class FxcCompiler : ShaderCompiler<RendererDX11, HlslShader, FxcCompileResult>
     {
         // For reference or help see the following:
         // See: https://github.com/microsoft/DirectXShaderCompiler/blob/master/include/dxc/dxcapi.h
@@ -33,13 +33,14 @@ namespace Molten.Graphics
         IDxcUtils* _utils;
 
         /// <summary>
-        /// Creates a new instance of <see cref="HlslCompiler"/>.
+        /// Creates a new instance of <see cref="FxcCompiler"/>.
         /// </summary>
         /// <param name="renderer">The renderer which owns the compiler.</param>
         /// <param name="log"></param>
         /// <param name="includePath">The default path for engine/game HLSL include files.</param>
         /// <param name="includeAssembly"></param>
-        internal HlslCompiler(RendererDX11 renderer, Logger log, string includePath, Assembly includeAssembly)
+        internal FxcCompiler(RendererDX11 renderer, Logger log, string includePath, Assembly includeAssembly) :
+            base(renderer, includePath, includeAssembly)
         {
             _shaderParsers = new Dictionary<string, HlslSubCompiler>();
 
@@ -48,11 +49,11 @@ namespace Molten.Graphics
             _compiler = CreateDxcInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
 
             // Detect and instantiate node parsers
-            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser>();
+            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<HlslShader>>();
             foreach (Type t in parserTypes)
             {
                 BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-                ShaderNodeParser<HlslFoundation> parser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser;
+                ShaderNodeParser<HlslShader> parser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<HlslShader>;
                 foreach (string nodeName in parser.SupportedNodes)
                     NodeParsers.Add(nodeName, parser);
             }
@@ -84,20 +85,19 @@ namespace Molten.Graphics
         }
 
         /// <summary>Compiles HLSL source code and outputs the result. Returns true if successful, or false if there were errors.</summary>
-        /// <param name="log"></param>
         /// <param name="entryPoint"></param>
         /// <param name="type"></param>
-        /// <param name="source"></param>
-        /// <param name="filename"></param>
+        /// <param name="context"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        internal bool CompileHlsl(string entryPoint, ShaderType type, ShaderCompilerContext context, out ShaderCompileResult result)
+        public override bool CompileSource(string entryPoint, ShaderType type, 
+            ShaderCompilerContext<RendererDX11, HlslShader, FxcCompileResult> context, out FxcCompileResult result)
         {
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.
             if (!context.Shaders.TryGetValue(entryPoint, out result))
             {
-                context.Args.SetEntryPoint(entryPoint);
+                /*context.Args.SetEntryPoint(entryPoint);
                 context.Args.SetShaderProfile(ShaderModel.Model5_0, type);
 
                 string argString = context.Args.ToString();
@@ -116,15 +116,13 @@ namespace Molten.Graphics
                 if (context.HasErrors)
                     return false;
 
-                context.Shaders.Add(entryPoint, result);
+                context.Shaders.Add(entryPoint, result);*/
             }
 
             return true;
         }
 
         internal DXC Dxc { get; }
-
-        internal Device Device => _renderer.Device;
 
         internal IDxcCompiler3* Native => _compiler;
 

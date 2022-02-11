@@ -62,7 +62,7 @@ namespace Molten.Graphics
             Device = new Device(_api, Log, settings.Graphics, _displayManager);
             _resourceManager = new ResourceManager(this);
             _compute = new ComputeManager(this.Device);
-            ShaderCompiler = new HlslCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
+            ShaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _clearedSurfaces = new HashSet<Texture2DDX11>();
 
             uint maxBufferSize = (uint)ByteMath.FromMegabytes(3.5);
@@ -290,7 +290,7 @@ namespace Molten.Graphics
 
         public override IComputeManager Compute => _compute;
 
-        internal HlslCompiler ShaderCompiler { get; private set; }
+        internal FxcCompiler ShaderCompiler { get; private set; }
 
         /// <summary>
         /// Gets the resource manager bound to the renderer.

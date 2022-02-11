@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public class ShaderCompilerContext
+    public class ShaderCompilerContext<R, S, CR>
+        where R : RenderService
+        where S : IShader
+        where CR : ShaderCompileResult<S>
     {
         /// <summary>
         /// HLSL shader objects stored by entry-point name
         /// </summary>
-        public Dictionary<string, ShaderCompileResult> Shaders { get; } 
+        public Dictionary<string, ShaderCompileResult<S>> Shaders { get; } 
 
-        public ShaderCompileResult Result { get; }
+        public ShaderCompileResult<S> Result { get; }
 
         public IReadOnlyList<ShaderCompilerMessage> Messages { get; }
 
@@ -23,15 +26,17 @@ namespace Molten.Graphics
 
         public ShaderCompileFlags Flags { get; }
 
+        public ShaderCompiler<R, S, CR> Compiler { get; }
+
         List<ShaderCompilerMessage> _messages;
         Dictionary<Type, Dictionary<string, object>> _resources;
 
-        public ShaderCompilerContext()
+        public ShaderCompilerContext(ShaderCompiler<R,S,CR> compiler)
         {
             _messages = new List<ShaderCompilerMessage>();
             Messages = _messages.AsReadOnly();
-            Shaders = new Dictionary<string, ShaderCompileResult>();
-            Result = new ShaderCompileResult();
+            Shaders = new Dictionary<string, ShaderCompileResult<S>>();
+            Result = new ShaderCompileResult<S>();
         }
 
         public void AddResource<T>(string name, T resource) 

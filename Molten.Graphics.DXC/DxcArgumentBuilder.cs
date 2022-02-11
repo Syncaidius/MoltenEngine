@@ -15,7 +15,9 @@ namespace Molten.Graphics
     /// <para>https://strontic.github.io/xcyclopedia/library/dxc.exe-0C1709D4E1787E3EB3E6A35C85714824.html</para>
     /// <para>https://simoncoenen.com/blog/programming/graphics/DxcCompiling</para>
     /// </summary>
-    internal unsafe class DxcArgumentBuilder
+    internal unsafe class DxcArgumentBuilder<R,S>
+        where R : RenderService
+        where S : DxcShader
     {
         static Dictionary<DxcCompilerArg, string> _argLookup = new Dictionary<DxcCompilerArg, string>()
         {
@@ -64,9 +66,9 @@ namespace Molten.Graphics
         };
 
         Dictionary<DxcCompilerArg, string> _args;
-        ShaderCompilerContext _context;
+        ShaderCompilerContext<R, S, DxcCompileResult<R, S>> _context;
 
-        internal DxcArgumentBuilder(ShaderCompilerContext context)
+        internal DxcArgumentBuilder(ShaderCompilerContext<R, S, DxcCompileResult<R, S>> context)
         {
             _args = new Dictionary<DxcCompilerArg, string>();
             _context = context;

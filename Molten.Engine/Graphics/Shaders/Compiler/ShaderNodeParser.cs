@@ -7,21 +7,23 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    public abstract class ShaderNodeParser<S> 
+    public abstract class ShaderNodeParser<R, S, CR>
+        where R : RenderService
         where S : IShader
+        where CR : ShaderCompileResult<S>
     {
         static string[] _colorDelimiters = new string[] { ",", " " };
 
         internal abstract string[] SupportedNodes { get; }
 
-        internal abstract NodeParseResult Parse(S shader, ShaderCompilerContext context, XmlNode node);
+        internal abstract NodeParseResult Parse(S shader, ShaderCompilerContext<R, S, CR> context, XmlNode node);
 
-        protected void InvalidValueMessage(ShaderCompilerContext context, XmlNode node, string friendlyTagName, string friendlyValueName)
+        protected void InvalidValueMessage(ShaderCompilerContext<R, S, CR> context, XmlNode node, string friendlyTagName, string friendlyValueName)
         {
             context.AddWarning($"Tag '{node.Name}' ({friendlyTagName}) has invalid value '{node.InnerText}'. Must be a {friendlyValueName} value");
         }
 
-        protected void UnsupportedTagMessage(ShaderCompilerContext context, XmlNode node)
+        protected void UnsupportedTagMessage(ShaderCompilerContext<R, S, CR> context, XmlNode node)
         {
             if(node.ParentNode != null)
                 context.AddWarning($"Ignoring unsupported {node.ParentNode.Name} tag '{node.Name}'.");
@@ -29,7 +31,7 @@ namespace Molten.Graphics
                 context.AddWarning($"Ignoring unsupported root tag '{node.Name}'.");
         }
 
-        protected void InvalidEnumMessage<T>(ShaderCompilerContext context, XmlNode node, string friendlyTagName)
+        protected void InvalidEnumMessage<T>(ShaderCompilerContext<R, S, CR> context, XmlNode node, string friendlyTagName)
             where T : struct, IComparable
         {
             Type t = typeof(T);
@@ -57,7 +59,7 @@ namespace Molten.Graphics
                 context.AddWarning($"Tag '{node.Name}' ({friendlyTagName}) has invalid value '{node.InnerText}'. Must be {strPossibleVals}");
         }
 
-        protected Color4 ParseColor4(ShaderCompilerContext context, XmlNode node, bool fromRgb)
+        protected Color4 ParseColor4(ShaderCompilerContext<R, S, CR> context, XmlNode node, bool fromRgb)
         {
             string[] vals = node.InnerText.Split(_colorDelimiters, StringSplitOptions.RemoveEmptyEntries);
             int maxVals = Math.Min(4, vals.Length);

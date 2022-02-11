@@ -3,6 +3,7 @@ using Silk.NET.Direct3D.Compilers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,10 +14,16 @@ namespace Molten.Graphics
     /// <summary>
     /// Provides an abstraction over the top of <see cref="IDxcResult"/> for retrieving various output elements.
     /// </summary>
-    internal unsafe class DxcCompileResult : EngineObject
+    /// <typeparam name="R">Render service type</typeparam>
+    /// <typeparam name="S">DXC shader type.</typeparam>
+    public unsafe class DxcCompileResult<R, S> : ShaderCompileResult<S>
+        where R : RenderService
+        where S : DxcShader
     {
         
         internal IDxcResult* Result;
+        IDxcContainerReflection* _containerReflection;
+        DxcReflection _reflection;
         IDxcBlob* _byteCode;
         IDxcUtils* _utils;
         IDxcBlob* _pdbData;
@@ -24,15 +31,13 @@ namespace Molten.Graphics
 
         internal IReadOnlyCollection<OutKind> AvailableOutputs { get; }
 
-        internal HlslReflection Reflection { get; private set; }
-
         internal IDxcBlob* PdbData => _pdbData;
 
         internal string PdbPath { get; private set; }
 
         internal IDxcBlob* ByteCode => _byteCode;
 
-        internal DxcCompileResult(ShaderCompilerContext context, IDxcResult* result)
+        internal DxcCompileResult(ShaderCompilerContext<R,S, DxcCompileResult<R,S>> context, IDxcResult* result)
         {
             _utils = context.Compiler.Utils;
             _availableOutputs = new List<OutKind>();
@@ -74,7 +79,7 @@ namespace Molten.Graphics
  
         protected override void OnDispose()
         {
-            Reflection.Dispose();
+            _reflection.Dispose();
             SilkUtil.ReleasePtr(ref _pdbData);
             SilkUtil.ReleasePtr(ref _byteCode);
         }
@@ -95,7 +100,7 @@ namespace Molten.Graphics
             outData = (IDxcBlob*)pData;
         }
 
-        private void LoadPdbData(ShaderCompilerContext context)
+        private void LoadPdbData(ShaderCompilerContext<R, S, DxcCompileResult<R,S>> context)
         {
             IDxcBlobUtf16* pPdbPath = null;
             GetDxcOutput(OutKind.OutPdb, ref _pdbData, &pPdbPath);
@@ -107,20 +112,29 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref pPdbPath);
         }
 
-        private void LoadReflection(ShaderCompilerContext context)
+        private void LoadReflection(ShaderCompilerContext<R, S, DxcCompileResult<R, S>> context)
         {
-            // TODO Re-implement this: https://posts.tanki.ninja/
             IDxcBlob* outData = null;
             DxcBuffer* reflectionBuffer = null;
-            Guid iid = ID3D11ShaderReflection.Guid;
             void* pReflection = null;
+            Guid guidReflection = DxcCompiler<R, S>.CLSID_DxcContainerReflection;
 
             GetDxcOutput(OutKind.OutReflection, ref outData);
-            _utils->CreateReflection(reflectionBuffer, ref iid, ref pReflection);
-            Reflection = new HlslReflection((ID3D11ShaderReflection*)pReflection);
+            _utils->CreateReflection(reflectionBuffer, ref guidReflection, ref pReflection);
 
             nuint dataSize = outData->GetBufferSize();
-            context.AddDebug($"\t Loaded DXC Reflection data -- Bytes: {dataSize}");
+            context.AddDebug($"\t Loaded DXC container reflection data -- Bytes: {dataSize}");
+        }
+
+        public T GetReflection<T>() where T : DxcReflection, new()
+        {
+            if(_reflection == null)
+            {
+                _reflection = new T();
+                _reflection.SetDxcReflection(_containerReflection);
+            }
+
+            return _reflection as T;
         }
 
         private void LoadByteCode()
@@ -128,7 +142,7 @@ namespace Molten.Graphics
             Result->GetResult(ref _byteCode);
         }
 
-        private void LoadErrors(ShaderCompilerContext context)
+        private void LoadErrors(ShaderCompilerContext<R, S, DxcCompileResult<R, S>> context)
         {
             IDxcBlobEncoding* pErrorBlob = null;
             Result->GetErrorBuffer(&pErrorBlob);

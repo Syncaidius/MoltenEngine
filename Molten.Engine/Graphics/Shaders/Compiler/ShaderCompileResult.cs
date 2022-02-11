@@ -2,10 +2,12 @@
 
 namespace Molten.Graphics
 {
-    public class ShaderCompileResult<S>
+    public class ShaderCompileResult<S> : EngineObject
         where S : IShader
     {
         public Dictionary<string, List<S>> ShaderGroups = new Dictionary<string, List<S>>();
+
+        protected override void OnDispose() { }
 
         public void AddResult(string nodeName, List<S> result)
         {
