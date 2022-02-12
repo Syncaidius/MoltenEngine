@@ -32,7 +32,7 @@ namespace Molten.Graphics
 
         ConcurrentDictionary<string, ShaderSource> _sources;
         Dictionary<ShaderNodeType, ShaderNodeParser<R, S, CR>> _nodeParsers;
-        Dictionary<ShaderClassType, ShaderClassCompiler<R, S, CR>> _classCompilers;
+        List<ShaderClassCompiler<R, S, CR>> _classCompilers;
 
         Assembly _defaultIncludeAssembly;
         string _defaultIncludePath;
@@ -44,7 +44,7 @@ namespace Molten.Graphics
             _defaultIncludeAssembly = includeAssembly;
 
             _nodeParsers = new Dictionary<ShaderNodeType, ShaderNodeParser<R, S, CR>>();
-            _classCompilers = new Dictionary<ShaderClassType, ShaderClassCompiler<R, S, CR>>();
+            _classCompilers = new List<ShaderClassCompiler<R, S, CR>>();
             _sources = new ConcurrentDictionary<string, ShaderSource>();
             Renderer = renderer;
         }
@@ -52,20 +52,6 @@ namespace Molten.Graphics
         public abstract bool CompileSource(string entryPoint, ShaderType type, 
             ShaderCompilerContext<R,S,CR> context, out CR result);
 
-        protected List<string> GetClassHeaders(ShaderClassType classType, string source)
-        {
-            string headerTagName = classType.ToString().ToLower();
-            List<string> headers = new List<string>();
-
-            Match m = Regex.Match(source, $"<{headerTagName}>(.|\n)*?</{headerTagName}>");
-            while (m.Success)
-            {
-                headers.Add(m.Value);
-                m = m.NextMatch();
-            }
-
-            return headers;
-        }
 
         /// <summary>
         /// Registers all <see cref="ShaderNodeParser{CXT}"/> types in the assembly of type <typeparamref name="T"/> and inherit
@@ -95,19 +81,19 @@ namespace Molten.Graphics
             }
         }
 
-        protected void AddClassCompiler<T>(ShaderClassType type)
+        protected void AddClassCompiler<T>()
             where T : ShaderClassCompiler<R, S, CR>, new()
         {
             Type t = typeof(T);
             BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
             T scc = Activator.CreateInstance(t, bindFlags, null, null, null) as T;
-            _classCompilers[scc.ClassType] = scc;
+            _classCompilers.Add(scc);
         }
 
-        public ShaderCompileResult<S> CompileShader(ref string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
+        public ShaderCompileResult<S> CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
         {
             ShaderCompilerContext<R, S, CR> context = new ShaderCompilerContext<R, S, CR>(this);
-            Dictionary<ShaderClassType, List<string>> headers = new Dictionary<ShaderClassType, List<string>>();
+            Dictionary<ShaderClassCompiler<R, S, CR>, List<string>> headers = new Dictionary<ShaderClassCompiler<R, S, CR>, List<string>>();
             string finalSource = source;
 
 
@@ -117,12 +103,12 @@ namespace Molten.Graphics
             int originalLineCount = source.Split(_newLineSeparator, StringSplitOptions.None).Length;
 
             // Check the source for all supportead class types.
-            foreach (ShaderClassType classType in _classCompilers.Keys)
+            foreach (ShaderClassCompiler<R,S,CR> scc in _classCompilers)
             {
-                List<string> classHeaders = GetClassHeaders(classType, source);
+                List<string> classHeaders = scc.GetHeaders(in source);
                 if (classHeaders.Count > 0)
                 {
-                    headers.Add(classType, classHeaders);
+                    headers.Add(scc, classHeaders);
 
                     // Remove the XML Molten headers from the source.
                     // This reduces the source we need to check through to find other header types.
@@ -146,14 +132,13 @@ namespace Molten.Graphics
             context.Source = ParseSource(context, filename, ref finalSource, isEmbedded, assembly, nameSpace, originalLineCount);
 
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
-            foreach (ShaderClassType classType in headers.Keys)
+            foreach (ShaderClassCompiler<R, S, CR> parser in headers.Keys)
             {
-                ShaderClassCompiler<R, S, CR> parser = _classCompilers[classType];
-                List<string> nodeHeaders = headers[classType];
+                List<string> nodeHeaders = headers[parser];
                 foreach (string header in nodeHeaders)
                 {
                     List<S> parseResult = parser.Parse(context, Renderer, header);
-                    context.Result.AddResult(classType, parseResult);
+                    context.Result.AddResult(parser.ClassType, parseResult);
                 }
             }
 
