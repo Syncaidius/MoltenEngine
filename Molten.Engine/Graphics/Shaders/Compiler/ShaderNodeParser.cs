@@ -14,9 +14,9 @@ namespace Molten.Graphics
     {
         static string[] _colorDelimiters = new string[] { ",", " " };
 
-        internal abstract string[] SupportedNodes { get; }
+        internal abstract ShaderNodeType NodeType { get; }
 
-        internal abstract NodeParseResult Parse(S shader, ShaderCompilerContext<R, S, CR> context, XmlNode node);
+        internal abstract void Parse(S shader, ShaderCompilerContext<R, S, CR> context, XmlNode node);
 
         protected void InvalidValueMessage(ShaderCompilerContext<R, S, CR> context, XmlNode node, string friendlyTagName, string friendlyValueName)
         {

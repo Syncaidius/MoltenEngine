@@ -14,7 +14,7 @@ namespace Molten.Graphics
         /// <summary>
         /// HLSL shader objects stored by entry-point name
         /// </summary>
-        public Dictionary<string, ShaderCompileResult<S>> Shaders { get; } 
+        public Dictionary<string, CR> Shaders { get; } 
 
         public ShaderCompileResult<S> Result { get; }
 
@@ -24,7 +24,13 @@ namespace Molten.Graphics
 
         public ShaderSource Source { get; set; }
 
-        public ShaderCompileFlags Flags { get; }
+        public string EntryPoint { get; set; }
+
+        public ShaderType Type { get; set; }
+
+        public ShaderModel Model { get; set; }
+
+        public ShaderCompileFlags Flags { get; set; }
 
         public ShaderCompiler<R, S, CR> Compiler { get; }
 
@@ -35,8 +41,9 @@ namespace Molten.Graphics
         {
             _messages = new List<ShaderCompilerMessage>();
             Messages = _messages.AsReadOnly();
-            Shaders = new Dictionary<string, ShaderCompileResult<S>>();
+            Shaders = new Dictionary<string, CR>();
             Result = new ShaderCompileResult<S>();
+            Compiler = compiler;
         }
 
         public void AddResource<T>(string name, T resource) 

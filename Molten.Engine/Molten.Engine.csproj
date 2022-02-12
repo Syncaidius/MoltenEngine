@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Graphics\Shaders\Compiler\NodeParsers\" />
+  </ItemGroup>
+
 </Project>

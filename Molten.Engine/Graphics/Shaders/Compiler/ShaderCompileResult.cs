@@ -5,46 +5,46 @@ namespace Molten.Graphics
     public class ShaderCompileResult<S> : EngineObject
         where S : IShader
     {
-        public Dictionary<string, List<S>> ShaderGroups = new Dictionary<string, List<S>>();
+        public Dictionary<ShaderClassType, List<S>> ShaderGroups = new Dictionary<ShaderClassType, List<S>>();
 
         protected override void OnDispose() { }
 
-        public void AddResult(string nodeName, List<S> result)
+        public void AddResult(ShaderClassType classType, List<S> result)
         {
             if (result.Count > 0)
             {
                 List<S> group = null;
-                if (!ShaderGroups.TryGetValue(nodeName, out group))
+                if (!ShaderGroups.TryGetValue(classType, out group))
                 {
                     group = new List<S>();
-                    ShaderGroups.Add(nodeName, group);
+                    ShaderGroups.Add(classType, group);
                 }
 
                 group.AddRange(result);
             }
         }
 
-        public List<S> this[string groupName]
+        public List<S> this[ShaderClassType cType]
         {
-            get => ShaderGroups[groupName];
+            get => ShaderGroups[cType];
         }
 
-        public IShader this[string groupName, int index]
+        public IShader this[ShaderClassType cType, int index]
         {
             get
             {
-                if (ShaderGroups.TryGetValue(groupName, out List<S> group))
+                if (ShaderGroups.TryGetValue(cType, out List<S> group))
                     return group[index];
                 else
                     return null;
             }
         }
 
-        public IShader this[string groupName, string shaderName]
+        public IShader this[ShaderClassType cType, string shaderName]
         {
             get
             {
-                if (ShaderGroups.TryGetValue(groupName, out List<S> group))
+                if (ShaderGroups.TryGetValue(cType, out List<S> group))
                 {
                     foreach (IShader shader in group)
                     {

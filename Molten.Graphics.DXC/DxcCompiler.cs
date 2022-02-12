@@ -32,7 +32,7 @@ namespace Molten.Graphics
             0xba, 0x3a, 0x16, 0x75, 0xe4, 0x72, 0x8b, 0x91);
 
 
-        Dictionary<string, DxcSubCompiler<R,S>> _shaderParsers;
+        Dictionary<string, DxcClassCompiler<R,S>> _shaderParsers;
        
         IDxcCompiler3* _compiler;
         IDxcUtils* _utils;
@@ -47,7 +47,7 @@ namespace Molten.Graphics
         public DxcCompiler(R renderer, Logger log, string includePath, Assembly includeAssembly) : 
             base(renderer, includePath, includeAssembly)
         {
-            _shaderParsers = new Dictionary<string, DxcSubCompiler<R,S>>();
+            _shaderParsers = new Dictionary<string, DxcClassCompiler<R,S>>();
 
             Dxc = DXC.GetApi();
             _utils = CreateDxcInstance<IDxcUtils>(CLSID_DxcUtils, IDxcUtils.Guid);
@@ -82,15 +82,6 @@ namespace Molten.Graphics
             return (T*)ppv;
         }
 
-        private void AddSubCompiler<T>(string nodeName) 
-            where T : DxcSubCompiler<R,S>
-        {
-            Type t = typeof(T);
-            BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-            DxcSubCompiler<R,S> sub = Activator.CreateInstance(t, bindFlags,  null, null, null) as DxcSubCompiler<R,S>;
-            _shaderParsers.Add(nodeName, sub);
-        }
-
         /// <summary>Compiles HLSL source code and outputs the result. Returns true if successful, or false if there were errors.</summary>
         /// <param name="entryPoint"></param>
         /// <param name="type"></param>
@@ -105,6 +96,7 @@ namespace Molten.Graphics
             // a shader with the same entry-point name is already loaded in the context.
             if (!context.Shaders.TryGetValue(entryPoint, out result))
             {
+                DxcArgumentBuilder<R,S> args = new DxcArgumentBuilder<R,S>(context);
                 context.Args.SetEntryPoint(entryPoint);
                 context.Args.SetShaderProfile(ShaderModel.Model5_0, type);
 

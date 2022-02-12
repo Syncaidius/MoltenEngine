@@ -31,8 +31,8 @@ namespace Molten.Graphics
         public Logger Log { get; }
 
         ConcurrentDictionary<string, ShaderSource> _sources;
-        Dictionary<string, ShaderNodeParser<R, S, CR>> _nodeParsers;
-        Dictionary<string, ShaderSubCompiler<R, S, CR>> _subCompilers;
+        Dictionary<ShaderNodeType, ShaderNodeParser<R, S, CR>> _nodeParsers;
+        Dictionary<ShaderClassType, ShaderClassCompiler<R, S, CR>> _classCompilers;
 
         Assembly _defaultIncludeAssembly;
         string _defaultIncludePath;
@@ -43,8 +43,8 @@ namespace Molten.Graphics
             _defaultIncludePath = includePath;
             _defaultIncludeAssembly = includeAssembly;
 
-            _nodeParsers = new Dictionary<string, ShaderNodeParser<R, S, CR>>();
-            _subCompilers = new Dictionary<string, ShaderSubCompiler<R, S, CR>>();
+            _nodeParsers = new Dictionary<ShaderNodeType, ShaderNodeParser<R, S, CR>>();
+            _classCompilers = new Dictionary<ShaderClassType, ShaderClassCompiler<R, S, CR>>();
             _sources = new ConcurrentDictionary<string, ShaderSource>();
             Renderer = renderer;
         }
@@ -52,8 +52,9 @@ namespace Molten.Graphics
         public abstract bool CompileSource(string entryPoint, ShaderType type, 
             ShaderCompilerContext<R,S,CR> context, out CR result);
 
-        protected List<string> GetHeaders(string headerTagName, string source)
+        protected List<string> GetClassHeaders(ShaderClassType classType, string source)
         {
+            string headerTagName = classType.ToString().ToLower();
             List<string> headers = new List<string>();
 
             Match m = Regex.Match(source, $"<{headerTagName}>(.|\n)*?</{headerTagName}>");
@@ -80,15 +81,33 @@ namespace Molten.Graphics
                 BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
                 ShaderNodeParser<R, S, CR> nParser = 
                     Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<R, S, CR>;
-                foreach (string nodeName in nParser.SupportedNodes)
-                    _nodeParsers[nodeName] = nParser;
+
+                if (_nodeParsers.ContainsKey(nParser.NodeType))
+                {
+                    string ntName = nParser.GetType().Name;
+                    string existingName = _nodeParsers[nParser.NodeType].GetType().Name;
+                    Log.WriteError($"Failed to register node parser '{ntName}' for node type '{nParser.NodeType}' as '{existingName}' is already registered.");
+                }
+                else
+                {
+                    _nodeParsers[nParser.NodeType] = nParser;
+                }
             }
+        }
+
+        protected void AddClassCompiler<T>(ShaderClassType type)
+            where T : ShaderClassCompiler<R, S, CR>, new()
+        {
+            Type t = typeof(T);
+            BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+            T scc = Activator.CreateInstance(t, bindFlags, null, null, null) as T;
+            _classCompilers[scc.ClassType] = scc;
         }
 
         public ShaderCompileResult<S> CompileShader(ref string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
         {
             ShaderCompilerContext<R, S, CR> context = new ShaderCompilerContext<R, S, CR>(this);
-            Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>();
+            Dictionary<ShaderClassType, List<string>> headers = new Dictionary<ShaderClassType, List<string>>();
             string finalSource = source;
 
 
@@ -97,17 +116,19 @@ namespace Molten.Graphics
 
             int originalLineCount = source.Split(_newLineSeparator, StringSplitOptions.None).Length;
 
-            foreach (string nodeName in _subCompilers.Keys)
+            // Check the source for all supportead class types.
+            foreach (ShaderClassType classType in _classCompilers.Keys)
             {
-                List<string> nodeHeaders = GetHeaders(nodeName, source);
-                if (nodeHeaders.Count > 0)
+                List<string> classHeaders = GetClassHeaders(classType, source);
+                if (classHeaders.Count > 0)
                 {
-                    headers.Add(nodeName, nodeHeaders);
+                    headers.Add(classType, classHeaders);
 
                     // Remove the XML Molten headers from the source.
                     // This reduces the source we need to check through to find other header types.
-                    foreach (string h in nodeHeaders)
+                    foreach (string h in classHeaders)
                     {
+                        // Find the header in the original source string, so we can get an accurate line number.
                         int index = source.IndexOf(h);
                         string[] lines = source.Substring(0, index).Split(_newLineSeparator, StringSplitOptions.None);
                         string[] hLines = h.Split(_newLineSeparator, StringSplitOptions.None);
@@ -125,14 +146,14 @@ namespace Molten.Graphics
             context.Source = ParseSource(context, filename, ref finalSource, isEmbedded, assembly, nameSpace, originalLineCount);
 
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
-            foreach (string nodeName in headers.Keys)
+            foreach (ShaderClassType classType in headers.Keys)
             {
-                ShaderSubCompiler<R, S, CR> parser = _subCompilers[nodeName];
-                List<string> nodeHeaders = headers[nodeName];
+                ShaderClassCompiler<R, S, CR> parser = _classCompilers[classType];
+                List<string> nodeHeaders = headers[classType];
                 foreach (string header in nodeHeaders)
                 {
                     List<S> parseResult = parser.Parse(context, Renderer, header);
-                    context.Result.AddResult(nodeName, parseResult);
+                    context.Result.AddResult(classType, parseResult);
                 }
             }
 
@@ -170,13 +191,13 @@ namespace Molten.Graphics
             return false;
         }
 
-        public void ParserHeader(S foundation, ref string header, ShaderCompilerContext<R, S, CR> context)
+        public void ParserHeader(S shader, ref string header, ShaderCompilerContext<R, S, CR> context)
         {
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(header);
 
             XmlNode rootNode = doc.ChildNodes[0];
-            ParseNode(foundation, rootNode, context);
+            ParseNode(shader, rootNode, context);
         }
 
         public void ParseNode(S shader, XmlNode parentNode, ShaderCompilerContext<R, S, CR> context)
@@ -184,18 +205,20 @@ namespace Molten.Graphics
             foreach (XmlNode node in parentNode.ChildNodes)
             {
                 string nodeName = node.Name.ToLower();
+                if (!Enum.TryParse(nodeName, out ShaderNodeType nodeType))
+                {
+                    context.AddError($"Node '{nodeName}' is invalid");
+                    continue;
+                }
+
                 ShaderNodeParser<R, S, CR> parser = null;
-                if (_nodeParsers.TryGetValue(nodeName, out parser))
+                if (!_nodeParsers.TryGetValue(nodeType, out parser))
                 {
-                    parser.Parse(shader, context, node);
+                    context.AddError($"The node '{nodeName}' is not supported by compiler '{this.GetType().Name}'");
+                    continue;
                 }
-                else
-                {
-                    if (parentNode.ParentNode != null)
-                        context.AddWarning($"Ignoring unsupported {parentNode.ParentNode.Name} tag '{parentNode.Name}'");
-                    else
-                        context.AddWarning($"Ignoring unsupported root tag '{parentNode.Name}'");
-                }
+
+                parser.Parse(shader, context, node);
             }
         }
 

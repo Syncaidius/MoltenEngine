@@ -8,7 +8,7 @@ using System.Reflection;
 namespace Molten.Graphics
 {
     internal unsafe abstract class HlslSubCompiler : 
-        ShaderSubCompiler<RendererDX11, HlslShader, FxcCompileResult>
+        ShaderClassCompiler<RendererDX11, HlslShader, FxcCompileResult>
     {
         protected bool HasResource(HlslShader shader, string resourceName)
         {

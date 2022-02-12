@@ -5,15 +5,15 @@
 		<name>main</name>
 		<iterations>1</iterations>
 		<vertex>VS</vertex>
-    <fragment>PS</fragment>
-    <blend preset="Default" />
-    <rasterizer preset="NoCulling" />
-    <depth>
-      <enabled>true</enabled>
-      <writemask>All</writemask>
-      <writepermission>ReadOnly</writepermission>
-      <comparison>LessEqual</comparison>
-    </depth>
+		<fragment>PS</fragment>
+		<blend preset="Default" />
+		<rasterizer preset="NoCulling" />
+		<depth>
+		  <enabled>true</enabled>
+		  <writemask>All</writemask>
+		  <writepermission>ReadOnly</writepermission>
+		  <comparison>LessEqual</comparison>
+		</depth>
 	</pass>
 </material>
 
