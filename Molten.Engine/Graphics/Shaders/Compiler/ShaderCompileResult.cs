@@ -3,7 +3,7 @@
 namespace Molten.Graphics
 {
     public class ShaderCompileResult<S> : EngineObject
-        where S : IShader
+        where S : IShaderElement
     {
         public Dictionary<ShaderClassType, List<S>> ShaderGroups = new Dictionary<ShaderClassType, List<S>>();
 
@@ -29,7 +29,7 @@ namespace Molten.Graphics
             get => ShaderGroups[cType];
         }
 
-        public IShader this[ShaderClassType cType, int index]
+        public IShaderElement this[ShaderClassType cType, int index]
         {
             get
             {
@@ -40,13 +40,13 @@ namespace Molten.Graphics
             }
         }
 
-        public IShader this[ShaderClassType cType, string shaderName]
+        public IShaderElement this[ShaderClassType cType, string shaderName]
         {
             get
             {
                 if (ShaderGroups.TryGetValue(cType, out List<S> group))
                 {
-                    foreach (IShader shader in group)
+                    foreach (IShaderElement shader in group)
                     {
                         if (shader.Name == shaderName)
                             return shader;

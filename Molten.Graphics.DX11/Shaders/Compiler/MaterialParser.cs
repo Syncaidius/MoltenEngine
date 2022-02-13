@@ -7,17 +7,17 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal unsafe class MaterialParser : HlslSubCompiler
+    internal unsafe class MaterialParser : FxcClassCompiler
     {
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
 
-        public override List<HlslShader> Parse(ShaderCompiler<RendererDX11, HlslShader, 
+        public override List<HlslFoundation> Parse(ShaderCompiler<RendererDX11, HlslFoundation, 
             FxcCompileResult> compiler, 
-            ShaderCompilerContext context, 
+            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
             RendererDX11 renderer, 
-            ref string header)
+            in string header)
         {
-            List<HlslShader> result = new List<HlslShader>();
+            List<HlslFoundation> result = new List<HlslFoundation>();
             Material material = new Material(renderer.Device, context.Source.Filename);
             try
             {
@@ -125,7 +125,9 @@ namespace Molten.Graphics
             return result;
         }
 
-        private MaterialPassCompileResult CompilePass(ShaderCompilerContext context, MaterialPass pass)
+        private MaterialPassCompileResult CompilePass(
+            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
+            MaterialPass pass)
         {
             MaterialPassCompileResult result = new MaterialPassCompileResult(pass);
 
@@ -158,7 +160,9 @@ namespace Molten.Graphics
             return result;
         }
 
-        private void BuildPassStructure(ShaderCompilerContext context, MaterialPassCompileResult pResult)
+        private void BuildPassStructure(
+            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
+            MaterialPassCompileResult pResult)
         {
             MaterialPass pass = pResult.Pass;
             Material material = pass.Material as Material;
@@ -200,6 +204,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected override void OnBuildVariableStructure(ShaderCompilerContext context, HlslShader shader, FxcCompileResult result, HlslInputBindDescription bind) { }
+        protected override void OnBuildVariableStructure(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
+            HlslFoundation foundation, FxcCompileResult result, HlslInputBindDescription bind) { }
     }
 }

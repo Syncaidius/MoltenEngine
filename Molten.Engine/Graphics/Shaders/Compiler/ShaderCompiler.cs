@@ -18,7 +18,7 @@ namespace Molten.Graphics
     /// <typeparam name="SB">Source build result</typeparam>
     public abstract class ShaderCompiler<R, S, CR> : EngineObject
         where R : RenderService
-        where S : IShader
+        where S : IShaderElement
         where CR : ShaderCompileResult<S>
     {
         string[] _newLineSeparator = { "\n", Environment.NewLine };
@@ -137,7 +137,7 @@ namespace Molten.Graphics
                 List<string> nodeHeaders = headers[parser];
                 foreach (string header in nodeHeaders)
                 {
-                    List<S> parseResult = parser.Parse(context, Renderer, header);
+                    List<S> parseResult = parser.Parse(context, Renderer, in header);
                     context.Result.AddResult(parser.ClassType, parseResult);
                 }
             }

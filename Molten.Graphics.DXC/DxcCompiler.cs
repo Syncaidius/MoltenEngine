@@ -10,7 +10,7 @@ namespace Molten.Graphics
 {
     internal unsafe class DxcCompiler<R, S> : ShaderCompiler<R, S, DxcCompileResult<R,S>>
         where R : RenderService
-        where S : DxcShader
+        where S : DxcFoundation
     {
         // For reference or help see the following:
         // See: https://github.com/microsoft/DirectXShaderCompiler/blob/master/include/dxc/dxcapi.h

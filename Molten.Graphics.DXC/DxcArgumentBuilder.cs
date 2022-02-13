@@ -17,7 +17,7 @@ namespace Molten.Graphics
     /// </summary>
     internal unsafe class DxcArgumentBuilder<R,S>
         where R : RenderService
-        where S : DxcShader
+        where S : DxcFoundation
     {
         static Dictionary<DxcCompilerArg, string> _argLookup = new Dictionary<DxcCompilerArg, string>()
         {

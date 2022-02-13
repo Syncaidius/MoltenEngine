@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public interface IShader
+    public interface IShader : IShaderElement
     {
         /// <summary>Gets the description of the material.</summary>
         string Description { get; }
@@ -15,8 +15,6 @@ namespace Molten.Graphics
         string Author { get; }
 
         string Filename { get; }
-
-        string Name { get; }
 
         Dictionary<string, string> Metadata { get; }
 

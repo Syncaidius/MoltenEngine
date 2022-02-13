@@ -10,6 +10,7 @@ using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 using Molten.Graphics.Dxgi;
 using System.Reflection;
+using Molten.IO;
 
 namespace Molten.Graphics
 {
@@ -78,12 +79,12 @@ namespace Molten.Graphics
 
         private void LoadDefaultShaders(Assembly includeAssembly)
         {
-            ShaderCompileResult result = LoadEmbeddedShader("Molten.Graphics.Assets", "gbuffer.mfx", includeAssembly);
-            StandardMeshMaterial = result["material", "gbuffer"] as Material;
-            StandardMeshMaterial_NoNormalMap = result["material", "gbuffer-sans-nmap"] as Material;
+            ShaderCompileResult<HlslFoundation> result = LoadEmbeddedShader("Molten.Graphics.Assets", "gbuffer.mfx", includeAssembly);
+            StandardMeshMaterial = result[ShaderClassType.Material, "gbuffer"] as Material;
+            StandardMeshMaterial_NoNormalMap = result[ShaderClassType.Material, "gbuffer-sans-nmap"] as Material;
         }
 
-        internal ShaderCompileResult LoadEmbeddedShader(string nameSpace, string filename, Assembly assembly = null)
+        internal ShaderCompileResult<HlslFoundation> LoadEmbeddedShader(string nameSpace, string filename, Assembly assembly = null)
         {
             string src = "";
             assembly = assembly ?? this.GetType().Assembly;
@@ -93,7 +94,7 @@ namespace Molten.Graphics
                     src = reader.ReadToEnd();
             }
 
-            return ShaderCompiler.BuildShader(ref src, filename, HlslSourceType.EmbeddedFile, assembly, nameSpace);
+            return ShaderCompiler.CompileShader(in src, filename, ShaderCompileFlags.EmbeddedFile, assembly, nameSpace);
         }
 
         internal void InitializeMainSurfaces(uint width, uint height)

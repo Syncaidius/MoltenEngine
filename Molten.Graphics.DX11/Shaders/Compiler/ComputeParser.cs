@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe class ComputeParser : HlslSubCompiler
+    internal unsafe class ComputeParser : FxcClassCompiler
     {
         internal override List<IShader> Parse(HlslCompilerContext context, RendererDX11 renderer, string header)
         {

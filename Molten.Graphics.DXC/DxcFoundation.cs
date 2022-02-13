@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public abstract class DxcShader : IShader
+    public abstract class DxcFoundation : IShaderElement
     {
     }
 }

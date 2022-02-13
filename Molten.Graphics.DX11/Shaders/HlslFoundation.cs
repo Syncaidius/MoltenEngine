@@ -9,7 +9,7 @@ namespace Molten.Graphics
     /// <summary>
     /// An a base class implementation of key shader components (e.g. name, render states, samplers, etc).
     /// </summary>
-    public abstract class HlslFoundation : PipeBindable
+    public abstract class HlslFoundation : PipeBindable, IShaderElement
     {
         /// <summary>
         /// The texture samplers to be used with the shader/component.

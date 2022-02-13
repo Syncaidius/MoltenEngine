@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     internal abstract class DxcClassCompiler<R, S> : ShaderClassCompiler<R, S, DxcCompileResult<R, S>>
         where R : RenderService
-        where S : DxcShader
+        where S : DxcFoundation
     {
         public override List<S> Parse(ShaderCompilerContext<R, S, DxcCompileResult<R, S>> context, R renderer, string header)
         {

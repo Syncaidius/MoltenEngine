@@ -7,24 +7,10 @@ using System.Reflection;
 
 namespace Molten.Graphics
 {
-    internal unsafe abstract class HlslSubCompiler : 
-        ShaderClassCompiler<RendererDX11, HlslShader, FxcCompileResult>
+    internal unsafe abstract class FxcClassCompiler : 
+        ShaderClassCompiler<RendererDX11, HlslFoundation, FxcCompileResult>
     {
-        protected bool HasResource(HlslShader shader, string resourceName)
-        {
-            foreach (ShaderResourceVariable resource in shader.Resources)
-            {
-                if (resource == null)
-                    continue;
-
-                if (resource.Name == resourceName)
-                    return true;
-            }
-
-            return false;
-        }
-
-        protected bool HasConstantBuffer(ShaderCompilerContext<RendererDX11, HlslShader, FxcCompileResult> context, 
+        protected bool HasConstantBuffer(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
             HlslShader shader, string bufferName, string[] varNames)
         {
             foreach (ShaderConstantBuffer buffer in shader.ConstBuffers)
@@ -67,7 +53,7 @@ namespace Molten.Graphics
             composition.OutputStructure = new ShaderIOStructure(result, ShaderIOStructureType.Output);
         }
 
-        protected bool BuildStructure<T>(ShaderCompilerContext<RendererDX11, HlslShader, FxcCompileResult> context, 
+        protected bool BuildStructure<T>(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
             HlslShader shader, FxcCompileResult result, ShaderComposition<T> composition) 
             where T : unmanaged
         {
@@ -142,11 +128,11 @@ namespace Molten.Graphics
             return true;
         }
 
-        protected abstract void OnBuildVariableStructure(ShaderCompilerContext<RendererDX11, HlslShader, FxcCompileResult> context, 
-            HlslShader shader, FxcCompileResult result, HlslInputBindDescription bind);
+        protected abstract void OnBuildVariableStructure(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
+            HlslFoundation shader, FxcCompileResult result, HlslInputBindDescription bind);
 
 
-        private void OnBuildTextureVariable(ShaderCompilerContext<RendererDX11, HlslShader, FxcCompileResult> context, 
+        private void OnBuildTextureVariable(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
             HlslShader shader, HlslInputBindDescription bind)
         {
             ShaderResourceVariable obj = null;
@@ -176,7 +162,7 @@ namespace Molten.Graphics
             shader.Resources[bindPoint] = obj;
         }
 
-        private unsafe ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext<RendererDX11, HlslShader, FxcCompileResult> context, 
+        private unsafe ShaderConstantBuffer GetConstantBuffer(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
             HlslShader shader, ID3D11ShaderReflectionConstantBuffer* buffer)
         {
             ShaderBufferDesc bufferDesc = new ShaderBufferDesc();
@@ -189,7 +175,7 @@ namespace Molten.Graphics
                 localName += $"_{shader.Name}";
 
             // Duplication checks.
-            if (context.ConstantBuffers.TryGetValue(localName, out ShaderConstantBuffer existing))
+            if (context.TryGetResource(localName, out ShaderConstantBuffer existing))
             {
                 // Check for duplicates
                 if (existing != null)
@@ -227,13 +213,13 @@ namespace Molten.Graphics
                 }
 
                 // Register the new buffer
-                context.ConstantBuffers.Add(localName, cBuffer);
+                context.AddResource(localName, cBuffer);
             }
 
             return cBuffer;
         }
 
-        protected T GetVariableResource<T>(ShaderCompilerContext<RendererDX11, HlslShader, FxcCompileResult> context, 
+        protected T GetVariableResource<T>(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
             HlslShader shader, HlslInputBindDescription desc) 
             where T : class, IShaderValue
         {

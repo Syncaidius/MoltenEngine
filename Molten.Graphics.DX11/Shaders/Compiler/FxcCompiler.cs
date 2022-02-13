@@ -8,7 +8,7 @@ using Buffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics
 {
-    internal unsafe class FxcCompiler : ShaderCompiler<RendererDX11, HlslShader, FxcCompileResult>
+    internal unsafe class FxcCompiler : ShaderCompiler<RendererDX11, HlslFoundation, FxcCompileResult>
     {
         // For reference or help see the following:
         // See: https://github.com/microsoft/DirectXShaderCompiler/blob/master/include/dxc/dxcapi.h
@@ -27,7 +27,7 @@ namespace Molten.Graphics
             0xb5, 0xbf, 0xf0, 0x66, 0x4f, 0x39, 0xc1, 0xb0 );
 
 
-        Dictionary<string, HlslSubCompiler> _shaderParsers;
+        Dictionary<string, FxcClassCompiler> _shaderParsers;
        
         IDxcCompiler3* _compiler;
         IDxcUtils* _utils;
@@ -42,18 +42,18 @@ namespace Molten.Graphics
         internal FxcCompiler(RendererDX11 renderer, Logger log, string includePath, Assembly includeAssembly) :
             base(renderer, includePath, includeAssembly)
         {
-            _shaderParsers = new Dictionary<string, HlslSubCompiler>();
+            _shaderParsers = new Dictionary<string, FxcClassCompiler>();
 
             Dxc = DXC.GetApi();
             _utils = CreateDxcInstance<IDxcUtils>(CLSID_DxcUtils, IDxcUtils.Guid);
             _compiler = CreateDxcInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
 
             // Detect and instantiate node parsers
-            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<HlslShader>>();
+            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<HlslFoundation>>();
             foreach (Type t in parserTypes)
             {
                 BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-                ShaderNodeParser<HlslShader> parser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<HlslShader>;
+                ShaderNodeParser<HlslFoundation> parser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<HlslShader>;
                 foreach (string nodeName in parser.SupportedNodes)
                     NodeParsers.Add(nodeName, parser);
             }
@@ -76,11 +76,11 @@ namespace Molten.Graphics
             return (T*)ppv;
         }
 
-        private void AddSubCompiler<T>(string nodeName) where T : HlslSubCompiler
+        private void AddSubCompiler<T>(string nodeName) where T : FxcClassCompiler
         {
             Type t = typeof(T);
             BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-            HlslSubCompiler sub = Activator.CreateInstance(t, bindFlags,  null, null, null) as HlslSubCompiler;
+            FxcClassCompiler sub = Activator.CreateInstance(t, bindFlags,  null, null, null) as FxcClassCompiler;
             _shaderParsers.Add(nodeName, sub);
         }
 
@@ -91,7 +91,7 @@ namespace Molten.Graphics
         /// <param name="result"></param>
         /// <returns></returns>
         public override bool CompileSource(string entryPoint, ShaderType type, 
-            ShaderCompilerContext<RendererDX11, HlslShader, FxcCompileResult> context, out FxcCompileResult result)
+            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, out FxcCompileResult result)
         {
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.

@@ -8,7 +8,7 @@ namespace Molten.Graphics
 {
     public class ShaderCompilerContext<R, S, CR>
         where R : RenderService
-        where S : IShader
+        where S : IShaderElement
         where CR : ShaderCompileResult<S>
     {
         /// <summary>
@@ -58,7 +58,7 @@ namespace Molten.Graphics
             lookup.Add(name, resource);
         }
 
-        public T TryGetResource<T>(string name)
+        public bool TryGetResource<T>(string name, out T resource)
             where T : EngineObject
         {
             if (_resources.TryGetValue(typeof(T), out Dictionary<string, object> lookup))
@@ -67,10 +67,15 @@ namespace Molten.Graphics
                 _resources.Add(typeof(T), lookup);
             }
 
-            if (lookup.TryGetValue(name, out object value))
-                return value as T;
-            else
-                return default(T);
+            object result = default(T);
+            if(lookup.TryGetValue(name, out result))
+            {
+                resource = result as T;
+                return true;
+            }
+
+            resource = default(T);
+            return false;
         }
 
         public void AddMessage(string text, ShaderCompilerMessage.Kind type = ShaderCompilerMessage.Kind.Message)

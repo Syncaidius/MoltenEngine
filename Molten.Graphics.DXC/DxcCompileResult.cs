@@ -18,7 +18,7 @@ namespace Molten.Graphics
     /// <typeparam name="S">DXC shader type.</typeparam>
     public unsafe class DxcCompileResult<R, S> : ShaderCompileResult<S>
         where R : RenderService
-        where S : DxcShader
+        where S : DxcFoundation
     {
         
         internal IDxcResult* Result;

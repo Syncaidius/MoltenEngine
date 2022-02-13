@@ -10,7 +10,7 @@ namespace Molten.Graphics
 {
     public abstract class ShaderClassCompiler<R, S, CR>
         where R : RenderService
-        where S : IShader
+        where S : IShaderElement
         where CR : ShaderCompileResult<S>
     {
         Regex _regexHeader;
@@ -35,7 +35,7 @@ namespace Molten.Graphics
             return headers;
         }
 
-        public abstract List<S> Parse(ShaderCompilerContext<R, S, CR> context, R renderer, string header);
+        public abstract List<S> Parse(ShaderCompilerContext<R, S, CR> context, R renderer, in string header);
 
         public abstract ShaderClassType ClassType { get; }
     }
