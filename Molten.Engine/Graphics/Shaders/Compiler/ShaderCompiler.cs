@@ -55,7 +55,7 @@ namespace Molten.Graphics
         /// from type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The base type of the node parsers to be detected and added.</typeparam>
-        protected void AddNodeParser<T>()
+        protected void AddNodeParsers<T>()
             where T : ShaderNodeParser<R, S, CR>, new()
         {
             IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<T>();

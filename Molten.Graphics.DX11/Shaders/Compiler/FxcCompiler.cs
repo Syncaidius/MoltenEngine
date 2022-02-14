@@ -10,21 +10,7 @@ namespace Molten.Graphics
 {
     internal unsafe class FxcCompiler : ShaderCompiler<RendererDX11, HlslFoundation, FxcCompileResult>
     {
-        // For reference or help see the following:
-        // See: https://github.com/microsoft/DirectXShaderCompiler/blob/master/include/dxc/dxcapi.h
-        // See: https://posts.tanki.ninja/2019/07/11/Using-DXC-In-Practice/
-        // See: https://simoncoenen.com/blog/programming/graphics/DxcCompiling
-
-        static readonly Guid CLSID_DxcLibrary= new Guid(0x6245d6af, 0x66e0, 0x48fd, 
-            new byte[] {0x80, 0xb4, 0x4d, 0x27, 0x17, 0x96, 0x74, 0x8c});
-
-        static readonly Guid CLSID_DxcUtils = CLSID_DxcLibrary;
-
-        static readonly Guid CLSID_DxcCompilerArgs = new Guid(0x3e56ae82, 0x224d, 0x470f,
-            new byte[] { 0xa1, 0xa1, 0xfe, 0x30, 0x16, 0xee, 0x9f, 0x9d });
-
-        static readonly Guid CLSID_DxcCompiler = new Guid(0x73e22d93U, (ushort)0xe6ceU, (ushort)0x47f3U, 
-            0xb5, 0xbf, 0xf0, 0x66, 0x4f, 0x39, 0xc1, 0xb0 );
+        internal D3DCompiler Compiler { get; }
 
         /// <summary>
         /// Creates a new instance of <see cref="FxcCompiler"/>.
@@ -36,20 +22,8 @@ namespace Molten.Graphics
         internal FxcCompiler(RendererDX11 renderer, Logger log, string includePath, Assembly includeAssembly) :
             base(renderer, includePath, includeAssembly)
         {
-            _utils = CreateDxcInstance<IDxcUtils>(CLSID_DxcUtils, IDxcUtils.Guid);
-            _compiler = CreateDxcInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
-
-            // Detect and instantiate node parsers
-            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<RendererDX11, HlslFoundation, FxcCompileResult>>();
-            foreach (Type t in parserTypes)
-            {
-                BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-                ShaderNodeParser<RendererDX11, HlslFoundation, FxcCompileResult> parser = 
-                    Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<RendererDX11, HlslFoundation, FxcCompileResult>;
-                
-                foreach (string nodeName in parser.SupportedNodes)
-                    NodeParsers.Add(nodeName, parser);
-            }
+            Compiler = D3DCompiler.GetApi();
+            AddNodeParsers<ShaderNodeParser<RendererDX11, HlslFoundation, FxcCompileResult>>();
 
             AddClassCompiler<MaterialCompiler>();
             AddClassCompiler<ComputeCompiler>();
@@ -57,8 +31,7 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-
-         
+            Compiler.Dispose();
         }
 
         /// <summary>Compiles HLSL source code and outputs the result. Returns true if successful, or false if there were errors.</summary>
