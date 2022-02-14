@@ -34,6 +34,8 @@ namespace Molten.Graphics
 
         public ShaderCompiler<R, S, CR> Compiler { get; }
 
+        public R Renderer { get; }
+
         List<ShaderCompilerMessage> _messages;
         Dictionary<Type, Dictionary<string, object>> _resources;
 
@@ -44,6 +46,7 @@ namespace Molten.Graphics
             Shaders = new Dictionary<string, CR>();
             Result = new ShaderCompileResult<S>();
             Compiler = compiler;
+            Renderer = compiler.Renderer;
         }
 
         public void AddResource<T>(string name, T resource) 

@@ -8,17 +8,21 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe class ComputeParser : FxcClassCompiler
+    internal unsafe class ComputeCompiler : FxcClassCompiler
     {
-        internal override List<IShader> Parse(HlslCompilerContext context, RendererDX11 renderer, string header)
+        public override ShaderClassType ClassType => ShaderClassType.Compute;
+
+        public override List<HlslShader> Parse(
+            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
+            RendererDX11 renderer, in string header)
         {
-            List<IShader> shaders = new List<IShader>();
+            List<HlslShader> shaders = new List<HlslShader>();
             ComputeTask compute = new ComputeTask(renderer.Device, context.Source.Filename);
             try
             {
-                ParserHeader(compute, ref header, context);
-                HlslCompileResult result = null;
-                if (context.Compiler.CompileHlsl(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out result))
+                context.Compiler.ParserHeader(compute, in header, context);
+                FxcCompileResult result = null;
+                if (context.Compiler.CompileSource(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out result))
                 {
                     if(BuildStructure(context, compute, result, compute.Composition))
                     {
@@ -34,21 +38,22 @@ namespace Molten.Graphics
                 context.AddError($"{context.Source.Filename ?? "Material header error"}: {e.Message}");
             }
 
-            if(context.HasErrors)
+            if(!context.HasErrors)
             {
                 shaders.Add(compute);
                 (renderer.Compute as ComputeManager).AddTask(compute);
             }
 
             // Intialize the shader's default resource array, now that we have the final count of the shader's actual resources.
-            foreach (HlslShader shader in result)
+            foreach (HlslShader shader in shaders)
                 shader.DefaultResources = new IShaderResource[shader.Resources.Length];
 
             return shaders;
         }
 
-        protected override void OnBuildVariableStructure(HlslCompilerContext context, HlslShader shader,
-            HlslCompileResult result, HlslInputBindDescription bind)
+        protected override void OnBuildVariableStructure(
+            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context,
+            HlslFoundation shader, FxcCompileResult result, HlslInputBindDescription bind)
         {
             ComputeTask ct = shader as ComputeTask;
 
@@ -66,7 +71,9 @@ namespace Molten.Graphics
             }
         }
 
-        protected void OnBuildRWStructuredVariable(HlslCompilerContext context, ComputeTask shader, HlslInputBindDescription bind)
+        protected void OnBuildRWStructuredVariable
+            (ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
+            ComputeTask shader, HlslInputBindDescription bind)
         {
             RWBufferVariable rwBuffer = GetVariableResource<RWBufferVariable>(context, shader, bind);
             uint bindPoint = bind.Ptr->BindPoint;
@@ -77,7 +84,9 @@ namespace Molten.Graphics
             shader.UAVs[bindPoint] = rwBuffer;
         }
 
-        protected void OnBuildRWTypedVariable(HlslCompilerContext context, ComputeTask shader, HlslInputBindDescription bind)
+        protected void OnBuildRWTypedVariable(
+            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
+            ComputeTask shader, HlslInputBindDescription bind)
         {
             RWVariable resource = null;
             uint bindPoint = bind.Ptr->BindPoint;

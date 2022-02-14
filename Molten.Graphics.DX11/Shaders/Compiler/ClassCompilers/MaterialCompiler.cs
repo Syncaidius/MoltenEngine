@@ -7,21 +7,20 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal unsafe class MaterialParser : FxcClassCompiler
+    internal unsafe class MaterialCompiler : FxcClassCompiler
     {
+        public override ShaderClassType ClassType => ShaderClassType.Material;
+
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
 
-        public override List<HlslFoundation> Parse(ShaderCompiler<RendererDX11, HlslFoundation, 
-            FxcCompileResult> compiler, 
-            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
-            RendererDX11 renderer, 
-            in string header)
+        public override List<HlslFoundation> Parse(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context,
+            RendererDX11 renderer, in string header)
         {
             List<HlslFoundation> result = new List<HlslFoundation>();
             Material material = new Material(renderer.Device, context.Source.Filename);
             try
             {
-                context.Compiler.ParserHeader(material, ref header, context);
+                context.Compiler.ParserHeader(material, in header, context);
                 if (material.Passes == null || material.Passes.Length == 0)
                 {
                     material.AddDefaultPass();
@@ -137,7 +136,7 @@ namespace Molten.Graphics
                 if (pass.Compositions[i].Optional && string.IsNullOrWhiteSpace(pass.Compositions[i].EntryPoint))
                     continue;
 
-                if (compiler.CompileHlsl(pass.Compositions[i].EntryPoint, 
+                if (context.Compiler.CompileSource(pass.Compositions[i].EntryPoint, 
                     MaterialPass.ShaderTypes[i], context, out result.Results[i]))
                 {
                     BuildIO(result.Results[i], pass.Compositions[i]);
@@ -166,7 +165,6 @@ namespace Molten.Graphics
         {
             MaterialPass pass = pResult.Pass;
             Material material = pass.Material as Material;
-            Device device = material.Device;
 
             // Vertex Shader
             if (pResult.VertexResult != null)

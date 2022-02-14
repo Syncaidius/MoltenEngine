@@ -63,8 +63,8 @@ namespace Molten.Graphics
                     NodeParsers.Add(nodeName, parser);
             }
 
-            AddSubCompiler<MaterialParser>("material");
-            AddSubCompiler<ComputeParser>("compute");
+            AddClassCompiler<MaterialParser>();
+            AddClassCompiler<ComputeParser>();
         }
 
         protected override void OnDispose()

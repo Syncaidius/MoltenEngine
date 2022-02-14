@@ -26,12 +26,6 @@ namespace Molten.Graphics
         static readonly Guid CLSID_DxcCompiler = new Guid(0x73e22d93U, (ushort)0xe6ceU, (ushort)0x47f3U, 
             0xb5, 0xbf, 0xf0, 0x66, 0x4f, 0x39, 0xc1, 0xb0 );
 
-
-        Dictionary<string, FxcClassCompiler> _shaderParsers;
-       
-        IDxcCompiler3* _compiler;
-        IDxcUtils* _utils;
-
         /// <summary>
         /// Creates a new instance of <see cref="FxcCompiler"/>.
         /// </summary>
@@ -42,46 +36,29 @@ namespace Molten.Graphics
         internal FxcCompiler(RendererDX11 renderer, Logger log, string includePath, Assembly includeAssembly) :
             base(renderer, includePath, includeAssembly)
         {
-            _shaderParsers = new Dictionary<string, FxcClassCompiler>();
-
-            Dxc = DXC.GetApi();
             _utils = CreateDxcInstance<IDxcUtils>(CLSID_DxcUtils, IDxcUtils.Guid);
             _compiler = CreateDxcInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
 
             // Detect and instantiate node parsers
-            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<HlslFoundation>>();
+            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<RendererDX11, HlslFoundation, FxcCompileResult>>();
             foreach (Type t in parserTypes)
             {
                 BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-                ShaderNodeParser<HlslFoundation> parser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<HlslShader>;
+                ShaderNodeParser<RendererDX11, HlslFoundation, FxcCompileResult> parser = 
+                    Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<RendererDX11, HlslFoundation, FxcCompileResult>;
+                
                 foreach (string nodeName in parser.SupportedNodes)
                     NodeParsers.Add(nodeName, parser);
             }
 
-            AddSubCompiler<MaterialParser>("material");
-            AddSubCompiler<ComputeParser>("compute");
+            AddClassCompiler<MaterialCompiler>();
+            AddClassCompiler<ComputeCompiler>();
         }
 
         protected override void OnDispose()
         {
-            SilkUtil.ReleasePtr(ref _compiler);
-            SilkUtil.ReleasePtr(ref _utils);
-            Dxc.Dispose();
-        }
 
-        private T* CreateDxcInstance<T>(Guid clsid, Guid iid) where T : unmanaged
-        {
-            void* ppv = null;
-            HResult result = Dxc.CreateInstance(&clsid, &iid, ref ppv);
-            return (T*)ppv;
-        }
-
-        private void AddSubCompiler<T>(string nodeName) where T : FxcClassCompiler
-        {
-            Type t = typeof(T);
-            BindingFlags bindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-            FxcClassCompiler sub = Activator.CreateInstance(t, bindFlags,  null, null, null) as FxcClassCompiler;
-            _shaderParsers.Add(nodeName, sub);
+         
         }
 
         /// <summary>Compiles HLSL source code and outputs the result. Returns true if successful, or false if there were errors.</summary>
@@ -121,11 +98,5 @@ namespace Molten.Graphics
 
             return true;
         }
-
-        internal DXC Dxc { get; }
-
-        internal IDxcCompiler3* Native => _compiler;
-
-        internal IDxcUtils* Utils => _utils;
     }
 }

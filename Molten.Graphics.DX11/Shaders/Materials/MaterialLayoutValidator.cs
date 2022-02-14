@@ -9,7 +9,8 @@ namespace Molten.Graphics
 {
     internal class MaterialLayoutValidator
     {
-        internal bool Validate(ShaderCompilerContext context, MaterialPassCompileResult pResult)
+        internal bool Validate(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context,
+            MaterialPassCompileResult pResult)
         {
             bool valid = true;
             MaterialPass pass = pResult.Pass;
@@ -71,7 +72,9 @@ namespace Molten.Graphics
                 CheckGeometryTessellationAdjacency(pResult);
         }
 
-        private bool CheckTessellationShaders(ShaderCompilerContext context, MaterialPassCompileResult pResult)
+        private bool CheckTessellationShaders(
+            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
+            MaterialPassCompileResult pResult)
         {
             bool valid = true;
             FxcCompileResult hs = pResult.Results[MaterialPass.ID_HULL];

@@ -11,6 +11,7 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class HlslFoundation : PipeBindable, IShaderElement
     {
+
         /// <summary>
         /// The texture samplers to be used with the shader/component.
         /// </summary>
@@ -34,6 +35,7 @@ namespace Molten.Graphics
         internal HlslFoundation(Device device) : base(device)
         {
             Samplers = new ShaderStateBank<ShaderSampler>[0];
+            Parent = this;
         }
 
         protected internal override sealed void Refresh(PipeSlot slot, DeviceContext pipe) { }
@@ -42,5 +44,7 @@ namespace Molten.Graphics
         /// Gets or sets the number of iterations the shader/component should be run.
         /// </summary>
         public int Iterations { get; set; } = 1;
+
+        public HlslShader Parent { get; internal set; }
     }
 }

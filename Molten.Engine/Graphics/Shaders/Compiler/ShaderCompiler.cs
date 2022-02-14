@@ -6,14 +6,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Molten.Graphics
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <summary>Provides a base for implementing </summary>
     /// <typeparam name="CXT">Shader compiler context type</typeparam>
     /// <typeparam name="SB">Source build result</typeparam>
     public abstract class ShaderCompiler<R, S, CR> : EngineObject
@@ -57,16 +54,15 @@ namespace Molten.Graphics
         /// Registers all <see cref="ShaderNodeParser{CXT}"/> types in the assembly of type <typeparamref name="T"/> and inherit
         /// from type <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        protected void RegisterNodeParsers<T>()
-            where T : ShaderNodeParser<R, S, CR>
+        /// <typeparam name="T">The base type of the node parsers to be detected and added.</typeparam>
+        protected void AddNodeParser<T>()
+            where T : ShaderNodeParser<R, S, CR>, new()
         {
-            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<R, S, CR>>();
+            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<T>();
             foreach (Type t in parserTypes)
             {
                 BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-                ShaderNodeParser<R, S, CR> nParser = 
-                    Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<R, S, CR>;
+                T nParser = Activator.CreateInstance(t, bFlags, null, null, null) as T;
 
                 if (_nodeParsers.ContainsKey(nParser.NodeType))
                 {
@@ -76,6 +72,7 @@ namespace Molten.Graphics
                 }
                 else
                 {
+                    // Replace existing parser for this node type
                     _nodeParsers[nParser.NodeType] = nParser;
                 }
             }
@@ -176,7 +173,7 @@ namespace Molten.Graphics
             return false;
         }
 
-        public void ParserHeader(S shader, ref string header, ShaderCompilerContext<R, S, CR> context)
+        public void ParserHeader(S shader, in string header, ShaderCompilerContext<R, S, CR> context)
         {
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(header);
