@@ -16,7 +16,7 @@ namespace Molten.Graphics
         /// </summary>
         public Dictionary<string, CR> Shaders { get; } 
 
-        public ShaderCompileResult<S> Result { get; }
+        public CR Result { get; }
 
         public IReadOnlyList<ShaderCompilerMessage> Messages { get; }
 
@@ -44,7 +44,7 @@ namespace Molten.Graphics
             _messages = new List<ShaderCompilerMessage>();
             Messages = _messages.AsReadOnly();
             Shaders = new Dictionary<string, CR>();
-            Result = new ShaderCompileResult<S>();
+            Result = null;
             Compiler = compiler;
             Renderer = compiler.Renderer;
         }

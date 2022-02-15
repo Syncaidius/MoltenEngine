@@ -45,12 +45,12 @@ namespace Molten.Graphics
             _segment = renderer.DynamicVertexBuffer.Allocate<SpriteVertex>(_spriteCapacity);
             _segment.SetVertexFormat(typeof(SpriteVertex));
 
-            ShaderCompileResult result = renderer.LoadEmbeddedShader("Molten.Graphics.DX11.Assets", "sprite.mfx");
-            _defaultMaterial = result["material", "sprite-texture"] as Material;
-            _defaultNoTextureMaterial = result["material", "sprite-no-texture"] as Material;
-            _defaultLineMaterial = result["material", "line"] as Material;
-            _defaultCircleMaterial = result["material", "circle"] as Material;
-            _defaultTriMaterial = result["material", "triangle"] as Material;
+            FxcCompileResult result = renderer.LoadEmbeddedShader("Molten.Graphics.DX11.Assets", "sprite.mfx");
+            _defaultMaterial = result[ShaderClassType.Material, "sprite-texture"] as Material;
+            _defaultNoTextureMaterial = result[ShaderClassType.Material, "sprite-no-texture"] as Material;
+            _defaultLineMaterial = result[ShaderClassType.Material, "line"] as Material;
+            _defaultCircleMaterial = result[ShaderClassType.Material, "circle"] as Material;
+            _defaultTriMaterial = result[ShaderClassType.Material, "triangle"] as Material;
 
             _flushFuncs = new Action<DeviceContext, RenderCamera, Range, ObjectRenderData>[4]
             {

@@ -87,7 +87,7 @@ namespace Molten.Graphics
             _classCompilers.Add(scc);
         }
 
-        public ShaderCompileResult<S> CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
+        public CR CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
         {
             ShaderCompilerContext<R, S, CR> context = new ShaderCompilerContext<R, S, CR>(this);
             Dictionary<ShaderClassCompiler<R, S, CR>, List<string>> headers = new Dictionary<ShaderClassCompiler<R, S, CR>, List<string>>();

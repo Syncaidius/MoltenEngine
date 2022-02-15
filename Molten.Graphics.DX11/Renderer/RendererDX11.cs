@@ -84,7 +84,7 @@ namespace Molten.Graphics
             StandardMeshMaterial_NoNormalMap = result[ShaderClassType.Material, "gbuffer-sans-nmap"] as Material;
         }
 
-        internal ShaderCompileResult<HlslFoundation> LoadEmbeddedShader(string nameSpace, string filename, Assembly assembly = null)
+        internal FxcCompileResult LoadEmbeddedShader(string nameSpace, string filename, Assembly assembly = null)
         {
             string src = "";
             assembly = assembly ?? this.GetType().Assembly;
