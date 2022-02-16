@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe class FxcReflection : IDisposable
+    public unsafe class FxcReflection : IDisposable
     {
         internal ID3D11ShaderReflection* Ptr;
 

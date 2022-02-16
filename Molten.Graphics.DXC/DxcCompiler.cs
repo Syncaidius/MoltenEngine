@@ -97,12 +97,12 @@ namespace Molten.Graphics
             if (!context.Shaders.TryGetValue(entryPoint, out result))
             {
                 DxcArgumentBuilder<R,S> args = new DxcArgumentBuilder<R,S>(context);
-                context.Args.SetEntryPoint(entryPoint);
-                context.Args.SetShaderProfile(ShaderModel.Model5_0, type);
+                args.SetEntryPoint(entryPoint);
+                args.SetShaderProfile(ShaderModel.Model5_0, type);
 
-                string argString = context.Args.ToString();
-                uint argCount = context.Args.Count;
-                char** ptrArgString = context.Args.GetArgsPtr();
+                string argString = args.ToString();
+                uint argCount = args.Count;
+                char** ptrArgString = args.GetArgsPtr();
 
                 Guid dxcResultGuid = IDxcResult.Guid;
                 void* dxcResult;

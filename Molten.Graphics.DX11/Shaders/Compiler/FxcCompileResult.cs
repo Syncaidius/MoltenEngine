@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe class FxcCompileResult : ShaderCompileResult<HlslFoundation>
+    public unsafe class FxcCompileResult : ShaderCompileResult<HlslFoundation>
     {
         public FxcReflection Reflection { get; }
 

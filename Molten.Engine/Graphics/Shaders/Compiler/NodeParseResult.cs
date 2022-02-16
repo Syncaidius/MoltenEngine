@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal struct NodeParseResult
+    public struct NodeParseResult
     {
         public string Message;
 
@@ -25,7 +25,7 @@ namespace Molten.Graphics
         }
     }
 
-    internal enum NodeParseResultType
+    public enum NodeParseResultType
     {
         Ignored = 0,
 

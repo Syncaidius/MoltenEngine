@@ -7,7 +7,7 @@ namespace Molten.Threading
     /// <summary>An thread with its own update and timing loop. Can be paused/stopped/continued at any time. Useful for game components which update on a regular 
     /// basis (e.g. game world, rendering, logic, etc).</summary>
     /// <seealso cref="System.IDisposable" />
-    internal class EngineThread : IDisposable
+    public class EngineThread : IDisposable
     {
         ThreadedQueue<Action> _dispatchedActions;
         Timing _timing;

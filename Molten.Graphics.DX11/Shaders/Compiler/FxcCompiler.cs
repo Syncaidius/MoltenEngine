@@ -28,6 +28,11 @@ namespace Molten.Graphics
             AddClassCompiler<ComputeCompiler>();
         }
 
+        protected override List<Type> GetNodeParserList()
+        {
+            return ReflectionHelper.FindTypeInParentAssembly<FxcNodeParser>();
+        }
+
         protected override void OnDispose()
         {
             Compiler.Dispose();

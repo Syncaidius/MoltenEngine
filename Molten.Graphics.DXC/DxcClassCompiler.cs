@@ -10,9 +10,6 @@ namespace Molten.Graphics
         where R : RenderService
         where S : DxcFoundation
     {
-        public override List<S> Parse(ShaderCompilerContext<R, S, DxcCompileResult<R, S>> context, R renderer, string header)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }
