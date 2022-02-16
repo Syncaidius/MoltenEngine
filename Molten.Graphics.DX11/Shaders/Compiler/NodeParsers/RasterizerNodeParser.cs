@@ -8,14 +8,17 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal class RasterizerNodeParser : ShaderNodeParser
+    internal class RasterizerNodeParser : FxcNodeParser
     {
-        internal override string[] SupportedNodes => new string[] { "rasterizer" };
+        public override ShaderNodeType NodeType => ShaderNodeType.Rasterizer;
 
-        internal override NodeParseResult Parse(HlslFoundation foundation, HlslCompilerContext context, XmlNode node)
+        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, XmlNode node)
         {
             if (foundation is ComputeTask)
-                return new NodeParseResult(NodeParseResultType.Ignored);
+            {
+                context.AddWarning($"Ignoring {NodeType} in compute task definition");
+                return;
+            }
 
             GraphicsRasterizerState state = null;
             StateConditions conditions = StateConditions.None;
@@ -123,8 +126,6 @@ namespace Molten.Graphics
                 foundation.RasterizerState.FillMissingWith(state);
             else
                 foundation.RasterizerState[conditions] = state;
-
-            return new NodeParseResult(NodeParseResultType.Success);
         }
     }
 }

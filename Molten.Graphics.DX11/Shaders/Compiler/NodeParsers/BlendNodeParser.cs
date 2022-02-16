@@ -8,14 +8,17 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal class BlendNodeParser : ShaderNodeParser
+    public class BlendNodeParser : FxcNodeParser
     {
-        internal override string[] SupportedNodes => new string[] { "blend" };
+        public override ShaderNodeType NodeType => ShaderNodeType.Blend;
 
-        internal override NodeParseResult Parse(HlslFoundation foundation, HlslCompilerContext context, XmlNode node)
+        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, XmlNode node)
         {
             if (foundation is ComputeTask)
-                return new NodeParseResult(NodeParseResultType.Ignored);
+            {
+                context.AddWarning($"Ignoring {NodeType} in compute task definition");
+                return;
+            }
 
             StateConditions conditions = StateConditions.None;
             int rtIndex = 0;
@@ -146,8 +149,6 @@ namespace Molten.Graphics
                 foundation.BlendState.FillMissingWith(state);
             else
                 foundation.BlendState[conditions] = state;
-
-            return new NodeParseResult(NodeParseResultType.Success);
         }
     }
 }

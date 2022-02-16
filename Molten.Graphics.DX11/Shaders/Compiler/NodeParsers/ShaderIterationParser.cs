@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal class ShaderIterationParser : ShaderNodeParser
+    internal class ShaderIterationParser : FxcNodeParser
     {
         internal override string[] SupportedNodes => new string[] { "iterations" };
 

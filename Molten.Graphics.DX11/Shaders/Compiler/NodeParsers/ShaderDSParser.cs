@@ -8,23 +8,32 @@ using System.Xml;
 namespace Molten.Graphics
 {
     /// <summary>An entry-point tag parser used by <see cref="ComputeTask"/> headers.</summary>
-    internal class ShaderDSParser : ShaderNodeParser
+    internal class ShaderDSParser : FxcNodeParser
     {
-        internal override string[] SupportedNodes => new string[] { "domain" };
+        public override ShaderNodeType NodeType => ShaderNodeType.Domain;
 
-        internal override NodeParseResult Parse(HlslFoundation foundation, HlslCompilerContext context, XmlNode node)
+        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, XmlNode node)
         {
+            if (foundation is ComputeTask)
+            {
+                context.AddWarning($"Ignoring {NodeType} in compute task definition");
+                return;
+            }
+
             switch (foundation)
             {
                 case Material material:
                     material.DefaultDSEntryPoint = node.InnerText;
-                    return new NodeParseResult(NodeParseResultType.Success);
+                    break;
+
                 case MaterialPass pass:
                     pass.DomainShader.EntryPoint = node.InnerText;
-                    return new NodeParseResult(NodeParseResultType.Success);
-            }
+                    break;
 
-            return new NodeParseResult(NodeParseResultType.Ignored);
+                default:
+                    context.AddWarning($"Ignoring '{NodeType}' in unsupported shader type '{foundation.GetType().Name}' definition");
+                    break;
+            }
         }
     }
 }

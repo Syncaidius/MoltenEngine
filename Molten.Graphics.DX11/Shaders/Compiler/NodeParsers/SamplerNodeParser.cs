@@ -7,14 +7,17 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal class SamplerNodeParser : ShaderNodeParser
-    { 
-        internal override string[] SupportedNodes => new string[] { "sampler" };
+    internal class SamplerNodeParser : FxcNodeParser
+    {
+        public override ShaderNodeType NodeType => ShaderNodeType.Sampler;
 
-        internal override NodeParseResult Parse(HlslFoundation foundation, HlslCompilerContext context, XmlNode node)
+        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, XmlNode node)
         {
             if (foundation is ComputeTask)
-                return new NodeParseResult(NodeParseResultType.Ignored);
+            {
+                context.AddWarning($"Ignoring {NodeType} in compute task definition");
+                return;
+            }
 
             int slotID = 0;
             StateConditions conditions = StateConditions.None;
@@ -137,7 +140,6 @@ namespace Molten.Graphics
 
             sampler = foundation.Device.SamplerBank.AddOrRetrieveExisting(sampler);
             foundation.Samplers[slotID][conditions] = sampler;
-            return new NodeParseResult(NodeParseResultType.Success);
         }
     }
 }

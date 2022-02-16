@@ -8,14 +8,17 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal class DepthNodeParser : ShaderNodeParser
+    internal class DepthNodeParser : FxcNodeParser
     {
-        internal override string[] SupportedNodes => new string[] { "depth" };
+        public override ShaderNodeType NodeType => ShaderNodeType.Depth;
 
-        internal override NodeParseResult Parse(HlslFoundation foundation, HlslCompilerContext context, XmlNode node)
+        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, XmlNode node)
         {
             if (foundation is ComputeTask)
-                return new NodeParseResult(NodeParseResultType.Ignored);
+            {
+                context.AddWarning($"Ignoring {NodeType} in compute task definition");
+                return;
+            }
 
             GraphicsDepthState state = null;
             StateConditions conditions = StateConditions.None;
@@ -120,11 +123,9 @@ namespace Molten.Graphics
                 foundation.DepthState.FillMissingWith(state);
             else
                 foundation.DepthState[conditions] = state;
-
-            return new NodeParseResult(NodeParseResultType.Success);
         }
 
-        private void ParseFaceNode(HlslCompilerContext context, XmlNode faceNode, GraphicsDepthState.Face face)
+        private void ParseFaceNode(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, XmlNode faceNode, GraphicsDepthState.Face face)
         {
             foreach(XmlNode child in faceNode.ChildNodes)
             {

@@ -67,5 +67,16 @@ namespace Molten.Graphics
         /// Rasterizer state definition
         /// </summary>
         Rasterizer = 14,
+
+
+        /// <summary>
+        /// Texture sampler definition
+        /// </summary>
+        Sampler = 15,
+
+        /// <summary>
+        /// Entry-point definition.
+        /// </summary>
+        Entry = 16,
     }
 }

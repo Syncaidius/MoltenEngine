@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using ID3D10Blob = Silk.NET.Core.Native.ID3D10Blob;
 
 namespace Molten.Graphics
 {
@@ -13,17 +13,16 @@ namespace Molten.Graphics
     {
         public FxcReflection Reflection { get; }
 
-        public IDxcBlob* ByteCode { get; }
+        public ID3D10Blob* ByteCode { get; }
 
-        IDxcBlob* _byteCode;
-        IDxcBlob* _errors;
+        ID3D10Blob* _byteCode;
+        ID3D10Blob* _errors;
 
         internal FxcCompileResult(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
             D3DCompiler compiler, ShaderSource source, ID3D10Blob* byteCode, ID3D10Blob* errors)
         {
-            // TODO: We can temporarily use IDXCBlob since it's an alias of ID3D10Blob. Switch once Silk.NET Correctly implements ID3D10Blob.
-            _byteCode = (IDxcBlob*)byteCode;
-            _errors = (IDxcBlob*)errors;
+            _byteCode = byteCode;
+            _errors = errors;
 
             Guid guidReflect = ID3D11ShaderReflection.Guid;
             void* ppReflection = null;
