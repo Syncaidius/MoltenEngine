@@ -44,10 +44,14 @@ namespace Molten.Graphics
             _classCompilers = new List<ShaderClassCompiler<R, S, CR>>();
             _sources = new ConcurrentDictionary<string, ShaderSource>();
             Renderer = renderer;
+
+            InitializeNodeParsers();
         }
 
         public abstract bool CompileSource(string entryPoint, ShaderType type, 
             ShaderCompilerContext<R,S,CR> context, out CR result);
+
+        protected abstract List<Type> GetNodeParserList();
 
 
         /// <summary>
@@ -55,26 +59,36 @@ namespace Molten.Graphics
         /// from type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The base type of the node parsers to be detected and added.</typeparam>
-        protected void AddNodeParsers<T>()
-            where T : ShaderNodeParser<R, S, CR>, new()
+        private void InitializeNodeParsers()
         {
-            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<T>();
-            foreach (Type t in parserTypes)
+            List<Type> nParserList = GetNodeParserList();
+            IEnumerable<Type> defaultNodeParsers = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<R,S,CR>>();
+            nParserList.AddRange(defaultNodeParsers);
+
+            foreach (Type t in nParserList)
             {
                 BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-                T nParser = Activator.CreateInstance(t, bFlags, null, null, null) as T;
+                ShaderNodeParser<R,S,CR> nParser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<R, S, CR>;
 
                 if (_nodeParsers.ContainsKey(nParser.NodeType))
                 {
                     string ntName = nParser.GetType().Name;
                     string existingName = _nodeParsers[nParser.NodeType].GetType().Name;
-                    Log.WriteError($"Failed to register node parser '{ntName}' for node type '{nParser.NodeType}' as '{existingName}' is already registered.");
+                    Log.WriteWarning($"Failed to register node parser '{ntName}' for node type '{nParser.NodeType}' as '{existingName}' is already registered.");
                 }
                 else
                 {
                     // Replace existing parser for this node type
                     _nodeParsers[nParser.NodeType] = nParser;
                 }
+            }
+
+            // Validate parsers to find missing ones.
+            ShaderNodeType[] nTypes = Enum.GetValues<ShaderNodeType>();
+            foreach(ShaderNodeType t in nTypes)
+            {
+                if (!_nodeParsers.ContainsKey(t))
+                    Log.WriteError($"Shader compiler '{this.GetType()}' doesn't provide node parser for '{t}' nodes. May prevent shader compilation.");
             }
         }
 

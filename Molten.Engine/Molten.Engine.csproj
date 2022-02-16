@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Graphics\Shaders\Compiler\NodeParsers\**" />
+    <EmbeddedResource Remove="Graphics\Shaders\Compiler\NodeParsers\**" />
+    <None Remove="Graphics\Shaders\Compiler\NodeParsers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
@@ -17,10 +23,6 @@
     <ProjectReference Include="..\Molten.IO\Molten.IO.csproj" />
     <ProjectReference Include="..\Molten.Math\Molten.Math.csproj" />
     <ProjectReference Include="..\Molten.Utility\Molten.Utility.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Graphics\Shaders\Compiler\NodeParsers\" />
   </ItemGroup>
 
 </Project>

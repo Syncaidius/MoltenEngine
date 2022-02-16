@@ -23,7 +23,6 @@ namespace Molten.Graphics
             base(renderer, includePath, includeAssembly)
         {
             Compiler = D3DCompiler.GetApi();
-            AddNodeParsers<ShaderNodeParser<RendererDX11, HlslFoundation, FxcCompileResult>>();
 
             AddClassCompiler<MaterialCompiler>();
             AddClassCompiler<ComputeCompiler>();
