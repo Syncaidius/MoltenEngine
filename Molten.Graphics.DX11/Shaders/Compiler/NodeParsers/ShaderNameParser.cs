@@ -7,18 +7,16 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal class ShaderNameParser : ShaderNodeParser
+    internal class ShaderNameParser : FxcNodeParser
     {
-        internal override string[] SupportedNodes => new string[] {"name"};
+        public override ShaderNodeType NodeType => ShaderNodeType.Name;
 
-        internal override NodeParseResult Parse(HlslFoundation foundation, HlslCompilerContext context, XmlNode node)
+        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, XmlNode node)
         {
             if (string.IsNullOrWhiteSpace(node.InnerText))
                 foundation.Name = "Unnamed Material";
             else
                 foundation.Name = node.InnerText;
-
-            return new NodeParseResult(NodeParseResultType.Success);
         }
     }
 }

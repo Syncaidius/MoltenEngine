@@ -9,9 +9,9 @@ namespace Molten.Graphics
 {
     internal class ShaderIterationParser : FxcNodeParser
     {
-        internal override string[] SupportedNodes => new string[] { "iterations" };
+        public override ShaderNodeType NodeType => ShaderNodeType.Iterations;
 
-        internal override NodeParseResult Parse(HlslFoundation foundation, HlslCompilerContext context, XmlNode node)
+        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, XmlNode node)
         {
             int val = 1;
             if (int.TryParse(node.InnerText, out val))
@@ -23,8 +23,6 @@ namespace Molten.Graphics
                 foundation.Name = "Unnamed Material";
             else
                 foundation.Name = node.InnerText;
-
-            return new NodeParseResult(NodeParseResultType.Success);
         }
     }
 }

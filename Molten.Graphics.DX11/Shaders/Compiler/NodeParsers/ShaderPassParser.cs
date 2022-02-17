@@ -7,27 +7,25 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
-    internal class ShaderPassParser : ShaderNodeParser
+    internal class ShaderPassParser : FxcNodeParser
     {
-        internal override string[] SupportedNodes => new string[] { "pass" };
+        public override ShaderNodeType NodeType => ShaderNodeType.Pass;
 
-        internal override NodeParseResult Parse(HlslFoundation shader, HlslCompilerContext context, XmlNode node)
+        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, XmlNode node)
         {
-            if (shader is Material material)
+            if (foundation is Material material)
             {
                 MaterialPass pass = new MaterialPass(material, "<Unnamed Material Pass>");
 
                 for (int i = 0; i < material.Samplers.Length; i++)
                     pass.Samplers[i] = material.Samplers[i];
 
-                context.Parser.ParseNode(pass, node, context);
+                context.Compiler.ParseNode(pass, node, context);
                 material.AddPass(pass);
-
-                return new NodeParseResult(NodeParseResultType.Success);
             }
             else
             {
-                return new NodeParseResult(NodeParseResultType.Ignored);
+                context.AddWarning($"Ignoring '{NodeType}' node on non-material shader element '{foundation.GetType().Name}'");
             }
         }
     }
