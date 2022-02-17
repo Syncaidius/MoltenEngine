@@ -365,11 +365,6 @@ namespace Molten.Graphics
         public abstract IComputeManager Compute { get; }
 
         /// <summary>
-        /// Gets the name of the renderer implementation.
-        /// </summary>
-        public abstract string Name { get; }
-
-        /// <summary>
         /// Gets a list of all the output <see cref="ISwapChainSurface"/> instances attached to the renderer. These are automatically presented to the graphics device by the renderer, if active.
         /// </summary>
         public ThreadedList<ISwapChainSurface> OutputSurfaces { get; } = new ThreadedList<ISwapChainSurface>();

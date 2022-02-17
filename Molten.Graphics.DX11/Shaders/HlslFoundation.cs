@@ -45,6 +45,6 @@ namespace Molten.Graphics
         /// </summary>
         public int Iterations { get; set; } = 1;
 
-        public HlslShader Parent { get; internal set; }
+        public HlslFoundation Parent { get; internal set; }
     }
 }

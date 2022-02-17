@@ -9,7 +9,7 @@ using ID3D10Blob = Silk.NET.Core.Native.ID3D10Blob;
 
 namespace Molten.Graphics
 {
-    public unsafe class FxcCompileResult : ShaderCompileResult<HlslFoundation>
+    public unsafe class FxcCompileResult : ShaderCompileResult
     {
         public FxcReflection Reflection { get; }
 

@@ -9,7 +9,7 @@ namespace Molten.Graphics
     public class ShaderCompilerContext<R, S, CR>
         where R : RenderService
         where S : IShaderElement
-        where CR : ShaderCompileResult<S>
+        where CR : ShaderCompileResult
     {
         /// <summary>
         /// HLSL shader objects stored by entry-point name

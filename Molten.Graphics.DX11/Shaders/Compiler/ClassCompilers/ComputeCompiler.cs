@@ -12,11 +12,11 @@ namespace Molten.Graphics
     {
         public override ShaderClassType ClassType => ShaderClassType.Compute;
 
-        public override List<HlslShader> Parse(
+        public override List<IShaderElement> Parse(
             ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
             RendererDX11 renderer, in string header)
         {
-            List<HlslShader> shaders = new List<HlslShader>();
+            List<IShaderElement> shaders = new List<IShaderElement>();
             ComputeTask compute = new ComputeTask(renderer.Device, context.Source.Filename);
             try
             {

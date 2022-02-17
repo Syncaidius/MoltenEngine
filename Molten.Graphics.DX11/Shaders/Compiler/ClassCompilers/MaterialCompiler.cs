@@ -13,10 +13,10 @@ namespace Molten.Graphics
 
         MaterialLayoutValidator _layoutValidator = new MaterialLayoutValidator();
 
-        public override List<HlslFoundation> Parse(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context,
+        public override List<IShaderElement> Parse(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context,
             RendererDX11 renderer, in string header)
         {
-            List<HlslFoundation> result = new List<HlslFoundation>();
+            List<IShaderElement> result = new List<IShaderElement>();
             Material material = new Material(renderer.Device, context.Source.Filename);
             try
             {

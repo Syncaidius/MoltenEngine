@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Direct3D11;
+using ID3D10Blob = Silk.NET.Core.Native.ID3D10Blob;
 
 namespace Molten.Graphics
 {
@@ -17,7 +18,7 @@ namespace Molten.Graphics
 
         internal VertexInputLayout(Device device, 
             PipeSlotGroup<BufferSegment> vbSlots, 
-            IDxcBlob* vertexBytecode,
+            ID3D10Blob* vertexBytecode,
             ShaderIOStructure io) : base(device)
         {
             _expectedFormatIDs = new ulong[vbSlots.SlotCount];

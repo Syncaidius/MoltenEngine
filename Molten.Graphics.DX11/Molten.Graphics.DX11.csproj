@@ -43,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Molten.Engine.Windows\Molten.Engine.Windows.csproj" />
     <ProjectReference Include="..\Molten.Engine\Molten.Engine.csproj" />
     <ProjectReference Include="..\Molten.Font\Molten.Font.csproj" />
     <ProjectReference Include="..\Molten.Graphics.DXGI\Molten.Graphics.DXGI.csproj" />

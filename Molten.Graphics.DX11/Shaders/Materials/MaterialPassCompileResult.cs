@@ -12,10 +12,10 @@ namespace Molten.Graphics
         internal MaterialPassCompileResult(MaterialPass pass)
         {
             Pass = pass;
-            Results = new HlslCompileResult[MaterialPass.ShaderTypes.Length];
+            Results = new FxcCompileResult[MaterialPass.ShaderTypes.Length];
         }
 
-        internal HlslCompileResult[] Results;
+        internal FxcCompileResult[] Results;
 
         internal ShaderIOStructure InputStructure;
 
@@ -23,14 +23,14 @@ namespace Molten.Graphics
 
         internal MaterialPass Pass { get; private set; }
 
-        internal HlslCompileResult VertexResult => Results[0];
+        internal FxcCompileResult VertexResult => Results[0];
 
-        internal HlslCompileResult HullResult => Results[1];
+        internal FxcCompileResult HullResult => Results[1];
 
-        internal HlslCompileResult DomainResult => Results[2];
+        internal FxcCompileResult DomainResult => Results[2];
 
-        internal HlslCompileResult GeometryResult => Results[3];
+        internal FxcCompileResult GeometryResult => Results[3];
 
-        internal HlslCompileResult PixelResult => Results[4];
+        internal FxcCompileResult PixelResult => Results[4];
     }
 }

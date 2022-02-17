@@ -26,11 +26,11 @@ namespace Molten.Graphics
             switch (type)
             {
                 case ShaderIOStructureType.Input:
-                    count = result.Reflection.Desc->InputParameters;
+                    count = result.Reflection.Desc.InputParameters;
                     break;
 
                 case ShaderIOStructureType.Output:
-                    count = result.Reflection.Desc->OutputParameters;
+                    count = result.Reflection.Desc.OutputParameters;
                     break;
             }
 

@@ -57,7 +57,7 @@ namespace Molten.Graphics
             HlslShader shader, FxcCompileResult result, ShaderComposition<T> composition) 
             where T : unmanaged
         {
-            for (uint r = 0; r < result.Reflection.Desc->BoundResources; r++)
+            for (uint r = 0; r < result.Reflection.Desc.BoundResources; r++)
             {
                 HlslInputBindDescription bindDesc = result.Reflection.BindDescs[r];
                 uint bindPoint = bindDesc.Ptr->BindPoint;

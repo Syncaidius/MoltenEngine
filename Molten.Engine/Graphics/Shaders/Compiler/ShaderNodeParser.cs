@@ -10,7 +10,7 @@ namespace Molten.Graphics
     public abstract class ShaderNodeParser<R, S, CR>
         where R : RenderService
         where S : IShaderElement
-        where CR : ShaderCompileResult<S>
+        where CR : ShaderCompileResult
     {
         static string[] _colorDelimiters = new string[] { ",", " " };
 

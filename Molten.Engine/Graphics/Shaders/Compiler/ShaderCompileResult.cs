@@ -2,21 +2,20 @@
 
 namespace Molten.Graphics
 {
-    public class ShaderCompileResult<S> : EngineObject
-        where S : IShaderElement
+    public abstract class ShaderCompileResult : EngineObject
     {
-        public Dictionary<ShaderClassType, List<S>> ShaderGroups = new Dictionary<ShaderClassType, List<S>>();
+        public Dictionary<ShaderClassType, List<IShaderElement>> ShaderGroups = new Dictionary<ShaderClassType, List<IShaderElement>>();
 
         protected override void OnDispose() { }
 
-        public void AddResult(ShaderClassType classType, List<S> result)
+        public void AddResult(ShaderClassType classType, List<IShaderElement> result)
         {
             if (result.Count > 0)
             {
-                List<S> group = null;
+                List<IShaderElement> group = null;
                 if (!ShaderGroups.TryGetValue(classType, out group))
                 {
-                    group = new List<S>();
+                    group = new List<IShaderElement>();
                     ShaderGroups.Add(classType, group);
                 }
 
@@ -24,7 +23,7 @@ namespace Molten.Graphics
             }
         }
 
-        public List<S> this[ShaderClassType cType]
+        public List<IShaderElement> this[ShaderClassType cType]
         {
             get => ShaderGroups[cType];
         }
@@ -33,7 +32,7 @@ namespace Molten.Graphics
         {
             get
             {
-                if (ShaderGroups.TryGetValue(cType, out List<S> group))
+                if (ShaderGroups.TryGetValue(cType, out List<IShaderElement> group))
                     return group[index];
                 else
                     return null;
@@ -44,7 +43,7 @@ namespace Molten.Graphics
         {
             get
             {
-                if (ShaderGroups.TryGetValue(cType, out List<S> group))
+                if (ShaderGroups.TryGetValue(cType, out List<IShaderElement> group))
                 {
                     foreach (IShaderElement shader in group)
                     {

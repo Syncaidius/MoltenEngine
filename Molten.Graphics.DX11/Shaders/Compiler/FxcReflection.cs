@@ -12,9 +12,23 @@ namespace Molten.Graphics
     {
         internal ID3D11ShaderReflection* Ptr;
 
+        internal ShaderDesc Desc;
+
+        internal HlslInputBindDescription[] BindDescs;
+
         internal FxcReflection(ID3D11ShaderReflection* reflection)
         {
             Ptr = reflection;
+            Ptr->GetDesc(ref Desc);
+
+            BindDescs = new HlslInputBindDescription[Desc.BoundResources];
+
+            for (uint r = 0; r < Desc.BoundResources; r++)
+            {
+                ShaderInputBindDesc* bDesc = null;
+                Ptr->GetResourceBindingDesc(r, bDesc);
+                BindDescs[r] = new HlslInputBindDescription(bDesc);
+            }
         }
 
         public void Dispose()

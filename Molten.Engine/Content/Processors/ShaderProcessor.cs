@@ -20,9 +20,9 @@ namespace Molten.Content
                 {
                     string source = reader.ReadToEnd();
                     ShaderCompileResult r = context.Engine.Renderer.Resources.CompileShaders(ref source, context.Filename);
-                    foreach (string group in r.ShaderGroups.Keys)
+                    foreach (ShaderClassType classType in r.ShaderGroups.Keys)
                     {
-                        List<IShader> list = r.ShaderGroups[group];
+                        List<IShaderElement> list = r.ShaderGroups[classType];
                         foreach (IShader shader in list)
                         {
                             if (shader is IMaterial mat)

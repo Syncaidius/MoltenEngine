@@ -79,7 +79,7 @@ namespace Molten.Graphics
 
         private void LoadDefaultShaders(Assembly includeAssembly)
         {
-            ShaderCompileResult<HlslFoundation> result = LoadEmbeddedShader("Molten.Graphics.Assets", "gbuffer.mfx", includeAssembly);
+            FxcCompileResult result = LoadEmbeddedShader("Molten.Graphics.Assets", "gbuffer.mfx", includeAssembly);
             StandardMeshMaterial = result[ShaderClassType.Material, "gbuffer"] as Material;
             StandardMeshMaterial_NoNormalMap = result[ShaderClassType.Material, "gbuffer-sans-nmap"] as Material;
         }
@@ -276,11 +276,6 @@ namespace Molten.Graphics
             Device?.Dispose();
             _api.Dispose();
         }
-
-        /// <summary>
-        /// Gets the name of the renderer.
-        /// </summary>
-        public override string Name => "DirectX 11";
 
         /// <summary>
         /// Gets the display manager bound to the renderer.

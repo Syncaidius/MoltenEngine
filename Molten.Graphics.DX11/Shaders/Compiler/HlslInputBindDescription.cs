@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe class HlslInputBindDescription
+    internal unsafe class HlslInputBindDescription : IDisposable
     {
-        internal readonly ShaderInputBindDesc* Ptr;
+        internal ShaderInputBindDesc* Ptr;
 
         internal readonly string Name;
 
@@ -18,6 +18,11 @@ namespace Molten.Graphics
         {
             Ptr = desc;
             Name = SilkMarshal.PtrToString((nint)desc->Name);
+        }
+
+        public void Dispose()
+        {
+            SilkUtil.ReleasePtr(ref Ptr);
         }
     }
 }

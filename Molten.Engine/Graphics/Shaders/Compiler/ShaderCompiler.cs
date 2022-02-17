@@ -16,7 +16,7 @@ namespace Molten.Graphics
     public abstract class ShaderCompiler<R, S, CR> : EngineObject
         where R : RenderService
         where S : IShaderElement
-        where CR : ShaderCompileResult<S>
+        where CR : ShaderCompileResult
     {
         string[] _newLineSeparator = { "\n", Environment.NewLine };
         string[] _includeReplacements = { "#include", "<", ">", "\"" };
@@ -143,13 +143,13 @@ namespace Molten.Graphics
             context.Source = ParseSource(context, filename, ref finalSource, isEmbedded, assembly, nameSpace, originalLineCount);
 
             // Compile any headers that matching _subCompiler keys (e.g. material or compute)
-            foreach (ShaderClassCompiler<R, S, CR> parser in headers.Keys)
+            foreach (ShaderClassCompiler<R, S, CR> classCompiler in headers.Keys)
             {
-                List<string> nodeHeaders = headers[parser];
+                List<string> nodeHeaders = headers[classCompiler];
                 foreach (string header in nodeHeaders)
                 {
-                    List<S> parseResult = parser.Parse(context, Renderer, in header);
-                    context.Result.AddResult(parser.ClassType, parseResult);
+                    List<IShaderElement> parseResult = classCompiler.Parse(context, Renderer, in header);
+                    context.Result.AddResult(classCompiler.ClassType, parseResult);
                 }
             }
 
