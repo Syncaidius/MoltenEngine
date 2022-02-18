@@ -45,7 +45,7 @@ namespace Molten.Graphics
             _segment = renderer.DynamicVertexBuffer.Allocate<SpriteVertex>(_spriteCapacity);
             _segment.SetVertexFormat(typeof(SpriteVertex));
 
-            FxcCompileResult result = renderer.LoadEmbeddedShader("Molten.Graphics.DX11.Assets", "sprite.mfx");
+            ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.DX11.Assets", "sprite.mfx");
             _defaultMaterial = result[ShaderClassType.Material, "sprite-texture"] as Material;
             _defaultNoTextureMaterial = result[ShaderClassType.Material, "sprite-no-texture"] as Material;
             _defaultLineMaterial = result[ShaderClassType.Material, "line"] as Material;

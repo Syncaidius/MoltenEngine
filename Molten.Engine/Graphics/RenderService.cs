@@ -354,10 +354,10 @@ namespace Molten.Graphics
         public abstract IDisplayManager DisplayManager { get; }
 
         /// <summary>
-        /// Gets the resource manager bound to the renderer.
+        /// Gets the <see cref="ResourceFactory"/> bound to the renderer.
         /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.
         /// </summary>
-        public abstract IResourceManager Resources { get; }
+        public abstract ResourceFactory Resources { get; }
 
         /// <summary>
         /// Gets the compute manager attached to the current renderer.

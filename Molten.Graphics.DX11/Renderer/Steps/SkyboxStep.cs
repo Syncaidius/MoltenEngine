@@ -23,7 +23,7 @@ namespace Molten.Graphics
             _surfaceDepth = renderer.GetDepthSurface();
             _skyboxData = new ObjectRenderData();
 
-            ShaderCompileResult result = renderer.LoadEmbeddedShader("Molten.Graphics.Assets", "skybox.mfx");
+            ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "skybox.mfx");
             _matSky = result[ShaderClassType.Material, "skybox-default"] as Material;
 
             Vertex[] vertices;

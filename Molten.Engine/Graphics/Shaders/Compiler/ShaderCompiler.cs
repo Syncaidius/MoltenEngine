@@ -10,10 +10,22 @@ using System.Xml;
 
 namespace Molten.Graphics
 {
+    public abstract class ShaderCompiler : EngineObject
+    {
+        public Logger Log { get; }
+
+        protected ShaderCompiler(Logger log)
+        {
+            Log = log;
+        }
+
+        public abstract ShaderCompileResult CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace);
+    }
+
     /// <summary>Provides a base for implementing </summary>
     /// <typeparam name="CXT">Shader compiler context type</typeparam>
     /// <typeparam name="SB">Source build result</typeparam>
-    public abstract class ShaderCompiler<R, S, CR> : EngineObject
+    public abstract class ShaderCompiler<R, S, CR> : ShaderCompiler
         where R : RenderService
         where S : IShaderElement
         where CR : ShaderCompileResult
@@ -25,8 +37,6 @@ namespace Molten.Graphics
 
         public R Renderer { get; }
 
-        public Logger Log { get; }
-
         ConcurrentDictionary<string, ShaderSource> _sources;
         Dictionary<ShaderNodeType, ShaderNodeParser<R, S, CR>> _nodeParsers;
         List<ShaderClassCompiler<R, S, CR>> _classCompilers;
@@ -34,9 +44,8 @@ namespace Molten.Graphics
         Assembly _defaultIncludeAssembly;
         string _defaultIncludePath;
 
-        protected ShaderCompiler(R renderer, string includePath, Assembly includeAssembly)
+        protected ShaderCompiler(R renderer, string includePath, Assembly includeAssembly) : base(renderer.Log)
         {
-            Log = renderer.Log;
             _defaultIncludePath = includePath;
             _defaultIncludeAssembly = includeAssembly;
 
@@ -101,7 +110,7 @@ namespace Molten.Graphics
             _classCompilers.Add(scc);
         }
 
-        public CR CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
+        public override ShaderCompileResult CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
         {
             ShaderCompilerContext<R, S, CR> context = new ShaderCompilerContext<R, S, CR>(this);
             Dictionary<ShaderClassCompiler<R, S, CR>, List<string>> headers = new Dictionary<ShaderClassCompiler<R, S, CR>, List<string>>();

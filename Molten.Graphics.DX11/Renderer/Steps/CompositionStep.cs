@@ -26,7 +26,7 @@ namespace Molten.Graphics
 
             string namepace = "Molten.Graphics.Assets.gbuffer_compose.mfx";
 
-            ShaderCompileResult result = renderer.LoadEmbeddedShader("Molten.Graphics.Assets", "gbuffer_compose.mfx");
+            ShaderCompileResult result = renderer.Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "gbuffer_compose.mfx");
             _matCompose = result[ShaderClassType.Material, "gbuffer-compose"] as Material;
 
             _valLighting = _matCompose["mapLighting"];

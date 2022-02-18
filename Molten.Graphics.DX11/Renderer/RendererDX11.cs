@@ -18,7 +18,7 @@ namespace Molten.Graphics
     {
         D3D11 _api;
         DisplayManagerDXGI _displayManager;
-        ResourceManager _resourceManager;
+        ResourceFactoryDX11 _resFactory;
         ComputeManager _compute;
         HashSet<Texture2DDX11> _clearedSurfaces;
         Dictionary<Type, RenderStepBase> _steps;
@@ -61,7 +61,7 @@ namespace Molten.Graphics
 
             _api = D3D11.GetApi();
             Device = new Device(_api, Log, settings.Graphics, _displayManager);
-            _resourceManager = new ResourceManager(this);
+            _resFactory = new ResourceFactoryDX11(this);
             _compute = new ComputeManager(this.Device);
             ShaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _clearedSurfaces = new HashSet<Texture2DDX11>();
@@ -79,23 +79,10 @@ namespace Molten.Graphics
 
         private void LoadDefaultShaders(Assembly includeAssembly)
         {
-            FxcCompileResult result = LoadEmbeddedShader("Molten.Graphics.Assets", "gbuffer.mfx", includeAssembly);
+            ShaderCompileResult result = Resources.LoadEmbeddedShader("Molten.Graphics.Assets", "gbuffer.mfx", includeAssembly);
             StandardMeshMaterial = result[ShaderClassType.Material, "gbuffer"] as Material;
             StandardMeshMaterial_NoNormalMap = result[ShaderClassType.Material, "gbuffer-sans-nmap"] as Material;
-        }
-
-        internal FxcCompileResult LoadEmbeddedShader(string nameSpace, string filename, Assembly assembly = null)
-        {
-            string src = "";
-            assembly = assembly ?? this.GetType().Assembly;
-            using (Stream stream = EmbeddedResource.TryGetStream($"{nameSpace}.{filename}", assembly))
-            {
-                using (StreamReader reader = new StreamReader(stream))
-                    src = reader.ReadToEnd();
-            }
-
-            return ShaderCompiler.CompileShader(in src, filename, ShaderCompileFlags.EmbeddedFile, assembly, nameSpace);
-        }
+        }        
 
         internal void InitializeMainSurfaces(uint width, uint height)
         {
@@ -267,7 +254,7 @@ namespace Molten.Graphics
             _mainSurfaces.Clear();
             _surfacesByKey.Clear();
 
-            _resourceManager.Dispose();
+            _resFactory.Dispose();
             _displayManager?.Dispose();
             SpriteBatcher.Dispose();
 
@@ -292,6 +279,6 @@ namespace Molten.Graphics
         /// Gets the resource manager bound to the renderer.
         /// This is responsible for creating and destroying graphics resources, such as buffers, textures and surfaces.
         /// </summary>
-        public override IResourceManager Resources => _resourceManager;
+        public override ResourceFactory Resources => _resFactory;
     }
 }

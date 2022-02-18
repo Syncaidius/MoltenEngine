@@ -9,21 +9,22 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    /// <summary>DirectX 11 implementation of <see cref="IResourceManager"/>.</summary>
-    public class ResourceManager : IResourceManager
+    /// <summary>DirectX 11 implementation of <see cref="ResourceFactory"/>.</summary>
+    public class ResourceFactoryDX11 : ResourceFactory
     {
         RendererDX11 _renderer;
         Device _device;
         List<SpriteFont> _fontTable;
 
-        internal ResourceManager(RendererDX11 renderer)
+        internal ResourceFactoryDX11(RendererDX11 renderer) : 
+            base(renderer, renderer.ShaderCompiler)
         {
             _renderer = renderer;
             _device = _renderer.Device;
             _fontTable = new List<SpriteFont>();
         }
 
-        public IDepthStencilSurface CreateDepthSurface(
+        public override IDepthStencilSurface CreateDepthSurface(
             uint width,
             uint height,
             DepthFormat format = DepthFormat.R24G8_Typeless,
@@ -35,17 +36,17 @@ namespace Molten.Graphics
             return new DepthStencilSurface(_renderer, width, height, format, mipCount, arraySize, sampleCount, flags);
         }
 
-        public INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1, uint sampleCount = 1)
+        public override INativeSurface CreateFormSurface(string formTitle, string formName, uint mipCount = 1, uint sampleCount = 1)
         {
             return new RenderFormSurface(formTitle, formName, _renderer, mipCount);
         }
 
-        public INativeSurface CreateControlSurface(string formTitle, string controlName, uint mipCount = 1, uint sampleCount = 1)
+        public override INativeSurface CreateControlSurface(string formTitle, string controlName, uint mipCount = 1, uint sampleCount = 1)
         {
             return new RenderControlSurface(formTitle, controlName, _renderer, mipCount);
         }
 
-        public IRenderSurface CreateSurface(
+        public override IRenderSurface CreateSurface(
             uint width,
             uint height,
             GraphicsFormat format = GraphicsFormat.R8G8B8A8_SNorm,
@@ -57,19 +58,19 @@ namespace Molten.Graphics
             return new RenderSurface(_renderer, width, height, (Format)format, mipCount, arraySize, sampleCount, flags);
         }
 
-        public ITexture CreateTexture1D(Texture1DProperties properties)
+        public override ITexture CreateTexture1D(Texture1DProperties properties)
         {
             return new Texture1DDX11(_renderer, properties.Width, properties.Format.ToApi(), properties.MipMapLevels, properties.ArraySize, properties.Flags);
         }
 
-        public ITexture CreateTexture1D(TextureData data)
+        public override ITexture CreateTexture1D(TextureData data)
         {
             Texture1DDX11 tex = new Texture1DDX11(_renderer, data.Width, data.Format.ToApi(), data.MipMapLevels, data.ArraySize, data.Flags);
             tex.SetData(data, 0, 0, data.MipMapLevels, data.ArraySize);
             return tex;
         }
 
-        public ITexture2D CreateTexture2D(Texture2DProperties properties)
+        public override ITexture2D CreateTexture2D(Texture2DProperties properties)
         {
             return new Texture2DDX11(_renderer,
                 properties.Width,
@@ -81,7 +82,7 @@ namespace Molten.Graphics
                 properties.SampleCount);
         }
 
-        public ITexture2D CreateTexture2D(TextureData data)
+        public override ITexture2D CreateTexture2D(TextureData data)
         {
             Texture2DDX11 tex = new Texture2DDX11(_renderer,
                 data.Width,
@@ -96,13 +97,13 @@ namespace Molten.Graphics
             return tex;
         }
 
-        public ITextureCube CreateTextureCube(Texture2DProperties properties)
+        public override ITextureCube CreateTextureCube(Texture2DProperties properties)
         {
             uint cubeCount = Math.Max(properties.ArraySize / 6, 1);
             return new TextureCubeDX11(_renderer, properties.Width, properties.Height, properties.Format.ToApi(), properties.MipMapLevels, cubeCount, properties.Flags);
         }
 
-        public ITextureCube CreateTextureCube(TextureData data)
+        public override ITextureCube CreateTextureCube(TextureData data)
         {
             uint cubeCount = Math.Max(data.ArraySize / 6, 1);
             TextureCubeDX11 tex = new TextureCubeDX11(_renderer, data.Width, data.Height, data.Format.ToApi(), data.MipMapLevels, cubeCount, data.Flags);
@@ -117,7 +118,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="source">The source texture.</param>
         /// <param name="destination">The destination texture.</param>
-        public void ResolveTexture(ITexture source, ITexture destination)
+        public override void ResolveTexture(ITexture source, ITexture destination)
         {
             if (source.DataFormat != destination.DataFormat)
                 throw new Exception("The source and destination texture must be the same format.");
@@ -148,7 +149,7 @@ namespace Molten.Graphics
         /// <param name="sourceArraySlice">The source array slice.</param>
         /// <param name="destMiplevel">The destination mip-map level.</param>
         /// <param name="destArraySlice">The destination array slice.</param>
-        public void ResolveTexture(ITexture source, ITexture destination,
+        public override void ResolveTexture(ITexture source, ITexture destination,
             uint sourceMipLevel,
             uint sourceArraySlice,
             uint destMiplevel,
@@ -163,7 +164,7 @@ namespace Molten.Graphics
             _renderer.PushTask(task);
         }
 
-        public void Dispose()
+        protected override void OnDispose()
         {
             for (int i = 0; i < _fontTable.Count; i++)
                 _fontTable[i].Dispose();
@@ -171,17 +172,17 @@ namespace Molten.Graphics
             _fontTable.Clear();
         }
 
-        public ISpriteRenderer CreateSpriteRenderer(Action<SpriteBatcher> callback = null)
+        public override ISpriteRenderer CreateSpriteRenderer(Action<SpriteBatcher> callback = null)
         {
             return new SpriteRendererDX11(_renderer.Device, callback);
         }
 
-        IMesh<GBufferVertex> IResourceManager.CreateMesh(uint maxVertices, VertexTopology topology, bool dynamic)
+        public override IMesh<GBufferVertex> CreateMesh(uint maxVertices, VertexTopology topology, bool dynamic)
         {
             return new StandardMesh(_renderer, (uint)maxVertices, topology, dynamic);
         }
 
-        public IIndexedMesh<GBufferVertex> CreateIndexedMesh(uint maxVertices,
+        public override IIndexedMesh<GBufferVertex> CreateIndexedMesh(uint maxVertices,
             uint maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 
             bool dynamic = false)
@@ -189,39 +190,19 @@ namespace Molten.Graphics
             return new StandardIndexedMesh(_renderer, (uint)maxVertices, (uint)maxIndices, topology, IndexBufferFormat.Unsigned32Bit, dynamic);
         }
 
-        public IMesh<T> CreateMesh<T>(uint maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
-            where T : unmanaged, IVertexType
+        public override IMesh<T> CreateMesh<T>(uint maxVertices, VertexTopology topology = VertexTopology.TriangleList, bool dynamic = false) 
         {
             return new Mesh<T>(_renderer, maxVertices, topology, dynamic);
         }
 
-        public IIndexedMesh<T> CreateIndexedMesh<T>(
+        public  override IIndexedMesh<T> CreateIndexedMesh<T>(
             uint maxVertices, 
             uint maxIndices, 
             VertexTopology topology = VertexTopology.TriangleList, 
             IndexBufferFormat indexFormat = IndexBufferFormat.Unsigned32Bit, 
             bool dynamic = false)
-            where T : unmanaged, IVertexType
         {
             return new IndexedMesh<T>(_renderer, (uint)maxVertices, (uint)maxIndices, topology, indexFormat, dynamic);
-        }
-
-        /// <summary>Compiels a set of shaders from the provided source string.</summary>
-        /// <param name="source">The source code to be parsed and compiled.</param>
-        /// <param name="filename">The name of the source file. Used as a pouint of reference in debug/error messages only.</param>
-        /// <returns></returns>
-        public ShaderCompileResult CompileShaders(ref string source, string filename = null)
-        {
-            ShaderCompileFlags flags = ShaderCompileFlags.EmbeddedFile;
-
-            if (!string.IsNullOrWhiteSpace(filename))
-            {
-                FileInfo fInfo = new FileInfo(filename);
-                DirectoryInfo dir = fInfo.Directory;
-                flags = ShaderCompileFlags.None;
-            }
-
-            return _renderer.ShaderCompiler.CompileShader(in source, filename, flags, null, null);
         }
     }
 }
