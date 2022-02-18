@@ -19,7 +19,7 @@ namespace Molten.Graphics
         ID3D10Blob* _errors;
 
         internal FxcCompileResult(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
-            D3DCompiler compiler, ShaderSource source, ID3D10Blob* byteCode, ID3D10Blob* errors)
+            D3DCompiler compiler, ID3D10Blob* byteCode, ID3D10Blob* errors)
         {
             _byteCode = byteCode;
             _errors = errors;
@@ -27,8 +27,8 @@ namespace Molten.Graphics
             Guid guidReflect = ID3D11ShaderReflection.Guid;
             void* ppReflection = null;
 
-            fixed(void* ptrSource = source.SourceCode)
-                compiler.Reflect(ptrSource, source.NumBytes, &guidReflect, &ppReflection);
+            fixed(void* ptrSource = context.Source.SourceCode)
+                compiler.Reflect(ptrSource, context.Source.NumBytes, &guidReflect, &ppReflection);
 
             Reflection = new FxcReflection((ID3D11ShaderReflection*)ppReflection);
         }

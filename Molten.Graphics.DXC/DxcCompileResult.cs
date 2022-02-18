@@ -16,7 +16,7 @@ namespace Molten.Graphics
     /// </summary>
     /// <typeparam name="R">Render service type</typeparam>
     /// <typeparam name="S">DXC shader type.</typeparam>
-    public unsafe class DxcCompileResult<R, S> : ShaderCompileResult<S>
+    public unsafe class DxcCompileResult<R, S> : ShaderCompileResult
         where R : RenderService
         where S : DxcFoundation
     {
@@ -37,9 +37,9 @@ namespace Molten.Graphics
 
         internal IDxcBlob* ByteCode => _byteCode;
 
-        internal DxcCompileResult(ShaderCompilerContext<R,S, DxcCompileResult<R,S>> context, IDxcResult* result)
+        internal DxcCompileResult(ShaderCompilerContext<R,S, DxcCompileResult<R,S>> context, IDxcUtils* utils, IDxcResult* result)
         {
-            _utils = context.Compiler.Utils;
+            _utils = utils;
             _availableOutputs = new List<OutKind>();
             AvailableOutputs = _availableOutputs.AsReadOnly();
             Result = result;

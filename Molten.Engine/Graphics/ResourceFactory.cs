@@ -164,7 +164,7 @@ namespace Molten.Graphics
             return _compiler.CompileShader(in src, filename, ShaderCompileFlags.EmbeddedFile, assembly, nameSpace);
         }
 
-        /// <summary>Compiels a set of shaders from the provided source string.</summary>
+        /// <summary>Compiles a set of shaders from the provided source string.</summary>
         /// <param name="source">The source code to be parsed and compiled.</param>
         /// <param name="filename">The name of the source file. Used as a pouint of reference in debug/error messages only.</param>
         /// <returns></returns>

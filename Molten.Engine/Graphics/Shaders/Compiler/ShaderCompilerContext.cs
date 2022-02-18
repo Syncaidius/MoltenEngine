@@ -24,11 +24,7 @@ namespace Molten.Graphics
 
         public ShaderSource Source { get; set; }
 
-        public string EntryPoint { get; set; }
-
         public ShaderType Type { get; set; }
-
-        public ShaderModel Model { get; set; }
 
         public ShaderCompileFlags Flags { get; set; }
 

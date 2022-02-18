@@ -1,10 +1,6 @@
 ﻿using Silk.NET.Core.Native;
 using Silk.NET.Direct3D.Compilers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using Buffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics
 {
@@ -51,26 +47,28 @@ namespace Molten.Graphics
             // a shader with the same entry-point name is already loaded in the context.
             if (!context.Shaders.TryGetValue(entryPoint, out result))
             {
-                /*context.Args.SetEntryPoint(entryPoint);
-                context.Args.SetShaderProfile(ShaderModel.Model5_0, type);
+                string shaderProfile = ShaderModel.Model5_0.ToProfile(type, ShaderLanguage.Hlsl);
 
-                string argString = context.Args.ToString();
-                uint argCount = context.Args.Count;
-                char** ptrArgString = context.Args.GetArgsPtr();
+                byte* pSourceName = (byte*)SilkMarshal.StringToPtr(context.Source.Filename, NativeStringEncoding.LPStr);
+                byte* pEntryPoint = (byte*)SilkMarshal.StringToPtr(entryPoint, NativeStringEncoding.LPStr);
+                byte* pTarget = (byte*)SilkMarshal.StringToPtr(shaderProfile, NativeStringEncoding.LPStr);
+                void* pSrc = (void*)SilkMarshal.StringToPtr(context.Source.SourceCode, NativeStringEncoding.LPStr);
+                FxcCompileFlags compileFlags = context.Flags.Translate();
 
-                Guid dxcResultGuid = IDxcResult.Guid;
-                void* dxcResult;
-                Buffer srcBuffer = context.Source.BuildSource(context.Compiler);
+                ID3D10Blob* pByteCode = null;
+                ID3D10Blob* pErrors = null;
 
-                Native->Compile(&srcBuffer, ptrArgString, argCount, null, &dxcResultGuid, &dxcResult);
-                result = new ShaderC(context, (IDxcResult*)dxcResult);
-
-                SilkMarshal.Free((nint)ptrArgString);
+                HResult r = Compiler.Compile(pSrc, context.Source.NumBytes, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
+                result = new FxcCompileResult(context, Compiler, pByteCode, pErrors);
 
                 if (context.HasErrors)
                     return false;
 
-                context.Shaders.Add(entryPoint, result);*/
+                context.Shaders.Add(entryPoint, result);
+
+                SilkMarshal.Free((nint)pSourceName);
+                SilkMarshal.Free((nint)pEntryPoint);
+                SilkMarshal.Free((nint)pTarget);
             }
 
             return true;

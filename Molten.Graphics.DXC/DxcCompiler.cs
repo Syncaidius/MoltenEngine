@@ -106,10 +106,10 @@ namespace Molten.Graphics
 
                 Guid dxcResultGuid = IDxcResult.Guid;
                 void* dxcResult;
-                Buffer srcBuffer = context.Source.BuildSource(context.Compiler);
+                Buffer srcBuffer = context.Compiler.BuildSource(context.Compiler);
 
                 Native->Compile(&srcBuffer, ptrArgString, argCount, null, &dxcResultGuid, &dxcResult);
-                result = new DxcCompileResult<R, S>(context, (IDxcResult*)dxcResult);
+                result = new DxcCompileResult<R, S>(context, _utils, (IDxcResult*)dxcResult);
 
                 SilkMarshal.Free((nint)ptrArgString);
 
