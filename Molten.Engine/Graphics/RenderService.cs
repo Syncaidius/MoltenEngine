@@ -28,7 +28,8 @@ namespace Molten.Graphics
         {
             Log = Logger.Get();
             Overlay = new OverlayProvider();
-            Log.AddOutput(new LogFileWriter($"renderer_{Name.Replace(' ', '_')}" + "{0}.txt"));
+            Type test = this.GetType();
+            Log.AddOutput(new LogFileWriter($"renderer_{this.GetType().Name.Replace(' ', '_')}" + "{0}.txt"));
             Log.WriteLine("Acquiring render chain");
 
             try
