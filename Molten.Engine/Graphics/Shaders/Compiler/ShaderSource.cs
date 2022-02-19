@@ -14,7 +14,7 @@ namespace Molten.Graphics
     {
         string _src;
 
-        public ShaderSource(string filename, ref string source, bool isEmbedded, int originalLineCount,
+        public ShaderSource(string filename, in string source, bool isEmbedded, int originalLineCount,
             Assembly assembly, string nameSpace)
         {
             Filename = filename;
@@ -38,6 +38,8 @@ namespace Molten.Graphics
                         FullFilename = $"{nameSpace}.{filename}, {assembly}";
                 }
             }
+
+            NumBytes = (uint)(sizeof(char) * _src.Length);
         }
 
         protected override void OnDispose()

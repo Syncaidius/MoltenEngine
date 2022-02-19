@@ -36,6 +36,7 @@ namespace Molten.Graphics
        
         IDxcCompiler3* _compiler;
         IDxcUtils* _utils;
+        Dictionary<ShaderSource, DxcSourceBlob> _sourceBlobs;
 
         /// <summary>
         /// Creates a new instance of <see cref="DxcCompiler"/>.
@@ -48,23 +49,16 @@ namespace Molten.Graphics
             base(renderer, includePath, includeAssembly)
         {
             _shaderParsers = new Dictionary<string, DxcClassCompiler<R,S>>();
+            _sourceBlobs = new Dictionary<ShaderSource, DxcSourceBlob>();
 
             Dxc = DXC.GetApi();
             _utils = CreateDxcInstance<IDxcUtils>(CLSID_DxcUtils, IDxcUtils.Guid);
             _compiler = CreateDxcInstance<IDxcCompiler3>(CLSID_DxcCompiler, IDxcCompiler3.Guid);
+        }
 
-            // Detect and instantiate node parsers
-            IEnumerable<Type> parserTypes = ReflectionHelper.FindTypeInParentAssembly<ShaderNodeParser<R, S, DxcCompileResult<R, S>>>();
-            foreach (Type t in parserTypes)
-            {
-                BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
-                ShaderNodeParser<R,S, DxcCompileResult<R,S>> parser = Activator.CreateInstance(t, bFlags, null, null, null) as ShaderNodeParser<HlslShader>;
-                foreach (string nodeName in parser.SupportedNodes)
-                    NodeParsers.Add(nodeName, parser);
-            }
-
-            AddClassCompiler<MaterialParser>();
-            AddClassCompiler<ComputeParser>();
+        protected override List<Type> GetNodeParserList()
+        {
+            throw new NotImplementedException();
         }
 
         protected override void OnDispose()
@@ -106,9 +100,10 @@ namespace Molten.Graphics
 
                 Guid dxcResultGuid = IDxcResult.Guid;
                 void* dxcResult;
-                Buffer srcBuffer = context.Compiler.BuildSource(context.Compiler);
 
-                Native->Compile(&srcBuffer, ptrArgString, argCount, null, &dxcResultGuid, &dxcResult);
+                DxcSourceBlob srcBlob = BuildSource(context.Source);
+
+                Native->Compile(in srcBlob.BlobBuffer, ptrArgString, argCount, null, &dxcResultGuid, &dxcResult);
                 result = new DxcCompileResult<R, S>(context, _utils, (IDxcResult*)dxcResult);
 
                 SilkMarshal.Free((nint)ptrArgString);
@@ -120,6 +115,31 @@ namespace Molten.Graphics
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// (Re)builds the HLSL source code in the current <see cref="HlslSource"/> instance. 
+        /// This generates a (new) <see cref="Buffer"/> object.
+        /// </summary>
+        /// <param name="compiler"></param>
+        /// <returns></returns>
+        internal DxcSourceBlob BuildSource(ShaderSource source)
+        {
+            if(!_sourceBlobs.TryGetValue(source, out DxcSourceBlob blob))
+            {
+                blob = new DxcSourceBlob();
+                void* ptrSource = (void*)SilkMarshal.StringToPtr(source.SourceCode, NativeStringEncoding.UTF8);
+                _utils->CreateBlob(ptrSource, source.NumBytes, DXC.CPUtf16, ref blob.Ptr);
+
+                blob.BlobBuffer = new Buffer()
+                {
+                    Ptr = blob.Ptr->GetBufferPointer(),
+                    Size = blob.Ptr->GetBufferSize(),
+                    Encoding = 0
+                };
+            }
+
+            return blob;
         }
 
         internal DXC Dxc { get; }

@@ -110,7 +110,7 @@ namespace Molten.Graphics
             _classCompilers.Add(scc);
         }
 
-        public override ShaderCompileResult CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
+        public override sealed ShaderCompileResult CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
         {
             ShaderCompilerContext<R, S, CR> context = new ShaderCompilerContext<R, S, CR>(this);
             Dictionary<ShaderClassCompiler<R, S, CR>, List<string>> headers = new Dictionary<ShaderClassCompiler<R, S, CR>, List<string>>();
@@ -172,7 +172,7 @@ namespace Molten.Graphics
         private ShaderSource ParseSource(ShaderCompilerContext<R,S,CR> context, string filename, ref string hlsl,
             bool isEmbedded, Assembly assembly, string nameSpace, int originalLineCount)
         {
-            ShaderSource source = new ShaderSource(filename, ref hlsl, isEmbedded, originalLineCount, assembly, nameSpace);
+            ShaderSource source = new ShaderSource(filename, in hlsl, isEmbedded, originalLineCount, assembly, nameSpace);
 
             // See for info: https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-appendix-pre-include
             // Parse #include <file> - Only checks INCLUDE path and "in paths specified by the /I compiler option,
