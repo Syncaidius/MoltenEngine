@@ -13,14 +13,22 @@ namespace Molten.Input
     {
         WorkerGroup _workers;
 
-        internal WindowsClipboard(ThreadManager thread)
+        internal WindowsClipboard() { }
+
+        internal void Start(ThreadManager thread)
         {
             _workers = thread.CreateWorkerGroup("Clipboard", 1);
         }
 
+        internal void Stop()
+        {
+            _workers?.Dispose();
+            _workers = null;
+        }
+
         public void SetText(string txt)
         {
-            WorkerCallbackTask task = _workers.QueueCallback(() =>
+            WorkerCallbackTask task = _workers?.QueueCallback(() =>
             {
                 if (!string.IsNullOrWhiteSpace(txt))
                     Clipboard.SetText(txt);
@@ -34,7 +42,7 @@ namespace Molten.Input
         public bool ContainsText()
         {
             bool result = false;
-            WorkerCallbackTask task = _workers.QueueCallback(() =>
+            WorkerCallbackTask task = _workers?.QueueCallback(() =>
             {
                 result = Clipboard.ContainsText();
                 return true;
@@ -47,7 +55,7 @@ namespace Molten.Input
         public string GetText()
         {
             string result = null;
-            WorkerCallbackTask task = _workers.QueueCallback(() =>
+            WorkerCallbackTask task = _workers?.QueueCallback(() =>
             {
                 result = Clipboard.GetText();
                 return true;
@@ -59,7 +67,7 @@ namespace Molten.Input
 
         public void Dispose()
         {
-            _workers.Dispose();
+            _workers?.Dispose();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Molten.Graphics
     public abstract class ShaderClassCompiler<R, S, CR>
         where R : RenderService
         where S : IShaderElement
-        where CR : ShaderCompileResult
+        where CR : class, IShaderClassResult
     {
         Regex _regexHeader;
 

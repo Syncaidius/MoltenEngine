@@ -31,7 +31,7 @@ namespace Molten
                 log.WriteLine($"Initializing service: {this.GetType()}");
                 OnInitialize(Settings, log);
                 log.WriteLine($"Completed initialization of service: {this}");
-                State = EngineServiceState.Initialized;
+                State = EngineServiceState.Ready;
                 OnInitialized?.Invoke(this);
             }
             catch (Exception ex)
@@ -90,7 +90,7 @@ namespace Molten
             OnStop();
 
             Thread?.Dispose();
-            State = EngineServiceState.Initialized;
+            State = EngineServiceState.Ready;
         }
 
         protected override void OnDispose()

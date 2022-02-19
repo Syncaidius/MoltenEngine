@@ -6,6 +6,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using Molten.Windows32;
 using System.Reflection;
+using Molten.Threading;
 
 namespace Molten.Input
 {
@@ -29,7 +30,19 @@ namespace Molten.Input
             base.OnInitialize(settings, log);
 
             _gamepads = new List<WinGamepadDevice>();
-            _clipboard = new WindowsClipboard(Thread.Manager);
+            _clipboard = new WindowsClipboard();
+        }
+
+        protected override ThreadingMode OnStart()
+        {
+            _clipboard.Start(Thread.Manager);
+            return base.OnStart();
+        }
+
+        protected override void OnStop()
+        {
+            _clipboard.Stop();
+            base.OnStop();
         }
 
         protected override T OnGetCustomDevice<T>()

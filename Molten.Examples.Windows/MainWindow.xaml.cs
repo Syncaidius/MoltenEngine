@@ -62,7 +62,7 @@ namespace Molten.Samples
         protected override void OnClosing(CancelEventArgs e)
         {
             _curTest?.Exit();
-            Application.Current.Shutdown();
+            Application.Current?.Shutdown();
             base.OnClosing(e);
         }
 

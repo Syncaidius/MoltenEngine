@@ -16,7 +16,7 @@ namespace Molten.Graphics
     /// </summary>
     /// <typeparam name="R">Render service type</typeparam>
     /// <typeparam name="S">DXC shader type.</typeparam>
-    public unsafe class DxcCompileResult<R, S> : ShaderCompileResult
+    public unsafe class DxcCompileResult<R, S> : EngineObject, IShaderClassResult
         where R : RenderService
         where S : DxcFoundation
     {

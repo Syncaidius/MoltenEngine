@@ -2,7 +2,7 @@
 
 namespace Molten.Graphics
 {
-    public abstract class ShaderCompileResult : EngineObject
+    public sealed class ShaderCompileResult : EngineObject
     {
         public Dictionary<ShaderClassType, List<IShaderElement>> ShaderGroups = new Dictionary<ShaderClassType, List<IShaderElement>>();
 

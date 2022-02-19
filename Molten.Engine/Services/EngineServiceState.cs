@@ -16,7 +16,7 @@ namespace Molten
         /// <summary>
         /// The service is initialized and ready to (re)start.
         /// </summary>
-        Initialized = 1,
+        Ready = 1,
 
         /// <summary>
         /// The service is starting.

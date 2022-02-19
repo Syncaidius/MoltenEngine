@@ -46,7 +46,7 @@ namespace Molten.Samples
             _cam2D.OutputSurface = Window;
             _cam2D.LayerMask = BitwiseHelper.Set(_cam2D.LayerMask, 0);
 
-            if (engine.Input != null && engine.Input.State == EngineServiceState.Initialized)
+            if (engine.Input != null && engine.Input.State == EngineServiceState.Ready)
                 Engine.Input.Camera = _cam2D;
 
             ContentRequest cr = engine.Content.BeginRequest("assets/");

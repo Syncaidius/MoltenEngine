@@ -10,7 +10,7 @@ using Silk.NET.Core.Native;
 
 namespace Molten.Graphics
 {
-    public unsafe class FxcCompileResult : ShaderCompileResult
+    public unsafe class FxcCompileResult : EngineObject, IShaderClassResult 
     {
         public FxcReflection Reflection { get; }
 
@@ -48,8 +48,8 @@ namespace Molten.Graphics
             void* ptrErrors = _errors->GetBufferPointer();
             nuint numBytes = _errors->GetBufferSize();
             string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, NativeStringEncoding.UTF8);
-
             string[] errors = strErrors.Split('\r', '\n');
+
             for (int i = 0; i < errors.Length; i++)
                 context.AddError(errors[i]);
 
@@ -58,8 +58,6 @@ namespace Molten.Graphics
 
         protected override void OnDispose()
         {
-            base.OnDispose();
-
             Reflection.Dispose();
             SilkUtil.ReleasePtr(ref _byteCode);
             SilkUtil.ReleasePtr(ref _errors);

@@ -120,7 +120,7 @@ namespace Molten
                 Type serviceType = service.GetType();
                 if (type.IsAssignableFrom(serviceType))
                     return service.State == EngineServiceState.Running || 
-                        service.State == EngineServiceState.Initialized;
+                        service.State == EngineServiceState.Ready;
             }
 
             return false;
@@ -165,14 +165,14 @@ namespace Molten
         /// </summary>
         public void Stop()
         {
-            _mainThread.Dispose();
+            _mainThread?.Dispose();
 
             foreach (EngineService service in _services)
             {
                 service.Stop();
 
                 // Wait for the service thread to stop.
-                while (service.State != EngineServiceState.Initialized)
+                while (service.State != EngineServiceState.Ready)
                 {
                     if (service.Thread != null)
                     {
