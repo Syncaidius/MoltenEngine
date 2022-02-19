@@ -27,7 +27,7 @@ namespace Molten.Graphics
                     break;
 
                 case MaterialPass pass:
-                    pass.HullShader.EntryPoint = node.InnerText;
+                    pass.VertexShader.EntryPoint = node.InnerText;
                     break;
 
                 default:

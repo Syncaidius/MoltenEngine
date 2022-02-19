@@ -61,9 +61,9 @@ namespace Molten.Graphics
 
             _api = D3D11.GetApi();
             Device = new Device(_api, Log, settings.Graphics, _displayManager);
+            ShaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _resFactory = new ResourceFactoryDX11(this);
             _compute = new ComputeManager(this.Device);
-            ShaderCompiler = new FxcCompiler(this, Log, "\\Assets\\HLSL\\include\\", includeAssembly);
             _clearedSurfaces = new HashSet<Texture2DDX11>();
 
             uint maxBufferSize = (uint)ByteMath.FromMegabytes(3.5);

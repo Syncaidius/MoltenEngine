@@ -20,7 +20,7 @@ namespace Molten.Graphics
             Filename = filename;
             ParentNamespace = nameSpace;
             Dependencies = new List<ShaderSource>();
-            IsEmbedded = IsEmbedded;
+            IsEmbedded = isEmbedded;
             ParentAssembly = assembly;
             FullFilename = filename;
 
@@ -38,8 +38,6 @@ namespace Molten.Graphics
                         FullFilename = $"{nameSpace}.{filename}, {assembly}";
                 }
             }
-
-            NumBytes = (uint)(sizeof(char) * _src.Length);
         }
 
         protected override void OnDispose()
@@ -52,7 +50,7 @@ namespace Molten.Graphics
         /// </summary>
         public string Filename { get; private set; }
 
-        public uint NumBytes { get; protected set; }
+        public uint NumBytes => (uint)(sizeof(char) * _src.Length);
 
         /// <summary>
         /// Gets a reference to the HLSL source code string

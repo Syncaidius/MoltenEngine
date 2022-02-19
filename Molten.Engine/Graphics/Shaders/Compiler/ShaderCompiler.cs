@@ -113,6 +113,8 @@ namespace Molten.Graphics
         public override sealed ShaderCompileResult CompileShader(in string source, string filename, ShaderCompileFlags flags, Assembly assembly, string nameSpace)
         {
             ShaderCompilerContext<R, S, CR> context = new ShaderCompilerContext<R, S, CR>(this);
+            context.Flags = flags;
+
             Dictionary<ShaderClassCompiler<R, S, CR>, List<string>> headers = new Dictionary<ShaderClassCompiler<R, S, CR>, List<string>>();
             string finalSource = source;
 
@@ -158,7 +160,10 @@ namespace Molten.Graphics
                 foreach (string header in nodeHeaders)
                 {
                     List<IShaderElement> parseResult = classCompiler.Parse(context, Renderer, in header);
-                    context.Result.AddResult(classCompiler.ClassType, parseResult);
+                    if (parseResult != null)
+                        context.Result.AddResult(classCompiler.ClassType, parseResult);
+                    else
+                        context.AddError($"{filename}: {classCompiler.GetType().Name}.Parse() did not return a result (null)");
                 }
             }
 
@@ -210,7 +215,7 @@ namespace Molten.Graphics
             foreach (XmlNode node in parentNode.ChildNodes)
             {
                 string nodeName = node.Name.ToLower();
-                if (!Enum.TryParse(nodeName, out ShaderNodeType nodeType))
+                if (!Enum.TryParse(nodeName, true, out ShaderNodeType nodeType))
                 {
                     context.AddError($"Node '{nodeName}' is invalid");
                     continue;

@@ -24,8 +24,6 @@ namespace Molten.Graphics
 
         public ShaderSource Source { get; set; }
 
-        public ShaderType Type { get; set; }
-
         public ShaderCompileFlags Flags { get; set; }
 
         public ShaderCompiler<R, S, CR> Compiler { get; }
@@ -79,6 +77,9 @@ namespace Molten.Graphics
 
         public void AddMessage(string text, ShaderCompilerMessage.Kind type = ShaderCompilerMessage.Kind.Message)
         {
+            if (string.IsNullOrWhiteSpace(text))
+                return;
+
             _messages.Add(new ShaderCompilerMessage()
             {
                 Text = $"[{type}] {text}",

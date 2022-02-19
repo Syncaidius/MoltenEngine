@@ -59,6 +59,7 @@ namespace Molten.Graphics
                 ID3D10Blob* pErrors = null;
 
                 HResult r = Compiler.Compile(pSrc, context.Source.NumBytes, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
+
                 result = new FxcCompileResult(context, Compiler, pByteCode, pErrors);
 
                 if (context.HasErrors)
