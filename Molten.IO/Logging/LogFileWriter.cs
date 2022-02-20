@@ -25,23 +25,24 @@ namespace Molten
         Stream _stream;
         StreamWriter _writer;
         string _strFormat = "[{0}] {1}";
-        string _logFile = "log_{0}.txt";
         bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LogFileWriter"/> class.
         /// </summary>
-        /// <param name="fileNameFormat">The file name format.</param>
+        /// <param name="path">The file name format. Must contain string.format syntax for providing an entry for incremental value or date.</param>
         /// <param name="bufferSize">The file stream buffer size.</param>
-        public LogFileWriter(string fileNameFormat = "log_{0}.txt", NamingMode nameMode = NamingMode.Incremental, int bufferSize = 1024)
+        public LogFileWriter(string path = "Logs/log.txt", NamingMode nameMode = NamingMode.Incremental, int bufferSize = 1024)
         {
             bool success = false;
             int appendVal = 1;
 
-            if (fileNameFormat.Contains("{0}") == false)
-                throw new FormatException("The provided name of the log file must contain formatting indicator '{0}'. This is required to correctly format the filename.");
+            LogFileInfo = new FileInfo(path);
+            if (LogFileInfo.Directory != null && !LogFileInfo.Directory.Exists)
+                LogFileInfo.Directory.Create();
 
-            string file = string.Format(fileNameFormat, "");
+            string fnShort = LogFileInfo.Name.Replace(LogFileInfo.Extension, "");
+            string fileName = $"{LogFileInfo.Directory}/{fnShort}{LogFileInfo.Extension}";
 
             // Open a usable log file. Keep trying until one successfully opens. 
             // Generally this only fails if a log with the same name is already open for writing elsewhere in the engine or OS.
@@ -50,14 +51,15 @@ namespace Molten
                 case NamingMode.Incremental:
                     while (success == false)
                     {
+
                         try
                         {
-                            _stream = new FileStream(file, FileMode.Create, FileAccess.Write, FileShare.Read, bufferSize);
+                            _stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read, bufferSize);
                             success = true;
                         }
                         catch
                         {
-                            file = string.Format(fileNameFormat, "_" + appendVal);
+                            fileName = $"{LogFileInfo.Directory}/{fnShort}_{appendVal}{LogFileInfo.Extension}";
                             appendVal++;
                         }
                     }
@@ -65,12 +67,11 @@ namespace Molten
 
                 case NamingMode.DateTime:
                     string formattedDate = DateTime.Now.ToString("yyyy-mm-dd_HH-mm-ss");
-                    file = string.Format(fileNameFormat, "_" + formattedDate);
+                    fileName = $"{LogFileInfo.Directory}/{fnShort}_{formattedDate}{LogFileInfo.Extension}";
                     break;
             }
 
             // Store the successfully opened log writer.
-            _logFile = file;
             _writer = new StreamWriter(_stream, Encoding.UTF8);
         }
 
@@ -120,5 +121,7 @@ namespace Molten
             string line = string.Format(_strFormat, DateTime.Now.ToLongTimeString(), text);
             _writer.Write(line);
         }
+
+        public FileInfo LogFileInfo { get; }
     }
 }

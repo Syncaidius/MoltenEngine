@@ -155,10 +155,18 @@ namespace Molten.Graphics
         {
             string src = "";
             assembly = assembly ?? _renderer.GetType().Assembly;
-            using (Stream stream = EmbeddedResource.TryGetStream($"{nameSpace}.{filename}", assembly))
+            Stream stream = EmbeddedResource.TryGetStream($"{nameSpace}.{filename}", assembly);
+            if(stream != null)
             {
                 using (StreamReader reader = new StreamReader(stream))
                     src = reader.ReadToEnd();
+
+                stream.Dispose();
+            }
+            else
+            {
+                _renderer.Log.WriteError($"Attempt to load embedded shader failed: '{filename}' not found in namespace '{nameSpace}' of assembly '{assembly.FullName}'");
+                return new ShaderCompileResult();
             }
 
             return _compiler.CompileShader(in src, filename, ShaderCompileFlags.EmbeddedFile, assembly, nameSpace);

@@ -26,10 +26,8 @@ namespace Molten.Graphics
         /// </summary>
         public RenderService()
         {
-            Log = Logger.Get();
             Overlay = new OverlayProvider();
             Type test = this.GetType();
-            Log.AddOutput(new LogFileWriter($"renderer_{this.GetType().Name.Replace(' ', '_')}" + "{0}.txt"));
             Log.WriteLine("Acquiring render chain");
 
             try
@@ -245,7 +243,7 @@ namespace Molten.Graphics
         /// Occurs when the renderer is being initialized.
         /// </summary>
         /// <param name="settings"></param>
-        protected override void OnInitialize(EngineSettings settings, Logger mainLog)
+        protected override void OnInitialize(EngineSettings settings)
         {
             try
             {
@@ -386,11 +384,6 @@ namespace Molten.Graphics
         /// Gets the height of the biggest render surface used so far.
         /// </summary>
         protected uint BiggestHeight { get; private set; } = 1;
-
-        /// <summary>
-        /// Gets the <see cref="Logger"/> bound and dedicated to the current renderer.
-        /// </summary>
-        protected internal Logger Log { get; }
 
         /// <summary>
         /// Gets the renderer's <see cref="OverlayProvider"/> implementation.

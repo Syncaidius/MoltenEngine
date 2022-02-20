@@ -53,9 +53,9 @@ namespace Molten.Graphics
             _displayManager.Initialize(Log, settings);
         }
 
-        protected override void OnInitialize(EngineSettings settings, Logger mainLog)
+        protected override void OnInitialize(EngineSettings settings)
         {
-            base.OnInitialize(settings, mainLog);
+            base.OnInitialize(settings);
 
             Assembly includeAssembly = this.GetType().Assembly;
 

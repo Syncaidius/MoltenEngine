@@ -40,7 +40,7 @@ namespace Molten
                 Settings.Load();
 
             Log = Logger.Get();
-            Log.AddOutput(new LogFileWriter("engine_log{0}.txt"));
+            Log.AddOutput(new LogFileWriter("engine_log.txt"));
             Log.WriteDebugLine("Engine Instantiated");
             Threading = new ThreadManager(Log);
             _taskQueue = new ThreadedQueue<EngineTask>();

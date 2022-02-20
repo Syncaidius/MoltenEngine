@@ -2,6 +2,7 @@
 using Molten.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,22 +24,40 @@ namespace Molten
         /// </summary>
         public event MoltenEventHandler<EngineService> OnError;
 
-        public void Initialize(EngineSettings settings, Logger log)
+        LogFileWriter _logWriter;
+
+        public EngineService()
+        {
+            Log = Logger.Get();
+            string serviceName = this.GetType().Name;
+
+            _logWriter = new LogFileWriter($"Logs/{serviceName}.txt");
+            Log.AddOutput(_logWriter);
+        }
+
+        public void Initialize(EngineSettings settings, Logger parentLog)
         {
             Settings = settings;
             try
             {
-                log.WriteLine($"Initializing service: {this.GetType()}");
-                OnInitialize(Settings, log);
-                log.WriteLine($"Completed initialization of service: {this}");
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+
+                parentLog.WriteLine($"Initializing service: {this.GetType()}");
+                OnInitialize(Settings);
+                parentLog.WriteLine($"Completed initialization of service: {this}");
                 State = EngineServiceState.Ready;
+
+                sw.Stop();
+                Log.WriteLine($"Initialized service in {sw.Elapsed.TotalMilliseconds:N2} milliseconds");
+
                 OnInitialized?.Invoke(this);
             }
             catch (Exception ex)
             {
                 State = EngineServiceState.Error;
-                log.WriteError($"Failed to initialize service: {this}");
-                log.WriteError(ex);
+                parentLog.WriteError($"Failed to initialize service: {this}");
+                parentLog.WriteError(ex);
             }
         }
 
@@ -47,14 +66,14 @@ namespace Molten
         /// </summary>
         /// <param name="threadManager">The <see cref="ThreadManager"/> provided for startup.</param>
         /// <returns></returns>
-        public void Start(ThreadManager threadManager, Logger log)
+        public void Start(ThreadManager threadManager, Logger parentLog)
         {
             if (State == EngineServiceState.Uninitialized)
                 throw new EngineServiceException(this, "Cannot start uninitialized service.");
 
             if (State == EngineServiceState.Error)
             {
-                log.WriteError($"Cannot start service {this} due to error.");
+                parentLog.WriteError($"Cannot start service {this} due to error.");
                 OnError?.Invoke(this);
                 return;
             }
@@ -62,25 +81,34 @@ namespace Molten
             if (State == EngineServiceState.Starting || State == EngineServiceState.Running)
                 return;
 
+
             State = EngineServiceState.Starting;
             try
             {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+
                 ThreadMode = OnStart();
                 if (ThreadMode == ThreadingMode.SeparateThread)
                 {
                     Thread = threadManager.CreateThread($"service_{this}", true, false, Update);
-                    log.WriteLine($"Started service thread: {Thread.Name}");
+                    parentLog.WriteLine($"Started service thread: {Thread.Name}");
                 }
 
                 State = EngineServiceState.Running;
-                log.WriteLine($"Started service: {this}");
+                parentLog.WriteLine($"Started service: {this}");
+                parentLog.WriteLine($"Service log: {_logWriter.LogFileInfo.FullName}");
+
+                sw.Stop();
+                Log.WriteLine($"Started service in {sw.Elapsed.TotalMilliseconds:N2} milliseconds");
+
                 OnStarted?.Invoke(this);
             }
             catch (Exception ex)
             {
                 State = EngineServiceState.Error;
-                log.WriteError($"Failed to start service: {this}");
-                log.WriteError(ex);
+                parentLog.WriteError($"Failed to start service: {this}");
+                parentLog.WriteError(ex);
                 OnError?.Invoke(this);
             }
         }
@@ -99,6 +127,7 @@ namespace Molten
 
             State = EngineServiceState.Disposed;
             Thread = null;
+            Log.Dispose();
         }
 
         public void Update(Timing time)
@@ -107,7 +136,7 @@ namespace Molten
             OnUpdate(time);
         }
 
-        protected abstract void OnInitialize(EngineSettings settings, Logger log);
+        protected abstract void OnInitialize(EngineSettings settings);
 
         /// <summary>Invoked when the current <see cref="EngineService"/> needs to be updated.</summary>
         /// <param name="time"></param>
@@ -138,5 +167,10 @@ namespace Molten
         public ThreadingMode ThreadMode { get; protected set; }
 
         public EngineSettings Settings { get; private set; }
+
+        /// <summary>
+        /// Gets the log bound to the current <see cref="EngineService"/>.
+        /// </summary>
+        public Logger Log { get; private set; }
     }
 }

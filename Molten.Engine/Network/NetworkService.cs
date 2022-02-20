@@ -54,7 +54,7 @@ namespace Molten.Net
 
         #region Protected
 
-        protected override void OnInitialize(EngineSettings settings, Logger log)
+        protected override void OnInitialize(EngineSettings settings)
         {
             throw new NotImplementedException();
         }

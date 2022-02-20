@@ -13,9 +13,9 @@ namespace Molten.Input
 
         public override IInputNavigation Navigation => _navigation;
 
-        protected override void OnInitialize(EngineSettings settings, Logger log)
+        protected override void OnInitialize(EngineSettings settings)
         {
-            base.OnInitialize(settings, log);
+            base.OnInitialize(settings);
 
             _navigation = new AndroidInputNavigation();
         }
