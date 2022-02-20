@@ -76,13 +76,6 @@ namespace Molten.Graphics
                     r = Compiler.Compile(postProcessedSrc, postProcessedSize, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
                     ParseErrors(context, pErrors);
                 }
-                else
-                {
-                    void* postProcessedSrc = pProcessedSrc->GetBufferPointer();
-                    nuint postProcessedSize = pProcessedSrc->GetBufferSize();
-
-                    string test = SilkMarshal.PtrToString((nint)postProcessedSrc, NativeStringEncoding.LPStr);
-                }
 
                 //Store shader result
                 if (!context.HasErrors)
