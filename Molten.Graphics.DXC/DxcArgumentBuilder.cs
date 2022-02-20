@@ -66,9 +66,9 @@ namespace Molten.Graphics
         };
 
         Dictionary<DxcCompilerArg, string> _args;
-        ShaderCompilerContext<R, S, DxcCompileResult<R, S>> _context;
+        ShaderCompilerContext<R, S> _context;
 
-        internal DxcArgumentBuilder(ShaderCompilerContext<R, S, DxcCompileResult<R, S>> context)
+        internal DxcArgumentBuilder(ShaderCompilerContext<R, S> context)
         {
             _args = new Dictionary<DxcCompilerArg, string>();
             _context = context;

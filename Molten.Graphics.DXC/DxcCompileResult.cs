@@ -37,7 +37,7 @@ namespace Molten.Graphics
 
         internal IDxcBlob* ByteCode => _byteCode;
 
-        internal DxcCompileResult(ShaderCompilerContext<R,S, DxcCompileResult<R,S>> context, IDxcUtils* utils, IDxcResult* result)
+        internal DxcCompileResult(ShaderCompilerContext<R,S> context, IDxcUtils* utils, IDxcResult* result)
         {
             _utils = utils;
             _availableOutputs = new List<OutKind>();
@@ -100,7 +100,7 @@ namespace Molten.Graphics
             outData = (IDxcBlob*)pData;
         }
 
-        private void LoadPdbData(ShaderCompilerContext<R, S, DxcCompileResult<R,S>> context)
+        private void LoadPdbData(ShaderCompilerContext<R, S> context)
         {
             IDxcBlobUtf16* pPdbPath = null;
             GetDxcOutput(OutKind.OutPdb, ref _pdbData, &pPdbPath);
@@ -112,7 +112,7 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref pPdbPath);
         }
 
-        private void LoadReflection(ShaderCompilerContext<R, S, DxcCompileResult<R, S>> context)
+        private void LoadReflection(ShaderCompilerContext<R, S> context)
         {
             IDxcBlob* outData = null;
             DxcBuffer* reflectionBuffer = null;
@@ -142,7 +142,7 @@ namespace Molten.Graphics
             Result->GetResult(ref _byteCode);
         }
 
-        private void LoadErrors(ShaderCompilerContext<R, S, DxcCompileResult<R, S>> context)
+        private void LoadErrors(ShaderCompilerContext<R, S> context)
         {
             IDxcBlobEncoding* pErrorBlob = null;
             Result->GetErrorBuffer(&pErrorBlob);

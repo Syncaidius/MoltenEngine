@@ -9,7 +9,7 @@ namespace Molten.Graphics
 {
     internal class MaterialLayoutValidator
     {
-        internal bool Validate(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context,
+        internal bool Validate(ShaderCompilerContext<RendererDX11, HlslFoundation> context,
             MaterialPassCompileResult pResult)
         {
             bool valid = true;
@@ -73,7 +73,7 @@ namespace Molten.Graphics
         }
 
         private bool CheckTessellationShaders(
-            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
+            ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
             MaterialPassCompileResult pResult)
         {
             bool valid = true;

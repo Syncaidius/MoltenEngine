@@ -13,7 +13,7 @@ namespace Molten.Graphics
         public override ShaderClassType ClassType => ShaderClassType.Compute;
 
         public override List<IShaderElement> Parse(
-            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
+            ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
             RendererDX11 renderer, in string header)
         {
             List<IShaderElement> shaders = new List<IShaderElement>();
@@ -22,7 +22,7 @@ namespace Molten.Graphics
             {
                 context.Compiler.ParserHeader(compute, in header, context);
                 FxcCompileResult result = null;
-                if (context.Compiler.CompileSource(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out result))
+                if (context.Renderer.ShaderCompiler.CompileSource(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out result))
                 {
                     if(BuildStructure(context, compute, result, compute.Composition))
                     {
@@ -52,7 +52,7 @@ namespace Molten.Graphics
         }
 
         protected override void OnBuildVariableStructure(
-            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context,
+            ShaderCompilerContext<RendererDX11, HlslFoundation> context,
             HlslFoundation shader, FxcCompileResult result, HlslInputBindDescription bind)
         {
             ComputeTask ct = shader as ComputeTask;
@@ -72,7 +72,7 @@ namespace Molten.Graphics
         }
 
         protected void OnBuildRWStructuredVariable
-            (ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
+            (ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
             ComputeTask shader, HlslInputBindDescription bind)
         {
             RWBufferVariable rwBuffer = GetVariableResource<RWBufferVariable>(context, shader, bind);
@@ -85,7 +85,7 @@ namespace Molten.Graphics
         }
 
         protected void OnBuildRWTypedVariable(
-            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, 
+            ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
             ComputeTask shader, HlslInputBindDescription bind)
         {
             RWVariable resource = null;

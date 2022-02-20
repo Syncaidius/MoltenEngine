@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Molten.Graphics
 {
-    internal unsafe class FxcCompiler : ShaderCompiler<RendererDX11, HlslFoundation, FxcCompileResult>
+    internal unsafe class FxcCompiler : ShaderCompiler<RendererDX11, HlslFoundation>
     {
         internal D3DCompiler Compiler { get; }
 
@@ -40,19 +40,21 @@ namespace Molten.Graphics
         /// <param name="context"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        public override bool CompileSource(string entryPoint, ShaderType type, 
-            ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, out FxcCompileResult result)
+        internal bool CompileSource(string entryPoint, ShaderType type, 
+            ShaderCompilerContext<RendererDX11, HlslFoundation> context, out FxcCompileResult result)
         {
+            IShaderClassResult classResult = null;
+
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.
-            if (!context.Shaders.TryGetValue(entryPoint, out result))
+            if (!context.Shaders.TryGetValue(entryPoint, out classResult))
             {
                 string shaderProfile = ShaderModel.Model5_0.ToProfile(type, ShaderLanguage.Hlsl);
 
                 byte* pSourceName = (byte*)SilkMarshal.StringToPtr(context.Source.Filename, NativeStringEncoding.LPStr);
                 byte* pEntryPoint = (byte*)SilkMarshal.StringToPtr(entryPoint, NativeStringEncoding.LPStr);
                 byte* pTarget = (byte*)SilkMarshal.StringToPtr(shaderProfile, NativeStringEncoding.LPStr);
-                void* pSrc = (void*)SilkMarshal.StringToPtr(context.Source.SourceCode, NativeStringEncoding.Ansi);
+                void* pSrc = (void*)SilkMarshal.StringToPtr(context.Source.SourceCode, NativeStringEncoding.LPStr);
                 FxcCompileFlags compileFlags = context.Flags.Translate();
 
                 ID3D10Blob* pByteCode = null;
@@ -72,6 +74,7 @@ namespace Molten.Graphics
                 SilkMarshal.Free((nint)pTarget);
             }
 
+            result = classResult as FxcCompileResult;
             return true;
         }
     }

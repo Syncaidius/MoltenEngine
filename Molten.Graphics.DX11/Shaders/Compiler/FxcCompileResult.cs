@@ -19,7 +19,7 @@ namespace Molten.Graphics
         ID3D10Blob* _byteCode;
         ID3D10Blob* _errors;
 
-        internal FxcCompileResult(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context,
+        internal FxcCompileResult(ShaderCompilerContext<RendererDX11, HlslFoundation> context,
             D3DCompiler compiler, ID3D10Blob* byteCode, ID3D10Blob* errors)
         {
             _byteCode = byteCode;
@@ -40,7 +40,7 @@ namespace Molten.Graphics
             Reflection = new FxcReflection((ID3D11ShaderReflection*)ppReflection);
         }
 
-        private void ParseErrors(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context)
+        private void ParseErrors(ShaderCompilerContext<RendererDX11, HlslFoundation> context)
         {
             if (_errors == null)
                 return;

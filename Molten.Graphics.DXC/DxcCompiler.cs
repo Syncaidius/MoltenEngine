@@ -8,7 +8,7 @@ using Buffer = Silk.NET.Direct3D.Compilers.Buffer;
 
 namespace Molten.Graphics
 {
-    internal unsafe class DxcCompiler<R, S> : ShaderCompiler<R, S, DxcCompileResult<R,S>>
+    internal unsafe class DxcCompiler<R, S> : ShaderCompiler<R, S>
         where R : RenderService
         where S : DxcFoundation
     {
@@ -83,12 +83,14 @@ namespace Molten.Graphics
         /// <param name="result"></param>
         /// <returns></returns>
         /// 
-        public override bool CompileSource(string entryPoint, ShaderType type, 
-            ShaderCompilerContext<R, S, DxcCompileResult<R, S>> context, out DxcCompileResult<R,S> result)
+        public bool CompileSource(string entryPoint, ShaderType type, 
+            ShaderCompilerContext<R, S> context, out DxcCompileResult<R,S> result)
         {
+            IShaderClassResult classResult = null;
+
             // Since it's not possible to have two functions in the same file with the same name, we'll just check if
             // a shader with the same entry-point name is already loaded in the context.
-            if (!context.Shaders.TryGetValue(entryPoint, out result))
+            if (!context.Shaders.TryGetValue(entryPoint, out classResult))
             {
                 DxcArgumentBuilder<R,S> args = new DxcArgumentBuilder<R,S>(context);
                 args.SetEntryPoint(entryPoint);
@@ -114,6 +116,7 @@ namespace Molten.Graphics
                 context.Shaders.Add(entryPoint, result);
             }
 
+            result = classResult as DxcCompileResult<R,S>;
             return true;
         }
 

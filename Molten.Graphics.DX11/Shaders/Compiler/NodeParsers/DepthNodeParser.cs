@@ -12,7 +12,7 @@ namespace Molten.Graphics
     {
         public override ShaderNodeType NodeType => ShaderNodeType.Depth;
 
-        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, XmlNode node)
+        public override void Parse(HlslFoundation foundation, ShaderCompilerContext<RendererDX11, HlslFoundation> context, XmlNode node)
         {
             if (foundation is ComputeTask)
             {
@@ -125,7 +125,7 @@ namespace Molten.Graphics
                 foundation.DepthState[conditions] = state;
         }
 
-        private void ParseFaceNode(ShaderCompilerContext<RendererDX11, HlslFoundation, FxcCompileResult> context, XmlNode faceNode, GraphicsDepthState.Face face)
+        private void ParseFaceNode(ShaderCompilerContext<RendererDX11, HlslFoundation> context, XmlNode faceNode, GraphicsDepthState.Face face)
         {
             foreach(XmlNode child in faceNode.ChildNodes)
             {
