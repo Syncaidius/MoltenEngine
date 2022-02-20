@@ -14,15 +14,16 @@ namespace Molten.Graphics
 
         internal readonly string Name;
 
-        internal HlslInputBindDescription(ShaderInputBindDesc* desc)
+        internal HlslInputBindDescription(ID3D11ShaderReflection* reflection, uint rIndex)
         {
-            Ptr = desc;
-            Name = SilkMarshal.PtrToString((nint)desc->Name);
+            Ptr = EngineUtil.Alloc<ShaderInputBindDesc>();
+            reflection->GetResourceBindingDesc(rIndex, Ptr);
+            Name = SilkMarshal.PtrToString((nint)Ptr->Name);
         }
 
         public void Dispose()
         {
-            SilkUtil.ReleasePtr(ref Ptr);
+            EngineUtil.Free(ref Ptr);
         }
     }
 }

@@ -50,8 +50,6 @@ namespace Molten.Graphics
         /// </summary>
         public string Filename { get; private set; }
 
-        public uint NumBytes => (uint)(sizeof(char) * _src.Length);
-
         /// <summary>
         /// Gets a reference to the HLSL source code string
         /// </summary>

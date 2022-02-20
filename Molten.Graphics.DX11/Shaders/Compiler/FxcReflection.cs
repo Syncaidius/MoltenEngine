@@ -23,16 +23,15 @@ namespace Molten.Graphics
 
             BindDescs = new HlslInputBindDescription[Desc.BoundResources];
 
-            for (uint r = 0; r < Desc.BoundResources; r++)
-            {
-                ShaderInputBindDesc* bDesc = null;
-                Ptr->GetResourceBindingDesc(r, bDesc);
-                BindDescs[r] = new HlslInputBindDescription(bDesc);
-            }
+            for (uint rIndex = 0; rIndex < Desc.BoundResources; rIndex++)
+                BindDescs[rIndex] = new HlslInputBindDescription(reflection, rIndex);
         }
 
         public void Dispose()
         {
+            foreach (HlslInputBindDescription d in BindDescs)
+                d.Dispose();
+
             SilkUtil.ReleasePtr(ref Ptr);
         }
     }

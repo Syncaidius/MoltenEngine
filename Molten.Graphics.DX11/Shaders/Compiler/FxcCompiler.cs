@@ -61,8 +61,10 @@ namespace Molten.Graphics
                 ID3D10Blob* pErrors = null;
                 ID3D10Blob* pProcessedSrc = null;
 
+                uint numBytes = (uint)SilkMarshal.GetMaxSizeOf(context.Source.SourceCode, NativeStringEncoding.LPStr);
+
                 // Preprocess and check for errors
-                HResult r = Compiler.Preprocess(pSrc, context.Source.NumBytes, pSourceName, null, null, &pProcessedSrc, &pErrors);
+                HResult r = Compiler.Preprocess(pSrc, numBytes, pSourceName, null, null, &pProcessedSrc, &pErrors);
                 ParseErrors(context, pErrors);
 
                 // Compile source and check for errors
@@ -74,12 +76,19 @@ namespace Molten.Graphics
                     r = Compiler.Compile(postProcessedSrc, postProcessedSize, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
                     ParseErrors(context, pErrors);
                 }
+                else
+                {
+                    void* postProcessedSrc = pProcessedSrc->GetBufferPointer();
+                    nuint postProcessedSize = pProcessedSrc->GetBufferSize();
+
+                    string test = SilkMarshal.PtrToString((nint)postProcessedSrc, NativeStringEncoding.LPStr);
+                }
 
                 //Store shader result
                 if (!context.HasErrors)
                 {
-                    result = new FxcCompileResult(context, Compiler, pByteCode);
-                    context.Shaders.Add(entryPoint, result);
+                    classResult = new FxcCompileResult(context, Compiler, pByteCode);
+                    context.Shaders.Add(entryPoint, classResult);
                 }
 
                 SilkUtil.ReleasePtr(ref pProcessedSrc);
@@ -91,11 +100,14 @@ namespace Molten.Graphics
             }
 
             result = classResult as FxcCompileResult;
-            return true;
+            return !context.HasErrors;
         }
 
         private void ParseErrors(ShaderCompilerContext<RendererDX11, HlslFoundation> context, ID3D10Blob* errors)
         {
+            if (errors == null)
+                return;
+
             void* ptrErrors = errors->GetBufferPointer();
             nuint numBytes = errors->GetBufferSize();
             string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, NativeStringEncoding.UTF8);
