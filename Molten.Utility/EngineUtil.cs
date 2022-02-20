@@ -197,6 +197,12 @@ namespace Molten
         /// least the same size as <paramref name="array"/></param>
         public static void ArrayResize<T>(ref T[] array, long newSize)
         {
+            if (array == null)
+            {
+                array = new T[newSize];
+                return;
+            }
+
             if (array.Length > newSize)
                 throw new Exception("New array size cannot be smaller than the provided array's length.");
 

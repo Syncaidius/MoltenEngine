@@ -47,7 +47,7 @@ namespace Molten.Graphics
             IDXGISwapChain* ptrSwapChain = null;
             SwapChainDesc* ptrDesc = (SwapChainDesc*)&desc;
 
-            Device.DisplayManager.DxgiFactory->CreateSwapChain((IUnknown*)Device.NativeDevice, ptrDesc, ref ptrSwapChain);
+            HResult r = Device.DisplayManager.DxgiFactory->CreateSwapChain((IUnknown*)Device.NativeDevice, ptrDesc, &ptrSwapChain);
 
             _swapDesc = desc;
             NativeSwapChain = (IDXGISwapChain1*)ptrSwapChain;
