@@ -91,7 +91,7 @@ namespace Molten.Threading
             group.IsDisposed = true;
             _groups.Remove(group);
             _groupsByName.Remove(group.Name);
-            _log.WriteLine($"Destroyed worker group '{group.Name}");
+            _log.WriteLine($"Destroyed worker group '{group.Name}'");
         }
 
         /// <summary>Exits all engine threads before disposing of the thread manager. Do not call this externally.</summary>

@@ -132,7 +132,9 @@ namespace Molten.Graphics
             {
                 blob = new DxcSourceBlob();
                 void* ptrSource = (void*)SilkMarshal.StringToPtr(source.SourceCode, NativeStringEncoding.UTF8);
-                _utils->CreateBlob(ptrSource, source.NumBytes, DXC.CPUtf16, ref blob.Ptr);
+                uint numBytes = (uint)SilkMarshal.GetMaxSizeOf(source.SourceCode, NativeStringEncoding.UTF8);
+
+                _utils->CreateBlob(ptrSource, numBytes, DXC.CPUtf16, ref blob.Ptr);
 
                 blob.BlobBuffer = new Buffer()
                 {

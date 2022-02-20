@@ -35,6 +35,7 @@ namespace Molten.Graphics
         public ShaderCompilerContext(ShaderCompiler<R,S> compiler)
         {
             _messages = new List<ShaderCompilerMessage>();
+            _resources = new Dictionary<Type, Dictionary<string, object>>();
             Messages = _messages.AsReadOnly();
             Shaders = new Dictionary<string, IShaderClassResult>();
             Result = new ShaderCompileResult();
@@ -45,7 +46,7 @@ namespace Molten.Graphics
         public void AddResource<T>(string name, T resource) 
             where T : EngineObject
         {
-            if (_resources.TryGetValue(typeof(T), out Dictionary<string, object> lookup))
+            if (!_resources.TryGetValue(typeof(T), out Dictionary<string, object> lookup))
             {
                 lookup = new Dictionary<string, object>();
                 _resources.Add(typeof(T), lookup);
@@ -57,7 +58,7 @@ namespace Molten.Graphics
         public bool TryGetResource<T>(string name, out T resource)
             where T : EngineObject
         {
-            if (_resources.TryGetValue(typeof(T), out Dictionary<string, object> lookup))
+            if (!_resources.TryGetValue(typeof(T), out Dictionary<string, object> lookup))
             {
                 lookup = new Dictionary<string, object>();
                 _resources.Add(typeof(T), lookup);

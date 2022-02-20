@@ -25,7 +25,7 @@ namespace Molten.Graphics
 
         public bool IsCompatible(InputElementData other)
         {
-            return IsCompatible(other, (uint)other.Elements.Length);
+            return IsCompatible(other, 0);
         }
 
         public bool IsCompatible(InputElementData other, uint startIndex)

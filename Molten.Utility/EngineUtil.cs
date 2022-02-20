@@ -201,29 +201,37 @@ namespace Molten
                 throw new Exception("New array size cannot be smaller than the provided array's length.");
 
             Type t = typeof(T);
-            uint eSize = (uint)Marshal.SizeOf(t);
             T[] newArray = new T[newSize];
-            GCHandle hArray = GCHandle.Alloc(array, GCHandleType.Pinned);
 
-            try
+            if (t.IsValueType)
             {
-                void* ptrArray = hArray.AddrOfPinnedObject().ToPointer();
-                GCHandle hNewArray = GCHandle.Alloc(newArray, GCHandleType.Pinned);
+                uint eSize = (uint)Marshal.SizeOf(t);
+                GCHandle hArray = GCHandle.Alloc(array, GCHandleType.Pinned);
+
                 try
                 {
-                    ulong arrayBytes = (ulong)array.LongLength * eSize;
-                    ulong available = (ulong)newArray.LongLength * eSize;
-                    void* ptrNewArray = hNewArray.AddrOfPinnedObject().ToPointer();
-                    Buffer.MemoryCopy(ptrArray, ptrNewArray, available, arrayBytes);
+                    void* ptrArray = hArray.AddrOfPinnedObject().ToPointer();
+                    GCHandle hNewArray = GCHandle.Alloc(newArray, GCHandleType.Pinned);
+                    try
+                    {
+                        ulong arrayBytes = (ulong)array.LongLength * eSize;
+                        ulong available = (ulong)newArray.LongLength * eSize;
+                        void* ptrNewArray = hNewArray.AddrOfPinnedObject().ToPointer();
+                        Buffer.MemoryCopy(ptrArray, ptrNewArray, available, arrayBytes);
+                    }
+                    finally
+                    {
+                        hNewArray.Free();
+                    }
                 }
                 finally
                 {
-                    hNewArray.Free();
+                    hArray.Free();
                 }
             }
-            finally
+            else
             {
-                hArray.Free();
+                Array.Copy(array, newArray, array.LongLength);
             }
 
             array = newArray;
