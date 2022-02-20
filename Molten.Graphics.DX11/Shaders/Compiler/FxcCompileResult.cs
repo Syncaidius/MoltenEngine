@@ -17,15 +17,11 @@ namespace Molten.Graphics
         public ID3D10Blob* ByteCode { get; }
 
         ID3D10Blob* _byteCode;
-        ID3D10Blob* _errors;
 
         internal FxcCompileResult(ShaderCompilerContext<RendererDX11, HlslFoundation> context,
-            D3DCompiler compiler, ID3D10Blob* byteCode, ID3D10Blob* errors)
+            D3DCompiler compiler, ID3D10Blob* byteCode)
         {
             _byteCode = byteCode;
-            _errors = errors;
-
-            ParseErrors(context);
 
             if (context.HasErrors)
                 return;
@@ -40,27 +36,11 @@ namespace Molten.Graphics
             Reflection = new FxcReflection((ID3D11ShaderReflection*)ppReflection);
         }
 
-        private void ParseErrors(ShaderCompilerContext<RendererDX11, HlslFoundation> context)
-        {
-            if (_errors == null)
-                return;
-
-            void* ptrErrors = _errors->GetBufferPointer();
-            nuint numBytes = _errors->GetBufferSize();
-            string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, NativeStringEncoding.UTF8);
-            string[] errors = strErrors.Split('\r', '\n');
-
-            for (int i = 0; i < errors.Length; i++)
-                context.AddError(errors[i]);
-
-            SilkUtil.ReleasePtr(ref _errors);
-        }
 
         protected override void OnDispose()
         {
             Reflection.Dispose();
             SilkUtil.ReleasePtr(ref _byteCode);
-            SilkUtil.ReleasePtr(ref _errors);
         }
     }
 }

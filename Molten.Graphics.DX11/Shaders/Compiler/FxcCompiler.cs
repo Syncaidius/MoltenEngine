@@ -59,16 +59,32 @@ namespace Molten.Graphics
 
                 ID3D10Blob* pByteCode = null;
                 ID3D10Blob* pErrors = null;
+                ID3D10Blob* pProcessedSrc = null;
 
-                HResult r = Compiler.Compile(pSrc, context.Source.NumBytes, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
+                // Preprocess and check for errors
+                HResult r = Compiler.Preprocess(pSrc, context.Source.NumBytes, pSourceName, null, null, &pProcessedSrc, &pErrors);
+                ParseErrors(context, pErrors);
 
-                result = new FxcCompileResult(context, Compiler, pByteCode, pErrors);
+                // Compile source and check for errors
+                if (!context.HasErrors)
+                {
+                    void* postProcessedSrc = pProcessedSrc->GetBufferPointer();
+                    nuint postProcessedSize = pProcessedSrc->GetBufferSize();
 
-                if (context.HasErrors)
-                    return false;
+                    r = Compiler.Compile(postProcessedSrc, postProcessedSize, pSourceName, null, null, pEntryPoint, pTarget, (uint)compileFlags, 0, &pByteCode, &pErrors);
+                    ParseErrors(context, pErrors);
+                }
 
-                context.Shaders.Add(entryPoint, result);
+                //Store shader result
+                if (!context.HasErrors)
+                {
+                    result = new FxcCompileResult(context, Compiler, pByteCode);
+                    context.Shaders.Add(entryPoint, result);
+                }
 
+                SilkUtil.ReleasePtr(ref pProcessedSrc);
+                SilkUtil.ReleasePtr(ref pErrors);
+                SilkMarshal.Free((nint)pSrc);
                 SilkMarshal.Free((nint)pSourceName);
                 SilkMarshal.Free((nint)pEntryPoint);
                 SilkMarshal.Free((nint)pTarget);
@@ -76,6 +92,17 @@ namespace Molten.Graphics
 
             result = classResult as FxcCompileResult;
             return true;
+        }
+
+        private void ParseErrors(ShaderCompilerContext<RendererDX11, HlslFoundation> context, ID3D10Blob* errors)
+        {
+            void* ptrErrors = errors->GetBufferPointer();
+            nuint numBytes = errors->GetBufferSize();
+            string strErrors = SilkMarshal.PtrToString((nint)ptrErrors, NativeStringEncoding.UTF8);
+            string[] errorList = strErrors.Split('\r', '\n');
+
+            for (int i = 0; i < errorList.Length; i++)
+                context.AddError(errorList[i]);
         }
     }
 }
