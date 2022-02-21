@@ -59,7 +59,7 @@ namespace Molten.Net
             throw new NotImplementedException();
         }
 
-        protected override ThreadingMode OnStart()
+        protected override ThreadingMode OnStart(ThreadManager threadManager)
         {
             // NOTE access Settings property of base EngineService to get network settings/config.
 

@@ -88,7 +88,7 @@ namespace Molten
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                ThreadMode = OnStart();
+                ThreadMode = OnStart(threadManager);
                 if (ThreadMode == ThreadingMode.SeparateThread)
                 {
                     Thread = threadManager.CreateThread($"service_{this}", true, false, Update);
@@ -146,7 +146,7 @@ namespace Molten
         /// Invokved when the current <see cref="EngineService"/> has been requested to start.
         /// </summary>
         /// <returns></returns>
-        protected abstract ThreadingMode OnStart();
+        protected abstract ThreadingMode OnStart(ThreadManager threadManager);
 
         /// <summary>
         /// Invoked when the current <see cref="EngineService"/> has been requested to stop.

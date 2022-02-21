@@ -33,10 +33,10 @@ namespace Molten.Input
             _clipboard = new WindowsClipboard();
         }
 
-        protected override ThreadingMode OnStart()
+        protected override ThreadingMode OnStart(ThreadManager threadManager)
         {
-            _clipboard.Start(Thread.Manager);
-            return base.OnStart();
+            _clipboard.Start(threadManager);
+            return base.OnStart(threadManager);
         }
 
         protected override void OnStop()

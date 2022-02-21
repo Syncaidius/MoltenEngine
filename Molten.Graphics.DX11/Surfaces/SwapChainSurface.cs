@@ -71,18 +71,28 @@ namespace Molten.Graphics
             }
 
             void* ppSurface = null;
+            ID3D11Resource* res = null;
             Guid riid = ID3D11Texture2D.Guid;
-            NativeSwapChain->GetBuffer(0, &riid, &ppSurface);
-
-            RenderTargetViewDesc rtvDesc = new RenderTargetViewDesc()
+            WinHResult hr = NativeSwapChain->GetBuffer(0, &riid, &ppSurface);
+            DxgiError err = hr.ToEnum<DxgiError>();
+            if (err == DxgiError.Ok)
             {
-                Format = _swapDesc.Format,
-                ViewDimension = RtvDimension.RtvDimensionTexture2D,
-            };
+                NativeTexture = (ID3D11Texture2D*)ppSurface;
 
-            ID3D11Resource* res = (ID3D11Resource*)NativeTexture;
-            Device.NativeDevice->CreateRenderTargetView(res, &rtvDesc, ref RTV);
-            VP = new ViewportF(0, 0, Width, Height);
+                RenderTargetViewDesc rtvDesc = new RenderTargetViewDesc()
+                {
+                    Format = _swapDesc.Format,
+                    ViewDimension = RtvDimension.RtvDimensionTexture2D,
+                };
+
+                res = (ID3D11Resource*)NativeTexture;
+                Device.NativeDevice->CreateRenderTargetView(res, &rtvDesc, ref RTV);
+                VP = new ViewportF(0, 0, Width, Height);
+            }
+            else
+            {
+                Renderer.Log.WriteError($"Error creating resource for SwapChainSurface '{Name}': {err}");
+            }
 
             return res;
         }

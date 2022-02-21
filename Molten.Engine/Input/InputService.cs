@@ -185,7 +185,7 @@ namespace Molten.Input
             UpdateID++;
         }
 
-        protected override ThreadingMode OnStart()
+        protected override ThreadingMode OnStart(ThreadManager threadManager)
         {
             return ThreadingMode.MainThread;
         }

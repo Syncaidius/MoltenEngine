@@ -49,7 +49,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected override ThreadingMode OnStart()
+        protected override ThreadingMode OnStart(ThreadManager threadManager)
         {
             _shouldPresent = true;
             return ThreadingMode.SeparateThread;

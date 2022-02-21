@@ -44,10 +44,11 @@ namespace Molten.Graphics
 
         protected override ID3D11Resource* CreateResource(bool resize)
         {
-            ID3D11Resource* resource =  base.CreateResource(resize);
             SilkUtil.ReleasePtr(ref RTV);
 
+            ID3D11Resource* resource =  base.CreateResource(resize);
             SetRTVDescription(ref _rtvDesc);
+
             if (_description.SampleDesc.Count > 1)
             {
                 _rtvDesc.ViewDimension = RtvDimension.RtvDimensionTexture2Dmsarray;
@@ -68,7 +69,7 @@ namespace Molten.Graphics
                 };
             }
 
-            Device.NativeDevice->CreateRenderTargetView(NativePtr, ref _rtvDesc, ref RTV);
+            Device.NativeDevice->CreateRenderTargetView(resource, ref _rtvDesc, ref RTV);
             return resource;
         }
 
