@@ -31,7 +31,7 @@ namespace Molten.Graphics
 
         protected void CreateSwapChain(DisplayMode mode, bool windowed, IntPtr controlHandle)
         {
-            SwapChainDesc1 test = _swapDesc = new SwapChainDesc1()
+            _swapDesc = new SwapChainDesc1()
             {
                 Width = mode.Width,
                 Height = mode.Height,
@@ -46,8 +46,11 @@ namespace Molten.Graphics
                 AlphaMode = AlphaMode.AlphaModeIgnore // TODO implement this correctly
             };
 
-            WinHResult hr = Device.DisplayManager.DxgiFactory->CreateSwapChainForHwnd((IUnknown*)Device.NativeDevice, controlHandle, &test, null, null, ref NativeSwapChain);
+            WinHResult hr = Device.DisplayManager.DxgiFactory->CreateSwapChainForHwnd((IUnknown*)Device.NativeDevice, controlHandle, ref _swapDesc, null, null, ref NativeSwapChain);
             DxgiError de = hr.ToEnum<DxgiError>();
+
+            if (de != DxgiError.Ok)
+                Renderer.Log.WriteError($"Creation of swapchain failed with result: {de}");
         }
 
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
