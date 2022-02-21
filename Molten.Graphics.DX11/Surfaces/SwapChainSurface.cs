@@ -7,6 +7,7 @@ using Molten.Graphics.Dxgi;
 using Silk.NET.DXGI;
 using Silk.NET.Direct3D11;
 using Silk.NET.Core.Native;
+using Molten.Windows32;
 
 namespace Molten.Graphics
 {
@@ -17,6 +18,7 @@ namespace Molten.Graphics
 
         PresentParameters* _presentParams;
         SwapChainDesc1 _swapDesc;
+
         ThreadedQueue<Action> _dispatchQueue;
         uint _vsync;
 
@@ -29,7 +31,7 @@ namespace Molten.Graphics
 
         protected void CreateSwapChain(DisplayMode mode, bool windowed, IntPtr controlHandle)
         {
-            SwapChainDesc1 desc = new SwapChainDesc1()
+            SwapChainDesc1 test = _swapDesc = new SwapChainDesc1()
             {
                 Width = mode.Width,
                 Height = mode.Height,
@@ -40,17 +42,12 @@ namespace Molten.Graphics
                 SwapEffect = SwapEffect.SwapEffectDiscard,
                 Flags = (uint)DxgiSwapChainFlags.None,
                 Stereo = 0,
-                Scaling = Scaling.ScalingNone,
+                Scaling = Scaling.ScalingStretch,
                 AlphaMode = AlphaMode.AlphaModeIgnore // TODO implement this correctly
             };
 
-            IDXGISwapChain* ptrSwapChain = null;
-            SwapChainDesc* ptrDesc = (SwapChainDesc*)&desc;
-
-            HResult r = Device.DisplayManager.DxgiFactory->CreateSwapChain((IUnknown*)Device.NativeDevice, ptrDesc, &ptrSwapChain);
-
-            _swapDesc = desc;
-            NativeSwapChain = (IDXGISwapChain1*)ptrSwapChain;
+            WinHResult hr = Device.DisplayManager.DxgiFactory->CreateSwapChainForHwnd((IUnknown*)Device.NativeDevice, controlHandle, &test, null, null, ref NativeSwapChain);
+            DxgiError de = hr.ToEnum<DxgiError>();
         }
 
         protected override unsafe ID3D11Resource* CreateResource(bool resize)

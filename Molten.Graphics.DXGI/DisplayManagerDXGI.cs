@@ -10,7 +10,7 @@ namespace Molten.Graphics.Dxgi
     public unsafe class DisplayManagerDXGI : EngineObject, IDisplayManager
     {
         DXGI _api;
-        IDXGIFactory1* _dxgiFactory;
+        IDXGIFactory2* _dxgiFactory;
         List<int> _usable;
         List<DisplayAdapterDXGI> _adapters;
         Logger _log;
@@ -40,10 +40,10 @@ namespace Molten.Graphics.Dxgi
             _log = logger;
 
             // Create factory
-            Guid factoryGuid = IDXGIFactory1.Guid;
+            Guid factoryGuid = IDXGIFactory2.Guid;
             void* ptrFactory = null;
             _api.CreateDXGIFactory1(&factoryGuid, &ptrFactory);
-            _dxgiFactory = (IDXGIFactory1*)ptrFactory;
+            _dxgiFactory = (IDXGIFactory2*)ptrFactory;
 
             // Detect adapters.
             IDXGIAdapter1*[] detected = DXGIHelper.EnumArray((uint index, ref IDXGIAdapter1* ptrOutput) =>
@@ -175,6 +175,6 @@ namespace Molten.Graphics.Dxgi
         }
 
         /// <summary>Gets the DXGI factory.</summary>
-        public IDXGIFactory1* DxgiFactory => _dxgiFactory;
+        public IDXGIFactory2* DxgiFactory => _dxgiFactory;
     }
 }
