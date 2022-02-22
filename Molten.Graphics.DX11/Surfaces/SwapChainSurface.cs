@@ -110,8 +110,14 @@ namespace Molten.Graphics
 
             if (OnPresent() && NativeSwapChain != null)
             {
-                
-                NativeSwapChain->Present1(_vsync, 0U, _presentParams);
+
+                NativeSwapChain->Present(_vsync, 0U);
+
+                // TODO implement partial-present - Partial Presentation (using scroll or dirty rects)
+                // is not valid until first submitting a regular Present without scroll or dirty rects.
+                // Otherwise, the preserved back-buffer data would be uninitialized.
+
+                // NativeSwapChain->Present1(_vsync, 0U, _presentParams);
             }
 
             if (!IsDisposed)
