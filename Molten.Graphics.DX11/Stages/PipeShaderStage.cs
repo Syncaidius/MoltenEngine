@@ -50,7 +50,7 @@ namespace Molten.Graphics
                     }
 
                     // Apply pass resources to slots
-                    for (int i = 0; i < composition.ConstBufferIds.Count; i++)
+                    for (int i = 0; i < composition.ResourceIds.Count; i++)
                     {
                         uint slotID = composition.ResourceIds[i];
                         Resources[slotID].Value = composition.Parent.Resources[slotID]?.Resource;

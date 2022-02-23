@@ -100,9 +100,8 @@ namespace Molten.Graphics
             MappedSubresource mapping = new MappedSubresource();
             NativeContext->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
 
-            bool canWrite = !((mapType & Map.MapRead) == Map.MapRead);
-            bool canRead = !((mapType & Map.MapRead) == Map.MapRead ||
-                (mapType & Map.MapReadWrite) == Map.MapReadWrite);
+            bool canWrite = mapType != Map.MapRead;
+            bool canRead = mapType == Map.MapRead || mapType == Map.MapReadWrite;
             stream = new RawStream(mapping.PData, uint.MaxValue, canRead, canWrite);
 
             return mapping;

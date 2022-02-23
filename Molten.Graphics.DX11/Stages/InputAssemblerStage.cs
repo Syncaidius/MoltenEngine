@@ -86,6 +86,9 @@ namespace Molten.Graphics
 
         private void BindVertexBuffers(PipeSlotGroup<BufferSegment> grp)
         {
+            if (grp.NumSlotsChanged == 0)
+                return;
+
             int iNumChanged = (int)grp.NumSlotsChanged;
 
             ID3D11Buffer** pBuffers = stackalloc ID3D11Buffer*[iNumChanged];

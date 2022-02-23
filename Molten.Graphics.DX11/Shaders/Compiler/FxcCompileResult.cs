@@ -14,7 +14,7 @@ namespace Molten.Graphics
     {
         public FxcReflection Reflection { get; }
 
-        public ID3D10Blob* ByteCode { get; }
+        public ID3D10Blob* ByteCode => _byteCode;
 
         ID3D10Blob* _byteCode;
 
