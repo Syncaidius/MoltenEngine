@@ -118,13 +118,20 @@ namespace Molten.Graphics
 
             uint numBytes = Description.ByteWidth;
 
-            SubresourceData ssd = new SubresourceData(null, numBytes, numBytes);
-            if (initialData != null)
-                EngineUtil.PinObject(initialData, (ptr) => ssd.PSysMem = ptr.ToPointer());
-            else
-                ssd = new SubresourceData(null, numBytes, numBytes);
 
-            Device.NativeDevice->CreateBuffer(ref Description, ref ssd, ref _native);
+            if (initialData != null)
+            {
+                EngineUtil.PinObject(initialData, (ptr) =>
+                {
+                    SubresourceData srd = new SubresourceData(null, numBytes, numBytes);
+                    srd.PSysMem = ptr.ToPointer();
+                    Device.NativeDevice->CreateBuffer(ref Description, ref srd, ref _native);
+                });
+            }
+            else
+            {
+                Device.NativeDevice->CreateBuffer(ref Description, null, ref _native);
+            }
 
             Device.AllocateVRAM(numBytes);
 
