@@ -62,7 +62,7 @@ namespace Molten.Graphics
             }
 
             // No issues arose, lets add it to the material manager
-            if (context.HasErrors)
+            if (!context.HasErrors)
             {
                 // Populate missing material states with default.
                 material.DepthState.FillMissingWith(renderer.Device.DepthBank.GetPreset(DepthStencilPreset.Default));

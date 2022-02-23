@@ -45,10 +45,11 @@ namespace Molten.Graphics
             foreach (XmlNode child in node.ChildNodes)
             {
                 string nodeName = child.Name.ToLower();
+
                 switch (nodeName)
                 {
                     case "writepermission":
-                        if (Enum.TryParse(child.InnerText, out GraphicsDepthWritePermission writePermission))
+                        if (SilkUtil.TryParseEnum(child.InnerText, out GraphicsDepthWritePermission writePermission))
                             state.WritePermission = writePermission;
                         else
                             InvalidEnumMessage<DepthWriteMask>(context, child, "depth write permission");
@@ -69,17 +70,17 @@ namespace Molten.Graphics
                         break;
 
                     case "writemask":
-                        if (Enum.TryParse(child.InnerText, true, out DepthWriteMask writeMask))
+                        if (SilkUtil.TryParseEnum(child.InnerText, out DepthWriteMask writeMask))
                             state.DepthWriteMask = writeMask;
                         else
                             InvalidEnumMessage<DepthWriteMask>(context, child, "depth write mask");
                         break;
 
                     case "comparison":
-                        if (Enum.TryParse(child.InnerText, true, out ComparisonFunc comparison))
+                        if (SilkUtil.TryParseEnum(child.InnerText, out ComparisonFunc comparison))
                             state.DepthComparison = comparison;
                         else
-                            InvalidEnumMessage<DepthWriteMask>(context, child, "depth comparison");
+                            InvalidEnumMessage<ComparisonFunc>(context, child, "depth comparison");
                         break;
 
                     case "stencilreadmask":
