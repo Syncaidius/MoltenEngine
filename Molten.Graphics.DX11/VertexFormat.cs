@@ -76,7 +76,6 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    InputElementDesc el = new InputElementDesc();
                     vf.Data.Names[eCount] = GetSemanticName(att.Usage);
                     vf.Data.Elements[eCount] = new InputElementDesc()
                     {
@@ -86,7 +85,7 @@ namespace Molten.Graphics
                         InputSlotClass = att.Classification.ToApi(),
                     };
 
-                    vf.SizeOf += CalculateElement(att.Type, ref el);
+                    vf.SizeOf += CalculateElement(att.Type, ref vf.Data.Elements[eCount]);
                 }
 
                 eCount++;
