@@ -16,15 +16,6 @@ namespace Molten.Graphics
         internal const int ID_GEOMETRY = 3;
         internal const int ID_PIXEL = 4;
 
-        internal readonly static ShaderType[] ShaderTypes = new ShaderType[]
-        {
-            ShaderType.VertexShader,
-            ShaderType.HullShader,
-            ShaderType.DomainShader,
-            ShaderType.GeometryShader,
-            ShaderType.PixelShader
-        };
-
         Material _parent;
 
         internal MaterialPass(Material material, string name) : 
@@ -33,13 +24,13 @@ namespace Molten.Graphics
             _parent = material;
             Name = name;
 
-            VertexShader = new ShaderComposition<ID3D11VertexShader>(material, false);
-            GeometryShader = new ShaderComposition<ID3D11GeometryShader>(material, true);
-            HullShader = new ShaderComposition<ID3D11HullShader>(material, true);
-            DomainShader = new ShaderComposition<ID3D11DomainShader>(material, true);
-            PixelShader = new ShaderComposition<ID3D11PixelShader>(material, false);
+            VertexShader = new VSComposition(material, false);
+            GeometryShader = new GSComposition(material, true);
+            HullShader = new HSComposition(material, true);
+            DomainShader = new DSComposition(material, true);
+            PixelShader = new PSComposition(material, false);
 
-            Compositions = new ShaderComposition[ShaderTypes.Length];
+            Compositions = new ShaderComposition[5];
             Compositions[ID_VERTEX] = VertexShader;
             Compositions[ID_HULL] = HullShader;
             Compositions[ID_DOMAIN] = DomainShader;
@@ -51,7 +42,7 @@ namespace Molten.Graphics
         {
             GraphicsValidationResult result = GraphicsValidationResult.Successful;
 
-            if(HullShader.RawShader != null)
+            if(HullShader.PtrShader != null)
             {
                 if (topology < D3DPrimitiveTopology.D3D11PrimitiveTopology1ControlPointPatchlist)
                     result |= GraphicsValidationResult.HullPatchTopologyExpected;
@@ -68,15 +59,15 @@ namespace Molten.Graphics
 
         internal ShaderComposition[] Compositions;
 
-        internal ShaderComposition<ID3D11VertexShader> VertexShader { get; }
+        internal VSComposition VertexShader { get; }
 
-        internal ShaderComposition<ID3D11GeometryShader> GeometryShader { get; }
+        internal GSComposition GeometryShader { get; }
 
-        internal ShaderComposition<ID3D11HullShader> HullShader { get; }
+        internal HSComposition HullShader { get; }
 
-        internal ShaderComposition<ID3D11DomainShader> DomainShader { get; }
+        internal DSComposition DomainShader { get; }
 
-        internal ShaderComposition<ID3D11PixelShader> PixelShader { get; }
+        internal PSComposition PixelShader { get; }
 
         internal D3DPrimitive GeometryPrimitive;
 

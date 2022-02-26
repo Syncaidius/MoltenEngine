@@ -12,7 +12,7 @@ namespace Molten.Graphics
         internal MaterialPassCompileResult(MaterialPass pass)
         {
             Pass = pass;
-            Results = new FxcCompileResult[MaterialPass.ShaderTypes.Length];
+            Results = new FxcCompileResult[pass.Compositions.Length];
         }
 
         internal FxcCompileResult[] Results;

@@ -26,31 +26,48 @@ namespace Molten.Graphics
 
         internal string EntryPoint;
 
+        internal ShaderType Type;
+
         internal bool Optional;
 
         internal HlslShader Parent { get; }
 
-        internal ShaderComposition(HlslShader parentShader, bool optional) : base(parentShader.Device)
+        internal unsafe abstract void SetBytecode(ID3D10Blob* byteCode);
+
+        internal ShaderComposition(HlslShader parentShader, bool optional, ShaderType type) : 
+            base(parentShader.Device)
         {
             Parent = parentShader;
             Optional = optional;
+            Type = type;
         }
 
         protected internal override void Refresh(PipeSlot slot, DeviceContext pipe) { }
     }
 
-    internal unsafe class ShaderComposition<T> : ShaderComposition 
+    internal abstract unsafe class ShaderComposition<T> : ShaderComposition 
         where T : unmanaged
     {
-        internal ShaderComposition(HlslShader parentShader, bool optional) : 
-            base(parentShader, optional) { }
+        T* _ptrShader;
+
+        internal ShaderComposition(HlslShader parentShader, bool optional, ShaderType type) : 
+            base(parentShader, optional, type) { }
+
+        internal override unsafe void SetBytecode(ID3D10Blob* byteCode)
+        {
+            void* ptrBytecode = byteCode->GetBufferPointer();
+            nuint numBytes = byteCode->GetBufferSize();
+            _ptrShader = CreateShader(ptrBytecode, numBytes);
+        }
+
+        protected unsafe abstract T* CreateShader(void* ptrBytecode, nuint numBytes);
 
         /// <summary>The underlying, compiled HLSL shader object.</summary>
-        internal T* RawShader;
+        internal T* PtrShader => _ptrShader;
 
         internal override void PipelineDispose()
         {
-            SilkUtil.ReleasePtr(ref RawShader);
+            SilkUtil.ReleasePtr(ref _ptrShader);
         }
     }
 }

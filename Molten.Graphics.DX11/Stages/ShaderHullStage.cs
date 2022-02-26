@@ -35,7 +35,7 @@ namespace Molten.Graphics
         protected override unsafe void OnBindShader(PipeSlot<ShaderComposition<ID3D11HullShader>> slot)
         {
             if (slot.BoundValue != null)
-                Pipe.NativeContext->HSSetShader(slot.BoundValue.RawShader, null, 0);
+                Pipe.NativeContext->HSSetShader(slot.BoundValue.PtrShader, null, 0);
             else
                 Pipe.NativeContext->HSSetShader(null, null, 0);
         }

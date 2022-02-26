@@ -125,36 +125,47 @@ namespace Molten.Graphics
         }
 
         private MaterialPassCompileResult CompilePass(
-            ShaderCompilerContext<RendererDX11, HlslFoundation> context, 
+            ShaderCompilerContext<RendererDX11, HlslFoundation> context,
             MaterialPass pass)
         {
             MaterialPassCompileResult result = new MaterialPassCompileResult(pass);
 
             // Compile each stage of the material pass.
-            for(int i = 0; i < MaterialPass.ShaderTypes.Length; i++)
+            for (int i = 0; i < pass.Compositions.Length; i++)
             {
-                if (pass.Compositions[i].Optional && string.IsNullOrWhiteSpace(pass.Compositions[i].EntryPoint))
-                    continue;
+                ShaderComposition sc = pass.Compositions[i];
 
-                if (context.Renderer.ShaderCompiler.CompileSource(pass.Compositions[i].EntryPoint, 
-                    MaterialPass.ShaderTypes[i], context, out result.Results[i]))
+                if (string.IsNullOrWhiteSpace(sc.EntryPoint))
                 {
-                    BuildIO(result.Results[i], pass.Compositions[i]);
+                    if (!sc.Optional)
+                        context.AddError($"Mandatory entry point for {sc.Type} shader is missing.");
+
+                    continue;
+                }
+
+                if (context.Renderer.ShaderCompiler.CompileSource(sc.EntryPoint,
+                    sc.Type, context, out result.Results[i]))
+                {
+                    sc.SetBytecode(result.Results[i].ByteCode);
+                    BuildIO(result.Results[i], sc);
                 }
                 else
                 {
-                    context.AddError($"{context.Source.Filename}: Failed to compile {MaterialPass.ShaderTypes[i]} stage of material pass.");
+                    context.AddError($"{context.Source.Filename}: Failed to compile {sc.Type} stage of material pass.");
                     return result;
                 }
             }
 
-            // Fill in any extra metadata
-            if (result.GeometryResult != null)
-                pass.GeometryPrimitive = result.GeometryResult.Reflection.Ptr->GetGSInputPrimitive();
+            if (!context.HasErrors)
+            {
+                // Fill in any extra metadata
+                if (result.GeometryResult != null)
+                    pass.GeometryPrimitive = result.GeometryResult.Reflection.Ptr->GetGSInputPrimitive();
 
-            // Validate I/O structure of each shader stage.
-            if (_layoutValidator.Validate(context, result))
-                BuildPassStructure(context, result);
+                // Validate I/O structure of each shader stage.
+                if (_layoutValidator.Validate(context, result))
+                    BuildPassStructure(context, result);
+            }
 
             return result;
         }

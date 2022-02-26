@@ -25,12 +25,7 @@ namespace Molten.Graphics
                 if (context.Renderer.ShaderCompiler.CompileSource(compute.Composition.EntryPoint, ShaderType.ComputeShader, context, out result))
                 {
                     if(BuildStructure(context, compute, result, compute.Composition))
-                    {
-                        void* byteCode = result.ByteCode->GetBufferPointer();
-                        nuint numBytes = result.ByteCode->GetBufferSize();
-                        ID3D11ClassLinkage* linkage = null;
-                        renderer.Device.NativeDevice->CreateComputeShader(result.ByteCode, numBytes, linkage, ref compute.Composition.RawShader);
-                    }
+                        compute.Composition.SetBytecode(result.ByteCode);
                 }
             }
             catch (Exception e)
