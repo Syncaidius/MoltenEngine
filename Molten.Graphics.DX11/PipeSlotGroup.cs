@@ -42,10 +42,10 @@ namespace Molten.Graphics
                 }
             }
 
-            // If first slot is less than last slot, changes occurred.
-            if(FirstChanged < LastChanged)
+            // If first slot is less than or equal last slot, changes occurred.
+            if(FirstChanged <= LastChanged)
             {
-                NumSlotsChanged = LastChanged - FirstChanged;
+                NumSlotsChanged = (1 + LastChanged) - FirstChanged;
                 return true;
             }
 
