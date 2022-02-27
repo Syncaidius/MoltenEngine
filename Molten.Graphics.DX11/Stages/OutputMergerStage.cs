@@ -50,7 +50,7 @@ namespace Molten.Graphics
                     {
                         if (Surfaces[i].BoundValue != null)
                         {
-                            _numRTVs = i;
+                            _numRTVs++;
                             _rtvs[i] = Surfaces[i].BoundValue.RTV;
                         }
                         else
