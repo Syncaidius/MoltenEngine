@@ -13,12 +13,12 @@ namespace Molten.Graphics
 
         PipeSlot<T>[] _slots;
 
-        internal PipeSlotGroup(PipeStage stage, uint slotCount, PipeBindTypeFlags slotType, string namePrefix)
+        internal PipeSlotGroup(PipeStage stage, uint slotCount, PipeBindTypeFlags slotType, string namePrefix, Action<PipeSlot<T>> unbindCallback)
         {
             _slots = new PipeSlot<T>[slotCount];
 
             for (uint i = 0; i < slotCount; i++)
-                _slots[i] = new PipeSlot<T>(stage, i, slotType, namePrefix, true);
+                _slots[i] = new PipeSlot<T>(stage, i, slotType, namePrefix, true, unbindCallback);
 
             stage.AllSlots.AddRange(_slots);
         }

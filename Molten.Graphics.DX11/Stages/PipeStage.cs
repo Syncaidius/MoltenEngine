@@ -18,16 +18,16 @@ namespace Molten.Graphics
             AllSlots = new List<PipeSlot>();
         }
 
-        protected PipeSlotGroup<T> DefineSlotGroup<T>(uint slotCount, PipeBindTypeFlags slotType, string namePrefix)
+        protected PipeSlotGroup<T> DefineSlotGroup<T>(uint slotCount, PipeBindTypeFlags slotType, string namePrefix, Action<PipeSlot<T>> unbindCallback)
             where T : PipeBindable
         {
-            return new PipeSlotGroup<T>(this, slotCount, slotType, namePrefix);
+            return new PipeSlotGroup<T>(this, slotCount, slotType, namePrefix, unbindCallback);
         }
 
-        protected PipeSlot<T> DefineSlot<T>(uint slotID, PipeBindTypeFlags slotType, string namePrefix)
+        protected PipeSlot<T> DefineSlot<T>(uint slotID, PipeBindTypeFlags slotType, string namePrefix, Action<PipeSlot<T>> unbindCallback)
             where T : PipeBindable
         {
-            PipeSlot<T> slot = new PipeSlot<T>(this, slotID, slotType, namePrefix, false);
+            PipeSlot<T> slot = new PipeSlot<T>(this, slotID, slotType, namePrefix, false, unbindCallback);
             AllSlots.Add(slot);
             return slot;
         }

@@ -20,16 +20,24 @@ namespace Molten.Graphics
             Name = $"Pipe{pipe.EOID} {shaderType} stage";
 
             uint maxSamplers = pipe.Device.Features.MaxSamplerSlots;
-            Samplers = DefineSlotGroup<ShaderSampler>(maxSamplers, PipeBindTypeFlags.Input, "Sampler");
+            Samplers = DefineSlotGroup<ShaderSampler>(maxSamplers, PipeBindTypeFlags.Input, "Sampler", OnUnbindSampler);
 
             uint maxResources = pipe.Device.Features.MaxInputResourceSlots;
-            Resources = DefineSlotGroup<PipeBindableResource>(maxResources, PipeBindTypeFlags.Input, "Resource");
+            Resources = DefineSlotGroup<PipeBindableResource>(maxResources, PipeBindTypeFlags.Input, "Resource", OnUnbindResource);
 
             uint maxCBuffers = pipe.Device.Features.MaxConstantBufferSlots;
-            ConstantBuffers = DefineSlotGroup<ShaderConstantBuffer>(maxCBuffers, PipeBindTypeFlags.Input, "C-Buffer");
+            ConstantBuffers = DefineSlotGroup<ShaderConstantBuffer>(maxCBuffers, PipeBindTypeFlags.Input, "C-Buffer", OnUnbindConstBuffer);
 
-            Shader = DefineSlot<ShaderComposition<T>>(0, PipeBindTypeFlags.Input, "Shader");
+            Shader = DefineSlot<ShaderComposition<T>>(0, PipeBindTypeFlags.Input, "Shader", OnUnbindShaderComposition);
         }
+
+        protected abstract void OnUnbindSampler(PipeSlot<ShaderSampler> slot);
+
+        protected abstract void OnUnbindResource(PipeSlot<PipeBindableResource> slot);
+
+        protected abstract void OnUnbindConstBuffer(PipeSlot<ShaderConstantBuffer> slot);
+
+        protected abstract void OnUnbindShaderComposition(PipeSlot<ShaderComposition<T>> slot);
 
         internal bool Bind()
         {

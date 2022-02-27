@@ -23,6 +23,8 @@ namespace Molten.Graphics
         /// <returns></returns>
         internal abstract bool Bind();
 
+        internal abstract void Unbind();
+
         /// <summary>
         /// Gets the parent <see cref="PipeStage"/> that the current <see cref="PipeSlot"/> belongs to.
         /// </summary>
@@ -48,11 +50,13 @@ namespace Molten.Graphics
         where T : PipeBindable
     {
         uint _boundVersion;
+        Action<PipeSlot<T>> _unbindCallback;
 
-        internal PipeSlot(PipeStage stage, uint slotID, PipeBindTypeFlags slotType, string namePrefix, bool grpMember) : 
+        internal PipeSlot(PipeStage stage, uint slotID, PipeBindTypeFlags slotType, string namePrefix, bool grpMember, Action<PipeSlot<T>> unbindCallback) : 
             base(stage, slotID, slotType, $"{namePrefix}_{typeof(T).Name}", grpMember)
         {
-            
+
+            _unbindCallback = unbindCallback;
         }
 
         protected override void OnDispose()
@@ -68,7 +72,18 @@ namespace Molten.Graphics
         {
             if (BoundValue != Value)
             {
-                BoundValue?.UnbindFrom(this);
+                // Unbind from slots that do not match the current slot's bind type
+                if (BoundValue != null)
+                {
+                    foreach (PipeSlot binding in BoundValue.BoundTo)
+                    {
+                        if (binding.SlotType != SlotType)
+                        {
+                            binding.Unbind();
+                            BoundValue.UnbindFrom(binding);
+                        }
+                    }
+                }
 
                 if (Value != null)
                 {
@@ -103,6 +118,11 @@ namespace Molten.Graphics
             }
 
             return false;
+        }
+
+        internal override void Unbind()
+        {
+            _unbindCallback?.Invoke(this);
         }
 
         /// <summary>
