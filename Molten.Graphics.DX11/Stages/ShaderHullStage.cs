@@ -7,12 +7,32 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class ShaderHullStage : PipeShaderStage<ID3D11HullShader>
+    internal unsafe class ShaderHullStage : PipeShaderStage<ID3D11HullShader>
     {
         public ShaderHullStage(DeviceContext pipe) :
             base(pipe, ShaderType.HullShader)
         {
 
+        }
+
+        protected override void OnUnbindConstBuffer(PipeSlot<ShaderConstantBuffer> slot)
+        {
+            Pipe.NativeContext->HSSetConstantBuffers(slot.Index, 1, null);
+        }
+
+        protected override void OnUnbindResource(PipeSlot<PipeBindableResource> slot)
+        {
+            Pipe.NativeContext->HSSetShaderResources(slot.Index, 1, null);
+        }
+
+        protected override void OnUnbindSampler(PipeSlot<ShaderSampler> slot)
+        {
+            Pipe.NativeContext->HSSetSamplers(slot.Index, 1, null);
+        }
+
+        protected override void OnUnbindShaderComposition(PipeSlot<ShaderComposition<ID3D11HullShader>> slot)
+        {
+            Pipe.NativeContext->HSSetShader(null, null, 0);
         }
 
         protected override unsafe void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,

@@ -13,8 +13,33 @@ namespace Molten.Graphics
             base(pipe, ShaderType.DomainShader)
         {
             uint uavSlots = pipe.Device.Features.MaxUnorderedAccessViews;
-            UAResources = DefineSlotGroup<PipeBindableResource>(uavSlots, PipeBindTypeFlags.Input, "UAV");
-            Task = DefineSlot<ComputeTask>(0, PipeBindTypeFlags.Input, "Compute Task");
+            UAResources = DefineSlotGroup<PipeBindableResource>(uavSlots, PipeBindTypeFlags.Input, "UAV", OnUnbindUAV);
+            Task = DefineSlot<ComputeTask>(0, PipeBindTypeFlags.Input, "Compute Task", null);
+        }
+
+        private void OnUnbindUAV(PipeSlot<PipeBindableResource> slot)
+        {
+            Pipe.NativeContext->CSSetUnorderedAccessViews(slot.Index, 1, null, null);
+        }
+
+        protected override void OnUnbindConstBuffer(PipeSlot<ShaderConstantBuffer> slot)
+        {
+            Pipe.NativeContext->VSSetConstantBuffers(slot.Index, 1, null);
+        }
+
+        protected override void OnUnbindResource(PipeSlot<PipeBindableResource> slot)
+        {
+            Pipe.NativeContext->VSSetShaderResources(slot.Index, 1, null);
+        }
+
+        protected override void OnUnbindSampler(PipeSlot<ShaderSampler> slot)
+        {
+            Pipe.NativeContext->VSSetSamplers(slot.Index, 1, null);
+        }
+
+        protected override void OnUnbindShaderComposition(PipeSlot<ShaderComposition<ID3D11ComputeShader>> slot)
+        {
+            Pipe.NativeContext->VSSetShader(null, null, 0);
         }
 
         protected override unsafe void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,

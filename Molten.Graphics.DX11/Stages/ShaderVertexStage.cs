@@ -7,11 +7,31 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class ShaderVertexStage : PipeShaderStage<ID3D11VertexShader>
+    internal unsafe class ShaderVertexStage : PipeShaderStage<ID3D11VertexShader>
     {
         public ShaderVertexStage(DeviceContext pipe) :
             base(pipe, ShaderType.VertexShader)
         {
+        }
+
+        protected override void OnUnbindConstBuffer(PipeSlot<ShaderConstantBuffer> slot)
+        {
+            Pipe.NativeContext->VSSetConstantBuffers(slot.Index, 1, null);
+        }
+
+        protected override void OnUnbindResource(PipeSlot<PipeBindableResource> slot)
+        {
+            Pipe.NativeContext->VSSetShaderResources(slot.Index, 1, null);
+        }
+
+        protected override void OnUnbindSampler(PipeSlot<ShaderSampler> slot)
+        {
+            Pipe.NativeContext->VSSetSamplers(slot.Index, 1, null);
+        }
+
+        protected override void OnUnbindShaderComposition(PipeSlot<ShaderComposition<ID3D11VertexShader>> slot)
+        {
+            Pipe.NativeContext->VSSetShader(null, null, 0);
         }
 
         protected override unsafe void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,
