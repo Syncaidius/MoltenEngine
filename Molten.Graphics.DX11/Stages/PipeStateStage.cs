@@ -12,8 +12,10 @@ namespace Molten.Graphics
     {
         internal PipeStateStage(DeviceContext pipe) : base(pipe)
         {
-            State = DefineSlot<T>(0, PipeBindTypeFlags.Input, $"{typeof(N).Name}");
+            State = DefineSlot<T>(0, PipeBindTypeFlags.Input, $"{typeof(N).Name}", UnbindState);
         }
+
+        protected abstract void UnbindState(PipeSlot<T> slot);
 
         internal void Bind()
         {

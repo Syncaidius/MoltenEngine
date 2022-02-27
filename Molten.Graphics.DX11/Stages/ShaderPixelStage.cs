@@ -10,24 +10,33 @@ namespace Molten.Graphics
     internal unsafe class ShaderPixelStage : PipeShaderStage<ID3D11PixelShader>
     {
         public ShaderPixelStage(DeviceContext pipe) :
-            base(pipe, ShaderType.DomainShader)
+            base(pipe, ShaderType.PixelShader)
         {
 
         }
 
         protected override void OnUnbindConstBuffer(PipeSlot<ShaderConstantBuffer> slot)
         {
-            Pipe.NativeContext->PSSetConstantBuffers(slot.Index, 1, null);
+            ID3D11Buffer** nullbuffer = stackalloc ID3D11Buffer*[1];
+            nullbuffer[0] = null;
+
+            Pipe.NativeContext->PSSetConstantBuffers(slot.Index, 1, nullbuffer);
         }
 
         protected override void OnUnbindResource(PipeSlot<PipeBindableResource> slot)
         {
-            Pipe.NativeContext->PSSetShaderResources(slot.Index, 1, null);
+            ID3D11ShaderResourceView** nullSrv = stackalloc ID3D11ShaderResourceView*[1];
+            nullSrv[0] = null;
+
+            Pipe.NativeContext->PSSetShaderResources(slot.Index, 1, nullSrv);
         }
 
         protected override void OnUnbindSampler(PipeSlot<ShaderSampler> slot)
         {
-            Pipe.NativeContext->PSSetSamplers(slot.Index, 1, null);
+            ID3D11SamplerState** nullState = stackalloc ID3D11SamplerState*[1];
+            nullState[0] = null;
+
+            Pipe.NativeContext->PSSetSamplers(slot.Index, 1, nullState);
         }
 
         protected override void OnUnbindShaderComposition(PipeSlot<ShaderComposition<ID3D11PixelShader>> slot)

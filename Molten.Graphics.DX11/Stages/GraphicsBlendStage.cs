@@ -12,5 +12,10 @@ namespace Molten.Graphics
             Color4 tmp = state.BlendFactor;
             Pipe.NativeContext->OMSetBlendState(state, (float*)&tmp, state.BlendSampleMask);
         }
+
+        protected override void UnbindState(PipeSlot<GraphicsBlendState> slot)
+        {
+            Pipe.NativeContext->OMSetBlendState(null, null, 0);
+        }
     }
 }

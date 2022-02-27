@@ -54,6 +54,11 @@ namespace Molten.Graphics
         /// Gets a list of slots that the current <see cref="PipeBindable"/> is bound to.
         /// </summary>
         internal HashSet<PipeSlot> BoundTo { get; }
+
+        /// <summary>
+        /// Gets the current binding ID.
+        /// </summary>
+        internal uint BindingID { get; set; }
     }
 
     public unsafe abstract class PipeBindable<T> : PipeBindable

@@ -1,4 +1,5 @@
 ﻿using Silk.NET.Direct3D11;
+using Silk.NET.Maths;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,11 @@ namespace Molten.Graphics
             _viewports = new ViewportF[maxRTs];
             _apiScissorRects = new Silk.NET.Maths.Rectangle<int>[maxRTs];
             _apiViewports = new Silk.NET.Direct3D11.Viewport[maxRTs];
+        }
 
+        protected override void UnbindState(PipeSlot<GraphicsRasterizerState> slot)
+        {
+            Pipe.NativeContext->RSSetState(null);
         }
 
         public void SetScissorRectangle(Rectangle rect, int slot = 0)
@@ -125,7 +130,9 @@ namespace Molten.Graphics
                 for (int i = 0; i < _scissorRects.Length; i++)
                     _apiScissorRects[i] = _scissorRects[i].ToApi();
 
-                Pipe.NativeContext->RSSetScissorRects((uint)_apiScissorRects.Length, ref _apiScissorRects[0]);
+                fixed (Rectangle<int>* ptrRect = _apiScissorRects)
+                    Pipe.NativeContext->RSSetScissorRects((uint)_apiScissorRects.Length, ptrRect);
+
                 _scissorRectsDirty = false;
             }
 

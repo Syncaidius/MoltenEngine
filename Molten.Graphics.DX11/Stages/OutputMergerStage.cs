@@ -18,15 +18,31 @@ namespace Molten.Graphics
         uint _numRTVs;
         ID3D11DepthStencilView* _dsv;
 
+
         public OutputMergerStage(DeviceContext pipe) : base(pipe.Device)
         {
             _pipe = pipe;
 
             uint maxRTs = Device.Features.SimultaneousRenderSurfaces;
-            Surfaces = DefineSlotGroup<RenderSurface>(maxRTs, PipeBindTypeFlags.Output, "RT Output");
-            DepthSurface = DefineSlot<DepthStencilSurface>(0, PipeBindTypeFlags.Output, "Depth-Stencil Output");
+            Surfaces = DefineSlotGroup<RenderSurface>(maxRTs, PipeBindTypeFlags.Output, "RT Output", OnUnbindSurface);
+            DepthSurface = DefineSlot<DepthStencilSurface>(0, PipeBindTypeFlags.Output, "Depth-Stencil Output", OnUnbindDepth);
 
             _rtvs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView>(maxRTs);
+        }
+
+        protected void OnUnbindSurface(PipeSlot<RenderSurface> slot)
+        {
+            _rtvs[slot.Index] = null;
+
+            Pipe.NativeContext->OMGetRenderTargets(1, _rtvs, ref _dsv);
+        }
+
+        protected void OnUnbindDepth(PipeSlot<DepthStencilSurface> slot)
+        {
+            _rtvs[slot.Index] = null;
+            _dsv = null;
+
+            Pipe.NativeContext->OMGetRenderTargets(1, _rtvs, ref _dsv);
         }
 
         protected override void OnDispose()

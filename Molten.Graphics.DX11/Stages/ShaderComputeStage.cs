@@ -10,7 +10,7 @@ namespace Molten.Graphics
     internal unsafe class ShaderComputeStage : PipeShaderStage<ID3D11ComputeShader>
     {
         public ShaderComputeStage(DeviceContext pipe) :
-            base(pipe, ShaderType.DomainShader)
+            base(pipe, ShaderType.ComputeShader)
         {
             uint uavSlots = pipe.Device.Features.MaxUnorderedAccessViews;
             UAResources = DefineSlotGroup<PipeBindableResource>(uavSlots, PipeBindTypeFlags.Input, "UAV", OnUnbindUAV);

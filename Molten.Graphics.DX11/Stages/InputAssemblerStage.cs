@@ -29,10 +29,25 @@ namespace Molten.Graphics
             _ps = new ShaderPixelStage(pipe);
 
             uint maxVBuffers = pipe.Device.Features.MaxVertexBufferSlots;
-            VertexBuffers = DefineSlotGroup<BufferSegment>(maxVBuffers, PipeBindTypeFlags.Input, "V-Buffer");
-            IndexBuffer = DefineSlot<BufferSegment>(0, PipeBindTypeFlags.Input, "I-Buffer");
-            _vertexLayout = DefineSlot<VertexInputLayout>(0, PipeBindTypeFlags.Input, "Vertex Input Layout");
-            Material = DefineSlot<Material>(0, PipeBindTypeFlags.Input, "Material");
+            VertexBuffers = DefineSlotGroup<BufferSegment>(maxVBuffers, PipeBindTypeFlags.Input, "V-Buffer", OnUnbindVB);
+            IndexBuffer = DefineSlot<BufferSegment>(0, PipeBindTypeFlags.Input, "I-Buffer", OnUnbindIB);
+            _vertexLayout = DefineSlot<VertexInputLayout>(0, PipeBindTypeFlags.Input, "Vertex Input Layout", OnUnbindInputLayout);
+            Material = DefineSlot<Material>(0, PipeBindTypeFlags.Input, "Material", null);
+        }
+
+        private void OnUnbindVB(PipeSlot<BufferSegment> slot)
+        {
+            Pipe.NativeContext->IASetVertexBuffers(slot.Index, 1, null, null, null);
+        }
+
+        private void OnUnbindIB(PipeSlot<BufferSegment> slot)
+        {
+            Pipe.NativeContext->IASetIndexBuffer(null, Format.FormatUnknown, 0);
+        }
+
+        private void OnUnbindInputLayout(PipeSlot<VertexInputLayout> slot)
+        {
+            Pipe.NativeContext->IASetInputLayout(null);
         }
 
         internal bool Bind(MaterialPass pass, StateConditions conditions, VertexTopology topology)
@@ -72,12 +87,13 @@ namespace Molten.Graphics
             }
 
             // Does the vertex input layout need updating?
-            if (vbChanged|| vsChanged)
+            if (vbChanged || vsChanged)
             {
                 BindVertexBuffers(VertexBuffers);
                 _vertexLayout.Value = GetInputLayout();
-                _vertexLayout.Bind();
-                Pipe.NativeContext->IASetInputLayout(_vertexLayout.BoundValue);
+
+                if (_vertexLayout.Bind())
+                    Pipe.NativeContext->IASetInputLayout(_vertexLayout.BoundValue);
             }
 
             return matChanged || vsChanged || gsChanged || hsChanged || 
