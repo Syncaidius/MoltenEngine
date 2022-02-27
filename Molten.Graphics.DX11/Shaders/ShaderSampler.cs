@@ -23,9 +23,10 @@ namespace Molten.Graphics
 
         internal ShaderSampler(Device device) : base(device)
         {
+            // See for defaults: https://docs.microsoft.com/en-us/windows/win32/api/d3d11/ns-d3d11-d3d11_sampler_desc
             _desc = new SamplerDesc()
             {
-                Filter = Filter.FilterComparisonMinMagMipLinear,
+                Filter = Filter.FilterMinMagMipLinear,
                 AddressU = TextureAddressMode.TextureAddressClamp,
                 AddressV = TextureAddressMode.TextureAddressClamp,
                 AddressW = TextureAddressMode.TextureAddressClamp,
