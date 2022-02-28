@@ -167,7 +167,7 @@ namespace Molten.Graphics
                 ApplyChanges(pipe);
 
             ValidateCopyBufferUsage(destination);
-            pipe.NativeContext->CopyResource(this, destination);
+            pipe.Native->CopyResource(this, destination);
         }
 
         internal void CopyTo(DeviceContext pipe, GraphicsBuffer destination, Box sourceRegion, uint destByteOffset = 0)

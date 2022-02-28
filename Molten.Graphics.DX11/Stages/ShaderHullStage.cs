@@ -17,47 +17,47 @@ namespace Molten.Graphics
 
         protected override void OnUnbindConstBuffer(PipeSlot<ShaderConstantBuffer> slot)
         {
-            Pipe.NativeContext->HSSetConstantBuffers(slot.Index, 1, null);
+            Pipe.Native->HSSetConstantBuffers(slot.Index, 1, null);
         }
 
         protected override void OnUnbindResource(PipeSlot<PipeBindableResource> slot)
         {
-            Pipe.NativeContext->HSSetShaderResources(slot.Index, 1, null);
+            Pipe.Native->HSSetShaderResources(slot.Index, 1, null);
         }
 
         protected override void OnUnbindSampler(PipeSlot<ShaderSampler> slot)
         {
-            Pipe.NativeContext->HSSetSamplers(slot.Index, 1, null);
+            Pipe.Native->HSSetSamplers(slot.Index, 1, null);
         }
 
         protected override void OnUnbindShaderComposition(PipeSlot<ShaderComposition<ID3D11HullShader>> slot)
         {
-            Pipe.NativeContext->HSSetShader(null, null, 0);
+            Pipe.Native->HSSetShader(null, null, 0);
         }
 
         protected override unsafe void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,
             ID3D11Buffer** buffers)
         {
-            Pipe.NativeContext->HSSetConstantBuffers(grp.FirstChanged, grp.NumSlotsChanged, buffers);
+            Pipe.Native->HSSetConstantBuffers(grp.FirstChanged, grp.NumSlotsChanged, buffers);
         }
 
         protected override unsafe void OnBindResources(PipeSlotGroup<PipeBindableResource> grp,
             ID3D11ShaderResourceView** srvs)
         {
-            Pipe.NativeContext->HSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
+            Pipe.Native->HSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
         }
 
         protected override unsafe void OnBindSamplers(PipeSlotGroup<ShaderSampler> grp, ID3D11SamplerState** resources)
         {
-            Pipe.NativeContext->HSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
+            Pipe.Native->HSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
         }
 
         protected override unsafe void OnBindShader(PipeSlot<ShaderComposition<ID3D11HullShader>> slot)
         {
             if (slot.BoundValue != null)
-                Pipe.NativeContext->HSSetShader(slot.BoundValue.PtrShader, null, 0);
+                Pipe.Native->HSSetShader(slot.BoundValue.PtrShader, null, 0);
             else
-                Pipe.NativeContext->HSSetShader(null, null, 0);
+                Pipe.Native->HSSetShader(null, null, 0);
         }
     }
 }

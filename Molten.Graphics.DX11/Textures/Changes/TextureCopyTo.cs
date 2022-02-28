@@ -21,7 +21,7 @@ namespace Molten.Graphics
                 Destination.Depth != texture.Depth)
                 throw new TextureCopyException(texture, Destination, "The source and destination textures must have the same dimensions.");
 
-            pipe.NativeContext->CopyResource(Destination.NativePtr, texture.NativePtr);
+            pipe.Native->CopyResource(Destination.NativePtr, texture.NativePtr);
 
             return Destination == texture;
         }

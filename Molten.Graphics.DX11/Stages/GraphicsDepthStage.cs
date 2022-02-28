@@ -9,12 +9,12 @@ namespace Molten.Graphics
         protected override void BindState(GraphicsDepthState state)
         {
             state = state ?? Device.DepthBank.GetPreset(DepthStencilPreset.Default);
-            Pipe.NativeContext->OMSetDepthStencilState(state.NativePtr, state.StencilReference);
+            Pipe.Native->OMSetDepthStencilState(state.NativePtr, state.StencilReference);
         }
 
         protected override void UnbindState(PipeSlot<GraphicsDepthState> slot)
         {
-            Pipe.NativeContext->OMSetDepthStencilState(null, 0);
+            Pipe.Native->OMSetDepthStencilState(null, 0);
         }
     }
 }

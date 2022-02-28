@@ -34,7 +34,7 @@ namespace Molten.Graphics
         {
             _rtvs[slot.Index] = null;
 
-            Pipe.NativeContext->OMGetRenderTargets(1, _rtvs, ref _dsv);
+            Pipe.Native->OMGetRenderTargets(1, _rtvs, ref _dsv);
         }
 
         protected void OnUnbindDepth(PipeSlot<DepthStencilSurface> slot)
@@ -42,7 +42,7 @@ namespace Molten.Graphics
             _rtvs[slot.Index] = null;
             _dsv = null;
 
-            Pipe.NativeContext->OMGetRenderTargets(1, _rtvs, ref _dsv);
+            Pipe.Native->OMGetRenderTargets(1, _rtvs, ref _dsv);
         }
 
         protected override void OnDispose()
@@ -93,7 +93,7 @@ namespace Molten.Graphics
                     _boundDepthMode = _requestedDepthMode;
                 }
 
-                _pipe.NativeContext->OMSetRenderTargets(_numRTVs, _rtvs, _dsv);
+                _pipe.Native->OMSetRenderTargets(_numRTVs, _rtvs, _dsv);
                 Pipe.Profiler.Current.SurfaceBindings++;
             }
         }

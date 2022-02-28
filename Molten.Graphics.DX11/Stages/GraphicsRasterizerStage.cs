@@ -31,7 +31,7 @@ namespace Molten.Graphics
 
         protected override void UnbindState(PipeSlot<GraphicsRasterizerState> slot)
         {
-            Pipe.NativeContext->RSSetState(null);
+            Pipe.Native->RSSetState(null);
         }
 
         public void SetScissorRectangle(Rectangle rect, int slot = 0)
@@ -117,7 +117,7 @@ namespace Molten.Graphics
         protected override void BindState(GraphicsRasterizerState state)
         {
             state = state ?? Device.RasterizerBank.GetPreset(RasterizerPreset.Default);
-            Pipe.NativeContext->RSSetState(state);
+            Pipe.Native->RSSetState(state);
         }
 
         public new void Bind()
@@ -131,7 +131,7 @@ namespace Molten.Graphics
                     _apiScissorRects[i] = _scissorRects[i].ToApi();
 
                 fixed (Rectangle<int>* ptrRect = _apiScissorRects)
-                    Pipe.NativeContext->RSSetScissorRects((uint)_apiScissorRects.Length, ptrRect);
+                    Pipe.Native->RSSetScissorRects((uint)_apiScissorRects.Length, ptrRect);
 
                 _scissorRectsDirty = false;
             }
@@ -142,7 +142,7 @@ namespace Molten.Graphics
                 for (int i = 0; i < _viewports.Length; i++)
                     _apiViewports[i] = _viewports[i].ToApi();
 
-                Pipe.NativeContext->RSSetViewports((uint)_viewports.Length, ref _apiViewports[0]);
+                Pipe.Native->RSSetViewports((uint)_viewports.Length, ref _apiViewports[0]);
                 _viewportsDirty = false;
             }
         }

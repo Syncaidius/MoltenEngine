@@ -37,7 +37,7 @@ namespace Molten.Graphics
             if (RTV != null)
             {
                 Color4 c4 = color;
-                pipe.NativeContext->ClearRenderTargetView(RTV, (float*)&c4);
+                pipe.Native->ClearRenderTargetView(RTV, (float*)&c4);
             }
 
         }

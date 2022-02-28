@@ -213,7 +213,7 @@ namespace Molten.Graphics
         internal void GenerateMipMaps(DeviceContext pipe)
         {
             if (SRV != null)
-                pipe.NativeContext->GenerateMips(SRV);
+                pipe.Native->GenerateMips(SRV);
         }
 
         public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0)
@@ -362,7 +362,7 @@ namespace Molten.Graphics
 
             if (staging != null)
             {
-                pipe.NativeContext->CopyResource(staging.NativePtr, _native);
+                pipe.Native->CopyResource(staging.NativePtr, _native);
                 pipe.Profiler.Current.CopyResourceCount++;
                 resToMap = staging._native;
             }

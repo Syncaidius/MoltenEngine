@@ -79,7 +79,7 @@ namespace Molten.Graphics
             where T : unmanaged
         {
             MappedSubresource mapping = new MappedSubresource();
-            NativeContext->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
+            Native->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
 
             return mapping;
         }
@@ -98,7 +98,7 @@ namespace Molten.Graphics
             where T: unmanaged
         {
             MappedSubresource mapping = new MappedSubresource();
-            NativeContext->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
+            Native->Map((ID3D11Resource*)resource, subresource, mapType, (uint)mapFlags, ref mapping);
 
             bool canWrite = mapType != Map.MapRead;
             bool canRead = mapType == Map.MapRead || mapType == Map.MapReadWrite;
@@ -110,14 +110,14 @@ namespace Molten.Graphics
         internal void UnmapResource<T>(T* resource, uint subresource)
             where T : unmanaged
         {
-            NativeContext->Unmap((ID3D11Resource*)resource, subresource);
+            Native->Unmap((ID3D11Resource*)resource, subresource);
         }
 
         internal void CopyResourceRegion(
             ID3D11Resource* source, uint srcSubresource, ref Box sourceRegion, 
             ID3D11Resource* dest, uint destSubresource, Vector3UI destStart)
         {
-            NativeContext->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
+            Native->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
                 source, srcSubresource, ref sourceRegion);
 
             Profiler.Current.CopySubresourceCount++;
@@ -127,7 +127,7 @@ namespace Molten.Graphics
     ID3D11Resource* source, uint srcSubresource, Box* sourceRegion,
     ID3D11Resource* dest, uint destSubresource, Vector3UI destStart)
         {
-            NativeContext->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
+            Native->CopySubresourceRegion(dest, destSubresource, destStart.X, destStart.Y, destStart.Z,
                 source, srcSubresource, sourceRegion);
 
             Profiler.Current.CopySubresourceCount++;
@@ -136,7 +136,7 @@ namespace Molten.Graphics
         internal void UpdateResource(ID3D11Resource* resource, uint subresource, 
             Box* region, void* ptrData, uint rowPitch, uint slicePitch)
         {
-            NativeContext->UpdateSubresource(resource, subresource, region, ptrData, rowPitch, slicePitch);
+            Native->UpdateSubresource(resource, subresource, region, ptrData, rowPitch, slicePitch);
             Profiler.Current.UpdateSubresourceCount++;
         }
 
@@ -505,7 +505,7 @@ namespace Molten.Graphics
 
         internal Device Device => _device;
 
-        internal ID3D11DeviceContext* NativeContext => _context;
+        internal ID3D11DeviceContext* Native => _context;
 
         internal Logger Log { get; private set; }
 

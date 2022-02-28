@@ -17,47 +17,47 @@ namespace Molten.Graphics
 
         protected override void OnUnbindConstBuffer(PipeSlot<ShaderConstantBuffer> slot)
         {
-            Pipe.NativeContext->GSSetConstantBuffers(slot.Index, 1, null);
+            Pipe.Native->GSSetConstantBuffers(slot.Index, 1, null);
         }
 
         protected override void OnUnbindResource(PipeSlot<PipeBindableResource> slot)
         {
-            Pipe.NativeContext->GSSetShaderResources(slot.Index, 1, null);
+            Pipe.Native->GSSetShaderResources(slot.Index, 1, null);
         }
 
         protected override void OnUnbindSampler(PipeSlot<ShaderSampler> slot)
         {
-            Pipe.NativeContext->GSSetSamplers(slot.Index, 1, null);
+            Pipe.Native->GSSetSamplers(slot.Index, 1, null);
         }
 
         protected override void OnUnbindShaderComposition(PipeSlot<ShaderComposition<ID3D11GeometryShader>> slot)
         {
-            Pipe.NativeContext->GSSetShader(null, null, 0);
+            Pipe.Native->GSSetShader(null, null, 0);
         }
 
         protected override unsafe void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,
             ID3D11Buffer** buffers)
         {
-            Pipe.NativeContext->GSSetConstantBuffers(grp.FirstChanged, grp.NumSlotsChanged, buffers);
+            Pipe.Native->GSSetConstantBuffers(grp.FirstChanged, grp.NumSlotsChanged, buffers);
         }
 
         protected override unsafe void OnBindResources(PipeSlotGroup<PipeBindableResource> grp,
             ID3D11ShaderResourceView** srvs)
         {
-            Pipe.NativeContext->GSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
+            Pipe.Native->GSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
         }
 
         protected override unsafe void OnBindSamplers(PipeSlotGroup<ShaderSampler> grp, ID3D11SamplerState** resources)
         {
-            Pipe.NativeContext->GSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
+            Pipe.Native->GSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
         }
 
         protected override unsafe void OnBindShader(PipeSlot<ShaderComposition<ID3D11GeometryShader>> slot)
         {
             if (slot.BoundValue != null)
-                Pipe.NativeContext->GSSetShader(slot.BoundValue.PtrShader, null, 0);
+                Pipe.Native->GSSetShader(slot.BoundValue.PtrShader, null, 0);
             else
-                Pipe.NativeContext->GSSetShader(null, null, 0);
+                Pipe.Native->GSSetShader(null, null, 0);
         }
     }
 }

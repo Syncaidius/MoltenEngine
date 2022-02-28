@@ -162,7 +162,7 @@ namespace Molten.Graphics
             if (_depthView == null)
                 CreateTexture(false);
 
-            pipe.NativeContext->ClearDepthStencilView(_depthView, (uint)clearFlags, depth, stencil);
+            pipe.Native->ClearDepthStencilView(_depthView, (uint)clearFlags, depth, stencil);
         }
 
         public void Clear(DepthClearFlags flags, float depth = 1.0f, byte stencil = 0)

@@ -20,7 +20,7 @@ namespace Molten.Graphics
             ID3D11Buffer** nullbuffer = stackalloc ID3D11Buffer*[1];
             nullbuffer[0] = null;
 
-            Pipe.NativeContext->PSSetConstantBuffers(slot.Index, 1, nullbuffer);
+            Pipe.Native->PSSetConstantBuffers(slot.Index, 1, nullbuffer);
         }
 
         protected override void OnUnbindResource(PipeSlot<PipeBindableResource> slot)
@@ -28,7 +28,7 @@ namespace Molten.Graphics
             ID3D11ShaderResourceView** nullSrv = stackalloc ID3D11ShaderResourceView*[1];
             nullSrv[0] = null;
 
-            Pipe.NativeContext->PSSetShaderResources(slot.Index, 1, nullSrv);
+            Pipe.Native->PSSetShaderResources(slot.Index, 1, nullSrv);
         }
 
         protected override void OnUnbindSampler(PipeSlot<ShaderSampler> slot)
@@ -36,37 +36,37 @@ namespace Molten.Graphics
             ID3D11SamplerState** nullState = stackalloc ID3D11SamplerState*[1];
             nullState[0] = null;
 
-            Pipe.NativeContext->PSSetSamplers(slot.Index, 1, nullState);
+            Pipe.Native->PSSetSamplers(slot.Index, 1, nullState);
         }
 
         protected override void OnUnbindShaderComposition(PipeSlot<ShaderComposition<ID3D11PixelShader>> slot)
         {
-            Pipe.NativeContext->PSSetShader(null, null, 0);
+            Pipe.Native->PSSetShader(null, null, 0);
         }
 
         protected override unsafe void OnBindConstants(PipeSlotGroup<ShaderConstantBuffer> grp,
             ID3D11Buffer** buffers)
         {
-            Pipe.NativeContext->PSSetConstantBuffers(grp.FirstChanged, grp.NumSlotsChanged, buffers);
+            Pipe.Native->PSSetConstantBuffers(grp.FirstChanged, grp.NumSlotsChanged, buffers);
         }
 
         protected override unsafe void OnBindResources(PipeSlotGroup<PipeBindableResource> grp,
             ID3D11ShaderResourceView** srvs)
         {
-            Pipe.NativeContext->PSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
+            Pipe.Native->PSSetShaderResources(grp.FirstChanged, grp.NumSlotsChanged, srvs);
         }
 
         protected override unsafe void OnBindSamplers(PipeSlotGroup<ShaderSampler> grp, ID3D11SamplerState** resources)
         {
-            Pipe.NativeContext->PSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
+            Pipe.Native->PSSetSamplers(grp.FirstChanged, grp.NumSlotsChanged, resources);
         }
 
         protected override unsafe void OnBindShader(PipeSlot<ShaderComposition<ID3D11PixelShader>> slot)
         {
             if (slot.BoundValue != null)
-                Pipe.NativeContext->PSSetShader(slot.BoundValue.PtrShader, null, 0);
+                Pipe.Native->PSSetShader(slot.BoundValue.PtrShader, null, 0);
             else
-                Pipe.NativeContext->PSSetShader(null, null, 0);
+                Pipe.Native->PSSetShader(null, null, 0);
         }
     }
 }

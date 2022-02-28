@@ -37,17 +37,17 @@ namespace Molten.Graphics
 
         private void OnUnbindVB(PipeSlot<BufferSegment> slot)
         {
-            Pipe.NativeContext->IASetVertexBuffers(slot.Index, 1, null, null, null);
+            Pipe.Native->IASetVertexBuffers(slot.Index, 1, null, null, null);
         }
 
         private void OnUnbindIB(PipeSlot<BufferSegment> slot)
         {
-            Pipe.NativeContext->IASetIndexBuffer(null, Format.FormatUnknown, 0);
+            Pipe.Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
         }
 
         private void OnUnbindInputLayout(PipeSlot<VertexInputLayout> slot)
         {
-            Pipe.NativeContext->IASetInputLayout(null);
+            Pipe.Native->IASetInputLayout(null);
         }
 
         internal bool Bind(MaterialPass pass, StateConditions conditions, VertexTopology topology)
@@ -58,7 +58,7 @@ namespace Molten.Graphics
             if (_boundTopology != topology)
             {
                 _boundTopology = topology;
-                Pipe.NativeContext->IASetPrimitiveTopology(_boundTopology.ToApi());
+                Pipe.Native->IASetPrimitiveTopology(_boundTopology.ToApi());
             }
 
             _vs.Shader.Value = pass.VertexShader;
@@ -81,9 +81,9 @@ namespace Molten.Graphics
             {
                 BufferSegment ib = IndexBuffer.BoundValue;
                 if (ib != null)
-                    Pipe.NativeContext->IASetIndexBuffer(ib.Buffer, ib.DataFormat, ib.ByteOffset);
+                    Pipe.Native->IASetIndexBuffer(ib.Buffer, ib.DataFormat, ib.ByteOffset);
                 else
-                    Pipe.NativeContext->IASetIndexBuffer(null, Format.FormatUnknown, 0);
+                    Pipe.Native->IASetIndexBuffer(null, Format.FormatUnknown, 0);
             }
 
             // Does the vertex input layout need updating?
@@ -93,7 +93,7 @@ namespace Molten.Graphics
                 _vertexLayout.Value = GetInputLayout();
 
                 if (_vertexLayout.Bind())
-                    Pipe.NativeContext->IASetInputLayout(_vertexLayout.BoundValue);
+                    Pipe.Native->IASetInputLayout(_vertexLayout.BoundValue);
             }
 
             return matChanged || vsChanged || gsChanged || hsChanged || 
@@ -133,7 +133,7 @@ namespace Molten.Graphics
                 p++;
             }
 
-            Pipe.NativeContext->IASetVertexBuffers(grp.FirstChanged, grp.NumSlotsChanged, pBuffers, pStrides, pOffsets);
+            Pipe.Native->IASetVertexBuffers(grp.FirstChanged, grp.NumSlotsChanged, pBuffers, pStrides, pOffsets);
         }
 
 
