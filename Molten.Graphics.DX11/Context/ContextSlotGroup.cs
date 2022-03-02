@@ -23,10 +23,45 @@ namespace Molten.Graphics
 
         protected override void OnDispose() { }
 
+        /// <summary>
+        /// Binds all pending <see cref="ContextBindable"/> objects on to the current <see cref="ContextSlotGroup{T}"/>
+        /// </summary>
+        internal void BindAll()
+        {
+            foreach (ContextSlot<T> slot in _slots)
+            {
+                if (slot.Bind())
+                {
+                    if (slot.SlotIndex < FirstChanged)
+                        FirstChanged = slot.SlotIndex;
+
+                    if (slot.SlotIndex > LastChanged)
+                        LastChanged = slot.SlotIndex;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Unbinds all bound <see cref="ContextBindable"/> objects from the current <see cref="ContextSlotGroup{T}"/>.
+        /// </summary>
+        internal void UnbindAll()
+        {
+
+        }
+
+        /// <summary>
+        /// Gets the <see cref="ContextGroupBinder{T}"/> bound to the current <see cref="ContextSlotGroup{T}"/>.
+        /// </summary>
         internal ContextGroupBinder<T> Binder { get; }
 
+        /// <summary>
+        /// Gets the bind type of the current <see cref="ContextSlotGroup{T}"/>.
+        /// </summary>
         internal PipeBindTypeFlags BindType { get; }
 
+        /// <summary>
+        /// Gets the parent <see cref="DeviceContextState"/> of the current <see cref="ContextSlotGroup{T}"/>.
+        /// </summary>
         internal DeviceContextState ParentState { get; }
 
         internal DeviceContext Context => ParentState.Context;

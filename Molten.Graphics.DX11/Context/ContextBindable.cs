@@ -14,10 +14,13 @@ namespace Molten.Graphics
             base(device)
         {
             BoundTo = new HashSet<ContextSlot>();
+            BindFlags = bindFlags;
         }
 
         internal abstract void Refresh(ContextSlot slot, DeviceContext context); 
 
         internal uint BindID { get; set; }
+
+        internal PipeBindTypeFlags BindFlags { get; }
     }
 }

@@ -38,7 +38,7 @@ namespace Molten.Graphics
         T _boundValue;
 
         uint _boundVersion;
-        uint _boundID;
+        uint _pendingID;
 
         public ContextSlot(DeviceContextState parent, ContextBinder<T> binder, PipeBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
             base(parent, bindType, $"{namePrefix}_{typeof(T).Name}", slotIndex)
@@ -66,24 +66,43 @@ namespace Molten.Graphics
                 }
                 else
                 {
-                    foreach(ContextSlot<T> slot in _value.BoundTo)
+                    // Check other bound slots that should be unbound.
+                    bool canBind = true;
+                    foreach (ContextSlot<T> slot in _value.BoundTo)
                     {
-                        if(slot._boundID > _boundID)
+                        if (slot._pendingID > _pendingID)
                         {
-                            // If a value is bound in the current slot. Unbind it.
-                            if (_boundValue != null)
+                            // Are the slot bind types different and does the object allow both simultaneously?
+                            if (slot.BindType != BindType)
                             {
-                                Context.Log.Debug($"Attempt to bind '{_value.Name}' to '{Name}' failed: Already bound to '{slot.Name}'");
-                                Unbind();
+                                if ((_value.BindFlags & BindType) == BindType && (_value.BindFlags & slot.BindType) == slot.BindType)
+                                    continue;
                             }
 
-                            return false;
-                        } 
+                            canBind = false;
+                        }
+                        else if (slot._pendingID < _pendingID)
+                        {
+                            slot.Unbind();
+                        }
+                        else if (slot._pendingID == _pendingID)
+                        {
+                            Context.Log.Error($"{_value.Name} is will be bound on '{slot.Name}' and '{Name}' with the same pending BindID ({_pendingID}). This is unexpected behaviour!");
+                            canBind = false;
+                        }
+                    }
+
+
+                    // If a value is bound in the current slot. Unbind it.
+                    if (_boundValue != null && !canBind)
+                    {
+                        // TODO output _value.BoundTo list + details of current slot.
+                        Unbind();
+                        return false;
                     }
 
                     _value.Refresh(this, Context);
                     _boundValue = _value;
-                    _boundID = _boundValue.BindID;
                     _boundVersion = _boundValue.Version;
 
                     if (!IsGroupMember)
@@ -127,7 +146,7 @@ namespace Molten.Graphics
             set
             {
                 _value = value;
-                _value.BindID++;
+                _pendingID = _value.BindID++;
             }
         }
 
