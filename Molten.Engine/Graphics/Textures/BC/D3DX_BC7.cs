@@ -146,7 +146,7 @@ namespace Molten.Graphics.Textures
                     if (uStartBit + RGBAPrec.R > 128)
                     {
 # if DEBUG
-                        log.WriteError("BC7: Invalid block encountered during decoding\n");
+                        log.Error("BC7: Invalid block encountered during decoding\n");
 #endif
                         BC67.FillWithErrorColors(pOut);
                         return pOut;
@@ -161,7 +161,7 @@ namespace Molten.Graphics.Textures
                     if (uStartBit + RGBAPrec.G > 128)
                     {
 # if DEBUG
-                        log.WriteError("BC7: Invalid block encountered during decoding\n");
+                        log.Error("BC7: Invalid block encountered during decoding\n");
 #endif
                         BC67.FillWithErrorColors(pOut);
                         return pOut;
@@ -176,7 +176,7 @@ namespace Molten.Graphics.Textures
                     if (uStartBit + RGBAPrec.B > 128)
                     {
 # if DEBUG
-                        log.WriteError("BC7: Invalid block encountered during decoding\n");
+                        log.Error("BC7: Invalid block encountered during decoding\n");
 #endif
                         BC67.FillWithErrorColors(pOut);
                         return pOut;
@@ -191,7 +191,7 @@ namespace Molten.Graphics.Textures
                     if (uStartBit + RGBAPrec.A > 128)
                     {
 # if DEBUG
-                        log.WriteError("BC7: Invalid block encountered during decoding\n");
+                        log.Error("BC7: Invalid block encountered during decoding\n");
 #endif
                         BC67.FillWithErrorColors(pOut);
                         return pOut;
@@ -207,7 +207,7 @@ namespace Molten.Graphics.Textures
                     if (uStartBit > 127)
                     {
 # if DEBUG
-                        log.WriteError("BC7: Invalid block encountered during decoding\n");
+                        log.Error("BC7: Invalid block encountered during decoding\n");
 #endif
                         BC67.FillWithErrorColors(pOut);
                         return pOut;
@@ -246,7 +246,7 @@ namespace Molten.Graphics.Textures
                     if (uStartBit + uNumBits > 128)
                     {
 # if DEBUG
-                        log.WriteError("BC7: Invalid block encountered during decoding\n");
+                        log.Error("BC7: Invalid block encountered during decoding\n");
 #endif
                         BC67.FillWithErrorColors(pOut);
                         return pOut;
@@ -263,7 +263,7 @@ namespace Molten.Graphics.Textures
                         if (uStartBit + uNumBits > 128)
                         {
 # if DEBUG
-                            log.WriteError("BC7: Invalid block encountered during decoding\n");
+                            log.Error("BC7: Invalid block encountered during decoding\n");
 #endif
                             BC67.FillWithErrorColors(pOut);
                             return pOut;
@@ -305,7 +305,7 @@ namespace Molten.Graphics.Textures
             else
             {
 #if DEBUG
-                log.WriteError("BC7: Reserved mode 8 encountered during decoding\n");
+                log.Error("BC7: Reserved mode 8 encountered during decoding\n");
 #endif
                 // Per the BC7 format spec, we must return transparent black
                 for (int i = 0; i < pOut.Length; i++)

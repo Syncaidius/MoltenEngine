@@ -281,7 +281,7 @@ namespace Molten.Font
                     break;
 
                 default:
-                    log.WriteDebugLine($"[GPOS] unsupported JustificationLookupTable format {format}");
+                    log.Debug($"[GPOS] unsupported JustificationLookupTable format {format}");
                     break;
             }
 

@@ -48,7 +48,7 @@ namespace Molten.Font
             }
             else
             {
-                log.WriteWarning($"Unsupported Class-Definition sub-table format: {Format}");
+                log.Warning($"Unsupported Class-Definition sub-table format: {Format}");
             }
         }
     }
@@ -102,7 +102,7 @@ namespace Molten.Font
             }
             else
             {
-                log.WriteWarning($"Unsupported Class-Definition sub-table format: {Format}");
+                log.Warning($"Unsupported Class-Definition sub-table format: {Format}");
             }
         }
     }

@@ -76,7 +76,7 @@ namespace Molten.Graphics
             }
             else
             {
-                device.Log.WriteWarning($"Vertex formats do not match the input layout of shader:");
+                device.Log.Warning($"Vertex formats do not match the input layout of shader:");
                 for (uint i = 0; i < vbSlots.SlotCount; i++)
                 {
                     if (vbSlots[i].BoundValue == null)
@@ -84,15 +84,15 @@ namespace Molten.Graphics
 
                     format = vbSlots[i].BoundValue.VertexFormat;
 
-                    device.Log.WriteWarning("Format - Buffer slot " + i + ": ");
+                    device.Log.Warning("Format - Buffer slot " + i + ": ");
                     for (int f = 0; f < format.Data.Elements.Length; f++)
-                        device.Log.WriteWarning($"\t[{f}]{format.Data.Names[f]} -- index: {format.Data.Elements[f].SemanticIndex} -- slot: {i}");
+                        device.Log.Warning($"\t[{f}]{format.Data.Names[f]} -- index: {format.Data.Elements[f].SemanticIndex} -- slot: {i}");
                 }
 
                 // List final input structure.
-                device.Log.WriteWarning("Shader Input Structure: ");
+                device.Log.Warning("Shader Input Structure: ");
                 for (int i = 0; i < finalElements.Length; i++)
-                    device.Log.WriteWarning($"\t[{i}]{format.Data.Names[i]} -- index: {finalElements[i].SemanticIndex} -- slot: {finalElements[i].InputSlot}");
+                    device.Log.Warning($"\t[{i}]{format.Data.Names[i]} -- index: {finalElements[i].SemanticIndex} -- slot: {finalElements[i].InputSlot}");
             }
         }
 
@@ -120,7 +120,7 @@ namespace Molten.Graphics
                 // Prevent vertex buffer segments with no format from crashing the application.
                 if (seg.VertexFormat == null)
                 {
-                    log.WriteWarning($"Missing format for bound vertex segment {seg.Name} in slot {i}. Skipping validation. This may cause a false input layout match.");
+                    log.Warning($"Missing format for bound vertex segment {seg.Name} in slot {i}. Skipping validation. This may cause a false input layout match.");
                     continue;
                 }
 

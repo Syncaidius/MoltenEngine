@@ -45,7 +45,7 @@ namespace Molten.Font
             NumSignatures = reader.ReadUInt16();
             Flags = reader.ReadUInt16();
 
-            log.WriteDebugLine($"[DSIG] Version {Version} -- {NumSignatures} signatures found");
+            log.Debug($"[DSIG] Version {Version} -- {NumSignatures} signatures found");
 
             // Read signature record list.
             List<SignatureRecord> sigs = new List<SignatureRecord>();

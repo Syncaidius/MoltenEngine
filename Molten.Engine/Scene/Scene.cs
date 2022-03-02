@@ -32,7 +32,7 @@ namespace Molten
             _pendingChanges = new ThreadedQueue<SceneChange>();
 
             _defaultLayer = AddLayer("default");
-            engine.Log.WriteLine($"Created scene '{name}'");
+            engine.Log.Log($"Created scene '{name}'");
         }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace Molten
         {
             Engine.RemoveScene(this);
             Engine.Renderer?.DestroyRenderData(RenderData);
-            Engine.Log.WriteLine($"Destroyed scene '{Name}'");
+            Engine.Log.Log($"Destroyed scene '{Name}'");
         }
 
         /// <summary>Gets or sets whether or not the scene is updated.</summary>

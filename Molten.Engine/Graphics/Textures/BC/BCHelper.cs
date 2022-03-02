@@ -203,14 +203,14 @@ namespace Molten.Graphics.Textures
                             parser.Encode(writer, colTable, log);
                         }
                         blockTimer.Stop();
-                        log.WriteLine($"Encoded block row {blockY} in {blockTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms");
+                        log.Log($"Encoded block row {blockY} in {blockTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms");
                     }
 
                     result = stream.ToArray();
                 }
             }
             mainTimer.Stop();
-            log.WriteLine($"Encoded {parser.ExpectedFormat} {uncompressed.Width}x{uncompressed.Height} mip-map level in {mainTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms");
+            log.Log($"Encoded {parser.ExpectedFormat} {uncompressed.Width}x{uncompressed.Height} mip-map level in {mainTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms");
 
             return result;
         }

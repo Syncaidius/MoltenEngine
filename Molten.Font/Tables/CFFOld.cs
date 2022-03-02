@@ -73,7 +73,7 @@ namespace Molten.Font
             }
             else
             {
-                log.WriteDebugLine($"[CFF] Unsupported CFF version {MajorVersion}.{MinorVersion}");
+                log.Debug($"[CFF] Unsupported CFF version {MajorVersion}.{MinorVersion}");
             }
         }
 

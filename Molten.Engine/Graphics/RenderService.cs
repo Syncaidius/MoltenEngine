@@ -28,23 +28,23 @@ namespace Molten.Graphics
         {
             Overlay = new OverlayProvider();
             Type test = this.GetType();
-            Log.WriteLine("Acquiring render chain");
+            Log.Log("Acquiring render chain");
 
             try
             {
                 _chain = GetRenderChain();
                 if (_chain != null)
-                    Log.WriteLine("Render chain acquired");
+                    Log.Log("Render chain acquired");
                 else
                 {
-                    Log.WriteError("Render chain acquisition failed: Null chain");
+                    Log.Error("Render chain acquisition failed: Null chain");
                     throw new NullReferenceException("The provided render chain was null.");
                 }
             }
             catch (Exception e)
             {
-                Log.WriteError("Render chain acquisition failed. See exception details below");
-                Log.WriteError(e, true);
+                Log.Error("Render chain acquisition failed. See exception details below");
+                Log.Error(e, true);
                 throw e;
             }
         }
@@ -248,12 +248,12 @@ namespace Molten.Graphics
             try
             {
                 OnInitializeAdapter(settings.Graphics);
-                Log.WriteLine($"Initialized adapter");
+                Log.Log($"Initialized adapter");
             }
             catch (Exception ex)
             {
-                Log.WriteLine("Failed to initialize renderer");
-                Log.WriteError(ex, true);
+                Log.Log("Failed to initialize renderer");
+                Log.Error(ex, true);
             }
 
             settings.Log(Log, "Graphics");

@@ -43,21 +43,21 @@ namespace Molten
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                parentLog.WriteLine($"Initializing service: {this.GetType()}");
+                parentLog.Log($"Initializing service: {this.GetType()}");
                 OnInitialize(Settings);
-                parentLog.WriteLine($"Completed initialization of service: {this}");
+                parentLog.Log($"Completed initialization of service: {this}");
                 State = EngineServiceState.Ready;
 
                 sw.Stop();
-                Log.WriteLine($"Initialized service in {sw.Elapsed.TotalMilliseconds:N2} milliseconds");
+                Log.Log($"Initialized service in {sw.Elapsed.TotalMilliseconds:N2} milliseconds");
 
                 OnInitialized?.Invoke(this);
             }
             catch (Exception ex)
             {
                 State = EngineServiceState.Error;
-                parentLog.WriteError($"Failed to initialize service: {this}");
-                parentLog.WriteError(ex);
+                parentLog.Error($"Failed to initialize service: {this}");
+                parentLog.Error(ex);
             }
         }
 
@@ -73,7 +73,7 @@ namespace Molten
 
             if (State == EngineServiceState.Error)
             {
-                parentLog.WriteError($"Cannot start service {this} due to error.");
+                parentLog.Error($"Cannot start service {this} due to error.");
                 OnError?.Invoke(this);
                 return;
             }
@@ -92,23 +92,23 @@ namespace Molten
                 if (ThreadMode == ThreadingMode.SeparateThread)
                 {
                     Thread = threadManager.CreateThread($"service_{this}", true, false, Update);
-                    parentLog.WriteLine($"Started service thread: {Thread.Name}");
+                    parentLog.Log($"Started service thread: {Thread.Name}");
                 }
 
                 State = EngineServiceState.Running;
-                parentLog.WriteLine($"Started service: {this}");
-                parentLog.WriteLine($"Service log: {_logWriter.LogFileInfo.FullName}");
+                parentLog.Log($"Started service: {this}");
+                parentLog.Log($"Service log: {_logWriter.LogFileInfo.FullName}");
 
                 sw.Stop();
-                Log.WriteLine($"Started service in {sw.Elapsed.TotalMilliseconds:N2} milliseconds");
+                Log.Log($"Started service in {sw.Elapsed.TotalMilliseconds:N2} milliseconds");
 
                 OnStarted?.Invoke(this);
             }
             catch (Exception ex)
             {
                 State = EngineServiceState.Error;
-                parentLog.WriteError($"Failed to start service: {this}");
-                parentLog.WriteError(ex);
+                parentLog.Error($"Failed to start service: {this}");
+                parentLog.Error(ex);
                 OnError?.Invoke(this);
             }
         }

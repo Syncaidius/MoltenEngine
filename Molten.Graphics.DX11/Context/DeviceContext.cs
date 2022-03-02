@@ -318,7 +318,7 @@ namespace Molten.Graphics
             },
             (pass, iteration, passNumber, vResult) =>
             {
-                _device.Log.WriteWarning($"Draw() call failed with result: {vResult} -- " + 
+                _device.Log.Warning($"Draw() call failed with result: {vResult} -- " + 
                     $"Iteration: M{iteration}/{material.Iterations}P{passNumber}/{material.PassCount} -- " +
                     $"Material: {material.Name} -- Topology: {topology} -- VertexCount: { vertexCount}");
             });
@@ -343,7 +343,7 @@ namespace Molten.Graphics
             },
             (pass, iteration, passNum, vResult) =>
             {
-                _device.Log.WriteWarning($"DrawInstanced() call failed with result: {vResult} -- " + 
+                _device.Log.Warning($"DrawInstanced() call failed with result: {vResult} -- " + 
                         $"Iteration: M{iteration}/{material.Iterations}P{passNum}/{material.PassCount} -- Material: {material.Name} -- " +
                         $"Topology: {topology} -- VertexCount: { vertexCountPerInstance} -- Instances: {instanceCount}");
             });
@@ -367,7 +367,7 @@ namespace Molten.Graphics
             },
             (pass, it, passNum, vResult) =>
             {
-                _device.Log.WriteWarning($"DrawIndexed() call failed with result: {vResult} -- " +
+                _device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
                     $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
                     $" -- Material: {material.Name} -- Topology: {topology} -- indexCount: { indexCount}");
             });
@@ -396,7 +396,7 @@ namespace Molten.Graphics
             },
             (pass, it, passNum, vResult) =>
             {
-                _device.Log.WriteWarning($"DrawIndexed() call failed with result: {vResult} -- " +
+                _device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
                     $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
                     $" -- Material: {material.Name} -- Topology: {topology} -- Indices-per-instance: { indexCountPerInstance}");
             });

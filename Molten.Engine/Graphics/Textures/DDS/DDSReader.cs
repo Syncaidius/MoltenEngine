@@ -52,7 +52,7 @@ namespace Molten.Graphics.Textures.DDS
             // Make sure the stream is at least big enough to contain a complete DDS header.
             if (reader.BaseStream.Length < 128)
             {
-                log.WriteError("DDS header is invalid.", filename);
+                log.Error("DDS header is invalid.", filename);
                 return false;
             }
 
@@ -60,7 +60,7 @@ namespace Molten.Graphics.Textures.DDS
             _magicWord = _magicWord.Trim();
             if (_magicWord != "DDS")
             {
-                log.WriteError("Data does not contain valid DDS data. Magic word not found.", filename);
+                log.Error("Data does not contain valid DDS data. Magic word not found.", filename);
                 return false;
             }
 
@@ -144,7 +144,7 @@ namespace Molten.Graphics.Textures.DDS
                         break;
 
                     default:
-                        log.WriteError($"Unrecognised DDS block-compression format '{_header.PixelFormat.FourCC}'", filename);
+                        log.Error($"Unrecognised DDS block-compression format '{_header.PixelFormat.FourCC}'", filename);
                         _headerDXT10.ImageFormat = GraphicsFormat.R8G8B8A8_UNorm;
                         break;
                 }
@@ -217,7 +217,7 @@ namespace Molten.Graphics.Textures.DDS
             // Check for invalid mip map values.
             if (_header.MipMapCount > 512)
             {
-                log.WriteError($"Invalid mip-map count: {_header.MipMapCount}", filename);
+                log.Error($"Invalid mip-map count: {_header.MipMapCount}", filename);
                 return false;
             }
 

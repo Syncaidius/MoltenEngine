@@ -319,7 +319,7 @@ namespace Molten.Graphics
                 //      -- If texture arrays are allowed, add a new array slice to the texture
 
                 // TEMP - Use the default character as a placeholder
-                _renderer.Log.WriteError($"Unable to add character '{c}' to atlas for font '{_font.Info.FullName}'. Font atlas was full.");
+                _renderer.Log.Error($"Unable to add character '{c}' to atlas for font '{_font.Info.FullName}'. Font atlas was full.");
                 _glyphCache[gIndex] = GetCharGlyph(PLACEHOLDER_CHAR);
                 return;
             }

@@ -41,7 +41,7 @@ namespace Molten
 
             Log = Logger.Get();
             Log.AddOutput(new LogFileWriter("engine_log.txt"));
-            Log.WriteDebugLine("Engine Instantiated");
+            Log.Debug("Engine Instantiated");
             Threading = new ThreadManager(Log);
             _taskQueue = new ThreadedQueue<EngineTask>();
             _services = new List<EngineService>(Settings.StartupServices);
@@ -74,7 +74,7 @@ namespace Molten
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Log.WriteError(e.ExceptionObject as Exception);
+            Log.Error(e.ExceptionObject as Exception);
             Logger.DisposeAll();
         }
 
@@ -139,8 +139,8 @@ namespace Molten
             catch (Exception e)
             {
                 // TODO Use the fallback font provided with the engine.
-                Log.WriteError("Failed to load default font.");
-                Log.WriteError(e);
+                Log.Error("Failed to load default font.");
+                Log.Error(e);
                 throw e;
             }
         }
@@ -221,7 +221,7 @@ namespace Molten
             if (IsDisposed)
                 return;
 
-            Log.WriteDebugLine("Disposing of engine");
+            Log.Debug("Disposing of engine");
 
             Stop();
 

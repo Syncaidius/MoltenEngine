@@ -92,7 +92,7 @@ namespace Molten.Font
                     break;
 
                 default:
-                    log.WriteDebugLine($"[GPOS] unsupported SingleAdjustmentPosTable format {Format}");
+                    log.Debug($"[GPOS] unsupported SingleAdjustmentPosTable format {Format}");
                     break;
             }
 
@@ -157,7 +157,7 @@ namespace Molten.Font
                     break;
 
                 default:
-                    log.WriteDebugLine($"[GPOS] unsupported PairAdjustmentPosTable format {Format}");
+                    log.Debug($"[GPOS] unsupported PairAdjustmentPosTable format {Format}");
                     break;
             }
 
@@ -231,7 +231,7 @@ namespace Molten.Font
                     break;
 
                 default:
-                    log.WriteDebugLine($"[GPOS] unsupported MarkToBaseAttachmentPosTable format {Format}");
+                    log.Debug($"[GPOS] unsupported MarkToBaseAttachmentPosTable format {Format}");
                     break;
             }
         }
@@ -276,7 +276,7 @@ namespace Molten.Font
                     break;
 
                 default:
-                    log.WriteDebugLine($"[GPOS] unsupported MarkToLigatureAttachmentPosTable format {Format}");
+                    log.Debug($"[GPOS] unsupported MarkToLigatureAttachmentPosTable format {Format}");
                     break;
             }
         }
@@ -388,7 +388,7 @@ namespace Molten.Font
                     break;
 
                 default:
-                    log.WriteDebugLine($"[GPOS] unsupported ContextPosTable format {Format}");
+                    log.Debug($"[GPOS] unsupported ContextPosTable format {Format}");
                     break;
             }
         }
@@ -465,7 +465,7 @@ namespace Molten.Font
                     break;
 
                 default:
-                    log.WriteDebugLine($"[GPOS] unsupported ChainingContextualPosTable format {Format}");
+                    log.Debug($"[GPOS] unsupported ChainingContextualPosTable format {Format}");
                     break;
             }
         }

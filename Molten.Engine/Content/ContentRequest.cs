@@ -260,7 +260,7 @@ namespace Molten
                 string[] metaParts = parts[i].Split(METADATA_ASSIGNMENT, StringSplitOptions.RemoveEmptyEntries);
                 if (metaParts.Length != 2)
                 {
-                    log.WriteError($"Invalid metadata segment in content request: {parts[i]}");
+                    log.Error($"Invalid metadata segment in content request: {parts[i]}");
                     continue;
                 }
                 metadataOut.Add(metaParts[0], metaParts[1]);

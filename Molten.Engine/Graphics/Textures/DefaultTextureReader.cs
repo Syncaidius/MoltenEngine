@@ -49,9 +49,9 @@ namespace Molten.Graphics.Textures
 
         private void Image_Warning(object sender, WarningEventArgs e)
         {
-            _log.WriteWarning(e.Message, _filename);
+            _log.Warning(e.Message, _filename);
             if (e.Exception != null)
-                _log.WriteError(e.Exception, true);
+                _log.Error(e.Exception, true);
         }
     }
 }

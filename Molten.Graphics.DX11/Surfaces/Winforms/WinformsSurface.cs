@@ -51,7 +51,7 @@ namespace Molten.Graphics
                 fixed(ModeDesc1* ptrMode = &_displayMode.Description)
                     NativeSwapChain->ResizeTarget((ModeDesc*)ptrMode);
 
-                Device.Log.WriteLine($"{typeof(T)} surface '{_ctrlName}' resized to {newWidth}x{newHeight}");
+                Device.Log.Log($"{typeof(T)} surface '{_ctrlName}' resized to {newWidth}x{newHeight}");
             }
             else
             {

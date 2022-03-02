@@ -17,7 +17,7 @@ namespace Molten
 
         public void Log(Logger log, string title)
         {
-            log.WriteLine($"{title} settings:");
+            log.Log($"{title} settings:");
             foreach (KeyValuePair<string, SettingValue> p in _byKey)
             {
                 string msg = "";
@@ -40,7 +40,7 @@ namespace Molten
                     msg = $"\t {p.Key}: {p.Value.Object}";
                 }
 
-                log.WriteLine(msg);
+                log.Log(msg);
             }
         }
 

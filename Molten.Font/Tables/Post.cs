@@ -114,7 +114,7 @@ namespace Molten.Font
                     break;
 
                 case 4 when MinorVersion == 0:
-                    log.WriteDebugLine($"[post] Table format 4.{MinorVersion} (AAT) detected. Ignoring extra data.");
+                    log.Debug($"[post] Table format 4.{MinorVersion} (AAT) detected. Ignoring extra data.");
                     // From Apple docs: "As a rule, format 4 'post' tables are no longer necessary and should be avoided."
                     break;
             }

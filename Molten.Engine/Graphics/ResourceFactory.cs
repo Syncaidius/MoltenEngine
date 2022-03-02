@@ -165,7 +165,7 @@ namespace Molten.Graphics
             }
             else
             {
-                _renderer.Log.WriteError($"Attempt to load embedded shader failed: '{filename}' not found in namespace '{nameSpace}' of assembly '{assembly.FullName}'");
+                _renderer.Log.Error($"Attempt to load embedded shader failed: '{filename}' not found in namespace '{nameSpace}' of assembly '{assembly.FullName}'");
                 return new ShaderCompileResult();
             }
 

@@ -103,7 +103,7 @@ namespace Molten.Graphics
         protected override void UpdateControlMode(RenderForm control, WindowMode newMode)
         {
             if (_mode != newMode)
-                Device.Log.WriteLine($"Form surface '{Name}' mode set to '{newMode}'");
+                Device.Log.Log($"Form surface '{Name}' mode set to '{newMode}'");
 
             // Update current mode
             _mode = newMode;

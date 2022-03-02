@@ -417,7 +417,7 @@ namespace Molten.Graphics.Textures
                             case EField.BZ: aEndPts[1].B.b |= 1 << desc[uCurBit].m_uBit; break;
                             default:
                                 {
-                                    log.WriteError("BC6H: Invalid header bits encountered during decoding\n");
+                                    log.Error("BC6H: Invalid header bits encountered during decoding\n");
                                     BC67.FillWithErrorColors(pOut);
                                     return pOut;
                                 }
@@ -454,7 +454,7 @@ namespace Molten.Graphics.Textures
                     uint uNumBits = BC67.IsFixUpOffset(info.uPartitions, uShape, i) ? info.uIndexPrec - 1U : info.uIndexPrec;
                     if (uStartBit + uNumBits > 128)
                     {
-                        log.WriteError("BC6H: Invalid block encountered during decoding\n");
+                        log.Error("BC6H: Invalid block encountered during decoding\n");
                         BC67.FillWithErrorColors(pOut);
                         return pOut;
                     }
@@ -462,7 +462,7 @@ namespace Molten.Graphics.Textures
 
                     if (uIndex >= ((info.uPartitions > 0) ? 8 : 16))
                     {
-                        log.WriteError("BC6H: Invalid index encountered during decoding\n");
+                        log.Error("BC6H: Invalid index encountered during decoding\n");
                         BC67.FillWithErrorColors(pOut);
                         return pOut;
                     }
@@ -504,7 +504,7 @@ namespace Molten.Graphics.Textures
                     case 0x1F: warnstr = "BC6H: Reserved mode 11111 encountered during decoding\n"; break;
                 }
 
-                log.WriteWarning(warnstr);
+                log.Warning(warnstr);
 
                 // Per the BC6H format spec, we must return opaque black
                 for (uint i = 0; i < BC.NUM_PIXELS_PER_BLOCK; ++i)

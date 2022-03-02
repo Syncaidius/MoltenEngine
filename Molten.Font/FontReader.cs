@@ -122,7 +122,7 @@ namespace Molten.Font
                     {
                         if (ignoredTables[j] == header.Tag)
                         {
-                            _log.WriteDebugLine($"Ignoring table '{header.Tag}' ({header.Length} bytes)", _filename);
+                            _log.Debug($"Ignoring table '{header.Tag}' ({header.Length} bytes)", _filename);
                             ignored = true;
                             break;
                         }
@@ -145,7 +145,7 @@ namespace Molten.Font
 
             // Spit out warnings for unsupported font tables
             foreach (TableHeader header in tables.UnsupportedTables)
-                _log.WriteWarning($"Unsupported table -- {header.ToString()}", _filename);
+                _log.Warning($"Unsupported table -- {header.ToString()}", _filename);
 
             /* Jump to the end of the font file data within the stream.
              * Due to table depedency checks, we cannot guarantee the last table to be read is at the end of the font data, so this
@@ -164,13 +164,13 @@ namespace Molten.Font
             FontTable table = GetTableInstance(header);
             if (table != null)
             {
-                _log.WriteDebugLine($"Supported table '{header.Tag}' found ({header.Length} bytes)", _filename);
+                _log.Debug($"Supported table '{header.Tag}' found ({header.Length} bytes)", _filename);
                 FontTableList dependencies = new FontTableList();
                 bool dependenciesValid = true;
 
                 if (table.Dependencies != null && table.Dependencies.Length > 0)
                 {
-                    _log.WriteDebugLine($"[{header.Tag}] Dependencies: {string.Join(",", table.Dependencies)}");
+                    _log.Debug($"[{header.Tag}] Dependencies: {string.Join(",", table.Dependencies)}");
 
                     // Attempt to load/retrieve dependency tables before continuing.
                     foreach (string depTag in table.Dependencies)
@@ -180,25 +180,25 @@ namespace Molten.Font
                         {
                             if (toParseByTag.TryGetValue(depTag, out TableHeader depHeader))
                             {
-                                _log.WriteDebugLine($"[{header.Tag}] Attempting to load missing dependency '{depTag}'");
+                                _log.Debug($"[{header.Tag}] Attempting to load missing dependency '{depTag}'");
                                 LoadTable(fontStartPos, tables, depHeader, toParse, toParseByTag);
                                 dep = tables.Get(depTag);
                                 if (dep == null)
                                 {
-                                    _log.WriteDebugLine($"[{header.Tag}] Dependency '{depTag}' failed to load correctly. Unable to load table.");
+                                    _log.Debug($"[{header.Tag}] Dependency '{depTag}' failed to load correctly. Unable to load table.");
                                     dependenciesValid = false;
                                     break;
                                 }
                             }
                             else
                             {
-                                _log.WriteDebugLine($"[{header.Tag}] Missing dependency '{depTag}'. Unable to load table.");
+                                _log.Debug($"[{header.Tag}] Missing dependency '{depTag}'. Unable to load table.");
                                 dependenciesValid = false;
                                 break;
                             }
                         }
 
-                        _log.WriteDebugLine($"[{header.Tag}] Dependency '{depTag}' found");
+                        _log.Debug($"[{header.Tag}] Dependency '{depTag}' found");
                         dependencies.Add(dep);
                     }
                 }
@@ -218,9 +218,9 @@ namespace Molten.Font
                         long posDif = readerPos - expectedEnd;
 
                         if (expectedEnd != readerPos)
-                            _log.WriteDebugLine($"Parsed table '{header.Tag}' -- [MISMATCH] End pos (byte): {readerPos}. Expected: {header.Length}. Dif: {posDif} bytes", _filename);
+                            _log.Debug($"Parsed table '{header.Tag}' -- [MISMATCH] End pos (byte): {readerPos}. Expected: {header.Length}. Dif: {posDif} bytes", _filename);
                         else
-                            _log.WriteDebugLine($"Parsed table '{header.Tag}' -- [PASS]", _filename);
+                            _log.Debug($"Parsed table '{header.Tag}' -- [PASS]", _filename);
                     }
                 }
             }

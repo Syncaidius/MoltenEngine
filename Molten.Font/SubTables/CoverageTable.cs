@@ -41,7 +41,7 @@ namespace Molten.Font
             }
             else
             {
-                log.WriteWarning($"Unsupported coverage format: {Format}");
+                log.Warning($"Unsupported coverage format: {Format}");
             }
         }
 

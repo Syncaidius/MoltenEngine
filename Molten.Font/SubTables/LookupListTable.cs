@@ -65,7 +65,7 @@ namespace Molten.Font
                     // ExtensionLookupType must be set to any lookup type other than the extension lookup type.
                     if (subLookupTypeIndex == extensionIndex)
                     {
-                        log.WriteDebugLine($"Nested extension lookup table detected. Ignored.");
+                        log.Debug($"Nested extension lookup table detected. Ignored.");
                         continue;
                     }
                     subTableOffset += extensionOffset;
@@ -75,7 +75,7 @@ namespace Molten.Font
                 Type subTableType = typeLookup[subLookupTypeIndex];
                 if (subLookupTypeIndex >= typeLookup.Length || subTableType == null)
                 {
-                    log.WriteDebugLine($"Unsupported lookup sub-table type: {subLookupTypeIndex}");
+                    log.Debug($"Unsupported lookup sub-table type: {subLookupTypeIndex}");
                     continue;
                 }
 

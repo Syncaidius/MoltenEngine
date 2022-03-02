@@ -36,7 +36,7 @@ namespace Molten.Threading
 
             _threads.Add(thread);
             _threadsByName.Add(name, thread);
-            _log.WriteLine($"Spawned engine thread '{name}'");
+            _log.Log($"Spawned engine thread '{name}'");
             return thread;
         }
 
@@ -56,7 +56,7 @@ namespace Molten.Threading
             WorkerGroup group = new WorkerGroup(this, name, workerCount, workerQueue);
             _groups.Add(group);
             _groupsByName.Add(name, group);
-            _log.WriteLine($"Spawned worker group '{group.Name}'");
+            _log.Log($"Spawned worker group '{group.Name}'");
             return group;
         }
 
@@ -76,7 +76,7 @@ namespace Molten.Threading
             if (thread.IsDisposed)
                 return;
 
-            _log.WriteLine($"Destroyed thread '{thread.Name}'");
+            _log.Log($"Destroyed thread '{thread.Name}'");
             thread.IsDisposed = true;
             _threads.Remove(thread);
             _threadsByName.Remove(thread.Name);
@@ -91,7 +91,7 @@ namespace Molten.Threading
             group.IsDisposed = true;
             _groups.Remove(group);
             _groupsByName.Remove(group.Name);
-            _log.WriteLine($"Destroyed worker group '{group.Name}'");
+            _log.Log($"Destroyed worker group '{group.Name}'");
         }
 
         /// <summary>Exits all engine threads before disposing of the thread manager. Do not call this externally.</summary>

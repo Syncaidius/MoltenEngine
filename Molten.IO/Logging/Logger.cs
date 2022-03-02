@@ -55,38 +55,38 @@ namespace Molten
             _outputs.Remove(output);
         }
 
-        public void WriteLine(string value)
+        public void Log(string value)
         {
-            WriteLine(value, Color.White);
+            Log(value, Color.White);
         }
 
-        /// <summary>A debug version of <see cref="WriteLine(string)"/> which will be ignored and removed in release builds.</summary>
+        /// <summary>A debug version of <see cref="Log(string)"/> which will be ignored and removed in release builds.</summary>
         /// <param name="value">The text to be written.</param>
         [Conditional("DEBUG")]
-        public void WriteDebugLine(string value)
+        public void Debug(string value)
         {
-            WriteLine($"[DEBUG] {value}", Color.White);
+            Log($"[DEBUG] {value}", Color.White);
         }
 
-        /// <summary>A debug version of <see cref="WriteLine(string)"/> which will be ignored and removed in release builds.</summary>
+        /// <summary>A debug version of <see cref="Log(string)"/> which will be ignored and removed in release builds.</summary>
         /// <param name="value">The text to be written.</param>
         /// <param name="filename">The filename associated with the message.</param>
         [Conditional("DEBUG")]
-        public void WriteDebugLine(string value, string filename)
+        public void Debug(string value, string filename)
         {
             if (string.IsNullOrEmpty(filename))
-                WriteLine($"[DEBUG] {value}", DebugColor);
+                Log($"[DEBUG] {value}", DebugColor);
             else
-                WriteLine($"[DEBUG] {filename}: {value}", DebugColor);
+                Log($"[DEBUG] {filename}: {value}", DebugColor);
         }
 
-        /// <summary>A debug version of <see cref="WriteLine(string)"/> which will be ignored and removed in release builds.</summary>
+        /// <summary>A debug version of <see cref="Log(string)"/> which will be ignored and removed in release builds.</summary>
         /// <param name="value">The text to be written.</param>
         /// <param name="color">The color of the text.</param>
         [Conditional("DEBUG")]
         public void WriteDebugLine(string value, Color color)
         {
-            WriteLine($"[DEBUG] {value}", color);
+            Log($"[DEBUG] {value}", color);
         }
 
         /// <summary>
@@ -94,14 +94,14 @@ namespace Molten
         /// </summary>
         /// <param name="msg">The message to be written to the logger.</param>
         /// <param name="color">The preferred color that the text should be written in.</param>
-        public void WriteLine(string msg, Color color)
+        public void Log(string msg, Color color)
         {
             _interlocker.Lock(() =>
             {
                 for (int i = 0; i < _outputs.Count; i++)
                     _outputs[i].WriteLine(msg, color);
 #if DEBUG
-                Debug.WriteLine(msg);
+                System.Diagnostics.Debug.WriteLine(msg);
 #endif
             });
         }
@@ -123,7 +123,7 @@ namespace Molten
         /// </summary>
         /// <param name="e">The exception.</param>
         /// <param name="handled">If true, the exception will be marked as handled in it's log message.</param>
-        public void WriteError(Exception e, bool handled = false)
+        public void Error(Exception e, bool handled = false)
         {
             string[] st = e.StackTrace.Split(_traceSeparators, StringSplitOptions.RemoveEmptyEntries);
 
@@ -135,51 +135,51 @@ namespace Molten
 
             string time = DateTime.Now.ToLongTimeString();
             if (handled)
-                WriteLine("===HANDLED EXCEPTION===", ErrorColor);
+                Log("===HANDLED EXCEPTION===", ErrorColor);
             else
-                WriteLine("===UNHANDLED EXCEPTION===", ErrorColor);
+                Log("===UNHANDLED EXCEPTION===", ErrorColor);
 
-            WriteLine(title, ErrorColor);
-            WriteLine(msg, ErrorColor);
-            WriteLine(source, ErrorColor);
-            WriteLine(hResult, ErrorColor);
-            WriteLine(target, ErrorColor);
+            Log(title, ErrorColor);
+            Log(msg, ErrorColor);
+            Log(source, ErrorColor);
+            Log(hResult, ErrorColor);
+            Log(target, ErrorColor);
 
             if (e.InnerException != null)
             {
                 string inner = "   Inner Exception: " + e.InnerException.GetType().ToString();
-                WriteLine(title, ErrorColor);
+                Log(title, ErrorColor);
             }
 
             // Stack-trace lines.
             for (int i = 0; i < st.Length; i++)
-                WriteLine(st[i], ErrorColor);
+                Log(st[i], ErrorColor);
         }
 
-        public void WriteError(string value)
+        public void Error(string value)
         {
-            WriteLine($"{ErrorPrefix} {value}", ErrorColor);
+            Log($"{ErrorPrefix} {value}", ErrorColor);
         }
 
-        public void WriteError(string value, string filename)
+        public void Error(string value, string filename)
         {
             if (string.IsNullOrWhiteSpace(filename))
-                WriteLine($"{ErrorPrefix}: {value}", ErrorColor);
+                Log($"{ErrorPrefix}: {value}", ErrorColor);
             else
-                WriteLine($"{ErrorPrefix} {filename}: {value}", ErrorColor);
+                Log($"{ErrorPrefix} {filename}: {value}", ErrorColor);
         }
 
-        public void WriteWarning(string value)
+        public void Warning(string value)
         {
-            WriteLine($"{WarningPrefix} {value}", WarningColor);
+            Log($"{WarningPrefix} {value}", WarningColor);
         }
 
-        public void WriteWarning(string value, string filename)
+        public void Warning(string value, string filename)
         {
             if (string.IsNullOrEmpty(filename))
-                WriteWarning(value);
+                Warning(value);
             else
-                WriteLine($"{WarningPrefix} {filename}: {value}", WarningColor);
+                Log($"{WarningPrefix} {filename}: {value}", WarningColor);
         }
 
         public void Write(string value)
@@ -195,7 +195,7 @@ namespace Molten
                     _outputs[i].Write(value, color);
 
 #if DEBUG
-                Debug.Write(value);
+                System.Diagnostics.Debug.Write(value);
 #endif
             });
         }
@@ -213,7 +213,7 @@ namespace Molten
         }
 
         /// <summary>
-        /// Gets or sets he default color of errors when calling <see cref="WriteError(Exception, bool)"/> or <see cref="WriteError(string)"/>.
+        /// Gets or sets he default color of errors when calling <see cref="Error(Exception, bool)"/> or <see cref="Error(string)"/>.
         /// </summary>
         public Color ErrorColor { get; set; } = Color.Red;
 

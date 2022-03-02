@@ -82,7 +82,7 @@ namespace Molten.Graphics
                 {
                     string ntName = nParser.GetType().Name;
                     string existingName = _nodeParsers[nParser.NodeType].GetType().Name;
-                    Log.WriteWarning($"Failed to register node parser '{ntName}' for node type '{nParser.NodeType}' as '{existingName}' is already registered.");
+                    Log.Warning($"Failed to register node parser '{ntName}' for node type '{nParser.NodeType}' as '{existingName}' is already registered.");
                 }
                 else
                 {
@@ -96,7 +96,7 @@ namespace Molten.Graphics
             foreach(ShaderNodeType t in nTypes)
             {
                 if (!_nodeParsers.ContainsKey(t))
-                    Log.WriteError($"Shader compiler '{this.GetType()}' doesn't provide node parser for '{t}' nodes. May prevent shader compilation.");
+                    Log.Error($"Shader compiler '{this.GetType()}' doesn't provide node parser for '{t}' nodes. May prevent shader compilation.");
             }
         }
 
@@ -168,7 +168,7 @@ namespace Molten.Graphics
 
             string msgPrefix = string.IsNullOrWhiteSpace(filename) ? "" : $"{filename}: ";
             foreach (ShaderCompilerMessage msg in context.Messages)
-                Log.WriteLine($"{msgPrefix}{msg.Text}");
+                Log.Log($"{msgPrefix}{msg.Text}");
 
             return context.Result;
         }

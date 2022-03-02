@@ -50,7 +50,7 @@ namespace Molten.Graphics
             DxgiError de = hr.ToEnum<DxgiError>();
 
             if (de != DxgiError.Ok)
-                Renderer.Log.WriteError($"Creation of swapchain failed with result: {de}");
+                Renderer.Log.Error($"Creation of swapchain failed with result: {de}");
         }
 
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
@@ -91,7 +91,7 @@ namespace Molten.Graphics
             }
             else
             {
-                Renderer.Log.WriteError($"Error creating resource for SwapChainSurface '{Name}': {err}");
+                Renderer.Log.Error($"Error creating resource for SwapChainSurface '{Name}': {err}");
             }
 
             return res;

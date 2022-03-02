@@ -17,7 +17,7 @@ namespace Molten.Graphics.Textures
         {
             if (!MathHelper.IsPowerOfTwo(data.Width) || !MathHelper.IsPowerOfTwo(data.Height))
             {
-                log.WriteError("Cannot save DDS file: Width and height must be power-of-two.", filename);
+                log.Error("Cannot save DDS file: Width and height must be power-of-two.", filename);
                 return;
             }
 

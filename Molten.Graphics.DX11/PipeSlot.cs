@@ -117,7 +117,7 @@ namespace Molten.Graphics
                     {
                         BoundValue = null;
 #if DEBUG
-                        _value.Device.Log.WriteError($"Failed to bind {Value.Name} to {this.Name}");
+                        _value.Device.Log.Error($"Failed to bind {Value.Name} to {this.Name}");
 #endif
                         return false;
                     }

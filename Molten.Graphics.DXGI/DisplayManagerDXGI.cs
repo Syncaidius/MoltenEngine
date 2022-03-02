@@ -70,14 +70,14 @@ namespace Molten.Graphics.Dxgi
             }
 
             // Output detection info into renderer log.
-            _log.WriteLine($"Detected {_adapters.Count} adapters:");
+            _log.Log($"Detected {_adapters.Count} adapters:");
             List<IDisplayOutput> displays = new List<IDisplayOutput>();
             for (int i = 0; i < _adapters.Count; i++)
             {
-                _log.WriteLine($"   Adapter {i}: {_adapters[i].Name}{(_usable.Contains(i) ? " (usable)" : "")}");
+                _log.Log($"   Adapter {i}: {_adapters[i].Name}{(_usable.Contains(i) ? " (usable)" : "")}");
                 _adapters[i].GetAttachedOutputs(displays);
                 for (int d = 0; d < displays.Count; d++)
-                    _log.WriteLine($"       Display {d}: {displays[d].Name}");
+                    _log.Log($"       Display {d}: {displays[d].Name}");
                 displays.Clear();
             }
 
@@ -107,10 +107,10 @@ namespace Molten.Graphics.Dxgi
                 preferredAdapter.AddActiveOutput(preferredAdapter.GetOutput(id));
 
             // Log preferred adapter stats
-            _log.WriteLine($"Chosen {preferredAdapter.Name}");
-            _log.WriteLine($"    Dedicated VRAM: {preferredAdapter.DedicatedVideoMemory:N2} MB");
-            _log.WriteLine($"    System RAM dedicated to video: {preferredAdapter.DedicatedSystemMemory:N2} MB");
-            _log.WriteLine($"    Shared system RAM: {preferredAdapter.SharedSystemMemory:N2} MB");
+            _log.Log($"Chosen {preferredAdapter.Name}");
+            _log.Log($"    Dedicated VRAM: {preferredAdapter.DedicatedVideoMemory:N2} MB");
+            _log.Log($"    System RAM dedicated to video: {preferredAdapter.DedicatedSystemMemory:N2} MB");
+            _log.Log($"    Shared system RAM: {preferredAdapter.SharedSystemMemory:N2} MB");
         }
 
         /// <summary>
