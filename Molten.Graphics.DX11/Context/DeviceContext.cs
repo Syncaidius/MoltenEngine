@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Silk.NET.Direct3D11;
 using Molten.IO;
+using System.Collections.ObjectModel;
 
 namespace Molten.Graphics
 {
@@ -50,7 +51,17 @@ namespace Molten.Graphics
             else
                 Type = GraphicsContextType.Deferred;
 
-            _context->ClearState();
+            Shaders = new Dictionary<ShaderType, ContextShaderStage>()
+            {
+                [ShaderType.VertexShader] = new VSShaderStage(this),
+                [ShaderType.GeometryShader] = new GSShaderStage(this),
+                [ShaderType.HullShader] = new HSShaderStage(this),
+                [ShaderType.DomainShader] = new DSShaderStage(this),
+                [ShaderType.PixelShader] = new PSShaderStage(this),
+                [ShaderType.ComputeShader] = new CSShaderStage(this)
+            };
+
+            State = new DeviceContextState(this);
 
             _stateStack = new PipeStateStack(this);
             _compute = new ShaderComputeStage(this);
@@ -527,6 +538,13 @@ namespace Molten.Graphics
 
         /// <summary>Gets the output merger state of the current <see cref="Graphics.DeviceContext"/>.</summary>
         internal OutputMergerStage Output { get; private set; }
+
+        /// <summary>
+        /// Gets the state of the current <see cref="DeviceContext"/>.
+        /// </summary>
+        internal DeviceContextState State { get; private set; }
+
+        internal ReadOnlyDictionary<ShaderType, ContextShaderStage> Shaders { get; private set; }
 
         internal GraphicsDepthWritePermission DepthWriteOverride { get; set; } = GraphicsDepthWritePermission.Enabled;
 

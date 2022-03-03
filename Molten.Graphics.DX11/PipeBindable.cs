@@ -13,28 +13,10 @@ namespace Molten.Graphics
     /// </summary>
     public abstract class PipeBindable : PipeObject
     {
-        internal PipeBindable(Device device) : base(device)
+        internal PipeBindable(Device device, PipeBindTypeFlags bindFlags) : base(device)
         {
-            BoundTo = new HashSet<PipeSlot>();
-        }
-
-        /// <summary>Invoked when the current <see cref="PipeBindable"/> is to be bound to a <see cref="PipeSlot"/>.</summary>
-        /// <param name="slot">The <see cref="PipeSlot"/> to bind to.</param>
-        /// <returns>True if the binding succeeded.</returns>
-        internal bool BindTo(PipeSlot slot)
-        {
-            // TODO validate binding. Allow bindable to do it's own validation too.
-            // If validation fails, return false here.
-            // E.g. is the object bound to both input and outout in an invalid way?
-
-            BoundTo.Add(slot);
-            Refresh(slot, slot.Stage.Pipe);
-            return true;
-        }
-
-        internal void UnbindFrom(PipeSlot slot)
-        {
-            BoundTo.Remove(slot);
+            BoundTo = new HashSet<ContextSlot>();
+            BindFlags = bindFlags;
         }
 
         /// <summary>
@@ -42,7 +24,7 @@ namespace Molten.Graphics
         /// </summary>
         /// <param name="slot">The <see cref="PipeSlot"/> which contains the current <see cref="PipeBindable"/>.</param>
         /// <param name="pipe">The <see cref="DeviceContext"/> that the current <see cref="PipeBindable"/> is to be bound to.</param>
-        protected internal abstract void Refresh(PipeSlot slot, DeviceContext pipe);
+        internal abstract void Refresh(ContextSlot slot, DeviceContext pipe);
 
         /// <summary>
         /// Gets the instance-specific version of the current <see cref="PipeBindable"/>. Any change which will require a device
@@ -53,18 +35,21 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets a list of slots that the current <see cref="PipeBindable"/> is bound to.
         /// </summary>
-        internal HashSet<PipeSlot> BoundTo { get; }
+        internal HashSet<ContextSlot> BoundTo { get; }
 
         /// <summary>
         /// Gets the current binding ID.
         /// </summary>
-        internal uint BindingID { get; set; }
+        internal uint BindID { get; set; }
+
+        internal PipeBindTypeFlags BindFlags { get; }
     }
 
     public unsafe abstract class PipeBindable<T> : PipeBindable
         where T : unmanaged
     {
-        internal PipeBindable(Device device) : base(device)
+        internal PipeBindable(Device device, PipeBindTypeFlags bindFlags) : 
+            base(device, bindFlags)
         {
 
         }

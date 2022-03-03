@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     internal class ContextSlotGroup<T> : EngineObject
-        where T : ContextBindable
+        where T : PipeBindable
     {
         ContextSlot<T>[] _slots;
 
@@ -19,6 +19,7 @@ namespace Molten.Graphics
             Name = $"{namePrefix} slot group";
             BindType = bindType;
             ParentState = parent;
+            SlotCount = (uint)slots.Length;
         }
 
         protected override void OnDispose() { }
@@ -26,27 +27,46 @@ namespace Molten.Graphics
         /// <summary>
         /// Binds all pending <see cref="ContextBindable"/> objects on to the current <see cref="ContextSlotGroup{T}"/>
         /// </summary>
-        internal void BindAll()
+        internal bool BindAll()
         {
+            uint firstChanged = uint.MaxValue;
+            uint lastChanged = uint.MinValue;
+
             foreach (ContextSlot<T> slot in _slots)
             {
                 if (slot.Bind())
                 {
-                    if (slot.SlotIndex < FirstChanged)
-                        FirstChanged = slot.SlotIndex;
+                    if (slot.SlotIndex < firstChanged)
+                        firstChanged = slot.SlotIndex;
 
-                    if (slot.SlotIndex > LastChanged)
-                        LastChanged = slot.SlotIndex;
+                    if (slot.SlotIndex > lastChanged)
+                        lastChanged = slot.SlotIndex;
                 }
             }
+
+            // If first slot is less than or equal last slot, changes occurred.
+            if (firstChanged <= lastChanged)
+            {
+                uint numChanged = (1 + lastChanged) - firstChanged;
+                Binder.Bind(this, firstChanged, lastChanged, numChanged);
+            }
+
+            return false;
         }
 
         /// <summary>
         /// Unbinds all bound <see cref="ContextBindable"/> objects from the current <see cref="ContextSlotGroup{T}"/>.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void UnbindAll()
         {
+            Binder.UnbindAll(this);
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal T GetBoundValue(uint slotIndex)
+        {
+            return _slots[slotIndex].BoundValue;
         }
 
         /// <summary>
@@ -65,6 +85,9 @@ namespace Molten.Graphics
         internal DeviceContextState ParentState { get; }
 
         internal DeviceContext Context => ParentState.Context;
+
+        internal uint SlotCount { get; }
+
 
         internal T this[uint slotIndex]
         {

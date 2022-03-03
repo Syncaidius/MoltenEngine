@@ -15,13 +15,13 @@ namespace Molten.Graphics
         Color4 _borderColor;
         bool _isDirty;
 
-        internal ShaderSampler(Device device, ShaderSampler source) : base(device)
+        internal ShaderSampler(Device device, ShaderSampler source) : base(device, PipeBindTypeFlags.Input)
         {
             _desc = source._desc;
             _isDirty = true;
         }
 
-        internal ShaderSampler(Device device) : base(device)
+        internal ShaderSampler(Device device) : base(device, PipeBindTypeFlags.Input)
         {
             // See for defaults: https://docs.microsoft.com/en-us/windows/win32/api/d3d11/ns-d3d11-d3d11_sampler_desc
             _desc = new SamplerDesc()

@@ -29,7 +29,7 @@ namespace Molten.Graphics
     }
 
     internal class ContextSlot<T> : ContextSlot
-        where T : ContextBindable
+        where T : PipeBindable
     {
         ContextBinder<T> _binder;
         ContextSlotGroup<T> _group;
@@ -44,6 +44,7 @@ namespace Molten.Graphics
             base(parent, bindType, $"{namePrefix}_{typeof(T).Name}", slotIndex)
         {
             IsGroupMember = false;
+            _group = null;
             _binder = binder;
         }
 
@@ -55,6 +56,10 @@ namespace Molten.Graphics
             _binder = grp.Binder;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>True if a binding changed occurred. False if no change has occurred.</returns>
         internal override bool Bind()
         {
             if (_value != _boundValue)
@@ -70,35 +75,38 @@ namespace Molten.Graphics
                     bool canBind = true;
                     foreach (ContextSlot<T> slot in _value.BoundTo)
                     {
-                        if (slot._pendingID > _pendingID)
-                        {
-                            // Are the slot bind types different and does the object allow both simultaneously?
-                            if (slot.BindType != BindType)
-                            {
-                                if ((_value.BindFlags & BindType) == BindType && (_value.BindFlags & slot.BindType) == slot.BindType)
-                                    continue;
-                            }
+                        // Only check slots on the same context.
+                        if (slot.Context != Context)
+                            continue;
 
-                            canBind = false;
-                        }
-                        else if (slot._pendingID < _pendingID)
+                        // Are the slot bind types different, or can the object to be simultaneously bound to input and output slots?
+                        if (slot.BindType != BindType)
                         {
-                            slot.Unbind();
-                        }
-                        else if (slot._pendingID == _pendingID)
-                        {
-                            Context.Log.Error($"{_value.Name} is will be bound on '{slot.Name}' and '{Name}' with the same pending BindID ({_pendingID}). This is unexpected behaviour!");
-                            canBind = false;
+                            if ((_value.BindFlags & BindType) == BindType && (_value.BindFlags & slot.BindType) == slot.BindType)
+                                continue;
+
+                            if (slot._pendingID > _pendingID)
+                            {
+                                canBind = false;
+                            }
+                            else if (slot._pendingID < _pendingID)
+                            {
+                                slot.Unbind();
+                            }
+                            else if (slot._pendingID == _pendingID)
+                            {
+                                Context.Log.Error($"{_value.Name} is will be bound on '{slot.Name}' and '{Name}' with the same pending BindID ({_pendingID}). This is unexpected behaviour!");
+                                canBind = false;
+                            }
                         }
                     }
-
 
                     // If a value is bound in the current slot. Unbind it.
                     if (_boundValue != null && !canBind)
                     {
                         // TODO output _value.BoundTo list + details of current slot.
                         Unbind();
-                        return false;
+                        return true;
                     }
 
                     _value.Refresh(this, Context);

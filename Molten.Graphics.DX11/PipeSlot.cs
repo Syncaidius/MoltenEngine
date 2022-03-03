@@ -123,7 +123,7 @@ namespace Molten.Graphics
                     }
 
                     _boundVersion = Value.Version;
-                    BindingID = Value.BindingID;
+                    BindingID = Value.BindID;
                     BoundValue = Value;
                 }
 
@@ -166,7 +166,7 @@ namespace Molten.Graphics
                 _value = value;
 
                 if (_value != null)
-                    _value.BindingID++;
+                    _value.BindID++;
             }
         }
 
