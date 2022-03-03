@@ -13,19 +13,19 @@ namespace Molten.Graphics
         {
         }
 
-        internal override unsafe void SetConstantBuffers(uint startSlot, uint numBuffers, ID3D11Buffer** states)
+        internal override unsafe void SetConstantBuffers(uint startSlot, uint numBuffers, ID3D11Buffer** buffers)
         {
-            throw new NotImplementedException();
+            Context.Native->CSSetConstantBuffers(startSlot, numBuffers, buffers);
         }
 
-        internal override unsafe void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView** states)
+        internal override unsafe void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView** views)
         {
-            throw new NotImplementedException();
+            Context.Native->CSSetShaderResources(startSlot, numViews, views);
         }
 
         internal override unsafe void SetSamplers(uint startSlot, uint numSamplers, ID3D11SamplerState** states)
         {
-            throw new NotImplementedException();
+            Context.Native->CSSetSamplers(startSlot, numSamplers, states);
         }
 
         internal override unsafe void SetShader(void* shader, ID3D11ClassInstance** classInstances, uint numClassInstances)
