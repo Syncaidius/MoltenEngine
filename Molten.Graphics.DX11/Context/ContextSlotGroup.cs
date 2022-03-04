@@ -54,6 +54,35 @@ namespace Molten.Graphics
             return false;
         }
 
+        internal void Set(T[] values)
+        {
+            if (values.Length > _slots.Length)
+                throw new Exception($"The provided array is larger than the group slot count");
+
+            Set(values, 0, (uint)values.Length, 0);
+        }
+
+        internal void Set(T[] values, uint valueStartIndex, uint numValues, uint slotStartIndex)
+        {
+            uint valEndIndex = valueStartIndex + numValues;
+            uint slotID = slotStartIndex;
+
+            for (uint i = valueStartIndex; i < valEndIndex; i++)
+            {
+                if (values[i] != null)
+                    throw new InvalidOperationException($"The provided buffer segment at index {i} is not part of a vertex buffer.");
+
+                _slots[slotID++].Value = values[i];
+            }
+        }
+
+        internal void Get(T[] destination)
+        {
+            // TODO rewrite group to store slot values in an array.
+            // TODO add ContextGroupedSlot<T> : ContextSlot with group-specific implementation
+            // TODO remove ContextSlot from groups
+        }
+
         /// <summary>
         /// Unbinds all bound <see cref="ContextBindable"/> objects from the current <see cref="ContextSlotGroup{T}"/>.
         /// </summary>
@@ -82,14 +111,10 @@ namespace Molten.Graphics
 
         internal uint SlotCount { get; }
 
-
-        internal T this[uint slotIndex]
+        internal ContextSlot<T> this[uint slotIndex]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _slots[slotIndex].BoundValue;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => _slots[slotIndex].Value = value;
+            get => _slots[slotIndex];
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Molten.Graphics
 
             uint sid = startIndex;
             for (uint i = 0; i < numChanged; i++)
-                samplers[i] = grp[sid++];
+                samplers[i] = grp[sid++].BoundValue;
 
             _stage.SetSamplers(startIndex, numChanged, samplers);
         }

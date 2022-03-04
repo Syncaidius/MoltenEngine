@@ -28,7 +28,6 @@ namespace Molten.Graphics
             }
         }
 
-        InputAssemblerStage _input;
         ShaderComputeStage _compute;
 
         Device _device;
@@ -55,7 +54,6 @@ namespace Molten.Graphics
 
             _stateStack = new PipeStateStack(this);
             _compute = new ShaderComputeStage(this);
-            _input = new InputAssemblerStage(this);
             Output = new OutputMergerStage(this);
 
             DepthStencil = new GraphicsDepthStage(this);
@@ -223,9 +221,7 @@ namespace Molten.Graphics
             if (topology == VertexTopology.Undefined)
                 return GraphicsBindResult.UndefinedTopology;
 
-            GraphicsBindResult result = GraphicsBindResult.Successful;
-
-            _input.Bind(pass, _drawInfo.Conditions, topology);
+            State.Bind(pass, _drawInfo.Conditions, topology);
 
             Output.DepthWritePermission = DepthWriteOverride != GraphicsDepthWritePermission.Enabled ? 
                 DepthWriteOverride : pass.DepthState[_drawInfo.Conditions].WritePermission;
@@ -241,7 +237,7 @@ namespace Molten.Graphics
             Rasterizer.Bind();
 
             // Validate all pipeline components.
-            result |= _input.Validate(mode);
+            GraphicsBindResult result = State.Validate(mode);
 
             return result;
         }
@@ -275,7 +271,7 @@ namespace Molten.Graphics
             if (!_drawInfo.Began)
                 throw new GraphicsContextException($"GraphicsPipe: BeginDraw() must be called before calling {nameof(Draw)}()");
 
-            _input.Material.Value = mat;
+            State.Material.Value = mat;
 
             // Re-render the same material for mat.Iterations.
             for (uint i = 0; i < mat.Iterations; i++)
@@ -406,74 +402,6 @@ namespace Molten.Graphics
                 throw new GraphicsContextException($"GraphicsPipe: BeginDraw() must be called before calling {nameof(DrawIndexedInstanced)}()");
         }
 
-        /// <summary>Sets a vertex buffer to a particular input slot.</summary>
-        /// <param name="segment">The buffer.</param>
-        /// <param name="slot">The input slot ID.</param>
-        /// <param name="byteOffset">The number of bytes to offset the starting point within the buffer.</param>
-        internal void SetVertexSegment(BufferSegment segment, uint slot)
-        {
-            _input.VertexBuffers[slot].Value = segment;
-        }
-
-        /// <summary>Sets a list of vertex buffers to input slots.</summary>
-        /// <param name="segments">The buffers to set.</param>
-        /// <param name="startIndex">The index within the buffer list/array to start setting.</param>
-        /// <param name="firstSlot">The input slot to start setting.</param>
-        /// <param name="byteOffsets">A list of byte offsets. each entry/element corresponds to the buffers in the buffer array.</param>
-        internal void SetVertexSegments(BufferSegment[] segments)
-        {
-            SetVertexSegments(segments, segments.Length, 0, 0);
-        }
-
-        /// <summary>Sets a list of vertex buffers to input slots.</summary>
-        /// <param name="segments">The buffers to set.</param>
-        /// <param name="startIndex">The index within 'segments' array to start setting.</param>
-        /// <param name="firstSlot">The input slot to start setting.</param>
-        /// <param name="byteOffsets">A list of byte offsets. each entry/element corresponds to the buffers in the buffer array.</param>
-        internal void SetVertexSegments(BufferSegment[] segments, int count, uint firstSlot, uint startIndex)
-        {
-            uint end = startIndex + (uint)count;
-            uint slotID = firstSlot;
-
-            for (uint i = startIndex; i < end; i++)
-            {
-                if (segments[i] != null)
-                {
-                    if (((BindFlag)segments[i].Buffer.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
-                        throw new InvalidOperationException($"The provided buffer segment at index {i} is not part of a vertex buffer.");
-                }
-
-                _input.VertexBuffers[slotID++].Value = segments[i];
-            }
-        }
-
-        /// <summary>Sets a index buffer.</summary>
-        /// <param name="segment">The buffer segment to set.</param>
-        /// <param name="byteOffset">The number of bytes to offset the starting point within the buffer.</param>
-        internal void SetIndexSegment(BufferSegment segment)
-        {
-            _input.IndexBuffer.Value = segment;
-        }
-
-        /// <summary>Copyies a list of vertex <see cref="BufferSegment"/> that are set on the current <see cref="Graphics.DeviceContext"/>. Any empty slots will be null.</summary>
-        /// <param name="destination"></param>
-        internal void GetVertexSegments(BufferSegment[] destination)
-        {
-            int needed = _input.VertexBuffers.SlotCount;
-            if (destination.Length < needed)
-                throw new InvalidOperationException($"The destination array is too small. Needs {needed} but has {destination.Length} capacity.");
-
-            for (uint i = 0; i < needed; i++)
-                destination[i] = _input.VertexBuffers[i].Value;
-        }
-
-        /// <summary>Returns the current index <see cref="BufferSegment"/>, or null if not set.</summary>
-        /// <returns></returns>
-        internal BufferSegment GetIndexSegment()
-        {
-            return _input.IndexBuffer.Value;
-        }
-
         /// <summary>Clears the first render target that is set on the device.</summary>
         /// <param name="color"></param>
         /// <param name="slot"></param>
@@ -486,7 +414,7 @@ namespace Molten.Graphics
         protected override void OnDispose()
         {
             Output.Dispose();
-            _input.Dispose();
+            State.Dispose();
             _compute.Dispose();
 
             DepthStencil.Dispose();

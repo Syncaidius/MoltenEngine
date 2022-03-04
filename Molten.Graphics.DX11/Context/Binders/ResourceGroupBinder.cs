@@ -23,7 +23,7 @@ namespace Molten.Graphics
 
             uint sid = startIndex;
             for (uint i = 0; i < numChanged; i++)
-                res[i] = grp[sid++];
+                res[i] = grp[sid++].BoundValue;
 
             _stage.SetResources(startIndex, numChanged, res);
         }

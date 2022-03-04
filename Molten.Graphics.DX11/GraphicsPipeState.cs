@@ -40,8 +40,8 @@ namespace Molten.Graphics
             _depthState = _pipe.DepthStencil.State.Value;
             _rasterState = _pipe.Rasterizer.State.Value;
 
-            _pipe.GetVertexSegments(_vSegments);
-            _iSegment = _pipe.GetIndexSegment();
+            _pipe.State.VertexBuffers.Get(_vSegments);
+            _iSegment = _pipe.State.IndexBuffer.Value;
 
             //store viewports
             int vpCount = _pipe.Rasterizer.ViewportCount;
@@ -64,8 +64,8 @@ namespace Molten.Graphics
             _pipe.Rasterizer.State.Value = _rasterState;
 
             //buffers
-            _pipe.SetVertexSegments(_vSegments);
-            _pipe.SetIndexSegment(_iSegment);
+            _pipe.State.VertexBuffers.Set(_vSegments);
+            _pipe.State.IndexBuffer.Value = _iSegment;
 
             //restore viewports
             _pipe.Rasterizer.SetViewports(_viewports);

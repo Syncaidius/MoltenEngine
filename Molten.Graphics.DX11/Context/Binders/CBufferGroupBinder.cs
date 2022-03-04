@@ -29,7 +29,7 @@ namespace Molten.Graphics
 
             for (uint i = 0; i < numChanged; i++)
             {
-                cb = grp[sid++];
+                cb = grp[sid++].BoundValue;
                 if (cb != null)
                 {
                     cBuffers[i] = cb.ResourcePtr;

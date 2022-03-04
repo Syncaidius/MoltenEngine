@@ -21,7 +21,10 @@ namespace Molten.Graphics
 
             for (uint i = startIndex; i <= endIndex; i++)
             {
-                seg = grp[i];
+                seg = grp[i].BoundValue;
+
+                if (((BindFlag)seg.Buffer.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
+                    throw new InvalidOperationException($"The buffer segment in vertex buffer slot {i} is not part of a vertex buffer.");
 
                 if (seg != null)
                 {
@@ -45,7 +48,10 @@ namespace Molten.Graphics
         internal override void Bind(ContextSlot<BufferSegment> slot, BufferSegment value)
         {
             BufferSegment seg = slot.BoundValue;
-            
+
+            if (((BindFlag)seg.Buffer.Description.BindFlags & BindFlag.BindVertexBuffer) != BindFlag.BindVertexBuffer)
+                throw new InvalidOperationException($"The buffer segment in vertex buffer slot {slot.SlotIndex} is not part of a vertex buffer.");
+
             ID3D11Buffer** pBuffers = stackalloc ID3D11Buffer*[1];
             uint* pStrides = stackalloc uint[1];
             uint* pOffsets = stackalloc uint[1];

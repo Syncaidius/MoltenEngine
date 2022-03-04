@@ -25,7 +25,7 @@ namespace Molten.Graphics
             uint sid = startIndex;
             for (int i = 0; i < numChanged; i++)
             {
-                pUavs[i] = grp[sid++];
+                pUavs[i] = grp[sid++].BoundValue;
                 pInitialCounts[i] = 0; // TODO set initial counts. Research this more.
             }
 
