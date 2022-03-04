@@ -11,7 +11,7 @@ using System.Collections.ObjectModel;
 namespace Molten.Graphics
 {
     internal delegate void PipeDrawCallback(MaterialPass pass);
-    internal delegate void PipeDrawFailCallback(MaterialPass pass, uint iteration, uint passNumber, GraphicsValidationResult result);
+    internal delegate void PipeDrawFailCallback(MaterialPass pass, uint iteration, uint passNumber, GraphicsBindResult result);
 
     /// <summary>Manages the pipeline of a either an immediate or deferred <see cref="DeviceContext"/>.</summary>
     public unsafe partial class DeviceContext : EngineObject
@@ -50,16 +50,6 @@ namespace Molten.Graphics
                 Type = GraphicsContextType.Immediate;
             else
                 Type = GraphicsContextType.Deferred;
-
-            Shaders = new Dictionary<ShaderType, ContextShaderStage>()
-            {
-                [ShaderType.VertexShader] = new VSShaderStage(this),
-                [ShaderType.GeometryShader] = new GSShaderStage(this),
-                [ShaderType.HullShader] = new HSShaderStage(this),
-                [ShaderType.DomainShader] = new DSShaderStage(this),
-                [ShaderType.PixelShader] = new PSShaderStage(this),
-                [ShaderType.ComputeShader] = new CSShaderStage(this)
-            };
 
             State = new DeviceContextState(this);
 
@@ -226,14 +216,14 @@ namespace Molten.Graphics
             _stateStack.Pop();
         }
 
-        private GraphicsValidationResult ApplyState(MaterialPass pass,
+        private GraphicsBindResult ApplyState(MaterialPass pass,
             GraphicsValidationMode mode,
             VertexTopology topology)
         {
             if (topology == VertexTopology.Undefined)
-                return GraphicsValidationResult.UndefinedTopology;
+                return GraphicsBindResult.UndefinedTopology;
 
-            GraphicsValidationResult result = GraphicsValidationResult.Successful;
+            GraphicsBindResult result = GraphicsBindResult.Successful;
 
             _input.Bind(pass, _drawInfo.Conditions, topology);
 
@@ -277,10 +267,10 @@ namespace Molten.Graphics
             _drawInfo.Reset();
         }
 
-        private GraphicsValidationResult DrawCommon(Material mat, GraphicsValidationMode mode, VertexTopology topology, 
+        private GraphicsBindResult DrawCommon(Material mat, GraphicsValidationMode mode, VertexTopology topology, 
             PipeDrawCallback drawCallback, PipeDrawFailCallback failCallback)
         {
-            GraphicsValidationResult vResult = GraphicsValidationResult.Successful;
+            GraphicsBindResult vResult = GraphicsBindResult.Successful;
 
             if (!_drawInfo.Began)
                 throw new GraphicsContextException($"GraphicsPipe: BeginDraw() must be called before calling {nameof(Draw)}()");
@@ -295,7 +285,7 @@ namespace Molten.Graphics
                     MaterialPass pass = mat.Passes[j];
                     vResult = ApplyState(pass, mode, topology);
 
-                    if (vResult == GraphicsValidationResult.Successful)
+                    if (vResult == GraphicsBindResult.Successful)
                     {
                         // Re-render the same pass for K iterations.
                         for (int k = 0; k < pass.Iterations; k++)
@@ -321,7 +311,7 @@ namespace Molten.Graphics
         /// <param name="vertexStartIndex">The vertex to start drawing from.</param>
         /// <param name="topology">The primitive topology to use when drawing with a NULL vertex buffer. 
         /// Vertex buffers always override this when applied.</param>
-        public GraphicsValidationResult Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
+        public GraphicsBindResult Draw(Material material, uint vertexCount, VertexTopology topology, uint vertexStartIndex = 0)
         {
             return DrawCommon(material, GraphicsValidationMode.Unindexed, topology, (pass) =>
             {
@@ -341,7 +331,7 @@ namespace Molten.Graphics
         /// <param name="topology">The expected topology of the indexed vertex data.</param>
         /// <param name="vertexStartIndex">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public GraphicsValidationResult DrawInstanced(Material material,
+        public GraphicsBindResult DrawInstanced(Material material,
             uint vertexCountPerInstance,
             uint instanceCount,
             VertexTopology topology,
@@ -366,7 +356,7 @@ namespace Molten.Graphics
         /// <param name="indexCount">The number of indices to be drawn.</param>
         /// <param name="startIndex">The index to start drawing from.</param>
         /// <param name="topology">The toplogy to apply when drawing with a NULL vertex buffer. Vertex buffers always override this when applied.</param>
-        public GraphicsValidationResult DrawIndexed(Material material,
+        public GraphicsBindResult DrawIndexed(Material material,
             uint indexCount,
             VertexTopology topology,
             int vertexIndexOffset = 0,
@@ -391,7 +381,7 @@ namespace Molten.Graphics
         /// <param name="startIndex">The start index.</param>
         /// <param name="vertexIndexOffset">The index of the first vertex.</param>
         /// <param name="instanceStartIndex">The index of the first instance element</param>
-        public GraphicsValidationResult DrawIndexedInstanced(Material material,
+        public GraphicsBindResult DrawIndexedInstanced(Material material,
             uint indexCountPerInstance,
             uint instanceCount,
             VertexTopology topology,
@@ -543,8 +533,6 @@ namespace Molten.Graphics
         /// Gets the state of the current <see cref="DeviceContext"/>.
         /// </summary>
         internal DeviceContextState State { get; private set; }
-
-        internal ReadOnlyDictionary<ShaderType, ContextShaderStage> Shaders { get; private set; }
 
         internal GraphicsDepthWritePermission DepthWriteOverride { get; set; } = GraphicsDepthWritePermission.Enabled;
 

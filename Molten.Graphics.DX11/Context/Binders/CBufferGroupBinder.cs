@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe class CBufferGroupBinder : ContextGroupBinder<ShaderConstantBuffer>
+    internal unsafe class CBufferGroupBinder<T> : ContextGroupBinder<ShaderConstantBuffer>
+        where T : unmanaged
     {
-        ContextShaderStage _stage;
+        ContextShaderStage<T> _stage;
 
-        internal CBufferGroupBinder(ContextShaderStage stage)
+        internal CBufferGroupBinder(ContextShaderStage<T> stage)
         {
             _stage = stage;
         }
@@ -28,7 +29,7 @@ namespace Molten.Graphics
 
             for (uint i = 0; i < numChanged; i++)
             {
-                cb = grp.GetBoundValue(sid++);
+                cb = grp[sid++];
                 if (cb != null)
                 {
                     cBuffers[i] = cb.ResourcePtr;

@@ -15,8 +15,8 @@ namespace Molten.Graphics
         /// <summary>Gets the <see cref="ID3D11ShaderResourceView"/> attached to the object.</summary>
         internal protected SRView SRV { get; }
 
-        internal PipeBindableResource(Device device) : 
-            base(device)
+        internal PipeBindableResource(Device device, PipeBindTypeFlags bindFlags) : 
+            base(device, bindFlags)
         {
             SRV = new SRView(device);
             UAV = new UAView(device);
@@ -44,8 +44,8 @@ namespace Molten.Graphics
     internal unsafe abstract class PipeBindableResource<T> : PipeBindableResource
         where T : unmanaged
     {
-        internal PipeBindableResource(Device device) : 
-            base(device)
+        internal PipeBindableResource(Device device, PipeBindTypeFlags bindFlags) : 
+            base(device, bindFlags)
         {
         }
 

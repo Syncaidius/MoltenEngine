@@ -7,30 +7,30 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class DSShaderStage : ContextShaderStage
+    internal class ShaderPSStage : ContextShaderStage<ID3D11PixelShader>
     {
-        public DSShaderStage(DeviceContext context) : base(context, ShaderType.DomainShader)
+        public ShaderPSStage(DeviceContextState state) : base(state, ShaderType.PixelShader)
         {
         }
 
         internal override unsafe void SetConstantBuffers(uint startSlot, uint numBuffers, ID3D11Buffer** buffers)
         {
-            Context.Native->DSSetConstantBuffers(startSlot, numBuffers, buffers);
+            Context.Native->PSSetConstantBuffers(startSlot, numBuffers, buffers);
         }
 
         internal override unsafe void SetResources(uint startSlot, uint numViews, ID3D11ShaderResourceView** views)
         {
-            Context.Native->DSSetShaderResources(startSlot, numViews, views);
+            Context.Native->PSSetShaderResources(startSlot, numViews, views);
         }
 
         internal override unsafe void SetSamplers(uint startSlot, uint numSamplers, ID3D11SamplerState** states)
         {
-            Context.Native->DSSetSamplers(startSlot, numSamplers, states);
+            Context.Native->PSSetSamplers(startSlot, numSamplers, states);
         }
 
         internal override unsafe void SetShader(void* shader, ID3D11ClassInstance** classInstances, uint numClassInstances)
         {
-            Context.Native->DSSetShader((ID3D11DomainShader*)shader, classInstances, numClassInstances);
+            Context.Native->PSSetShader((ID3D11PixelShader*)shader, classInstances, numClassInstances);
         }
     }
 }

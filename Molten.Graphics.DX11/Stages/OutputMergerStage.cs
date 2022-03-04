@@ -168,11 +168,11 @@ namespace Molten.Graphics
                 Surfaces[slot].Value.Clear(_pipe, color);
         }
 
-        internal GraphicsValidationResult Validate()
+        internal GraphicsBindResult Validate()
         {
             // TODO if render target 0 is set, ensure a pixel shader is bound, otherwise flag as missing pixel shader.
 
-            return GraphicsValidationResult.Successful;
+            return GraphicsBindResult.Successful;
         }
 
         public PipeSlotGroup<RenderSurface> Surfaces { get; }

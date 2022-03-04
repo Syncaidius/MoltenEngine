@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class CSShaderStage : ContextShaderStage
+    internal class ShaderCSStage : ContextShaderStage<ID3D11ComputeShader>
     {
-        public CSShaderStage(DeviceContext context) : base(context, ShaderType.ComputeShader)
+        public ShaderCSStage(DeviceContextState state) : base(state, ShaderType.ComputeShader)
         {
+            uint uavSlots = state.Context.Device.Features.MaxUnorderedAccessViews;
+            UAVs = state.RegisterSlotGroup(PipeBindTypeFlags.Input, "UAV", uavSlots, new UavGroupBinder(this));
         }
 
         internal override unsafe void SetConstantBuffers(uint startSlot, uint numBuffers, ID3D11Buffer** buffers)
@@ -33,9 +35,11 @@ namespace Molten.Graphics
             Context.Native->CSSetShader((ID3D11ComputeShader*)shader, classInstances, numClassInstances);
         }
 
-        internal unsafe void SetUnorderedAccessViews(uint startSlot, uint numUAVs, ID3D11UnorderedAccessView** ppUnorderedAccessViews, ref uint* pUAVInitialCounts)
+        internal unsafe void SetUnorderedAccessViews(uint startSlot, uint numUAVs, ID3D11UnorderedAccessView** ppUnorderedAccessViews, uint* pUAVInitialCounts)
         {
             Context.Native->CSSetUnorderedAccessViews(startSlot, numUAVs, ppUnorderedAccessViews, pUAVInitialCounts);
         }
+
+        internal ContextSlotGroup<PipeBindableResource> UAVs { get; }
     }
 }

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class GSShaderStage : ContextShaderStage
+    internal class ShaderGSStage : ContextShaderStage<ID3D11GeometryShader>
     {
-        public GSShaderStage(DeviceContext context) : base(context, ShaderType.GeometryShader)
+        public ShaderGSStage(DeviceContextState state) : base(state, ShaderType.GeometryShader)
         {
         }
 

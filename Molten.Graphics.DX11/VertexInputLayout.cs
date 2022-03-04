@@ -17,9 +17,9 @@ namespace Molten.Graphics
         ulong[] _expectedFormatIDs;
 
         internal VertexInputLayout(Device device, 
-            PipeSlotGroup<BufferSegment> vbSlots, 
+            ContextSlotGroup<BufferSegment> vbSlots, 
             ID3D10Blob* vertexBytecode,
-            ShaderIOStructure io) : base(device)
+            ShaderIOStructure io) : base(device, PipeBindTypeFlags.Input)
         {
             _expectedFormatIDs = new ulong[vbSlots.SlotCount];
             List<InputElementDesc> elements = new List<InputElementDesc>();
@@ -28,10 +28,10 @@ namespace Molten.Graphics
             // Store the EOID of each expected vertext format.
             for (uint i = 0; i < vbSlots.SlotCount; i++)
             {
-                if (vbSlots[i].BoundValue == null)
+                if (vbSlots[i] == null)
                     continue;
 
-                format = vbSlots[i].BoundValue.VertexFormat;
+                format = vbSlots[i].VertexFormat;
 
                 /* Check if the current vertex segment's format matches 
                    the part of the shader's input structure that it's meant to represent. */
@@ -79,10 +79,10 @@ namespace Molten.Graphics
                 device.Log.Warning($"Vertex formats do not match the input layout of shader:");
                 for (uint i = 0; i < vbSlots.SlotCount; i++)
                 {
-                    if (vbSlots[i].BoundValue == null)
+                    if (vbSlots[i] == null)
                         continue;
 
-                    format = vbSlots[i].BoundValue.VertexFormat;
+                    format = vbSlots[i].VertexFormat;
 
                     device.Log.Warning("Format - Buffer slot " + i + ": ");
                     for (int f = 0; f < format.Data.Elements.Length; f++)
@@ -96,16 +96,16 @@ namespace Molten.Graphics
             }
         }
 
-        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
+        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
         {
             // Do nothing. Vertex input layouts build everything they need in the constructor.
         }
 
-        public bool IsMatch(Logger log, PipeSlotGroup<BufferSegment> grp)
+        public bool IsMatch(Logger log, ContextSlotGroup<BufferSegment> grp)
         {
             for (uint i = 0; i < grp.SlotCount; i++)
             {
-                BufferSegment seg = grp[i].BoundValue;
+                BufferSegment seg = grp[i];
 
                 // If null vertex buffer, check if shader actually need one to be present.
                 if (seg == null)

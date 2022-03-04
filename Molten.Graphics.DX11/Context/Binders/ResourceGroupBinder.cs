@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe class ResourceGroupBinder : ContextGroupBinder<PipeBindableResource>
+    internal unsafe class ResourceGroupBinder<T> : ContextGroupBinder<PipeBindableResource>
+        where T : unmanaged
     {
-        ContextShaderStage _stage;
+        ContextShaderStage<T> _stage;
 
-        internal ResourceGroupBinder(ContextShaderStage stage)
+        internal ResourceGroupBinder(ContextShaderStage<T> stage)
         {
             _stage = stage;
         }
@@ -22,7 +23,7 @@ namespace Molten.Graphics
 
             uint sid = startIndex;
             for (uint i = 0; i < numChanged; i++)
-                res[i] = grp.GetBoundValue(sid++);
+                res[i] = grp[sid++];
 
             _stage.SetResources(startIndex, numChanged, res);
         }

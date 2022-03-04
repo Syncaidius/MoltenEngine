@@ -63,12 +63,6 @@ namespace Molten.Graphics
             Binder.UnbindAll(this);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal T GetBoundValue(uint slotIndex)
-        {
-            return _slots[slotIndex].BoundValue;
-        }
-
         /// <summary>
         /// Gets the <see cref="ContextGroupBinder{T}"/> bound to the current <see cref="ContextSlotGroup{T}"/>.
         /// </summary>
@@ -92,7 +86,7 @@ namespace Molten.Graphics
         internal T this[uint slotIndex]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _slots[slotIndex].Value;
+            get => _slots[slotIndex].BoundValue;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set => _slots[slotIndex].Value = value;

@@ -31,7 +31,7 @@ namespace Molten.Graphics
     internal class ContextSlot<T> : ContextSlot
         where T : PipeBindable
     {
-        ContextBinder<T> _binder;
+        ContextSlotBinder<T> _binder;
         ContextSlotGroup<T> _group;
 
         T _value;
@@ -40,7 +40,7 @@ namespace Molten.Graphics
         uint _boundVersion;
         uint _pendingID;
 
-        public ContextSlot(DeviceContextState parent, ContextBinder<T> binder, PipeBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
+        public ContextSlot(DeviceContextState parent, ContextSlotBinder<T> binder, PipeBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
             base(parent, bindType, $"{namePrefix}_{typeof(T).Name}", slotIndex)
         {
             IsGroupMember = false;

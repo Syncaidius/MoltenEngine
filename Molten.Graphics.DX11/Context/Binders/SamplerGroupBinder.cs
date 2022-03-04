@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe class SamplerGroupBinder : ContextGroupBinder<ShaderSampler>
+    internal unsafe class SamplerGroupBinder<T> : ContextGroupBinder<ShaderSampler>
+        where T: unmanaged
     {
-        ContextShaderStage _stage;
+        ContextShaderStage<T> _stage;
 
-        internal SamplerGroupBinder(ContextShaderStage stage)
+        internal SamplerGroupBinder(ContextShaderStage<T> stage)
         {
             _stage = stage;
         }

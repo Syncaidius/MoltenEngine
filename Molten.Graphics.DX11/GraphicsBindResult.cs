@@ -7,7 +7,7 @@ namespace Molten.Graphics
 {
     [Flags]
     /// <summary>Represents possible validation results from the last graphics draw call.</summary>
-    public enum GraphicsValidationResult : uint
+    public enum GraphicsBindResult : uint
     {
         /// <summary>Nothing went wrong!</summary>
         Successful = 0,

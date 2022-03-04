@@ -38,14 +38,14 @@ namespace Molten.Graphics
             Compositions[ID_PIXEL] = PixelShader;
         }
 
-        internal GraphicsValidationResult ValidateInput(D3DPrimitiveTopology topology)
+        internal GraphicsBindResult ValidateInput(D3DPrimitiveTopology topology)
         {
-            GraphicsValidationResult result = GraphicsValidationResult.Successful;
+            GraphicsBindResult result = GraphicsBindResult.Successful;
 
             if(HullShader.PtrShader != null)
             {
                 if (topology < D3DPrimitiveTopology.D3D11PrimitiveTopology1ControlPointPatchlist)
-                    result |= GraphicsValidationResult.HullPatchTopologyExpected;
+                    result |= GraphicsBindResult.HullPatchTopologyExpected;
             }
 
             return result;
