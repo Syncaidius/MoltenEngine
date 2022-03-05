@@ -99,14 +99,14 @@ namespace Molten.Graphics
             };
         }
 
-        internal GraphicsDepthState(Device device, GraphicsDepthState source) : base(device)
+        internal GraphicsDepthState(Device device, GraphicsDepthState source) : base(device, PipeBindTypeFlags.Input)
         {
             _desc = source._desc;
             _frontFace = new Face(this, ref _desc.FrontFace);
             _backFace = new Face(this, ref _desc.BackFace);
         }
 
-        internal GraphicsDepthState(Device device) : base(device)
+        internal GraphicsDepthState(Device device) : base(device, PipeBindTypeFlags.Input)
         {
             _desc = _defaultDesc;
             _frontFace = new Face(this, ref _desc.FrontFace);
@@ -153,7 +153,7 @@ namespace Molten.Graphics
             _dirty = true;
         }
 
-        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
+        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
         {
             if (_native == null || _dirty)
             {

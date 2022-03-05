@@ -38,7 +38,9 @@ namespace Molten.Graphics
         RendererDX11 _renderer;
 
         internal TextureBase(RendererDX11 renderer, uint width, uint height, uint depth, uint mipCount, 
-            uint arraySize, uint sampleCount, Format format, TextureFlags flags) : base(renderer.Device)
+            uint arraySize, uint sampleCount, Format format, TextureFlags flags) : base(renderer.Device,
+                ((flags & TextureFlags.AllowUAV) == TextureFlags.AllowUAV ? PipeBindTypeFlags.Output ? PipeBindTypeFlags.None) |
+                (flags & TextureFlags.SharedResource) == TextureFlags.SharedResource ? PipeBindTypeFlags.Input ? PipeBindTypeFlags.None)
         {
             _renderer = renderer;
             Flags = flags;
@@ -602,7 +604,7 @@ namespace Molten.Graphics
                 Version++;
         }
 
-        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
+        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
         {
             Apply(pipe);
         }

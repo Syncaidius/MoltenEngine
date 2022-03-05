@@ -15,6 +15,14 @@ namespace Molten.Graphics
             UAVs = state.RegisterSlotGroup(PipeBindTypeFlags.Input, "UAV", uavSlots, new UavGroupBinder(this));
         }
 
+        internal override bool Bind()
+        {
+            bool uavChanged = UAVs.BindAll();
+            bool baseChanged =  base.Bind();
+
+            return uavChanged || baseChanged;
+        }
+
         internal override unsafe void SetConstantBuffers(uint startSlot, uint numBuffers, ID3D11Buffer** buffers)
         {
             Context.Native->CSSetConstantBuffers(startSlot, numBuffers, buffers);

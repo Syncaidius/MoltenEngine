@@ -27,7 +27,7 @@ namespace Molten.Graphics
             Shader = state.RegisterSlot(PipeBindTypeFlags.Input, "Shader", 0, new ShaderSlotBinder<T>(this));
         }
 
-        internal bool Bind()
+        internal virtual bool Bind()
         {
             Samplers.BindAll();
             Resources.BindAll();

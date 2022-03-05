@@ -46,6 +46,7 @@ namespace Molten.Graphics
             IndexBuffer = RegisterSlot<BufferSegment, IndexBufferBinder>(PipeBindTypeFlags.Input, "I-Buffer", 0);
             _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(PipeBindTypeFlags.Input, "Vertex Input Layout", 0);
             Material = RegisterSlot<Material, MaterialBinder>(PipeBindTypeFlags.Input, "Material", 0);
+            Compute = RegisterSlot<ComputeTask, ComputeTaskBinder>(PipeBindTypeFlags.Input, "Compute Task", 0);
 
             VS = new ShaderVSStage(this);
             GS = new ShaderGSStage(this);
@@ -135,6 +136,26 @@ namespace Molten.Graphics
 
             return matChanged || vsChanged || gsChanged || hsChanged ||
                 dsChanged || psChanged || ibChanged || vbChanged;
+        }
+
+        public bool BindCompute()
+        {
+            Compute.Bind();
+            CS.Shader.Value = Compute.BoundValue.Composition;
+
+            bool csChanged = CS.Bind();
+
+            if (CS.Shader.BoundValue != null)
+            {
+                // Apply unordered acces views to slots
+                for (int i = 0; i < CS.Shader.BoundValue.UnorderedAccessIds.Count; i++)
+                {
+                    uint slotID = CS.Shader.BoundValue.UnorderedAccessIds[i];
+                    CS.UAVs[slotID].Value = Compute.BoundValue.UAVs[slotID]?.UnorderedResource;
+                }
+            }
+
+            return csChanged;
         }
 
 
@@ -355,18 +376,20 @@ namespace Molten.Graphics
 
         internal IReadOnlyList<ContextSlot> AllSlots { get; }
 
-        internal ContextShaderStage<ID3D11VertexShader> VS { get; }
-        internal ContextShaderStage<ID3D11GeometryShader> GS { get; }
-        internal ContextShaderStage<ID3D11HullShader> HS { get; }
-        internal ContextShaderStage<ID3D11DomainShader> DS { get; }
-        internal ContextShaderStage<ID3D11PixelShader> PS { get; }
-        internal ContextShaderStage<ID3D11ComputeShader> CS { get; }
+        internal ShaderVSStage VS { get; }
+        internal ShaderGSStage GS { get; }
+        internal ShaderHSStage HS { get; }
+        internal ShaderDSStage DS { get; }
+        internal ShaderPSStage PS { get; }
+        internal ShaderCSStage CS { get; }
 
         public ContextSlotGroup<BufferSegment> VertexBuffers { get; }
 
         public ContextSlot<BufferSegment> IndexBuffer { get; }
 
         public ContextSlot<Material> Material { get; }
+
+        public ContextSlot<ComputeTask> Compute { get; }
 
         internal ContextSlot<GraphicsBlendState> BlendState { get; }
 

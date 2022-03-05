@@ -14,7 +14,7 @@ namespace Molten.Graphics
         ID3D11ShaderResourceView* _native;
         ShaderResourceViewDesc _desc;
 
-        internal SRView(Device device) : base(device)
+        internal SRView(Device device) : base(device, PipeBindTypeFlags.Input)
         {
         }
 
@@ -33,7 +33,7 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _native);
         }
 
-        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
+        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
         {
             throw new NotSupportedException("SRView does not support Refresh()");
         }

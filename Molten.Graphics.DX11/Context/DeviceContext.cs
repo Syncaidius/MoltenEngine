@@ -28,8 +28,6 @@ namespace Molten.Graphics
             }
         }
 
-        ShaderComputeStage _compute;
-
         Device _device;
         ID3D11DeviceContext* _context;
         PipeStateStack _stateStack;
@@ -53,7 +51,6 @@ namespace Molten.Graphics
             State = new DeviceContextState(this);
 
             _stateStack = new PipeStateStack(this);
-            _compute = new ShaderComputeStage(this);
             Output = new OutputMergerStage(this);
 
             // Apply the surface of the graphics device's output initialally.
@@ -133,17 +130,6 @@ namespace Molten.Graphics
         {
             Native->UpdateSubresource(resource, subresource, region, ptrData, rowPitch, slicePitch);
             Profiler.Current.UpdateSubresourceCount++;
-        }
-
-        /// <summary>Dispatches a compute effect to the GPU.</summary>
-        public void Dispatch(ComputeTask task, uint x, uint y, uint z)
-        {
-            _compute.Task.Value = task;
-
-            // TODO fix null UAV on depth texture (possibly issue with TextureBase).
-
-            Output.Refresh(); // Refresh any outputs that may be used by the compute task (Render targets!).
-            _compute.Dispatch(x, y, z);
         }
 
         /// <summary>Sets a list of render surfaces.</summary>
@@ -389,6 +375,53 @@ namespace Molten.Graphics
                 throw new GraphicsContextException($"GraphicsPipe: BeginDraw() must be called before calling {nameof(DrawIndexedInstanced)}()");
         }
 
+        internal void Dispatch(ComputeTask task, uint groupsX, uint groupsY, uint groupsZ)
+        {
+            // Refresh any outputs that may be used by the compute task (Render targets!).
+            Output.Refresh();
+
+            State.Compute.Value = task;
+            bool csChanged = State.BindCompute();
+
+            if (State.CS.Shader.BoundValue == null)
+            {
+                return;
+            }
+            else
+            {
+                // Ensure dispatch is within supported range.
+                int maxZ = Device.Features.Compute.MaxDispatchZDimension;
+                int maxXY = Device.Features.Compute.MaxDispatchXYDimension;
+
+                if (groupsZ > maxZ)
+                {
+#if DEBUG
+                    Log.Write("Unable to dispatch compute shader. Z dimension (" + groupsZ + ") is greater than supported (" + maxZ + ").");
+#endif
+                    return;
+                }
+                else if (groupsX > maxXY)
+                {
+#if DEBUG
+                    Log.Write("Unable to dispatch compute shader. X dimension (" + groupsX + ") is greater than supported (" + maxXY + ").");
+#endif
+                    return;
+                }
+                else if (groupsY > maxXY)
+                {
+#if DEBUG
+                    Log.Write("Unable to dispatch compute shader. Y dimension (" + groupsY + ") is greater than supported (" + maxXY + ").");
+#endif
+                    return;
+                }
+
+                // TODO have this processed during the presentation call of each graphics pipe.
+
+               
+                Native->Dispatch(groupsX, groupsY, groupsZ);
+            }
+        }
+
         /// <summary>Clears the first render target that is set on the device.</summary>
         /// <param name="color"></param>
         /// <param name="slot"></param>
@@ -402,7 +435,6 @@ namespace Molten.Graphics
         {
             Output.Dispose();
             State.Dispose();
-            _compute.Dispose();
 
             // Dispose context.
             if (Type != GraphicsContextType.Immediate)

@@ -225,7 +225,7 @@ namespace Molten.Graphics
             }
         }
 
-        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
+        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
         {
             Buffer.Refresh(slot, pipe);
         }

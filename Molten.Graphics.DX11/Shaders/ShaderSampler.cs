@@ -47,10 +47,9 @@ namespace Molten.Graphics
         {
             IsComparisonSampler = _desc.Filter >= Filter.FilterComparisonMinMagMipPoint &&
                     _desc.Filter <= Filter.FilterComparisonAnisotropic;
-
         }
 
-        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
+        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
         {
             // If the sampler was actually dirty, recreate it.
             if (_isDirty)

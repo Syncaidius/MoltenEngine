@@ -35,14 +35,17 @@ namespace Molten.Graphics
         internal unsafe abstract void SetBytecode(ID3D10Blob* byteCode);
 
         internal ShaderComposition(HlslShader parentShader, bool optional, ShaderType type) : 
-            base(parentShader.Device)
+            base(parentShader.Device, PipeBindTypeFlags.Input)
         {
             Parent = parentShader;
             Optional = optional;
             Type = type;
         }
 
-        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe) { }
+        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal abstract unsafe class ShaderComposition<T> : ShaderComposition 
