@@ -56,10 +56,6 @@ namespace Molten.Graphics
             _compute = new ShaderComputeStage(this);
             Output = new OutputMergerStage(this);
 
-            DepthStencil = new GraphicsDepthStage(this);
-            BlendState = new GraphicsBlendStage(this);
-            Rasterizer = new GraphicsRasterizerStage(this);
-
             // Apply the surface of the graphics device's output initialally.
             SetRenderSurfaces(null);
             Output.DepthWritePermission = GraphicsDepthWritePermission.Enabled;
@@ -226,15 +222,6 @@ namespace Molten.Graphics
             Output.DepthWritePermission = DepthWriteOverride != GraphicsDepthWritePermission.Enabled ? 
                 DepthWriteOverride : pass.DepthState[_drawInfo.Conditions].WritePermission;
             Output.Refresh();
-
-            BlendState.State.Value = pass.BlendState[_drawInfo.Conditions];
-            Rasterizer.State.Value = pass.RasterizerState[_drawInfo.Conditions];
-            DepthStencil.State.Value = pass.DepthState[_drawInfo.Conditions];
-
-            // Apply render targets and states.
-            DepthStencil.Bind();
-            BlendState.Bind();
-            Rasterizer.Bind();
 
             // Validate all pipeline components.
             GraphicsBindResult result = State.Validate(mode);
@@ -417,10 +404,6 @@ namespace Molten.Graphics
             State.Dispose();
             _compute.Dispose();
 
-            DepthStencil.Dispose();
-            BlendState.Dispose();
-            Rasterizer.Dispose();
-
             // Dispose context.
             if (Type != GraphicsContextType.Immediate)
             {
@@ -444,15 +427,6 @@ namespace Molten.Graphics
             get => _profiler;
             set => _profiler = value ?? _defaultProfiler;
         }
-
-        /// <summary>Gets the depth stencil component of the graphics device.</summary>
-        internal GraphicsDepthStage DepthStencil { get; private set; }
-
-        /// <summary>Gets the blend state component of the graphics device.</summary>
-        internal GraphicsBlendStage BlendState { get; private set; }
-
-        /// <summary>Gets the rasterizer component of the graphics device.</summary>
-        internal GraphicsRasterizerStage Rasterizer { get; private set; }
 
         /// <summary>Gets the output merger state of the current <see cref="Graphics.DeviceContext"/>.</summary>
         internal OutputMergerStage Output { get; private set; }

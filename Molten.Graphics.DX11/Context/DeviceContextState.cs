@@ -1,5 +1,6 @@
 ﻿using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
+using Silk.NET.Maths;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,15 @@ namespace Molten.Graphics
     /// </summary>
     internal unsafe class DeviceContextState : EngineObject
     {
+        Rectangle<int>[] _apiScissorRects;
+        Rectangle[] _scissorRects;
+        bool _scissorRectsDirty;
+
+        Silk.NET.Direct3D11.Viewport[] _apiViewports;
+        ViewportF[] _viewports;
+        bool _viewportsDirty;
+        ViewportF[] _nullViewport;
+
         List<ContextSlot> _slots;
         VertexTopology _boundTopology;
         ContextSlot<VertexInputLayout> _vertexLayout;
@@ -23,6 +33,13 @@ namespace Molten.Graphics
             Context = context;
             _slots = new List<ContextSlot>();
             AllSlots = _slots.AsReadOnly();
+            _nullViewport = new ViewportF[1];
+
+            uint maxRTs = context.Device.Features.SimultaneousRenderSurfaces;
+            _scissorRects = new Rectangle[maxRTs];
+            _viewports = new ViewportF[maxRTs];
+            _apiScissorRects = new Rectangle<int>[maxRTs];
+            _apiViewports = new Silk.NET.Direct3D11.Viewport[maxRTs];
 
             uint maxVBuffers = Context.Device.Features.MaxVertexBufferSlots;
             VertexBuffers = RegisterSlotGroup<BufferSegment, VertexBufferGroupBinder>(PipeBindTypeFlags.Input, "V-Buffer", maxVBuffers);
@@ -36,6 +53,10 @@ namespace Molten.Graphics
             DS = new ShaderDSStage(this);
             PS = new ShaderPSStage(this);
             CS = new ShaderCSStage(this);
+
+            BlendState = RegisterSlot<GraphicsBlendState, BlendBinder>(PipeBindTypeFlags.Output, "Blend State", 0);
+            DepthState = RegisterSlot<GraphicsDepthState, DepthStencilBinder>(PipeBindTypeFlags.Output, "Depth-Stencil State", 0);
+            RasterizerState = RegisterSlot<GraphicsRasterizerState, RasterizerBinder>(PipeBindTypeFlags.Output, "Rasterizer State", 0);
         }
 
         internal void Clear()
@@ -86,8 +107,115 @@ namespace Molten.Graphics
                 _vertexLayout.Bind();                    
             }
 
+            BlendState.Value = pass.BlendState[conditions];
+            RasterizerState.Value = pass.RasterizerState[conditions];
+            DepthState.Value = pass.DepthState[conditions];
+
+            // Check if scissor rects need updating
+            if (_scissorRectsDirty)
+            {
+                for (int i = 0; i < _scissorRects.Length; i++)
+                    _apiScissorRects[i] = _scissorRects[i].ToApi();
+
+                fixed (Rectangle<int>* ptrRect = _apiScissorRects)
+                    Context.Native->RSSetScissorRects((uint)_apiScissorRects.Length, ptrRect);
+
+                _scissorRectsDirty = false;
+            }
+
+            // Check if viewports need updating.
+            if (_viewportsDirty)
+            {
+                for (int i = 0; i < _viewports.Length; i++)
+                    _apiViewports[i] = _viewports[i].ToApi();
+
+                Context.Native->RSSetViewports((uint)_viewports.Length, ref _apiViewports[0]);
+                _viewportsDirty = false;
+            }
+
             return matChanged || vsChanged || gsChanged || hsChanged ||
                 dsChanged || psChanged || ibChanged || vbChanged;
+        }
+
+
+        public void SetScissorRectangle(Rectangle rect, int slot = 0)
+        {
+            _scissorRects[slot] = rect;
+            _scissorRectsDirty = true;
+        }
+
+        public void SetScissorRectangles(Rectangle[] rects)
+        {
+            for (int i = 0; i < rects.Length; i++)
+                _scissorRects[i] = rects[i];
+
+            // Reset any remaining scissor rectangles to whatever the first is.
+            for (int i = rects.Length; i < _scissorRects.Length; i++)
+                _scissorRects[i] = _scissorRects[0];
+
+            _scissorRectsDirty = true;
+        }
+
+        /// <summary>
+        /// Applies the provided viewport value to the specified viewport slot.
+        /// </summary>
+        /// <param name="vp">The viewport value.</param>
+        public void SetViewport(ViewportF vp, int slot)
+        {
+            _viewports[slot] = vp;
+        }
+
+        /// <summary>
+        /// Applies the specified viewport to all viewport slots.
+        /// </summary>
+        /// <param name="vp">The viewport value.</param>
+        public void SetViewports(ViewportF vp)
+        {
+            for (int i = 0; i < _viewports.Length; i++)
+                _viewports[i] = vp;
+
+            _viewportsDirty = true;
+        }
+
+        /// <summary>
+        /// Sets the provided viewports on to their respective viewport slots. <para/>
+        /// If less than the total number of viewport slots was provided, the remaining ones will be set to whatever the same value as the first viewport slot.
+        /// </summary>
+        /// <param name="viewports"></param>
+        public void SetViewports(ViewportF[] viewports)
+        {
+            if (viewports == null)
+            {
+                RenderSurface surface = null;
+                RenderSurface surfaceZero = Context.Output.GetRenderSurface(0);
+
+                for (uint i = 0; i < _viewports.Length; i++)
+                {
+                    surface = Context.Output.GetRenderSurface(i);
+                    _viewports[i] = surface != null ? surface.Viewport : surfaceZero.Viewport;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < viewports.Length; i++)
+                    _viewports[i] = viewports[i];
+
+                // Set remaining unset ones to whatever the first is.
+                for (int i = viewports.Length; i < _viewports.Length; i++)
+                    _viewports[i] = _viewports[0];
+            }
+
+            _viewportsDirty = true;
+        }
+
+        public void GetViewports(ViewportF[] outArray)
+        {
+            Array.Copy(_viewports, outArray, _viewports.Length);
+        }
+
+        public ViewportF GetViewport(int index)
+        {
+            return _viewports[index];
         }
 
         /// <summary>Retrieves or creates a usable input layout for the provided vertex buffers and sub-effect.</summary>
@@ -239,5 +367,14 @@ namespace Molten.Graphics
         public ContextSlot<BufferSegment> IndexBuffer { get; }
 
         public ContextSlot<Material> Material { get; }
+
+        internal ContextSlot<GraphicsBlendState> BlendState { get; }
+
+        internal ContextSlot<GraphicsRasterizerState> RasterizerState { get; }
+
+        internal ContextSlot<GraphicsDepthState> DepthState { get; }
+
+        /// <summary>Gets the number of applied viewports.</summary>
+        public int ViewportCount => _viewports.Length;
     }
 }
