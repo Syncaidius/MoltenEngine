@@ -22,12 +22,13 @@ namespace Molten.Graphics
             uint mipCount = 1,
             uint arraySize = 1,
             uint sampleCount = 1,
-            TextureFlags flags = TextureFlags.None)
+            TextureFlags flags = TextureFlags.None, string name = null)
             : base(renderer, width, height, format, mipCount, arraySize, flags, sampleCount)
         {
             VP = new ViewportF(0, 0, width, height);
             _rtvDesc = new RenderTargetViewDesc();
             _rtvDesc.Format = DxgiFormat;
+            Name = $"Surface_{name ?? this.GetType().Name}";
         }
 
         internal virtual void Clear(DeviceContext pipe, Color color)

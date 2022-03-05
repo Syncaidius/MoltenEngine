@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Molten.Graphics
+﻿namespace Molten.Graphics
 {
     internal abstract class ContextSlot : EngineObject
     {
@@ -26,6 +21,10 @@ namespace Molten.Graphics
         internal uint SlotIndex { get; }
 
         internal DeviceContext Context => ParentState.Context;
+
+        protected internal uint PendingID { get; set; }
+
+        protected internal abstract object RawValue { get; }
     }
 
     internal class ContextSlot<T> : ContextSlot
@@ -38,7 +37,6 @@ namespace Molten.Graphics
         T _boundValue;
 
         uint _boundVersion;
-        uint _pendingID;
 
         public ContextSlot(DeviceContextState parent, ContextSlotBinder<T> binder, ContextBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
             base(parent, bindType, $"{namePrefix}_{typeof(T).Name}", slotIndex)
@@ -71,9 +69,14 @@ namespace Molten.Graphics
                 }
                 else
                 {
+                    T oldBoundValue = _boundValue;
+
+                    if (_boundValue != null)
+                        _boundValue.BoundTo.Remove(this);
+
                     // Check other bound slots that should be unbound.
                     bool canBind = true;
-                    foreach (ContextSlot<T> slot in _value.BoundTo)
+                    foreach (ContextSlot slot in _value.BoundTo)
                     {
                         // Only check slots on the same context.
                         if (slot.Context != Context)
@@ -85,33 +88,37 @@ namespace Molten.Graphics
                             if ((_value.BindFlags & BindType) == BindType && (_value.BindFlags & slot.BindType) == slot.BindType)
                                 continue;
 
-                            if (slot._pendingID > _pendingID)
+                            // If both slots will try to bind the same value, test which has higher priority...
+                            if (slot.RawValue == _value)
                             {
-                                canBind = false;
+                                if (slot.PendingID > PendingID)
+                                {
+                                    canBind = false;
+                                }
+                                else if (slot.PendingID < PendingID)
+                                {
+                                    slot.Unbind();
+                                }
+                                else if (slot.PendingID == PendingID)
+                                {
+                                    Context.Log.Error($"{_value.Name} is will be bound on '{slot.Name}' and '{Name}' with the same pending BindID ({PendingID}). This is unexpected behaviour!");
+                                    canBind = false;
+                                }
                             }
-                            else if (slot._pendingID < _pendingID)
+                            else // ...Otherwise unbind the value from the other slot so this one can use it.
                             {
                                 slot.Unbind();
-                            }
-                            else if (slot._pendingID == _pendingID)
-                            {
-                                Context.Log.Error($"{_value.Name} is will be bound on '{slot.Name}' and '{Name}' with the same pending BindID ({_pendingID}). This is unexpected behaviour!");
-                                canBind = false;
                             }
                         }
                     }
 
-                    // If a value is bound in the current slot. Unbind it.
-                    if (_boundValue != null && !canBind)
-                    {
-                        // TODO output _value.BoundTo list + details of current slot.
-                        Unbind();
-                        return true;
-                    }
+                    if (!canBind)
+                        return oldBoundValue != null;
 
                     _value.Refresh(this, Context);
                     _boundValue = _value;
                     _boundVersion = _boundValue.Version;
+                    _value.BoundTo.Add(this);
 
                     if (!IsGroupMember)
                     {
@@ -143,6 +150,7 @@ namespace Molten.Graphics
         internal override void Unbind()
         {
             _binder.Unbind(this, _boundValue);
+            _boundValue.BoundTo.Remove(this);
             _boundValue = null;
         }
 
@@ -160,12 +168,13 @@ namespace Molten.Graphics
             {
                 _value = value;
 
-                _pendingID = value != null ? _value.BindID++ : 0;
+                PendingID = value != null ? _value.BindID++ : 0;
             }
         }
 
         internal T BoundValue => _boundValue;
 
+        protected internal override object RawValue => _value;
         internal bool IsGroupMember { get; }
     }
 }

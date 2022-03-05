@@ -49,6 +49,7 @@ namespace Molten.Graphics
             {
                 uint numChanged = (1 + lastChanged) - firstChanged;
                 Binder.Bind(this, firstChanged, lastChanged, numChanged);
+                return true;
             }
 
             return false;
