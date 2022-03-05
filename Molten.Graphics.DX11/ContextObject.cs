@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public abstract class PipeObject : EngineObject
+    public abstract class ContextObject : EngineObject
     {
-        internal PipeObject(Device device)
+        internal ContextObject(Device device)
         {
             Device = device; 
         }
@@ -21,7 +21,7 @@ namespace Molten.Graphics
         internal abstract void PipelineDispose();
 
         /// <summary>
-        /// Gets the <see cref="Graphics.Device"/> that the current <see cref="PipeObject"/> is bound to.
+        /// Gets the <see cref="Graphics.Device"/> that the current <see cref="ContextObject"/> is bound to.
         /// </summary>
         public Device Device { get; }
     }

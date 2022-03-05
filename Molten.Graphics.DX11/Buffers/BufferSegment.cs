@@ -51,7 +51,7 @@ namespace Molten.Graphics
         /// <summary>If true, the segment is not used.</summary>
         internal bool IsFree;
 
-        internal BufferSegment(Device device) : base(device) { }
+        internal BufferSegment(Device device) : base(device, ContextBindTypeFlags.None) { }
 
         internal void SetVertexFormat<T>() where T: struct, IVertexType
         {
@@ -313,6 +313,7 @@ namespace Molten.Graphics
             seg.LinkNext(this);
             seg.LinkPrevious(Previous);
 
+            seg.BindFlags = BindFlags;
             seg.ByteCount = bytesToTake;
             seg.ByteOffset = ByteOffset;
             seg.Buffer = Buffer;
@@ -330,6 +331,7 @@ namespace Molten.Graphics
             seg.LinkPrevious(this);
 
             ByteCount -= bytesToTake;
+            seg.BindFlags = BindFlags;
             seg.ByteCount = bytesToTake;
             seg.ByteOffset = ByteOffset + ByteCount;
             seg.Buffer = Buffer;

@@ -56,12 +56,12 @@ namespace Molten.Graphics
             // We want to add to the previous composition, rather than completely overwrite it.
             RenderSurface destSurface = context.HasComposed ? context.PreviousComposition : _surfaceScene;
 
-            device.UnsetRenderSurfaces();
-            device.SetRenderSurface(destSurface, 0);
-            device.Output.DepthSurface.Value = _surfaceDepth;
-            device.DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
-            device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
-            device.Rasterizer.SetScissorRectangle(bounds);
+            device.State.ResetRenderSurfaces();
+            device.State.SetRenderSurface(destSurface, 0);
+            device.State.DepthSurface.Value = _surfaceDepth;
+            device.State.DepthWriteOverride = GraphicsDepthWritePermission.Enabled;
+            device.State.SetViewports(camera.OutputSurface.Viewport);
+            device.State.SetScissorRectangle(bounds);
 
             renderer.Device.BeginDraw(StateConditions.None); // TODO correctly use pipe + conditions here.
             _skyboxData.RenderTransform = Matrix4F.Scaling(camera.MaxDrawDistance) * Matrix4F.CreateTranslation(camera.Position);

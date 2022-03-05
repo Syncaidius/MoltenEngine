@@ -28,10 +28,10 @@ namespace Molten.Graphics
             Device device = renderer.Device;
             _surfaceScene.Clear(Color.Transparent);
 
-            device.SetRenderSurface(_surfaceScene, 0);
-            device.Output.DepthSurface.Value = _surfaceDepth;
-            device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
-            device.Rasterizer.SetScissorRectangle((Rectangle)camera.OutputSurface.Viewport.Bounds);
+            device.State.SetRenderSurface(_surfaceScene, 0);
+            device.State.DepthSurface.Value = _surfaceDepth;
+            device.State.SetViewports(camera.OutputSurface.Viewport);
+            device.State.SetScissorRectangle((Rectangle)camera.OutputSurface.Viewport.Bounds);
 
             StateConditions conditions = StateConditions.ScissorTest; // TODO expand
             conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;

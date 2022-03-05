@@ -16,24 +16,59 @@ namespace Molten.Graphics
             Type = type;
 
             uint maxSamplers = Context.Device.Features.MaxSamplerSlots;
-            Samplers = state.RegisterSlotGroup(PipeBindTypeFlags.Input, "Sampler", maxSamplers, new SamplerGroupBinder<T>(this));
+            Samplers = state.RegisterSlotGroup(ContextBindTypeFlags.Input, "Sampler", maxSamplers, new SamplerGroupBinder<T>(this));
 
             uint maxResources = Context.Device.Features.MaxInputResourceSlots;
-            Resources = state.RegisterSlotGroup(PipeBindTypeFlags.Input, "Resource", maxResources, new ResourceGroupBinder<T>(this));
+            Resources = state.RegisterSlotGroup(ContextBindTypeFlags.Input, "Resource", maxResources, new ResourceGroupBinder<T>(this));
 
             uint maxCBuffers = Context.Device.Features.MaxConstantBufferSlots;
-            ConstantBuffers = state.RegisterSlotGroup(PipeBindTypeFlags.Input, "C-Buffer", maxCBuffers, new CBufferGroupBinder<T>(this));
+            ConstantBuffers = state.RegisterSlotGroup(ContextBindTypeFlags.Input, "C-Buffer", maxCBuffers, new CBufferGroupBinder<T>(this));
 
-            Shader = state.RegisterSlot(PipeBindTypeFlags.Input, "Shader", 0, new ShaderSlotBinder<T>(this));
+            Shader = state.RegisterSlot(ContextBindTypeFlags.Input, "Shader", 0, new ShaderSlotBinder<T>(this));
         }
 
         internal virtual bool Bind()
         {
+            bool shaderChanged = Shader.Bind();
+
+            if (shaderChanged)
+            {
+                ShaderComposition<T> composition = Shader.BoundValue;
+
+                if (composition != null)
+                {
+                    // Apply pass constant buffers to slots
+                    for (int i = 0; i < composition.ConstBufferIds.Count; i++)
+                    {
+                        uint slotID = composition.ConstBufferIds[i];
+                        ConstantBuffers[slotID].Value = composition.Parent.ConstBuffers[slotID];
+                    }
+
+                    // Apply pass resources to slots
+                    for (int i = 0; i < composition.ResourceIds.Count; i++)
+                    {
+                        uint slotID = composition.ResourceIds[i];
+                        Resources[slotID].Value = composition.Parent.Resources[slotID]?.Resource;
+                    }
+
+                    // Apply pass samplers to slots
+                    for (int i = 0; i < composition.SamplerIds.Count; i++)
+                    {
+                        uint slotID = composition.SamplerIds[i];
+                        Samplers[slotID].Value = composition.Parent.SamplerVariables[slotID]?.Sampler;
+                    }
+                }
+                else
+                {
+                    // Do we unbind stage resources?
+                }
+            }
+
             Samplers.BindAll();
             Resources.BindAll();
             ConstantBuffers.BindAll();
 
-            return Shader.Bind();
+            return shaderChanged;
         }
 
         internal abstract void SetSamplers(uint startSlot, uint numSamplers, ID3D11SamplerState** states);
@@ -54,9 +89,9 @@ namespace Molten.Graphics
         internal ContextSlotGroup<ShaderSampler> Samplers { get; }
 
         /// <summary>
-        /// Gets the slots for binding <see cref="PipeBindableResource"/> to the current <see cref="PipeShaderStage"/>.
+        /// Gets the slots for binding <see cref="ContextBindableResource"/> to the current <see cref="PipeShaderStage"/>.
         /// </summary>
-        internal ContextSlotGroup<PipeBindableResource> Resources { get; }
+        internal ContextSlotGroup<ContextBindableResource> Resources { get; }
 
         /// <summary>
         /// Gets the slots for binding <see cref="ShaderConstantBuffer"/> to the current <see cref="PipeShaderStage"/>/

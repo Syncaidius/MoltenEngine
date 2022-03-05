@@ -9,7 +9,7 @@ namespace Molten.Graphics
     /// <summary>
     /// An a base class implementation of key shader components (e.g. name, render states, samplers, etc).
     /// </summary>
-    public abstract class HlslFoundation : PipeBindable, IShaderElement
+    public abstract class HlslFoundation : ContextBindable, IShaderElement
     {
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Molten.Graphics
         /// </summary>
         internal ShaderStateBank<GraphicsDepthState> DepthState = new ShaderStateBank<GraphicsDepthState>();
 
-        internal HlslFoundation(Device device) : base(device, PipeBindTypeFlags.Input)
+        internal HlslFoundation(Device device) : base(device, ContextBindTypeFlags.Input)
         {
             Samplers = new ShaderStateBank<ShaderSampler>[0];
             Parent = this;

@@ -11,7 +11,7 @@ namespace Molten.Graphics
 
         internal RWBufferVariable(HlslShader shader) : base(shader) { }
 
-        protected override PipeBindableResource OnSetUnorderedResource(object value)
+        protected override ContextBindableResource OnSetUnorderedResource(object value)
         {
             _buffer = value as GraphicsBuffer;
             if (_buffer != null && _buffer.IsUnorderedAccess == false)

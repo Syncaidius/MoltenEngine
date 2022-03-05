@@ -59,10 +59,10 @@ namespace Molten.Graphics
             Device device = renderer.Device;
 
             _surfaceLighting.Clear(renderer.Device, context.Scene.AmbientLightColor);
-            device.UnsetRenderSurfaces();
-            device.SetRenderSurface(_surfaceLighting, 0);
-            device.Output.DepthSurface.Value = _surfaceDepth;
-            device.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
+            device.State.ResetRenderSurfaces();
+            device.State.SetRenderSurface(_surfaceLighting, 0);
+            device.State.DepthSurface.Value = _surfaceDepth;
+            device.State.DepthWriteOverride = GraphicsDepthWritePermission.ReadOnly;
             RenderPointLights(device, camera, context.Scene);
         }
 
@@ -102,8 +102,8 @@ namespace Molten.Graphics
             };
 
             //set correct buffers and shaders
-            pipe.SetVertexSegment(null, 0);
-            pipe.SetIndexSegment(null);
+            pipe.State.VertexBuffers[0].Value = null;
+            pipe.State.IndexBuffer.Value = null;
             uint pointCount = scene.PointLights.ElementCount * 2;
 
             pipe.BeginDraw(StateConditions.None); // TODO expand use of conditions here

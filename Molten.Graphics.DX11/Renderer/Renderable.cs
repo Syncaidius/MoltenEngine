@@ -50,7 +50,7 @@ namespace Molten.Graphics
 
         internal void Render(DeviceContext pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)
         {
-            pipe.DepthWriteOverride = data.DepthWriteOverride;
+            pipe.State.DepthWriteOverride = data.DepthWriteOverride;
             OnRender(pipe, renderer, camera, data);
         }
 

@@ -12,7 +12,7 @@ namespace Molten.Graphics
 
         internal Texture1DVariable(Material material) : base(material) { }
 
-        protected override PipeBindableResource OnSetResource(object value)
+        protected override ContextBindableResource OnSetResource(object value)
         {
             _texture = value as Texture1DDX11;
             return _texture;

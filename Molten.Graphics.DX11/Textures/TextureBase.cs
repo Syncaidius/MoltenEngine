@@ -11,7 +11,7 @@ namespace Molten.Graphics
 {
     public delegate void TextureEvent(TextureBase texture);
 
-    public unsafe abstract partial class TextureBase : PipeBindableResource, ITexture
+    public unsafe abstract partial class TextureBase : ContextBindableResource, ITexture
     {
         ThreadedQueue<ITextureTask> _pendingChanges;
 
@@ -39,8 +39,8 @@ namespace Molten.Graphics
 
         internal TextureBase(RendererDX11 renderer, uint width, uint height, uint depth, uint mipCount, 
             uint arraySize, uint sampleCount, Format format, TextureFlags flags) : base(renderer.Device,
-                ((flags & TextureFlags.AllowUAV) == TextureFlags.AllowUAV ? PipeBindTypeFlags.Output ? PipeBindTypeFlags.None) |
-                (flags & TextureFlags.SharedResource) == TextureFlags.SharedResource ? PipeBindTypeFlags.Input ? PipeBindTypeFlags.None)
+                ((flags & TextureFlags.AllowUAV) == TextureFlags.AllowUAV ? ContextBindTypeFlags.Output : ContextBindTypeFlags.None) |
+                ((flags & TextureFlags.SharedResource) == TextureFlags.SharedResource ? ContextBindTypeFlags.Input : ContextBindTypeFlags.None))
         {
             _renderer = renderer;
             Flags = flags;

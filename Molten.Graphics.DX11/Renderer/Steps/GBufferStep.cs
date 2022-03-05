@@ -28,15 +28,15 @@ namespace Molten.Graphics
         {
             Device device = renderer.Device;
 
-            device.SetRenderSurface(_surfaceScene, 0);
-            device.SetRenderSurface(_surfaceNormals, 1);
-            device.SetRenderSurface(_surfaceEmissive, 2);
-            device.Output.DepthSurface.Value = _surfaceDepth;
+            device.State.SetRenderSurface(_surfaceScene, 0);
+            device.State.SetRenderSurface(_surfaceNormals, 1);
+            device.State.SetRenderSurface(_surfaceEmissive, 2);
+            device.State.DepthSurface.Value = _surfaceDepth;
 
             SetMaterialCommon(renderer.StandardMeshMaterial, camera, _surfaceScene);
             SetMaterialCommon(renderer.StandardMeshMaterial_NoNormalMap, camera, _surfaceScene);
 
-            device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
+            device.State.SetViewports(camera.OutputSurface.Viewport);
             StateConditions conditions = StateConditions.None; // TODO expand
             conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;
 

@@ -12,7 +12,7 @@ namespace Molten.Graphics
         public ShaderCSStage(DeviceContextState state) : base(state, ShaderType.ComputeShader)
         {
             uint uavSlots = state.Context.Device.Features.MaxUnorderedAccessViews;
-            UAVs = state.RegisterSlotGroup(PipeBindTypeFlags.Input, "UAV", uavSlots, new UavGroupBinder(this));
+            UAVs = state.RegisterSlotGroup(ContextBindTypeFlags.Input, "UAV", uavSlots, new UavGroupBinder(this));
         }
 
         internal override bool Bind()
@@ -48,6 +48,6 @@ namespace Molten.Graphics
             Context.Native->CSSetUnorderedAccessViews(startSlot, numUAVs, ppUnorderedAccessViews, pUAVInitialCounts);
         }
 
-        internal ContextSlotGroup<PipeBindableResource> UAVs { get; }
+        internal ContextSlotGroup<ContextBindableResource> UAVs { get; }
     }
 }

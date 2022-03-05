@@ -29,7 +29,7 @@ namespace Molten.Graphics
         {
             Device device = renderer.Device;
 
-            device.SetRenderSurfaces(null);
+            device.State.SetRenderSurfaces(null);
             bool newSurface = renderer.ClearIfFirstUse(device, _surfaceScene, context.Scene.BackgroundColor);
             renderer.ClearIfFirstUse(device, _surfaceNormals, Color.White * 0.5f);
             renderer.ClearIfFirstUse(device, _surfaceEmissive, Color.Black);

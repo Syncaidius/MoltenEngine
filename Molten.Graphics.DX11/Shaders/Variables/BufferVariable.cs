@@ -12,7 +12,7 @@ namespace Molten.Graphics
 
         internal BufferVariable(HlslShader shader) : base(shader) { }
 
-        protected override PipeBindableResource OnSetResource(object value)
+        protected override ContextBindableResource OnSetResource(object value)
         {
             _bufferSegment = value as BufferSegment;
             return _bufferSegment;

@@ -19,7 +19,7 @@ namespace Molten.Graphics
         internal VertexInputLayout(Device device, 
             ContextSlotGroup<BufferSegment> vbSlots, 
             ID3D10Blob* vertexBytecode,
-            ShaderIOStructure io) : base(device, PipeBindTypeFlags.Input)
+            ShaderIOStructure io) : base(device, ContextBindTypeFlags.Input)
         {
             _expectedFormatIDs = new ulong[vbSlots.SlotCount];
             List<InputElementDesc> elements = new List<InputElementDesc>();
@@ -28,10 +28,10 @@ namespace Molten.Graphics
             // Store the EOID of each expected vertext format.
             for (uint i = 0; i < vbSlots.SlotCount; i++)
             {
-                if (vbSlots[i] == null)
+                if (vbSlots[i].BoundValue == null)
                     continue;
 
-                format = vbSlots[i].VertexFormat;
+                format = vbSlots[i].BoundValue.VertexFormat;
 
                 /* Check if the current vertex segment's format matches 
                    the part of the shader's input structure that it's meant to represent. */
@@ -79,10 +79,10 @@ namespace Molten.Graphics
                 device.Log.Warning($"Vertex formats do not match the input layout of shader:");
                 for (uint i = 0; i < vbSlots.SlotCount; i++)
                 {
-                    if (vbSlots[i] == null)
+                    if (vbSlots[i].BoundValue == null)
                         continue;
 
-                    format = vbSlots[i].VertexFormat;
+                    format = vbSlots[i].BoundValue.VertexFormat;
 
                     device.Log.Warning("Format - Buffer slot " + i + ": ");
                     for (int f = 0; f < format.Data.Elements.Length; f++)
@@ -105,7 +105,7 @@ namespace Molten.Graphics
         {
             for (uint i = 0; i < grp.SlotCount; i++)
             {
-                BufferSegment seg = grp[i];
+                BufferSegment seg = grp[i].BoundValue;
 
                 // If null vertex buffer, check if shader actually need one to be present.
                 if (seg == null)

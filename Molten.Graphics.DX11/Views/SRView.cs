@@ -14,7 +14,7 @@ namespace Molten.Graphics
         ID3D11ShaderResourceView* _native;
         ShaderResourceViewDesc _desc;
 
-        internal SRView(Device device) : base(device, PipeBindTypeFlags.Input)
+        internal SRView(Device device) : base(device, ContextBindTypeFlags.Input)
         {
         }
 

@@ -36,12 +36,12 @@ namespace Molten.Graphics
             if (!camera.HasFlags(RenderCameraFlags.DoNotClear))
                 renderer.ClearIfFirstUse(device, finalSurface, context.Scene.BackgroundColor);
 
-            device.SetRenderSurfaces(null);
-            device.SetRenderSurface(finalSurface, 0);
-            device.Output.DepthSurface.Value = null;
-            device.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
-            device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
-            device.Rasterizer.SetScissorRectangle((Rectangle)camera.OutputSurface.Viewport.Bounds);
+            device.State.SetRenderSurfaces(null);
+            device.State.SetRenderSurface(finalSurface, 0);
+            device.State.DepthSurface.Value = null;
+            device.State.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
+            device.State.SetViewports(camera.OutputSurface.Viewport);
+            device.State.SetScissorRectangle((Rectangle)camera.OutputSurface.Viewport.Bounds);
 
             StateConditions conditions = StateConditions.ScissorTest;
             conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;

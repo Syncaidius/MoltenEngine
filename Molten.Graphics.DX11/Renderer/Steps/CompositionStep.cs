@@ -49,12 +49,12 @@ namespace Molten.Graphics
             Device device = renderer.Device;
 
             context.CompositionSurface.Clear(context.Scene.BackgroundColor);
-            device.UnsetRenderSurfaces();
-            device.SetRenderSurface(context.CompositionSurface, 0);
-            device.Output.DepthSurface.Value = null;
-            device.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
-            device.Rasterizer.SetViewports(camera.OutputSurface.Viewport);
-            device.Rasterizer.SetScissorRectangle((Rectangle)vpBounds);
+            device.State.ResetRenderSurfaces();
+            device.State.SetRenderSurface(context.CompositionSurface, 0);
+            device.State.DepthSurface.Value = null;
+            device.State.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
+            device.State.SetViewports(camera.OutputSurface.Viewport);
+            device.State.SetScissorRectangle((Rectangle)vpBounds);
 
             StateConditions conditions = StateConditions.ScissorTest;
             conditions |= camera.OutputSurface.SampleCount > 1 ? StateConditions.Multisampling : StateConditions.None;

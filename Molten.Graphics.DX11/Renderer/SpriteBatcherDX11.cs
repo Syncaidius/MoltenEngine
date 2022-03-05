@@ -68,7 +68,7 @@ namespace Molten.Graphics
 
             Range range;
 
-            pipe.SetVertexSegment(_segment, 0);
+            pipe.State.VertexBuffers[0].Value = _segment;
 
             // Chop up the sprite list into ranges of vertices. Each range is equivilent to one draw call.
             // Use pointers to reduce array indexing overhead. We're potentially iterating over thousands of sprites here.

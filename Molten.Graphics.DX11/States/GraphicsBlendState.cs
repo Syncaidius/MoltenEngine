@@ -49,21 +49,21 @@ namespace Molten.Graphics
 
         bool _dirty;
 
-        internal GraphicsBlendState(Device device, GraphicsBlendState source) : base(device, PipeBindTypeFlags.Input)
+        internal GraphicsBlendState(Device device, GraphicsBlendState source) : base(device, ContextBindTypeFlags.Input)
         {
             _desc = source._desc;
             BlendFactor = source.BlendFactor;
             BlendSampleMask = source.BlendSampleMask;
         }
 
-        internal GraphicsBlendState(Device device) : base(device, PipeBindTypeFlags.Input)
+        internal GraphicsBlendState(Device device) : base(device, ContextBindTypeFlags.Input)
         {
             _desc = _defaultDesc;
             BlendFactor = new Color4(1, 1, 1, 1);
             BlendSampleMask = 0xffffffff;
         }
 
-        internal GraphicsBlendState(Device device, RenderTargetBlendDesc rtDesc) : base(device, PipeBindTypeFlags.Input)
+        internal GraphicsBlendState(Device device, RenderTargetBlendDesc rtDesc) : base(device, ContextBindTypeFlags.Input)
         {
             _desc = _defaultDesc;
             _desc.RenderTarget[0] = rtDesc;

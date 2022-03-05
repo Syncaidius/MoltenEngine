@@ -30,7 +30,9 @@ namespace Molten.Graphics
             ResourceMiscFlag optionFlags = 0, 
             StagingBufferFlags stagingType = StagingBufferFlags.None, 
             uint structuredStride = 0, 
-            Array initialData = null) : base(device)
+            Array initialData = null) : base(device,
+                ((bindFlags & BindFlag.BindUnorderedAccess) == BindFlag.BindUnorderedAccess ? ContextBindTypeFlags.Output : ContextBindTypeFlags.None) |
+                ((bindFlags & BindFlag.BindShaderResource) == BindFlag.BindShaderResource ? ContextBindTypeFlags.Input : ContextBindTypeFlags.None))
         {
             _freeSegments = new List<BufferSegment>();
             Mode = mode;
@@ -137,6 +139,7 @@ namespace Molten.Graphics
 
             // Allocate the first segment.
             _firstSegment = Device.GetBufferSegment();
+            _firstSegment.BindFlags = BindFlags;
             _firstSegment.Buffer = this;
             _firstSegment.ByteOffset = 0;
             _firstSegment.ByteCount = numBytes;
@@ -375,7 +378,7 @@ namespace Molten.Graphics
             return ((CpuAccessFlag)Description.CPUAccessFlags & flag) == flag;
         }
 
-        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
+        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
         {
             ApplyChanges(pipe);
         }
@@ -618,7 +621,7 @@ namespace Molten.Graphics
         public BufferMode Mode { get; }
 
         /// <summary>Gets the bind flags associated with the buffer.</summary>
-        public BindFlag BindFlags => (BindFlag)Description.BindFlags;
+        public BindFlag BufferBindFlags => (BindFlag)Description.BindFlags;
 
         /// <summary>Gets the underlying DirectX 11 buffer. </summary>
         internal override ID3D11Buffer* ResourcePtr => _native;

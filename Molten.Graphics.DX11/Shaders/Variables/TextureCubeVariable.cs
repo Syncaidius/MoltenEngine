@@ -12,7 +12,7 @@ namespace Molten.Graphics
 
         internal TextureCubeVariable(HlslShader shader) : base(shader) { }
 
-        protected override PipeBindableResource OnSetResource(object value)
+        protected override ContextBindableResource OnSetResource(object value)
         {
             if (value != null)
                 _texture = value as TextureCubeDX11;

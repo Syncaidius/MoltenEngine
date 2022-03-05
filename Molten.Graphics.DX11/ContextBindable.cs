@@ -11,29 +11,29 @@ namespace Molten.Graphics
     /// <summary>
     /// Represents a DX11 bindable pipeline object.
     /// </summary>
-    public abstract class PipeBindable : PipeObject
+    public abstract class ContextBindable : ContextObject
     {
-        internal PipeBindable(Device device, PipeBindTypeFlags bindFlags) : base(device)
+        internal ContextBindable(Device device, ContextBindTypeFlags bindFlags) : base(device)
         {
             BoundTo = new HashSet<ContextSlot>();
             BindFlags = bindFlags;
         }
 
         /// <summary>
-        /// Invoked right before the current <see cref="PipeBindable"/> is due to be bound to a <see cref="DeviceContext"/>.
+        /// Invoked right before the current <see cref="ContextBindable"/> is due to be bound to a <see cref="DeviceContext"/>.
         /// </summary>
-        /// <param name="slot">The <see cref="PipeSlot"/> which contains the current <see cref="PipeBindable"/>.</param>
-        /// <param name="pipe">The <see cref="DeviceContext"/> that the current <see cref="PipeBindable"/> is to be bound to.</param>
+        /// <param name="slot">The <see cref="PipeSlot"/> which contains the current <see cref="ContextBindable"/>.</param>
+        /// <param name="pipe">The <see cref="DeviceContext"/> that the current <see cref="ContextBindable"/> is to be bound to.</param>
         internal abstract void Refresh(ContextSlot slot, DeviceContext pipe);
 
         /// <summary>
-        /// Gets the instance-specific version of the current <see cref="PipeBindable"/>. Any change which will require a device
+        /// Gets the instance-specific version of the current <see cref="ContextBindable"/>. Any change which will require a device
         /// update should increase this value. E.g. Resizing a texture, recompiling a shader/material, etc.
         /// </summary>
         internal protected uint Version { get; protected set; }
 
         /// <summary>
-        /// Gets a list of slots that the current <see cref="PipeBindable"/> is bound to.
+        /// Gets a list of slots that the current <see cref="ContextBindable"/> is bound to.
         /// </summary>
         internal HashSet<ContextSlot> BoundTo { get; }
 
@@ -42,13 +42,13 @@ namespace Molten.Graphics
         /// </summary>
         internal uint BindID { get; set; }
 
-        internal PipeBindTypeFlags BindFlags { get; }
+        internal ContextBindTypeFlags BindFlags { get; set; }
     }
 
-    public unsafe abstract class PipeBindable<T> : PipeBindable
+    public unsafe abstract class PipeBindable<T> : ContextBindable
         where T : unmanaged
     {
-        internal PipeBindable(Device device, PipeBindTypeFlags bindFlags) : 
+        internal PipeBindable(Device device, ContextBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
 

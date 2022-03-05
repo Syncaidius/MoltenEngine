@@ -14,7 +14,7 @@ namespace Molten.Graphics
         ID3D11UnorderedAccessView* _native;
         UnorderedAccessViewDesc _desc;
 
-        internal UAView(Device device) : base(device)
+        internal UAView(Device device) : base(device, ContextBindTypeFlags.Output)
         {
         }
 
@@ -33,7 +33,7 @@ namespace Molten.Graphics
             SilkUtil.ReleasePtr(ref _native);
         }
 
-        protected internal override void Refresh(PipeSlot slot, DeviceContext pipe)
+        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
         {
             throw new NotSupportedException("UAView does not support Refresh()");
         }

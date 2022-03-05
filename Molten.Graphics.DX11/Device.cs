@@ -35,7 +35,7 @@ namespace Molten.Graphics
         SamplerBank _samplerBank;
 
         ObjectPool<BufferSegment> _bufferSegmentPool;
-        ThreadedQueue<PipeObject> _objectsToDispose;
+        ThreadedQueue<ContextObject> _objectsToDispose;
 
         /// <summary>The adapter to initially bind the graphics device to. Can be changed later.</summary>
         /// <param name="adapter">The adapter.</param>
@@ -50,7 +50,7 @@ namespace Molten.Graphics
             VertexFormatCache = new TypedObjectCache<IVertexType, VertexFormat>(VertexFormat.FromType);
             _settings = settings;
             _bufferSegmentPool = new ObjectPool<BufferSegment>(() => new BufferSegment(this));
-            _objectsToDispose = new ThreadedQueue<PipeObject>();
+            _objectsToDispose = new ThreadedQueue<ContextObject>();
 
             DeviceCreationFlags flags = DeviceCreationFlags.BgraSupport;
 
@@ -100,7 +100,7 @@ namespace Molten.Graphics
             _bufferSegmentPool.Recycle(segment);
         }
 
-        public void MarkForDisposal(PipeObject pObject)
+        public void MarkForDisposal(ContextObject pObject)
         {
             if (IsDisposed)
                 pObject.PipelineDispose();
@@ -110,7 +110,7 @@ namespace Molten.Graphics
 
         internal void DisposeMarkedObjects()
         {
-            while (_objectsToDispose.TryDequeue(out PipeObject obj))
+            while (_objectsToDispose.TryDequeue(out ContextObject obj))
                 obj.PipelineDispose();
         }
 

@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal class PipeStateStack
+    internal class ContextStateStack
     {
         const int STACK_INCREMENT = 5;
         GraphicsPipeState[] _stack;
         int _stackSize = 0;
         DeviceContext _pipe;
 
-        internal PipeStateStack(DeviceContext pipe)
+        internal ContextStateStack(DeviceContext pipe)
         {
             _stack = new GraphicsPipeState[STACK_INCREMENT];
             for (int i = 0; i < _stack.Length; i++)

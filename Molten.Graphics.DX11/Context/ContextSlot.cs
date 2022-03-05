@@ -7,7 +7,7 @@ namespace Molten.Graphics
 {
     internal abstract class ContextSlot : EngineObject
     {
-        internal ContextSlot(DeviceContextState parent, PipeBindTypeFlags bindType, string namePrefix, uint slotIndex)
+        internal ContextSlot(DeviceContextState parent, ContextBindTypeFlags bindType, string namePrefix, uint slotIndex)
         {
             ParentState = parent; 
             BindType = bindType;
@@ -19,7 +19,7 @@ namespace Molten.Graphics
 
         internal abstract void Unbind();
 
-        internal PipeBindTypeFlags BindType { get; }
+        internal ContextBindTypeFlags BindType { get; }
 
         internal DeviceContextState ParentState { get; }
 
@@ -29,7 +29,7 @@ namespace Molten.Graphics
     }
 
     internal class ContextSlot<T> : ContextSlot
-        where T : PipeBindable
+        where T : ContextBindable
     {
         ContextSlotBinder<T> _binder;
         ContextSlotGroup<T> _group;
@@ -40,7 +40,7 @@ namespace Molten.Graphics
         uint _boundVersion;
         uint _pendingID;
 
-        public ContextSlot(DeviceContextState parent, ContextSlotBinder<T> binder, PipeBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
+        public ContextSlot(DeviceContextState parent, ContextSlotBinder<T> binder, ContextBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
             base(parent, bindType, $"{namePrefix}_{typeof(T).Name}", slotIndex)
         {
             IsGroupMember = false;
@@ -48,7 +48,7 @@ namespace Molten.Graphics
             _binder = binder;
         }
 
-        public ContextSlot(DeviceContextState parent, ContextSlotGroup<T> grp, PipeBindTypeFlags bindType, string namePrefix, uint slotIndex) :
+        public ContextSlot(DeviceContextState parent, ContextSlotGroup<T> grp, ContextBindTypeFlags bindType, string namePrefix, uint slotIndex) :
             base(parent, bindType, $"{namePrefix}_{typeof(T).Name}", slotIndex)
         {
             IsGroupMember = true;
@@ -146,6 +146,11 @@ namespace Molten.Graphics
             _boundValue = null;
         }
 
+        public override string ToString()
+        {
+            return $"{Name} -- Value: {Value} -- Bound: {BoundValue}";
+        }
+
         protected override void OnDispose() { }
 
         internal T Value
@@ -154,7 +159,8 @@ namespace Molten.Graphics
             set
             {
                 _value = value;
-                _pendingID = _value.BindID++;
+
+                _pendingID = value != null ? _value.BindID++ : 0;
             }
         }
 

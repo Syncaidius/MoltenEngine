@@ -24,9 +24,17 @@ namespace Molten.Graphics
         ViewportF[] _nullViewport;
 
         List<ContextSlot> _slots;
+        ContextSlot<ComputeTask> _compute;
+
         VertexTopology _boundTopology;
         ContextSlot<VertexInputLayout> _vertexLayout;
         List<VertexInputLayout> _cachedLayouts = new List<VertexInputLayout>();
+
+        GraphicsDepthWritePermission _boundDepthMode = GraphicsDepthWritePermission.Enabled;
+
+        internal ID3D11RenderTargetView** RTVs;
+        uint _numRTVs;
+        internal ID3D11DepthStencilView* DSV;
 
         internal DeviceContextState(DeviceContext context)
         {
@@ -42,11 +50,11 @@ namespace Molten.Graphics
             _apiViewports = new Silk.NET.Direct3D11.Viewport[maxRTs];
 
             uint maxVBuffers = Context.Device.Features.MaxVertexBufferSlots;
-            VertexBuffers = RegisterSlotGroup<BufferSegment, VertexBufferGroupBinder>(PipeBindTypeFlags.Input, "V-Buffer", maxVBuffers);
-            IndexBuffer = RegisterSlot<BufferSegment, IndexBufferBinder>(PipeBindTypeFlags.Input, "I-Buffer", 0);
-            _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(PipeBindTypeFlags.Input, "Vertex Input Layout", 0);
-            Material = RegisterSlot<Material, MaterialBinder>(PipeBindTypeFlags.Input, "Material", 0);
-            Compute = RegisterSlot<ComputeTask, ComputeTaskBinder>(PipeBindTypeFlags.Input, "Compute Task", 0);
+            VertexBuffers = RegisterSlotGroup<BufferSegment, VertexBufferGroupBinder>(ContextBindTypeFlags.Input, "V-Buffer", maxVBuffers);
+            IndexBuffer = RegisterSlot<BufferSegment, IndexBufferBinder>(ContextBindTypeFlags.Input, "I-Buffer", 0);
+            _vertexLayout = RegisterSlot<VertexInputLayout, InputLayoutBinder>(ContextBindTypeFlags.Input, "Vertex Input Layout", 0);
+            Material = RegisterSlot<Material, MaterialBinder>(ContextBindTypeFlags.Input, "Material", 0);
+            _compute = RegisterSlot<ComputeTask, ComputeTaskBinder>(ContextBindTypeFlags.Input, "Compute Task", 0);
 
             VS = new ShaderVSStage(this);
             GS = new ShaderGSStage(this);
@@ -55,9 +63,14 @@ namespace Molten.Graphics
             PS = new ShaderPSStage(this);
             CS = new ShaderCSStage(this);
 
-            BlendState = RegisterSlot<GraphicsBlendState, BlendBinder>(PipeBindTypeFlags.Output, "Blend State", 0);
-            DepthState = RegisterSlot<GraphicsDepthState, DepthStencilBinder>(PipeBindTypeFlags.Output, "Depth-Stencil State", 0);
-            RasterizerState = RegisterSlot<GraphicsRasterizerState, RasterizerBinder>(PipeBindTypeFlags.Output, "Rasterizer State", 0);
+            Blend = RegisterSlot<GraphicsBlendState, BlendBinder>(ContextBindTypeFlags.Output, "Blend State", 0);
+            Depth = RegisterSlot<GraphicsDepthState, DepthStencilBinder>(ContextBindTypeFlags.Output, "Depth-Stencil State", 0);
+            Rasterizer = RegisterSlot<GraphicsRasterizerState, RasterizerBinder>(ContextBindTypeFlags.Output, "Rasterizer State", 0);
+
+            RTVs = EngineUtil.AllocPtrArray<ID3D11RenderTargetView>(maxRTs);
+
+            Surfaces = RegisterSlotGroup<RenderSurface, SurfaceGroupBinder>(ContextBindTypeFlags.Output, "Render Surface", maxRTs);
+            DepthSurface = RegisterSlot<DepthStencilSurface, DepthSurfaceBinder>(ContextBindTypeFlags.Output, "Depth Surface", 0);
         }
 
         internal void Clear()
@@ -108,9 +121,9 @@ namespace Molten.Graphics
                 _vertexLayout.Bind();                    
             }
 
-            BlendState.Value = pass.BlendState[conditions];
-            RasterizerState.Value = pass.RasterizerState[conditions];
-            DepthState.Value = pass.DepthState[conditions];
+            Blend.Value = pass.BlendState[conditions];
+            Rasterizer.Value = pass.RasterizerState[conditions];
+            Depth.Value = pass.DepthState[conditions];
 
             // Check if scissor rects need updating
             if (_scissorRectsDirty)
@@ -134,14 +147,62 @@ namespace Molten.Graphics
                 _viewportsDirty = false;
             }
 
+            GraphicsDepthWritePermission depthWriteMode = DepthWriteOverride != GraphicsDepthWritePermission.Enabled ?
+                DepthWriteOverride : pass.DepthState[conditions].WritePermission;
+
+            bool surfaceChanged = Surfaces.BindAll();
+            bool depthChanged = DepthSurface.Bind() || (_boundDepthMode != depthWriteMode);
+
+            if (surfaceChanged || depthChanged)
+            {
+                if (surfaceChanged)
+                {
+                    _numRTVs = 0;
+
+                    for (uint i = 0; i < Surfaces.SlotCount; i++)
+                    {
+                        if (Surfaces[i].BoundValue != null)
+                        {
+                            _numRTVs = (i+1);
+                            RTVs[i] = Surfaces[i].BoundValue.RTV;
+                        }
+                        else
+                        {
+                            RTVs[i] = null;
+                        }
+                    }
+                }
+
+                if (depthChanged)
+                {
+                    if (DepthSurface.BoundValue != null && depthWriteMode != GraphicsDepthWritePermission.Disabled)
+                    {
+                        if (depthWriteMode == GraphicsDepthWritePermission.ReadOnly)
+                            DSV = DepthSurface.BoundValue.ReadOnlyView;
+                        else
+                            DSV = DepthSurface.BoundValue.DepthView;
+                    }
+                    else
+                    {
+                        DSV = null;
+                    }
+
+                    _boundDepthMode = depthWriteMode;
+                }
+
+                Context.Native->OMSetRenderTargets(_numRTVs, RTVs, DSV);
+                Context.Profiler.Current.SurfaceBindings++;
+            }
+
             return matChanged || vsChanged || gsChanged || hsChanged ||
                 dsChanged || psChanged || ibChanged || vbChanged;
         }
 
-        public bool BindCompute()
+        public bool Bind(ComputeTask task)
         {
-            Compute.Bind();
-            CS.Shader.Value = Compute.BoundValue.Composition;
+            _compute.Value = task;
+            _compute.Bind();
+            CS.Shader.Value = _compute.BoundValue.Composition;
 
             bool csChanged = CS.Bind();
 
@@ -151,13 +212,91 @@ namespace Molten.Graphics
                 for (int i = 0; i < CS.Shader.BoundValue.UnorderedAccessIds.Count; i++)
                 {
                     uint slotID = CS.Shader.BoundValue.UnorderedAccessIds[i];
-                    CS.UAVs[slotID].Value = Compute.BoundValue.UAVs[slotID]?.UnorderedResource;
+                    CS.UAVs[slotID].Value = _compute.BoundValue.UAVs[slotID]?.UnorderedResource;
                 }
             }
 
             return csChanged;
         }
 
+
+        /// <summary>Clears a render target that is set on the device.</summary>
+        /// <param name="color"></param>
+        /// <param name="slot"></param>
+        public void Clear(Color color, uint slot)
+        {
+            if (Surfaces[slot].Value != null)
+                Surfaces[slot].Value.Clear(Context, color);
+        }
+
+        /// <summary>Sets a list of render surfaces.</summary>
+        /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
+        public void SetRenderSurfaces(params RenderSurface[] surfaces)
+        {
+            if (surfaces == null)
+                SetRenderSurfaces(null, 0);
+            else
+                SetRenderSurfaces(surfaces, (uint)surfaces.Length);
+        }
+
+        /// <summary>Sets a list of render surfaces.</summary>
+        /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
+        /// <param name="count">The number of render surfaces to set.</param>
+        public void SetRenderSurfaces(RenderSurface[] surfaces, uint count)
+        {
+            if (surfaces != null)
+            {
+                for (uint i = 0; i < count; i++)
+                    Surfaces[i].Value = surfaces[i];
+            }
+            else
+            {
+                count = 0;
+            }
+
+            // Set the remaining surfaces to null.
+            for (uint i = count; i < Surfaces.SlotCount; i++)
+                Surfaces[i].Value = null;
+        }
+
+        /// <summary>Sets a render surface.</summary>
+        /// <param name="surface">The surface to be set.</param>
+        /// <param name="slot">The ID of the slot that the surface is to be bound to.</param>
+        public void SetRenderSurface(RenderSurface surface, uint slot)
+        {
+            Surfaces[slot].Value = surface;
+        }
+
+        /// <summary>
+        /// Fills the provided array with a list of applied render surfaces.
+        /// </summary>
+        /// <param name="destinationArray">The array to fill with applied render surfaces.</param>
+        public void GetRenderSurfaces(RenderSurface[] destinationArray)
+        {
+            if (destinationArray.Length < Surfaces.SlotCount)
+                throw new InvalidOperationException($"The destination array is too small ({destinationArray.Length}). A minimum size of {Surfaces.SlotCount} is needed.");
+            for (uint i = 0; i < Surfaces.SlotCount; i++)
+                destinationArray[i] = Surfaces[i].Value;
+        }
+
+        /// <summary>Returns the render surface that is bound to the requested slot ID. Returns null if the slot is empty.</summary>
+        /// <param name="slot">The ID of the slot to retrieve a surface from.</param>
+        /// <returns></returns>
+        public RenderSurface GetRenderSurface(uint slot)
+        {
+            return Surfaces[slot].Value;
+        }
+
+        /// <summary>
+        /// Resets the render surfaces.
+        /// </summary>
+        /// <param name="resetMode">The reset mode.</param>
+        /// <param name="outputOnFirst">If true and the reset mode is OutputSurface, it will only be applied to the first slot (0)..</param>
+        public void ResetRenderSurfaces()
+        {
+            for (uint i = 0; i < Surfaces.SlotCount; i++)
+                Surfaces[i].Value = null;
+        }
 
         public void SetScissorRectangle(Rectangle rect, int slot = 0)
         {
@@ -208,11 +347,11 @@ namespace Molten.Graphics
             if (viewports == null)
             {
                 RenderSurface surface = null;
-                RenderSurface surfaceZero = Context.Output.GetRenderSurface(0);
+                RenderSurface surfaceZero = GetRenderSurface(0);
 
                 for (uint i = 0; i < _viewports.Length; i++)
                 {
-                    surface = Context.Output.GetRenderSurface(i);
+                    surface = GetRenderSurface(i);
                     _viewports[i] = surface != null ? surface.Viewport : surfaceZero.Viewport;
                 }
             }
@@ -332,32 +471,32 @@ namespace Molten.Graphics
                 return GraphicsBindResult.NonInstancedVertexLayout;
         }
 
-        internal ContextSlot<T> RegisterSlot<T, B>(PipeBindTypeFlags bindType, string namePrefix, uint slotIndex) 
-            where T : PipeBindable
+        internal ContextSlot<T> RegisterSlot<T, B>(ContextBindTypeFlags bindType, string namePrefix, uint slotIndex) 
+            where T : ContextBindable
             where B : ContextSlotBinder<T>, new()
         {
             B binder = new B();
             return RegisterSlot(bindType, namePrefix, slotIndex, binder);
         }
 
-        internal ContextSlot<T> RegisterSlot<T>(PipeBindTypeFlags bindType, string namePrefix, uint slotIndex, ContextSlotBinder<T> binder)
-            where T : PipeBindable
+        internal ContextSlot<T> RegisterSlot<T>(ContextBindTypeFlags bindType, string namePrefix, uint slotIndex, ContextSlotBinder<T> binder)
+            where T : ContextBindable
         {
             ContextSlot<T> slot = new ContextSlot<T>(this, binder, bindType, namePrefix, slotIndex);
             _slots.Add(slot);
             return slot;
         }
 
-        internal ContextSlotGroup<T> RegisterSlotGroup<T, B>(PipeBindTypeFlags bindType, string namePrefix, uint numSlots)
-            where T : PipeBindable
+        internal ContextSlotGroup<T> RegisterSlotGroup<T, B>(ContextBindTypeFlags bindType, string namePrefix, uint numSlots)
+            where T : ContextBindable
             where B : ContextGroupBinder<T>, new()
         {
             B binder = new B();
             return RegisterSlotGroup(bindType, namePrefix, numSlots, binder);
         }
 
-        internal ContextSlotGroup<T> RegisterSlotGroup<T>(PipeBindTypeFlags bindType, string namePrefix, uint numSlots, ContextGroupBinder<T> binder)
-            where T : PipeBindable
+        internal ContextSlotGroup<T> RegisterSlotGroup<T>(ContextBindTypeFlags bindType, string namePrefix, uint numSlots, ContextGroupBinder<T> binder)
+            where T : ContextBindable
         {
             ContextSlot<T>[] slots = new ContextSlot<T>[numSlots];
             ContextSlotGroup<T> grp = new ContextSlotGroup<T>(this, binder, slots, bindType, namePrefix);
@@ -370,7 +509,10 @@ namespace Molten.Graphics
             return grp;
         }
 
-        protected override void OnDispose() { }
+        protected override void OnDispose()
+        {
+            EngineUtil.FreePtrArray(ref RTVs);
+        }
 
         internal DeviceContext Context { get; }
 
@@ -389,15 +531,23 @@ namespace Molten.Graphics
 
         public ContextSlot<Material> Material { get; }
 
-        public ContextSlot<ComputeTask> Compute { get; }
+        internal ContextSlot<GraphicsBlendState> Blend { get; }
 
-        internal ContextSlot<GraphicsBlendState> BlendState { get; }
+        internal ContextSlot<GraphicsRasterizerState> Rasterizer { get; }
 
-        internal ContextSlot<GraphicsRasterizerState> RasterizerState { get; }
-
-        internal ContextSlot<GraphicsDepthState> DepthState { get; }
+        internal ContextSlot<GraphicsDepthState> Depth { get; }
 
         /// <summary>Gets the number of applied viewports.</summary>
         public int ViewportCount => _viewports.Length;
+
+        internal GraphicsDepthWritePermission DepthWriteOverride { get; set; } = GraphicsDepthWritePermission.Enabled;
+
+        public ContextSlotGroup<RenderSurface> Surfaces { get; }
+
+
+        /// <summary>
+        /// Gets or sets the output depth surface.
+        /// </summary>
+        public ContextSlot<DepthStencilSurface> DepthSurface { get; }
     }
 }

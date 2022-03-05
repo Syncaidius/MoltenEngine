@@ -12,7 +12,7 @@ namespace Molten.Graphics
 
         internal Texture2DVariable(HlslShader shader) : base(shader) { }
 
-        protected override PipeBindableResource OnSetResource(object value)
+        protected override ContextBindableResource OnSetResource(object value)
         {
             if (value != null)
             {

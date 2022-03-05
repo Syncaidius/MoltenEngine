@@ -12,7 +12,7 @@ namespace Molten.Graphics
 
         internal RWTexture2DVariable(HlslShader shader) : base(shader) { }
 
-        protected override PipeBindableResource OnSetUnorderedResource(object value)
+        protected override ContextBindableResource OnSetUnorderedResource(object value)
         {
             _texture = value as Texture2DDX11;
 

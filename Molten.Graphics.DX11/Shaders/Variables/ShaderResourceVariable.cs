@@ -7,17 +7,17 @@ namespace Molten.Graphics
 {
     internal abstract class ShaderResourceVariable : IShaderValue
     {
-        PipeBindableResource _resource;
+        ContextBindableResource _resource;
 
         internal ShaderResourceVariable(HlslShader shader)
         {
             Parent = shader;
         }
 
-        protected abstract PipeBindableResource OnSetResource(object value);
+        protected abstract ContextBindableResource OnSetResource(object value);
 
         /// <summary>Gets the resource bound to the variable.</summary>
-        internal PipeBindableResource Resource { get { return _resource; } }
+        internal ContextBindableResource Resource { get { return _resource; } }
 
         public string Name { get; set; }
 

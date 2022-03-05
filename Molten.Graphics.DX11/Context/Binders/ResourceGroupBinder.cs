@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal unsafe class ResourceGroupBinder<T> : ContextGroupBinder<PipeBindableResource>
+    internal unsafe class ResourceGroupBinder<T> : ContextGroupBinder<ContextBindableResource>
         where T : unmanaged
     {
         ContextShaderStage<T> _stage;
@@ -17,7 +17,7 @@ namespace Molten.Graphics
             _stage = stage;
         }
 
-        internal override void Bind(ContextSlotGroup<PipeBindableResource> grp, uint startIndex, uint endIndex, uint numChanged)
+        internal override void Bind(ContextSlotGroup<ContextBindableResource> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             ID3D11ShaderResourceView** res = stackalloc ID3D11ShaderResourceView*[(int)numChanged];
 
@@ -28,14 +28,14 @@ namespace Molten.Graphics
             _stage.SetResources(startIndex, numChanged, res);
         }
 
-        internal override void Bind(ContextSlot<PipeBindableResource> slot, PipeBindableResource value)
+        internal override void Bind(ContextSlot<ContextBindableResource> slot, ContextBindableResource value)
         {
             ID3D11ShaderResourceView** res = stackalloc ID3D11ShaderResourceView*[1];
             res[0] = slot.BoundValue;
             _stage.SetResources(slot.SlotIndex, 1, res);
         }
 
-        internal override void Unbind(ContextSlotGroup<PipeBindableResource> grp, uint startIndex, uint endIndex, uint numChanged)
+        internal override void Unbind(ContextSlotGroup<ContextBindableResource> grp, uint startIndex, uint endIndex, uint numChanged)
         {
             ID3D11ShaderResourceView** res = stackalloc ID3D11ShaderResourceView*[(int)numChanged];
 
@@ -45,7 +45,7 @@ namespace Molten.Graphics
             _stage.SetResources(startIndex, numChanged, res);
         }
 
-        internal override void Unbind(ContextSlot<PipeBindableResource> slot, PipeBindableResource value)
+        internal override void Unbind(ContextSlot<ContextBindableResource> slot, ContextBindableResource value)
         {
             ID3D11ShaderResourceView** res = stackalloc ID3D11ShaderResourceView*[1];
             res[0] = null;

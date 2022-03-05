@@ -61,7 +61,7 @@ namespace Molten.Graphics
         internal override void ApplyBuffers(DeviceContext pipe)
         {
             base.ApplyBuffers(pipe);
-            pipe.SetIndexSegment(_ib);
+            pipe.State.IndexBuffer.Value = _ib;
         }
 
         private protected override void OnRender(DeviceContext pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)

@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     internal class ContextSlotGroup<T> : EngineObject
-        where T : PipeBindable
+        where T : ContextBindable
     {
         ContextSlot<T>[] _slots;
 
-        internal ContextSlotGroup(DeviceContextState parent, ContextGroupBinder<T> binder, ContextSlot<T>[] slots, PipeBindTypeFlags bindType, string namePrefix)
+        internal ContextSlotGroup(DeviceContextState parent, ContextGroupBinder<T> binder, ContextSlot<T>[] slots, ContextBindTypeFlags bindType, string namePrefix)
         {
             _slots = slots;
             Binder = binder;
@@ -100,7 +100,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the bind type of the current <see cref="ContextSlotGroup{T}"/>.
         /// </summary>
-        internal PipeBindTypeFlags BindType { get; }
+        internal ContextBindTypeFlags BindType { get; }
 
         /// <summary>
         /// Gets the parent <see cref="DeviceContextState"/> of the current <see cref="ContextSlotGroup{T}"/>.

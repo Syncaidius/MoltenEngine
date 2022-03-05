@@ -36,48 +36,48 @@ namespace Molten.Graphics
 
         public void Capture()
         {
-            _blendState = _pipe.BlendState.State.Value;
-            _depthState = _pipe.DepthStencil.State.Value;
-            _rasterState = _pipe.Rasterizer.State.Value;
+            _blendState = _pipe.State.Blend.Value;
+            _depthState = _pipe.State.Depth.Value;
+            _rasterState = _pipe.State.Rasterizer.Value;
 
             _pipe.State.VertexBuffers.Get(_vSegments);
             _iSegment = _pipe.State.IndexBuffer.Value;
 
             //store viewports
-            int vpCount = _pipe.Rasterizer.ViewportCount;
+            int vpCount = _pipe.State.ViewportCount;
             if (_viewports.Length < vpCount)
                 Array.Resize(ref _viewports, vpCount);
-            _pipe.Rasterizer.GetViewports(_viewports);
+            _pipe.State.GetViewports(_viewports);
 
             // Store surfaces
-            _pipe.GetRenderSurfaces(_surfaces);
+            _pipe.State.GetRenderSurfaces(_surfaces);
 
-            _depthSurface = _pipe.Output.DepthSurface.Value;
-            _depthWriteOverride = _pipe.DepthWriteOverride;
+            _depthSurface = _pipe.State.DepthSurface.Value;
+            _depthWriteOverride = _pipe.State.DepthWriteOverride;
         }
 
         public void Restore()
         {
             //states
-            _pipe.BlendState.State.Value = _blendState;
-            _pipe.DepthStencil.State.Value = _depthState;
-            _pipe.Rasterizer.State.Value = _rasterState;
+            _pipe.State.Blend.Value = _blendState;
+            _pipe.State.Depth.Value = _depthState;
+            _pipe.State.Rasterizer.Value = _rasterState;
 
             //buffers
             _pipe.State.VertexBuffers.Set(_vSegments);
             _pipe.State.IndexBuffer.Value = _iSegment;
 
             //restore viewports
-            _pipe.Rasterizer.SetViewports(_viewports);
+            _pipe.State.SetViewports(_viewports);
 
             // Restore surfaces -- ensure surface 0 is correctly handled when null.
-            _pipe.SetRenderSurfaces(_surfaces);
+            _pipe.State.SetRenderSurfaces(_surfaces);
             if (_surfaces[0] == null)
-                _pipe.UnsetRenderSurface(0);
+                _pipe.State.SetRenderSurface(null, 0);
 
 
-            _pipe.Output.DepthSurface.Value = _depthSurface;
-            _pipe.DepthWriteOverride = _depthWriteOverride;
+            _pipe.State.DepthSurface.Value = _depthSurface;
+            _pipe.State.DepthWriteOverride = _depthWriteOverride;
         }
 
         /// <summary>Resets the pipe state, but does not apply it.</summary>

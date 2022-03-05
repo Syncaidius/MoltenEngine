@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     internal abstract class ContextGroupBinder<T> : ContextSlotBinder<T>
-        where T : PipeBindable
+        where T : ContextBindable
     {
         internal abstract void Bind(ContextSlotGroup<T> grp, uint startIndex, uint endIndex, uint numChanged);
 

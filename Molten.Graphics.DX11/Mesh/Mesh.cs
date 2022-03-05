@@ -47,7 +47,7 @@ namespace Molten.Graphics
 
         internal virtual void ApplyBuffers(DeviceContext pipe)
         {
-            pipe.SetVertexSegment(_vb, 0);
+            pipe.State.VertexBuffers[0].Value = _vb;
         }
 
         private protected override void OnRender(DeviceContext pipe, RendererDX11 renderer, RenderCamera camera, ObjectRenderData data)

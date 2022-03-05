@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public unsafe abstract class PipeBindableResource : PipeBindable<ID3D11Resource>
+    public unsafe abstract class ContextBindableResource : PipeBindable<ID3D11Resource>
     {
         /// <summary>Gets or sets the <see cref="ID3D11UnorderedAccessView"/> attached to the object.</summary>
         internal protected UAView UAV { get; }
@@ -15,7 +15,7 @@ namespace Molten.Graphics
         /// <summary>Gets the <see cref="ID3D11ShaderResourceView"/> attached to the object.</summary>
         internal protected SRView SRV { get; }
 
-        internal PipeBindableResource(Device device, PipeBindTypeFlags bindFlags) : 
+        internal ContextBindableResource(Device device, ContextBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
             SRV = new SRView(device);
@@ -29,22 +29,22 @@ namespace Molten.Graphics
         }
 
         #region Implicit cast operators
-        public static implicit operator ID3D11UnorderedAccessView*(PipeBindableResource resource)
+        public static implicit operator ID3D11UnorderedAccessView*(ContextBindableResource resource)
         {
             return resource.UAV;
         }
 
-        public static implicit operator ID3D11ShaderResourceView*(PipeBindableResource resource)
+        public static implicit operator ID3D11ShaderResourceView*(ContextBindableResource resource)
         {
             return resource.SRV;
         }
         #endregion
     }
 
-    internal unsafe abstract class PipeBindableResource<T> : PipeBindableResource
+    internal unsafe abstract class PipeBindableResource<T> : ContextBindableResource
         where T : unmanaged
     {
-        internal PipeBindableResource(Device device, PipeBindTypeFlags bindFlags) : 
+        internal PipeBindableResource(Device device, ContextBindTypeFlags bindFlags) : 
             base(device, bindFlags)
         {
         }

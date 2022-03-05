@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     [Flags]
-    public enum PipeBindTypeFlags
+    public enum ContextBindTypeFlags
     {
         /// <summary>
         /// No bind type.

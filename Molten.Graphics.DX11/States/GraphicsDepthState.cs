@@ -99,14 +99,14 @@ namespace Molten.Graphics
             };
         }
 
-        internal GraphicsDepthState(Device device, GraphicsDepthState source) : base(device, PipeBindTypeFlags.Input)
+        internal GraphicsDepthState(Device device, GraphicsDepthState source) : base(device, ContextBindTypeFlags.Input)
         {
             _desc = source._desc;
             _frontFace = new Face(this, ref _desc.FrontFace);
             _backFace = new Face(this, ref _desc.BackFace);
         }
 
-        internal GraphicsDepthState(Device device) : base(device, PipeBindTypeFlags.Input)
+        internal GraphicsDepthState(Device device) : base(device, ContextBindTypeFlags.Input)
         {
             _desc = _defaultDesc;
             _frontFace = new Face(this, ref _desc.FrontFace);

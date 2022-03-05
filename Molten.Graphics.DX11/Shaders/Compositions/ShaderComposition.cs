@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    internal abstract class ShaderComposition : PipeBindable
+    internal abstract class ShaderComposition : ContextBindable
     {
         /// <summary>A list of const buffers the shader stage requires to be bound.</summary>
         internal List<uint> ConstBufferIds = new List<uint>();
@@ -35,17 +35,14 @@ namespace Molten.Graphics
         internal unsafe abstract void SetBytecode(ID3D10Blob* byteCode);
 
         internal ShaderComposition(HlslShader parentShader, bool optional, ShaderType type) : 
-            base(parentShader.Device, PipeBindTypeFlags.Input)
+            base(parentShader.Device, ContextBindTypeFlags.Input)
         {
             Parent = parentShader;
             Optional = optional;
             Type = type;
         }
 
-        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
-        {
-            throw new NotImplementedException();
-        }
+        internal override void Refresh(ContextSlot slot, DeviceContext pipe) { }
     }
 
     internal abstract unsafe class ShaderComposition<T> : ShaderComposition 

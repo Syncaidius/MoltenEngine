@@ -1,12 +1,10 @@
-﻿using Molten.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Silk.NET.Direct3D11;
 using Molten.IO;
-using System.Collections.ObjectModel;
 
 namespace Molten.Graphics
 {
@@ -28,9 +26,8 @@ namespace Molten.Graphics
             }
         }
 
-        Device _device;
         ID3D11DeviceContext* _context;
-        PipeStateStack _stateStack;
+        ContextStateStack _stateStack;
         RenderProfiler _profiler;
         RenderProfiler _defaultProfiler;
         DrawInfo _drawInfo;
@@ -38,7 +35,7 @@ namespace Molten.Graphics
         internal void Initialize(Logger log, Device device, ID3D11DeviceContext* context)
         {
             _context = context;
-            _device = device;
+            Device = device;
             _defaultProfiler = _profiler = new RenderProfiler();
             _drawInfo = new DrawInfo();
             Log = log;
@@ -50,12 +47,10 @@ namespace Molten.Graphics
 
             State = new DeviceContextState(this);
 
-            _stateStack = new PipeStateStack(this);
-            Output = new OutputMergerStage(this);
+            _stateStack = new ContextStateStack(this);
 
             // Apply the surface of the graphics device's output initialally.
-            SetRenderSurfaces(null);
-            Output.DepthWritePermission = GraphicsDepthWritePermission.Enabled;
+            State.SetRenderSurfaces(null);
         }
 
         /// <summary>
@@ -132,59 +127,7 @@ namespace Molten.Graphics
             Profiler.Current.UpdateSubresourceCount++;
         }
 
-        /// <summary>Sets a list of render surfaces.</summary>
-        /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
-        /// <param name="count">The number of render surfaces to set.</param>
-        public void SetRenderSurfaces(RenderSurface[] surfaces, uint count)
-        {
-            Output.SetRenderSurfaces(surfaces, count);
-        }
-
-        /// <summary>Sets a list of render surfaces.</summary>
-        /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
-        public void SetRenderSurfaces(params RenderSurface[] surfaces)
-        {
-            if (surfaces == null)
-                Output.SetRenderSurfaces(null, 0);
-            else
-                Output.SetRenderSurfaces(surfaces, (uint)surfaces.Length);
-        }
-
-        /// <summary>Sets a render surface.</summary>
-        /// <param name="surface">The surface to be set.</param>
-        /// <param name="slot">The ID of the slot that the surface is to be bound to.</param>
-        public void SetRenderSurface(RenderSurface surface, uint slot)
-        {
-            Output.SetRenderSurface(surface, slot);
-        }
-
-        /// <summary>Fills an array with the current configuration of render surfaces.</summary>
-        /// <param name="destinationArray"></param>
-        public void GetRenderSurfaces(RenderSurface[] destinationArray)
-        {
-            Output.GetRenderSurfaces(destinationArray);
-        }
-
-        /// <summary>Returns the render surface that is bound to the requested slot ID. Returns null if the slot is empty.</summary>
-        /// <param name="slot">The ID of the slot to retrieve a surface from.</param>
-        /// <returns></returns>
-        public RenderSurface GetRenderSurface(uint slot)
-        {
-            return Output.GetRenderSurface(slot);
-        }
-
-        /// <summary>Resets a render surface slot.</summary>
-        /// <param name="resetMode">The type of reset to perform.</param>
-        /// <param name="slot">The ID of the slot to reset.</param>
-        public void UnsetRenderSurface(uint slot)
-        {
-            Output.SetRenderSurface(null, slot);
-        }
-
-        public void UnsetRenderSurfaces()
-        {
-            Output.ResetRenderSurfaces();
-        }
+    
 
         public int PushState()
         {
@@ -204,10 +147,6 @@ namespace Molten.Graphics
                 return GraphicsBindResult.UndefinedTopology;
 
             State.Bind(pass, _drawInfo.Conditions, topology);
-
-            Output.DepthWritePermission = DepthWriteOverride != GraphicsDepthWritePermission.Enabled ? 
-                DepthWriteOverride : pass.DepthState[_drawInfo.Conditions].WritePermission;
-            Output.Refresh();
 
             // Validate all pipeline components.
             GraphicsBindResult result = State.Validate(mode);
@@ -288,7 +227,7 @@ namespace Molten.Graphics
             },
             (pass, iteration, passNumber, vResult) =>
             {
-                _device.Log.Warning($"Draw() call failed with result: {vResult} -- " + 
+                Device.Log.Warning($"Draw() call failed with result: {vResult} -- " + 
                     $"Iteration: M{iteration}/{material.Iterations}P{passNumber}/{material.PassCount} -- " +
                     $"Material: {material.Name} -- Topology: {topology} -- VertexCount: { vertexCount}");
             });
@@ -313,7 +252,7 @@ namespace Molten.Graphics
             },
             (pass, iteration, passNum, vResult) =>
             {
-                _device.Log.Warning($"DrawInstanced() call failed with result: {vResult} -- " + 
+                Device.Log.Warning($"DrawInstanced() call failed with result: {vResult} -- " + 
                         $"Iteration: M{iteration}/{material.Iterations}P{passNum}/{material.PassCount} -- Material: {material.Name} -- " +
                         $"Topology: {topology} -- VertexCount: { vertexCountPerInstance} -- Instances: {instanceCount}");
             });
@@ -337,7 +276,7 @@ namespace Molten.Graphics
             },
             (pass, it, passNum, vResult) =>
             {
-                _device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
+                Device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
                     $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
                     $" -- Material: {material.Name} -- Topology: {topology} -- indexCount: { indexCount}");
             });
@@ -366,7 +305,7 @@ namespace Molten.Graphics
             },
             (pass, it, passNum, vResult) =>
             {
-                _device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
+                Device.Log.Warning($"DrawIndexed() call failed with result: {vResult} -- " +
                     $"Iteration: M{it}/{material.Iterations}P{passNum}/{material.PassCount}" +
                     $" -- Material: {material.Name} -- Topology: {topology} -- Indices-per-instance: { indexCountPerInstance}");
             });
@@ -377,11 +316,7 @@ namespace Molten.Graphics
 
         internal void Dispatch(ComputeTask task, uint groupsX, uint groupsY, uint groupsZ)
         {
-            // Refresh any outputs that may be used by the compute task (Render targets!).
-            Output.Refresh();
-
-            State.Compute.Value = task;
-            bool csChanged = State.BindCompute();
+            bool csChanged = State.Bind(task);
 
             if (State.CS.Shader.BoundValue == null)
             {
@@ -422,32 +357,23 @@ namespace Molten.Graphics
             }
         }
 
-        /// <summary>Clears the first render target that is set on the device.</summary>
-        /// <param name="color"></param>
-        /// <param name="slot"></param>
-        public void Clear(Color color, uint slot = 0)
-        {
-            Output.Clear(color, slot);
-        }
-
         /// <summary>Dispoes of the current <see cref="Graphics.DeviceContext"/> instance.</summary>
         protected override void OnDispose()
         {
-            Output.Dispose();
             State.Dispose();
 
             // Dispose context.
             if (Type != GraphicsContextType.Immediate)
             {
                 SilkUtil.ReleasePtr(ref _context);
-                _device.RemoveDeferredPipe(this);
+                Device.RemoveDeferredPipe(this);
             }
         }
 
         /// <summary>Gets the current <see cref="Graphics.DeviceContext"/> type. This value will not change during the context's life.</summary>
         public GraphicsContextType Type { get; private set; }
 
-        internal Device Device => _device;
+        internal Device Device { get; private set; }
 
         internal ID3D11DeviceContext* Native => _context;
 
@@ -460,16 +386,10 @@ namespace Molten.Graphics
             set => _profiler = value ?? _defaultProfiler;
         }
 
-        /// <summary>Gets the output merger state of the current <see cref="Graphics.DeviceContext"/>.</summary>
-        internal OutputMergerStage Output { get; private set; }
-
         /// <summary>
         /// Gets the state of the current <see cref="DeviceContext"/>.
         /// </summary>
         internal DeviceContextState State { get; private set; }
 
-        internal GraphicsDepthWritePermission DepthWriteOverride { get; set; } = GraphicsDepthWritePermission.Enabled;
-
-        internal GraphicsDepthWritePermission DepthWritePermission => Output.DepthWritePermission;
     }
 }

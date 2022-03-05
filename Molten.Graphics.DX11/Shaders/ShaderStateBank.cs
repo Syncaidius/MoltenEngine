@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Molten.Graphics
 {
     internal class ShaderStateBank<T> : EngineObject
-        where T : PipeObject
+        where T : ContextObject
     {
         T[] _states;
 
