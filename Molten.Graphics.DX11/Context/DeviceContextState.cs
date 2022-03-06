@@ -219,16 +219,6 @@ namespace Molten.Graphics
             return csChanged;
         }
 
-
-        /// <summary>Clears a render target that is set on the device.</summary>
-        /// <param name="color"></param>
-        /// <param name="slot"></param>
-        public void Clear(Color color, uint slot)
-        {
-            if (Surfaces[slot].Value != null)
-                Surfaces[slot].Value.Clear(Context, color);
-        }
-
         /// <summary>Sets a list of render surfaces.</summary>
         /// <param name="surfaces">Array containing a list of render surfaces to be set.</param>
         public void SetRenderSurfaces(params RenderSurface[] surfaces)

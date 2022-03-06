@@ -69,11 +69,6 @@
                 }
                 else
                 {
-                    T oldBoundValue = _boundValue;
-
-                    if (_boundValue != null)
-                        _boundValue.BoundTo.Remove(this);
-
                     // Check other bound slots that should be unbound.
                     bool canBind = true;
                     foreach (ContextSlot slot in _value.BoundTo)
@@ -113,7 +108,15 @@
                     }
 
                     if (!canBind)
-                        return oldBoundValue != null;
+                    {
+                        if (_boundValue != null)
+                        {
+                            Unbind();
+                            return true;
+                        }
+
+                        return false;
+                    }
 
                     _value.Refresh(this, Context);
                     _boundValue = _value;

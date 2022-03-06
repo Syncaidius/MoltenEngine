@@ -17,7 +17,7 @@ namespace Molten.Graphics
         {
             uint maxRTs = slot.Context.Device.Features.SimultaneousRenderSurfaces;
             slot.Context.State.DSV = null;
-            slot.Context.Native->OMGetRenderTargets(maxRTs, slot.Context.State.RTVs, ref slot.Context.State.DSV);
+            slot.Context.Native->OMSetRenderTargets(maxRTs, slot.Context.State.RTVs, slot.Context.State.DSV);
         }
     }
 }
