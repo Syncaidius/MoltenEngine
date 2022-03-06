@@ -117,6 +117,11 @@
 
                         return false;
                     }
+                    else
+                    {
+                        if (_boundValue != null)
+                            _boundValue.BoundTo.Remove(this);
+                    }
 
                     _value.Refresh(this, Context);
                     _boundValue = _value;
