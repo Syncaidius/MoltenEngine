@@ -25,14 +25,14 @@ namespace Molten.Graphics
             for (uint i = 0; i < numRTs; i++)
                 rtvs[i] = null;
 
-            grp.Context.Native->OMGetRenderTargets(numRTs, rtvs, ref grp.Context.State.DSV);
+            grp.Context.Native->OMSetRenderTargets(numRTs, rtvs, grp.Context.State.DSV);
         }
 
         internal override void Unbind(ContextSlot<RenderSurface> slot, RenderSurface value)
         {
             var rtvs = slot.Context.State.RTVs;
             rtvs[slot.SlotIndex] = null;
-            slot.Context.Native->OMGetRenderTargets(1, rtvs, ref slot.Context.State.DSV);
+            slot.Context.Native->OMSetRenderTargets(1, rtvs, slot.Context.State.DSV);
         }
     }
 }
