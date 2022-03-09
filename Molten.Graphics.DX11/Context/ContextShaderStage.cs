@@ -16,23 +16,23 @@ namespace Molten.Graphics
             Type = type;
 
             uint maxSamplers = Context.Device.Features.MaxSamplerSlots;
-            Samplers = state.RegisterSlotGroup(ContextBindTypeFlags.Input, "Sampler", maxSamplers, new SamplerGroupBinder<T>(this));
+            Samplers = state.RegisterSlotGroup(ContextBindTypeFlags.Input, $"{type}_Sampler", maxSamplers, new SamplerGroupBinder<T>(this));
 
             uint maxResources = Context.Device.Features.MaxInputResourceSlots;
-            Resources = state.RegisterSlotGroup(ContextBindTypeFlags.Input, "Resource", maxResources, new ResourceGroupBinder<T>(this));
+            Resources = state.RegisterSlotGroup(ContextBindTypeFlags.Input, $"{type}_Resource", maxResources, new ResourceGroupBinder<T>(this));
 
             uint maxCBuffers = Context.Device.Features.MaxConstantBufferSlots;
-            ConstantBuffers = state.RegisterSlotGroup(ContextBindTypeFlags.Input, "C-Buffer", maxCBuffers, new CBufferGroupBinder<T>(this));
+            ConstantBuffers = state.RegisterSlotGroup(ContextBindTypeFlags.Input, $"{type}_C-Buffer", maxCBuffers, new CBufferGroupBinder<T>(this));
 
-            Shader = state.RegisterSlot(ContextBindTypeFlags.Input, "Shader", 0, new ShaderSlotBinder<T>(this));
+            Shader = state.RegisterSlot(ContextBindTypeFlags.Input, $"{type}_Shader", 0, new ShaderSlotBinder<T>(this));
         }
 
         internal virtual bool Bind()
         {
             bool shaderChanged = Shader.Bind();
 
-            if (shaderChanged)
-            {
+            //if (shaderChanged)
+            //{
                 ShaderComposition<T> composition = Shader.BoundValue;
 
                 if (composition != null)
@@ -62,7 +62,7 @@ namespace Molten.Graphics
                 {
                     // Do we unbind stage resources?
                 }
-            }
+            //}
 
             Samplers.BindAll();
             Resources.BindAll();

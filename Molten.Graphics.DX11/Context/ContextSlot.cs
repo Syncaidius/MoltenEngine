@@ -7,7 +7,7 @@
             ParentState = parent; 
             BindType = bindType;
             SlotIndex = slotIndex;
-            Name = $"{namePrefix} slot {slotIndex}";
+            Name = $"{namePrefix}_slot_{slotIndex}";
         }
 
         internal abstract bool Bind();
@@ -41,7 +41,7 @@
         uint _boundVersion;
 
         public ContextSlot(DeviceContextState parent, ContextSlotBinder<T> binder, ContextBindTypeFlags bindType, string namePrefix, uint slotIndex) : 
-            base(parent, bindType, $"{namePrefix}_{typeof(T).Name}", slotIndex)
+            base(parent, bindType, namePrefix, slotIndex)
         {
             IsGroupMember = false;
             _group = null;
@@ -49,7 +49,7 @@
         }
 
         public ContextSlot(DeviceContextState parent, ContextSlotGroup<T> grp, ContextBindTypeFlags bindType, string namePrefix, uint slotIndex) :
-            base(parent, bindType, $"{namePrefix}_{typeof(T).Name}", slotIndex)
+            base(parent, bindType, namePrefix, slotIndex)
         {
             IsGroupMember = true;
             _group = grp;
@@ -90,7 +90,7 @@
                             {
                                 if (slot.PendingID > PendingID)
                                 {
-                                    canBind = false;
+                                    canBind = false; 
                                 }
                                 else if (slot.PendingID < PendingID)
                                 {
@@ -129,7 +129,6 @@
                     _boundValue = _value;
                     _boundVersion = _boundValue.Version;
                     _value.BoundTo.Add(this);
-                    Context.Log.Log($"Frame {Context.Device.Profiler.FrameCount} - Bound {_boundValue.Name} to {this.Name}");
 
                     if (!IsGroupMember)
                     {
@@ -162,7 +161,6 @@
         {
             _binder.Unbind(this, _boundValue);
             _boundValue.BoundTo.Remove(this);
-            Context.Log.Log($"Frame {Context.Device.Profiler.FrameCount} - Unbound {_boundValue.Name} from {Name}");
             _boundValue = null;
         }
 

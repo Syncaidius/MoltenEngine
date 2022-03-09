@@ -125,6 +125,10 @@ namespace Molten.Graphics
             Rasterizer.Value = pass.RasterizerState[conditions];
             Depth.Value = pass.DepthState[conditions];
 
+            bool bStateChanged = Blend.Bind();
+            bool rStateChanged = Rasterizer.Bind();
+            bool dStateChanged = Depth.Bind();
+
             // Check if scissor rects need updating
             if (_scissorRectsDirty)
             {
@@ -194,7 +198,8 @@ namespace Molten.Graphics
                 Context.Profiler.Current.SurfaceBindings++;
             }
 
-            return matChanged || vsChanged || gsChanged || hsChanged ||
+            return bStateChanged || rStateChanged || dStateChanged || 
+                matChanged || vsChanged || gsChanged || hsChanged ||
                 dsChanged || psChanged || ibChanged || vbChanged;
         }
 

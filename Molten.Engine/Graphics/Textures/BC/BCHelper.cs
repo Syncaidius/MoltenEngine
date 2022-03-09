@@ -160,7 +160,6 @@ namespace Molten.Graphics.Textures
             uint blockCountX = Math.Max(1, (uncompressed.Width + 3) / BLOCK_DIMENSIONS);
             uint blockCountY = Math.Max(1, (uncompressed.Height + 3) / BLOCK_DIMENSIONS);
             byte[] result = null;
-            Stopwatch blockTimer = new Stopwatch();
             Stopwatch mainTimer = new Stopwatch();
 
             mainTimer.Start();
@@ -170,8 +169,6 @@ namespace Molten.Graphics.Textures
                 {
                     for (uint blockY = 0; blockY < blockCountY; blockY++)
                     {
-                        blockTimer.Reset();
-                        blockTimer.Start();
                         for (uint blockX = 0; blockX < blockCountX; blockX++)
                         {
 
@@ -202,8 +199,6 @@ namespace Molten.Graphics.Textures
 
                             parser.Encode(writer, colTable, log);
                         }
-                        blockTimer.Stop();
-                        log.Log($"Encoded block row {blockY} in {blockTimer.Elapsed.TotalMilliseconds.ToString("N2")}ms");
                     }
 
                     result = stream.ToArray();

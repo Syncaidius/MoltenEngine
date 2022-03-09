@@ -117,7 +117,7 @@ namespace Molten.Graphics
             SurfaceSizeMode sizeMode = SurfaceSizeMode.Full)
         {
             Format dxgiFormat = (Format)format;
-            RenderSurface surface = new RenderSurface(this, width, height, dxgiFormat, name:$"_renderer_{key}");
+            RenderSurface surface = new RenderSurface(this, width, height, dxgiFormat, name:$"renderer_{key}");
             SurfaceConfig config = RegisterSurface(key, surface, sizeMode);
             _mainSurfaces[mainType] = config;
         }
