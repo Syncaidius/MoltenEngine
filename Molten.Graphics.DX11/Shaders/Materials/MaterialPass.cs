@@ -51,7 +51,7 @@ namespace Molten.Graphics
             return result;
         }
 
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
             for (int i = 0; i < Compositions.Length; i++)
                 Compositions[i].Dispose();

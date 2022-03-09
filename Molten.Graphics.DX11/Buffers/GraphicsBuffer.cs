@@ -378,14 +378,14 @@ namespace Molten.Graphics
             return ((CpuAccessFlag)Description.CPUAccessFlags & flag) == flag;
         }
 
-        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
+        internal override void Apply(DeviceContext pipe)
         {
             ApplyChanges(pipe);
         }
 
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
-            base.PipelineDispose();
+            base.PipelineRelease();
 
             if (NativePtr != null)
             {

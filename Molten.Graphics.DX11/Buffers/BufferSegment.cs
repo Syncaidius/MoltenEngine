@@ -225,9 +225,9 @@ namespace Molten.Graphics
             }
         }
 
-        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
+        internal override void Apply(DeviceContext pipe)
         {
-            Buffer.Refresh(slot, pipe);
+            Buffer.Apply(pipe);
         }
 
         /// <summary>Releases the buffer space reserved by the segment.</summary>
@@ -238,7 +238,7 @@ namespace Molten.Graphics
             Buffer.Deallocate(this);
         }
 
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
             Release();
             IsDisposed = false;

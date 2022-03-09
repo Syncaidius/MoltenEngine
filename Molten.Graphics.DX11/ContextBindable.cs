@@ -20,11 +20,10 @@ namespace Molten.Graphics
         }
 
         /// <summary>
-        /// Invoked right before the current <see cref="ContextBindable"/> is due to be bound to a <see cref="DeviceContext"/>.
+        /// Invoked when the current <see cref="ContextBindable"/> should apply any changes before being bound to a GPU context.
         /// </summary>
-        /// <param name="slot">The <see cref="PipeSlot"/> which contains the current <see cref="ContextBindable"/>.</param>
         /// <param name="pipe">The <see cref="DeviceContext"/> that the current <see cref="ContextBindable"/> is to be bound to.</param>
-        internal abstract void Refresh(ContextSlot slot, DeviceContext pipe);
+        internal abstract void Apply(DeviceContext pipe);
 
         /// <summary>
         /// Gets the instance-specific version of the current <see cref="ContextBindable"/>. Any change which will require a device

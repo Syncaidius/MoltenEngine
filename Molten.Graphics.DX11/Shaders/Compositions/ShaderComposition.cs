@@ -42,7 +42,7 @@ namespace Molten.Graphics
             Type = type;
         }
 
-        internal override void Refresh(ContextSlot slot, DeviceContext pipe) { }
+        internal override void Apply(DeviceContext pipe) { }
     }
 
     internal abstract unsafe class ShaderComposition<T> : ShaderComposition 
@@ -65,7 +65,7 @@ namespace Molten.Graphics
         /// <summary>The underlying, compiled HLSL shader object.</summary>
         internal T* PtrShader => _ptrShader;
 
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
             SilkUtil.ReleasePtr(ref _ptrShader);
         }

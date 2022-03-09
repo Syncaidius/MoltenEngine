@@ -150,7 +150,7 @@ namespace Molten.Graphics
             _frameTimer.Stop();
             Current.Time = _frameTimer.Elapsed.TotalMilliseconds;
             Current.TargetTime = time.TargetFrameTime;
-            Current.FrameID = FrameCount;
+            Current.FrameID = FrameCount++;
             Previous = Current;
             _curID++;
 

@@ -73,7 +73,7 @@ namespace Molten.Graphics
                 _desc.SlopeScaledDepthBias == other._desc.SlopeScaledDepthBias;
         }
 
-        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
+        internal override void Apply(DeviceContext pipe)
         {
             if (_native == null || _dirty)
             {
@@ -85,7 +85,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
         }

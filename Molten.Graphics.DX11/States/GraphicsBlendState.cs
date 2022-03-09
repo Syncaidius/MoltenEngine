@@ -113,7 +113,7 @@ namespace Molten.Graphics
             return true;
         }
 
-        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
+        internal override void Apply(DeviceContext pipe)
         {
             if (_native == null || _dirty)
             {
@@ -130,7 +130,7 @@ namespace Molten.Graphics
             return (ID3D11BlendState*)state._native;
         }
 
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
         }

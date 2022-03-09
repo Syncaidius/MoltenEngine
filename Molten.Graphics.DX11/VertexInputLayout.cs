@@ -96,7 +96,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
+        internal override void Apply(DeviceContext pipe)
         {
             // Do nothing. Vertex input layouts build everything they need in the constructor.
         }
@@ -131,7 +131,7 @@ namespace Molten.Graphics
             return true;
         }
 
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
         }

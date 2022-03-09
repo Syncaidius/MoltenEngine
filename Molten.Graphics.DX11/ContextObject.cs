@@ -15,10 +15,10 @@ namespace Molten.Graphics
 
         protected override sealed void OnDispose()
         {
-            Device.MarkForDisposal(this);
+            Device.MarkForRelease(this);
         }
 
-        internal abstract void PipelineDispose();
+        internal abstract void PipelineRelease();
 
         /// <summary>
         /// Gets the <see cref="Graphics.Device"/> that the current <see cref="ContextObject"/> is bound to.

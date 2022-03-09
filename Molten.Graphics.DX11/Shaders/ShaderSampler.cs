@@ -49,13 +49,13 @@ namespace Molten.Graphics
                     _desc.Filter <= Filter.FilterComparisonAnisotropic;
         }
 
-        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
+        internal override void Apply(DeviceContext pipe)
         {
             // If the sampler was actually dirty, recreate it.
             if (_isDirty)
             {
                 int fVal = (int)_desc.Filter;
-                PipelineDispose();
+                PipelineRelease();
 
                 pipe.Device.NativeDevice->CreateSamplerState(ref _desc, ref _native);
                 _isDirty = false;
@@ -63,7 +63,7 @@ namespace Molten.Graphics
             }
         }
 
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
             SilkUtil.ReleasePtr(ref _native);
         }

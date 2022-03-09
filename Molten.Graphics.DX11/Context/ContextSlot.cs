@@ -14,6 +14,8 @@
 
         internal abstract void Unbind();
 
+        internal protected abstract void Clear();
+
         internal ContextBindTypeFlags BindType { get; }
 
         internal DeviceContextState ParentState { get; }
@@ -22,9 +24,9 @@
 
         internal DeviceContext Context => ParentState.Context;
 
-        protected internal uint PendingID { get; set; }
+        internal protected uint PendingID { get; set; }
 
-        protected internal abstract object RawValue { get; }
+        internal protected abstract ContextBindable RawValue { get; }
     }
 
     internal class ContextSlot<T> : ContextSlot
@@ -92,7 +94,7 @@
                                 }
                                 else if (slot.PendingID < PendingID)
                                 {
-                                    slot.Unbind();
+                                    slot.Clear();
                                 }
                                 else if (slot.PendingID == PendingID)
                                 {
@@ -123,10 +125,11 @@
                             _boundValue.BoundTo.Remove(this);
                     }
 
-                    _value.Refresh(this, Context);
+                    _value.Apply(Context);
                     _boundValue = _value;
                     _boundVersion = _boundValue.Version;
                     _value.BoundTo.Add(this);
+                    Context.Log.Log($"Frame {Context.Device.Profiler.FrameCount} - Bound {_boundValue.Name} to {this.Name}");
 
                     if (!IsGroupMember)
                     {
@@ -142,7 +145,7 @@
                 // Refresh the existing value.
                 if(_value != null)
                 {
-                    _value.Refresh(this, this.Context);
+                    _value.Apply(this.Context);
                     if (_boundVersion != Value.Version)
                     {
                         _boundVersion = Value.Version;
@@ -159,7 +162,17 @@
         {
             _binder.Unbind(this, _boundValue);
             _boundValue.BoundTo.Remove(this);
+            Context.Log.Log($"Frame {Context.Device.Profiler.FrameCount} - Unbound {_boundValue.Name} from {Name}");
             _boundValue = null;
+        }
+
+        internal protected override void Clear()
+        {
+            if (_boundValue != null && _boundValue == _value)
+                Unbind();
+
+            _value = null;
+            PendingID = 0;
         }
 
         public override string ToString()
@@ -182,7 +195,8 @@
 
         internal T BoundValue => _boundValue;
 
-        protected internal override object RawValue => _value;
+        internal protected override ContextBindable RawValue => _value;
+
         internal bool IsGroupMember { get; }
     }
 }

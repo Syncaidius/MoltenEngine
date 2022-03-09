@@ -38,7 +38,7 @@ namespace Molten.Graphics
             Parent = this;
         }
 
-        internal override sealed void Refresh(ContextSlot slot, DeviceContext pipe) { }
+        internal override sealed void Apply(DeviceContext pipe) { }
 
         /// <summary>
         /// Gets or sets the number of iterations the shader/component should be run.

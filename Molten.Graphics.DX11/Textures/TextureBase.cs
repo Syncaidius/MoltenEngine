@@ -185,13 +185,12 @@ namespace Molten.Graphics
 
         protected virtual void OnDisposeForRecreation()
         {
-            PipelineDispose();
+            PipelineRelease();
         }
 
-
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
-            base.PipelineDispose();
+            base.PipelineRelease();
 
             //TrackDeallocation();
             SilkUtil.ReleasePtr(ref _native);
@@ -215,7 +214,7 @@ namespace Molten.Graphics
         internal void GenerateMipMaps(DeviceContext pipe)
         {
             if (SRV != null)
-                pipe.Native->GenerateMips(SRV);
+                pipe.Native->GenerateMips(SRV.NativePtr);
         }
 
         public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0)
@@ -583,7 +582,7 @@ namespace Molten.Graphics
         /// <summary>Applies all pending changes to the texture. Take care when calling this method in multi-threaded code. Calling while the
         /// GPU may be using the texture will cause unexpected behaviour.</summary>
         /// <param name="pipe"></param>
-        internal void Apply(DeviceContext pipe)
+        internal override void Apply(DeviceContext pipe)
         {
             if (IsDisposed)
                 return;
@@ -602,11 +601,6 @@ namespace Molten.Graphics
 
             if (altered)
                 Version++;
-        }
-
-        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
-        {
-            Apply(pipe);
         }
 
         /// <summary>Gets the flags that were passed in when the texture was created.</summary>

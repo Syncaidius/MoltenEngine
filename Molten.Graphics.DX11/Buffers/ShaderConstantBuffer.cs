@@ -61,7 +61,7 @@ namespace Molten.Graphics
             Description.ByteWidth = desc.Size;
         }
 
-        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
+        internal override void Apply(DeviceContext pipe)
         {
             // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
             if (DirtyVariables)

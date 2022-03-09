@@ -19,7 +19,7 @@ namespace Molten.Graphics
             Composition = new CSComposition(this, false, ShaderType.ComputeShader);
         }
 
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
             Composition.Dispose();
         }

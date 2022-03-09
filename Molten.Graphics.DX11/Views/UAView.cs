@@ -9,38 +9,30 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public unsafe class UAView : PipeBindable<ID3D11UnorderedAccessView>
+    public unsafe class UAView
     {
         ID3D11UnorderedAccessView* _native;
         UnorderedAccessViewDesc _desc;
+        Device _device;
 
-        internal UAView(Device device) : base(device, ContextBindTypeFlags.Output)
+        internal UAView(Device device) 
         {
+            _device = device;
         }
 
-        internal override unsafe ID3D11UnorderedAccessView* NativePtr => _native;
+        internal unsafe ID3D11UnorderedAccessView* NativePtr => _native;
 
         internal ref UnorderedAccessViewDesc Desc => ref _desc;
 
         internal void Recreate(ID3D11Resource* resource)
         {
             SilkUtil.ReleasePtr(ref _native);
-            Device.NativeDevice->CreateUnorderedAccessView(resource, ref _desc, ref _native);
+            _device.NativeDevice->CreateUnorderedAccessView(resource, ref _desc, ref _native);
         }
 
         internal void Release()
         {
             SilkUtil.ReleasePtr(ref _native);
-        }
-
-        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
-        {
-            throw new NotSupportedException("UAView does not support Refresh()");
-        }
-
-        internal override void PipelineDispose()
-        {
-            Release();
         }
     }
 }

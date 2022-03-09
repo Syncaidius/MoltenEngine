@@ -170,12 +170,12 @@ namespace Molten.Graphics
             Clear(Device, (ClearFlag)flags, depth, stencil);
         }
 
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
             SilkUtil.ReleasePtr(ref _depthView);
             SilkUtil.ReleasePtr(ref _readOnlyView);
 
-            base.PipelineDispose();
+            base.PipelineRelease();
         }
 
         /// <summary>Gets the DepthStencilView instance associated with this surface.</summary>

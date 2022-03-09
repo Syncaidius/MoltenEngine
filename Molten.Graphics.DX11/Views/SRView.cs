@@ -9,38 +9,30 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public unsafe class SRView : PipeBindable<ID3D11ShaderResourceView>
+    public unsafe class SRView
     {
         ID3D11ShaderResourceView* _native;
         ShaderResourceViewDesc _desc;
+        Device _device;
 
-        internal SRView(Device device) : base(device, ContextBindTypeFlags.Input)
+        internal SRView(Device device)
         {
+            _device = device;
         }
 
-        internal override unsafe ID3D11ShaderResourceView* NativePtr => _native;
+        internal unsafe ID3D11ShaderResourceView* NativePtr => _native;
 
         internal ref ShaderResourceViewDesc Desc => ref _desc;
 
         internal void Recreate(ID3D11Resource* resource)
         {
             SilkUtil.ReleasePtr(ref _native);
-            Device.NativeDevice->CreateShaderResourceView(resource, ref _desc, ref _native);
+            _device.NativeDevice->CreateShaderResourceView(resource, ref _desc, ref _native);
         }
 
         internal void Release()
         {
             SilkUtil.ReleasePtr(ref _native);
-        }
-
-        internal override void Refresh(ContextSlot slot, DeviceContext pipe)
-        {
-            throw new NotSupportedException("SRView does not support Refresh()");
-        }
-
-        internal override void PipelineDispose()
-        {
-            Release();
         }
     }
 }

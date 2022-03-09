@@ -100,10 +100,10 @@ namespace Molten.Graphics
             _bufferSegmentPool.Recycle(segment);
         }
 
-        public void MarkForDisposal(ContextObject pObject)
+        public void MarkForRelease(ContextObject pObject)
         {
             if (IsDisposed)
-                pObject.PipelineDispose();
+                pObject.PipelineRelease();
             else
                 _objectsToDispose.Enqueue(pObject);
         }
@@ -111,7 +111,7 @@ namespace Molten.Graphics
         internal void DisposeMarkedObjects()
         {
             while (_objectsToDispose.TryDequeue(out ContextObject obj))
-                obj.PipelineDispose();
+                obj.PipelineRelease();
         }
 
         /// <summary>Track a VRAM allocation.</summary>

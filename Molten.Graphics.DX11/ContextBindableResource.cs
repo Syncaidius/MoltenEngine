@@ -22,21 +22,21 @@ namespace Molten.Graphics
             UAV = new UAView(device);
         }
 
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
-            UAV.Dispose();
-            SRV.Dispose();
+            UAV.Release();
+            SRV.Release();
         }
 
         #region Implicit cast operators
         public static implicit operator ID3D11UnorderedAccessView*(ContextBindableResource resource)
         {
-            return resource.UAV;
+            return resource.UAV.NativePtr;
         }
 
         public static implicit operator ID3D11ShaderResourceView*(ContextBindableResource resource)
         {
-            return resource.SRV;
+            return resource.SRV.NativePtr;
         }
         #endregion
     }

@@ -70,7 +70,7 @@ namespace Molten.Graphics
             return _passesByName[name];
         }
 
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
             for (int i = 0; i < Passes.Length; i++)
                 Passes[i].Dispose();

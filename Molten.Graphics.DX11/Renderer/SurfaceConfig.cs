@@ -46,6 +46,6 @@ namespace Molten.Graphics
         /// <summary>
         /// The surface will remain at a fixed size regardless of resolution changes.
         /// </summary>
-        Fixe = 2,
+        Fixed = 2,
     }
 }

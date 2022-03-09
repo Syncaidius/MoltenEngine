@@ -40,7 +40,6 @@ namespace Molten.Graphics
                 Color4 c4 = color;
                 pipe.Native->ClearRenderTargetView(RTV, (float*)&c4);
             }
-
         }
 
         protected override ID3D11Resource* CreateResource(bool resize)
@@ -97,10 +96,10 @@ namespace Molten.Graphics
         }
 
         /// <summary>Called when the render target needs to be disposed.</summary>
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
             SilkUtil.ReleasePtr(ref RTV);
-            base.PipelineDispose();
+            base.PipelineRelease();
         }
 
         /// <summary>Gets the viewport that defines the default renderable area of the render target.</summary>

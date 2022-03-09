@@ -188,9 +188,9 @@ namespace Molten.Graphics
             return controlAlive;
         }
 
-        internal override void PipelineDispose()
+        internal override void PipelineRelease()
         {
-            base.PipelineDispose();
+            base.PipelineRelease();
 
             _disposing = true;
         }
