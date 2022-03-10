@@ -156,13 +156,20 @@ namespace Molten.Graphics
 
         internal void Map(DeviceContext pipe, Action<GraphicsBuffer, RawStream> callback, GraphicsBuffer staging = null)
         {
+            uint curByteOffset = ByteOffset;
+            uint curStride = Stride;
+
             Buffer.GetStream(pipe, ByteOffset, Stride * ElementCount, (buffer, stream) =>
             {
                 if (Buffer.Mode == BufferMode.DynamicRing)
                     ByteOffset = (uint)stream.Position;
 
                 callback(buffer, stream);
-            }, staging); 
+            }, staging);
+
+            // Do we need to update version due to data changes?
+            if (curByteOffset != ByteOffset || curStride != Stride)
+                Version++;
         }
 
         internal void GetData<T>(DeviceContext pipe, 
@@ -250,6 +257,7 @@ namespace Molten.Graphics
             Previous = null;
             Next = null;
             VertexFormat = null;
+            Version = 0;
             SetIndexFormat(IndexBufferFormat.Unsigned32Bit);
 
             UAV.Release();
