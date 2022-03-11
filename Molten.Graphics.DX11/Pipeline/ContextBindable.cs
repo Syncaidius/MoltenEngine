@@ -15,7 +15,7 @@ namespace Molten.Graphics
     {
         internal ContextBindable(Device device, ContextBindTypeFlags bindFlags) : base(device)
         {
-            BoundTo = new HashSet<ContextSlot>();
+            BoundTo = new List<ContextSlot>();
             BindFlags = bindFlags;
         }
 
@@ -34,7 +34,7 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets a list of slots that the current <see cref="ContextBindable"/> is bound to.
         /// </summary>
-        internal HashSet<ContextSlot> BoundTo { get; }
+        internal List<ContextSlot> BoundTo { get; }
 
         /// <summary>
         /// Gets the current binding ID.

@@ -17,14 +17,12 @@ namespace Molten.IO
         long _length;
         byte* _ptrDataStart;
         byte* _ptrData;
+        bool _canRead;
+        bool _canWrite;
 
         public RawStream(void* ptrData, uint numBytes, bool canRead, bool canWrite)
         {
-            _ptrData = (byte*)ptrData;
-            _ptrDataStart = _ptrData;
-            CanRead = canRead;
-            CanWrite = canWrite;
-            _length = numBytes;
+            SetSource(ptrData, numBytes, canRead, canWrite);
         }
 
         /// <summary>
@@ -33,12 +31,13 @@ namespace Molten.IO
         /// <remarks>Resets <see cref="Position"/> to zero and updates <see cref="Length"/>.</remarks>
         /// <param name="ptrData">A pointer to the source data.</param>
         /// <param name="numBytes">The number of bytes that <paramref name="ptrData"/> represents</param>.
-        public void SetSource(void* ptrData, uint numBytes)
+        public void SetSource(void* ptrData, uint numBytes, bool canRead, bool canWrite)
         {
-            _ptrDataStart = (byte*)ptrData;
+            _ptrData = (byte*)ptrData;
             _ptrDataStart = _ptrData;
+            _canRead = canRead;
+            _canWrite = canWrite;
             _length = numBytes;
-            _pos = 0;
         }
 
         public override void SetLength(long value)
@@ -62,8 +61,9 @@ namespace Molten.IO
             Write(&value, sizeof(T));
         }
 
-        public void Write<T>(ref T value) where T : unmanaged
+        public void Write<T>(in T value) where T : unmanaged
         {
+
             fixed (T* p = &value)
                 Write(p, sizeof(T));
         }
@@ -212,7 +212,7 @@ namespace Molten.IO
             switch (origin)
             {
                 case SeekOrigin.Begin:
-                    Position += offset;
+                    Position = offset;
                     break;
 
                 case SeekOrigin.End:
@@ -224,7 +224,6 @@ namespace Molten.IO
                     break;
             }
 
-            _ptrData = _ptrDataStart + _pos;
             return _pos;
         }
 
@@ -250,6 +249,11 @@ namespace Molten.IO
         }
 
         /// <summary>
+        /// Gets the underlying data pointer.
+        /// </summary>
+        public void* DataPtr => _ptrDataStart;
+
+        /// <summary>
         /// Gets whether or not the stream can seek using <see cref="Seek(long, SeekOrigin)"/>.
         /// </summary>
         public override bool CanSeek => true;
@@ -257,12 +261,12 @@ namespace Molten.IO
         /// <summary>
         /// Gets whether or not the stream can perform read operations.
         /// </summary>
-        public override bool CanRead { get; }
+        public override bool CanRead => _canRead;
 
         /// <summary>
         /// Gets whether or not the stream can perform write operations.
         /// </summary>
-        public override bool CanWrite { get; }
+        public override bool CanWrite => _canWrite;
 
         /// <summary>
         /// Gets whether or not the stream will timeout.

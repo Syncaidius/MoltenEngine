@@ -31,42 +31,39 @@ namespace Molten.Graphics
         {
             bool shaderChanged = Shader.Bind();
 
-            //if (shaderChanged)
-            //{
                 ShaderComposition<T> composition = Shader.BoundValue;
 
-                if (composition != null)
+            if (composition.PtrShader != null)
+            {
+                // Apply pass constant buffers to slots
+                for (int i = 0; i < composition.ConstBufferIds.Count; i++)
                 {
-                    // Apply pass constant buffers to slots
-                    for (int i = 0; i < composition.ConstBufferIds.Count; i++)
-                    {
-                        uint slotID = composition.ConstBufferIds[i];
-                        ConstantBuffers[slotID].Value = composition.Parent.ConstBuffers[slotID];
-                    }
-
-                    // Apply pass resources to slots
-                    for (int i = 0; i < composition.ResourceIds.Count; i++)
-                    {
-                        uint slotID = composition.ResourceIds[i];
-                        Resources[slotID].Value = composition.Parent.Resources[slotID]?.Resource;
-                    }
-
-                    // Apply pass samplers to slots
-                    for (int i = 0; i < composition.SamplerIds.Count; i++)
-                    {
-                        uint slotID = composition.SamplerIds[i];
-                        Samplers[slotID].Value = composition.Parent.SamplerVariables[slotID]?.Sampler;
-                    }
+                    uint slotID = composition.ConstBufferIds[i];
+                    ConstantBuffers[slotID].Value = composition.Parent.ConstBuffers[slotID];
                 }
-                else
+
+                // Apply pass resources to slots
+                for (int i = 0; i < composition.ResourceIds.Count; i++)
                 {
-                    // Do we unbind stage resources?
+                    uint slotID = composition.ResourceIds[i];
+                    Resources[slotID].Value = composition.Parent.Resources[slotID]?.Resource;
                 }
-            //}
 
-            Samplers.BindAll();
-            Resources.BindAll();
-            ConstantBuffers.BindAll();
+                // Apply pass samplers to slots
+                for (int i = 0; i < composition.SamplerIds.Count; i++)
+                {
+                    uint slotID = composition.SamplerIds[i];
+                    Samplers[slotID].Value = composition.Parent.SamplerVariables[slotID]?.Sampler;
+                }
+
+                Samplers.BindAll();
+                Resources.BindAll();
+                ConstantBuffers.BindAll();
+            }
+            else
+            {
+                // Do we unbind stage resources?
+            }
 
             return shaderChanged;
         }

@@ -73,8 +73,12 @@
                 {
                     // Check other bound slots that should be unbound.
                     bool canBind = true;
-                    foreach (ContextSlot slot in _value.BoundTo)
+                    ContextSlot slot = null;
+
+                    for (int i = _value.BoundTo.Count - 1; i >= 0; i--)
                     {
+                        slot = _value.BoundTo[i];
+
                         // Only check slots on the same context.
                         if (slot.Context != Context)
                             continue;
