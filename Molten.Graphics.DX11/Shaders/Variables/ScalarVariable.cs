@@ -21,9 +21,9 @@ namespace Molten.Graphics
             _value = EngineUtil.AllocArray<T>(_expectedElements);
         }
 
-        internal override void Write(RawStream stream)
+        internal override void Write(byte* pDest)
         {
-            stream.Write(_value, SizeOf);
+            Buffer.MemoryCopy(_value, pDest, SizeOf, SizeOf);
         }
 
         public override void Dispose()

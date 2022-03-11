@@ -6,13 +6,13 @@ using System.Text;
 
 namespace Molten.Graphics
 {
-    public abstract class ShaderConstantVariable : IShaderValue, IDisposable
+    public unsafe abstract class ShaderConstantVariable : IShaderValue, IDisposable
     {
         /// <summary>Gets the byte offset of the variable.</summary>
         internal uint ByteOffset;
 
         /// <summary>The size of the variable's data in bytes.</summary>
-        internal long SizeOf;
+        internal uint SizeOf;
 
         internal ShaderConstantVariable(ShaderConstantBuffer parent)
         {
@@ -32,11 +32,13 @@ namespace Molten.Graphics
 
         /// <summary>Called when the variable's value needs to be written to a buffer.</summary>
         /// <param name="stream">The data stream to write the value(s) into.</param>
-        internal abstract void Write(RawStream stream);
+        internal abstract void Write(byte* pDest);
 
         /// <summary>Gets the shader buffer which owns the variable.</summary>
         internal ShaderConstantBuffer ParentBuffer { get; private set; }
 
         public string Name { get; set; }
+
+
     }
 }

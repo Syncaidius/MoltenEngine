@@ -7,29 +7,27 @@ using System.Text;
 namespace Molten.Graphics
 {
     /// <summary>A shader matrix variable.</summary>
-    internal class ScalarFloat3x3Variable : ShaderConstantVariable
+    internal unsafe class ScalarFloat3x3Variable : ShaderConstantVariable
     {
         Matrix3F _value;
 
         public ScalarFloat3x3Variable(ShaderConstantBuffer parent)
             : base(parent)
         {
-            SizeOf = Matrix3F.SizeInBytes;
+            SizeOf = (uint)sizeof(Matrix3F);
         }
 
         public override void Dispose() { }
 
-        internal override void Write(RawStream stream)
+        internal override void Write(byte* pDest)
         {
-            stream.Write(_value);
+            ((Matrix3F*)pDest)[0] = _value;
         }
 
         public override object Value
         {
-            get
-            {
-                return _value;
-            }
+            get => _value;
+
             set
             {
                 _value = (Matrix3F)value;

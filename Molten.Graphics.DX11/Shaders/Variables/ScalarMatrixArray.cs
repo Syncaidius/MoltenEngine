@@ -30,27 +30,17 @@ namespace Molten.Graphics
 
         public override void Dispose() { }
 
-        internal override void Write(RawStream stream)
+        internal override void Write(byte* pDest)
         {
             if (_value != null)
-            {
-                EngineUtil.PinObject(_value, (ptr) =>
-                {
-                    stream.Write(ptr.ToPointer(), SizeOf);
-                });
-            }
+                EngineUtil.PinObject(_value, (ptr) => Buffer.MemoryCopy(ptr.ToPointer(), pDest, SizeOf, SizeOf));
             else
-            {
-                stream.Seek(SizeOf, SeekOrigin.Current);
-            }
+                EngineUtil.Zero(pDest, SizeOf);
         }
 
         public override object Value
         {
-            get
-            {
-                return _value;
-            }
+            get => _value;
 
             set
             {

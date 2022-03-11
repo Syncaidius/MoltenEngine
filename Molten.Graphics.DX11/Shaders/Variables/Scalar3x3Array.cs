@@ -30,7 +30,7 @@ namespace Molten.Graphics
 
         public override void Dispose() { }
 
-        internal override unsafe void Write(RawStream stream)
+        internal override unsafe void Write(byte* pDest)
         {
             if (_isDirty)
             {
@@ -44,11 +44,11 @@ namespace Molten.Graphics
                 }
 
                 fixed (Matrix3F* ptr = _value)
-                    stream.Write(ptr, SizeOf);
+                    Buffer.MemoryCopy(ptr, pDest, SizeOf, SizeOf);
             }
             else
             {
-                stream.Seek(SizeOf, SeekOrigin.Current);
+                EngineUtil.Zero(pDest, SizeOf);
             }
         }
 

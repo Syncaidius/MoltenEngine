@@ -7,21 +7,21 @@ using System.Text;
 namespace Molten.Graphics
 {
     /// <summary>A shader matrix variable.</summary>
-    internal class ScalarFloat4x4Variable : ShaderConstantVariable
+    internal unsafe class ScalarFloat4x4Variable : ShaderConstantVariable
     {
         Matrix4F _value;
 
         public ScalarFloat4x4Variable(ShaderConstantBuffer parent)
             : base(parent)
         {
-            SizeOf = Matrix4F.SizeInBytes;
+            SizeOf = (uint)sizeof(Matrix4F);
         }
 
         public override void Dispose() { }
 
-        internal override void Write(RawStream stream)
+        internal override void Write(byte* pDest)
         {
-            stream.Write(ref _value);
+            ((Matrix4F*)pDest)[0] = _value;
         }
 
         public override object Value

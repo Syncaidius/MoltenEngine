@@ -58,14 +58,17 @@ namespace Molten.IO
 
         public void Write<T>(T value) where T : unmanaged
         {
-            Write(&value, sizeof(T));
+            Write(in value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write<T>(in T value) where T : unmanaged
         {
+            if (!CanWrite)
+                throw new RawStreamException(this, $"Map mode does not allow writing.");
 
-            fixed (T* p = &value)
-                Write(p, sizeof(T));
+            ((T*)_ptrData)[0] = value;
+            Position += sizeof(T);
         }
 
         public void Write<T>(T[] values, uint offset, uint numElements) where T : unmanaged

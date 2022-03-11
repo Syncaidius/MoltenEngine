@@ -18,12 +18,14 @@ namespace Molten.Graphics
         internal Dictionary<string, ShaderConstantVariable> _varLookup;
         internal string BufferName;
         internal int Hash;
+        byte* _constData;
 
         internal ShaderConstantBuffer(Device device, BufferMode flags, 
             ID3D11ShaderReflectionConstantBuffer* srConstBuffer, ref ShaderBufferDesc desc)
             : base(device, flags, BindFlag.BindConstantBuffer, desc.Size)
         {
             _varLookup = new Dictionary<string, ShaderConstantVariable>();
+            _constData = (byte*)EngineUtil.Alloc(desc.Size);
 
             // Read sdescription data
             BufferName = SilkMarshal.PtrToString((nint)desc.Name);
@@ -61,6 +63,12 @@ namespace Molten.Graphics
             Description.ByteWidth = desc.Size;
         }
 
+        internal override void PipelineRelease()
+        {
+            EngineUtil.Free(ref _constData);
+            base.PipelineRelease();
+        }
+
         internal override void Apply(DeviceContext pipe)
         {
             // Setting data via shader variabls takes precedent. All standard buffer changes (set/append) will be ignored and wiped.
@@ -71,15 +79,13 @@ namespace Molten.Graphics
 
                 //write updated data into constant buffer
                 RawStream bufferData;
-                MappedSubresource data = pipe.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0, out bufferData);
-                {
-                    // Re-write all data to the variable buffer to maintain byte-ordering.
-                    for (int i = 0; i < Variables.Length; i++)
-                    {
-                        bufferData.Position = Variables[i].ByteOffset;
-                        Variables[i].Write(bufferData);
-                    }
-                }
+
+                // Re-write all data to the variable buffer to maintain byte-ordering.
+                foreach(ShaderConstantVariable v in Variables)
+                    v.Write(_constData + v.ByteOffset);
+
+                MappedSubresource data = pipe.MapResource(NativePtr, 0, Map.MapWriteDiscard, 0);
+                Buffer.MemoryCopy(_constData, data.PData, data.DepthPitch, Description.ByteWidth);
                 pipe.UnmapResource(NativePtr, 0);
             }
             else
@@ -96,6 +102,7 @@ namespace Molten.Graphics
             uint columns = vInfo.TypeDesc->Columns;
             uint rows = vInfo.TypeDesc->Rows;
             uint elementCount = vInfo.TypeDesc->Elements;
+            uint offset = vInfo.TypeDesc->Offset;
 
             switch (vInfo.TypeDesc->Class)
             {
@@ -166,41 +173,9 @@ namespace Molten.Graphics
             return null;
         }
 
-        /// <summary>Gets or sets a shader variable within the constant buffer.</summary>
-        /// <param name="variable"></param>
-        /// <returns></returns>
-        public object this[string variable]
-        {
-            set
-            {
-                //if the shader is invalid, skip applying data
-                //if (!IsValid)
-                //    return;
 
-                ShaderConstantVariable varInstance = null;
+        public string ConstantBufferName => BufferName;
 
-                if (_varLookup.TryGetValue(variable, out varInstance))
-                    _varLookup[variable].Value = value;
-            }
-
-            get
-            {
-                //if the shader is invalid, skip applying data
-                //if (!IsValid)
-                //    return null;
-
-                ShaderConstantVariable varInstance = null;
-
-                if (_varLookup.TryGetValue(variable, out varInstance))
-                    return _varLookup[variable].Value;
-                else
-                    return null;
-            }
-        }
-
-        public string ConstantBufferName
-        {
-            get { return BufferName; }
-        }
+        internal byte* DataPtr => _constData;
     }
 }

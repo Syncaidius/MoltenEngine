@@ -164,7 +164,13 @@ namespace Molten
         {
             foreach (Memory mem in _allocated.Values)
                 mem.Free();
+        }
 
+        public static void Zero(void* ptr, nuint numBytes)
+        {
+            byte* p = (byte*)ptr;
+            for (uint i = 0; i < numBytes; i++)
+                p[i] = 0;
         }
 
         /// <summary>A helper method for pinning a managed/C# object and providing an <see cref="IntPtr"/> to it. 

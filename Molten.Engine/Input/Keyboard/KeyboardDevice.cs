@@ -60,7 +60,7 @@ namespace Molten.Input
                     OnKeyUp?.Invoke(this, newState);
             }
 
-            Debug.WriteLine($"KB State -- Key: {newState.Key} -- Action: {newState.Action} -- Type: {newState.KeyType}");
+            //Debug.WriteLine($"KB State -- Key: {newState.Key} -- Action: {newState.Action} -- Type: {newState.KeyType}");
             return true;
         }
 

@@ -11,7 +11,7 @@ namespace Molten.Graphics
     internal unsafe class ScalarArray<T> : ShaderConstantVariable where T : unmanaged
     {
         static Type _elementType = typeof(T);
-        static int _stride = sizeof(T);
+        static uint _stride = (uint)sizeof(T);
 
         Array _value;
         internal int ExpectedElements;
@@ -24,27 +24,18 @@ namespace Molten.Graphics
 
         public override void Dispose() { }
 
-        internal override void Write(RawStream stream)
+        internal override void Write(byte* pDest)
         {
             if (_value != null)
-            {
-                EngineUtil.PinObject(_value, (ptr) =>
-                {
-                    stream.Write(ptr.ToPointer(), SizeOf);
-                });
-            }
+                EngineUtil.PinObject(_value, (ptr) => Buffer.MemoryCopy(ptr.ToPointer(), pDest, SizeOf, SizeOf));
             else
-            {
-                stream.Seek(SizeOf, SeekOrigin.Current);
-            }
+                EngineUtil.Zero(pDest, SizeOf);
         }
 
         public override object Value
         {
-            get
-            {
-                return _value;
-            }
+            get => _value;
+
             set
             {
                 Type vType = value.GetType();
@@ -57,7 +48,7 @@ namespace Molten.Graphics
                     {
                         _value = (Array)value;
 
-                        int valueBytes = _value.Length * _stride;
+                        nuint valueBytes = (nuint)_value.Length * _stride;
 
                         if (valueBytes != SizeOf)
                             throw new InvalidOperationException($"Value that was set is not of the expected size ({SizeOf}bytes)");
