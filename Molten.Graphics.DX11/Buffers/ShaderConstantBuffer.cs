@@ -77,9 +77,6 @@ namespace Molten.Graphics
                 // Reset variable-specific dirty flag
                 DirtyVariables = false;
 
-                //write updated data into constant buffer
-                RawStream bufferData;
-
                 // Re-write all data to the variable buffer to maintain byte-ordering.
                 foreach(ShaderConstantVariable v in Variables)
                     v.Write(_constData + v.ByteOffset);

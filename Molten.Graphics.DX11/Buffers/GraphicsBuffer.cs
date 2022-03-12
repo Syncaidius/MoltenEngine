@@ -415,7 +415,7 @@ namespace Molten.Graphics
 
             if (HasFlags(BindFlag.BindUnorderedAccess))
             {
-                UnorderedAccessViewDesc uavDesc = new UnorderedAccessViewDesc()
+                UAV.Desc = new UnorderedAccessViewDesc()
                 {
                     Format = Format.FormatUnknown,
                     ViewDimension = UavDimension.UavDimensionBuffer,

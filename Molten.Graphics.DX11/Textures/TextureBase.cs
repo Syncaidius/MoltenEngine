@@ -421,7 +421,7 @@ namespace Molten.Graphics
             }
 
             // Now pull data from it
-            MappedSubresource databox = pipe.MapResource(resToMap, subID, Map.MapRead, 0);
+            MappedSubresource mapping = pipe.MapResource(resToMap, subID, Map.MapRead, 0);
             // NOTE: Databox: "The row pitch in the mapping indicate the offsets you need to use to jump between rows."
             // https://gamedev.stackexchange.com/questions/106308/problem-with-id3d11devicecontextcopyresource-method-how-to-properly-read-a-t/106347#106347
 
@@ -437,15 +437,15 @@ namespace Molten.Graphics
             fixed (byte* ptrFixedSlice = sliceData)
             {
                 byte* ptrSlice = ptrFixedSlice;
-                byte* ptrDatabox = (byte*)databox.PData;
+                byte* ptrDatabox = (byte*)mapping.PData;
 
                 uint p = 0;
-                while (p < databox.DepthPitch)
+                while (p < mapping.DepthPitch)
                 {
                     Buffer.MemoryCopy(ptrDatabox, ptrSlice, expectedSlicePitch, expectedRowPitch);
-                    ptrDatabox += databox.RowPitch;
+                    ptrDatabox += mapping.RowPitch;
                     ptrSlice += expectedRowPitch;
-                    p += databox.RowPitch;
+                    p += mapping.RowPitch;
                 }
             }
             pipe.UnmapResource(_native, (uint)subID);
