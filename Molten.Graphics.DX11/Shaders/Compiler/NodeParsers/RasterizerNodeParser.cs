@@ -48,7 +48,7 @@ namespace Molten.Graphics
                 switch (nodeName)
                 {
                     case "cull":
-                        if (Enum.TryParse(child.InnerText, true, out CullMode mode))
+                        if (SilkUtil.TryParseEnum(child.InnerText, out CullMode mode))
                             state.CullMode = mode;
                         else
                             InvalidEnumMessage<CullMode>(context, child, "cull mode");
@@ -69,7 +69,7 @@ namespace Molten.Graphics
                         break;
 
                     case "fill":
-                        if (Enum.TryParse(child.InnerText, true, out FillMode fillMode))
+                        if (SilkUtil.TryParseEnum(child.InnerText, out FillMode fillMode))
                             state.FillMode = fillMode;
                         else
                             InvalidEnumMessage<FillMode>(context, child, "fill mode");

@@ -133,28 +133,28 @@ namespace Molten.Graphics
                 string nodeName = child.Name.ToLower();
                 switch (nodeName) {
                     case "comparison":
-                        if (Enum.TryParse(child.InnerText, true, out ComparisonFunc comparison))
+                        if (SilkUtil.TryParseEnum(child.InnerText, out ComparisonFunc comparison))
                             face.Comparison = comparison;
                         else
                             InvalidEnumMessage<ComparisonFunc>(context, child, $"{faceNode.Name}-face comparison");
                         break;
 
                     case "stencilpass":
-                        if (Enum.TryParse(child.InnerText, true, out StencilOp stencilpassOp))
+                        if (SilkUtil.TryParseEnum(child.InnerText, out StencilOp stencilpassOp))
                             face.PassOperation = stencilpassOp;
                         else
                             InvalidEnumMessage<StencilOp>(context, child, $"{faceNode.Name}-face stencil pass operation");
                         break;
 
                     case "stencilfail":
-                        if (Enum.TryParse(child.InnerText, true, out StencilOp stencilFailOp))
+                        if (SilkUtil.TryParseEnum(child.InnerText, out StencilOp stencilFailOp))
                             face.FailOperation = stencilFailOp;
                         else
                             InvalidEnumMessage<StencilOp>(context, child, $"{faceNode.Name}-face stencil fail operation");
                         break;
 
                     case "fail":
-                        if (Enum.TryParse(child.InnerText, true, out StencilOp failOp))
+                        if (SilkUtil.TryParseEnum(child.InnerText, out StencilOp failOp))
                             face.DepthFailOperation = failOp;
                         else
                             InvalidEnumMessage<StencilOp>(context, child, $"{faceNode.Name}-face depth fail operation");
