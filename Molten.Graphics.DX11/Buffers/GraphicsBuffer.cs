@@ -415,7 +415,7 @@ namespace Molten.Graphics
 
             if (HasFlags(BindFlag.BindUnorderedAccess))
             {
-                UAV.Desc = new UnorderedAccessViewDesc()
+                uav.Desc = new UnorderedAccessViewDesc()
                 {
                     Format = Format.FormatUnknown,
                     ViewDimension = UavDimension.UavDimensionBuffer,
@@ -426,7 +426,7 @@ namespace Molten.Graphics
                         Flags = 0,
                     }
                 };
-                UAV.Recreate(this);
+                uav.Recreate(this);
             }
         }
 
