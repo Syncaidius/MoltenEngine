@@ -189,15 +189,15 @@ namespace Molten.Graphics
             return source;
         }
 
-        private bool TryGetDependency(ref string path, ShaderCompilerContext<R, S> context)
+        private ShaderSource TryGetDependency(in string path, ShaderSource parent)
         {
             if (_sources.TryGetValue(path, out ShaderSource dependency))
             {
-                context.Source.Dependencies.Add(dependency);
-                return true;
+                parent.Dependencies.Add(dependency);
+                return dependency;
             }
 
-            return false;
+            return null;
         }
 
         public void ParserHeader(S shader, in string header, ShaderCompilerContext<R, S> context)
@@ -231,6 +231,36 @@ namespace Molten.Graphics
             }
         }
 
+        private ShaderSource GetDependencyStream(ShaderSource source, in string key, out Stream stream,
+            string embeddedName = null, Assembly parentAssembly = null)
+        {
+            stream = null;
+            ShaderSource dependency = null;
+
+            if (source.IsEmbedded)
+            {
+                dependency = TryGetDependency(in key, source);
+                if (dependency == null)
+                {
+                    stream = EmbeddedResource.TryGetStream(embeddedName, parentAssembly);
+                    return null;
+                }
+            }
+            else
+            {
+                dependency = TryGetDependency(in key, source);
+                if (dependency != null)
+                {
+                    if (File.Exists(key))
+                        stream = new FileStream(key, FileMode.Open, FileAccess.Read);
+
+                    return null;
+                }
+            }
+
+            return dependency;
+        }
+
         private void ParseDependencies(ShaderCompilerContext<R, S> context, ShaderSource source, Regex regex, bool allowRelativePath, Assembly assembly)
         {
             HashSet<string> dependencies = new HashSet<string>();
@@ -251,80 +281,71 @@ namespace Molten.Graphics
 
                 string depSource = "";
                 Stream fStream = null;
-                string parsedFilename = null;
-                bool depIsEmbedded = source.IsEmbedded;
+                string depKey = null;
+                ShaderSource dependency = null;
 
                 if (allowRelativePath)
                 {
                     if (source.IsEmbedded)
                     {
-                        // Check parent assembly instead, if set.
+                        // Check parent assembly, if set.
                         Assembly parentAssembly = source.ParentAssembly;
                         if (parentAssembly != null)
                         {
                             string embeddedName = $"{source.ParentNamespace}.{depFilename}";
-                            parsedFilename = $"{embeddedName}, {parentAssembly.FullName}";
-                            if (TryGetDependency(ref parsedFilename, context))
-                                continue;
-
-                            fStream = EmbeddedResource.TryGetStream(embeddedName, parentAssembly);
+                            depKey = $"{embeddedName}, {parentAssembly.FullName}";
+                            dependency = GetDependencyStream(source, in depKey, out fStream, embeddedName, parentAssembly);
                         }
                     }
                     else
                     {
                         // If the source came from a standard file, check it's local directory for the include.
-                        parsedFilename = $"{source.Filename}/{depFilename}";
-                        if (TryGetDependency(ref parsedFilename, context))
-                            continue;
-
-                        if (File.Exists(parsedFilename))
-                            fStream = new FileStream(parsedFilename, FileMode.Open, FileAccess.Read);
+                        depKey = $"{source.Filename}/{depFilename}";
+                        dependency = GetDependencyStream(source, in depKey, out fStream);
                     }
                 }
 
                 // Check embedded files or the default include path
-                if (fStream == null)
+                if (dependency == null && fStream == null)
                 {
-                    parsedFilename = $"{source.ParentNamespace}.{depFilename},{assembly.FullName}";
-                    if (TryGetDependency(ref parsedFilename, context))
-                        continue;
+                    string embeddedName = $"{source.ParentNamespace}.{depFilename}";
+                    depKey = $"{source.ParentNamespace}.{depFilename},{assembly.FullName}";
+                    dependency = GetDependencyStream(source, in depKey, out fStream, embeddedName, assembly);
+                }
 
-                    fStream = EmbeddedResource.TryGetStream(depFilename, assembly);
+                // Check in default include directory.
+                if (dependency == null && fStream == null)
+                {
+                    depKey = $"{_defaultIncludePath}/{depFilename}";
+                    dependency = GetDependencyStream(source, in depKey, out fStream);
+                }
 
-                    // Try default include path instead.
-                    if (fStream == null)
+                // Now try to load the dependency, if not found
+                if (dependency == null)
+                {
+                    if (fStream != null)
                     {
-                        parsedFilename = $"{_defaultIncludePath}/{depFilename}";
-                        if (TryGetDependency(ref parsedFilename, context))
-                            continue;
+                        using (StreamReader reader = new StreamReader(fStream))
+                            depSource = reader.ReadToEnd();
 
-                        if (File.Exists(parsedFilename))
-                            fStream = new FileStream(parsedFilename, FileMode.Open, FileAccess.Read);
+                        fStream.Dispose();
+
+                        int depLineCount = depSource.Split(_newLineSeparator, StringSplitOptions.None).Length;
+                        dependency = ParseSource(context, depFilename, ref depSource, source.IsEmbedded,
+                            assembly, source.ParentNamespace, depLineCount);
+                        source.Dependencies.Add(dependency);
+                        dependencies.Add(depFilename);
+                    }
+                    else
+                    {
+
+                        context.AddError($"{source.Filename}: The include '{depFilename}' was not found");
                     }
                 }
 
-                // Now try to load the dependency
-                if (fStream != null)
-                {
-                    using (StreamReader reader = new StreamReader(fStream))
-                        depSource = reader.ReadToEnd();
-
-                    fStream.Dispose();
-
-                    int depLineCount = depSource.Split(_newLineSeparator, StringSplitOptions.None).Length;
-                    ShaderSource dependency = ParseSource(context, depFilename, ref depSource, depIsEmbedded,
-                        assembly, source.ParentNamespace, depLineCount);
-                    source.Dependencies.Add(dependency);
-                    dependencies.Add(depFilename);
-
-                    // Remove the current #include delcaration
-                    source.SourceCode = source.SourceCode.Replace($"{m.Value};", dependency.SourceCode);
-                    source.SourceCode = source.SourceCode.Replace(m.Value, dependency.SourceCode);
-                }
-                else
-                {
-                    context.AddError($"{source.Filename}: The include '{depFilename}' was not found");
-                }
+                // Remove the current #include delcaration
+                source.SourceCode = source.SourceCode.Replace($"{m.Value};", dependency.SourceCode);
+                source.SourceCode = source.SourceCode.Replace(m.Value, dependency.SourceCode);
 
                 m = m.NextMatch();
             }
