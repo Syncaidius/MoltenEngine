@@ -85,6 +85,9 @@ Blank - Not Started\
 | GLSL Shader Compiler   | 🚧		  |         |        |             |      |
 | SPIR-V Shader Compiler | 🚧		  |         |        |             |      |
 
+# Android
+Molten as recently been upgraded to .NET 6. To build for Android you will need to install the Android workloads by running  
+```dotnet workload install android``` in command prompt or powershell.
 
 # Third-Party Libraries
 A special thanks to each of these great libraries, without which Molten wouldn't exist in it's current form:
