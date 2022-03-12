@@ -9,30 +9,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public unsafe class UAView
+    internal unsafe class UAView : ResourceView<ID3D11UnorderedAccessView, UnorderedAccessViewDesc>
     {
-        ID3D11UnorderedAccessView* _native;
-        UnorderedAccessViewDesc _desc;
-        Device _device;
+        internal UAView(Device device) : base(device) { }
 
-        internal UAView(Device device) 
+        protected override unsafe void OnCreateView(ID3D11Resource* resource, ref UnorderedAccessViewDesc desc, ref ID3D11UnorderedAccessView* view)
         {
-            _device = device;
-        }
-
-        internal unsafe ID3D11UnorderedAccessView* NativePtr => _native;
-
-        internal ref UnorderedAccessViewDesc Desc => ref _desc;
-
-        internal void Recreate(ID3D11Resource* resource)
-        {
-            SilkUtil.ReleasePtr(ref _native);
-            _device.NativeDevice->CreateUnorderedAccessView(resource, ref _desc, ref _native);
-        }
-
-        internal void Release()
-        {
-            SilkUtil.ReleasePtr(ref _native);
+            Device.NativeDevice->CreateUnorderedAccessView(resource, ref desc, ref view);
         }
     }
 }

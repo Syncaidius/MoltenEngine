@@ -55,6 +55,8 @@ namespace Molten.Graphics
 
         protected override unsafe ID3D11Resource* CreateResource(bool resize)
         {
+            RTV.Release();
+
             // Resize the swap chain if needed.
             if (resize && NativeSwapChain != null)
             {
@@ -79,14 +81,14 @@ namespace Molten.Graphics
             {
                 NativeTexture = (ID3D11Texture2D*)ppSurface;
 
-                RenderTargetViewDesc rtvDesc = new RenderTargetViewDesc()
+                RTV.Desc = new RenderTargetViewDesc()
                 {
                     Format = _swapDesc.Format,
                     ViewDimension = RtvDimension.RtvDimensionTexture2D,
                 };
 
                 res = (ID3D11Resource*)NativeTexture;
-                Device.NativeDevice->CreateRenderTargetView(res, &rtvDesc, ref RTV);
+                RTV.Create(res);
                 VP = new ViewportF(0, 0, Width, Height);
             }
             else

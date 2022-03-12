@@ -160,13 +160,13 @@ namespace Molten.Graphics
                 if (!HasFlags(TextureFlags.NoShaderResource))
                 {
                     SetSRVDescription(ref SRV.Desc);
-                    SRV.Recreate(this);
+                    SRV.Create(_native);
                 }
 
                 if (HasFlags(TextureFlags.AllowUAV))
                 {
                     SetUAVDescription(ref SRV.Desc, ref UAV.Desc);
-                    UAV.Recreate(this);
+                    UAV.Create(_native);
                 }
 
                 OnCreate?.Invoke(this);
@@ -214,7 +214,7 @@ namespace Molten.Graphics
         internal void GenerateMipMaps(DeviceContext pipe)
         {
             if (SRV != null)
-                pipe.Native->GenerateMips(SRV.NativePtr);
+                pipe.Native->GenerateMips(SRV.Ptr);
         }
 
         public void SetData<T>(RectangleUI area, T[] data, uint bytesPerPixel, uint level, uint arrayIndex = 0)

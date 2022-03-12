@@ -23,7 +23,7 @@ namespace Molten.Graphics
 
             uint sid = startIndex;
             for (uint i = 0; i < numChanged; i++) {
-                res[i] = grp[sid].BoundValue != null ? grp[sid].BoundValue.SRV.NativePtr : null;
+                res[i] = grp[sid].BoundValue != null ? grp[sid].BoundValue.SRV.Ptr : null;
                 sid++;
             }
 
@@ -33,7 +33,7 @@ namespace Molten.Graphics
         internal override void Bind(ContextSlot<ContextBindableResource> slot, ContextBindableResource value)
         {
             ID3D11ShaderResourceView** res = stackalloc ID3D11ShaderResourceView*[1];
-            res[0] = slot.BoundValue != null ? slot.BoundValue.SRV.NativePtr : null;
+            res[0] = slot.BoundValue != null ? slot.BoundValue.SRV.Ptr : null;
             _stage.SetResources(slot.SlotIndex, 1, res);
         }
 

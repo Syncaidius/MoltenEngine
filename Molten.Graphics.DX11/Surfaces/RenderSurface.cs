@@ -12,8 +12,6 @@ namespace Molten.Graphics
         /// <summary>The viewport which represents the current render surface.</summary>
         internal ViewportF VP;
 
-        RenderTargetViewDesc _rtvDesc;
-
         internal RenderSurface(
             RendererDX11 renderer,
             uint width,
@@ -26,33 +24,38 @@ namespace Molten.Graphics
             : base(renderer, width, height, format, mipCount, arraySize, flags, sampleCount)
         {
             VP = new ViewportF(0, 0, width, height);
-            _rtvDesc = new RenderTargetViewDesc();
-            _rtvDesc.Format = DxgiFormat;
-            Name = $"Surface_{name ?? this.GetType().Name}";
+            Name = $"Surface_{name ?? GetType().Name}";
+            RTV = new RenderTargetView(renderer.Device)
+            {
+                Desc = new RenderTargetViewDesc()
+                {
+                    Format = DxgiFormat,
+                }
+            };
         }
 
         internal virtual void Clear(DeviceContext pipe, Color color)
         {
             Apply(pipe);
 
-            if (RTV != null)
+            if (RTV.Ptr != null)
             {
                 Color4 c4 = color;
-                pipe.Native->ClearRenderTargetView(RTV, (float*)&c4);
+                pipe.Native->ClearRenderTargetView(RTV.Ptr, (float*)&c4);
             }
         }
 
         protected override ID3D11Resource* CreateResource(bool resize)
         {
-            SilkUtil.ReleasePtr(ref RTV);
+            RTV.Release();
 
             ID3D11Resource* resource =  base.CreateResource(resize);
-            SetRTVDescription(ref _rtvDesc);
+            SetRTVDescription(ref RTV.Desc);
 
             if (_description.SampleDesc.Count > 1)
             {
-                _rtvDesc.ViewDimension = RtvDimension.RtvDimensionTexture2Dmsarray;
-                _rtvDesc.Texture2DMSArray = new Tex2DmsArrayRtv
+                RTV.Desc.ViewDimension = RtvDimension.RtvDimensionTexture2Dmsarray;
+                RTV.Desc.Texture2DMSArray = new Tex2DmsArrayRtv
                 {
                     ArraySize = _description.ArraySize,
                     FirstArraySlice = 0,
@@ -60,8 +63,8 @@ namespace Molten.Graphics
             }
             else
             {
-                _rtvDesc.ViewDimension = RtvDimension.RtvDimensionTexture2Darray;
-                _rtvDesc.Texture2DArray = new Tex2DArrayRtv()
+                RTV.Desc.ViewDimension = RtvDimension.RtvDimensionTexture2Darray;
+                RTV.Desc.Texture2DArray = new Tex2DArrayRtv()
                 {
                     ArraySize = _description.ArraySize,
                     MipSlice = 0,
@@ -69,7 +72,7 @@ namespace Molten.Graphics
                 };
             }
 
-            Device.NativeDevice->CreateRenderTargetView(resource, ref _rtvDesc, ref RTV);
+            RTV.Create(resource);
             return resource;
         }
 
@@ -98,7 +101,7 @@ namespace Molten.Graphics
         /// <summary>Called when the render target needs to be disposed.</summary>
         internal override void PipelineRelease()
         {
-            SilkUtil.ReleasePtr(ref RTV);
+            RTV.Release();
             base.PipelineRelease();
         }
 
@@ -108,6 +111,6 @@ namespace Molten.Graphics
         /// <summary>
         /// Gets the DX11 render target view (RTV) for the current render surface.
         /// </summary>
-        protected internal ID3D11RenderTargetView* RTV;
+        internal RenderTargetView RTV { get; }
     }
 }

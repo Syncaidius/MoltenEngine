@@ -410,7 +410,7 @@ namespace Molten.Graphics
                     Format = Format.FormatUnknown,
                 };
 
-                srv.Recreate(this);
+                srv.Create(this);
             }
 
             if (HasFlags(BindFlag.BindUnorderedAccess))
@@ -426,7 +426,7 @@ namespace Molten.Graphics
                         Flags = 0,
                     }
                 };
-                uav.Recreate(this);
+                uav.Create(this);
             }
         }
 

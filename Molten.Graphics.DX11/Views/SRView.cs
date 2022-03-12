@@ -9,30 +9,13 @@ using System.Threading.Tasks;
 
 namespace Molten.Graphics
 {
-    public unsafe class SRView
+    internal unsafe class SRView : ResourceView<ID3D11ShaderResourceView, ShaderResourceViewDesc>
     {
-        ID3D11ShaderResourceView* _native;
-        ShaderResourceViewDesc _desc;
-        Device _device;
+        internal SRView(Device device) : base(device) { }
 
-        internal SRView(Device device)
+        protected override unsafe void OnCreateView(ID3D11Resource* resource, ref ShaderResourceViewDesc desc, ref ID3D11ShaderResourceView* view)
         {
-            _device = device;
-        }
-
-        internal unsafe ID3D11ShaderResourceView* NativePtr => _native;
-
-        internal ref ShaderResourceViewDesc Desc => ref _desc;
-
-        internal void Recreate(ID3D11Resource* resource)
-        {
-            SilkUtil.ReleasePtr(ref _native);
-            _device.NativeDevice->CreateShaderResourceView(resource, ref _desc, ref _native);
-        }
-
-        internal void Release()
-        {
-            SilkUtil.ReleasePtr(ref _native);
+            Device.NativeDevice->CreateShaderResourceView(resource, ref desc, ref view);
         }
     }
 }

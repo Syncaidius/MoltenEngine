@@ -104,7 +104,7 @@ namespace Molten.Graphics
                     Format = Format.FormatUnknown,
                 };
 
-                srv.Recreate(this);
+                srv.Create(this);
             }
 
             // See UAV notes: https://docs.microsoft.com/en-us/windows/win32/direct3d11/overviews-direct3d-11-resources-intro#raw-views-of-buffers
@@ -121,7 +121,7 @@ namespace Molten.Graphics
                         Flags = (uint)BufferUavFlag.BufferUavFlagRaw,
                     }
                 };
-                UAV.Recreate(this);
+                UAV.Create(this);
             }
         }
     }

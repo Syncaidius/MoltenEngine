@@ -168,7 +168,7 @@ namespace Molten.Graphics
                         if (Surfaces[i].BoundValue != null)
                         {
                             _numRTVs = (i+1);
-                            RTVs[i] = Surfaces[i].BoundValue.RTV;
+                            RTVs[i] = Surfaces[i].BoundValue.RTV.Ptr;
                         }
                         else
                         {
