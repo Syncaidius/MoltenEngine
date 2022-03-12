@@ -86,7 +86,7 @@ Blank - Not Started\
 | SPIR-V Shader Compiler | 🚧		  |         |        |             |      |
 
 # Android
-Molten as recently been upgraded to .NET 6. To build for Android you will need to install the Android workloads by running  
+Molten has recently been upgraded to .NET 6. To build for Android you will need to install the Android workloads by running  
 ```dotnet workload install android``` in command prompt or powershell.
 
 # Third-Party Libraries

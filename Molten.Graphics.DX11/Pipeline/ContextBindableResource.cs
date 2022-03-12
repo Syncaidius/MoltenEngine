@@ -27,18 +27,6 @@ namespace Molten.Graphics
             UAV.Release();
             SRV.Release();
         }
-
-        #region Implicit cast operators
-        public static implicit operator ID3D11UnorderedAccessView*(ContextBindableResource resource)
-        {
-            return resource.UAV.NativePtr;
-        }
-
-        public static implicit operator ID3D11ShaderResourceView*(ContextBindableResource resource)
-        {
-            return resource.SRV.NativePtr;
-        }
-        #endregion
     }
 
     internal unsafe abstract class PipeBindableResource<T> : ContextBindableResource

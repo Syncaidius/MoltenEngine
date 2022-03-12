@@ -231,7 +231,7 @@ namespace Molten.Graphics
             }
         }
 
-        private ShaderSource GetDependencyStream(ShaderSource source, in string key, out Stream stream,
+        private ShaderSource GetDependencySource(ShaderSource source, in string key, out Stream stream,
             string embeddedName = null, Assembly parentAssembly = null)
         {
             stream = null;
@@ -294,14 +294,14 @@ namespace Molten.Graphics
                         {
                             string embeddedName = $"{source.ParentNamespace}.{depFilename}";
                             depKey = $"{embeddedName}, {parentAssembly.FullName}";
-                            dependency = GetDependencyStream(source, in depKey, out fStream, embeddedName, parentAssembly);
+                            dependency = GetDependencySource(source, in depKey, out fStream, embeddedName, parentAssembly);
                         }
                     }
                     else
                     {
                         // If the source came from a standard file, check it's local directory for the include.
                         depKey = $"{source.Filename}/{depFilename}";
-                        dependency = GetDependencyStream(source, in depKey, out fStream);
+                        dependency = GetDependencySource(source, in depKey, out fStream);
                     }
                 }
 
@@ -310,14 +310,14 @@ namespace Molten.Graphics
                 {
                     string embeddedName = $"{source.ParentNamespace}.{depFilename}";
                     depKey = $"{source.ParentNamespace}.{depFilename},{assembly.FullName}";
-                    dependency = GetDependencyStream(source, in depKey, out fStream, embeddedName, assembly);
+                    dependency = GetDependencySource(source, in depKey, out fStream, embeddedName, assembly);
                 }
 
                 // Check in default include directory.
                 if (dependency == null && fStream == null)
                 {
                     depKey = $"{_defaultIncludePath}/{depFilename}";
-                    dependency = GetDependencyStream(source, in depKey, out fStream);
+                    dependency = GetDependencySource(source, in depKey, out fStream);
                 }
 
                 // Now try to load the dependency, if not found

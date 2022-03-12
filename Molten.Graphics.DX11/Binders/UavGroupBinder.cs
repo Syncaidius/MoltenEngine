@@ -25,8 +25,9 @@ namespace Molten.Graphics
             uint sid = startIndex;
             for (int i = 0; i < numChanged; i++)
             {
-                pUavs[i] = grp[sid++].BoundValue;
+                pUavs[i] = grp[sid].BoundValue != null ? grp[sid].BoundValue.UAV.NativePtr : null;
                 pInitialCounts[i] = 0; // TODO set initial counts. Research this more.
+                sid++;
             }
 
             _stage.SetUnorderedAccessViews(startIndex, numChanged, pUavs, pInitialCounts);
@@ -36,7 +37,7 @@ namespace Molten.Graphics
         {
             ID3D11UnorderedAccessView** pUavs = stackalloc ID3D11UnorderedAccessView*[1];
             uint* pInitialCounts = stackalloc uint[1];
-            pUavs[0] = slot.BoundValue;
+            pUavs[0] = slot.BoundValue != null ? slot.BoundValue.UAV.NativePtr : null;
             pInitialCounts[0] = 0;
             _stage.SetUnorderedAccessViews(slot.SlotIndex, 1, pUavs, pInitialCounts);
         }
