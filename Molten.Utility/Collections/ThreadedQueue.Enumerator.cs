@@ -21,15 +21,9 @@ namespace Molten.Collections
 
                 Reset();
             }
-            public T Current
-            {
-                get { return _queue._items[_position]; }
-            }
+            public T Current => _queue._items[_position];
 
-            object IEnumerator.Current
-            {
-                get { return _queue._items[_position]; }
-            }
+            object IEnumerator.Current => _queue._items[_position];
 
             public void Dispose()
             {

@@ -203,7 +203,7 @@ namespace Molten.Graphics
                     for (int i = 0; i < sceneData.Layers.Count; i++)
                     {
                         layer = sceneData.Layers[i];
-                        int layerBitVal = 1 << i;
+                        SceneLayerMask layerBitVal = (SceneLayerMask)(1UL << i);
                         if ((camera.LayerMask & layerBitVal) == layerBitVal)
                             continue;
 

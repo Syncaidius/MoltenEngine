@@ -31,6 +31,7 @@ namespace Molten.Samples
         protected override void OnInitialize(Engine engine)
         {
             base.OnInitialize(engine);
+
             if(Window != null)
                 Window.OnHandleChanged += Window_OnHandleChanged;
 
@@ -45,7 +46,7 @@ namespace Molten.Samples
             _cam2D.OrderDepth = 1;
             _cam2D.MaxDrawDistance = 1.0f;
             _cam2D.OutputSurface = Window;
-            _cam2D.LayerMask = BitwiseHelper.Set(_cam2D.LayerMask, 0);
+            _cam2D.LayerMask = SceneLayerMask.Layer0;
 
             if (engine.Input != null && engine.Input.State == EngineServiceState.Ready)
                 Engine.Input.Camera = _cam2D;

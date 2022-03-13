@@ -176,7 +176,7 @@ namespace Molten
         /// Gets or sets the camera's layer render mask. Each enabled bit ignores a layer with the same ID as the bit's position. 
         /// For example, setting bit 0 will skip rendering of layer 0 (the default layer).
         /// </summary>
-        public int LayerMask
+        public SceneLayerMask LayerMask
         {
             get => _camera.LayerMask;
             set => _camera.LayerMask = value;
