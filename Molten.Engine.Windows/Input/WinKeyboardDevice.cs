@@ -54,7 +54,7 @@ namespace Molten.Input
                 Key = 0,
                 KeyType = KeyboardKeyType.Normal,
                 Action = InputAction.Pressed,
-                Character = char.MinValue,
+                Character = char.MinValue
             };
 
             if (windowHandle == forewindow)

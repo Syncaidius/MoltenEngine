@@ -171,6 +171,8 @@ namespace Molten.Input
         /// <param name="time">An instance of timing for the current thread.</param>
         protected override void OnUpdate(Timing time)
         {
+            UpdateID++;
+
             if (_activeSurface != null)
             {
                 for (int i = 0; i < _devices.Count; i++)
@@ -181,8 +183,6 @@ namespace Molten.Input
                 for (int i = 0; i < _devices.Count; i++)
                     _devices[i].ClearState();
             }
-
-            UpdateID++;
         }
 
         protected override ThreadingMode OnStart(ThreadManager threadManager)

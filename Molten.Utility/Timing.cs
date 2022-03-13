@@ -146,7 +146,7 @@ namespace Molten
         /// <summary>
         /// Gets the current frame.
         /// </summary>
-        public ulong CurrentFrame => _frame;
+        public ulong FrameID => _frame;
 
         /// <summary>Gets or sets whether the timer will maintain a fixed time-step equal to <see cref="TargetFrameTime"/>.</summary>
         public bool IsFixedTimestep { get; set; } = true;

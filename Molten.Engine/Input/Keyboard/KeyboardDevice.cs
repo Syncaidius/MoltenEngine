@@ -60,7 +60,7 @@ namespace Molten.Input
                     OnKeyUp?.Invoke(this, newState);
             }
 
-            //Debug.WriteLine($"KB State -- Key: {newState.Key} -- Action: {newState.Action} -- Type: {newState.KeyType}");
+            Debug.WriteLine($"KB State -- Key: {newState.Key} -- Action: {newState.Action} -- Type: {newState.KeyType} -- Frame: {newState.UpdateID} -- CurFrame: {Manager.UpdateID}");
             return true;
         }
 
@@ -76,7 +76,7 @@ namespace Molten.Input
 
         protected override bool GetIsTapped(ref KeyboardKeyState state)
         {
-            return state.Action == InputAction.Pressed;
+            return state.Action == InputAction.Pressed && state.UpdateID == Manager.UpdateID;
         }
 
         /// <summary>

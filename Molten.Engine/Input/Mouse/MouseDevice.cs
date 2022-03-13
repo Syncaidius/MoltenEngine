@@ -89,7 +89,6 @@ namespace Molten.Input
             if (_surface == null)
                 return true;
 
-            newState.UpdateID = Manager.UpdateID;
             Delta = Vector2I.Zero;
 
             // Is the cursor constrained to it's parent control/window?
@@ -212,7 +211,7 @@ namespace Molten.Input
 
         protected override bool GetIsTapped(ref MouseButtonState state)
         {
-            return state.Action == InputAction.Pressed;
+            return state.Action == InputAction.Pressed && state.UpdateID == Manager.UpdateID;
         }
 
         protected override void OnUpdate(Timing time) { }

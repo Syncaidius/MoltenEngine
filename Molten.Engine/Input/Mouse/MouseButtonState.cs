@@ -6,11 +6,16 @@ using System.Threading.Tasks;
 
 namespace Molten.Input
 {
-    public struct MouseButtonState
+    public struct MouseButtonState : IInputState
     {
         public MouseButton Button;
 
-        public DateTime PressTimestamp;
+        DateTime _pressTimestamp;
+        public DateTime PressTimestamp
+        {
+            get => _pressTimestamp;
+            set => _pressTimestamp = value;
+        }
 
         public Vector2I Position;
 
@@ -20,6 +25,11 @@ namespace Molten.Input
 
         public InputActionType ActionType;
 
-        public uint UpdateID;
+        ulong _updateID;
+        public ulong UpdateID
+        {
+            get => _updateID;
+            set => _updateID = value;
+        }
     }
 }

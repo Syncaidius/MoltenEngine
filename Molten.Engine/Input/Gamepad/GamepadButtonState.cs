@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Molten.Input
 {
-    public struct GamepadButtonState
+    public struct GamepadButtonState : IInputState
     {
         /// <summary>
         /// Gets the game pad button associated with the current <see cref="GamepadButtonState"/>.
@@ -27,11 +27,23 @@ namespace Molten.Input
         /// <summary>
         /// Gets the UTC time at which the button was last pressed.
         /// </summary>
-        public DateTime PressTimestamp;
+        DateTime _pressTimestamp;
+        public DateTime PressTimestamp
+        {
+            get => _pressTimestamp;
+            set => _pressTimestamp = value;
+        }
 
         /// <summary>
         /// Gets the amount of time that the <see cref="GamepadButton"/> has been held.
         /// </summary>
         public TimeSpan HeldTime;
+
+        ulong _updateID;
+        public ulong UpdateID
+        {
+            get => _updateID;
+            set => _updateID = value;
+        }
     }
 }

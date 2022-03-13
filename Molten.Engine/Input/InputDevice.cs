@@ -215,7 +215,7 @@ namespace Molten.Input
     /// <typeparam name="S">The type of the state to be stored in the device's buffer.</typeparam>
     /// <typeparam name="T">The input type. Must be an integer-based type. For example a key, button or touch-point enum.</typeparam>
     public abstract class InputDevice<S, T> : InputDevice
-        where S : struct
+        where S : struct, IInputState
         where T : struct
     {
         /// <summary>
@@ -307,7 +307,9 @@ namespace Molten.Input
                     _bStart = 0;
 
                 S state = _buffer[_bStart];
+                state.UpdateID = Manager.UpdateID;
                 int stateID = GetStateID(ref state);
+
                 S prev = _states[stateID];
                 bool accept = ProcessState(ref state, ref prev);
 

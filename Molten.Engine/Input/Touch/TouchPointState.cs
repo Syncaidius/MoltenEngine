@@ -2,7 +2,7 @@
 
 namespace Molten.Input
 {
-    public struct TouchPointState
+    public struct TouchPointState : IInputState
     {
         /// <summary>
         /// An empty <see cref="TouchPointState"/>.
@@ -45,5 +45,19 @@ namespace Molten.Input
         /// touch area in relation to the maximum detectable size of the device.
         /// </summary>
         public float Size;
+
+        DateTime _pressTimestamp;
+        public DateTime PressTimestamp
+        {
+            get => _pressTimestamp;
+            set => _pressTimestamp = value;
+        }
+
+        ulong _updateID;
+        public ulong UpdateID
+        {
+            get => _updateID;
+            set => _updateID = value;
+        }
     }
 }
