@@ -46,14 +46,15 @@ namespace Molten.Threading
         /// <param name="name">The name of the worker group.</param>
         /// <param name="workerCount">The number of <see cref="WorkerThread"/> in the group.</param>
         /// <param name="workerQueue">A queue from which the worker threads will acquire tasks. If null, a queue will be created internally.</param>
+        /// <param name="paused">If true, the worker group will be created in a paused state.</param>
         /// <returns></returns>
         /// <exception cref="EngineThreadException">Thrown if another <see cref="WorkerGroup"/> has the same name.</exception>
-        public WorkerGroup CreateWorkerGroup(string name, int workerCount, ThreadedQueue<WorkerTask> workerQueue = null)
+        public WorkerGroup CreateWorkerGroup(string name, int workerCount, ThreadedQueue<WorkerTask> workerQueue = null, bool paused = false)
         {
             if (_groupsByName.ContainsKey(name))
                 throw new EngineThreadException(null, name, "A worker group with the same name already exists!");
 
-            WorkerGroup group = new WorkerGroup(this, name, workerCount, workerQueue);
+            WorkerGroup group = new WorkerGroup(this, name, workerCount, paused);
             _groups.Add(group);
             _groupsByName.Add(name, group);
             _log.Log($"Spawned worker group '{group.Name}'");

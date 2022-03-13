@@ -171,7 +171,7 @@ namespace Molten
 
         private void AddElement(string requestString, ContentRequestType type, Type contentType, Action<ContentContext> populator = null)
         {
-            ContentContext c = ContentManager.ContextPool.GetInstance();
+            ContentContext c = Manager.ContextPool.GetInstance();
             string path = ParseRequestString(Manager.Log, requestString, c.Metadata);
             string contentPath = Path.Combine(RootDirectory, path);
 

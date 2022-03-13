@@ -13,7 +13,7 @@ namespace Molten.Threading
         ThreadManager _manager;
         string _name;
         int _nameCount;
-        ApartmentState _apartment;
+        bool _paused;
 
         /// <summary>
         /// Creates a new instance of <see cref="WorkerGroup"/>.
@@ -23,13 +23,18 @@ namespace Molten.Threading
         /// <param name="workerCount">The number of <see cref="WorkerThread"/> in the group.</param>
         /// <param name="workQueue">A queue from which the worker threads will acquire tasks. If null, a queue will be created internally.</param>
         /// <param name="apartment"></param>
-        internal WorkerGroup(ThreadManager manager, string name, int workerCount, ThreadedQueue<WorkerTask> workQueue = null, ApartmentState apartment = ApartmentState.MTA)
+        /// <param name="paused">If true, the worker group will be created in a paused state.</param>
+        internal WorkerGroup(ThreadManager manager, string name, int workerCount,
+            bool paused,
+            ThreadedQueue<WorkerTask> workQueue = null,
+            ApartmentState apartment = ApartmentState.MTA)
         {
             _queue = workQueue ?? new ThreadedQueue<WorkerTask>();
             _threads = new List<WorkerThread>();
             _name = name;
             _manager = manager;
-            _apartment = apartment;
+            IsPaused = paused;
+            ThreadApartment = apartment;
 
             SetWorkerCount(workerCount);
         }
@@ -106,7 +111,7 @@ namespace Molten.Threading
                 while (_threads.Count < count)
                 {
                     string tName = $"{_name}_{_nameCount}";
-                    WorkerThread t = new WorkerThread(tName, this, _queue, _apartment);
+                    WorkerThread t = new WorkerThread(tName, this, _queue);
                     _threads.Add(t);
                     t.Start();
                     _nameCount++;
@@ -118,6 +123,11 @@ namespace Molten.Threading
         public int WorkerCount => _threads.Count;
 
         /// <summary>
+        /// Gets the number of tasks in the current <see cref="WorkerGroup"/>'s queue.
+        /// </summary>
+        public int QueueSize => _queue.Count;
+
+        /// <summary>
         /// Gets the name of the current <see cref="WorkerGroup"/>.
         /// </summary>
         public string Name => _name;
@@ -126,5 +136,32 @@ namespace Molten.Threading
         /// Gets whether or not the current <see cref="WorkerGroup"/> has been disposed.
         /// </summary>
         public bool IsDisposed { get; internal set; }
+
+        /// <summary>
+        /// Gets the <see cref="ApartmentState"/> of the group's worker threads.
+        /// </summary>
+        public ApartmentState ThreadApartment { get; }
+
+        /// <summary>
+        /// Gets or sets whether the worker group is paused. If true, the group's workers will not process the group's task queue.
+        /// </summary>
+        public bool IsPaused
+        {
+            get => _paused;
+            set
+            {
+                if(_paused != value)
+                {
+                    _paused = value;
+
+                    // Wake worker threads so they're able to check the queue for new tasks.
+                    if (!_paused)
+                    {
+                        for (int i = 0; i < _threads.Count; i++)
+                            _threads[i].Wake();
+                    }
+                }
+            }
+        }
     }
 }

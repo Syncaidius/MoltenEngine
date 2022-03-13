@@ -57,7 +57,6 @@ namespace Molten
 
             OnStart(settings);
             _engine = new Engine(settings, ignoreSavedSettings);
-            _engine.Initialize();
 
             // Did a module fail to start and shutdown the engine?
             if (_engine.IsDisposed)
@@ -106,6 +105,7 @@ namespace Molten
                         break;
                 }
             }
+
 
             OnInitialize(Engine);
             OnFirstLoad(Engine);

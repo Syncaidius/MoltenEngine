@@ -56,13 +56,7 @@ namespace Molten
                 Renderer.OnStarted += Renderer_OnStarted;
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-        }
 
-        /// <summary>
-        /// Initializes (but doesn't start) the engine and it's bound servics.
-        /// </summary>
-        public void Initialize()
-        {
             foreach (EngineService service in _services)
                 service.Initialize(Settings, Log);
         }
@@ -152,6 +146,8 @@ namespace Molten
         {
             foreach (EngineService service in _services)
                 service.Start(Threading, Log);
+
+            Content.Workers.IsPaused = false;
 
             _mainThread = Threading.CreateThread("engine", true, true, (timing) =>
             {
