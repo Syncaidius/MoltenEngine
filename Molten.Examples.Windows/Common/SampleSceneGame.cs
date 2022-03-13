@@ -157,7 +157,6 @@ namespace Molten.Samples
                 pos.Y += 20; sb.DrawString(SampleFont, $"Right stick: {Gamepad.RightStick.X},{Gamepad.RightStick.Y}", pos, Color.White);
                 pos.Y += 20; sb.DrawString(SampleFont, $"Left Trigger: {Gamepad.LeftTrigger.Value}", pos, Color.White);
                 pos.Y += 20; sb.DrawString(SampleFont, $"Right Trigger: {Gamepad.RightTrigger.Value}", pos, Color.White);
-                //pos.Y += 20; sb.DrawString(SampleFont, $"Pressed Buttons: {Gamepad.PressedButtons}", pos, Color.White);
             }
             else
             {

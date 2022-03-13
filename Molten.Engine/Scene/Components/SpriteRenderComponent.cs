@@ -7,12 +7,13 @@ namespace Molten
         protected ISpriteRenderer _spriteRenderer;
         protected bool _visible = true;
         protected bool _inScene = false;
-        protected ObjectRenderData _data;
+
+        protected ObjectRenderData Data { get; private set; }
 
         protected override void OnInitialize(SceneObject obj)
         {
-            _data = new ObjectRenderData();
-            _data.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
+            Data = new ObjectRenderData();
+            Data.DepthWriteOverride = GraphicsDepthWritePermission.Disabled;
 
             AddToScene(obj);
             obj.OnRemovedFromScene += Obj_OnRemovedFromScene;
@@ -32,7 +33,7 @@ namespace Molten
             // Add mesh to render data if possible.
             if (_visible && obj.Scene != null)
             {
-                obj.Scene.RenderData.AddObject(_spriteRenderer, _data, obj.Layer.Data);
+                obj.Scene.RenderData.AddObject(_spriteRenderer, Data, obj.Layer.Data);
                 _inScene = true;
             }
         }
@@ -44,7 +45,7 @@ namespace Molten
 
             if (obj.Scene != null || _visible)
             {
-                obj.Scene.RenderData.RemoveObject(_spriteRenderer, _data, obj.Layer.Data);
+                obj.Scene.RenderData.RemoveObject(_spriteRenderer, Data, obj.Layer.Data);
                 _inScene = false;
             }
         }
@@ -74,7 +75,7 @@ namespace Molten
 
         public override void OnUpdate(Timing time)
         {
-            _data.TargetTransform = Object.Transform.Global;
+            Data.TargetTransform = Object.Transform.Global;
         }
 
         protected abstract void OnRender(SpriteBatcher sb);
@@ -107,8 +108,8 @@ namespace Molten
         /// </summary>
         public GraphicsDepthWritePermission DepthWriteOverride
         {
-            get => _data.DepthWriteOverride;
-            set => _data.DepthWriteOverride = value;
+            get => Data.DepthWriteOverride;
+            set => Data.DepthWriteOverride = value;
         }
     }
 }
