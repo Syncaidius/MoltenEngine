@@ -7,51 +7,31 @@ using System.Threading.Tasks;
 
 namespace Molten.UI
 {
-    public class UIPanel : UIComponent<UIPanelRenderer>
+    public class UIPanel : UIComponent<UIPanel.RenderData>
     {
-        protected override void OnInitialize(Engine engine, UISettings settings)
-        {
-            base.OnInitialize(engine, settings);
-
-            BorderColor = settings.DefaultBorderColor;
-            BackgroundColor = settings.DefaultBackgroundColor;
-        }
-
-        protected override void OnUpdate(Timing time)
-        {
-            
-        }
-
-        public ref Color BorderColor => ref Data.ExtData.BorderColor;
-
-        public ref float BorderThickness => ref Data.ExtData.BorderThickness;
-
-        public ref Color BackgroundColor => ref Data.ExtData.BackgroundColor;
-    }
-
-    public class UIPanelRenderer : UIComponentRenderer<UIPanelRenderer.Ext>
-    {
-        public struct Ext
+        public struct RenderData : IUIRenderData
         {
             public Color BorderColor;
 
             public float BorderThickness;
 
             public Color BackgroundColor;
-        }
 
-        public UIPanelRenderer()
-        {
+            public RenderData()
+            {
+                BorderColor = UISettings.DefaultBorderColor;
+                BackgroundColor = UISettings.DefaultBackgroundColor;
+                BorderThickness = 2;
+            }
 
-        }
+            public void Render(SpriteBatcher sb, UIBaseData data)
+            {
+                if (BackgroundColor.A > 0)
+                    sb.DrawRect(data.RenderBounds, BackgroundColor);
 
-        protected override void OnRender(SpriteBatcher sb, ref Ext ed)
-        {
-            if(ed.BackgroundColor.A > 0)
-                sb.DrawRect(RenderBounds, ed.BackgroundColor);
-
-            if(ed.BorderColor.A > 0 && ed.BorderThickness > 0)
-                sb.DrawRectOutline(BorderBounds, ed.BorderColor, ed.BorderThickness);
+                if (BorderColor.A > 0 && BorderThickness > 0)
+                    sb.DrawRectOutline(data.BorderBounds, BorderColor, BorderThickness);
+            }
         }
     }
 }

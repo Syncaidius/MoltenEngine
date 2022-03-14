@@ -213,7 +213,7 @@ namespace Molten.Samples
             _ui.Root = new UIPanel()
             {
                 LocalBounds = new Rectangle(100, 150, 400, 600),
-                BorderThickness = 1,
+                
             };
         }
 

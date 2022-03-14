@@ -23,9 +23,12 @@ namespace Molten
         protected override bool OnRun()
         {
             Manager.ReloadFile(File);
-            OnCompleted?.Invoke(this);
-            _pool.Recycle(this);
             return true;
+        }
+
+        protected override void OnFree()
+        {
+            _pool.Recycle(this);
         }
     }
 }

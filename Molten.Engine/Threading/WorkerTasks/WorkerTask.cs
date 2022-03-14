@@ -16,12 +16,18 @@
             if (OnRun())
             {
                 OnCompleted?.Invoke(this);
+                OnFree();
                 _waitHandle.Set();
                 return true;
             }
 
             return false;
         }
+
+        /// <summary>
+        /// Invoked after the current <see cref="WorkerTask"/> is completed and about to be released from a <see cref="WorkerThread"/>.
+        /// </summary>
+        protected abstract void OnFree();
 
         /// <summary>
         /// Blocks the calling <see cref="Thread"/> until the current <see cref="WorkerTask"/> is completed.

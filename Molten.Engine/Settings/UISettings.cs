@@ -8,10 +8,6 @@ namespace Molten
         {
             TooltipDelay = AddSetting("tooltip_delay", 500);
             DragThreshold = AddSetting("drag_threshold", 10f);
-            
-            DefaultTextColor = AddSetting("color_text", Color.White);
-            DefaultBackgroundColor = AddSetting("color_bg", new Color(40, 40, 150, 200));
-            DefaultBorderColor = AddSetting("color_border", new Color(80, 80, 190));
         }
 
         /// <summary>
@@ -26,13 +22,10 @@ namespace Molten
         [DataMember]
         public SettingValue<float> DragThreshold { get; }
 
-        [DataMember]
-        public SettingValue<Color> DefaultTextColor { get; }
+        public static readonly Color DefaultTextColor = Color.White;
 
-        [DataMember]
-        public SettingValue<Color> DefaultBackgroundColor { get; }
+        public static readonly Color DefaultBackgroundColor = new Color(40, 40, 150, 200);
 
-        [DataMember]
-        public SettingValue<Color> DefaultBorderColor { get; }
+        public static readonly Color DefaultBorderColor = new Color(80, 80, 190);
     }
 }

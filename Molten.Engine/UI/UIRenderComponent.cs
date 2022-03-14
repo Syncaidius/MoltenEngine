@@ -32,7 +32,7 @@ namespace Molten.UI
             if (Root == null)
                 return;
 
-            Root.BaseData.Render(sb);
+            Root.Render(sb);
         }
 
         /// <summary>

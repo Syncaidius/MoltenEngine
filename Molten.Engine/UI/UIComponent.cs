@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -13,7 +14,7 @@ namespace Molten.UI
     public abstract class UIComponent
     {
         [DataMember]
-        internal UIComponentRenderer BaseData;
+        internal UIBaseData BaseData;
 
         UIComponent _parent;
         List<UIComponent> _children;
@@ -22,6 +23,7 @@ namespace Molten.UI
         {
             _children = new List<UIComponent>();
             Engine = Engine.Current;
+            BaseData = new UIBaseData();
             OnInitialize(Engine, Engine.Settings.UI);
         }
 
@@ -58,7 +60,7 @@ namespace Molten.UI
             }
 
             UISpacing pad = BaseData.Padding;
-            UISpacing mrg = BaseData.Padding;
+            UISpacing mrg = BaseData.Margin;
             BaseData.BorderBounds = BaseData.GlobalBounds;
             BaseData.BorderBounds.Inflate(-mrg.Left, -mrg.Top, -mrg.Right, -mrg.Bottom);
 
@@ -71,7 +73,9 @@ namespace Molten.UI
             OnUpdate(time);       
         }
 
-        protected abstract void OnUpdate(Timing time);
+        protected virtual void OnUpdate(Timing time) { }
+
+        internal abstract void Render(SpriteBatcher sb);
 
         [DataMember]
         public Rectangle LocalBounds
@@ -107,17 +111,21 @@ namespace Molten.UI
         public Engine Engine { get; private set; }
     }
 
-    public abstract class UIComponent<R> : UIComponent
-        where R : UIComponentRenderer, new()
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="R"></typeparam>
+    /// <typeparam name="EP">Extended property structure.</typeparam>
+    public abstract class UIComponent<EP> : UIComponent
+        where EP : struct, IUIRenderData
     {
-        protected R Data;
+        EP _data = new EP();
 
-        protected override void OnInitialize(Engine engine, UISettings settings)
+        internal override void Render(SpriteBatcher sb)
         {
-            Data = new R();
-            BaseData = Data;
-
-            base.OnInitialize(engine, settings);
+            _data.Render(sb, BaseData);
         }
+
+        public ref EP Properties => ref _data;
     }
 }
