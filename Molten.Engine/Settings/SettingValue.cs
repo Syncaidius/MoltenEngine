@@ -32,6 +32,7 @@ namespace Molten
     /// <typeparam name="T">The type of value to track.</typeparam>
     [DataContract]
     public class SettingValue<T> : SettingValue
+        where T : struct
     {
         T _value;
         T _pendingValue;
