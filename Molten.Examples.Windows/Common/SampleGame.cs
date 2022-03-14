@@ -163,6 +163,9 @@ namespace Molten.Samples
 
         protected virtual void OnHudDraw(SpriteBatcher sb)
         {
+            if (SampleFont == null)
+                return;
+
             string text = "[F1] debug overlay";
             Vector2F tSize = SampleFont.MeasureString(text);
             Vector2F pos = new Vector2F()

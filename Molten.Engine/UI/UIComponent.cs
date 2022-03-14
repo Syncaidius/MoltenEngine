@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,15 +12,23 @@ namespace Molten.UI
     /// </summary>
     public abstract class UIComponent
     {
-        internal UIComponentRenderer Data;
+        [DataMember]
+        internal UIComponentRenderer BaseData;
+
         UIComponent _parent;
         List<UIComponent> _children;
 
-        internal UIComponent()
+        public UIComponent()
         {
             _children = new List<UIComponent>();
-            Data.Margin.OnChanged += MarginPadding_OnChanged;
-            Data.Padding.OnChanged += MarginPadding_OnChanged;
+            Engine = Engine.Current;
+            OnInitialize(Engine, Engine.Settings.UI);
+        }
+
+        protected virtual void OnInitialize(Engine engine, UISettings settings)
+        {
+            BaseData.Margin.OnChanged += MarginPadding_OnChanged;
+            BaseData.Padding.OnChanged += MarginPadding_OnChanged;
         }
 
         private void MarginPadding_OnChanged()
@@ -31,30 +40,30 @@ namespace Molten.UI
         {
             if (_parent != null)
             {
-                Data.GlobalBounds = new Rectangle()
+                BaseData.GlobalBounds = new Rectangle()
                 {
-                    X = _parent.Data.GlobalBounds.X + Data.LocalBounds.X,
-                    Y = _parent.Data.GlobalBounds.Y + Data.LocalBounds.Y,
-                    Width = Data.LocalBounds.Width,
-                    Height = Data.LocalBounds.Height,
+                    X = _parent.BaseData.GlobalBounds.X + BaseData.LocalBounds.X,
+                    Y = _parent.BaseData.GlobalBounds.Y + BaseData.LocalBounds.Y,
+                    Width = BaseData.LocalBounds.Width,
+                    Height = BaseData.LocalBounds.Height,
                 };
 
-                Data.ParentData = _parent.Data;
+                BaseData.Parent = _parent.BaseData;
             }
             else
             {
-                Data.GlobalBounds = Data.LocalBounds;
+                BaseData.GlobalBounds = BaseData.LocalBounds;
 
-                Data.ParentData = null;
+                BaseData.Parent = null;
             }
 
-            UISpacing pad = Data.Padding;
-            UISpacing mrg = Data.Padding;
-            Data.BorderBounds = Data.GlobalBounds;
-            Data.BorderBounds.Inflate(-mrg.Left, -mrg.Top, -mrg.Right, -mrg.Bottom);
+            UISpacing pad = BaseData.Padding;
+            UISpacing mrg = BaseData.Padding;
+            BaseData.BorderBounds = BaseData.GlobalBounds;
+            BaseData.BorderBounds.Inflate(-mrg.Left, -mrg.Top, -mrg.Right, -mrg.Bottom);
 
-            Data.RenderBounds = Data.BorderBounds;
-            Data.RenderBounds.Inflate(-pad.Left, -pad.Top, -pad.Right, -pad.Bottom);
+            BaseData.RenderBounds = BaseData.BorderBounds;
+            BaseData.RenderBounds.Inflate(-pad.Left, -pad.Top, -pad.Right, -pad.Bottom);
         }
 
         internal void Update(Timing time)
@@ -64,19 +73,20 @@ namespace Molten.UI
 
         protected abstract void OnUpdate(Timing time);
 
+        [DataMember]
         public Rectangle LocalBounds
         {
-            get => Data.LocalBounds;
+            get => BaseData.LocalBounds;
             set
             {
-                Data.LocalBounds = value;
+                BaseData.LocalBounds = value;
                 UpdateBounds();
             }
         }
 
-        public Rectangle GlobalBounds => Data.GlobalBounds;
+        public Rectangle GlobalBounds => BaseData.GlobalBounds;
 
-        public Rectangle RenderBounds => Data.RenderBounds;
+        public Rectangle RenderBounds => BaseData.RenderBounds;
 
         public List<UIComponent> Children => _children;
 
@@ -93,14 +103,21 @@ namespace Molten.UI
                 }
             }
         }
+
+        public Engine Engine { get; private set; }
     }
 
-    public abstract class UIComponent<D> : UIComponent
-        where D : UIComponentRenderer, new()
+    public abstract class UIComponent<R> : UIComponent
+        where R : UIComponentRenderer, new()
     {
-        public UIComponent() : base()
+        protected R Data;
+
+        protected override void OnInitialize(Engine engine, UISettings settings)
         {
-            Data = new D();
+            Data = new R();
+            BaseData = Data;
+
+            base.OnInitialize(engine, settings);
         }
     }
 }

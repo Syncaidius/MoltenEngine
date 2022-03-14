@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Molten.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,12 +11,12 @@ namespace Molten.UI
     {
         internal UIComponentRenderer() { }
 
-        public abstract void Render();
+        internal abstract void Render(SpriteBatcher sb);
 
         /// <summary>
         /// The ID of the parent <see cref="UIComponentRenderer"/>. Populated internally before rendering
         /// </summary>
-        public UIComponentRenderer ParentData;
+        public UIComponentRenderer Parent;
 
         /// <summary>
         /// Global position of the UI component, where 0,0 is it's origin.
@@ -33,5 +34,25 @@ namespace Molten.UI
         public UISpacing Padding = new UISpacing();
 
         public UIAnchorFlags Anchor;
+    }
+
+    public abstract class UIComponentRenderer<ED> : UIComponentRenderer
+        where ED : struct
+    {
+        public ED ExtData;
+
+        internal override void Render(SpriteBatcher sb)
+        {
+            // Local copy of ext data for rendering.
+            ED rData = ExtData;
+            OnRender(sb, ref rData);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="ed">Extended data that is specific to the current <see cref="UIComponentRenderer{ED}"/></param>
+        protected abstract void OnRender(SpriteBatcher sb, ref ED renderData);
     }
 }

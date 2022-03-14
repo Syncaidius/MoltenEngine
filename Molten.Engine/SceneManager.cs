@@ -13,8 +13,6 @@ namespace Molten
         List<Scene> _scenes = new List<Scene>();
         List<SceneClickTracker> _trackers;
         Dictionary<MouseButton, SceneClickTracker> _trackerByButton;
-        UITooltip _tooltip;
-        double _tooltipTimer;
         UISettings _settings;
 
         internal SceneManager(UISettings settings)
@@ -87,9 +85,6 @@ namespace Molten
                     if (Hovered != null)
                     {
                         Hovered.InvokeCursorLeave(cursorPos);
-
-                        // Set tooltip.
-                        _tooltip.Text.Text = "";
                     }
 
                     // Set new-current as null.
@@ -107,9 +102,6 @@ namespace Molten
                         Hovered = newHover;
                         Hovered.InvokeCursorEnter(cursorPos);
 
-                        // Set tooltip.
-                        _tooltipTimer = 0;
-                        _tooltip.Text.Text = Hovered.Tooltip;
                     }
                 }
 
@@ -121,19 +113,6 @@ namespace Molten
                 if (Hovered != null)
                 {
                     Hovered.InvokeCursorHover(cursorPos);
-
-                    // Update tooltip status
-                    if (_tooltipTimer < _settings.TooltipDelay)
-                    {
-                        _tooltip.IsVisible = false;
-                        _tooltipTimer += time.ElapsedTime.TotalMilliseconds;
-                    }
-                    else
-                    {
-                        _tooltip.IsVisible = true;
-                    }
-
-                    _tooltip.Position = cursorPos + new Vector2F(16); // TODO Offset this position based on font/cursor size, not a hard-coded value.
 
                     // Handle scroll wheel event
                     if (mouse.ScrollWheel.Delta != 0)

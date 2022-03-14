@@ -6,8 +6,12 @@ namespace Molten
     {
         internal UISettings()
         {
-            TooltipDelay = AddSetting<int>("tooltip_delay", 500);
-            DragThreshold = AddSetting<float>("drag_threshold", 10);
+            TooltipDelay = AddSetting("tooltip_delay", 500);
+            DragThreshold = AddSetting("drag_threshold", 10f);
+            
+            DefaultTextColor = AddSetting("color_text", Color.White);
+            DefaultBackgroundColor = AddSetting("color_bg", new Color(40, 40, 150, 200));
+            DefaultBorderColor = AddSetting("color_border", new Color(80, 80, 190));
         }
 
         /// <summary>
@@ -21,5 +25,14 @@ namespace Molten
         /// </summary>
         [DataMember]
         public SettingValue<float> DragThreshold { get; }
+
+        [DataMember]
+        public SettingValue<Color> DefaultTextColor { get; }
+
+        [DataMember]
+        public SettingValue<Color> DefaultBackgroundColor { get; }
+
+        [DataMember]
+        public SettingValue<Color> DefaultBorderColor { get; }
     }
 }
