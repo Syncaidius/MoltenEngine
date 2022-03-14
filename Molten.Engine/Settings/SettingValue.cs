@@ -32,7 +32,6 @@ namespace Molten
     /// <typeparam name="T">The type of value to track.</typeparam>
     [DataContract]
     public class SettingValue<T> : SettingValue
-        where T : struct
     {
         T _value;
         T _pendingValue;
@@ -61,11 +60,18 @@ namespace Molten
 
         public override void Apply()
         {
-            if (!_value.Equals(_pendingValue))
+            if(_value != null)
             {
-                OnChanged?.Invoke(_value, _pendingValue);
-                _value = _pendingValue;
+                if(_pendingValue == null || !_value.Equals(_pendingValue))
+                    OnChanged?.Invoke(_value, _pendingValue);
             }
+            else
+            {
+                if(_pendingValue != null)
+                    OnChanged?.Invoke(_value, _pendingValue);
+            }
+
+            _value = _pendingValue;
         }
 
         public override void Cancel()
