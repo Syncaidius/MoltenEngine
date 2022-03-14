@@ -7,7 +7,7 @@ namespace Molten
     /// <typeparam name="T"></typeparam>
     /// <param name="oldValue">The old value.</param>
     /// <param name="newValue">The new value.</param>
-    public delegate void SubscribedValueHandler<T>(T oldValue, T newValue);
+    public delegate void SubscribedValueHandler<T>(T oldValue, T newValue) where T : struct;
 
     /// <summary>A utility class for providing basic value change tracking, with subscribable event.</summary>
     [DataContract]
