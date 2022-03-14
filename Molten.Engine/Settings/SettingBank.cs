@@ -62,6 +62,7 @@ namespace Molten
         }
 
         protected SettingValueList<T> AddSettingList<T>(string key)
+            where T : struct
         {
             SettingValueList<T> r = new SettingValueList<T>();
 

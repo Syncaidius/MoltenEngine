@@ -8,6 +8,7 @@ namespace Molten
     /// <typeparam name="T">The type of value to track.</typeparam>
     [DataContract]
     public class SettingValueList<T> : SettingValue
+        where T : struct
     {
         List<T> _value = new List<T>();
         List<T> _pendingValue = new List<T>();
